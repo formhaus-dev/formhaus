@@ -210,6 +210,16 @@ describe('FormEngine', () => {
       expect(engine.errors.clabe).toBeUndefined();
       expect(engine.topLevelErrors).toContain('Invalid CLABE');
     });
+
+    it('replaces previous errors instead of merging', () => {
+      const engine = new FormEngine(basicSchema);
+      engine.setErrors({ name: 'First error' });
+      expect(engine.errors.name).toBe('First error');
+
+      engine.setErrors({ email: 'Second error' });
+      expect(engine.errors.name).toBeUndefined();
+      expect(engine.errors.email).toBe('Second error');
+    });
   });
 
   describe('subscribe / getSnapshot', () => {

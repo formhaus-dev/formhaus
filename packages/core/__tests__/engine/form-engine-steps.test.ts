@@ -174,4 +174,17 @@ describe('FormEngine - Multi-Step', () => {
       expect(engine.currentStep?.id).toBe('personal');
     });
   });
+
+  describe('cascade clears hidden step fields', () => {
+    it('clears field values when their step becomes hidden', () => {
+      const engine = new FormEngine(multiStepSchema, {
+        accountType: 'business',
+        company: 'Acme',
+      });
+      expect(engine.values.company).toBe('Acme');
+
+      engine.setValue('accountType', 'personal');
+      expect(engine.values.company).toBeUndefined();
+    });
+  });
 });

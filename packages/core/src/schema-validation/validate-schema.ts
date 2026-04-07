@@ -48,7 +48,6 @@ function detectCycles(graph: Map<string, string[]>): string[][] {
 export function validateSchema(schema: FormSchema): string[] {
   const warnings: string[] = [];
 
-  // Check fields/steps mutual exclusivity
   const hasFields = schema.fields && schema.fields.length > 0;
   const hasSteps = schema.steps && schema.steps.length > 0;
 
@@ -56,19 +55,34 @@ export function validateSchema(schema: FormSchema): string[] {
     warnings.push('Schema has both "fields" and "steps". Only "steps" will be used.');
   }
 
-  // Build dependency graph from show conditions
   const allFields = getAllFields(schema);
-  const fieldKeys = new Set(allFields.map((f) => f.key));
+  const fieldKeys = new Set<string>();
   const graph = new Map<string, string[]>();
+
+  for (const field of allFields) {
+    if (fieldKeys.has(field.key)) {
+      warnings.push(`Duplicate field key "${field.key}" — fields will share state and overwrite each other`);
+    }
+    fieldKeys.add(field.key);
+  }
 
   for (const field of allFields) {
     const deps = [...extractDependencies(field.show), ...extractDependencies(field.showAny)];
 
-    // Warn about references to non-existent fields
     for (const dep of deps) {
       if (!fieldKeys.has(dep)) {
         warnings.push(
           `Field "${field.key}" has show condition referencing non-existent field "${dep}"`,
+        );
+      }
+    }
+
+    if (field.validation?.pattern !== undefined) {
+      try {
+        new RegExp(field.validation.pattern);
+      } catch {
+        warnings.push(
+          `Field "${field.key}" has invalid regex pattern: "${field.validation.pattern}"`,
         );
       }
     }
@@ -78,7 +92,6 @@ export function validateSchema(schema: FormSchema): string[] {
     }
   }
 
-  // Detect cycles
   const cycles = detectCycles(graph);
   for (const cycle of cycles) {
     warnings.push(`Circular show condition detected: ${cycle.join(' -> ')}`);

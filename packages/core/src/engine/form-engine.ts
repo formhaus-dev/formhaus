@@ -144,6 +144,7 @@ export class FormEngine {
   }
 
   setErrors(errors: Record<string, string>): void {
+    this.errors = {};
     this.topLevelErrors = [];
 
     for (const [key, message] of Object.entries(errors)) {
@@ -311,11 +312,23 @@ export class FormEngine {
   }
 
   private _cascadeClearHiddenFields(): void {
+    const hiddenStepFields = new Set<string>();
+    if (this.isMultiStep) {
+      for (const step of this.schema.steps ?? []) {
+        if (!isStepVisible(step, this.values)) {
+          for (const field of step.fields) {
+            hiddenStepFields.add(field.key);
+          }
+        }
+      }
+    }
+
     for (let i = 0; i < MAX_CASCADE_ITERATIONS; i++) {
       let changed = false;
 
       for (const field of this._allFields) {
-        if (!isVisible(field, this.values) && this.values[field.key] !== undefined) {
+        const fieldHidden = !isVisible(field, this.values) || hiddenStepFields.has(field.key);
+        if (fieldHidden && this.values[field.key] !== undefined) {
           delete this.values[field.key];
           delete this.errors[field.key];
           changed = true;
