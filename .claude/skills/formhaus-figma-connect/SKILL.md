@@ -1,13 +1,13 @@
 ---
-name: figma-connect
+name: formhaus-figma-connect
 description: |
   Generate a @formhaus/figma componentMap JSON by scanning a Figma design system
   via MCP. Auto-detects form components (inputs, checkboxes, buttons, etc.),
   shows screenshots for confirmation, fills gaps interactively.
   Output pastes directly into the Formhaus Figma plugin's Component Map tab.
   Use when: "connect figma", "figma components", "component map",
-  "setup plugin", "map design system", or when user wants to configure
-  the Figma plugin for their design system.
+  "formhaus figma", "setup plugin", "map design system", or when user wants
+  to configure the Figma plugin for their design system.
 allowed-tools:
   - Read
   - Glob

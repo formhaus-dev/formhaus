@@ -2,6 +2,15 @@
 
 ## 0.3.0 - 2026-04-07
 
+### Docs
+
+- Replaced "JSON schema" terminology with "form definition" across all docs, README, and CONTRIBUTING to avoid confusion with the JSON Schema spec.
+- Renamed `/form-schema` skill to `/formhaus-create-form`.
+- Renamed `/figma-connect` skill to `/formhaus-figma-connect`.
+- Renamed `docs/api/schema.md` to `docs/api/definition.md`.
+- Added "Nested keys" section to field types guide.
+- Added "Schema improvements (non-urgent)" section to CONTRIBUTING.
+
 ### `@formhaus/core`
 
 - `FieldType` now accepts any string. Built-in types get autocomplete via `DefaultFieldType`.

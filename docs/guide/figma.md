@@ -1,6 +1,6 @@
 # Figma Plugin
 
-The Formhaus Figma plugin renders form mockups from JSON schemas using your design system components.
+The Formhaus Figma plugin renders form mockups from form definitions using your design system components.
 
 ## Install
 
@@ -21,21 +21,21 @@ This compiles `code.ts` into the bundled plugin code that Figma runs.
 
 1. Open a Figma file
 2. Run the plugin (**Plugins > Formhaus**)
-3. Paste a `@formhaus/core` JSON schema into the **Generate** tab
+3. Paste a `@formhaus/core` form definition into the **Generate** tab
 4. Click **Generate**
 
 The plugin creates a frame for each step (or one frame for single-step forms) with your design system components rendered inside.
 
 ### Quick test
 
-Click **Load example** in the plugin to load a basic contact form schema. Hit **Generate** to see it render with the default component map.
+Click **Load example** in the plugin to load a basic contact form definition. Hit **Generate** to see it render with the default component map.
 
 ## Component Map
 
 The **Component Map** tells the plugin which Figma components to use for each form field type.
 
 ::: tip Auto-generate with Claude
-Instead of editing this JSON manually, run [`/figma-connect`](/guide/figma-connect-skill) to scan your design system and generate the component map automatically.
+Instead of editing this JSON manually, run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to scan your design system and generate the component map automatically.
 :::
 
 ### Structure
@@ -140,7 +140,7 @@ The card width (400px), padding, and spacing are currently fixed. Future version
 
 ## Next steps
 
-- [/form-schema](/guide/form-schema-skill): generate schemas from text descriptions
-- [/figma-connect](/guide/figma-connect-skill): auto-detect your design system components
+- [/formhaus-create-form](/guide/formhaus-create-form): generate form definitions from text descriptions
+- [/formhaus-figma-connect](/guide/formhaus-figma-connect): auto-detect your design system components
 - [Field Types](/guide/fields): all supported form field types
-- [Examples](/guide/examples): example schemas to try with the plugin
+- [Examples](/guide/examples): example definitions to try with the plugin

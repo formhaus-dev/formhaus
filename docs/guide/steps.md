@@ -4,7 +4,7 @@ Split a form into steps. The renderer handles navigation, progress, and per-step
 
 ## Basic multi-step
 
-Use `steps` instead of `fields` in the schema:
+Use `steps` instead of `fields` in the definition:
 
 ```json
 {

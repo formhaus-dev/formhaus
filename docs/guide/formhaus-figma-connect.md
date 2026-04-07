@@ -1,4 +1,4 @@
-# /figma-connect
+# /formhaus-figma-connect
 
 Auto-detect your Figma design system components and generate a [component map](/guide/figma#component-map) for the Figma plugin.
 
@@ -36,7 +36,7 @@ Once connected, Claude can:
 ## Usage
 
 ```
-/figma-connect
+/formhaus-figma-connect
 ```
 
 The skill:
@@ -54,10 +54,10 @@ Paste the output into the Figma plugin's **Component Map** tab.
 
 A complete workflow from idea to Figma mockup:
 
-1. **Describe your form** to Claude, or run [`/form-schema`](/guide/form-schema-skill)
-2. Claude generates the JSON schema
-3. Run `/figma-connect` to map your design system (one-time setup)
-4. Paste the schema into the Figma plugin
+1. **Describe your form** to Claude, or run [`/formhaus-create-form`](/guide/formhaus-create-form)
+2. Claude generates the form definition
+3. Run `/formhaus-figma-connect` to map your design system (one-time setup)
+4. Paste the definition into the Figma plugin
 5. Click **Generate**, your form renders with your design system components
 
 After the initial setup, you only need steps 1, 4, and 5 for each new form.
@@ -65,5 +65,5 @@ After the initial setup, you only need steps 1, 4, and 5 for each new form.
 ## Next steps
 
 - [Figma Plugin](/guide/figma): how the plugin works, component map reference
-- [/form-schema](/guide/form-schema-skill): generate schemas from descriptions
-- [Examples](/guide/examples): example schemas to try with the plugin
+- [/formhaus-create-form](/guide/formhaus-create-form): generate form definitions from descriptions
+- [Examples](/guide/examples): example definitions to try with the plugin

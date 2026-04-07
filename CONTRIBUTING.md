@@ -55,16 +55,24 @@ Opens at http://localhost:5173.
 ## What could use help
 
 - Svelte adapter (`@formhaus/svelte`)
-- More fixture schemas in `packages/core/fixtures/`
+- More fixture definitions in `packages/core/fixtures/`
 - Bug reports
 
 ### Docs wanted
 
-- **Why Formhaus** — comparison page vs react-hook-form, Formik, VeeValidate. One JSON schema renders to React, Vue, Svelte, and Figma. Nobody else does that.
+- **Why Formhaus** — comparison page vs react-hook-form, Formik, VeeValidate. One form definition renders to React, Vue, Svelte, and Figma. Nobody else does that.
 - **Migration guides** — "Coming from react-hook-form" / "Coming from Formik". Map their concepts to ours.
-- **TypeScript** — how to type schemas, infer value types, generics in custom components.
+- **TypeScript** — how to type definitions, infer value types, generics in custom components.
 - **Recipes** — dependent dropdowns, address autocomplete, file upload, dynamic field arrays. Concrete solutions, not abstract docs.
 - **Design system integration** — examples with shadcn/ui, Vuetify, Ant Design. One real UI kit example beats ten abstract ones.
+
+### Schema improvements (non-urgent)
+
+- **`disabled` on fields** — currently only action buttons support `disabled`. Sometimes you need to show a field but block input.
+- **`readonly`** — useful for review/preview mode where the form is visible but not editable.
+- **Multiple validators per field** — right now it's `"validator": "checkFormat"`. An array like `["checkFormat", "checkUnique"]` would be more flexible.
+- **`optionsFrom` / `optionsDependsOn` docs** — the feature works but there's no usage example in the docs. This is the most "magical" part of the definition format.
+- **Field groups / sections** — if a single step has 15 fields, you want to visually break them into blocks without going multi-step.
 
 ## Code style
 

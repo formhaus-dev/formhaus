@@ -222,7 +222,7 @@ File upload. Uses native file input. Set `accept` to restrict file types.
 ```
 :::
 
-In the schema:
+In the definition:
 
 ```json
 {
@@ -258,11 +258,11 @@ Override any built-in field type by passing a `components` prop:
 ```
 :::
 
-Each custom component gets the field definition from the schema, the current value, and validation state:
+Each custom component gets the field descriptor, the current value, and validation state:
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `field` | `FormField` | Field object from the schema (`key`, `label`, `options`, etc.) |
+| `field` | `FormField` | Field descriptor (`key`, `label`, `options`, etc.) |
 | `value` | `unknown` | Current value |
 | `error` | `string?` | Validation error, if any |
 | `loading` | `boolean?` | Field is loading (async options) |
@@ -324,7 +324,15 @@ const emit = defineEmits<{
 </template>
 ```
 
-`field` has everything from the schema: `key`, `type`, `label`, `placeholder`, `helperText`, `options`, `validation`. Full type in the [Schema Reference](/api/schema).
+`field` has everything from the definition: `key`, `type`, `label`, `placeholder`, `helperText`, `options`, `validation`. Full type in the [Definition Reference](/api/definition).
+
+## Nested keys
+
+Field keys are flat strings. `key: "name"` maps to `values.name` in the submit output. If you use a dot in the key (`key: "address.city"`), it stays flat — the submitted value is `{ "address.city": "Berlin" }`, not `{ address: { city: "Berlin" } }`.
+
+This is intentional. Most forms don't need nested data, and flat keys keep the engine simple. If your backend expects nested objects, reshape the values in your `onSubmit` handler.
+
+Repeatable field groups (arrays of items) are not supported yet.
 
 ## Next steps
 

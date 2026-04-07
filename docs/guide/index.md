@@ -1,7 +1,7 @@
 # Getting Started
 
-Framework-agnostic JSON-schema-driven form ecosystem.
-Define a form once as a JSON schema, render it anywhere in code or Figma.
+Framework-agnostic form engine with its own compact JSON-based definition format.
+Define a form once, render it anywhere in code or Figma.
 
 ## Install
 
@@ -51,12 +51,12 @@ function MyForm() {
 ```
 :::
 
-The renderer reads the schema, renders fields, handles validation, and gives you values on submit.
+The renderer reads the form definition, renders fields, handles validation, and gives you values on submit.
 
 ## How it works
 
 ```
-JSON Schema --> FormEngine (pure TS) --> Adapter --> UI Components
+Form Definition --> FormEngine (pure TS) --> Adapter --> UI Components
                      |
                      |-- values, errors, step state
                      |-- visibility (show/hide fields)
@@ -80,11 +80,11 @@ The engine is framework-agnostic. It holds form state, runs validation, tracks f
 ### @formhaus/core
 
 Pure TypeScript, zero deps. Contains:
-- Type definitions for the JSON schema
+- Type definitions for the form definition format
 - `FormEngine` class (state machine for the form)
 - Visibility evaluation (`show`/`showAny` conditions)
 - Validation (built-in rules + custom validators)
-- Schema validation (DAG cycle detection for show conditions)
+- Definition validation (DAG cycle detection for show conditions)
 
 ### @formhaus/vue
 
@@ -98,4 +98,4 @@ React 18+. Same idea as the Vue adapter. Native HTML by default, override via `c
 
 - [Field Types](/guide/fields): all supported form field types
 - [Validation](/guide/validation): add rules to your fields
-- [Examples](/guide/examples): working form schemas to learn from
+- [Examples](/guide/examples): working form definitions to learn from

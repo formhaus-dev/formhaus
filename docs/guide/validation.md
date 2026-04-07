@@ -97,7 +97,7 @@ function validateFormat(value: unknown, allValues: Record<string, unknown>) {
 ```
 :::
 
-Reference the validator by name in the schema:
+Reference the validator by name in the definition:
 
 ```json
 {
@@ -119,4 +119,4 @@ Reference the validator by name in the schema:
 
 - [Error Handling](/guide/errors): display errors and handle loading states
 - [Multi-Step Forms](/guide/steps): validate across multiple steps
-- [Schema Reference](/api/schema): full TypeScript types for all validation rules
+- [Definition Reference](/api/definition): full TypeScript types for all validation rules

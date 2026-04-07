@@ -2,11 +2,11 @@ import { defineConfig } from 'vitepress'
 
 export default defineConfig({
   title: 'Formhaus',
-  description: 'Framework-agnostic JSON-schema-driven form ecosystem',
+  description: 'Framework-agnostic form engine with its own compact definition format',
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/' },
-      { text: 'API', link: '/api/schema' },
+      { text: 'API', link: '/api/definition' },
       { text: 'Playground', link: '/playground' },
       { text: 'GitHub', link: 'https://github.com/ignsm/formhaus' }
     ],
@@ -27,7 +27,7 @@ export default defineConfig({
       {
         text: 'API Reference',
         items: [
-          { text: 'Schema', link: '/api/schema' },
+          { text: 'Definition', link: '/api/definition' },
         ]
       },
       {
@@ -39,8 +39,8 @@ export default defineConfig({
       {
         text: 'Claude Skills',
         items: [
-          { text: '/figma-connect', link: '/guide/figma-connect-skill' },
-          { text: '/form-schema', link: '/guide/form-schema-skill' },
+          { text: '/formhaus-figma-connect', link: '/guide/formhaus-figma-connect' },
+          { text: '/formhaus-create-form', link: '/guide/formhaus-create-form' },
         ]
       },
       {

@@ -1,11 +1,11 @@
 ---
-name: form-schema
+name: formhaus-create-form
 description: |
-  Generate @formhaus/core JSON schemas from any input: text description,
+  Generate @formhaus/core form definitions from any input: text description,
   CSV/table, or screenshot of a form. Interactive step/condition builder.
   Output pastes directly into the Formhaus Figma plugin or FormRenderer.
-  Use when: "generate form", "form schema", "form JSON", "create a form",
-  or when user describes form fields in any format.
+  Use when: "generate form", "form definition", "form JSON", "create a form",
+  "formhaus", or when user describes form fields in any format.
 allowed-tools:
   - Read
   - Write
@@ -15,9 +15,9 @@ allowed-tools:
   - Agent
 ---
 
-# Form Schema Generator
+# Form Definition Generator
 
-You generate valid `@formhaus/core` JSON schemas from any input.
+You generate valid `@formhaus/core` form definitions from any input.
 The output is ready to paste into the Formhaus Figma plugin or use with FormRenderer.
 
 ## Types Reference
@@ -179,7 +179,7 @@ Ask only if there's ambiguity: "Should [field] be required?"
 
 ### Step 4: Generate JSON
 
-Output the complete FormSchema JSON. Follow these rules:
+Output the complete form definition JSON. Follow these rules:
 
 1. `id` is kebab-case derived from the title
 2. `key` for each field is camelCase
@@ -192,7 +192,7 @@ Output the complete FormSchema JSON. Follow these rules:
 
 Show the generated JSON in a code block. Ask:
 
-> "Here's your form schema. You can paste this directly into the
+> "Here's your form definition. You can paste this directly into the
 > Formhaus Figma plugin or use with FormRenderer."
 
 Options:
@@ -219,8 +219,8 @@ a pattern or show the user an example.
 
 - NEVER output invalid JSON. Validate before presenting.
 - NEVER invent field types not in the FieldType union.
-- NEVER use `fields` AND `steps` in the same schema. Pick one.
-- Keys must be unique within a schema (across all steps).
+- NEVER use `fields` AND `steps` in the same definition. Pick one.
+- Keys must be unique within a definition (across all steps).
 - ShowCondition.field must reference an existing field key.
 - For multi-step: each step needs `id`, `title`, and `fields`.
 - Submit label should match the form's purpose ("Submit", "Create transfer", "Register", etc.).

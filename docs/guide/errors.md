@@ -140,5 +140,5 @@ function onFieldChange(key, value) {
 ## Next steps
 
 - [Validation](/guide/validation): client-side validation rules
-- [Examples](/guide/examples): error handling in real schemas
-- [Schema Reference](/api/schema): full TypeScript types
+- [Examples](/guide/examples): error handling in real definitions
+- [Definition Reference](/api/definition): full TypeScript types

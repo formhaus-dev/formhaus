@@ -1,4 +1,4 @@
-# Schema Reference
+# Definition Reference
 
 Every form is a JSON object following the `FormSchema` type.
 

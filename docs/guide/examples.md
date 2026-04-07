@@ -1,6 +1,6 @@
 # Examples
 
-Example form schemas showing different features. These same JSON files drive both Vue and React stories.
+Example form definitions showing different features. These same JSON files drive both Vue and React stories.
 
 ## Dispute Form
 
@@ -11,7 +11,7 @@ Steps:
 2. **Additional details** - description (textarea, min 20 chars), contact preference, phone (conditional)
 3. **Review & Submit** - acknowledgement checkbox
 
-Schema: [`fixtures/dispute-form.json`](https://github.com/ignsm/formhaus/blob/main/packages/core/fixtures/dispute-form.json)
+Definition: [`fixtures/dispute-form.json`](https://github.com/ignsm/formhaus/blob/main/packages/core/fixtures/dispute-form.json)
 
 ## All fixtures
 
@@ -26,6 +26,6 @@ Schema: [`fixtures/dispute-form.json`](https://github.com/ignsm/formhaus/blob/ma
 
 ## Next steps
 
-- [Figma Plugin](/guide/figma): render these schemas as Figma mockups
-- [/form-schema](/guide/form-schema-skill): generate new schemas with Claude
-- [Schema Reference](/api/schema): full TypeScript types
+- [Figma Plugin](/guide/figma): render these definitions as Figma mockups
+- [/formhaus-create-form](/guide/formhaus-create-form): generate new definitions with Claude
+- [Definition Reference](/api/definition): full TypeScript types

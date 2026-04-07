@@ -6,8 +6,8 @@
 [![bundlephobia](https://img.shields.io/bundlephobia/minzip/@formhaus/core?label=core%20size)](https://bundlephobia.com/package/@formhaus/core)
 [![license](https://img.shields.io/github/license/ignsm/formhaus)](LICENSE)
 
-Framework-agnostic JSON-schema-driven form ecosystem.
-Define a form once as a JSON schema, render it anywhere in code or Figma.
+Framework-agnostic form engine with its own compact JSON-based definition format.
+Define a form once — fields, validation, conditions, steps — in a single file. Render it in React, Vue, Figma, or any framework via the core engine. No JSON Schema spec, no separate UI schema, no boilerplate.
 
 ## Packages
 
@@ -17,7 +17,7 @@ Define a form once as a JSON schema, render it anywhere in code or Figma.
 | `@formhaus/react` | React adapter with native HTML defaults and custom component support | `npm i @formhaus/react` |
 | `@formhaus/vue` | Vue 3 adapter with native HTML defaults and custom component support | `npm i @formhaus/vue` |
 
-There is also a Figma plugin (`@formhaus/figma`) that generates form mockups from JSON schemas. Available via `manifest.json` for now.
+There is also a Figma plugin (`@formhaus/figma`) that generates form mockups from form definitions. Available via `manifest.json` for now.
 
 Svelte, Solid, or anything else: use `@formhaus/core` directly. See the [playground](https://formhaus.dev/playground) for an example.
 
@@ -38,9 +38,9 @@ Or use `@formhaus/core` directly with any framework. See the [Svelte example in 
 
 ## Quick Start
 
-### Define a schema
+### Define a form
 
-You can write the JSON by hand or use the [Claude skill](.claude/skills/form-schema/SKILL.md) to generate it from a text description.
+You can write the JSON by hand or use the [Claude skill](.claude/skills/formhaus-create-form/SKILL.md) to generate it from a text description.
 
 ```json
 {
@@ -191,7 +191,7 @@ Each field component receives the full `FormField` descriptor, the current value
 
 ## Figma Plugin
 
-`@formhaus/figma` is a Figma plugin that takes a formhaus JSON schema and generates a styled form mockup directly on the canvas. Useful for rapid prototyping and design handoff.
+`@formhaus/figma` is a Figma plugin that takes a formhaus form definition and generates a styled form mockup directly on the canvas. Useful for rapid prototyping and design handoff.
 
 ## Contributing
 

@@ -1,6 +1,6 @@
-# /form-schema
+# /formhaus-create-form
 
-Generate valid `@formhaus/core` JSON schemas from natural language, CSV data, or screenshots.
+Generate valid `@formhaus/core` form definitions from natural language, CSV data, or screenshots.
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ Generate valid `@formhaus/core` JSON schemas from natural language, CSV data, or
 ## Usage
 
 ```
-/form-schema
+/formhaus-create-form
 ```
 
 Then describe your form:
@@ -35,7 +35,7 @@ The skill:
 
 ## Output
 
-The generated JSON schema works with:
+The generated form definition works with:
 
 - The [Figma plugin](/guide/figma): paste into the Generate tab
 - [React adapter](https://github.com/ignsm/formhaus/tree/main/packages/react): pass to `FormRenderer`
@@ -43,6 +43,6 @@ The generated JSON schema works with:
 
 ## Next steps
 
-- [/figma-connect](/guide/figma-connect-skill): connect your design system to the Figma plugin
+- [/formhaus-figma-connect](/guide/formhaus-figma-connect): connect your design system to the Figma plugin
 - [Field Types](/guide/fields): all supported form field types
-- [Schema Reference](/api/schema): full TypeScript types
+- [Definition Reference](/api/definition): full TypeScript types
