@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "description": "Figma plugin: generates form mockups from @formhaus/core JSON schemas",
   "scripts": {
-    "build": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2020 --format=iife",
-    "watch": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2020 --format=iife --watch",
+    "build": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017 --format=iife",
+    "watch": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017 --format=iife --watch",
     "test": "vitest run",
     "test:watch": "vitest"
   },
