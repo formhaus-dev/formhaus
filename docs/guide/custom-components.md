@@ -34,7 +34,61 @@ import { MyFormActions } from './MyFormActions'
 ```
 :::
 
-Your component receives these props:
+Your component receives pre-computed convenience props so you don't need to re-derive button labels or visibility:
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `primaryLabel` | `string?` | Resolved label for the primary button ("Continue" or submit label) |
+| `showBack` | `boolean?` | Whether the back button should be shown |
+| `backLabel` | `string?` | Resolved label for the back button |
+| `loading` | `boolean?` | Whether the form is submitting |
+| `cancelAction` | `FormAction?` | Cancel button config |
+
+In React, call `onPrimary` for the primary action and `onPrev` for back. In Vue, emit `primary` and `prev`.
+
+### Vue example
+
+```vue
+<script setup lang="ts">
+import type { FormActionsProps } from '@formhaus/vue'
+
+defineProps<FormActionsProps>()
+const emit = defineEmits<{
+  (e: 'primary'): void
+  (e: 'prev'): void
+  (e: 'cancel'): void
+}>()
+</script>
+
+<template>
+  <div class="my-actions">
+    <button v-if="showBack" @click="emit('prev')">{{ backLabel }}</button>
+    <button @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
+  </div>
+</template>
+```
+
+### React example
+
+```tsx
+import type { FormActionsProps } from '@formhaus/react'
+
+export function MyFormActions({
+  primaryLabel, showBack, backLabel, loading,
+  onPrimary, onPrev,
+}: FormActionsProps) {
+  return (
+    <div className="my-actions">
+      {showBack && <button onClick={onPrev}>{backLabel}</button>}
+      <button disabled={loading} onClick={onPrimary}>{primaryLabel}</button>
+    </div>
+  )
+}
+```
+
+### Raw props
+
+For full control, the raw props are still available:
 
 | Prop | Type | Description |
 |------|------|-------------|
@@ -46,59 +100,7 @@ Your component receives these props:
 | `isMultiStep` | `boolean` | Whether the form has multiple steps |
 | `loading` | `boolean?` | Whether the form is submitting |
 
-In Vue, emit `submit`, `next`, `prev`, `cancel` events. In React, call `onSubmit`, `onNext`, `onPrev`, `onCancel` callbacks.
-
-### Vue example
-
-```vue
-<script setup lang="ts">
-import type { FormActionsProps } from '@formhaus/vue'
-
-defineProps<FormActionsProps>()
-const emit = defineEmits<{
-  (e: 'submit'): void
-  (e: 'next'): void
-  (e: 'prev'): void
-  (e: 'cancel'): void
-}>()
-</script>
-
-<template>
-  <div class="my-actions">
-    <button v-if="isMultiStep && !isFirstStep" @click="emit('prev')">
-      Back
-    </button>
-    <button @click="isLastStep || !isMultiStep ? emit('submit') : emit('next')" :disabled="loading">
-      {{ isLastStep || !isMultiStep ? (submitAction?.label ?? 'Submit') : 'Continue' }}
-    </button>
-  </div>
-</template>
-```
-
-### React example
-
-```tsx
-import type { FormActionsProps } from '@formhaus/react'
-
-export function MyFormActions({
-  submitAction, isFirstStep, isLastStep, isMultiStep, loading,
-  onSubmit, onNext, onPrev,
-}: FormActionsProps) {
-  return (
-    <div className="my-actions">
-      {isMultiStep && !isFirstStep && (
-        <button onClick={onPrev}>Back</button>
-      )}
-      <button
-        disabled={loading}
-        onClick={isLastStep || !isMultiStep ? onSubmit : onNext}
-      >
-        {isLastStep || !isMultiStep ? (submitAction?.label ?? 'Submit') : 'Continue'}
-      </button>
-    </div>
-  )
-}
-```
+In Vue, you can also emit `submit`, `next`, `prev`, `cancel` events directly. In React, call `onSubmit`, `onNext`, `onPrev`, `onCancel` callbacks.
 
 ## Custom progress component
 

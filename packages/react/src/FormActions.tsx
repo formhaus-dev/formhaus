@@ -12,19 +12,24 @@ export function FormActions({
   onNext,
   onPrev,
   onCancel,
+  primaryLabel: primaryLabelProp,
+  showBack: showBackProp,
+  backLabel: backLabelProp,
+  onPrimary: onPrimaryProp,
 }: FormActionsProps) {
-  const showBack = isMultiStep && !isFirstStep && backAction !== false;
-  const backLabel = typeof backAction === 'object' ? backAction?.label : 'Back';
+  const showBack = showBackProp ?? (isMultiStep && !isFirstStep && backAction !== false);
+  const backLabel = backLabelProp ?? (typeof backAction === 'object' ? (backAction?.label ?? 'Back') : 'Back');
+  const primaryLabel = primaryLabelProp ?? (isMultiStep && !isLastStep ? 'Continue' : (submitAction?.label ?? 'Submit'));
 
   function handlePrimary() {
-    if (isMultiStep && !isLastStep) {
+    if (onPrimaryProp) {
+      onPrimaryProp();
+    } else if (isMultiStep && !isLastStep) {
       onNext();
     } else {
       onSubmit();
     }
   }
-
-  const primaryLabel = isMultiStep && !isLastStep ? 'Continue' : (submitAction?.label ?? 'Submit');
 
   return (
     <div className="fh-form-actions">

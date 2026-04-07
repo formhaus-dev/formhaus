@@ -69,6 +69,23 @@ export function FormRenderer({
   const ProgressComp = ProgressComponent ?? FormStepProgress;
   const ActionsComp = ActionsComponent ?? FormActions;
 
+  const effectiveIsLastStep = engine.isLastStep || !engine.isMultiStep;
+  const computedPrimaryLabel = engine.isMultiStep && !effectiveIsLastStep
+    ? (engine.currentStep?.next?.label ?? 'Continue')
+    : (schema.submit?.label ?? 'Submit');
+  const computedShowBack = engine.isMultiStep && !engine.isFirstStep && engine.currentStep?.back !== false;
+  const computedBackLabel = typeof engine.currentStep?.back === 'object'
+    ? (engine.currentStep.back.label ?? 'Back')
+    : 'Back';
+
+  function handlePrimary() {
+    if (engine.isMultiStep && !effectiveIsLastStep) {
+      handleNext();
+    } else {
+      handleSubmit({ preventDefault: () => {} } as React.FormEvent);
+    }
+  }
+
   return (
     <form className="fh-form" onSubmit={handleSubmit}>
       {engine.isMultiStep && (
@@ -111,13 +128,17 @@ export function FormRenderer({
         backAction={engine.currentStep?.back}
         cancelAction={schema.cancel}
         isFirstStep={engine.isFirstStep}
-        isLastStep={engine.isLastStep || !engine.isMultiStep}
+        isLastStep={effectiveIsLastStep}
         isMultiStep={engine.isMultiStep}
         loading={loading}
         onSubmit={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
         onNext={handleNext}
         onPrev={handlePrev}
         onCancel={handleCancel}
+        primaryLabel={computedPrimaryLabel}
+        showBack={computedShowBack}
+        backLabel={computedBackLabel}
+        onPrimary={handlePrimary}
       />
     </form>
   );

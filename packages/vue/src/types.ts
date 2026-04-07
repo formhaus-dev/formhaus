@@ -19,6 +19,9 @@ export interface FormActionsProps {
   isLastStep: boolean;
   isMultiStep: boolean;
   loading?: boolean;
+  primaryLabel?: string;
+  showBack?: boolean;
+  backLabel?: string;
 }
 
 export interface FormStepProgressProps {

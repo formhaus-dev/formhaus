@@ -9,6 +9,9 @@ const props = defineProps<{
   isLastStep: boolean;
   isMultiStep: boolean;
   loading?: boolean;
+  primaryLabel?: string;
+  showBack?: boolean;
+  backLabel?: string;
 }>();
 
 const emit = defineEmits<{
@@ -16,6 +19,7 @@ const emit = defineEmits<{
   (e: 'next'): void;
   (e: 'prev'): void;
   (e: 'cancel'): void;
+  (e: 'primary'): void;
   (e: 'action', name: string): void;
 }>();
 
@@ -31,18 +35,29 @@ function getButtonClass(variant?: string): string {
 }
 
 function onPrimaryClick() {
-  if (props.isMultiStep && !props.isLastStep) {
+  if (props.primaryLabel !== undefined) {
+    emit('primary');
+  } else if (props.isMultiStep && !props.isLastStep) {
     emit('next');
   } else {
     emit('submit');
   }
 }
 
-function getPrimaryLabel(): string {
-  if (props.isMultiStep && !props.isLastStep) {
-    return 'Continue';
-  }
+function resolvedPrimaryLabel(): string {
+  if (props.primaryLabel !== undefined) return props.primaryLabel;
+  if (props.isMultiStep && !props.isLastStep) return 'Continue';
   return props.submitAction?.label ?? 'Submit';
+}
+
+function resolvedShowBack(): boolean {
+  if (props.showBack !== undefined) return props.showBack;
+  return props.isMultiStep && !props.isFirstStep && props.backAction !== false;
+}
+
+function resolvedBackLabel(): string {
+  if (props.backLabel !== undefined) return props.backLabel;
+  return (typeof props.backAction === 'object' ? props.backAction?.label : undefined) ?? 'Back';
 }
 </script>
 
@@ -50,13 +65,13 @@ function getPrimaryLabel(): string {
   <div class="fh-form-actions">
     <div class="fh-form-actions__secondary">
       <button
-        v-if="props.isMultiStep && !props.isFirstStep && props.backAction !== false"
+        v-if="resolvedShowBack()"
         type="button"
         :class="['fh-form-actions__button', typeof props.backAction === 'object' ? getButtonClass(props.backAction?.variant) : 'fh-form-actions__button--text']"
         :disabled="props.loading"
         @click="emit('prev')"
       >
-        {{ (typeof props.backAction === 'object' ? props.backAction?.label : undefined) ?? 'Back' }}
+        {{ resolvedBackLabel() }}
       </button>
       <button
         v-if="props.cancelAction"
@@ -74,7 +89,7 @@ function getPrimaryLabel(): string {
       :disabled="props.loading"
       @click="onPrimaryClick"
     >
-      {{ getPrimaryLabel() }}
+      {{ resolvedPrimaryLabel() }}
     </button>
   </div>
 </template>

@@ -21,10 +21,14 @@ export interface FormActionsProps {
   isLastStep: boolean;
   isMultiStep: boolean;
   loading?: boolean;
+  primaryLabel?: string;
+  showBack?: boolean;
+  backLabel?: string;
   onSubmit: () => void;
   onNext: () => void;
   onPrev: () => void;
   onCancel: () => void;
+  onPrimary?: () => void;
 }
 
 export interface FormStepProgressProps {

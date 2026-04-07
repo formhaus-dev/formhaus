@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormEngineOptions, ValidatorFn } from '@formhaus/core';
-import { watch } from 'vue';
+import { computed, watch } from 'vue';
 import FormActions from './FormActions.vue';
 import FormFieldComponent from './FormField.vue';
 import FormStepProgress from './FormStepProgress.vue';
@@ -90,6 +90,32 @@ function onPrev() {
 function onCancel() {
   emit('cancel');
 }
+
+const effectiveIsLastStep = computed(() => isLastStep.value || !isMultiStep.value);
+
+const primaryLabel = computed(() => {
+  if (isMultiStep.value && !effectiveIsLastStep.value) {
+    return currentStep.value?.next?.label ?? 'Continue';
+  }
+  return props.schema.submit?.label ?? 'Submit';
+});
+
+const showBack = computed(() => {
+  return isMultiStep.value && !isFirstStep.value && currentStep.value?.back !== false;
+});
+
+const backLabel = computed(() => {
+  const back = currentStep.value?.back;
+  return (typeof back === 'object' ? back?.label : undefined) ?? 'Back';
+});
+
+function onPrimary() {
+  if (isMultiStep.value && !effectiveIsLastStep.value) {
+    onNext();
+  } else {
+    onSubmit();
+  }
+}
 </script>
 
 <template>
@@ -130,13 +156,17 @@ function onCancel() {
       :back-action="currentStep?.back"
       :cancel-action="props.schema.cancel"
       :is-first-step="isFirstStep"
-      :is-last-step="isLastStep || !isMultiStep"
+      :is-last-step="effectiveIsLastStep"
       :is-multi-step="isMultiStep"
       :loading="props.loading"
+      :primary-label="primaryLabel"
+      :show-back="showBack"
+      :back-label="backLabel"
       @submit="onSubmit"
       @next="onNext"
       @prev="onPrev"
       @cancel="onCancel"
+      @primary="onPrimary"
     />
   </form>
 </template>
