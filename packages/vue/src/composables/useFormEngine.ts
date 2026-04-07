@@ -5,7 +5,7 @@ import {
   type FormSchema,
   type FormStep,
 } from '@formhaus/core';
-import { type ComputedRef, computed, ref } from 'vue';
+import { type ComputedRef, type Ref, computed, ref, watch } from 'vue';
 
 export interface UseFormEngineReturn {
   engine: FormEngine;
@@ -24,66 +24,40 @@ export interface UseFormEngineReturn {
 }
 
 export function useFormEngine(
-  schema: FormSchema,
+  schemaOrGetter: FormSchema | (() => FormSchema),
   initialValues?: Record<string, unknown>,
   options?: FormEngineOptions,
 ): UseFormEngineReturn {
-  const engine = new FormEngine(schema, initialValues, options);
+  const getSchema = typeof schemaOrGetter === 'function' ? schemaOrGetter : () => schemaOrGetter;
   const version = ref(0);
+  let engine = new FormEngine(getSchema(), initialValues, options);
+  engine.subscribe(() => { version.value++; });
 
-  engine.subscribe(() => {
-    version.value++;
-  });
+  const engineRef = ref(engine) as Ref<FormEngine>;
+
+  watch(
+    () => getSchema().id,
+    () => {
+      engine = new FormEngine(getSchema(), initialValues, options);
+      engine.subscribe(() => { version.value++; });
+      engineRef.value = engine;
+      version.value++;
+    },
+  );
 
   return {
-    engine,
-    values: computed(() => {
-      version.value;
-      return engine.values;
-    }),
-    errors: computed(() => {
-      version.value;
-      return engine.errors;
-    }),
-    topLevelErrors: computed(() => {
-      version.value;
-      return engine.topLevelErrors;
-    }),
-    fieldLoading: computed(() => {
-      version.value;
-      return engine.fieldLoading;
-    }),
-    visibleFields: computed(() => {
-      version.value;
-      return engine.visibleFields;
-    }),
-    visibleSteps: computed(() => {
-      version.value;
-      return engine.visibleSteps;
-    }),
-    currentStep: computed(() => {
-      version.value;
-      return engine.currentStep;
-    }),
-    isFirstStep: computed(() => {
-      version.value;
-      return engine.isFirstStep;
-    }),
-    isLastStep: computed(() => {
-      version.value;
-      return engine.isLastStep;
-    }),
-    canGoNext: computed(() => {
-      version.value;
-      return engine.canGoNext;
-    }),
-    progress: computed(() => {
-      version.value;
-      return engine.progress;
-    }),
-    isMultiStep: computed(() => {
-      version.value;
-      return engine.isMultiStep;
-    }),
+    get engine() { return engineRef.value; },
+    values: computed(() => { version.value; return engineRef.value.values; }),
+    errors: computed(() => { version.value; return engineRef.value.errors; }),
+    topLevelErrors: computed(() => { version.value; return engineRef.value.topLevelErrors; }),
+    fieldLoading: computed(() => { version.value; return engineRef.value.fieldLoading; }),
+    visibleFields: computed(() => { version.value; return engineRef.value.visibleFields; }),
+    visibleSteps: computed(() => { version.value; return engineRef.value.visibleSteps; }),
+    currentStep: computed(() => { version.value; return engineRef.value.currentStep; }),
+    isFirstStep: computed(() => { version.value; return engineRef.value.isFirstStep; }),
+    isLastStep: computed(() => { version.value; return engineRef.value.isLastStep; }),
+    canGoNext: computed(() => { version.value; return engineRef.value.canGoNext; }),
+    progress: computed(() => { version.value; return engineRef.value.progress; }),
+    isMultiStep: computed(() => { version.value; return engineRef.value.isMultiStep; }),
   };
 }

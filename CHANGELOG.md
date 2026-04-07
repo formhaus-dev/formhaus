@@ -20,6 +20,7 @@
 - `FieldComponentProps` now includes `onFocus`.
 - Submit button evaluates `FormAction.disabled` conditions.
 - `mask` field shown as placeholder fallback in TextField.
+- `useFormEngine` recreates engine when `schema.id` changes.
 
 ### `@formhaus/vue`
 
@@ -28,6 +29,7 @@
 - `optionsProviders` prop wired up for dynamic field options.
 - `analyticsEvent` emit fires on focus, blur, error, step change, and submit.
 - Field components now emit `focus`.
+- `useFormEngine` accepts getter, recreates engine when `schema.id` changes.
 - Submit button evaluates `FormAction.disabled` conditions.
 - `mask` field shown as placeholder fallback in TextField.
 - Removed unused `actions` prop from FormRenderer.

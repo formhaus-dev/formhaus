@@ -40,7 +40,7 @@ const {
   canGoNext,
   progress,
   isMultiStep,
-} = useFormEngine(props.schema, props.initialValues, engineOptions);
+} = useFormEngine(() => props.schema, props.initialValues, engineOptions);
 
 const resolvedOptions = useFieldOptions(visibleFields, values, props.optionsProviders);
 

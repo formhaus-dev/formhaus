@@ -7,12 +7,15 @@ export function useFormEngine(
   options?: FormEngineOptions,
 ): FormEngine {
   const engineRef = useRef<FormEngine | null>(null);
-  if (engineRef.current === null) {
+  const schemaIdRef = useRef<string>(schema.id);
+
+  if (engineRef.current === null || schemaIdRef.current !== schema.id) {
     engineRef.current = new FormEngine(schema, initialValues, options);
+    schemaIdRef.current = schema.id;
   }
+
   const engine = engineRef.current;
 
-  // Subscribe to engine changes via useSyncExternalStore
   useSyncExternalStore(engine.subscribe.bind(engine), engine.getSnapshot.bind(engine));
 
   return engine;
