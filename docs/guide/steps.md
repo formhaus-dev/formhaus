@@ -121,4 +121,5 @@ On submit, all visible fields across all visible steps are returned. Fields in h
 
 - [Conditional Fields](/guide/conditions): make steps and fields conditional
 - [Error Handling](/guide/errors): handle errors from multi-step submissions
+- [Custom Actions & Progress](/guide/custom-components): replace buttons and step progress with your own components
 - [Examples](/guide/examples): multi-step patterns in practice

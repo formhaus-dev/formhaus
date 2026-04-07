@@ -197,4 +197,5 @@ Your custom component receives the same props as the built-in field components: 
 
 - [Validation](/guide/validation): add rules to your fields
 - [Conditional Fields](/guide/conditions): show/hide fields based on values
+- [Custom Actions & Progress](/guide/custom-components): replace the built-in buttons and step progress
 - [Figma Plugin](/guide/figma): use these field types in Figma mockups

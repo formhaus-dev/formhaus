@@ -20,6 +20,7 @@ export default defineConfig({
           { text: 'Validation', link: '/guide/validation' },
           { text: 'Multi-Step Forms', link: '/guide/steps' },
           { text: 'Error Handling', link: '/guide/errors' },
+          { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
           { text: 'Examples', link: '/guide/examples' },
         ]
       },
