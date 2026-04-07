@@ -104,6 +104,21 @@ Steps support `show`/`showAny` too. Hidden steps are skipped during navigation.
 
 If the user selects "personal" account type, this entire step disappears and the step counter updates.
 
+## Conditional button disabled
+
+The `submit` and `cancel` actions accept `disabled` conditions using the same syntax:
+
+```json
+{
+  "submit": {
+    "label": "Submit",
+    "disabled": [{ "field": "termsAccepted", "neq": true }]
+  }
+}
+```
+
+The submit button stays disabled until `termsAccepted` is `true`. All conditions must pass (AND logic) for the button to be disabled.
+
 ## Next steps
 
 - [Multi-Step Forms](/guide/steps): combine conditions with step navigation

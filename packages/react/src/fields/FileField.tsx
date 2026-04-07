@@ -7,6 +7,7 @@ export function FileField({
   disabled,
   onChange,
   onBlur,
+  onFocus,
 }: FieldComponentProps) {
   const inputId = field.key;
   const helperId = `${field.key}-helper`;
@@ -34,6 +35,7 @@ export function FileField({
           onChange(files && files.length > 0 ? files[0] : null);
         }}
         onBlur={onBlur}
+        onFocus={onFocus}
       />
       {error && (
         <p id={errorId} className="fh-field__error" role="alert">

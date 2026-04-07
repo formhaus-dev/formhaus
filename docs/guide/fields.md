@@ -32,6 +32,17 @@ Types `text`, `email`, `phone`, `number`, `password` all render a text input. Th
 }
 ```
 
+`mask` provides a pattern hint. The default TextField uses it as a placeholder when no `placeholder` is set. Custom components receive `field.mask` and can implement full input masking:
+
+```json
+{
+  "key": "phone",
+  "type": "phone",
+  "label": "Phone number",
+  "mask": "(###) ###-####"
+}
+```
+
 ## Select
 
 Dropdown with predefined options. Define options inline or load them dynamically.

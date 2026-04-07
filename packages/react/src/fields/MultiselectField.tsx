@@ -8,6 +8,7 @@ export function MultiselectField({
   disabled,
   onChange,
   onBlur,
+  onFocus,
 }: FieldComponentProps) {
   const groupId = field.key;
   const helperId = `${field.key}-helper`;
@@ -43,6 +44,7 @@ export function MultiselectField({
                 disabled={disabled || loading}
                 onChange={() => handleToggle(opt.value)}
                 onBlur={onBlur}
+                onFocus={onFocus}
               />
               <label className="fh-field__multiselect-label" htmlFor={optionId}>
                 {opt.label}

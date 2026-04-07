@@ -6,6 +6,7 @@ const props = defineProps<FormFieldProps>();
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
   (e: 'blur'): void;
+  (e: 'focus'): void;
 }>();
 
 const groupId = computed(() => `fh-field-${props.field.key}`);
@@ -43,6 +44,7 @@ function handleToggle(optValue: string) {
           type="checkbox"
           :checked="selected.includes(option.value)"
           :disabled="props.disabled || props.loading"
+          @focus="emit('focus')"
           @change="handleToggle(option.value)"
           @blur="emit('blur')"
         />

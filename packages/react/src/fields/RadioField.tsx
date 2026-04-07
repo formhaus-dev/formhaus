@@ -8,6 +8,7 @@ export function RadioField({
   disabled,
   onChange,
   onBlur,
+  onFocus,
 }: FieldComponentProps) {
   const groupId = field.key;
   const helperId = `${field.key}-helper`;
@@ -37,6 +38,7 @@ export function RadioField({
                 disabled={disabled || loading}
                 onChange={() => onChange(opt.value)}
                 onBlur={onBlur}
+                onFocus={onFocus}
               />
               <label className="fh-field__radio-label" htmlFor={optionId}>
                 {opt.label}

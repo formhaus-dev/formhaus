@@ -8,6 +8,7 @@ export function TextareaField({
   disabled,
   onChange,
   onBlur,
+  onFocus,
 }: FieldComponentProps) {
   const inputId = field.key;
   const helperId = `${field.key}-helper`;
@@ -33,6 +34,7 @@ export function TextareaField({
         aria-describedby={describedBy}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
+        onFocus={onFocus}
       />
       {error && (
         <p id={errorId} className="fh-field__error" role="alert">

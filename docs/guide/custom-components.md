@@ -179,6 +179,41 @@ import type { FormActionsProps, FormStepProgressProps } from '@formhaus/vue'
 import type { FormActionsProps, FormStepProgressProps } from '@formhaus/react'
 ```
 
+## Analytics events
+
+Track form interactions via `onAnalyticsEvent` (React) or `@analyticsEvent` (Vue):
+
+::: code-group
+```tsx [React]
+<FormRenderer
+  schema={schema}
+  onAnalyticsEvent={(event) => analytics.track(event.type, event)}
+  onSubmit={handleSubmit}
+/>
+```
+
+```vue [Vue]
+<FormRenderer
+  :schema="schema"
+  @analytics-event="(event) => analytics.track(event.type, event)"
+  @submit="onSubmit"
+/>
+```
+:::
+
+Events emitted:
+
+| Event | When | Payload |
+|-------|------|---------|
+| `field_focused` | User focuses a field | `fieldKey` |
+| `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
+| `field_error` | Validation fails | `fieldKey`, `error` |
+| `step_completed` | User advances past a step | `stepId` |
+| `step_viewed` | A step becomes active | `stepId`, `stepIndex` |
+| `form_submitted` | Form submits successfully | `fieldCount` |
+
+All events are optional. If you don't pass a handler, nothing fires.
+
 ## Next steps
 
 - [Field Types](/guide/fields): customize field components via the `components` prop

@@ -6,6 +6,7 @@ const props = defineProps<FormFieldProps>();
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
   (e: 'blur'): void;
+  (e: 'focus'): void;
 }>();
 
 const inputId = computed(() => `fh-field-${props.field.key}`);
@@ -28,6 +29,7 @@ function onChange(event: Event) {
       :disabled="props.disabled || props.loading"
       :aria-invalid="!!props.error || undefined"
       :aria-describedby="(props.error || props.field.helperText) ? helperId : undefined"
+      @focus="emit('focus')"
       @change="onChange"
     >
       <option v-if="props.field.placeholder" value="" disabled>

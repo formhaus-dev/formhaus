@@ -16,6 +16,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
   (e: 'blur'): void;
+  (e: 'focus'): void;
 }>();
 
 const fieldComponent = computed<Component | null>(() => {
@@ -36,6 +37,7 @@ const fieldComponent = computed<Component | null>(() => {
     :disabled="props.disabled"
     @update:value="(v: unknown) => emit('update:value', v)"
     @blur="emit('blur')"
+    @focus="emit('focus')"
   />
   <div v-else class="fh-field--unsupported">
     Unsupported field type: {{ props.field.type }}

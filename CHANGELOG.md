@@ -2,31 +2,35 @@
 
 ## Unreleased
 
-### `@formhaus/react`
-
-- **Breaking:** CSS class `fh-form-actions__btn` renamed to `fh-form-actions__button` for cross-framework consistency.
-- **Breaking:** CheckboxField, RadioField, SwitchField HTML structure and class names aligned with Vue.
-
-### `@formhaus/vue`
-
-- **Breaking:** All scoped styles removed. Components are now unstyled by default, matching React.
-
 ### `@formhaus/core`
 
-- `FieldType` now accepts any string. Built-in types still get autocomplete via `DefaultFieldType`.
+- `FieldType` now accepts any string. Built-in types get autocomplete via `DefaultFieldType`.
 - `multiselect` validation: empty arrays are empty, `minLength`/`maxLength` check selection count.
 - `setErrors()` now replaces all previous errors instead of merging.
-- `validateSchema()` detects duplicate field keys.
-- `validateSchema()` detects invalid regex patterns.
+- `validateSchema()` detects duplicate field keys and invalid regex patterns.
 - Cascade clearing now respects step-level visibility.
 
 ### `@formhaus/react`
 
+- **Breaking:** CSS class `fh-form-actions__btn` renamed to `fh-form-actions__button`.
+- **Breaking:** CheckboxField, RadioField, SwitchField structure and class names aligned with Vue.
 - New `MultiselectField` component (checkbox group).
+- `optionsProviders` prop for dynamic field options via `optionsFrom`.
+- `onAnalyticsEvent` prop fires on focus, blur, error, step change, and submit.
+- `FieldComponentProps` now includes `onFocus`.
+- Submit button evaluates `FormAction.disabled` conditions.
+- `mask` field shown as placeholder fallback in TextField.
 
 ### `@formhaus/vue`
 
+- **Breaking:** All scoped styles removed. Components are now unstyled by default.
 - New `MultiselectField` component (checkbox group).
+- `optionsProviders` prop wired up for dynamic field options.
+- `analyticsEvent` emit fires on focus, blur, error, step change, and submit.
+- Field components now emit `focus`.
+- Submit button evaluates `FormAction.disabled` conditions.
+- `mask` field shown as placeholder fallback in TextField.
+- Removed unused `actions` prop from FormRenderer.
 
 ## 0.2.1 - 2026-04-07
 

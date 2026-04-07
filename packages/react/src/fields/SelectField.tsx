@@ -8,6 +8,7 @@ export function SelectField({
   disabled,
   onChange,
   onBlur,
+  onFocus,
 }: FieldComponentProps) {
   const inputId = field.key;
   const helperId = `${field.key}-helper`;
@@ -32,6 +33,7 @@ export function SelectField({
         aria-describedby={describedBy}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
+        onFocus={onFocus}
       >
         {field.placeholder && (
           <option value="" disabled>

@@ -37,15 +37,17 @@ interface FormField {
   optionsDependsOn?: string[];    // Re-fetch options when these fields change
   accept?: string;                // File input mime types
   rows?: number;                  // Textarea row count
-  mask?: string;                  // Input mask (reserved, not yet implemented)
+  mask?: string;                  // Input mask pattern (shown as placeholder, custom components get full access)
   inputMode?: 'text' | 'numeric' | 'tel' | 'email';
 }
 
-type FieldType =
+type DefaultFieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
   | 'select' | 'multiselect'
   | 'checkbox' | 'radio' | 'switch'
   | 'file' | 'date' | 'textarea';
+
+type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get autocomplete
 ```
 
 ## FormStep

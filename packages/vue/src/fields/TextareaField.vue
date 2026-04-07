@@ -6,6 +6,7 @@ const props = defineProps<FormFieldProps>();
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
   (e: 'blur'): void;
+  (e: 'focus'): void;
 }>();
 
 const inputId = computed(() => `fh-field-${props.field.key}`);
@@ -27,6 +28,7 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
       :aria-invalid="!!props.error || undefined"
       :aria-describedby="(props.error || props.field.helperText) ? helperId : undefined"
       @input="(e) => emit('update:value', (e.target as HTMLTextAreaElement).value)"
+      @focus="emit('focus')"
       @blur="emit('blur')"
     />
     <p v-if="props.error" :id="helperId" class="fh-field__error">{{ props.error }}</p>

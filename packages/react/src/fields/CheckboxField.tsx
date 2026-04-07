@@ -8,6 +8,7 @@ export function CheckboxField({
   disabled,
   onChange,
   onBlur,
+  onFocus,
 }: FieldComponentProps) {
   const inputId = field.key;
   const helperId = `${field.key}-helper`;
@@ -27,6 +28,7 @@ export function CheckboxField({
           aria-describedby={describedBy}
           onChange={(e) => onChange(e.target.checked)}
           onBlur={onBlur}
+          onFocus={onFocus}
         />
         {field.label && (
           <label className="fh-field__label" htmlFor={inputId}>

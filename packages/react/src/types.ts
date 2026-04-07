@@ -1,5 +1,9 @@
-import type { FieldType, FormAction, FormAnalyticsEvent, FormSchema, ValidatorFn } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormSchema, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
+
+export type OptionsProvider = (
+  values: Record<string, unknown>,
+) => FieldOption[] | Promise<FieldOption[]>;
 
 export interface FieldComponentProps {
   field: import('@formhaus/core').FormField;
@@ -9,6 +13,7 @@ export interface FieldComponentProps {
   disabled?: boolean;
   onChange: (value: unknown) => void;
   onBlur: () => void;
+  onFocus?: () => void;
 }
 
 export type FieldComponentMap = Partial<Record<FieldType, ComponentType<FieldComponentProps>>>;
@@ -21,6 +26,7 @@ export interface FormActionsProps {
   isLastStep: boolean;
   isMultiStep: boolean;
   loading?: boolean;
+  values?: Record<string, unknown>;
   primaryLabel?: string;
   showBack?: boolean;
   backLabel?: string;
@@ -49,6 +55,7 @@ export interface FormRendererProps {
   errors?: Record<string, string>;
   loading?: boolean;
   components?: FieldComponentMap;
+  optionsProviders?: Record<string, OptionsProvider>;
   ActionsComponent?: ComponentType<FormActionsProps>;
   ProgressComponent?: ComponentType<FormStepProgressProps>;
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;

@@ -36,6 +36,7 @@ interface FormFieldProps {
   components?: FieldComponentMap;
   onChange: (value: unknown) => void;
   onBlur: () => void;
+  onFocus?: () => void;
 }
 
 export function FormField({
@@ -47,6 +48,7 @@ export function FormField({
   components,
   onChange,
   onBlur,
+  onFocus,
 }: FormFieldProps) {
   const Component = components?.[field.type] ?? (defaultComponents as Record<string, ComponentType<FieldComponentProps>>)[field.type];
 
@@ -63,6 +65,7 @@ export function FormField({
       disabled={disabled}
       onChange={onChange}
       onBlur={onBlur}
+      onFocus={onFocus}
     />
   );
 }

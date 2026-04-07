@@ -6,6 +6,7 @@ const props = defineProps<FormFieldProps>();
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
   (e: 'blur'): void;
+  (e: 'focus'): void;
 }>();
 
 const groupId = computed(() => `fh-field-${props.field.key}`);
@@ -35,6 +36,7 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
           :value="option.value"
           :checked="String(props.value) === String(option.value)"
           :disabled="props.disabled || props.loading"
+          @focus="emit('focus')"
           @change="emit('update:value', option.value)"
         />
         <label :for="`${groupId}-${option.value}`" class="fh-field__radio-label">

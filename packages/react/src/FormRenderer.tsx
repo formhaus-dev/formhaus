@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { FormActions } from './FormActions';
 import { FormField } from './FormField';
 import { FormStepProgress } from './FormStepProgress';
+import { useFieldOptions } from './hooks/useFieldOptions';
 import { useFormEngine } from './hooks/useFormEngine';
 import type { FormRendererProps } from './types';
 
@@ -17,13 +18,15 @@ export function FormRenderer({
   errors: externalErrors,
   loading = false,
   components,
+  optionsProviders,
   ActionsComponent,
   ProgressComponent,
+  onAnalyticsEvent,
 }: FormRendererProps) {
   const engineOptions: FormEngineOptions = { validators };
   const engine = useFormEngine(schema, initialValues, engineOptions);
+  const resolvedOptions = useFieldOptions(engine.visibleFields, engine.values, optionsProviders);
 
-  // Sync external errors
   useEffect(() => {
     if (externalErrors) {
       engine.setErrors(externalErrors);
@@ -35,23 +38,45 @@ export function FormRenderer({
     onFieldChange?.(key, value, engine.values);
   }
 
-  function handleFieldBlur(_key: string) {
-    // Intentionally no validation on blur.
-    // Validation runs only on Submit / Continue click.
+  function handleFieldFocus(key: string) {
+    onAnalyticsEvent?.({ type: 'field_focused', fieldKey: key });
+  }
+
+  function handleFieldBlur(key: string) {
+    onAnalyticsEvent?.({
+      type: 'field_blurred',
+      fieldKey: key,
+      hasValue: engine.values[key] !== undefined && engine.values[key] !== '',
+    });
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     const allErrors = engine.validate();
+    for (const [key, msg] of Object.entries(allErrors)) {
+      onAnalyticsEvent?.({ type: 'field_error', fieldKey: key, error: msg });
+    }
     if (Object.keys(allErrors).length > 0) return;
     const submitValues = engine.getSubmitValues();
+    onAnalyticsEvent?.({ type: 'form_submitted', fieldCount: Object.keys(submitValues).length });
     onSubmit(submitValues as Record<string, unknown>);
   }
 
   function handleNext() {
+    const prevStep = engine.currentStep;
     const success = engine.nextStep();
-    if (success && engine.currentStep) {
-      onStepChange?.(engine.currentStep.id, 'next');
+    if (success) {
+      if (prevStep) {
+        onAnalyticsEvent?.({ type: 'step_completed', stepId: prevStep.id });
+      }
+      if (engine.currentStep) {
+        onStepChange?.(engine.currentStep.id, 'next');
+        onAnalyticsEvent?.({
+          type: 'step_viewed',
+          stepId: engine.currentStep.id,
+          stepIndex: engine.currentStepIndex,
+        });
+      }
     }
   }
 
@@ -98,19 +123,25 @@ export function FormRenderer({
       )}
 
       <div className="fh-form__fields">
-        {engine.visibleFields.map((field) => (
-          <FormField
-            key={field.key}
-            field={field}
-            value={engine.values[field.key]}
-            error={engine.errors[field.key]}
-            loading={engine.fieldLoading[field.key]}
-            disabled={loading}
-            components={components}
-            onChange={(v) => handleFieldUpdate(field.key, v)}
-            onBlur={() => handleFieldBlur(field.key)}
-          />
-        ))}
+        {engine.visibleFields.map((field) => {
+          const fieldWithOptions = resolvedOptions[field.key]
+            ? { ...field, options: resolvedOptions[field.key] }
+            : field;
+          return (
+            <FormField
+              key={field.key}
+              field={fieldWithOptions}
+              value={engine.values[field.key]}
+              error={engine.errors[field.key]}
+              loading={engine.fieldLoading[field.key]}
+              disabled={loading}
+              components={components}
+              onChange={(v) => handleFieldUpdate(field.key, v)}
+              onBlur={() => handleFieldBlur(field.key)}
+              onFocus={() => handleFieldFocus(field.key)}
+            />
+          );
+        })}
       </div>
 
       {engine.topLevelErrors.length > 0 && (
@@ -131,6 +162,7 @@ export function FormRenderer({
         isLastStep={effectiveIsLastStep}
         isMultiStep={engine.isMultiStep}
         loading={loading}
+        values={engine.values}
         onSubmit={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
         onNext={handleNext}
         onPrev={handlePrev}

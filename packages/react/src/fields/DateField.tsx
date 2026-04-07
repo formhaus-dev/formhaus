@@ -8,6 +8,7 @@ export function DateField({
   disabled,
   onChange,
   onBlur,
+  onFocus,
 }: FieldComponentProps) {
   const inputId = field.key;
   const helperId = `${field.key}-helper`;
@@ -32,6 +33,7 @@ export function DateField({
         aria-describedby={describedBy}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
+        onFocus={onFocus}
       />
       {error && (
         <p id={errorId} className="fh-field__error" role="alert">
