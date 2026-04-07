@@ -16,7 +16,7 @@ export function CheckboxField({
 
   return (
     <div className="fh-field fh-field--checkbox">
-      <label className="fh-field__checkbox-label" htmlFor={inputId}>
+      <div className="fh-field__checkbox-wrapper">
         <input
           id={inputId}
           type="checkbox"
@@ -28,8 +28,12 @@ export function CheckboxField({
           onChange={(e) => onChange(e.target.checked)}
           onBlur={onBlur}
         />
-        <span className="fh-field__checkbox-text">{field.label}</span>
-      </label>
+        {field.label && (
+          <label className="fh-field__label" htmlFor={inputId}>
+            {field.label}
+          </label>
+        )}
+      </div>
       {error && (
         <p id={errorId} className="fh-field__error" role="alert">
           {error}

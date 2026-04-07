@@ -34,17 +34,3 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
     <p v-else-if="props.field.helperText" :id="helperId" class="fh-field__helper">{{ props.field.helperText }}</p>
   </div>
 </template>
-
-<style scoped>
-.fh-field--switch {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.fh-field__switch-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-</style>

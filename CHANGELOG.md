@@ -1,5 +1,23 @@
 # Changelog
 
+## Unreleased
+
+### `@formhaus/react`
+
+- **Breaking:** CSS class `fh-form-actions__btn` renamed to `fh-form-actions__button` for cross-framework consistency.
+- **Breaking:** CheckboxField, RadioField, SwitchField HTML structure and class names aligned with Vue.
+
+### `@formhaus/vue`
+
+- **Breaking:** All scoped styles removed. Components are now unstyled by default, matching React.
+
+### `@formhaus/core`
+
+- `setErrors()` now replaces all previous errors instead of merging.
+- `validateSchema()` detects duplicate field keys.
+- `validateSchema()` detects invalid regex patterns.
+- Cascade clearing now respects step-level visibility.
+
 ## 0.2.1 - 2026-04-07
 
 ### `@formhaus/react`

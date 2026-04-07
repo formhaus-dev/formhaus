@@ -46,26 +46,3 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
     <p v-else-if="props.field.helperText" :id="helperId" class="fh-field__helper">{{ props.field.helperText }}</p>
   </fieldset>
 </template>
-
-<style scoped>
-.fh-field--radio {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  border: none;
-  margin: 0;
-  padding: 0;
-}
-
-.fh-field__radio-group {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.fh-field__radio-option {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-</style>

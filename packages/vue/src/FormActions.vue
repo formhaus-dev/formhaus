@@ -93,26 +93,3 @@ function resolvedBackLabel(): string {
     </button>
   </div>
 </template>
-
-<style scoped>
-.fh-form-actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-}
-
-.fh-form-actions__secondary {
-  display: flex;
-  gap: 12px;
-}
-
-.fh-form-actions__button {
-  cursor: pointer;
-}
-
-.fh-form-actions__button:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-</style>

@@ -22,37 +22,3 @@ const props = defineProps<{
     <p v-if="props.stepDescription" class="fh-step-progress__description">{{ props.stepDescription }}</p>
   </div>
 </template>
-
-<style scoped>
-.fh-step-progress {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.fh-step-progress__bar {
-  border-radius: 9999px;
-  height: 4px;
-  overflow: hidden;
-  width: 100%;
-}
-
-.fh-step-progress__fill {
-  border-radius: 9999px;
-  height: 100%;
-  transition: width 0.3s ease;
-}
-
-.fh-step-progress__info {
-  display: flex;
-  justify-content: space-between;
-}
-
-.fh-step-progress__title {
-  margin: 0;
-}
-
-.fh-step-progress__description {
-  margin: 0;
-}
-</style>

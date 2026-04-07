@@ -170,29 +170,3 @@ function onPrimary() {
     />
   </form>
 </template>
-
-<style scoped>
-.fh-form {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.fh-form__fields {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.fh-form__top-errors {
-  padding: 16px;
-}
-
-.fh-form__top-error {
-  margin: 0;
-}
-
-.fh-form__top-error + .fh-form__top-error {
-  margin-top: 8px;
-}
-</style>

@@ -16,35 +16,35 @@ export function RadioField({
   const options = field.options ?? [];
 
   return (
-    <div className="fh-field fh-field--radio">
-      <fieldset
-        className="fh-field__fieldset"
-        aria-invalid={!!error}
-        aria-describedby={describedBy}
-      >
-        {field.label && <legend className="fh-field__legend">{field.label}</legend>}
-        <div className="fh-field__radio-group">
-          {options.map((opt) => {
-            const optionId = `${groupId}-${opt.value}`;
-            return (
-              <label key={opt.value} className="fh-field__radio-label" htmlFor={optionId}>
-                <input
-                  id={optionId}
-                  type="radio"
-                  className="fh-field__radio"
-                  name={groupId}
-                  value={opt.value}
-                  checked={value === opt.value}
-                  disabled={disabled || loading}
-                  onChange={() => onChange(opt.value)}
-                  onBlur={onBlur}
-                />
-                <span className="fh-field__radio-text">{opt.label}</span>
+    <fieldset
+      className="fh-field fh-field--radio"
+      aria-invalid={!!error || undefined}
+      aria-describedby={describedBy}
+    >
+      {field.label && <legend className="fh-field__label">{field.label}</legend>}
+      <div className="fh-field__radio-group">
+        {options.map((opt) => {
+          const optionId = `${groupId}-${opt.value}`;
+          return (
+            <div key={opt.value} className="fh-field__radio-option">
+              <input
+                id={optionId}
+                type="radio"
+                className="fh-field__radio"
+                name={groupId}
+                value={opt.value}
+                checked={String(value) === String(opt.value)}
+                disabled={disabled || loading}
+                onChange={() => onChange(opt.value)}
+                onBlur={onBlur}
+              />
+              <label className="fh-field__radio-label" htmlFor={optionId}>
+                {opt.label}
               </label>
-            );
-          })}
-        </div>
-      </fieldset>
+            </div>
+          );
+        })}
+      </div>
       {error && (
         <p id={errorId} className="fh-field__error" role="alert">
           {error}
@@ -55,6 +55,6 @@ export function RadioField({
           {field.helperText}
         </p>
       )}
-    </div>
+    </fieldset>
   );
 }

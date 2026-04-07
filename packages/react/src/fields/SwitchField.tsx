@@ -16,7 +16,7 @@ export function SwitchField({
 
   return (
     <div className="fh-field fh-field--switch">
-      <label className="fh-field__switch-label" htmlFor={inputId}>
+      <div className="fh-field__switch-wrapper">
         <input
           id={inputId}
           type="checkbox"
@@ -29,8 +29,12 @@ export function SwitchField({
           onChange={(e) => onChange(e.target.checked)}
           onBlur={onBlur}
         />
-        <span className="fh-field__switch-text">{field.label}</span>
-      </label>
+        {field.label && (
+          <label className="fh-field__label" htmlFor={inputId}>
+            {field.label}
+          </label>
+        )}
+      </div>
       {error && (
         <p id={errorId} className="fh-field__error" role="alert">
           {error}

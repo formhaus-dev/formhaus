@@ -37,7 +37,7 @@ export function FormActions({
         {showBack && (
           <button
             type="button"
-            className="fh-form-actions__btn fh-form-actions__btn--text"
+            className="fh-form-actions__button fh-form-actions__button--text"
             disabled={loading}
             onClick={onPrev}
           >
@@ -47,7 +47,7 @@ export function FormActions({
         {cancelAction && (
           <button
             type="button"
-            className="fh-form-actions__btn fh-form-actions__btn--text"
+            className="fh-form-actions__button fh-form-actions__button--text"
             disabled={loading}
             onClick={onCancel}
           >
@@ -57,7 +57,7 @@ export function FormActions({
       </div>
       <button
         type="button"
-        className="fh-form-actions__btn fh-form-actions__btn--primary"
+        className="fh-form-actions__button fh-form-actions__button--primary"
         disabled={loading}
         aria-busy={loading}
         onClick={handlePrimary}
