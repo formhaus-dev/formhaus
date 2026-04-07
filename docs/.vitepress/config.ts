@@ -30,6 +30,19 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Figma Plugin',
+        items: [
+          { text: 'Plugin Guide', link: '/guide/figma' },
+        ]
+      },
+      {
+        text: 'Claude Skills',
+        items: [
+          { text: '/figma-connect', link: '/guide/figma-connect-skill' },
+          { text: '/form-schema', link: '/guide/form-schema-skill' },
+        ]
+      },
+      {
         text: 'Interactive',
         items: [
           { text: 'Playground', link: '/playground' },

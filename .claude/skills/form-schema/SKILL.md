@@ -196,13 +196,10 @@ Show the generated JSON in a code block. Ask:
 > Formhaus Figma plugin or use with FormRenderer."
 
 Options:
-- A) Looks good, save to file
+- A) Looks good, copy and done
 - B) Make changes (specify what)
-- C) Copy and done
 
-If A: write to `packages/core/fixtures/{id}.json`
 If B: apply changes and re-present
-If C: done
 
 ## Example Fixtures
 

@@ -1,7 +1,7 @@
 # Getting Started
 
 Framework-agnostic JSON-schema-driven form ecosystem.
-Define a form once as a JSON schema, render it anywhere: React, Vue, or Figma.
+Define a form once as a JSON schema, render it anywhere in code or Figma.
 
 ## Install
 
@@ -93,3 +93,9 @@ Vue 3.3+. Renders native HTML form elements by default. Override any field type 
 ### @formhaus/react
 
 React 18+. Same idea as the Vue adapter. Native HTML by default, override via `components` prop.
+
+## Next steps
+
+- [Field Types](/guide/fields): all supported form field types
+- [Validation](/guide/validation): add rules to your fields
+- [Examples](/guide/examples): working form schemas to learn from

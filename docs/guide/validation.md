@@ -114,3 +114,9 @@ Reference the validator by name in the schema:
 - **Never on blur.** No errors while the user is still typing.
 - **Hidden fields are skipped.** If a `show` condition hides a field, it's not validated.
 - **Empty non-required fields are skipped.** `minLength`, `pattern`, etc. only run on non-empty values.
+
+## Next steps
+
+- [Error Handling](/guide/errors): display errors and handle loading states
+- [Multi-Step Forms](/guide/steps): validate across multiple steps
+- [Schema Reference](/api/schema): full TypeScript types for all validation rules

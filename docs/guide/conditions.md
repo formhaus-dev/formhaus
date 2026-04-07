@@ -103,3 +103,9 @@ Steps support `show`/`showAny` too. Hidden steps are skipped during navigation.
 ```
 
 If the user selects "personal" account type, this entire step disappears and the step counter updates.
+
+## Next steps
+
+- [Multi-Step Forms](/guide/steps): combine conditions with step navigation
+- [Validation](/guide/validation): add validation rules alongside conditions
+- [Examples](/guide/examples): conditional logic in practice

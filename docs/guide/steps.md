@@ -116,3 +116,9 @@ When the user picks "personal" instead of "business", this step vanishes. The pr
 ## getSubmitValues
 
 On submit, all visible fields across all visible steps are returned. Fields in hidden steps are excluded.
+
+## Next steps
+
+- [Conditional Fields](/guide/conditions): make steps and fields conditional
+- [Error Handling](/guide/errors): handle errors from multi-step submissions
+- [Examples](/guide/examples): multi-step patterns in practice

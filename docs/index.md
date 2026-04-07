@@ -7,9 +7,6 @@ hero:
     - theme: brand
       text: Get Started
       link: /guide/
-    - theme: alt
-      text: Playground
-      link: /playground
 features:
   - title: Schema Reference
     details: Types, field options, validation rules, conditional visibility, multi-step config.
@@ -20,4 +17,13 @@ features:
   - title: Validation
     details: Required, pattern, min/max, matchField, custom validators. All from JSON.
     link: /guide/validation
+  - title: Figma Plugin
+    details: Generate form mockups from JSON schemas using your design system components.
+    link: /guide/figma
+  - title: Claude Skills
+    details: Generate schemas from text, CSV, or screenshots. Auto-detect Figma component mappings.
+    link: /guide/form-schema-skill
+  - title: Playground
+    details: Edit form schemas live and see them render in React, Vue, and Svelte.
+    link: /playground
 ---

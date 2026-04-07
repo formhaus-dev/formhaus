@@ -192,3 +192,9 @@ Override any field type by passing a `components` prop:
 :::
 
 Your custom component receives the same props as the built-in field components: `field`, `value`, `error`, `loading`, `disabled`, plus `onChange`/`onBlur` callbacks.
+
+## Next steps
+
+- [Validation](/guide/validation): add rules to your fields
+- [Conditional Fields](/guide/conditions): show/hide fields based on values
+- [Figma Plugin](/guide/figma): use these field types in Figma mockups

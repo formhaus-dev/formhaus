@@ -23,3 +23,9 @@ Schema: [`fixtures/dispute-form.json`](https://github.com/ignsm/formhaus/blob/ma
 | `multi-step-form.json` | Multi step | 3 | Linear steps with preferences |
 | `conditional-steps.json` | Multi step | 3 | Business step hidden for personal |
 | `dispute-form.json` | Multi step | 3 | Dispute with cancel button |
+
+## Next steps
+
+- [Figma Plugin](/guide/figma): render these schemas as Figma mockups
+- [/form-schema](/guide/form-schema-skill): generate new schemas with Claude
+- [Schema Reference](/api/schema): full TypeScript types
