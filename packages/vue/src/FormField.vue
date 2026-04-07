@@ -21,7 +21,7 @@ const emit = defineEmits<{
 const fieldComponent = computed<Component | null>(() => {
   const custom = props.components?.[props.field.type];
   if (custom) return custom;
-  return defaultFieldComponents[props.field.type] ?? null;
+  return (defaultFieldComponents as Record<string, Component>)[props.field.type] ?? null;
 });
 </script>
 

@@ -4,7 +4,9 @@ import { getDefaultMessage } from './default-messages';
 export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) => string | null;
 
 function isEmpty(value: unknown): boolean {
-  return value === undefined || value === null || value === '';
+  if (value === undefined || value === null || value === '') return true;
+  if (Array.isArray(value) && value.length === 0) return true;
+  return false;
 }
 
 export function validateField(
@@ -25,14 +27,14 @@ export function validateField(
   // Skip remaining rules if value is empty and not required
   if (isEmpty(value)) return null;
 
-  if (rules.minLength !== undefined && typeof value === 'string') {
-    if (value.length < rules.minLength) {
+  if (rules.minLength !== undefined && (typeof value === 'string' || Array.isArray(value))) {
+    if ((value as string | unknown[]).length < rules.minLength) {
       return rules.minLengthMessage ?? getDefaultMessage('minLength', { min: rules.minLength });
     }
   }
 
-  if (rules.maxLength !== undefined && typeof value === 'string') {
-    if (value.length > rules.maxLength) {
+  if (rules.maxLength !== undefined && (typeof value === 'string' || Array.isArray(value))) {
+    if ((value as string | unknown[]).length > rules.maxLength) {
       return rules.maxLengthMessage ?? getDefaultMessage('maxLength', { max: rules.maxLength });
     }
   }

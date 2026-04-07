@@ -1,4 +1,4 @@
-export type FieldType =
+export type DefaultFieldType =
   | 'text'
   | 'email'
   | 'phone'
@@ -12,6 +12,8 @@ export type FieldType =
   | 'file'
   | 'date'
   | 'textarea';
+
+export type FieldType = DefaultFieldType | (string & {});
 
 export interface FieldOption {
   value: string;

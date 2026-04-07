@@ -1,5 +1,6 @@
 // Types
 export type {
+  DefaultFieldType,
   FieldOption,
   FieldType,
   FieldValidation,

@@ -13,10 +13,20 @@
 
 ### `@formhaus/core`
 
+- `FieldType` now accepts any string. Built-in types still get autocomplete via `DefaultFieldType`.
+- `multiselect` validation: empty arrays are empty, `minLength`/`maxLength` check selection count.
 - `setErrors()` now replaces all previous errors instead of merging.
 - `validateSchema()` detects duplicate field keys.
 - `validateSchema()` detects invalid regex patterns.
 - Cascade clearing now respects step-level visibility.
+
+### `@formhaus/react`
+
+- New `MultiselectField` component (checkbox group).
+
+### `@formhaus/vue`
+
+- New `MultiselectField` component (checkbox group).
 
 ## 0.2.1 - 2026-04-07
 

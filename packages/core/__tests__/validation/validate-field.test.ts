@@ -154,6 +154,33 @@ describe('validateField', () => {
     });
   });
 
+  describe('array values (multiselect)', () => {
+    it('treats empty array as empty for required', () => {
+      const field = makeField({ type: 'multiselect', validation: { required: true } });
+      expect(validateField(field, [], {}, {})).toBe('This field is required');
+    });
+
+    it('passes required with non-empty array', () => {
+      const field = makeField({ type: 'multiselect', validation: { required: true } });
+      expect(validateField(field, ['a', 'b'], {}, {})).toBeNull();
+    });
+
+    it('minLength checks array length', () => {
+      const field = makeField({ type: 'multiselect', validation: { minLength: 2 } });
+      expect(validateField(field, ['a'], {}, {})).toBe('Must be at least 2 characters');
+    });
+
+    it('maxLength checks array length', () => {
+      const field = makeField({ type: 'multiselect', validation: { maxLength: 2 } });
+      expect(validateField(field, ['a', 'b', 'c'], {}, {})).toBe('Must be at most 2 characters');
+    });
+
+    it('passes minLength/maxLength with correct count', () => {
+      const field = makeField({ type: 'multiselect', validation: { minLength: 1, maxLength: 3 } });
+      expect(validateField(field, ['a', 'b'], {}, {})).toBeNull();
+    });
+  });
+
   describe('no validation rules', () => {
     it('returns null when no validation object', () => {
       const field = makeField();

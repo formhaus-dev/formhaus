@@ -85,6 +85,26 @@ Then pass the provider to the renderer:
 ```
 :::
 
+## Multiselect
+
+Pick multiple from a list. Renders as a checkbox group. The value is an array of selected option values.
+
+```json
+{
+  "key": "interests",
+  "type": "multiselect",
+  "label": "Interests",
+  "options": [
+    { "value": "tech", "label": "Technology" },
+    { "value": "design", "label": "Design" },
+    { "value": "music", "label": "Music" }
+  ],
+  "validation": { "required": true, "minLength": 1, "maxLength": 3 }
+}
+```
+
+`minLength` / `maxLength` on multiselect controls how many options can be selected.
+
 ## Checkbox
 
 Boolean toggle with a label.
@@ -167,9 +187,45 @@ File upload. Uses native file input. Set `accept` to restrict file types.
 }
 ```
 
-## Custom field components
+## Custom field types
 
-Override any field type by passing a `components` prop:
+`FieldType` accepts any string, not just the built-in types. Use the `components` prop to provide a renderer for your custom type:
+
+::: code-group
+```vue [Vue]
+<template>
+  <FormRenderer
+    :schema="schema"
+    :components="{ 'color-picker': ColorPicker }"
+    @submit="onSubmit"
+  />
+</template>
+```
+
+```tsx [React]
+<FormRenderer
+  schema={schema}
+  components={{ 'color-picker': ColorPickerField }}
+  onSubmit={handleSubmit}
+/>
+```
+:::
+
+In the schema:
+
+```json
+{
+  "key": "brandColor",
+  "type": "color-picker",
+  "label": "Brand color"
+}
+```
+
+If no component is registered for a type, the form shows "Unsupported field type."
+
+## Override default components
+
+Override any built-in field type by passing a `components` prop:
 
 ::: code-group
 ```vue [Vue]
