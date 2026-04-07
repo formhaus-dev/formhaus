@@ -17,6 +17,8 @@ export function FormRenderer({
   errors: externalErrors,
   loading = false,
   components,
+  ActionsComponent,
+  ProgressComponent,
 }: FormRendererProps) {
   const engineOptions: FormEngineOptions = { validators };
   const engine = useFormEngine(schema, initialValues, engineOptions);
@@ -64,10 +66,13 @@ export function FormRenderer({
     onCancel?.();
   }
 
+  const ProgressComp = ProgressComponent ?? FormStepProgress;
+  const ActionsComp = ActionsComponent ?? FormActions;
+
   return (
     <form className="fh-form" onSubmit={handleSubmit}>
       {engine.isMultiStep && (
-        <FormStepProgress
+        <ProgressComp
           current={engine.progress.current}
           total={engine.progress.total}
           stepTitle={engine.currentStep?.title}
@@ -101,7 +106,7 @@ export function FormRenderer({
         </div>
       )}
 
-      <FormActions
+      <ActionsComp
         submitAction={schema.submit}
         backAction={engine.currentStep?.back}
         cancelAction={schema.cancel}

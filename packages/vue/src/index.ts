@@ -18,5 +18,7 @@ export type {
   FormRendererEmits,
   FieldComponentMap,
   FormFieldProps,
+  FormActionsProps,
+  FormStepProgressProps,
   OptionsProvider,
 } from './types';

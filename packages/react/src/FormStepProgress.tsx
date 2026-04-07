@@ -1,9 +1,4 @@
-interface FormStepProgressProps {
-  current: number;
-  total: number;
-  stepTitle?: string;
-  stepDescription?: string;
-}
+import type { FormStepProgressProps } from './types';
 
 export function FormStepProgress({
   current,

@@ -11,6 +11,23 @@ import type { Component } from 'vue';
 
 export type FieldComponentMap = Record<FieldType, Component>;
 
+export interface FormActionsProps {
+  submitAction?: FormAction;
+  backAction?: FormAction | false;
+  cancelAction?: FormAction;
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  isMultiStep: boolean;
+  loading?: boolean;
+}
+
+export interface FormStepProgressProps {
+  current: number;
+  total: number;
+  stepTitle?: string;
+  stepDescription?: string;
+}
+
 export type OptionsProvider = (
   values: Record<string, unknown>,
 ) => FieldOption[] | Promise<FieldOption[]>;
@@ -21,6 +38,8 @@ export interface FormRendererProps {
   errors?: Record<string, string>;
   loading?: boolean;
   components?: Partial<FieldComponentMap>;
+  actionsComponent?: Component;
+  progressComponent?: Component;
 }
 
 export interface FormRendererEmits {

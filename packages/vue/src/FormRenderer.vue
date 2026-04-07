@@ -94,7 +94,8 @@ function onCancel() {
 
 <template>
   <form class="fh-form" @submit.prevent>
-    <FormStepProgress
+    <component
+      :is="props.progressComponent ?? FormStepProgress"
       v-if="isMultiStep"
       :current="progress.current"
       :total="progress.total"
@@ -123,7 +124,8 @@ function onCancel() {
       </p>
     </div>
 
-    <FormActions
+    <component
+      :is="props.actionsComponent ?? FormActions"
       :submit-action="props.schema.submit"
       :back-action="currentStep?.back"
       :cancel-action="props.schema.cancel"

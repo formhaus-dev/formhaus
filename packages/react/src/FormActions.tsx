@@ -1,18 +1,4 @@
-import type { FormAction } from '@formhaus/core';
-
-interface FormActionsProps {
-  submitAction?: FormAction;
-  backAction?: FormAction | false;
-  cancelAction?: FormAction;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-  isMultiStep: boolean;
-  loading?: boolean;
-  onSubmit: () => void;
-  onNext: () => void;
-  onPrev: () => void;
-  onCancel: () => void;
-}
+import type { FormActionsProps } from './types';
 
 export function FormActions({
   submitAction,

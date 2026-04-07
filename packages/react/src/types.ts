@@ -1,4 +1,4 @@
-import type { FieldType, FormAnalyticsEvent, FormSchema, ValidatorFn } from '@formhaus/core';
+import type { FieldType, FormAction, FormAnalyticsEvent, FormSchema, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
 
 export interface FieldComponentProps {
@@ -13,6 +13,27 @@ export interface FieldComponentProps {
 
 export type FieldComponentMap = Partial<Record<FieldType, ComponentType<FieldComponentProps>>>;
 
+export interface FormActionsProps {
+  submitAction?: FormAction;
+  backAction?: FormAction | false;
+  cancelAction?: FormAction;
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  isMultiStep: boolean;
+  loading?: boolean;
+  onSubmit: () => void;
+  onNext: () => void;
+  onPrev: () => void;
+  onCancel: () => void;
+}
+
+export interface FormStepProgressProps {
+  current: number;
+  total: number;
+  stepTitle?: string;
+  stepDescription?: string;
+}
+
 export interface FormRendererProps {
   schema: FormSchema;
   initialValues?: Record<string, unknown>;
@@ -24,5 +45,7 @@ export interface FormRendererProps {
   errors?: Record<string, string>;
   loading?: boolean;
   components?: FieldComponentMap;
+  ActionsComponent?: ComponentType<FormActionsProps>;
+  ProgressComponent?: ComponentType<FormStepProgressProps>;
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
 }
