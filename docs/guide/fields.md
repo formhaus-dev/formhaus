@@ -191,7 +191,73 @@ Override any field type by passing a `components` prop:
 ```
 :::
 
-Your custom component receives the same props as the built-in field components: `field`, `value`, `error`, `loading`, `disabled`, plus `onChange`/`onBlur` callbacks.
+Each custom component gets the field definition from the schema, the current value, and validation state:
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `field` | `FormField` | Field object from the schema (`key`, `label`, `options`, etc.) |
+| `value` | `unknown` | Current value |
+| `error` | `string?` | Validation error, if any |
+| `loading` | `boolean?` | Field is loading (async options) |
+| `disabled` | `boolean?` | Form is disabled |
+
+In React, call `onChange(value)` and `onBlur()`. In Vue, emit `update:value` and `blur`.
+
+### React example
+
+```tsx
+import type { FieldComponentProps } from '@formhaus/react'
+
+export function CustomPhoneInput({ field, value, error, disabled, onChange, onBlur }: FieldComponentProps) {
+  return (
+    <div>
+      <label>{field.label}</label>
+      <input
+        type="tel"
+        value={(value as string) ?? ''}
+        placeholder={field.placeholder}
+        disabled={disabled}
+        onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
+      />
+      {field.helperText && <span>{field.helperText}</span>}
+      {error && <span className="error">{error}</span>}
+    </div>
+  )
+}
+```
+
+### Vue example
+
+```vue
+<script setup lang="ts">
+import type { FormFieldProps } from '@formhaus/vue'
+
+const props = defineProps<FormFieldProps>()
+const emit = defineEmits<{
+  (e: 'update:value', value: unknown): void
+  (e: 'blur'): void
+}>()
+</script>
+
+<template>
+  <div>
+    <label>{{ props.field.label }}</label>
+    <input
+      type="tel"
+      :value="(props.value as string) ?? ''"
+      :placeholder="props.field.placeholder"
+      :disabled="props.disabled"
+      @input="emit('update:value', ($event.target as HTMLInputElement).value)"
+      @blur="emit('blur')"
+    />
+    <span v-if="props.field.helperText">{{ props.field.helperText }}</span>
+    <span v-if="props.error" class="error">{{ props.error }}</span>
+  </div>
+</template>
+```
+
+`field` has everything from the schema: `key`, `type`, `label`, `placeholder`, `helperText`, `options`, `validation`. Full type in the [Schema Reference](/api/schema).
 
 ## Next steps
 
