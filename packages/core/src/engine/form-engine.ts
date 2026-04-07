@@ -23,6 +23,13 @@ export class FormEngine {
   private _listeners: Set<() => void>;
   private _validators: Record<string, ValidatorFn>;
   private _allFields: FormField[];
+  private _dirty: boolean;
+  private _cache: {
+    visibleSteps: FormStep[];
+    currentStep: FormStep | null;
+    visibleFields: FormField[];
+    canGoNext: boolean;
+  };
 
   constructor(
     schema: FormSchema,
@@ -54,6 +61,8 @@ export class FormEngine {
     this.fieldLoading = {};
 
     this._allFields = this._computeAllFields();
+    this._dirty = true;
+    this._cache = { visibleSteps: [], currentStep: null, visibleFields: [], canGoNext: false };
 
     // Initialize values with defaults, then overlay initialValues
     this.values = {};
@@ -87,25 +96,18 @@ export class FormEngine {
   }
 
   get visibleSteps(): FormStep[] {
-    if (!this.isMultiStep) return [];
-    const steps = this.schema.steps ?? [];
-    return steps.filter((s) => isStepVisible(s, this.values));
+    this._recomputeIfDirty();
+    return this._cache.visibleSteps;
   }
 
   get currentStep(): FormStep | null {
-    const steps = this.visibleSteps;
-    if (steps.length === 0) return null;
-    // Find the step at currentStepIndex within visible steps
-    return steps[this.currentStepIndex] ?? steps[steps.length - 1] ?? null;
+    this._recomputeIfDirty();
+    return this._cache.currentStep;
   }
 
   get visibleFields(): FormField[] {
-    if (this.isMultiStep) {
-      const step = this.currentStep;
-      if (!step) return [];
-      return step.fields.filter((f) => isVisible(f, this.values));
-    }
-    return (this.schema.fields ?? []).filter((f) => isVisible(f, this.values));
+    this._recomputeIfDirty();
+    return this._cache.visibleFields;
   }
 
   get isFirstStep(): boolean {
@@ -117,11 +119,8 @@ export class FormEngine {
   }
 
   get canGoNext(): boolean {
-    if (!this.isMultiStep) return false;
-    const step = this.currentStep;
-    if (!step) return false;
-    const stepErrors = validateStep(step, this.values, this._validators);
-    return Object.keys(stepErrors).length === 0;
+    this._recomputeIfDirty();
+    return this._cache.canGoNext;
   }
 
   get progress(): { current: number; total: number } {
@@ -339,7 +338,33 @@ export class FormEngine {
     }
   }
 
+  private _recomputeIfDirty(): void {
+    if (!this._dirty) return;
+    this._dirty = false;
+
+    if (!this.isMultiStep) {
+      this._cache.visibleSteps = [];
+      this._cache.currentStep = null;
+      this._cache.visibleFields = (this.schema.fields ?? []).filter((f) => isVisible(f, this.values));
+      this._cache.canGoNext = false;
+      return;
+    }
+
+    const steps = this.schema.steps ?? [];
+    this._cache.visibleSteps = steps.filter((s) => isStepVisible(s, this.values));
+
+    const vs = this._cache.visibleSteps;
+    this._cache.currentStep = vs[this.currentStepIndex] ?? vs[vs.length - 1] ?? null;
+
+    const step = this._cache.currentStep;
+    this._cache.visibleFields = step ? step.fields.filter((f) => isVisible(f, this.values)) : [];
+
+    const stepErrors = step ? validateStep(step, this.values, this._validators) : {};
+    this._cache.canGoNext = Object.keys(stepErrors).length === 0;
+  }
+
   private _notify(): void {
+    this._dirty = true;
     this._version++;
     for (const listener of this._listeners) {
       listener();

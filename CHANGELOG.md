@@ -9,6 +9,7 @@
 - `setErrors()` now replaces all previous errors instead of merging.
 - `validateSchema()` detects duplicate field keys and invalid regex patterns.
 - Cascade clearing now respects step-level visibility.
+- Getter caching: `visibleSteps`, `visibleFields`, `currentStep`, `canGoNext` recompute only when state changes, not on every access.
 
 ### `@formhaus/react`
 
