@@ -26,15 +26,11 @@ docs/       # VitePress site at formhaus.dev
 ## Build and test
 
 ```bash
-# build everything
-pnpm build
-
-# test core (only package with tests right now)
-cd packages/core && pnpm test
-
-# build a specific package
-cd packages/react && pnpm build
+pnpm build    # build all packages
+pnpm test     # test all packages (core + figma + react + vue)
 ```
+
+CI runs on every PR — build + test must pass.
 
 ## Run docs locally
 
@@ -51,12 +47,13 @@ Opens at http://localhost:5173.
 1. Fork the repo and create a branch from `main`
 2. Make your changes
 3. Make sure `pnpm build` and `pnpm test` pass
-4. Commit using [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`)
-5. Open a PR against `main`
+4. Update docs if you changed any public API
+5. Add a changelog entry under `## Unreleased`
+6. Commit using [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`)
+7. Open a PR against `main`
 
 ## What could use help
 
-- Tests for React and Vue adapters
 - Svelte adapter (`@formhaus/svelte`)
 - More fixture schemas in `packages/core/fixtures/`
 - Docs improvements
@@ -66,8 +63,11 @@ Opens at http://localhost:5173.
 
 - TypeScript everywhere
 - No runtime dependencies in `core`
+- No comments in code — code should be self-explanatory
 - Adapters render native HTML by default, users bring their own UI kit via `components` prop
-- CSS class prefix: `fh-`
+- Both React and Vue ship unstyled — no CSS included
+- CSS class prefix: `fh-` (consistent across frameworks)
+- `FieldType` is extensible — custom types via `components` prop
 
 ## Questions?
 
