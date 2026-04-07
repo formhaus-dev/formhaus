@@ -14,7 +14,7 @@
   },
   "files": ["dist"],
   "scripts": {
-    "build": "vue-tsc --declaration --emitDeclarationOnly && vite build",
+    "build": "vite build && vue-tsc --declaration --emitDeclarationOnly",
     "clean": "rm -rf dist"
   },
   "dependencies": {
