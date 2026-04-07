@@ -48,6 +48,12 @@ export default defineConfig({
         items: [
           { text: 'Playground', link: '/playground' },
         ]
+      },
+      {
+        text: 'Meta',
+        items: [
+          { text: 'Changelog', link: '/changelog' },
+        ]
       }
     ],
     socialLinks: [

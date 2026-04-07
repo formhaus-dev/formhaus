@@ -29,13 +29,15 @@ export function validateField(
 
   if (rules.minLength !== undefined && (typeof value === 'string' || Array.isArray(value))) {
     if ((value as string | unknown[]).length < rules.minLength) {
-      return rules.minLengthMessage ?? getDefaultMessage('minLength', { min: rules.minLength });
+      const unit = Array.isArray(value) ? 'items' : undefined;
+      return rules.minLengthMessage ?? getDefaultMessage('minLength', { min: rules.minLength, unit });
     }
   }
 
   if (rules.maxLength !== undefined && (typeof value === 'string' || Array.isArray(value))) {
     if ((value as string | unknown[]).length > rules.maxLength) {
-      return rules.maxLengthMessage ?? getDefaultMessage('maxLength', { max: rules.maxLength });
+      const unit = Array.isArray(value) ? 'items' : undefined;
+      return rules.maxLengthMessage ?? getDefaultMessage('maxLength', { max: rules.maxLength, unit });
     }
   }
 

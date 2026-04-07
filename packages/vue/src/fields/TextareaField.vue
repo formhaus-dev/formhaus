@@ -2,6 +2,8 @@
 import { computed } from 'vue';
 import type { FormFieldProps } from '../types';
 
+const DEFAULT_ROWS = 3;
+
 const props = defineProps<FormFieldProps>();
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
@@ -24,7 +26,7 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
       :value="String(props.value ?? '')"
       :placeholder="props.field.placeholder"
       :disabled="props.disabled || props.loading"
-      :rows="props.field.rows ?? 3"
+      :rows="props.field.rows ?? DEFAULT_ROWS"
       :aria-invalid="!!props.error || undefined"
       :aria-describedby="(props.error || props.field.helperText) ? helperId : undefined"
       @input="(e) => emit('update:value', (e.target as HTMLTextAreaElement).value)"

@@ -167,12 +167,12 @@ describe('validateField', () => {
 
     it('minLength checks array length', () => {
       const field = makeField({ type: 'multiselect', validation: { minLength: 2 } });
-      expect(validateField(field, ['a'], {}, {})).toBe('Must be at least 2 characters');
+      expect(validateField(field, ['a'], {}, {})).toBe('Must be at least 2 items');
     });
 
     it('maxLength checks array length', () => {
       const field = makeField({ type: 'multiselect', validation: { maxLength: 2 } });
-      expect(validateField(field, ['a', 'b', 'c'], {}, {})).toBe('Must be at most 2 characters');
+      expect(validateField(field, ['a', 'b', 'c'], {}, {})).toBe('Must be at most 2 items');
     });
 
     it('passes minLength/maxLength with correct count', () => {

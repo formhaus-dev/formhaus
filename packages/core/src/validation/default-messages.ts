@@ -3,9 +3,9 @@ export function getDefaultMessage(rule: string, params?: Record<string, unknown>
     case 'required':
       return 'This field is required';
     case 'minLength':
-      return `Must be at least ${params?.min} characters`;
+      return `Must be at least ${params?.min} ${params?.unit ?? 'characters'}`;
     case 'maxLength':
-      return `Must be at most ${params?.max} characters`;
+      return `Must be at most ${params?.max} ${params?.unit ?? 'characters'}`;
     case 'min':
       return `Must be at least ${params?.min}`;
     case 'max':

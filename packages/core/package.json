@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/core",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Framework-agnostic JSON-schema-driven form engine with validation, conditional visibility, and multi-step support",
   "type": "module",
   "main": "./dist/index.js",

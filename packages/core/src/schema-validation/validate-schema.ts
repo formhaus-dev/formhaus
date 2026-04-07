@@ -6,8 +6,8 @@ function extractDependencies(conditions?: ShowCondition[]): string[] {
 }
 
 function getAllFields(schema: FormSchema): FormField[] {
-  if (schema.steps && schema.steps.length > 0) {
-    return schema.steps.flatMap((s) => s.fields);
+  if ((schema.steps?.length ?? 0) > 0) {
+    return schema.steps!.flatMap((s) => s.fields);
   }
   return schema.fields ?? [];
 }
@@ -48,8 +48,8 @@ function detectCycles(graph: Map<string, string[]>): string[][] {
 export function validateSchema(schema: FormSchema): string[] {
   const warnings: string[] = [];
 
-  const hasFields = schema.fields && schema.fields.length > 0;
-  const hasSteps = schema.steps && schema.steps.length > 0;
+  const hasFields = (schema.fields?.length ?? 0) > 0;
+  const hasSteps = (schema.steps?.length ?? 0) > 0;
 
   if (hasFields && hasSteps) {
     warnings.push('Schema has both "fields" and "steps". Only "steps" will be used.');

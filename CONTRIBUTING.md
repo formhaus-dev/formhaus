@@ -56,8 +56,15 @@ Opens at http://localhost:5173.
 
 - Svelte adapter (`@formhaus/svelte`)
 - More fixture schemas in `packages/core/fixtures/`
-- Docs improvements
 - Bug reports
+
+### Docs wanted
+
+- **Why Formhaus** — comparison page vs react-hook-form, Formik, VeeValidate. One JSON schema renders to React, Vue, Svelte, and Figma. Nobody else does that.
+- **Migration guides** — "Coming from react-hook-form" / "Coming from Formik". Map their concepts to ours.
+- **TypeScript** — how to type schemas, infer value types, generics in custom components.
+- **Recipes** — dependent dropdowns, address autocomplete, file upload, dynamic field arrays. Concrete solutions, not abstract docs.
+- **Design system integration** — examples with shadcn/ui, Vuetify, Ant Design. One real UI kit example beats ten abstract ones.
 
 ## Code style
 

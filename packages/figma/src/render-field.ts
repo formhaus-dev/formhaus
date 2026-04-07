@@ -2,6 +2,10 @@ import type { FormField } from '@formhaus/core';
 import { getFields, getTextLayers, type FieldMapping } from './constants';
 import { createPlaceholder, setNestedText } from './figma-helpers';
 
+const LABEL_FONT_SIZE = 14;
+const GROUP_SPACING = 4;
+const ROW_SPACING = 8;
+
 export async function renderField(
   field: FormField,
   fcSet: ComponentSetNode,
@@ -26,9 +30,9 @@ async function renderFormsConstructorField(
   fcSet: ComponentSetNode,
 ): Promise<SceneNode> {
   const textLayers = getTextLayers();
-  const showHeader = !!field.label;
-  const showHelper = !!field.helperText;
-  const variantName = `Type=${variant}, Header=${showHeader ? 'True' : 'False'}, Helper_text=${showHelper ? 'True' : 'False'}`;
+  const hasHeader = !!field.label;
+  const hasHelper = !!field.helperText;
+  const variantName = `Type=${variant}, Header=${hasHeader ? 'True' : 'False'}, Helper_text=${hasHelper ? 'True' : 'False'}`;
 
   const comp = fcSet.children.find((c) => c.name === variantName) as ComponentNode | undefined;
   if (!comp) return createPlaceholder(field);
@@ -71,7 +75,6 @@ async function renderStandaloneField(field: FormField, mapping: FieldMapping): P
 
   const isRequired = field.validation?.required;
 
-  // Radio/checkbox with options: one row per option
   if (
     field.options &&
     field.options.length > 0 &&
@@ -80,7 +83,6 @@ async function renderStandaloneField(field: FormField, mapping: FieldMapping): P
     return renderOptionGroup(field, comp, isRequired);
   }
 
-  // Single standalone (switch, checkbox without options)
   return renderSingleStandalone(field, comp, isRequired);
 }
 
@@ -94,12 +96,12 @@ function renderOptionGroup(
   group.layoutMode = 'VERTICAL';
   group.primaryAxisSizingMode = 'AUTO';
   group.counterAxisSizingMode = 'AUTO';
-  group.itemSpacing = 4;
+  group.itemSpacing = GROUP_SPACING;
   group.fills = [];
 
   const groupLabel = figma.createText();
   groupLabel.fontName = { family: 'Inter', style: 'Semi Bold' };
-  groupLabel.fontSize = 14;
+  groupLabel.fontSize = LABEL_FONT_SIZE;
   groupLabel.characters = isRequired ? `${field.label} *` : field.label;
   group.appendChild(groupLabel);
   groupLabel.layoutSizingHorizontal = 'FILL';
@@ -110,7 +112,7 @@ function renderOptionGroup(
     row.layoutMode = 'HORIZONTAL';
     row.primaryAxisSizingMode = 'AUTO';
     row.counterAxisSizingMode = 'AUTO';
-    row.itemSpacing = 8;
+    row.itemSpacing = ROW_SPACING;
     row.counterAxisAlignItems = 'CENTER';
     row.fills = [];
 
@@ -119,7 +121,7 @@ function renderOptionGroup(
 
     const optLabel = figma.createText();
     optLabel.fontName = { family: 'Inter', style: 'Regular' };
-    optLabel.fontSize = 14;
+    optLabel.fontSize = LABEL_FONT_SIZE;
     optLabel.characters = option.label;
     row.appendChild(optLabel);
 
@@ -139,7 +141,7 @@ function renderSingleStandalone(
   wrapper.layoutMode = 'HORIZONTAL';
   wrapper.primaryAxisSizingMode = 'AUTO';
   wrapper.counterAxisSizingMode = 'AUTO';
-  wrapper.itemSpacing = 8;
+  wrapper.itemSpacing = ROW_SPACING;
   wrapper.counterAxisAlignItems = 'CENTER';
   wrapper.fills = [];
 
@@ -148,7 +150,7 @@ function renderSingleStandalone(
 
   const labelNode = figma.createText();
   labelNode.fontName = { family: 'Inter', style: 'Regular' };
-  labelNode.fontSize = 14;
+  labelNode.fontSize = LABEL_FONT_SIZE;
   labelNode.characters = isRequired ? `${field.label} *` : field.label;
   wrapper.appendChild(labelNode);
 

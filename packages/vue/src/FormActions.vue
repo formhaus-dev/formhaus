@@ -51,18 +51,18 @@ function onPrimaryClick() {
   }
 }
 
-function resolvedPrimaryLabel(): string {
+function getPrimaryLabel(): string {
   if (props.primaryLabel !== undefined) return props.primaryLabel;
   if (props.isMultiStep && !props.isLastStep) return 'Continue';
   return props.submitAction?.label ?? 'Submit';
 }
 
-function resolvedShowBack(): boolean {
+function getShouldShowBack(): boolean {
   if (props.showBack !== undefined) return props.showBack;
   return props.isMultiStep && !props.isFirstStep && props.backAction !== false;
 }
 
-function resolvedBackLabel(): string {
+function getBackLabel(): string {
   if (props.backLabel !== undefined) return props.backLabel;
   return (typeof props.backAction === 'object' ? props.backAction?.label : undefined) ?? 'Back';
 }
@@ -72,13 +72,13 @@ function resolvedBackLabel(): string {
   <div class="fh-form-actions">
     <div class="fh-form-actions__secondary">
       <button
-        v-if="resolvedShowBack()"
+        v-if="getShouldShowBack()"
         type="button"
         :class="['fh-form-actions__button', typeof props.backAction === 'object' ? getButtonClass(props.backAction?.variant) : 'fh-form-actions__button--text']"
         :disabled="props.loading"
         @click="emit('prev')"
       >
-        {{ resolvedBackLabel() }}
+        {{ getBackLabel() }}
       </button>
       <button
         v-if="props.cancelAction"
@@ -96,7 +96,7 @@ function resolvedBackLabel(): string {
       :disabled="isActionDisabled(props.isMultiStep && !props.isLastStep ? undefined : props.submitAction)"
       @click="onPrimaryClick"
     >
-      {{ resolvedPrimaryLabel() }}
+      {{ getPrimaryLabel() }}
     </button>
   </div>
 </template>

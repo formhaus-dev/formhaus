@@ -8,10 +8,12 @@ export function useFieldOptions(
   providers?: Record<string, OptionsProvider>,
 ): Record<string, FieldOption[]> {
   const [resolved, setResolved] = useState<Record<string, FieldOption[]>>({});
-  const pendingRef = useRef<Set<string>>(new Set());
+  const lastDepsRef = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (!providers) return;
+
+    let isStale = false;
 
     for (const field of fields) {
       if (!field.optionsFrom) continue;
@@ -20,23 +22,26 @@ export function useFieldOptions(
       if (!provider) continue;
 
       const depsKey = (field.optionsDependsOn ?? []).map((k) => values[k]).join('|');
-      const cacheKey = `${field.key}:${depsKey}`;
 
-      if (pendingRef.current.has(cacheKey)) continue;
-      pendingRef.current.add(cacheKey);
+      if (lastDepsRef.current.get(field.key) === depsKey) continue;
+      lastDepsRef.current.set(field.key, depsKey);
 
       const result = provider(values);
 
       if (Array.isArray(result)) {
-        setResolved((prev) => ({ ...prev, [field.key]: result }));
-        pendingRef.current.delete(cacheKey);
+        if (!isStale) setResolved((prev) => ({ ...prev, [field.key]: result }));
       } else {
-        result.then((options) => {
-          setResolved((prev) => ({ ...prev, [field.key]: options }));
-          pendingRef.current.delete(cacheKey);
-        });
+        result
+          .then((options) => {
+            if (!isStale) setResolved((prev) => ({ ...prev, [field.key]: options }));
+          })
+          .catch(() => {
+            lastDepsRef.current.delete(field.key);
+          });
       }
     }
+
+    return () => { isStale = true; };
   }, [fields, values, providers]);
 
   return resolved;

@@ -8,6 +8,7 @@ export function useFieldOptions(
   providers?: Record<string, OptionsProvider>,
 ): Ref<Record<string, FieldOption[]>> {
   const resolved = ref<Record<string, FieldOption[]>>({});
+  const lastDeps = new Map<string, string>();
 
   if (!providers) return resolved;
 
@@ -20,12 +21,19 @@ export function useFieldOptions(
         const provider = providers[field.optionsFrom];
         if (!provider) continue;
 
-        const result = provider(values.value);
-        const options = Array.isArray(result) ? result : await result;
-        resolved.value[field.key] = options;
+        const depsKey = (field.optionsDependsOn ?? []).map((k) => values.value[k]).join('|');
+        if (lastDeps.get(field.key) === depsKey) continue;
+        lastDeps.set(field.key, depsKey);
+
+        try {
+          const result = provider(values.value);
+          resolved.value[field.key] = Array.isArray(result) ? result : await result;
+        } catch {
+          lastDeps.delete(field.key);
+        }
       }
     },
-    { immediate: true, deep: true },
+    { immediate: true },
   );
 
   return resolved;

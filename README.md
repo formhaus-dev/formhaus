@@ -1,5 +1,11 @@
 # Formhaus
 
+[![npm](https://img.shields.io/npm/v/@formhaus/core?label=core)](https://www.npmjs.com/package/@formhaus/core)
+[![npm](https://img.shields.io/npm/v/@formhaus/react?label=react)](https://www.npmjs.com/package/@formhaus/react)
+[![npm](https://img.shields.io/npm/v/@formhaus/vue?label=vue)](https://www.npmjs.com/package/@formhaus/vue)
+[![bundlephobia](https://img.shields.io/bundlephobia/minzip/@formhaus/core?label=core%20size)](https://bundlephobia.com/package/@formhaus/core)
+[![license](https://img.shields.io/github/license/ignsm/formhaus)](LICENSE)
+
 Framework-agnostic JSON-schema-driven form ecosystem.
 Define a form once as a JSON schema, render it anywhere in code or Figma.
 

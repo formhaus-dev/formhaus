@@ -23,7 +23,7 @@ export class FormEngine {
   private _listeners: Set<() => void>;
   private _validators: Record<string, ValidatorFn>;
   private _allFields: FormField[];
-  private _dirty: boolean;
+  private _isDirty: boolean;
   private _cache: {
     visibleSteps: FormStep[];
     currentStep: FormStep | null;
@@ -37,8 +37,8 @@ export class FormEngine {
     options?: FormEngineOptions,
   ) {
     // Validate schema structure
-    const hasFields = schema.fields && schema.fields.length > 0;
-    const hasSteps = schema.steps && schema.steps.length > 0;
+    const hasFields = (schema.fields?.length ?? 0) > 0;
+    const hasSteps = (schema.steps?.length ?? 0) > 0;
     if (hasFields && hasSteps) {
       throw new Error('FormSchema cannot have both "fields" and "steps" as non-empty arrays.');
     }
@@ -61,7 +61,7 @@ export class FormEngine {
     this.fieldLoading = {};
 
     this._allFields = this._computeAllFields();
-    this._dirty = true;
+    this._isDirty = true;
     this._cache = { visibleSteps: [], currentStep: null, visibleFields: [], canGoNext: false };
 
     // Initialize values with defaults, then overlay initialValues
@@ -339,8 +339,8 @@ export class FormEngine {
   }
 
   private _recomputeIfDirty(): void {
-    if (!this._dirty) return;
-    this._dirty = false;
+    if (!this._isDirty) return;
+    this._isDirty = false;
 
     if (!this.isMultiStep) {
       this._cache.visibleSteps = [];
@@ -364,7 +364,7 @@ export class FormEngine {
   }
 
   private _notify(): void {
-    this._dirty = true;
+    this._isDirty = true;
     this._version++;
     for (const listener of this._listeners) {
       listener();

@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/figma",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "Figma plugin: generates form mockups from @formhaus/core JSON schemas",
   "scripts": {
     "build": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017 --format=iife",

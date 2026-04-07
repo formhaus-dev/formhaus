@@ -1,5 +1,7 @@
 import type { FieldComponentProps } from '../types';
 
+const DEFAULT_ROWS = 3;
+
 export function TextareaField({
   field,
   value,
@@ -28,7 +30,7 @@ export function TextareaField({
         className="fh-field__input fh-field__input--textarea"
         value={(value as string) ?? ''}
         placeholder={field.placeholder}
-        rows={field.rows ?? 3}
+        rows={field.rows ?? DEFAULT_ROWS}
         disabled={disabled || loading}
         aria-invalid={!!error}
         aria-describedby={describedBy}

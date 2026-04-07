@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.3.0 - 2026-04-07
 
 ### `@formhaus/core`
 
@@ -10,6 +10,7 @@
 - `validateSchema()` detects duplicate field keys and invalid regex patterns.
 - Cascade clearing now respects step-level visibility.
 - Getter caching: `visibleSteps`, `visibleFields`, `currentStep`, `canGoNext` recompute only when state changes, not on every access.
+- `minLength`/`maxLength` validation messages now say "items" instead of "characters" for array values.
 
 ### `@formhaus/react`
 
@@ -22,6 +23,7 @@
 - Submit button evaluates `FormAction.disabled` conditions.
 - `mask` field shown as placeholder fallback in TextField.
 - `useFormEngine` recreates engine when `schema.id` changes.
+- `useFieldOptions` now handles rejected async providers and avoids redundant calls.
 
 ### `@formhaus/vue`
 
@@ -31,6 +33,7 @@
 - `analyticsEvent` emit fires on focus, blur, error, step change, and submit.
 - Field components now emit `focus`.
 - `useFormEngine` accepts getter, recreates engine when `schema.id` changes.
+- `useFieldOptions` now handles rejected async providers and avoids redundant calls.
 - Submit button evaluates `FormAction.disabled` conditions.
 - `mask` field shown as placeholder fallback in TextField.
 - Removed unused `actions` prop from FormRenderer.
