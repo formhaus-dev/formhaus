@@ -1,4 +1,4 @@
-import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormSchema, StepValidateFn, ValidatorFn } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, StepValidateFn, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
 
 export type OptionsProvider = (
@@ -45,7 +45,7 @@ export interface FormStepProgressProps {
 }
 
 export interface FormRendererProps {
-  schema: FormSchema;
+  definition: FormDefinition;
   initialValues?: Record<string, unknown>;
   onSubmit: (values: Record<string, unknown>) => Promise<void> | void;
   onCancel?: () => void;

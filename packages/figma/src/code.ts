@@ -29,17 +29,17 @@ function sendComponentMapToUI(): void {
 
 loadStoredComponentMap();
 
-figma.ui.onmessage = async (msg: { type: string; schema?: string; componentMap?: string }) => {
-  if (msg.type === 'generate' && msg.schema) {
+figma.ui.onmessage = async (msg: { type: string; definition?: string; componentMap?: string }) => {
+  if (msg.type === 'generate' && msg.definition) {
     try {
-      const schema = parseAndValidate(msg.schema);
-      const frames = await renderForm(schema);
+      const definition = parseAndValidate(msg.definition);
+      const frames = await renderForm(definition);
       figma.viewport.scrollAndZoomIntoView(frames);
-      const steps = getSteps(schema);
+      const steps = getSteps(definition);
       const stepInfo = steps.length > 1 ? ` across ${steps.length} frames` : '';
       figma.ui.postMessage({
         type: 'success',
-        message: `Generated "${schema.title}" with ${countFields(schema)} fields${stepInfo}`,
+        message: `Generated "${definition.title}" with ${countFields(definition)} fields${stepInfo}`,
       });
     } catch (e: unknown) {
       const message = e instanceof Error ? e.message : String(e);

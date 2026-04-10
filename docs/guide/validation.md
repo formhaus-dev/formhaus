@@ -76,7 +76,7 @@ function validateFormat(value, allValues) {
 
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :validators="{ checkFormat: validateFormat }"
     @submit="onSubmit"
   />
@@ -85,7 +85,7 @@ function validateFormat(value, allValues) {
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   validators={{ checkFormat: validateFormat }}
   onSubmit={handleSubmit}
 />

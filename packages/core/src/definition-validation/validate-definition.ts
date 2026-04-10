@@ -1,15 +1,15 @@
-import type { FormField, FormSchema, ShowCondition } from '../types';
+import type { FormField, FormDefinition, ShowCondition } from '../types';
 
 function extractDependencies(conditions?: ShowCondition[]): string[] {
   if (!conditions) return [];
   return conditions.map((c) => c.field);
 }
 
-function getAllFields(schema: FormSchema): FormField[] {
-  if ((schema.steps?.length ?? 0) > 0) {
-    return schema.steps!.flatMap((s) => s.fields);
+function getAllFields(definition: FormDefinition): FormField[] {
+  if ((definition.steps?.length ?? 0) > 0) {
+    return definition.steps!.flatMap((s) => s.fields);
   }
-  return schema.fields ?? [];
+  return definition.fields ?? [];
 }
 
 function detectCycles(graph: Map<string, string[]>): string[][] {
@@ -45,17 +45,17 @@ function detectCycles(graph: Map<string, string[]>): string[][] {
   return cycles;
 }
 
-export function validateSchema(schema: FormSchema): string[] {
+export function validateDefinition(definition: FormDefinition): string[] {
   const warnings: string[] = [];
 
-  const hasFields = (schema.fields?.length ?? 0) > 0;
-  const hasSteps = (schema.steps?.length ?? 0) > 0;
+  const hasFields = (definition.fields?.length ?? 0) > 0;
+  const hasSteps = (definition.steps?.length ?? 0) > 0;
 
   if (hasFields && hasSteps) {
-    warnings.push('Schema has both "fields" and "steps". Only "steps" will be used.');
+    warnings.push('Definition has both "fields" and "steps". Only "steps" will be used.');
   }
 
-  const allFields = getAllFields(schema);
+  const allFields = getAllFields(definition);
   const fieldKeys = new Set<string>();
   const graph = new Map<string, string[]>();
 

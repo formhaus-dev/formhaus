@@ -10,6 +10,10 @@ jobs:
   check:
     runs-on: ubuntu-latest
 
+    strategy:
+      matrix:
+        node-version: [20, 22]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -17,11 +21,17 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
       - run: pnpm build
+
+      - run: pnpm lint:packages
+
+      - run: pnpm check:types
+
+      - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve
 
       - run: pnpm test

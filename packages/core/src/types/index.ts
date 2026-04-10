@@ -8,4 +8,4 @@ export type {
   FormField,
   ShowCondition,
 } from './field';
-export type { FormSchema, FormStep } from './schema';
+export type { FormDefinition, FormStep } from './definition';

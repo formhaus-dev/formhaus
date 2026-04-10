@@ -1,22 +1,23 @@
 {
   "name": "@formhaus/vue",
-  "version": "0.3.0",
-  "description": "Vue 3 components for formhaus JSON-schema-driven forms",
+  "version": "0.3.1",
+  "description": "Vue 3 components for Formhaus forms. Define a form once in JSON, render with native HTML or your own components.",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "vite build && vue-tsc --declaration --emitDeclarationOnly",
+    "build": "vite build",
     "test": "vitest run",
     "clean": "rm -rf dist"
   },
@@ -32,14 +33,14 @@
     "jsdom": "^29.0.2",
     "typescript": "^5.7.3",
     "vite": "^6.2.2",
+    "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.1.3",
-    "vue": "^3.5.13",
-    "vue-tsc": "^2.0.0"
+    "vue": "^3.5.13"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ignsm/formhaus.git",
+    "url": "git+https://github.com/ignsm/formhaus.git",
     "directory": "packages/vue"
   }
 }

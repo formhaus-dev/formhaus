@@ -1,9 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/vue';
 import { describe, expect, it } from 'vitest';
-import type { FormSchema } from '@formhaus/core';
+import type { FormDefinition } from '@formhaus/core';
 import FormRenderer from '../src/FormRenderer.vue';
 
-const schema: FormSchema = {
+const definition: FormDefinition = {
   id: 'test',
   title: 'Test Form',
   submit: { label: 'Send' },
@@ -13,7 +13,7 @@ const schema: FormSchema = {
   ],
 };
 
-const selectSchema: FormSchema = {
+const selectDefinition: FormDefinition = {
   id: 'select-test',
   title: 'Select',
   submit: { label: 'Go' },
@@ -31,7 +31,7 @@ const selectSchema: FormSchema = {
   ],
 };
 
-const multiStepSchema: FormSchema = {
+const multiStepDefinition: FormDefinition = {
   id: 'steps',
   title: 'Steps',
   submit: { label: 'Submit' },
@@ -54,63 +54,63 @@ function getInput(name: string): HTMLInputElement {
 }
 
 describe('FormRenderer', () => {
-  it('renders fields from schema', () => {
-    render(FormRenderer, { props: { schema } });
+  it('renders fields from definition', () => {
+    render(FormRenderer, { props: { definition } });
     expect(getInput('Name')).toBeDefined();
     expect(getInput('Email')).toBeDefined();
   });
 
   it('renders submit button', () => {
-    render(FormRenderer, { props: { schema } });
+    render(FormRenderer, { props: { definition } });
     expect(screen.getByText('Send')).toBeDefined();
   });
 
   it('shows validation error on submit with empty required field', async () => {
-    render(FormRenderer, { props: { schema } });
+    render(FormRenderer, { props: { definition } });
     await fireEvent.click(screen.getByText('Send'));
     expect(screen.getByText('This field is required')).toBeDefined();
   });
 
   it('updates field value on input', async () => {
-    render(FormRenderer, { props: { schema } });
+    render(FormRenderer, { props: { definition } });
     const input = getInput('Name');
     await fireEvent.update(input, 'Jane');
     expect(input.value).toBe('Jane');
   });
 
   it('renders select with options', () => {
-    render(FormRenderer, { props: { schema: selectSchema } });
+    render(FormRenderer, { props: { definition: selectDefinition } });
     expect(screen.getByText('Red')).toBeDefined();
     expect(screen.getByText('Blue')).toBeDefined();
   });
 
   it('disables fields when loading', () => {
-    render(FormRenderer, { props: { schema, loading: true } });
+    render(FormRenderer, { props: { definition, loading: true } });
     expect(getInput('Name').disabled).toBe(true);
   });
 });
 
 describe('FormRenderer multi-step', () => {
   it('shows step 1 fields only', () => {
-    render(FormRenderer, { props: { schema: multiStepSchema } });
+    render(FormRenderer, { props: { definition: multiStepDefinition } });
     expect(getInput('First')).toBeDefined();
     expect(screen.queryByRole('textbox', { name: /Second/ })).toBeNull();
   });
 
   it('shows step progress', () => {
-    render(FormRenderer, { props: { schema: multiStepSchema } });
+    render(FormRenderer, { props: { definition: multiStepDefinition } });
     expect(screen.getAllByText(/Step/).length).toBeGreaterThan(0);
   });
 
   it('validates before advancing', async () => {
-    render(FormRenderer, { props: { schema: multiStepSchema } });
+    render(FormRenderer, { props: { definition: multiStepDefinition } });
     await fireEvent.click(screen.getByText('Continue'));
     expect(screen.getByText('This field is required')).toBeDefined();
     expect(screen.queryByRole('textbox', { name: /Second/ })).toBeNull();
   });
 
   it('advances to step 2 when valid', async () => {
-    render(FormRenderer, { props: { schema: multiStepSchema } });
+    render(FormRenderer, { props: { definition: multiStepDefinition } });
     await fireEvent.update(getInput('First'), 'ok');
     await fireEvent.click(screen.getByText('Continue'));
     expect(screen.getByRole('textbox', { name: /Second/ })).toBeDefined();

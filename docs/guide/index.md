@@ -24,7 +24,7 @@ Or use `@formhaus/core` directly with any framework. See the [Svelte example in 
 ```vue [Vue]
 <script setup>
 import { FormRenderer } from '@formhaus/vue';
-import schema from '@formhaus/core/fixtures/basic-form.json';
+import definition from '@formhaus/core/fixtures/basic-form.json';
 
 function onSubmit(values) {
   console.log(values);
@@ -32,18 +32,18 @@ function onSubmit(values) {
 </script>
 
 <template>
-  <FormRenderer :schema="schema" @submit="onSubmit" />
+  <FormRenderer :definition="definition" @submit="onSubmit" />
 </template>
 ```
 
 ```tsx [React]
 import { FormRenderer } from '@formhaus/react';
-import schema from '@formhaus/core/fixtures/basic-form.json';
+import definition from '@formhaus/core/fixtures/basic-form.json';
 
 function MyForm() {
   return (
     <FormRenderer
-      schema={schema}
+      definition={definition}
       onSubmit={(values) => console.log(values)}
     />
   );

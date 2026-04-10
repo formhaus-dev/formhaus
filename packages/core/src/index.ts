@@ -1,4 +1,3 @@
-// Types
 export type {
   DefaultFieldType,
   FieldOption,
@@ -6,19 +5,16 @@ export type {
   FieldValidation,
   FormAction,
   FormAnalyticsEvent,
+  FormDefinition,
   FormField,
-  FormSchema,
   FormStep,
   ShowCondition,
 } from './types';
 
-// Engine
 export { FormEngine, type FormEngineOptions, type StepValidateFn } from './engine';
 
-// Visibility
 export { evaluateCondition, isStepVisible, isVisible } from './visibility';
 
-// Validation
 export {
   type ValidatorFn,
   getDefaultMessage,
@@ -27,5 +23,4 @@ export {
   validateStep,
 } from './validation';
 
-// Schema validation
-export { validateSchema } from './schema-validation';
+export { validateDefinition } from './definition-validation';

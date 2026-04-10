@@ -32,7 +32,7 @@ async function validateStep(stepId: string, values: Record<string, unknown>) {
 function SignupForm() {
   return (
     <FormRenderer
-      schema={schema}
+      definition={definition}
       onStepValidate={validateStep}
       onSubmit={handleSubmit}
     />
@@ -61,7 +61,7 @@ async function validateStep(stepId, values) {
 
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :on-step-validate="validateStep"
     @submit="onSubmit"
   />
@@ -131,11 +131,11 @@ type StepValidateFn = (
 ```
 
 The callback receives:
-- `stepId` - the `id` of the step being validated (from your schema)
+- `stepId` - the `id` of the step being validated (from your definition)
 - `values` - all current field values (not just the current step's fields)
 
 Return:
-- `{ key: message }` - errors to show. Keys match field keys in your schema.
+- `{ key: message }` - errors to show. Keys match field keys in your definition.
 - `null` or `undefined` - no errors, advance to next step.
 
 ## Using the engine directly
@@ -145,7 +145,7 @@ If you use `FormEngine` without the React/Vue adapter, call `nextStepAsync()` in
 ```ts
 import { FormEngine } from '@formhaus/core';
 
-const engine = new FormEngine(schema, initialValues, {
+const engine = new FormEngine(definition, initialValues, {
   validators: { ... },
   onStepValidate: async (stepId, values) => {
     // your server call

@@ -2,7 +2,7 @@ import {
   FormEngine,
   type FormEngineOptions,
   type FormField,
-  type FormSchema,
+  type FormDefinition,
   type FormStep,
 } from '@formhaus/core';
 import { type ComputedRef, type Ref, computed, ref, watch } from 'vue';
@@ -25,21 +25,21 @@ export interface UseFormEngineReturn {
 }
 
 export function useFormEngine(
-  schemaOrGetter: FormSchema | (() => FormSchema),
+  definitionOrGetter: FormDefinition | (() => FormDefinition),
   initialValues?: Record<string, unknown>,
   options?: FormEngineOptions,
 ): UseFormEngineReturn {
-  const getSchema = typeof schemaOrGetter === 'function' ? schemaOrGetter : () => schemaOrGetter;
+  const getDefinition = typeof definitionOrGetter === 'function' ? definitionOrGetter : () => definitionOrGetter;
   const version = ref(0);
-  let engine = new FormEngine(getSchema(), initialValues, options);
+  let engine = new FormEngine(getDefinition(), initialValues, options);
   engine.subscribe(() => { version.value++; });
 
   const engineRef = ref(engine) as Ref<FormEngine>;
 
   watch(
-    () => getSchema().id,
+    () => getDefinition().id,
     () => {
-      engine = new FormEngine(getSchema(), initialValues, options);
+      engine = new FormEngine(getDefinition(), initialValues, options);
       engine.subscribe(() => { version.value++; });
       engineRef.value = engine;
       version.value++;

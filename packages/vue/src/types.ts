@@ -4,7 +4,7 @@ import type {
   FormAction,
   FormAnalyticsEvent,
   FormField,
-  FormSchema,
+  FormDefinition,
   StepValidateFn,
   ValidatorFn,
 } from '@formhaus/core';
@@ -38,7 +38,7 @@ export type OptionsProvider = (
 ) => FieldOption[] | Promise<FieldOption[]>;
 
 export interface FormRendererProps {
-  schema: FormSchema;
+  definition: FormDefinition;
   initialValues?: Record<string, unknown>;
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;

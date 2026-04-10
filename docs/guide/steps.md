@@ -95,7 +95,7 @@ When the user picks "personal" instead of "business", this step vanishes. The pr
 ```vue [Vue]
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     @step-change="(stepId, direction) => console.log(stepId, direction)"
     @submit="onSubmit"
   />
@@ -104,7 +104,7 @@ When the user picks "personal" instead of "business", this step vanishes. The pr
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   onStepChange={(stepId, direction) => console.log(stepId, direction)}
   onSubmit={handleSubmit}
 />

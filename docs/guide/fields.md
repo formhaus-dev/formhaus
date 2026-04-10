@@ -80,7 +80,7 @@ Then pass the provider to the renderer:
 ```vue [Vue]
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :options-providers="{ categories: loadCategories }"
     @submit="onSubmit"
   />
@@ -89,7 +89,7 @@ Then pass the provider to the renderer:
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   optionsProviders={{ categories: loadCategories }}
   onSubmit={handleSubmit}
 />
@@ -206,7 +206,7 @@ File upload. Uses native file input. Set `accept` to restrict file types.
 ```vue [Vue]
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :components="{ 'color-picker': ColorPicker }"
     @submit="onSubmit"
   />
@@ -215,7 +215,7 @@ File upload. Uses native file input. Set `accept` to restrict file types.
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   components={{ 'color-picker': ColorPickerField }}
   onSubmit={handleSubmit}
 />
@@ -242,7 +242,7 @@ Override any built-in field type by passing a `components` prop:
 ```vue [Vue]
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :components="{ phone: CustomPhoneInput }"
     @submit="onSubmit"
   />
@@ -251,7 +251,7 @@ Override any built-in field type by passing a `components` prop:
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   components={{ phone: CustomPhoneInput }}
   onSubmit={handleSubmit}
 />

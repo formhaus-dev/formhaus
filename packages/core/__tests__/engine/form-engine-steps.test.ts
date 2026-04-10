@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
 import type { StepValidateFn } from '../../src/engine';
-import type { FormSchema } from '../../src/types';
+import type { FormDefinition } from '../../src/types';
 
-const multiStepSchema: FormSchema = {
+const multiStepDefinition: FormDefinition = {
   id: 'multi',
   title: 'Multi-Step',
   submit: { label: 'Submit' },
@@ -37,18 +37,18 @@ const multiStepSchema: FormSchema = {
 describe('FormEngine - Multi-Step', () => {
   describe('step navigation', () => {
     it('starts on step 0', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       expect(engine.currentStepIndex).toBe(0);
       expect(engine.isFirstStep).toBe(true);
     });
 
-    it('isMultiStep returns true for step-based schema', () => {
-      const engine = new FormEngine(multiStepSchema);
+    it('isMultiStep returns true for step-based definition', () => {
+      const engine = new FormEngine(multiStepDefinition);
       expect(engine.isMultiStep).toBe(true);
     });
 
     it('nextStep validates before advancing', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       // Name is required, so nextStep should fail
       const result = engine.nextStep();
       expect(result).toBe(false);
@@ -57,7 +57,7 @@ describe('FormEngine - Multi-Step', () => {
     });
 
     it('nextStep advances when valid', () => {
-      const engine = new FormEngine(multiStepSchema, { name: 'John' });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       const result = engine.nextStep();
       expect(result).toBe(true);
       // Business step is hidden (accountType != business), so we skip to payment
@@ -65,20 +65,20 @@ describe('FormEngine - Multi-Step', () => {
     });
 
     it('prevStep goes back', () => {
-      const engine = new FormEngine(multiStepSchema, { name: 'John' });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       engine.nextStep();
       engine.prevStep();
       expect(engine.currentStep?.id).toBe('personal');
     });
 
     it('prevStep on first step is a no-op', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       engine.prevStep();
       expect(engine.currentStepIndex).toBe(0);
     });
 
     it('nextStep on last step is a no-op', () => {
-      const engine = new FormEngine(multiStepSchema, { name: 'John' });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       engine.nextStep(); // Go to payment (business hidden)
       const result = engine.nextStep(); // Already on last step
       expect(result).toBe(false);
@@ -87,14 +87,14 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('conditional steps', () => {
     it('hides steps based on show conditions', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       const visibleIds = engine.visibleSteps.map((s) => s.id);
       expect(visibleIds).toEqual(['personal', 'payment']);
       expect(visibleIds).not.toContain('business');
     });
 
     it('shows step when condition is met', () => {
-      const engine = new FormEngine(multiStepSchema, { accountType: 'business' });
+      const engine = new FormEngine(multiStepDefinition, { accountType: 'business' });
       const visibleIds = engine.visibleSteps.map((s) => s.id);
       expect(visibleIds).toEqual(['personal', 'business', 'payment']);
     });
@@ -102,7 +102,7 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('visibleFields in multi-step', () => {
     it('returns fields of current step only', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       const keys = engine.visibleFields.map((f) => f.key);
       expect(keys).toEqual(['name']);
     });
@@ -110,13 +110,13 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('progress', () => {
     it('reports correct progress', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       // 2 visible steps (personal, payment)
       expect(engine.progress).toEqual({ current: 1, total: 2 });
     });
 
     it('updates when step becomes visible', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       engine.setValue('accountType', 'business');
       // Now 3 visible steps
       expect(engine.progress.total).toBe(3);
@@ -125,20 +125,20 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('goToStepWithField', () => {
     it('navigates to step containing field', () => {
-      const engine = new FormEngine(multiStepSchema, { name: 'John' });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       engine.goToStepWithField('method');
       // method is in 'payment' step, which is index 1 in visible steps (personal=0, payment=1)
       expect(engine.currentStep?.id).toBe('payment');
     });
 
     it('no-op when field is in hidden step', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       engine.goToStepWithField('company'); // company is in hidden business step
       expect(engine.currentStepIndex).toBe(0); // Unchanged
     });
 
     it('no-op when field does not exist', () => {
-      const engine = new FormEngine(multiStepSchema);
+      const engine = new FormEngine(multiStepDefinition);
       engine.goToStepWithField('nonexistent');
       expect(engine.currentStepIndex).toBe(0);
     });
@@ -146,7 +146,7 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('getSubmitValues for multi-step', () => {
     it('returns all visible fields across all steps', () => {
-      const engine = new FormEngine(multiStepSchema, { name: 'John', method: 'bank' });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John', method: 'bank' });
       const values = engine.getSubmitValues();
       expect(values.name).toBe('John');
       expect(values.method).toBe('bank');
@@ -155,7 +155,7 @@ describe('FormEngine - Multi-Step', () => {
     });
 
     it('includes fields from conditionally shown step', () => {
-      const engine = new FormEngine(multiStepSchema, {
+      const engine = new FormEngine(multiStepDefinition, {
         name: 'John',
         accountType: 'business',
         company: 'Acme',
@@ -168,7 +168,7 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('setErrors navigates to step', () => {
     it('navigates to step containing first errored field', () => {
-      const engine = new FormEngine(multiStepSchema, { name: 'John' });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       engine.nextStep(); // Go to payment
       engine.setErrors({ name: 'Server error on name' });
       // Should navigate back to personal step
@@ -178,7 +178,7 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('cascade clears hidden step fields', () => {
     it('clears field values when their step becomes hidden', () => {
-      const engine = new FormEngine(multiStepSchema, {
+      const engine = new FormEngine(multiStepDefinition, {
         accountType: 'business',
         company: 'Acme',
       });
@@ -191,7 +191,7 @@ describe('FormEngine - Multi-Step', () => {
 
   describe('nextStepAsync', () => {
     it('works without onStepValidate (same as sync)', async () => {
-      const engine = new FormEngine(multiStepSchema, { name: 'John' });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       const result = await engine.nextStepAsync();
       expect(result).toBe(true);
       expect(engine.currentStep?.id).toBe('payment');
@@ -199,7 +199,7 @@ describe('FormEngine - Multi-Step', () => {
 
     it('runs sync validation first', async () => {
       const onStepValidate = vi.fn().mockResolvedValue(null);
-      const engine = new FormEngine(multiStepSchema, {}, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, {}, { onStepValidate });
       const result = await engine.nextStepAsync();
       expect(result).toBe(false);
       expect(engine.errors.name).toBe('This field is required');
@@ -208,14 +208,14 @@ describe('FormEngine - Multi-Step', () => {
 
     it('calls onStepValidate after sync passes', async () => {
       const onStepValidate = vi.fn().mockResolvedValue(null);
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       await engine.nextStepAsync();
       expect(onStepValidate).toHaveBeenCalledWith('personal', engine.values);
     });
 
     it('blocks transition when onStepValidate returns errors', async () => {
       const onStepValidate: StepValidateFn = async () => ({ name: 'Already taken' });
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       const result = await engine.nextStepAsync();
       expect(result).toBe(false);
       expect(engine.errors.name).toBe('Already taken');
@@ -224,7 +224,7 @@ describe('FormEngine - Multi-Step', () => {
 
     it('allows transition when onStepValidate returns null', async () => {
       const onStepValidate: StepValidateFn = async () => null;
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       const result = await engine.nextStepAsync();
       expect(result).toBe(true);
       expect(engine.currentStep?.id).toBe('payment');
@@ -232,7 +232,7 @@ describe('FormEngine - Multi-Step', () => {
 
     it('allows transition when onStepValidate returns void', async () => {
       const onStepValidate: StepValidateFn = async () => {};
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       const result = await engine.nextStepAsync();
       expect(result).toBe(true);
       expect(engine.currentStep?.id).toBe('payment');
@@ -244,7 +244,7 @@ describe('FormEngine - Multi-Step', () => {
         capturedValidating = engine.stepValidating;
         return null;
       };
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       await engine.nextStepAsync();
       expect(capturedValidating).toBe(true);
       expect(engine.stepValidating).toBe(false);
@@ -254,7 +254,7 @@ describe('FormEngine - Multi-Step', () => {
       let resolve: () => void;
       const onStepValidate: StepValidateFn = () =>
         new Promise((r) => { resolve = () => r(null); });
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
 
       const first = engine.nextStepAsync();
       const second = await engine.nextStepAsync();
@@ -269,7 +269,7 @@ describe('FormEngine - Multi-Step', () => {
       const onStepValidate: StepValidateFn = async () => {
         throw new Error('Network failure');
       };
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       await expect(engine.nextStepAsync()).rejects.toThrow('Network failure');
       expect(engine.stepValidating).toBe(false);
       expect(engine.currentStep?.id).toBe('personal');
@@ -280,7 +280,7 @@ describe('FormEngine - Multi-Step', () => {
       const onStepValidate: StepValidateFn = () =>
         new Promise((r) => { resolvers.push(r); });
       const engine = new FormEngine(
-        multiStepSchema,
+        multiStepDefinition,
         { name: 'John', accountType: 'business' },
         { onStepValidate },
       );
@@ -303,27 +303,27 @@ describe('FormEngine - Multi-Step', () => {
         name: 'Server error',
         nonexistent: 'Unknown field error',
       });
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       await engine.nextStepAsync();
       expect(engine.errors.name).toBe('Server error');
       expect(engine.topLevelErrors).toContain('Unknown field error');
     });
 
     it('returns false for non-multi-step forms', async () => {
-      const singleSchema: FormSchema = {
+      const singleDefinition: FormDefinition = {
         id: 'single',
         title: 'Single',
         submit: { label: 'Submit' },
         fields: [{ key: 'name', type: 'text', label: 'Name' }],
       };
-      const engine = new FormEngine(singleSchema);
+      const engine = new FormEngine(singleDefinition);
       const result = await engine.nextStepAsync();
       expect(result).toBe(false);
     });
 
     it('returns false on last step even with onStepValidate', async () => {
       const onStepValidate: StepValidateFn = async () => null;
-      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
       await engine.nextStepAsync();
       const result = await engine.nextStepAsync();
       expect(result).toBe(false);

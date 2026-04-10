@@ -15,7 +15,7 @@ import MyFormActions from './MyFormActions.vue'
 
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :actions-component="MyFormActions"
     @submit="onSubmit"
   />
@@ -27,7 +27,7 @@ import { FormRenderer } from '@formhaus/react'
 import { MyFormActions } from './MyFormActions'
 
 <FormRenderer
-  schema={schema}
+  definition={definition}
   ActionsComponent={MyFormActions}
   onSubmit={handleSubmit}
 />
@@ -110,7 +110,7 @@ Pass your component via the `progressComponent` (Vue) or `ProgressComponent` (Re
 ```vue [Vue]
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :progress-component="MyStepProgress"
     @submit="onSubmit"
   />
@@ -119,7 +119,7 @@ Pass your component via the `progressComponent` (Vue) or `ProgressComponent` (Re
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   ProgressComponent={MyStepProgress}
   onSubmit={handleSubmit}
 />
@@ -145,7 +145,7 @@ Use all custom component props together:
 ```vue [Vue]
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :components="{ phone: CustomPhoneInput }"
     :actions-component="MyFormActions"
     :progress-component="MyStepProgress"
@@ -156,7 +156,7 @@ Use all custom component props together:
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   components={{ phone: CustomPhoneInput }}
   ActionsComponent={MyFormActions}
   ProgressComponent={MyStepProgress}
@@ -186,7 +186,7 @@ Track form interactions via `onAnalyticsEvent` (React) or `@analyticsEvent` (Vue
 ::: code-group
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   onAnalyticsEvent={(event) => analytics.track(event.type, event)}
   onSubmit={handleSubmit}
 />
@@ -194,7 +194,7 @@ Track form interactions via `onAnalyticsEvent` (React) or `@analyticsEvent` (Vue
 
 ```vue [Vue]
 <FormRenderer
-  :schema="schema"
+  :definition="definition"
   @analytics-event="(event) => analytics.track(event.type, event)"
   @submit="onSubmit"
 />

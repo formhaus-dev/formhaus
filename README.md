@@ -86,7 +86,7 @@ npm install @formhaus/core @formhaus/react
 
 ```tsx
 import { FormRenderer } from '@formhaus/react';
-import schema from './contact-schema.json';
+import definition from './contact-form.json';
 
 function ContactPage() {
   async function handleSubmit(values: Record<string, unknown>) {
@@ -96,7 +96,7 @@ function ContactPage() {
     });
   }
 
-  return <FormRenderer schema={schema} onSubmit={handleSubmit} />;
+  return <FormRenderer definition={definition} onSubmit={handleSubmit} />;
 }
 ```
 
@@ -109,7 +109,7 @@ npm install @formhaus/core @formhaus/vue
 ```vue
 <script setup lang="ts">
 import { FormRenderer } from '@formhaus/vue';
-import schema from './contact-schema.json';
+import definition from './contact-form.json';
 
 async function handleSubmit(values: Record<string, unknown>) {
   await fetch('/api/contact', {
@@ -120,7 +120,7 @@ async function handleSubmit(values: Record<string, unknown>) {
 </script>
 
 <template>
-  <FormRenderer :schema="schema" @submit="handleSubmit" />
+  <FormRenderer :definition="definition" @submit="handleSubmit" />
 </template>
 ```
 
@@ -156,7 +156,7 @@ const components: FieldComponentMap = {
   email: MyTextInput,
 };
 
-<FormRenderer schema={schema} onSubmit={handleSubmit} components={components} />;
+<FormRenderer definition={definition} onSubmit={handleSubmit} components={components} />;
 ```
 
 ### Vue
@@ -180,7 +180,7 @@ import MyTextInput from './MyTextInput.vue';
 
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :components="{ text: MyTextInput, email: MyTextInput }"
     @submit="handleSubmit"
   />

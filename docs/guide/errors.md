@@ -25,7 +25,7 @@ async function onSubmit(values) {
 
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :errors="serverErrors"
     @submit="onSubmit"
   />
@@ -47,7 +47,7 @@ function MyForm() {
 
   return (
     <FormRenderer
-      schema={schema}
+      definition={definition}
       errors={errors}
       onSubmit={handleSubmit}
     />
@@ -86,7 +86,7 @@ Show a loading indicator on the submit button while the request is pending:
 ```vue [Vue]
 <template>
   <FormRenderer
-    :schema="schema"
+    :definition="definition"
     :loading="isSubmitting"
     @submit="onSubmit"
   />
@@ -95,7 +95,7 @@ Show a loading indicator on the submit button while the request is pending:
 
 ```tsx [React]
 <FormRenderer
-  schema={schema}
+  definition={definition}
   loading={isSubmitting}
   onSubmit={handleSubmit}
 />
@@ -113,7 +113,7 @@ Some fields load data asynchronously (e.g. looking up a city by zip code). Use `
 <script setup>
 import { useFormEngine } from '@formhaus/vue';
 
-const { engine } = useFormEngine(schema);
+const { engine } = useFormEngine(definition);
 
 async function onFieldChange(key, value) {
   if (key === 'zipCode' && value.length === 5) {
@@ -127,7 +127,7 @@ async function onFieldChange(key, value) {
 ```
 
 ```tsx [React]
-const engine = useFormEngine(schema);
+const engine = useFormEngine(definition);
 
 function onFieldChange(key, value) {
   if (key === 'zipCode' && value.length === 5) {

@@ -1,7 +1,7 @@
 import type { FormAction } from './action';
 import type { FormField, ShowCondition } from './field';
 
-export interface FormSchema {
+export interface FormDefinition {
   id: string;
   title: string;
   submit: FormAction;

@@ -1,4 +1,4 @@
-import type { FormField, FormSchema, FormStep } from '@formhaus/core';
+import type { FormField, FormDefinition, FormStep } from '@formhaus/core';
 import {
   getButtonKey,
   getFormsConstructorKey,
@@ -11,10 +11,10 @@ import { createButtonInstance } from './figma-helpers';
 import { getSteps } from './parse';
 import { renderField } from './render-field';
 
-export async function renderForm(schema: FormSchema): Promise<FrameNode[]> {
-  // Remove existing frames for this schema
+export async function renderForm(definition: FormDefinition): Promise<FrameNode[]> {
+  // Remove existing frames for this definition
   const existingFrames = figma.currentPage.children.filter(
-    (n) => n.type === 'FRAME' && n.getSharedPluginData('formGenerator', 'schemaId') === schema.id,
+    (n) => n.type === 'FRAME' && n.getSharedPluginData('formGenerator', 'definitionId') === definition.id,
   );
   for (const f of existingFrames) f.remove();
 
@@ -24,7 +24,7 @@ export async function renderForm(schema: FormSchema): Promise<FrameNode[]> {
   await figma.loadFontAsync({ family: 'Inter', style: 'Semi Bold' });
   await figma.loadFontAsync({ family: 'Inter', style: 'Regular' });
 
-  const steps = getSteps(schema);
+  const steps = getSteps(definition);
   const isMultiStep = steps.length > 1;
 
   let cursorX =
@@ -41,8 +41,8 @@ export async function renderForm(schema: FormSchema): Promise<FrameNode[]> {
     const isLast = i === steps.length - 1;
 
     const card = createCardFrame(
-      isMultiStep ? `${schema.title} — Step ${i + 1}: ${step.title}` : schema.title,
-      schema.id,
+      isMultiStep ? `${definition.title} — Step ${i + 1}: ${step.title}` : definition.title,
+      definition.id,
     );
     card.x = cursorX;
     card.y = 0;
@@ -63,7 +63,7 @@ export async function renderForm(schema: FormSchema): Promise<FrameNode[]> {
     const titleNode = figma.createText();
     titleNode.fontName = { family: 'Inter', style: 'Semi Bold' };
     titleNode.fontSize = 24;
-    titleNode.characters = isMultiStep ? step.title : schema.title;
+    titleNode.characters = isMultiStep ? step.title : definition.title;
     card.appendChild(titleNode);
     titleNode.layoutSizingHorizontal = 'FILL';
 
@@ -91,7 +91,7 @@ export async function renderForm(schema: FormSchema): Promise<FrameNode[]> {
     }
 
     // Action buttons, stacked vertically
-    await appendButtons(card, btnSet, schema, isFirst, isLast, isMultiStep);
+    await appendButtons(card, btnSet, definition, isFirst, isLast, isMultiStep);
 
     createdFrames.push(card);
   }
@@ -99,7 +99,7 @@ export async function renderForm(schema: FormSchema): Promise<FrameNode[]> {
   return createdFrames;
 }
 
-function createCardFrame(name: string, schemaId: string): FrameNode {
+function createCardFrame(name: string, definitionId: string): FrameNode {
   const frame = figma.createFrame();
   frame.name = name;
   frame.layoutMode = 'VERTICAL';
@@ -113,19 +113,19 @@ function createCardFrame(name: string, schemaId: string): FrameNode {
   frame.paddingRight = CARD_PADDING;
   frame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
   frame.cornerRadius = 12;
-  frame.setSharedPluginData('formGenerator', 'schemaId', schemaId);
+  frame.setSharedPluginData('formGenerator', 'definitionId', definitionId);
   return frame;
 }
 
 async function appendButtons(
   card: FrameNode,
   btnSet: ComponentSetNode,
-  schema: FormSchema,
+  definition: FormDefinition,
   isFirst: boolean,
   isLast: boolean,
   isMultiStep: boolean,
 ): Promise<void> {
-  const primaryLabel = isLast ? schema.submit.label : 'Continue';
+  const primaryLabel = isLast ? definition.submit.label : 'Continue';
   const primaryBtn = await createButtonInstance(btnSet, primaryLabel, 'Primary');
   if (primaryBtn) {
     primaryBtn.resize(CARD_INNER_WIDTH, primaryBtn.height);
@@ -140,8 +140,8 @@ async function appendButtons(
     }
   }
 
-  if (schema.cancel && isFirst) {
-    const cancelBtn = await createButtonInstance(btnSet, schema.cancel.label, 'Secondary');
+  if (definition.cancel && isFirst) {
+    const cancelBtn = await createButtonInstance(btnSet, definition.cancel.label, 'Secondary');
     if (cancelBtn) {
       cancelBtn.resize(CARD_INNER_WIDTH, cancelBtn.height);
       card.appendChild(cancelBtn);

@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.3.1 - 2026-04-10
+
+### Breaking
+
+- `FormSchema` type renamed to `FormDefinition`. `validateSchema()` renamed to `validateDefinition()`.
+- `FormRenderer` prop `schema` renamed to `definition` (React and Vue).
+
+### `@formhaus/core`
+
+- New `onStepValidate` option runs an async validator between steps. `nextStepAsync()` awaits it. Exposes `stepValidating` and the `StepValidateFn` type.
+
+### `@formhaus/react`
+
+- `FormRenderer` accepts `onStepValidate`. Continue button shows a loading state while the validator runs.
+
+### `@formhaus/vue`
+
+- `FormRenderer` accepts `onStepValidate`. `useFormEngine` now returns `stepValidating`.
+
+### Packaging
+
+- **Breaking:** ESM-only. Dropped legacy `main` and `module` fields. Minimum Node is 18.
+- Fixed `@formhaus/vue` type resolution under `moduleResolution: "node16"` and `"nodenext"`.
+- `@formhaus/core` and `@formhaus/react` down to 2.87 KB and 3.15 KB gzipped.
+- `sideEffects: false` on core, react, and vue.
+
 ## 0.3.0 - 2026-04-07
 
 ### Docs

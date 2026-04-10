@@ -1,5 +1,5 @@
-import { validateSchema } from '../schema-validation';
-import type { FormField, FormSchema, FormStep } from '../types';
+import { validateDefinition } from '../definition-validation';
+import type { FormField, FormDefinition, FormStep } from '../types';
 import type { ValidatorFn } from '../validation';
 import { validateField, validateFields, validateStep } from '../validation';
 import { isStepVisible, isVisible } from '../visibility';
@@ -17,7 +17,7 @@ export interface FormEngineOptions {
 }
 
 export class FormEngine {
-  readonly schema: FormSchema;
+  readonly definition: FormDefinition;
 
   values: Record<string, unknown>;
   errors: Record<string, string>;
@@ -40,26 +40,24 @@ export class FormEngine {
   };
 
   constructor(
-    schema: FormSchema,
+    definition: FormDefinition,
     initialValues?: Record<string, unknown>,
     options?: FormEngineOptions,
   ) {
-    // Validate schema structure
-    const hasFields = (schema.fields?.length ?? 0) > 0;
-    const hasSteps = (schema.steps?.length ?? 0) > 0;
+    const hasFields = (definition.fields?.length ?? 0) > 0;
+    const hasSteps = (definition.steps?.length ?? 0) > 0;
     if (hasFields && hasSteps) {
-      throw new Error('FormSchema cannot have both "fields" and "steps" as non-empty arrays.');
+      throw new Error('FormDefinition cannot have both "fields" and "steps" as non-empty arrays.');
     }
 
-    // Run schema validation (warnings only, don't throw)
-    const warnings = validateSchema(schema);
+    const warnings = validateDefinition(definition);
     if (warnings.length > 0) {
       for (const w of warnings) {
         console.warn(`[FormEngine] ${w}`);
       }
     }
 
-    this.schema = schema;
+    this.definition = definition;
     this._validators = options?.validators ?? {};
     this._onStepValidate = options?.onStepValidate;
     this._version = 0;
@@ -102,7 +100,7 @@ export class FormEngine {
   // --- Computed getters ---
 
   get isMultiStep(): boolean {
-    return (this.schema.steps ?? []).length > 0;
+    return (this.definition.steps ?? []).length > 0;
   }
 
   get visibleSteps(): FormStep[] {
@@ -296,7 +294,7 @@ export class FormEngine {
       return allErrors;
     }
 
-    const errors = validateFields(this.schema.fields ?? [], this.values, this._validators);
+    const errors = validateFields(this.definition.fields ?? [], this.values, this._validators);
     this.errors = errors;
     this._notify();
     return errors;
@@ -330,7 +328,7 @@ export class FormEngine {
         }
       }
     } else {
-      for (const field of this.schema.fields ?? []) {
+      for (const field of this.definition.fields ?? []) {
         if (isVisible(field, this.values)) {
           visibleKeys.add(field.key);
         }
@@ -381,16 +379,16 @@ export class FormEngine {
 
   private _computeAllFields(): FormField[] {
     if (this.isMultiStep) {
-      const steps = this.schema.steps ?? [];
+      const steps = this.definition.steps ?? [];
       return steps.flatMap((s) => s.fields);
     }
-    return this.schema.fields ?? [];
+    return this.definition.fields ?? [];
   }
 
   private _cascadeClearHiddenFields(): void {
     const hiddenStepFields = new Set<string>();
     if (this.isMultiStep) {
-      for (const step of this.schema.steps ?? []) {
+      for (const step of this.definition.steps ?? []) {
         if (!isStepVisible(step, this.values)) {
           for (const field of step.fields) {
             hiddenStepFields.add(field.key);
@@ -422,12 +420,12 @@ export class FormEngine {
     if (!this.isMultiStep) {
       this._cache.visibleSteps = [];
       this._cache.currentStep = null;
-      this._cache.visibleFields = (this.schema.fields ?? []).filter((f) => isVisible(f, this.values));
+      this._cache.visibleFields = (this.definition.fields ?? []).filter((f) => isVisible(f, this.values));
       this._cache.canGoNext = false;
       return;
     }
 
-    const steps = this.schema.steps ?? [];
+    const steps = this.definition.steps ?? [];
     this._cache.visibleSteps = steps.filter((s) => isStepVisible(s, this.values));
 
     const vs = this._cache.visibleSteps;

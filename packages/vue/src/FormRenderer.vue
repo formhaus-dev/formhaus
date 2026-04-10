@@ -43,7 +43,7 @@ const {
   progress,
   isMultiStep,
   stepValidating,
-} = useFormEngine(() => props.schema, props.initialValues, engineOptions);
+} = useFormEngine(() => props.definition, props.initialValues, engineOptions);
 
 const resolvedOptions = useFieldOptions(visibleFields, values, props.optionsProviders);
 
@@ -127,7 +127,7 @@ const primaryLabel = computed(() => {
   if (isMultiStep.value && !effectiveIsLastStep.value) {
     return currentStep.value?.next?.label ?? 'Continue';
   }
-  return props.schema.submit?.label ?? 'Submit';
+  return props.definition.submit?.label ?? 'Submit';
 });
 
 const showBack = computed(() => {
@@ -183,9 +183,9 @@ async function onPrimary() {
 
     <component
       :is="props.actionsComponent ?? FormActions"
-      :submit-action="props.schema.submit"
+      :submit-action="props.definition.submit"
       :back-action="currentStep?.back"
-      :cancel-action="props.schema.cancel"
+      :cancel-action="props.definition.cancel"
       :is-first-step="isFirstStep"
       :is-last-step="effectiveIsLastStep"
       :is-multi-step="isMultiStep"

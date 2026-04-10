@@ -1,33 +1,47 @@
 {
   "name": "@formhaus/core",
-  "version": "0.3.0",
-  "description": "Framework-agnostic JSON-schema-driven form engine with validation, conditional visibility, and multi-step support",
+  "version": "0.3.1",
+  "description": "Framework-agnostic form engine with validation, conditional visibility, and multi-step support. Define forms as plain JSON, render anywhere.",
   "type": "module",
-  "main": "./dist/index.js",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
     }
   },
-  "files": ["dist", "fixtures"],
+  "files": [
+    "dist",
+    "fixtures"
+  ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:resolve": "node --input-type=module -e \"import('./dist/index.js').then(m => { if (!m.FormEngine) process.exit(1); console.log('ESM resolve OK'); })\"",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
+    "tsup": "^8.5.1",
     "typescript": "^5.7.3",
     "vitest": "^4.1.2"
   },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ignsm/formhaus.git",
+    "url": "git+https://github.com/ignsm/formhaus.git",
     "directory": "packages/core"
   },
-  "keywords": ["form", "json-schema", "validation", "form-engine", "multi-step", "conditional-forms"]
+  "keywords": [
+    "form",
+    "form-engine",
+    "form-builder",
+    "validation",
+    "multi-step",
+    "conditional-forms",
+    "json"
+  ]
 }

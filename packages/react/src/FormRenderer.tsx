@@ -8,7 +8,7 @@ import { useFormEngine } from './hooks/useFormEngine';
 import type { FormRendererProps } from './types';
 
 export function FormRenderer({
-  schema,
+  definition,
   initialValues,
   onSubmit,
   onCancel,
@@ -25,7 +25,7 @@ export function FormRenderer({
   onAnalyticsEvent,
 }: FormRendererProps) {
   const engineOptions: FormEngineOptions = { validators, onStepValidate };
-  const engine = useFormEngine(schema, initialValues, engineOptions);
+  const engine = useFormEngine(definition, initialValues, engineOptions);
   const resolvedOptions = useFieldOptions(engine.visibleFields, engine.values, optionsProviders);
 
   useEffect(() => {
@@ -98,7 +98,7 @@ export function FormRenderer({
   const effectiveIsLastStep = engine.isLastStep || !engine.isMultiStep;
   const computedPrimaryLabel = engine.isMultiStep && !effectiveIsLastStep
     ? (engine.currentStep?.next?.label ?? 'Continue')
-    : (schema.submit?.label ?? 'Submit');
+    : (definition.submit?.label ?? 'Submit');
   const computedShowBack = engine.isMultiStep && !engine.isFirstStep && engine.currentStep?.back !== false;
   const computedBackLabel = typeof engine.currentStep?.back === 'object'
     ? (engine.currentStep.back.label ?? 'Back')
@@ -156,9 +156,9 @@ export function FormRenderer({
       )}
 
       <ActionsComp
-        submitAction={schema.submit}
+        submitAction={definition.submit}
         backAction={engine.currentStep?.back}
-        cancelAction={schema.cancel}
+        cancelAction={definition.cancel}
         isFirstStep={engine.isFirstStep}
         isLastStep={effectiveIsLastStep}
         isMultiStep={engine.isMultiStep}

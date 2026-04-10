@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import type { FormSchema } from '@formhaus/core';
+import type { FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '../src/FormRenderer';
 
-const schema: FormSchema = {
+const definition: FormDefinition = {
   id: 'test',
   title: 'Test Form',
   submit: { label: 'Send' },
@@ -13,7 +13,7 @@ const schema: FormSchema = {
   ],
 };
 
-const selectSchema: FormSchema = {
+const selectDefinition: FormDefinition = {
   id: 'select-test',
   title: 'Select',
   submit: { label: 'Go' },
@@ -31,7 +31,7 @@ const selectSchema: FormSchema = {
   ],
 };
 
-const multiStepSchema: FormSchema = {
+const multiStepDefinition: FormDefinition = {
   id: 'steps',
   title: 'Steps',
   submit: { label: 'Submit' },
@@ -54,33 +54,33 @@ function getInput(name: string): HTMLInputElement {
 }
 
 describe('FormRenderer', () => {
-  it('renders fields from schema', () => {
-    render(<FormRenderer schema={schema} onSubmit={() => {}} />);
+  it('renders fields from definition', () => {
+    render(<FormRenderer definition={definition} onSubmit={() => {}} />);
     expect(getInput('Name')).toBeDefined();
     expect(getInput('Email')).toBeDefined();
   });
 
   it('renders submit button', () => {
-    render(<FormRenderer schema={schema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={definition} onSubmit={() => {}} />);
     expect(screen.getByText('Send')).toBeDefined();
   });
 
   it('shows validation error on submit with empty required field', () => {
-    render(<FormRenderer schema={schema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={definition} onSubmit={() => {}} />);
     fireEvent.click(screen.getByText('Send'));
     expect(screen.getByText('This field is required')).toBeDefined();
   });
 
   it('calls onSubmit with values when valid', () => {
     const onSubmit = vi.fn();
-    render(<FormRenderer schema={schema} onSubmit={onSubmit} />);
+    render(<FormRenderer definition={definition} onSubmit={onSubmit} />);
     fireEvent.change(getInput('Name'), { target: { value: 'John' } });
     fireEvent.click(screen.getByText('Send'));
     expect(onSubmit).toHaveBeenCalledWith({ name: 'John' });
   });
 
   it('updates field value on change', () => {
-    render(<FormRenderer schema={schema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={definition} onSubmit={() => {}} />);
     const input = getInput('Name');
     fireEvent.change(input, { target: { value: 'Jane' } });
     expect(input.value).toBe('Jane');
@@ -88,43 +88,43 @@ describe('FormRenderer', () => {
 
   it('calls onFieldChange callback', () => {
     const onFieldChange = vi.fn();
-    render(<FormRenderer schema={schema} onSubmit={() => {}} onFieldChange={onFieldChange} />);
+    render(<FormRenderer definition={definition} onSubmit={() => {}} onFieldChange={onFieldChange} />);
     fireEvent.change(getInput('Name'), { target: { value: 'X' } });
     expect(onFieldChange).toHaveBeenCalledWith('name', 'X', expect.any(Object));
   });
 
   it('renders select with options', () => {
-    render(<FormRenderer schema={selectSchema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={selectDefinition} onSubmit={() => {}} />);
     expect(screen.getByText('Red')).toBeDefined();
     expect(screen.getByText('Blue')).toBeDefined();
   });
 
   it('displays external errors', () => {
-    const { rerender } = render(<FormRenderer schema={schema} onSubmit={() => {}} />);
-    rerender(<FormRenderer schema={schema} onSubmit={() => {}} errors={{ name: 'Taken' }} />);
+    const { rerender } = render(<FormRenderer definition={definition} onSubmit={() => {}} />);
+    rerender(<FormRenderer definition={definition} onSubmit={() => {}} errors={{ name: 'Taken' }} />);
     expect(screen.getByText('Taken')).toBeDefined();
   });
 
   it('disables fields when loading', () => {
-    render(<FormRenderer schema={schema} onSubmit={() => {}} loading={true} />);
+    render(<FormRenderer definition={definition} onSubmit={() => {}} loading={true} />);
     expect(getInput('Name').disabled).toBe(true);
   });
 });
 
 describe('FormRenderer multi-step', () => {
   it('shows step 1 fields only', () => {
-    render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={multiStepDefinition} onSubmit={() => {}} />);
     expect(getInput('First')).toBeDefined();
     expect(screen.queryByRole('textbox', { name: /Second/ })).toBeNull();
   });
 
   it('shows step progress', () => {
-    render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={multiStepDefinition} onSubmit={() => {}} />);
     expect(screen.getAllByText(/Step/).length).toBeGreaterThan(0);
   });
 
   it('validates before advancing', async () => {
-    render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={multiStepDefinition} onSubmit={() => {}} />);
     fireEvent.click(screen.getByText('Continue'));
     await waitFor(() => {
       expect(screen.getByText('This field is required')).toBeDefined();
@@ -133,7 +133,7 @@ describe('FormRenderer multi-step', () => {
   });
 
   it('advances to step 2 when valid', async () => {
-    render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} />);
+    render(<FormRenderer definition={multiStepDefinition} onSubmit={() => {}} />);
     fireEvent.change(getInput('First'), { target: { value: 'ok' } });
     fireEvent.click(screen.getByText('Continue'));
     await waitFor(() => {
@@ -143,7 +143,7 @@ describe('FormRenderer multi-step', () => {
 
   it('calls onStepChange when advancing', async () => {
     const onStepChange = vi.fn();
-    render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} onStepChange={onStepChange} />);
+    render(<FormRenderer definition={multiStepDefinition} onSubmit={() => {}} onStepChange={onStepChange} />);
     fireEvent.change(getInput('First'), { target: { value: 'ok' } });
     fireEvent.click(screen.getByText('Continue'));
     await waitFor(() => {

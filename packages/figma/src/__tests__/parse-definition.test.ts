@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-interface TestSchema {
+interface TestDefinition {
   id?: string;
   title?: string;
   submit?: { label: string };
@@ -8,36 +8,36 @@ interface TestSchema {
   steps?: { id: string; title: string; fields: { key: string; type: string; label: string }[] }[];
 }
 
-function parseAndValidate(json: string): TestSchema {
-  let parsed: TestSchema;
+function parseAndValidate(json: string): TestDefinition {
+  let parsed: TestDefinition;
   try {
     parsed = JSON.parse(json);
   } catch (_e) {
     throw new Error('Invalid JSON. Check syntax and try again.');
   }
   if (!parsed.title) {
-    throw new Error("Schema must have a 'title'.");
+    throw new Error("Definition must have a 'title'.");
   }
   if (!parsed.fields && !parsed.steps) {
-    throw new Error("Schema must have 'fields' (single-step) or 'steps' (multi-step).");
+    throw new Error("Definition must have 'fields' (single-step) or 'steps' (multi-step).");
   }
   if (!parsed.submit) {
-    throw new Error("Schema must have a 'submit' action.");
+    throw new Error("Definition must have a 'submit' action.");
   }
   return parsed;
 }
 
-function countFields(schema: TestSchema): number {
-  if (schema.fields) return schema.fields.length;
-  return (schema.steps || []).reduce(
+function countFields(definition: TestDefinition): number {
+  if (definition.fields) return definition.fields.length;
+  return (definition.steps || []).reduce(
     (sum: number, s: { fields: unknown[] }) => sum + s.fields.length,
     0,
   );
 }
 
-function getSteps(schema: TestSchema) {
-  if (schema.steps && schema.steps.length > 0) return schema.steps;
-  return [{ title: schema.title, fields: schema.fields || [] }];
+function getSteps(definition: TestDefinition) {
+  if (definition.steps && definition.steps.length > 0) return definition.steps;
+  return [{ title: definition.title, fields: definition.fields || [] }];
 }
 
 describe('parseAndValidate', () => {
@@ -50,14 +50,14 @@ describe('parseAndValidate', () => {
       ...overrides,
     });
 
-  it('parses a valid single-step schema', () => {
-    const schema = parseAndValidate(valid());
-    expect(schema.title).toBe('Test');
-    expect(schema.fields).toHaveLength(1);
+  it('parses a valid single-step definition', () => {
+    const definition = parseAndValidate(valid());
+    expect(definition.title).toBe('Test');
+    expect(definition.fields).toHaveLength(1);
   });
 
-  it('parses a valid multi-step schema', () => {
-    const schema = parseAndValidate(
+  it('parses a valid multi-step definition', () => {
+    const definition = parseAndValidate(
       valid({
         fields: undefined,
         steps: [
@@ -66,7 +66,7 @@ describe('parseAndValidate', () => {
         ],
       }),
     );
-    expect(schema.steps).toHaveLength(2);
+    expect(definition.steps).toHaveLength(2);
   });
 
   it('throws on malformed JSON', () => {
@@ -105,13 +105,13 @@ describe('countFields', () => {
 });
 
 describe('getSteps', () => {
-  it('returns steps for multi-step schema', () => {
+  it('returns steps for multi-step definition', () => {
     const steps = getSteps({ steps: [{ title: 'A', fields: [] }] });
     expect(steps).toHaveLength(1);
     expect(steps[0].title).toBe('A');
   });
 
-  it('wraps fields as single step for single-step schema', () => {
+  it('wraps fields as single step for single-step definition', () => {
     const steps = getSteps({ title: 'Form', fields: [{ key: 'x' }] });
     expect(steps).toHaveLength(1);
     expect(steps[0].title).toBe('Form');

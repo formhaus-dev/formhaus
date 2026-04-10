@@ -1,13 +1,13 @@
 # Definition Reference
 
-Every form is a JSON object following the `FormSchema` type.
+Every form is a JSON object following the `FormDefinition` type.
 
-## FormSchema
+## FormDefinition
 
 Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never both.
 
 ```ts
-interface FormSchema {
+interface FormDefinition {
   id: string;            // Unique form identifier
   title: string;         // Form title (rendered by the adapter or parent)
   submit: FormAction;    // Submit button config

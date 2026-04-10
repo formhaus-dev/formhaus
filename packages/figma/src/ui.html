@@ -127,8 +127,8 @@
   <!-- Generate Tab -->
   <div class="tab-content active" id="tab-generate">
     <h2>Formhaus</h2>
-    <label>Paste @formhaus/core JSON schema</label>
-    <textarea id="schema" placeholder='{ "id": "...", "title": "...", "submit": { "label": "Submit" }, "fields": [...] }'></textarea>
+    <label>Paste @formhaus/core form definition JSON</label>
+    <textarea id="definition" placeholder='{ "id": "...", "title": "...", "submit": { "label": "Submit" }, "fields": [...] }'></textarea>
     <span class="link" id="loadExample">Load example (basic-form)</span>
     <button id="generate">Generate</button>
     <div class="output" id="output"></div>
@@ -169,8 +169,7 @@
       });
     }
 
-    // Generate tab
-    var schemaEl = document.getElementById('schema');
+    var definitionEl = document.getElementById('definition');
     var outputEl = document.getElementById('output');
     var generateBtn = document.getElementById('generate');
 
@@ -186,16 +185,16 @@
       ]
     }, null, 2);
 
-    document.getElementById('loadExample').onclick = function() { schemaEl.value = EXAMPLE; };
+    document.getElementById('loadExample').onclick = function() { definitionEl.value = EXAMPLE; };
 
     generateBtn.onclick = function() {
-      var schema = schemaEl.value.trim();
-      if (!schema) { showOutput('Paste a JSON schema first.', 'error'); return; }
+      var definition = definitionEl.value.trim();
+      if (!definition) { showOutput('Paste a form definition first.', 'error'); return; }
       generateBtn.disabled = true;
       generateBtn.textContent = 'Generating...';
       outputEl.className = 'output';
       outputEl.textContent = '';
-      parent.postMessage({ pluginMessage: { type: 'generate', schema: schema } }, '*');
+      parent.postMessage({ pluginMessage: { type: 'generate', definition: definition } }, '*');
     };
 
     // Component Map tab

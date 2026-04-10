@@ -7,9 +7,15 @@
     "docs:build": "cd docs && pnpm install && npx vitepress build",
     "docs:dev": "cd docs && npx vitepress dev",
     "test": "pnpm -r run test",
-    "clean": "pnpm -r run clean"
+    "clean": "pnpm -r run clean",
+    "lint:packages": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue exec publint",
+    "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue exec attw --pack --profile esm-only"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.2",
+    "publint": "^0.3.18"
   }
 }

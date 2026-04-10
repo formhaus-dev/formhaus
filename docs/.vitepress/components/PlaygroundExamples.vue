@@ -14,17 +14,17 @@ const selectedVue = ref('Basic Form');
 const selectedSvelte = ref('Basic Form');
 
 function reactFiles(fixture: string) {
-  const schema = JSON.stringify(fixtures[fixture], null, 2);
+  const definition = JSON.stringify(fixtures[fixture], null, 2);
   return {
     'App.tsx': `import { FormRenderer } from "@formhaus/react";
 
-const schema = ${schema};
+const definition = ${definition};
 
 export default function App() {
   return (
     <div style={{ maxWidth: 480, margin: "24px auto", fontFamily: "sans-serif" }}>
       <FormRenderer
-        schema={schema}
+        definition={definition}
         onSubmit={(values) => console.log("Submitted:", values)}
       />
     </div>
@@ -34,12 +34,12 @@ export default function App() {
 }
 
 function vueFiles(fixture: string) {
-  const schema = JSON.stringify(fixtures[fixture], null, 2);
+  const definition = JSON.stringify(fixtures[fixture], null, 2);
   return {
     'src/App.vue': `<` + `script setup>
 import { FormRenderer } from "@formhaus/vue";
 
-const schema = ${schema};
+const definition = ${definition};
 
 function onSubmit(values) {
   console.log("Submitted:", values);
@@ -48,14 +48,14 @@ function onSubmit(values) {
 
 <template>
   <div style="max-width: 480px; margin: 24px auto; font-family: sans-serif">
-    <FormRenderer :schema="schema" @submit="onSubmit" />
+    <FormRenderer :definition="definition" @submit="onSubmit" />
   </div>
 </template>`,
   };
 }
 
 function svelteFiles(fixture: string) {
-  const schema = JSON.stringify(fixtures[fixture], null, 2);
+  const definition = JSON.stringify(fixtures[fixture], null, 2);
   return {
     'App.svelte': `<` + `script>
   // No adapter needed. This shows how to use @formhaus/core directly.
@@ -63,8 +63,8 @@ function svelteFiles(fixture: string) {
   // You only write the rendering.
   import { FormEngine } from "@formhaus/core";
 
-  const schema = ${schema};
-  const engine = new FormEngine(schema);
+  const definition = ${definition};
+  const engine = new FormEngine(definition);
 
   let fields = engine.visibleFields.slice();
   let vals = Object.assign({}, engine.values);
@@ -115,7 +115,7 @@ function svelteFiles(fixture: string) {
 </` + `script>
 
 <div style="max-width: 480px; margin: 24px auto; font-family: sans-serif">
-  <h2>{schema.title}</h2>
+  <h2>{definition.title}</h2>
   {#if multi && step}
     <p style="color: #666; margin: 0 0 12px">{step.title}{step.description ? ' — ' + step.description : ''}</p>
   {/if}
@@ -161,7 +161,7 @@ function svelteFiles(fixture: string) {
     {#if multi && !first}
       <button on:click={back}>Back</button>
     {/if}
-    <button on:click={submit}>{multi && !last ? 'Continue' : schema.submit.label}</button>
+    <button on:click={submit}>{multi && !last ? 'Continue' : definition.submit.label}</button>
   </div>
 </div>`,
   };
