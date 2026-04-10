@@ -174,9 +174,9 @@ const selected = ref('Basic Form');
 const templates = { react: 'react-ts', vue: 'vue3-ts', svelte: 'svelte' } as const;
 const fileFns = { react: reactFiles, vue: vueFiles, svelte: svelteFiles };
 const deps = {
-  react: { '@formhaus/core': '0.1.0', '@formhaus/react': '0.1.1', 'react': '18.3.1', 'react-dom': '18.3.1' },
-  vue: { '@formhaus/core': '0.1.0', '@formhaus/vue': '0.1.1' },
-  svelte: { '@formhaus/core': '0.1.0', 'svelte': '3.59.2' },
+  react: { '@formhaus/core': '0.3.1', '@formhaus/react': '0.3.1', 'react': '18.3.1', 'react-dom': '18.3.1' },
+  vue: { '@formhaus/core': '0.3.1', '@formhaus/vue': '0.3.1' },
+  svelte: { '@formhaus/core': '0.3.1', 'svelte': '3.59.2' },
 };
 const heights = { react: 480, vue: 480, svelte: 520 };
 </script>
