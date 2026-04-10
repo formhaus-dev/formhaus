@@ -19,6 +19,7 @@ export default defineConfig({
           { text: 'Conditional Fields', link: '/guide/conditions' },
           { text: 'Validation', link: '/guide/validation' },
           { text: 'Multi-Step Forms', link: '/guide/steps' },
+          { text: 'Async Step Validation', link: '/guide/async-validation' },
           { text: 'Error Handling', link: '/guide/errors' },
           { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
           { text: 'Examples', link: '/guide/examples' },

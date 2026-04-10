@@ -1,1 +1,1 @@
-export { FormEngine, type FormEngineOptions } from './form-engine';
+export { FormEngine, type FormEngineOptions, type StepValidateFn } from './form-engine';

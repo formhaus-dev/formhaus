@@ -129,6 +129,37 @@ interface FieldOption {
 }
 ```
 
+## ValidatorFn
+
+Synchronous field-level validator. Registered via the `validators` prop.
+
+```ts
+type ValidatorFn = (
+  value: unknown,
+  allValues: Record<string, unknown>,
+) => string | null;
+```
+
+## StepValidateFn
+
+Async step-level validator. See [Async Step Validation](/guide/async-validation) for the full guide.
+
+```ts
+type StepValidateFn = (
+  stepId: string,
+  values: Record<string, unknown>,
+) => Promise<Record<string, string> | null | void>;
+```
+
+## FormEngine (async)
+
+| Property / Method | Type | Description |
+|---|---|---|
+| `stepValidating` | `boolean` | `true` while `onStepValidate` is running |
+| `nextStepAsync()` | `Promise<boolean>` | Async version of `nextStep()`. Runs sync validation, then `onStepValidate`, then advances |
+
+See [Using the engine directly](/guide/async-validation#using-the-engine-directly) for examples.
+
 ## Minimal example
 
 A working single-step form with two fields:

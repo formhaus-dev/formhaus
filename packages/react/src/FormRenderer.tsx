@@ -15,6 +15,7 @@ export function FormRenderer({
   onStepChange,
   onFieldChange,
   validators,
+  onStepValidate,
   errors: externalErrors,
   loading = false,
   components,
@@ -23,7 +24,7 @@ export function FormRenderer({
   ProgressComponent,
   onAnalyticsEvent,
 }: FormRendererProps) {
-  const engineOptions: FormEngineOptions = { validators };
+  const engineOptions: FormEngineOptions = { validators, onStepValidate };
   const engine = useFormEngine(schema, initialValues, engineOptions);
   const resolvedOptions = useFieldOptions(engine.visibleFields, engine.values, optionsProviders);
 
@@ -62,9 +63,9 @@ export function FormRenderer({
     onSubmit(submitValues as Record<string, unknown>);
   }
 
-  function handleNext() {
+  async function handleNext() {
     const prevStep = engine.currentStep;
-    const success = engine.nextStep();
+    const success = await engine.nextStepAsync();
     if (success) {
       if (prevStep) {
         onAnalyticsEvent?.({ type: 'step_completed', stepId: prevStep.id });
@@ -103,9 +104,9 @@ export function FormRenderer({
     ? (engine.currentStep.back.label ?? 'Back')
     : 'Back';
 
-  function handlePrimary() {
+  async function handlePrimary() {
     if (engine.isMultiStep && !effectiveIsLastStep) {
-      handleNext();
+      await handleNext();
     } else {
       handleSubmit({ preventDefault: () => {} } as React.FormEvent);
     }
@@ -161,7 +162,7 @@ export function FormRenderer({
         isFirstStep={engine.isFirstStep}
         isLastStep={effectiveIsLastStep}
         isMultiStep={engine.isMultiStep}
-        loading={loading}
+        loading={loading || engine.stepValidating}
         values={engine.values}
         onSubmit={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
         onNext={handleNext}

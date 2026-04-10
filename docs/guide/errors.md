@@ -74,6 +74,10 @@ setErrors({ _general: 'Your account has been temporarily suspended.' });
 
 The banner renders between the fields and the Submit/Continue buttons.
 
+## Async step validation errors
+
+See [Async Step Validation](/guide/async-validation#error-handling) for how `onStepValidate` errors display and how to handle network failures.
+
 ## Loading state
 
 Show a loading indicator on the submit button while the request is pending:

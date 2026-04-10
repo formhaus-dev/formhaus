@@ -5,6 +5,7 @@ import type {
   FormAnalyticsEvent,
   FormField,
   FormSchema,
+  StepValidateFn,
   ValidatorFn,
 } from '@formhaus/core';
 import type { Component } from 'vue';
@@ -39,6 +40,7 @@ export type OptionsProvider = (
 export interface FormRendererProps {
   schema: FormSchema;
   initialValues?: Record<string, unknown>;
+  onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
   loading?: boolean;
   components?: Partial<FieldComponentMap>;

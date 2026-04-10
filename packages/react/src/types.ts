@@ -1,4 +1,4 @@
-import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormSchema, ValidatorFn } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormSchema, StepValidateFn, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
 
 export type OptionsProvider = (
@@ -52,6 +52,7 @@ export interface FormRendererProps {
   onStepChange?: (stepId: string, direction: 'next' | 'back') => void;
   onFieldChange?: (key: string, value: unknown, allValues: Record<string, unknown>) => void;
   validators?: Record<string, ValidatorFn>;
+  onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
   loading?: boolean;
   components?: FieldComponentMap;

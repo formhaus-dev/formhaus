@@ -6,8 +6,14 @@ import { isStepVisible, isVisible } from '../visibility';
 
 const MAX_CASCADE_ITERATIONS = 50;
 
+export type StepValidateFn = (
+  stepId: string,
+  values: Record<string, unknown>,
+) => Promise<Record<string, string> | null | void>;
+
 export interface FormEngineOptions {
   validators?: Record<string, ValidatorFn>;
+  onStepValidate?: StepValidateFn;
 }
 
 export class FormEngine {
@@ -18,10 +24,12 @@ export class FormEngine {
   topLevelErrors: string[];
   currentStepIndex: number;
   fieldLoading: Record<string, boolean>;
+  stepValidating: boolean;
 
   private _version: number;
   private _listeners: Set<() => void>;
   private _validators: Record<string, ValidatorFn>;
+  private _onStepValidate?: StepValidateFn;
   private _allFields: FormField[];
   private _isDirty: boolean;
   private _cache: {
@@ -53,12 +61,14 @@ export class FormEngine {
 
     this.schema = schema;
     this._validators = options?.validators ?? {};
+    this._onStepValidate = options?.onStepValidate;
     this._version = 0;
     this._listeners = new Set();
     this.currentStepIndex = 0;
     this.errors = {};
     this.topLevelErrors = [];
     this.fieldLoading = {};
+    this.stepValidating = false;
 
     this._allFields = this._computeAllFields();
     this._isDirty = true;
@@ -197,6 +207,73 @@ export class FormEngine {
     this.currentStepIndex++;
     this._notify();
     return true;
+  }
+
+  async nextStepAsync(): Promise<boolean> {
+    if (!this.isMultiStep) return false;
+    if (this.stepValidating) return false;
+
+    const step = this.currentStep;
+    if (!step) return false;
+
+    const stepErrors = validateStep(step, this.values, this._validators);
+    if (Object.keys(stepErrors).length > 0) {
+      Object.assign(this.errors, stepErrors);
+      this._notify();
+      return false;
+    }
+
+    if (!this._onStepValidate) {
+      if (this.isLastStep) return false;
+      this.currentStepIndex++;
+      this._notify();
+      return true;
+    }
+
+    const stepIndexBefore = this.currentStepIndex;
+    this.stepValidating = true;
+    this._notify();
+
+    try {
+      const result = await this._onStepValidate(step.id, this.values);
+
+      if (this.currentStepIndex !== stepIndexBefore) {
+        this.stepValidating = false;
+        this._notify();
+        return false;
+      }
+
+      if (result && Object.keys(result).length > 0) {
+        this.errors = {};
+        this.topLevelErrors = [];
+        for (const [key, message] of Object.entries(result)) {
+          const field = this._allFields.find((f) => f.key === key);
+          if (field && isVisible(field, this.values)) {
+            this.errors[key] = message;
+          } else {
+            this.topLevelErrors.push(message);
+          }
+        }
+        this.stepValidating = false;
+        this._notify();
+        return false;
+      }
+
+      if (this.isLastStep) {
+        this.stepValidating = false;
+        this._notify();
+        return false;
+      }
+
+      this.stepValidating = false;
+      this.currentStepIndex++;
+      this._notify();
+      return true;
+    } catch (e) {
+      this.stepValidating = false;
+      this._notify();
+      throw e;
+    }
   }
 
   prevStep(): void {

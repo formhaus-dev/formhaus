@@ -13,7 +13,7 @@ export type {
 } from './types';
 
 // Engine
-export { FormEngine, type FormEngineOptions } from './engine';
+export { FormEngine, type FormEngineOptions, type StepValidateFn } from './engine';
 
 // Visibility
 export { evaluateCondition, isStepVisible, isVisible } from './visibility';

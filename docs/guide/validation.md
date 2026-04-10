@@ -111,6 +111,7 @@ Reference the validator by name in the definition:
 ## When validation runs
 
 - **On Submit/Continue click.** All visible fields on the current step are validated.
+- **Async step validation.** If `onStepValidate` is provided, it runs after sync validation passes but before the step transition. See [Async Step Validation](/guide/async-validation).
 - **Never on blur.** No errors while the user is still typing.
 - **Hidden fields are skipped.** If a `show` condition hides a field, it's not validated.
 - **Empty non-required fields are skipped.** `minLength`, `pattern`, etc. only run on non-empty values.

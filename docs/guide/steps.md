@@ -113,12 +113,17 @@ When the user picks "personal" instead of "business", this step vanishes. The pr
 
 `direction` is `'next'` or `'back'`.
 
+## Async step validation
+
+Need to check something on the server before advancing? See the [Async Step Validation](/guide/async-validation) guide.
+
 ## getSubmitValues
 
 On submit, all visible fields across all visible steps are returned. Fields in hidden steps are excluded.
 
 ## Next steps
 
+- [Async Step Validation](/guide/async-validation): server-side checks between steps
 - [Conditional Fields](/guide/conditions): make steps and fields conditional
 - [Error Handling](/guide/errors): handle errors from multi-step submissions
 - [Custom Actions & Progress](/guide/custom-components): replace buttons and step progress with your own components

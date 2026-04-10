@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { FormSchema } from '@formhaus/core';
 import { FormRenderer } from '../src/FormRenderer';
@@ -123,25 +123,31 @@ describe('FormRenderer multi-step', () => {
     expect(screen.getAllByText(/Step/).length).toBeGreaterThan(0);
   });
 
-  it('validates before advancing', () => {
+  it('validates before advancing', async () => {
     render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} />);
     fireEvent.click(screen.getByText('Continue'));
-    expect(screen.getByText('This field is required')).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByText('This field is required')).toBeDefined();
+    });
     expect(screen.queryByRole('textbox', { name: /Second/ })).toBeNull();
   });
 
-  it('advances to step 2 when valid', () => {
+  it('advances to step 2 when valid', async () => {
     render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} />);
     fireEvent.change(getInput('First'), { target: { value: 'ok' } });
     fireEvent.click(screen.getByText('Continue'));
-    expect(screen.getByRole('textbox', { name: /Second/ })).toBeDefined();
+    await waitFor(() => {
+      expect(screen.getByRole('textbox', { name: /Second/ })).toBeDefined();
+    });
   });
 
-  it('calls onStepChange when advancing', () => {
+  it('calls onStepChange when advancing', async () => {
     const onStepChange = vi.fn();
     render(<FormRenderer schema={multiStepSchema} onSubmit={() => {}} onStepChange={onStepChange} />);
     fireEvent.change(getInput('First'), { target: { value: 'ok' } });
     fireEvent.click(screen.getByText('Continue'));
-    expect(onStepChange).toHaveBeenCalledWith('step2', 'next');
+    await waitFor(() => {
+      expect(onStepChange).toHaveBeenCalledWith('step2', 'next');
+    });
   });
 });

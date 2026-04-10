@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
+import type { StepValidateFn } from '../../src/engine';
 import type { FormSchema } from '../../src/types';
 
 const multiStepSchema: FormSchema = {
@@ -185,6 +186,147 @@ describe('FormEngine - Multi-Step', () => {
 
       engine.setValue('accountType', 'personal');
       expect(engine.values.company).toBeUndefined();
+    });
+  });
+
+  describe('nextStepAsync', () => {
+    it('works without onStepValidate (same as sync)', async () => {
+      const engine = new FormEngine(multiStepSchema, { name: 'John' });
+      const result = await engine.nextStepAsync();
+      expect(result).toBe(true);
+      expect(engine.currentStep?.id).toBe('payment');
+    });
+
+    it('runs sync validation first', async () => {
+      const onStepValidate = vi.fn().mockResolvedValue(null);
+      const engine = new FormEngine(multiStepSchema, {}, { onStepValidate });
+      const result = await engine.nextStepAsync();
+      expect(result).toBe(false);
+      expect(engine.errors.name).toBe('This field is required');
+      expect(onStepValidate).not.toHaveBeenCalled();
+    });
+
+    it('calls onStepValidate after sync passes', async () => {
+      const onStepValidate = vi.fn().mockResolvedValue(null);
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      await engine.nextStepAsync();
+      expect(onStepValidate).toHaveBeenCalledWith('personal', engine.values);
+    });
+
+    it('blocks transition when onStepValidate returns errors', async () => {
+      const onStepValidate: StepValidateFn = async () => ({ name: 'Already taken' });
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const result = await engine.nextStepAsync();
+      expect(result).toBe(false);
+      expect(engine.errors.name).toBe('Already taken');
+      expect(engine.currentStep?.id).toBe('personal');
+    });
+
+    it('allows transition when onStepValidate returns null', async () => {
+      const onStepValidate: StepValidateFn = async () => null;
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const result = await engine.nextStepAsync();
+      expect(result).toBe(true);
+      expect(engine.currentStep?.id).toBe('payment');
+    });
+
+    it('allows transition when onStepValidate returns void', async () => {
+      const onStepValidate: StepValidateFn = async () => {};
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      const result = await engine.nextStepAsync();
+      expect(result).toBe(true);
+      expect(engine.currentStep?.id).toBe('payment');
+    });
+
+    it('sets stepValidating to true during async validation', async () => {
+      let capturedValidating = false;
+      const onStepValidate: StepValidateFn = async () => {
+        capturedValidating = engine.stepValidating;
+        return null;
+      };
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      await engine.nextStepAsync();
+      expect(capturedValidating).toBe(true);
+      expect(engine.stepValidating).toBe(false);
+    });
+
+    it('rejects concurrent calls while validating', async () => {
+      let resolve: () => void;
+      const onStepValidate: StepValidateFn = () =>
+        new Promise((r) => { resolve = () => r(null); });
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+
+      const first = engine.nextStepAsync();
+      const second = await engine.nextStepAsync();
+      expect(second).toBe(false);
+
+      resolve!();
+      const firstResult = await first;
+      expect(firstResult).toBe(true);
+    });
+
+    it('resets stepValidating on exception', async () => {
+      const onStepValidate: StepValidateFn = async () => {
+        throw new Error('Network failure');
+      };
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      await expect(engine.nextStepAsync()).rejects.toThrow('Network failure');
+      expect(engine.stepValidating).toBe(false);
+      expect(engine.currentStep?.id).toBe('personal');
+    });
+
+    it('discards result when step changed during validation', async () => {
+      const resolvers: Array<(v: null) => void> = [];
+      const onStepValidate: StepValidateFn = () =>
+        new Promise((r) => { resolvers.push(r); });
+      const engine = new FormEngine(
+        multiStepSchema,
+        { name: 'John', accountType: 'business' },
+        { onStepValidate },
+      );
+
+      const firstPromise = engine.nextStepAsync();
+      resolvers[0]!(null);
+      await firstPromise;
+      expect(engine.currentStep?.id).toBe('business');
+
+      const secondPromise = engine.nextStepAsync();
+      engine.prevStep();
+      resolvers[1]!(null);
+      const result = await secondPromise;
+      expect(result).toBe(false);
+      expect(engine.currentStep?.id).toBe('personal');
+    });
+
+    it('routes errors for hidden fields to topLevelErrors', async () => {
+      const onStepValidate: StepValidateFn = async () => ({
+        name: 'Server error',
+        nonexistent: 'Unknown field error',
+      });
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      await engine.nextStepAsync();
+      expect(engine.errors.name).toBe('Server error');
+      expect(engine.topLevelErrors).toContain('Unknown field error');
+    });
+
+    it('returns false for non-multi-step forms', async () => {
+      const singleSchema: FormSchema = {
+        id: 'single',
+        title: 'Single',
+        submit: { label: 'Submit' },
+        fields: [{ key: 'name', type: 'text', label: 'Name' }],
+      };
+      const engine = new FormEngine(singleSchema);
+      const result = await engine.nextStepAsync();
+      expect(result).toBe(false);
+    });
+
+    it('returns false on last step even with onStepValidate', async () => {
+      const onStepValidate: StepValidateFn = async () => null;
+      const engine = new FormEngine(multiStepSchema, { name: 'John' }, { onStepValidate });
+      await engine.nextStepAsync();
+      const result = await engine.nextStepAsync();
+      expect(result).toBe(false);
     });
   });
 });

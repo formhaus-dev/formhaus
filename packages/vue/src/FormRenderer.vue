@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormEngineOptions, ValidatorFn } from '@formhaus/core';
+import type { FormEngineOptions, StepValidateFn, ValidatorFn } from '@formhaus/core';
 import { computed, watch } from 'vue';
 import FormActions from './FormActions.vue';
 import FormFieldComponent from './FormField.vue';
@@ -12,6 +12,7 @@ const props = withDefaults(
   defineProps<
     FormRendererProps & {
       validators?: Record<string, ValidatorFn>;
+      onStepValidate?: StepValidateFn;
       optionsProviders?: Record<string, OptionsProvider>;
     }
   >(),
@@ -24,6 +25,7 @@ const emit = defineEmits<FormRendererEmits>();
 
 const engineOptions: FormEngineOptions = {
   validators: props.validators,
+  onStepValidate: props.onStepValidate,
 };
 
 const {
@@ -40,6 +42,7 @@ const {
   canGoNext,
   progress,
   isMultiStep,
+  stepValidating,
 } = useFormEngine(() => props.schema, props.initialValues, engineOptions);
 
 const resolvedOptions = useFieldOptions(visibleFields, values, props.optionsProviders);
@@ -82,9 +85,9 @@ async function onSubmit() {
   emit('submit', submitValues);
 }
 
-function onNext() {
+async function onNext() {
   const prevStep = currentStep.value;
-  const success = engine.nextStep();
+  const success = await engine.nextStepAsync();
   if (success) {
     if (prevStep) {
       emit('analyticsEvent', { type: 'step_completed', stepId: prevStep.id });
@@ -136,9 +139,9 @@ const backLabel = computed(() => {
   return (typeof back === 'object' ? back?.label : undefined) ?? 'Back';
 });
 
-function onPrimary() {
+async function onPrimary() {
   if (isMultiStep.value && !effectiveIsLastStep.value) {
-    onNext();
+    await onNext();
   } else {
     onSubmit();
   }
@@ -186,7 +189,7 @@ function onPrimary() {
       :is-first-step="isFirstStep"
       :is-last-step="effectiveIsLastStep"
       :is-multi-step="isMultiStep"
-      :loading="props.loading"
+      :loading="props.loading || stepValidating"
       :values="values"
       :primary-label="primaryLabel"
       :show-back="showBack"
