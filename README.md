@@ -6,8 +6,8 @@
 [![bundlephobia](https://img.shields.io/bundlephobia/minzip/@formhaus/core?label=core%20size)](https://bundlephobia.com/package/@formhaus/core)
 [![license](https://img.shields.io/github/license/ignsm/formhaus)](LICENSE)
 
-Framework-agnostic form engine with its own compact JSON-based definition format.
-Define a form once — fields, validation, conditions, steps — in a single file. Render it in React, Vue, Figma, or any framework via the core engine. No JSON Schema spec, no separate UI schema, no boilerplate.
+Framework-agnostic form engine with a compact JSON definition format.
+Define a form once (fields, validation, conditions, steps) in a single file. Render it in React, Vue, Figma, or anything via the core engine. No JSON Schema spec, no separate UI schema, no boilerplate.
 
 ## Packages
 
@@ -17,9 +17,9 @@ Define a form once — fields, validation, conditions, steps — in a single fil
 | `@formhaus/react` | React adapter with native HTML defaults and custom component support | `npm i @formhaus/react` |
 | `@formhaus/vue` | Vue 3 adapter with native HTML defaults and custom component support | `npm i @formhaus/vue` |
 
-There is also a Figma plugin (`@formhaus/figma`) that generates form mockups from form definitions. Available via `manifest.json` for now.
+`@formhaus/figma` generates form mockups on the Figma canvas from a form definition. Not on Figma Community yet, install as a local plugin via `packages/figma/manifest.json`.
 
-Svelte, Solid, or anything else: use `@formhaus/core` directly. See the [playground](https://formhaus.dev/playground) for an example.
+Svelte, Solid, or anything else: use `@formhaus/core` directly. The [playground](https://formhaus.dev/playground.html) has a Svelte example.
 
 ## Install
 
@@ -34,13 +34,13 @@ npm install @formhaus/react   # React
 npm install @formhaus/vue     # Vue
 ```
 
-Or use `@formhaus/core` directly with any framework. See the [Svelte example in the playground](/playground).
+Or use `@formhaus/core` directly with any framework. See the [Svelte example](https://formhaus.dev/playground.html).
 
 ## Quick Start
 
 ### Define a form
 
-You can write the JSON by hand or use the [Claude skill](.claude/skills/formhaus-create-form/SKILL.md) to generate it from a text description.
+Write the JSON by hand, or use the [`/formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
 
 ```json
 {
@@ -191,7 +191,7 @@ Each field component receives the full `FormField` descriptor, the current value
 
 ## Figma Plugin
 
-`@formhaus/figma` is a Figma plugin that takes a formhaus form definition and generates a styled form mockup directly on the canvas. Useful for rapid prototyping and design handoff.
+`@formhaus/figma` generates styled form mockups on the Figma canvas from a form definition. Map your design system components to field types via a `componentMap` that the [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill can generate for you by scanning your Figma file. Not on Figma Community yet, install as a local plugin via `packages/figma/manifest.json`.
 
 ## Contributing
 
