@@ -1,0 +1,62 @@
+{
+  "id": "validation-form",
+  "title": "Account Registration",
+  "submit": { "label": "Create Account" },
+  "fields": [
+    {
+      "key": "username",
+      "type": "text",
+      "label": "Username",
+      "placeholder": "Choose a username",
+      "validation": {
+        "required": true,
+        "minLength": 3,
+        "maxLength": 20,
+        "pattern": "^[a-zA-Z0-9_]+$",
+        "patternMessage": "Only letters, numbers, and underscores"
+      }
+    },
+    {
+      "key": "email",
+      "type": "email",
+      "label": "Email",
+      "validation": {
+        "required": true,
+        "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+        "patternMessage": "Please enter a valid email"
+      }
+    },
+    {
+      "key": "password",
+      "type": "password",
+      "label": "Password",
+      "helperText": "At least 8 characters",
+      "validation": {
+        "required": true,
+        "minLength": 8,
+        "minLengthMessage": "Password must be at least 8 characters"
+      }
+    },
+    {
+      "key": "confirmPassword",
+      "type": "password",
+      "label": "Confirm Password",
+      "validation": {
+        "required": true,
+        "matchField": "password",
+        "matchFieldMessage": "Passwords do not match"
+      }
+    },
+    {
+      "key": "age",
+      "type": "number",
+      "label": "Age",
+      "validation": {
+        "required": true,
+        "min": 18,
+        "minMessage": "You must be at least 18 years old",
+        "max": 120
+      }
+    }
+  ]
+}

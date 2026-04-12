@@ -1,0 +1,60 @@
+{
+  "id": "multi-step",
+  "title": "Account Setup",
+  "submit": { "label": "Create Account" },
+  "steps": [
+    {
+      "id": "personal",
+      "title": "Personal Information",
+      "description": "Tell us about yourself",
+      "fields": [
+        { "key": "firstName", "type": "text", "label": "First Name", "validation": { "required": true } },
+        { "key": "lastName", "type": "text", "label": "Last Name", "validation": { "required": true } },
+        { "key": "email", "type": "email", "label": "Email", "validation": { "required": true } },
+        { "key": "phone", "type": "phone", "label": "Phone Number", "inputMode": "tel" }
+      ]
+    },
+    {
+      "id": "address",
+      "title": "Address",
+      "description": "Where do you live?",
+      "fields": [
+        { "key": "street", "type": "text", "label": "Street Address", "validation": { "required": true } },
+        { "key": "city", "type": "text", "label": "City", "validation": { "required": true } },
+        { "key": "state", "type": "text", "label": "State / Province" },
+        { "key": "zipCode", "type": "text", "label": "ZIP / Postal Code", "validation": { "required": true } },
+        {
+          "key": "country",
+          "type": "select",
+          "label": "Country",
+          "options": [
+            { "value": "US", "label": "United States" },
+            { "value": "MX", "label": "Mexico" },
+            { "value": "CA", "label": "Canada" }
+          ],
+          "validation": { "required": true }
+        }
+      ]
+    },
+    {
+      "id": "preferences",
+      "title": "Preferences",
+      "description": "Customize your experience",
+      "fields": [
+        { "key": "newsletter", "type": "checkbox", "label": "Subscribe to newsletter", "defaultValue": true },
+        {
+          "key": "notifications",
+          "type": "radio",
+          "label": "Notification preference",
+          "options": [
+            { "value": "email", "label": "Email" },
+            { "value": "sms", "label": "SMS" },
+            { "value": "none", "label": "None" }
+          ],
+          "defaultValue": "email"
+        },
+        { "key": "darkMode", "type": "switch", "label": "Dark mode" }
+      ]
+    }
+  ]
+}

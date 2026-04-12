@@ -3,9 +3,9 @@
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "build": "pnpm -r run build",
-    "docs:install": "cd docs && pnpm install",
-    "docs:build": "cd docs && pnpm install && npx vitepress build",
-    "docs:dev": "cd docs && npx vitepress dev",
+    "docs:install": "cd docs && pnpm install --ignore-workspace",
+    "docs:build": "cd docs && pnpm install --ignore-workspace && pnpm run build",
+    "docs:dev": "cd docs && pnpm run dev",
     "test": "pnpm -r run test",
     "clean": "pnpm -r run clean",
     "lint:packages": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue exec publint",

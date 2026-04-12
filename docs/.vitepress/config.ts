@@ -1,6 +1,11 @@
 import { defineConfig } from 'vitepress'
 
 export default defineConfig({
+  vite: {
+    server: {
+      fs: { allow: ['..'] }
+    }
+  },
   title: 'Formhaus',
   description: 'Framework-agnostic form engine with its own compact definition format',
   themeConfig: {

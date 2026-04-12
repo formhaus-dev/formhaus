@@ -1,0 +1,53 @@
+{
+  "id": "conditional-fields",
+  "title": "Payment Details",
+  "submit": { "label": "Continue" },
+  "fields": [
+    {
+      "key": "paymentMethod",
+      "type": "select",
+      "label": "Payment Method",
+      "options": [
+        { "value": "bank", "label": "Bank Transfer" },
+        { "value": "card", "label": "Credit/Debit Card" },
+        { "value": "crypto", "label": "Cryptocurrency" }
+      ],
+      "validation": { "required": true }
+    },
+    {
+      "key": "cardNumber",
+      "type": "text",
+      "label": "Card Number",
+      "show": [{ "field": "paymentMethod", "eq": "card" }],
+      "validation": { "required": true },
+      "inputMode": "numeric"
+    },
+    {
+      "key": "cardExpiry",
+      "type": "text",
+      "label": "Expiry (MM/YY)",
+      "placeholder": "MM/YY",
+      "show": [{ "field": "paymentMethod", "eq": "card" }],
+      "validation": { "required": true }
+    },
+    {
+      "key": "walletAddress",
+      "type": "text",
+      "label": "Wallet Address",
+      "show": [{ "field": "paymentMethod", "eq": "crypto" }],
+      "validation": { "required": true }
+    },
+    {
+      "key": "cryptoNetwork",
+      "type": "select",
+      "label": "Network",
+      "show": [{ "field": "paymentMethod", "eq": "crypto" }],
+      "options": [
+        { "value": "ethereum", "label": "Ethereum" },
+        { "value": "tron", "label": "Tron" },
+        { "value": "solana", "label": "Solana" }
+      ],
+      "validation": { "required": true }
+    }
+  ]
+}

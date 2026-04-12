@@ -16,6 +16,8 @@ Try Formhaus live in the browser. Edit the code to see changes instantly.
 
 ## Svelte
 
+Uses `@formhaus/core` directly with no adapter. You write the rendering.
+
 <ClientOnly>
   <PlaygroundSection framework="svelte" />
 </ClientOnly>

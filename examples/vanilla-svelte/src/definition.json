@@ -1,0 +1,46 @@
+{
+  "id": "basic-form",
+  "title": "Contact Information",
+  "submit": { "label": "Submit" },
+  "fields": [
+    {
+      "key": "firstName",
+      "type": "text",
+      "label": "First Name",
+      "placeholder": "Enter your first name",
+      "validation": { "required": true, "minLength": 2 }
+    },
+    {
+      "key": "lastName",
+      "type": "text",
+      "label": "Last Name",
+      "placeholder": "Enter your last name",
+      "validation": { "required": true }
+    },
+    {
+      "key": "email",
+      "type": "email",
+      "label": "Email Address",
+      "placeholder": "you@example.com",
+      "validation": {
+        "required": true,
+        "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$",
+        "patternMessage": "Please enter a valid email address"
+      }
+    },
+    {
+      "key": "country",
+      "type": "select",
+      "label": "Country",
+      "placeholder": "Select a country",
+      "options": [
+        { "value": "US", "label": "United States" },
+        { "value": "MX", "label": "Mexico" },
+        { "value": "CA", "label": "Canada" },
+        { "value": "BR", "label": "Brazil" },
+        { "value": "IN", "label": "India" }
+      ],
+      "validation": { "required": true }
+    }
+  ]
+}
