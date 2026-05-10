@@ -14,8 +14,7 @@
     }
   },
   "files": [
-    "dist",
-    "fixtures"
+    "dist"
   ],
   "scripts": {
     "build": "tsup",

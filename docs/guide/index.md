@@ -20,11 +20,23 @@ Or use `@formhaus/core` directly with any framework. See the [Svelte example in 
 
 ## Quick start
 
+```ts
+const definition = {
+  id: 'contact',
+  title: 'Contact Us',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
+    { key: 'email', type: 'email', label: 'Email', validation: { required: true } },
+  ],
+};
+```
+
 ::: code-group
 ```vue [Vue]
 <script setup>
 import { FormRenderer } from '@formhaus/vue';
-import definition from '@formhaus/core/fixtures/basic-form.json';
+import definition from './contact-form.json';
 
 function onSubmit(values) {
   console.log(values);
@@ -38,7 +50,7 @@ function onSubmit(values) {
 
 ```tsx [React]
 import { FormRenderer } from '@formhaus/react';
-import definition from '@formhaus/core/fixtures/basic-form.json';
+import definition from './contact-form.json';
 
 function MyForm() {
   return (
