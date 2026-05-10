@@ -1,35 +1,13 @@
 # Changelog
 
-## Unreleased
-
-### `@formhaus/core`
-
-- New `'autocomplete'` member of `DefaultFieldType` for type-to-filter dropdowns.
-- New `'datetime'` member of `DefaultFieldType` for date+time inputs.
-
-### `@formhaus/react`
-
-- Fixed `FormRenderer` crashing under React SSR (Next.js prerender, `renderToString`) with "Missing getServerSnapshot". `useFormEngine` now provides a server snapshot and stable subscribe/getSnapshot callbacks.
-- New `AutocompleteField` component for `type: 'autocomplete'`. Renders `<input>` + `<datalist>` (native browser filtering, SSR-safe).
-- New `DateTimeField` component for `type: 'datetime'`. Renders `<input type="datetime-local">`.
-
-### `@formhaus/vue`
-
-- New `AutocompleteField` component for `type: 'autocomplete'`. Renders `<input>` + `<datalist>`.
-- New `DateTimeField` component for `type: 'datetime'`. Renders `<input type="datetime-local">`.
-
-### Migration notes
-
-- **Drop the `next/dynamic({ ssr: false })` workaround** if you used it to avoid the prior SSR crash. `FormRenderer` now prerenders cleanly and hydrates without a layout shift:
-
-  ```diff
-  - import dynamic from 'next/dynamic';
-  - const FormRenderer = dynamic(
-  -   () => import('@formhaus/react').then((m) => m.FormRenderer),
-  -   { ssr: false }
-  - );
-  + import { FormRenderer } from '@formhaus/react';
-  ```
+> Starting with v0.3.2, per-package changelogs live alongside each package and on [GitHub Releases](https://github.com/ignsm/formhaus/releases). Releases are managed with [Changesets](https://github.com/changesets/changesets) — see CONTRIBUTING.md for the workflow.
+>
+> Per-package changelogs:
+> - [`@formhaus/core`](packages/core/CHANGELOG.md)
+> - [`@formhaus/react`](packages/react/CHANGELOG.md)
+> - [`@formhaus/vue`](packages/vue/CHANGELOG.md)
+>
+> The historical entries below cover everything through v0.3.1.
 
 ## 0.3.1 - 2026-04-10
 

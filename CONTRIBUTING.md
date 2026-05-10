@@ -48,9 +48,17 @@ Opens at http://localhost:5173.
 2. Make your changes
 3. Make sure `pnpm build` and `pnpm test` pass
 4. Update docs if you changed any public API
-5. Add a changelog entry under `## Unreleased`
+5. Run `pnpm changeset` and pick the affected packages + bump type. This writes a `.changeset/*.md` file describing your change. Commit it with the rest of your work.
 6. Commit using [conventional commits](https://www.conventionalcommits.org/) (`feat:`, `fix:`, `docs:`, `chore:`)
 7. Open a PR against `main`
+
+### Changesets
+
+Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR that touches a published package adds a `.changeset/*.md` file. When the maintainer is ready to release, `pnpm version` consumes those files into per-package CHANGELOGs and bumps versions; `pnpm release` builds and publishes to npm.
+
+Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
+
+`@formhaus/core`, `@formhaus/react`, and `@formhaus/vue` are versioned together (the `fixed` group in `.changeset/config.json`). `@formhaus/figma` is private and not published.
 
 ## What could use help
 
