@@ -27,6 +27,7 @@ export default defineConfig({
           { text: 'Async Step Validation', link: '/guide/async-validation' },
           { text: 'Error Handling', link: '/guide/errors' },
           { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
+          { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
           { text: 'Examples', link: '/guide/examples' },
         ]
       },
