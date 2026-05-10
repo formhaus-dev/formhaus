@@ -1,5 +1,6 @@
 import type { DefaultFieldType, FormField as FormFieldType } from '@formhaus/core';
 import type { ComponentType } from 'react';
+import { AutocompleteField } from './fields/AutocompleteField';
 import { CheckboxField } from './fields/CheckboxField';
 import { DateField } from './fields/DateField';
 import { DateTimeField } from './fields/DateTimeField';
@@ -19,6 +20,7 @@ const defaultComponents: Record<DefaultFieldType, ComponentType<FieldComponentPr
   number: TextField,
   password: TextField,
   select: SelectField,
+  autocomplete: AutocompleteField,
   multiselect: MultiselectField,
   checkbox: CheckboxField,
   radio: RadioField,

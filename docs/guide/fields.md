@@ -96,6 +96,23 @@ Then pass the provider to the renderer:
 ```
 :::
 
+## Autocomplete
+
+Type-to-filter dropdown for long option lists. Default renderer uses `<input type="text">` with a `<datalist>` — native browser filtering, zero JS, SSR-safe. Same `options` shape as `select` (and `optionsFrom` works the same way). For richer pickers (MUI `Autocomplete`, Headless UI `Combobox`) plug in your own component via `components`.
+
+```json
+{
+  "key": "country",
+  "type": "autocomplete",
+  "label": "Country",
+  "placeholder": "Type to filter…",
+  "options": [
+    { "value": "US", "label": "United States" },
+    { "value": "DE", "label": "Germany" }
+  ]
+}
+```
+
 ## Multiselect
 
 Pick multiple from a list. Renders as a checkbox group. The value is an array of selected option values.

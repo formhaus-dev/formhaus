@@ -5,6 +5,7 @@ export type DefaultFieldType =
   | 'number'
   | 'password'
   | 'select'
+  | 'autocomplete'
   | 'multiselect'
   | 'checkbox'
   | 'radio'

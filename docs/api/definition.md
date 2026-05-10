@@ -43,7 +43,7 @@ interface FormField {
 
 type DefaultFieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
-  | 'select' | 'multiselect'
+  | 'select' | 'autocomplete' | 'multiselect'
   | 'checkbox' | 'radio' | 'switch'
   | 'file' | 'date' | 'datetime' | 'textarea';
 

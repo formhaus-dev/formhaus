@@ -4,15 +4,18 @@
 
 ### `@formhaus/core`
 
+- New `'autocomplete'` member of `DefaultFieldType` for type-to-filter dropdowns.
 - New `'datetime'` member of `DefaultFieldType` for date+time inputs.
 
 ### `@formhaus/react`
 
 - Fixed `FormRenderer` crashing under React SSR (Next.js prerender, `renderToString`) with "Missing getServerSnapshot". `useFormEngine` now provides a server snapshot and stable subscribe/getSnapshot callbacks.
+- New `AutocompleteField` component for `type: 'autocomplete'`. Renders `<input>` + `<datalist>` (native browser filtering, SSR-safe).
 - New `DateTimeField` component for `type: 'datetime'`. Renders `<input type="datetime-local">`.
 
 ### `@formhaus/vue`
 
+- New `AutocompleteField` component for `type: 'autocomplete'`. Renders `<input>` + `<datalist>`.
 - New `DateTimeField` component for `type: 'datetime'`. Renders `<input type="datetime-local">`.
 
 ## 0.3.1 - 2026-04-10

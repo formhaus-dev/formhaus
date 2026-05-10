@@ -103,6 +103,31 @@ describe('FormRenderer', () => {
     expect(container.querySelector('input[type="date"]')).not.toBeNull();
     expect(container.querySelector('input[type="datetime-local"]')).not.toBeNull();
   });
+
+  it('renders autocomplete with datalist options', () => {
+    const acDefinition: FormDefinition = {
+      id: 'ac-test',
+      title: 'AC',
+      submit: { label: 'Save' },
+      fields: [
+        {
+          key: 'fruit',
+          type: 'autocomplete',
+          label: 'Fruit',
+          options: [
+            { value: 'apple', label: 'Apple' },
+            { value: 'banana', label: 'Banana' },
+          ],
+        },
+      ],
+    };
+    const { container } = render(FormRenderer, { props: { definition: acDefinition } });
+    const input = screen.getByRole('combobox', { name: /Fruit/ }) as HTMLInputElement;
+    expect(input.getAttribute('list')).toBe('fh-field-fruit-list');
+    const datalist = container.querySelector('datalist#fh-field-fruit-list');
+    expect(datalist).not.toBeNull();
+    expect(datalist?.querySelectorAll('option').length).toBe(2);
+  });
 });
 
 describe('FormRenderer multi-step', () => {

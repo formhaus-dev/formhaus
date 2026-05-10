@@ -139,6 +139,53 @@ describe('FormRenderer', () => {
     fireEvent.click(screen.getByText('Save'));
     expect(onSubmit).toHaveBeenCalledWith({ expiresAt: '2026-05-10T14:30' });
   });
+
+  it('renders autocomplete with datalist options', () => {
+    const acDefinition: FormDefinition = {
+      id: 'ac-test',
+      title: 'AC',
+      submit: { label: 'Save' },
+      fields: [
+        {
+          key: 'fruit',
+          type: 'autocomplete',
+          label: 'Fruit',
+          options: [
+            { value: 'apple', label: 'Apple' },
+            { value: 'banana', label: 'Banana' },
+          ],
+        },
+      ],
+    };
+    const { container } = render(<FormRenderer definition={acDefinition} onSubmit={() => {}} />);
+    const input = screen.getByRole('combobox', { name: /Fruit/ }) as HTMLInputElement;
+    expect(input.getAttribute('list')).toBe('fruit-list');
+    const datalist = container.querySelector('datalist#fruit-list');
+    expect(datalist).not.toBeNull();
+    expect(datalist?.querySelectorAll('option').length).toBe(2);
+  });
+
+  it('submits autocomplete value', () => {
+    const onSubmit = vi.fn();
+    const acDefinition: FormDefinition = {
+      id: 'ac-submit',
+      title: 'AC submit',
+      submit: { label: 'Save' },
+      fields: [
+        {
+          key: 'fruit',
+          type: 'autocomplete',
+          label: 'Fruit',
+          options: [{ value: 'apple', label: 'Apple' }],
+        },
+      ],
+    };
+    render(<FormRenderer definition={acDefinition} onSubmit={onSubmit} />);
+    const input = screen.getByRole('combobox', { name: /Fruit/ }) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'apple' } });
+    fireEvent.click(screen.getByText('Save'));
+    expect(onSubmit).toHaveBeenCalledWith({ fruit: 'apple' });
+  });
 });
 
 describe('FormRenderer multi-step', () => {

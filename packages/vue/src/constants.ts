@@ -1,5 +1,6 @@
 import type { DefaultFieldType } from '@formhaus/core';
 import type { Component } from 'vue';
+import AutocompleteField from './fields/AutocompleteField.vue';
 import CheckboxField from './fields/CheckboxField.vue';
 import DateField from './fields/DateField.vue';
 import DateTimeField from './fields/DateTimeField.vue';
@@ -18,6 +19,7 @@ export const defaultFieldComponents: Record<DefaultFieldType, Component> = {
   number: TextField,
   password: TextField,
   select: SelectField,
+  autocomplete: AutocompleteField,
   multiselect: MultiselectField,
   checkbox: CheckboxField,
   radio: RadioField,
