@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### `@formhaus/react`
+
+- Fixed `FormRenderer` crashing under React SSR (Next.js prerender, `renderToString`) with "Missing getServerSnapshot". `useFormEngine` now provides a server snapshot and stable subscribe/getSnapshot callbacks.
+
 ## 0.3.1 - 2026-04-10
 
 ### Breaking
