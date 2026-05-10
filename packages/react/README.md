@@ -60,6 +60,10 @@ const components: FieldComponentMap = { text: MyInput, email: MyInput };
 
 Unmapped field types fall back to native HTML.
 
+## Server-side rendering
+
+`FormRenderer` is SSR-safe. It works with Next.js static and dynamic prerender, plus React's `renderToString`, with no `next/dynamic` wrapper required.
+
 ## Docs
 
 - Full guide and API reference: https://formhaus.dev

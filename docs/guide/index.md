@@ -92,7 +92,7 @@ Vue 3.3+. Renders native HTML form elements by default. Override any field type 
 
 ### @formhaus/react
 
-React 18+. Same idea as the Vue adapter. Native HTML by default, override via `components` prop.
+React 18+. Same idea as the Vue adapter. Native HTML by default, override via `components` prop. SSR-safe — works with Next.js static prerender and `renderToString` without `next/dynamic`.
 
 ## Next steps
 
