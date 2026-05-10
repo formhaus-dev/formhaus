@@ -1,6 +1,6 @@
 # Changelog
 
-> Starting with v0.3.2, per-package changelogs live alongside each package and on [GitHub Releases](https://github.com/ignsm/formhaus/releases). Releases are managed with [Changesets](https://github.com/changesets/changesets) — see CONTRIBUTING.md for the workflow.
+> Starting with v0.4.0, per-package changelogs live alongside each package and on [GitHub Releases](https://github.com/ignsm/formhaus/releases). Releases are managed with [Changesets](https://github.com/changesets/changesets) — see CONTRIBUTING.md for the workflow.
 >
 > Per-package changelogs:
 > - [`@formhaus/core`](packages/core/CHANGELOG.md)
@@ -8,6 +8,16 @@
 > - [`@formhaus/vue`](packages/vue/CHANGELOG.md)
 >
 > The historical entries below cover everything through v0.3.1.
+
+## 0.4.0 - 2026-05-10
+
+See per-package CHANGELOGs. Highlights:
+
+- **`@formhaus/react`**: SSR fix — `FormRenderer` no longer crashes Next.js prerender. Drop your `next/dynamic({ ssr: false })` wrapper.
+- **All packages**: new `'datetime'` and `'autocomplete'` field types.
+- **`@formhaus/core`**: optional baseline stylesheet at `@formhaus/core/style.css` (CSS custom properties for theming).
+- Source maps shipped alongside minified bundles.
+- `@formhaus/core/fixtures/*.json` no longer ship with the npm tarball (they were never reachable from consumer code under strict ESM).
 
 ## 0.3.1 - 2026-04-10
 
