@@ -18,6 +18,16 @@ npm install @formhaus/vue     # Vue
 
 Or use `@formhaus/core` directly with any framework. See the [Svelte example in the playground](/playground#svelte).
 
+### Optional baseline styles
+
+The default React and Vue components render unstyled HTML. For a starting look (padding, focus, error colour) import the shared stylesheet:
+
+```ts
+import '@formhaus/core/style.css';
+```
+
+Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). When you bring your own components via the `components` prop, the stylesheet doesn't apply to them.
+
 ## Quick start
 
 ```ts

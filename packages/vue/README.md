@@ -69,6 +69,17 @@ defineEmits<{ (e: 'update:value', value: unknown): void }>();
 
 Unmapped field types fall back to native HTML.
 
+## Optional baseline styles
+
+By default the Vue adapter renders unstyled HTML. For a sensible starting look (padding, focus states, error colour, button styles) import the shared stylesheet from `@formhaus/core`:
+
+```ts
+// main.ts
+import '@formhaus/core/style.css';
+```
+
+Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). If you bring your own components via the `components` prop (Vuetify, Element Plus, Naive UI), the stylesheet doesn't apply to those.
+
 ## Docs
 
 - Full guide and API reference: https://formhaus.dev

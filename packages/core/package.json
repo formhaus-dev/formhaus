@@ -3,7 +3,9 @@
   "version": "0.3.1",
   "description": "Framework-agnostic form engine with validation, conditional visibility, and multi-step support. Define forms as plain JSON, render anywhere.",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": [
+    "**/*.css"
+  ],
   "engines": {
     "node": ">=18"
   },
@@ -11,10 +13,12 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
-    }
+    },
+    "./style.css": "./style.css"
   },
   "files": [
-    "dist"
+    "dist",
+    "style.css"
   ],
   "scripts": {
     "build": "tsup",

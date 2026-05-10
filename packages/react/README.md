@@ -64,6 +64,16 @@ Unmapped field types fall back to native HTML.
 
 `FormRenderer` is SSR-safe. It works with Next.js static and dynamic prerender, plus React's `renderToString`, with no `next/dynamic` wrapper required.
 
+## Optional baseline styles
+
+By default the React adapter renders unstyled HTML. For a sensible starting look (padding, focus states, error colour, button styles) import the shared stylesheet:
+
+```ts
+import '@formhaus/core/style.css';
+```
+
+Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). If you bring your own components via the `components` prop (MUI, Tailwind, shadcn), the stylesheet doesn't apply to those.
+
 ## Docs
 
 - Full guide and API reference: https://formhaus.dev

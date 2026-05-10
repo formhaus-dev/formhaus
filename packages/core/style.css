@@ -1,0 +1,217 @@
+/**
+ * @formhaus/core baseline styles.
+ * Optional. Import from React or Vue apps:
+ *
+ *   import '@formhaus/core/style.css';
+ *
+ * Override any custom property below to retheme without forking the CSS.
+ */
+
+:where(.fh-form) {
+  --fh-color-text: #111827;
+  --fh-color-text-muted: #6b7280;
+  --fh-color-border: #d1d5db;
+  --fh-color-border-focus: #2563eb;
+  --fh-color-error: #dc2626;
+  --fh-color-bg: #ffffff;
+  --fh-color-bg-disabled: #f3f4f6;
+  --fh-color-primary: #2563eb;
+  --fh-color-primary-hover: #1d4ed8;
+  --fh-color-primary-text: #ffffff;
+  --fh-color-secondary-border: #d1d5db;
+  --fh-radius: 6px;
+  --fh-gap: 16px;
+  --fh-input-padding: 8px 12px;
+  --fh-font-size: 14px;
+  --fh-font-size-small: 13px;
+}
+
+.fh-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-gap);
+  color: var(--fh-color-text);
+  font-size: var(--fh-font-size);
+}
+
+.fh-form__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-gap);
+}
+
+.fh-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fh-field__label {
+  font-weight: 500;
+}
+
+.fh-field__required {
+  color: var(--fh-color-error);
+}
+
+.fh-field__input {
+  padding: var(--fh-input-padding);
+  border: 1px solid var(--fh-color-border);
+  border-radius: var(--fh-radius);
+  background: var(--fh-color-bg);
+  color: inherit;
+  font: inherit;
+  font-size: var(--fh-font-size);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.fh-field__input:focus {
+  outline: none;
+  border-color: var(--fh-color-border-focus);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.fh-field__input:disabled {
+  background: var(--fh-color-bg-disabled);
+  cursor: not-allowed;
+}
+
+.fh-field__input[aria-invalid="true"] {
+  border-color: var(--fh-color-error);
+}
+
+.fh-field__input--textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.fh-field__error,
+.fh-form__top-error {
+  color: var(--fh-color-error);
+  font-size: var(--fh-font-size-small);
+  margin: 0;
+}
+
+.fh-field__helper {
+  color: var(--fh-color-text-muted);
+  font-size: var(--fh-font-size-small);
+  margin: 0;
+}
+
+.fh-form__top-errors {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fh-field--checkbox .fh-field__checkbox-wrapper,
+.fh-field--switch .fh-field__switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fh-field__radio-group,
+.fh-field__multiselect-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fh-field__radio-option,
+.fh-field__multiselect-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fh-form-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.fh-form-actions__secondary {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.fh-form-actions__button {
+  padding: 8px 16px;
+  border-radius: var(--fh-radius);
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: var(--fh-font-size);
+  cursor: pointer;
+}
+
+.fh-form-actions__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.fh-form-actions__button--primary {
+  background: var(--fh-color-primary);
+  color: var(--fh-color-primary-text);
+}
+
+.fh-form-actions__button--primary:hover:not(:disabled) {
+  background: var(--fh-color-primary-hover);
+}
+
+.fh-form-actions__button--secondary {
+  border-color: var(--fh-color-secondary-border);
+}
+
+.fh-form-actions__button--secondary:hover:not(:disabled) {
+  background: var(--fh-color-bg-disabled);
+}
+
+.fh-form-actions__button--text {
+  text-decoration: underline;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.fh-step-progress {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fh-step-progress__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.fh-step-progress__counter {
+  color: var(--fh-color-text-muted);
+  font-size: var(--fh-font-size-small);
+}
+
+.fh-step-progress__title {
+  font-weight: 600;
+}
+
+.fh-step-progress__description {
+  color: var(--fh-color-text-muted);
+  font-size: var(--fh-font-size-small);
+}
+
+.fh-step-progress__bar {
+  height: 4px;
+  background: var(--fh-color-bg-disabled);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.fh-step-progress__fill {
+  height: 100%;
+  background: var(--fh-color-primary);
+  transition: width 200ms ease-out;
+}

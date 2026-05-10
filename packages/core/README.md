@@ -45,6 +45,16 @@ engine.getSubmitValues();
 // { name: 'Jane', email: 'jane@example.com' }
 ```
 
+## Optional baseline styles
+
+The default React and Vue field components render unstyled HTML with `fh-*` class names. For a sensible starting look (padding, focus states, error colour, button styles), import the optional stylesheet:
+
+```ts
+import '@formhaus/core/style.css';
+```
+
+Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.) — no need to fork the file. If you're using a UI kit through the `components` prop, the stylesheet doesn't affect those.
+
 ## What it covers
 
 - Form state with reactive `subscribe()` / `getSnapshot()` for adapters
