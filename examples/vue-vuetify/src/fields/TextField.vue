@@ -14,6 +14,7 @@ const inputType =
   : props.field.type === 'password' ? 'password'
   : props.field.type === 'number' ? 'number'
   : props.field.type === 'date' ? 'date'
+  : props.field.type === 'datetime' ? 'datetime-local'
   : props.field.type === 'phone' ? 'tel'
   : 'text';
 </script>

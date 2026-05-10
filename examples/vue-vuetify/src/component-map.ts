@@ -1,4 +1,5 @@
 import type { FieldComponentMap } from '@formhaus/vue';
+import AutocompleteField from './fields/AutocompleteField.vue';
 import CheckboxField from './fields/CheckboxField.vue';
 import FileField from './fields/FileField.vue';
 import RadioField from './fields/RadioField.vue';
@@ -14,7 +15,9 @@ export const components: Partial<FieldComponentMap> = {
   number: TextField,
   password: TextField,
   date: TextField,
+  datetime: TextField,
   select: SelectField,
+  autocomplete: AutocompleteField,
   multiselect: SelectField,
   checkbox: CheckboxField,
   radio: RadioField,

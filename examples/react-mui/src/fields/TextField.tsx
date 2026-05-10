@@ -14,8 +14,11 @@ export function TextField({
     : field.type === 'password' ? 'password'
     : field.type === 'number' ? 'number'
     : field.type === 'date' ? 'date'
+    : field.type === 'datetime' ? 'datetime-local'
     : field.type === 'phone' ? 'tel'
     : 'text';
+
+  const shrinkLabel = field.type === 'date' || field.type === 'datetime';
 
   return (
     <MuiTextField
@@ -31,7 +34,7 @@ export function TextField({
       fullWidth
       margin="normal"
       slotProps={{
-        inputLabel: field.type === 'date' ? { shrink: true } : undefined,
+        inputLabel: shrinkLabel ? { shrink: true } : undefined,
       }}
     />
   );

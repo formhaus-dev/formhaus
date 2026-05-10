@@ -1,4 +1,5 @@
 import type { FieldComponentMap } from '@formhaus/react';
+import { AutocompleteField } from './fields/AutocompleteField';
 import { CheckboxField } from './fields/CheckboxField';
 import { FileField } from './fields/FileField';
 import { RadioField } from './fields/RadioField';
@@ -14,7 +15,9 @@ export const components: FieldComponentMap = {
   number: TextField,
   password: TextField,
   date: TextField,
+  datetime: TextField,
   select: SelectField,
+  autocomplete: AutocompleteField,
   multiselect: SelectField,
   checkbox: CheckboxField,
   radio: RadioField,
