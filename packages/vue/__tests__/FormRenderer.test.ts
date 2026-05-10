@@ -88,6 +88,21 @@ describe('FormRenderer', () => {
     render(FormRenderer, { props: { definition, loading: true } });
     expect(getInput('Name').disabled).toBe(true);
   });
+
+  it('renders date and datetime fields with native input types', () => {
+    const dateDefinition: FormDefinition = {
+      id: 'date-test',
+      title: 'Dates',
+      submit: { label: 'Save' },
+      fields: [
+        { key: 'birthday', type: 'date', label: 'Birthday' },
+        { key: 'expiresAt', type: 'datetime', label: 'Expires at' },
+      ],
+    };
+    const { container } = render(FormRenderer, { props: { definition: dateDefinition } });
+    expect(container.querySelector('input[type="date"]')).not.toBeNull();
+    expect(container.querySelector('input[type="datetime-local"]')).not.toBeNull();
+  });
 });
 
 describe('FormRenderer multi-step', () => {

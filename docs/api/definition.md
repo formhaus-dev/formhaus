@@ -45,7 +45,7 @@ type DefaultFieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
   | 'select' | 'multiselect'
   | 'checkbox' | 'radio' | 'switch'
-  | 'file' | 'date' | 'textarea';
+  | 'file' | 'date' | 'datetime' | 'textarea';
 
 type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get autocomplete
 ```

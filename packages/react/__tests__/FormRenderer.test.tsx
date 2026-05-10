@@ -109,6 +109,36 @@ describe('FormRenderer', () => {
     render(<FormRenderer definition={definition} onSubmit={() => {}} loading={true} />);
     expect(getInput('Name').disabled).toBe(true);
   });
+
+  it('renders date and datetime fields with native input types', () => {
+    const dateDefinition: FormDefinition = {
+      id: 'date-test',
+      title: 'Dates',
+      submit: { label: 'Save' },
+      fields: [
+        { key: 'birthday', type: 'date', label: 'Birthday' },
+        { key: 'expiresAt', type: 'datetime', label: 'Expires at' },
+      ],
+    };
+    const { container } = render(<FormRenderer definition={dateDefinition} onSubmit={() => {}} />);
+    expect(container.querySelector('input[type="date"]')).not.toBeNull();
+    expect(container.querySelector('input[type="datetime-local"]')).not.toBeNull();
+  });
+
+  it('updates datetime field value', () => {
+    const onSubmit = vi.fn();
+    const dateDefinition: FormDefinition = {
+      id: 'datetime-submit',
+      title: 'Datetime',
+      submit: { label: 'Save' },
+      fields: [{ key: 'expiresAt', type: 'datetime', label: 'Expires at' }],
+    };
+    const { container } = render(<FormRenderer definition={dateDefinition} onSubmit={onSubmit} />);
+    const input = container.querySelector('input[type="datetime-local"]') as HTMLInputElement;
+    fireEvent.change(input, { target: { value: '2026-05-10T14:30' } });
+    fireEvent.click(screen.getByText('Save'));
+    expect(onSubmit).toHaveBeenCalledWith({ expiresAt: '2026-05-10T14:30' });
+  });
 });
 
 describe('FormRenderer multi-step', () => {

@@ -175,13 +175,25 @@ Multi-line text input. Set `rows` to control the height.
 
 ## Date
 
-Date picker. Uses native `<input type="date">` for now.
+Date picker. Uses native `<input type="date">` for now. Emits `YYYY-MM-DD`.
 
 ```json
 {
   "key": "birthDate",
   "type": "date",
   "label": "Date of birth"
+}
+```
+
+## Datetime
+
+Date and time picker. Uses native `<input type="datetime-local">`. Emits `YYYY-MM-DDTHH:mm` (browser default; no timezone). For richer pickers (calendar UI, timezone-aware ISO output) plug in your own component via `components`.
+
+```json
+{
+  "key": "expiresAt",
+  "type": "datetime",
+  "label": "Expires at"
 }
 ```
 

@@ -11,6 +11,7 @@ export type DefaultFieldType =
   | 'switch'
   | 'file'
   | 'date'
+  | 'datetime'
   | 'textarea';
 
 export type FieldType = DefaultFieldType | (string & {});

@@ -2,6 +2,7 @@ import type { DefaultFieldType } from '@formhaus/core';
 import type { Component } from 'vue';
 import CheckboxField from './fields/CheckboxField.vue';
 import DateField from './fields/DateField.vue';
+import DateTimeField from './fields/DateTimeField.vue';
 import FileField from './fields/FileField.vue';
 import MultiselectField from './fields/MultiselectField.vue';
 import RadioField from './fields/RadioField.vue';
@@ -23,5 +24,6 @@ export const defaultFieldComponents: Record<DefaultFieldType, Component> = {
   switch: SwitchField,
   file: FileField,
   date: DateField,
+  datetime: DateTimeField,
   textarea: TextareaField,
 };

@@ -2,6 +2,7 @@ import type { DefaultFieldType, FormField as FormFieldType } from '@formhaus/cor
 import type { ComponentType } from 'react';
 import { CheckboxField } from './fields/CheckboxField';
 import { DateField } from './fields/DateField';
+import { DateTimeField } from './fields/DateTimeField';
 import { FileField } from './fields/FileField';
 import { MultiselectField } from './fields/MultiselectField';
 import { RadioField } from './fields/RadioField';
@@ -24,6 +25,7 @@ const defaultComponents: Record<DefaultFieldType, ComponentType<FieldComponentPr
   switch: SwitchField,
   file: FileField,
   date: DateField,
+  datetime: DateTimeField,
   textarea: TextareaField,
 };
 
