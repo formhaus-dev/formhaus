@@ -18,6 +18,19 @@
 - New `AutocompleteField` component for `type: 'autocomplete'`. Renders `<input>` + `<datalist>`.
 - New `DateTimeField` component for `type: 'datetime'`. Renders `<input type="datetime-local">`.
 
+### Migration notes
+
+- **Drop the `next/dynamic({ ssr: false })` workaround** if you used it to avoid the prior SSR crash. `FormRenderer` now prerenders cleanly and hydrates without a layout shift:
+
+  ```diff
+  - import dynamic from 'next/dynamic';
+  - const FormRenderer = dynamic(
+  -   () => import('@formhaus/react').then((m) => m.FormRenderer),
+  -   { ssr: false }
+  - );
+  + import { FormRenderer } from '@formhaus/react';
+  ```
+
 ## 0.3.1 - 2026-04-10
 
 ### Breaking

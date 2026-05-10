@@ -113,6 +113,13 @@ Type-to-filter dropdown for long option lists. Default renderer uses `<input typ
 }
 ```
 
+::: warning Native `<datalist>` quirks
+The default renderer uses the browser's `<datalist>` element. Two things to know:
+
+1. **Filtering matches against `value`, not `label`.** Typing "Virginia" against `{ value: "us-east-1", label: "US East (N. Virginia)" }` shows nothing. If users will search by the label, swap the field to a custom component (MUI Autocomplete, Headless UI Combobox).
+2. **The input does not enforce that the value is in the list.** Users can type anything. If you need "must be one of the options", add a custom validator or use a custom component.
+:::
+
 ## Multiselect
 
 Pick multiple from a list. Renders as a checkbox group. The value is an array of selected option values.
@@ -213,6 +220,25 @@ Date and time picker. Uses native `<input type="datetime-local">`. Emits `YYYY-M
   "label": "Expires at"
 }
 ```
+
+::: warning Timezone gotcha
+`<input type="datetime-local">` emits `YYYY-MM-DDTHH:mm` with **no timezone**. Most APIs expect ISO 8601 with a timezone offset (`2026-05-10T14:30:00Z` or `…+02:00`). If you POST the raw value to a backend that assumes UTC, you'll silently store the wrong instant for any user not in UTC.
+
+Two ways to fix on submit:
+
+```ts
+function toISO(local: string): string {
+  return new Date(local).toISOString();
+}
+
+<FormRenderer
+  definition={definition}
+  onSubmit={(values) => api.post({ ...values, expiresAt: toISO(values.expiresAt as string) })}
+/>
+```
+
+Or plug in a custom component (MUI `DateTimePicker`, react-aria `DateField`) that emits ISO directly.
+:::
 
 ## File
 
