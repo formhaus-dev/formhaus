@@ -30,9 +30,9 @@
     },
     {
       "key": "country",
-      "type": "select",
+      "type": "autocomplete",
       "label": "Country",
-      "placeholder": "Select a country",
+      "placeholder": "Type to filter…",
       "options": [
         { "value": "US", "label": "United States" },
         { "value": "MX", "label": "Mexico" },
@@ -41,6 +41,12 @@
         { "value": "IN", "label": "India" }
       ],
       "validation": { "required": true }
+    },
+    {
+      "key": "meetingTime",
+      "type": "datetime",
+      "label": "Preferred meeting time",
+      "helperText": "We'll confirm by email"
     }
   ]
 }

@@ -35,8 +35,8 @@ export const activeFile = '/App.tsx';
 export const visibleFiles = ['/App.tsx', '/component-map.ts'];
 export const editorHeight = 480;
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.3.1',
-  '@formhaus/react': '0.3.1',
+  '@formhaus/core': '0.4.0',
+  '@formhaus/react': '0.4.0',
   '@mui/material': '6.4.0',
   '@emotion/react': '11.14.0',
   '@emotion/styled': '11.14.0',

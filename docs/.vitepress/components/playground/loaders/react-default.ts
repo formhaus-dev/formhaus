@@ -23,8 +23,8 @@ export const activeFile = '/App.tsx';
 export const visibleFiles = ['/App.tsx'];
 export const editorHeight = 480;
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.3.1',
-  '@formhaus/react': '0.3.1',
+  '@formhaus/core': '0.4.0',
+  '@formhaus/react': '0.4.0',
   'react': '18.3.1',
   'react-dom': '18.3.1',
 };

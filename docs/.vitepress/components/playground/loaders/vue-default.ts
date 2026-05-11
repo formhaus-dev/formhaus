@@ -24,6 +24,6 @@ export const activeFile = 'src/App.vue';
 export const visibleFiles = ['src/App.vue'];
 export const editorHeight = 480;
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.3.1',
-  '@formhaus/vue': '0.3.1',
+  '@formhaus/core': '0.4.0',
+  '@formhaus/vue': '0.4.0',
 };

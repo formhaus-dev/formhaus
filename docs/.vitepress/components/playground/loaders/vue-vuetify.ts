@@ -35,8 +35,8 @@ export const visibleFiles = ['src/App.vue', 'src/component-map.ts'];
 export const editorHeight = 480;
 export const entry = '/src/main.ts';
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.3.1',
-  '@formhaus/vue': '0.3.1',
+  '@formhaus/core': '0.4.0',
+  '@formhaus/vue': '0.4.0',
   'vuetify': '3.7.0',
   '@mdi/font': '7.4.47',
 };

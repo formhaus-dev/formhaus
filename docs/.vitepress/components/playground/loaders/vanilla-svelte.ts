@@ -15,6 +15,6 @@ export const activeFile = 'App.svelte';
 export const visibleFiles = ['App.svelte'];
 export const editorHeight = 520;
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.3.1',
+  '@formhaus/core': '0.4.0',
   'svelte': '3.59.2',
 };
