@@ -3,6 +3,7 @@ import componentMapTs from '../../../../../examples/vue-vuetify/src/component-ma
 import mainTs from '../../../../../examples/vue-vuetify/src/main.ts?raw';
 import TextFieldVue from '../../../../../examples/vue-vuetify/src/fields/TextField.vue?raw';
 import SelectFieldVue from '../../../../../examples/vue-vuetify/src/fields/SelectField.vue?raw';
+import AutocompleteFieldVue from '../../../../../examples/vue-vuetify/src/fields/AutocompleteField.vue?raw';
 import CheckboxFieldVue from '../../../../../examples/vue-vuetify/src/fields/CheckboxField.vue?raw';
 import RadioFieldVue from '../../../../../examples/vue-vuetify/src/fields/RadioField.vue?raw';
 import SwitchFieldVue from '../../../../../examples/vue-vuetify/src/fields/SwitchField.vue?raw';
@@ -18,6 +19,7 @@ export function buildFiles(definitionJson: string) {
     'src/main.ts': mainTs,
     'src/fields/TextField.vue': TextFieldVue,
     'src/fields/SelectField.vue': SelectFieldVue,
+    'src/fields/AutocompleteField.vue': AutocompleteFieldVue,
     'src/fields/CheckboxField.vue': CheckboxFieldVue,
     'src/fields/RadioField.vue': RadioFieldVue,
     'src/fields/SwitchField.vue': SwitchFieldVue,

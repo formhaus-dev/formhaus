@@ -80,10 +80,25 @@
         <label><input type="checkbox" role="switch" checked={values[field.key] ?? false} on:change={e => handleFieldChange(field.key, e.target.checked)} /> {field.label}</label>
       {:else if field.type === 'textarea'}
         <textarea id={field.key} rows={field.rows ?? 3} placeholder={field.placeholder ?? ''} on:input={e => handleFieldChange(field.key, e.target.value)}>{values[field.key] ?? ''}</textarea>
+      {:else if field.type === 'autocomplete'}
+        <input
+          id={field.key}
+          type="text"
+          list="{field.key}-list"
+          placeholder={field.placeholder ?? ''}
+          value={values[field.key] ?? ''}
+          autocomplete="off"
+          on:input={e => handleFieldChange(field.key, e.target.value)}
+        />
+        <datalist id="{field.key}-list">
+          {#each field.options ?? [] as opt}
+            <option value={opt.value}>{opt.label}</option>
+          {/each}
+        </datalist>
       {:else}
         <input
           id={field.key}
-          type={field.type === 'email' ? 'email' : field.type === 'password' ? 'password' : field.type === 'number' ? 'number' : 'text'}
+          type={field.type === 'email' ? 'email' : field.type === 'password' ? 'password' : field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : field.type === 'datetime' ? 'datetime-local' : 'text'}
           placeholder={field.placeholder ?? ''}
           value={values[field.key] ?? ''}
           on:input={e => handleFieldChange(field.key, e.target.value)}

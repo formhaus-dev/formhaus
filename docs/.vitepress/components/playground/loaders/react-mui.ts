@@ -3,6 +3,7 @@ import componentMapTs from '../../../../../examples/react-mui/src/component-map.
 import mainTsx from '../../../../../examples/react-mui/src/main.tsx?raw';
 import TextFieldTsx from '../../../../../examples/react-mui/src/fields/TextField.tsx?raw';
 import SelectFieldTsx from '../../../../../examples/react-mui/src/fields/SelectField.tsx?raw';
+import AutocompleteFieldTsx from '../../../../../examples/react-mui/src/fields/AutocompleteField.tsx?raw';
 import CheckboxFieldTsx from '../../../../../examples/react-mui/src/fields/CheckboxField.tsx?raw';
 import RadioFieldTsx from '../../../../../examples/react-mui/src/fields/RadioField.tsx?raw';
 import SwitchFieldTsx from '../../../../../examples/react-mui/src/fields/SwitchField.tsx?raw';
@@ -18,6 +19,7 @@ export function buildFiles(definitionJson: string) {
     '/main.tsx': mainTsx,
     '/fields/TextField.tsx': TextFieldTsx,
     '/fields/SelectField.tsx': SelectFieldTsx,
+    '/fields/AutocompleteField.tsx': AutocompleteFieldTsx,
     '/fields/CheckboxField.tsx': CheckboxFieldTsx,
     '/fields/RadioField.tsx': RadioFieldTsx,
     '/fields/SwitchField.tsx': SwitchFieldTsx,
