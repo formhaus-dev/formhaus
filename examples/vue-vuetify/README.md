@@ -1,6 +1,6 @@
 # Vue + Vuetify example
 
-Wires the Formhaus Vue adapter to [Vuetify 3](https://vuetifyjs.com) components. Demonstrates the `components` prop pattern: each Vuetify input is a thin wrapper that maps `FormFieldProps` onto the Vuetify API.
+This example maps Formhaus `FormFieldProps` to [Vuetify 3](https://vuetifyjs.com) inputs through the `components` prop.
 
 ## Run
 
@@ -13,14 +13,14 @@ pnpm dev
 
 Opens at http://localhost:5173.
 
-## What's interesting
+## Files
 
-- [src/component-map.ts](src/component-map.ts) — maps every Formhaus field type to a Vuetify-backed renderer. Copy this file as a starting point for your own Vuetify-based form.
-- [src/fields/AutocompleteField.vue](src/fields/AutocompleteField.vue) — Vuetify's `<v-autocomplete>` filtering by `label` (the default `<datalist>` filters by `value`).
-- [src/fields/SelectField.vue](src/fields/SelectField.vue) — handles both `select` and `multiselect` from one component.
-- [src/fields/TextField.vue](src/fields/TextField.vue) — covers text, email, phone, number, password, date, datetime in one renderer using Vuetify's `<v-text-field>`.
-- [src/definition.json](src/definition.json) — a small contact form using `text`, `email`, `autocomplete`, and `datetime`.
+- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a Vuetify renderer.
+- [src/fields/AutocompleteField.vue](src/fields/AutocompleteField.vue) filters by `label`, unlike the default `<datalist>`, which filters by `value`.
+- [src/fields/SelectField.vue](src/fields/SelectField.vue) handles both `select` and `multiselect`.
+- [src/fields/TextField.vue](src/fields/TextField.vue) handles text, email, phone, number, password, date, and datetime fields with Vuetify's `<v-text-field>`.
+- [src/definition.json](src/definition.json) is the contact form used by the example.
 
 ## Use as a starter
 
-Copy this folder, rename, and tweak `definition.json` and the field map. Nothing in here references workspace-internal paths.
+Copy the folder, then change `definition.json` and the field map. The example resolves its Formhaus dependencies from npm.

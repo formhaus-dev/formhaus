@@ -25,7 +25,7 @@ The output is ready to paste into the Formhaus Figma plugin or use with FormRend
 These are the exact TypeScript types. Your output MUST conform to them.
 
 ```typescript
-interface FormSchema {
+interface FormDefinition {
   id: string;           // kebab-case identifier
   title: string;        // human-readable form title
   submit: FormAction;   // submit button config (required)
@@ -66,8 +66,9 @@ interface FormField {
 
 type FieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
-  | 'select' | 'multiselect' | 'checkbox' | 'radio' | 'switch'
-  | 'file' | 'date' | 'textarea';
+  | 'select' | 'autocomplete' | 'multiselect'
+  | 'checkbox' | 'radio' | 'switch'
+  | 'file' | 'date' | 'datetime' | 'textarea';
 
 interface ShowCondition {
   field: string;                        // references another field's key
@@ -113,7 +114,7 @@ Look at the user's input and classify:
 - **Text description**: "Registration form with name, email, password"
 - **CSV/table**: structured data with columns like key, type, label, required
 - **Screenshot**: user provides a path to an image file or says "look at this screenshot"
-- **Existing fixture**: user references a fixture name (read from `packages/core/fixtures/`)
+- **Existing definition**: user references an example in `examples/definitions/`
 
 ### Step 2: Extract fields
 
@@ -127,9 +128,11 @@ obvious validation (required, email format, etc).
 - "Agree to terms", "Subscribe" → `checkbox`
 - "Account type", "Gender" with 2-4 options → `radio`
 - Dropdowns, "Select..." with 5+ options → `select`
+- Searchable dropdowns, typeahead → `autocomplete`
 - Country, city, currency → `select`
 - Long text, "Description", "Notes", "Bio" → `textarea`
 - Dates, birthdays, "When" → `date`
+- Date and time together → `datetime`
 - File upload, "Attach", "Upload" → `file`
 - Toggle, "Enable/Disable", notifications → `switch`
 - Numbers, amounts, quantities → `number`
@@ -201,18 +204,16 @@ Options:
 
 If B: apply changes and re-present
 
-## Example Fixtures
+## Example Definitions
 
-For reference, these existing fixtures show correct schema patterns:
+For reference, these definitions show current patterns:
 
-- `basic-form.json` — single step, text + select, basic validation
-- `conditional-fields.json` — show conditions (payment method switches fields)
-- `multi-step-form.json` — 3 linear steps
-- `conditional-steps.json` — steps that show/hide based on field values
-- `dispute-form.json` — cancel button, conditional disputed amount
-- `validation-form.json` — password confirmation, age range, pattern validation
+- `basic-form.json` — text, autocomplete, datetime, and basic validation
+- `conditional-fields.json` — payment fields controlled by show conditions
+- `multi-step.json` — 3 linear steps
+- `validation.json` — password confirmation, age range, and pattern validation
 
-Read these from `packages/core/fixtures/` when you need to verify
+Read these from `examples/definitions/` when you need to verify
 a pattern or show the user an example.
 
 ## Rules

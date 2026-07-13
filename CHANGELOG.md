@@ -7,7 +7,7 @@
 > - [`@formhaus/react`](packages/react/CHANGELOG.md)
 > - [`@formhaus/vue`](packages/vue/CHANGELOG.md)
 >
-> The historical entries below cover everything through v0.3.1.
+> The historical entries below cover the older combined releases through v0.4.0.
 
 ## 0.4.0 - 2026-05-10
 

@@ -44,7 +44,7 @@ function MyInput({ field, value, error, onChange, onBlur }: FieldComponentProps)
     <div>
       <label>{field.label}</label>
       <input
-        value={value as string}
+        value={(value as string) ?? ''}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
       />
@@ -59,6 +59,37 @@ const components: FieldComponentMap = { text: MyInput, email: MyInput };
 ```
 
 Unmapped field types fall back to native HTML.
+
+## Dynamic options
+
+Use `optionsFrom` to load select-like options and `optionsDependsOn` to rerun the provider when another field changes:
+
+```tsx
+import { FormRenderer, type OptionsProvider } from '@formhaus/react';
+
+const loadCities: OptionsProvider = async (values) => {
+  const response = await fetch(`/api/cities?country=${values.country ?? ''}`);
+  return response.json();
+};
+
+<FormRenderer
+  definition={definition}
+  optionsProviders={{ cities: loadCities }}
+  onSubmit={handleSubmit}
+/>
+```
+
+```json
+{
+  "key": "city",
+  "type": "select",
+  "label": "City",
+  "optionsFrom": "cities",
+  "optionsDependsOn": ["country"]
+}
+```
+
+The provider receives all current values. If requests overlap, only the latest result is used.
 
 ## Server-side rendering
 

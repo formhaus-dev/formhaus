@@ -1,6 +1,6 @@
 # React + MUI example
 
-Wires the Formhaus React adapter to [Material UI](https://mui.com) components. Demonstrates the `components` prop pattern: each MUI input is a thin wrapper that maps `FieldComponentProps` onto the MUI API.
+This example maps Formhaus `FieldComponentProps` to [Material UI](https://mui.com) inputs through the `components` prop.
 
 ## Run
 
@@ -13,14 +13,14 @@ pnpm dev
 
 Opens at http://localhost:5173.
 
-## What's interesting
+## Files
 
-- [src/component-map.ts](src/component-map.ts) — maps every Formhaus field type to an MUI-backed renderer. Copy this file as a starting point for your own MUI-based form.
-- [src/fields/AutocompleteField.tsx](src/fields/AutocompleteField.tsx) — MUI's `<Autocomplete>` filtering by `label` (the default `<datalist>` filters by `value`).
-- [src/fields/SelectField.tsx](src/fields/SelectField.tsx) — handles both `select` and `multiselect` from one component.
-- [src/fields/TextField.tsx](src/fields/TextField.tsx) — covers text, email, phone, number, password, date, datetime in one renderer using MUI's `<TextField>`.
-- [src/definition.json](src/definition.json) — a small contact form using `text`, `email`, `autocomplete`, and `datetime`.
+- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to an MUI renderer.
+- [src/fields/AutocompleteField.tsx](src/fields/AutocompleteField.tsx) filters by `label`, unlike the default `<datalist>`, which filters by `value`.
+- [src/fields/SelectField.tsx](src/fields/SelectField.tsx) handles both `select` and `multiselect`.
+- [src/fields/TextField.tsx](src/fields/TextField.tsx) handles text, email, phone, number, password, date, and datetime fields with MUI's `<TextField>`.
+- [src/definition.json](src/definition.json) is the contact form used by the example.
 
 ## Use as a starter
 
-Copy this folder, rename, and tweak `definition.json` and the field map. Nothing in here references workspace-internal paths.
+Copy the folder, then change `definition.json` and the field map. The example resolves its Formhaus dependencies from npm.

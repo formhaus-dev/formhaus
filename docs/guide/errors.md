@@ -80,10 +80,27 @@ See [Async Step Validation](/guide/async-validation#error-handling) for how `onS
 
 ## Loading state
 
-Show a loading indicator on the submit button while the request is pending:
+`FormRenderer` does not track the Promise returned by `onSubmit`. Keep request state in the parent and pass it through `loading`:
 
 ::: code-group
 ```vue [Vue]
+<script setup>
+import { ref } from 'vue';
+
+const isSubmitting = ref(false);
+
+async function onSubmit(values) {
+  isSubmitting.value = true;
+  try {
+    await api.submitForm(values);
+  } catch (error) {
+    handleRequestError(error);
+  } finally {
+    isSubmitting.value = false;
+  }
+}
+</script>
+
 <template>
   <FormRenderer
     :definition="definition"
@@ -94,52 +111,48 @@ Show a loading indicator on the submit button while the request is pending:
 ```
 
 ```tsx [React]
-<FormRenderer
-  definition={definition}
-  loading={isSubmitting}
-  onSubmit={handleSubmit}
-/>
+function MyForm() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  async function handleSubmit(values) {
+    setIsSubmitting(true);
+    try {
+      await api.submitForm(values);
+    } catch (error) {
+      handleRequestError(error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  return (
+    <FormRenderer
+      definition={definition}
+      loading={isSubmitting}
+      onSubmit={handleSubmit}
+    />
+  );
+}
 ```
 :::
 
-When `loading` is true, the submit button shows a spinner and is disabled.
+When `loading` is true, the default fields and action buttons are disabled. The React primary button also gets `aria-busy`. The built-in actions do not render a spinner; use a custom actions component if you need one.
 
 ## Field-level loading
 
-Some fields load data asynchronously (e.g. looking up a city by zip code). Use `setFieldLoading` on the engine:
+Custom renderers built around `FormEngine` or `useFormEngine` can mark one field as loading:
 
-::: code-group
-```vue [Vue]
-<script setup>
-import { useFormEngine } from '@formhaus/vue';
-
-const { engine } = useFormEngine(definition);
-
-async function onFieldChange(key, value) {
-  if (key === 'zipCode' && value.length === 5) {
-    engine.setFieldLoading('city', true);
-    const result = await lookupCity(value);
-    engine.setValue('city', result.name);
-    engine.setFieldLoading('city', false);
-  }
-}
-</script>
-```
-
-```tsx [React]
-const engine = useFormEngine(definition);
-
-function onFieldChange(key, value) {
-  if (key === 'zipCode' && value.length === 5) {
-    engine.setFieldLoading('city', true);
-    lookupCity(value).then(result => {
-      engine.setValue('city', result.name);
-      engine.setFieldLoading('city', false);
-    });
-  }
+```ts
+engine.setFieldLoading('city', true);
+try {
+  const result = await lookupCity(engine.values.zipCode);
+  engine.setValue('city', result.name);
+} finally {
+  engine.setFieldLoading('city', false);
 }
 ```
-:::
+
+`FormRenderer` owns its engine. Calling `useFormEngine()` next to a `FormRenderer` creates a separate instance and does not change the rendered form. Use the hook when you are building the renderer yourself. See [Values and validation](/api/form-engine#values-and-validation) for the underlying methods.
 
 ## Next steps
 

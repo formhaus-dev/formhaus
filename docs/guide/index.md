@@ -1,7 +1,6 @@
-# Getting Started
+# Getting started
 
-Framework-agnostic form engine with its own compact JSON-based definition format.
-Define a form once, render it anywhere in code or Figma.
+Formhaus keeps fields, validation, visibility, and steps in a JSON definition. The core engine runs without a UI framework; React, Vue, Figma, and custom renderers use the same format.
 
 ## Install
 
@@ -78,16 +77,15 @@ The renderer reads the form definition, renders fields, handles validation, and 
 ## How it works
 
 ```
-Form Definition --> FormEngine (pure TS) --> Adapter --> UI Components
+Form definition --> FormEngine (TypeScript) --> Adapter --> UI components
                      |
                      |-- values, errors, step state
                      |-- visibility (show/hide fields)
                      |-- validation (required, pattern, etc.)
-                     +-- subscribe/getSnapshot (React)
-                         computed refs (Vue)
+                     +-- general, field, and structure subscriptions
 ```
 
-3 packages:
+3 published packages:
 
 | Package | What it does | Dependencies |
 |---------|-------------|--------------|
@@ -106,7 +104,7 @@ Pure TypeScript, zero deps. Contains:
 - `FormEngine` class (state machine for the form)
 - Visibility evaluation (`show`/`showAny` conditions)
 - Validation (built-in rules + custom validators)
-- Definition validation (DAG cycle detection for show conditions)
+- Definition warnings for missing dependencies and field or step cycles
 
 ### @formhaus/vue
 
@@ -114,7 +112,7 @@ Vue 3.3+. Renders native HTML form elements by default. Override any field type 
 
 ### @formhaus/react
 
-React 18+. Same idea as the Vue adapter. Native HTML by default, override via `components` prop. SSR-safe — works with Next.js static prerender and `renderToString` without `next/dynamic`.
+React 18+. Renders native HTML by default and accepts replacements through `components`. It works with Next.js prerendering and React's `renderToString` without a `next/dynamic` wrapper.
 
 ## Next steps
 

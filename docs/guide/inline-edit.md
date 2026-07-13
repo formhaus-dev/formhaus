@@ -1,6 +1,6 @@
-# Inline Edit / Per-Field Save
+# Inline edit and per-field save
 
-Account settings pages save each field independently — change your display name, hit Save next to it, that single field updates. `FormRenderer` assumes one submit at the end, but it composes well into this pattern: **one `FormRenderer` per row**.
+Account settings often save one field at a time. Use one `FormRenderer` per editable row so each field has its own validation and submit handler.
 
 ## The pattern
 
@@ -9,12 +9,27 @@ Each editable row is its own form. One field, one validation cycle, one submit h
 ::: code-group
 ```tsx [React]
 import { FormRenderer } from '@formhaus/react';
+import { useState } from 'react';
 
-function DisplayNameRow({ user, onSave }) {
+function DisplayNameRow({ user, onSave, onError }) {
+  const [saving, setSaving] = useState(false);
+
+  async function handleSubmit(values) {
+    setSaving(true);
+    try {
+      await onSave({ name: values.name });
+    } catch (error) {
+      onError(error);
+    } finally {
+      setSaving(false);
+    }
+  }
+
   return (
     <FormRenderer
       definition={{
         id: 'display-name',
+        title: 'Display name',
         fields: [
           {
             key: 'name',
@@ -26,7 +41,8 @@ function DisplayNameRow({ user, onSave }) {
         submit: { label: 'Save' },
       }}
       initialValues={{ name: user.name }}
-      onSubmit={(values) => onSave({ name: values.name })}
+      loading={saving}
+      onSubmit={handleSubmit}
     />
   );
 }
@@ -34,13 +50,15 @@ function DisplayNameRow({ user, onSave }) {
 
 ```vue [Vue]
 <script setup>
+import { ref } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
 
-const props = defineProps(['user']);
-const emit = defineEmits(['save']);
+const props = defineProps(['user', 'onSave', 'onError']);
+const saving = ref(false);
 
 const definition = {
   id: 'display-name',
+  title: 'Display name',
   fields: [
     {
       key: 'name',
@@ -51,19 +69,31 @@ const definition = {
   ],
   submit: { label: 'Save' },
 };
+
+async function handleSubmit(values) {
+  saving.value = true;
+  try {
+    await props.onSave({ name: values.name });
+  } catch (error) {
+    props.onError(error);
+  } finally {
+    saving.value = false;
+  }
+}
 </script>
 
 <template>
   <FormRenderer
     :definition="definition"
     :initial-values="{ name: user.name }"
-    @submit="(values) => emit('save', { name: values.name })"
+    :loading="saving"
+    @submit="handleSubmit"
   />
 </template>
 ```
 :::
 
-You get validation, error display, async submit handling, and analytics events for free — same as a full multi-field form.
+Each row still gets normal validation and error display. The parent owns the async request state because `FormRenderer` does not wait for `onSubmit` before returning.
 
 ## Inline button layout
 
@@ -76,7 +106,7 @@ import Button from '@mui/material/Button';
 
 function InlineSaveActions({ onSubmit, loading }: FormActionsProps) {
   return (
-    <Button onClick={onSubmit} loading={loading} size="small">
+    <Button type="button" onClick={onSubmit} loading={loading} size="small">
       Save
     </Button>
   );
@@ -91,16 +121,16 @@ function InlineSaveActions({ onSubmit, loading }: FormActionsProps) {
 ```
 :::
 
-The renderer wires the button to the engine: validation runs first, the button shows loading while `onSubmit` resolves, errors appear next to the field. You write the button. The engine handles the rest.
+The renderer validates before calling `onSubmit`. The `loading` value comes from the `FormRenderer` prop, so the parent still decides when the button is busy.
 
 ## Why not one big form?
 
-A single `FormRenderer` with N fields validates and submits all-or-nothing. Settings pages need each field to save independently — display name failing shouldn't block the email change two rows down. One `FormRenderer` per row keeps the model simple: each row is a small autonomous form.
+A single `FormRenderer` validates and submits all of its fields together. On a settings page, an invalid display name should not block an email update in another row.
 
 ## Tradeoffs
 
-- **N engine instances.** Each `FormRenderer` creates its own `FormEngine`. For 10 rows that's 10 instances, each with one field. Cheap, but not free. If you have 50+ rows in a single page, profile.
-- **No cross-row state.** Each row is independent. If field B should clear when field A changes, you need a parent component holding shared state and passing it via `initialValues`.
-- **Repeated submit boilerplate.** Each row writes its own `onSubmit`. A small wrapper component that takes `field`, `initialValue`, and an API call helps.
+- Each row creates a `FormEngine`. Profile pages with 50 or more editable rows.
+- Rows do not share state. Put cross-row state in the parent instead of relying on field conditions.
+- Each row needs a submit handler. A small wrapper can hold the repeated request-state code.
 
-For account-settings-style pages this pattern is the right shape. For one-shot wizards or checkout, use a single `FormRenderer` with all fields.
+Use a single `FormRenderer` for forms that submit all fields together, such as checkout and multi-step onboarding.

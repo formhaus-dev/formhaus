@@ -4,18 +4,19 @@ The Formhaus Figma plugin renders form mockups from form definitions using your 
 
 ## Install
 
-1. Open the `packages/figma` folder in the repo
-2. In Figma, go to **Plugins > Development > Import plugin from manifest**
-3. Select `packages/figma/manifest.json`
-4. The plugin appears under **Plugins > Development > Formhaus**
+1. Clone the repo and install dependencies
+2. Build the plugin
 
-::: tip Building from source
 ```bash
-cd packages/figma
-pnpm build
+pnpm install
+pnpm --filter @formhaus/figma build
 ```
-This compiles `code.ts` into the bundled plugin code that Figma runs.
-:::
+
+3. In Figma, go to **Plugins > Development > Import plugin from manifest**
+4. Select `packages/figma/manifest.json`
+5. The plugin appears under **Plugins > Development > Formhaus**
+
+The build bundles the plugin code and its UI into `packages/figma/dist`.
 
 ## Usage
 
@@ -35,7 +36,7 @@ Click **Load example** in the plugin to load a basic contact form definition. Hi
 The **Component Map** tells the plugin which Figma components to use for each form field type.
 
 ::: tip Auto-generate with Claude
-Instead of editing this JSON manually, run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to scan your design system and generate the component map automatically.
+Run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to search your Figma library and build the component map from confirmed matches.
 :::
 
 ### Structure
@@ -141,6 +142,6 @@ The card width (400px), padding, and spacing are currently fixed. Future version
 ## Next steps
 
 - [/formhaus-create-form](/guide/formhaus-create-form): generate form definitions from text descriptions
-- [/formhaus-figma-connect](/guide/formhaus-figma-connect): auto-detect your design system components
+- [/formhaus-figma-connect](/guide/formhaus-figma-connect): map components from your Figma library
 - [Field Types](/guide/fields): all supported form field types
 - [Examples](/guide/examples): example definitions to try with the plugin

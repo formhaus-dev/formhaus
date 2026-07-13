@@ -1,3 +1,5 @@
+import { FORMHAUS_VERSION } from './versions';
+
 export function buildFiles(definitionJson: string) {
   return {
     'src/App.vue': `<` + `script setup>
@@ -24,6 +26,6 @@ export const activeFile = 'src/App.vue';
 export const visibleFiles = ['src/App.vue'];
 export const editorHeight = 480;
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.4.0',
-  '@formhaus/vue': '0.4.0',
+  '@formhaus/core': FORMHAUS_VERSION,
+  '@formhaus/vue': FORMHAUS_VERSION,
 };

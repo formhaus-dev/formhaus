@@ -47,15 +47,15 @@ Use `steps` instead of `fields` in the definition:
 - **Submit** replaces Continue on the last visible step.
 - **Progress bar** shows "Step N of M" based on visible steps.
 
-## Custom CTA per step
+## Custom labels per step
 
-Override the Continue or Back button text/style on any step:
+Override the Continue or Back button label on any step:
 
 ```json
 {
   "id": "review",
   "title": "Review & Send",
-  "back": { "label": "Edit Details", "variant": "text" },
+  "back": { "label": "Edit Details" },
   "fields": [...]
 }
 ```
@@ -70,6 +70,8 @@ Set `back` to `false` to hide the Back button on a step:
   "fields": [...]
 }
 ```
+
+`variant` and `action` are available as metadata to custom action components. The built-in adapters use the resolved labels for step navigation.
 
 ## Conditional steps
 

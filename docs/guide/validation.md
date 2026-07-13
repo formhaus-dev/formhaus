@@ -24,19 +24,19 @@ All rules are optional. Combine them freely.
 | Rule | Type | What it checks | Default message |
 |------|------|---------------|-----------------|
 | `required` | `boolean \| string` | Not empty (null, undefined, or "") | "This field is required" |
-| `minLength` | `number` | String length >= value | "Must be at least N characters" |
-| `maxLength` | `number` | String length <= value | "Must be at most N characters" |
+| `minLength` | `number` | String length or selected-item count >= value | "Must be at least N characters/items" |
+| `maxLength` | `number` | String length or selected-item count <= value | "Must be at most N characters/items" |
 | `min` | `number` | Number >= value | "Must be at least N" |
 | `max` | `number` | Number <= value | "Must be at most N" |
 | `pattern` | `string` | Matches regex | "Invalid format" |
 | `matchField` | `string` | Value equals another field's value | "Fields must match" |
 | `validator` | `string` | Custom validator function returns null | (your message) |
 
-Every rule has a `...Message` field for custom error text. Pass `required: "Please enter your name"` and that string becomes the error message.
+Length, range, pattern, and matching rules have a corresponding `...Message` field. For `required`, pass the message directly: `required: "Please enter your name"`.
 
 ## matchField
 
-Useful for "confirm email" or "confirm password" fields. When either field changes, the match is re-evaluated.
+Useful for "confirm email" or "confirm password" fields. The values are compared the next time validation runs.
 
 ```json
 [
@@ -61,7 +61,7 @@ Useful for "confirm email" or "confirm password" fields. When either field chang
 
 ## Custom validators
 
-For validation that can't be expressed in JSON (API checks, business rules), register a validator function:
+For synchronous business rules or format checks that cannot be expressed in JSON, register a validator function. Use [async step validation](/guide/async-validation) for server requests.
 
 ::: code-group
 ```vue [Vue]

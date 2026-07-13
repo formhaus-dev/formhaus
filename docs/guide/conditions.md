@@ -83,9 +83,9 @@ Show a field when country is US AND method is credit or debit:
 
 ## Hidden field cleanup
 
-When a field becomes hidden, its value is cleared from engine state. You never submit data the user can't see.
+Hidden field values are removed during engine construction, after `reset()`, and whenever a dependency changes. Hidden values are not submitted.
 
-If field A hides field B, and field B's value was used by field C's show condition, C gets re-evaluated too. Cascades until stable (max 50 iterations).
+If field A hides field B, and field B controls field C, the engine checks C next. It continues until no more fields or steps become hidden, with no fixed depth limit.
 
 ## Conditional steps
 
@@ -104,9 +104,9 @@ Steps support `show`/`showAny` too. Hidden steps are skipped during navigation.
 
 If the user selects "personal" account type, this entire step disappears and the step counter updates.
 
-## Conditional button disabled
+## Conditional submit button
 
-The `submit` and `cancel` actions accept `disabled` conditions using the same syntax:
+The default adapters evaluate `disabled` conditions on the top-level `submit` action:
 
 ```json
 {
@@ -118,6 +118,8 @@ The `submit` and `cancel` actions accept `disabled` conditions using the same sy
 ```
 
 The submit button stays disabled until `termsAccepted` is `true`. All conditions must pass (AND logic) for the button to be disabled.
+
+Other actions also expose `disabled` to custom action components, but the built-in adapters do not evaluate it for next, back, or cancel buttons.
 
 ## Next steps
 

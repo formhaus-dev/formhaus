@@ -1,6 +1,6 @@
 # Examples
 
-Working integrations of Formhaus with real UI kits. Each example is self-contained: it installs its own dependencies, has its own README, and can be used as a starter.
+These integrations install their own dependencies and can be copied outside the monorepo.
 
 | Example | Stack | What it shows |
 |---------|-------|---------------|
@@ -16,7 +16,7 @@ pnpm install --ignore-workspace
 pnpm dev
 ```
 
-The `--ignore-workspace` flag is important — it makes the example resolve `@formhaus/*` from the public npm registry, the way a real consumer would.
+`--ignore-workspace` makes the example resolve `@formhaus/*` from the public npm registry instead of the local workspace.
 
 ## Form definitions
 

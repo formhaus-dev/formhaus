@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@formhaus/core": "^0.3.1",
-    "@formhaus/react": "^0.3.1",
+    "@formhaus/core": "^0.5.0",
+    "@formhaus/react": "^0.5.0",
     "@mui/material": "^6.4.0",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",

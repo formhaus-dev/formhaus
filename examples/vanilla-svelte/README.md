@@ -1,6 +1,6 @@
 # Svelte example (no adapter package)
 
-Demonstrates that `@formhaus/core` works directly with any framework — no `@formhaus/svelte` package needed. The Svelte component subscribes to the `FormEngine` and re-renders on change.
+This example uses `@formhaus/core` directly from Svelte. The component subscribes to `FormEngine` and copies engine state into Svelte variables after each update.
 
 ## Run
 
@@ -13,10 +13,10 @@ pnpm dev
 
 Opens at http://localhost:5173.
 
-## What's interesting
+## Files
 
-- [src/App.svelte](src/App.svelte) — subscribes to `engine.subscribe(...)`, copies state into reactive `let` variables in `sync()`, and renders fields by `field.type`. This is the pattern you'd use to write `@formhaus/svelte` if you wanted one.
-- [src/definition.json](src/definition.json) — same form definition format as the React/Vue examples. Define once, render anywhere.
+- [src/App.svelte](src/App.svelte) subscribes through `engine.subscribe(...)`, updates reactive variables in `sync()`, and renders fields by `field.type`.
+- [src/definition.json](src/definition.json) uses the same definition format as the React and Vue examples.
 
 ## Use as a starter
 

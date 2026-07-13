@@ -96,6 +96,19 @@ Then pass the provider to the renderer:
 ```
 :::
 
+The provider receives all current values and can return options directly or through a Promise:
+
+```ts
+import type { OptionsProvider } from '@formhaus/react'; // or @formhaus/vue
+
+const loadCategories: OptionsProvider = async (values) => {
+  const response = await fetch(`/api/categories?type=${values.type ?? ''}`);
+  return response.json();
+};
+```
+
+The renderer calls the provider when the field appears and whenever a field listed in `optionsDependsOn` changes. If requests overlap, only the latest result is used. A rejected request leaves the previous options in place and retries after the next dependency change.
+
 ## Autocomplete
 
 Type-to-filter dropdown for long option lists. Default renderer uses `<input type="text">` with a `<datalist>` — native browser filtering, zero JS, SSR-safe. Same `options` shape as `select` (and `optionsFrom` works the same way). For richer pickers (MUI `Autocomplete`, Headless UI `Combobox`) plug in your own component via `components`.
@@ -320,7 +333,7 @@ Each custom component gets the field descriptor, the current value, and validati
 | `field` | `FormField` | Field descriptor (`key`, `label`, `options`, etc.) |
 | `value` | `unknown` | Current value |
 | `error` | `string?` | Validation error, if any |
-| `loading` | `boolean?` | Field is loading (async options) |
+| `loading` | `boolean?` | Field loading state set through `FormEngine.setFieldLoading()` |
 | `disabled` | `boolean?` | Form is disabled |
 
 In React, call `onChange(value)` and `onBlur()`. In Vue, emit `update:value` and `blur`.

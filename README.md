@@ -6,8 +6,7 @@
 [![bundlephobia](https://img.shields.io/bundlephobia/minzip/@formhaus/core?label=core%20size)](https://bundlephobia.com/package/@formhaus/core)
 [![license](https://img.shields.io/github/license/ignsm/formhaus)](LICENSE)
 
-Framework-agnostic form engine with a compact JSON definition format.
-Define a form once (fields, validation, conditions, steps) in a single file. Render it in React, Vue, Figma, or anything via the core engine. No JSON Schema spec, no separate UI schema, no boilerplate.
+Formhaus keeps fields, validation, visibility, and steps in a compact JSON definition. `@formhaus/core` runs it without a UI framework. React and Vue adapters render native or custom controls, and the Figma plugin reads the same definition.
 
 ## Packages
 
@@ -17,7 +16,7 @@ Define a form once (fields, validation, conditions, steps) in a single file. Ren
 | `@formhaus/react` | React adapter with native HTML defaults and custom component support | `npm i @formhaus/react` |
 | `@formhaus/vue` | Vue 3 adapter with native HTML defaults and custom component support | `npm i @formhaus/vue` |
 
-`@formhaus/figma` generates form mockups on the Figma canvas from a form definition. Not on Figma Community yet, install as a local plugin via `packages/figma/manifest.json`.
+`@formhaus/figma` generates form mockups on the Figma canvas. It is not on Figma Community yet; build it locally, then import `packages/figma/manifest.json`.
 
 Svelte, Solid, or anything else: use `@formhaus/core` directly. The [playground](https://formhaus.dev/playground.html) has a Svelte example.
 
@@ -36,7 +35,7 @@ npm install @formhaus/vue     # Vue
 
 Or use `@formhaus/core` directly with any framework. See the [Svelte example](https://formhaus.dev/playground.html).
 
-## Quick Start
+## Quick start
 
 ### Define a form
 
@@ -126,7 +125,7 @@ async function handleSubmit(values: Record<string, unknown>) {
 
 By default, both adapters render native HTML inputs.
 
-## Custom Components
+## Custom components
 
 Both adapters accept a `components` prop (a `FieldComponentMap`) that lets you swap native HTML inputs for your own UI kit.
 
@@ -141,7 +140,7 @@ function MyTextInput({ field, value, error, onChange, onBlur }: FieldComponentPr
       <label>{field.label}</label>
       <input
         type={field.type}
-        value={value as string}
+        value={(value as string) ?? ''}
         placeholder={field.placeholder}
         onChange={(e) => onChange(e.target.value)}
         onBlur={onBlur}
@@ -166,9 +165,17 @@ const components: FieldComponentMap = {
 <script setup lang="ts">
 import type { FormFieldProps } from '@formhaus/vue';
 
-defineProps<FormFieldProps>();
-defineEmits<{ (e: 'update:modelValue', value: unknown): void }>();
+const props = defineProps<FormFieldProps>();
+const emit = defineEmits<{ (e: 'update:value', value: unknown): void }>();
 </script>
+
+<template>
+  <label>{{ props.field.label }}</label>
+  <input
+    :value="(props.value as string) ?? ''"
+    @input="emit('update:value', ($event.target as HTMLInputElement).value)"
+  />
+</template>
 ```
 
 ```vue
@@ -189,9 +196,9 @@ import MyTextInput from './MyTextInput.vue';
 
 Each field component receives the full `FormField` descriptor, the current value, and any validation error. Implement as many or as few field types as you need. Unmapped types fall back to native HTML.
 
-## Figma Plugin
+## Figma plugin
 
-`@formhaus/figma` generates styled form mockups on the Figma canvas from a form definition. Map your design system components to field types via a `componentMap` that the [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill can generate for you by scanning your Figma file. Not on Figma Community yet, install as a local plugin via `packages/figma/manifest.json`.
+`@formhaus/figma` maps form definitions to components from your Figma library. The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill can generate the `componentMap`. See the [plugin guide](https://formhaus.dev/guide/figma.html) for local installation.
 
 ## Contributing
 

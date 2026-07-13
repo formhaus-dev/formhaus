@@ -58,11 +58,28 @@ Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`
 ## What it covers
 
 - Form state with reactive `subscribe()` / `getSnapshot()` for adapters
+- Per-field and structure subscriptions for renderers that need isolated updates
 - Field validation (required, min/max, pattern, matchField, custom validators)
 - Visibility conditions (`show` / `showAny`) with cascade-clearing of hidden values
 - Multi-step forms with conditional steps and per-step validation
 - Async step validation via `onStepValidate` + `nextStepAsync()`
 - Definition validation (duplicate keys, invalid regex, circular show conditions)
+
+## Granular subscriptions
+
+`subscribe()` notifies on every engine update. Renderers can subscribe more narrowly so a change to one field does not update every field component:
+
+```ts
+const unsubscribe = engine.subscribeField('email', () => {
+  const value = engine.values.email;
+  const error = engine.errors.email;
+  renderEmail({ value, error });
+});
+
+engine.getFieldSnapshot('email');
+```
+
+Use `subscribeStructure()` and `getStructureSnapshot()` for visible field lists, visible steps, and navigation. Every subscribe method returns an unsubscribe function.
 
 ## Docs
 

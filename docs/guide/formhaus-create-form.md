@@ -1,6 +1,6 @@
 # /formhaus-create-form
 
-Generate valid `@formhaus/core` form definitions from natural language, CSV data, or screenshots.
+Generate an `@formhaus/core` form definition from a description, CSV data, or a screenshot.
 
 ## Prerequisites
 
@@ -17,12 +17,7 @@ Then describe your form:
 
 > "Registration form with name, email, password, confirm password, and agree to terms"
 
-The skill:
-1. Infers field types automatically (email fields get `type: "email"`, toggles get `type: "switch"`, etc.)
-2. Asks if you want single-step or multi-step layout
-3. Suggests conditional visibility rules
-4. Adds validation (required, pattern, matchField)
-5. Outputs ready-to-use JSON
+The skill infers field types and validation rules, then asks about steps and conditional visibility when the answer is not clear from the input. It returns JSON that matches the current `FormDefinition` type.
 
 ## Input formats
 
@@ -31,7 +26,7 @@ The skill:
 | Text description | "Contact form with name, email, and message" |
 | CSV/table | A table with columns: key, type, label, required |
 | Screenshot | Path to an image of an existing form |
-| Fixture reference | "Like the dispute form but with an address step" |
+| Example reference | "Like the multi-step example but add a payment step" |
 
 ## Output
 

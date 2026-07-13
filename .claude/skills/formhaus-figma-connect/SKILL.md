@@ -73,12 +73,14 @@ The formhaus plugin supports these field types:
 | `password` | Yes (variant "Input") | Same component as text |
 | `textarea` | Yes (variant "Textarea") | Multi-line input |
 | `select` | Yes (variant "Select") | Dropdown |
+| `autocomplete` | Yes (variant "Select") | Searchable dropdown |
 | `multiselect` | Yes (variant "Select") | Multi-select dropdown |
 | `checkbox` | Standalone | Separate component with variant props |
 | `radio` | Standalone | Separate component with variant props |
 | `switch` | Standalone | Toggle component |
 | `file` | Standalone | File upload (often missing) |
 | `date` | Standalone | Date picker (often missing) |
+| `datetime` | Standalone | Date and time picker (often missing) |
 
 ## Workflow
 
@@ -278,6 +280,7 @@ Assemble the complete componentMap JSON:
     "password": { "formsConstructorVariant": "Input" },
     "textarea": { "formsConstructorVariant": "Textarea" },
     "select": { "formsConstructorVariant": "Select" },
+    "autocomplete": { "formsConstructorVariant": "Select" },
     "multiselect": { "formsConstructorVariant": "Select" },
     "checkbox": {
       "standalone": true,
@@ -295,7 +298,8 @@ Assemble the complete componentMap JSON:
       "variantProps": { ... }
     },
     "file": { "standalone": true, "missing": true },
-    "date": { "standalone": true, "missing": true }
+    "date": { "standalone": true, "missing": true },
+    "datetime": { "standalone": true, "missing": true }
   },
   "textLayerNames": {
     "label": "<detected name>",

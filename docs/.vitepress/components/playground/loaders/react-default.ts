@@ -1,3 +1,5 @@
+import { FORMHAUS_VERSION } from './versions';
+
 export function buildFiles(definitionJson: string) {
   return {
     '/App.tsx': `import { FormRenderer } from "@formhaus/react";
@@ -23,8 +25,8 @@ export const activeFile = '/App.tsx';
 export const visibleFiles = ['/App.tsx'];
 export const editorHeight = 480;
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.4.0',
-  '@formhaus/react': '0.4.0',
+  '@formhaus/core': FORMHAUS_VERSION,
+  '@formhaus/react': FORMHAUS_VERSION,
   'react': '18.3.1',
   'react-dom': '18.3.1',
 };

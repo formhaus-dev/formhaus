@@ -69,6 +69,41 @@ defineEmits<{ (e: 'update:value', value: unknown): void }>();
 
 Unmapped field types fall back to native HTML.
 
+## Dynamic options
+
+Use `optionsFrom` to load select-like options and `optionsDependsOn` to rerun the provider when another field changes:
+
+```vue
+<script setup lang="ts">
+import { FormRenderer, type OptionsProvider } from '@formhaus/vue';
+
+const loadCities: OptionsProvider = async (values) => {
+  const response = await fetch(`/api/cities?country=${values.country ?? ''}`);
+  return response.json();
+};
+</script>
+
+<template>
+  <FormRenderer
+    :definition="definition"
+    :options-providers="{ cities: loadCities }"
+    @submit="handleSubmit"
+  />
+</template>
+```
+
+```json
+{
+  "key": "city",
+  "type": "select",
+  "label": "City",
+  "optionsFrom": "cities",
+  "optionsDependsOn": ["country"]
+}
+```
+
+The provider receives all current values. If requests overlap, only the latest result is used.
+
 ## Optional baseline styles
 
 By default the Vue adapter renders unstyled HTML. For a sensible starting look (padding, focus states, error colour, button styles) import the shared stylesheet from `@formhaus/core`:

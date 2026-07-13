@@ -11,6 +11,7 @@ import FileFieldVue from '../../../../../examples/vue-vuetify/src/fields/FileFie
 import TextareaFieldVue from '../../../../../examples/vue-vuetify/src/fields/TextareaField.vue?raw';
 import FormActionsVue from '../../../../../examples/vue-vuetify/src/actions/FormActions.vue?raw';
 import StepProgressVue from '../../../../../examples/vue-vuetify/src/actions/StepProgress.vue?raw';
+import { FORMHAUS_VERSION } from './versions';
 
 export function buildFiles(definitionJson: string) {
   return {
@@ -37,8 +38,8 @@ export const visibleFiles = ['src/App.vue', 'src/component-map.ts'];
 export const editorHeight = 480;
 export const entry = '/src/main.ts';
 export const deps: Record<string, string> = {
-  '@formhaus/core': '0.4.0',
-  '@formhaus/vue': '0.4.0',
+  '@formhaus/core': FORMHAUS_VERSION,
+  '@formhaus/vue': FORMHAUS_VERSION,
   'vuetify': '3.7.0',
   '@mdi/font': '7.4.47',
 };

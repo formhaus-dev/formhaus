@@ -63,23 +63,22 @@ Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 ## What could use help
 
 - Svelte adapter (`@formhaus/svelte`)
-- More fixture definitions in `packages/core/fixtures/`
+- More form definitions in `examples/definitions/`
 - Bug reports
 
 ### Docs wanted
 
-- **Why Formhaus** — comparison page vs react-hook-form, Formik, VeeValidate. One form definition renders to React, Vue, Svelte, and Figma. Nobody else does that.
+- **Why Formhaus** — comparison page for teams considering react-hook-form, Formik, or VeeValidate.
 - **Migration guides** — "Coming from react-hook-form" / "Coming from Formik". Map their concepts to ours.
 - **TypeScript** — how to type definitions, infer value types, generics in custom components.
 - **Recipes** — dependent dropdowns, address autocomplete, file upload, dynamic field arrays. Concrete solutions, not abstract docs.
-- **Design system integration** — examples with shadcn/ui, Vuetify, Ant Design. One real UI kit example beats ten abstract ones.
+- **Design system integration** — examples with shadcn/ui, Vuetify, and Ant Design.
 
 ### Schema improvements (non-urgent)
 
 - **`disabled` on fields** — currently only action buttons support `disabled`. Sometimes you need to show a field but block input.
 - **`readonly`** — useful for review/preview mode where the form is visible but not editable.
 - **Multiple validators per field** — right now it's `"validator": "checkFormat"`. An array like `["checkFormat", "checkUnique"]` would be more flexible.
-- **`optionsFrom` / `optionsDependsOn` docs** — the feature works but there's no usage example in the docs. This is the most "magical" part of the definition format.
 - **Field groups / sections** — if a single step has 15 fields, you want to visually break them into blocks without going multi-step.
 
 ## Code style
@@ -88,7 +87,7 @@ Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 - No runtime dependencies in `core`
 - No comments in code — code should be self-explanatory
 - Adapters render native HTML by default, users bring their own UI kit via `components` prop
-- Both React and Vue ship unstyled — no CSS included
+- React and Vue ship unstyled; the optional baseline stylesheet lives in `@formhaus/core/style.css`
 - CSS class prefix: `fh-` (consistent across frameworks)
 - `FieldType` is extensible — custom types via `components` prop
 

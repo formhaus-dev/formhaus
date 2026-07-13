@@ -2,26 +2,26 @@
 layout: home
 hero:
   name: Formhaus
-  tagline: Define a form once, render it anywhere in code or Figma.
+  tagline: One form definition for the core engine, React, Vue, and Figma.
   actions:
     - theme: brand
-      text: Get Started
+      text: Get started
       link: /guide/
 features:
-  - title: Definition Reference
-    details: Types, field options, validation rules, conditional visibility, multi-step config.
+  - title: Definition reference
+    details: Field options, validation rules, conditional visibility, and multi-step configuration.
     link: /api/definition
-  - title: Conditional Fields
+  - title: Conditional fields
     details: Show and hide fields based on other field values. AND/OR logic, cascading cleanup.
     link: /guide/conditions
   - title: Validation
     details: Required, pattern, min/max, matchField, custom validators. All from JSON.
     link: /guide/validation
-  - title: Figma Plugin
+  - title: Figma plugin
     details: Generate form mockups from form definitions using your design system components.
     link: /guide/figma
-  - title: Claude Skills
-    details: Generate form definitions from text, CSV, or screenshots. Auto-detect Figma component mappings.
+  - title: Claude skills
+    details: Build definitions from text, CSV, or screenshots, and map components from a Figma library.
     link: /guide/formhaus-create-form
   - title: Playground
     details: Edit form definitions live and see them render in React, Vue, and Svelte.

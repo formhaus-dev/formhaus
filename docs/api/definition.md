@@ -9,7 +9,7 @@ Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never b
 ```ts
 interface FormDefinition {
   id: string;            // Unique form identifier
-  title: string;         // Form title (rendered by the adapter or parent)
+  title: string;         // Form title for host UI and Figma output
   submit: FormAction;    // Submit button config
   cancel?: FormAction;   // Cancel button (optional)
   fields?: FormField[];  // Single-step form
@@ -74,11 +74,13 @@ Button configuration for submit, cancel, next, and back.
 ```ts
 interface FormAction {
   label: string;
-  variant?: 'primary' | 'secondary' | 'text';
-  action?: string;              // Named action handler key
-  disabled?: ShowCondition[];   // Conditional disable
+  variant?: 'primary' | 'secondary' | 'text'; // Styling hint for custom actions
+  action?: string;              // Identifier for custom actions
+  disabled?: ShowCondition[];   // Conditions available to the action renderer
 }
 ```
+
+The default React and Vue adapters evaluate `disabled` on the top-level `submit` action. Custom action components receive the full action objects and can use `variant`, `action`, and `disabled` for other buttons.
 
 ## ShowCondition
 
@@ -151,14 +153,9 @@ type StepValidateFn = (
 ) => Promise<Record<string, string> | null | void>;
 ```
 
-## FormEngine (async)
+`FormRenderer` does not render the form title. Use it in your page heading or other host UI. The Figma plugin uses it for frame names and headings.
 
-| Property / Method | Type | Description |
-|---|---|---|
-| `stepValidating` | `boolean` | `true` while `onStepValidate` is running |
-| `nextStepAsync()` | `Promise<boolean>` | Async version of `nextStep()`. Runs sync validation, then `onStepValidate`, then advances |
-
-See [Using the engine directly](/guide/async-validation#using-the-engine-directly) for examples.
+For runtime state and methods, see the [FormEngine reference](/api/form-engine).
 
 ## Minimal example
 

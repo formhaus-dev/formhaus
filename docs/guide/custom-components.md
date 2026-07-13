@@ -62,8 +62,8 @@ const emit = defineEmits<{
 
 <template>
   <div class="my-actions">
-    <button v-if="showBack" @click="emit('prev')">{{ backLabel }}</button>
-    <button @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
+    <button v-if="showBack" type="button" @click="emit('prev')">{{ backLabel }}</button>
+    <button type="button" @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
   </div>
 </template>
 ```
@@ -79,16 +79,14 @@ export function MyFormActions({
 }: FormActionsProps) {
   return (
     <div className="my-actions">
-      {showBack && <button onClick={onPrev}>{backLabel}</button>}
-      <button disabled={loading} onClick={onPrimary}>{primaryLabel}</button>
+      {showBack && <button type="button" onClick={onPrev}>{backLabel}</button>}
+      <button type="button" disabled={loading} onClick={onPrimary}>{primaryLabel}</button>
     </div>
   )
 }
 ```
 
 ### Raw props
-
-For full control, the raw props are still available:
 
 | Prop | Type | Description |
 |------|------|-------------|
@@ -98,7 +96,7 @@ For full control, the raw props are still available:
 | `isFirstStep` | `boolean` | Whether this is the first step |
 | `isLastStep` | `boolean` | Whether this is the last step |
 | `isMultiStep` | `boolean` | Whether the form has multiple steps |
-| `loading` | `boolean?` | Whether the form is submitting |
+| `loading` | `boolean?` | Parent loading state or async step validation state |
 
 In Vue, you can also emit `submit`, `next`, `prev`, `cancel` events directly. In React, call `onSubmit`, `onNext`, `onPrev`, `onCancel` callbacks.
 

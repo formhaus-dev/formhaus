@@ -35,6 +35,7 @@ export default defineConfig({
         text: 'API Reference',
         items: [
           { text: 'Definition', link: '/api/definition' },
+          { text: 'FormEngine', link: '/api/form-engine' },
         ]
       },
       {

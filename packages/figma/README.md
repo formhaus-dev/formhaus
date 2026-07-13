@@ -1,6 +1,6 @@
 # @formhaus/figma
 
-Figma plugin that generates styled form mockups on the canvas from a [Formhaus](https://github.com/ignsm/formhaus) form definition. Maps your design system components to field types via a `componentMap`.
+Figma plugin that turns a [Formhaus](https://github.com/ignsm/formhaus) definition into component instances on the canvas. A `componentMap` connects field types to components from your library.
 
 Not published to the Figma Community yet. Install as a local plugin.
 
@@ -18,15 +18,15 @@ Not published to the Figma Community yet. Install as a local plugin.
 3. Paste a Formhaus form definition JSON into the plugin UI
 4. Click **Generate**
 
-The plugin creates a frame per step with all fields rendered as instances of your mapped design system components. Buttons, step counters, and layout are set up automatically.
+The plugin creates one frame per step, adds mapped field and button instances, and lays the frames out horizontally.
 
 ## Component map
 
 The plugin ships with a default component map. To make it use your own design system, you need a JSON that maps each form field type (`text`, `select`, `checkbox`, etc.) to a Figma component key in your library.
 
-Writing that map by hand means digging through the Figma API for component keys. Instead, use the **[`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill**: it scans your Figma design system via MCP, auto-detects form components, shows screenshots for confirmation, and generates the full `componentMap` JSON. Copy the output, open the plugin's **Component Map** tab, paste, save. The plugin remembers the map across runs.
+The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill searches a Figma library through MCP and asks you to confirm the matches. Paste its JSON into the plugin's **Component Map** tab and save it. The plugin stores the map in Figma client storage.
 
-If you don't use Claude Code, the full `ComponentMap` TypeScript interface lives in [`packages/figma/src/constants.ts`](https://github.com/ignsm/formhaus/blob/main/packages/figma/src/constants.ts). Paste a JSON that conforms to it.
+The `ComponentMap` TypeScript interface lives in [`packages/figma/src/constants.ts`](https://github.com/ignsm/formhaus/blob/main/packages/figma/src/constants.ts) if you prefer to write the JSON by hand.
 
 ## Docs
 
