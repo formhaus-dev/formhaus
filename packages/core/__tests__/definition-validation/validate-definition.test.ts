@@ -123,5 +123,51 @@ describe('validateDefinition', () => {
         `Circular show condition detected: ${cycle.join(' -> ')}`,
       ]);
     });
+
+    it('warns when a step condition references a missing field', () => {
+      const definition: FormDefinition = {
+        id: 'missing-step-dependency',
+        title: 'Missing step dependency',
+        submit: { label: 'Submit' },
+        steps: [{
+          id: 'details',
+          title: 'Details',
+          show: [{ field: 'missing', eq: true }],
+          fields: [],
+        }],
+      };
+      expect(validateDefinition(definition)).toContain(
+        'Step "details" has show condition referencing non-existent field "missing"',
+      );
+    });
+
+    it('detects cycles that pass through step visibility', () => {
+      const definition: FormDefinition = {
+        id: 'step-cycle',
+        title: 'Step cycle',
+        submit: { label: 'Submit' },
+        steps: [
+          {
+            id: 'main',
+            title: 'Main',
+            fields: [{
+              key: 'trigger',
+              type: 'text',
+              label: 'Trigger',
+              show: [{ field: 'detail', notEmpty: true }],
+            }],
+          },
+          {
+            id: 'details',
+            title: 'Details',
+            show: [{ field: 'trigger', notEmpty: true }],
+            fields: [{ key: 'detail', type: 'text', label: 'Detail' }],
+          },
+        ],
+      };
+      expect(validateDefinition(definition)).toContain(
+        'Circular show condition detected: trigger -> detail -> trigger',
+      );
+    });
   });
 });

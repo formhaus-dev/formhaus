@@ -1,4 +1,5 @@
 import type { FieldComponentProps } from '../types';
+import { FieldMessage } from './FieldMessage';
 
 export function RadioField({
   field,
@@ -47,16 +48,7 @@ export function RadioField({
           );
         })}
       </div>
-      {error && (
-        <p id={errorId} className="fh-field__error" role="alert">
-          {error}
-        </p>
-      )}
-      {!error && field.helperText && (
-        <p id={helperId} className="fh-field__helper">
-          {field.helperText}
-        </p>
-      )}
+      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
     </fieldset>
   );
 }

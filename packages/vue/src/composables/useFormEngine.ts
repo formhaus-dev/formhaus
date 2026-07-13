@@ -5,7 +5,7 @@ import {
   type FormDefinition,
   type FormStep,
 } from '@formhaus/core';
-import { type ComputedRef, type Ref, computed, ref, watch } from 'vue';
+import { type ComputedRef, type Ref, computed, onScopeDispose, ref, watch } from 'vue';
 
 export interface UseFormEngineReturn {
   engine: FormEngine;
@@ -32,19 +32,22 @@ export function useFormEngine(
   const getDefinition = typeof definitionOrGetter === 'function' ? definitionOrGetter : () => definitionOrGetter;
   const version = ref(0);
   let engine = new FormEngine(getDefinition(), initialValues, options);
-  engine.subscribe(() => { version.value++; });
+  let unsubscribe = engine.subscribe(() => { version.value++; });
 
   const engineRef = ref(engine) as Ref<FormEngine>;
 
   watch(
     () => getDefinition().id,
     () => {
+      unsubscribe();
       engine = new FormEngine(getDefinition(), initialValues, options);
-      engine.subscribe(() => { version.value++; });
+      unsubscribe = engine.subscribe(() => { version.value++; });
       engineRef.value = engine;
       version.value++;
     },
   );
+
+  onScopeDispose(() => unsubscribe());
 
   return {
     get engine() { return engineRef.value; },

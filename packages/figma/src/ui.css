@@ -1,0 +1,94 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  color: #333;
+  display: flex;
+  flex-direction: column;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 13px;
+  height: 100vh;
+}
+
+.tabs { display: flex; border-bottom: 1px solid #ddd; flex-shrink: 0; }
+.tab {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: #666;
+  cursor: pointer;
+  flex: 1;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 10px 16px;
+  text-align: center;
+}
+.tab:hover { color: #333; }
+.tab.active { color: #18a0fb; border-bottom-color: #18a0fb; font-weight: 600; }
+
+.tab-content {
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  gap: 12px;
+  overflow: hidden;
+  padding: 16px;
+}
+.tab-content.active { display: flex; }
+
+h2 { font-size: 16px; font-weight: 600; }
+label { color: #666; font-size: 12px; font-weight: 500; }
+textarea {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  flex: 1;
+  font-family: 'Geist Mono', 'SF Mono', monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  min-height: 120px;
+  outline: none;
+  padding: 10px;
+  resize: none;
+  width: 100%;
+}
+textarea:focus { border-color: #18a0fb; }
+
+button {
+  background: #18a0fb;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px;
+  width: 100%;
+}
+button:hover { background: #0d8de0; }
+button:disabled { background: #ccc; cursor: not-allowed; }
+.btn-secondary { background: #f0f0f0; color: #333; }
+.btn-secondary:hover { background: #e0e0e0; }
+.btn-danger { background: #fff0f0; border: 1px solid #fcc; color: #c00; }
+.btn-danger:hover { background: #ffe0e0; }
+
+.output { border-radius: 6px; font-size: 12px; min-height: 20px; padding: 8px 10px; }
+.output.error { background: #fff0f0; border: 1px solid #fcc; color: #c00; }
+.output.success { background: #f0fff0; border: 1px solid #cfc; color: #060; }
+.output:empty { display: none; }
+
+.link {
+  background: none;
+  color: #888;
+  font-size: 11px;
+  font-weight: 400;
+  padding: 0;
+  text-align: left;
+  text-decoration: underline;
+}
+.link:hover { background: none; color: #18a0fb; }
+.status-row { margin-top: 4px; }
+.status-badge { border-radius: 4px; display: inline-block; font-size: 11px; font-weight: 600; padding: 3px 8px; }
+.status-badge.default { background: #f0f0f0; color: #666; }
+.status-badge.custom { background: #e8f5e9; color: #2e7d32; }
+.btn-row { display: flex; gap: 8px; }
+.btn-row button { flex: 1; }
+.hint { color: #999; font-size: 11px; line-height: 1.4; }

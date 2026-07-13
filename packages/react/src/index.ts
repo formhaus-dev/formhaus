@@ -8,4 +8,5 @@ export type {
   FormRendererProps,
   FormActionsProps,
   FormStepProgressProps,
+  OptionsProvider,
 } from './types';

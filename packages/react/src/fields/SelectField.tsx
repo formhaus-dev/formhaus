@@ -1,4 +1,6 @@
 import type { FieldComponentProps } from '../types';
+import { FieldLabel } from './FieldLabel';
+import { FieldMessage } from './FieldMessage';
 
 export function SelectField({
   field,
@@ -18,12 +20,7 @@ export function SelectField({
 
   return (
     <div className="fh-field">
-      {field.label && (
-        <label className="fh-field__label" htmlFor={inputId}>
-          {field.label}
-          {field.validation?.required && <span className="fh-field__required" aria-hidden="true"> *</span>}
-        </label>
-      )}
+      <FieldLabel field={field} inputId={inputId} />
       <select
         id={inputId}
         className="fh-field__input fh-field__input--select"
@@ -46,16 +43,7 @@ export function SelectField({
           </option>
         ))}
       </select>
-      {error && (
-        <p id={errorId} className="fh-field__error" role="alert">
-          {error}
-        </p>
-      )}
-      {!error && field.helperText && (
-        <p id={helperId} className="fh-field__helper">
-          {field.helperText}
-        </p>
-      )}
+      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
     </div>
   );
 }

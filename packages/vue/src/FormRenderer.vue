@@ -1,25 +1,14 @@
 <script setup lang="ts">
-import type { FormEngineOptions, StepValidateFn, ValidatorFn } from '@formhaus/core';
+import type { FormEngineOptions } from '@formhaus/core';
 import { computed, watch } from 'vue';
 import FormActions from './FormActions.vue';
 import FormFieldComponent from './FormField.vue';
 import FormStepProgress from './FormStepProgress.vue';
 import { useFieldOptions } from './composables/useFieldOptions';
 import { useFormEngine } from './composables/useFormEngine';
-import type { FieldComponentMap, FormRendererEmits, FormRendererProps, OptionsProvider } from './types';
+import type { FormRendererEmits, FormRendererProps } from './types';
 
-const props = withDefaults(
-  defineProps<
-    FormRendererProps & {
-      validators?: Record<string, ValidatorFn>;
-      onStepValidate?: StepValidateFn;
-      optionsProviders?: Record<string, OptionsProvider>;
-    }
-  >(),
-  {
-    loading: false,
-  },
-);
+const props = withDefaults(defineProps<FormRendererProps>(), { loading: false });
 
 const emit = defineEmits<FormRendererEmits>();
 
@@ -28,37 +17,35 @@ const engineOptions: FormEngineOptions = {
   onStepValidate: props.onStepValidate,
 };
 
+const form = useFormEngine(() => props.definition, props.initialValues, engineOptions);
 const {
-  engine,
   values,
   errors,
   topLevelErrors,
   fieldLoading,
   visibleFields,
-  visibleSteps,
   currentStep,
   isFirstStep,
   isLastStep,
-  canGoNext,
   progress,
   isMultiStep,
   stepValidating,
-} = useFormEngine(() => props.definition, props.initialValues, engineOptions);
+} = form;
 
-const resolvedOptions = useFieldOptions(visibleFields, values, props.optionsProviders);
+const resolvedOptions = useFieldOptions(visibleFields, () => form.engine, props.optionsProviders);
 
 watch(
   () => props.errors,
   (newErrors) => {
     if (newErrors) {
-      engine.setErrors(newErrors);
+      form.engine.setErrors(newErrors);
     }
   },
 );
 
 function onFieldUpdate(key: string, value: unknown) {
-  engine.setValue(key, value);
-  emit('fieldChange', key, value, engine.values);
+  form.engine.setValue(key, value);
+  emit('fieldChange', key, value, form.engine.values);
 }
 
 function onFieldFocus(key: string) {
@@ -74,20 +61,20 @@ function onFieldBlur(key: string) {
 }
 
 async function onSubmit() {
-  const allErrors = engine.validate();
+  const allErrors = form.engine.validate();
   for (const [key, msg] of Object.entries(allErrors)) {
     emit('analyticsEvent', { type: 'field_error', fieldKey: key, error: msg });
   }
   if (Object.keys(allErrors).length > 0) return;
 
-  const submitValues = engine.getSubmitValues();
+  const submitValues = form.engine.getSubmitValues();
   emit('analyticsEvent', { type: 'form_submitted', fieldCount: Object.keys(submitValues).length });
   emit('submit', submitValues);
 }
 
 async function onNext() {
   const prevStep = currentStep.value;
-  const success = await engine.nextStepAsync();
+  const success = await form.engine.nextStepAsync();
   if (success) {
     if (prevStep) {
       emit('analyticsEvent', { type: 'step_completed', stepId: prevStep.id });
@@ -97,14 +84,14 @@ async function onNext() {
       emit('analyticsEvent', {
         type: 'step_viewed',
         stepId: currentStep.value.id,
-        stepIndex: engine.currentStepIndex,
+        stepIndex: form.engine.currentStepIndex,
       });
     }
   }
 }
 
 function onPrev() {
-  engine.prevStep();
+  form.engine.prevStep();
   if (currentStep.value) {
     emit('stepChange', currentStep.value.id, 'back');
   }

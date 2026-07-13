@@ -1,89 +1,105 @@
-import { setComponentMap, getComponentMap, type ComponentMap } from './constants';
+import {
+  getComponentMap,
+  resetComponentMap,
+  setComponentMap,
+  type ComponentMap,
+} from './constants';
 import { countFields, getSteps, parseAndValidate } from './parse';
 import { renderForm } from './render-form';
 
 const STORAGE_KEY = 'formhaus-component-map';
 
-figma.showUI(__html__, { width: 480, height: 600 });
+interface UiMessage {
+  type: string;
+  definition?: string;
+  componentMap?: string;
+}
 
-// Load custom component map from storage on startup
+figma.showUI(__html__, { width: 480, height: 600 });
+loadStoredComponentMap();
+
+figma.ui.onmessage = async (message: UiMessage) => {
+  if (message.type === 'generate' && message.definition) {
+    await generateForm(message.definition);
+  } else if (message.type === 'setComponentMap' && message.componentMap) {
+    await saveComponentMap(message.componentMap);
+  } else if (message.type === 'resetComponentMap') {
+    await clearComponentMap();
+  } else if (message.type === 'getComponentMap') {
+    sendComponentMapToUi();
+  }
+};
+
 async function loadStoredComponentMap(): Promise<void> {
   try {
     const stored = await figma.clientStorage.getAsync(STORAGE_KEY);
-    if (stored) {
-      setComponentMap(stored as ComponentMap);
-      figma.ui.postMessage({ type: 'componentMapStatus', isCustom: true });
-    } else {
-      figma.ui.postMessage({ type: 'componentMapStatus', isCustom: false });
-    }
-  } catch (_e) {
-    figma.ui.postMessage({ type: 'componentMapStatus', isCustom: false });
+    if (stored) setComponentMap(stored as ComponentMap);
+    sendMapStatus(!!stored);
+  } catch {
+    sendMapStatus(false);
   }
 }
 
-// Send current component map to UI
-function sendComponentMapToUI(): void {
-  const map = getComponentMap();
-  figma.ui.postMessage({ type: 'componentMapData', map: JSON.stringify(map, null, 2) });
+async function generateForm(source: string): Promise<void> {
+  try {
+    const definition = parseAndValidate(source);
+    const frames = await renderForm(definition);
+    figma.viewport.scrollAndZoomIntoView(frames);
+    const stepCount = getSteps(definition).length;
+    const stepInfo = stepCount > 1 ? ` across ${stepCount} frames` : '';
+    figma.ui.postMessage({
+      type: 'success',
+      message: `Generated "${definition.title}" with ${countFields(definition)} fields${stepInfo}`,
+    });
+  } catch (error) {
+    postError('error', error);
+  }
 }
 
-loadStoredComponentMap();
-
-figma.ui.onmessage = async (msg: { type: string; definition?: string; componentMap?: string }) => {
-  if (msg.type === 'generate' && msg.definition) {
-    try {
-      const definition = parseAndValidate(msg.definition);
-      const frames = await renderForm(definition);
-      figma.viewport.scrollAndZoomIntoView(frames);
-      const steps = getSteps(definition);
-      const stepInfo = steps.length > 1 ? ` across ${steps.length} frames` : '';
-      figma.ui.postMessage({
-        type: 'success',
-        message: `Generated "${definition.title}" with ${countFields(definition)} fields${stepInfo}`,
-      });
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      figma.ui.postMessage({ type: 'error', message });
-    }
+async function saveComponentMap(source: string): Promise<void> {
+  try {
+    const map = JSON.parse(source) as ComponentMap;
+    assertComponentMap(map);
+    setComponentMap(map);
+    await figma.clientStorage.setAsync(STORAGE_KEY, map);
+    figma.ui.postMessage({ type: 'componentMapSaved', message: 'Component map saved successfully.' });
+  } catch (error) {
+    postError('componentMapError', error);
   }
+}
 
-  if (msg.type === 'setComponentMap' && msg.componentMap) {
-    try {
-      const parsed = JSON.parse(msg.componentMap) as ComponentMap;
-      // Basic validation
-      if (!parsed.formsConstructorKey || !parsed.buttonKey || !parsed.fields || !parsed.textLayerNames) {
-        throw new Error('Invalid component map: must include formsConstructorKey, buttonKey, fields, and textLayerNames.');
-      }
-      setComponentMap(parsed);
-      await figma.clientStorage.setAsync(STORAGE_KEY, parsed);
-      figma.ui.postMessage({
-        type: 'componentMapSaved',
-        message: 'Component map saved successfully.',
-      });
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      figma.ui.postMessage({ type: 'componentMapError', message });
-    }
+async function clearComponentMap(): Promise<void> {
+  try {
+    await figma.clientStorage.deleteAsync(STORAGE_KEY);
+    resetComponentMap();
+    figma.ui.postMessage({ type: 'componentMapSaved', message: 'Reset to default component map.' });
+    sendMapStatus(false);
+    sendComponentMapToUi();
+  } catch (error) {
+    postError('componentMapError', error);
   }
+}
 
-  if (msg.type === 'resetComponentMap') {
-    try {
-      await figma.clientStorage.deleteAsync(STORAGE_KEY);
-      const { resetComponentMap } = await import('./constants');
-      resetComponentMap();
-      figma.ui.postMessage({
-        type: 'componentMapSaved',
-        message: 'Reset to default component map.',
-      });
-      figma.ui.postMessage({ type: 'componentMapStatus', isCustom: false });
-      sendComponentMapToUI();
-    } catch (e: unknown) {
-      const message = e instanceof Error ? e.message : String(e);
-      figma.ui.postMessage({ type: 'componentMapError', message });
-    }
+function assertComponentMap(map: ComponentMap): void {
+  if (!map.formsConstructorKey || !map.buttonKey || !map.fields || !map.textLayerNames) {
+    throw new Error(
+      'Invalid component map: must include formsConstructorKey, buttonKey, fields, and textLayerNames.',
+    );
   }
+}
 
-  if (msg.type === 'getComponentMap') {
-    sendComponentMapToUI();
-  }
-};
+function sendComponentMapToUi(): void {
+  figma.ui.postMessage({
+    type: 'componentMapData',
+    map: JSON.stringify(getComponentMap(), null, 2),
+  });
+}
+
+function sendMapStatus(isCustom: boolean): void {
+  figma.ui.postMessage({ type: 'componentMapStatus', isCustom });
+}
+
+function postError(type: string, error: unknown): void {
+  const message = error instanceof Error ? error.message : String(error);
+  figma.ui.postMessage({ type, message });
+}

@@ -4,8 +4,8 @@
   "private": true,
   "description": "Figma plugin: generates form mockups from @formhaus/core form definitions",
   "scripts": {
-    "build": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017 --format=iife",
-    "watch": "esbuild src/code.ts --bundle --outfile=dist/code.js --target=es2017 --format=iife --watch",
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
     "test": "vitest run",
     "test:watch": "vitest"
   },

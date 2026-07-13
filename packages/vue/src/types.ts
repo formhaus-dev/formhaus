@@ -40,12 +40,14 @@ export type OptionsProvider = (
 export interface FormRendererProps {
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
+  validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
   loading?: boolean;
   components?: Partial<FieldComponentMap>;
   actionsComponent?: Component;
   progressComponent?: Component;
+  optionsProviders?: Record<string, OptionsProvider>;
 }
 
 export interface FormRendererEmits {

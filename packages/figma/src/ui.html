@@ -1,122 +1,8 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: Inter, system-ui, sans-serif;
-      font-size: 13px;
-      color: #333;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      border-bottom: 1px solid #ddd;
-      flex-shrink: 0;
-    }
-    .tab {
-      flex: 1;
-      padding: 10px 16px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 500;
-      color: #666;
-      cursor: pointer;
-      border-bottom: 2px solid transparent;
-      background: none;
-      border-top: none;
-      border-left: none;
-      border-right: none;
-    }
-    .tab:hover { color: #333; }
-    .tab.active { color: #18A0FB; border-bottom-color: #18A0FB; font-weight: 600; }
-
-    /* Tab content */
-    .tab-content {
-      display: none;
-      flex: 1;
-      flex-direction: column;
-      padding: 16px;
-      gap: 12px;
-      overflow: hidden;
-    }
-    .tab-content.active { display: flex; }
-
-    h2 { font-size: 16px; font-weight: 600; }
-    label { font-weight: 500; font-size: 12px; color: #666; }
-    textarea {
-      width: 100%;
-      flex: 1;
-      min-height: 120px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      font-family: 'Geist Mono', 'SF Mono', monospace;
-      font-size: 12px;
-      line-height: 1.5;
-      resize: none;
-      outline: none;
-    }
-    textarea:focus { border-color: #18A0FB; }
-    button {
-      width: 100%;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #18A0FB;
-      color: white;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button:hover { background: #0d8de0; }
-    button:disabled { background: #ccc; cursor: not-allowed; }
-    .btn-secondary {
-      background: #f0f0f0;
-      color: #333;
-    }
-    .btn-secondary:hover { background: #e0e0e0; }
-    .btn-danger {
-      background: #fff0f0;
-      color: #cc0000;
-      border: 1px solid #ffcccc;
-    }
-    .btn-danger:hover { background: #ffe0e0; }
-    .output {
-      padding: 8px 10px;
-      border-radius: 6px;
-      font-size: 12px;
-      min-height: 20px;
-    }
-    .output.error { background: #FFF0F0; color: #CC0000; border: 1px solid #FFCCCC; }
-    .output.success { background: #F0FFF0; color: #006600; border: 1px solid #CCFFCC; }
-    .output:empty { display: none; }
-    .link { font-size: 11px; color: #888; cursor: pointer; text-decoration: underline; }
-    .link:hover { color: #18A0FB; }
-    .status-badge {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-    .status-badge.default { background: #f0f0f0; color: #666; }
-    .status-badge.custom { background: #E8F5E9; color: #2E7D32; }
-    .btn-row {
-      display: flex;
-      gap: 8px;
-    }
-    .btn-row button { flex: 1; }
-    .hint {
-      font-size: 11px;
-      color: #999;
-      line-height: 1.4;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <style>/* FORMHAUS_STYLES */</style>
 </head>
 <body>
   <div class="tabs">
@@ -124,27 +10,25 @@
     <button class="tab" data-tab="settings">Component Map</button>
   </div>
 
-  <!-- Generate Tab -->
   <div class="tab-content active" id="tab-generate">
     <h2>Formhaus</h2>
-    <label>Paste @formhaus/core form definition JSON</label>
+    <label for="definition">Paste @formhaus/core form definition JSON</label>
     <textarea id="definition" placeholder='{ "id": "...", "title": "...", "submit": { "label": "Submit" }, "fields": [...] }'></textarea>
-    <span class="link" id="loadExample">Load example (basic-form)</span>
+    <button class="link" id="loadExample">Load example (basic-form)</button>
     <button id="generate">Generate</button>
     <div class="output" id="output"></div>
   </div>
 
-  <!-- Component Map Tab -->
   <div class="tab-content" id="tab-settings">
     <div>
       <label>Status</label>
-      <div style="margin-top: 4px;">
+      <div class="status-row">
         <span class="status-badge default" id="mapStatus">Using default map</span>
       </div>
     </div>
-    <label>Component Map JSON</label>
+    <label for="componentMap">Component Map JSON</label>
     <textarea id="componentMap" placeholder="Paste your component map JSON here..."></textarea>
-    <p class="hint">Map your design system's Figma component keys to form field types. Click "Load Current" to see the active mapping as a starting point.</p>
+    <p class="hint">Map your design system's Figma component keys to form field types. Load the current map to use it as a starting point.</p>
     <div class="btn-row">
       <button class="btn-secondary" id="loadCurrentMap">Load Current</button>
       <button id="saveMap">Save Map</button>
@@ -153,118 +37,6 @@
     <div class="output" id="mapOutput"></div>
   </div>
 
-  <script>
-    // Tab switching
-    var tabs = document.querySelectorAll('.tab');
-    var tabContents = document.querySelectorAll('.tab-content');
-    for (var i = 0; i < tabs.length; i++) {
-      tabs[i].addEventListener('click', function() {
-        var target = this.getAttribute('data-tab');
-        for (var j = 0; j < tabs.length; j++) {
-          tabs[j].classList.remove('active');
-          tabContents[j].classList.remove('active');
-        }
-        this.classList.add('active');
-        document.getElementById('tab-' + target).classList.add('active');
-      });
-    }
-
-    var definitionEl = document.getElementById('definition');
-    var outputEl = document.getElementById('output');
-    var generateBtn = document.getElementById('generate');
-
-    var EXAMPLE = JSON.stringify({
-      "id": "basic-form",
-      "title": "Contact Information",
-      "submit": { "label": "Submit" },
-      "fields": [
-        { "key": "firstName", "type": "text", "label": "First Name", "placeholder": "Enter your first name", "validation": { "required": true } },
-        { "key": "email", "type": "email", "label": "Email Address", "placeholder": "you@example.com", "validation": { "required": true } },
-        { "key": "country", "type": "select", "label": "Country", "placeholder": "Select a country", "options": [{ "value": "US", "label": "United States" }, { "value": "MX", "label": "Mexico" }], "validation": { "required": true } },
-        { "key": "terms", "type": "checkbox", "label": "I agree to terms", "validation": { "required": true } }
-      ]
-    }, null, 2);
-
-    document.getElementById('loadExample').onclick = function() { definitionEl.value = EXAMPLE; };
-
-    generateBtn.onclick = function() {
-      var definition = definitionEl.value.trim();
-      if (!definition) { showOutput('Paste a form definition first.', 'error'); return; }
-      generateBtn.disabled = true;
-      generateBtn.textContent = 'Generating...';
-      outputEl.className = 'output';
-      outputEl.textContent = '';
-      parent.postMessage({ pluginMessage: { type: 'generate', definition: definition } }, '*');
-    };
-
-    // Component Map tab
-    var componentMapEl = document.getElementById('componentMap');
-    var mapOutputEl = document.getElementById('mapOutput');
-    var mapStatusEl = document.getElementById('mapStatus');
-
-    document.getElementById('loadCurrentMap').onclick = function() {
-      parent.postMessage({ pluginMessage: { type: 'getComponentMap' } }, '*');
-    };
-
-    document.getElementById('saveMap').onclick = function() {
-      var mapJson = componentMapEl.value.trim();
-      if (!mapJson) { showMapOutput('Paste a component map JSON first.', 'error'); return; }
-      try {
-        JSON.parse(mapJson); // validate JSON
-      } catch (e) {
-        showMapOutput('Invalid JSON: ' + e.message, 'error');
-        return;
-      }
-      parent.postMessage({ pluginMessage: { type: 'setComponentMap', componentMap: mapJson } }, '*');
-    };
-
-    document.getElementById('resetMap').onclick = function() {
-      parent.postMessage({ pluginMessage: { type: 'resetComponentMap' } }, '*');
-    };
-
-    // Message handling
-    window.onmessage = function(event) {
-      var msg = event.data.pluginMessage;
-      if (!msg) return;
-
-      if (msg.type === 'success' || msg.type === 'error') {
-        generateBtn.disabled = false;
-        generateBtn.textContent = 'Generate';
-        showOutput(msg.message, msg.type);
-      }
-
-      if (msg.type === 'componentMapStatus') {
-        if (msg.isCustom) {
-          mapStatusEl.textContent = 'Using custom map';
-          mapStatusEl.className = 'status-badge custom';
-        } else {
-          mapStatusEl.textContent = 'Using default map';
-          mapStatusEl.className = 'status-badge default';
-        }
-      }
-
-      if (msg.type === 'componentMapData') {
-        componentMapEl.value = msg.map;
-      }
-
-      if (msg.type === 'componentMapSaved') {
-        showMapOutput(msg.message, 'success');
-      }
-
-      if (msg.type === 'componentMapError') {
-        showMapOutput(msg.message, 'error');
-      }
-    };
-
-    function showOutput(text, type) {
-      outputEl.textContent = text;
-      outputEl.className = 'output ' + type;
-    }
-
-    function showMapOutput(text, type) {
-      mapOutputEl.textContent = text;
-      mapOutputEl.className = 'output ' + type;
-    }
-  </script>
+  <script>/* FORMHAUS_SCRIPT */</script>
 </body>
 </html>

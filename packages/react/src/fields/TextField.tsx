@@ -1,4 +1,6 @@
 import type { FieldComponentProps } from '../types';
+import { FieldLabel } from './FieldLabel';
+import { FieldMessage } from './FieldMessage';
 
 export function TextField({
   field,
@@ -17,7 +19,7 @@ export function TextField({
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
-    onChange(field.type === 'number' ? Number(v) : v);
+    onChange(field.type === 'number' && v !== '' ? Number(v) : v);
   };
 
   const inputType =
@@ -33,12 +35,7 @@ export function TextField({
 
   return (
     <div className="fh-field">
-      {field.label && (
-        <label className="fh-field__label" htmlFor={inputId}>
-          {field.label}
-          {field.validation?.required && <span className="fh-field__required" aria-hidden="true"> *</span>}
-        </label>
-      )}
+      <FieldLabel field={field} inputId={inputId} />
       <input
         id={inputId}
         type={inputType}
@@ -52,16 +49,7 @@ export function TextField({
         onBlur={onBlur}
         onFocus={onFocus}
       />
-      {error && (
-        <p id={errorId} className="fh-field__error" role="alert">
-          {error}
-        </p>
-      )}
-      {!error && field.helperText && (
-        <p id={helperId} className="fh-field__helper">
-          {field.helperText}
-        </p>
-      )}
+      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
     </div>
   );
 }

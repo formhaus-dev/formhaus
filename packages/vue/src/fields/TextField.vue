@@ -29,7 +29,7 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
 
 function onInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
-  emit('update:value', props.field.type === 'number' ? Number(value) : value);
+  emit('update:value', props.field.type === 'number' && value !== '' ? Number(value) : value);
 }
 </script>
 
