@@ -1,5 +1,23 @@
 # @formhaus/core
 
+## 0.5.0
+
+### Minor Changes
+
+- ad80814: - New `subscribeField()`, `getFieldSnapshot()`, `subscribeStructure()`, and `getStructureSnapshot()` methods expose granular form updates.
+
+### Patch Changes
+
+- 76b2a0d: - `stepValidating` reads `false` in the notification that delivers async step-validation errors.
+- 76b2a0d: - `setErrors()` surfaces errors from hidden steps at form level.
+  - `reset()` clears loading state and discards pending step validation results.
+  - Definition warnings include missing and circular step visibility dependencies.
+- ad80814: - `visibleFields` no longer runs current-step validators.
+- ad80814: - `reset()` clears values for fields that the reset values hide, instead of keeping them until the next change.
+  - Construction clears initial values for fields that other initial values hide, matching `reset()`.
+- ad80814: - Visibility cascades now clear dependency chains longer than 50 fields.
+  - Deep visibility dependency graphs no longer overflow the call stack during definition validation.
+
 ## 0.4.0 - 2026-05-10
 
 ### Minor
