@@ -2,6 +2,24 @@ import { describe, expect, it } from 'vitest';
 import { validateDefinition } from '../../src/definition-validation';
 import type { FormDefinition } from '../../src/types';
 
+function createDeepDependencyDefinition(length: number, closeCycle = false): FormDefinition {
+  return {
+    id: closeCycle ? 'deep-cycle' : 'deep-dependencies',
+    title: closeCycle ? 'Deep cycle' : 'Deep dependencies',
+    submit: { label: 'Submit' },
+    fields: Array.from({ length }, (_, index) => ({
+      key: `field-${index}`,
+      type: 'text' as const,
+      label: `Field ${index}`,
+      ...(index < length - 1
+        ? { show: [{ field: `field-${index + 1}`, notEmpty: true }] }
+        : closeCycle
+          ? { show: [{ field: 'field-0', notEmpty: true }] }
+          : {}),
+    })),
+  };
+}
+
 describe('validateDefinition', () => {
   describe('duplicate field keys', () => {
     it('warns on duplicate keys in flat fields', () => {
@@ -82,6 +100,28 @@ describe('validateDefinition', () => {
       };
       const warnings = validateDefinition(definition);
       expect(warnings.some((w) => w.includes('regex'))).toBe(false);
+    });
+  });
+
+  describe('condition cycles', () => {
+    const chainLength = 20_000;
+
+    it('handles a deep acyclic dependency chain', () => {
+      const definition = createDeepDependencyDefinition(chainLength);
+
+      expect(validateDefinition(definition)).toEqual([]);
+    });
+
+    it('reports the exact cycle at the end of a deep dependency chain', () => {
+      const definition = createDeepDependencyDefinition(chainLength, true);
+      const cycle = [
+        ...Array.from({ length: chainLength }, (_, index) => `field-${index}`),
+        'field-0',
+      ];
+
+      expect(validateDefinition(definition)).toEqual([
+        `Circular show condition detected: ${cycle.join(' -> ')}`,
+      ]);
     });
   });
 });

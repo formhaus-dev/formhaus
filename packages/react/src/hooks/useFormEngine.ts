@@ -1,7 +1,7 @@
 import { FormEngine, type FormEngineOptions, type FormDefinition } from '@formhaus/core';
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 
-export function useFormEngine(
+export function useFormEngineStore(
   definition: FormDefinition,
   initialValues?: Record<string, unknown>,
   options?: FormEngineOptions,
@@ -14,7 +14,15 @@ export function useFormEngine(
     definitionIdRef.current = definition.id;
   }
 
-  const engine = engineRef.current;
+  return engineRef.current;
+}
+
+export function useFormEngine(
+  definition: FormDefinition,
+  initialValues?: Record<string, unknown>,
+  options?: FormEngineOptions,
+): FormEngine {
+  const engine = useFormEngineStore(definition, initialValues, options);
 
   const subscribe = useCallback((listener: () => void) => engine.subscribe(listener), [engine]);
   const getSnapshot = useCallback(() => engine.getSnapshot(), [engine]);

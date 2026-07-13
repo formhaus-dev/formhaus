@@ -80,4 +80,246 @@ describe('FormEngine - Subscribe/getSnapshot', () => {
     engine.setValue('b', '2');
     expect(cb).toHaveBeenCalledTimes(1);
   });
+
+  it('notifies only the field whose value changed', () => {
+    const engine = new FormEngine(definition);
+    const listenerA = vi.fn();
+    const listenerB = vi.fn();
+    const snapshotA = engine.getFieldSnapshot('a');
+    const snapshotB = engine.getFieldSnapshot('b');
+    engine.subscribeField('a', listenerA);
+    engine.subscribeField('b', listenerB);
+
+    engine.setValue('a', '1');
+
+    expect(listenerA).toHaveBeenCalledOnce();
+    expect(listenerB).not.toHaveBeenCalled();
+    expect(engine.getFieldSnapshot('a')).toBe(snapshotA + 1);
+    expect(engine.getFieldSnapshot('b')).toBe(snapshotB);
+  });
+
+  it('notifies fields cleared by a visibility cascade', () => {
+    const conditionalDefinition: FormDefinition = {
+      id: 'conditional-subscribe',
+      title: 'Conditional subscribe',
+      submit: { label: 'Submit' },
+      fields: [
+        { key: 'country', type: 'text', label: 'Country' },
+        {
+          key: 'region',
+          type: 'text',
+          label: 'Region',
+          show: [{ field: 'country', eq: 'US' }],
+        },
+      ],
+    };
+    const engine = new FormEngine(conditionalDefinition, { country: 'US', region: 'CA' });
+    const countryListener = vi.fn();
+    const regionListener = vi.fn();
+    engine.subscribeField('country', countryListener);
+    engine.subscribeField('region', regionListener);
+
+    engine.setValue('country', 'JP');
+
+    expect(countryListener).toHaveBeenCalledOnce();
+    expect(regionListener).toHaveBeenCalledOnce();
+  });
+
+  it('notifies fields whose external errors changed', () => {
+    const engine = new FormEngine(definition);
+    const listenerA = vi.fn();
+    const listenerB = vi.fn();
+    engine.subscribeField('a', listenerA);
+    engine.subscribeField('b', listenerB);
+
+    engine.setErrors({ a: 'First error' });
+    engine.setErrors({ b: 'Second error' });
+
+    expect(listenerA).toHaveBeenCalledTimes(2);
+    expect(listenerB).toHaveBeenCalledOnce();
+  });
+
+  it('notifies fields after validate and validateField change errors', () => {
+    const requiredDefinition: FormDefinition = {
+      ...definition,
+      fields: [
+        { key: 'a', type: 'text', label: 'A', validation: { required: true } },
+        { key: 'b', type: 'text', label: 'B', validation: { required: true } },
+      ],
+    };
+    const engine = new FormEngine(requiredDefinition);
+    const listenerA = vi.fn();
+    const listenerB = vi.fn();
+    engine.subscribeField('a', listenerA);
+    engine.subscribeField('b', listenerB);
+
+    engine.validateField('a');
+    expect(listenerA).toHaveBeenCalledOnce();
+    expect(listenerB).not.toHaveBeenCalled();
+
+    engine.validate();
+    expect(listenerA).toHaveBeenCalledOnce();
+    expect(listenerB).toHaveBeenCalledOnce();
+  });
+
+  it('notifies fields whose loading or reset state changed', () => {
+    const engine = new FormEngine(definition, { a: 'initial' });
+    const listenerA = vi.fn();
+    const listenerB = vi.fn();
+    engine.subscribeField('a', listenerA);
+    engine.subscribeField('b', listenerB);
+
+    engine.setFieldLoading('a', true);
+    engine.reset();
+
+    expect(listenerA).toHaveBeenCalledTimes(2);
+    expect(listenerB).not.toHaveBeenCalled();
+  });
+
+  it('notifies structure subscribers only for possible visibility changes', () => {
+    const conditionalDefinition: FormDefinition = {
+      id: 'conditional-structure',
+      title: 'Conditional structure',
+      submit: { label: 'Submit' },
+      fields: [
+        { key: 'country', type: 'text', label: 'Country' },
+        {
+          key: 'region',
+          type: 'text',
+          label: 'Region',
+          show: [{ field: 'country', eq: 'US' }],
+        },
+      ],
+    };
+    const engine = new FormEngine(conditionalDefinition, { country: 'US' });
+    const listener = vi.fn();
+    const snapshot = engine.getStructureSnapshot();
+    engine.subscribeStructure(listener);
+
+    engine.setValue('region', 'CA');
+    expect(listener).not.toHaveBeenCalled();
+    expect(engine.getStructureSnapshot()).toBe(snapshot);
+
+    engine.setValue('country', 'JP');
+    expect(listener).toHaveBeenCalledOnce();
+    expect(engine.getStructureSnapshot()).toBe(snapshot + 1);
+  });
+
+  it('notifies structure subscribers when the current step changes', () => {
+    const stepDefinition: FormDefinition = {
+      id: 'step-structure',
+      title: 'Step structure',
+      submit: { label: 'Submit' },
+      steps: [
+        { id: 'first', title: 'First', fields: [] },
+        { id: 'second', title: 'Second', fields: [] },
+      ],
+    };
+    const engine = new FormEngine(stepDefinition);
+    const listener = vi.fn();
+    engine.subscribeStructure(listener);
+
+    expect(engine.nextStep()).toBe(true);
+    engine.prevStep();
+
+    expect(listener).toHaveBeenCalledTimes(2);
+  });
+
+  it('publishes nextStep validation errors without a structure update', () => {
+    const stepDefinition: FormDefinition = {
+      id: 'step-errors',
+      title: 'Step errors',
+      submit: { label: 'Submit' },
+      steps: [
+        {
+          id: 'first',
+          title: 'First',
+          fields: [{ key: 'a', type: 'text', label: 'A', validation: { required: true } }],
+        },
+        { id: 'second', title: 'Second', fields: [] },
+      ],
+    };
+    const engine = new FormEngine(stepDefinition);
+    const fieldListener = vi.fn();
+    const structureListener = vi.fn();
+    engine.subscribeField('a', fieldListener);
+    engine.subscribeStructure(structureListener);
+
+    expect(engine.nextStep()).toBe(false);
+
+    expect(fieldListener).toHaveBeenCalledOnce();
+    expect(structureListener).not.toHaveBeenCalled();
+  });
+
+  it('publishes nextStepAsync field errors without a structure update', async () => {
+    const stepDefinition: FormDefinition = {
+      id: 'async-step-errors',
+      title: 'Async step errors',
+      submit: { label: 'Submit' },
+      steps: [
+        { id: 'first', title: 'First', fields: [{ key: 'a', type: 'text', label: 'A' }] },
+        { id: 'second', title: 'Second', fields: [] },
+      ],
+    };
+    const engine = new FormEngine(stepDefinition, { a: 'value' }, {
+      onStepValidate: async () => ({ a: 'Server error' }),
+    });
+    const fieldListener = vi.fn();
+    const structureListener = vi.fn();
+    engine.subscribeField('a', fieldListener);
+    engine.subscribeStructure(structureListener);
+
+    await expect(engine.nextStepAsync()).resolves.toBe(false);
+
+    expect(fieldListener).toHaveBeenCalledOnce();
+    expect(structureListener).not.toHaveBeenCalled();
+  });
+
+  it('does not publish field or structure revisions when nextStepAsync rejects', async () => {
+    const stepDefinition: FormDefinition = {
+      id: 'async-step-rejection',
+      title: 'Async step rejection',
+      submit: { label: 'Submit' },
+      steps: [
+        { id: 'first', title: 'First', fields: [{ key: 'a', type: 'text', label: 'A' }] },
+        { id: 'second', title: 'Second', fields: [] },
+      ],
+    };
+    const engine = new FormEngine(stepDefinition, { a: 'value' }, {
+      onStepValidate: async () => {
+        throw new Error('Network error');
+      },
+    });
+    const fieldListener = vi.fn();
+    const structureListener = vi.fn();
+    engine.subscribeField('a', fieldListener);
+    engine.subscribeStructure(structureListener);
+
+    await expect(engine.nextStepAsync()).rejects.toThrow('Network error');
+
+    expect(engine.stepValidating).toBe(false);
+    expect(fieldListener).not.toHaveBeenCalled();
+    expect(structureListener).not.toHaveBeenCalled();
+  });
+
+  it('notifies form subscribers once when setErrors changes the current step', () => {
+    const stepDefinition: FormDefinition = {
+      id: 'set-errors-step',
+      title: 'Set errors step',
+      submit: { label: 'Submit' },
+      steps: [
+        { id: 'first', title: 'First', fields: [{ key: 'a', type: 'text', label: 'A' }] },
+        { id: 'second', title: 'Second', fields: [{ key: 'b', type: 'text', label: 'B' }] },
+      ],
+    };
+    const engine = new FormEngine(stepDefinition);
+    expect(engine.nextStep()).toBe(true);
+    const listener = vi.fn();
+    engine.subscribe(listener);
+
+    engine.setErrors({ a: 'Server error' });
+
+    expect(engine.currentStep?.id).toBe('first');
+    expect(listener).toHaveBeenCalledOnce();
+  });
 });

@@ -90,7 +90,7 @@ describe('FormRenderer', () => {
     const onFieldChange = vi.fn();
     render(<FormRenderer definition={definition} onSubmit={() => {}} onFieldChange={onFieldChange} />);
     fireEvent.change(getInput('Name'), { target: { value: 'X' } });
-    expect(onFieldChange).toHaveBeenCalledWith('name', 'X', expect.any(Object));
+    expect(onFieldChange).toHaveBeenCalledWith('name', 'X', { name: 'X' });
   });
 
   it('renders select with options', () => {

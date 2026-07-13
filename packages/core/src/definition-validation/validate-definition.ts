@@ -13,33 +13,42 @@ function getAllFields(definition: FormDefinition): FormField[] {
 }
 
 function detectCycles(graph: Map<string, string[]>): string[][] {
-  const visited = new Set<string>();
-  const inStack = new Set<string>();
+  const state = new Map<string, 'visiting' | 'visited'>();
   const cycles: string[][] = [];
 
-  function dfs(node: string, path: string[]): void {
-    if (inStack.has(node)) {
-      const cycleStart = path.indexOf(node);
-      cycles.push([...path.slice(cycleStart), node]);
-      return;
+  for (const start of graph.keys()) {
+    if (state.has(start)) continue;
+
+    const path: string[] = [];
+    const stack: { node: string; nextNeighbor: number }[] = [
+      { node: start, nextNeighbor: 0 },
+    ];
+
+    while (stack.length > 0) {
+      const frame = stack[stack.length - 1];
+      if (!state.has(frame.node)) {
+        state.set(frame.node, 'visiting');
+        path.push(frame.node);
+      }
+
+      const neighbors = graph.get(frame.node) ?? [];
+      if (frame.nextNeighbor < neighbors.length) {
+        const neighbor = neighbors[frame.nextNeighbor++];
+        const neighborState = state.get(neighbor);
+
+        if (neighborState === 'visiting') {
+          const cycleStart = path.indexOf(neighbor);
+          cycles.push([...path.slice(cycleStart), neighbor]);
+        } else if (neighborState !== 'visited') {
+          stack.push({ node: neighbor, nextNeighbor: 0 });
+        }
+        continue;
+      }
+
+      state.set(frame.node, 'visited');
+      path.pop();
+      stack.pop();
     }
-    if (visited.has(node)) return;
-
-    visited.add(node);
-    inStack.add(node);
-    path.push(node);
-
-    const neighbors = graph.get(node) ?? [];
-    for (const neighbor of neighbors) {
-      dfs(neighbor, path);
-    }
-
-    path.pop();
-    inStack.delete(node);
-  }
-
-  for (const node of graph.keys()) {
-    dfs(node, []);
   }
 
   return cycles;

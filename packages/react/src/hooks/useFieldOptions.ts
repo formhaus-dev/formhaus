@@ -1,19 +1,39 @@
-import type { FieldOption, FormField } from '@formhaus/core';
+import type { FieldOption, FormEngine, FormField } from '@formhaus/core';
 import { useEffect, useRef, useState } from 'react';
 import type { OptionsProvider } from '../types';
 
+function areOptionsEqual(previous: FieldOption[] | undefined, next: FieldOption[]): boolean {
+  return previous?.length === next.length && previous.every((option, index) => (
+    option.value === next[index].value && option.label === next[index].label
+  ));
+}
+
 export function useFieldOptions(
   fields: FormField[],
-  values: Record<string, unknown>,
+  engine: FormEngine,
   providers?: Record<string, OptionsProvider>,
 ): Record<string, FieldOption[]> {
   const [resolved, setResolved] = useState<Record<string, FieldOption[]>>({});
-  const lastDepsRef = useRef<Map<string, string>>(new Map());
+  const requestVersions = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
-    if (!providers) return;
+    if (!providers) {
+      setResolved((previous) => (
+        Object.keys(previous).length > 0 ? {} : previous
+      ));
+      return;
+    }
 
-    let isStale = false;
+    let active = true;
+    const unsubscribers: (() => void)[] = [];
+
+    const commit = (fieldKey: string, options: FieldOption[]) => {
+      if (!active) return;
+      setResolved((previous) => {
+        if (areOptionsEqual(previous[fieldKey], options)) return previous;
+        return { ...previous, [fieldKey]: options };
+      });
+    };
 
     for (const field of fields) {
       if (!field.optionsFrom) continue;
@@ -21,28 +41,40 @@ export function useFieldOptions(
       const provider = providers[field.optionsFrom];
       if (!provider) continue;
 
-      const depsKey = (field.optionsDependsOn ?? []).map((k) => values[k]).join('|');
+      const resolve = () => {
+        const requestVersion = (requestVersions.current.get(field.key) ?? 0) + 1;
+        requestVersions.current.set(field.key, requestVersion);
 
-      if (lastDepsRef.current.get(field.key) === depsKey) continue;
-      lastDepsRef.current.set(field.key, depsKey);
+        try {
+          const result = provider(engine.values);
+          if (Array.isArray(result)) {
+            commit(field.key, result);
+            return;
+          }
 
-      const result = provider(values);
+          result
+            .then((options) => {
+              if (requestVersions.current.get(field.key) === requestVersion) {
+                commit(field.key, options);
+              }
+            })
+            .catch(() => {});
+        } catch {
+          // Retry when a dependency changes.
+        }
+      };
 
-      if (Array.isArray(result)) {
-        if (!isStale) setResolved((prev) => ({ ...prev, [field.key]: result }));
-      } else {
-        result
-          .then((options) => {
-            if (!isStale) setResolved((prev) => ({ ...prev, [field.key]: options }));
-          })
-          .catch(() => {
-            lastDepsRef.current.delete(field.key);
-          });
+      resolve();
+      for (const dependency of new Set(field.optionsDependsOn ?? [])) {
+        unsubscribers.push(engine.subscribeField(dependency, resolve));
       }
     }
 
-    return () => { isStale = true; };
-  }, [fields, values, providers]);
+    return () => {
+      active = false;
+      for (const unsubscribe of unsubscribers) unsubscribe();
+    };
+  }, [engine, fields, providers]);
 
   return resolved;
 }

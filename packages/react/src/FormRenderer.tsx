@@ -1,11 +1,165 @@
-import type { FormEngineOptions } from '@formhaus/core';
-import { useEffect } from 'react';
+import type { FormEngine, FormEngineOptions } from '@formhaus/core';
+import { memo, useCallback, useEffect, useSyncExternalStore } from 'react';
 import { FormActions } from './FormActions';
-import { FormField } from './FormField';
+import { FormFieldController } from './FormFieldController';
 import { FormStepProgress } from './FormStepProgress';
 import { useFieldOptions } from './hooks/useFieldOptions';
-import { useFormEngine } from './hooks/useFormEngine';
-import type { FormRendererProps } from './types';
+import { useFormEngineStore } from './hooks/useFormEngine';
+import type { FieldComponentMap, FormRendererProps, OptionsProvider } from './types';
+
+function useFormSnapshot(engine: FormEngine): void {
+  const subscribe = useCallback((listener: () => void) => engine.subscribe(listener), [engine]);
+  const getSnapshot = useCallback(() => engine.getSnapshot(), [engine]);
+  useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+}
+
+function useStructureSnapshot(engine: FormEngine): void {
+  const subscribe = useCallback(
+    (listener: () => void) => engine.subscribeStructure(listener),
+    [engine],
+  );
+  const getSnapshot = useCallback(() => engine.getStructureSnapshot(), [engine]);
+  useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+}
+
+interface FormProgressProps {
+  engine: FormEngine;
+  ProgressComponent: FormRendererProps['ProgressComponent'];
+}
+
+function FormProgress({ engine, ProgressComponent }: FormProgressProps) {
+  useStructureSnapshot(engine);
+  if (!engine.isMultiStep) return null;
+
+  const ProgressComp = ProgressComponent ?? FormStepProgress;
+  return (
+    <ProgressComp
+      current={engine.progress.current}
+      total={engine.progress.total}
+      stepTitle={engine.currentStep?.title}
+      stepDescription={engine.currentStep?.description}
+    />
+  );
+}
+
+interface FormFieldsProps {
+  engine: FormEngine;
+  loading: boolean;
+  components?: FieldComponentMap;
+  optionsProviders?: Record<string, OptionsProvider>;
+  onChange: (key: string, value: unknown) => void;
+  onBlur: (key: string) => void;
+  onFocus: (key: string) => void;
+}
+
+const FormFields = memo(function FormFields({
+  engine,
+  loading,
+  components,
+  optionsProviders,
+  onChange,
+  onBlur,
+  onFocus,
+}: FormFieldsProps) {
+  useStructureSnapshot(engine);
+  const fields = engine.visibleFields;
+  const resolvedOptions = useFieldOptions(fields, engine, optionsProviders);
+
+  return (
+    <div className="fh-form__fields">
+      {fields.map((field) => (
+        <FormFieldController
+          key={field.key}
+          engine={engine}
+          field={field}
+          options={resolvedOptions[field.key] ?? field.options}
+          disabled={loading}
+          components={components}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={onFocus}
+        />
+      ))}
+    </div>
+  );
+});
+
+function FormTopLevelErrors({ engine }: { engine: FormEngine }) {
+  useFormSnapshot(engine);
+  if (engine.topLevelErrors.length === 0) return null;
+
+  return (
+    <div className="fh-form__top-errors">
+      {engine.topLevelErrors.map((error) => (
+        <p key={error} className="fh-form__top-error">
+          {error}
+        </p>
+      ))}
+    </div>
+  );
+}
+
+interface FormActionsControllerProps {
+  engine: FormEngine;
+  definition: FormRendererProps['definition'];
+  loading: boolean;
+  ActionsComponent: FormRendererProps['ActionsComponent'];
+  onSubmit: () => void;
+  onNext: () => Promise<void>;
+  onPrev: () => void;
+  onCancel: () => void;
+}
+
+function FormActionsController({
+  engine,
+  definition,
+  loading,
+  ActionsComponent,
+  onSubmit,
+  onNext,
+  onPrev,
+  onCancel,
+}: FormActionsControllerProps) {
+  useFormSnapshot(engine);
+
+  const ActionsComp = ActionsComponent ?? FormActions;
+  const effectiveIsLastStep = engine.isLastStep || !engine.isMultiStep;
+  const primaryLabel = engine.isMultiStep && !effectiveIsLastStep
+    ? (engine.currentStep?.next?.label ?? 'Continue')
+    : (definition.submit?.label ?? 'Submit');
+  const showBack = engine.isMultiStep && !engine.isFirstStep && engine.currentStep?.back !== false;
+  const backLabel = typeof engine.currentStep?.back === 'object'
+    ? (engine.currentStep.back.label ?? 'Back')
+    : 'Back';
+  const handlePrimary = useCallback(async () => {
+    if (engine.isMultiStep && !effectiveIsLastStep) {
+      await onNext();
+    } else {
+      onSubmit();
+    }
+  }, [effectiveIsLastStep, engine, onNext, onSubmit]);
+
+  return (
+    <ActionsComp
+      submitAction={definition.submit}
+      backAction={engine.currentStep?.back}
+      cancelAction={definition.cancel}
+      isFirstStep={engine.isFirstStep}
+      isLastStep={effectiveIsLastStep}
+      isMultiStep={engine.isMultiStep}
+      loading={loading || engine.stepValidating}
+      values={engine.values}
+      onSubmit={onSubmit}
+      onNext={onNext}
+      onPrev={onPrev}
+      onCancel={onCancel}
+      primaryLabel={primaryLabel}
+      showBack={showBack}
+      backLabel={backLabel}
+      onPrimary={handlePrimary}
+    />
+  );
+}
 
 export function FormRenderer({
   definition,
@@ -25,8 +179,7 @@ export function FormRenderer({
   onAnalyticsEvent,
 }: FormRendererProps) {
   const engineOptions: FormEngineOptions = { validators, onStepValidate };
-  const engine = useFormEngine(definition, initialValues, engineOptions);
-  const resolvedOptions = useFieldOptions(engine.visibleFields, engine.values, optionsProviders);
+  const engine = useFormEngineStore(definition, initialValues, engineOptions);
 
   useEffect(() => {
     if (externalErrors) {
@@ -34,144 +187,92 @@ export function FormRenderer({
     }
   }, [externalErrors, engine]);
 
-  function handleFieldUpdate(key: string, value: unknown) {
+  const handleFieldUpdate = useCallback((key: string, value: unknown) => {
     engine.setValue(key, value);
     onFieldChange?.(key, value, engine.values);
-  }
+  }, [engine, onFieldChange]);
 
-  function handleFieldFocus(key: string) {
+  const handleFieldFocus = useCallback((key: string) => {
     onAnalyticsEvent?.({ type: 'field_focused', fieldKey: key });
-  }
+  }, [onAnalyticsEvent]);
 
-  function handleFieldBlur(key: string) {
+  const handleFieldBlur = useCallback((key: string) => {
     onAnalyticsEvent?.({
       type: 'field_blurred',
       fieldKey: key,
       hasValue: engine.values[key] !== undefined && engine.values[key] !== '',
     });
-  }
+  }, [engine, onAnalyticsEvent]);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  const submit = useCallback(() => {
     const allErrors = engine.validate();
-    for (const [key, msg] of Object.entries(allErrors)) {
-      onAnalyticsEvent?.({ type: 'field_error', fieldKey: key, error: msg });
+    for (const [key, message] of Object.entries(allErrors)) {
+      onAnalyticsEvent?.({ type: 'field_error', fieldKey: key, error: message });
     }
     if (Object.keys(allErrors).length > 0) return;
+
     const submitValues = engine.getSubmitValues();
     onAnalyticsEvent?.({ type: 'form_submitted', fieldCount: Object.keys(submitValues).length });
     onSubmit(submitValues as Record<string, unknown>);
-  }
+  }, [engine, onAnalyticsEvent, onSubmit]);
 
-  async function handleNext() {
-    const prevStep = engine.currentStep;
+  const handleSubmit = useCallback((event: React.FormEvent) => {
+    event.preventDefault();
+    submit();
+  }, [submit]);
+
+  const handleNext = useCallback(async () => {
+    const previousStep = engine.currentStep;
     const success = await engine.nextStepAsync();
-    if (success) {
-      if (prevStep) {
-        onAnalyticsEvent?.({ type: 'step_completed', stepId: prevStep.id });
-      }
-      if (engine.currentStep) {
-        onStepChange?.(engine.currentStep.id, 'next');
-        onAnalyticsEvent?.({
-          type: 'step_viewed',
-          stepId: engine.currentStep.id,
-          stepIndex: engine.currentStepIndex,
-        });
-      }
-    }
-  }
+    if (!success) return;
 
-  function handlePrev() {
+    if (previousStep) {
+      onAnalyticsEvent?.({ type: 'step_completed', stepId: previousStep.id });
+    }
+    if (engine.currentStep) {
+      onStepChange?.(engine.currentStep.id, 'next');
+      onAnalyticsEvent?.({
+        type: 'step_viewed',
+        stepId: engine.currentStep.id,
+        stepIndex: engine.currentStepIndex,
+      });
+    }
+  }, [engine, onAnalyticsEvent, onStepChange]);
+
+  const handlePrev = useCallback(() => {
     engine.prevStep();
     if (engine.currentStep) {
       onStepChange?.(engine.currentStep.id, 'back');
     }
-  }
+  }, [engine, onStepChange]);
 
-  function handleCancel() {
+  const handleCancel = useCallback(() => {
     onCancel?.();
-  }
-
-  const ProgressComp = ProgressComponent ?? FormStepProgress;
-  const ActionsComp = ActionsComponent ?? FormActions;
-
-  const effectiveIsLastStep = engine.isLastStep || !engine.isMultiStep;
-  const computedPrimaryLabel = engine.isMultiStep && !effectiveIsLastStep
-    ? (engine.currentStep?.next?.label ?? 'Continue')
-    : (definition.submit?.label ?? 'Submit');
-  const computedShowBack = engine.isMultiStep && !engine.isFirstStep && engine.currentStep?.back !== false;
-  const computedBackLabel = typeof engine.currentStep?.back === 'object'
-    ? (engine.currentStep.back.label ?? 'Back')
-    : 'Back';
-
-  async function handlePrimary() {
-    if (engine.isMultiStep && !effectiveIsLastStep) {
-      await handleNext();
-    } else {
-      handleSubmit({ preventDefault: () => {} } as React.FormEvent);
-    }
-  }
+  }, [onCancel]);
 
   return (
     <form className="fh-form" onSubmit={handleSubmit}>
-      {engine.isMultiStep && (
-        <ProgressComp
-          current={engine.progress.current}
-          total={engine.progress.total}
-          stepTitle={engine.currentStep?.title}
-          stepDescription={engine.currentStep?.description}
-        />
-      )}
-
-      <div className="fh-form__fields">
-        {engine.visibleFields.map((field) => {
-          const fieldWithOptions = resolvedOptions[field.key]
-            ? { ...field, options: resolvedOptions[field.key] }
-            : field;
-          return (
-            <FormField
-              key={field.key}
-              field={fieldWithOptions}
-              value={engine.values[field.key]}
-              error={engine.errors[field.key]}
-              loading={engine.fieldLoading[field.key]}
-              disabled={loading}
-              components={components}
-              onChange={(v) => handleFieldUpdate(field.key, v)}
-              onBlur={() => handleFieldBlur(field.key)}
-              onFocus={() => handleFieldFocus(field.key)}
-            />
-          );
-        })}
-      </div>
-
-      {engine.topLevelErrors.length > 0 && (
-        <div className="fh-form__top-errors">
-          {engine.topLevelErrors.map((error) => (
-            <p key={error} className="fh-form__top-error">
-              {error}
-            </p>
-          ))}
-        </div>
-      )}
-
-      <ActionsComp
-        submitAction={definition.submit}
-        backAction={engine.currentStep?.back}
-        cancelAction={definition.cancel}
-        isFirstStep={engine.isFirstStep}
-        isLastStep={effectiveIsLastStep}
-        isMultiStep={engine.isMultiStep}
-        loading={loading || engine.stepValidating}
-        values={engine.values}
-        onSubmit={() => handleSubmit({ preventDefault: () => {} } as React.FormEvent)}
+      <FormProgress engine={engine} ProgressComponent={ProgressComponent} />
+      <FormFields
+        key={definition.id}
+        engine={engine}
+        loading={loading}
+        components={components}
+        optionsProviders={optionsProviders}
+        onChange={handleFieldUpdate}
+        onBlur={handleFieldBlur}
+        onFocus={handleFieldFocus}
+      />
+      <FormTopLevelErrors engine={engine} />
+      <FormActionsController
+        engine={engine}
+        definition={definition}
+        loading={loading}
+        ActionsComponent={ActionsComponent}
+        onSubmit={submit}
         onNext={handleNext}
         onPrev={handlePrev}
         onCancel={handleCancel}
-        primaryLabel={computedPrimaryLabel}
-        showBack={computedShowBack}
-        backLabel={computedBackLabel}
-        onPrimary={handlePrimary}
       />
     </form>
   );
