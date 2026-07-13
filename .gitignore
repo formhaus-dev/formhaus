@@ -5,6 +5,7 @@ dist/
 *.log
 coverage/
 .vite/
+.agents/
 storybook-static/
 docs/.vitepress/cache/
 docs/.vitepress/dist/
