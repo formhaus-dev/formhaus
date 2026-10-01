@@ -1,5 +1,16 @@
 # @formhaus/vue
 
+## 0.6.0
+
+### Minor Changes
+
+- ddcb5da: New `HeadlessFormRenderer` renders only the components you pass, so the built-in native fields stay out of your bundle.
+
+### Patch Changes
+
+- Updated dependencies [ddcb5da]
+  - @formhaus/core@0.6.0
+
 ## 0.5.0
 
 ### Patch Changes
