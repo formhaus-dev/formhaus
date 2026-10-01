@@ -1,5 +1,4 @@
 import type { FormEngine } from '@formhaus/core';
-import { FormStepProgress } from './FormStepProgress';
 import { useStructureSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
@@ -13,11 +12,10 @@ export function FormProgressController({
   ProgressComponent,
 }: FormProgressControllerProps) {
   useStructureSnapshot(engine);
-  if (!engine.isMultiStep) return null;
+  if (!engine.isMultiStep || !ProgressComponent) return null;
 
-  const Progress = ProgressComponent ?? FormStepProgress;
   return (
-    <Progress
+    <ProgressComponent
       current={engine.progress.current}
       total={engine.progress.total}
       stepTitle={engine.currentStep?.title}

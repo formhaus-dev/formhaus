@@ -165,6 +165,46 @@ Use all custom component props together:
 
 If you don't pass these props, the built-in components render as before. No breaking changes.
 
+## Headless renderer
+
+`FormRenderer` imports the built-in native fields, actions and step progress. They stay in your bundle even when you replace all of them. If you map every field type you use and pass your own actions and progress components, use `HeadlessFormRenderer`. It takes the same props and events as `FormRenderer`, but it does not import any built-in component. This drops the built-in fields from your bundle.
+
+::: code-group
+```vue [Vue]
+<script setup lang="ts">
+import { HeadlessFormRenderer } from '@formhaus/vue'
+</script>
+
+<template>
+  <HeadlessFormRenderer
+    :definition="definition"
+    :components="{ text: MyInput, email: MyInput, select: MySelect }"
+    :actions-component="MyFormActions"
+    :progress-component="MyStepProgress"
+    @submit="onSubmit"
+  />
+</template>
+```
+
+```tsx [React]
+import { HeadlessFormRenderer } from '@formhaus/react'
+
+<HeadlessFormRenderer
+  definition={definition}
+  components={{ text: MyInput, email: MyInput, select: MySelect }}
+  ActionsComponent={MyFormActions}
+  ProgressComponent={MyStepProgress}
+  onSubmit={handleSubmit}
+/>
+```
+:::
+
+`HeadlessFormRenderer` has no fallbacks:
+
+- A field type with no mapped component renders an "Unsupported field type" placeholder.
+- Without an actions component, the form renders no buttons.
+- Without a progress component, a multi-step form renders no progress bar.
+
 ## Exported types
 
 Import the prop interfaces to type your custom components:

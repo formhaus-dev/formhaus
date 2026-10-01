@@ -1,4 +1,5 @@
 export { FormRenderer } from './FormRenderer';
+export { HeadlessFormRenderer } from './HeadlessFormRenderer';
 export { FormActions } from './FormActions';
 export { FormStepProgress } from './FormStepProgress';
 export { useFormEngine } from './hooks/useFormEngine';

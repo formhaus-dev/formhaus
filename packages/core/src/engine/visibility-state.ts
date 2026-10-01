@@ -27,7 +27,9 @@ export class VisibilityState {
   };
 
   constructor(private definition: FormDefinition) {
-    this.allFields = this.computeAllFields();
+    this.allFields = definition.steps?.length
+      ? definition.steps.flatMap((step) => step.fields)
+      : definition.fields ?? [];
     this.fieldByKey = new Map(this.allFields.map((field) => [field.key, field]));
     for (const step of definition.steps ?? []) {
       for (const field of step.fields) this.stepByFieldKey.set(field.key, step);
@@ -139,12 +141,6 @@ export class VisibilityState {
 
   private get isMultiStep(): boolean {
     return (this.definition.steps ?? []).length > 0;
-  }
-
-  private computeAllFields(): FormField[] {
-    return this.isMultiStep
-      ? (this.definition.steps ?? []).flatMap((step) => step.fields)
-      : this.definition.fields ?? [];
   }
 
   private buildIndexes(): void {

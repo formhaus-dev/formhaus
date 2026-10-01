@@ -1,6 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
 import { useCallback } from 'react';
-import { FormActions } from './FormActions';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
@@ -26,7 +25,6 @@ export function FormActionsController({
   onCancel,
 }: FormActionsControllerProps) {
   useFormSnapshot(engine);
-  const Actions = ActionsComponent ?? FormActions;
   const isLastStep = engine.isLastStep || !engine.isMultiStep;
   const primaryLabel = engine.isMultiStep && !isLastStep
     ? (engine.currentStep?.next?.label ?? 'Continue')
@@ -40,8 +38,10 @@ export function FormActionsController({
     else onSubmit();
   }, [engine, isLastStep, onNext, onSubmit]);
 
+  if (!ActionsComponent) return null;
+
   return (
-    <Actions
+    <ActionsComponent
       submitAction={definition.submit}
       backAction={engine.currentStep?.back}
       cancelAction={definition.cancel}

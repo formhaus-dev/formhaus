@@ -11,6 +11,7 @@ import SelectField from './fields/SelectField.vue';
 import SwitchField from './fields/SwitchField.vue';
 import TextField from './fields/TextField.vue';
 import TextareaField from './fields/TextareaField.vue';
+import type { FieldComponentMap } from './types';
 
 export const defaultFieldComponents: Record<DefaultFieldType, Component> = {
   text: TextField,
@@ -29,3 +30,13 @@ export const defaultFieldComponents: Record<DefaultFieldType, Component> = {
   datetime: DateTimeField,
   textarea: TextareaField,
 };
+
+export function withDefaultFields(
+  components?: Partial<FieldComponentMap>,
+): Partial<FieldComponentMap> {
+  const merged: Partial<FieldComponentMap> = { ...defaultFieldComponents };
+  for (const [type, component] of Object.entries(components ?? {})) {
+    if (component) merged[type] = component;
+  }
+  return merged;
+}

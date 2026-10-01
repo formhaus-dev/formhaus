@@ -1,4 +1,5 @@
 export { default as FormRenderer } from './FormRenderer.vue';
+export { default as HeadlessFormRenderer } from './HeadlessFormRenderer.vue';
 export { default as FormField } from './FormField.vue';
 export { default as FormActions } from './FormActions.vue';
 export { default as FormStepProgress } from './FormStepProgress.vue';
