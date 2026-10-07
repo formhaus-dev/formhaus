@@ -1,5 +1,21 @@
 # @formhaus/vue
 
+## 0.7.0
+
+### Minor Changes
+
+- - New `onBeforeStepChange`, `onAfterStepChange`, `onBeforeSubmit`, `onAfterSubmit` and `onError` props.
+  - New `submitHandler` prop is awaited before `submit` is emitted. Inputs stay disabled and repeated submits are ignored until it settles.
+  - Radio fields with `autoAdvance` go to the next step on click, Space or Enter. Arrow keys only select.
+  - Custom fields emit `commit`. Custom actions receive `showPrimary`.
+  - Focus moves to the first field of the new step after navigation.
+  - Pressing Enter inside the form runs the primary action.
+
+### Patch Changes
+
+- Updated dependencies
+  - @formhaus/core@0.7.0
+
 ## 0.6.0
 
 ### Minor Changes

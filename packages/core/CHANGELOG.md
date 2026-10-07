@@ -1,5 +1,16 @@
 # @formhaus/core
 
+## 0.7.0
+
+### Minor Changes
+
+- - New `onBeforeStepChange`, `onAfterStepChange`, `onBeforeSubmit` and `onAfterSubmit` options. A before-hook cancels the action by returning `false`.
+  - New `prevStepAsync()`, `submitAsync()` and `cancelPendingActions()` methods and the `submitting` state.
+  - New `FormLifecycleError` marks an after-hook failure for an action that already completed.
+  - New `autoAdvance` field option and `next: false` step option.
+  - New step `routes` choose the next step from answers. Exposes the `StepRoute` type.
+  - `FormEngine` throws on invalid routes. `validateDefinition()` reports them and warns when a branch falls through into a sibling branch.
+
 ## 0.6.0
 
 No changes. Version aligned with `@formhaus/react` and `@formhaus/vue`.
