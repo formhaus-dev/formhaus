@@ -41,7 +41,7 @@ interface FormStep {
   fields: FormField[];
   show?: ShowCondition[];    // step visible when ALL conditions true
   showAny?: ShowCondition[]; // step visible when ANY condition true
-  next?: FormAction;         // custom "next" button label
+  next?: FormAction | false; // custom "next" or false to hide it
   back?: FormAction | false; // custom "back" or false to hide it
 }
 
@@ -52,6 +52,7 @@ interface FormField {
   placeholder?: string;
   helperText?: string;
   defaultValue?: unknown;
+  autoAdvance?: boolean;     // explicit activation advances; built-in radio supports it
   show?: ShowCondition[];     // field visible when ALL conditions true
   showAny?: ShowCondition[];  // field visible when ANY condition true
   validation?: FieldValidation;

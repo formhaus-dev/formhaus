@@ -20,6 +20,10 @@ Formhaus keeps fields, validation, visibility, and steps in a compact JSON defin
 
 Svelte, Solid, or anything else: use `@formhaus/core` directly. The [playground](https://formhaus.dev/playground.html) has a Svelte example.
 
+## Navigation and submission
+
+Radio fields can advance on explicit activation with `autoAdvance: true`; a step can hide Next with `next: false`. Cancellable async hooks run before/after navigation and submission. See [step navigation and lifecycle hooks](docs/guide/steps.md).
+
 ## Install
 
 ```bash

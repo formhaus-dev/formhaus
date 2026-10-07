@@ -20,6 +20,7 @@ export function FormActions({
   isLastStep,
   isMultiStep,
   loading,
+  showPrimary = true,
   values = {},
   onSubmit,
   onNext,
@@ -74,7 +75,7 @@ export function FormActions({
           </button>
         )}
       </div>
-      <button
+      {showPrimary && <button
         type="button"
         className="fh-form-actions__button fh-form-actions__button--primary"
         disabled={primaryDisabled}
@@ -82,7 +83,7 @@ export function FormActions({
         onClick={handlePrimary}
       >
         {primaryLabel}
-      </button>
+      </button>}
     </div>
   );
 }

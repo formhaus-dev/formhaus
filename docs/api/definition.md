@@ -29,6 +29,7 @@ interface FormField {
   placeholder?: string;           // Placeholder text
   helperText?: string;            // Hint text below the field
   defaultValue?: unknown;         // Pre-filled value
+  autoAdvance?: boolean;          // Advance on explicit field activation
   show?: ShowCondition[];         // AND conditions for visibility
   showAny?: ShowCondition[];      // OR conditions for visibility
   validation?: FieldValidation;   // Validation rules
@@ -62,7 +63,7 @@ interface FormStep {
   fields: FormField[];
   show?: ShowCondition[];       // Step-level visibility
   showAny?: ShowCondition[];
-  next?: FormAction;            // Override "Continue" button
+  next?: FormAction | false;    // Override or hide "Continue" button
   back?: FormAction | false;    // Override or hide "Back" button
 }
 ```
@@ -183,3 +184,9 @@ A working single-step form with two fields:
   ]
 }
 ```
+
+## Explicit field activation
+
+`FormField.autoAdvance?: boolean` enables forward navigation when a renderer field is intentionally committed. Built-in radio fields support click, Space and Enter; arrow keys only select. Custom React fields call `onCommit(value)` and Vue fields emit `commit`. Programmatic values and initial values never advance; the final step never auto-submits.
+
+`FormStep.next` also accepts `false` to hide Next. This changes the action UI, not navigation permission. Provide an accessible retry action whenever Next is hidden. See the [radio activation example](../guide/steps#advance-when-an-answer-is-activated).

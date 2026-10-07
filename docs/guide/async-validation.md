@@ -102,7 +102,7 @@ async function handleNext() {
 }
 ```
 
-With `FormRenderer`, errors propagate as unhandled promise rejections. Wrap `onStepValidate` if you want to handle them:
+With `FormRenderer` or `HeadlessFormRenderer`, rejections reach the `onError` callback, or display as a form-level error when it is omitted. You can also return a field or top-level error from `onStepValidate`:
 
 ```ts
 async function validateStep(stepId, values) {
@@ -117,9 +117,11 @@ async function validateStep(stepId, values) {
 
 ## Edge cases
 
-**Back while validating.** The async call finishes but the result is discarded. No stale errors on the wrong step.
+**Back while validating.** Renderers disable Back while an async action is pending. If low-level core navigation changes the step during a pending guard, its result is discarded.
 
-**Last step.** `onStepValidate` runs on the last step too. Errors block submit.
+**Last step.** The renderer Submit action does not invoke `onStepValidate`. Perform final server validation in the submit handler before saving.
+
+`nextStepAsync()` returns `false` on the final step without running validation or navigation hooks. Use `onBeforeSubmit` for cancellable checks before submission; see [lifecycle hooks](/guide/steps#lifecycle-hooks).
 
 ## Type reference
 
@@ -156,10 +158,10 @@ const engine = new FormEngine(definition, initialValues, {
 const advanced = await engine.nextStepAsync();
 
 // Check loading state for your UI:
-engine.stepValidating; // true while onStepValidate is running
+engine.stepValidating; // true while navigation validation and hooks are running
 ```
 
-`nextStep()` is unchanged and ignores `onStepValidate`.
+`nextStep()` ignores `onStepValidate` and lifecycle hooks. `nextStepAsync()` also awaits the [before/after navigation hooks](/guide/steps#lifecycle-hooks); a before-hook can cancel an otherwise valid transition.
 
 ## Next steps
 

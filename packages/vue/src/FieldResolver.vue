@@ -14,6 +14,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
+  (e: 'commit', value: unknown): void;
   (e: 'blur'): void;
   (e: 'focus'): void;
 }>();
@@ -31,6 +32,7 @@ const fieldComponent = computed<Component | null>(() => props.components?.[props
     :loading="props.loading"
     :disabled="props.disabled"
     @update:value="(v: unknown) => emit('update:value', v)"
+    @commit="(v: unknown) => emit('commit', v)"
     @blur="emit('blur')"
     @focus="emit('focus')"
   />

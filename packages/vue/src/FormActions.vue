@@ -11,6 +11,7 @@ const props = defineProps<{
   loading?: boolean;
   values?: Record<string, unknown>;
   primaryLabel?: string;
+  showPrimary?: boolean;
   showBack?: boolean;
   backLabel?: string;
 }>();
@@ -91,6 +92,7 @@ function getBackLabel(): string {
       </button>
     </div>
     <button
+      v-if="props.showPrimary !== false"
       type="button"
       class="fh-form-actions__button fh-form-actions__button--primary"
       :disabled="isActionDisabled(props.isMultiStep && !props.isLastStep ? undefined : props.submitAction)"

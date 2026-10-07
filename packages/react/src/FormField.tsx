@@ -9,6 +9,7 @@ interface FormFieldProps {
   disabled?: boolean;
   components?: FieldComponentMap;
   onChange: (value: unknown) => void;
+  onCommit?: (value: unknown) => void;
   onBlur: () => void;
   onFocus?: () => void;
 }
@@ -21,6 +22,7 @@ export function FormField({
   disabled,
   components,
   onChange,
+  onCommit,
   onBlur,
   onFocus,
 }: FormFieldProps) {
@@ -38,6 +40,7 @@ export function FormField({
       loading={loading}
       disabled={disabled}
       onChange={onChange}
+      onCommit={onCommit}
       onBlur={onBlur}
       onFocus={onFocus}
     />

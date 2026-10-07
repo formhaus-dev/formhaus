@@ -27,7 +27,7 @@ export function FormActionsController({
   useFormSnapshot(engine);
   const isLastStep = engine.isLastStep || !engine.isMultiStep;
   const primaryLabel = engine.isMultiStep && !isLastStep
-    ? (engine.currentStep?.next?.label ?? 'Continue')
+    ? (typeof engine.currentStep?.next === 'object' ? engine.currentStep.next.label ?? 'Continue' : 'Continue')
     : (definition.submit?.label ?? 'Submit');
   const showBack = engine.isMultiStep && !engine.isFirstStep && engine.currentStep?.back !== false;
   const backLabel = typeof engine.currentStep?.back === 'object'
@@ -48,13 +48,14 @@ export function FormActionsController({
       isFirstStep={engine.isFirstStep}
       isLastStep={isLastStep}
       isMultiStep={engine.isMultiStep}
-      loading={loading || engine.stepValidating}
+      loading={loading || engine.stepValidating || engine.submitting}
       values={engine.values}
       onSubmit={onSubmit}
       onNext={onNext}
       onPrev={onPrev}
       onCancel={onCancel}
       primaryLabel={primaryLabel}
+      showPrimary={isLastStep || engine.currentStep?.next !== false}
       showBack={showBack}
       backLabel={backLabel}
       onPrimary={handlePrimary}

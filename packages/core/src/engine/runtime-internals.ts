@@ -1,6 +1,6 @@
 import type { ValidatorFn } from '../validation';
 import type { FormDefinition, FormField, FormStep } from '../types';
-import type { StepValidateFn } from './engine-options';
+import type { FormEngineOptions, StepValidateFn } from './engine-options';
 import type { NotifyOptions } from './subscriptions';
 import type { VisibilityState } from './visibility-state';
 
@@ -17,6 +17,9 @@ export interface EngineInternals {
   fieldLoading: Record<string, boolean>;
   stepValidating: boolean;
   validationEpoch: number;
+  operationEpoch: number;
+  submitting: boolean;
+  readonly lifecycle: FormEngineOptions;
   readonly validators: Record<string, ValidatorFn>;
   readonly onStepValidate?: StepValidateFn;
   readonly visibility: VisibilityState;

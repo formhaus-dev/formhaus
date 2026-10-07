@@ -1,4 +1,4 @@
-import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, StepValidateFn, ValidatorFn } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, StepValidateFn, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
 
 export type OptionsProvider = (
@@ -12,6 +12,7 @@ export interface FieldComponentProps {
   loading?: boolean;
   disabled?: boolean;
   onChange: (value: unknown) => void;
+  onCommit?: (value: unknown) => void;
   onBlur: () => void;
   onFocus?: () => void;
 }
@@ -28,6 +29,7 @@ export interface FormActionsProps {
   loading?: boolean;
   values?: Record<string, unknown>;
   primaryLabel?: string;
+  showPrimary?: boolean;
   showBack?: boolean;
   backLabel?: string;
   onSubmit: () => void;
@@ -44,7 +46,8 @@ export interface FormStepProgressProps {
   stepDescription?: string;
 }
 
-export interface FormRendererProps {
+export interface FormRendererProps extends FormEngineOptions {
+  onError?: (error: unknown) => void;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
   onSubmit: (values: Record<string, unknown>) => Promise<void> | void;

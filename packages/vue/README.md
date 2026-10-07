@@ -2,6 +2,10 @@
 
 Vue 3 adapter for [Formhaus](https://github.com/ignsm/formhaus). Renders forms from a JSON definition with native HTML inputs by default. Drop in your own components via a `components` prop.
 
+## Navigation and submission
+
+`FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. Use `:submit-handler="save"` to await saving and track loading. Legacy `@submit` is a notification whose listeners cannot be awaited; do not save in both places. Custom fields emit `commit`; custom actions honor `showPrimary`. See the [complete Vue example and lifecycle semantics](../../docs/guide/steps.md#vue-lifecycle-example).
+
 ## Install
 
 ```bash
@@ -30,7 +34,7 @@ async function handleSubmit(values: Record<string, unknown>) {
 </script>
 
 <template>
-  <FormRenderer :definition="definition" @submit="handleSubmit" />
+  <FormRenderer :definition="definition" :submit-handler="handleSubmit" />
 </template>
 ```
 

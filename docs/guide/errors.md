@@ -19,6 +19,7 @@ async function onSubmit(values) {
   } catch (err) {
     // Server returns: { email: "Already registered" }
     serverErrors.value = err.fieldErrors;
+    throw err;
   }
 }
 </script>
@@ -27,7 +28,7 @@ async function onSubmit(values) {
   <FormRenderer
     :definition="definition"
     :errors="serverErrors"
-    @submit="onSubmit"
+    :submit-handler="onSubmit"
   />
 </template>
 ```
@@ -42,6 +43,7 @@ function MyForm() {
     } catch (err) {
       // Server returns: { email: "Already registered" }
       setErrors(err.fieldErrors);
+      throw err;
     }
   }
 
@@ -56,7 +58,7 @@ function MyForm() {
 ```
 :::
 
-In a multi-step form, if the error is on a field in step 1 and the user is on step 3, the form auto-navigates back to step 1.
+In a multi-step form, if the error is on a field in step 1 and the user is on step 3, the form auto-navigates back to step 1. If you catch a failed save to map its field errors, rethrow it so `onAfterSubmit` does not run as if saving succeeded. Rejections reach `onError`, or the form-level error banner when that callback is omitted.
 
 ## Top-level errors
 
@@ -80,10 +82,31 @@ See [Async Step Validation](/guide/async-validation#error-handling) for how `onS
 
 ## Loading state
 
-`FormRenderer` does not track the Promise returned by `onSubmit`. Keep request state in the parent and pass it through `loading`:
+React awaits the Promise returned by `onSubmit`. Vue awaits `submitHandler`; the legacy `@submit` event is a notification and cannot await an async listener. `FormRenderer` and `HeadlessFormRenderer` keep fields and actions busy during awaited navigation, submission and lifecycle hooks.
 
 ::: code-group
 ```vue [Vue]
+<FormRenderer
+  :definition="definition"
+  :submit-handler="save"
+  :on-error="handleRequestError"
+/>
+```
+
+```tsx [React]
+<FormRenderer
+  definition={definition}
+  onSubmit={save}
+  onError={handleRequestError}
+/>
+```
+:::
+
+Here `save(values)` returns the request Promise and rejects on failure. No separate loading state is required for that request. In Vue, `@submit` still fires after `submitHandler` succeeds; do not send the same request from both.
+
+Keep parent-owned `loading` for other work that should disable the form, or for a legacy Vue `@submit` listener that performs the save itself:
+
+```vue
 <script setup>
 import { ref } from 'vue';
 
@@ -110,33 +133,9 @@ async function onSubmit(values) {
 </template>
 ```
 
-```tsx [React]
-function MyForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+With this legacy Vue pattern, `onAfterSubmit` means the event was dispatched, not that its async listener finished. Use `submitHandler` when the lifecycle must include the request.
 
-  async function handleSubmit(values) {
-    setIsSubmitting(true);
-    try {
-      await api.submitForm(values);
-    } catch (error) {
-      handleRequestError(error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  }
-
-  return (
-    <FormRenderer
-      definition={definition}
-      loading={isSubmitting}
-      onSubmit={handleSubmit}
-    />
-  );
-}
-```
-:::
-
-When `loading` is true, the default fields and action buttons are disabled. The React primary button also gets `aria-busy`. The built-in actions do not render a spinner; use a custom actions component if you need one.
+While busy, the default fields and action buttons are disabled. The form has `aria-busy`; the React primary button also has it. The built-in actions do not render a spinner; use a custom actions component if you need one. See [lifecycle ordering and after-hook failures](/guide/steps#lifecycle-hooks).
 
 ## Field-level loading
 

@@ -10,6 +10,10 @@ import { FormEngine } from '@formhaus/core';
 const engine = new FormEngine(definition, initialValues, {
   validators,
   onStepValidate,
+  onBeforeStepChange,
+  onAfterStepChange,
+  onBeforeSubmit,
+  onAfterSubmit,
 });
 ```
 
@@ -23,7 +27,8 @@ Both `initialValues` and the options object are optional. Values belonging to hi
 | `errors` | `Record<string, string>` | Errors attached to visible fields |
 | `topLevelErrors` | `string[]` | Errors for missing or hidden fields |
 | `fieldLoading` | `Record<string, boolean>` | Per-field loading state |
-| `stepValidating` | `boolean` | Whether `onStepValidate` is running |
+| `stepValidating` | `boolean` | Whether async navigation, including validation and before/after hooks, is running |
+| `submitting` | `boolean` | Whether submission validation, hooks or the submit handler are running |
 | `currentStepIndex` | `number` | Zero-based index in the visible step list |
 | `visibleFields` | `FormField[]` | Visible fields on the current step, or all visible fields in a single-step form |
 | `visibleSteps` | `FormStep[]` | Steps whose conditions currently pass |
@@ -45,16 +50,17 @@ Both `initialValues` and the options object are optional. Values belonging to hi
 | `getSubmitValues()` | `Record<string, unknown>` | Returns values for visible fields only |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
 
-`reset()` also removes values hidden by the new reset values. Pending async step-validation results are discarded.
+`reset()` also removes values hidden by the new reset values. Pending navigation and pre-submit results are discarded. A submission already dispatched cannot be undone.
 
 ## Navigation
 
 | Method | Returns | Description |
 |---|---|---|
-| `nextStep()` | `boolean` | Validates and advances without running `onStepValidate` |
-| `nextStepAsync()` | `Promise<boolean>` | Validates, awaits `onStepValidate`, and advances when no errors are returned |
-| `prevStep()` | `void` | Moves to the previous visible step |
-| `goToStepWithField(key)` | `void` | Moves to the visible step containing a field |
+| `nextStep()` | `boolean` | Validates and advances without async validation or lifecycle hooks |
+| `nextStepAsync(reason?)` | `Promise<boolean>` | Validates, awaits `onStepValidate` and navigation hooks; `reason` is `next` (default) or `autoAdvance` |
+| `prevStep()` | `void` | Moves to the previous visible step without lifecycle hooks |
+| `prevStepAsync()` | `Promise<boolean>` | Runs navigation hooks and moves back without forward validation |
+| `goToStepWithField(key)` | `void` | Moves to the visible step containing a field without lifecycle hooks |
 
 See [Async step validation](/guide/async-validation#using-the-engine-directly) for an `onStepValidate` example.
 
@@ -80,3 +86,36 @@ For renderers, the granular subscriptions avoid updating unrelated fields:
 | `getStructureSnapshot()` | Returns the structure revision number |
 
 Each `subscribe` method returns an unsubscribe function. Snapshot methods return stable numbers until the corresponding state changes, so they can be passed to external-store APIs such as React's `useSyncExternalStore`.
+
+## Navigation and submission lifecycle
+
+`FormEngineOptions` additionally accepts `onBeforeStepChange`, `onAfterStepChange`, `onBeforeSubmit` and `onAfterSubmit`. Before-hooks may return `false` to cancel, synchronously or asynchronously. Step hooks receive `StepChangeContext`; submit hooks receive submission values.
+
+These types are exported by `@formhaus/core`:
+
+```ts
+interface StepChangeContext {
+  fromStepId: string
+  toStepId: string
+  direction: 'next' | 'back'
+  reason: 'next' | 'back' | 'autoAdvance'
+  values: Record<string, unknown>
+}
+
+type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>
+type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>
+type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>
+type SubmitFn = (values: Record<string, unknown>) => void | Promise<void>
+```
+
+`onAfterSubmit` and `submitAsync(handler)` use `SubmitFn`. Callback values are shallow snapshots. For a complete Vue component and React usage, see [lifecycle hooks](/guide/steps#lifecycle-hooks).
+
+| API | Result |
+| --- | --- |
+| `nextStepAsync(reason = 'next')` | `Promise<boolean>`; validates and runs hooks. Renderers use `reason: 'autoAdvance'` for field activation. |
+| `prevStepAsync()` | `Promise<boolean>`; runs hooks without forward validation. |
+| `submitAsync(handler)` | `Promise<boolean>`; validates, runs the before-hook, awaits the handler and then the after-hook. |
+| `cancelPendingActions()` | Invalidates pending guards without clearing answers. Cannot undo a dispatched submission. |
+| `submitting` | True while submission and its hooks are pending. |
+
+A cancelled, invalid or concurrent action resolves to `false`. Exceptions reject. `FormLifecycleError` has `committed: true`, `phase` and `cause` for an after-hook failure: the action already completed. `stepValidating` remains true throughout navigation hooks. Existing synchronous methods, error redirection and reset do not run async hooks. See [lifecycle ordering, recovery and adapter examples](../guide/steps#lifecycle-hooks).

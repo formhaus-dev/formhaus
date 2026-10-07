@@ -4,6 +4,10 @@ Framework-agnostic form engine. Types, validation, visibility, multi-step naviga
 
 Part of [Formhaus](https://github.com/ignsm/formhaus). For React, use `@formhaus/react`. For Vue, use `@formhaus/vue`.
 
+## Navigation and submission
+
+Use `nextStepAsync()`, `prevStepAsync()` and `submitAsync(handler)` for cancellable async before/after hooks. Synchronous navigation remains available without lifecycle hooks. See [step navigation and lifecycle](../../docs/guide/steps.md).
+
 ## Install
 
 ```bash

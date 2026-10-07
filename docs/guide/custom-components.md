@@ -39,9 +39,10 @@ Your component receives pre-computed convenience props so you don't need to re-d
 | Prop | Type | Description |
 |------|------|-------------|
 | `primaryLabel` | `string?` | Resolved label for the primary button ("Continue" or submit label) |
+| `showPrimary` | `boolean?` | False when the current step hides Next with `next: false`; final Submit remains visible |
 | `showBack` | `boolean?` | Whether the back button should be shown |
 | `backLabel` | `string?` | Resolved label for the back button |
-| `loading` | `boolean?` | Whether the form is submitting |
+| `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 | `cancelAction` | `FormAction?` | Cancel button config |
 
 In React, call `onPrimary` for the primary action and `onPrev` for back. In Vue, emit `primary` and `prev`.
@@ -62,8 +63,8 @@ const emit = defineEmits<{
 
 <template>
   <div class="my-actions">
-    <button v-if="showBack" type="button" @click="emit('prev')">{{ backLabel }}</button>
-    <button type="button" @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
+    <button v-if="showBack" type="button" :disabled="loading" @click="emit('prev')">{{ backLabel }}</button>
+    <button v-if="showPrimary !== false" type="button" @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
   </div>
 </template>
 ```
@@ -74,13 +75,13 @@ const emit = defineEmits<{
 import type { FormActionsProps } from '@formhaus/react'
 
 export function MyFormActions({
-  primaryLabel, showBack, backLabel, loading,
+  primaryLabel, showPrimary = true, showBack, backLabel, loading,
   onPrimary, onPrev,
 }: FormActionsProps) {
   return (
     <div className="my-actions">
-      {showBack && <button type="button" onClick={onPrev}>{backLabel}</button>}
-      <button type="button" disabled={loading} onClick={onPrimary}>{primaryLabel}</button>
+      {showBack && <button type="button" disabled={loading} onClick={onPrev}>{backLabel}</button>}
+      {showPrimary && <button type="button" disabled={loading} onClick={onPrimary}>{primaryLabel}</button>}
     </div>
   )
 }
@@ -96,7 +97,7 @@ export function MyFormActions({
 | `isFirstStep` | `boolean` | Whether this is the first step |
 | `isLastStep` | `boolean` | Whether this is the last step |
 | `isMultiStep` | `boolean` | Whether the form has multiple steps |
-| `loading` | `boolean?` | Parent loading state or async step validation state |
+| `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 
 In Vue, you can also emit `submit`, `next`, `prev`, `cancel` events directly. In React, call `onSubmit`, `onNext`, `onPrev`, `onCancel` callbacks.
 
@@ -198,6 +199,8 @@ import { HeadlessFormRenderer } from '@formhaus/react'
 />
 ```
 :::
+
+`HeadlessFormRenderer` supports the same [lifecycle hooks and awaited submission](/guide/steps#lifecycle-hooks). Custom fields must implement [explicit activation](/guide/fields#explicit-field-activation) for `autoAdvance`; custom actions must honor `showPrimary` and `loading` as above.
 
 `HeadlessFormRenderer` has no fallbacks:
 

@@ -83,6 +83,8 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   const previousErrors = engine.errors;
   const loadingFields = Object.keys(engine.fieldLoading);
   engine.validationEpoch++;
+  engine.operationEpoch++;
+  engine.submitting = false;
   engine.values = createValues(engine.visibility.allFields, values);
   engine.errors = {};
   engine.topLevelErrors = [];

@@ -5,7 +5,9 @@ import type {
   FormAnalyticsEvent,
   FormField,
   FormDefinition,
+  FormEngineOptions,
   StepValidateFn,
+  SubmitFn,
   ValidatorFn,
 } from '@formhaus/core';
 import type { Component } from 'vue';
@@ -22,6 +24,7 @@ export interface FormActionsProps {
   loading?: boolean;
   values?: Record<string, unknown>;
   primaryLabel?: string;
+  showPrimary?: boolean;
   showBack?: boolean;
   backLabel?: string;
 }
@@ -37,7 +40,9 @@ export type OptionsProvider = (
   values: Record<string, unknown>,
 ) => FieldOption[] | Promise<FieldOption[]>;
 
-export interface FormRendererProps {
+export interface FormRendererProps extends FormEngineOptions {
+  onError?: (error: unknown) => void;
+  submitHandler?: SubmitFn;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
   validators?: Record<string, ValidatorFn>;

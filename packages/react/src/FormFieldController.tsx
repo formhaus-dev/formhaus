@@ -10,6 +10,7 @@ interface FormFieldControllerProps {
   disabled?: boolean;
   components?: FieldComponentMap;
   onChange: (key: string, value: unknown) => void;
+  onCommit: (key: string, value: unknown) => void;
   onBlur: (key: string) => void;
   onFocus: (key: string) => void;
 }
@@ -21,6 +22,7 @@ export const FormFieldController = memo(function FormFieldController({
   disabled,
   components,
   onChange,
+  onCommit,
   onBlur,
   onFocus,
 }: FormFieldControllerProps) {
@@ -39,6 +41,7 @@ export const FormFieldController = memo(function FormFieldController({
     (value: unknown) => onChange(field.key, value),
     [field.key, onChange],
   );
+  const handleCommit = useCallback((value: unknown) => onCommit(field.key, value), [field.key, onCommit]);
   const handleBlur = useCallback(() => onBlur(field.key), [field.key, onBlur]);
   const handleFocus = useCallback(() => onFocus(field.key), [field.key, onFocus]);
   const fieldWithOptions = options ? { ...field, options } : field;
@@ -52,6 +55,7 @@ export const FormFieldController = memo(function FormFieldController({
       disabled={disabled}
       components={components}
       onChange={handleChange}
+      onCommit={handleCommit}
       onBlur={handleBlur}
       onFocus={handleFocus}
     />

@@ -338,6 +338,12 @@ Each custom component gets the field descriptor, the current value, and validati
 
 In React, call `onChange(value)` and `onBlur()`. In Vue, emit `update:value` and `blur`.
 
+### Explicit field activation
+
+For a deliberate activation that may advance a step, React fields call the optional `onCommit(value)` callback; Vue fields emit `commit` with the value. This saves the value and, when `field.autoAdvance` is true, validates and advances a non-final step. Emit only the commit event for an activation, because it also updates the value. Ordinary edits use `onChange`/`update:value` and never navigate.
+
+The built-in radio activates on click, Space or Enter; arrows only change the selection. A custom radio should preserve that distinction and allow the selected option to be activated again after a cancelled guard. Respect `disabled` while hooks or submission are pending. See the [complete radio example](/guide/steps#advance-when-an-answer-is-activated).
+
 ### React example
 
 ```tsx

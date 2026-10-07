@@ -5,10 +5,24 @@ import type { FormFieldProps } from '../types';
 const props = defineProps<FormFieldProps>();
 const emit = defineEmits<{
   (e: 'update:value', value: unknown): void;
+  (e: 'commit', value: unknown): void;
   (e: 'blur'): void;
   (e: 'focus'): void;
 }>();
 
+let arrowSelection = false;
+function onKeyDown(event: KeyboardEvent, value: string) {
+  arrowSelection = event.key.startsWith('Arrow');
+  if (props.field.autoAdvance && event.key === ' ') event.preventDefault();
+  if (props.field.autoAdvance && event.key === 'Enter') {
+    event.preventDefault();
+    if (!event.repeat) emit('commit', value);
+  }
+}
+function onKeyUp(event: KeyboardEvent, value: string) {
+  arrowSelection = false;
+  if (props.field.autoAdvance && event.key === ' ') { event.preventDefault(); emit('commit', value); }
+}
 const groupId = computed(() => `fh-field-${props.field.key}`);
 const helperId = computed(() => `fh-field-${props.field.key}-helper`);
 </script>
@@ -37,7 +51,12 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
           :checked="String(props.value) === String(option.value)"
           :disabled="props.disabled || props.loading"
           @focus="emit('focus')"
-          @change="emit('update:value', option.value)"
+          @blur="emit('blur')"
+          @keydown="onKeyDown($event, option.value)"
+          @keyup="onKeyUp($event, option.value)"
+          @pointerdown="arrowSelection = false"
+          @click="() => { if (props.field.autoAdvance && !arrowSelection) emit('commit', option.value); }"
+          @change="() => { if (!props.field.autoAdvance || arrowSelection) emit('update:value', option.value); }"
         />
         <label :for="`${groupId}-${option.value}`" class="fh-field__radio-label">
           {{ option.label }}

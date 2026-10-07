@@ -9,20 +9,10 @@ Each editable row is its own form. One field, one validation cycle, one submit h
 ::: code-group
 ```tsx [React]
 import { FormRenderer } from '@formhaus/react';
-import { useState } from 'react';
 
 function DisplayNameRow({ user, onSave, onError }) {
-  const [saving, setSaving] = useState(false);
-
   async function handleSubmit(values) {
-    setSaving(true);
-    try {
-      await onSave({ name: values.name });
-    } catch (error) {
-      onError(error);
-    } finally {
-      setSaving(false);
-    }
+    await onSave({ name: values.name });
   }
 
   return (
@@ -41,8 +31,8 @@ function DisplayNameRow({ user, onSave, onError }) {
         submit: { label: 'Save' },
       }}
       initialValues={{ name: user.name }}
-      loading={saving}
       onSubmit={handleSubmit}
+      onError={onError}
     />
   );
 }
@@ -50,11 +40,9 @@ function DisplayNameRow({ user, onSave, onError }) {
 
 ```vue [Vue]
 <script setup>
-import { ref } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
 
 const props = defineProps(['user', 'onSave', 'onError']);
-const saving = ref(false);
 
 const definition = {
   id: 'display-name',
@@ -71,14 +59,7 @@ const definition = {
 };
 
 async function handleSubmit(values) {
-  saving.value = true;
-  try {
-    await props.onSave({ name: values.name });
-  } catch (error) {
-    props.onError(error);
-  } finally {
-    saving.value = false;
-  }
+  await props.onSave({ name: values.name });
 }
 </script>
 
@@ -86,14 +67,14 @@ async function handleSubmit(values) {
   <FormRenderer
     :definition="definition"
     :initial-values="{ name: user.name }"
-    :loading="saving"
-    @submit="handleSubmit"
+    :submit-handler="handleSubmit"
+    :on-error="props.onError"
   />
 </template>
 ```
 :::
 
-Each row still gets normal validation and error display. The parent owns the async request state because `FormRenderer` does not wait for `onSubmit` before returning.
+Each row gets validation, error display and automatic busy state while React `onSubmit` or Vue `submitHandler` is pending. Rejections reach `onError`. Vue legacy `@submit` listeners cannot be awaited: if a listener performs the request, the parent must supply `loading` and its after-submit hook only observes event dispatch. Do not perform the same save in both `submitHandler` and `@submit`.
 
 ## Inline button layout
 
@@ -121,7 +102,7 @@ function InlineSaveActions({ onSubmit, loading }: FormActionsProps) {
 ```
 :::
 
-The renderer validates before calling `onSubmit`. The `loading` value comes from the `FormRenderer` prop, so the parent still decides when the button is busy.
+The renderer validates before calling the submit handler. The action component receives `loading` while navigation, submission or their hooks are pending, or when the parent supplies `loading`. The parent can use that prop to cover additional work.
 
 ## Why not one big form?
 
@@ -131,6 +112,6 @@ A single `FormRenderer` validates and submits all of its fields together. On a s
 
 - Each row creates a `FormEngine`. Profile pages with 50 or more editable rows.
 - Rows do not share state. Put cross-row state in the parent instead of relying on field conditions.
-- Each row needs a submit handler. A small wrapper can hold the repeated request-state code.
+- Each row needs a submit handler. A small wrapper can hold shared save and error handling.
 
 Use a single `FormRenderer` for forms that submit all fields together, such as checkout and multi-step onboarding.

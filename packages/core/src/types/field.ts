@@ -28,6 +28,7 @@ export interface FormField {
   label: string;
   placeholder?: string;
   helperText?: string;
+  autoAdvance?: boolean;
   defaultValue?: unknown;
   show?: ShowCondition[];
   showAny?: ShowCondition[];
