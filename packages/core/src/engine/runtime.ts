@@ -15,6 +15,7 @@ import {
   assertDefinitionShape,
 } from './validation-state';
 import { submitAsync } from './submission';
+import { routeWarnings, reconcileStepIndex } from './step-routes';
 import { VisibilityState } from './visibility-state';
 
 export class FormEngine {
@@ -40,6 +41,8 @@ export class FormEngine {
     options?: FormEngineOptions,
   ) {
     assertDefinitionShape(definition);
+    const invalidRoutes = routeWarnings(definition);
+    if (invalidRoutes.length) throw new Error(invalidRoutes.join('\n'));
     for (const warning of validateDefinition(definition)) {
       console.warn(`[FormEngine] ${warning}`);
     }
@@ -108,6 +111,7 @@ export class FormEngine {
   }
 
   setValue(key: string, value: unknown): void {
+    const previousSteps = this.definition.steps?.some((step) => step.routes?.length) ? this.visibleSteps : null;
     const valueChanged = !Object.is(this.values[key], value);
     const hadError = this.errors[key] !== undefined;
     this.values[key] = value;
@@ -117,6 +121,10 @@ export class FormEngine {
     if (valueChanged || hadError) changedFields.add(key);
     const valuesChanged = valueChanged || clearedFields.size > 0;
     const structureChanged = valuesChanged && this.visibility.affectsStructure(key, clearedFields);
+    if (previousSteps && structureChanged) {
+      this.visibility.markChanged(true, true);
+      this.currentStepIndex = reconcileStepIndex(previousSteps, this.visibleSteps, this.currentStepIndex);
+    }
     this.notify({ fieldKeys: changedFields, structureChanged, valuesChanged });
   }
 

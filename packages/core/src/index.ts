@@ -8,6 +8,7 @@ export type {
   FormDefinition,
   FormField,
   FormStep,
+  StepRoute,
   ShowCondition,
 } from './types';
 

@@ -134,7 +134,7 @@ type StepValidateFn = (
 
 The callback receives:
 - `stepId` - the `id` of the step being validated (from your definition)
-- `values` - all current field values (not just the current step's fields)
+- `values` - visible field values across the active path, not just the current step. In routed forms, retained answers from skipped branches are excluded.
 
 Return:
 - `{ key: message }` - errors to show. Keys match field keys in your definition.

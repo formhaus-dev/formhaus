@@ -17,25 +17,25 @@ const engine = new FormEngine(definition, initialValues, {
 });
 ```
 
-Both `initialValues` and the options object are optional. Values belonging to hidden fields or hidden steps are removed during construction.
+Both `initialValues` and the options object are optional. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
 ## State
 
 | Property | Type | Description |
 |---|---|---|
-| `values` | `Record<string, unknown>` | Current field values |
+| `values` | `Record<string, unknown>` | Current draft values, including retained inactive branch answers in routed forms |
 | `errors` | `Record<string, string>` | Errors attached to visible fields |
 | `topLevelErrors` | `string[]` | Errors for missing or hidden fields |
 | `fieldLoading` | `Record<string, boolean>` | Per-field loading state |
 | `stepValidating` | `boolean` | Whether async navigation, including validation and before/after hooks, is running |
 | `submitting` | `boolean` | Whether submission validation, hooks or the submit handler are running |
-| `currentStepIndex` | `number` | Zero-based index in the visible step list |
+| `currentStepIndex` | `number` | Zero-based index in the visible step list (active path when routes are enabled) |
 | `visibleFields` | `FormField[]` | Visible fields on the current step, or all visible fields in a single-step form |
-| `visibleSteps` | `FormStep[]` | Steps whose conditions currently pass |
+| `visibleSteps` | `FormStep[]` | Visible steps on the active path; without routes, all steps whose conditions pass |
 | `currentStep` | `FormStep \| null` | Current visible step |
 | `isFirstStep` / `isLastStep` | `boolean` | Current navigation position |
 | `canGoNext` | `boolean` | Whether current-step validation passes |
-| `progress` | `{ current: number; total: number }` | One-based progress through visible steps |
+| `progress` | `{ current: number; total: number }` | One-based progress through visible steps on the active path |
 | `isMultiStep` | `boolean` | Whether the definition uses steps |
 
 ## Values and validation
@@ -45,12 +45,12 @@ Both `initialValues` and the options object are optional. Values belonging to hi
 | `setValue(key, value)` | `void` | Sets a value, clears its error, and reconciles dependent visibility |
 | `setErrors(errors)` | `void` | Replaces existing errors and navigates to the first visible field with an error |
 | `setFieldLoading(key, loading)` | `void` | Updates loading state for one field |
-| `validate()` | `Record<string, string>` | Validates all visible fields |
+| `validate()` | `Record<string, string>` | Validates visible fields on the active path; skipped branch values are excluded |
 | `validateField(key)` | `string \| null` | Validates one visible field |
-| `getSubmitValues()` | `Record<string, unknown>` | Returns values for visible fields only |
+| `getSubmitValues()` | `Record<string, unknown>` | Returns visible field values on the active path, excluding inactive branch answers |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
 
-`reset()` also removes values hidden by the new reset values. Pending navigation and pre-submit results are discarded. A submission already dispatched cannot be undone.
+`reset()` also removes values hidden by the new reset values, while preserving answers in skipped route branches. Independently hidden fields still follow visibility clearing rules. Pending navigation and pre-submit results are discarded. A submission already dispatched cannot be undone.
 
 ## Navigation
 

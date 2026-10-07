@@ -1,13 +1,13 @@
 import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs } from './pending-inputs';
 import { validateStep } from '../validation';
-import { applyValidationErrors } from './validation-state';
+import { applyValidationErrors, getValidationValues } from './validation-state';
 import type { EngineInternals } from './runtime-internals';
 
 function getStepErrors(engine: EngineInternals): Record<string, string> | null {
   const step = engine.currentStep;
   if (!step) return null;
-  return validateStep(step, engine.values, engine.validators);
+  return validateStep(step, getValidationValues(engine), engine.validators);
 }
 
 function publishStepErrors(engine: EngineInternals, errors: Record<string, string>): boolean {
@@ -46,7 +46,7 @@ async function changeStep(engine: EngineInternals, direction: 'next' | 'back', r
   if (direction === 'next' ? engine.isLastStep : engine.isFirstStep) return false;
   const step = engine.currentStep;
   if (!step) return false;
-  if (direction === 'next' && publishStepErrors(engine, validateStep(step, engine.values, engine.validators))) return false;
+  if (direction === 'next' && publishStepErrors(engine, validateStep(step, getValidationValues(engine), engine.validators))) return false;
   const lifecycle = { ...engine.lifecycle };
   const validate = engine.onStepValidate;
   let committed = false;
@@ -54,7 +54,7 @@ async function changeStep(engine: EngineInternals, direction: 'next' | 'back', r
   const toIndex = fromIndex + (direction === 'next' ? 1 : -1);
   const target = engine.visibleSteps[toIndex];
   if (!target) return false;
-  const context = { fromStepId: step.id, toStepId: target.id, direction, reason, values: { ...engine.values } };
+  const context = { fromStepId: step.id, toStepId: target.id, direction, reason, values: { ...getValidationValues(engine) } };
   const epoch = engine.validationEpoch;
   const operation = ++engine.operationEpoch;
   const inputsChanged = watchCheckedInputs(engine, context.values);
@@ -77,7 +77,7 @@ async function changeStep(engine: EngineInternals, direction: 'next' | 'back', r
       if (stale() || allowed === false) return false;
     }
     if (stale()) return false;
-    if (direction === 'next' && publishStepErrors(engine, validateStep(step, engine.values, engine.validators))) return false;
+    if (direction === 'next' && publishStepErrors(engine, validateStep(step, getValidationValues(engine), engine.validators))) return false;
     committed = true;
     engine.currentStepIndex = toIndex;
     engine.validationEpoch++;

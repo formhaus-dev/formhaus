@@ -10,7 +10,14 @@ export interface FormDefinition {
   steps?: FormStep[];
 }
 
+export interface StepRoute {
+  to: string | null;
+  show?: ShowCondition[];
+  showAny?: ShowCondition[];
+}
+
 export interface FormStep {
+  routes?: StepRoute[];
   id: string;
   title: string;
   description?: string;

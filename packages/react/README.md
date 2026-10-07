@@ -6,6 +6,8 @@ React adapter for [Formhaus](https://github.com/ignsm/formhaus). Renders forms f
 
 `FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. React awaits `onSubmit` and keeps the form busy until it settles. Custom fields use `onCommit(value)` for activation; custom actions honor `showPrimary`. See [examples and lifecycle semantics](../../docs/guide/steps.md).
 
+Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](../../docs/guide/steps.md#route-between-branches).
+
 ## Install
 
 ```bash

@@ -136,7 +136,9 @@ On submit, all visible fields across all visible steps are returned. Fields in h
 Set `autoAdvance: true` on a radio field. Clicking an option or pressing Space/Enter advances after validating the **whole current step**. Arrow keys select an answer without leaving the group. Initial values, `setValue()`, hydration and rerenders never advance. Selecting a radio on the final step never submits.
 
 ```ts
-const definition = {
+import type { FormDefinition } from '@formhaus/core'
+
+const definition: FormDefinition = {
   id: 'survey', title: 'Survey', submit: { label: 'Send' },
   steps: [
     {
@@ -249,3 +251,53 @@ function showError(cause: unknown) {
 ```
 
 For `HeadlessFormRenderer`, pass these same callbacks along with your fields, actions and progress components. See the [custom activation and action contracts](/guide/custom-components#headless-renderer).
+
+## Route between branches
+
+`routes` keeps branching in the form definition alongside fields and visibility conditions:
+
+```ts
+import type { FormDefinition } from '@formhaus/core'
+
+const definition: FormDefinition = {
+  id: 'account', title: 'Account', submit: { label: 'Create account' },
+  steps: [
+    {
+      id: 'kind', title: 'Account type', next: false,
+      fields: [{
+        key: 'kind', type: 'radio', label: 'Account type', autoAdvance: true,
+        helperText: 'Click or press Space/Enter to continue; arrows only select.',
+        validation: { required: true },
+        options: [{ value: 'business', label: 'Business' }, { value: 'personal', label: 'Personal' }],
+      }],
+      routes: [
+        { to: 'business', show: [{ field: 'kind', eq: 'business' }] },
+        { to: 'personal' },
+      ],
+    },
+    {
+      id: 'business', title: 'Company',
+      fields: [{ key: 'company', type: 'text', label: 'Company', validation: { required: true } }],
+      routes: [{ to: 'review' }],
+    },
+    {
+      id: 'personal', title: 'Your name',
+      fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }],
+      routes: [{ to: 'review' }],
+    },
+    { id: 'review', title: 'Review', fields: [] },
+  ],
+}
+```
+
+Routes use the existing `show` (all conditions) and `showAny` (any condition) predicates. The first matching route whose target is visible wins. An unconditional last entry provides a fallback. If no route matches, navigation continues to the next visible step in declaration order. A hidden target is skipped while looking for a matching route; hiding the current target later recomputes the path. `to: null` ends the active path at the current step, where the Submit action appears. It does not send the form.
+
+Targets must name a **later declared step**, or be `null`. Unknown, self and backward targets, duplicate step ids and missing/future route predicate fields are rejected when constructing the engine, and reported by `validateDefinition()`. The constructor throws, so a renderer given such a definition throws during render. Run `validateDefinition()` on JSON from a CMS or Figma before rendering it. This forward-only model prevents cycles. Use Back for returning to previous steps.
+
+Both branch exits in the example explicitly converge at `review`. Without the business exit route, the normal next step would be `personal`, so both branches would run. List the full intended path, including convergence, in your definition. `validateDefinition()` warns when a branch target has no unconditional route and its next declared step is a sibling target.
+
+The active path is computed from current answers, beginning at the first step. `visibleSteps`, `currentStepIndex`, `progress`, `isLastStep` and validation use that path. Fallbacks and progress are provisional before the routing answers are filled. Back returns to the previous step on the current path, without a separate visit-history stack. If changed answers remove the current step, the engine immediately returns to the nearest surviving predecessor from the old path; if the current step still belongs to the new path, it stays there. This reconciliation cannot be vetoed. Like reset/error redirection, it emits structure subscriptions, not navigation lifecycle hooks; observe `subscribeStructure()` for every structural change.
+
+Routing is opt-in. With no nonempty `routes` arrays, existing visibility, payload and validation behavior is unchanged. With routes, answers in skipped branches remain in `engine.values` for returning to that branch, but do not enter submission, validation or lifecycle value snapshots. Route and step-visibility predicates see only visible answers from the active steps already encountered. Field visibility can also use other fields in its current step. Retained answers in skipped branches cannot select a new route. Put routing/visibility dependencies on earlier steps or the same step's fields, not on future steps. Existing `show`/`showAny` hiding still clears hidden answers; retaining a skipped branch is not a guarantee that a separately hidden field will be retained.
+
+Hooks and validators receive the active visible field values; submission receives that same projection. General `onFieldChange`/Vue `fieldChange`, option providers and direct `engine.values` access still receive retained form state. Treat that state as a draft, not as the submission payload. JSON serialization and the Figma definition parser preserve routes and `autoAdvance`; Figma generates static step mockups, not interactive route connections.

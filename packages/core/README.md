@@ -8,6 +8,8 @@ Part of [Formhaus](https://github.com/ignsm/formhaus). For React, use `@formhaus
 
 Use `nextStepAsync()`, `prevStepAsync()` and `submitAsync(handler)` for cancellable async before/after hooks. Synchronous navigation remains available without lifecycle hooks. See [step navigation and lifecycle](../../docs/guide/steps.md).
 
+Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](../../docs/guide/steps.md#route-between-branches).
+
 ## Install
 
 ```bash

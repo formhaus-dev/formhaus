@@ -36,12 +36,16 @@ export function applyValidationErrors(
   engine.notify({ fieldKeys: changedFields });
 }
 
+export function getValidationValues(engine: EngineInternals): Record<string, unknown> {
+  return engine.definition.steps?.some((step) => step.routes?.length) ? getSubmitValues(engine) : engine.values;
+}
+
 export function validateForm(engine: EngineInternals): Record<string, string> {
   const previousErrors = engine.errors;
   const errors: Record<string, string> = {};
   if (engine.isMultiStep) {
     for (const step of engine.visibleSteps) {
-      Object.assign(errors, validateStep(step, engine.values, engine.validators));
+      Object.assign(errors, validateStep(step, getValidationValues(engine), engine.validators));
     }
   } else {
     Object.assign(
@@ -58,7 +62,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
   const field = engine.visibility.fieldByKey.get(key);
   if (!field || !engine.visibility.isFieldVisible(key, engine.values)) return null;
   const previousError = engine.errors[key];
-  const error = validateField(field, engine.values[key], engine.values, engine.validators);
+  const error = validateField(field, engine.values[key], getValidationValues(engine), engine.validators);
   if (error) engine.errors[key] = error;
   else delete engine.errors[key];
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];
