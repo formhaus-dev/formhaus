@@ -76,7 +76,10 @@ For each form, the plugin creates:
 
 - A card frame per step, 400px wide with auto-layout. Multi-step forms place the steps side by side.
 - Instances of the bound or kit components for every field, with labels, placeholders and helper text filled in.
-- An actions group with Submit, Continue, Back and Cancel buttons.
+- An actions group with the step's buttons.
+- For forms with [routes](/guide/steps), a flow map: steps are laid out in columns by path, arrows connect them and each arrow is labelled with its condition. Steps are numbered by their position on the path, and a step that ends the form shows Submit.
+
+**Update form** keeps the positions of existing steps and redraws the arrows.
 
 Built-in kits use their own card styling. With your own components the card is white and takes its font and group label style from your text field. Each frame stores the form definition, so you can select it later and edit it from the plugin.
 
