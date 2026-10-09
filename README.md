@@ -3,6 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@formhaus/core?label=core)](https://www.npmjs.com/package/@formhaus/core)
 [![npm](https://img.shields.io/npm/v/@formhaus/react?label=react)](https://www.npmjs.com/package/@formhaus/react)
 [![npm](https://img.shields.io/npm/v/@formhaus/vue?label=vue)](https://www.npmjs.com/package/@formhaus/vue)
+[![npm](https://img.shields.io/npm/v/@formhaus/mcp?label=mcp)](https://www.npmjs.com/package/@formhaus/mcp)
 [![core size](https://img.shields.io/bundlejs/size/@formhaus/core?label=core%20size)](https://bundlejs.com/?q=@formhaus/core)
 [![license](https://img.shields.io/github/license/ignsm/formhaus)](LICENSE)
 

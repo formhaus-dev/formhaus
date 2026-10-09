@@ -9,7 +9,7 @@ authors:
 repository-code: "https://github.com/ignsm/formhaus"
 url: "https://formhaus.dev"
 license: MIT
-version: 0.8.0
+version: 0.9.0
 date-released: "2026-10-09"
 keywords:
   - forms

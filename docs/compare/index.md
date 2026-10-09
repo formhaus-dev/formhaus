@@ -30,7 +30,7 @@ Formhaus fits forms that are data: one JSON definition with steps, branching rou
 | Bundle size | `@formhaus/core` 6.2 KB, `@formhaus/react` 4.8 KB, `@formhaus/vue` 6.4 KB gzipped |
 | License | MIT |
 
-Formhaus sizes are minified ESM bundles gzipped at level 9 (1 KB = 1024 bytes) with `scripts/check-bundle-size.mjs` from the repository, measured on 2026-10-09 for version 0.8.0. The React and Vue numbers exclude `@formhaus/core`. Competitor sizes on each page come from [bundlephobia](https://bundlephobia.com), measured on the same date.
+Formhaus sizes are minified ESM bundles gzipped at level 9 (1 KB = 1024 bytes) with `scripts/check-bundle-size.mjs` from the repository, measured on 2026-10-09 for version 0.9.0. The React and Vue numbers exclude `@formhaus/core`. Competitor sizes on each page come from [bundlephobia](https://bundlephobia.com), measured on the same date.
 
 ## Sources
 
