@@ -1,7 +1,7 @@
 import type { FormDefinition, FormStep } from '@formhaus/core';
 import { element, iconButton } from '../dom';
 import { icon } from '../icons';
-import { setBackLabel, setBackVisible, setCancel, setNextLabel, setNextVisible, setSkip, type SkippableStep } from './actions';
+import { setBackLabel, setBackVisible, setCancel, setNextLabel, setNextVisible, setSkip } from './actions';
 import { labelled, textInput } from './controls';
 
 export interface ButtonsContext {
@@ -29,7 +29,7 @@ export function addLink(text: string, onClick: () => void): HTMLElement {
   return link;
 }
 
-export function buttonsBlock(step: SkippableStep, index: number, count: number, multiStep: boolean, context: ButtonsContext): HTMLElement {
+export function buttonsBlock(step: FormStep, index: number, count: number, multiStep: boolean, context: ButtonsContext): HTMLElement {
   const { draft, changed, rerender } = context;
   const block = element('div', 'buttons-block');
   block.appendChild(element('div', 'section-label', 'Buttons'));

@@ -1,4 +1,4 @@
-import type { FormAction, FormDefinition } from '@formhaus/core';
+import type { FormAction, FormDefinition, FormStep } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from './config';
 import { stack } from './kits/primitives';
 import type { FormRenderer } from './renderers/types';
@@ -18,11 +18,7 @@ export function normalizeLayout(raw: Partial<FormLayout> | null | undefined): Fo
   return { actions: raw?.actions === 'inline' ? 'inline' : 'stacked', steps: raw?.steps === 'page' ? 'page' : 'screens' };
 }
 
-export interface StepActions {
-  next?: FormAction | false;
-  back?: FormAction | false;
-  skip?: FormAction;
-}
+export type StepActions = Pick<FormStep, 'next' | 'back' | 'skip'>;
 
 export type ButtonAction = 'next' | 'submit' | 'back' | 'skip' | 'cancel';
 
