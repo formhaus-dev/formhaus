@@ -23,6 +23,7 @@ export interface FormActionsProps {
   submitAction?: FormAction;
   backAction?: FormAction | false;
   cancelAction?: FormAction;
+  skipAction?: FormAction;
   isFirstStep: boolean;
   isLastStep: boolean;
   isMultiStep: boolean;
@@ -32,10 +33,13 @@ export interface FormActionsProps {
   showPrimary?: boolean;
   showBack?: boolean;
   backLabel?: string;
+  showSkip?: boolean;
+  skipLabel?: string;
   onSubmit: () => void;
   onNext: () => void;
   onPrev: () => void;
   onCancel: () => void;
+  onSkip?: () => void;
   onPrimary?: () => void;
 }
 

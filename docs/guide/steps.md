@@ -44,6 +44,7 @@ Use `steps` instead of `fields` in the definition:
 
 - **Continue** validates the current step. If valid, moves to the next visible step. If not, shows errors.
 - **Back** goes to the previous visible step. No validation.
+- **Skip** appears on steps with `skip` and moves forward without validating.
 - **Submit** replaces Continue on the last visible step.
 - **Progress bar** shows "Step N of M" based on visible steps.
 
@@ -71,7 +72,22 @@ Set `back` to `false` to hide the Back button on a step:
 }
 ```
 
-`variant` and `action` are available as metadata to custom action components. The built-in adapters use the resolved labels for step navigation.
+The built-in adapters render Continue and Submit as primary buttons, Back as secondary, and Skip and Cancel as text buttons. Set `variant` on `back`, `skip` or `cancel` to change that. `action` is metadata for custom action components.
+
+## Skip a step
+
+Add `skip` to show a Skip button on an optional step:
+
+```json
+{
+  "id": "phone",
+  "title": "Phone number",
+  "skip": { "label": "Not now" },
+  "fields": [...]
+}
+```
+
+Skip resets the step's fields to their defaults and moves forward without validation or `onStepValidate`. The skipped step's fields are left out of submit validation and submitted values. Routes and conditions use the reset values. Skip on the last step submits the form without that step. Pressing Continue or Submit on a skipped step, or changing one of its fields, includes it again. A skip cancelled by `onBeforeStepChange` or `onBeforeSubmit` changes nothing. Skip is not rendered on steps with `next: false`.
 
 ## Conditional steps
 
@@ -177,7 +193,7 @@ React `FormRenderer` and `HeadlessFormRenderer` accept the same hooks as `new Fo
 />
 ```
 
-Forward navigation runs field validation → `onStepValidate` → `onBeforeStepChange` → commit step → `onAfterStepChange`. Back runs the before/after hooks without field or server validation. Only an explicit `false` from a before-hook cancels; `void` allows the operation. Hooks may be synchronous or async. The step context includes `fromStepId`, `toStepId`, `direction` and `reason` (`next`, `back`, or `autoAdvance`). Before-hooks receive a shallow values snapshot. Errors reject core promises; renderers call `onError`, or display the error at the form level if it is omitted.
+Forward navigation runs field validation → `onStepValidate` → `onBeforeStepChange` → commit step → `onAfterStepChange`. Back runs the before/after hooks without field or server validation. Only an explicit `false` from a before-hook cancels; `void` allows the operation. Hooks may be synchronous or async. The step context includes `fromStepId`, `toStepId`, `direction` and `reason` (`next`, `back`, `autoAdvance`, or `skip`). Before-hooks receive a shallow values snapshot. Errors reject core promises; renderers call `onError`, or display the error at the form level if it is omitted.
 
 Submission runs whole-form validation → `onBeforeSubmit` → the awaited submit handler → `onAfterSubmit`. Only successful handlers reach the after-hook. `FormLifecycleError` identifies an after-hook failure with `committed: true`, `phase` and `cause`: navigation or submission already happened. Do not automatically retry a submission because its receipt/analytics hook failed. Inputs stay disabled until after-hooks resolve, so fire analytics without `await`.
 

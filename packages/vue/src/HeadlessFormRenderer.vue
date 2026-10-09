@@ -23,7 +23,7 @@ const engineOptions: FormEngineOptions = {
     return async (context: StepChangeContext) => {
       emit('stepChange', context.toStepId, context.direction);
       if (context.direction === 'next') {
-        emit('analyticsEvent', { type: 'step_completed', stepId: context.fromStepId });
+        emit('analyticsEvent', { type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
         emit('analyticsEvent', { type: 'step_viewed', stepId: context.toStepId, stepIndex: form.engine.currentStepIndex });
       }
       await after?.(context);
@@ -59,7 +59,7 @@ watch(
   { immediate: true },
 );
 
-const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, submit: onSubmit, actionError } =
+const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, skip: onSkip, submit: onSubmit, actionError } =
   useRendererActions(form, props, emit);
 const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
 
@@ -180,6 +180,7 @@ async function onPrimary() {
       :submit-action="props.definition.submit"
       :back-action="currentStep?.back"
       :cancel-action="props.definition.cancel"
+      :skip-action="currentStep?.skip"
       :is-first-step="isFirstStep"
       :is-last-step="effectiveIsLastStep"
       :is-multi-step="isMultiStep"
@@ -189,10 +190,12 @@ async function onPrimary() {
       :show-primary="effectiveIsLastStep || currentStep?.next !== false"
       :show-back="showBack"
       :back-label="backLabel"
+      :show-skip="!!currentStep?.skip && currentStep.next !== false"
       @submit="onSubmit"
       @next="onNext"
       @prev="onPrev"
       @cancel="onCancel"
+      @skip="onSkip"
       @primary="onPrimary"
     />
   </form>

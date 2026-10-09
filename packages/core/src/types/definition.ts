@@ -26,4 +26,5 @@ export interface FormStep {
   showAny?: ShowCondition[];
   next?: FormAction | false;
   back?: FormAction | false;
+  skip?: FormAction;
 }

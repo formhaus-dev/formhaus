@@ -42,10 +42,12 @@ Your component receives pre-computed convenience props so you don't need to re-d
 | `showPrimary` | `boolean?` | False when the current step hides Next with `next: false`; final Submit remains visible |
 | `showBack` | `boolean?` | Whether the back button should be shown |
 | `backLabel` | `string?` | Resolved label for the back button |
+| `showSkip` | `boolean?` | Whether the skip button should be shown |
+| `skipLabel` | `string?` | Label for the skip button, defaults to the `skip` label or "Skip" |
 | `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 | `cancelAction` | `FormAction?` | Cancel button config |
 
-In React, call `onPrimary` for the primary action and `onPrev` for back. In Vue, emit `primary` and `prev`.
+In React, call `onPrimary` for the primary action, `onPrev` for back and `onSkip` for skip. In Vue, emit `primary`, `prev` and `skip`.
 
 ### Vue example
 
@@ -94,6 +96,7 @@ export function MyFormActions({
 | `submitAction` | `FormAction?` | Label and variant for the submit button |
 | `backAction` | `FormAction \| false?` | Back button config, or `false` to hide |
 | `cancelAction` | `FormAction?` | Cancel button config |
+| `skipAction` | `FormAction?` | Skip button config of the current step |
 | `isFirstStep` | `boolean` | Whether this is the first step |
 | `isLastStep` | `boolean` | Whether this is the last step |
 | `isMultiStep` | `boolean` | Whether the form has multiple steps |
@@ -250,6 +253,7 @@ Events emitted:
 | `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
 | `field_error` | Validation fails | `fieldKey`, `error` |
 | `step_completed` | User advances past a step | `stepId` |
+| `step_skipped` | User skips a step | `stepId` |
 | `step_viewed` | A step becomes active | `stepId`, `stepIndex` |
 | `form_submitted` | Validation and `onBeforeSubmit` pass, right before the submit handler runs | `fieldCount` |
 

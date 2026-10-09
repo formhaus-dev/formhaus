@@ -27,6 +27,16 @@ import '@formhaus/core/style.css';
 
 Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). When you bring your own components via the `components` prop, the stylesheet doesn't apply to them.
 
+Action buttons use these classes:
+
+| Class | Buttons |
+|---|---|
+| `fh-form-actions__button--primary` | Continue, Submit |
+| `fh-form-actions__button--secondary` | Back |
+| `fh-form-actions__button--text` | Skip, Cancel |
+
+Every button also has `fh-form-actions__button`. A `variant` on the action replaces the role class.
+
 ## Quick start
 
 ```ts

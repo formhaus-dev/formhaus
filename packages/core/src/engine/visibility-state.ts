@@ -1,3 +1,4 @@
+import { getAllFields } from './engine-utils';
 import { indexConditions } from './visibility-index';
 import { ActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
@@ -30,9 +31,7 @@ export class VisibilityState {
   };
 
   constructor(private definition: FormDefinition) {
-    this.allFields = definition.steps?.length
-      ? definition.steps.flatMap((step) => step.fields)
-      : definition.fields ?? [];
+    this.allFields = getAllFields(definition);
     this.fieldByKey = new Map(this.allFields.map((field) => [field.key, field]));
     this.path = new ActivePath(definition);
     for (const step of definition.steps ?? []) {
@@ -51,19 +50,9 @@ export class VisibilityState {
     }
   }
 
-  getVisibleSteps(values: Record<string, unknown>, stepIndex: number): FormStep[] {
+  state(values: Record<string, unknown>, stepIndex: number): VisibilityCache {
     this.recomputeVisibility(values, stepIndex);
-    return this.cache.visibleSteps;
-  }
-
-  getCurrentStep(values: Record<string, unknown>, stepIndex: number): FormStep | null {
-    this.recomputeVisibility(values, stepIndex);
-    return this.cache.currentStep;
-  }
-
-  getVisibleFields(values: Record<string, unknown>, stepIndex: number): FormField[] {
-    this.recomputeVisibility(values, stepIndex);
-    return this.cache.visibleFields;
+    return this.cache;
   }
 
   getCanGoNext(
@@ -81,7 +70,7 @@ export class VisibilityState {
   }
 
   findStepIndex(fieldKey: string, values: Record<string, unknown>, stepIndex: number): number | null {
-    const steps = this.getVisibleSteps(values, stepIndex);
+    const steps = this.state(values, stepIndex).visibleSteps;
     const target = steps.findIndex((step) => step.fields.some((field) => field.key === fieldKey));
     return target === -1 ? null : target;
   }
@@ -143,7 +132,7 @@ export class VisibilityState {
     if (this.hasRoutes) return new Set(Object.keys(this.path.values(values)));
     const keys = new Set<string>();
     const fields = this.isMultiStep
-      ? this.getVisibleSteps(values, stepIndex).flatMap((step) => step.fields)
+      ? this.state(values, stepIndex).visibleSteps.flatMap((step) => step.fields)
       : this.definition.fields ?? [];
     for (const field of fields) {
       if (isVisible(field, this.conditionValues(values))) keys.add(field.key);

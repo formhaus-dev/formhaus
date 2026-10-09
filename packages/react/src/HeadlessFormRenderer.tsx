@@ -22,7 +22,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
       focusPending.current = true;
       props.onStepChange?.(context.toStepId, context.direction);
       if (context.direction === 'next') {
-        onAnalyticsEvent?.({ type: 'step_completed', stepId: context.fromStepId });
+        onAnalyticsEvent?.({ type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
         onAnalyticsEvent?.({ type: 'step_viewed', stepId: context.toStepId, stepIndex: engine.currentStepIndex });
       }
       await props.onAfterStepChange?.(context);
@@ -82,7 +82,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
       <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
       <FormActionsController engine={engine} definition={definition} loading={loading}
         ActionsComponent={ActionsComponent} onSubmit={actions.submit} onNext={actions.next}
-        onPrev={actions.prev} onCancel={handleCancel} />
+        onPrev={actions.prev} onSkip={actions.skip} onCancel={handleCancel} />
     </form>
   );
 }

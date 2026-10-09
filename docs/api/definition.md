@@ -66,17 +66,18 @@ interface FormStep {
   routes?: StepRoute[];         // Ordered forward destinations
   next?: FormAction | false;    // Override or hide "Continue" button
   back?: FormAction | false;    // Override or hide "Back" button
+  skip?: FormAction;            // Show a "Skip" button
 }
 ```
 
 ## FormAction
 
-Button configuration for submit, cancel, next, and back.
+Button configuration for submit, cancel, next, back, and skip.
 
 ```ts
 interface FormAction {
   label: string;
-  variant?: 'primary' | 'secondary' | 'text'; // Styling hint for custom actions
+  variant?: 'primary' | 'secondary' | 'text'; // Button class for back, skip and cancel
   action?: string;              // Identifier for custom actions
   disabled?: ShowCondition[];   // Conditions available to the action renderer
 }

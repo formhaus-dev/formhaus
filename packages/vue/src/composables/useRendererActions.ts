@@ -34,22 +34,35 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     update(key, value);
     if (field.autoAdvance && engine.currentStep?.id === step?.id && !engine.isLastStep) void run(() => engine.nextStepAsync('autoAdvance'));
   }
-  const submit = () => run(async () => {
-    const engine = form.engine;
-    const handler = props.submitHandler;
-    if (engine.definition.submit.disabled?.every((condition) => evaluateCondition(condition, engine.values))
-      && engine.definition.submit.disabled.length > 0) return false;
-    const result = await engine.submitAsync(async (values) => {
+  function send(engine: typeof form.engine, handler: typeof props.submitHandler) {
+    return async (values: Record<string, unknown>) => {
       emit('analyticsEvent', { type: 'form_submitted', fieldCount: Object.keys(values).length });
       if (handler) await handler(values);
       if (engine === form.engine) emit('submit', values);
-    });
+    };
+  }
+  async function report(engine: typeof form.engine, action: Promise<boolean>) {
+    const result = await action;
     if (!result) {
       for (const [fieldKey, error] of Object.entries(engine.errors)) {
         emit('analyticsEvent', { type: 'field_error', fieldKey, error });
       }
     }
     return result;
+  }
+  const submit = () => run(async () => {
+    const engine = form.engine;
+    if (engine.definition.submit.disabled?.every((condition) => evaluateCondition(condition, engine.values))
+      && engine.definition.submit.disabled.length > 0) return false;
+    return report(engine, engine.submitAsync(send(engine, props.submitHandler)));
   });
-  return { update, commit, next, prev, submit, actionError };
+  const skip = () => run(() => {
+    const engine = form.engine;
+    const submit = send(engine, props.submitHandler);
+    return report(engine, engine.skipStepAsync((values) => {
+      emit('analyticsEvent', { type: 'step_skipped', stepId: engine.currentStep!.id });
+      return submit(values);
+    }));
+  });
+  return { update, commit, next, prev, skip, submit, actionError };
 }

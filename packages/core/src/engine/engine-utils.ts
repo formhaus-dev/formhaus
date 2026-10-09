@@ -1,4 +1,12 @@
-import type { FormField } from '../types';
+import type { FormDefinition, FormField } from '../types';
+
+export function hasFieldsAndSteps(definition: FormDefinition): boolean {
+  return !!definition.fields?.length && !!definition.steps?.length;
+}
+
+export function getAllFields(definition: FormDefinition): FormField[] {
+  return definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : definition.fields ?? [];
+}
 
 export function createValues(
   fields: FormField[],

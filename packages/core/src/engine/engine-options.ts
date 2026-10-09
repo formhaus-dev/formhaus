@@ -9,7 +9,7 @@ export interface StepChangeContext {
   fromStepId: string;
   toStepId: string;
   direction: 'next' | 'back';
-  reason: 'next' | 'back' | 'autoAdvance';
+  reason: 'next' | 'back' | 'autoAdvance' | 'skip';
   values: Record<string, unknown>;
 }
 

@@ -2,12 +2,12 @@ import { validateDefinition } from '../definition-validation';
 import type { ValidatorFn } from '../validation';
 import type { FormDefinition, FormField, FormStep } from '../types';
 import type { FormEngineOptions, StepValidateFn, SubmitFn } from './engine-options';
-import { createValues, getChangedKeys } from './engine-utils';
-import { goToStepWithField, nextStep, nextStepAsync, prevStep, prevStepAsync } from './navigation';
+import { createValues } from './engine-utils';
+import { changeStep, goToStepWithField, nextStep, prevStep, skipStep, skipStepAsync } from './navigation';
 import type { EngineInternals, RuntimeNotifyOptions } from './runtime-internals';
 import { FormSubscriptions, type NotifyOptions } from './subscriptions';
 import {
-  applyExternalErrors,
+  applyValidationErrors,
   getSubmitValues,
   resetEngine,
   validateForm,
@@ -28,6 +28,7 @@ export class FormEngine {
   fieldLoading: Record<string, boolean> = {};
   stepValidating = false;
   submitting = false;
+  private readonly skipped = new Map<string, string[]>();
   private validationEpoch = 0;
   private operationEpoch = 0;
   private readonly lifecycle: FormEngineOptions;
@@ -60,15 +61,15 @@ export class FormEngine {
   }
 
   get visibleSteps(): FormStep[] {
-    return this.visibility.getVisibleSteps(this.values, this.currentStepIndex);
+    return this.visibility.state(this.values, this.currentStepIndex).visibleSteps;
   }
 
   get currentStep(): FormStep | null {
-    return this.visibility.getCurrentStep(this.values, this.currentStepIndex);
+    return this.visibility.state(this.values, this.currentStepIndex).currentStep;
   }
 
   get visibleFields(): FormField[] {
-    return this.visibility.getVisibleFields(this.values, this.currentStepIndex);
+    return this.visibility.state(this.values, this.currentStepIndex).visibleFields;
   }
 
   get isFirstStep(): boolean {
@@ -118,6 +119,7 @@ export class FormEngine {
     const hadError = this.errors[key] !== undefined;
     this.values[key] = value;
     delete this.errors[key];
+    for (const [stepId, keys] of this.skipped) if (valueChanged && keys.includes(key)) this.skipped.delete(stepId);
     const clearedFields = this.visibility.cascadeHiddenFields(key, this.values, this.errors);
     const revalidated = clearResolvedMatchErrors(this.internals, key);
     const changedFields = new Set([...clearedFields, ...revalidated]);
@@ -133,7 +135,7 @@ export class FormEngine {
   }
 
   setErrors(errors: Record<string, string>): void {
-    applyExternalErrors(this.internals, errors);
+    applyValidationErrors(this.internals, errors, true);
   }
 
   setFieldLoading(key: string, loading: boolean): void {
@@ -152,8 +154,11 @@ export class FormEngine {
   }
 
   nextStep(): boolean { return nextStep(this.internals); }
-  nextStepAsync(reason: 'next' | 'autoAdvance' = 'next'): Promise<boolean> { return nextStepAsync(this.internals, reason); }
-  prevStepAsync(): Promise<boolean> { return prevStepAsync(this.internals); }
+  nextStepAsync(reason: 'next' | 'autoAdvance' = 'next'): Promise<boolean> { return changeStep(this.internals, 'next', reason); }
+  prevStepAsync(): Promise<boolean> { return changeStep(this.internals, 'back'); }
+  skipStep(): boolean { return skipStep(this.internals); }
+  skipStepAsync(submit?: SubmitFn): Promise<boolean> { return skipStepAsync(this.internals, submit); }
+  isStepSkipped(stepId: string): boolean { return this.skipped.has(stepId); }
   submitAsync(submit: SubmitFn): Promise<boolean> { return submitAsync(this.internals, submit); }
   prevStep(): void { prevStep(this.internals); }
   validate(): Record<string, string> { return validateForm(this.internals); }
@@ -165,8 +170,6 @@ export class FormEngine {
   private get internals(): EngineInternals {
     return this as unknown as EngineInternals;
   }
-
-  private getChangedKeys = getChangedKeys;
 
   private notify(options: RuntimeNotifyOptions = {}): void {
     this.visibility.markChanged(!!options.structureChanged, !!options.valuesChanged);

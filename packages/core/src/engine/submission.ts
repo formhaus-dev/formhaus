@@ -3,9 +3,11 @@ import { watchCheckedInputs } from './pending-inputs';
 import type { SubmitFn } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 import { getSubmitValues, validateForm } from './validation-state';
+import { includeCurrentStep } from './step-skip';
 
-export async function submitAsync(engine: EngineInternals, submit: SubmitFn): Promise<boolean> {
+export async function submitAsync(engine: EngineInternals, submit: SubmitFn, keepSkipped = false): Promise<boolean> {
   if (engine.submitting || engine.stepValidating) return false;
+  if (!keepSkipped) includeCurrentStep(engine);
   const lifecycle = { ...engine.lifecycle };
   let dispatched = false;
   const epoch = engine.validationEpoch;

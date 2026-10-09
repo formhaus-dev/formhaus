@@ -19,6 +19,7 @@ export interface EngineInternals {
   validationEpoch: number;
   operationEpoch: number;
   submitting: boolean;
+  readonly skipped: Map<string, string[]>;
   readonly lifecycle: FormEngineOptions;
   readonly validators: Record<string, ValidatorFn>;
   readonly onStepValidate?: StepValidateFn;
@@ -29,9 +30,5 @@ export interface EngineInternals {
   readonly visibleFields: FormField[];
   readonly isFirstStep: boolean;
   readonly isLastStep: boolean;
-  getChangedKeys(
-    previous: Record<string, unknown>,
-    next: Record<string, unknown>,
-  ): Set<string>;
   notify(options?: RuntimeNotifyOptions): void;
 }
