@@ -1,6 +1,7 @@
 <script setup>
 defineProps({
   primaryLabel: { type: String, default: undefined },
+  showPrimary: { type: Boolean, default: true },
   showBack: { type: Boolean, default: false },
   backLabel: { type: String, default: undefined },
   cancelAction: { type: Object, default: undefined },
@@ -20,7 +21,7 @@ const emit = defineEmits(['primary', 'prev', 'cancel']);
         {{ cancelAction.label }}
       </v-btn>
     </div>
-    <v-btn color="primary" :loading="loading" @click="emit('primary')">
+    <v-btn v-if="showPrimary" color="primary" :loading="loading" @click="emit('primary')">
       {{ primaryLabel }}
     </v-btn>
   </div>

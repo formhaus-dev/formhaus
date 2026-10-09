@@ -4,6 +4,7 @@ import Button from '@mui/material/Button';
 
 export function FormActions({
   primaryLabel,
+  showPrimary = true,
   showBack,
   backLabel,
   cancelAction,
@@ -26,9 +27,11 @@ export function FormActions({
           </Button>
         )}
       </Box>
-      <Button variant="contained" disabled={loading} onClick={onPrimary}>
-        {primaryLabel}
-      </Button>
+      {showPrimary && (
+        <Button variant="contained" disabled={loading} onClick={onPrimary}>
+          {primaryLabel}
+        </Button>
+      )}
     </Box>
   );
 }
