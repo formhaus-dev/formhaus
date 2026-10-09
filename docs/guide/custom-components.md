@@ -251,9 +251,9 @@ Events emitted:
 | `field_error` | Validation fails | `fieldKey`, `error` |
 | `step_completed` | User advances past a step | `stepId` |
 | `step_viewed` | A step becomes active | `stepId`, `stepIndex` |
-| `form_submitted` | Form submits successfully | `fieldCount` |
+| `form_submitted` | Validation and `onBeforeSubmit` pass, right before the submit handler runs | `fieldCount` |
 
-All events are optional. If you don't pass a handler, nothing fires.
+`form_submitted` marks a submission attempt, not a successful save. Track the save in `onAfterSubmit`. All events are optional. If you don't pass a handler, nothing fires.
 
 ## Next steps
 

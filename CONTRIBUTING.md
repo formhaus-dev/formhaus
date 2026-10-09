@@ -30,7 +30,7 @@ pnpm build    # build all packages
 pnpm test     # test all packages (core + figma + react + vue)
 ```
 
-CI runs on every PR — build + test must pass.
+CI runs on pushes to `main` and on PRs targeting `main`; build and test must pass. A stacked PR based on another branch gets no CI until it is retargeted to `main`.
 
 ## Run docs locally
 

@@ -23,7 +23,7 @@ All rules are optional. Combine them freely.
 
 | Rule | Type | What it checks | Default message |
 |------|------|---------------|-----------------|
-| `required` | `boolean \| string` | Not empty (null, undefined, or "") | "This field is required" |
+| `required` | `boolean \| string` | Not null, undefined, an empty string or an empty array | "This field is required" |
 | `minLength` | `number` | String length or selected-item count >= value | "Must be at least N characters/items" |
 | `maxLength` | `number` | String length or selected-item count <= value | "Must be at most N characters/items" |
 | `min` | `number` | Number >= value | "Must be at least N" |
@@ -110,7 +110,8 @@ Reference the validator by name in the definition:
 
 ## When validation runs
 
-- **On Submit/Continue click.** All visible fields on the current step are validated.
+- **On Continue.** Visible fields on the current step are validated.
+- **On Submit.** Visible fields across all visible steps are validated, or all visible fields in a single-step form.
 - **Async step validation.** If `onStepValidate` is provided, it runs after sync validation passes but before the step transition. See [Async Step Validation](/guide/async-validation).
 - **Never on blur.** No errors while the user is still typing.
 - **Hidden fields are skipped.** If a `show` condition hides a field, it's not validated.
