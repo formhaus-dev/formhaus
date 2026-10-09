@@ -7,6 +7,8 @@ import type { FormRenderer } from './renderers/types';
 
 const LEGACY_NAMESPACE = 'formGenerator';
 const FRAME_GAP = 40;
+export const DEFINITION_KEY = 'definition';
+const MAX_STORED_DEFINITION = 90_000;
 
 interface RenderableStep {
   title: string;
@@ -15,15 +17,16 @@ interface RenderableStep {
 }
 
 export async function renderForm(definition: FormDefinition, renderer: FormRenderer): Promise<FrameNode[]> {
-  const existingFrames = findExistingFrames(definition.id);
+  const existingFrames = findExistingFrames(definition.id).sort((left, right) => absolute(left, 0) - absolute(right, 0) || absolute(left, 1) - absolute(right, 1));
+  const fallbackX = nextFrameX(figma.currentPage.children, existingFrames);
   const createdFrames: FrameNode[] = [];
   try {
     const steps = getSteps(definition) as RenderableStep[];
-    let cursorX = nextFrameX(figma.currentPage.children, existingFrames);
+    const stored = JSON.stringify(definition);
     for (let index = 0; index < steps.length; index++) {
       const frame = await renderStep(definition, steps[index], index, steps.length, renderer);
-      frame.x = cursorX;
-      cursorX += frame.width + FRAME_GAP;
+      place(frame, existingFrames[index] ?? createdFrames[index - 1], Boolean(existingFrames[index]), fallbackX);
+      if (utf8Length(stored) <= MAX_STORED_DEFINITION) frame.setSharedPluginData(PLUGIN_NAMESPACE, DEFINITION_KEY, stored);
       createdFrames.push(frame);
     }
     for (const frame of existingFrames) frame.remove();
@@ -34,13 +37,30 @@ export async function renderForm(definition: FormDefinition, renderer: FormRende
   }
 }
 
+function absolute(frame: FrameNode, axis: 0 | 1): number {
+  return frame.absoluteTransform[axis][2];
+}
+
+function utf8Length(text: string): number {
+  return encodeURIComponent(text).replace(/%[0-9A-F]{2}/g, '_').length;
+}
+
+function place(frame: FrameNode, anchor: FrameNode | undefined, replaces: boolean, fallbackX: number): void {
+  if (!anchor) {
+    frame.x = fallbackX;
+    frame.y = 0;
+    return;
+  }
+  const parent = anchor.parent as (BaseNode & ChildrenMixin) | null;
+  if (parent && parent !== frame.parent) parent.insertChild(parent.children.indexOf(anchor) + 1, frame);
+  frame.x = replaces ? anchor.x : anchor.x + anchor.width + FRAME_GAP;
+  frame.y = anchor.y;
+}
+
 function findExistingFrames(definitionId: string): FrameNode[] {
-  return figma.currentPage.children.filter((node): node is FrameNode => (
-    node.type === 'FRAME' && (
-      node.getSharedPluginData(PLUGIN_NAMESPACE, 'definitionId') === definitionId ||
-      node.getSharedPluginData(LEGACY_NAMESPACE, 'definitionId') === definitionId
-    )
-  ));
+  return [...new Set([PLUGIN_NAMESPACE, LEGACY_NAMESPACE].flatMap((namespace) => figma.currentPage
+    .findAllWithCriteria({ types: ['FRAME'], sharedPluginData: { namespace, keys: ['definitionId'] } })
+    .filter((frame) => frame.getSharedPluginData(namespace, 'definitionId') === definitionId)))];
 }
 
 export function nextFrameX(

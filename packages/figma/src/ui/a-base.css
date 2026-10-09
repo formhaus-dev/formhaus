@@ -135,23 +135,4 @@ textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand);
 .output.info { background: var(--bg-2); color: var(--text-2); }
 .output.success { background: var(--success-soft); color: var(--success); }
 
-.source-cards { display: grid; gap: 8px; grid-template-columns: 1fr 1fr; }
-.source-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 12px;
-  position: relative;
-}
-.source-card:hover { border-color: var(--border-strong); }
-.source-card:has(input:checked) { border-color: var(--brand); box-shadow: 0 0 0 1px var(--brand); }
-.source-card input { position: absolute; right: 12px; top: 12px; accent-color: var(--brand); }
-.source-title { font-size: 12px; font-weight: 600; padding-right: 20px; }
-.source-sub { color: var(--text-2); font-size: 11px; }
-.source-card select { margin-top: 8px; }
-.source-card .link { align-self: flex-start; margin-top: 10px; }
-
-.panel-footer { background: var(--bg); bottom: -16px; display: flex; flex-direction: column; gap: 8px; margin: 0 -16px -16px; padding: 12px 16px 16px; position: sticky; }
+.panel-footer { background: var(--bg); border-top: 1px solid var(--border); bottom: -16px; display: flex; flex-direction: column; gap: 8px; margin: auto -16px -16px; padding: 12px 16px 16px; position: sticky; }

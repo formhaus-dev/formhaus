@@ -8,36 +8,38 @@
 <body>
   <header class="topbar">
     <nav class="segmented" role="tablist">
-      <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="generate">Generate</button>
+      <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="generate">Form</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-tab="components">Components</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-tab="settings">JSON map</button>
     </nav>
   </header>
 
   <section class="panel active" role="tabpanel" id="tab-generate">
-    <div class="section-label">Render with</div>
-    <div class="source-cards">
-      <label class="source-card">
-        <input type="radio" name="source" value="kit">
-        <span class="source-title">Built-in kit</span>
-        <span class="source-sub">Ready-made components in your file</span>
-        <select id="kit">
-          <option value="material">Material 3</option>
-          <option value="ios">iOS-like</option>
-        </select>
-      </label>
-      <label class="source-card">
-        <input type="radio" name="source" value="custom">
-        <span class="source-title">My components</span>
-        <span class="source-sub" id="customHint">Bind them in Components</span>
-        <button class="link" id="openComponents" type="button">Set up components</button>
-      </label>
+    <div class="source-row">
+      <label class="section-label" for="sourceSelect">Components</label>
+      <select id="sourceSelect">
+        <option value="kit:material">Material 3 kit</option>
+        <option value="kit:ios">iOS-like kit</option>
+        <option value="custom">My components</option>
+      </select>
+      <button class="link" id="openComponents" type="button">Set up</button>
     </div>
+    <div class="form-bar">
+      <div class="form-status-row">
+        <div class="form-status" id="formStatus">New form</div>
+        <button class="link" id="openCanvasForm" type="button" hidden>Open it</button>
+      </div>
+      <div class="segmented small">
+        <button class="mode active" type="button" aria-pressed="true" data-mode="fields">Fields</button>
+        <button class="mode" type="button" aria-pressed="false" data-mode="json">JSON</button>
+      </div>
+    </div>
+    <div class="editor" id="editor"></div>
+    <textarea id="definition" spellcheck="false" hidden></textarea>
     <div class="row-between">
-      <label class="section-label" for="definition">Form definition</label>
+      <button class="link" id="newForm" type="button">New form</button>
       <button class="link" id="loadExample" type="button">Load example</button>
     </div>
-    <textarea id="definition" spellcheck="false" placeholder='{ "id": "signup", "title": "Sign up", "submit": { "label": "Create account" }, "fields": [] }'></textarea>
     <footer class="panel-footer">
       <div class="output" id="output"></div>
       <button class="btn btn-primary btn-block" id="generate" type="button">Generate form</button>

@@ -34,7 +34,10 @@ function node(extra: Record<string, unknown> = {}) {
 function stubFigma(children: unknown[]) {
   const created: { x: number }[] = [];
   vi.stubGlobal('figma', {
-    currentPage: { children },
+    currentPage: {
+      children,
+      findAllWithCriteria: ({ types }: { types: string[] }) => (children as { type: string }[]).filter((child) => types.includes(child.type)),
+    },
     createText: () => node({ type: 'TEXT' }),
     createFrame: () => {
       const frame = node({ type: 'FRAME' });
@@ -54,19 +57,29 @@ describe('renderForm', () => {
     vi.unstubAllGlobals();
   });
 
+  it('places each new step where the matching old step frame was', async () => {
+    const stepOne = { type: 'FRAME', x: 0, y: 500, width: 300, absoluteTransform: [[1, 0, 0], [0, 1, 500]], getSharedPluginData: () => definition.id, remove: vi.fn() };
+    const stepTwo = { type: 'FRAME', x: 0, y: 1200, width: 300, absoluteTransform: [[1, 0, 0], [0, 1, 1200]], getSharedPluginData: () => definition.id, remove: vi.fn() };
+    const created = stubFigma([stepTwo, stepOne]);
+    const twoSteps = { ...definition, steps: [{ id: 'a', title: 'A', fields: [] }, { id: 'b', title: 'B', fields: [] }] };
+    await renderForm(twoSteps, renderer(async () => node() as unknown as SceneNode));
+    const frames = created.filter((frame) => (frame as unknown as { name: string }).name.includes('Step'));
+    expect(frames.map((frame) => [frame.x, (frame as unknown as { y: number }).y])).toEqual([[0, 500], [0, 1200]]);
+  });
+
   it('replaces a previous render of the same definition in place', async () => {
-    const oldForm = { type: 'FRAME', x: 300, width: 300, getSharedPluginData: () => definition.id, remove: vi.fn() };
-    const unrelated = { type: 'FRAME', x: 0, width: 100, getSharedPluginData: () => 'other-form', remove: vi.fn() };
+    const oldForm = { type: 'FRAME', x: 300, y: 40, width: 300, absoluteTransform: [[1, 0, 300], [0, 1, 40]], getSharedPluginData: () => definition.id, remove: vi.fn() };
+    const unrelated = { type: 'FRAME', x: 0, width: 100, absoluteTransform: [[1, 0, 0], [0, 1, 0]], getSharedPluginData: () => 'other-form', remove: vi.fn() };
     const created = stubFigma([unrelated, oldForm]);
     await renderForm(definition, renderer(async () => node() as unknown as SceneNode));
-    expect(created[0].x).toBe(200);
+    expect(created[0]).toMatchObject({ x: 300, y: 40 });
     expect(oldForm.remove).toHaveBeenCalled();
     expect(unrelated.remove).not.toHaveBeenCalled();
   });
 
   it('keeps existing frames when a field fails to render', async () => {
     const remove = vi.fn();
-    stubFigma([{ type: 'FRAME', x: 0, width: 0, getSharedPluginData: () => definition.id, remove }]);
+    stubFigma([{ type: 'FRAME', x: 0, width: 0, absoluteTransform: [[1, 0, 0], [0, 1, 0]], getSharedPluginData: () => definition.id, remove }]);
     await expect(renderForm(definition, renderer(async () => { throw new Error('Import failed'); }))).rejects.toThrow('Import failed');
     expect(remove).not.toHaveBeenCalled();
   });

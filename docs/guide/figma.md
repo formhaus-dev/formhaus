@@ -20,12 +20,12 @@ The build bundles the plugin code and its UI into `packages/figma/dist`.
 
 ## Usage
 
-1. Open a Figma file
-2. Run the plugin (**Plugins > Formhaus**)
-3. Paste a `@formhaus/core` form definition into the **Generate** tab
-4. Click **Generate**
+1. Open a Figma file and run the plugin (**Plugins > Formhaus**).
+2. On the **Form** tab, pick the components to render with: a built-in kit or **My components**.
+3. Build the form in **Fields**: set the title and submit label, add fields, mark them required, and open a field's details for its placeholder, helper text, key and options. Drag fields by the handle to reorder them, or split the form into steps. **JSON** shows the same definition as `@formhaus/core` JSON.
+4. Click **Generate form**.
 
-The plugin creates a frame for each step (or one frame for single-step forms). Regenerating the same definition replaces its frames in place.
+Each generated form keeps its definition. Select a form on the canvas and the plugin opens it for editing. **Update form** redraws it in place with the current components, so anyone with edit access to the file can change a form without touching JSON. Field keys follow the label until another field's condition or route refers to them, and the editor keeps conditions, routes and validation rules it does not show.
 
 ### Quick test
 
