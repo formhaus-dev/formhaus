@@ -1,5 +1,6 @@
 {
   "buildCommand": "cd docs && npm install && npx vitepress build",
   "outputDirectory": "docs/.vitepress/dist",
-  "framework": null
+  "framework": null,
+  "ignoreCommand": "if [ \"$VERCEL_GIT_COMMIT_REF\" = \"main\" ]; then exit 1; else exit 0; fi"
 }
