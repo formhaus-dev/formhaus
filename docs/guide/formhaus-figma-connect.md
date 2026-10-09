@@ -1,6 +1,6 @@
 # /formhaus-figma-connect
 
-Search a Figma library for form components and generate a [component map](/guide/figma#component-map) for the plugin.
+Find your form components in a Figma library and bind them to the [Figma plugin](/guide/figma#my-components).
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ Once connected, the skill can:
 - Search components by name
 - Show screenshots for confirmation
 - Read variants, properties, and layer names
-- Write the confirmed mappings as JSON
+- Write the confirmed bindings into your Figma file
 
 ## Usage
 
@@ -39,22 +39,20 @@ Once connected, the skill can:
 /formhaus-figma-connect
 ```
 
-The skill checks the MCP connection, asks for a Figma file URL, and searches for inputs, selection controls, and buttons. You confirm matches from screenshots and provide any missing components before it writes the map.
-
-Paste the output into the Figma plugin's **Component Map** tab.
+The skill checks the MCP connection and asks for the URL of the file where you design forms. It searches your libraries for inputs, selects, selection controls and buttons, and shows each match as a screenshot. After you confirm, it writes the bindings into that file. Open the plugin's **Components** tab to check them.
 
 ## Typical workflow
 
 1. Describe the form to Claude, or run [`/formhaus-create-form`](/guide/formhaus-create-form)
 2. Claude generates the form definition
 3. Run `/formhaus-figma-connect` to map your design system (one-time setup)
-4. Paste the definition into the Figma plugin
-5. Click **Generate** to create the form with those components
+4. Paste the definition into the plugin's **JSON** mode, or build the form in **Fields**
+5. Click **Generate form** to create it with your components
 
 After the initial setup, you only need steps 1, 4, and 5 for each new form.
 
 ## Next steps
 
-- [Figma Plugin](/guide/figma): how the plugin works, component map reference
+- [Figma Plugin](/guide/figma): how the plugin works and how bindings fall back
 - [/formhaus-create-form](/guide/formhaus-create-form): generate form definitions from descriptions
 - [Examples](/guide/examples): example definitions to try with the plugin

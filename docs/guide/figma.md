@@ -51,117 +51,25 @@ Roles you leave unbound reuse a related component when one is bound: a date or s
 
 Drag any card onto the canvas to place that component. Bindings are stored in the document, so everyone who opens the file generates with the same components.
 
-## Component Map
-
-The **JSON map** tab is the older way to use your own components: a JSON file that maps each form field type to a component key in your library. The plugin uses it when **My components** is selected and no roles are bound in the **Components** tab.
-
-::: tip Auto-generate with Claude
-Run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to search your Figma library and build the component map from confirmed matches.
+::: tip Bind with Claude
+Run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to find your form components through the Figma MCP server, confirm them from screenshots and write the bindings into your file.
 :::
 
-### Structure
-
-```json
-{
-  "formsConstructorKey": "COMPONENT_SET_KEY",
-  "formHelperTextKey": "HELPER_TEXT_KEY",
-  "buttonKey": "BUTTON_KEY",
-  "fields": {
-    "text": { "formsConstructorVariant": "Input" },
-    "email": { "formsConstructorVariant": "Input" },
-    "textarea": { "formsConstructorVariant": "Textarea" },
-    "select": { "formsConstructorVariant": "Select" },
-    "checkbox": {
-      "standalone": true,
-      "standaloneKey": "CHECKBOX_KEY",
-      "variantProps": { "Type": "Checkbox", "State": "Static" }
-    }
-  },
-  "textLayerNames": {
-    "label": "Header",
-    "placeholder": "Placeholder",
-    "helperText": "Helper text"
-  }
-}
-```
-
-### Key concepts
-
-| Field | Description |
-|-------|-------------|
-| `formsConstructorKey` | Key of the main component set that contains Input, Textarea, and Select as variants |
-| `formHelperTextKey` | Key of a helper text component (optional) |
-| `buttonKey` | Key of the button component set |
-| `fields` | Maps each [field type](/guide/fields) to a component |
-| `textLayerNames` | Names of text layers inside your components (for labels, placeholders, helper text) |
-
-### 2 types of field mappings
-
-**formsConstructor variants**, fields that are variants within a single component set:
-
-```json
-"text": { "formsConstructorVariant": "Input" }
-```
-
-The plugin finds the variant named "Input" inside the `formsConstructorKey` component set.
-
-**Standalone components**, fields that use their own separate component:
-
-```json
-"checkbox": {
-  "standalone": true,
-  "standaloneKey": "YOUR_COMPONENT_KEY",
-  "variantProps": { "Type": "Checkbox", "State": "Static", "Checked": "False" }
-}
-```
-
-The plugin imports the component by `standaloneKey` and applies `variantProps` to select the right variant.
-
-### Finding component keys
-
-To find a component key in Figma:
-
-1. Right-click a component in Figma
-2. **Copy/Paste > Copy link**
-3. The key is in the URL, or use the Plugin API: `figma.currentPage.selection[0].key`
-
-### Configuring in the plugin
-
-1. Open the plugin and switch to the **JSON map** tab
-2. Click **Load Current** to see the active map
-3. Edit the JSON to match your design system
-4. Click **Save Map** to persist (stored in Figma's local storage)
-5. Use **Reset to Default** to go back to the example map
-
-### Missing components
-
-If your design system doesn't have a component for a field type (e.g., file upload or date picker), mark it as missing:
-
-```json
-"file": { "standalone": true, "missing": true },
-"date": { "standalone": true, "missing": true }
-```
-
-Missing fields render as red placeholder frames in the generated output.
+Earlier versions used a JSON component map. If you saved one, the plugin moves it into **Components** the first time you open a file without bindings.
 
 ## What the plugin generates
 
 For each form, the plugin creates:
 
-- A card frame (400px wide, white background, auto-layout)
-- Field components arranged vertically with proper labels, placeholders, and helper text
-- Submit/cancel/back buttons at the bottom
-- For multi-step forms: one card per step, arranged horizontally
+- A card frame per step, 400px wide with auto-layout. Multi-step forms place the steps side by side.
+- Instances of the bound or kit components for every field, with labels, placeholders and helper text filled in.
+- An actions group with Submit, Continue, Back and Cancel buttons.
 
-The output uses instances of your design system components.
-
-::: info Customizable layout coming soon
-The card width (400px), padding, and spacing are currently fixed. Future versions will make these configurable so you can match your design system's layout grid.
-:::
+Built-in kits use their own card styling. With your own components the card is white and takes its font and group label style from your text field. Each frame stores the form definition, so you can select it later and edit it from the plugin.
 
 ## Next steps
 
 - [/formhaus-create-form](/guide/formhaus-create-form): generate form definitions from text descriptions
-- [/formhaus-figma-connect](/guide/formhaus-figma-connect): map components from your Figma library
+- [/formhaus-figma-connect](/guide/formhaus-figma-connect): bind components from your Figma library
 - [Field Types](/guide/fields): all supported form field types
 - [Examples](/guide/examples): example definitions to try with the plugin

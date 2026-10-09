@@ -33,11 +33,14 @@ export function slotNames(root: InstanceNode | ComponentNode): string[] {
 
 export async function applySlots(instance: InstanceNode, values: SlotValues, bound?: Binding): Promise<void> {
   await loadFonts(instance);
-  const binding = liveBinding(bound, slotNames(instance));
+  const nested = instance.findAll((node) => node.type === 'TEXT').map((node) => node.name);
+  const binding = liveBinding(bound, [...slotNames(instance), ...nested]);
   const filled = setTextProperties(instance, values, binding);
   for (const slot of SLOT_ORDER) {
     if (filled.has(slot) || values[slot] === undefined) continue;
-    const layer = ownTextLayers(instance).find((node) => slotForName(node.name, binding) === slot);
+    const explicit = binding?.text?.[slot];
+    const layer = ownTextLayers(instance).find((node) => slotForName(node.name, binding) === slot)
+      ?? (explicit ? (instance.findOne((node) => node.type === 'TEXT' && node.name === explicit) as TextNode | null) : null);
     if (!layer) continue;
     if (values[slot]) layer.characters = values[slot]!;
     else if (slot === 'helper') layer.visible = false;

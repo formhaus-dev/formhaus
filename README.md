@@ -204,7 +204,7 @@ Each field component receives the full `FormField` descriptor, the current value
 
 ## Figma plugin
 
-`@formhaus/figma` maps form definitions to components from your Figma library. The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill can generate the `componentMap`. See the [plugin guide](https://formhaus.dev/guide/figma.html) for local installation.
+`@formhaus/figma` renders form definitions in Figma with built-in Material 3 and iOS-like kits or with your own components. The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill binds your library's components to the plugin. See the [plugin guide](https://formhaus.dev/guide/figma.html) for local installation.
 
 ## Contributing
 

@@ -14,6 +14,7 @@ function instance(properties: Record<string, { type: string }>, layers: ReturnTy
     setProperties: vi.fn(),
     findAll: (predicate: (child: unknown) => boolean) => layers.filter(predicate),
     findAllWithCriteria: () => layers,
+    findOne: (predicate: (child: unknown) => boolean) => layers.find(predicate) ?? null,
   };
   for (const child of layers) child.parent = node;
   return node;
@@ -47,5 +48,14 @@ describe('applySlots', () => {
     await applySlots(instance({}, [header]) as unknown as InstanceNode, { label: 'Name' });
     expect(header.fontName).toEqual({ family: 'Inter', style: 'Regular' });
     expect(header.characters).toBe('Name');
+  });
+
+  it('fills explicitly named layers inside nested instances', async () => {
+    const header = layer('Header');
+    const node = instance({}, [header]);
+    header.parent = { type: 'INSTANCE', parent: node };
+    const binding = { source: 'library' as const, key: 'k', text: { label: 'Header' } };
+    await applySlots(node as unknown as InstanceNode, { label: 'Email' }, binding);
+    expect(header.characters).toBe('Email');
   });
 });

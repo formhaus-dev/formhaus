@@ -22,13 +22,9 @@ The plugin creates one frame per step and lays the frames out horizontally. With
 
 `pnpm --filter @formhaus/figma build:harness` builds `dist/harness.js`, which exposes `formhaus.render(definition, kit, useBindings)` and `formhaus.binding(message)` for running the renderer in a file through the Figma MCP `use_figma` tool.
 
-## Component map
+## Binding with Claude
 
-Before the **Components** tab, the plugin bound components through a JSON component map. It still works from the **JSON map** tab. The plugin ships with a default component map. To make it use your own design system, you need a JSON that maps each form field type (`text`, `select`, `checkbox`, etc.) to a Figma component key in your library.
-
-The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill searches a Figma library through MCP and asks you to confirm the matches. Paste its JSON into the plugin's **JSON map** tab and save it. The plugin stores the map in Figma client storage.
-
-The `ComponentMap` TypeScript interface lives in [`packages/figma/src/constants.ts`](https://github.com/ignsm/formhaus/blob/main/packages/figma/src/constants.ts) if you prefer to write the JSON by hand.
+The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill finds your form components through the Figma MCP server, asks you to confirm them and writes the bindings into the file. A JSON component map saved by an earlier version of the plugin moves into the **Components** tab automatically.
 
 ## Docs
 

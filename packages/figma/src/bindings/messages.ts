@@ -1,4 +1,4 @@
-import { readConfig, writeConfig, type ComponentSource, type PluginConfig, type TextSlot } from '../config';
+import { readConfig, writeConfig, type PluginConfig, type TextSlot } from '../config';
 import type { Role } from '../roles';
 import { autoMatch } from './auto-match';
 import { bindingRows } from './rows';
@@ -46,8 +46,8 @@ export function isBindingMessage(type: string): boolean {
   return Object.prototype.hasOwnProperty.call(HANDLERS, type);
 }
 
-export async function runBindingMessage(message: BindingMessage, fallbackSource: ComponentSource = 'kit') {
-  const config = readConfig(fallbackSource);
+export async function runBindingMessage(message: BindingMessage) {
+  const config = readConfig();
   const notice = await HANDLERS[message.type](config, message);
   writeConfig(config);
   return { rows: await bindingRows(config), notice };

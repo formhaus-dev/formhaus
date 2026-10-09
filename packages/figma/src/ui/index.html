@@ -10,7 +10,6 @@
     <nav class="segmented" role="tablist">
       <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="generate">Form</button>
       <button class="tab" type="button" role="tab" aria-selected="false" data-tab="components">Components</button>
-      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="settings">JSON map</button>
     </nav>
   </header>
 
@@ -59,21 +58,6 @@
     <div class="output" id="bindingsOutput"></div>
     <div class="groups" id="bindings"></div>
     <p class="hint footnote">Drag a card onto the canvas to place that component.</p>
-  </section>
-
-  <section class="panel" role="tabpanel" id="tab-settings">
-    <div class="row-between">
-      <div class="section-label">Component map</div>
-      <span class="badge tone-neutral" id="mapStatus">No custom map</span>
-    </div>
-    <p class="hint">The older way to use your own library: a JSON map of field types to component keys. It is used when My components is selected and nothing is bound in Components.</p>
-    <textarea id="componentMap" spellcheck="false" placeholder="Paste your component map JSON"></textarea>
-    <div class="output" id="mapOutput"></div>
-    <div class="btn-row">
-      <button class="btn btn-secondary" id="loadCurrentMap" type="button">Load current</button>
-      <button class="btn btn-secondary btn-danger" id="resetMap" type="button">Reset</button>
-      <button class="btn btn-primary" id="saveMap" type="button">Save map</button>
-    </div>
   </section>
 
   <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Text slots"></div>

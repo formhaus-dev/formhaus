@@ -1,10 +1,8 @@
 import type { FormDefinition } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
-import map from '../component-map.example.json';
 import { countFields, getSteps, parseAndValidate } from '../parse';
 
 const definition = (value: object) => value as unknown as FormDefinition;
-const mappedFields = Object.entries(map.fields) as [string, Record<string, unknown>][];
 
 describe('parseAndValidate', () => {
   const valid = (overrides = {}) =>
@@ -87,42 +85,5 @@ describe('getSteps', () => {
   it('handles missing fields gracefully', () => {
     const steps = getSteps(definition({ title: 'Empty' }));
     expect(steps[0].fields).toEqual([]);
-  });
-});
-
-describe('component mapping', () => {
-  it('has entries for all core field types', () => {
-    const coreTypes = [
-      'text',
-      'email',
-      'phone',
-      'number',
-      'password',
-      'textarea',
-      'select',
-      'checkbox',
-      'radio',
-      'switch',
-    ];
-    for (const t of coreTypes) {
-      expect(map.fields[t as keyof typeof map.fields]).toBeDefined();
-    }
-  });
-
-  it('Forms Constructor variants use valid type names', () => {
-    const validVariants = ['Input', 'Select', 'Textarea'];
-    for (const [, cfg] of mappedFields) {
-      if (cfg.formsConstructorVariant) {
-        expect(validVariants).toContain(cfg.formsConstructorVariant);
-      }
-    }
-  });
-
-  it('standalone fields have a standaloneKey or are marked missing', () => {
-    for (const [type, cfg] of mappedFields) {
-      if (cfg.standalone) {
-        expect(cfg.standaloneKey || cfg.missing).toBeTruthy();
-      }
-    }
   });
 });
