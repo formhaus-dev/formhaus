@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/mcp",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "MCP server for authoring and checking Formhaus form definitions: validation, path simulation and capabilities.",
   "type": "module",
   "sideEffects": false,
