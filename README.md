@@ -8,6 +8,8 @@
 
 Formhaus keeps fields, validation, visibility, and steps in a compact JSON definition. `@formhaus/core` runs it without a UI framework. React and Vue adapters render native or custom controls, and the Figma plugin reads the same definition.
 
+**[Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Playground](https://formhaus.dev/playground.html)**
+
 ## Packages
 
 | Package | Description | npm |
@@ -135,7 +137,8 @@ By default, both adapters render native HTML inputs.
 
 Both adapters accept a `components` prop (a `FieldComponentMap`) that lets you swap native HTML inputs for your own UI kit.
 
-### React
+<details>
+<summary><b>React</b></summary>
 
 ```tsx
 import type { FieldComponentMap, FieldComponentProps } from '@formhaus/react';
@@ -164,7 +167,10 @@ const components: FieldComponentMap = {
 <FormRenderer definition={definition} onSubmit={handleSubmit} components={components} />;
 ```
 
-### Vue
+</details>
+
+<details>
+<summary><b>Vue</b></summary>
 
 ```vue
 <!-- MyTextInput.vue -->
@@ -199,6 +205,8 @@ import MyTextInput from './MyTextInput.vue';
   />
 </template>
 ```
+
+</details>
 
 Each field component receives the full `FormField` descriptor, the current value, and any validation error. Implement as many or as few field types as you need. Unmapped types fall back to native HTML.
 
