@@ -16,7 +16,7 @@ export function parseAndValidate(json: string): FormDefinition {
   if (!parsed.submit) {
     throw new Error("Definition must have a 'submit' action.");
   }
-  return parsed as FormDefinition;
+  return parsed as unknown as FormDefinition;
 }
 
 export function countFields(definition: FormDefinition): number {

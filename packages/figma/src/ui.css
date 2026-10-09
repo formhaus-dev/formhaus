@@ -92,3 +92,9 @@ button:disabled { background: #ccc; cursor: not-allowed; }
 .btn-row { display: flex; gap: 8px; }
 .btn-row button { flex: 1; }
 .hint { color: #999; font-size: 11px; line-height: 1.4; }
+
+.components { border: 1px solid #ddd; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; padding: 8px 12px 12px; }
+.components legend { color: #666; font-size: 12px; font-weight: 500; padding: 0 4px; }
+.choice { align-items: center; color: #333; display: flex; font-size: 13px; gap: 8px; }
+.choice select { border: 1px solid #ddd; border-radius: 4px; font-size: 12px; margin-left: auto; padding: 4px 6px; }
+.choice .hint { color: #999; font-size: 12px; }

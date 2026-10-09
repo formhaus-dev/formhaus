@@ -3,8 +3,10 @@ type OutputType = 'error' | 'success';
 interface PluginMessage {
   type: string;
   message?: string;
-  isCustom?: boolean;
   map?: string;
+  source?: 'kit' | 'custom';
+  kit?: string;
+  hasStoredMap?: boolean;
 }
 
 function getElement<T extends HTMLElement>(id: string): T {
@@ -28,6 +30,24 @@ const generateButton = getElement<HTMLButtonElement>('generate');
 const componentMapInput = getElement<HTMLTextAreaElement>('componentMap');
 const mapOutput = getElement<HTMLElement>('mapOutput');
 const mapStatus = getElement<HTMLElement>('mapStatus');
+const kitSelect = getElement<HTMLSelectElement>('kit');
+const customHint = getElement<HTMLElement>('customHint');
+const sourceInputs = [...document.querySelectorAll<HTMLInputElement>('input[name=source]')];
+
+function selectedSource(): string {
+  return sourceInputs.find((input) => input.checked)?.value ?? 'kit';
+}
+
+function sendComponents(): void {
+  postMessage({ type: 'setComponents', source: selectedSource(), kit: kitSelect.value });
+}
+
+for (const input of sourceInputs) input.addEventListener('change', sendComponents);
+kitSelect.addEventListener('change', () => {
+  const kitInput = sourceInputs.find((input) => input.value === 'kit');
+  if (kitInput) kitInput.checked = true;
+  sendComponents();
+});
 
 for (const tab of document.querySelectorAll<HTMLButtonElement>('.tab')) {
   tab.addEventListener('click', () => {
@@ -99,9 +119,12 @@ window.onmessage = (event: MessageEvent<{ pluginMessage?: PluginMessage }>) => {
     generateButton.textContent = 'Generate';
     showOutput(output, message.message ?? '', message.type);
   }
-  if (message.type === 'componentMapStatus') {
-    mapStatus.textContent = message.isCustom ? 'Using custom map' : 'Using default map';
-    mapStatus.className = `status-badge ${message.isCustom ? 'custom' : 'default'}`;
+  if (message.type === 'state') {
+    for (const input of sourceInputs) input.checked = input.value === message.source;
+    if (message.kit) kitSelect.value = message.kit;
+    customHint.textContent = message.hasStoredMap ? '(saved map)' : '(set up in Component Map)';
+    mapStatus.textContent = message.hasStoredMap ? 'Using custom map' : 'No custom map';
+    mapStatus.className = `status-badge ${message.hasStoredMap ? 'custom' : 'default'}`;
   }
   if (message.type === 'componentMapData') componentMapInput.value = message.map ?? '';
   if (message.type === 'componentMapSaved') {

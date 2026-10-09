@@ -1,6 +1,6 @@
 # Figma Plugin
 
-The Formhaus Figma plugin renders form mockups from form definitions using your design system components.
+The Formhaus Figma plugin renders form mockups from form definitions, with a built-in Material 3 or iOS-like kit, or with your own design system components.
 
 ## Install
 
@@ -25,15 +25,21 @@ The build bundles the plugin code and its UI into `packages/figma/dist`.
 3. Paste a `@formhaus/core` form definition into the **Generate** tab
 4. Click **Generate**
 
-The plugin creates a frame for each step (or one frame for single-step forms) with your design system components rendered inside.
+The plugin creates a frame for each step (or one frame for single-step forms). Regenerating the same definition replaces its frames in place.
 
 ### Quick test
 
-Click **Load example** in the plugin to load a basic contact form definition. Hit **Generate** to see it render with the default component map.
+Click **Load example** in the plugin to load a basic contact form definition, then **Generate**.
+
+## Built-in kit
+
+Pick **Built-in kit** under **Components** and choose **Material 3** or **iOS-like**. On first use the plugin adds a `Formhaus · <kit>` section to the current page with one component per field role: text, select, textarea, date, file, checkbox, switch, radio and checkbox option rows, primary and secondary buttons. Forms are built from instances of these components, so restyling a kit component updates every generated form. The kit stays in the file and is reused on the next run.
+
+Each kit component exposes `Label`, `Value` and `Helper` text properties and a `Show helper` toggle. Icons come from [Material Symbols](https://fonts.google.com/icons) (Apache 2.0). Material 3 uses Roboto; iOS-like uses SF Pro when it is installed. Both fall back to Inter. Text inputs have `Empty` and `Filled` variants: Material shows only the label in an empty field, iOS-like shows the placeholder inside the cell.
 
 ## Component Map
 
-The **Component Map** tells the plugin which Figma components to use for each form field type.
+Pick **My components** to render with your design system instead. The **Component Map** tells the plugin which Figma components to use for each form field type.
 
 ::: tip Auto-generate with Claude
 Run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to search your Figma library and build the component map from confirmed matches.

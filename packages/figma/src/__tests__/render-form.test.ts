@@ -1,6 +1,8 @@
 import type { FormDefinition } from '@formhaus/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import type { KitTheme } from '../kits/kit';
 import { nextFrameX, renderForm } from '../render-form';
+import type { FormRenderer } from '../renderers/types';
 
 const definition: FormDefinition = {
   id: 'existing-form',
@@ -9,86 +11,74 @@ const definition: FormDefinition = {
   fields: [{ key: 'name', type: 'text', label: 'Name' }],
 };
 
+const font = { family: 'Inter', style: 'Regular' };
+const theme: KitTheme = {
+  fonts: { regular: font, medium: font, semibold: font },
+  text: '#000000',
+  muted: '#666666',
+  card: { fill: '#FFFFFF', radius: 12, padding: 24, gap: 16, width: 400 },
+  actionsGap: 8,
+  optionGroup: { gap: 0 },
+  titleSize: 24,
+  bodySize: 16,
+  captionSize: 12,
+};
+
+function node(extra: Record<string, unknown> = {}) {
+  return {
+    name: '', x: 0, width: 400, height: 100, fills: [] as unknown[], children: [] as unknown[],
+    resize: vi.fn(), setSharedPluginData: vi.fn(), appendChild: vi.fn(), ...extra,
+  };
+}
+
+function stubFigma(children: unknown[]) {
+  const created: { x: number }[] = [];
+  vi.stubGlobal('figma', {
+    currentPage: { children },
+    createText: () => node({ type: 'TEXT' }),
+    createFrame: () => {
+      const frame = node({ type: 'FRAME' });
+      created.push(frame);
+      return frame;
+    },
+  });
+  return created;
+}
+
+function renderer(field: FormRenderer['field']): FormRenderer {
+  return { theme, field, button: async () => null };
+}
+
 describe('renderForm', () => {
   beforeEach(() => {
     vi.unstubAllGlobals();
   });
 
-  it('positions a regenerated form over the old one, past unrelated content only', async () => {
-    const emptyDefinition: FormDefinition = {
-      id: 'regen-form',
-      title: 'Regen form',
-      submit: { label: 'Submit' },
-      fields: [],
-    };
-    const oldForm = {
-      type: 'FRAME',
-      x: 300,
-      width: 300,
-      getSharedPluginData: () => emptyDefinition.id,
-      remove: vi.fn(),
-    };
-    const unrelated = {
-      type: 'FRAME',
-      x: 0,
-      width: 100,
-      getSharedPluginData: () => 'other-form',
-      remove: vi.fn(),
-    };
-    const created: { x: number }[] = [];
-    vi.stubGlobal('figma', {
-      currentPage: { children: [unrelated, oldForm] },
-      importComponentSetByKeyAsync: vi.fn().mockResolvedValue({ children: [] }),
-      loadFontAsync: vi.fn().mockResolvedValue(undefined),
-      createText: () => ({ fontName: null, fontSize: 0, characters: '', fills: [], layoutSizingHorizontal: '' }),
-      createFrame: () => {
-        const frame = {
-          name: '', layoutMode: '', primaryAxisSizingMode: '', counterAxisSizingMode: '',
-          itemSpacing: 0, paddingTop: 0, paddingBottom: 0, paddingLeft: 0, paddingRight: 0,
-          fills: [] as unknown[], cornerRadius: 0, x: 0, width: 0, layoutSizingHorizontal: '',
-          resize: vi.fn(), setSharedPluginData: vi.fn(), appendChild: vi.fn(),
-        };
-        created.push(frame);
-        return frame;
-      },
-    });
-
-    await renderForm(emptyDefinition);
-
-    // Excludes the old form (right edge 600); lands just past unrelated content (right edge 100).
-    // The pre-fix code counted the old form and would place it at 700.
+  it('replaces a previous render of the same definition in place', async () => {
+    const oldForm = { type: 'FRAME', x: 300, width: 300, getSharedPluginData: () => definition.id, remove: vi.fn() };
+    const unrelated = { type: 'FRAME', x: 0, width: 100, getSharedPluginData: () => 'other-form', remove: vi.fn() };
+    const created = stubFigma([unrelated, oldForm]);
+    await renderForm(definition, renderer(async () => node() as unknown as SceneNode));
     expect(created[0].x).toBe(200);
     expect(oldForm.remove).toHaveBeenCalled();
+    expect(unrelated.remove).not.toHaveBeenCalled();
   });
 
-  it('keeps existing frames when component imports fail', async () => {
+  it('keeps existing frames when a field fails to render', async () => {
     const remove = vi.fn();
-    const existingFrame = {
-      type: 'FRAME',
-      getSharedPluginData: () => definition.id,
-      remove,
-    };
-    vi.stubGlobal('figma', {
-      currentPage: { children: [existingFrame] },
-      importComponentSetByKeyAsync: vi.fn().mockRejectedValue(new Error('Import failed')),
-      loadFontAsync: vi.fn().mockResolvedValue(undefined),
-    });
-
-    await expect(renderForm(definition)).rejects.toThrow('Import failed');
-
+    stubFigma([{ type: 'FRAME', x: 0, width: 0, getSharedPluginData: () => definition.id, remove }]);
+    await expect(renderForm(definition, renderer(async () => { throw new Error('Import failed'); }))).rejects.toThrow('Import failed');
     expect(remove).not.toHaveBeenCalled();
   });
 });
 
 describe('nextFrameX', () => {
   it('places the new form past unrelated content', () => {
-    const children = [{ x: 0, width: 300 }, { x: 500, width: 200 }];
-    expect(nextFrameX(children, [])).toBe(800);
+    expect(nextFrameX([{ x: 0, width: 300 }, { x: 500, width: 200 }], [])).toBe(800);
   });
 
   it('ignores the frames about to be removed so position stays stable on regeneration', () => {
     const oldForm = { x: 0, width: 300 };
-    const children = [oldForm];
-    expect(nextFrameX(children, [oldForm])).toBe(100);
+    expect(nextFrameX([oldForm], [oldForm])).toBe(100);
   });
 });

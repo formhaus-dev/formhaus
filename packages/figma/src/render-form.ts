@@ -1,15 +1,12 @@
 import type { FormDefinition, FormField } from '@formhaus/core';
-import {
-  CARD_GAP,
-  CARD_INNER_WIDTH,
-  CARD_PADDING,
-  CARD_WIDTH,
-  getButtonKey,
-  getFormsConstructorKey,
-} from './constants';
-import { createButtonInstance } from './figma-helpers';
+import { PLUGIN_NAMESPACE } from './config';
+import type { KitTheme } from './kits/kit';
+import { solid, stack, text } from './kits/primitives';
 import { getSteps } from './parse';
-import { renderField } from './render-field';
+import type { FormRenderer } from './renderers/types';
+
+const LEGACY_NAMESPACE = 'formGenerator';
+const FRAME_GAP = 40;
 
 interface RenderableStep {
   title: string;
@@ -17,24 +14,16 @@ interface RenderableStep {
   fields: FormField[];
 }
 
-export async function renderForm(definition: FormDefinition): Promise<FrameNode[]> {
+export async function renderForm(definition: FormDefinition, renderer: FormRenderer): Promise<FrameNode[]> {
   const existingFrames = findExistingFrames(definition.id);
   const createdFrames: FrameNode[] = [];
   try {
-    const [fieldsComponentSet, buttonComponentSet] = await loadResources();
     const steps = getSteps(definition) as RenderableStep[];
     let cursorX = nextFrameX(figma.currentPage.children, existingFrames);
     for (let index = 0; index < steps.length; index++) {
-      const frame = await renderStep(
-        definition,
-        steps[index],
-        index,
-        steps.length,
-        fieldsComponentSet,
-        buttonComponentSet,
-      );
+      const frame = await renderStep(definition, steps[index], index, steps.length, renderer);
       frame.x = cursorX;
-      cursorX += CARD_WIDTH + CARD_GAP;
+      cursorX += frame.width + FRAME_GAP;
       createdFrames.push(frame);
     }
     for (const frame of existingFrames) frame.remove();
@@ -45,20 +34,12 @@ export async function renderForm(definition: FormDefinition): Promise<FrameNode[
   }
 }
 
-async function loadResources(): Promise<[ComponentSetNode, ComponentSetNode]> {
-  const [fields, buttons] = await Promise.all([
-    figma.importComponentSetByKeyAsync(getFormsConstructorKey()),
-    figma.importComponentSetByKeyAsync(getButtonKey()),
-    figma.loadFontAsync({ family: 'Inter', style: 'Semi Bold' }),
-    figma.loadFontAsync({ family: 'Inter', style: 'Regular' }),
-  ]);
-  return [fields, buttons];
-}
-
 function findExistingFrames(definitionId: string): FrameNode[] {
   return figma.currentPage.children.filter((node): node is FrameNode => (
-    node.type === 'FRAME' &&
-    node.getSharedPluginData('formGenerator', 'definitionId') === definitionId
+    node.type === 'FRAME' && (
+      node.getSharedPluginData(PLUGIN_NAMESPACE, 'definitionId') === definitionId ||
+      node.getSharedPluginData(LEGACY_NAMESPACE, 'definitionId') === definitionId
+    )
   ));
 }
 
@@ -80,111 +61,52 @@ async function renderStep(
   step: RenderableStep,
   index: number,
   stepCount: number,
-  fieldsComponentSet: ComponentSetNode,
-  buttonComponentSet: ComponentSetNode,
+  renderer: FormRenderer,
 ): Promise<FrameNode> {
   const isMultiStep = stepCount > 1;
-  const frameName = isMultiStep
-    ? `${definition.title} — Step ${index + 1}: ${step.title}`
-    : definition.title;
-  const frame = createCardFrame(frameName, definition.id);
-  appendStepHeading(frame, definition, step, index, stepCount);
-  await appendFields(frame, step.fields, fieldsComponentSet);
-  await appendButtons(
-    frame,
-    buttonComponentSet,
-    definition,
-    index === 0,
-    index === stepCount - 1,
-    isMultiStep,
-  );
+  const name = isMultiStep ? `${definition.title} — Step ${index + 1}: ${step.title}` : definition.title;
+  const frame = createCard(name, definition.id, renderer.theme);
+  const { theme } = renderer;
+  if (isMultiStep) append(frame, text(`Step ${index + 1} of ${stepCount}`, { font: theme.fonts.regular, size: theme.captionSize, color: theme.muted }, 'Progress'));
+  append(frame, text(isMultiStep ? step.title : definition.title, { font: theme.fonts.semibold, size: theme.titleSize, color: theme.text }, 'Title'));
+  if (step.description) append(frame, text(step.description, { font: theme.fonts.regular, size: theme.bodySize, color: theme.muted }, 'Description'));
+  for (const field of step.fields) append(frame, await renderer.field(field));
+  await appendButtons(frame, definition, renderer, index === 0, index === stepCount - 1, isMultiStep);
   return frame;
 }
 
-function appendStepHeading(
-  frame: FrameNode,
-  definition: FormDefinition,
-  step: RenderableStep,
-  index: number,
-  stepCount: number,
-): void {
-  if (stepCount > 1) {
-    appendText(frame, `Step ${index + 1} of ${stepCount}`, 12, 'Regular', true);
-  }
-  appendText(frame, stepCount > 1 ? step.title : definition.title, 24, 'Semi Bold');
-  if (step.description) appendText(frame, step.description, 14, 'Regular', true);
+function append(frame: FrameNode, node: SceneNode | null): void {
+  if (!node) return;
+  frame.appendChild(node);
+  if ('layoutSizingHorizontal' in node) node.layoutSizingHorizontal = 'FILL';
+  if (node.type === 'TEXT') node.textAutoResize = 'HEIGHT';
 }
 
-function appendText(
-  frame: FrameNode,
-  characters: string,
-  fontSize: number,
-  style: 'Regular' | 'Semi Bold',
-  muted = false,
-): void {
-  const text = figma.createText();
-  text.fontName = { family: 'Inter', style };
-  text.fontSize = fontSize;
-  text.characters = characters;
-  if (muted) text.fills = [{ type: 'SOLID', color: { r: 0.5, g: 0.5, b: 0.5 } }];
-  frame.appendChild(text);
-  text.layoutSizingHorizontal = 'FILL';
-}
-
-async function appendFields(
-  frame: FrameNode,
-  fields: FormField[],
-  componentSet: ComponentSetNode,
-): Promise<void> {
-  for (const field of fields) {
-    const node = await renderField(field, componentSet);
-    if (!node) continue;
-    frame.appendChild(node);
-    if ('layoutSizingHorizontal' in node) node.layoutSizingHorizontal = 'FILL';
-  }
-}
-
-function createCardFrame(name: string, definitionId: string): FrameNode {
-  const frame = figma.createFrame();
-  frame.name = name;
-  frame.layoutMode = 'VERTICAL';
-  frame.primaryAxisSizingMode = 'AUTO';
+function createCard(name: string, definitionId: string, theme: KitTheme): FrameNode {
+  const frame = stack('VERTICAL', name, { itemSpacing: theme.card.gap });
+  frame.paddingTop = theme.card.padding;
+  frame.paddingBottom = theme.card.padding;
+  frame.paddingLeft = theme.card.padding;
+  frame.paddingRight = theme.card.padding;
+  frame.resize(theme.card.width, frame.height);
   frame.counterAxisSizingMode = 'FIXED';
-  frame.resize(CARD_WIDTH, 100);
-  frame.itemSpacing = 16;
-  frame.paddingTop = CARD_PADDING;
-  frame.paddingBottom = CARD_PADDING;
-  frame.paddingLeft = CARD_PADDING;
-  frame.paddingRight = CARD_PADDING;
-  frame.fills = [{ type: 'SOLID', color: { r: 1, g: 1, b: 1 } }];
-  frame.cornerRadius = 12;
-  frame.setSharedPluginData('formGenerator', 'definitionId', definitionId);
+  frame.fills = solid(theme.card.fill);
+  frame.cornerRadius = theme.card.radius;
+  frame.setSharedPluginData(PLUGIN_NAMESPACE, 'definitionId', definitionId);
   return frame;
 }
 
 async function appendButtons(
   frame: FrameNode,
-  components: ComponentSetNode,
   definition: FormDefinition,
+  renderer: FormRenderer,
   isFirst: boolean,
   isLast: boolean,
   isMultiStep: boolean,
 ): Promise<void> {
-  await appendButton(frame, components, isLast ? definition.submit.label : 'Continue', 'Primary');
-  if (isMultiStep && !isFirst) await appendButton(frame, components, 'Back', 'Secondary');
-  if (definition.cancel && isFirst) {
-    await appendButton(frame, components, definition.cancel.label, 'Secondary');
-  }
-}
-
-async function appendButton(
-  frame: FrameNode,
-  components: ComponentSetNode,
-  label: string,
-  type: 'Primary' | 'Secondary',
-): Promise<void> {
-  const button = await createButtonInstance(components, label, type);
-  if (!button) return;
-  button.resize(CARD_INNER_WIDTH, button.height);
-  frame.appendChild(button);
+  const actions = stack('VERTICAL', 'Actions', { itemSpacing: renderer.theme.actionsGap });
+  append(frame, actions);
+  append(actions, await renderer.button(isLast ? definition.submit.label : 'Continue', true));
+  if (isMultiStep && !isFirst) append(actions, await renderer.button('Back', false));
+  if (definition.cancel && isFirst) append(actions, await renderer.button(definition.cancel.label, false));
 }

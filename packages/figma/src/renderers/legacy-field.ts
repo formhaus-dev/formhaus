@@ -1,6 +1,6 @@
 import type { FormField } from '@formhaus/core';
-import { getFields, getTextLayers, type FieldMapping } from './constants';
-import { createPlaceholder, setNestedText } from './figma-helpers';
+import { getFields, getTextLayers, type FieldMapping } from '../constants';
+import { createPlaceholder, setNestedText } from '../figma-helpers';
 
 const LABEL_FONT_SIZE = 14;
 const GROUP_SPACING = 4;

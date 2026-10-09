@@ -1,44 +1,10 @@
+import type { FormDefinition } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
+import map from '../component-map.example.json';
+import { countFields, getSteps, parseAndValidate } from '../parse';
 
-interface TestDefinition {
-  id?: string;
-  title?: string;
-  submit?: { label: string };
-  fields?: { key: string; type: string; label: string }[];
-  steps?: { id: string; title: string; fields: { key: string; type: string; label: string }[] }[];
-}
-
-function parseAndValidate(json: string): TestDefinition {
-  let parsed: TestDefinition;
-  try {
-    parsed = JSON.parse(json);
-  } catch (_e) {
-    throw new Error('Invalid JSON. Check syntax and try again.');
-  }
-  if (!parsed.title) {
-    throw new Error("Definition must have a 'title'.");
-  }
-  if (!parsed.fields && !parsed.steps) {
-    throw new Error("Definition must have 'fields' (single-step) or 'steps' (multi-step).");
-  }
-  if (!parsed.submit) {
-    throw new Error("Definition must have a 'submit' action.");
-  }
-  return parsed;
-}
-
-function countFields(definition: TestDefinition): number {
-  if (definition.fields) return definition.fields.length;
-  return (definition.steps || []).reduce(
-    (sum: number, s: { fields: unknown[] }) => sum + s.fields.length,
-    0,
-  );
-}
-
-function getSteps(definition: TestDefinition) {
-  if (definition.steps && definition.steps.length > 0) return definition.steps;
-  return [{ title: definition.title, fields: definition.fields || [] }];
-}
+const definition = (value: object) => value as unknown as FormDefinition;
+const mappedFields = Object.entries(map.fields) as [string, Record<string, unknown>][];
 
 describe('parseAndValidate', () => {
   const valid = (overrides = {}) =>
@@ -92,41 +58,40 @@ describe('parseAndValidate', () => {
 
 describe('countFields', () => {
   it('counts single-step fields', () => {
-    expect(countFields({ fields: [1, 2, 3] })).toBe(3);
+    expect(countFields(definition({ fields: [1, 2, 3] }))).toBe(3);
   });
 
   it('counts multi-step fields', () => {
-    expect(countFields({ steps: [{ fields: [1, 2] }, { fields: [3] }] })).toBe(3);
+    expect(countFields(definition({ steps: [{ fields: [1, 2] }, { fields: [3] }] }))).toBe(3);
   });
 
   it('returns 0 for empty', () => {
-    expect(countFields({ fields: [] })).toBe(0);
+    expect(countFields(definition({ fields: [] }))).toBe(0);
   });
 });
 
 describe('getSteps', () => {
   it('returns steps for multi-step definition', () => {
-    const steps = getSteps({ steps: [{ title: 'A', fields: [] }] });
+    const steps = getSteps(definition({ steps: [{ title: 'A', fields: [] }] }));
     expect(steps).toHaveLength(1);
     expect(steps[0].title).toBe('A');
   });
 
   it('wraps fields as single step for single-step definition', () => {
-    const steps = getSteps({ title: 'Form', fields: [{ key: 'x' }] });
+    const steps = getSteps(definition({ title: 'Form', fields: [{ key: 'x' }] }));
     expect(steps).toHaveLength(1);
     expect(steps[0].title).toBe('Form');
     expect(steps[0].fields).toHaveLength(1);
   });
 
   it('handles missing fields gracefully', () => {
-    const steps = getSteps({ title: 'Empty' });
+    const steps = getSteps(definition({ title: 'Empty' }));
     expect(steps[0].fields).toEqual([]);
   });
 });
 
 describe('component mapping', () => {
   it('has entries for all core field types', () => {
-    const map = require('../../src/component-map.example.json');
     const coreTypes = [
       'text',
       'email',
@@ -140,14 +105,13 @@ describe('component mapping', () => {
       'switch',
     ];
     for (const t of coreTypes) {
-      expect(map.fields[t]).toBeDefined();
+      expect(map.fields[t as keyof typeof map.fields]).toBeDefined();
     }
   });
 
   it('Forms Constructor variants use valid type names', () => {
-    const map = require('../../src/component-map.example.json');
     const validVariants = ['Input', 'Select', 'Textarea'];
-    for (const [, cfg] of Object.entries(map.fields) as [string, Record<string, unknown>][]) {
+    for (const [, cfg] of mappedFields) {
       if (cfg.formsConstructorVariant) {
         expect(validVariants).toContain(cfg.formsConstructorVariant);
       }
@@ -155,8 +119,7 @@ describe('component mapping', () => {
   });
 
   it('standalone fields have a standaloneKey or are marked missing', () => {
-    const map = require('../../src/component-map.example.json');
-    for (const [type, cfg] of Object.entries(map.fields) as [string, Record<string, unknown>][]) {
+    for (const [type, cfg] of mappedFields) {
       if (cfg.standalone) {
         expect(cfg.standaloneKey || cfg.missing).toBeTruthy();
       }

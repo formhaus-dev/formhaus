@@ -12,6 +12,16 @@
 
   <div class="tab-content active" id="tab-generate">
     <h2>Formhaus</h2>
+    <fieldset class="components" id="components">
+      <legend>Components</legend>
+      <label class="choice"><input type="radio" name="source" value="kit"> Built-in kit
+        <select id="kit">
+          <option value="material">Material 3</option>
+          <option value="ios">iOS-like</option>
+        </select>
+      </label>
+      <label class="choice"><input type="radio" name="source" value="custom"> My components <span class="hint" id="customHint"></span></label>
+    </fieldset>
     <label for="definition">Paste @formhaus/core form definition JSON</label>
     <textarea id="definition" placeholder='{ "id": "...", "title": "...", "submit": { "label": "Submit" }, "fields": [...] }'></textarea>
     <button class="link" id="loadExample">Load example (basic-form)</button>

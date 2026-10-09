@@ -47,5 +47,11 @@ async function runWatch() {
   }
 }
 
+async function runHarnessBuild() {
+  await mkdir(dist, { recursive: true });
+  await build({ ...codeOptions, entryPoints: [join(root, 'src/harness.ts')], outfile: join(dist, 'harness.js'), minify: true });
+}
+
 if (process.argv.includes('--watch')) await runWatch();
+else if (process.argv.includes('--harness')) await runHarnessBuild();
 else await runBuild();
