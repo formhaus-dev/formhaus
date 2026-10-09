@@ -12,23 +12,23 @@ describe('step buttons in Figma', () => {
   it('maps next and submit to primary, back to secondary, skip and cancel to text', () => {
     const form = { ...definition(), cancel: { label: 'Close' } };
     expect(stepButtons(form, { next: { label: 'Next question' }, skip: { label: 'Not now' } }, at(true, false))).toEqual([
-      { label: 'Next question', kind: 'primary' },
-      { label: 'Not now', kind: 'text' },
-      { label: 'Close', kind: 'text' },
+      { label: 'Next question', kind: 'primary', action: 'next' },
+      { label: 'Not now', kind: 'text', action: 'skip' },
+      { label: 'Close', kind: 'text', action: 'cancel' },
     ]);
     expect(stepButtons(definition(), { back: { label: 'Previous' } }, at(false, true))).toEqual([
-      { label: 'Finish', kind: 'primary' },
-      { label: 'Previous', kind: 'secondary' },
+      { label: 'Finish', kind: 'primary', action: 'submit' },
+      { label: 'Previous', kind: 'secondary', action: 'back' },
     ]);
   });
 
   it('hides false actions and honours an explicit variant', () => {
     expect(stepButtons(definition(), { next: false, back: false }, at(false, false))).toEqual([]);
-    expect(stepButtons(definition(), { back: { label: 'Back', variant: 'text' } }, at(false, false))[1]).toEqual({ label: 'Back', kind: 'text' });
+    expect(stepButtons(definition(), { back: { label: 'Back', variant: 'text' } }, at(false, false))[1]).toEqual({ label: 'Back', kind: 'text', action: 'back' });
   });
 
   it('ignores skip on a single-step form', () => {
-    expect(stepButtons(definition(), { skip: { label: 'Skip' } }, { isFirst: true, isLast: true, isMultiStep: false })).toEqual([{ label: 'Finish', kind: 'primary' }]);
+    expect(stepButtons(definition(), { skip: { label: 'Skip' } }, { isFirst: true, isLast: true, isMultiStep: false })).toEqual([{ label: 'Finish', kind: 'primary', action: 'submit' }]);
   });
 });
 

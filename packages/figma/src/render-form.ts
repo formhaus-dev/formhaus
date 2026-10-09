@@ -1,4 +1,4 @@
-import type { FormDefinition, FormField } from '@formhaus/core';
+import type { FormDefinition, FormField, FormStep } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from './config';
 import type { KitTheme } from './kits/kit';
 import { solid, stack, text } from './kits/primitives';
@@ -7,6 +7,7 @@ import { appendActions, DEFAULT_LAYOUT, stepButtons, type FormLayout, type StepA
 import { drawFlow, removeFlow } from './flow/arrows';
 import { buildGraph, type FlowGraph } from './flow/graph';
 import { flowPositions } from './flow/layout';
+import { wirePrototype } from './flow/prototype';
 import type { FormRenderer } from './renderers/types';
 
 const LEGACY_NAMESPACE = 'formGenerator';
@@ -49,9 +50,9 @@ export async function renderForm(definition: FormDefinition, renderer: FormRende
   const existingFrames = findExistingFrames(definition.id).sort((left, right) => absolute(left, 0) - absolute(right, 0) || absolute(left, 1) - absolute(right, 1));
   const fallbackX = nextFrameX(figma.currentPage.children, existingFrames);
   const createdFrames: FrameNode[] = [];
+  const steps = getSteps(definition) as RenderableStep[];
+  const graph = steps.length > 1 ? buildGraph(definition) : null;
   try {
-    const steps = getSteps(definition) as RenderableStep[];
-    const graph = steps.length > 1 ? buildGraph(definition) : null;
     const stepContexts = contexts(steps, graph);
     const stored = JSON.stringify(definition);
     const matched = matchFrames(steps.map((step) => step.id), existingFrames);
@@ -64,13 +65,14 @@ export async function renderForm(definition: FormDefinition, renderer: FormRende
       createdFrames.push(frame);
     }
     for (const frame of existingFrames) frame.remove();
-    removeFlow(definition.id);
-    if (graph?.branching) await arrangeFlow(definition, steps, graph, createdFrames, existingFrames.length === 0 ? { x: fallbackX, y: 0 } : null, renderer);
-    return createdFrames;
   } catch (error) {
     for (const frame of createdFrames) frame.remove();
     throw error;
   }
+  removeFlow(definition.id);
+  if (graph?.branching) await arrangeFlow(definition, steps, graph, createdFrames, existingFrames.length === 0 ? { x: fallbackX, y: 0 } : null, renderer);
+  if (graph) await wirePrototype(definition, steps as FormStep[], createdFrames);
+  return createdFrames;
 }
 
 async function arrangeFlow(definition: FormDefinition, steps: RenderableStep[], graph: FlowGraph, frames: FrameNode[], origin: { x: number; y: number } | null, renderer: FormRenderer): Promise<void> {

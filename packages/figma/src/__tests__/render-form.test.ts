@@ -27,15 +27,17 @@ const theme: KitTheme = {
 function node(extra: Record<string, unknown> = {}) {
   return {
     name: '', x: 0, width: 400, height: 100, fills: [] as unknown[], children: [] as unknown[],
-    resize: vi.fn(), setSharedPluginData: vi.fn(), appendChild: vi.fn(), ...extra,
+    resize: vi.fn(), setSharedPluginData: vi.fn(), appendChild: vi.fn(), findAll: () => [], findChild: () => null, ...extra,
   };
 }
 
 function stubFigma(children: unknown[]) {
   const created: { x: number }[] = [];
   vi.stubGlobal('figma', {
+    getNodeByIdAsync: async () => null,
     currentPage: {
       children,
+      flowStartingPoints: [],
       findAllWithCriteria: ({ types }: { types: string[] }) => (children as { type: string }[]).filter((child) => types.includes(child.type)),
     },
     createText: () => node({ type: 'TEXT' }),
