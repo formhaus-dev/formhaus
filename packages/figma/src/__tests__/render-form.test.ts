@@ -20,6 +20,7 @@ const theme: KitTheme = {
   actionsGap: 8,
   optionGroup: { gap: 0 },
   titleSize: 24,
+  headingSize: 20,
   bodySize: 16,
   captionSize: 12,
 };

@@ -11,6 +11,7 @@ export interface KitTheme {
   actionsGap: number;
   optionGroup: { gap: number; fill?: string; radius?: number };
   titleSize: number;
+  headingSize: number;
   bodySize: number;
   captionSize: number;
   groupLabel?: TextStyle;

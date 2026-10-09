@@ -7,7 +7,7 @@ import { appendActions, DEFAULT_LAYOUT, stepButtons, type FormLayout, type StepA
 import { drawFlow, removeFlow } from './flow/arrows';
 import { buildGraph, type FlowGraph } from './flow/graph';
 import { flowPositions } from './flow/layout';
-import { wirePrototype } from './flow/prototype';
+import { livePoints, wirePrototype } from './flow/prototype';
 import type { FormRenderer } from './renderers/types';
 
 const LEGACY_NAMESPACE = 'formGenerator';
@@ -22,6 +22,12 @@ interface RenderableStep extends StepActions {
   title: string;
   description?: string;
   fields: FormField[];
+  sections?: RenderableStep[];
+}
+
+export function layoutSteps(definition: FormDefinition, layout: FormLayout): RenderableStep[] {
+  const steps = getSteps(definition) as RenderableStep[];
+  return layout.steps === 'page' && steps.length > 1 ? [{ title: definition.title, fields: [], sections: steps }] : steps;
 }
 
 interface StepContext {
@@ -50,15 +56,18 @@ export async function renderForm(definition: FormDefinition, renderer: FormRende
   const existingFrames = findExistingFrames(definition.id).sort((left, right) => absolute(left, 0) - absolute(right, 0) || absolute(left, 1) - absolute(right, 1));
   const fallbackX = nextFrameX(figma.currentPage.children, existingFrames);
   const createdFrames: FrameNode[] = [];
-  const steps = getSteps(definition) as RenderableStep[];
+  const steps = layoutSteps(definition, layout);
   const graph = steps.length > 1 ? buildGraph(definition) : null;
+  let origin: { x: number; y: number } | null = null;
   try {
     const stepContexts = contexts(steps, graph);
     const stored = JSON.stringify(definition);
     const matched = matchFrames(steps.map((step) => step.id), existingFrames);
+    origin = existingFrames.length === 0 ? { x: fallbackX, y: 0 } : matched.every(Boolean) ? null : { x: existingFrames[0].x, y: existingFrames[0].y };
     for (let index = 0; index < steps.length; index++) {
       const frame = await renderStep(definition, steps[index], stepContexts[index], steps.length, renderer, layout);
-      place(frame, matched[index] ?? createdFrames[index - 1], Boolean(matched[index]), fallbackX, Boolean(graph?.branching));
+      const anchor = matched[index] ?? (index === 0 ? existingFrames[0] : undefined);
+      place(frame, anchor ?? createdFrames[index - 1], Boolean(anchor), fallbackX, Boolean(graph?.branching));
       frame.setSharedPluginData(PLUGIN_NAMESPACE, STEP_KEY, steps[index].id ?? '');
       if (utf8Length(stored) <= MAX_STORED_DEFINITION) frame.setSharedPluginData(PLUGIN_NAMESPACE, DEFINITION_KEY, stored);
       frame.setSharedPluginData(PLUGIN_NAMESPACE, LAYOUT_KEY, JSON.stringify(layout));
@@ -70,8 +79,9 @@ export async function renderForm(definition: FormDefinition, renderer: FormRende
     throw error;
   }
   removeFlow(definition.id);
-  if (graph?.branching) await arrangeFlow(definition, steps, graph, createdFrames, existingFrames.length === 0 ? { x: fallbackX, y: 0 } : null, renderer);
+  if (graph?.branching) await arrangeFlow(definition, steps, graph, createdFrames, origin, renderer);
   if (graph) await wirePrototype(definition, steps as FormStep[], createdFrames);
+  else figma.currentPage.flowStartingPoints = await livePoints(new Set());
   return createdFrames;
 }
 
@@ -137,12 +147,22 @@ async function renderStep(
   const frame = createCard(name, definition.id, renderer.theme);
   const { theme } = renderer;
   if (context.progress) append(frame, text(context.progress, { font: theme.fonts.regular, size: theme.captionSize, color: theme.muted }, 'Progress'));
-  append(frame, text(isMultiStep ? step.title : definition.title, { font: theme.fonts.semibold, size: theme.titleSize, color: theme.text }, 'Title'));
-  if (step.description) append(frame, text(step.description, { font: theme.fonts.regular, size: theme.bodySize, color: theme.muted }, 'Description'));
-  for (const field of step.fields) append(frame, await renderer.field(field));
+  await appendContent(frame, isMultiStep ? step.title : definition.title, step, renderer, theme.titleSize);
   const buttons = stepButtons(definition, step, { isFirst: index === 0, isLast: context.isLast, isMultiStep });
   await appendActions(frame, buttons, renderer, layout, append);
   return frame;
+}
+
+async function appendContent(frame: FrameNode, title: string, step: RenderableStep, renderer: FormRenderer, size: number): Promise<void> {
+  const { theme } = renderer;
+  append(frame, text(title, { font: theme.fonts.semibold, size, color: theme.text }, 'Title'));
+  if (step.description) append(frame, text(step.description, { font: theme.fonts.regular, size: theme.bodySize, color: theme.muted }, 'Description'));
+  for (const field of step.fields) append(frame, await renderer.field(field));
+  for (const section of step.sections ?? []) {
+    const group = stack('VERTICAL', section.title, { itemSpacing: theme.card.gap, paddingTop: theme.card.gap });
+    append(frame, group);
+    await appendContent(group, section.title, section, renderer, theme.headingSize);
+  }
 }
 
 function append(frame: FrameNode, node: SceneNode | null): void {

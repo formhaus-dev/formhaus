@@ -5,12 +5,18 @@ import type { FormRenderer } from './renderers/types';
 import type { ButtonKind } from './roles';
 
 export type ActionsLayout = 'stacked' | 'inline';
+export type StepsLayout = 'screens' | 'page';
 
 export interface FormLayout {
   actions: ActionsLayout;
+  steps: StepsLayout;
 }
 
-export const DEFAULT_LAYOUT: FormLayout = { actions: 'stacked' };
+export const DEFAULT_LAYOUT: FormLayout = { actions: 'stacked', steps: 'screens' };
+
+export function normalizeLayout(raw: Partial<FormLayout> | null | undefined): FormLayout {
+  return { actions: raw?.actions === 'inline' ? 'inline' : 'stacked', steps: raw?.steps === 'page' ? 'page' : 'screens' };
+}
 
 export interface StepActions {
   next?: FormAction | false;

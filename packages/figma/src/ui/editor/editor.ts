@@ -1,7 +1,7 @@
 import type { FormDefinition, FormField } from '@formhaus/core';
 import { element, iconButton } from '../dom';
 import { icon } from '../icons';
-import { DEFAULT_LAYOUT, type ActionsLayout, type FormLayout } from '../../render-actions';
+import { DEFAULT_LAYOUT, type FormLayout } from '../../render-actions';
 import { addLink, buttonsBlock } from './buttons';
 import { labelled, textInput } from './controls';
 import { fieldRow, typeSelect } from './field-row';
@@ -114,29 +114,33 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
     picker.prepend(Object.assign(element('option', '', 'Choose type'), { value: '', disabled: true }));
     picker.value = '';
     add.appendChild(picker);
-    section.append(list, add, buttonsBlock(step, stepIndex, steps(draft).length, isMultiStep(draft), { draft, changed: onChange, rerender: () => update() }));
+    const count = steps(draft).length;
+    const onePage = layout.steps === 'page' && count > 1;
+    section.append(list, add);
+    if (!onePage || stepIndex === count - 1) section.append(buttonsBlock(step, stepIndex, count, isMultiStep(draft) && !onePage, { draft, changed: onChange, rerender: () => update() }));
     return section;
   }
 
-  function layoutPicker(): HTMLElement {
+  function layoutPicker<K extends keyof FormLayout>(key: K, title: string, options: [FormLayout[K], string][]): HTMLElement {
     const group = element('div', 'segmented small');
     group.setAttribute('role', 'group');
-    group.setAttribute('aria-label', 'Button layout');
-    for (const [value, text] of [['stacked', 'Stacked'], ['inline', 'Side by side']] as [ActionsLayout, string][]) {
-      const option = element('button', value === layout.actions ? 'mode active' : 'mode', text);
+    group.setAttribute('aria-label', title);
+    for (const [value, text] of options) {
+      const option = element('button', value === layout[key] ? 'mode active' : 'mode', text);
       option.type = 'button';
-      option.setAttribute('aria-pressed', String(value === layout.actions));
-      option.onclick = () => { layout = { actions: value }; update(); };
+      option.setAttribute('aria-pressed', String(value === layout[key]));
+      option.onclick = () => { layout = { ...layout, [key]: value }; update(); };
       group.appendChild(option);
     }
-    return labelled('Buttons', group, 'head-row', 'section-label');
+    return labelled(title, group, 'head-row', 'section-label');
   }
 
   function render(): void {
     const head = element('div', 'form-head');
     head.append(
       labelled('Form title', textInput(draft.title, 'Sign up', 'input title-input', (value) => { draft.title = value; onChange(); }, 'Form title'), 'head-field', 'section-label'),
-      layoutPicker(),
+      ...(steps(draft).length > 1 ? [layoutPicker('steps', 'Steps', [['screens', 'Separate'], ['page', 'One page']])] : []),
+      layoutPicker('actions', 'Buttons', [['stacked', 'Stacked'], ['inline', 'Side by side']]),
     );
     const addStepButton = addLink(isMultiStep(draft) ? 'Add step' : 'Split into steps', () => { addStep(draft); update(); });
     container.replaceChildren(head, ...steps(draft).map((_, index) => stepSection(index)), addStepButton);

@@ -160,6 +160,7 @@ export const iosKit: Kit = {
     actionsGap: 12,
     optionGroup: { gap: 0, fill: C.cell, radius: CELL_RADIUS },
     titleSize: 28,
+    headingSize: 22,
     bodySize: 17,
     captionSize: 13,
   }),

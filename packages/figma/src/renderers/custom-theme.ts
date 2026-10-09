@@ -10,6 +10,7 @@ const NEUTRAL = {
   actionsGap: 8,
   optionGroup: { gap: 8 },
   titleSize: 24,
+  headingSize: 20,
   bodySize: 15,
   captionSize: 12,
 };

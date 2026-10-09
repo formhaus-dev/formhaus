@@ -32,6 +32,8 @@ Each step has a **Buttons** block under its fields:
 
 Labels can be changed per step, and Continue and Back can be removed. **Buttons** at the top switches between stacked buttons and buttons side by side. Side by side puts Back and the primary button in one row and the text buttons below.
 
+**Steps** at the top switches a multi-step form between separate screens and one page. One page draws every step as a titled section in a single frame with Submit at the end, without a flow map or prototype. Routes and step conditions stay in the definition, but every step is drawn.
+
 Each generated form keeps its definition. Select a form on the canvas and the plugin opens it for editing. **Update form** redraws it in place with the current components, so anyone with edit access to the file can change a form without touching JSON. Field keys follow the label until another field's condition or route refers to them, and the editor keeps conditions, routes and validation rules it does not show.
 
 ### Quick test

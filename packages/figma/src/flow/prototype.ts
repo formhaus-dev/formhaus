@@ -49,9 +49,11 @@ export async function wirePrototype(definition: FormDefinition, source: FormStep
   const steps = source.map((step, index) => ({ ...step, id: step.id ?? `#${index}` }));
   const byId = new Map(steps.map((step, index) => [step.id, frames[index]]));
   for (let index = 0; index < steps.length; index++) await wireStep(steps, index, frames[index], byId);
-  const page = figma.currentPage;
-  const points = await Promise.all(page.flowStartingPoints.map(async (point) => ({ point, node: await figma.getNodeByIdAsync(point.nodeId) })));
-  const ids = new Set(frames.map((frame) => frame.id));
-  const kept = points.filter(({ point, node }) => node && !node.removed && !ids.has(point.nodeId)).map(({ point }) => point);
-  page.flowStartingPoints = [...kept, { nodeId: frames[0].id, name: definition.title }];
+  const kept = await livePoints(new Set(frames.map((frame) => frame.id)));
+  figma.currentPage.flowStartingPoints = [...kept, { nodeId: frames[0].id, name: definition.title }];
+}
+
+export async function livePoints(exclude: Set<string>): Promise<{ nodeId: string; name: string }[]> {
+  const points = await Promise.all(figma.currentPage.flowStartingPoints.map(async (point) => ({ point, node: await figma.getNodeByIdAsync(point.nodeId) })));
+  return points.filter(({ point, node }) => node && !node.removed && !exclude.has(point.nodeId)).map(({ point }) => point);
 }

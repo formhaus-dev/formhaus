@@ -51,7 +51,7 @@ export function buttonsBlock(step: SkippableStep, index: number, count: number, 
       ? row('Skip', textInput(step.skip.label, 'Skip', 'input', (value) => { setSkip(step, value); changed(); }, 'Skip button'), () => { setSkip(step, null); rerender(); })
       : addLink('Skip button', () => { setSkip(step, 'Skip'); rerender(); }));
   }
-  if (index === 0) {
+  if (index === 0 || !multiStep) {
     block.appendChild(draft.cancel
       ? row('Cancel', textInput(draft.cancel.label, 'Cancel', 'input', (value) => { setCancel(draft, value); changed(); }, 'Cancel button'), () => { setCancel(draft, null); rerender(); })
       : addLink('Cancel button', () => { setCancel(draft, 'Cancel'); rerender(); }));

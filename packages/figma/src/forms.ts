@@ -1,6 +1,6 @@
 import type { FormDefinition } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from './config';
-import { DEFAULT_LAYOUT, type FormLayout } from './render-actions';
+import { normalizeLayout, type FormLayout } from './render-actions';
 import { DEFINITION_KEY, LAYOUT_KEY } from './render-form';
 
 function formFrame(node: BaseNode | null): FrameNode | null {
@@ -27,6 +27,5 @@ export function selectedForm(selection: readonly SceneNode[]): SelectedForm | nu
   const frame = formFrame(selection[0] ?? null);
   const definition = parse<FormDefinition>(frame?.getSharedPluginData(PLUGIN_NAMESPACE, DEFINITION_KEY));
   if (!frame || !definition) return null;
-  const layout = parse<FormLayout>(frame.getSharedPluginData(PLUGIN_NAMESPACE, LAYOUT_KEY));
-  return { definition, layout: layout?.actions === 'inline' ? { actions: 'inline' } : DEFAULT_LAYOUT };
+  return { definition, layout: normalizeLayout(parse<FormLayout>(frame.getSharedPluginData(PLUGIN_NAMESPACE, LAYOUT_KEY))) };
 }
