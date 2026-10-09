@@ -3,7 +3,7 @@
 [![npm](https://img.shields.io/npm/v/@formhaus/core?label=core)](https://www.npmjs.com/package/@formhaus/core)
 [![npm](https://img.shields.io/npm/v/@formhaus/react?label=react)](https://www.npmjs.com/package/@formhaus/react)
 [![npm](https://img.shields.io/npm/v/@formhaus/vue?label=vue)](https://www.npmjs.com/package/@formhaus/vue)
-[![bundlephobia](https://img.shields.io/bundlephobia/minzip/@formhaus/core?label=core%20size)](https://bundlephobia.com/package/@formhaus/core)
+[![core size](https://img.shields.io/bundlejs/size/@formhaus/core?label=core%20size)](https://bundlejs.com/?q=@formhaus/core)
 [![license](https://img.shields.io/github/license/ignsm/formhaus)](LICENSE)
 
 Formhaus keeps fields, validation, visibility, and steps in a compact JSON definition. `@formhaus/core` runs it without a UI framework. React and Vue adapters render native or custom controls, and the Figma plugin reads the same definition.
