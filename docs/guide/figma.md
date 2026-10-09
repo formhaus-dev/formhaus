@@ -39,15 +39,17 @@ Each kit component exposes `Label`, `Value` and `Helper` text properties and a `
 
 ## My components
 
-Open the **Components** tab to render forms with your own design system. Each field role has a row with a preview of the bound component.
+Open the **Components** tab to render forms with your own design system. Every field role has a card with a preview of the component it renders with.
 
-1. Select a component, a component set or an instance on the canvas.
-2. Click **Use selection** on the role it should render.
-3. Pick which text layers or properties hold the label, value and helper text if the detected ones are wrong.
+1. Select a component, a component set or an instance on the canvas. The bar at the top shows it and suggests a role.
+2. Drag the bar onto a card, click the card, or click **Bind as …**.
+3. If the label, value or helper land in the wrong layers, open **Text slots** on the card and pick the right ones.
 
-Binding an instance keeps its variant and boolean property values, so configure the instance the way fields should look before binding it. Library components are bound by key and imported when you generate. **Auto-match from this page** binds unbound roles to components on the current page by name, such as `Text field`, `Dropdown`, `Toggle` or `Button / Primary`. Roles you leave unbound use the selected built-in kit.
+Binding an instance keeps its variant and boolean property values, so configure the instance the way fields should look before binding it. Library components are bound by key and imported when you generate. **Auto-match** binds unbound roles to components on the current page by name, such as `Text field`, `Dropdown`, `Toggle` or `Button / Primary`.
 
-Bindings are stored in the document, so everyone who opens the file generates with the same components.
+Roles you leave unbound reuse a related component when one is bound: a date or select field uses your dropdown or text field, a text area uses your text field. Anything else falls back to the selected built-in kit. With your own components the form card is neutral and takes its font and group label style from your text field.
+
+Drag any card onto the canvas to place that component. Bindings are stored in the document, so everyone who opens the file generates with the same components.
 
 ## Component Map
 

@@ -2,58 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>/* FORMHAUS_STYLES */</style>
 </head>
 <body>
-  <div class="tabs">
-    <button class="tab active" data-tab="generate">Generate</button>
-    <button class="tab" data-tab="components">Components</button>
-    <button class="tab" data-tab="settings">JSON map</button>
-  </div>
+  <header class="topbar">
+    <nav class="segmented" role="tablist">
+      <button class="tab active" type="button" role="tab" aria-selected="true" data-tab="generate">Generate</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="components">Components</button>
+      <button class="tab" type="button" role="tab" aria-selected="false" data-tab="settings">JSON map</button>
+    </nav>
+  </header>
 
-  <div class="tab-content active" id="tab-generate">
-    <h2>Formhaus</h2>
-    <fieldset class="components" id="components">
-      <legend>Components</legend>
-      <label class="choice"><input type="radio" name="source" value="kit"> Built-in kit
+  <section class="panel active" role="tabpanel" id="tab-generate">
+    <div class="section-label">Render with</div>
+    <div class="source-cards">
+      <label class="source-card">
+        <input type="radio" name="source" value="kit">
+        <span class="source-title">Built-in kit</span>
+        <span class="source-sub">Ready-made components in your file</span>
         <select id="kit">
           <option value="material">Material 3</option>
           <option value="ios">iOS-like</option>
         </select>
       </label>
-      <label class="choice"><input type="radio" name="source" value="custom"> My components <span class="hint" id="customHint"></span></label>
-    </fieldset>
-    <label for="definition">Paste @formhaus/core form definition JSON</label>
-    <textarea id="definition" placeholder='{ "id": "...", "title": "...", "submit": { "label": "Submit" }, "fields": [...] }'></textarea>
-    <button class="link" id="loadExample">Load example (basic-form)</button>
-    <button id="generate">Generate</button>
-    <div class="output" id="output"></div>
-  </div>
+      <label class="source-card">
+        <input type="radio" name="source" value="custom">
+        <span class="source-title">My components</span>
+        <span class="source-sub" id="customHint">Bind them in Components</span>
+        <button class="link" id="openComponents" type="button">Set up components</button>
+      </label>
+    </div>
+    <div class="row-between">
+      <label class="section-label" for="definition">Form definition</label>
+      <button class="link" id="loadExample" type="button">Load example</button>
+    </div>
+    <textarea id="definition" spellcheck="false" placeholder='{ "id": "signup", "title": "Sign up", "submit": { "label": "Create account" }, "fields": [] }'></textarea>
+    <footer class="panel-footer">
+      <div class="output" id="output"></div>
+      <button class="btn btn-primary btn-block" id="generate" type="button">Generate form</button>
+    </footer>
+  </section>
 
-  <div class="tab-content" id="tab-components">
-    <p class="hint">Select a component or a configured instance on the canvas, then click <b>Use selection</b>. Anything you leave unbound uses the built-in kit.</p>
-    <button class="btn-secondary" id="autoMatch">Auto-match from this page</button>
-    <div class="output" id="bindingsOutput"></div>
-    <div class="bindings" id="bindings"></div>
-  </div>
-
-  <div class="tab-content" id="tab-settings">
-    <div>
-      <label>Status</label>
-      <div class="status-row">
-        <span class="status-badge default" id="mapStatus">Using default map</span>
+  <section class="panel" role="tabpanel" id="tab-components">
+    <div class="tray is-empty" id="tray"></div>
+    <div class="coverage">
+      <div class="row-between">
+        <div class="coverage-title" id="coverageTitle"></div>
+        <button class="btn btn-secondary btn-small" id="autoMatch" type="button">Auto-match</button>
       </div>
+      <div class="coverage-bar" id="coverageBar"></div>
+      <div class="coverage-legend" id="coverageLegend"></div>
     </div>
-    <label for="componentMap">Component Map JSON</label>
-    <textarea id="componentMap" placeholder="Paste your component map JSON here..."></textarea>
-    <p class="hint">Map your design system's Figma component keys to form field types. Load the current map to use it as a starting point.</p>
-    <div class="btn-row">
-      <button class="btn-secondary" id="loadCurrentMap">Load Current</button>
-      <button id="saveMap">Save Map</button>
+    <div class="output" id="bindingsOutput"></div>
+    <div class="groups" id="bindings"></div>
+    <p class="hint footnote">Drag a card onto the canvas to place that component.</p>
+  </section>
+
+  <section class="panel" role="tabpanel" id="tab-settings">
+    <div class="row-between">
+      <div class="section-label">Component map</div>
+      <span class="badge tone-neutral" id="mapStatus">No custom map</span>
     </div>
-    <button class="btn-danger" id="resetMap">Reset to Default</button>
+    <p class="hint">The older way to use your own library: a JSON map of field types to component keys. It is used when My components is selected and nothing is bound in Components.</p>
+    <textarea id="componentMap" spellcheck="false" placeholder="Paste your component map JSON"></textarea>
     <div class="output" id="mapOutput"></div>
-  </div>
+    <div class="btn-row">
+      <button class="btn btn-secondary" id="loadCurrentMap" type="button">Load current</button>
+      <button class="btn btn-secondary btn-danger" id="resetMap" type="button">Reset</button>
+      <button class="btn btn-primary" id="saveMap" type="button">Save map</button>
+    </div>
+  </section>
+
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Text slots"></div>
 
   <script>/* FORMHAUS_SCRIPT */</script>
 </body>

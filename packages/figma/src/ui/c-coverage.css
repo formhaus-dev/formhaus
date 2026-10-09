@@ -1,0 +1,43 @@
+.coverage {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+}
+.coverage-title { color: var(--text-2); font-size: 12px; }
+.coverage-title strong { color: var(--text); font-size: 14px; font-weight: 700; }
+.coverage-bar { background: var(--bg-2); border-radius: 999px; display: flex; gap: 2px; height: 6px; overflow: hidden; }
+.coverage-bar:empty { display: none; }
+.segment { min-width: 6px; }
+.coverage-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.legend-item { align-items: center; color: var(--text-2); display: inline-flex; font-size: 11px; gap: 6px; }
+.dot { border-radius: 50%; display: inline-block; height: 8px; width: 8px; }
+
+.cov-yours.segment, .cov-yours.dot { background: var(--brand); }
+.cov-reused.segment, .cov-reused.dot { background: color-mix(in srgb, var(--brand) 40%, var(--bg)); }
+.cov-kit.segment, .cov-kit.dot { background: color-mix(in srgb, var(--warning) 60%, var(--bg)); }
+.cov-missing.segment, .cov-missing.dot { background: var(--danger); }
+
+.badge.cov-yours { background: var(--brand-soft); color: var(--brand-text); }
+.badge.cov-reused { background: var(--bg-2); color: var(--text-2); }
+.badge.cov-kit { background: var(--warning-soft); color: var(--warning); }
+.badge.cov-missing { background: var(--danger-soft); color: var(--danger); }
+
+.card.cov-yours { border-color: color-mix(in srgb, var(--brand) 35%, var(--border)); }
+.card.cov-kit { border-style: dashed; border-color: var(--border-strong); }
+.card.cov-kit .card-preview img { filter: grayscale(1); opacity: 0.45; }
+.card.cov-missing { border-color: color-mix(in srgb, var(--danger) 45%, var(--border)); }
+.card-hint { color: var(--text-3); font-size: 10px; margin-top: 4px; }
+
+.all-covered {
+  background: var(--success-soft);
+  border-radius: var(--radius-lg);
+  color: var(--success);
+  font-weight: 600;
+  padding: 12px;
+  text-align: center;
+}
+.covered { display: flex; flex-direction: column; gap: 16px; }
+.covered-title { border-top: 1px solid var(--border); font-size: 13px; font-weight: 700; padding-top: 16px; }

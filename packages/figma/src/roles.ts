@@ -39,6 +39,16 @@ export const ROLE_SLOTS: Record<Role, TextSlot[]> = {
   'button.secondary': LABEL_ONLY,
 };
 
+export const ROLE_FALLBACKS: Partial<Record<Role, Role[]>> = {
+  'field.select': ['field.text'],
+  'field.date': ['field.select', 'field.text'],
+  'field.file': ['field.text'],
+  'field.textarea': ['field.text'],
+  'field.checkbox': ['option.checkbox'],
+  'field.switch': ['field.checkbox', 'option.checkbox'],
+  'option.checkbox': ['field.checkbox'],
+};
+
 export const ROLE_LABELS: Record<Role, string> = {
   'field.text': 'Text input',
   'field.select': 'Select',

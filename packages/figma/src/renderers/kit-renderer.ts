@@ -3,8 +3,9 @@ import type { Binding, PluginConfig } from '../config';
 import type { KitTheme } from '../kits/kit';
 import { STATE_PROPERTY, solid, stack, text } from '../kits/primitives';
 import { loadKit } from '../kits/registry';
-import { isOptionRole, roleForField, type Role } from '../roles';
+import { isOptionRole, ROLE_FALLBACKS, ROLE_LABELS, roleForField, type Role } from '../roles';
 import { applySlots } from '../text-slots';
+import { customTheme } from './custom-theme';
 import { asComponent, componentForBinding, instantiate, setVariant } from './resolve';
 import { labelText, type FormRenderer } from './types';
 
@@ -13,19 +14,34 @@ interface Resolved {
   binding?: Binding;
 }
 
-export async function createKitRenderer(config: PluginConfig): Promise<FormRenderer> {
-  const { theme, components } = await loadKit(config.kit);
-  const cache = new Map<Role, Resolved>();
+export interface KitRenderer extends FormRenderer {
+  sample(role: Role): Promise<InstanceNode>;
+}
+
+export async function createKitRenderer(config: PluginConfig): Promise<KitRenderer> {
+  const { theme: kitTheme, components } = await loadKit(config.kit);
+  const cache = new Map<Role, Resolved | null>();
+
+  async function bound(role: Role): Promise<Resolved | null> {
+    if (!cache.has(role)) {
+      const binding = config.bindings[role];
+      const component = binding ? await componentForBinding(binding) : null;
+      cache.set(role, component ? { component, binding } : null);
+    }
+    return cache.get(role)!;
+  }
 
   async function resolve(role: Role): Promise<Resolved> {
-    const cached = cache.get(role);
-    if (cached) return cached;
-    const binding = config.bindings[role];
-    const bound = binding ? await componentForBinding(binding) : null;
-    const resolved = bound ? { component: bound, binding } : { component: asComponent(components.get(role)!) };
-    cache.set(role, resolved);
-    return resolved;
+    for (const candidate of [role, ...(ROLE_FALLBACKS[role] ?? [])]) {
+      const found = await bound(candidate);
+      if (found) return found;
+    }
+    return { component: asComponent(components.get(role)!) };
   }
+
+  const resolved = await Promise.all((Object.keys(config.bindings) as Role[]).map(bound));
+  const custom = resolved.some(Boolean);
+  const theme = custom ? await customTheme(kitTheme, (await bound('field.text'))?.component) : kitTheme;
 
   async function instance(role: Role, values: Parameters<typeof applySlots>[1], state?: string): Promise<InstanceNode> {
     const { component, binding } = await resolve(role);
@@ -49,6 +65,11 @@ export async function createKitRenderer(config: PluginConfig): Promise<FormRende
       node.name = field.key;
       return node;
     },
+    async sample(role) {
+      const node = await instance(role, { label: ROLE_LABELS[role], value: ' ', helper: '' }, 'Empty');
+      node.name = ROLE_LABELS[role];
+      return node;
+    },
     async button(label, primary) {
       const node = await instance(primary ? 'button.primary' : 'button.secondary', { label });
       node.name = label;
@@ -64,7 +85,8 @@ async function optionGroup(
   instance: (role: Role, values: { label: string }) => Promise<InstanceNode>,
 ): Promise<FrameNode> {
   const group = stack('VERTICAL', field.key, { itemSpacing: 8 });
-  group.appendChild(text(labelText(field), { font: theme.fonts.medium, size: theme.captionSize + 2, color: theme.muted }, 'Label'));
+  const labelStyle = theme.groupLabel ?? { font: theme.fonts.medium, size: theme.captionSize + 2, color: theme.muted };
+  group.appendChild(text(labelText(field), labelStyle, 'Label'));
   const list = stack('VERTICAL', 'Options', { itemSpacing: theme.optionGroup.gap });
   if (theme.optionGroup.fill) {
     list.fills = solid(theme.optionGroup.fill);

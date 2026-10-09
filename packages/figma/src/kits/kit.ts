@@ -1,7 +1,7 @@
 import type { KitId } from '../config';
 import type { KitFonts } from '../fonts';
 import type { Role } from '../roles';
-import type { KitNode } from './primitives';
+import type { KitNode, TextStyle } from './primitives';
 
 export interface KitTheme {
   fonts: KitFonts;
@@ -13,6 +13,7 @@ export interface KitTheme {
   titleSize: number;
   bodySize: number;
   captionSize: number;
+  groupLabel?: TextStyle;
 }
 
 export interface Kit {

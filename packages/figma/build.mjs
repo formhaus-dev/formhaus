@@ -1,5 +1,5 @@
 import { watch } from 'node:fs';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build, context } from 'esbuild';
@@ -16,9 +16,10 @@ const codeOptions = {
 };
 
 async function buildUi() {
+  const sheets = (await readdir(uiRoot)).filter((file) => file.endsWith('.css')).sort();
   const [template, styles, script] = await Promise.all([
     readFile(join(uiRoot, 'index.html'), 'utf8'),
-    readFile(join(uiRoot, 'styles.css'), 'utf8'),
+    Promise.all(sheets.map((file) => readFile(join(uiRoot, file), 'utf8'))).then((parts) => parts.join('\n')),
     build({ bundle: true, entryPoints: [join(uiRoot, 'main.ts')], format: 'iife', target: 'es2017', write: false }),
   ]);
   const code = script.outputFiles[0].text;

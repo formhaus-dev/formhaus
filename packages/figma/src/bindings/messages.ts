@@ -12,13 +12,18 @@ export interface BindingMessage {
   name?: string;
 }
 
-const HANDLERS: Record<string, (config: PluginConfig, message: BindingMessage) => Promise<string | void>> = {
+export interface Notice {
+  text: string;
+  tone: 'success' | 'info';
+}
+
+const HANDLERS: Record<string, (config: PluginConfig, message: BindingMessage) => Promise<Notice | void>> = {
   getBindings: async () => undefined,
   bindSelection: async (config, { role }) => {
     const { binding } = await componentFromSelection(figma.currentPage.selection);
     config.bindings[role!] = binding;
     config.source = 'custom';
-    return `Bound ${binding.name}.`;
+    return { text: `Bound ${binding.name}.`, tone: 'success' };
   },
   unbind: async (config, { role }) => {
     delete config.bindings[role!];
@@ -32,7 +37,8 @@ const HANDLERS: Record<string, (config: PluginConfig, message: BindingMessage) =
     const count = Object.keys(found).length;
     Object.assign(config.bindings, found);
     if (count > 0) config.source = 'custom';
-    return count > 0 ? `Matched ${count} components on this page.` : 'No matching components found on this page.';
+    if (count > 0) return { text: `Matched ${count} components on this page.`, tone: 'success' };
+    return { text: 'Nothing new to match on this page. Name components like Text field, Dropdown or Button / Primary, or bind them by hand.', tone: 'info' };
   },
 };
 
