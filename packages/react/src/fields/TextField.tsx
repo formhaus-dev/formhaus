@@ -1,21 +1,9 @@
 import type { FieldComponentProps } from '../types';
-import { FieldLabel } from './FieldLabel';
-import { FieldMessage } from './FieldMessage';
+import { FieldShell } from './FieldShell';
+import { inputProps } from './fieldProps';
 
-export function TextField({
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-  onBlur,
-  onFocus,
-}: FieldComponentProps) {
-  const inputId = field.key;
-  const helperId = `${field.key}-helper`;
-  const errorId = `${field.key}-error`;
-  const describedBy = error ? errorId : field.helperText ? helperId : undefined;
+export function TextField(props: FieldComponentProps) {
+  const { field, value, error, onChange } = props;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
@@ -34,22 +22,15 @@ export function TextField({
             : 'text';
 
   return (
-    <div className="fh-field">
-      <FieldLabel field={field} inputId={inputId} />
+    <FieldShell field={field} error={error}>
       <input
-        id={inputId}
+        {...inputProps(props)}
         type={inputType}
         className="fh-field__input"
         value={value != null ? String(value) : ''}
         placeholder={field.placeholder ?? field.mask}
-        disabled={disabled || loading}
-        aria-invalid={!!error}
-        aria-describedby={describedBy}
         onChange={handleChange}
-        onBlur={onBlur}
-        onFocus={onFocus}
       />
-      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
-    </div>
+    </FieldShell>
   );
 }

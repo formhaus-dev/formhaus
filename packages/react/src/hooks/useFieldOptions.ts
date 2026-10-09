@@ -59,9 +59,7 @@ export function useFieldOptions(
               }
             })
             .catch(() => {});
-        } catch {
-          // Retry when a dependency changes.
-        }
+        } catch {}
       };
 
       resolve();

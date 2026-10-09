@@ -1,36 +1,18 @@
 import type { FieldComponentProps } from '../types';
-import { FieldLabel } from './FieldLabel';
-import { FieldMessage } from './FieldMessage';
+import { FieldShell } from './FieldShell';
+import { inputProps } from './fieldProps';
 
-export function SelectField({
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-  onBlur,
-  onFocus,
-}: FieldComponentProps) {
-  const inputId = field.key;
-  const helperId = `${field.key}-helper`;
-  const errorId = `${field.key}-error`;
-  const describedBy = error ? errorId : field.helperText ? helperId : undefined;
+export function SelectField(props: FieldComponentProps) {
+  const { field, value, error, onChange } = props;
   const options = field.options ?? [];
 
   return (
-    <div className="fh-field">
-      <FieldLabel field={field} inputId={inputId} />
+    <FieldShell field={field} error={error}>
       <select
-        id={inputId}
+        {...inputProps(props)}
         className="fh-field__input fh-field__input--select"
         value={(value as string) ?? ''}
-        disabled={disabled || loading}
-        aria-invalid={!!error}
-        aria-describedby={describedBy}
         onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
-        onFocus={onFocus}
       >
         {field.placeholder && (
           <option value="" disabled>
@@ -43,7 +25,6 @@ export function SelectField({
           </option>
         ))}
       </select>
-      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
-    </div>
+    </FieldShell>
   );
 }

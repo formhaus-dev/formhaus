@@ -70,3 +70,17 @@ export interface FormFieldProps {
   loading?: boolean;
   disabled?: boolean;
 }
+
+export interface FieldResolverProps extends FormFieldProps {
+  components?: Partial<FieldComponentMap>;
+}
+
+export interface FieldEmits {
+  (e: 'update:value', value: unknown): void;
+  (e: 'blur'): void;
+  (e: 'focus'): void;
+}
+
+export interface CommitFieldEmits extends FieldEmits {
+  (e: 'commit', value: unknown): void;
+}

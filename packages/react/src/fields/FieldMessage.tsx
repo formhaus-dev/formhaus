@@ -1,16 +1,16 @@
+import type { FormField } from '@formhaus/core';
+
 interface FieldMessageProps {
+  field: FormField;
   error?: string;
-  helperText?: string;
-  errorId: string;
-  helperId: string;
 }
 
-export function FieldMessage({ error, helperText, errorId, helperId }: FieldMessageProps) {
+export function FieldMessage({ field, error }: FieldMessageProps) {
   if (error) {
-    return <p id={errorId} className="fh-field__error" role="alert">{error}</p>;
+    return <p id={`${field.key}-error`} className="fh-field__error" role="alert">{error}</p>;
   }
-  if (helperText) {
-    return <p id={helperId} className="fh-field__helper">{helperText}</p>;
+  if (field.helperText) {
+    return <p id={`${field.key}-helper`} className="fh-field__helper">{field.helperText}</p>;
   }
   return null;
 }

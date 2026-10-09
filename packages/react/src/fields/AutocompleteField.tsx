@@ -1,41 +1,23 @@
 import type { FieldComponentProps } from '../types';
-import { FieldLabel } from './FieldLabel';
-import { FieldMessage } from './FieldMessage';
+import { FieldShell } from './FieldShell';
+import { inputProps } from './fieldProps';
 
-export function AutocompleteField({
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-  onBlur,
-  onFocus,
-}: FieldComponentProps) {
-  const inputId = field.key;
+export function AutocompleteField(props: FieldComponentProps) {
+  const { field, value, error, onChange } = props;
   const listId = `${field.key}-list`;
-  const helperId = `${field.key}-helper`;
-  const errorId = `${field.key}-error`;
-  const describedBy = error ? errorId : field.helperText ? helperId : undefined;
   const options = field.options ?? [];
 
   return (
-    <div className="fh-field">
-      <FieldLabel field={field} inputId={inputId} />
+    <FieldShell field={field} error={error}>
       <input
-        id={inputId}
+        {...inputProps(props)}
         type="text"
         list={listId}
         className="fh-field__input fh-field__input--autocomplete"
         value={(value as string) ?? ''}
         placeholder={field.placeholder}
-        disabled={disabled || loading}
-        aria-invalid={!!error}
-        aria-describedby={describedBy}
         autoComplete="off"
         onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
-        onFocus={onFocus}
       />
       <datalist id={listId}>
         {options.map((opt) => (
@@ -44,7 +26,6 @@ export function AutocompleteField({
           </option>
         ))}
       </datalist>
-      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
-    </div>
+    </FieldShell>
   );
 }

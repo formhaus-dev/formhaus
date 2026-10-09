@@ -1,19 +1,12 @@
-import type { FormEngine } from '@formhaus/core';
 import { memo } from 'react';
-import { FormFieldController } from './FormFieldController';
+import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { useFormSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
 import { useFieldOptions } from './hooks/useFieldOptions';
-import type { FieldComponentMap, OptionsProvider } from './types';
+import type { OptionsProvider } from './types';
 
-interface FormFieldsControllerProps {
-  engine: FormEngine;
+interface FormFieldsControllerProps extends ControllerProps {
   loading: boolean;
-  components?: FieldComponentMap;
   optionsProviders?: Record<string, OptionsProvider>;
-  onChange: (key: string, value: unknown) => void;
-  onCommit: (key: string, value: unknown) => void;
-  onBlur: (key: string) => void;
-  onFocus: (key: string) => void;
 }
 
 export const FormFieldsController = memo(function FormFieldsController({

@@ -1,38 +1,17 @@
 import type { FieldComponentProps } from '../types';
-import { FieldLabel } from './FieldLabel';
-import { FieldMessage } from './FieldMessage';
+import { FieldShell } from './FieldShell';
+import { inputProps } from './fieldProps';
 
-export function DateField({
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-  onBlur,
-  onFocus,
-}: FieldComponentProps) {
-  const inputId = field.key;
-  const helperId = `${field.key}-helper`;
-  const errorId = `${field.key}-error`;
-  const describedBy = error ? errorId : field.helperText ? helperId : undefined;
-
+export function DateField(props: FieldComponentProps) {
   return (
-    <div className="fh-field">
-      <FieldLabel field={field} inputId={inputId} />
+    <FieldShell field={props.field} error={props.error}>
       <input
-        id={inputId}
+        {...inputProps(props)}
         type="date"
         className="fh-field__input fh-field__input--date"
-        value={String(value ?? '')}
-        disabled={disabled || loading}
-        aria-invalid={!!error}
-        aria-describedby={describedBy}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
-        onFocus={onFocus}
+        value={String(props.value ?? '')}
+        onChange={(e) => props.onChange(e.target.value)}
       />
-      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
-    </div>
+    </FieldShell>
   );
 }

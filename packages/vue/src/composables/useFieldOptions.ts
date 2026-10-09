@@ -74,7 +74,5 @@ function resolveOptions(
     result.then((options) => {
       if (requestVersions.get(fieldKey) === version) commit(fieldKey, options);
     }).catch(() => {});
-  } catch {
-    // Retry when a dependency changes.
-  }
+  } catch {}
 }

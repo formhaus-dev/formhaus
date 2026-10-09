@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { FormFieldProps } from '../types';
+import type { FieldEmits, FormFieldProps } from '../types';
+import FieldShell from './FieldShell.vue';
+import { useField } from './useField';
 
 const props = defineProps<FormFieldProps>();
-const emit = defineEmits<{
-  (e: 'update:value', value: unknown): void;
-  (e: 'blur'): void;
-  (e: 'focus'): void;
-}>();
-
-const groupId = computed(() => `fh-field-${props.field.key}`);
-const helperId = computed(() => `fh-field-${props.field.key}-helper`);
+const emit = defineEmits<FieldEmits>();
+const { inputId, control } = useField(props, emit);
 const selected = computed(() =>
   Array.isArray(props.value) ? (props.value as (string | number)[]) : [],
 );
@@ -24,36 +20,23 @@ function handleToggle(optValue: string) {
 </script>
 
 <template>
-  <fieldset
-    class="fh-field fh-field--multiselect"
-    :aria-invalid="!!props.error || undefined"
-    :aria-describedby="(props.error || props.field.helperText) ? helperId : undefined"
-  >
-    <legend v-if="props.field.label" class="fh-field__label">
-      {{ props.field.label }}
-    </legend>
-    <div class="fh-field__multiselect-group">
-      <div
-        v-for="option in (props.field.options ?? [])"
-        :key="String(option.value)"
-        class="fh-field__multiselect-option"
-      >
-        <input
-          :id="`${groupId}-${option.value}`"
-          class="fh-field__checkbox"
-          type="checkbox"
-          :checked="selected.includes(option.value)"
-          :disabled="props.disabled || props.loading"
-          @focus="emit('focus')"
-          @change="handleToggle(option.value)"
-          @blur="emit('blur')"
-        />
-        <label :for="`${groupId}-${option.value}`" class="fh-field__multiselect-label">
-          {{ option.label }}
-        </label>
-      </div>
+  <FieldShell :field="props.field" :error="props.error" variant="multiselect">
+    <div
+      v-for="option in (props.field.options ?? [])"
+      :key="String(option.value)"
+      class="fh-field__multiselect-option"
+    >
+      <input
+        v-bind="control"
+        :id="`${inputId}-${option.value}`"
+        class="fh-field__checkbox"
+        type="checkbox"
+        :checked="selected.includes(option.value)"
+        @change="handleToggle(option.value)"
+      />
+      <label :for="`${inputId}-${option.value}`" class="fh-field__multiselect-label">
+        {{ option.label }}
+      </label>
     </div>
-    <p v-if="props.error" :id="helperId" class="fh-field__error">{{ props.error }}</p>
-    <p v-else-if="props.field.helperText" :id="helperId" class="fh-field__helper">{{ props.field.helperText }}</p>
-  </fieldset>
+  </FieldShell>
 </template>

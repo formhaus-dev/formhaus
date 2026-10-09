@@ -1,40 +1,22 @@
 import type { FieldComponentProps } from '../types';
-import { FieldLabel } from './FieldLabel';
-import { FieldMessage } from './FieldMessage';
+import { FieldShell } from './FieldShell';
+import { inputProps } from './fieldProps';
 
-export function FileField({
-  field,
-  error,
-  loading,
-  disabled,
-  onChange,
-  onBlur,
-  onFocus,
-}: FieldComponentProps) {
-  const inputId = field.key;
-  const helperId = `${field.key}-helper`;
-  const errorId = `${field.key}-error`;
-  const describedBy = error ? errorId : field.helperText ? helperId : undefined;
+export function FileField(props: FieldComponentProps) {
+  const { field, error, onChange } = props;
 
   return (
-    <div className="fh-field">
-      <FieldLabel field={field} inputId={inputId} />
+    <FieldShell field={field} error={error}>
       <input
-        id={inputId}
+        {...inputProps(props)}
         type="file"
         className="fh-field__input fh-field__input--file"
         accept={field.accept}
-        disabled={disabled || loading}
-        aria-invalid={!!error}
-        aria-describedby={describedBy}
         onChange={(e) => {
           const files = e.target.files;
           onChange(files && files.length > 0 ? files[0] : null);
         }}
-        onBlur={onBlur}
-        onFocus={onFocus}
       />
-      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
-    </div>
+    </FieldShell>
   );
 }

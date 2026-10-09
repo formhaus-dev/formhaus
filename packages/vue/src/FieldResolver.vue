@@ -1,23 +1,9 @@
 <script setup lang="ts">
-import type { FormField } from '@formhaus/core';
 import { type Component, computed } from 'vue';
-import type { FieldComponentMap } from './types';
+import type { CommitFieldEmits, FieldResolverProps } from './types';
 
-const props = defineProps<{
-  field: FormField;
-  value: unknown;
-  error?: string;
-  loading?: boolean;
-  disabled?: boolean;
-  components?: Partial<FieldComponentMap>;
-}>();
-
-const emit = defineEmits<{
-  (e: 'update:value', value: unknown): void;
-  (e: 'commit', value: unknown): void;
-  (e: 'blur'): void;
-  (e: 'focus'): void;
-}>();
+const props = defineProps<FieldResolverProps>();
+const emit = defineEmits<CommitFieldEmits>();
 
 const fieldComponent = computed<Component | null>(() => props.components?.[props.field.type] ?? null);
 </script>

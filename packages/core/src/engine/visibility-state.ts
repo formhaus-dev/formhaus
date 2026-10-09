@@ -113,7 +113,11 @@ export class VisibilityState {
     const queue = [...seed];
     const queued = new Set(queue);
     const cleared = new Set<string>();
-    const enqueue = (key: string) => {
+    const clear = (key: string) => {
+      delete values[key];
+      delete errors[key];
+      this.path.invalidate();
+      cleared.add(key);
       if (queued.has(key)) return;
       queued.add(key);
       queue.push(key);
@@ -122,8 +126,8 @@ export class VisibilityState {
     for (let index = 0; index < queue.length; index++) {
       const key = queue[index];
       queued.delete(key);
-      this.clearHiddenFields(this.fieldDependents.get(key), values, errors, cleared, enqueue);
-      this.clearHiddenSteps(this.stepDependents.get(key), values, errors, cleared, enqueue);
+      this.clearHiddenFields(this.fieldDependents.get(key), values, clear);
+      this.clearHiddenSteps(this.stepDependents.get(key), values, clear);
     }
     return cleared;
   }
@@ -180,37 +184,25 @@ export class VisibilityState {
   private clearHiddenFields(
     fields: Iterable<FormField> | undefined,
     values: Record<string, unknown>,
-    errors: Record<string, string>,
-    cleared: Set<string>,
-    enqueue: (key: string) => void,
+    clear: (key: string) => void,
   ): void {
     for (const field of fields ?? []) {
       const step = this.stepByFieldKey.get(field.key);
       if (this.hasRoutes && step && !this.path.steps(values).includes(step)) continue;
       if (isVisible(field, this.conditionValues(values)) || values[field.key] === undefined) continue;
-      delete values[field.key];
-      delete errors[field.key];
-      this.path.invalidate();
-      cleared.add(field.key);
-      enqueue(field.key);
+      clear(field.key);
     }
   }
   private clearHiddenSteps(
     steps: Iterable<FormStep> | undefined,
     values: Record<string, unknown>,
-    errors: Record<string, string>,
-    cleared: Set<string>,
-    enqueue: (key: string) => void,
+    clear: (key: string) => void,
   ): void {
     for (const step of steps ?? []) {
       if (isStepVisible(step, this.conditionValues(values))) continue;
       for (const field of step.fields) {
         if (values[field.key] === undefined) continue;
-        delete values[field.key];
-        delete errors[field.key];
-        this.path.invalidate();
-        cleared.add(field.key);
-        enqueue(field.key);
+        clear(field.key);
       }
     }
   }

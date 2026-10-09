@@ -1,20 +1,8 @@
 <script setup lang="ts">
 import { type FormAction, evaluateCondition } from '@formhaus/core';
+import type { FormActionsProps } from './types';
 
-const props = defineProps<{
-  submitAction?: FormAction;
-  backAction?: FormAction | false;
-  cancelAction?: FormAction;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-  isMultiStep: boolean;
-  loading?: boolean;
-  values?: Record<string, unknown>;
-  primaryLabel?: string;
-  showPrimary?: boolean;
-  showBack?: boolean;
-  backLabel?: string;
-}>();
+const props = defineProps<FormActionsProps>();
 
 const emit = defineEmits<{
   (e: 'submit'): void;

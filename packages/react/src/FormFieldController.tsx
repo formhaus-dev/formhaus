@@ -3,16 +3,19 @@ import { memo, useCallback, useSyncExternalStore } from 'react';
 import { FormField } from './FormField';
 import type { FieldComponentMap } from './types';
 
-interface FormFieldControllerProps {
+export interface ControllerProps {
   engine: FormEngine;
-  field: FormFieldType;
-  options?: FieldOption[];
-  disabled?: boolean;
   components?: FieldComponentMap;
   onChange: (key: string, value: unknown) => void;
   onCommit: (key: string, value: unknown) => void;
   onBlur: (key: string) => void;
   onFocus: (key: string) => void;
+}
+
+interface FormFieldControllerProps extends ControllerProps {
+  field: FormFieldType;
+  options?: FieldOption[];
+  disabled?: boolean;
 }
 
 export const FormFieldController = memo(function FormFieldController({

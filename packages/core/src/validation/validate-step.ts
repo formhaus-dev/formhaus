@@ -7,18 +7,7 @@ export function validateStep(
   values: Record<string, unknown>,
   validators?: Record<string, ValidatorFn>,
 ): Record<string, string> {
-  const errors: Record<string, string> = {};
-
-  for (const field of step.fields) {
-    if (!isVisible(field, values)) continue;
-
-    const error = validateField(field, values[field.key], values, validators);
-    if (error) {
-      errors[field.key] = error;
-    }
-  }
-
-  return errors;
+  return validateFields(step.fields, values, validators);
 }
 
 export function validateFields(

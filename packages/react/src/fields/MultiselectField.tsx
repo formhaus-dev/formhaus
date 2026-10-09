@@ -1,20 +1,9 @@
 import type { FieldComponentProps } from '../types';
-import { FieldMessage } from './FieldMessage';
+import { FieldShell } from './FieldShell';
+import { optionProps } from './fieldProps';
 
-export function MultiselectField({
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-  onBlur,
-  onFocus,
-}: FieldComponentProps) {
-  const groupId = field.key;
-  const helperId = `${field.key}-helper`;
-  const errorId = `${field.key}-error`;
-  const describedBy = error ? errorId : field.helperText ? helperId : undefined;
+export function MultiselectField(props: FieldComponentProps) {
+  const { field, value, error, onChange } = props;
   const options = field.options ?? [];
   const selected = Array.isArray(value) ? (value as (string | number)[]) : [];
 
@@ -26,35 +15,25 @@ export function MultiselectField({
   }
 
   return (
-    <fieldset
-      className="fh-field fh-field--multiselect"
-      aria-invalid={!!error || undefined}
-      aria-describedby={describedBy}
-    >
-      {field.label && <legend className="fh-field__label">{field.label}</legend>}
-      <div className="fh-field__multiselect-group">
-        {options.map((opt) => {
-          const optionId = `${groupId}-${opt.value}`;
-          return (
-            <div key={opt.value} className="fh-field__multiselect-option">
-              <input
-                id={optionId}
-                type="checkbox"
-                className="fh-field__checkbox"
-                checked={selected.includes(opt.value)}
-                disabled={disabled || loading}
-                onChange={() => handleToggle(opt.value)}
-                onBlur={onBlur}
-                onFocus={onFocus}
-              />
-              <label className="fh-field__multiselect-label" htmlFor={optionId}>
-                {opt.label}
-              </label>
-            </div>
-          );
-        })}
-      </div>
-      <FieldMessage error={error} helperText={field.helperText} errorId={errorId} helperId={helperId} />
-    </fieldset>
+    <FieldShell field={field} error={error} variant="multiselect">
+      {options.map((opt) => {
+        const optionId = `${field.key}-${opt.value}`;
+        return (
+          <div key={opt.value} className="fh-field__multiselect-option">
+            <input
+              {...optionProps(props)}
+              id={optionId}
+              type="checkbox"
+              className="fh-field__checkbox"
+              checked={selected.includes(opt.value)}
+              onChange={() => handleToggle(opt.value)}
+            />
+            <label className="fh-field__multiselect-label" htmlFor={optionId}>
+              {opt.label}
+            </label>
+          </div>
+        );
+      })}
+    </FieldShell>
   );
 }
