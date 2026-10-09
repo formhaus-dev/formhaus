@@ -58,11 +58,7 @@ import definition from './signup.json';
 <FormRenderer definition={definition} onSubmit={save} />;
 ```
 
-## When to use something else
-
-- Hand-written single forms: [react-hook-form](https://react-hook-form.com) or [TanStack Form](https://tanstack.com/form).
-- Your source of truth is a JSON Schema of the data model: [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/) or [JSON Forms](https://jsonforms.io).
-- You need a drop-in form builder UI and response analytics: [SurveyJS](https://surveyjs.io).
+[Compare with react-hook-form, TanStack Form, react-jsonschema-form and SurveyJS →](https://formhaus.dev/compare/)
 
 ## Packages
 
