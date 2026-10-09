@@ -64,7 +64,7 @@ jobs:
 
     strategy:
       matrix:
-        example: [react-mui, vue-vuetify, vanilla-svelte, react-quiz]
+        example: [react-mui, vue-vuetify, vanilla-svelte, react-quiz, nextjs-app-router, nuxt, react-shadcn]
 
     steps:
       - uses: actions/checkout@v4

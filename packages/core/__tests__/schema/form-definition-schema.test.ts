@@ -15,6 +15,9 @@ const examples = [
   ...jsonFiles(resolve(repoRoot, 'docs/recipes/definitions')),
   ...jsonFiles(resolve(repoRoot, 'docs/compare/definitions')),
   resolve(repoRoot, 'examples/react-quiz/src/quiz.json'),
+  resolve(repoRoot, 'examples/nextjs-app-router/form/definition.json'),
+  resolve(repoRoot, 'examples/nuxt/shared/definition.json'),
+  resolve(repoRoot, 'examples/react-shadcn/src/definition.json'),
 ];
 
 const readJson = (path: string) => JSON.parse(readFileSync(path, 'utf8'));

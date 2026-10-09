@@ -63,6 +63,16 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Integrations',
+        items: [
+          { text: 'Next.js', link: '/guide/integrations/nextjs' },
+          { text: 'Nuxt', link: '/guide/integrations/nuxt' },
+          { text: 'shadcn/ui', link: '/guide/integrations/shadcn' },
+          { text: 'Material UI', link: '/guide/integrations/mui' },
+          { text: 'Vuetify', link: '/guide/integrations/vuetify' },
+        ]
+      },
+      {
         text: 'API Reference',
         items: [
           { text: 'Definition', link: '/api/definition' },

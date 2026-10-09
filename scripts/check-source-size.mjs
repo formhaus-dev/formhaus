@@ -17,6 +17,9 @@ const IGNORED_DIRECTORIES = new Set([
   '.agents',
   '.claude',
   '.git',
+  '.next',
+  '.nuxt',
+  '.output',
   'dist',
   'node_modules',
 ]);

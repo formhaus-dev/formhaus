@@ -27,7 +27,7 @@ export function TextField({
       type={inputType}
       value={value != null ? String(value) : ''}
       placeholder={field.placeholder}
-      onChange={(e) => onChange(field.type === 'number' ? Number(e.target.value) : e.target.value)}
+      onChange={(e) => onChange(field.type === 'number' && e.target.value !== '' ? Number(e.target.value) : e.target.value)}
       error={!!error}
       helperText={error || field.helperText}
       disabled={disabled || loading}

@@ -12,3 +12,7 @@ docs/.vitepress/dist/
 examples/*/node_modules/
 examples/*/pnpm-lock.yaml
 examples/*/dist/
+examples/*/.next/
+examples/*/next-env.d.ts
+examples/*/.nuxt/
+examples/*/.output/

@@ -1,0 +1,77 @@
+{
+  "id": "workspace-signup",
+  "title": "Create a workspace",
+  "submit": { "label": "Create workspace" },
+  "steps": [
+    {
+      "id": "account",
+      "title": "Account",
+      "fields": [
+        {
+          "key": "email",
+          "type": "email",
+          "label": "Work email",
+          "validation": { "required": true, "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "patternMessage": "Enter a valid email" }
+        },
+        {
+          "key": "plan",
+          "type": "radio",
+          "label": "Plan",
+          "validation": { "required": true },
+          "options": [
+            { "value": "personal", "label": "Personal" },
+            { "value": "team", "label": "Team" }
+          ]
+        }
+      ],
+      "routes": [
+        { "to": "team", "show": [{ "field": "plan", "eq": "team" }] },
+        { "to": "profile" }
+      ]
+    },
+    {
+      "id": "team",
+      "title": "Team details",
+      "fields": [
+        {
+          "key": "company",
+          "type": "text",
+          "label": "Company",
+          "validation": { "required": true, "minLength": 2 }
+        },
+        {
+          "key": "teamSize",
+          "type": "select",
+          "label": "Team size",
+          "placeholder": "Select a size",
+          "validation": { "required": true },
+          "options": [
+            { "value": "2-10", "label": "2 to 10" },
+            { "value": "11-50", "label": "11 to 50" },
+            { "value": "51+", "label": "51 or more" }
+          ]
+        }
+      ],
+      "routes": [{ "to": "confirm" }]
+    },
+    {
+      "id": "profile",
+      "title": "About you",
+      "fields": [
+        { "key": "name", "type": "text", "label": "Full name", "validation": { "required": true } }
+      ]
+    },
+    {
+      "id": "confirm",
+      "title": "Confirm",
+      "fields": [
+        {
+          "key": "terms",
+          "type": "checkbox",
+          "label": "I accept the terms of service",
+          "validation": { "required": "Accept the terms to continue" }
+        }
+      ]
+    }
+  ]
+}
