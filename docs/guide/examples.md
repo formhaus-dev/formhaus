@@ -1,3 +1,7 @@
+---
+description: "Example Formhaus JSON definitions: basic form, conditional fields, multi-step, validation and a branching form with radio auto-advance."
+---
+
 # Examples
 
 The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tree/main/examples/definitions) drive the documentation playground.

@@ -1,5 +1,8 @@
 ---
 layout: home
+title: "Formhaus — JSON form definition for React, Vue, Figma and AI agents"
+titleTemplate: false
+description: "Define fields, validation, conditional visibility and multi-step routes in one JSON form definition. Render it in React, Vue or Figma."
 hero:
   name: Formhaus
   tagline: One form definition for the core engine, React, Vue, and Figma.

@@ -1,3 +1,8 @@
+---
+title: "Playground"
+description: "Edit a Formhaus form definition in the browser and see it render live in React, Vue and Svelte, with validation and multi-step navigation."
+---
+
 # Playground
 
 Try Formhaus live in the browser. Edit the code to see changes instantly.

@@ -1,3 +1,7 @@
+---
+description: "Validate form fields from JSON: required, pattern, min/max length and value, matchField for confirmations, and custom validator functions."
+---
+
 # Validation
 
 Validation runs on Submit or Continue click. No validation on blur.

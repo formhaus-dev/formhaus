@@ -1,3 +1,8 @@
+---
+title: "Changelog"
+description: "Release notes for @formhaus/core, @formhaus/react and @formhaus/vue: GitHub Releases and the changelog of each published package."
+---
+
 # Changelog
 
 Current releases are listed on [GitHub Releases](https://github.com/ignsm/formhaus/releases). Each published package also keeps its own changelog:

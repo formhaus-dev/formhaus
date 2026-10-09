@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "sandpack-vue3": "^3.0.0",
-    "vitepress": "^1.6.4"
+    "vitepress": "^1.6.4",
+    "vitepress-plugin-llms": "^1.14.0"
   }
 }

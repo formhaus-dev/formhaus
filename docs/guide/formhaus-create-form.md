@@ -1,3 +1,8 @@
+---
+title: "/formhaus-create-form Claude Code skill"
+description: "Generate a Formhaus JSON form definition from a text description, CSV data or a screenshot of a form with the /formhaus-create-form Claude Code skill."
+---
+
 # /formhaus-create-form
 
 Generate an `@formhaus/core` form definition from a description, CSV data, or a screenshot.

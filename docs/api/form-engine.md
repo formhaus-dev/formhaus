@@ -1,3 +1,7 @@
+---
+description: "FormEngine API reference: constructor, values, errors, visibility, step navigation, subscriptions and the submission lifecycle in @formhaus/core."
+---
+
 # FormEngine reference
 
 `FormEngine` holds values, errors, visibility, and step state without depending on a UI framework.

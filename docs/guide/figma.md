@@ -1,3 +1,7 @@
+---
+description: "Generate form mockups, flow maps and clickable prototypes in Figma from the same JSON definition your React or Vue app renders."
+---
+
 # Figma Plugin
 
 The Formhaus Figma plugin renders form mockups from form definitions, with a built-in Material 3 or iOS-like kit, or with your own design system components.

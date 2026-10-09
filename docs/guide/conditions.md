@@ -1,3 +1,7 @@
+---
+description: "Show or hide fields and steps based on other answers with show and showAny conditions in JSON. AND/OR logic and cleanup of hidden values."
+---
+
 # Conditional Fields
 
 Show or hide fields based on other field values. No code, just JSON.

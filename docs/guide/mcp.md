@@ -1,3 +1,7 @@
+---
+description: "Check Formhaus definitions from Claude Code, Claude Desktop or Cursor with validate_definition, simulate_path, capabilities and example_definitions."
+---
+
 # MCP Server
 
 `@formhaus/mcp` is an MCP server that lets AI agents check Formhaus definitions against the real engine. It runs over stdio and needs Node 20 or later.

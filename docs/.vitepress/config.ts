@@ -1,13 +1,22 @@
 import { defineConfig } from 'vitepress'
+import { head, transformHead } from './head'
+import { llms } from './llms'
+import { siteUrl } from './site'
 
 export default defineConfig({
   vite: {
+    plugins: [llms],
     server: {
       fs: { allow: ['..'] }
     }
   },
   title: 'Formhaus',
-  description: 'Framework-agnostic form engine with its own compact definition format',
+  titleTemplate: ':title · Formhaus',
+  description: 'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
+  lastUpdated: true,
+  sitemap: { hostname: siteUrl },
+  head,
+  transformHead,
   themeConfig: {
     nav: [
       { text: 'Guide', link: '/guide/' },

@@ -1,3 +1,7 @@
+---
+description: "Run a server check before the next step with onStepValidate: email uniqueness, promo codes, field and top-level errors, network failures."
+---
+
 # Async Step Validation
 
 Run a server check before advancing to the next step. Pass `onStepValidate`, get errors back or `null` to proceed.

@@ -1,3 +1,8 @@
+---
+title: "/formhaus-figma-connect Claude Code skill"
+description: "Find form components in your Figma library and bind them to the Formhaus Figma plugin with the /formhaus-figma-connect skill and Figma MCP."
+---
+
 # /formhaus-figma-connect
 
 Find your form components in a Figma library and bind them to the [Figma plugin](/guide/figma#my-components).

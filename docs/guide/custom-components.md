@@ -1,3 +1,7 @@
+---
+description: "Replace Formhaus buttons and the step progress bar with design system components in React or Vue, or render everything with the headless renderer."
+---
+
 # Custom Actions & Progress
 
 Replace the built-in form buttons and step progress bar with your own components. Useful when your project has a design system and the default unstyled HTML doesn't fit.

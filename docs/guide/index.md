@@ -1,3 +1,7 @@
+---
+description: "Install @formhaus/core with the React or Vue renderer, write a JSON form definition and render your first form with validation and steps."
+---
+
 # Getting started
 
 Formhaus keeps fields, validation, visibility, and steps in a JSON definition. The core engine runs without a UI framework; React, Vue, Figma, and custom renderers use the same format.

@@ -1,3 +1,7 @@
+---
+description: "Show server-side errors in a Formhaus form: field-level and top-level errors, navigation to the failing step, and form and field loading states."
+---
+
 # Error Handling
 
 The server might reject submitted data. Pass errors back to the form and it handles display.

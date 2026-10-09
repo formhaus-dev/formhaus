@@ -1,3 +1,7 @@
+---
+description: "FormDefinition reference: fields, steps, actions, show conditions, validation rules, options, step routes and the JSON Schema for editors."
+---
+
 # Definition Reference
 
 Every form is a JSON object following the `FormDefinition` type.

@@ -1,3 +1,7 @@
+---
+description: "Field types in a Formhaus definition: text, select, autocomplete, multiselect, checkbox, radio, switch, date, file, plus custom field components."
+---
+
 # Field Types
 
 Each field `type` maps to a UI component. Default adapters use native HTML elements. Override any field type with your own component via the `components` prop.

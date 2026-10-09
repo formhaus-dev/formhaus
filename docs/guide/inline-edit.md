@@ -1,3 +1,7 @@
+---
+description: "Save account settings one field at a time with one FormRenderer per editable row, each with its own validation and submit handler."
+---
+
 # Inline edit and per-field save
 
 Account settings often save one field at a time. Use one `FormRenderer` per editable row so each field has its own validation and submit handler.
