@@ -8,7 +8,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@formhaus/core": "^0.7.2"
+    "@formhaus/core": "^0.8.0"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
