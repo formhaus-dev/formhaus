@@ -52,6 +52,12 @@ export default defineConfig({
         ]
       },
       {
+        text: 'MCP Server',
+        items: [
+          { text: 'Setup and Tools', link: '/guide/mcp' },
+        ]
+      },
+      {
         text: 'Interactive',
         items: [
           { text: 'Playground', link: '/playground' },

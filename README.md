@@ -17,6 +17,7 @@ Formhaus keeps fields, validation, visibility, and steps in a compact JSON defin
 | `@formhaus/core` | Zero-dependency form engine: types, validation, visibility, multi-step | `npm i @formhaus/core` |
 | `@formhaus/react` | React adapter with native HTML defaults and custom component support | `npm i @formhaus/react` |
 | `@formhaus/vue` | Vue 3 adapter with native HTML defaults and custom component support | `npm i @formhaus/vue` |
+| `@formhaus/mcp` | MCP server: validate definitions and simulate paths from AI agents | `claude mcp add formhaus -- npx -y @formhaus/mcp` |
 
 `@formhaus/figma` generates form mockups on the Figma canvas. It is not on Figma Community yet; build it locally, then import `packages/figma/manifest.json`.
 
