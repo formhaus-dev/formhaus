@@ -1,5 +1,11 @@
 # @formhaus/mcp
 
+## 0.1.1
+
+### Patch Changes
+
+- e71df6f: - Listed in the MCP Registry as `io.github.ignsm/formhaus`.
+
 ## 0.1.0
 
 ### Minor Changes
