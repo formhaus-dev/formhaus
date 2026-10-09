@@ -97,7 +97,7 @@ Save your bindings as a design system in the **Design system** card on the **Com
 **Copy setup code** gives a short code for teammates. They paste it with **Paste setup code**, and the design system is added to their account and used in their file. Library components work in any file that can access the library. Components that live in one file only work in other files after you publish them as a library.
 
 ::: tip Bind with Claude
-Run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to find your form components through the Figma MCP server, confirm them from screenshots and write the bindings into your file.
+Run [`/formhaus:formhaus-figma-connect`](/guide/formhaus-figma-connect) to find your form components through the Figma MCP server, confirm them from screenshots and write the bindings into your file.
 :::
 
 Earlier versions used a JSON component map. If you saved one, the plugin turns it into a design system called **Saved component map**, uses it in new files and binds it in the first file you open.
@@ -115,7 +115,7 @@ Built-in kits use their own card styling. With your own components the card is w
 
 ## Next steps
 
-- [/formhaus-create-form](/guide/formhaus-create-form): generate form definitions from text descriptions
-- [/formhaus-figma-connect](/guide/formhaus-figma-connect): bind components from your Figma library
+- [/formhaus:formhaus-create-form](/guide/formhaus-create-form): generate form definitions from text descriptions
+- [/formhaus:formhaus-figma-connect](/guide/formhaus-figma-connect): bind components from your Figma library
 - [Field Types](/guide/fields): all supported form field types
 - [Examples](/guide/examples): example definitions to try with the plugin

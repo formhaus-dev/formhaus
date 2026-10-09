@@ -22,5 +22,5 @@ The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tre
 ## Next steps
 
 - [Figma Plugin](/guide/figma): render these definitions as Figma mockups
-- [/formhaus-create-form](/guide/formhaus-create-form): generate new definitions with Claude
+- [/formhaus:formhaus-create-form](/guide/formhaus-create-form): generate new definitions with Claude
 - [Definition Reference](/api/definition): full TypeScript types

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "formhaus": {
+      "command": "npx",
+      "args": ["-y", "@formhaus/mcp"]
+    }
+  }
+}

@@ -1,0 +1,39 @@
+name: MCP Registry
+
+on:
+  push:
+    tags: ['@formhaus/mcp@*']
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    env:
+      MCP_PUBLISHER_VERSION: v1.8.1
+
+    defaults:
+      run:
+        working-directory: packages/mcp
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check server.json version
+        run: |
+          test "$(jq -r .version server.json)" = "$(jq -r .version package.json)"
+          test "$(jq -r .name server.json)" = "$(jq -r .mcpName package.json)"
+
+      - name: Install mcp-publisher
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/download/${MCP_PUBLISHER_VERSION}/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+
+      - name: Log in to the MCP Registry
+        run: ./mcp-publisher login github-oidc
+
+      - name: Publish to the MCP Registry
+        run: ./mcp-publisher publish

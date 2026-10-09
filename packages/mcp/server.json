@@ -1,0 +1,23 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.ignsm/formhaus",
+  "title": "Formhaus",
+  "description": "Validate Formhaus form definitions and simulate multi-step paths against the real engine.",
+  "websiteUrl": "https://formhaus.dev/guide/mcp.html",
+  "repository": {
+    "url": "https://github.com/ignsm/formhaus",
+    "source": "github",
+    "subfolder": "packages/mcp"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "@formhaus/mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

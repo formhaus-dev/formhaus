@@ -56,8 +56,8 @@ export default defineConfig({
       {
         text: 'Claude Skills',
         items: [
-          { text: '/formhaus-figma-connect', link: '/guide/formhaus-figma-connect' },
-          { text: '/formhaus-create-form', link: '/guide/formhaus-create-form' },
+          { text: '/formhaus:formhaus-figma-connect', link: '/guide/formhaus-figma-connect' },
+          { text: '/formhaus:formhaus-create-form', link: '/guide/formhaus-create-form' },
         ]
       },
       {

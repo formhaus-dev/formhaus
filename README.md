@@ -15,7 +15,7 @@ Formhaus is a JSON form definition with a zero-dependency engine, React and Vue 
 - [Multi-step forms with branching](https://formhaus.dev/guide/steps.html#route-between-branches) in React or Vue.
 - [Rendering a form from JSON with your own components](https://formhaus.dev/guide/fields.html#override-default-components).
 - [Designing the form in Figma](https://formhaus.dev/guide/figma.html) from the same file.
-- Generating and checking definitions with AI agents: [Claude Code skills](https://formhaus.dev/guide/formhaus-create-form.html), the [MCP server](https://formhaus.dev/guide/mcp.html) (`claude mcp add formhaus -- npx -y @formhaus/mcp`) and the [JSON Schema](https://formhaus.dev/api/definition.html#json-schema).
+- Generating and checking definitions with AI agents: [Claude Code skills](https://formhaus.dev/guide/formhaus-create-form.html), the [MCP server](https://formhaus.dev/guide/mcp.html) (`claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus`) and the [JSON Schema](https://formhaus.dev/api/definition.html#json-schema).
 - A [headless engine](https://formhaus.dev/api/form-engine.html) for Svelte or vanilla JS.
 
 ## Example
@@ -95,7 +95,7 @@ Or use `@formhaus/core` directly with any framework. See the [Svelte example](ht
 
 ### Define a form
 
-Write the JSON by hand, or use the [`/formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
+Write the JSON by hand, or use the [`/formhaus:formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
 
 ```json
 {
@@ -267,7 +267,7 @@ Each field component receives the full `FormField` descriptor, the current value
 
 <img src="docs/public/figma/prototype.gif" alt="Clicking through a generated prototype" width="560">
 
-The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill binds your library's components to the plugin. See the [plugin guide](https://formhaus.dev/guide/figma.html) for local installation.
+The [`/formhaus:formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill binds your library's components to the plugin. See the [plugin guide](https://formhaus.dev/guide/figma.html) for local installation.
 
 ## Contributing
 

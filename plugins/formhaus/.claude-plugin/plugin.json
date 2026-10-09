@@ -1,0 +1,13 @@
+{
+  "name": "formhaus",
+  "version": "0.1.0",
+  "description": "Generate, validate and simulate Formhaus form definitions, and bind a Figma design system to the Formhaus Figma plugin.",
+  "author": {
+    "name": "ignsm",
+    "url": "https://github.com/ignsm"
+  },
+  "homepage": "https://formhaus.dev/guide/mcp.html",
+  "repository": "https://github.com/ignsm/formhaus",
+  "license": "MIT",
+  "keywords": ["forms", "form-definition", "mcp", "figma"]
+}

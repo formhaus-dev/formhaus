@@ -22,6 +22,8 @@ allowed-tools:
 
 The plugin renders every form element through a **role**. You find a component for each role in the user's design system, confirm it with them, and write the result into the Figma file where they build forms. Afterwards the plugin's **Components** tab shows every role as bound.
 
+The skill needs the Figma MCP server and the Formhaus Figma plugin installed in Figma. It does not need the formhaus repo.
+
 ## Roles
 
 | Role | What it renders | Search terms |

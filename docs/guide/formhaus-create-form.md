@@ -1,22 +1,35 @@
 ---
-title: "/formhaus-create-form Claude Code skill"
-description: "Generate a Formhaus JSON form definition from a text description, CSV data or a screenshot of a form with the /formhaus-create-form Claude Code skill."
+title: "/formhaus:formhaus-create-form Claude Code skill"
+description: "Generate a Formhaus JSON form definition from a text description, CSV data or a screenshot of a form with the /formhaus:formhaus-create-form Claude Code skill."
 ---
 
-# /formhaus-create-form
+# /formhaus:formhaus-create-form
 
 Generate an `@formhaus/core` form definition from a description, CSV data, or a screenshot.
 
 ## Prerequisites
 
 - [Claude Code](https://claude.ai/code) installed
-- The formhaus repo cloned locally
+- The Formhaus Claude Code plugin
+
+Install the plugin:
+
+```bash
+claude plugin marketplace add ignsm/formhaus
+claude plugin install formhaus@formhaus
+```
+
+Inside a Claude Code session, `/plugin marketplace add ignsm/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
+
+The plugin also starts the [MCP server](/guide/mcp). The skill uses it to validate the definition and simulate step paths before it shows the result.
 
 ## Usage
 
 ```
-/formhaus-create-form
+/formhaus:formhaus-create-form
 ```
+
+Plugin skills are namespaced with the plugin name. Claude also picks the skill on its own when the request matches.
 
 Then describe your form:
 
@@ -43,6 +56,6 @@ The generated form definition works with:
 
 ## Next steps
 
-- [/formhaus-figma-connect](/guide/formhaus-figma-connect): connect your design system to the Figma plugin
+- [/formhaus:formhaus-figma-connect](/guide/formhaus-figma-connect): connect your design system to the Figma plugin
 - [Field Types](/guide/fields): all supported form field types
 - [Definition Reference](/api/definition): full TypeScript types

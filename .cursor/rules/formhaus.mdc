@@ -1,0 +1,26 @@
+---
+description: Formhaus form definitions. Use when creating, editing or reviewing a Formhaus JSON form definition, or code that passes one to FormEngine or FormRenderer.
+alwaysApply: false
+---
+
+# Formhaus form definitions
+
+A Formhaus form is a JSON definition rendered by `@formhaus/core` with `@formhaus/react` or `@formhaus/vue`. One definition drives the web form and the Figma plugin.
+
+- Start each definition file with `"$schema": "https://formhaus.dev/schema/form-definition.json"`.
+- Required keys: `id` (kebab-case), `title`, `submit: { "label": "..." }`.
+- Use `fields` for a single page or `steps` for a multi-step form, never both.
+- Field `key` values are camelCase and unique across all steps.
+- `show` and `showAny` conditions reference existing field keys and use `eq`, `neq`, `in`, `notIn` or `notEmpty`.
+- Step `routes` only point to later steps. `to: null` ends the form without auto-submission.
+
+## Checking definitions
+
+When the `formhaus` MCP server is available (`npx -y @formhaus/mcp`):
+
+- Call `capabilities` for the current field types, validation rules and step semantics.
+- Call `example_definitions` for working examples.
+- Call `validate_definition` after every change and fix all `errors` before finishing.
+- Call `simulate_path` with sample answers to check branching steps and conditions.
+
+Reference: https://formhaus.dev/api/definition.html

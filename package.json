@@ -14,7 +14,7 @@
     "check:source-size": "node scripts/check-source-size.mjs",
     "check:bundle-size": "node scripts/check-bundle-size.mjs",
     "changeset": "changeset",
-    "version": "changeset version",
+    "version": "changeset version && node scripts/sync-mcp-server-json.mjs",
     "release": "pnpm build && changeset publish"
   },
   "engines": {

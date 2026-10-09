@@ -29,7 +29,7 @@ Multi-step forms with routes get a flow map with labelled arrows, and every mult
 
 ## Binding with Claude
 
-The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill finds your form components through the Figma MCP server, asks you to confirm them and writes the bindings into the file. Save a setup as a design system to reuse it in every file and share it with a setup code.
+The [`/formhaus:formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill finds your form components through the Figma MCP server, asks you to confirm them and writes the bindings into the file. Save a setup as a design system to reuse it in every file and share it with a setup code.
 
 ## Docs
 

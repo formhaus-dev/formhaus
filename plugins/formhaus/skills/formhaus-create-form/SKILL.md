@@ -13,12 +13,38 @@ allowed-tools:
   - Grep
   - AskUserQuestion
   - Agent
+  - mcp__plugin_formhaus_formhaus__validate_definition
+  - mcp__plugin_formhaus_formhaus__simulate_path
+  - mcp__plugin_formhaus_formhaus__capabilities
+  - mcp__plugin_formhaus_formhaus__example_definitions
+  - mcp__formhaus__validate_definition
+  - mcp__formhaus__simulate_path
+  - mcp__formhaus__capabilities
+  - mcp__formhaus__example_definitions
 ---
 
 # Form Definition Generator
 
 You generate valid `@formhaus/core` form definitions from any input.
 The output is ready to paste into the Formhaus Figma plugin or use with FormRenderer.
+The formhaus repo does not need to be cloned. The JSON Schema is published at
+`https://formhaus.dev/schema/form-definition.json`.
+
+## Formhaus MCP tools
+
+Check whether the `formhaus` MCP server tools are available (`validate_definition`,
+`simulate_path`, `capabilities`, `example_definitions`). The Formhaus Claude Code plugin
+starts the server. Without the plugin, it is added with
+`claude mcp add formhaus -- npx -y @formhaus/mcp`.
+
+- `capabilities` returns the current field types, validation rules, condition operators
+  and step semantics. Prefer it over the reference below when they differ.
+- `example_definitions` lists bundled example definitions and returns one by `id`.
+- `validate_definition` checks a definition against the JSON Schema and the engine.
+- `simulate_path` walks a multi-step definition with sample answers and reports the step path.
+
+If the tools are not available, validate by hand against the types below and tell the
+user that `@formhaus/mcp` can check the result.
 
 ## Types Reference
 
@@ -44,6 +70,7 @@ interface FormStep {
   routes?: StepRoute[];      // ordered forward destinations
   next?: FormAction | false; // custom "next" or false to hide it
   back?: FormAction | false; // custom "back" or false to hide it
+  skip?: FormAction;         // Skip button: resets the step, moves on without validation
 }
 
 interface StepRoute {
@@ -122,7 +149,7 @@ Look at the user's input and classify:
 - **Text description**: "Registration form with name, email, password"
 - **CSV/table**: structured data with columns like key, type, label, required
 - **Screenshot**: user provides a path to an image file or says "look at this screenshot"
-- **Existing definition**: user references an example in `examples/definitions/`
+- **Existing definition**: user references a bundled example (`example_definitions`)
 
 ### Step 2: Extract fields
 
@@ -199,7 +226,19 @@ Output the complete form definition JSON. Follow these rules:
 5. Only include optional properties when they add value (no empty strings, no `required: false`)
 6. Options for select/radio must have both `value` and `label`
 
-### Step 5: Present and confirm
+Put `"$schema": "https://formhaus.dev/schema/form-definition.json"` as the first key
+so editors validate and autocomplete the file.
+
+### Step 5: Validate
+
+If the MCP tools are available:
+
+1. Call `validate_definition` with the definition. Fix every entry in `errors` and
+   re-run until `errors` is empty. Review `warnings` and fix the ones that are real mistakes.
+2. For multi-step definitions with conditions or routes, call `simulate_path` with answers
+   that take each branch and check that the path matches the user's intent.
+
+### Step 6: Present and confirm
 
 Show the generated JSON in a code block. Ask:
 
@@ -214,19 +253,13 @@ If B: apply changes and re-present
 
 ## Example Definitions
 
-For reference, these definitions show current patterns:
-
-- `basic-form.json` — text, autocomplete, datetime, and basic validation
-- `conditional-fields.json` — payment fields controlled by show conditions
-- `multi-step.json` — 3 linear steps
-- `validation.json` — password confirmation, age range, and pattern validation
-
-Read these from `examples/definitions/` when you need to verify
-a pattern or show the user an example.
+Call `example_definitions` to list the bundled examples and fetch one by `id` when you
+need to verify a pattern or show the user an example. They cover common field types,
+validation, show conditions, linear steps, and branching steps with routes.
 
 ## Rules
 
-- NEVER output invalid JSON. Validate before presenting.
+- NEVER output invalid JSON. Validate before presenting, with `validate_definition` when available.
 - NEVER invent field types not in the FieldType union.
 - NEVER use `fields` AND `steps` in the same definition. Pick one.
 - Keys must be unique within a definition (across all steps).

@@ -54,7 +54,7 @@ Opens at http://localhost:5173.
 
 ### Changesets
 
-Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR that touches a published package adds a `.changeset/*.md` file. When the maintainer is ready to release, `pnpm version` consumes those files into per-package CHANGELOGs and bumps versions; `pnpm release` builds and publishes to npm.
+Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR that touches a published package adds a `.changeset/*.md` file. When the maintainer is ready to release, `pnpm version` consumes those files into per-package CHANGELOGs, bumps versions and syncs `packages/mcp/server.json`; `pnpm release` builds, publishes to npm and creates git tags. Pushing an `@formhaus/mcp@*` tag publishes `server.json` to the MCP Registry.
 
 Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 

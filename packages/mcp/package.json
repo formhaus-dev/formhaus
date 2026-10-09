@@ -2,6 +2,7 @@
   "name": "@formhaus/mcp",
   "version": "0.1.0",
   "description": "MCP server for authoring and checking Formhaus form definitions: validation, path simulation and capabilities.",
+  "mcpName": "io.github.ignsm/formhaus",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -39,6 +40,10 @@
     "vitest": "^4.1.3"
   },
   "license": "MIT",
+  "homepage": "https://formhaus.dev/guide/mcp.html",
+  "bugs": {
+    "url": "https://github.com/ignsm/formhaus/issues"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ignsm/formhaus.git",
@@ -46,9 +51,15 @@
   },
   "keywords": [
     "mcp",
+    "mcp-server",
     "model-context-protocol",
-    "form",
-    "form-engine",
+    "claude",
+    "cursor",
+    "ai-agents",
+    "forms",
+    "form-definition",
+    "json-form",
+    "validation",
     "formhaus"
   ]
 }
