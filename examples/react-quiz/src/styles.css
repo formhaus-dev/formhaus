@@ -1,0 +1,60 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #1a1a1a;
+  background: #f6f6f4;
+}
+
+body {
+  margin: 0;
+}
+
+.quiz {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.quiz__main {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.quiz__card {
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.quiz__card h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.quiz__card p {
+  margin: 0;
+}
+
+.quiz__log {
+  font-size: 13px;
+}
+
+.quiz__log h2 {
+  margin: 0 0 8px;
+  font-size: 14px;
+}
+
+.quiz__log ol {
+  margin: 0;
+  padding-left: 20px;
+  font-family: ui-monospace, monospace;
+}
+
+@media (max-width: 720px) {
+  .quiz {
+    grid-template-columns: 1fr;
+  }
+}

@@ -61,7 +61,7 @@ jobs:
 
     strategy:
       matrix:
-        example: [react-mui, vue-vuetify, vanilla-svelte]
+        example: [react-mui, vue-vuetify, vanilla-svelte, react-quiz]
 
     steps:
       - uses: actions/checkout@v4

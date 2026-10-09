@@ -1,0 +1,61 @@
+{
+  "id": "plan-quiz",
+  "title": "Find your plan",
+  "submit": { "label": "Book a call" },
+  "steps": [
+    {
+      "id": "audience",
+      "title": "Who is it for?",
+      "next": false,
+      "fields": [{
+        "key": "audience", "type": "radio", "label": "Who will use it?", "autoAdvance": true,
+        "helperText": "Click an answer or press Space to continue.",
+        "validation": { "required": true },
+        "options": [{ "value": "solo", "label": "Just me" }, { "value": "team", "label": "My team" }]
+      }],
+      "routes": [
+        { "to": "team", "show": [{ "field": "audience", "eq": "team" }] },
+        { "to": "goal" }
+      ]
+    },
+    {
+      "id": "team",
+      "title": "How big is your team?",
+      "next": false,
+      "fields": [{
+        "key": "teamSize", "type": "radio", "label": "Team size", "autoAdvance": true,
+        "helperText": "Click an answer or press Space to continue.",
+        "validation": { "required": true },
+        "options": [{ "value": "small", "label": "2–10" }, { "value": "medium", "label": "11–50" }, { "value": "large", "label": "51+" }]
+      }],
+      "routes": [{ "to": "goal" }]
+    },
+    {
+      "id": "goal",
+      "title": "What do you need first?",
+      "next": false,
+      "fields": [{
+        "key": "goal", "type": "radio", "label": "Main goal", "autoAdvance": true,
+        "helperText": "Click an answer or press Space to continue.",
+        "validation": { "required": true },
+        "options": [{ "value": "leads", "label": "Collect leads" }, { "value": "surveys", "label": "Run surveys" }, { "value": "onboarding", "label": "Onboard customers" }]
+      }]
+    },
+    {
+      "id": "contact",
+      "title": "Where should we send your plan?",
+      "next": { "label": "See my plan" },
+      "fields": [
+        { "key": "email", "type": "email", "label": "Work email", "validation": { "required": true, "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$", "patternMessage": "Enter a valid email" } },
+        { "key": "consent", "type": "checkbox", "label": "I agree to receive my plan by email", "validation": { "required": "Please confirm to continue" } }
+      ]
+    },
+    {
+      "id": "call",
+      "title": "Want a walkthrough?",
+      "fields": [
+        { "key": "phone", "type": "phone", "label": "Phone (optional)" }
+      ]
+    }
+  ]
+}
