@@ -4,10 +4,10 @@ This example uses `@formhaus/core` directly from Svelte. The component subscribe
 
 ## Run
 
-This example installs its own dependencies (it ignores the workspace root):
+This example is its own pnpm workspace and installs `@formhaus/*` from npm:
 
 ```bash
-pnpm install --ignore-workspace
+pnpm install
 pnpm dev
 ```
 

@@ -13,11 +13,11 @@ These integrations install their own dependencies and can be copied outside the 
 
 ```bash
 cd examples/<name>
-pnpm install --ignore-workspace
+pnpm install
 pnpm dev
 ```
 
-`--ignore-workspace` makes the example resolve `@formhaus/*` from the public npm registry instead of the local workspace.
+Each example has its own `pnpm-workspace.yaml`, so it resolves `@formhaus/*` from the public npm registry instead of the local packages. The file also allows esbuild's install script, which pnpm 10 and later block by default.
 
 ## Form definitions
 

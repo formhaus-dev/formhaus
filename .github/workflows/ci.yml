@@ -75,7 +75,7 @@ jobs:
 
       - name: Install example deps
         working-directory: examples/${{ matrix.example }}
-        run: pnpm install --ignore-workspace
+        run: pnpm install
 
       - name: Build example
         working-directory: examples/${{ matrix.example }}

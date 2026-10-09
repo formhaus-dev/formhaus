@@ -4,10 +4,10 @@ This example maps Formhaus `FormFieldProps` to [Vuetify 3](https://vuetifyjs.com
 
 ## Run
 
-This example installs its own dependencies (it ignores the workspace root):
+This example is its own pnpm workspace and installs `@formhaus/*` from npm:
 
 ```bash
-pnpm install --ignore-workspace
+pnpm install
 pnpm dev
 ```
 
