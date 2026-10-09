@@ -1,3 +1,4 @@
+import { isAiMessage, runAiMessage, type AiMessage } from './ai-keys';
 import { migrateStoredMap } from './bindings/legacy-map';
 import { applyDefaultProfile } from './profiles';
 import { selectionPreview } from './bindings/selection-preview';
@@ -11,7 +12,7 @@ import { DEFINITION_KEY, renderForm } from './render-form';
 import { createKitRenderer } from './renderers/kit-renderer';
 import type { Role } from './roles';
 
-interface UiMessage extends BindingMessage {
+interface UiMessage extends BindingMessage, Omit<AiMessage, 'type'> {
   definition?: string;
   layout?: FormLayout;
   kit?: KitId;
@@ -46,6 +47,7 @@ figma.on('drop', (event) => {
 figma.ui.onmessage = async (message: UiMessage) => {
   if (message.type === 'generate' && message.definition) await generateForm(message.definition, message.layout);
   else if (message.type === 'setComponents') updateComponents(message.source, message.kit);
+  else if (isAiMessage(message.type)) figma.ui.postMessage(await runAiMessage(message));
   else if (isBindingMessage(message.type)) {
     await updateBindings(message);
     sendState();

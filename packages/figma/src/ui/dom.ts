@@ -20,6 +20,14 @@ export function iconButton(name: UiIcon, label: string, onClick: () => void, cla
   return node;
 }
 
+export function selectSegment(buttons: HTMLElement[], attribute: string, value: string): void {
+  for (const button of buttons) {
+    const active = button.dataset[attribute] === value;
+    button.classList.toggle('active', active);
+    button.setAttribute('aria-pressed', String(active));
+  }
+}
+
 export function byId<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
   if (!node) throw new Error(`Missing UI element: ${id}`);

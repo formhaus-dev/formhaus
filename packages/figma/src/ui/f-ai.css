@@ -1,0 +1,14 @@
+.form-tools { align-items: center; display: flex; flex-shrink: 0; gap: 12px; }
+.ai-open { align-items: center; display: inline-flex; gap: 4px; }
+.ai-panel { background: var(--bg-2); border-radius: var(--radius); display: flex; flex-direction: column; gap: 8px; padding: 10px 12px 12px; }
+.ai-panel[hidden], .ai-panel [hidden] { display: none; }
+.ai-head { align-items: center; display: flex; gap: 8px; }
+.ai-title { flex: 1; font-weight: 600; }
+.ai-head .segmented { background: var(--bg-3); }
+.ai-prompt { flex: none; font: inherit; line-height: 1.5; min-height: 72px; padding: 8px 10px; }
+.ai-key { display: flex; gap: 6px; }
+.ai-key select { flex-shrink: 0; width: 118px; }
+.ai-key .input { flex: 1; }
+.ai-hint { align-items: baseline; display: flex; gap: 6px; justify-content: space-between; }
+.ai-hint .link { flex-shrink: 0; }
+.ai-actions { display: flex; gap: 6px; justify-content: flex-end; }

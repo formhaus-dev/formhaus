@@ -10,7 +10,9 @@
   "documentAccess": "dynamic-page",
   "networkAccess": {
     "allowedDomains": [
-      "none"
-    ]
+      "https://api.anthropic.com",
+      "https://api.openai.com"
+    ],
+    "reasoning": "Only used when you add your own API key to generate forms from a description."
   }
 }

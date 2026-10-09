@@ -44,6 +44,19 @@ Each generated form keeps its definition. Select a form on the canvas and the pl
 
 Click **Load example** in the plugin to load a basic contact form definition, then **Generate**.
 
+## Describe a form with AI
+
+Describe a form in plain words and Claude or an OpenAI model drafts the definition with your own API key.
+
+1. On the **Form** tab, click **Describe with AI**.
+2. Describe the form, pick **Anthropic** or **OpenAI** and paste your API key.
+3. Click **Generate**. The plugin checks the result with `@formhaus/core`, asks the model to fix any errors once and loads the form into the editor.
+4. Review it and click **Generate form**.
+
+With a form open in the editor, **Edit this form** sends the current definition with your instruction and replaces it with the result. **Cancel** stops a request in progress. The plugin uses `claude-sonnet-5-5` for Anthropic and `gpt-6.1-sol` for OpenAI.
+
+Your key is stored in Figma client storage on your machine, never in the file. Requests go from the plugin straight to the provider you pick, and nothing goes to Formhaus. **Forget key** removes the saved key.
+
 ## Flow map
 
 Forms with [routes](/guide/steps#route-between-branches) are laid out as a flow map: one column per position on the path and an arrow per exit, labelled with its condition. Steps are numbered by their position on the path. A step with no step after it shows Submit.

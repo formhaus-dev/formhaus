@@ -15,7 +15,7 @@ Form mockups from one definition, drawn with your design system.
 Formhaus draws forms as real component instances: text fields, selects, dates, file uploads, checkboxes, radios, switches and buttons.
 
 - Bind your own components once, or use the built-in Material 3 or iOS-like kit.
-- Build a form in the editor or paste a Formhaus JSON definition.
+- Build a form in the editor, paste a Formhaus JSON definition, or describe it to Claude or an OpenAI model with your own API key.
 - Multi-step forms get one frame per step, or one page with sections.
 - Forms with routes get a flow map with labelled arrows.
 - Forms with separate screens are a clickable prototype: Continue, Back, Skip and branching answers lead to the right step.
@@ -36,7 +36,8 @@ https://github.com/ignsm/formhaus/issues
 
 ## Data and network
 
-- No network access. The manifest declares `allowedDomains: ["none"]`.
+- The manifest allows `https://api.anthropic.com` and `https://api.openai.com` only. The plugin calls them only after the user adds their own API key under **Describe with AI**. Requests go from the plugin straight to that provider and never to Formhaus.
+- API keys are stored in the plugin's client storage on the user's machine, never in the Figma file.
 - Form definitions, layouts and bindings are stored in the Figma file as shared plugin data under the `formhaus` namespace.
 - Saved design systems are stored in the plugin's client storage on the user's machine.
 

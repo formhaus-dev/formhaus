@@ -1,7 +1,7 @@
 import type { FormDefinition } from '@formhaus/core';
 import type { FormLayout } from '../render-actions';
 import { ROLES } from '../roles';
-import { byId } from './dom';
+import { byId, selectSegment } from './dom';
 import { createEditor } from './editor/editor';
 import { emptyForm } from './editor/model';
 import { EXAMPLE } from './example';
@@ -45,10 +45,10 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
     button.textContent = editing ? 'Update form' : 'Generate form';
   }
 
-  function load(definition: FormDefinition, layout?: FormLayout): void {
+  function load(definition: FormDefinition, layout?: FormLayout, edited = false): void {
     editor.set(definition, layout);
     jsonInput.value = JSON.stringify(definition, null, 2);
-    dirty = false;
+    dirty = edited;
     pending = null;
     show(output, '');
     refresh();
@@ -71,10 +71,7 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
     else if (!syncFromJson()) return;
     mode = next;
     show(output, '');
-    for (const item of modes) {
-      item.classList.toggle('active', item.dataset.mode === mode);
-      item.setAttribute('aria-pressed', String(item.dataset.mode === mode));
-    }
+    selectSegment(modes, 'mode', mode);
     editorRoot.hidden = mode !== 'fields';
     jsonInput.hidden = mode !== 'json';
     refresh();
@@ -108,6 +105,11 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
   load(emptyForm());
 
   return {
+    draft: () => (syncFromJson() ? editor.get() : null),
+    apply(definition: FormDefinition, note: string) {
+      load(definition, editor.layout(), true);
+      show(output, note, 'info');
+    },
     setCanvasForm(definition: FormDefinition | null, layout?: FormLayout) {
       if (!definition || definition.id === editor.get().id) {
         if (definition) canvasId = definition.id;

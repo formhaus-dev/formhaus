@@ -1,16 +1,18 @@
 import type { FormDefinition } from '@formhaus/core';
+import type { AiSettings } from '../ai-keys';
 import type { Notice } from '../bindings/messages';
 import type { BindingRow } from '../bindings/rows';
 import type { SelectionPreview } from '../bindings/selection-preview';
 import type { Profile } from '../profiles';
 import type { FormLayout } from '../render-actions';
+import { createAiPanel } from './ai/ai-panel';
 import { createComponentsPanel } from './components';
 import { byId } from './dom';
 import { createFormPanel } from './form-panel';
 
 type OutputType = 'error' | 'success' | 'info';
 
-interface PluginMessage {
+interface PluginMessage extends Partial<AiSettings> {
   type: string;
   message?: string;
   source?: 'kit' | 'custom';
@@ -36,6 +38,7 @@ function showOutput(element: HTMLElement, text: string, type?: OutputType): void
 const bindingsOutput = byId('bindingsOutput');
 const components = createComponentsPanel(post, (text, tone) => showOutput(bindingsOutput, text, tone));
 const form = createFormPanel(post, showOutput, () => selectTab('components'));
+const ai = createAiPanel(post, form);
 
 function selectTab(target: string): void {
   for (const item of document.querySelectorAll<HTMLElement>('.tab, .panel')) {
@@ -64,6 +67,7 @@ const HANDLERS: Record<string, (message: PluginMessage) => void> = {
     showOutput(bindingsOutput, message.notice?.text ?? '', message.notice?.tone);
   },
   bindingsError: (message) => showOutput(bindingsOutput, message.message ?? '', 'error'),
+  aiSettings: (message) => ai.setSettings({ provider: message.provider ?? 'anthropic', keys: message.keys ?? {} }),
   notice: (message) => showOutput(byId('output'), message.message ?? '', 'info'),
 };
 
