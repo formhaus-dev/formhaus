@@ -1,5 +1,19 @@
 # @formhaus/core
 
+## 0.8.0
+
+### Minor Changes
+
+- 75e49f2: - New JSON Schema for form definitions at `@formhaus/core/schema.json` and `https://formhaus.dev/schema/form-definition.json`.
+- 2bd4c47: - New `skip` step option. A skipped step is left out of submit validation and submitted values.
+  - New `skipStep()` and `skipStepAsync()` reset the current step to its defaults and move forward without validation.
+  - `skipStepAsync(submit)` submits without the step when no step follows it. Without `submit` it returns `false` and changes nothing.
+  - New `isStepSkipped()` method.
+  - Pressing Next or Submit on a skipped step, or changing one of its fields, includes it again.
+  - `StepChangeContext.reason` can be `'skip'`.
+  - New `step_skipped` analytics event type.
+  - `validateDefinition()` warns about `skip` on a single-step form or a step with `next: false`.
+
 ## 0.7.2
 
 No changes. Version aligned with `@formhaus/react` and `@formhaus/vue`.

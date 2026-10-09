@@ -1,5 +1,20 @@
 # @formhaus/react
 
+## 0.8.0
+
+### Minor Changes
+
+- 2bd4c47: - `FormActions` renders a Skip button on steps with `skip`. New `skipAction`, `showSkip`, `skipLabel` and `onSkip` props.
+  - **Breaking:** Back renders with `fh-form-actions__button--secondary` instead of `--text`.
+  - Back, Skip and Cancel use `variant` from their action when it is set.
+  - `onAnalyticsEvent` receives `step_skipped` instead of `step_completed` for a skipped step, including Skip on the last step.
+
+### Patch Changes
+
+- Updated dependencies [75e49f2]
+- Updated dependencies [2bd4c47]
+  - @formhaus/core@0.8.0
+
 ## 0.7.2
 
 ### Patch Changes
