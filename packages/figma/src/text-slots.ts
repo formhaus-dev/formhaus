@@ -1,5 +1,6 @@
 import type { Binding, TextSlot } from './config';
 import { HELPER_VISIBLE_PROPERTY } from './kits/primitives';
+import { propertyOwner } from './renderers/resolve';
 
 export type SlotValues = Partial<Record<TextSlot, string>>;
 
@@ -14,12 +15,25 @@ const SLOT_PATTERNS: Record<TextSlot, RegExp> = {
 export function slotForName(name: string, binding?: Binding): TextSlot | undefined {
   const explicit = SLOT_ORDER.find((slot) => binding?.text?.[slot] === name);
   if (explicit) return explicit;
-  if (binding?.text && Object.values(binding.text).length > 0) return undefined;
-  return SLOT_ORDER.find((slot) => SLOT_PATTERNS[slot].test(name));
+  const detected = SLOT_ORDER.find((slot) => SLOT_PATTERNS[slot].test(name));
+  return detected && binding?.text?.[detected] === undefined ? detected : undefined;
 }
 
-export async function applySlots(instance: InstanceNode, values: SlotValues, binding?: Binding): Promise<void> {
+export function liveBinding(binding: Binding | undefined, names: string[]): Binding | undefined {
+  if (!binding?.text) return binding;
+  const text = Object.fromEntries(Object.entries(binding.text).filter(([, name]) => name === '' || names.includes(name)));
+  return { ...binding, text };
+}
+
+export function slotNames(root: InstanceNode | ComponentNode): string[] {
+  const definitions = root.type === 'INSTANCE' ? root.componentProperties : propertyOwner(root).componentPropertyDefinitions;
+  const properties = Object.entries(definitions).filter(([, item]) => item.type === 'TEXT').map(([key]) => key.split('#')[0]);
+  return [...new Set([...properties, ...ownTextLayers(root).map((node) => node.name)])];
+}
+
+export async function applySlots(instance: InstanceNode, values: SlotValues, bound?: Binding): Promise<void> {
   await loadFonts(instance);
+  const binding = liveBinding(bound, slotNames(instance));
   const filled = setTextProperties(instance, values, binding);
   for (const slot of SLOT_ORDER) {
     if (filled.has(slot) || values[slot] === undefined) continue;
@@ -46,13 +60,13 @@ function setTextProperties(instance: InstanceNode, values: SlotValues, binding?:
   return filled;
 }
 
-function ownTextLayers(instance: InstanceNode): TextNode[] {
-  return instance.findAll((node) => node.type === 'TEXT' && node.visible && nearestInstance(node) === instance) as TextNode[];
+function ownTextLayers(root: InstanceNode | ComponentNode): TextNode[] {
+  return root.findAll((node) => node.type === 'TEXT' && node.visible && nearestInstance(node, root) === root) as TextNode[];
 }
 
-function nearestInstance(node: BaseNode): BaseNode | null {
+function nearestInstance(node: BaseNode, root: BaseNode): BaseNode | null {
   let current = node.parent;
-  while (current && current.type !== 'INSTANCE') current = current.parent;
+  while (current && current !== root && current.type !== 'INSTANCE') current = current.parent;
   return current;
 }
 

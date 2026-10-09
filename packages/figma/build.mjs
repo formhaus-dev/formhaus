@@ -2,10 +2,11 @@ import { watch } from 'node:fs';
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { build, context, transform } from 'esbuild';
+import { build, context } from 'esbuild';
 
 const root = dirname(fileURLToPath(import.meta.url));
 const dist = join(root, 'dist');
+const uiRoot = join(root, 'src/ui');
 const codeOptions = {
   bundle: true,
   entryPoints: [join(root, 'src/code.ts')],
@@ -15,16 +16,12 @@ const codeOptions = {
 };
 
 async function buildUi() {
-  const [template, styles, source] = await Promise.all([
-    readFile(join(root, 'src/ui.html'), 'utf8'),
-    readFile(join(root, 'src/ui.css'), 'utf8'),
-    readFile(join(root, 'src/ui.ts'), 'utf8'),
+  const [template, styles, script] = await Promise.all([
+    readFile(join(uiRoot, 'index.html'), 'utf8'),
+    readFile(join(uiRoot, 'styles.css'), 'utf8'),
+    build({ bundle: true, entryPoints: [join(uiRoot, 'main.ts')], format: 'iife', target: 'es2017', write: false }),
   ]);
-  const { code } = await transform(source, {
-    format: 'iife',
-    loader: 'ts',
-    target: 'es2017',
-  });
+  const code = script.outputFiles[0].text;
   const html = template
     .replace('/* FORMHAUS_STYLES */', styles)
     .replace('/* FORMHAUS_SCRIPT */', code);
@@ -42,9 +39,7 @@ async function runWatch() {
   const code = await context(codeOptions);
   await code.watch();
   await buildUi();
-  for (const file of ['ui.html', 'ui.css', 'ui.ts']) {
-    watch(join(root, 'src', file), () => buildUi().catch(console.error));
-  }
+  watch(uiRoot, () => buildUi().catch(console.error));
 }
 
 async function runHarnessBuild() {

@@ -2,15 +2,13 @@ import type { Binding } from '../config';
 
 export async function componentForBinding(binding: Binding): Promise<ComponentNode | null> {
   const node = await findNode(binding);
-  if (node?.type === 'COMPONENT') return node;
-  if (node?.type === 'COMPONENT_SET') return (node.defaultVariant as ComponentNode | null) ?? null;
-  return null;
+  return node?.type === 'COMPONENT' || node?.type === 'COMPONENT_SET' ? asComponent(node) : null;
 }
 
 async function findNode(binding: Binding): Promise<BaseNode | null> {
   if (binding.source === 'local' && binding.id) {
     const local = await figma.getNodeByIdAsync(binding.id);
-    if (local) return local;
+    if (local && !local.removed && local.parent) return local;
   }
   if (!binding.key) return null;
   try {
@@ -24,6 +22,15 @@ export function asComponent(node: ComponentNode | ComponentSetNode): ComponentNo
   return node.type === 'COMPONENT_SET' ? (node.defaultVariant as ComponentNode) : node;
 }
 
+export function propertyOwner(component: ComponentNode): ComponentNode | ComponentSetNode {
+  return component.parent?.type === 'COMPONENT_SET' ? component.parent : component;
+}
+
+export function missingProperties(component: ComponentNode, binding: Binding): string[] {
+  const defined = Object.keys(propertyOwner(component).componentPropertyDefinitions);
+  return Object.keys(binding.properties ?? {}).filter((key) => !defined.includes(key));
+}
+
 export function setVariant(instance: InstanceNode, property: string, value: string): void {
   if (instance.componentProperties[property]?.type !== 'VARIANT') return;
   try {
@@ -35,11 +42,11 @@ export function setVariant(instance: InstanceNode, property: string, value: stri
 
 export function instantiate(component: ComponentNode, binding?: Binding): InstanceNode {
   const instance = component.createInstance();
-  if (binding?.variant && component.parent?.type === 'COMPONENT_SET') {
+  for (const [key, value] of Object.entries(binding?.properties ?? {})) {
     try {
-      instance.setProperties(binding.variant);
+      instance.setProperties({ [key]: value });
     } catch {
-      return instance;
+      continue;
     }
   }
   return instance;

@@ -1,3 +1,6 @@
+import type { BindingRow } from '../bindings/rows';
+import { renderBindings } from './bindings';
+
 type OutputType = 'error' | 'success';
 
 interface PluginMessage {
@@ -7,6 +10,9 @@ interface PluginMessage {
   source?: 'kit' | 'custom';
   kit?: string;
   hasStoredMap?: boolean;
+  boundCount?: number;
+  rows?: BindingRow[];
+  notice?: string;
 }
 
 function getElement<T extends HTMLElement>(id: string): T {
@@ -32,6 +38,8 @@ const mapOutput = getElement<HTMLElement>('mapOutput');
 const mapStatus = getElement<HTMLElement>('mapStatus');
 const kitSelect = getElement<HTMLSelectElement>('kit');
 const customHint = getElement<HTMLElement>('customHint');
+const bindingsList = getElement<HTMLElement>('bindings');
+const bindingsOutput = getElement<HTMLElement>('bindingsOutput');
 const sourceInputs = [...document.querySelectorAll<HTMLInputElement>('input[name=source]')];
 
 function selectedSource(): string {
@@ -57,6 +65,7 @@ for (const tab of document.querySelectorAll<HTMLButtonElement>('.tab')) {
     }
     tab.classList.add('active');
     if (target) getElement(`tab-${target}`).classList.add('active');
+    if (target === 'components') postMessage({ type: 'getBindings' });
   });
 }
 
@@ -94,6 +103,8 @@ generateButton.onclick = () => {
   postMessage({ type: 'generate', definition });
 };
 
+getElement('autoMatch').onclick = () => postMessage({ type: 'autoMatch' });
+
 getElement('loadCurrentMap').onclick = () => postMessage({ type: 'getComponentMap' });
 getElement('resetMap').onclick = () => postMessage({ type: 'resetComponentMap' });
 getElement('saveMap').onclick = () => {
@@ -111,6 +122,11 @@ getElement('saveMap').onclick = () => {
   }
 };
 
+function customSummary(message: PluginMessage): string {
+  if (message.boundCount) return `(${message.boundCount} bound)`;
+  return message.hasStoredMap ? '(saved JSON map)' : '(set up in Components)';
+}
+
 window.onmessage = (event: MessageEvent<{ pluginMessage?: PluginMessage }>) => {
   const message = event.data.pluginMessage;
   if (!message) return;
@@ -122,10 +138,16 @@ window.onmessage = (event: MessageEvent<{ pluginMessage?: PluginMessage }>) => {
   if (message.type === 'state') {
     for (const input of sourceInputs) input.checked = input.value === message.source;
     if (message.kit) kitSelect.value = message.kit;
-    customHint.textContent = message.hasStoredMap ? '(saved map)' : '(set up in Component Map)';
+    customHint.textContent = customSummary(message);
     mapStatus.textContent = message.hasStoredMap ? 'Using custom map' : 'No custom map';
     mapStatus.className = `status-badge ${message.hasStoredMap ? 'custom' : 'default'}`;
   }
+  if (message.type === 'bindings') {
+    renderBindings(bindingsList, message.rows ?? [], postMessage);
+    if (message.notice) showOutput(bindingsOutput, message.notice, 'success');
+    else bindingsOutput.textContent = '';
+  }
+  if (message.type === 'bindingsError') showOutput(bindingsOutput, message.message ?? '', 'error');
   if (message.type === 'componentMapData') componentMapInput.value = message.map ?? '';
   if (message.type === 'componentMapSaved') {
     showOutput(mapOutput, message.message ?? '', 'success');

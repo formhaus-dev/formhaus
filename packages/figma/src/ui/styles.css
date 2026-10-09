@@ -98,3 +98,31 @@ button:disabled { background: #ccc; cursor: not-allowed; }
 .choice { align-items: center; color: #333; display: flex; font-size: 13px; gap: 8px; }
 .choice select { border: 1px solid #ddd; border-radius: 4px; font-size: 12px; margin-left: auto; padding: 4px 6px; }
 .choice .hint { color: #999; font-size: 12px; }
+
+#tab-components { overflow-y: auto; }
+.bindings { display: flex; flex-direction: column; gap: 16px; }
+.binding-group { display: flex; flex-direction: column; gap: 6px; }
+.binding-group h3 { color: #666; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+.binding {
+  align-items: center;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: 72px 1fr auto;
+  padding: 8px;
+}
+.binding.bound { border-color: #cfe8fc; }
+.thumb { background: #f7f7f7; border-radius: 4px; height: 44px; object-fit: contain; width: 72px; }
+.thumb.empty { align-items: center; color: #aaa; display: flex; font-size: 10px; justify-content: center; }
+.info { min-width: 0; }
+.role { font-size: 12px; font-weight: 600; }
+.name { color: #888; font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.actions { display: flex; gap: 4px; }
+.btn-small { font-size: 11px; padding: 5px 8px; width: auto; }
+.btn-clear { background: #f0f0f0; color: #666; }
+.btn-clear:hover { background: #e0e0e0; }
+.slots { display: grid; gap: 8px; grid-column: 1 / 4; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.slot { align-items: center; display: flex; font-size: 10px; gap: 4px; min-width: 0; text-transform: capitalize; }
+.slot select { border: 1px solid #ddd; border-radius: 4px; flex: 1; font-size: 11px; min-width: 0; padding: 2px 4px; }
+.warning { color: #b26a00; font-size: 11px; }

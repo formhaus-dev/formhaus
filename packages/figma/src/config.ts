@@ -11,7 +11,8 @@ export interface Binding {
   source: 'local' | 'library';
   id?: string;
   key?: string;
-  variant?: Record<string, string>;
+  name?: string;
+  properties?: Record<string, string | boolean>;
   text?: Partial<Record<TextSlot, string>>;
 }
 

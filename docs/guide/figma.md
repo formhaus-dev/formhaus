@@ -37,9 +37,21 @@ Pick **Built-in kit** under **Components** and choose **Material 3** or **iOS-li
 
 Each kit component exposes `Label`, `Value` and `Helper` text properties and a `Show helper` toggle. Icons come from [Material Symbols](https://fonts.google.com/icons) (Apache 2.0). Material 3 uses Roboto; iOS-like uses SF Pro when it is installed. Both fall back to Inter. Text inputs have `Empty` and `Filled` variants: Material shows only the label in an empty field, iOS-like shows the placeholder inside the cell.
 
+## My components
+
+Open the **Components** tab to render forms with your own design system. Each field role has a row with a preview of the bound component.
+
+1. Select a component, a component set or an instance on the canvas.
+2. Click **Use selection** on the role it should render.
+3. Pick which text layers or properties hold the label, value and helper text if the detected ones are wrong.
+
+Binding an instance keeps its variant and boolean property values, so configure the instance the way fields should look before binding it. Library components are bound by key and imported when you generate. **Auto-match from this page** binds unbound roles to components on the current page by name, such as `Text field`, `Dropdown`, `Toggle` or `Button / Primary`. Roles you leave unbound use the selected built-in kit.
+
+Bindings are stored in the document, so everyone who opens the file generates with the same components.
+
 ## Component Map
 
-Pick **My components** to render with your design system instead. The **Component Map** tells the plugin which Figma components to use for each form field type.
+The **JSON map** tab is the older way to use your own components: a JSON file that maps each form field type to a component key in your library. The plugin uses it when **My components** is selected and no roles are bound in the **Components** tab.
 
 ::: tip Auto-generate with Claude
 Run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to search your Figma library and build the component map from confirmed matches.
@@ -113,7 +125,7 @@ To find a component key in Figma:
 
 ### Configuring in the plugin
 
-1. Open the plugin and switch to the **Component Map** tab
+1. Open the plugin and switch to the **JSON map** tab
 2. Click **Load Current** to see the active map
 3. Edit the JSON to match your design system
 4. Click **Save Map** to persist (stored in Figma's local storage)

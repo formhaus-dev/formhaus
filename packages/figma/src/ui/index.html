@@ -7,7 +7,8 @@
 <body>
   <div class="tabs">
     <button class="tab active" data-tab="generate">Generate</button>
-    <button class="tab" data-tab="settings">Component Map</button>
+    <button class="tab" data-tab="components">Components</button>
+    <button class="tab" data-tab="settings">JSON map</button>
   </div>
 
   <div class="tab-content active" id="tab-generate">
@@ -27,6 +28,13 @@
     <button class="link" id="loadExample">Load example (basic-form)</button>
     <button id="generate">Generate</button>
     <div class="output" id="output"></div>
+  </div>
+
+  <div class="tab-content" id="tab-components">
+    <p class="hint">Select a component or a configured instance on the canvas, then click <b>Use selection</b>. Anything you leave unbound uses the built-in kit.</p>
+    <button class="btn-secondary" id="autoMatch">Auto-match from this page</button>
+    <div class="output" id="bindingsOutput"></div>
+    <div class="bindings" id="bindings"></div>
   </div>
 
   <div class="tab-content" id="tab-settings">

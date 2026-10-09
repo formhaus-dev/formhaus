@@ -1,6 +1,6 @@
 # @formhaus/figma
 
-Figma plugin that turns a [Formhaus](https://github.com/ignsm/formhaus) definition into component instances on the canvas. It ships Material 3 and iOS-like kits that it generates into your file, or renders with your own library through a component map.
+Figma plugin that turns a [Formhaus](https://github.com/ignsm/formhaus) definition into component instances on the canvas. It ships Material 3 and iOS-like kits that it generates into your file, or renders with your own components bound in the plugin.
 
 Not published to the Figma Community yet. Install as a local plugin.
 
@@ -15,18 +15,18 @@ Not published to the Figma Community yet. Install as a local plugin.
 
 1. Open a Figma file
 2. **Plugins → Development → Formhaus**
-3. Under **Components**, pick a built-in kit (Material 3 or iOS-like) or **My components**
+3. Under **Components**, pick a built-in kit (Material 3 or iOS-like) or **My components**. Bind your components in the **Components** tab: select one on the canvas and click **Use selection** next to its role.
 4. Paste a Formhaus form definition JSON and click **Generate**
 
 The plugin creates one frame per step and lays the frames out horizontally. With a built-in kit it first adds a `Formhaus · <kit>` section with the kit components to the current page.
 
-`pnpm --filter @formhaus/figma build:harness` builds `dist/harness.js`, which exposes `formhaus.render(definition, kit)` for running the renderer in a file through the Figma MCP `use_figma` tool.
+`pnpm --filter @formhaus/figma build:harness` builds `dist/harness.js`, which exposes `formhaus.render(definition, kit, useBindings)` and `formhaus.binding(message)` for running the renderer in a file through the Figma MCP `use_figma` tool.
 
 ## Component map
 
-The plugin ships with a default component map. To make it use your own design system, you need a JSON that maps each form field type (`text`, `select`, `checkbox`, etc.) to a Figma component key in your library.
+Before the **Components** tab, the plugin bound components through a JSON component map. It still works from the **JSON map** tab. The plugin ships with a default component map. To make it use your own design system, you need a JSON that maps each form field type (`text`, `select`, `checkbox`, etc.) to a Figma component key in your library.
 
-The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill searches a Figma library through MCP and asks you to confirm the matches. Paste its JSON into the plugin's **Component Map** tab and save it. The plugin stores the map in Figma client storage.
+The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill searches a Figma library through MCP and asks you to confirm the matches. Paste its JSON into the plugin's **JSON map** tab and save it. The plugin stores the map in Figma client storage.
 
 The `ComponentMap` TypeScript interface lives in [`packages/figma/src/constants.ts`](https://github.com/ignsm/formhaus/blob/main/packages/figma/src/constants.ts) if you prefer to write the JSON by hand.
 
