@@ -8,7 +8,7 @@ Every form is a JSON object following the `FormDefinition` type. The [specificat
 
 ## FormDefinition
 
-Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never both.
+Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never both. The `FormEngine` constructor throws when both are non-empty.
 
 ```ts
 interface FormDefinition {
@@ -57,7 +57,7 @@ type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get
 
 ## FormStep
 
-A step in a multi-step form. Has its own fields and optional CTA overrides.
+A step in a multi-step form. Has its own fields and optional CTA overrides. Step ids must be unique; the `FormEngine` constructor throws on duplicates.
 
 ```ts
 interface FormStep {
@@ -100,7 +100,7 @@ interface ShowCondition {
   neq?: string | number | boolean;        // Not equals
   in?: (string | number)[];               // Value is in list
   notIn?: (string | number)[];            // Value is not in list
-  notEmpty?: boolean;                     // Value is not empty
+  notEmpty?: boolean;                     // Value is not null, undefined, '' or []
 }
 ```
 
@@ -140,7 +140,7 @@ interface FieldOption {
 
 ## ValidatorFn
 
-Synchronous field-level validator. Registered via the `validators` prop.
+Synchronous field-level validator. Registered via the `validators` prop. Return an error string, or `null` or `''` for no error. The `FormEngine` constructor warns about a `validator` name that is not registered.
 
 ```ts
 type ValidatorFn = (
@@ -209,7 +209,7 @@ interface StepRoute {
 }
 ```
 
-The first matching route with a visible target wins. An unconditional last route is a fallback; no match continues to the next visible declared step. `to: null` makes this step terminal without submitting. Targets must be later declared step ids. Route conditions may reference this or earlier steps. Invalid targets and forward-field references are reported by `validateDefinition()`, and the `FormEngine` constructor throws on them. `validateDefinition()` also warns when a branch falls through into a sibling branch.
+The first matching route with a visible target wins. An unconditional last route is a fallback; no match continues to the next visible declared step. `to: null` makes this step terminal without submitting. Targets must be later declared step ids. Route conditions may reference this or earlier steps. Invalid targets and forward-field references are reported by `validateDefinition()`, and the `FormEngine` constructor throws on them. Step `show`/`showAny` conditions on the same or a later step never match in a routed form; `validateDefinition()` warns about them. `validateDefinition()` also warns when a branch falls through into a sibling branch.
 
 With routes enabled, progress, Back, validation, hooks and submission use the active path. Skipped values remain in `engine.values` but are excluded from the active projection. See [branch convergence, visibility, retained values and reconciliation](../guide/steps#route-between-branches) and [the complete JSON example](/guide/examples#branching-form).
 

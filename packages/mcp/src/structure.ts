@@ -57,9 +57,8 @@ export function checkStructure(definition: FormDefinition): Findings {
   if (fields.length === 0 && steps.length === 0) findings.warnings.push('Definition has no fields and no steps.');
   fields.forEach((field, index) => checkField(field, `fields[${index}]`, findings));
   const stepIds = new Set<string>();
-  const routed = steps.some((step) => step.routes?.length);
   steps.forEach((step, index) => {
-    if (stepIds.has(step.id) && !routed) findings.errors.push(`Duplicate step id "${step.id}" at steps[${index}].`);
+    if (stepIds.has(step.id)) findings.errors.push(`Duplicate step id "${step.id}" at steps[${index}].`);
     stepIds.add(step.id);
     checkStep(step, `steps[${index}]`, findings, index === steps.length - 1);
   });

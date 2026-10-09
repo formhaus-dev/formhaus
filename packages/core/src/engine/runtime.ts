@@ -12,12 +12,11 @@ import {
   resetEngine,
   validateForm,
   validateOne,
-  assertDefinitionShape,
   clearResolvedMatchErrors,
   pruneOffPathErrors,
 } from './validation-state';
 import { submitAsync } from './submission';
-import { routeWarnings, reconcileStepIndex } from './step-routes';
+import { definitionErrors, reconcileStepIndex } from './step-routes';
 import { VisibilityState } from './visibility-state';
 
 export class FormEngine {
@@ -43,15 +42,17 @@ export class FormEngine {
     initialValues?: Record<string, unknown>,
     options?: FormEngineOptions,
   ) {
-    assertDefinitionShape(definition);
-    const invalidRoutes = routeWarnings(definition);
-    if (invalidRoutes.length) throw new Error(invalidRoutes.join('\n'));
-    for (const warning of validateDefinition(definition)) {
-      console.warn(`[FormEngine] ${warning}`);
-    }
+    const errors = definitionErrors(definition);
+    if (errors.length) throw new Error(errors.join('\n'));
     this.lifecycle = options ?? {};
     this.validators = options?.validators ?? {};
     this.visibility = new VisibilityState(definition);
+    const warnings = validateDefinition(definition);
+    for (const { key, validation } of this.visibility.allFields) {
+      const name = validation?.validator;
+      if (name && !this.validators[name]) warnings.push(`Field "${key}" references unknown validator "${name}".`);
+    }
+    for (const warning of warnings) console.warn(`[FormEngine] ${warning}`);
     this.values = createValues(this.visibility.allFields, initialValues);
     this.visibility.reconcileHidden(this.values, this.errors);
   }

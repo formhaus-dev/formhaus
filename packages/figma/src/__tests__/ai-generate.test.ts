@@ -46,7 +46,9 @@ describe('checkReply', () => {
 
   it('splits fatal route and structure errors from warnings', () => {
     expect(checkReply(JSON.stringify(badRoute)).fatal[0]).toMatch(/^Invalid route from "one" to "missing"/);
-    expect(checkReply(JSON.stringify({ ...valid, steps: [{ id: 's', title: 'S', fields: [valid.fields[0]] }] })).fatal[0]).toMatch(/^Definition has both/);
+    expect(checkReply(JSON.stringify({ ...valid, steps: [{ id: 's', title: 'S', fields: [valid.fields[0]] }] })).fatal[0]).toMatch(/^FormEngine rejects a definition with both/);
+    const twice = { ...valid, fields: undefined, steps: [{ id: 's', title: 'S', fields: [] }, { id: 's', title: 'S', fields: [] }] };
+    expect(checkReply(JSON.stringify(twice)).fatal).toEqual(['Duplicate step id "s".']);
     const result = checkReply(JSON.stringify(withWarning));
     expect(result.fatal).toEqual([]);
     expect(result.warnings).toEqual(['Field "email" has show condition referencing non-existent field "ghost"']);

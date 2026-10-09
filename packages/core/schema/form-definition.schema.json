@@ -35,7 +35,7 @@
       "items": {
         "$ref": "#/definitions/FormStep"
       },
-      "description": "Steps of a multi-step form. When present, fields is ignored."
+      "description": "Steps of a multi-step form. FormEngine rejects a definition with both non-empty fields and steps."
     }
   },
   "required": [
@@ -120,7 +120,7 @@
         },
         "notEmpty": {
           "type": "boolean",
-          "description": "Matches when the value is not undefined, null or an empty string."
+          "description": "Matches when the value is not undefined, null, an empty string or an empty array."
         }
       },
       "required": [
@@ -329,7 +329,7 @@
         },
         "id": {
           "type": "string",
-          "description": "Unique step identifier, used as a route target."
+          "description": "Unique step identifier, used as a route target. FormEngine rejects duplicates."
         },
         "title": {
           "type": "string"

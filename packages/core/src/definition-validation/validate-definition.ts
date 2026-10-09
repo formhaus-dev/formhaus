@@ -1,5 +1,4 @@
-import { routeFallthroughWarnings, routeWarnings } from '../engine/step-routes';
-import { hasFieldsAndSteps } from '../engine/engine-utils';
+import { definitionErrors, routeFallthroughWarnings } from '../engine/step-routes';
 import type { FormDefinition } from '../types';
 import { analyzeDefinition } from './definition-analysis';
 
@@ -30,11 +29,8 @@ function detectCycles(graph: Map<string, string[]>): string[][] {
 
 export function validateDefinition(definition: FormDefinition): string[] {
   const { graph, warnings } = analyzeDefinition(definition);
-  if (hasFieldsAndSteps(definition)) {
-    warnings.unshift('Definition has both "fields" and "steps". Only "steps" will be used.');
-  }
   for (const cycle of detectCycles(graph)) {
     warnings.push(`Circular show condition detected: ${cycle.join(' -> ')}`);
   }
-  return [...warnings, ...routeWarnings(definition), ...routeFallthroughWarnings(definition)];
+  return [...definitionErrors(definition), ...warnings, ...routeFallthroughWarnings(definition)];
 }

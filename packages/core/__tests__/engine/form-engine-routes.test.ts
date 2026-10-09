@@ -98,7 +98,7 @@ describe('declarative step routes', () => {
     expect(() => new FormEngine(definition)).toThrow(/route/i);
     definition.steps![0].routes![0].show = [];
     definition.steps![1].id = 'kind';
-    expect(() => new FormEngine(definition)).toThrow(/route/i);
+    expect(() => new FormEngine(definition)).toThrow('Duplicate step id "kind".');
   });
 
   it('drops pending validation when changing an answer changes the path', async () => {

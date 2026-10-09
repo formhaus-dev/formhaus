@@ -1,4 +1,4 @@
-import { getAllFields } from './engine-utils';
+import { conditionFields, getAllFields } from './engine-utils';
 import { indexConditions } from './visibility-index';
 import { ActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
@@ -144,12 +144,12 @@ export class VisibilityState {
   private get isMultiStep(): boolean { return (this.definition.steps ?? []).length > 0; }
   private buildIndexes(): void {
     for (const field of this.allFields) {
-      indexConditions(field, field.show, field.showAny, this.fieldDependents);
+      indexConditions(field, this.fieldDependents);
     }
     for (const step of this.definition.steps ?? []) {
-      indexConditions(step, step.show, step.showAny, this.stepDependents);
+      indexConditions(step, this.stepDependents);
       for (const route of step.routes ?? []) {
-        for (const condition of [...(route.show ?? []), ...(route.showAny ?? [])]) this.routeFields.add(condition.field);
+        for (const field of conditionFields(route)) this.routeFields.add(field);
       }
     }
   }

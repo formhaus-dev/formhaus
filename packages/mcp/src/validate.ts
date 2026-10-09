@@ -43,6 +43,7 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   if (!engine.ok) errors.push(...engine.errors);
   warnings.push(...validateDefinition(definition).filter((warning) => !errors.includes(warning)));
   if (!engine.ok) return { report: finish(errors, warnings) };
+  warnings.push(...engine.warnings);
   return { report: finish(errors, warnings), definition, engine: engine.engine };
 }
 

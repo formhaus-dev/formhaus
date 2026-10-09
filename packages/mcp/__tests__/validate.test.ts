@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { validateDefinitionTool } from '../src/validate';
 import { branching, linear } from './fixtures';
 
@@ -40,6 +40,21 @@ describe('validate_definition', () => {
     const report = await validateDefinitionTool({ definition: { ...linear, steps: [linear.steps[0], { ...linear.steps[1], id: 'name' }] } });
     expect(report.valid).toBe(false);
     expect(report.errors).toEqual(['Duplicate step id "name" at steps[1].']);
+  });
+
+  it('rejects duplicate step ids with routes', async () => {
+    const steps = [{ ...linear.steps[0], routes: [{ to: null }] }, { ...linear.steps[1], id: 'name' }];
+    const report = await validateDefinitionTool({ definition: { ...linear, steps } });
+    expect(report.errors).toEqual(['Duplicate step id "name" at steps[1].']);
+  });
+
+  it('returns unknown validator names as warnings without logging', async () => {
+    const warn = vi.spyOn(console, 'warn');
+    const fields = [{ key: 'a', type: 'text', label: 'A', validation: { validator: 'vat' } }];
+    const report = await validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Send' }, fields } });
+    expect(report.warnings).toEqual(['Field "a" references unknown validator "vat".']);
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
   });
 
   it('warns about next: false without an autoAdvance radio', async () => {

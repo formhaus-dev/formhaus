@@ -2,6 +2,19 @@ import { describe, expect, it, vi } from 'vitest';
 import { simulatePathTool } from '../src/simulate';
 import { branching, linear, skippable } from './fixtures';
 
+const constructed = vi.hoisted(() => ({ count: 0 }));
+
+vi.mock('@formhaus/core', async (importOriginal) => {
+  const core = await importOriginal<typeof import('@formhaus/core')>();
+  class CountedEngine extends core.FormEngine {
+    constructor(...args: ConstructorParameters<typeof core.FormEngine>) {
+      super(...args);
+      constructed.count++;
+    }
+  }
+  return { ...core, FormEngine: CountedEngine };
+});
+
 const ids = (result: Awaited<ReturnType<typeof simulatePathTool>>) => result.path?.map(({ id }) => id);
 
 describe('simulate_path', () => {
@@ -86,10 +99,9 @@ describe('simulate_path', () => {
   });
 
   it('constructs the engine once', async () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    constructed.count = 0;
     await simulatePathTool({ definition: { ...linear, steps: [{ ...linear.steps[0], show: [{ field: 'ghost', eq: 1 }] }, linear.steps[1]] } });
-    expect(warn).toHaveBeenCalledTimes(1);
-    warn.mockRestore();
+    expect(constructed.count).toBe(1);
   });
 
   it('applies back after next', async () => {

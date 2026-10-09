@@ -16,7 +16,7 @@ export interface Checked {
   warnings: string[];
 }
 
-const FATAL = /^(Invalid route|Definition has both|Duplicate field key|Circular show condition)/;
+const FATAL = /^(Invalid route|FormEngine rejects|Duplicate (field key|step id)|Circular show condition)/;
 
 export const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);

@@ -13,11 +13,11 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 - **Core** means `FormEngine` from `@formhaus/core`.
 - **Renderer** means a UI layer that draws a definition: `@formhaus/react`, `@formhaus/vue`, the Figma plugin, or a custom renderer built on core.
 - **Value** means an entry in `engine.values`, keyed by field `key`.
-- **Empty** means `undefined`, `null` or `''` unless a section says otherwise.
+- **Empty** means `undefined`, `null`, `''` or `[]` unless a section says otherwise.
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.0**. `@formhaus/core` 0.8.x implements it. A definition carries no version marker.
+This document describes **Formhaus form definition 1.0**. `@formhaus/core` 0.9.x implements it. A definition carries no version marker.
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
@@ -101,7 +101,7 @@ A condition tests the value of one field:
 
 Each condition uses one operator. If several are present, only the first one in the order `eq`, `neq`, `in`, `notIn`, `notEmpty` applies. A condition without an operator, or with `notEmpty: false`, always matches.
 
-Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. An empty array value counts as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
+Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
 
 ### Combining conditions
 
@@ -155,11 +155,11 @@ Each rule except `required` and `validator` has a matching message property: `mi
 
 Core evaluates one field as follows and returns the first error:
 
-1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string, otherwise no error. No other rule runs. For validation, empty also includes `[]`, and `false` for `checkbox` and `switch`.
+1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string, otherwise no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
 2. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 3. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is ignored at runtime and reported by `validateDefinition()`.
-4. `matchField`: the value is compared with `===` to the value of the named field. In a form with routes, a field off the active path or on a skipped step has no value here.
-5. `validator`: the named function from the `validators` option is called with the value and all values. A non-empty string result is the error; `null` or `''` is no error. An unregistered name is ignored. The validator never receives an empty value, because step 1 returns first.
+4. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
+5. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
 Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur.
 
@@ -177,11 +177,11 @@ Validation runs on Continue for the visible fields of the current step, and on S
 | `back` | [action](#actions) or `false` | Back action. |
 | `skip` | [action](#actions) | Skip action. See [Skip](#skip). |
 
-Step ids SHOULD be unique. When any step has routes, they MUST be unique and the constructor throws on duplicates.
+Step ids MUST be unique. The constructor throws on duplicates.
 
 A hidden step is left out of navigation, progress, validation and submission, and its field values are cleared.
 
-In a form with routes, step `show`/`showAny` SHOULD reference fields of earlier steps only, the same rule as route conditions. The constructor does not check this, but a step condition sees only the values of earlier steps on the path, so a field of the same or a later step has no value there.
+In a form with routes, step `show`/`showAny` SHOULD reference fields of earlier steps only. A step condition sees only the values of earlier steps on the path, so a field of the same or a later step has no value there. `validateDefinition()` warns about such conditions; the constructor does not throw.
 
 ## Actions
 
@@ -241,7 +241,7 @@ Skip on a step with `skip`:
 
 1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors.
 2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skipStepAsync()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
-3. A skipped step is excluded from submit validation, and its fields are excluded from the payload.
+3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 
 On the last step, `skipStepAsync(submit)` submits the form without that step and runs the submit hooks. Built-in renderers pass their submit handler, so their Skip submits. `skipStep()` and `skipStepAsync()` without a handler return `false` there. Continue or Submit on a skipped step, or a changed value of one of its fields, includes it again. `validateDefinition()` warns about `skip` on a step with `next: false` or in a form with one step.
 
@@ -265,9 +265,9 @@ The `FormEngine` constructor throws on:
 
 - both `fields` and `steps` non-empty;
 - an invalid route target or route condition field;
-- duplicate step ids in a form with routes.
+- duplicate step ids.
 
-`validateDefinition(definition)` returns warnings for the issues above and for duplicate field keys, conditions on unknown fields, circular show conditions, invalid `pattern` regexes, `skip` without a Continue or later step, and branch fall-through. The constructor logs these warnings with `console.warn`.
+`validateDefinition(definition)` returns warnings for the issues above and for duplicate field keys, conditions on unknown fields, circular show conditions, invalid `pattern` regexes, `skip` without a Continue or later step, branch fall-through, and step conditions on the same or a later step in a form with routes. The constructor logs these warnings with `console.warn`, together with a warning for each `validator` name missing from the `validators` option.
 
 ## JSON Schema
 

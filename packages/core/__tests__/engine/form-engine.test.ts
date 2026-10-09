@@ -46,7 +46,7 @@ describe('FormEngine', () => {
         fields: [{ key: 'a', type: 'text', label: 'A' }],
         steps: [{ id: 's1', title: 'S1', fields: [{ key: 'b', type: 'text', label: 'B' }] }],
       };
-      expect(() => new FormEngine(definition)).toThrow('cannot have both');
+      expect(() => new FormEngine(definition)).toThrow('both "fields" and "steps"');
     });
   });
 

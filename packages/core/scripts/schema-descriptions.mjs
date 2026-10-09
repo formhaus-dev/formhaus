@@ -5,8 +5,8 @@ export const DESCRIPTIONS = {
   'FormDefinition.submit': 'Submit button on the last step.',
   'FormDefinition.cancel': 'Optional cancel button.',
   'FormDefinition.fields': 'Fields of a single-step form.',
-  'FormDefinition.steps': 'Steps of a multi-step form. When present, fields is ignored.',
-  'FormStep.id': 'Unique step identifier, used as a route target.',
+  'FormDefinition.steps': 'Steps of a multi-step form. FormEngine rejects a definition with both non-empty fields and steps.',
+  'FormStep.id': 'Unique step identifier, used as a route target. FormEngine rejects duplicates.',
   'FormStep.routes': 'Forward destinations checked in order. The first match with a visible target wins. With no match, navigation continues to the next visible step.',
   'FormStep.next': 'Overrides the Continue button. false hides it.',
   'FormStep.back': 'Overrides the Back button. false hides it.',
@@ -35,7 +35,7 @@ export const DESCRIPTIONS = {
   'ShowCondition.neq': 'Matches when the value does not strictly equal this.',
   'ShowCondition.in': 'Matches when the value is one of these.',
   'ShowCondition.notIn': 'Matches when the value is none of these.',
-  'ShowCondition.notEmpty': 'Matches when the value is not undefined, null or an empty string.',
+  'ShowCondition.notEmpty': 'Matches when the value is not undefined, null, an empty string or an empty array.',
 };
 
 export function applyDescriptions(definitions) {

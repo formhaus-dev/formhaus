@@ -1,4 +1,4 @@
-import { getAllFields } from '../engine/engine-utils';
+import { conditionFields, getAllFields, hasRoutes } from '../engine/engine-utils';
 import type { FormDefinition, FormField } from '../types';
 
 export interface DefinitionAnalysis {
@@ -16,7 +16,7 @@ export function analyzeDefinition(definition: FormDefinition): DefinitionAnalysi
     fieldKeys.add(key);
   }
   const depend = (owner: string, id: string, source: Pick<FormField, 'show' | 'showAny'>, keys: string[]) => {
-    const dependencies = [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
+    const dependencies = conditionFields(source);
     for (const dependency of dependencies) {
       if (!fieldKeys.has(dependency)) warnings.push(`${owner} "${id}" has show condition referencing non-existent field "${dependency}"`);
     }
@@ -32,8 +32,15 @@ export function analyzeDefinition(definition: FormDefinition): DefinitionAnalysi
       warnings.push(`Field "${field.key}" has invalid regex pattern: "${pattern}"`);
     }
   }
+  const earlier = new Set<string>();
   for (const step of definition.steps ?? []) {
     depend('Step', step.id, step, step.fields.map((field) => field.key));
+    for (const field of conditionFields(step)) {
+      if (hasRoutes(definition) && fieldKeys.has(field) && !earlier.has(field)) {
+        warnings.push(`Step "${step.id}" condition field "${field}" must belong to an earlier step.`);
+      }
+    }
+    for (const { key } of step.fields) earlier.add(key);
     if (step.skip && (step.next === false || !definition.steps![1])) {
       warnings.push(`Step "${step.id}" has "skip" but no Next button or later step.`);
     }

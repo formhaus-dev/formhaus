@@ -1,4 +1,5 @@
 import type { FieldValidation, FormField } from '../types';
+import { isBlank } from '../visibility';
 import { getDefaultMessage } from './default-messages';
 
 export type ValidatorFn = (
@@ -9,9 +10,7 @@ export type ValidatorFn = (
 const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
 
 function isEmpty(value: unknown, field: FormField): boolean {
-  if (value === undefined || value === null || value === '') return true;
-  if (value === false && BOOLEAN_TYPES.has(field.type)) return true;
-  return Array.isArray(value) && value.length === 0;
+  return isBlank(value) || (value === false && BOOLEAN_TYPES.has(field.type));
 }
 
 function boundError(
@@ -54,9 +53,8 @@ export function validateField(
   const matchError = rules.matchField !== undefined && value !== allValues[rules.matchField]
     ? rules.matchFieldMessage ?? getDefaultMessage('matchField')
     : undefined;
-  return sizeError
+  return (sizeError
     ?? patternError(value, rules)
     ?? matchError
-    ?? (rules.validator ? validators?.[rules.validator]?.(value, allValues) : undefined)
-    ?? null;
+    ?? (rules.validator ? validators?.[rules.validator]?.(value, allValues) : undefined)) || null;
 }

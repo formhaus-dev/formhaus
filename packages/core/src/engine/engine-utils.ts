@@ -4,6 +4,14 @@ export function hasFieldsAndSteps(definition: FormDefinition): boolean {
   return !!definition.fields?.length && !!definition.steps?.length;
 }
 
+export function hasRoutes(definition: FormDefinition): boolean {
+  return !!definition.steps?.some((step) => step.routes?.length);
+}
+
+export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): string[] {
+  return [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
+}
+
 export function getAllFields(definition: FormDefinition): FormField[] {
   return definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : definition.fields ?? [];
 }

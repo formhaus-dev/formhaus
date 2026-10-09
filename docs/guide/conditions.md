@@ -25,7 +25,7 @@ Hidden fields are not validated and not included in submit values.
 | Not equals | `neq` | Value does not equal |
 | In list | `in` | Value is one of the listed values |
 | Not in list | `notIn` | Value is not in the list |
-| Not empty | `notEmpty` | Value is not null, undefined, or empty string |
+| Not empty | `notEmpty` | Value is not null, undefined, empty string, or empty array |
 
 ## Example: show field when select changes
 
@@ -93,7 +93,7 @@ If field A hides field B, and field B controls field C, the engine checks C next
 
 ## Conditional steps
 
-Steps support `show`/`showAny` too. Hidden steps are skipped during navigation.
+Steps support `show`/`showAny` too. Hidden steps are skipped during navigation. In a form with routes, a step condition must reference fields of earlier steps; `validateDefinition()` warns otherwise.
 
 ```json
 {

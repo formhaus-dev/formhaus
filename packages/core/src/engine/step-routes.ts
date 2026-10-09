@@ -1,27 +1,27 @@
 import type { FormDefinition, FormStep } from '../types';
 import { isStepVisible, isVisible } from '../visibility';
+import { conditionFields, hasFieldsAndSteps, hasRoutes } from './engine-utils';
 
-export function routeWarnings(definition: FormDefinition): string[] {
+export function definitionErrors(definition: FormDefinition): string[] {
   const steps = definition.steps ?? [];
-  if (!steps.some((step) => step.routes?.length)) return [];
-  const warnings: string[] = [];
+  const warnings = hasFieldsAndSteps(definition) ? ['FormEngine rejects a definition with both "fields" and "steps".'] : [];
   const stepIndexes = new Map<string, number>();
   const fieldIndexes = new Map<string, number>();
   steps.forEach((step, index) => {
-    if (stepIndexes.has(step.id)) warnings.push(`Invalid route definition: duplicate step id "${step.id}".`);
+    if (stepIndexes.has(step.id)) warnings.push(`Duplicate step id "${step.id}".`);
     stepIndexes.set(step.id, index);
     for (const field of step.fields) fieldIndexes.set(field.key, index);
   });
+  if (!hasRoutes(definition)) return warnings;
   steps.forEach((step, index) => {
     for (const route of step.routes ?? []) {
       const target = route.to === null ? null : stepIndexes.get(route.to);
       if (target === undefined || (target !== null && target <= index)) {
         warnings.push(`Invalid route from "${step.id}" to "${route.to}": targets must be later steps or null.`);
       }
-      for (const condition of [...(route.show ?? []), ...(route.showAny ?? [])]) {
-        const fieldIndex = fieldIndexes.get(condition.field);
-        if (fieldIndex === undefined || fieldIndex > index) {
-          warnings.push(`Invalid route on "${step.id}": condition field "${condition.field}" must belong to this or an earlier step.`);
+      for (const field of conditionFields(route)) {
+        if (!((fieldIndexes.get(field) ?? Infinity) <= index)) {
+          warnings.push(`Invalid route on "${step.id}": condition field "${field}" must belong to this or an earlier step.`);
         }
       }
     }
@@ -48,7 +48,7 @@ export function routeFallthroughWarnings(definition: FormDefinition): string[] {
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
   const steps = definition.steps ?? [];
-  if (!steps.some((step) => step.routes?.length)) return steps.filter((step) => isStepVisible(step, values));
+  if (!hasRoutes(definition)) return steps.filter((step) => isStepVisible(step, values));
   const indexes = new Map(steps.map((step, index) => [step.id, index]));
   const result: FormStep[] = [];
   const available: Record<string, unknown> = {};
@@ -96,7 +96,7 @@ export class ActivePath {
   private activeValueMap: Record<string, unknown> = {};
 
   constructor(private definition: FormDefinition) {
-    this.enabled = !!definition.steps?.some((step) => step.routes?.length);
+    this.enabled = hasRoutes(definition);
   }
 
   invalidate(): void { this.source = null; }

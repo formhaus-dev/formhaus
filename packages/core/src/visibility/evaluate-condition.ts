@@ -1,5 +1,9 @@
 import type { ShowCondition } from '../types';
 
+export function isBlank(value: unknown): boolean {
+  return value == null || value === '' || (Array.isArray(value) && !value.length);
+}
+
 export function evaluateCondition(
   condition: ShowCondition,
   values: Record<string, unknown>,
@@ -23,7 +27,7 @@ export function evaluateCondition(
   }
 
   if (condition.notEmpty === true) {
-    return value !== undefined && value !== null && value !== '';
+    return !isBlank(value);
   }
 
   return true;

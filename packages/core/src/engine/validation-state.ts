@@ -1,6 +1,5 @@
 import { validateField, validateFields, validateStep } from '../validation';
-import type { FormDefinition } from '../types';
-import { createValues, getChangedKeys, hasFieldsAndSteps } from './engine-utils';
+import { createValues, getChangedKeys, hasRoutes } from './engine-utils';
 import type { EngineInternals } from './runtime-internals';
 
 export function applyValidationErrors(engine: EngineInternals, errors: Record<string, string>, navigate = false): void {
@@ -39,7 +38,12 @@ export function pruneOffPathErrors(engine: EngineInternals): string[] {
 }
 
 export function getValidationValues(engine: EngineInternals): Record<string, unknown> {
-  return engine.definition.steps?.some((step) => step.routes?.length) ? getSubmitValues(engine) : engine.values;
+  return hasRoutes(engine.definition) ? getSubmitValues(engine) : withoutSkipped(engine, { ...engine.values });
+}
+
+function withoutSkipped(engine: EngineInternals, values: Record<string, unknown>): Record<string, unknown> {
+  for (const key of [...engine.skipped.values()].flat()) delete values[key];
+  return values;
 }
 
 export function validateForm(engine: EngineInternals): Record<string, string> {
@@ -82,8 +86,7 @@ export function getSubmitValues(engine: EngineInternals): Record<string, unknown
   for (const key of visibleKeys) {
     if (engine.values[key] !== undefined) result[key] = engine.values[key];
   }
-  for (const key of [...engine.skipped.values()].flat()) delete result[key];
-  return result;
+  return withoutSkipped(engine, result);
 }
 
 export function resetEngine(engine: EngineInternals, values?: Record<string, unknown>): void {
@@ -112,10 +115,4 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
     structureChanged: true,
     valuesChanged: changedValues.size > 0,
   });
-}
-
-export function assertDefinitionShape(definition: FormDefinition): void {
-  if (hasFieldsAndSteps(definition)) {
-    throw new Error('FormDefinition cannot have both "fields" and "steps" as non-empty arrays.');
-  }
 }
