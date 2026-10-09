@@ -1,6 +1,7 @@
 import type { FormDefinition } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from './config';
-import { DEFINITION_KEY } from './render-form';
+import { DEFAULT_LAYOUT, type FormLayout } from './render-actions';
+import { DEFINITION_KEY, LAYOUT_KEY } from './render-form';
 
 function formFrame(node: BaseNode | null): FrameNode | null {
   for (let current = node; current && current.type !== 'PAGE'; current = current.parent) {
@@ -9,13 +10,23 @@ function formFrame(node: BaseNode | null): FrameNode | null {
   return null;
 }
 
-export function selectedForm(selection: readonly SceneNode[]): FormDefinition | null {
-  const frame = formFrame(selection[0] ?? null);
-  const stored = frame?.getSharedPluginData(PLUGIN_NAMESPACE, DEFINITION_KEY);
-  if (!stored) return null;
+export interface SelectedForm {
+  definition: FormDefinition;
+  layout: FormLayout;
+}
+
+function parse<T>(text: string | undefined): T | null {
   try {
-    return JSON.parse(stored) as FormDefinition;
+    return text ? (JSON.parse(text) as T) : null;
   } catch {
     return null;
   }
+}
+
+export function selectedForm(selection: readonly SceneNode[]): SelectedForm | null {
+  const frame = formFrame(selection[0] ?? null);
+  const definition = parse<FormDefinition>(frame?.getSharedPluginData(PLUGIN_NAMESPACE, DEFINITION_KEY));
+  if (!frame || !definition) return null;
+  const layout = parse<FormLayout>(frame.getSharedPluginData(PLUGIN_NAMESPACE, LAYOUT_KEY));
+  return { definition, layout: layout?.actions === 'inline' ? { actions: 'inline' } : DEFAULT_LAYOUT };
 }

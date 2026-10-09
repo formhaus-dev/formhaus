@@ -6,12 +6,14 @@ import { PLUGIN_NAMESPACE, readConfig, writeConfig, type ComponentSource, type K
 import { droppedRole, placeRole } from './drop';
 import { selectedForm } from './forms';
 import { countFields, getSteps, parseAndValidate } from './parse';
+import { DEFAULT_LAYOUT, type FormLayout } from './render-actions';
 import { DEFINITION_KEY, renderForm } from './render-form';
 import { createKitRenderer } from './renderers/kit-renderer';
 import type { Role } from './roles';
 
 interface UiMessage extends BindingMessage {
   definition?: string;
+  layout?: FormLayout;
   kit?: KitId;
   source?: ComponentSource;
 }
@@ -42,7 +44,7 @@ figma.on('drop', (event) => {
 });
 
 figma.ui.onmessage = async (message: UiMessage) => {
-  if (message.type === 'generate' && message.definition) await generateForm(message.definition);
+  if (message.type === 'generate' && message.definition) await generateForm(message.definition, message.layout);
   else if (message.type === 'setComponents') updateComponents(message.source, message.kit);
   else if (isBindingMessage(message.type)) {
     await updateBindings(message);
@@ -65,7 +67,8 @@ let selectionTick = 0;
 async function sendSelection(): Promise<void> {
   const tick = ++selectionTick;
   const selection = figma.currentPage.selection;
-  figma.ui.postMessage({ type: 'form', definition: selectedForm(selection) });
+  const form = selectedForm(selection);
+  figma.ui.postMessage({ type: 'form', definition: form?.definition ?? null, layout: form?.layout });
   const item = await selectionPreview(selection);
   if (tick === selectionTick) figma.ui.postMessage({ type: 'selection', item });
 }
@@ -104,10 +107,10 @@ function editable(frames: FrameNode[]): string {
   return frames[0]?.getSharedPluginData(PLUGIN_NAMESPACE, DEFINITION_KEY) ? '' : '. The form is too large to edit from the canvas.';
 }
 
-async function generateForm(source: string): Promise<void> {
+async function generateForm(source: string, layout: FormLayout = DEFAULT_LAYOUT): Promise<void> {
   try {
     const definition = parseAndValidate(source);
-    const frames = await renderForm(definition, await createKitRenderer(rendererConfig()));
+    const frames = await renderForm(definition, await createKitRenderer(rendererConfig()), layout.actions === 'inline' ? layout : DEFAULT_LAYOUT);
     figma.commitUndo();
     figma.currentPage.selection = frames.slice(0, 1);
     figma.viewport.scrollAndZoomIntoView(frames);

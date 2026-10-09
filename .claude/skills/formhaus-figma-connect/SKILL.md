@@ -36,9 +36,10 @@ The plugin renders every form element through a **role**. You find a component f
 | `option.radio` | One row of a radio group | radio |
 | `option.checkbox` | One row of a checkbox group | checkbox |
 | `button.primary` | Submit and Continue | button primary, button filled |
-| `button.secondary` | Back and Cancel | button secondary, button outline |
+| `button.secondary` | Back | button secondary, button outline |
+| `button.text` | Skip and Cancel | button text, link button, tertiary, ghost |
 
-Roles you skip still render. Select, date, file and text area reuse the bound text field or select. Checkbox, switch and checkbox options reuse each other. Anything left falls back to the built-in kit. Bind at least `field.text` and `button.primary`.
+Roles you skip still render. Select, date, file and text area reuse the bound text field or select. Checkbox, switch and checkbox options reuse each other. Back reuses the text button when no secondary button is bound. Without a text button, Skip and Cancel render as text in the primary button's font and colour. Anything left falls back to the built-in kit. Bind at least `field.text` and `button.primary`.
 
 ## Workflow
 

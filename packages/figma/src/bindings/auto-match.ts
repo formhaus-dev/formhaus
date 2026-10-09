@@ -15,7 +15,8 @@ interface Candidate {
 }
 
 const NOT_A_FIELD = /\b(icons?|avatar|badge|banner|card|chip|tag|menu|nav|tabs?|tooltip|colou?r)\b/i;
-const SECONDARY = /secondary|outlined?|tonal|ghost|tertiary/i;
+const SECONDARY = /secondary|outlined?|tonal/i;
+const TEXT_BUTTON = /\btext\b|\blink\b|tertiary|ghost|plain/i;
 
 const RULES: Record<Role, Rule> = {
   'field.textarea': { match: /text ?area|multi-?line/i },
@@ -27,8 +28,9 @@ const RULES: Record<Role, Rule> = {
   'field.switch': { match: /\bswitch\b|\btoggle\b/i },
   'option.radio': { match: /\bradio\b/i },
   'option.checkbox': { match: /check ?box/i },
-  'button.primary': { match: /\bbutton\b|\bbtn\b/i, exclude: /icon|radio|toggle|text button|fab|split/i, prefer: /primary|filled|main|default/i },
-  'button.secondary': { match: /\bbutton\b|\bbtn\b/i, exclude: /icon|radio|toggle|text button|fab|split/i, prefer: SECONDARY },
+  'button.primary': { match: /\bbutton\b|\bbtn\b/i, exclude: /icon|radio|toggle|fab|split|\btext\b|\blink\b|tertiary|ghost|plain/i, prefer: /primary|filled|main|default/i },
+  'button.secondary': { match: /\bbutton\b|\bbtn\b/i, exclude: /icon|radio|toggle|fab|split|\btext\b|\blink\b|tertiary|ghost|plain/i, prefer: SECONDARY },
+  'button.text': { match: /\bbutton\b|\bbtn\b|\blink\b/i, exclude: /icon|radio|toggle|fab|split/i, prefer: TEXT_BUTTON },
 };
 
 export function matchRole(role: Role, names: string[]): number {
@@ -37,6 +39,7 @@ export function matchRole(role: Role, names: string[]): number {
     .map((name, index) => ({ name, index }))
     .filter(({ name }) => rule.match.test(name) && !rule.exclude?.test(name) && !NOT_A_FIELD.test(name));
   if (role === 'button.secondary') return allowed.find(({ name }) => SECONDARY.test(name))?.index ?? -1;
+  if (role === 'button.text') return allowed.find(({ name }) => TEXT_BUTTON.test(name))?.index ?? -1;
   const usable = role === 'button.primary' ? allowed.filter(({ name }) => !SECONDARY.test(name)) : allowed;
   const preferred = rule.prefer ? usable.find(({ name }) => rule.prefer!.test(name)) : undefined;
   return (preferred ?? usable[0])?.index ?? -1;

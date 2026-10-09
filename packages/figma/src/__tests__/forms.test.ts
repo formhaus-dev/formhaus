@@ -12,7 +12,7 @@ describe('selectedForm', () => {
     const form = frame({ definitionId: 'signup', definition: JSON.stringify(definition) });
     const group = { type: 'FRAME', parent: form, getSharedPluginData: () => '' };
     const field = { type: 'INSTANCE', parent: group };
-    expect(selectedForm([field as unknown as SceneNode])).toEqual(definition);
+    expect(selectedForm([field as unknown as SceneNode])).toEqual({ definition, layout: { actions: 'stacked' } });
   });
 
   it('ignores frames without a stored definition and other selections', () => {

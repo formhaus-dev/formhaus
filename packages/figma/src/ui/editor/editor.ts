@@ -1,13 +1,16 @@
 import type { FormDefinition, FormField } from '@formhaus/core';
 import { element, iconButton } from '../dom';
 import { icon } from '../icons';
+import { DEFAULT_LAYOUT, type ActionsLayout, type FormLayout } from '../../render-actions';
+import { addLink, buttonsBlock } from './buttons';
 import { labelled, textInput } from './controls';
 import { fieldRow, typeSelect } from './field-row';
 import { addField, addStep, isMultiStep, moveField, removeField, removeStep, steps } from './model';
 
 export interface FormEditor {
   get(): FormDefinition;
-  set(draft: FormDefinition): void;
+  layout(): FormLayout;
+  set(draft: FormDefinition, layout?: FormLayout): void;
 }
 
 type Position = [number, number];
@@ -16,6 +19,7 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
   let draft: FormDefinition = { id: 'form', title: '', submit: { label: 'Submit' }, fields: [] };
   const open = new WeakSet<FormField>();
   let dragging: Position | null = null;
+  let layout: FormLayout = DEFAULT_LAYOUT;
 
   function update(focusKey?: string, selector = '.label-input'): void {
     render();
@@ -110,27 +114,40 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
     picker.prepend(Object.assign(element('option', '', 'Choose type'), { value: '', disabled: true }));
     picker.value = '';
     add.appendChild(picker);
-    section.append(list, add);
+    section.append(list, add, buttonsBlock(step, stepIndex, steps(draft).length, isMultiStep(draft), { draft, changed: onChange, rerender: () => update() }));
     return section;
+  }
+
+  function layoutPicker(): HTMLElement {
+    const group = element('div', 'segmented small');
+    group.setAttribute('role', 'group');
+    group.setAttribute('aria-label', 'Button layout');
+    for (const [value, text] of [['stacked', 'Stacked'], ['inline', 'Side by side']] as [ActionsLayout, string][]) {
+      const option = element('button', value === layout.actions ? 'mode active' : 'mode', text);
+      option.type = 'button';
+      option.setAttribute('aria-pressed', String(value === layout.actions));
+      option.onclick = () => { layout = { actions: value }; update(); };
+      group.appendChild(option);
+    }
+    return labelled('Buttons', group, 'head-row', 'section-label');
   }
 
   function render(): void {
     const head = element('div', 'form-head');
     head.append(
       labelled('Form title', textInput(draft.title, 'Sign up', 'input title-input', (value) => { draft.title = value; onChange(); }, 'Form title'), 'head-field', 'section-label'),
-      labelled('Submit button', textInput(draft.submit.label, 'Submit', 'input', (value) => { draft.submit = { ...draft.submit, label: value }; onChange(); }, 'Submit button'), 'head-field', 'section-label'),
+      layoutPicker(),
     );
-    const addStepButton = element('button', 'link add-link');
-    addStepButton.type = 'button';
-    addStepButton.append(icon('add', 14), document.createTextNode(isMultiStep(draft) ? 'Add step' : 'Split into steps'));
-    addStepButton.onclick = () => { addStep(draft); update(); };
+    const addStepButton = addLink(isMultiStep(draft) ? 'Add step' : 'Split into steps', () => { addStep(draft); update(); });
     container.replaceChildren(head, ...steps(draft).map((_, index) => stepSection(index)), addStepButton);
   }
 
   return {
     get: () => draft,
-    set(next) {
+    layout: () => layout,
+    set(next, nextLayout = DEFAULT_LAYOUT) {
       draft = structuredClone(next);
+      layout = nextLayout;
       render();
     },
   };

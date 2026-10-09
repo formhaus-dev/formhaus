@@ -1,4 +1,5 @@
 import type { FormDefinition } from '@formhaus/core';
+import type { FormLayout } from '../render-actions';
 import { ROLES } from '../roles';
 import { byId } from './dom';
 import { createEditor } from './editor/editor';
@@ -26,7 +27,7 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
   let mode: 'fields' | 'json' = 'fields';
   let canvasId: string | null = null;
   let dirty = false;
-  let pending: FormDefinition | null = null;
+  let pending: { definition: FormDefinition; layout?: FormLayout } | null = null;
 
   const editor = createEditor(editorRoot, () => {
     dirty = true;
@@ -37,15 +38,15 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
     const draft = editor.get();
     const editing = canvasId !== null && draft.id === canvasId;
     status.textContent = pending
-      ? `“${pending.title || 'Untitled'}” selected · unsaved edits here`
+      ? `“${pending.definition.title || 'Untitled'}” selected · unsaved edits here`
       : editing ? `Editing “${draft.title || 'Untitled'}” from the canvas` : 'New form';
     status.classList.toggle('is-editing', editing && !pending);
     openPending.hidden = !pending;
     button.textContent = editing ? 'Update form' : 'Generate form';
   }
 
-  function load(definition: FormDefinition): void {
-    editor.set(definition);
+  function load(definition: FormDefinition, layout?: FormLayout): void {
+    editor.set(definition, layout);
     jsonInput.value = JSON.stringify(definition, null, 2);
     dirty = false;
     pending = null;
@@ -56,7 +57,7 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
   function syncFromJson(): boolean {
     if (mode !== 'json') return true;
     try {
-      editor.set(JSON.parse(jsonInput.value) as FormDefinition);
+      editor.set(JSON.parse(jsonInput.value) as FormDefinition, editor.layout());
       return true;
     } catch (error) {
       show(output, `Fix the JSON first: ${error instanceof Error ? error.message : String(error)}`, 'error');
@@ -84,8 +85,8 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
   });
   openPending.onclick = () => {
     if (!pending) return;
-    canvasId = pending.id;
-    load(pending);
+    canvasId = pending.definition.id;
+    load(pending.definition, pending.layout);
   };
   for (const item of modes) item.onclick = () => setMode(item.dataset.mode as 'fields' | 'json');
   sourceSelect.onchange = () => {
@@ -101,24 +102,24 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
     button.disabled = true;
     button.textContent = 'Working…';
     show(output, '');
-    post({ type: 'generate', definition });
+    post({ type: 'generate', definition, layout: editor.layout() });
   };
 
   load(emptyForm());
 
   return {
-    setCanvasForm(definition: FormDefinition | null) {
+    setCanvasForm(definition: FormDefinition | null, layout?: FormLayout) {
       if (!definition || definition.id === editor.get().id) {
         if (definition) canvasId = definition.id;
         pending = null;
         return refresh();
       }
       if (dirty) {
-        pending = definition;
+        pending = { definition, layout };
         return refresh();
       }
       canvasId = definition.id;
-      load(definition);
+      load(definition, layout);
     },
     setSource(state: SourceState) {
       const custom = sourceSelect.querySelector<HTMLOptionElement>('option[value=custom]');

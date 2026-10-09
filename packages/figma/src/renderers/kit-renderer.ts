@@ -5,7 +5,8 @@ import { STATE_PROPERTY, solid, stack, text } from '../kits/primitives';
 import { loadKit } from '../kits/registry';
 import { isOptionRole, ROLE_FALLBACKS, ROLE_LABELS, roleForField, type Role } from '../roles';
 import { applySlots } from '../text-slots';
-import { customTheme } from './custom-theme';
+import { customTheme, textButtonStyle } from './custom-theme';
+import { textButton } from './text-button';
 import { asComponent, componentForBinding, instantiate, setVariant } from './resolve';
 import { labelText, type FormRenderer } from './types';
 
@@ -15,7 +16,7 @@ interface Resolved {
 }
 
 export interface KitRenderer extends FormRenderer {
-  sample(role: Role): Promise<InstanceNode>;
+  sample(role: Role): Promise<SceneNode>;
 }
 
 export async function createKitRenderer(config: PluginConfig): Promise<KitRenderer> {
@@ -51,6 +52,13 @@ export async function createKitRenderer(config: PluginConfig): Promise<KitRender
     return node;
   }
 
+  async function synthesized(label: string): Promise<SceneNode | null> {
+    const primary = custom && !(await bound('button.text')) ? await bound('button.primary') : null;
+    if (!primary) return null;
+    const fallback = { font: theme.fonts.medium, size: theme.bodySize, color: theme.text };
+    return textButton(label, await textButtonStyle(primary.component, fallback), primary.component);
+  }
+
   return {
     theme,
     async field(field) {
@@ -66,12 +74,12 @@ export async function createKitRenderer(config: PluginConfig): Promise<KitRender
       return node;
     },
     async sample(role) {
-      const node = await instance(role, { label: ROLE_LABELS[role], value: ' ', helper: '' }, 'Empty');
+      const node = (role === 'button.text' && await synthesized(ROLE_LABELS[role])) || await instance(role, { label: ROLE_LABELS[role], value: ' ', helper: '' }, 'Empty');
       node.name = ROLE_LABELS[role];
       return node;
     },
-    async button(label, primary) {
-      const node = await instance(primary ? 'button.primary' : 'button.secondary', { label });
+    async button(label, kind) {
+      const node = (kind === 'text' && await synthesized(label)) || await instance(`button.${kind}`, { label });
       node.name = label;
       return node;
     },

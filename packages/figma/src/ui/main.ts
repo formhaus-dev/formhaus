@@ -3,6 +3,7 @@ import type { Notice } from '../bindings/messages';
 import type { BindingRow } from '../bindings/rows';
 import type { SelectionPreview } from '../bindings/selection-preview';
 import type { Profile } from '../profiles';
+import type { FormLayout } from '../render-actions';
 import { createComponentsPanel } from './components';
 import { byId } from './dom';
 import { createFormPanel } from './form-panel';
@@ -20,6 +21,7 @@ interface PluginMessage {
   item?: SelectionPreview | null;
   definition?: FormDefinition | null;
   profiles?: Profile[];
+  layout?: FormLayout;
 }
 
 function post(message: Record<string, unknown>): void {
@@ -55,7 +57,7 @@ const HANDLERS: Record<string, (message: PluginMessage) => void> = {
   success: (message) => form.finish(message.message ?? '', 'success'),
   error: (message) => form.finish(message.message ?? '', 'error'),
   state: applyState,
-  form: (message) => form.setCanvasForm(message.definition ?? null),
+  form: (message) => form.setCanvasForm(message.definition ?? null, message.layout),
   selection: (message) => components.setSelection(message.item ?? null),
   bindings: (message) => {
     components.setRows(message.rows ?? [], message.profiles ?? [], message.notice?.profileId);

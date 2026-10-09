@@ -7,7 +7,7 @@ export function droppedRole(event: DropEvent): Role | undefined {
   return ROLES.find((candidate) => candidate === role);
 }
 
-export async function placeRole(event: DropEvent, role: Role, config: PluginConfig): Promise<InstanceNode> {
+export async function placeRole(event: DropEvent, role: Role, config: PluginConfig): Promise<SceneNode> {
   const renderer = await createKitRenderer(config);
   const node = await renderer.sample(role);
   const target = event.node;

@@ -25,6 +25,13 @@ The build bundles the plugin code and its UI into `packages/figma/dist`.
 3. Build the form in **Fields**: set the title and submit label, add fields, mark them required, and open a field's details for its placeholder, helper text, key and options. Drag fields by the handle to reorder them, or split the form into steps. **JSON** shows the same definition as `@formhaus/core` JSON.
 4. Click **Generate form**.
 
+Each step has a **Buttons** block under its fields:
+- **Continue** or **Submit** renders as the primary button.
+- **Back** renders as a secondary button from the second step on.
+- **Skip** and **Cancel** render as text buttons. Cancel shows on every step.
+
+Labels can be changed per step, and Continue and Back can be removed. **Buttons** at the top switches between stacked buttons and buttons side by side. Side by side puts Back and the primary button in one row and the text buttons below.
+
 Each generated form keeps its definition. Select a form on the canvas and the plugin opens it for editing. **Update form** redraws it in place with the current components, so anyone with edit access to the file can change a form without touching JSON. Field keys follow the label until another field's condition or route refers to them, and the editor keeps conditions, routes and validation rules it does not show.
 
 ### Quick test
@@ -47,7 +54,7 @@ Open the **Components** tab to render forms with your own design system. Every f
 
 Binding an instance keeps its variant and boolean property values, so configure the instance the way fields should look before binding it. Library components are bound by key and imported when you generate. **Auto-match** binds unbound roles to components on the current page by name, such as `Text field`, `Dropdown`, `Toggle` or `Button / Primary`.
 
-Roles you leave unbound reuse a related component when one is bound: a date or select field uses your dropdown or text field, a text area uses your text field. Anything else falls back to the selected built-in kit. With your own components the form card is neutral and takes its font and group label style from your text field.
+Roles you leave unbound reuse a related component when one is bound: a date or select field uses your dropdown or text field, a text area uses your text field, Back uses your text button. Without a text button, Skip and Cancel render as text in your primary button's font and colour. Anything else falls back to the selected built-in kit. With your own components the form card is neutral and takes its font and group label style from your text field.
 
 Drag any card onto the canvas to place that component. Bindings are stored in the document, so everyone who opens the file generates with the same components.
 

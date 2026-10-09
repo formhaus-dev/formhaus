@@ -23,7 +23,8 @@
 
 .editor { display: flex; flex-direction: column; gap: 14px; }
 .editor[hidden], #definition[hidden] { display: none; }
-.form-head { display: grid; gap: 8px; grid-template-columns: 1fr 150px; }
+.form-head { display: flex; flex-direction: column; gap: 10px; }
+.head-row { align-items: center; display: flex; justify-content: space-between; }
 .head-field { display: flex; flex-direction: column; gap: 4px; }
 .title-input { font-size: 14px; font-weight: 600; }
 
@@ -116,3 +117,15 @@
 }
 .add-field:hover { background: var(--brand-soft); border-color: var(--brand); }
 .add-select { cursor: pointer; inset: 0; opacity: 0; position: absolute; width: 100%; }
+
+.buttons-block {
+  background: var(--bg-2);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px 12px;
+}
+.button-control { align-items: center; display: flex; gap: 4px; }
+.button-control .input { flex: 1; }
+.button-control:not(:has(.icon-btn)) { padding-right: 28px; }

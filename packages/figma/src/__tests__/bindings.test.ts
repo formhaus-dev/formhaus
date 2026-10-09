@@ -40,6 +40,14 @@ describe('matchRole', () => {
     expect(variants[matchRole('button.secondary', variants)]).toBe('Button / Type=Secondary, Size=M');
   });
 
+  it('finds text buttons and keeps them out of primary and secondary', () => {
+    const variants = ['Button / Text', 'Button / Outlined', 'Button / Filled'];
+    expect(variants[matchRole('button.text', variants)]).toBe('Button / Text');
+    expect(variants[matchRole('button.primary', variants)]).toBe('Button / Filled');
+    expect(variants[matchRole('button.secondary', variants)]).toBe('Button / Outlined');
+    expect(matchRole('button.secondary', ['Button / Primary', 'Button / Tertiary'])).toBe(-1);
+  });
+
   it('leaves secondary unbound when no secondary style exists', () => {
     expect(matchRole('button.secondary', ['Button'])).toBe(-1);
   });

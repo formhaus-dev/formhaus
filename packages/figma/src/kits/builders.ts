@@ -1,6 +1,6 @@
 import type { KitFonts } from '../fonts';
 import type { IconName } from '../icons';
-import { BUTTON_ROLES, type ButtonRole, type Role } from '../roles';
+import { BUTTON_ROLES, type ButtonKind, type ButtonRole, type Role } from '../roles';
 import { component, emptyAndFilled, type KitNode } from './primitives';
 
 type Build = (root: ComponentNode) => void;
@@ -12,7 +12,7 @@ export interface KitParts {
   selectIcon: IconName;
   input(fonts: KitFonts, trailing: IconName | undefined, multiline: boolean, filled: boolean): Build;
   controls: Record<ControlRole, (fonts: KitFonts) => Build>;
-  button(fonts: KitFonts, primary: boolean): Build;
+  button(fonts: KitFonts, kind: ButtonKind): Build;
 }
 
 const INPUTS: Record<InputRole, { trailing?: IconName | 'select'; multiline?: boolean }> = {
@@ -37,6 +37,6 @@ export function buildRole(parts: KitParts, role: Role, fonts: KitFonts): KitNode
     const trailing = input.trailing === 'select' ? parts.selectIcon : input.trailing;
     return emptyAndFilled(role, parts.version, (filled) => parts.input(fonts, trailing, Boolean(input.multiline), filled));
   }
-  const build = isButton(role) ? parts.button(fonts, role === 'button.primary') : parts.controls[role](fonts);
+  const build = isButton(role) ? parts.button(fonts, role.slice('button.'.length) as ButtonKind) : parts.controls[role](fonts);
   return component(role, role, parts.version, build);
 }

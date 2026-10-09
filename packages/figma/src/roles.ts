@@ -13,7 +13,9 @@ export const FIELD_ROLES = [
   'option.checkbox',
 ] as const;
 
-export const BUTTON_ROLES = ['button.primary', 'button.secondary'] as const;
+export const BUTTON_ROLES = ['button.primary', 'button.secondary', 'button.text'] as const;
+
+export type ButtonKind = 'primary' | 'secondary' | 'text';
 
 export type FieldRole = (typeof FIELD_ROLES)[number];
 export type ButtonRole = (typeof BUTTON_ROLES)[number];
@@ -37,6 +39,7 @@ export const ROLE_SLOTS: Record<Role, TextSlot[]> = {
   'option.checkbox': LABEL_ONLY,
   'button.primary': LABEL_ONLY,
   'button.secondary': LABEL_ONLY,
+  'button.text': LABEL_ONLY,
 };
 
 export const ROLE_FALLBACKS: Partial<Record<Role, Role[]>> = {
@@ -47,6 +50,8 @@ export const ROLE_FALLBACKS: Partial<Record<Role, Role[]>> = {
   'field.checkbox': ['option.checkbox'],
   'field.switch': ['field.checkbox', 'option.checkbox'],
   'option.checkbox': ['field.checkbox'],
+  'button.secondary': ['button.text'],
+  'button.text': ['button.primary'],
 };
 
 export const ROLE_LABELS: Record<Role, string> = {
@@ -61,6 +66,7 @@ export const ROLE_LABELS: Record<Role, string> = {
   'option.checkbox': 'Checkbox option',
   'button.primary': 'Primary button',
   'button.secondary': 'Secondary button',
+  'button.text': 'Text button',
 };
 
 const ROLE_BY_TYPE: Record<string, FieldRole> = {

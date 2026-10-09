@@ -1,5 +1,6 @@
 import type { KitFonts } from '../fonts';
 import type { IconName } from '../icons';
+import type { ButtonKind } from '../roles';
 import type { Kit } from './kit';
 import { buildRole, type KitParts } from './builders';
 import { bindHelperVisibility, bindText, buttonShell, fill, fixed, fixedWidth, icon, solid, stack, text } from './primitives';
@@ -124,11 +125,11 @@ function controlCell(fonts: KitFonts, trailing: (() => SceneNode) | null, standa
   };
 }
 
-function button(fonts: KitFonts, primary: boolean) {
+function button(fonts: KitFonts, kind: ButtonKind) {
   return (root: ComponentNode) => {
     root.cornerRadius = 26;
-    root.fills = primary ? solid(C.blue) : solid(C.gray, 0.16);
-    const label = text('Button', { font: fonts.semibold, size: 17, color: primary ? C.cell : C.blue }, 'Label');
+    root.fills = kind === 'primary' ? solid(C.blue) : kind === 'secondary' ? solid(C.gray, 0.16) : [];
+    const label = text('Button', { font: kind === 'text' ? fonts.regular : fonts.semibold, size: 17, color: kind === 'primary' ? C.cell : C.blue }, 'Label');
     buttonShell(root, label, WIDTH, 52);
   };
 }
