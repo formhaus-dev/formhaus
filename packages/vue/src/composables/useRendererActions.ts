@@ -1,17 +1,21 @@
 import { evaluateCondition } from '@formhaus/core';
+import { ref, watch } from 'vue';
 import type { FormRendererEmits, FormRendererProps } from '../types';
 import type { UseFormEngineReturn } from './useFormEngine';
 
 export function useRendererActions(form: UseFormEngineReturn, props: FormRendererProps, emit: FormRendererEmits) {
+  const actionError = ref<string | null>(null);
+  watch(() => form.engine, () => { actionError.value = null; });
   async function run(action: () => Promise<boolean>) {
     if (props.loading) return;
     const owner = form.engine;
     const onError = props.onError;
+    actionError.value = null;
     try { await action(); }
     catch (error) {
       if (owner !== form.engine) return;
       if (onError) onError(error);
-      else form.engine.setErrors({ _form: error instanceof Error ? error.message : 'Form action failed' });
+      else actionError.value = error instanceof Error ? error.message : 'Form action failed';
     }
   }
   const next = () => run(() => form.engine.nextStepAsync());
@@ -42,10 +46,10 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     });
     if (!result) {
       for (const [fieldKey, error] of Object.entries(engine.errors)) {
-        if (fieldKey !== '_form') emit('analyticsEvent', { type: 'field_error', fieldKey, error });
+        emit('analyticsEvent', { type: 'field_error', fieldKey, error });
       }
     }
     return result;
   });
-  return { update, commit, next, prev, submit };
+  return { update, commit, next, prev, submit, actionError };
 }

@@ -79,7 +79,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
       <FormFieldsController key={definition.id} engine={engine} loading={loading} components={components}
         optionsProviders={optionsProviders} onChange={actions.update} onCommit={actions.commit}
         onBlur={handleFieldBlur} onFocus={handleFieldFocus} />
-      <FormTopLevelErrors engine={engine} />
+      <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
       <FormActionsController engine={engine} definition={definition} loading={loading}
         ActionsComponent={ActionsComponent} onSubmit={actions.submit} onNext={actions.next}
         onPrev={actions.prev} onCancel={handleCancel} />

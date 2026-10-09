@@ -59,8 +59,9 @@ watch(
   { immediate: true },
 );
 
-const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, submit: onSubmit } =
+const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, submit: onSubmit, actionError } =
   useRendererActions(form, props, emit);
+const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
 
 let previousStep = currentStep.value?.id;
 let focusPending = false;
@@ -167,8 +168,8 @@ async function onPrimary() {
       />
     </div>
 
-    <div v-if="topLevelErrors.length > 0" class="fh-form__top-errors">
-      <p v-for="(error, i) in topLevelErrors" :key="i" class="fh-form__top-error">
+    <div v-if="formErrors.length > 0" class="fh-form__top-errors">
+      <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">
         {{ error }}
       </p>
     </div>
