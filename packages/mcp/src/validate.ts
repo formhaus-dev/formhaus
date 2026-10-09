@@ -20,12 +20,23 @@ function finish(errors: string[], warnings: string[]): ValidationReport {
   return { valid: errors.length === 0, errors: [...new Set(errors)], warnings: [...new Set(warnings)] };
 }
 
+function bestEffortErrors(definition: FormDefinition): string[] {
+  try {
+    const { errors } = checkStructure(definition);
+    if (errors.length > 0) return errors;
+    const engine = createEngine(definition);
+    return engine.ok ? [] : engine.errors;
+  } catch {
+    return [];
+  }
+}
+
 export function inspectDefinition(input: unknown, values?: Record<string, unknown>): Inspection {
   const parsed = parseDefinition(input);
   if (!parsed.ok) return { report: finish([parsed.error], []) };
-  const invalid = schemaErrors(parsed.value);
-  if (invalid.length > 0) return { report: finish(invalid, []) };
   const definition = parsed.value as unknown as FormDefinition;
+  const invalid = schemaErrors(parsed.value);
+  if (invalid.length > 0) return { report: finish([...invalid, ...bestEffortErrors(definition)], []) };
   const { errors, warnings } = checkStructure(definition);
   if (errors.length > 0) return { report: finish(errors, warnings) };
   const engine = createEngine(definition, values);

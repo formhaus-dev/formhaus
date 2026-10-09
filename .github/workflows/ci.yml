@@ -34,6 +34,7 @@ jobs:
 
       - run: pnpm check:types
       - run: pnpm check:bundle-size
+      - run: pnpm check:source-size
 
       - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve
 

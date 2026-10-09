@@ -55,6 +55,13 @@ describe('validate_definition', () => {
     expect(report.errors.join('\n')).toMatch(/Invalid route from "name" to "missing"/);
   });
 
+  it('reports structural errors next to schema errors', async () => {
+    const definition = { ...linear, colour: 'blue', steps: [linear.steps[0], { ...linear.steps[1], id: 'name' }] };
+    const report = await validateDefinitionTool({ definition });
+    expect(report.errors.some((error) => error.startsWith('Schema:'))).toBe(true);
+    expect(report.errors).toContain('Duplicate step id "name" at steps[1].');
+  });
+
   it('rejects fields and steps together', async () => {
     const report = await validateDefinitionTool({ definition: { ...linear, fields: linear.steps[0].fields } });
     expect(report.errors).toContain('Definition cannot have both non-empty "fields" and "steps".');
