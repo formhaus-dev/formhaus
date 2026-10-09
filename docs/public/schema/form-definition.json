@@ -1,0 +1,428 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://formhaus.dev/schema/form-definition.json",
+  "title": "Formhaus form definition",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "description": "Unique form identifier."
+    },
+    "title": {
+      "type": "string",
+      "description": "Form title for host UI and Figma output. Renderers do not display it."
+    },
+    "submit": {
+      "$ref": "#/definitions/FormAction",
+      "description": "Submit button on the last step."
+    },
+    "cancel": {
+      "$ref": "#/definitions/FormAction",
+      "description": "Optional cancel button."
+    },
+    "fields": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/FormField"
+      },
+      "description": "Fields of a single-step form."
+    },
+    "steps": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/FormStep"
+      },
+      "description": "Steps of a multi-step form. When present, fields is ignored."
+    }
+  },
+  "required": [
+    "id",
+    "title",
+    "submit"
+  ],
+  "additionalProperties": false,
+  "description": "A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.",
+  "definitions": {
+    "FormAction": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "variant": {
+          "type": "string",
+          "enum": [
+            "primary",
+            "secondary",
+            "text"
+          ]
+        },
+        "action": {
+          "type": "string"
+        },
+        "disabled": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          }
+        }
+      },
+      "required": [
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "ShowCondition": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string",
+          "description": "Key of the field to check."
+        },
+        "eq": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ],
+          "description": "Matches when the value strictly equals this."
+        },
+        "neq": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ],
+          "description": "Matches when the value does not strictly equal this."
+        },
+        "in": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "description": "Matches when the value is one of these."
+        },
+        "notIn": {
+          "type": "array",
+          "items": {
+            "type": [
+              "string",
+              "number"
+            ]
+          },
+          "description": "Matches when the value is none of these."
+        },
+        "notEmpty": {
+          "type": "boolean",
+          "description": "Matches when the value is not undefined, null or an empty string."
+        }
+      },
+      "required": [
+        "field"
+      ],
+      "additionalProperties": false,
+      "description": "A condition on another field value. Use one operator per condition; only the first of eq, neq, in, notIn, notEmpty applies."
+    },
+    "FormField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Key of the field value in the submitted values. Unique within the form."
+        },
+        "type": {
+          "$ref": "#/definitions/FieldType",
+          "description": "Field type. A built-in type or a custom type rendered through the renderer components prop."
+        },
+        "label": {
+          "type": "string",
+          "description": "Label text."
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "helperText": {
+          "type": "string",
+          "description": "Hint text below the field."
+        },
+        "autoAdvance": {
+          "type": "boolean",
+          "description": "Moves to the next step when the field is committed: a built-in radio on click, Space or Enter, or a custom field calling onCommit. The last step never auto-submits."
+        },
+        "defaultValue": {
+          "description": "Initial value. Also the value restored on reset or skip."
+        },
+        "show": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Field is visible only when all conditions match. Hidden fields are cleared, not validated and not submitted."
+        },
+        "showAny": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Field is visible when any condition matches."
+        },
+        "validation": {
+          "$ref": "#/definitions/FieldValidation",
+          "description": "Validation rules checked on Continue and on submit, not on blur."
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FieldOption"
+          },
+          "description": "Static options for select, autocomplete, multiselect and radio fields."
+        },
+        "optionsFrom": {
+          "type": "string",
+          "description": "Key of an options provider passed to the renderer, used instead of static options."
+        },
+        "optionsDependsOn": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "accept": {
+          "type": "string"
+        },
+        "rows": {
+          "type": "number"
+        },
+        "mask": {
+          "type": "string"
+        },
+        "inputMode": {
+          "type": "string",
+          "enum": [
+            "text",
+            "numeric",
+            "tel",
+            "email"
+          ]
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "FieldType": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/DefaultFieldType"
+        },
+        {
+          "type": "string"
+        }
+      ]
+    },
+    "DefaultFieldType": {
+      "type": "string",
+      "enum": [
+        "text",
+        "email",
+        "phone",
+        "number",
+        "password",
+        "select",
+        "autocomplete",
+        "multiselect",
+        "checkbox",
+        "radio",
+        "switch",
+        "file",
+        "date",
+        "datetime",
+        "textarea"
+      ]
+    },
+    "FieldValidation": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": [
+            "boolean",
+            "string"
+          ]
+        },
+        "minLength": {
+          "type": "number"
+        },
+        "minLengthMessage": {
+          "type": "string"
+        },
+        "maxLength": {
+          "type": "number"
+        },
+        "maxLengthMessage": {
+          "type": "string"
+        },
+        "min": {
+          "type": "number"
+        },
+        "minMessage": {
+          "type": "string"
+        },
+        "max": {
+          "type": "number"
+        },
+        "maxMessage": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "patternMessage": {
+          "type": "string"
+        },
+        "matchField": {
+          "type": "string",
+          "description": "Key of another field whose value this field must equal."
+        },
+        "matchFieldMessage": {
+          "type": "string"
+        },
+        "validator": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "FieldOption": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "value",
+        "label"
+      ],
+      "additionalProperties": false
+    },
+    "FormStep": {
+      "type": "object",
+      "properties": {
+        "routes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/StepRoute"
+          },
+          "description": "Forward destinations checked in order. The first match with a visible target wins. With no match, navigation continues to the next visible step."
+        },
+        "id": {
+          "type": "string",
+          "description": "Unique step identifier, used as a route target."
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FormField"
+          }
+        },
+        "show": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Step is visible only when all conditions match. Hidden steps are skipped and not submitted."
+        },
+        "showAny": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Step is visible when any condition matches."
+        },
+        "next": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/FormAction"
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ],
+          "description": "Overrides the Continue button. false hides it."
+        },
+        "back": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/FormAction"
+            },
+            {
+              "type": "boolean",
+              "const": false
+            }
+          ],
+          "description": "Overrides the Back button. false hides it."
+        },
+        "skip": {
+          "$ref": "#/definitions/FormAction",
+          "description": "Shows a Skip button that resets the step fields and moves forward without validation."
+        }
+      },
+      "required": [
+        "id",
+        "title",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "StepRoute": {
+      "type": "object",
+      "properties": {
+        "to": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "Id of a later step. null makes the current step the last one on this path."
+        },
+        "show": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Route matches only when all conditions match. Without show or showAny the route always matches."
+        },
+        "showAny": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Route matches when any condition matches."
+        }
+      },
+      "required": [
+        "to"
+      ],
+      "additionalProperties": false,
+      "description": "A forward destination for a step."
+    }
+  }
+}

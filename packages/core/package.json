@@ -14,10 +14,12 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./style.css": "./style.css"
+    "./style.css": "./style.css",
+    "./schema.json": "./schema/form-definition.schema.json"
   },
   "files": [
     "dist",
+    "schema",
     "style.css"
   ],
   "scripts": {
@@ -25,10 +27,13 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:resolve": "node --input-type=module -e \"import('./dist/index.js').then(m => { if (!m.FormEngine) process.exit(1); console.log('ESM resolve OK'); })\"",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "schema": "node scripts/schema.mjs"
   },
   "devDependencies": {
+    "ajv": "^8.20.0",
     "fast-check": "^4.10.2",
+    "ts-json-schema-generator": "^2.9.0",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",
     "vitest": "^4.1.2"
