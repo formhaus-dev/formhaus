@@ -1,0 +1,90 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "id": "onboarding",
+  "title": "Set up your workspace",
+  "submit": { "label": "Create workspace" },
+  "steps": [
+    {
+      "id": "workspace",
+      "title": "Workspace",
+      "fields": [
+        {
+          "key": "whoIsItFor",
+          "type": "radio",
+          "label": "Who is it for?",
+          "validation": { "required": true },
+          "options": [
+            { "value": "my-team", "label": "My team" },
+            { "value": "just-me", "label": "Just me" }
+          ]
+        }
+      ],
+      "routes": [
+        {
+          "to": "team",
+          "show": [{ "field": "whoIsItFor", "eq": "my-team" }]
+        },
+        { "to": "project" }
+      ]
+    },
+    {
+      "id": "team",
+      "title": "Team",
+      "fields": [
+        {
+          "key": "company",
+          "type": "text",
+          "label": "Company",
+          "placeholder": "Acme Inc.",
+          "validation": { "required": true }
+        },
+        {
+          "key": "teamSize",
+          "type": "radio",
+          "label": "Team size",
+          "validation": { "required": true },
+          "options": [
+            { "value": "2-10", "label": "2–10" },
+            { "value": "11-50", "label": "11–50" },
+            { "value": "51", "label": "51+" }
+          ]
+        }
+      ],
+      "routes": [{ "to": "invite" }]
+    },
+    {
+      "id": "project",
+      "title": "Project",
+      "fields": [
+        {
+          "key": "whatWillYouBuildWith",
+          "type": "radio",
+          "label": "What will you build with?",
+          "validation": { "required": true },
+          "options": [
+            { "value": "react", "label": "React" },
+            { "value": "vue", "label": "Vue" },
+            { "value": "something-else", "label": "Something else" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "invite",
+      "title": "Invite",
+      "fields": [
+        {
+          "key": "workEmail",
+          "type": "email",
+          "label": "Work email",
+          "placeholder": "you@company.com",
+          "validation": {
+            "required": true,
+            "pattern": "^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$",
+            "patternMessage": "Enter an email like you@company.com"
+          }
+        }
+      ]
+    }
+  ]
+}

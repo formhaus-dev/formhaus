@@ -1,6 +1,7 @@
 import DefaultTheme from 'vitepress/theme';
 import type { Theme } from 'vitepress';
 import PlaygroundSandpack from '../components/playground/PlaygroundSandpack.vue';
+import './brand.css';
 
 export default {
   extends: DefaultTheme,

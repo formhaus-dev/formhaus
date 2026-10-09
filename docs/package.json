@@ -7,6 +7,14 @@
     "preview": "vitepress preview"
   },
   "devDependencies": {
+    "@codemirror/commands": "^6.11.1",
+    "@codemirror/lang-json": "^6.0.2",
+    "@codemirror/language": "^6.13.1",
+    "@codemirror/state": "^6.7.6",
+    "@codemirror/view": "^6.43.14",
+    "@formhaus/core": "^0.9.0",
+    "@formhaus/vue": "^0.9.0",
+    "@lezer/highlight": "^1.2.5",
     "sandpack-vue3": "^3.0.0",
     "vitepress": "^1.6.4",
     "vitepress-plugin-llms": "^1.14.0"

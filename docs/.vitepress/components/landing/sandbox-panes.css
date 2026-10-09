@@ -1,0 +1,124 @@
+.sandbox__pane {
+  min-width: 0;
+  min-height: 0;
+}
+
+.sandbox[data-tab='json'] .sandbox__pane--write,
+.sandbox:not([data-tab='json']) .sandbox__pane--json {
+  display: none;
+}
+
+.sandbox__graph {
+  min-width: 0;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--vp-c-divider);
+  background: var(--vp-c-bg-soft);
+}
+
+.sandbox__pane--preview {
+  display: flex;
+  flex-direction: column;
+}
+
+.sandbox__preview {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px 32px;
+}
+
+.sandbox__preview :deep(.fh-step-progress__counter) {
+  display: none;
+}
+
+.vp-doc .sandbox__caption {
+  display: none;
+  max-width: 1120px;
+  margin: 10px auto 0;
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--vp-c-text-3);
+}
+
+@media (min-width: 768px) {
+  .sandbox {
+    grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
+    grid-template-rows: 52px 150px minmax(0, 1fr);
+    grid-template-areas: 'barl barr' 'left graph' 'left preview';
+    height: 600px;
+  }
+
+  .sandbox__pane--write,
+  .sandbox__pane--json,
+  .sandbox__bar--left {
+    border-right: 1px solid var(--vp-c-divider);
+  }
+
+  .sandbox__tab[data-tab='preview'] {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .sandbox {
+    grid-template-rows: 60px 44px 110px 480px;
+    grid-template-areas: 'barl' 'barr' 'graph' 'left';
+  }
+
+  .sandbox__pane--preview {
+    grid-area: left;
+  }
+
+  .sandbox__dots,
+  .sandbox__text,
+  .sandbox__actions,
+  .sandbox__tab[data-tab='write'],
+  .sandbox__pane--write {
+    display: none;
+  }
+
+  .vp-doc .sandbox__caption {
+    display: block;
+  }
+
+  .sandbox__bar--left {
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .sandbox__tabs {
+    flex: 1;
+  }
+
+  .sandbox__tab {
+    flex: 1;
+    min-height: 40px;
+    padding: 4px 6px;
+  }
+
+  .sandbox__tab[data-tab='preview'] {
+    order: -1;
+  }
+
+  .sandbox__icon {
+    width: 36px;
+    height: 36px;
+  }
+
+  .sandbox__graph {
+    padding: 8px 16px;
+  }
+
+  .sandbox:not([data-tab='json']) .sandbox__pane--json,
+  .sandbox[data-tab='json'] .sandbox__pane--preview {
+    display: none;
+  }
+
+  .sandbox__preview {
+    padding: 20px 16px;
+  }
+}

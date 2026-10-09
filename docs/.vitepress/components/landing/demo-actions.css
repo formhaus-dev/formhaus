@@ -1,0 +1,113 @@
+.demo-form .fh-form-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+}
+
+.demo-form .fh-form-actions__button,
+.demo-form .demo-form__restart {
+  height: 42px;
+  padding: 0 20px;
+  white-space: nowrap;
+  border: 1px solid var(--vp-c-border);
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+  background: var(--vp-c-bg);
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.demo-form .fh-form-actions__button:hover,
+.demo-form .demo-form__restart:hover {
+  border-color: var(--vp-c-text-3);
+}
+
+.demo-form .fh-form-actions__button--primary {
+  margin-left: auto;
+  border-color: transparent;
+  color: var(--vp-button-brand-text);
+  background: var(--vp-button-brand-bg);
+}
+
+.demo-form .fh-form-actions__button--primary:hover {
+  border-color: transparent;
+  background: var(--vp-button-brand-hover-bg);
+}
+
+.demo-form .fh-form-actions__button:focus-visible,
+.demo-form .demo-form__restart:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+@media (max-width: 479px) {
+  .demo-form .fh-field__radio-label,
+  .demo-form .fh-field__multiselect-label {
+    gap: 8px;
+    padding: 12px 10px;
+    white-space: nowrap;
+  }
+}
+
+.demo-form .demo-form__result {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  outline: none;
+}
+
+.demo-form .demo-form__badge {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--vp-c-brand-1);
+  background: var(--vp-c-brand-soft);
+}
+
+.demo-form .demo-form__heading {
+  margin: 8px 0 0;
+  font-size: 22px;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.demo-form .demo-form__hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+.demo-form .demo-form__payload {
+  align-self: stretch;
+  margin: 12px 0;
+  padding: 16px;
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: var(--vp-code-block-bg);
+}
+
+.demo-form .demo-form__payload code {
+  padding: 0;
+  font-size: inherit;
+  color: var(--vp-c-text-1);
+  background: none;
+}
+
+.demo-form .demo-form__title {
+  flex: none;
+  margin: 0 0 24px;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--vp-c-text-1);
+}
