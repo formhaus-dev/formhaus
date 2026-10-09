@@ -36,6 +36,24 @@ export function applyValidationErrors(
   engine.notify({ fieldKeys: changedFields });
 }
 
+export function clearResolvedMatchErrors(engine: EngineInternals, key: string): string[] {
+  const cleared: string[] = [];
+  for (const field of engine.visibility.allFields) {
+    if (field.validation?.matchField !== key || engine.errors[field.key] === undefined) continue;
+    if (validateField(field, engine.values[field.key], getValidationValues(engine), engine.validators)) continue;
+    delete engine.errors[field.key];
+    cleared.push(field.key);
+  }
+  return cleared;
+}
+
+export function pruneOffPathErrors(engine: EngineInternals): string[] {
+  const pathFields = new Set(engine.visibleSteps.flatMap((step) => step.fields.map((field) => field.key)));
+  const pruned = Object.keys(engine.errors).filter((key) => !pathFields.has(key));
+  for (const key of pruned) delete engine.errors[key];
+  return pruned;
+}
+
 export function getValidationValues(engine: EngineInternals): Record<string, unknown> {
   return engine.definition.steps?.some((step) => step.routes?.length) ? getSubmitValues(engine) : engine.values;
 }

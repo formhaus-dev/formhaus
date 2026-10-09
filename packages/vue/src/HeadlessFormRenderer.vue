@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { FormEngineOptions, StepChangeContext } from '@formhaus/core';
+import { shouldApplyExternalErrors, type FormEngineOptions, type StepChangeContext } from '@formhaus/core';
 import { computed, nextTick, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import { useFieldOptions } from './composables/useFieldOptions';
@@ -50,12 +50,13 @@ const {
 const resolvedOptions = useFieldOptions(visibleFields, () => form.engine, props.optionsProviders);
 
 watch(
-  () => props.errors,
-  (newErrors) => {
-    if (newErrors) {
-      form.engine.setErrors(newErrors);
-    }
+  [() => props.errors, () => form.engine],
+  ([newErrors, engine], [oldErrors, oldEngine]) => {
+    if (!newErrors) return;
+    if (!shouldApplyExternalErrors(engine, engine === oldEngine ? oldErrors : undefined, newErrors)) return;
+    engine.setErrors(newErrors);
   },
+  { immediate: true },
 );
 
 const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, submit: onSubmit } =

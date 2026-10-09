@@ -13,6 +13,8 @@ import {
   validateForm,
   validateOne,
   assertDefinitionShape,
+  clearResolvedMatchErrors,
+  pruneOffPathErrors,
 } from './validation-state';
 import { submitAsync } from './submission';
 import { routeWarnings, reconcileStepIndex } from './step-routes';
@@ -111,19 +113,21 @@ export class FormEngine {
   }
 
   setValue(key: string, value: unknown): void {
-    const previousSteps = this.definition.steps?.some((step) => step.routes?.length) ? this.visibleSteps : null;
+    const previousSteps = this.isMultiStep ? this.visibleSteps : null;
     const valueChanged = !Object.is(this.values[key], value);
     const hadError = this.errors[key] !== undefined;
     this.values[key] = value;
     delete this.errors[key];
     const clearedFields = this.visibility.cascadeHiddenFields(key, this.values, this.errors);
-    const changedFields = new Set(clearedFields);
+    const revalidated = clearResolvedMatchErrors(this.internals, key);
+    const changedFields = new Set([...clearedFields, ...revalidated]);
     if (valueChanged || hadError) changedFields.add(key);
     const valuesChanged = valueChanged || clearedFields.size > 0;
     const structureChanged = valuesChanged && this.visibility.affectsStructure(key, clearedFields);
     if (previousSteps && structureChanged) {
       this.visibility.markChanged(true, true);
       this.currentStepIndex = reconcileStepIndex(previousSteps, this.visibleSteps, this.currentStepIndex);
+      for (const pruned of pruneOffPathErrors(this.internals)) changedFields.add(pruned);
     }
     this.notify({ fieldKeys: changedFields, structureChanged, valuesChanged });
   }

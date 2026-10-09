@@ -11,8 +11,11 @@ import {
 
 export type { ValidatorFn } from './field-rules';
 
-function isEmpty(value: unknown): boolean {
+const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
+
+function isEmpty(value: unknown, field: FormField): boolean {
   if (value === undefined || value === null || value === '') return true;
+  if (value === false && BOOLEAN_TYPES.has(field.type)) return true;
   return Array.isArray(value) && value.length === 0;
 }
 
@@ -24,7 +27,7 @@ export function validateField(
 ): string | null {
   const rules = field.validation;
   if (!rules) return null;
-  const empty = isEmpty(value);
+  const empty = isEmpty(value, field);
   const requiredError = getRequiredError(rules, empty);
   if (requiredError) return requiredError;
   if (empty) return null;

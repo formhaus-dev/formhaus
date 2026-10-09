@@ -31,6 +31,7 @@ jobs:
       - run: pnpm lint:packages
 
       - run: pnpm check:types
+      - run: pnpm check:bundle-size
 
       - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve
 

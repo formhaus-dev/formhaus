@@ -28,6 +28,7 @@
     "clean": "rm -rf dist"
   },
   "devDependencies": {
+    "fast-check": "^4.10.2",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",
     "vitest": "^4.1.2"

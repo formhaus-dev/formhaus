@@ -166,6 +166,8 @@ Boolean toggle with a label.
 }
 ```
 
+`required` rejects an unchecked box, so the user must check it to continue.
+
 ## Radio
 
 Pick one from a list. Options render vertically.

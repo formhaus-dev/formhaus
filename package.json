@@ -11,6 +11,7 @@
     "lint:packages": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue exec publint",
     "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue exec attw --pack --profile esm-only --exclude-entrypoints ./style.css",
     "check:source-size": "node scripts/check-source-size.mjs",
+    "check:bundle-size": "node scripts/check-bundle-size.mjs",
     "changeset": "changeset",
     "version": "changeset version",
     "release": "pnpm build && changeset publish"
@@ -21,6 +22,7 @@
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.2",
     "@changesets/cli": "^2.31.0",
+    "esbuild": "0.25.12",
     "publint": "^0.3.18"
   }
 }

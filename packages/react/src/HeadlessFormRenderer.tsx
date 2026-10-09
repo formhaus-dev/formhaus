@@ -1,4 +1,4 @@
-import type { FormEngineOptions } from '@formhaus/core';
+import { shouldApplyExternalErrors, type FormEngineOptions } from '@formhaus/core';
 import { useCallback, useEffect, useRef } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormFieldsController } from './FormFieldsController';
@@ -33,8 +33,13 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   const previousStep = useRef(engine.currentStep?.id);
   const actions = useRendererActions(engine, props);
 
+  const appliedErrors = useRef<{ engine: typeof engine; errors: Record<string, string> } | null>(null);
   useEffect(() => {
-    if (props.errors) engine.setErrors(props.errors);
+    if (!props.errors) return;
+    const previous = appliedErrors.current?.engine === engine ? appliedErrors.current.errors : undefined;
+    if (!shouldApplyExternalErrors(engine, previous, props.errors)) return;
+    appliedErrors.current = { engine, errors: props.errors };
+    engine.setErrors(props.errors);
   }, [props.errors, engine]);
 
   useEffect(() => {

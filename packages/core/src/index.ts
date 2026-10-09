@@ -27,3 +27,5 @@ export {
 export { validateDefinition } from './definition-validation';
 
 export { FormLifecycleError } from './engine/lifecycle-error';
+
+export { shouldApplyExternalErrors } from './engine/external-errors';

@@ -23,7 +23,7 @@ All rules are optional. Combine them freely.
 
 | Rule | Type | What it checks | Default message |
 |------|------|---------------|-----------------|
-| `required` | `boolean \| string` | Not null, undefined, an empty string or an empty array | "This field is required" |
+| `required` | `boolean \| string` | Not null, undefined, an empty string or an empty array. Checkbox and switch fields must be checked | "This field is required" |
 | `minLength` | `number` | String length or selected-item count >= value | "Must be at least N characters/items" |
 | `maxLength` | `number` | String length or selected-item count <= value | "Must be at most N characters/items" |
 | `min` | `number` | Number >= value | "Must be at least N" |
