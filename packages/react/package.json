@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/react",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Render multi-step, conditional and branching forms in React from a JSON form definition. Native inputs or your own components.",
   "type": "module",
   "sideEffects": false,

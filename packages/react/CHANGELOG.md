@@ -1,5 +1,9 @@
 # @formhaus/react
 
+## 0.9.0
+
+No changes. Version aligned with `@formhaus/core` 0.9.0.
+
 ## 0.8.0
 
 ### Minor Changes
