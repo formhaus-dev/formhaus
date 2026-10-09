@@ -1,4 +1,5 @@
 import { readConfig, writeConfig, type PluginConfig, type TextSlot } from '../config';
+import { addProfile, applyBindings, importedProfile, listProfiles, saveProfile, updateProfiles } from '../profiles';
 import type { Role } from '../roles';
 import { autoMatch } from './auto-match';
 import { bindingRows } from './rows';
@@ -10,11 +11,14 @@ export interface BindingMessage {
   role?: Role;
   slot?: TextSlot;
   name?: string;
+  id?: string;
+  profile?: unknown;
 }
 
 export interface Notice {
   text: string;
   tone: 'success' | 'info';
+  profileId?: string;
 }
 
 const HANDLERS: Record<string, (config: PluginConfig, message: BindingMessage) => Promise<Notice | void>> = {
@@ -31,6 +35,32 @@ const HANDLERS: Record<string, (config: PluginConfig, message: BindingMessage) =
   setSlot: async (config, { role, slot, name }) => {
     const binding = config.bindings[role!];
     if (binding) binding.text = assignSlot(binding.text ?? {}, slot!, name ?? '');
+  },
+  saveProfile: async (config, { name }) => {
+    const profile = await saveProfile(name ?? '', config.bindings);
+    const local = Object.values(config.bindings).some((binding) => binding?.source === 'local');
+    const reuse = profile.useInNewFiles ? ' New files will use it.' : '';
+    const warning = local ? ' Components from this file work elsewhere once their library is published.' : '';
+    return { text: `Saved “${profile.name}”.${reuse}${warning}`, tone: 'success', profileId: profile.id };
+  },
+  applyProfile: async (config, { id }) => {
+    const profile = (await listProfiles()).find((item) => item.id === id);
+    if (!profile) return;
+    applyBindings(config, profile);
+    return { text: `Using “${profile.name}” in this file.`, tone: 'success', profileId: profile.id };
+  },
+  importProfile: async (config, { profile: input }) => {
+    const profile = importedProfile(input);
+    if (!profile) throw new Error('This setup code has no components in it.');
+    await addProfile(profile);
+    applyBindings(config, profile);
+    return { text: `Added “${profile.name}” and used it in this file.`, tone: 'success', profileId: profile.id };
+  },
+  deleteProfile: async (_, { id }) => {
+    await updateProfiles((list) => list.filter((item) => item.id !== id));
+  },
+  toggleNewFiles: async (_, { id }) => {
+    await updateProfiles((list) => list.map((item) => ({ ...item, useInNewFiles: item.id === id ? !item.useInNewFiles : false })));
   },
   autoMatch: async (config) => {
     const found = autoMatch(figma.currentPage, config.bindings);
@@ -50,5 +80,5 @@ export async function runBindingMessage(message: BindingMessage) {
   const config = readConfig();
   const notice = await HANDLERS[message.type](config, message);
   writeConfig(config);
-  return { rows: await bindingRows(config), notice };
+  return { rows: await bindingRows(config), notice, profiles: await listProfiles() };
 }

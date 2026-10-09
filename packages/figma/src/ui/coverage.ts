@@ -9,11 +9,6 @@ export function coverageOf(row: BindingRow): Coverage {
   return row.name ? 'yours' : 'kit';
 }
 
-export function isCovered(row: BindingRow): boolean {
-  const state = coverageOf(row);
-  return state === 'yours' || state === 'reused';
-}
-
 function legendItem(state: Coverage, text: string): HTMLElement {
   const item = element('span', 'legend-item');
   item.append(element('i', `dot cov-${state}`), document.createTextNode(text));
@@ -23,9 +18,9 @@ function legendItem(state: Coverage, text: string): HTMLElement {
 export function renderCoverage(rows: BindingRow[], kitName: string): void {
   const counts: Record<Coverage, number> = { yours: 0, reused: 0, kit: 0, missing: 0 };
   for (const row of rows) counts[coverageOf(row)] += 1;
-  const covered = counts.yours + counts.reused;
   const title = byId('coverageTitle');
-  title.replaceChildren(element('strong', '', `${covered} of ${rows.length}`), document.createTextNode(' elements use your components'));
+  const all = counts.yours === rows.length;
+  title.replaceChildren(element('strong', '', all ? `All ${rows.length}` : `${counts.yours} of ${rows.length}`), document.createTextNode(' elements bound'));
   const bar = byId('coverageBar');
   bar.replaceChildren(...(Object.keys(counts) as Coverage[])
     .filter((state) => counts[state] > 0)
@@ -36,7 +31,7 @@ export function renderCoverage(rows: BindingRow[], kitName: string): void {
     }));
   const labels: Record<Coverage, string> = {
     yours: `${counts.yours} bound`,
-    reused: `${counts.reused} reuse a bound one`,
+    reused: `${counts.reused} use a substitute`,
     kit: `${counts.kit} from ${kitName}`,
     missing: `${counts.missing} missing`,
   };

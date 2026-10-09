@@ -122,7 +122,7 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
     },
     setSource(state: SourceState) {
       const custom = sourceSelect.querySelector<HTMLOptionElement>('option[value=custom]');
-      if (custom) custom.textContent = state.boundCount ? `My components · ${state.boundCount} of ${ROLES.length}` : 'My components';
+      if (custom) custom.textContent = state.boundCount ? `My components · ${state.boundCount} of ${ROLES.length} bound` : 'My components';
       sourceSelect.value = state.source === 'custom' ? 'custom' : `kit:${state.kit ?? 'material'}`;
     },
     finish(text: string, type: 'error' | 'success') {

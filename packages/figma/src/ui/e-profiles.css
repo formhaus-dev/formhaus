@@ -1,0 +1,18 @@
+.profiles {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+}
+.profile-head { display: flex; flex-direction: column; gap: 2px; }
+.profile-row, .profile-inline { align-items: center; display: flex; gap: 8px; }
+.profile-row select, .profile-inline .input { flex: 1; min-width: 0; }
+.profile-actions { display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.profile-actions .link:disabled { color: var(--text-3); cursor: default; text-decoration: none; }
+.link-danger { color: var(--danger); }
+.profile-check { align-items: center; color: var(--text); display: inline-flex; font-size: 11px; gap: 6px; }
+.profile-check input { accent-color: var(--brand); }
+.profile-actions.secondary { border-top: 1px solid var(--border); padding-top: 8px; }
+.grow { flex: 1; }

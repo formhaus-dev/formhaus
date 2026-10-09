@@ -24,7 +24,7 @@ The plugin creates one frame per step and lays the frames out horizontally. With
 
 ## Binding with Claude
 
-The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill finds your form components through the Figma MCP server, asks you to confirm them and writes the bindings into the file. A JSON component map saved by an earlier version of the plugin moves into the **Components** tab automatically.
+The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude skill finds your form components through the Figma MCP server, asks you to confirm them and writes the bindings into the file. Save a setup as a design system to reuse it in every file and share it with a setup code. A JSON component map saved by an earlier version of the plugin becomes a design system automatically.
 
 ## Docs
 

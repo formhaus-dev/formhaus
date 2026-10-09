@@ -1,4 +1,5 @@
 import { migrateStoredMap } from './bindings/legacy-map';
+import { applyDefaultProfile } from './profiles';
 import { selectionPreview } from './bindings/selection-preview';
 import { isBindingMessage, runBindingMessage, type BindingMessage } from './bindings/messages';
 import { PLUGIN_NAMESPACE, readConfig, writeConfig, type ComponentSource, type KitId, type PluginConfig } from './config';
@@ -16,13 +17,22 @@ interface UiMessage extends BindingMessage {
 }
 
 figma.showUI(__html__, { width: 480, height: 680, themeColors: true });
-migrateStoredMap().catch(() => 0).then((count) => {
+void start();
+
+async function start(): Promise<void> {
+  const migrated = await migrateStoredMap().catch(() => 0);
+  const profile = await applyDefaultProfile().catch(() => null);
   const { source, bindings } = currentConfig();
   if (source === 'custom' && Object.keys(bindings).length === 0) updateComponents('kit');
   sendState();
   void sendSelection();
-  if (count > 0) figma.ui.postMessage({ type: 'notice', message: `Your saved JSON component map now lives in Components: ${count} elements bound.` });
-});
+  if (migrated > 0) notice(`Your saved JSON component map is now the “Saved component map” design system: ${migrated} elements bound.`);
+  else if (profile) notice(`Using your “${profile}” design system in this new file.`);
+}
+
+function notice(message: string): void {
+  figma.ui.postMessage({ type: 'notice', message });
+}
 figma.on('selectionchange', () => void sendSelection());
 figma.on('drop', (event) => {
   const role = droppedRole(event);

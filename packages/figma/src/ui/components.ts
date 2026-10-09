@@ -3,16 +3,19 @@ import type { SelectionPreview } from '../bindings/selection-preview';
 import type { TextSlot } from '../config';
 import type { Role } from '../roles';
 import { renderCards } from './cards';
-import { renderCoverage } from './coverage';
+import { coverageOf, renderCoverage } from './coverage';
 import { byId } from './dom';
+import { createProfilesBar } from './profiles';
 import { closeSheet, openSheet } from './sheet';
+import type { Profile } from '../profiles';
 import { renderTray } from './tray';
 
 type Post = (message: Record<string, unknown>) => void;
 
 const KIT_NAMES: Record<string, string> = { material: 'Material 3', ios: 'iOS-like' };
 
-export function createComponentsPanel(post: Post) {
+export function createComponentsPanel(post: Post, show: (text: string, tone?: 'error' | 'success' | 'info') => void) {
+  const profilesBar = createProfilesBar(post, show);
   const list = byId('bindings');
   const tray = byId('tray');
   let rows: BindingRow[] = [];
@@ -45,9 +48,10 @@ export function createComponentsPanel(post: Post) {
 
   renderTray(tray, null, bind);
   return {
-    setRows(next: BindingRow[]) {
+    setRows(next: BindingRow[], profiles: Profile[] = [], focusProfile?: string) {
       rows = next;
       render();
+      profilesBar.update(profiles, rows.some((row) => coverageOf(row) === 'yours'), focusProfile);
     },
     setSelection(next: SelectionPreview | null) {
       selection = next;

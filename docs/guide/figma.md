@@ -51,11 +51,17 @@ Roles you leave unbound reuse a related component when one is bound: a date or s
 
 Drag any card onto the canvas to place that component. Bindings are stored in the document, so everyone who opens the file generates with the same components.
 
+### Design systems
+
+Save your bindings as a design system in the **Design system** card on the **Components** tab. Saved design systems are stored in your Figma account, so they are available in every file. Pick one and click **Use here** to bind it in the current file. Tick **Use in new files** to bind it automatically whenever you open the plugin in a file that has no setup yet.
+
+**Copy setup code** gives a short code for teammates. They paste it with **Paste setup code**, and the design system is added to their account and used in their file. Library components work in any file that can access the library. Components that live in one file only work in other files after you publish them as a library.
+
 ::: tip Bind with Claude
 Run [`/formhaus-figma-connect`](/guide/formhaus-figma-connect) to find your form components through the Figma MCP server, confirm them from screenshots and write the bindings into your file.
 :::
 
-Earlier versions used a JSON component map. If you saved one, the plugin moves it into **Components** the first time you open a file without bindings.
+Earlier versions used a JSON component map. If you saved one, the plugin turns it into a design system called **Saved component map**, uses it in new files and binds it in the first file you open.
 
 ## What the plugin generates
 

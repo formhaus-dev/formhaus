@@ -1,4 +1,5 @@
 import { PLUGIN_NAMESPACE, readConfig, writeConfig, type Binding } from '../config';
+import { saveProfile } from '../profiles';
 import type { Role } from '../roles';
 import { reference } from './selection';
 
@@ -83,5 +84,7 @@ export async function migrateStoredMap(): Promise<number> {
   if (count === 0) return 0;
   figma.root.setSharedPluginData(PLUGIN_NAMESPACE, MIGRATED_KEY, '1');
   writeConfig({ ...config, source: 'custom', bindings });
+  await saveProfile('Saved component map', bindings, true);
+  await figma.clientStorage.deleteAsync(STORAGE_KEY);
   return count;
 }

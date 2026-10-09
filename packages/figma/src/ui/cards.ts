@@ -1,6 +1,6 @@
 import type { BindingRow } from '../bindings/rows';
 import { ROLE_LABELS, type Role } from '../roles';
-import { coverageOf, isCovered } from './coverage';
+import { coverageOf, type Coverage } from './coverage';
 import { element, iconButton, previewStore } from './dom';
 import { icon } from './icons';
 
@@ -15,7 +15,7 @@ const GROUPS: Record<string, string> = { field: 'Fields', option: 'Options', but
 export const DRAG_TYPE = 'application/x-formhaus-selection';
 const store = previewStore();
 
-const BADGES = { yours: 'Yours', reused: 'Reused', kit: 'Not set', missing: 'Missing' };
+const BADGES = { yours: 'Yours', reused: 'Substitute', kit: 'Not set', missing: 'Missing' };
 
 function preview(row: BindingRow): HTMLElement {
   const frame = element('div', 'card-preview');
@@ -111,23 +111,37 @@ function section(title: string, note: string, children: HTMLElement[]): HTMLElem
   return node;
 }
 
-function setupSection(rows: BindingRow[], kitName: string, handlers: CardHandlers): HTMLElement {
-  if (rows.length === 0) return element('div', 'all-covered', 'Every element uses your components.');
+function setupSection(rows: BindingRow[], kitName: string, handlers: CardHandlers): HTMLElement | null {
+  if (rows.length === 0) return null;
   return section('Needs setup', `${rows.length} left`, [
     element('p', 'hint', `These still render with ${kitName}. Select your component on the canvas and click a card, or drag the bar above onto it.`),
     grid(rows, kitName, handlers),
   ]);
 }
 
-export function renderCards(container: HTMLElement, rows: BindingRow[], kitName: string, handlers: CardHandlers): void {
-  store.release();
-  const covered = rows.filter(isCovered);
+function substituteSection(rows: BindingRow[], kitName: string, handlers: CardHandlers): HTMLElement | null {
+  if (rows.length === 0) return null;
+  return section('Using a substitute', `${rows.length}`, [
+    element('p', 'hint', 'These render with a similar component of yours. Bind a dedicated one if your library has it.'),
+    grid(rows, kitName, handlers),
+  ]);
+}
+
+function boundSection(rows: BindingRow[], kitName: string, handlers: CardHandlers): HTMLElement {
   const groups = Object.entries(GROUPS)
-    .map(([prefix, title]) => ({ title, items: covered.filter((row) => row.role.startsWith(`${prefix}.`)) }))
+    .map(([prefix, title]) => ({ title, items: rows.filter((row) => row.role.startsWith(`${prefix}.`)) }))
     .filter((group) => group.items.length > 0)
     .map((group) => section(group.title, '', [grid(group.items, kitName, handlers)]));
-  const coveredSection = element('div', 'covered');
-  if (groups.length > 0) coveredSection.append(element('h2', 'covered-title', 'Covered'), ...groups);
-  container.replaceChildren(setupSection(rows.filter((row) => !isCovered(row)), kitName, handlers), coveredSection);
+  const node = element('div', 'covered');
+  if (groups.length > 0) node.append(element('h2', 'covered-title', 'Bound'), ...groups);
+  return node;
+}
+
+export function renderCards(container: HTMLElement, rows: BindingRow[], kitName: string, handlers: CardHandlers): void {
+  store.release();
+  const by = (...states: Coverage[]) => rows.filter((row) => states.includes(coverageOf(row)));
+  const done = by('yours').length === rows.length ? element('div', 'all-covered', 'Every element has its own component.') : null;
+  const parts = [done, setupSection(by('kit', 'missing'), kitName, handlers), substituteSection(by('reused'), kitName, handlers), boundSection(by('yours'), kitName, handlers)];
+  container.replaceChildren(...parts.filter((node): node is HTMLElement => Boolean(node)));
 }
 

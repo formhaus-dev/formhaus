@@ -31,17 +31,23 @@ const map: LegacyMap = {
 };
 
 let stored: unknown;
+let saved: Record<string, unknown>;
 const data = new Map<string, string>();
 
 beforeEach(() => {
   data.clear();
   stored = map;
+  saved = {};
   vi.stubGlobal('figma', {
     importComponentSetByKeyAsync: async (key: string) => {
       if (!sets[key]) throw new Error('not found');
       return sets[key];
     },
-    clientStorage: { getAsync: async () => stored },
+    clientStorage: {
+      getAsync: async (key: string) => (key === 'formhaus-component-map' ? stored : saved[key]),
+      setAsync: async (key: string, value: unknown) => { saved[key] = value; },
+      deleteAsync: async (key: string) => { if (key === 'formhaus-component-map') stored = undefined; },
+    },
     root: {
       getSharedPluginData: (_: string, key: string) => data.get(key) ?? '',
       setSharedPluginData: (_: string, key: string, value: string) => void data.set(key, value),
@@ -67,6 +73,8 @@ describe('migrateStoredMap', () => {
   it('moves a saved map into an unconfigured document once', async () => {
     expect(await migrateStoredMap()).toBe(7);
     expect(JSON.parse(data.get('config')!)).toMatchObject({ source: 'custom' });
+    expect(saved['formhaus-profiles']).toEqual([expect.objectContaining({ name: 'Saved component map', useInNewFiles: true })]);
+    expect(stored).toBeUndefined();
     expect(await migrateStoredMap()).toBe(0);
   });
 

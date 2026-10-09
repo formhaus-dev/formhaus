@@ -2,6 +2,7 @@ import type { FormDefinition } from '@formhaus/core';
 import type { Notice } from '../bindings/messages';
 import type { BindingRow } from '../bindings/rows';
 import type { SelectionPreview } from '../bindings/selection-preview';
+import type { Profile } from '../profiles';
 import { createComponentsPanel } from './components';
 import { byId } from './dom';
 import { createFormPanel } from './form-panel';
@@ -18,6 +19,7 @@ interface PluginMessage {
   notice?: Notice;
   item?: SelectionPreview | null;
   definition?: FormDefinition | null;
+  profiles?: Profile[];
 }
 
 function post(message: Record<string, unknown>): void {
@@ -30,7 +32,7 @@ function showOutput(element: HTMLElement, text: string, type?: OutputType): void
 }
 
 const bindingsOutput = byId('bindingsOutput');
-const components = createComponentsPanel(post);
+const components = createComponentsPanel(post, (text, tone) => showOutput(bindingsOutput, text, tone));
 const form = createFormPanel(post, showOutput, () => selectTab('components'));
 
 function selectTab(target: string): void {
@@ -56,7 +58,7 @@ const HANDLERS: Record<string, (message: PluginMessage) => void> = {
   form: (message) => form.setCanvasForm(message.definition ?? null),
   selection: (message) => components.setSelection(message.item ?? null),
   bindings: (message) => {
-    components.setRows(message.rows ?? []);
+    components.setRows(message.rows ?? [], message.profiles ?? [], message.notice?.profileId);
     showOutput(bindingsOutput, message.notice?.text ?? '', message.notice?.tone);
   },
   bindingsError: (message) => showOutput(bindingsOutput, message.message ?? '', 'error'),
