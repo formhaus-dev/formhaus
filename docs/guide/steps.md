@@ -133,7 +133,7 @@ On submit, all visible fields across all visible steps are returned. Fields in h
 
 ## Advance when an answer is activated
 
-Set `autoAdvance: true` on a radio field. Clicking an option or pressing Space/Enter advances after validating the **whole current step**. Arrow keys select an answer without leaving the group. Initial values, `setValue()`, hydration and rerenders never advance. Selecting a radio on the final step never submits.
+Set `autoAdvance: true` on a radio field. Clicking an option or pressing Space/Enter advances after validating the **whole current step**. Arrow keys select an answer without leaving the group. A double-click counts as one answer, so it cannot also answer the next question. Initial values, `setValue()`, hydration and rerenders never advance. Selecting a radio on the final step never submits.
 
 ```ts
 import type { FormDefinition } from '@formhaus/core'
@@ -157,7 +157,7 @@ const definition: FormDefinition = {
 
 `next: false` hides the built-in Next button; it does not forbid navigation and never hides the final Submit button. After a validation error or a cancelled/failed guard, activate the same selected option again to retry. Only hide Next when every user has an accessible way to retry. Keep Next for steps with several inputs or custom fields that do not support activation. Custom action components receive `showPrimary` and must honor it.
 
-Custom React fields call `onChange(value)` for editing and `onCommit(value)` for intentional activation. Custom Vue fields emit `update:value` and `commit` respectively. `onCommit`/`commit` also saves the value; emit only one of them for an activation. The built-in radio supports this contract. Other built-in field types do not auto-advance.
+Custom React fields call `onChange(value)` for editing and `onCommit(value)` for intentional activation. Custom Vue fields emit `update:value` and `commit` respectively. `onCommit`/`commit` also saves the value; emit only one of them for an activation. For repeat clicks (`event.detail > 1`), call `event.preventDefault()` and skip the commit, so a double-click neither commits nor checks an option on the next step. The built-in radio supports this contract. Other built-in field types do not auto-advance.
 
 ## Lifecycle hooks
 

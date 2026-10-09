@@ -55,7 +55,11 @@ export function RadioField({
                   if (commit && event.key === ' ') { event.preventDefault(); commit(opt.value); }
                 }}
                 onPointerDown={() => { arrowSelection.current = false; }}
-                onClick={() => { if (commit && !arrowSelection.current) commit(opt.value); }}
+                onClick={(event) => {
+                  if (!commit || arrowSelection.current) return;
+                  if (event.detail > 1) event.preventDefault();
+                  else commit(opt.value);
+                }}
                 onBlur={onBlur}
                 onFocus={onFocus}
               />

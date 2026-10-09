@@ -19,6 +19,11 @@ function onKeyDown(event: KeyboardEvent, value: string) {
     if (!event.repeat) emit('commit', value);
   }
 }
+function onClick(event: MouseEvent, value: string) {
+  if (!props.field.autoAdvance || arrowSelection) return;
+  if (event.detail > 1) event.preventDefault();
+  else emit('commit', value);
+}
 function onKeyUp(event: KeyboardEvent, value: string) {
   arrowSelection = false;
   if (props.field.autoAdvance && event.key === ' ') { event.preventDefault(); emit('commit', value); }
@@ -55,7 +60,7 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
           @keydown="onKeyDown($event, option.value)"
           @keyup="onKeyUp($event, option.value)"
           @pointerdown="arrowSelection = false"
-          @click="() => { if (props.field.autoAdvance && !arrowSelection) emit('commit', option.value); }"
+          @click="onClick($event, option.value)"
           @change="() => { if (!props.field.autoAdvance || arrowSelection) emit('update:value', option.value); }"
         />
         <label :for="`${groupId}-${option.value}`" class="fh-field__radio-label">
