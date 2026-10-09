@@ -60,6 +60,12 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Specification',
+        items: [
+          { text: 'Form definition 1.0', link: '/spec' },
+        ]
+      },
+      {
         text: 'Figma Plugin',
         items: [
           { text: 'Plugin Guide', link: '/guide/figma' },

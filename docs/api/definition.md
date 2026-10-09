@@ -4,7 +4,7 @@ description: "FormDefinition reference: fields, steps, actions, show conditions,
 
 # Definition Reference
 
-Every form is a JSON object following the `FormDefinition` type.
+Every form is a JSON object following the `FormDefinition` type. The [specification](/spec) defines how core interprets each property.
 
 ## FormDefinition
 
