@@ -33,6 +33,7 @@ function onFileChange(event: Event) {
       :aria-invalid="!!props.error || undefined"
       :aria-describedby="(props.error || props.field.helperText) ? helperId : undefined"
       @focus="emit('focus')"
+      @blur="emit('blur')"
       @change="onFileChange"
     />
     <p v-if="props.error" :id="helperId" class="fh-field__error">{{ props.error }}</p>

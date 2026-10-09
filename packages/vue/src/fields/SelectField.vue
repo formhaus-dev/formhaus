@@ -30,6 +30,7 @@ function onChange(event: Event) {
       :aria-invalid="!!props.error || undefined"
       :aria-describedby="(props.error || props.field.helperText) ? helperId : undefined"
       @focus="emit('focus')"
+      @blur="emit('blur')"
       @change="onChange"
     >
       <option v-if="props.field.placeholder" value="" disabled>

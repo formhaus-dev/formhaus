@@ -25,6 +25,7 @@ const helperId = computed(() => `fh-field-${props.field.key}-helper`);
         :aria-invalid="!!props.error || undefined"
         :aria-describedby="(props.error || props.field.helperText) ? helperId : undefined"
         @focus="emit('focus')"
+        @blur="emit('blur')"
         @change="(e) => emit('update:value', (e.target as HTMLInputElement).checked)"
       />
       <label v-if="props.field.label" :for="inputId" class="fh-field__label">
