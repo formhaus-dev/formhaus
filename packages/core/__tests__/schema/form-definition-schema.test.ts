@@ -12,6 +12,7 @@ const jsonFiles = (dir: string) =>
 const examples = [
   ...jsonFiles(resolve(repoRoot, 'examples/definitions')),
   ...jsonFiles(resolve(repoRoot, 'packages/core/fixtures')),
+  ...jsonFiles(resolve(repoRoot, 'docs/recipes/definitions')),
   resolve(repoRoot, 'examples/react-quiz/src/quiz.json'),
 ];
 

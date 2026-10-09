@@ -1,0 +1,20 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "id": "newsletter",
+  "title": "Newsletter",
+  "submit": { "label": "Subscribe" },
+  "fields": [
+    { "key": "email", "type": "email", "label": "Email", "validation": { "required": true } },
+    {
+      "key": "frequency",
+      "type": "select",
+      "label": "How often",
+      "defaultValue": "weekly",
+      "options": [
+        { "value": "weekly", "label": "Weekly" },
+        { "value": "monthly", "label": "Monthly" }
+      ]
+    },
+    { "key": "consent", "type": "checkbox", "label": "I agree to receive emails", "validation": { "required": "Please confirm to subscribe" } }
+  ]
+}

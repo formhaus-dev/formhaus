@@ -1,0 +1,44 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "id": "account-flow",
+  "title": "Create an account",
+  "submit": { "label": "Create account" },
+  "steps": [
+    {
+      "id": "kind",
+      "title": "Choose an account type",
+      "next": false,
+      "fields": [
+        {
+          "key": "kind",
+          "type": "radio",
+          "label": "Account type",
+          "autoAdvance": true,
+          "helperText": "Click or press Space/Enter to continue.",
+          "validation": { "required": true },
+          "options": [
+            { "value": "business", "label": "Business" },
+            { "value": "personal", "label": "Personal" }
+          ]
+        }
+      ],
+      "routes": [
+        { "to": "business", "show": [{ "field": "kind", "eq": "business" }] },
+        { "to": "personal" }
+      ]
+    },
+    {
+      "id": "business",
+      "title": "Company details",
+      "fields": [{ "key": "company", "type": "text", "label": "Company", "validation": { "required": true } }],
+      "routes": [{ "to": "review" }]
+    },
+    {
+      "id": "personal",
+      "title": "Personal details",
+      "fields": [{ "key": "name", "type": "text", "label": "Name", "validation": { "required": true } }],
+      "routes": [{ "to": "review" }]
+    },
+    { "id": "review", "title": "Review and submit", "fields": [] }
+  ]
+}

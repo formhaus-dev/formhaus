@@ -1,4 +1,5 @@
 {
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
   "id": "plan-quiz",
   "title": "Find your plan",
   "submit": { "label": "Book a call" },

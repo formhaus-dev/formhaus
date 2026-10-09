@@ -1,0 +1,83 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "id": "project-inquiry",
+  "title": "Start a project",
+  "submit": { "label": "Send inquiry" },
+  "steps": [
+    {
+      "id": "service",
+      "title": "What do you need?",
+      "fields": [
+        {
+          "key": "service",
+          "type": "radio",
+          "label": "Service",
+          "validation": { "required": true },
+          "options": [
+            { "value": "design", "label": "Design" },
+            { "value": "development", "label": "Development" }
+          ]
+        }
+      ],
+      "routes": [
+        { "to": "design", "show": [{ "field": "service", "eq": "design" }] },
+        { "to": "development", "show": [{ "field": "service", "eq": "development" }] }
+      ]
+    },
+    {
+      "id": "design",
+      "title": "Design scope",
+      "fields": [
+        { "key": "pages", "type": "number", "label": "Number of screens", "validation": { "required": true, "min": 1 } },
+        { "key": "hasBrand", "type": "switch", "label": "We have brand guidelines" }
+      ],
+      "routes": [{ "to": "budget" }]
+    },
+    {
+      "id": "development",
+      "title": "Development scope",
+      "fields": [
+        {
+          "key": "platform",
+          "type": "select",
+          "label": "Platform",
+          "validation": { "required": true },
+          "options": [
+            { "value": "web", "label": "Web" },
+            { "value": "ios", "label": "iOS" },
+            { "value": "android", "label": "Android" }
+          ]
+        },
+        { "key": "repoUrl", "type": "text", "label": "Existing repository URL" }
+      ],
+      "routes": [{ "to": "budget" }]
+    },
+    {
+      "id": "budget",
+      "title": "Budget",
+      "skip": { "label": "Not sure yet" },
+      "fields": [
+        {
+          "key": "budget",
+          "type": "radio",
+          "label": "Budget range",
+          "validation": { "required": true },
+          "options": [
+            { "value": "small", "label": "Under $10k" },
+            { "value": "medium", "label": "$10k to $50k" },
+            { "value": "large", "label": "Over $50k" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact details",
+      "back": { "label": "Edit answers" },
+      "fields": [
+        { "key": "name", "type": "text", "label": "Name", "validation": { "required": true } },
+        { "key": "email", "type": "email", "label": "Work email", "validation": { "required": true } }
+      ]
+    }
+  ]
+}

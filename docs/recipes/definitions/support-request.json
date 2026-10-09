@@ -1,0 +1,55 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "id": "support-request",
+  "title": "Contact support",
+  "submit": { "label": "Send request" },
+  "steps": [
+    {
+      "id": "topic",
+      "title": "What is it about?",
+      "fields": [
+        {
+          "key": "topic",
+          "type": "select",
+          "label": "Topic",
+          "validation": { "required": true },
+          "options": [
+            { "value": "billing", "label": "Billing" },
+            { "value": "bug", "label": "Something is broken" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        {
+          "key": "orderId",
+          "type": "text",
+          "label": "Order number",
+          "show": [{ "field": "topic", "eq": "billing" }],
+          "validation": { "required": true, "pattern": "^[0-9]{6}$", "patternMessage": "Six digits" }
+        }
+      ]
+    },
+    {
+      "id": "details",
+      "title": "Details",
+      "fields": [
+        { "key": "message", "type": "textarea", "label": "Describe the problem", "rows": 5, "validation": { "required": true, "minLength": 20 } }
+      ]
+    },
+    {
+      "id": "screenshot",
+      "title": "Screenshot",
+      "show": [{ "field": "topic", "eq": "bug" }],
+      "skip": { "label": "No screenshot" },
+      "fields": [
+        { "key": "screenshot", "type": "file", "label": "Screenshot", "accept": "image/*", "validation": { "required": true } }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "How do we reach you?",
+      "fields": [
+        { "key": "email", "type": "email", "label": "Email", "validation": { "required": true } }
+      ]
+    }
+  ]
+}

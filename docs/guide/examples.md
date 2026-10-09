@@ -4,23 +4,41 @@ description: "Example Formhaus JSON definitions: basic form, conditional fields,
 
 # Examples
 
-The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tree/main/examples/definitions) drive the documentation playground.
+The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tree/main/examples/definitions) are returned by the MCP server's `example_definitions` tool. All of them except `branching-form.json` are also playground presets. Copy any of them into a project and pass it to `FormRenderer`.
 
-## Available definitions
+## Basic form
 
-| File | Type | What it shows |
-|------|------|---------------|
-| [`basic-form.json`](https://github.com/ignsm/formhaus/blob/main/examples/definitions/basic-form.json) | Single step | Text, autocomplete, datetime, and basic validation |
-| [`conditional-fields.json`](https://github.com/ignsm/formhaus/blob/main/examples/definitions/conditional-fields.json) | Single step | Payment fields controlled by `show` conditions |
-| [`multi-step.json`](https://github.com/ignsm/formhaus/blob/main/examples/definitions/multi-step.json) | 3 steps | Navigation, progress, defaults, and several field types |
-| [`validation.json`](https://github.com/ignsm/formhaus/blob/main/examples/definitions/validation.json) | Single step | Length, pattern, range, and `matchField` validation |
+A single-step contact form with text, email, autocomplete and datetime fields and required rules.
 
-## Branching with radio activation
+<<< @/../examples/definitions/basic-form.json
 
-[`branching-form.json`](https://github.com/ignsm/formhaus/blob/c2bc73d57a13733352151590af1bb3fdcc796434/examples/definitions/branching-form.json) selects a business or personal path from a radio answer, then explicitly converges at review. It includes `autoAdvance` and hides Next on the radio step. Use it with the [routing guide](/guide/steps#route-between-branches); it is a standalone definition, not a playground preset.
+## Conditional fields
+
+A payment form where `show` conditions on `paymentMethod` reveal card or crypto wallet fields.
+
+<<< @/../examples/definitions/conditional-fields.json
+
+## Multi-step form
+
+A three-step account setup with progress, defaults, a select, a checkbox, a radio and a switch.
+
+<<< @/../examples/definitions/multi-step.json
+
+## Validation
+
+A registration form with length, pattern, range and `matchField` rules and custom messages.
+
+<<< @/../examples/definitions/validation.json
+
+## Branching form
+
+A radio answer with `autoAdvance` picks a business or personal step, and both branches converge at review through `routes`. See the [routing guide](/guide/steps#route-between-branches).
+
+<<< @/../examples/definitions/branching-form.json
 
 ## Next steps
 
+- [Recipes](/recipes/): complete forms for common jobs with React and Vue code
 - [Figma Plugin](/guide/figma): render these definitions as Figma mockups
 - [/formhaus:formhaus-create-form](/guide/formhaus-create-form): generate new definitions with Claude
 - [Definition Reference](/api/definition): full TypeScript types

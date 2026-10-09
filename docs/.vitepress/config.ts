@@ -41,6 +41,18 @@ export default defineConfig({
         ]
       },
       {
+        text: 'Recipes',
+        items: [
+          { text: 'Overview', link: '/recipes/' },
+          { text: 'Multi-step with branching', link: '/recipes/multi-step-branching' },
+          { text: 'Conditional fields', link: '/recipes/conditional-fields' },
+          { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
+          { text: 'Headless engine', link: '/recipes/headless-engine' },
+          { text: 'Figma to React', link: '/recipes/figma-to-react' },
+          { text: 'AI agents', link: '/recipes/ai-agents' },
+        ]
+      },
+      {
         text: 'API Reference',
         items: [
           { text: 'Definition', link: '/api/definition' },

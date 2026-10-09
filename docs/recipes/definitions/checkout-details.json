@@ -1,0 +1,70 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "id": "checkout-details",
+  "title": "Checkout details",
+  "submit": { "label": "Continue to payment" },
+  "fields": [
+    {
+      "key": "customerType",
+      "type": "radio",
+      "label": "Buying as",
+      "defaultValue": "personal",
+      "options": [
+        { "value": "personal", "label": "Individual" },
+        { "value": "business", "label": "Business" }
+      ]
+    },
+    {
+      "key": "companyName",
+      "type": "text",
+      "label": "Company name",
+      "show": [{ "field": "customerType", "eq": "business" }],
+      "validation": { "required": true }
+    },
+    {
+      "key": "needInvoice",
+      "type": "checkbox",
+      "label": "Send me an invoice",
+      "show": [{ "field": "customerType", "eq": "personal" }]
+    },
+    {
+      "key": "invoiceEmail",
+      "type": "email",
+      "label": "Invoice email",
+      "showAny": [
+        { "field": "customerType", "eq": "business" },
+        { "field": "needInvoice", "eq": true }
+      ],
+      "validation": { "required": true }
+    },
+    {
+      "key": "delivery",
+      "type": "radio",
+      "label": "Delivery",
+      "validation": { "required": true },
+      "options": [
+        { "value": "courier", "label": "Courier" },
+        { "value": "pickup", "label": "Pickup point" }
+      ]
+    },
+    {
+      "key": "address",
+      "type": "textarea",
+      "label": "Delivery address",
+      "rows": 3,
+      "show": [{ "field": "delivery", "eq": "courier" }],
+      "validation": { "required": true }
+    },
+    {
+      "key": "pickupPoint",
+      "type": "select",
+      "label": "Pickup point",
+      "show": [{ "field": "delivery", "eq": "pickup" }],
+      "validation": { "required": true },
+      "options": [
+        { "value": "central", "label": "Central station" },
+        { "value": "north", "label": "North mall" }
+      ]
+    }
+  ]
+}
