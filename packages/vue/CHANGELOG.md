@@ -1,5 +1,15 @@
 # @formhaus/vue
 
+## 0.7.1
+
+### Patch Changes
+
+- 4371c19: - An `errors` prop with unchanged contents no longer clears validation errors on re-render.
+  - An `errors` prop is re-applied when it repeats an error the user has since cleared.
+- 4371c19: - The `errors` prop is applied on first render and after the definition changes.
+- Updated dependencies [4371c19]
+  - @formhaus/core@0.7.1
+
 ## 0.7.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/react",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "React components for Formhaus forms. Define a form once in JSON, render with native HTML or your own components.",
   "type": "module",
   "sideEffects": false,
