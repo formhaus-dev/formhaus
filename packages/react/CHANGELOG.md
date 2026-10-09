@@ -1,5 +1,15 @@
 # @formhaus/react
 
+## 0.7.2
+
+### Patch Changes
+
+- ccd6e34: - A failed navigation or submit error clears when the user retries or the definition changes, instead of staying on the next step.
+  - A failed action no longer replaces field or external errors. Its message shows next to the form-level errors and is not added to `engine.topLevelErrors`.
+- 2e2d39b: - Double-clicking an `autoAdvance` radio answers only the current question. The second click no longer selects an option on the next step.
+- Updated dependencies
+  - @formhaus/core@0.7.2
+
 ## 0.7.1
 
 ### Patch Changes

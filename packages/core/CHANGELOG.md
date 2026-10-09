@@ -1,5 +1,9 @@
 # @formhaus/core
 
+## 0.7.2
+
+No changes. Version aligned with `@formhaus/react` and `@formhaus/vue`.
+
 ## 0.7.1
 
 ### Patch Changes
