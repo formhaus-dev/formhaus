@@ -1,0 +1,34 @@
+{
+  "id": "signup",
+  "title": "Sign up",
+  "submit": { "label": "Create account" },
+  "fields": [
+    {
+      "key": "email",
+      "type": "email",
+      "label": "Email",
+      "validation": {
+        "required": "Enter your email",
+        "pattern": "^\\S+@\\S+$",
+        "patternMessage": "Enter a valid email"
+      }
+    },
+    {
+      "key": "plan",
+      "type": "select",
+      "label": "Plan",
+      "options": [
+        { "value": "solo", "label": "Solo" },
+        { "value": "team", "label": "Team" }
+      ],
+      "validation": { "required": true }
+    },
+    {
+      "key": "company",
+      "type": "text",
+      "label": "Company",
+      "show": [{ "field": "plan", "eq": "team" }],
+      "validation": { "required": "Enter your company" }
+    }
+  ]
+}

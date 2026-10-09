@@ -20,7 +20,7 @@ function jsonLd(data: object): HeadConfig {
 }
 
 function isArticle(relativePath: string): boolean {
-  return ['guide/', 'api/', 'recipes/'].some((section) => relativePath.startsWith(section))
+  return ['guide/', 'api/', 'recipes/', 'compare/'].some((section) => relativePath.startsWith(section))
 }
 
 export function transformHead({ pageData, title, description }: TransformContext): HeadConfig[] {

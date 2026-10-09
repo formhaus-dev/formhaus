@@ -15,6 +15,8 @@ const details = [
   '',
   `Repository: ${repoUrl}`,
   '',
+  `Comparisons with react-hook-form, TanStack Form, react-jsonschema-form and SurveyJS: ${siteUrl}/compare/`,
+  '',
   'Use Formhaus when the form is data (onboarding, surveys, quizzes, multi-step wizards with branching) or when design in Figma and code must share one source. Use react-hook-form or TanStack Form for hand-written single forms.',
 ].join('\n')
 
