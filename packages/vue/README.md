@@ -1,12 +1,6 @@
 # @formhaus/vue
 
-Vue 3 adapter for [Formhaus](https://github.com/ignsm/formhaus). Renders forms from a JSON definition with native HTML inputs by default. Drop in your own components via a `components` prop.
-
-## Navigation and submission
-
-`FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. Use `:submit-handler="save"` to await saving and track loading. Legacy `@submit` is a notification whose listeners cannot be awaited; do not save in both places. Custom fields emit `commit`; custom actions honor `showPrimary`. See the [complete Vue example and lifecycle semantics](../../docs/guide/steps.md#vue-lifecycle-example).
-
-Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](../../docs/guide/steps.md#route-between-branches).
+`@formhaus/vue` renders a JSON form definition in Vue 3, including multi-step, conditional and branching forms. It uses native HTML inputs by default; pass your own components through the `components` prop. Part of [Formhaus](https://github.com/ignsm/formhaus).
 
 ## Install
 
@@ -15,10 +9,6 @@ npm install @formhaus/core @formhaus/vue
 ```
 
 Requires Vue ≥3.3 and Node ≥18.
-
-## Generating a definition
-
-Write the form JSON by hand, or use the [`/formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
 
 ## Usage
 
@@ -39,6 +29,16 @@ async function handleSubmit(values: Record<string, unknown>) {
   <FormRenderer :definition="definition" :submit-handler="handleSubmit" />
 </template>
 ```
+
+## Generating a definition
+
+Write the form JSON by hand, or use the [`/formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
+
+## Navigation and submission
+
+`FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. Use `:submit-handler="save"` to await saving and track loading. Legacy `@submit` is a notification whose listeners cannot be awaited; do not save in both places. Custom fields emit `commit`; custom actions honor `showPrimary`. See the [complete Vue example and lifecycle semantics](https://formhaus.dev/guide/steps.html#vue-lifecycle-example).
+
+Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](https://formhaus.dev/guide/steps.html#route-between-branches).
 
 ## Custom components
 

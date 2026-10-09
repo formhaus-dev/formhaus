@@ -1,7 +1,7 @@
 {
   "name": "@formhaus/vue",
   "version": "0.8.0",
-  "description": "Vue 3 components for Formhaus forms. Define a form once in JSON, render with native HTML or your own components.",
+  "description": "Render multi-step, conditional and branching forms in Vue 3 from a JSON form definition. Native inputs or your own components.",
   "type": "module",
   "sideEffects": false,
   "engines": {
@@ -38,9 +38,35 @@
     "vue": "^3.5.13"
   },
   "license": "MIT",
+  "homepage": "https://formhaus.dev",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ignsm/formhaus.git",
     "directory": "packages/vue"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/ignsm/formhaus/issues"
+  },
+  "keywords": [
+    "form",
+    "forms",
+    "form-definition",
+    "json-form",
+    "form-renderer",
+    "multi-step-form",
+    "wizard",
+    "conditional-fields",
+    "conditional-logic",
+    "branching",
+    "validation",
+    "headless-form",
+    "form-engine",
+    "form-builder",
+    "survey",
+    "quiz",
+    "typescript",
+    "vue",
+    "vue3",
+    "vue-form"
+  ]
 }

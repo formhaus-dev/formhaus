@@ -1,12 +1,6 @@
 # @formhaus/react
 
-React adapter for [Formhaus](https://github.com/ignsm/formhaus). Renders forms from a JSON definition with native HTML inputs by default. Drop in your own components via a `components` prop.
-
-## Navigation and submission
-
-`FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. React awaits `onSubmit` and keeps the form busy until it settles. Custom fields use `onCommit(value)` for activation; custom actions honor `showPrimary`. See [examples and lifecycle semantics](../../docs/guide/steps.md).
-
-Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](../../docs/guide/steps.md#route-between-branches).
+`@formhaus/react` renders a JSON form definition in React, including multi-step, conditional and branching forms. It uses native HTML inputs by default; pass your own components through the `components` prop. Part of [Formhaus](https://github.com/ignsm/formhaus).
 
 ## Install
 
@@ -15,10 +9,6 @@ npm install @formhaus/core @formhaus/react
 ```
 
 Requires React ≥18 and Node ≥18.
-
-## Generating a definition
-
-Write the form JSON by hand, or use the [`/formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
 
 ## Usage
 
@@ -37,6 +27,16 @@ export function ContactPage() {
   return <FormRenderer definition={definition} onSubmit={handleSubmit} />;
 }
 ```
+
+## Generating a definition
+
+Write the form JSON by hand, or use the [`/formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
+
+## Navigation and submission
+
+`FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. React awaits `onSubmit` and keeps the form busy until it settles. Custom fields use `onCommit(value)` for activation; custom actions honor `showPrimary`. See [examples and lifecycle semantics](https://formhaus.dev/guide/steps.html#lifecycle-hooks).
+
+Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](https://formhaus.dev/guide/steps.html#route-between-branches).
 
 ## Custom components
 

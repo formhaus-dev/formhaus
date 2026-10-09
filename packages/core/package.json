@@ -1,7 +1,7 @@
 {
   "name": "@formhaus/core",
   "version": "0.8.0",
-  "description": "Framework-agnostic form engine with validation, conditional visibility, and multi-step support. Define forms as plain JSON, render anywhere.",
+  "description": "JSON form definition engine: validation, conditional visibility, multi-step and branching routes. Zero dependencies, works in React, Vue, Svelte or vanilla.",
   "type": "module",
   "sideEffects": [
     "**/*.css"
@@ -39,18 +39,33 @@
     "vitest": "^4.1.2"
   },
   "license": "MIT",
+  "homepage": "https://formhaus.dev",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ignsm/formhaus.git",
     "directory": "packages/core"
   },
+  "bugs": {
+    "url": "https://github.com/ignsm/formhaus/issues"
+  },
   "keywords": [
     "form",
+    "forms",
+    "form-definition",
+    "json-form",
+    "form-renderer",
+    "multi-step-form",
+    "wizard",
+    "conditional-fields",
+    "conditional-logic",
+    "branching",
+    "validation",
+    "headless-form",
     "form-engine",
     "form-builder",
-    "validation",
-    "multi-step",
-    "conditional-forms",
-    "json"
+    "survey",
+    "quiz",
+    "typescript",
+    "framework-agnostic"
   ]
 }

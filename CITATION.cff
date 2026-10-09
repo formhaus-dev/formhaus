@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use Formhaus, please cite it using these metadata."
+title: Formhaus
+abstract: "A JSON form definition with a zero-dependency engine, React and Vue renderers, a Figma plugin and a JSON Schema."
+type: software
+authors:
+  - given-names: Ignat
+    alias: ignsm
+repository-code: "https://github.com/ignsm/formhaus"
+url: "https://formhaus.dev"
+license: MIT
+version: 0.8.0
+date-released: "2026-10-09"
+keywords:
+  - forms
+  - form-definition
+  - json
+  - multi-step-form
+  - validation
