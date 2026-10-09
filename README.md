@@ -204,7 +204,13 @@ Each field component receives the full `FormField` descriptor, the current value
 
 ## Figma plugin
 
-`@formhaus/figma` renders form definitions in Figma with built-in Material 3 and iOS-like kits or with your own components. The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill binds your library's components to the plugin. See the [plugin guide](https://formhaus.dev/guide/figma.html) for local installation.
+`@formhaus/figma` renders form definitions in Figma with built-in Material 3 and iOS-like kits or with your own components. Branching forms get a flow map, multi-step forms a clickable prototype, and a generated form can be selected, edited and updated in place.
+
+![The Formhaus plugin editing a branching form next to its flow map](docs/public/figma/hero.png)
+
+<img src="docs/public/figma/prototype.gif" alt="Clicking through a generated prototype" width="560">
+
+The [`/formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-figma-connect.html) Claude Code skill binds your library's components to the plugin. See the [plugin guide](https://formhaus.dev/guide/figma.html) for local installation.
 
 ## Contributing
 

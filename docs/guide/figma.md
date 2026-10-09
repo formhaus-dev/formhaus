@@ -2,6 +2,8 @@
 
 The Formhaus Figma plugin renders form mockups from form definitions, with a built-in Material 3 or iOS-like kit, or with your own design system components.
 
+![The Formhaus plugin editing a branching form next to its flow map on the canvas](/figma/hero.png)
+
 ## Install
 
 1. Clone the repo and install dependencies
@@ -32,13 +34,35 @@ Each step has a **Buttons** block under its fields:
 
 Labels can be changed per step, and Continue and Back can be removed. **Buttons** at the top switches between stacked buttons and buttons side by side. Side by side puts Back and the primary button in one row and the text buttons below.
 
-**Steps** at the top switches a multi-step form between separate screens and one page. One page draws every step as a titled section in a single frame with Submit at the end, without a flow map or prototype. Routes and step conditions stay in the definition, but every step is drawn.
-
 Each generated form keeps its definition. Select a form on the canvas and the plugin opens it for editing. **Update form** redraws it in place with the current components, so anyone with edit access to the file can change a form without touching JSON. Field keys follow the label until another field's condition or route refers to them, and the editor keeps conditions, routes and validation rules it does not show.
 
 ### Quick test
 
 Click **Load example** in the plugin to load a basic contact form definition, then **Generate**.
+
+## Flow map
+
+Forms with [routes](/guide/steps#route-between-branches) are laid out as a flow map: one column per position on the path and an arrow per exit, labelled with its condition. Steps are numbered by their position on the path. A step with no step after it shows Submit.
+
+![A branching account form laid out as a flow map with labelled arrows](/figma/flow-map.png)
+
+**Update form** keeps the positions of steps you moved, redraws the arrows and rewires the prototype.
+
+## Prototype
+
+Every multi-step form is wired as a Figma prototype and added as a flow starting point, so **Present** opens it at the first step.
+
+![Clicking through the generated prototype: choosing Business opens Company details, Continue opens Review](/figma/prototype.gif)
+
+- Continue and Skip go to the step the routes pick when nothing is answered.
+- Back goes back.
+- Options of a radio that drives a route or advances on its own go to their next step.
+
+## One page
+
+**Steps** at the top of the editor switches a multi-step form between separate screens and one page. One page draws every step as a titled section in a single frame with Submit at the end, without a flow map or prototype. Routes and step conditions stay in the definition, but every step is drawn.
+
+<img src="/figma/one-page.png" alt="A three-step form drawn as one page with a section per step" width="380">
 
 ## Built-in kit
 
@@ -48,7 +72,9 @@ Each kit component exposes `Label`, `Value` and `Helper` text properties and a `
 
 ## My components
 
-Open the **Components** tab to render forms with your own design system. Every field role has a card with a preview of the component it renders with.
+Open the **Components** tab to render forms with your own design system. Every field role has a card with a preview of the component it renders with, and the summary shows how many roles use your components, a related substitute or the built-in kit.
+
+<img src="/figma/components.png" alt="The Components tab with a saved design system, coverage summary and a role that still needs setup" width="480">
 
 1. Select a component, a component set or an instance on the canvas. The bar at the top shows it and suggests a role.
 2. Drag the bar onto a card, click the card, or click **Bind as …**.
@@ -76,13 +102,10 @@ Earlier versions used a JSON component map. If you saved one, the plugin turns i
 
 For each form, the plugin creates:
 
-- A card frame per step, 400px wide with auto-layout. Multi-step forms place the steps side by side.
+- A card frame per step, 400px wide with auto-layout, or one frame with a section per step in the one-page layout.
 - Instances of the bound or kit components for every field, with labels, placeholders and helper text filled in.
 - An actions group with the step's buttons.
-- For forms with [routes](/guide/steps), a flow map: steps are laid out in columns by path, arrows connect them and each arrow is labelled with its condition. Steps are numbered by their position on the path, and a step that ends the form shows Submit.
-- For multi-step forms, a clickable prototype: Continue and Skip go to the step the routes pick with no answers given, Back goes back, and options of a radio that drives a route or advances on its own go to their next step. Steps shown only for certain answers are reached through those options. The form is added as a flow starting point, so **Present** opens it at the first step.
-
-**Update form** keeps the positions of existing steps, redraws the arrows and rewires the prototype.
+- A [flow map](#flow-map) for forms with routes and a [prototype](#prototype) for multi-step forms.
 
 Built-in kits use their own card styling. With your own components the card is white and takes its font and group label style from your text field. Each frame stores the form definition, so you can select it later and edit it from the plugin.
 
