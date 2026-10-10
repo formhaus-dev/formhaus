@@ -5,11 +5,11 @@ description: "Formhaus Cloud webhooks: payload, headers, HMAC-SHA256 signature v
 
 # Webhooks
 
-A claimed form with a `webhook_url` POSTs each new submission to that URL.
+A claimed form with a `webhook_url` POSTs each new submission to that URL. Owners and editors set it; API keys act as editors.
 
 ## Set up
 
-Set `webhook_url` with an account key through [`PATCH /v1/forms/{id}`](/cloud/rest-api#update-settings) or [`update_form_settings`](/cloud/mcp#update-form-settings). Read the secret with `GET /v1/forms/{id}/webhook?reveal=true` or `reveal_secret: true`.
+Set the URL under **Form settings > Webhook**, or set `webhook_url` with an account key through [`PATCH /v1/forms/{id}`](/cloud/rest-api#update-settings) or [`update_form_settings`](/cloud/mcp#update-form-settings). Read the secret with **Reveal**, `GET /v1/forms/{id}/webhook?reveal=true` or `reveal_secret: true`. **Rotate** in the dashboard replaces the secret at once.
 
 ```bash
 curl -X PATCH https://api.formhaus.dev/v1/forms/Xk3d9QpL2a \
@@ -20,7 +20,7 @@ curl -X PATCH https://api.formhaus.dev/v1/forms/Xk3d9QpL2a \
 
 | Rule | Value |
 |---|---|
-| Scheme | `https://` only, no credentials in the URL |
+| Scheme and port | `https://` on port 443 only, no credentials in the URL |
 | Address | Public. Private, loopback, link-local and cloud metadata addresses are refused. |
 | Checked | On save and on every delivery; the request goes to the resolved IP |
 | Redirects | Not followed |
@@ -99,6 +99,10 @@ func Verify(secret, header string, body []byte, now time.Time) bool {
 
 Each attempt times out after 10 seconds and reads at most 1 KB of the response. Retries start 30 seconds after the first failure and double up to 3 hours, for 16 attempts over about 22 hours.
 
+## Failure email
+
+After 5 failed attempts in a row, owners and members with emails on get one `Webhook failing: <form title>` email with the last status or error. It is sent at most once per form per 24 hours. A successful delivery resets the count. The Forms page shows a `Webhook failing` badge.
+
 ## Delivery log
 
 `GET /v1/forms/{id}/webhook` returns `url`, `secret` (masked without `?reveal=true`) and `deliveries`, the last 100 attempts, newest first.
@@ -108,9 +112,21 @@ Each attempt times out after 10 seconds and reads at most 1 KB of the response. 
 | `submission_id` | Submission UUID |
 | `attempt` | Attempt number, from 1 |
 | `status_code` | HTTP status, `0` when no response |
-| `error` | Error text, omitted on success |
+| `error` | Generic text, omitted on success |
 | `duration_ms` | Request duration |
 | `created_at` | Attempt time |
+
+Errors never include a resolved address. The text is one of:
+
+| `error` | Cause |
+|---|---|
+| `http <code>` | The receiver answered with a non-`2xx` status |
+| `address not allowed` | Private, loopback, link-local or metadata address, or a port other than 443 |
+| `invalid url` | The URL failed the rules above |
+| `dns failed` | The host did not resolve |
+| `timeout` | No answer within 10 seconds |
+| `tls error` | Certificate or handshake failure |
+| `connection failed` | Any other network failure |
 
 ## Test send
 
