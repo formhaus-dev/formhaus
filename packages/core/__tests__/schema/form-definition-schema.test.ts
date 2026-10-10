@@ -74,6 +74,12 @@ describe('form definition JSON Schema', () => {
     expect(validate(definition)).toBe(false);
   });
 
+  it.each(['__proto__', 'constructor', 'prototype', 'toString'])('rejects the reserved field key %s', (key) => {
+    const definition = validDefinition();
+    definition.steps[0].fields[0].key = key;
+    expect(validate(definition)).toBe(false);
+  });
+
   it('rejects a route without to', () => {
     const definition = validDefinition();
     definition.steps[0].routes = [{} as { to: null }];

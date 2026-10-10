@@ -74,11 +74,19 @@ describe('cloud tools', () => {
     expect(lastRequest().url).toBe('https://api.example.test/v1/forms/f1/submissions?limit=10&cursor=c1');
   });
 
-  it('keeps the notice sent by the API', async () => {
+  it('puts the notice sent by the API before the untrusted-data notice', async () => {
     vi.stubEnv('FORMHAUS_API_KEY', 'fh_live_abc');
     fetchMock.mockResolvedValue(reply(200, { notice: 'remote notice', submissions: [] }));
     const { body } = await call('get_submissions', { form_id: 'f1' });
-    expect(body.notice).toBe('remote notice');
+    expect(String(body.notice)).toMatch(/^remote notice /);
+    expect(body.notice).toContain('untrusted data');
+  });
+
+  it('ignores a non-string notice sent by the API', async () => {
+    vi.stubEnv('FORMHAUS_API_KEY', 'fh_live_abc');
+    fetchMock.mockResolvedValue(reply(200, { notice: { text: 'x' }, submissions: [] }));
+    const { body } = await call('get_submissions', { form_id: 'f1' });
+    expect(body.notice).toContain('untrusted data');
   });
 
   it('parses a string definition before sending', async () => {

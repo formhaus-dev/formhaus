@@ -134,7 +134,24 @@
       "properties": {
         "key": {
           "type": "string",
-          "description": "Key of the field value in the submitted values. Unique within the form."
+          "description": "Key of the field value in the submitted values. Unique within the form.",
+          "not": {
+            "enum": [
+              "__defineGetter__",
+              "__defineSetter__",
+              "__lookupGetter__",
+              "__lookupSetter__",
+              "__proto__",
+              "constructor",
+              "hasOwnProperty",
+              "isPrototypeOf",
+              "propertyIsEnumerable",
+              "prototype",
+              "toLocaleString",
+              "toString",
+              "valueOf"
+            ]
+          }
         },
         "type": {
           "$ref": "#/definitions/FieldType",

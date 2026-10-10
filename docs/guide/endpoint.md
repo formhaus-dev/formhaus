@@ -40,11 +40,13 @@ Without `FORMHAUS_API_KEY` the form is unclaimed: it lasts 7 days and accepts 10
     "formhaus": {
       "command": "npx",
       "args": ["-y", "@formhaus/mcp"],
-      "env": { "FORMHAUS_API_KEY": "fh_live_..." }
+      "env": { "FORMHAUS_API_KEY": "${FORMHAUS_API_KEY}" }
     }
   }
 }
 ```
+
+Keep keys out of git; a `.mcp.json` with a literal key must not be committed.
 
 `FORMHAUS_API_BASE` overrides the API origin for the MCP tools. Requests time out after 15 seconds. Submission values returned by `get_submissions` are typed by respondents, so the result carries a `notice` that they are untrusted data.
 
