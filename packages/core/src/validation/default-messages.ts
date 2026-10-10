@@ -1,3 +1,16 @@
+export const TYPE_MESSAGES = {
+  email: 'Enter a valid email',
+  number: 'Enter a number',
+  boolean: 'Must be true or false',
+  option: 'Select one of the available options',
+  options: 'Must be a list of available options',
+  string: 'Must be text',
+  date: 'Enter a valid date',
+  datetime: 'Enter a valid date and time',
+  file: 'Must be a file reference',
+  value: 'Invalid value',
+};
+
 export function getDefaultMessage(rule: string, params?: Record<string, unknown>): string {
   switch (rule) {
     case 'required':

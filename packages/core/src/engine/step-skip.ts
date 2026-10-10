@@ -29,3 +29,9 @@ export function includeCurrentStep(engine: EngineInternals): void {
   const step = engine.currentStep;
   if (step) engine.skipped.delete(step.id);
 }
+
+export function skipStepAt(engine: EngineInternals, index: number): string[] {
+  engine.currentStepIndex = index;
+  engine.notify({ structureChanged: true });
+  return skipCurrentStep(engine);
+}

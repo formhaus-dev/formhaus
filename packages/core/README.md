@@ -51,6 +51,18 @@ Use `nextStepAsync()`, `prevStepAsync()` and `submitAsync(handler)` for cancella
 
 Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](https://formhaus.dev/guide/steps.html#route-between-branches).
 
+## Server-side validation
+
+`validateSubmission()` checks a submitted payload against the definition without a browser. It drops hidden, skipped and unknown keys, checks value types and ignores custom validators. Strings over 10,000 characters or the field's `maxLength` fail before any rule runs. `pattern` rules still run on untrusted input, so bound the execution time of the call.
+
+```ts
+import { validateSubmission } from '@formhaus/core/server';
+
+const { values, errors } = validateSubmission(definition, body.values, { skippedSteps: body.skippedSteps });
+```
+
+`@formhaus/core/server.iife.js` exposes the same function on a `Formhaus` global for embedded JS runtimes.
+
 ## Optional baseline styles
 
 The default React and Vue field components render unstyled HTML with `fh-*` class names. For a sensible starting look (padding, focus states, error colour, button styles), import the optional stylesheet:

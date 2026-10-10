@@ -7,7 +7,7 @@ export type ValidatorFn = (
   allValues: Record<string, unknown>,
 ) => string | null;
 
-const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
+export const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
 
 function isEmpty(value: unknown, field: FormField): boolean {
   return isBlank(value) || (value === false && BOOLEAN_TYPES.has(field.type));

@@ -10,7 +10,7 @@
     "typecheck": "pnpm -r --if-present run typecheck",
     "clean": "pnpm -r run clean",
     "lint:packages": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp exec publint",
-    "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp exec attw --pack --profile esm-only --exclude-entrypoints ./style.css",
+    "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp exec attw --pack --profile esm-only --exclude-entrypoints ./style.css ./server.iife.js",
     "check:source-size": "node scripts/check-source-size.mjs",
     "check:bundle-size": "node scripts/check-bundle-size.mjs",
     "changeset": "changeset",
