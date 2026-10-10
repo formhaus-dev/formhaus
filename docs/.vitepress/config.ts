@@ -53,6 +53,7 @@ export default defineConfig({
           { text: 'Quickstart', link: '/cloud/quickstart' },
           { text: 'Publishing', link: '/cloud/publishing' },
           { text: 'Collecting submissions', link: '/cloud/submissions' },
+          { text: 'Teams and roles', link: '/cloud/teams' },
           { text: 'Dashboard', link: '/cloud/dashboard' },
           { text: 'Webhooks', link: '/cloud/webhooks' },
           { text: 'Email notifications', link: '/cloud/emails' },

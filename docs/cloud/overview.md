@@ -19,9 +19,9 @@ Formhaus Cloud hosts the backend for a Formhaus definition. The open-source pack
 | Submission endpoint with server-side validation | No | `POST https://api.formhaus.dev/f/{id}` |
 | Hosted form page | No | `https://f.formhaus.dev/{id}` |
 | Embed script | No | `https://f.formhaus.dev/embed.js` |
-| Dashboard | No | `https://app.formhaus.dev` |
+| Dashboard with workspaces, roles and invites | No | `https://app.formhaus.dev` |
 | Webhooks with signatures | No | Yes |
-| Email notifications | No | Yes |
+| Email notifications: instant, daily digest, off | No | Yes |
 | REST API and CSV export | No | `https://api.formhaus.dev/v1` |
 
 ## Hosts
@@ -39,9 +39,10 @@ Formhaus Cloud hosts the backend for a Formhaus definition. The open-source pack
 | [Quickstart](/cloud/quickstart) | Connect an agent, publish a form, claim it |
 | [Publishing](/cloud/publishing) | Versions, rules, limits, unclaimed forms, keys, claim |
 | [Collecting submissions](/cloud/submissions) | Hosted link, embed, `FormhausForm`, POST contract |
-| [Dashboard](/cloud/dashboard) | Sign-in, API keys, claim |
+| [Teams and roles](/cloud/teams) | Workspaces, owner, editor and viewer, invites, member limits, deletion |
+| [Dashboard](/cloud/dashboard) | Every page: forms, responses, settings, webhooks, keys, usage, members, account |
 | [Webhooks](/cloud/webhooks) | Payload, signature, retries, delivery log |
-| [Email notifications](/cloud/emails) | Per-submission emails and throttling |
+| [Email notifications](/cloud/emails) | Notification modes, digest, other emails |
 | [REST API](/cloud/rest-api) | Endpoints, auth, pagination, CSV |
 | [MCP reference](/cloud/mcp) | Remote tools, inputs, outputs, errors |
-| [Plans, limits and data](/cloud/plans) | Limits per plan, region, retention, deletion |
+| [Plans, limits and data](/cloud/plans) | Free, Pro and Team limits, region, retention, security |
