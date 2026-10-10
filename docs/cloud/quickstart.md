@@ -19,7 +19,21 @@ With a key, add the header. The MCP client sends it; a tool argument cannot.
 
 ```bash
 claude mcp add --transport http formhaus https://api.formhaus.dev/mcp \
-  --header "Authorization: Bearer fh_live_..."
+  --header "Authorization: Bearer $FORMHAUS_API_KEY"
+```
+
+In a `.mcp.json` file, refer to the environment variable so the file holds no secret:
+
+```json
+{
+  "mcpServers": {
+    "formhaus": {
+      "type": "http",
+      "url": "https://api.formhaus.dev/mcp",
+      "headers": { "Authorization": "Bearer ${FORMHAUS_API_KEY}" }
+    }
+  }
+}
 ```
 
 The remote server has four tools: `publish_form`, `list_forms`, `get_submissions`, `update_form_settings`. See [MCP reference](/cloud/mcp).
@@ -29,7 +43,7 @@ The remote server has four tools: `publish_form`, `list_forms`, `get_submissions
 `@formhaus/mcp` runs over stdio and proxies `publish_form`, `list_forms` and `get_submissions` to the [REST API](/cloud/rest-api). It reads the key from `FORMHAUS_API_KEY`.
 
 ```bash
-claude mcp add formhaus -e FORMHAUS_API_KEY=fh_live_... -- npx -y @formhaus/mcp
+claude mcp add formhaus -e FORMHAUS_API_KEY=$FORMHAUS_API_KEY -- npx -y @formhaus/mcp
 ```
 
 | Variable | Default |
@@ -63,24 +77,27 @@ Add a waitlist form with an email field to this site and publish it with Formhau
 | `endpoint` | `https://api.formhaus.dev/f/{form_id}` |
 | `hosted_url` | `https://f.formhaus.dev/{form_id}` |
 | `embed_snippet` | `<script src="https://f.formhaus.dev/embed.js" data-form="{form_id}" async></script>` |
-| `react_snippet` | `FormhausForm` import and element |
+| `react_snippet` | React component file with `FormhausForm` |
+| `vue_snippet` | Vue single-file component with `FormhausForm` |
 | `dashboard_url` | `https://app.formhaus.dev/forms/{form_id}` |
 | `warnings` | Array of strings, empty when none |
 | `claim_url` | Only for unclaimed forms |
 | `expires_at` | Only for unclaimed forms |
 | `agent_key`, `agent_key_notice` | Only when a call without a key creates a new agent key |
 
-Store `agent_key` in `.env` as `FORMHAUS_API_KEY`. It is shown once. Never put a key in browser code: a page needs only `form_id`.
+Store `agent_key` in `.env` as `FORMHAUS_API_KEY`. It is shown once. Without it, the next publish creates a new key and new forms. Never put a key in browser code: a page needs only `form_id`.
 
 ```bash
 FORMHAUS_API_KEY=fh_agent_...
 ```
 
+Key types and scopes are in [MCP reference](/cloud/mcp#keys).
+
 ## Humans
 
 1. Open `claim_url` from the agent, or the link in the claim email.
 2. Sign in: enter your email at `https://app.formhaus.dev/login` and open the link. The link is valid for 15 minutes; the session lasts 30 days.
-3. Press **Claim**. The forms move to your account and stop expiring.
-4. Create an account key under **API keys** and give it to the agent as `FORMHAUS_API_KEY`.
+3. Press **Claim**. The forms move to your current workspace and stop expiring. You need the editor or owner role there.
+4. Optional: an owner creates an account key under **API keys** and gives it to the agent as `FORMHAUS_API_KEY`. The claimed agent key keeps working for the forms it created.
 
 Next: [put the form on a site](/cloud/submissions).

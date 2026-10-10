@@ -61,7 +61,7 @@ Limits per IP for publishes without an account key:
 | New agent keys (calls without any key) | 20 per day |
 | Claim emails | 1 per hour per address |
 
-The claim email contains the claim link and no form content. An unclaimed form is paused after reports from 3 distinct reporters within 24 hours; only Formhaus support resumes it. A report on a claimed form emails the owner instead.
+The claim email contains the claim link and no form content. An unclaimed form is paused after reports from 3 distinct networks within 24 hours; only Formhaus support resumes it. A report on a claimed form emails the owner instead.
 
 ## Keys
 
@@ -69,16 +69,18 @@ The claim email contains the claim link and no form content. An unclaimed form i
 |---|---|---|
 | None | | `publish_form` only, creates an unclaimed form |
 | `fh_agent_...` | `publish_form` without a key, returned once as `agent_key` | Unclaimed, unexpired forms it created |
-| `fh_live_...` | A human in the dashboard, under **API keys** | Every form of the account |
+| `fh_live_...` | A workspace owner in the dashboard, under **API keys** | Every form of the workspace |
 
 An agent key can list its forms, read their submissions and CSV, publish new versions, and publish up to 3 unclaimed forms. It cannot change settings: settings calls answer `owner_key_required`. It expires with its last form.
+
+An `fh_live_` key acts as an editor of its workspace and works only while the owner who created it is still an owner. See [Teams and roles](/cloud/teams#api-keys-in-a-team).
 
 Send keys as `Authorization: Bearer <key>`. Keep them in server-side configuration, such as `.env` as `FORMHAUS_API_KEY`. Pages need only `form_id`.
 
 ## Claim
 
-`claim_url` is `https://app.formhaus.dev/claim/{token}`. The person who opens it signs in and presses **Claim**.
+`claim_url` is `https://app.formhaus.dev/claim/{token}`. The person who opens it signs in and presses **Claim**. The forms go to that person's current workspace; the role there must be editor or owner.
 
 - The claim takes every unclaimed form of the same agent key that was published for the same `email` or without one. Forms published for another email stay unclaimed; the page shows how many.
-- Claimed forms stop expiring and count toward the account plan. On the Free plan, all forms in the claim must fit the 3-form limit, or nothing is claimed.
-- The agent key moves to the account as `Agent key (claimed YYYY-MM-DD), limited to forms it created`. It keeps working for the forms it created, and new forms it publishes go to the account. It still cannot change settings. Revoke it under **API keys**.
+- Claimed forms stop expiring and count toward the workspace plan. On the Free plan, all forms in the claim must fit the 3-form limit, or nothing is claimed.
+- The agent key moves to the workspace as `Agent key (claimed YYYY-MM-DD), limited to forms it created`. It keeps working for the forms it created, and new forms it publishes go to the workspace. It still cannot change settings. Revoke it under **API keys**.

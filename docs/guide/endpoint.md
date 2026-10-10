@@ -21,7 +21,7 @@ Ask the agent:
 Create a waitlist form with an email field and publish it.
 ```
 
-`publish_form` returns `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet` and, without an account key, `claim_url` and `agent_key`. See [Quickstart](/cloud/quickstart) for the local server, the plugin and every result field.
+`publish_form` returns `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet` and, without an account key, `claim_url` and `agent_key`. See [Quickstart](/cloud/quickstart) for the local server, the plugin and every result field.
 
 ## Put the form on a site
 
