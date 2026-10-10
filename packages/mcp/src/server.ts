@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import packageJson from '../package.json';
 import { capabilities, capabilitiesTool } from './capabilities';
+import { registerCloudTools } from './cloud-tools';
 import { definitionInput } from './definition-input';
 import { exampleDefinitionsTool } from './examples';
 import { simulatePathTool } from './simulate';
@@ -50,6 +51,8 @@ export function createServer(): McpServer {
     inputSchema: { id: z.string().optional().describe('Example id from the list.') },
     annotations: { readOnlyHint: true },
   }, async (input) => json(exampleDefinitionsTool(input)));
+
+  registerCloudTools(server);
 
   server.registerResource('capabilities', CAPABILITIES_URI, {
     title: 'Formhaus capabilities',

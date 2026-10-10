@@ -38,6 +38,7 @@ export default defineConfig({
           { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
           { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
           { text: 'Examples', link: '/guide/examples' },
+          { text: 'Get an Endpoint', link: '/guide/endpoint' },
         ]
       },
       {

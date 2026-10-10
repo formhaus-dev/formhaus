@@ -84,7 +84,7 @@ describe('FormEngine skip guards', () => {
     const engine = new FormEngine(endingDefinition(), { kind: 'more' });
     const submit = vi.fn();
     expect(await engine.skipStepAsync(submit)).toBe(true);
-    expect(submit).toHaveBeenCalledWith({});
+    expect(submit).toHaveBeenCalledWith({}, expect.any(Array));
     expect(engine.isStepSkipped('kind')).toBe(true);
     expect(engine.values.kind).toBe('done');
   });
@@ -100,7 +100,7 @@ describe('FormEngine skip guards', () => {
     const engine = new FormEngine(endingDefinition(), { kind: 'more', details: 'leftover' });
     const submit = vi.fn();
     expect(await engine.skipStepAsync(submit)).toBe(true);
-    expect(submit).toHaveBeenCalledWith({});
+    expect(submit).toHaveBeenCalledWith({}, expect.any(Array));
   });
 
   it('restores values when a skip submit is cancelled', async () => {
@@ -121,7 +121,7 @@ describe('FormEngine skip guards', () => {
     const engine = new FormEngine(endingDefinition(), { kind: 'more' }, { onAfterSubmit: () => { throw new Error('receipt'); } });
     const submit = vi.fn();
     await expect(engine.skipStepAsync(submit)).rejects.toMatchObject({ committed: true });
-    expect(submit).toHaveBeenCalledWith({});
+    expect(submit).toHaveBeenCalledWith({}, expect.any(Array));
     expect(engine.values.kind).toBe('done');
     expect(engine.isStepSkipped('kind')).toBe(true);
   });

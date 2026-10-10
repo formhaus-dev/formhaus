@@ -41,7 +41,7 @@ describe('FormRenderer skip and button roles', () => {
     await screen.findByRole('textbox', { name: /Notes/ });
     expect(emitted().analyticsEvent).toContainEqual([{ type: 'step_skipped', stepId: 'phone' }]);
     await fireEvent.click(button('Skip notes'));
-    await waitFor(() => expect(submitHandler).toHaveBeenCalledWith({ name: 'Ada' }));
+    await waitFor(() => expect(submitHandler).toHaveBeenCalledWith({ name: 'Ada' }, expect.any(Array)));
     expect(emitted().analyticsEvent).toContainEqual([{ type: 'step_skipped', stepId: 'notes' }]);
   });
 

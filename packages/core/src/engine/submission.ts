@@ -30,7 +30,7 @@ export async function submitAsync(engine: EngineInternals, submit: SubmitFn, kee
       values = getSubmitValues(engine);
     }
     dispatched = true;
-    await submit(values);
+    await submit(values, [...engine.skipped.keys()]);
     if (operation !== engine.operationEpoch) return true;
     await afterCommit('afterSubmit', () => lifecycle.onAfterSubmit?.(values));
     return true;

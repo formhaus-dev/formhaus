@@ -17,10 +17,16 @@ allowed-tools:
   - mcp__plugin_formhaus_formhaus__simulate_path
   - mcp__plugin_formhaus_formhaus__capabilities
   - mcp__plugin_formhaus_formhaus__example_definitions
+  - mcp__plugin_formhaus_formhaus__publish_form
+  - mcp__plugin_formhaus_formhaus__list_forms
   - mcp__formhaus__validate_definition
   - mcp__formhaus__simulate_path
   - mcp__formhaus__capabilities
   - mcp__formhaus__example_definitions
+  - mcp__formhaus__publish_form
+  - mcp__formhaus__list_forms
+  - Edit
+  - Bash
 ---
 
 # Form Definition Generator
@@ -33,7 +39,7 @@ The formhaus repo does not need to be cloned. The JSON Schema is published at
 ## Formhaus MCP tools
 
 Check whether the `formhaus` MCP server tools are available (`validate_definition`,
-`simulate_path`, `capabilities`, `example_definitions`). The Formhaus Claude Code plugin
+`simulate_path`, `capabilities`, `example_definitions`, `publish_form`). The Formhaus Claude Code plugin
 starts the server. Without the plugin, it is added with
 `claude mcp add formhaus -- npx -y @formhaus/mcp`.
 
@@ -42,6 +48,7 @@ starts the server. Without the plugin, it is added with
 - `example_definitions` lists bundled example definitions and returns one by `id`.
 - `validate_definition` checks a definition against the JSON Schema and the engine.
 - `simulate_path` walks a multi-step definition with sample answers and reports the step path.
+- `publish_form` publishes a definition to Formhaus Cloud and returns a live endpoint, a hosted page URL, an embed snippet and a React snippet.
 
 If the tools are not available, validate by hand against the types below and tell the
 user that `@formhaus/mcp` can check the result.
@@ -248,8 +255,28 @@ Show the generated JSON in a code block. Ask:
 Options:
 - A) Looks good, copy and done
 - B) Make changes (specify what)
+- C) Publish it and get a live endpoint
 
 If B: apply changes and re-present
+
+### Step 7: Publish and wire into the project
+
+Only when the user chose C, or asked for a working form, a hosted form or an endpoint.
+Requires the `publish_form` tool and a definition that passed `validate_definition`.
+
+1. Call `publish_form` with the definition. Hosted forms do not support `password`, `file`,
+   `autocomplete`, `optionsFrom` and custom field types. If the tool reports an error, fix every
+   listed path and call it again.
+2. Tell the user the `hosted_url` and `endpoint`. Without an API key the form is unclaimed
+   (7 days, 100 submissions): give them the `claim_url` from the result.
+3. Detect the project: React or Vue in `package.json`, or plain HTML. Install the matching
+   package (`@formhaus/react` or `@formhaus/vue`, plus `@formhaus/core` for `style.css`) with
+   the project's package manager.
+4. Add the `react_snippet` from the result where the user wants the form. It imports
+   `FormhausForm` from `@formhaus/react/cloud`. For Vue use `FormhausForm` from
+   `@formhaus/vue/cloud` with the same `id`. For plain HTML use `embed_snippet`.
+5. Publishing again with the same `form_id` ships a new version at the same endpoint, so
+   later edits to the definition do not change the project code.
 
 ## Example Definitions
 

@@ -15,12 +15,15 @@ export default defineConfig({
   build: {
     sourcemap: true,
     lib: {
-      entry: resolve(__dirname, 'src/index.ts'),
+      entry: {
+        index: resolve(__dirname, 'src/index.ts'),
+        cloud: resolve(__dirname, 'src/cloud/index.ts'),
+      },
       formats: ['es'],
-      fileName: 'index',
+      fileName: (_format, name) => `${name}.js`,
     },
     rollupOptions: {
-      external: ['vue', '@formhaus/core'],
+      external: ['vue', '@formhaus/core', '@formhaus/core/cloud', '@formhaus/vue'],
     },
   },
 });

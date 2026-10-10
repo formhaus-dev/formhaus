@@ -35,6 +35,6 @@ it.each([FormRenderer, HeadlessFormRenderer])('runs routes and hooks through %s'
   const send = await screen.findByRole('button', { name: 'Create account' });
   await waitFor(() => expect((send as HTMLButtonElement).disabled).toBe(false));
   fireEvent.click(send);
-  await waitFor(() => expect(submit).toHaveBeenCalledWith({ kind: 'personal', name: 'Ada' }));
+  await waitFor(() => expect(submit).toHaveBeenCalledWith({ kind: 'personal', name: 'Ada' }, expect.any(Array)));
   expect(change).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'personal', reason: 'autoAdvance' }));
 });

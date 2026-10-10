@@ -4,6 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "jsx": "react-jsx",
+    "paths": { "@formhaus/react": ["./src/index.ts"] },
     "lib": ["ES2020", "DOM"]
   },
   "include": ["src"]

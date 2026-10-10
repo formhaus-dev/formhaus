@@ -37,7 +37,7 @@ it.each([FormRenderer, HeadlessFormRenderer])('runs routed activation, validatio
   const send = await screen.findByText('Create account');
   await waitFor(() => expect((send as HTMLButtonElement).disabled).toBe(false));
   await fireEvent.click(send);
-  expect(submitHandler).toHaveBeenCalledWith({ kind: 'personal', name: 'Ada' });
+  expect(submitHandler).toHaveBeenCalledWith({ kind: 'personal', name: 'Ada' }, expect.any(Array));
   expect(emitted().submit).toEqual([[{ kind: 'personal', name: 'Ada' }]]);
   expect(change).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'personal', reason: 'autoAdvance' }));
 });

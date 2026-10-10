@@ -54,7 +54,7 @@ export interface FormRendererProps extends FormEngineOptions {
   onError?: (error: unknown) => void;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
-  onSubmit: (values: Record<string, unknown>) => Promise<void> | void;
+  onSubmit: (values: Record<string, unknown>, skippedSteps?: string[]) => Promise<void> | void;
   onCancel?: () => void;
   onStepChange?: (stepId: string, direction: 'next' | 'back') => void;
   onFieldChange?: (key: string, value: unknown, allValues: Record<string, unknown>) => void;

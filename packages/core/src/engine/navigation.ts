@@ -55,8 +55,8 @@ export async function skipStepAsync(engine: EngineInternals, submit?: SubmitFn):
   const skippedValues = engine.values;
   const edited = watchCheckedInputs(engine, { ...skippedValues });
   try {
-    return await submitAsync(engine, async (submitted) => {
-      await submit(submitted);
+    return await submitAsync(engine, async (submitted, skipped) => {
+      await submit(submitted, skipped);
       committed = true;
     }, true);
   } finally {

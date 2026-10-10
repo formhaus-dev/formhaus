@@ -1,5 +1,5 @@
 ---
-description: "Check Formhaus definitions from Claude Code, Claude Desktop or Cursor with validate_definition, simulate_path, capabilities and example_definitions."
+description: "Check Formhaus definitions from Claude Code, Claude Desktop or Cursor with validate_definition, simulate_path, capabilities, example_definitions and publish_form."
 ---
 
 # MCP Server
@@ -57,6 +57,11 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 | `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, validation `errors`, `wouldSubmit`, `submitValues` |
 | `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, adapters |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
+| `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `dashboard_url`, `warnings` |
+| `list_forms` | none | Forms of the API key account with status, version, submission count and endpoint |
+| `get_submissions` | `form_id`, optional `limit`, `cursor` | `submissions` and `next_cursor` |
+
+`publish_form`, `list_forms` and `get_submissions` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set. See [Get an endpoint](/guide/endpoint).
 
 Errors come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or duplicate step ids. Warnings come from `validateDefinition()` and point to likely mistakes.
 

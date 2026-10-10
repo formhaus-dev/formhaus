@@ -136,7 +136,7 @@ describe('FormRenderer built-in fallbacks', () => {
     fireEvent.click(screen.getByText('Custom cancel'));
 
     expect(onFieldChange).toHaveBeenCalledWith('name', 'Ann', { name: 'Ann' });
-    expect(onSubmit).toHaveBeenCalledWith({ name: 'Ann' });
+    expect(onSubmit).toHaveBeenCalledWith({ name: 'Ann' }, expect.any(Array));
     expect(onCancel).toHaveBeenCalledOnce();
   });
 });

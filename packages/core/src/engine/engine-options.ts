@@ -16,7 +16,7 @@ export interface StepChangeContext {
 export type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>;
 export type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>;
 export type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>;
-export type SubmitFn = (values: Record<string, unknown>) => void | Promise<void>;
+export type SubmitFn = (values: Record<string, unknown>, skippedSteps?: string[]) => void | Promise<void>;
 
 export interface FormEngineOptions {
   onBeforeStepChange?: BeforeStepChangeFn;

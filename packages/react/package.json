@@ -11,13 +11,17 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./cloud": {
+      "types": "./dist/cloud.d.ts",
+      "import": "./dist/cloud.js"
     }
   },
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "rm -rf dist && tsup",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:resolve": "node --input-type=module -e \"import('./dist/index.js').then(m => { if (!m.FormRenderer) process.exit(1); console.log('ESM resolve OK'); })\"",

@@ -4,6 +4,7 @@
     "outDir": "dist",
     "rootDir": "src",
     "jsx": "preserve",
+    "paths": { "@formhaus/vue": ["./src/index.ts"] },
     "lib": ["ES2020", "DOM"]
   },
   "include": ["src/**/*.ts", "src/**/*.vue"],

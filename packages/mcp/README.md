@@ -40,6 +40,11 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 | `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, validation `errors`, `wouldSubmit`, `submitValues` |
 | `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, adapters |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
+| `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `dashboard_url`, `warnings` |
+| `list_forms` | none | Forms of the API key account with status, version, submission count and endpoint |
+| `get_submissions` | `form_id`, optional `limit`, `cursor` | `submissions` and `next_cursor` |
+
+`publish_form`, `list_forms` and `get_submissions` call Formhaus Cloud at `https://api.formhaus.dev`. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set.
 
 `simulate_path` applies `answers` as initial values, then presses the actions in order, or Next until the last step or the first blocking error. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run. The capabilities are also available as the `formhaus://capabilities` resource.
 

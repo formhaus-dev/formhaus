@@ -32,7 +32,7 @@ describe('FormEngine step skip', () => {
     engine.setValue('notes', 'Hi');
     const submit = vi.fn();
     expect(await engine.submitAsync(submit)).toBe(true);
-    expect(submit).toHaveBeenCalledWith({ name: 'Ada', notes: 'Hi' });
+    expect(submit).toHaveBeenCalledWith({ name: 'Ada', notes: 'Hi' }, expect.any(Array));
   });
 
   it('un-skips a step when Next is pressed on it again', async () => {
@@ -54,7 +54,7 @@ describe('FormEngine step skip', () => {
     engine.setValue('notes', 'draft');
     const submit = vi.fn();
     expect(await engine.skipStepAsync(submit)).toBe(true);
-    expect(submit).toHaveBeenCalledWith({ name: 'Ada', phone: '555', plan: 'free' });
+    expect(submit).toHaveBeenCalledWith({ name: 'Ada', phone: '555', plan: 'free' }, expect.any(Array));
     expect(engine.isStepSkipped('notes')).toBe(true);
   });
 
@@ -67,7 +67,7 @@ describe('FormEngine step skip', () => {
     engine.setValue('notes', 'Hi');
     const submit = vi.fn();
     expect(await engine.submitAsync(submit)).toBe(true);
-    expect(submit).toHaveBeenCalledWith(expect.objectContaining({ notes: 'Hi' }));
+    expect(submit).toHaveBeenCalledWith(expect.objectContaining({ notes: 'Hi' }), expect.any(Array));
   });
 
   it('follows routes recomputed from the reset values', async () => {

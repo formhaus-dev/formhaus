@@ -58,7 +58,7 @@ describe('FormRenderer', () => {
     render(<FormRenderer definition={definition} onSubmit={onSubmit} />);
     fireEvent.change(getInput('Name'), { target: { value: 'John' } });
     fireEvent.click(screen.getByText('Send'));
-    expect(onSubmit).toHaveBeenCalledWith({ name: 'John' });
+    expect(onSubmit).toHaveBeenCalledWith({ name: 'John' }, expect.any(Array));
   });
 
   it('updates field value on change', () => {
@@ -119,7 +119,7 @@ describe('FormRenderer', () => {
     const input = container.querySelector('input[type="datetime-local"]') as HTMLInputElement;
     fireEvent.change(input, { target: { value: '2026-05-10T14:30' } });
     fireEvent.click(screen.getByText('Save'));
-    expect(onSubmit).toHaveBeenCalledWith({ expiresAt: '2026-05-10T14:30' });
+    expect(onSubmit).toHaveBeenCalledWith({ expiresAt: '2026-05-10T14:30' }, expect.any(Array));
   });
 
   it('renders autocomplete with datalist options', () => {
@@ -166,6 +166,6 @@ describe('FormRenderer', () => {
     const input = screen.getByRole('combobox', { name: /Fruit/ }) as HTMLInputElement;
     fireEvent.change(input, { target: { value: 'apple' } });
     fireEvent.click(screen.getByText('Save'));
-    expect(onSubmit).toHaveBeenCalledWith({ fruit: 'apple' });
+    expect(onSubmit).toHaveBeenCalledWith({ fruit: 'apple' }, expect.any(Array));
   });
 });

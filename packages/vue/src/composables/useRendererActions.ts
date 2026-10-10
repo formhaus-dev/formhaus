@@ -35,9 +35,9 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     if (field.autoAdvance && engine.currentStep?.id === step?.id && !engine.isLastStep) void run(() => engine.nextStepAsync('autoAdvance'));
   }
   function send(engine: typeof form.engine, handler: typeof props.submitHandler) {
-    return async (values: Record<string, unknown>) => {
+    return async (values: Record<string, unknown>, skippedSteps?: string[]) => {
       emit('analyticsEvent', { type: 'form_submitted', fieldCount: Object.keys(values).length });
-      if (handler) await handler(values);
+      if (handler) await handler(values, skippedSteps);
       if (engine === form.engine) emit('submit', values);
     };
   }
@@ -59,9 +59,9 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
   const skip = () => run(() => {
     const engine = form.engine;
     const submit = send(engine, props.submitHandler);
-    return report(engine, engine.skipStepAsync((values) => {
+    return report(engine, engine.skipStepAsync((values, skippedSteps) => {
       emit('analyticsEvent', { type: 'step_skipped', stepId: engine.currentStep!.id });
-      return submit(values);
+      return submit(values, skippedSteps);
     }));
   });
   return { update, commit, next, prev, skip, submit, actionError };
