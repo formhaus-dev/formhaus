@@ -61,7 +61,15 @@ import { validateSubmission } from '@formhaus/core/server';
 const { values, errors } = validateSubmission(definition, body.values, { skippedSteps: body.skippedSteps });
 ```
 
-`@formhaus/core/server.iife.js` exposes the same function on a `Formhaus` global for embedded JS runtimes.
+`checkDefinition()` splits the `validateDefinition()` output into errors, which `FormEngine` rejects, and warnings.
+
+```ts
+import { checkDefinition } from '@formhaus/core/server';
+
+const { errors, warnings } = checkDefinition(definition);
+```
+
+`@formhaus/core/server.iife.js` exposes both functions on a `Formhaus` global for embedded JS runtimes.
 
 ## Optional baseline styles
 
