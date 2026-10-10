@@ -107,4 +107,78 @@ describe('cloud tools', () => {
     expect(isError).toBe(true);
     expect(body.error).toContain('offline');
   });
+
+  it('tells the agent to save a new agent key when none is set', async () => {
+    fetchMock.mockResolvedValue(reply(201, { form_id: 'f1', agent_key: 'fh_agent_x' }));
+    const { body } = await call('publish_form', { definition: linear });
+    expect(body.agent_key_instructions).toContain('FORMHAUS_API_KEY');
+    expect(body.agent_key_instructions).toContain('restart');
+  });
+
+  it('omits the agent key instructions when a key is set', async () => {
+    vi.stubEnv('FORMHAUS_API_KEY', 'fh_agent_x');
+    fetchMock.mockResolvedValue(reply(201, { form_id: 'f1', agent_key: 'fh_agent_x' }));
+    const { body } = await call('publish_form', { definition: linear });
+    expect(body.agent_key_instructions).toBeUndefined();
+  });
+
+  it('describes agent and account keys in list_forms', async () => {
+    const { tools } = await client.listTools();
+    const description = tools.find((tool) => tool.name === 'list_forms')!.description!;
+    expect(description).toContain('fh_agent_');
+    expect(description).toContain('fh_live_');
+  });
+});
+
+describe('update_form_settings', () => {
+  beforeEach(() => vi.stubEnv('FORMHAUS_API_KEY', 'fh_live_abc'));
+
+  it('patches only the given settings', async () => {
+    fetchMock.mockResolvedValue(reply(200, { form_id: 'f1', status: 'paused' }));
+    const { isError, body } = await call('update_form_settings', { form_id: 'f1', status: 'paused', notify_email: true, notify_mode: 'daily' });
+    expect(isError).toBe(false);
+    expect(body.status).toBe('paused');
+    const { url, init } = lastRequest();
+    expect(url).toBe('https://api.example.test/v1/forms/f1');
+    expect(init.method).toBe('PATCH');
+    expect(JSON.parse(init.body!)).toEqual({ status: 'paused', notify_email: true, notify_mode: 'daily' });
+  });
+
+  it('reveals the webhook secret', async () => {
+    fetchMock
+      .mockResolvedValueOnce(reply(200, { form_id: 'f1', webhook_url: 'https://example.com/hook', webhook_secret: 'whsec_abc...' }))
+      .mockResolvedValueOnce(reply(200, { url: 'https://example.com/hook', secret: 'whsec_full' }));
+    const { body } = await call('update_form_settings', { form_id: 'f1', webhook_url: 'https://example.com/hook', reveal_secret: true });
+    expect(body.webhook_secret).toBe('whsec_full');
+    expect(lastRequest().url).toBe('https://api.example.test/v1/forms/f1/webhook?reveal=true');
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ webhook_url: 'https://example.com/hook' });
+  });
+
+  it('skips the secret request without a webhook', async () => {
+    fetchMock.mockResolvedValue(reply(200, { form_id: 'f1', webhook_url: '' }));
+    await call('update_form_settings', { form_id: 'f1', reveal_secret: true });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each(['owner_key_required', 'paused_by_moderation'])('maps the %s error', async (code) => {
+    fetchMock.mockResolvedValue(reply(403, { error: code }));
+    const { isError, body } = await call('update_form_settings', { form_id: 'f1', status: 'active' });
+    expect(isError).toBe(true);
+    expect(body.error).toBe(code);
+  });
+
+  it('returns validation messages', async () => {
+    fetchMock.mockResolvedValue(reply(400, { error: 'webhook_url must be a public https URL' }));
+    const { isError, body } = await call('update_form_settings', { form_id: 'f1', webhook_url: 'http://10.0.0.1' });
+    expect(isError).toBe(true);
+    expect(body.error).toContain('webhook_url');
+  });
+
+  it('requires an API key', async () => {
+    vi.stubEnv('FORMHAUS_API_KEY', '');
+    const { isError, body } = await call('update_form_settings', { form_id: 'f1', status: 'paused' });
+    expect(isError).toBe(true);
+    expect(body.error).toContain('FORMHAUS_API_KEY');
+    expect(fetchMock).not.toHaveBeenCalled();
+  });
 });

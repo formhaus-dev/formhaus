@@ -41,10 +41,11 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 | `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, adapters |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
 | `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `dashboard_url`, `warnings` |
-| `list_forms` | none | Forms of the API key account with status, version, submission count and endpoint |
+| `list_forms` | none | Forms the API key reaches with status, version, submission count and endpoint |
 | `get_submissions` | `form_id`, optional `limit`, `cursor` | `submissions` and `next_cursor` |
+| `update_form_settings` | `form_id`, optional `webhook_url`, `notify_email`, `notify_mode`, `success_message`, `redirect_url`, `status`, `reveal_secret` | `form_id`, `status`, `success_message`, `redirect_url`, `notify_email`, `webhook_url`, `webhook_secret` |
 
-`publish_form`, `list_forms` and `get_submissions` call Formhaus Cloud at `https://api.formhaus.dev`. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set.
+`publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call Formhaus Cloud at `https://api.formhaus.dev`. The last three need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set. An account key (`fh_live_...`) reaches every form and all four tools. An agent key (`fh_agent_...`, returned once by the first keyless `publish_form`) reaches only the forms it created, and `update_form_settings` needs an account key. Save `agent_key` as `FORMHAUS_API_KEY` in `.env` and restart the server with it.
 
 `simulate_path` applies `answers` as initial values, then presses the actions in order, or Next until the last step or the first blocking error. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run. The capabilities are also available as the `formhaus://capabilities` resource.
 
