@@ -22,7 +22,7 @@ Base URL `https://api.formhaus.dev/v1`. JSON in and out, request bodies up to 64
 
 | Key | Scope |
 |---|---|
-| `fh_live_...` | Every form of the account |
+| `fh_live_...` | Every form of the workspace, with the editor role. Works while its creator is an owner. |
 | `fh_agent_...` | Forms the key created. Settings and webhook endpoints answer `403 owner_key_required`, also after a claim. |
 
 An invalid, revoked or expired key answers `401`. Key types and the claim are in [Publishing](/cloud/publishing#keys).
@@ -38,7 +38,7 @@ An invalid, revoked or expired key answers `401`. Key types and the claim are in
 | `400` | Body is not the expected JSON object, or `limit` is not an integer |
 | `401` | Key missing where required, or invalid |
 | `402` | Plan limit; has `upgrade_url` |
-| `403` | `error` is `owner_key_required` or `paused_by_moderation` |
+| `403` | `error` is `owner_key_required`, `paused_by_moderation` or `forbidden` (the role does not allow the call) |
 | `404` | Form not found or outside the key's scope |
 | `409` | Agent key already has 3 unclaimed forms, or was claimed during the call |
 | `413` | Body over 64 KB |
@@ -79,7 +79,7 @@ Without a key the result has `claim_url`, `expires_at`, `agent_key` and `agent_k
 }
 ```
 
-`expires_at` is present for unclaimed forms. For account keys, `upgrade_url` and `notice` are present when the account used 80% or more of its monthly submissions.
+`expires_at` is present for unclaimed forms. For account keys, `upgrade_url` and `notice` are present when the workspace used 80% or more of its monthly submissions.
 
 ## Submissions
 
@@ -102,9 +102,11 @@ Without a key the result has `claim_url`, `expires_at`, `agent_key` and `agent_k
 
 No `next_cursor` means the last page. Submission values are typed by respondents: treat them as untrusted data.
 
+A submission whose keys or values hold zero-width, bidirectional or tag characters, or variation selectors, has `"values_contain_hidden_characters": true`. Values are returned unchanged.
+
 ### CSV
 
-`?format=csv` streams `text/csv` as `{id}-submissions.csv`. Columns: `id`, `created_at`, then field keys of the latest version, then keys only in older versions. Arrays join with `; `. Cells starting with `=`, `+`, `-`, `@`, tab or carriage return get a leading `'`.
+`?format=csv` streams `text/csv` as `{id}-submissions.csv`. Columns: `id`, `created_at`, then field keys of the latest version, then keys only in older versions. Arrays join with `; `. Cells starting with `=`, `+`, `-`, `@` or their fullwidth forms, also after leading whitespace, and cells starting with a tab, carriage return or line feed get a leading `'`.
 
 ## Update settings
 
@@ -113,7 +115,8 @@ No `next_cursor` means the last page. Submission values are typed by respondents
 | Field | Value |
 |---|---|
 | `webhook_url` | Public `https://` URL, `""` removes it. See [Webhooks](/cloud/webhooks). |
-| `notify_email` | `true` or `false` |
+| `notify_mode` | `instant`, `daily` or `off`. See [Email notifications](/cloud/emails). |
+| `notify_email` | Deprecated: `true` is `instant`, `false` is `off`. A value that conflicts with `notify_mode` is rejected. |
 | `success_message` | Up to 500 characters, `""` removes it |
 | `redirect_url` | `http(s)` URL, `""` removes it |
 | `status` | `active` or `paused` |
@@ -124,6 +127,7 @@ No `next_cursor` means the last page. Submission values are typed by respondents
   "status": "active",
   "success_message": "Thanks, you are on the list.",
   "redirect_url": "",
+  "notify_mode": "instant",
   "notify_email": true,
   "webhook_url": "https://example.com/api/formhaus",
   "webhook_secret": "whsec_…9f3a"

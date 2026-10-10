@@ -32,27 +32,46 @@ A `redirect_url` opens in the parent page.
 
 ## FormhausForm
 
-`FormhausForm` loads the definition from `GET /f/{id}/definition`, renders it and posts submissions.
+`FormhausForm` loads the definition from `GET /f/{id}/definition`, renders it and posts submissions. `publish_form` returns both files below as `react_snippet` and `vue_snippet`.
+
+```bash
+npm install @formhaus/react @formhaus/core
+npm install @formhaus/vue @formhaus/core
+```
 
 ::: code-group
 ```tsx [React]
 import { FormhausForm } from '@formhaus/react/cloud';
 import '@formhaus/core/style.css';
 
-export function Waitlist() {
-  return <FormhausForm id="Xk3d9QpL2a" onSuccess={(submission) => console.log(submission.id)} />;
+export default function Page() {
+  return <FormhausForm id="Xk3d9QpL2a" />;
 }
 ```
 
 ```vue [Vue]
-<script setup>
+<script setup lang="ts">
 import { FormhausForm } from '@formhaus/vue/cloud';
 import '@formhaus/core/style.css';
 </script>
 
 <template>
-  <FormhausForm id="Xk3d9QpL2a" @success="(submission) => console.log(submission.id)" />
+  <FormhausForm id="Xk3d9QpL2a" />
 </template>
+```
+:::
+
+The React entry is a client component. In the Next.js App Router, import it from a server component page such as `app/waitlist/page.tsx` without a `'use client'` directive. For Nuxt, save the Vue file under `components/` or `pages/`.
+
+Callbacks:
+
+::: code-group
+```tsx [React]
+<FormhausForm id="Xk3d9QpL2a" onSuccess={(submission) => console.log(submission.id)} />
+```
+
+```vue [Vue]
+<FormhausForm id="Xk3d9QpL2a" @success="(submission) => console.log(submission.id)" />
 ```
 :::
 
@@ -66,7 +85,7 @@ import '@formhaus/core/style.css';
 | `fallback` / `#fallback` | Shown while the definition loads. |
 | `success` / `#success` | Replaces the default message after a submission. |
 
-Other `FormRenderer` props pass through. A `422` maps `errors` onto fields. The React entry starts with `'use client'`.
+Other `FormRenderer` props pass through. A `422` maps `errors` onto fields.
 
 ## POST JSON
 
@@ -97,9 +116,29 @@ curl -X POST https://api.formhaus.dev/f/Xk3d9QpL2a \
 | `500` | `{ "error": "internal" }` |
 | `503` | `{ "error": "unavailable" }`, validation timed out |
 
+### Option values
+
+`select`, `radio` and `multiselect` fields take the option `value`, not the `label`. A label that is not also a value fails with `422`. `multiselect` takes an array of values.
+
+```json
+{ "fields": [{ "key": "plan", "type": "select", "label": "Plan", "options": [{ "value": "pro", "label": "Pro plan" }] }] }
+```
+
+```json
+{ "values": { "plan": "pro" } }
+```
+
 ### Idempotency-Key
 
-Optional header, 1 to 128 characters. Kept per form for 24 hours with a SHA-256 of `values` and `skippedSteps`. A repeat with the same body returns `201` with the first `id`, also after the form is paused, and stores nothing. The same key with a different body returns `409 idempotency_key_reused`. `FormhausForm` and the hosted page send one per distinct body.
+Optional header, 1 to 128 characters. Send the same key on every retry of one submission.
+
+| Request | Result |
+|---|---|
+| New key | The submission is stored, `201` |
+| Same key, same `values` and `skippedSteps` | Replay: `201` with the first `id`, nothing new stored, also after the form is paused |
+| Same key, different body | `409 idempotency_key_reused` |
+
+Keys are kept per form for 24 hours with a SHA-256 of the normalized body. `FormhausForm` and the hosted page send one per distinct body.
 
 ### Rate limits
 
@@ -125,6 +164,7 @@ The server runs `validateSubmission()` from `@formhaus/core` against the latest 
 - Rules: `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, and conditional visibility, steps and routes from the definition.
 - Types: `email` format; `number` accepts numbers and numeric strings; `checkbox` and `switch` need booleans; `select`, `radio` and `multiselect` values must be in `options`; `date` is `YYYY-MM-DD`; `datetime` is ISO 8601. Strings are at most 10,000 characters.
 - Unknown keys and values of hidden fields are dropped.
+- Stored values are not altered. Zero-width, bidirectional and tag characters stay in the data; the dashboard shows them as `\u{XXXX}`, and `get_submissions` flags them with `values_contain_hidden_characters`.
 - Custom `validators` and field actions run only in the browser.
 - A `pattern` that runs over 50 ms fails the submission with `422` or `503`.
 
