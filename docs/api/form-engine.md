@@ -54,6 +54,10 @@ Both `initialValues` and the options object are optional. Values belonging to hi
 | `getSubmitValues()` | `Record<string, unknown>` | Returns visible field values on the active path, excluding inactive branch answers |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
 
+::: warning
+`validate()` is the browser check. It does not check value types, `options` or the `email` format, and a string such as `"5"` skips `min` and `max`. On the server, use [`validateSubmission()`](/guide/server-validation).
+:::
+
 `reset()` also removes values hidden by the new reset values, while preserving answers in skipped route branches. Independently hidden fields still follow visibility clearing rules. Pending navigation and pre-submit results are discarded. A submission already dispatched cannot be undone.
 
 A custom renderer that receives external errors as a prop can skip redundant `setErrors()` calls:
