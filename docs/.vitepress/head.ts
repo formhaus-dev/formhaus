@@ -3,9 +3,11 @@ import { articleJsonLd, homeJsonLd } from './jsonld'
 import { pageUrl, siteName, siteUrl } from './site'
 
 export const head: HeadConfig[] = [
-  ['link', { rel: 'icon', type: 'image/png', href: '/favicon.png' }],
+  ['link', { rel: 'icon', href: '/favicon.ico', sizes: '32x32' }],
+  ['link', { rel: 'icon', type: 'image/svg+xml', href: '/brand/mark.svg' }],
   ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
-  ['meta', { name: 'theme-color', content: '#5b3fb0' }],
+  ['link', { rel: 'manifest', href: '/site.webmanifest' }],
+  ['meta', { name: 'theme-color', content: '#5502fb' }],
   ['meta', { property: 'og:type', content: 'website' }],
   ['meta', { property: 'og:site_name', content: siteName }],
   ['meta', { property: 'og:image', content: `${siteUrl}/og.jpg` }],
