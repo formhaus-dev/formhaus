@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
-import { focusProblem, type CloudAction } from '@formhaus/core/cloud';
+import { CloudError, focusProblem, type CloudAction } from '@formhaus/core/cloud';
 import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
@@ -11,7 +11,7 @@ const emit = defineEmits<{ success: [submission: { id: string; values: Record<st
 const root = ref<HTMLDivElement | null>(null);
 const notice = ref<InstanceType<typeof CloudNotice> | null>(null);
 
-const { state, submit } = useCloudForm({
+const { state, submit, retry } = useCloudForm({
   id: () => props.id,
   apiBase: () => props.apiBase,
   onSuccess: (submission) => emit('success', submission),
@@ -39,7 +39,17 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
 </script>
 
 <template>
-  <p v-if="state.loadError" role="alert" class="fh-form__error">{{ state.loadError.message }}</p>
+  <template v-if="state.loadError">
+    <p role="alert" class="fh-form__error">{{ state.loadError.message }}</p>
+    <button
+      v-if="state.loadError instanceof CloudError && state.loadError.retryable"
+      type="button"
+      class="fh-form-actions__button fh-form-actions__button--secondary"
+      @click="retry"
+    >
+      Try again
+    </button>
+  </template>
   <div v-else-if="!state.definition" class="fh-form" aria-busy="true"><slot name="fallback" /></div>
   <slot v-else-if="state.done" name="success">
     <p role="status" class="fh-form__success">Thank you. Your response was submitted.</p>

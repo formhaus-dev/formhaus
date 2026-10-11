@@ -28,5 +28,6 @@ export function useCloudForm(options: CloudFormOptions) {
   onBeforeUnmount(() => controller?.dispose());
 
   const submit = (values: Record<string, unknown>, skippedSteps?: string[]) => controller!.submit(values, skippedSteps);
-  return { state, submit };
+  const retry = () => controller!.start();
+  return { state, submit, retry };
 }

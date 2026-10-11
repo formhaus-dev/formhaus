@@ -13,7 +13,8 @@ const GENERIC: CloudFailure = { message: 'Could not send. Try again.', action: '
 const BROKEN: CloudFailure = { message: 'Could not send. Reload the page and try again.', action: 'reload' };
 
 const BY_CODE: Record<string, CloudFailure> = {
-  network: { message: 'You are offline. Check your connection and try again.', action: 'retry' },
+  network: { message: 'Could not reach the form server. Check your connection and try again.', action: 'retry' },
+  timeout: { message: 'The form server did not respond. Try again.', action: 'retry' },
   invalid: { message: 'Some answers were not accepted.', action: null },
   rate_limited: { message: 'Too many attempts. Wait a minute and try again.', action: 'retry' },
   limit_reached: { message: 'This form is not accepting responses right now.', action: null },
@@ -26,6 +27,7 @@ const BY_CODE: Record<string, CloudFailure> = {
   malformed_body: BROKEN,
   unsupported_media_type: BROKEN,
   invalid_idempotency_key: BROKEN,
+  invalid_response: SERVER,
   unavailable: SERVER,
   internal: SERVER,
 };
@@ -35,6 +37,7 @@ const CODE_BY_STATUS: Record<number, string> = {
   400: 'malformed_body',
   402: 'limit_reached',
   404: 'not_found',
+  409: 'paused',
   410: 'expired',
   413: 'body_too_large',
   422: 'invalid',

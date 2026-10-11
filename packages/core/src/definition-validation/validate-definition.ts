@@ -1,6 +1,7 @@
 import { definitionErrors, routeFallthroughWarnings } from '../engine/step-routes';
 import type { FormDefinition } from '../types';
 import { analyzeDefinition } from './definition-analysis';
+import { isEntry, shapeErrors } from './shape-errors';
 
 function detectCycles(graph: Map<string, string[]>): string[][] {
   const visiting = new Map<string, boolean>();
@@ -27,8 +28,12 @@ function detectCycles(graph: Map<string, string[]>): string[][] {
   return cycles;
 }
 
-export function validateDefinition(definition: FormDefinition): string[] {
+export function validateDefinition(input: unknown): string[] {
+  const shape = shapeErrors(input);
+  if (shape.length) return shape;
+  const definition = input as FormDefinition;
   const { graph, warnings } = analyzeDefinition(definition);
+  if (!isEntry(definition.submit)) warnings.unshift('Form definition is missing the "submit" action.');
   for (const cycle of detectCycles(graph)) {
     warnings.push(`Circular show condition detected: ${cycle.join(' -> ')}`);
   }

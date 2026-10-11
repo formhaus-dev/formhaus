@@ -9,6 +9,12 @@ import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import { useRendererActions } from './hooks/useRendererActions';
 import type { FormRendererProps } from './types';
 
+const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
+
+function firstControl(root: Element | null | undefined) {
+  return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
+}
+
 export function HeadlessFormRenderer(props: FormRendererProps) {
   const { definition, initialValues, loading = false, components, optionsProviders,
     ActionsComponent, ProgressComponent, onAnalyticsEvent } = props;
@@ -32,6 +38,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   const version = useFormSnapshot(engine);
   const previousStep = useRef(engine.currentStep?.id);
   const actions = useRendererActions(engine, props);
+  const handledInvalid = useRef(0);
 
   const appliedErrors = useRef<{ engine: typeof engine; errors: Record<string, string> } | null>(null);
   useEffect(() => {
@@ -43,8 +50,9 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   }, [props.errors, engine]);
 
   useEffect(() => {
-    if (previousStep.current !== engine.currentStep?.id) focusPending.current = true;
+    if (previousStep.current !== engine.currentStep?.id || handledInvalid.current !== actions.invalidAttempts) focusPending.current = true;
     previousStep.current = engine.currentStep?.id;
+    handledInvalid.current = actions.invalidAttempts;
     if (engine.stepValidating || engine.submitting) {
       wasBusy.current = true;
       return;
@@ -57,11 +65,10 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
       return;
     }
     focusPending.current = false;
-    const target = formRef.current?.querySelector<HTMLElement>(
-      '.fh-form__fields input:not(:disabled), .fh-form__fields select:not(:disabled), .fh-form__fields textarea:not(:disabled), .fh-form__fields button:not(:disabled)',
-    );
-    (target ?? formRef.current)?.focus();
-  }, [engine, version]);
+    const fields = formRef.current?.querySelector('.fh-form__fields');
+    const target = firstControl(fields?.querySelector('[aria-invalid="true"]')) ?? firstControl(fields);
+    ((target as HTMLElement | null | undefined) ?? formRef.current)?.focus();
+  }, [engine, version, actions.invalidAttempts]);
 
   const handleFieldFocus = useCallback((key: string) => {
     onAnalyticsEvent?.({ type: 'field_focused', fieldKey: key });

@@ -12,6 +12,7 @@ Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never b
 
 ```ts
 interface FormDefinition {
+  $schema?: string;      // JSON Schema URL for editor validation
   id: string;            // Unique form identifier
   title: string;         // Form title for host UI and Figma output
   description?: string;  // Text under the title, up to 1000 characters. Added in 0.10.0
@@ -45,7 +46,7 @@ interface FormField {
   accept?: string;                // File input mime types
   rows?: number;                  // Textarea row count
   mask?: string;                  // Input mask pattern (shown as placeholder, custom components get full access)
-  inputMode?: 'text' | 'numeric' | 'tel' | 'email';
+  inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
 }
 
 type DefaultFieldType =

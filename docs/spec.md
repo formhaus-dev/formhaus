@@ -63,7 +63,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `accept` | string | Accepted file types for `file`. |
 | `rows` | number | Row count for `textarea`. |
 | `mask` | string | Input mask. Built-in renderers use it as the placeholder when `placeholder` is absent. |
-| `inputMode` | `text`, `numeric`, `tel`, `email` | Virtual keyboard hint. |
+| `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint. |
 
 Field keys SHOULD be unique across the whole definition. Fields with the same key share one value. `validateDefinition()` warns about duplicates.
 
@@ -163,7 +163,7 @@ Core evaluates one field as follows and returns the first error:
 4. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 5. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
-Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur.
+Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur. When Submit fails validation, the engine moves to the first step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
 
 ## Steps
 
@@ -204,7 +204,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`. Built-in renderers evaluate `disabled` only on `submit`, against `engine.values`, not the active projection. Values of fields off the active path still count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`. Built-in renderers evaluate `disabled` only on `submit`, against `engine.values`, not the active projection. Values of fields off the active path still count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 
@@ -263,13 +263,14 @@ Keys are field keys as written. The payload is not nested and not type-converted
 
 ## Definition checks
 
-The `FormEngine` constructor throws on:
+The `FormEngine` constructor throws an `Error` that lists the problems on:
 
+- a definition that is not an object, or `fields`, `steps`, `steps[].fields`, `routes`, `show` or `showAny` that is not an array of objects;
 - both `fields` and `steps` non-empty;
 - an invalid route target or route condition field;
 - duplicate step ids.
 
-`validateDefinition(definition)` returns warnings for the issues above and for duplicate field keys, conditions on unknown fields, circular show conditions, invalid `pattern` regexes, `skip` without a Continue or later step, branch fall-through, and step conditions on the same or a later step in a form with routes. The constructor logs these warnings with `console.warn`, together with a warning for each `validator` name missing from the `validators` option.
+`validateDefinition(definition)` never throws. It returns messages for the issues above and for a missing `submit` action, duplicate field keys, conditions without `field` or on unknown fields, circular show conditions, invalid `pattern` regexes, `skip` without a Continue or later step, branch fall-through, and step conditions on the same or a later step in a form with routes. The constructor logs these warnings with `console.warn`, together with a warning for each `validator` name missing from the `validators` option. `validateSubmission()` does not log them.
 
 ## JSON Schema
 

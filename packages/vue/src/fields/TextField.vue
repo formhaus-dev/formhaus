@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import type { FieldEmits, FormFieldProps } from '../types';
 import FieldShell from './FieldShell.vue';
 import { useField } from './useField';
@@ -23,8 +23,14 @@ const inputType = computed(() => {
   }
 });
 
+const draft = ref('');
+const text = computed(() => (
+  props.field.type === 'number' && draft.value && Object.is(Number(draft.value), props.value) ? draft.value : String(props.value ?? '')
+));
+
 function onInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
+  draft.value = value;
   emit('update:value', props.field.type === 'number' && value !== '' ? Number(value) : value);
 }
 </script>
@@ -35,7 +41,7 @@ function onInput(event: Event) {
       v-bind="input"
       class="fh-field__input"
       :type="inputType"
-      :value="String(props.value ?? '')"
+      :value="text"
       :placeholder="props.field.placeholder ?? props.field.mask"
       :inputmode="props.field.inputMode"
       @input="onInput"

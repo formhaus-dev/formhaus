@@ -40,7 +40,7 @@ export interface FormField {
   accept?: string;
   rows?: number;
   mask?: string;
-  inputMode?: 'text' | 'numeric' | 'tel' | 'email';
+  inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
 }
 
 export interface ShowCondition {
