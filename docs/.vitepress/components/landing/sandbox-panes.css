@@ -58,16 +58,12 @@
 
 @media (max-width: 767px) {
   .sandbox {
-    grid-template-rows: 60px 44px auto;
+    grid-template-rows: 60px 44px 480px;
     grid-template-areas: 'barl' 'barr' 'left';
   }
 
   .sandbox__pane--preview {
     grid-area: left;
-  }
-
-  .sandbox__pane--json {
-    height: 480px;
   }
 
   .sandbox__dots,
