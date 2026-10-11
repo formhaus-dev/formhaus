@@ -8,13 +8,6 @@
   display: none;
 }
 
-.sandbox__graph {
-  min-width: 0;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
-}
-
 .sandbox__pane--preview {
   display: flex;
   flex-direction: column;
@@ -47,8 +40,8 @@
 @media (min-width: 768px) {
   .sandbox {
     grid-template-columns: minmax(0, 52fr) minmax(0, 48fr);
-    grid-template-rows: 52px 150px minmax(0, 1fr);
-    grid-template-areas: 'barl barr' 'left graph' 'left preview';
+    grid-template-rows: 52px minmax(0, 1fr);
+    grid-template-areas: 'barl barr' 'left preview';
     height: 600px;
   }
 
@@ -65,12 +58,16 @@
 
 @media (max-width: 767px) {
   .sandbox {
-    grid-template-rows: 60px 44px 110px 480px;
-    grid-template-areas: 'barl' 'barr' 'graph' 'left';
+    grid-template-rows: 60px 44px auto;
+    grid-template-areas: 'barl' 'barr' 'left';
   }
 
   .sandbox__pane--preview {
     grid-area: left;
+  }
+
+  .sandbox__pane--json {
+    height: 480px;
   }
 
   .sandbox__dots,
@@ -107,10 +104,6 @@
   .sandbox__icon {
     width: 36px;
     height: 36px;
-  }
-
-  .sandbox__graph {
-    padding: 8px 16px;
   }
 
   .sandbox:not([data-tab='json']) .sandbox__pane--json,
