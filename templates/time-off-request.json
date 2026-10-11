@@ -1,0 +1,93 @@
+{
+  "slug": "time-off-request",
+  "title": "Time off request",
+  "summary": "Leave type, dates, handover and approver for small teams without an HR system.",
+  "category": "operations",
+  "definition": {
+    "id": "time-off-request",
+    "title": "Request time off",
+    "submit": { "label": "Send request" },
+    "steps": [
+      {
+        "id": "you",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Work email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "managerEmail",
+            "type": "email",
+            "label": "Manager’s email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "leave",
+        "title": "Your leave",
+        "fields": [
+          {
+            "key": "type",
+            "type": "radio",
+            "label": "Type of leave",
+            "options": [
+              { "value": "vacation", "label": "Vacation" },
+              { "value": "sick", "label": "Sick leave" },
+              { "value": "personal", "label": "Personal day" },
+              { "value": "parental", "label": "Parental leave" },
+              { "value": "bereavement", "label": "Bereavement leave" },
+              { "value": "unpaid", "label": "Unpaid leave" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "typeOther",
+            "type": "text",
+            "label": "What kind of leave?",
+            "show": [{ "field": "type", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "start",
+            "type": "date",
+            "label": "First day off",
+            "validation": { "required": true }
+          },
+          {
+            "key": "end",
+            "type": "date",
+            "label": "Last day off",
+            "validation": { "required": true }
+          },
+          { "key": "note", "type": "textarea", "label": "Note for your manager", "rows": 2 }
+        ]
+      },
+      {
+        "id": "handover",
+        "title": "Handover",
+        "fields": [
+          { "key": "cover", "type": "text", "label": "Who will cover for you?" },
+          {
+            "key": "handover",
+            "type": "textarea",
+            "label": "Anything urgent while you’re away?",
+            "rows": 3
+          }
+        ]
+      }
+    ]
+  }
+}

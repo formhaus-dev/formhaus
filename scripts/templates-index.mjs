@@ -1,0 +1,46 @@
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const directory = fileURLToPath(new URL('../templates/', import.meta.url));
+const indexPath = resolve(directory, 'index.json');
+const CATEGORIES = ['lead-gen', 'intake', 'application', 'feedback', 'survey', 'registration', 'quiz', 'operations'];
+
+const countFields = ({ fields = [], steps = [] }) =>
+  fields.length + steps.reduce((total, step) => total + step.fields.length, 0);
+
+export function buildIndex(templates) {
+  return templates
+    .map(({ slug, title, summary, category, definition }) => ({
+      slug,
+      title,
+      summary,
+      category,
+      steps: definition.steps?.length || 1,
+      fields: countFields(definition),
+    }))
+    .sort((a, b) => CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category) || a.title.localeCompare(b.title, 'en'));
+}
+
+function readTemplates() {
+  return readdirSync(directory)
+    .filter((name) => name.endsWith('.json') && name !== 'index.json')
+    .map((name) => JSON.parse(readFileSync(resolve(directory, name), 'utf8')));
+}
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  const expected = `${JSON.stringify(buildIndex(readTemplates()), null, 2)}\n`;
+  if (process.argv.includes('--check')) {
+    let current = '';
+    try {
+      current = readFileSync(indexPath, 'utf8');
+    } catch {}
+    if (current !== expected) {
+      console.error('templates/index.json is stale. Run pnpm templates.');
+      process.exitCode = 1;
+    } else console.log('templates/index.json is up to date.');
+  } else {
+    writeFileSync(indexPath, expected);
+    console.log(`Wrote ${indexPath}`);
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "slug": "workshop-registration",
+  "title": "Workshop registration",
+  "summary": "Attendee details first, then attendance mode, experience level, and dietary and access needs.",
+  "category": "registration",
+  "definition": {
+    "id": "workshop-registration",
+    "title": "Register for the workshop",
+    "submit": { "label": "Register" },
+    "steps": [
+      {
+        "id": "you",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "company", "type": "text", "label": "Company" },
+          { "key": "jobTitle", "type": "text", "label": "Job title" }
+        ]
+      },
+      {
+        "id": "attendance",
+        "title": "Attendance",
+        "fields": [
+          {
+            "key": "attendance",
+            "type": "radio",
+            "label": "How will you attend?",
+            "layout": "inline",
+            "options": [
+              { "value": "in-person", "label": "In person" },
+              { "value": "online", "label": "Online" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "level",
+            "type": "radio",
+            "label": "Your experience with the topic",
+            "options": [
+              { "value": "new", "label": "New to it" },
+              { "value": "some", "label": "Some experience" },
+              { "value": "advanced", "label": "Advanced" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "dietary",
+            "type": "text",
+            "label": "Dietary requirements",
+            "show": [{ "field": "attendance", "eq": "in-person" }]
+          },
+          {
+            "key": "access",
+            "type": "textarea",
+            "label": "Accessibility needs",
+            "rows": 2,
+            "helperText": "Anything that would help you take part fully."
+          },
+          { "key": "updates", "type": "checkbox", "label": "Email me about future workshops" }
+        ]
+      }
+    ]
+  }
+}

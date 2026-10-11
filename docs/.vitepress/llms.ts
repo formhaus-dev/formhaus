@@ -27,6 +27,7 @@ export const llms = llmstxt({
   title: 'Formhaus',
   description,
   details,
+  ignoreFiles: ['templates/!(index).md'],
   ignoreFilesPerOutput: {
     llmsFullTxt: ['playground.md', 'changelog.md', 'legal/*'],
   },

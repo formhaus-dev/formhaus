@@ -1,0 +1,148 @@
+{
+  "slug": "agency-fit-quiz",
+  "title": "Agency fit quiz",
+  "summary": "Qualifies leads in a few taps and sends small budgets to a free resources signup instead of a sales call.",
+  "category": "quiz",
+  "definition": {
+    "id": "agency-fit-quiz",
+    "title": "Are we a good fit?",
+    "submit": { "label": "Book a call" },
+    "steps": [
+      {
+        "id": "stage",
+        "title": "Where is your business today?",
+        "next": false,
+        "fields": [
+          {
+            "key": "stage",
+            "type": "radio",
+            "label": "Business stage",
+            "options": [
+              { "value": "idea", "label": "Just an idea" },
+              { "value": "launched", "label": "Launched, no revenue yet" },
+              { "value": "growing", "label": "Growing" },
+              { "value": "established", "label": "Established" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "need",
+        "title": "What do you need most?",
+        "next": false,
+        "fields": [
+          {
+            "key": "need",
+            "type": "radio",
+            "label": "Main need",
+            "options": [
+              { "value": "brand", "label": "Brand and identity" },
+              { "value": "website", "label": "Website" },
+              { "value": "product", "label": "App or product design" },
+              { "value": "marketing", "label": "Marketing and growth" },
+              { "value": "other", "label": "Something else" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "timeline",
+        "title": "When do you want to start?",
+        "next": false,
+        "fields": [
+          {
+            "key": "timeline",
+            "type": "radio",
+            "label": "Start date",
+            "options": [
+              { "value": "now", "label": "Right away" },
+              { "value": "1-3-months", "label": "In 1 to 3 months" },
+              { "value": "3-6-months", "label": "In 3 to 6 months" },
+              { "value": "later", "label": "Later or not sure yet" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "budget",
+        "title": "What budget do you have in mind?",
+        "next": false,
+        "fields": [
+          {
+            "key": "budget",
+            "type": "radio",
+            "label": "Budget",
+            "options": [
+              { "value": "under-5k", "label": "Under $5,000" },
+              { "value": "5k-20k", "label": "$5,000 to $20,000" },
+              { "value": "20k-50k", "label": "$20,000 to $50,000" },
+              { "value": "50k-plus", "label": "More than $50,000" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ],
+        "routes": [
+          { "to": "resources", "show": [{ "field": "budget", "eq": "under-5k" }] },
+          { "to": "call" }
+        ]
+      },
+      {
+        "id": "resources",
+        "title": "We’ll send you our free guides",
+        "description": "Our projects usually start at $5,000. These guides help you get far on your own.",
+        "fields": [
+          {
+            "key": "guideEmail",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "firstName", "type": "text", "label": "First name" },
+          {
+            "key": "consent",
+            "type": "checkbox",
+            "label": "Send me guides and tips by email",
+            "validation": { "required": true }
+          }
+        ],
+        "routes": [{ "to": null }]
+      },
+      {
+        "id": "call",
+        "title": "Let’s talk",
+        "description": "Looks like a good fit. Leave your details and we’ll suggest a time.",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Work email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "company", "type": "text", "label": "Company" },
+          { "key": "website", "type": "text", "label": "Website", "placeholder": "https://" },
+          {
+            "key": "context",
+            "type": "textarea",
+            "label": "Anything we should know before the call?",
+            "rows": 3
+          }
+        ]
+      }
+    ]
+  }
+}

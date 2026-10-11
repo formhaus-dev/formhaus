@@ -1,0 +1,108 @@
+{
+  "slug": "training-plan-quiz",
+  "title": "Training plan quiz",
+  "summary": "Goal, experience, time and equipment in one-tap questions, then an email to send the plan.",
+  "category": "quiz",
+  "definition": {
+    "id": "training-plan-quiz",
+    "title": "Find your training plan",
+    "submit": { "label": "Get my plan" },
+    "steps": [
+      {
+        "id": "goal",
+        "title": "What’s your main goal?",
+        "next": false,
+        "fields": [
+          {
+            "key": "goal",
+            "type": "radio",
+            "label": "Goal",
+            "options": [
+              { "value": "lose-weight", "label": "Lose weight" },
+              { "value": "strength", "label": "Get stronger" },
+              { "value": "endurance", "label": "Build endurance" },
+              { "value": "event", "label": "Train for an event or race" },
+              { "value": "health", "label": "Feel healthier overall" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "experience",
+        "title": "How much do you train now?",
+        "next": false,
+        "fields": [
+          {
+            "key": "experience",
+            "type": "radio",
+            "label": "Current training",
+            "options": [
+              { "value": "none", "label": "Not at all" },
+              { "value": "sometimes", "label": "Once or twice a week" },
+              { "value": "regular", "label": "Three times a week or more" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "time",
+        "title": "How much time do you have?",
+        "next": false,
+        "fields": [
+          {
+            "key": "time",
+            "type": "radio",
+            "label": "Time per session",
+            "options": [
+              { "value": "under-30", "label": "Less than 30 minutes" },
+              { "value": "30-45", "label": "30 to 45 minutes" },
+              { "value": "45-60", "label": "45 to 60 minutes" },
+              { "value": "60-plus", "label": "More than an hour" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "place",
+        "title": "Where will you train?",
+        "next": false,
+        "fields": [
+          {
+            "key": "place",
+            "type": "radio",
+            "label": "Location",
+            "options": [
+              { "value": "home-none", "label": "At home, no equipment" },
+              { "value": "home-some", "label": "At home, some equipment" },
+              { "value": "gym", "label": "At a gym" },
+              { "value": "outdoors", "label": "Outdoors" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "send",
+        "title": "Where should we send your plan?",
+        "fields": [
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "firstName", "type": "text", "label": "First name" },
+          { "key": "tips", "type": "checkbox", "label": "Also send me weekly training tips" }
+        ]
+      }
+    ]
+  }
+}

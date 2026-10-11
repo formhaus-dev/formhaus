@@ -1,0 +1,117 @@
+{
+  "slug": "client-onboarding",
+  "title": "Client onboarding",
+  "summary": "Billing details, key contacts, brand assets and access, collected once when a client signs.",
+  "category": "intake",
+  "definition": {
+    "id": "client-onboarding",
+    "title": "Welcome aboard",
+    "submit": { "label": "Finish onboarding" },
+    "steps": [
+      {
+        "id": "company",
+        "title": "Company and billing",
+        "fields": [
+          {
+            "key": "legalName",
+            "type": "text",
+            "label": "Legal company name",
+            "validation": { "required": true }
+          },
+          { "key": "website", "type": "text", "label": "Website", "placeholder": "https://" },
+          {
+            "key": "billingAddress",
+            "type": "textarea",
+            "label": "Billing address",
+            "rows": 3,
+            "validation": { "required": true }
+          },
+          { "key": "taxId", "type": "text", "label": "VAT or tax ID" },
+          {
+            "key": "billingEmail",
+            "type": "email",
+            "label": "Email for invoices",
+            "inputMode": "email",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "people",
+        "title": "Contacts",
+        "fields": [
+          {
+            "key": "contactName",
+            "type": "text",
+            "label": "Main contact",
+            "validation": { "required": true }
+          },
+          {
+            "key": "contactEmail",
+            "type": "email",
+            "label": "Main contact email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "contactPhone",
+            "type": "phone",
+            "label": "Main contact phone",
+            "inputMode": "tel"
+          },
+          {
+            "key": "approver",
+            "type": "text",
+            "label": "Who signs off on work, if not the main contact?"
+          },
+          {
+            "key": "channel",
+            "type": "radio",
+            "label": "Where should we talk day to day?",
+            "options": [
+              { "value": "email", "label": "Email" },
+              { "value": "slack", "label": "Slack" },
+              { "value": "teams", "label": "Microsoft Teams" },
+              { "value": "calls", "label": "Scheduled calls" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "assets",
+        "title": "Assets and access",
+        "fields": [
+          {
+            "key": "assets",
+            "type": "text",
+            "label": "Link to brand assets",
+            "placeholder": "https://",
+            "helperText": "Logo, fonts and guidelines. A shared folder or Figma link works."
+          },
+          {
+            "key": "access",
+            "type": "multiselect",
+            "label": "What will we need access to?",
+            "helperText": "We’ll send a secure way to share logins. Don’t paste passwords here.",
+            "options": [
+              { "value": "cms", "label": "Website CMS" },
+              { "value": "dns", "label": "Domain and DNS" },
+              { "value": "hosting", "label": "Hosting" },
+              { "value": "analytics", "label": "Analytics" },
+              { "value": "social", "label": "Social accounts" },
+              { "value": "ads", "label": "Ad accounts" }
+            ]
+          },
+          { "key": "kickoff", "type": "date", "label": "Preferred kickoff date" },
+          {
+            "key": "notes",
+            "type": "textarea",
+            "label": "Anything we should know before we start?",
+            "rows": 3
+          }
+        ]
+      }
+    ]
+  }
+}

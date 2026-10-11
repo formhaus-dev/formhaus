@@ -1,0 +1,89 @@
+{
+  "slug": "support-request",
+  "title": "Support request",
+  "summary": "Category, urgency and details first. Account and invoice fields only show when they’re relevant.",
+  "category": "operations",
+  "definition": {
+    "id": "support-request",
+    "title": "Contact support",
+    "submit": { "label": "Send request" },
+    "steps": [
+      {
+        "id": "issue",
+        "title": "Your issue",
+        "fields": [
+          {
+            "key": "category",
+            "type": "radio",
+            "label": "What do you need help with?",
+            "options": [
+              { "value": "account", "label": "Account and sign-in" },
+              { "value": "billing", "label": "Billing" },
+              { "value": "bug", "label": "Something isn’t working" },
+              { "value": "how-to", "label": "How do I…" },
+              { "value": "other", "label": "Something else" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "priority",
+            "type": "radio",
+            "label": "How urgent is it?",
+            "layout": "inline",
+            "helperText": "Urgent means you can’t work at all.",
+            "options": [
+              { "value": "low", "label": "Low" },
+              { "value": "normal", "label": "Normal" },
+              { "value": "urgent", "label": "Urgent" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "subject",
+            "type": "text",
+            "label": "Subject",
+            "validation": { "required": true, "maxLength": 120 }
+          },
+          {
+            "key": "description",
+            "type": "textarea",
+            "label": "Describe the problem",
+            "rows": 5,
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "accountId",
+            "type": "text",
+            "label": "Account email or ID, if different",
+            "show": [{ "field": "category", "in": ["account", "billing"] }]
+          },
+          {
+            "key": "invoice",
+            "type": "text",
+            "label": "Invoice number",
+            "show": [{ "field": "category", "eq": "billing" }]
+          }
+        ]
+      }
+    ]
+  }
+}

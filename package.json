@@ -13,6 +13,8 @@
     "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp exec attw --pack --profile esm-only --exclude-entrypoints ./style.css ./server.iife.js",
     "check:source-size": "node scripts/check-source-size.mjs",
     "check:bundle-size": "node scripts/check-bundle-size.mjs",
+    "templates": "node scripts/templates-index.mjs",
+    "templates:check": "node scripts/templates-index.mjs --check",
     "changeset": "changeset",
     "version": "changeset version && node scripts/sync-mcp-server-json.mjs",
     "release": "pnpm build && changeset publish"

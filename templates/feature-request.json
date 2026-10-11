@@ -1,0 +1,85 @@
+{
+  "slug": "feature-request",
+  "title": "Feature request",
+  "summary": "Starts with the problem, then the idea, how much it hurts and how often it comes up.",
+  "category": "feedback",
+  "definition": {
+    "id": "feature-request",
+    "title": "Request a feature",
+    "submit": { "label": "Send request" },
+    "steps": [
+      {
+        "id": "problem",
+        "title": "The problem",
+        "fields": [
+          {
+            "key": "area",
+            "type": "select",
+            "label": "Which part of the product?",
+            "options": [
+              { "value": "core", "label": "Core product" },
+              { "value": "integrations", "label": "Integrations" },
+              { "value": "api", "label": "API" },
+              { "value": "reporting", "label": "Reports and analytics" },
+              { "value": "account", "label": "Account and billing" },
+              { "value": "other", "label": "Something else" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "problem",
+            "type": "textarea",
+            "label": "What are you trying to do?",
+            "rows": 4,
+            "helperText": "Describe the task or problem, not the solution yet.",
+            "validation": { "required": true }
+          },
+          {
+            "key": "workaround",
+            "type": "textarea",
+            "label": "How do you handle it today?",
+            "rows": 3
+          }
+        ]
+      },
+      {
+        "id": "idea",
+        "title": "Your idea",
+        "fields": [
+          { "key": "idea", "type": "textarea", "label": "What would you like to see?", "rows": 3 },
+          {
+            "key": "impact",
+            "type": "radio",
+            "label": "How much does this affect you?",
+            "options": [
+              { "value": "nice", "label": "Nice to have" },
+              { "value": "slows", "label": "It slows me down" },
+              { "value": "blocks", "label": "It blocks my work" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "frequency",
+            "type": "radio",
+            "label": "How often does it come up?",
+            "layout": "inline",
+            "options": [
+              { "value": "daily", "label": "Daily" },
+              { "value": "weekly", "label": "Weekly" },
+              { "value": "monthly", "label": "Monthly" },
+              { "value": "rarely", "label": "Rarely" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "helperText": "Only if you’d like us to follow up."
+          }
+        ]
+      }
+    ]
+  }
+}

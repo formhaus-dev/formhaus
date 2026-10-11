@@ -1,0 +1,118 @@
+{
+  "slug": "bug-report",
+  "title": "Bug report",
+  "summary": "Steps to reproduce, expected and actual result, environment and severity.",
+  "category": "feedback",
+  "definition": {
+    "id": "bug-report",
+    "title": "Report a bug",
+    "submit": { "label": "Send report" },
+    "steps": [
+      {
+        "id": "bug",
+        "title": "What happened",
+        "fields": [
+          {
+            "key": "summary",
+            "type": "text",
+            "label": "Short summary",
+            "validation": { "required": true, "maxLength": 120 }
+          },
+          {
+            "key": "steps",
+            "type": "textarea",
+            "label": "Steps to reproduce",
+            "rows": 4,
+            "placeholder": "1. Go to…\n2. Click…\n3. See the error",
+            "validation": { "required": true }
+          },
+          {
+            "key": "expected",
+            "type": "textarea",
+            "label": "What did you expect to happen?",
+            "rows": 2,
+            "validation": { "required": true }
+          },
+          {
+            "key": "actual",
+            "type": "textarea",
+            "label": "What happened instead?",
+            "rows": 2,
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "environment",
+        "title": "Where and how bad",
+        "fields": [
+          {
+            "key": "platform",
+            "type": "radio",
+            "label": "Where did it happen?",
+            "options": [
+              { "value": "web", "label": "Web browser" },
+              { "value": "macos", "label": "macOS app" },
+              { "value": "windows", "label": "Windows app" },
+              { "value": "ios", "label": "iOS app" },
+              { "value": "android", "label": "Android app" },
+              { "value": "other", "label": "Somewhere else" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "browser",
+            "type": "select",
+            "label": "Browser",
+            "show": [{ "field": "platform", "eq": "web" }],
+            "options": [
+              { "value": "chrome", "label": "Chrome" },
+              { "value": "safari", "label": "Safari" },
+              { "value": "firefox", "label": "Firefox" },
+              { "value": "edge", "label": "Edge" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          { "key": "version", "type": "text", "label": "App or browser version" },
+          {
+            "key": "severity",
+            "type": "radio",
+            "label": "How bad is it?",
+            "options": [
+              { "value": "blocker", "label": "I can’t do my work" },
+              { "value": "workaround", "label": "Annoying, but there’s a workaround" },
+              { "value": "minor", "label": "Minor or cosmetic" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "frequency",
+            "type": "radio",
+            "label": "How often does it happen?",
+            "layout": "inline",
+            "options": [
+              { "value": "always", "label": "Every time" },
+              { "value": "sometimes", "label": "Sometimes" },
+              { "value": "once", "label": "Only once" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "extra",
+        "title": "Anything else",
+        "fields": [
+          {
+            "key": "recording",
+            "type": "text",
+            "label": "Link to a screenshot or screen recording",
+            "placeholder": "https://"
+          },
+          { "key": "email", "type": "email", "label": "Email for follow-up", "inputMode": "email" }
+        ]
+      }
+    ]
+  }
+}

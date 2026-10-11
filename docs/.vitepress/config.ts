@@ -1,5 +1,6 @@
 import { defineConfig } from 'vitepress'
 import { head, transformHead } from './head'
+import { transformPageData } from './templates'
 import { llms } from './llms'
 import { siteUrl } from './site'
 
@@ -19,11 +20,13 @@ export default defineConfig({
   sitemap: { hostname: siteUrl },
   head,
   transformHead,
+  transformPageData,
   themeConfig: {
     logo: { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg', alt: 'Formhaus' },
     siteTitle: false,
     nav: [
       { text: 'Guide', link: '/guide/' },
+      { text: 'Templates', link: '/templates/', activeMatch: '^/templates/' },
       { text: 'Cloud', link: '/cloud' },
       { text: 'API', link: '/api/definition' },
       { text: 'Playground', link: '/playground' },

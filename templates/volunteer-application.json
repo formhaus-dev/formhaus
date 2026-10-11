@@ -1,0 +1,126 @@
+{
+  "slug": "volunteer-application",
+  "title": "Volunteer application",
+  "summary": "Interests, availability and an emergency contact for volunteer programs.",
+  "category": "application",
+  "definition": {
+    "id": "volunteer-application",
+    "title": "Volunteer with us",
+    "submit": { "label": "Send application" },
+    "steps": [
+      {
+        "id": "interests",
+        "title": "How you’d like to help",
+        "fields": [
+          {
+            "key": "areas",
+            "type": "multiselect",
+            "label": "What would you like to help with?",
+            "helperText": "Pick all that apply.",
+            "options": [
+              { "value": "events", "label": "Events" },
+              { "value": "fundraising", "label": "Fundraising" },
+              { "value": "admin", "label": "Admin and office" },
+              { "value": "mentoring", "label": "Mentoring" },
+              { "value": "outreach", "label": "Community outreach" },
+              { "value": "anything", "label": "Wherever I’m needed" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "skills",
+            "type": "textarea",
+            "label": "Relevant skills or experience",
+            "rows": 3
+          },
+          { "key": "why", "type": "textarea", "label": "Why would you like to volunteer with us?", "rows": 3 }
+        ]
+      },
+      {
+        "id": "availability",
+        "title": "Availability",
+        "fields": [
+          {
+            "key": "slots",
+            "type": "multiselect",
+            "label": "When are you free?",
+            "options": [
+              { "value": "weekday-morning", "label": "Weekday mornings" },
+              { "value": "weekday-afternoon", "label": "Weekday afternoons" },
+              { "value": "weekday-evening", "label": "Weekday evenings" },
+              { "value": "weekends", "label": "Weekends" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "hours",
+            "type": "radio",
+            "label": "Hours per month",
+            "options": [
+              { "value": "up-to-4", "label": "Up to 4" },
+              { "value": "5-10", "label": "5 to 10" },
+              { "value": "11-20", "label": "11 to 20" },
+              { "value": "20-plus", "label": "More than 20" }
+            ],
+            "validation": { "required": true }
+          },
+          { "key": "startDate", "type": "date", "label": "When can you start?" }
+        ]
+      },
+      {
+        "id": "you",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "adult",
+            "type": "radio",
+            "label": "Are you 18 or older?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "emergency",
+        "title": "Emergency contact",
+        "fields": [
+          {
+            "key": "emergencyName",
+            "type": "text",
+            "label": "Name",
+            "validation": { "required": true }
+          },
+          { "key": "emergencyRelation", "type": "text", "label": "Relationship to you" },
+          {
+            "key": "emergencyPhone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

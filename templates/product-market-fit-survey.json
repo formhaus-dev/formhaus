@@ -1,0 +1,92 @@
+{
+  "slug": "product-market-fit-survey",
+  "title": "Product-market fit survey",
+  "summary": "The “how disappointed would you be” question, plus who gets the most value and why.",
+  "category": "survey",
+  "definition": {
+    "id": "product-market-fit-survey",
+    "title": "Help us improve",
+    "submit": { "label": "Send answers" },
+    "steps": [
+      {
+        "id": "fit",
+        "title": "Your experience",
+        "fields": [
+          {
+            "key": "disappointment",
+            "type": "radio",
+            "label": "How would you feel if you could no longer use the product?",
+            "options": [
+              { "value": "very", "label": "Very disappointed" },
+              { "value": "somewhat", "label": "Somewhat disappointed" },
+              { "value": "not", "label": "Not disappointed" },
+              { "value": "stopped", "label": "I already stopped using it" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "role",
+            "type": "select",
+            "label": "What best describes your role?",
+            "options": [
+              { "value": "founder", "label": "Founder" },
+              { "value": "engineering", "label": "Engineering" },
+              { "value": "product", "label": "Product" },
+              { "value": "design", "label": "Design" },
+              { "value": "marketing", "label": "Marketing" },
+              { "value": "sales", "label": "Sales" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "value",
+        "title": "What it does for you",
+        "show": [{ "field": "disappointment", "neq": "stopped" }],
+        "fields": [
+          {
+            "key": "benefit",
+            "type": "textarea",
+            "label": "What is the main benefit you get from it?",
+            "rows": 3,
+            "validation": { "required": true }
+          },
+          {
+            "key": "idealUser",
+            "type": "textarea",
+            "label": "What kind of person would benefit most from it?",
+            "rows": 2
+          },
+          {
+            "key": "alternative",
+            "type": "text",
+            "label": "What would you use instead if it were gone?"
+          },
+          {
+            "key": "improve",
+            "type": "textarea",
+            "label": "How could we make it better for you?",
+            "rows": 3
+          }
+        ]
+      },
+      {
+        "id": "stopped",
+        "title": "Why you stopped",
+        "show": [{ "field": "disappointment", "eq": "stopped" }],
+        "fields": [
+          {
+            "key": "stopReason",
+            "type": "textarea",
+            "label": "Why did you stop using it?",
+            "rows": 3,
+            "validation": { "required": true }
+          },
+          { "key": "replacement", "type": "text", "label": "What do you use now?" }
+        ]
+      }
+    ]
+  }
+}

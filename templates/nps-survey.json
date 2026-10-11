@@ -1,0 +1,55 @@
+{
+  "slug": "nps-survey",
+  "title": "NPS survey",
+  "summary": "The standard 0 to 10 recommend question with a follow-up that changes with the score.",
+  "category": "feedback",
+  "definition": {
+    "id": "nps-survey",
+    "title": "Quick question",
+    "submit": { "label": "Send feedback" },
+    "fields": [
+      {
+        "key": "score",
+        "type": "radio",
+        "label": "How likely are you to recommend us to a friend or colleague?",
+        "layout": "inline",
+        "helperText": "0 means not at all likely, 10 means extremely likely.",
+        "options": [
+          { "value": "0", "label": "0" },
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" },
+          { "value": "5", "label": "5" },
+          { "value": "6", "label": "6" },
+          { "value": "7", "label": "7" },
+          { "value": "8", "label": "8" },
+          { "value": "9", "label": "9" },
+          { "value": "10", "label": "10" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "fix",
+        "type": "textarea",
+        "label": "What’s the main thing we should improve?",
+        "rows": 3,
+        "show": [{ "field": "score", "in": ["0", "1", "2", "3", "4", "5", "6"] }]
+      },
+      {
+        "key": "missing",
+        "type": "textarea",
+        "label": "What would make it a 10?",
+        "rows": 3,
+        "show": [{ "field": "score", "in": ["7", "8"] }]
+      },
+      {
+        "key": "love",
+        "type": "textarea",
+        "label": "What do you value most?",
+        "rows": 3,
+        "show": [{ "field": "score", "in": ["9", "10"] }]
+      }
+    ]
+  }
+}
