@@ -1,5 +1,33 @@
 # @formhaus/react
 
+## 0.10.0
+
+### Minor Changes
+
+- 113cbc7: - `onSubmit` receives the ids of skipped steps as a second argument.
+  - New `FormhausForm` in `@formhaus/react/cloud`. It loads a published definition by `id`, renders it and posts submissions, with `onSuccess`, `onError`, `fallback` and `success` props. 422 responses map onto fields.
+- 70690ac: - **Breaking:** `onError` in `FormhausForm` receives a `CloudError` with `status` `0` and `code` `"network"` on a network failure instead of a `TypeError`.
+  - `FormhausForm` shows every failed submission in a notice above the form, with "Try again" for 429, 5xx and network failures. The notice takes focus. Entered values stay.
+  - `FormhausForm` focuses the first field with a server error when there is no notice. Messages for keys the form does not render are listed in the notice.
+  - `FormhausForm` sends the version it rendered. When the form was republished and the values no longer pass, it loads the new version, keeps the answers whose field key and type still fit, marks dropped answers with "Please answer again." and asks to review and submit again.
+  - `FormhausForm` now renders the form inside a `div.fh-cloud` wrapper.
+  - `CloudError.message` texts changed. `CloudError` has `action` (`"retry"`, `"reload"` or `null`), `retryable` and, for `form_updated`, `version`.
+  - `createSubmitter()` takes an optional `version` next to `id` and `apiBase`.
+  - New `.fh-form__notice` styles in `@formhaus/core/style.css`.
+- 2e9e7c1: - **Breaking:** `helperText` renders under the label, above the control. For checkbox and switch it renders under the row. Errors stay below the control.
+  - Helper text stays visible while the field shows an error. `aria-describedby` lists both.
+  - `layout: "inline"` adds the `fh-field__radio-group--inline` or `fh-field__multiselect-group--inline` class.
+
+### Patch Changes
+
+- Updated dependencies [113cbc7]
+- Updated dependencies [70690ac]
+- Updated dependencies [6654e27]
+- Updated dependencies [a479c16]
+- Updated dependencies [2e9e7c1]
+- Updated dependencies [3f5bfee]
+  - @formhaus/core@0.10.0
+
 ## 0.9.0
 
 No changes. Version aligned with `@formhaus/core` 0.9.0.
