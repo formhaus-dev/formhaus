@@ -196,7 +196,8 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 @media (pointer: coarse) {
   :where(.fh-form) { --fh-font-size: 17px; --fh-font-size-small: 15px; }
   .fh-field__input { font-size: max(16px, var(--fh-font-size)); }
-  :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) { min-height: 44px; align-items: center; }
+  :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) { padding-block: 10px; }
+  .fh-field__radio, .fh-field__checkbox { margin-top: 4px; }
 }
 
 .fh-step-progress { display: flex; flex-direction: column; gap: 6px; }
