@@ -1,5 +1,5 @@
 import type { FormDefinition } from '../types';
-import { carryValues, splitErrors } from './carry';
+import { carryValues, splitErrors, updatedErrors } from './carry';
 import { createSubmitter, fetchPublished, type CloudClientOptions, type CloudSubmission } from './client';
 import { CloudError, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
@@ -38,13 +38,9 @@ function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
   return { tone: 'error', message: error.message, action: error.action, details };
 }
 
-function stillInvalid(errors: Record<string, string>, sent: Record<string, unknown>, kept: Record<string, unknown>) {
-  return Object.fromEntries(Object.entries(errors).filter(([key]) => !(key in sent) || key in kept));
-}
-
 export function createCloudController(options: CloudClientOptions, callbacks: CloudCallbacks) {
   const controller = new AbortController();
-  const submitter = createSubmitter(options);
+  let submitter = createSubmitter(options);
   const alive = () => !controller.signal.aborted;
   let state = initialCloudState;
   const update = (patch: Partial<CloudState>) => {
@@ -58,13 +54,15 @@ export function createCloudController(options: CloudClientOptions, callbacks: Cl
     try {
       const next = await fetchPublished(options, controller.signal, error.version);
       if (!alive()) return;
+      if (next.version === undefined || next.version < (error.version ?? 0)) throw new CloudError(409, 'form_updated');
       const kept = before ? carryValues(sent, next.definition, before) : {};
+      submitter = createSubmitter({ ...options, version: next.version });
       report({
         definition: next.definition,
-        version: next.version ?? error.version ?? null,
+        version: next.version,
         initialValues: kept,
         revision: state.revision + 1,
-        errors: splitErrors(next.definition, stillInvalid(error.errors ?? {}, sent, kept)).fields,
+        errors: updatedErrors(next.definition, sent, kept, error.errors ?? {}),
         notice: { tone: 'info', message: FORM_UPDATED_MESSAGE, action: null, details: [] },
       });
     } catch {
@@ -84,7 +82,11 @@ export function createCloudController(options: CloudClientOptions, callbacks: Cl
   return {
     start() {
       fetchPublished(options, controller.signal).then(
-        (published) => { if (alive()) update({ definition: published.definition, version: published.version ?? null }); },
+        (published) => {
+          if (!alive()) return;
+          submitter = createSubmitter({ ...options, version: published.version });
+          update({ definition: published.definition, version: published.version ?? null });
+        },
         (error: Error) => {
           if (!alive()) return;
           update({ loadError: error });
@@ -98,7 +100,7 @@ export function createCloudController(options: CloudClientOptions, callbacks: Cl
     async submit(values: Record<string, unknown>, skippedSteps?: string[]) {
       if (state.notice) update({ notice: null });
       try {
-        const submission = await submitter(values, skippedSteps, state.version ?? undefined);
+        const submission = await submitter(values, skippedSteps);
         if (!alive()) return;
         update({ done: true });
         callbacks.onSuccess?.(submission);

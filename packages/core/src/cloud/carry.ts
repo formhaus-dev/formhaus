@@ -1,4 +1,5 @@
 import type { FormDefinition, FormField } from '../types';
+import { ANSWER_AGAIN } from './failures';
 
 const SHAPES: Record<string, string> = {
   multiselect: 'list',
@@ -51,10 +52,25 @@ export function carryValues(
 export function splitErrors(definition: FormDefinition, errors: Record<string, string>) {
   const known = new Set(fieldsOf(definition).map((field) => field.key));
   const fields: Record<string, string> = {};
-  const other: string[] = [];
+  const other = new Set<string>();
   for (const [key, message] of Object.entries(errors)) {
     if (known.has(key)) fields[key] = message;
-    else other.push(`${key}: ${message}`);
+    else other.add(message);
   }
-  return { fields, other };
+  return { fields, other: [...other] };
+}
+
+export function updatedErrors(
+  next: FormDefinition,
+  sent: Record<string, unknown>,
+  kept: Record<string, unknown>,
+  rejected: Record<string, string>,
+): Record<string, string> {
+  const errors: Record<string, string> = {};
+  for (const field of fieldsOf(next)) {
+    const answered = sent[field.key] !== undefined && sent[field.key] !== null && sent[field.key] !== '';
+    if (answered && !(field.key in kept)) errors[field.key] = ANSWER_AGAIN;
+    else if (rejected[field.key] && (!answered || field.key in kept)) errors[field.key] = rejected[field.key];
+  }
+  return errors;
 }

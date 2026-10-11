@@ -15,8 +15,8 @@ function reveal(target: Focusable, scrollTo: Focusable): void {
   target.focus({ preventScroll: true });
 }
 
-export function focusFirstInvalid(root: Searchable | null, fallback?: Focusable | null): void {
+export function focusProblem(root: Searchable | null, notice?: Focusable | null): void {
+  if (notice) return reveal(notice, notice);
   const invalid = root?.querySelector('[aria-invalid="true"]') as Focusable | null | undefined;
-  if (invalid) return reveal(invalid.matches(CONTROLS) ? invalid : (invalid.querySelector(CONTROLS) as Focusable | null) ?? invalid, invalid);
-  if (fallback) reveal(fallback, fallback);
+  if (invalid) reveal(invalid.matches(CONTROLS) ? invalid : (invalid.querySelector(CONTROLS) as Focusable | null) ?? invalid, invalid);
 }

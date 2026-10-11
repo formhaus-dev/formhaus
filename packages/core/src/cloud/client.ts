@@ -3,7 +3,7 @@ import { networkError, toCloudError } from './error';
 import { randomId } from './uuid';
 
 const DEFAULT_API_BASE = 'https://api.formhaus.dev';
-export const VERSION_HEADER = 'Formhaus-Version';
+const VERSION_HEADER = 'Formhaus-Version';
 
 export interface CloudSubmission {
   id: string;
@@ -49,11 +49,15 @@ export async function fetchDefinition(options: CloudClientOptions, signal?: Abor
   return (await fetchPublished(options, signal)).definition;
 }
 
-export function createSubmitter(options: CloudClientOptions) {
+export interface CloudSubmitterOptions extends CloudClientOptions {
+  version?: number;
+}
+
+export function createSubmitter(options: CloudSubmitterOptions) {
   let pending: { body: string; key: string } | null = null;
 
-  return async (values: Record<string, unknown>, skippedSteps: string[] = [], version?: number): Promise<CloudSubmission> => {
-    const body = JSON.stringify({ values, skippedSteps, version });
+  return async (values: Record<string, unknown>, skippedSteps: string[] = []): Promise<CloudSubmission> => {
+    const body = JSON.stringify({ values, skippedSteps, version: options.version });
     if (pending?.body !== body) pending = { body, key: randomId() };
     const response = await send(endpoint(options), {
       method: 'POST',
