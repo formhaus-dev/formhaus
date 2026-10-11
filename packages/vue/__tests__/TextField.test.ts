@@ -28,6 +28,7 @@ describe('TextField', () => {
     [['1', '1.0', '1.05']],
     [['2', '2.5', '2.50']],
     [['-0', '-0.5']],
+    [['1.05', '1.0', '1.05']],
   ])('keeps typed number text %j', async (steps) => {
     render(ControlledNumber);
     const input = screen.getByRole('spinbutton', { name: 'Age' }) as HTMLInputElement;

@@ -14,7 +14,7 @@ export function TextField(props: FieldComponentProps) {
     onChange(isNumber && v !== '' ? Number(v) : v);
   };
 
-  const text = isNumber && draft && Number(draft) === value ? draft : String(value ?? '');
+  const text = isNumber && draft && Object.is(Number(draft), value) ? draft : String(value ?? '');
 
   const inputType =
     field.type === 'email'

@@ -56,6 +56,7 @@ describe('TextField', () => {
     [['2', '2.5', '2.50'], 2.5],
     [['1', '10', '10.0'], 10],
     [['-0', '-0.5'], -0.5],
+    [['1.05', '1.0', '1.05'], 1.05],
   ])('keeps typed number text %j', (steps, expected) => {
     const onValue = vi.fn();
     render(<ControlledNumber onValue={onValue} />);
@@ -74,6 +75,16 @@ describe('TextField', () => {
     rerender(<TextField field={field} value={7} onChange={() => {}} onBlur={() => {}} />);
 
     expect(input).toHaveProperty('value', '7');
+  });
+
+  it('drops the minus sign when zero is set from outside', () => {
+    const { rerender } = render(<TextField field={field} value={-0} onChange={() => {}} onBlur={() => {}} />);
+    const input = screen.getByRole('spinbutton', { name: 'Age' });
+    fireEvent.change(input, { target: { value: '-0' } });
+
+    rerender(<TextField field={field} value={0} onChange={() => {}} onBlur={() => {}} />);
+
+    expect(input).toHaveProperty('value', '0');
   });
 
   it('passes inputMode to the input', () => {
