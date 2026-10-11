@@ -1,6 +1,6 @@
 ---
 title: "Formhaus Cloud: a form backend for apps built with AI"
-description: "Formhaus Cloud gives an AI agent one MCP call to publish a form and get a validated submission endpoint, a hosted link and an embed. Free and Pro plans, EU-hosted."
+description: "Formhaus Cloud gives an AI agent one MCP call to publish a form and get a validated submission endpoint, a hosted link and an embed. Free, Pro and Team plans, EU-hosted."
 ---
 
 # Formhaus Cloud
@@ -120,14 +120,16 @@ See the [privacy policy](/legal/privacy), the [terms](/legal/terms) and the [DPA
 
 ## Pricing
 
-| | Free | Pro |
-|---|---|---|
-| Price | $0 | $19/month or $190/year |
-| Forms | 3 | Unlimited |
-| Submissions per month | 100 | 25,000 |
-| Retention | 90 days | Unlimited |
-| Webhooks | Yes | Yes |
-| Email notifications | Yes | Yes |
+| | Free | Pro | Team |
+|---|---|---|---|
+| Price | $0 | $19/month or $190/year | $49/month or $490/year |
+| Members | 1 | 3 | 10 |
+| Forms | 3 | Unlimited | Unlimited |
+| Submissions per month | 100 | 25,000 | 100,000 |
+| Retention | 90 days | Unlimited | Unlimited |
+| Roles (owner, editor, viewer) | Yes | Yes | Yes |
+| Webhooks | Yes | Yes | Yes |
+| Email notifications | Yes | Yes | Yes |
 
 [Get started](https://app.formhaus.dev/login) with the Free plan. Above the limit the endpoint answers `402`.
 
@@ -143,7 +145,7 @@ Yes. The agent calls the `publish_form` tool on the MCP server at `https://api.f
 
 ### Where is the data stored?
 
-In Frankfurt, Germany, in the EU. Submissions are kept for the retention period of the plan: 90 days on Free, unlimited on Pro. Deleting an account removes its forms and submissions.
+In Frankfurt, Germany, in the EU. Submissions are kept for the retention period of the plan: 90 days on Free, unlimited on Pro and Team. Deleting an account removes its forms and submissions.
 
 ### What happens to forms created without an account?
 
