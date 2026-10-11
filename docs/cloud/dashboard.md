@@ -64,7 +64,7 @@ Takes a [Formhaus definition](/api/definition). The definition is checked with `
 
 | Section | Content |
 |---|---|
-| After submit | Success message, or a redirect URL. Applies to all versions. |
+| After submit | Success message with an optional **Submit another response** button, or a redirect URL. Applies to all versions. |
 | Webhook | URL, signing secret with **Reveal** and **Rotate**, **Send test**, last 100 deliveries. See [Webhooks](/cloud/webhooks). |
 | Email notifications | `Milestones` or `Off`. See [Email notifications](/cloud/emails). |
 | Paste JSON as a new version | Publishes a version at the same endpoint. Responses keep the version they were submitted with. |

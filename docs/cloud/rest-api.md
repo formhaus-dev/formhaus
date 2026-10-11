@@ -47,7 +47,7 @@ An invalid, revoked or expired key answers `401`. Key types and the claim are in
 
 ## Publish
 
-`POST /v1/forms` takes `definition` and optional `form_id`, `email`, `success_message`, `redirect_url` ([rules](/cloud/publishing)). Returns `201` with the [`publish_form` result](/cloud/quickstart#publish).
+`POST /v1/forms` takes `definition` and optional `form_id`, `email`, `success_message`, `redirect_url`, `allow_another_response` ([rules](/cloud/publishing)). A new form starts with `allow_another_response: false`; a new version keeps the current value when it is omitted. Returns `201` with the [`publish_form` result](/cloud/quickstart#publish).
 
 ```bash
 curl -X POST https://api.formhaus.dev/v1/forms \
@@ -115,10 +115,11 @@ A submission whose keys or values hold zero-width, bidirectional or tag characte
 | Field | Value |
 |---|---|
 | `webhook_url` | Public `https://` URL, `""` removes it. See [Webhooks](/cloud/webhooks). |
-| `notify_mode` | `instant`, `daily` or `off`. See [Email notifications](/cloud/emails). |
-| `notify_email` | Deprecated: `true` is `instant`, `false` is `off`. A value that conflicts with `notify_mode` is rejected. |
+| `notify_mode` | `milestones` or `off`. See [Email notifications](/cloud/emails). |
+| `notify_email` | Deprecated: `true` is `milestones`, `false` is `off`. A value that conflicts with `notify_mode` is rejected. |
 | `success_message` | Up to 500 characters, `""` removes it |
 | `redirect_url` | `http(s)` URL, `""` removes it |
+| `allow_another_response` | `true` shows a **Submit another response** button on the success screen of the hosted page and embed. No effect while `redirect_url` is set. |
 | `status` | `active` or `paused` |
 
 ```json
@@ -127,7 +128,8 @@ A submission whose keys or values hold zero-width, bidirectional or tag characte
   "status": "active",
   "success_message": "Thanks, you are on the list.",
   "redirect_url": "",
-  "notify_mode": "instant",
+  "allow_another_response": false,
+  "notify_mode": "milestones",
   "notify_email": true,
   "webhook_url": "https://example.com/api/formhaus",
   "webhook_secret": "whsec_…9f3a"

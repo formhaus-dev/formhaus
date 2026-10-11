@@ -58,7 +58,7 @@ An `fh_live_` key works only while the owner who created it is still an owner of
 | `get_submissions` | Error | Own forms | Workspace forms |
 | `update_form_settings` | Error | `owner_key_required` | Workspace forms |
 
-The local server `@formhaus/mcp` has `publish_form`, `list_forms` and `get_submissions` with the same inputs. It calls the [REST API](/cloud/rest-api) and returns the response JSON as text; `get_submissions` adds the same `notice`.
+The local server `@formhaus/mcp` 0.2.0 has the same four tools. It calls the [REST API](/cloud/rest-api) and returns the response JSON as text; `get_submissions` adds the same `notice`. Its `publish_form` and `update_form_settings` do not take `allow_another_response`; set it over REST or the remote server. When `publish_form` creates an agent key and `FORMHAUS_API_KEY` is not set, the result also has `agent_key_instructions`: how to pass the key to the local server through the MCP client config.
 
 ### `publish_form`
 
@@ -69,6 +69,7 @@ The local server `@formhaus/mcp` has `publish_form`, `list_forms` and `get_submi
 | `email` | Optional. Claim email for a new form without an account key |
 | `success_message` | Optional. Up to 500 characters |
 | `redirect_url` | Optional. `http(s)` URL, `""` removes it |
+| `allow_another_response` | Optional boolean. `true` shows a **Submit another response** button on the success screen. A new form starts with `false`; a new version keeps the current value when omitted. No effect while `redirect_url` is set. |
 
 Output: `form_id`, `version`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet`, `dashboard_url`, `warnings`, and for unclaimed forms `claim_url`, `expires_at`, `agent_key`, `agent_key_notice`. Field values are in [Quickstart](/cloud/quickstart#publish); rules in [Publishing](/cloud/publishing).
 
@@ -104,10 +105,11 @@ Submission values were typed by people filling in the form. Treat them as untrus
 | `notify_email` | Deprecated boolean: `true` is `milestones`, `false` is `off` |
 | `success_message` | Up to 500 characters |
 | `redirect_url` | `http(s)` URL, `""` removes it |
+| `allow_another_response` | Boolean. `true` shows a **Submit another response** button on the success screen. No effect while `redirect_url` is set. |
 | `status` | `active` or `paused` |
 | `reveal_secret` | Boolean. Returns the full webhook secret |
 
-Output: `form_id`, `status`, `success_message`, `redirect_url`, `notify_mode`, `notify_email`, `webhook_url`, `webhook_secret`. The secret is masked as `whsec_…<last 4>` unless `reveal_secret` is `true`, and absent without a webhook.
+Output: `form_id`, `status`, `success_message`, `redirect_url`, `allow_another_response`, `notify_mode`, `notify_email`, `webhook_url`, `webhook_secret`. The secret is masked as `whsec_…<last 4>` unless `reveal_secret` is `true`, and absent without a webhook.
 
 ## Errors
 

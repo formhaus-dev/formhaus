@@ -83,7 +83,7 @@ A stored submission returns `201` with `{ "id": "...", "values": {...} }`. The f
 - Dashboard with a responses table per form.
 - CSV export.
 - Webhooks signed with a per-form secret, retried with backoff for up to 24 hours.
-- Email notification for each submission.
+- Email when a form reaches a response milestone: the 1st, 10th, 100th response and so on.
 - REST API with an API key: `POST /v1/forms`, `GET /v1/forms` and `GET /v1/forms/{id}/submissions`, as JSON or CSV.
 
 ## Agents
