@@ -24,6 +24,7 @@ export function buildSchema() {
   }).createSchema('FormDefinition');
 
   applyDescriptions(generated.definitions);
+  generated.definitions.FormField.properties.key.not = { enum: [...Object.getOwnPropertyNames(Object.prototype), 'prototype'].sort() };
   const { FormDefinition, ...definitions } = generated.definitions;
 
   return {

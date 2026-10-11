@@ -1,6 +1,6 @@
 import type { FormDefinition, FormStep } from '../types';
 import { isStepVisible, isVisible } from '../visibility';
-import { conditionFields, hasFieldsAndSteps, hasRoutes } from './engine-utils';
+import { conditionFields, getAllFields, hasFieldsAndSteps, hasRoutes } from './engine-utils';
 
 export function definitionErrors(definition: FormDefinition): string[] {
   const steps = definition.steps ?? [];
@@ -12,6 +12,9 @@ export function definitionErrors(definition: FormDefinition): string[] {
     stepIndexes.set(step.id, index);
     for (const field of step.fields) fieldIndexes.set(field.key, index);
   });
+  for (const { key } of getAllFields(definition)) {
+    if (key in Object.prototype || key === 'prototype') warnings.push(`Reserved field key "${key}".`);
+  }
   if (!hasRoutes(definition)) return warnings;
   steps.forEach((step, index) => {
     for (const route of step.routes ?? []) {

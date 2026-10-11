@@ -31,6 +31,20 @@ describe('definition checks', () => {
     expect(validateDefinition(definition)).toContain('Duplicate step id "a".');
   });
 
+  it.each(['__proto__', 'constructor', 'prototype', 'toString', 'hasOwnProperty'])(
+    'rejects the reserved field key %s',
+    (key) => {
+      const definition = form([{ id: 'a', title: '', fields: [text(key, { validation: { required: true } })] }]);
+      expect(() => new FormEngine(definition)).toThrow(`Reserved field key "${key}".`);
+      expect(validateDefinition(definition)).toContain(`Reserved field key "${key}".`);
+    },
+  );
+
+  it('rejects a reserved field key in a single-step form', () => {
+    const definition: FormDefinition = { id: 'flat', title: '', submit: { label: 'Submit' }, fields: [text('constructor')] as FormDefinition['fields'] };
+    expect(() => new FormEngine(definition)).toThrow('Reserved field key "constructor".');
+  });
+
   it('warns when a routed step condition references its own or a later step', () => {
     const definition = form([
       { id: 'a', title: '', fields: [text('kind')], routes: [{ to: 'c', show: [{ field: 'kind', eq: 'x' }] }] },
