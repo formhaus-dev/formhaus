@@ -123,4 +123,40 @@ describe('FormEngine validation and errors', () => {
     });
     expect(engine.validate().code).toBe('Invalid code');
   });
+
+  it('moves to the step with the error when submit fails', async () => {
+    const definition: FormDefinition = {
+      id: 'earlier-step-error',
+      title: 'Earlier step error',
+      submit: { label: 'Submit' },
+      steps: [
+        { id: 's1', title: 'One', fields: [{ key: 'x', type: 'text', label: 'X', validation: { required: true }, show: [{ field: 'y', eq: 'yes' }] }] },
+        { id: 's2', title: 'Two', fields: [{ key: 'y', type: 'text', label: 'Y' }] },
+      ],
+    };
+    const engine = new FormEngine(definition);
+    await engine.nextStepAsync();
+    engine.setValue('y', 'yes');
+
+    expect(await engine.submitAsync(() => {})).toBe(false);
+    expect(engine.currentStep?.id).toBe('s1');
+    expect(engine.errors.x).toBe('This field is required');
+  });
+
+  it('stays on the last step when its own field is invalid', async () => {
+    const definition: FormDefinition = {
+      id: 'last-step-error',
+      title: 'Last step error',
+      submit: { label: 'Submit' },
+      steps: [
+        { id: 's1', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }] },
+        { id: 's2', title: 'Two', fields: [{ key: 'b', type: 'text', label: 'B', validation: { required: true } }] },
+      ],
+    };
+    const engine = new FormEngine(definition);
+    await engine.nextStepAsync();
+
+    expect(await engine.submitAsync(() => {})).toBe(false);
+    expect(engine.currentStep?.id).toBe('s2');
+  });
 });
