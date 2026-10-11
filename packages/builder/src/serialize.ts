@@ -1,0 +1,87 @@
+import type { FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
+import { canBranch, groups, hasOptions, isPage, pageTitle, type BuilderForm, type BuilderQuestion, type Group } from './model';
+
+export interface Serialized {
+  definition: FormDefinition;
+  paths: Map<string, string>;
+}
+
+function field(item: BuilderQuestion, path: string, paths: Map<string, string>): FormField {
+  const { validation, ...extra } = item.extra;
+  const { required, ...rules } = validation ?? {};
+  const result: FormField = { key: item.key, type: item.type, label: item.label.trim() || 'Untitled question', ...extra };
+  const merged = { ...(item.required ? { required: typeof required === 'string' ? required : true } : {}), ...rules };
+  if (Object.keys(merged).length) result.validation = merged;
+  paths.set(path, item.uid);
+  if (hasOptions(item.type)) {
+    result.options = item.options.map((option, index) => {
+      paths.set(`${path}.options.${index}`, option.uid);
+      return { value: option.value, label: option.label.trim() || `Option ${index + 1}` };
+    });
+  }
+  return result;
+}
+
+function routesFor(parts: Group[], ids: string[], fields: FormField[][]): StepRoute[][] {
+  const routes: StepRoute[][] = parts.map(() => []);
+  parts.forEach((part, index) => {
+    const indexOf = (uid: string | null) => parts.findIndex((other, at) => at > index && other.page?.uid === uid);
+    const branching = part.questions.filter((item) => canBranch(item.type) && item.options.some((option) => indexOf(option.jump) >= 0));
+    for (const item of branching) {
+      const key = fields[index][part.questions.indexOf(item)].key;
+      item.options.forEach((option, at) => {
+        const target = indexOf(option.jump);
+        const value = fields[index][part.questions.indexOf(item)].options![at].value;
+        if (target >= 0) routes[index].push({ to: ids[target], show: [{ field: key, eq: value }] });
+      });
+    }
+    const covered = branching.length === 1 && branching[0].options.every((option) => indexOf(option.jump) >= 0);
+    const next = indexOf(part.page?.next ?? null);
+    if (covered) delete routes[index][routes[index].length - 1].show;
+    else if (next >= 0) routes[index].push({ to: ids[next] });
+    else if (routes[index].length && index + 1 < parts.length) routes[index].push({ to: ids[index + 1] });
+  });
+  return routes;
+}
+
+function head(form: BuilderForm) {
+  const { $schema, submit, ...extra } = form.extra;
+  return {
+    ...($schema ? { $schema } : {}),
+    id: form.id,
+    title: form.title.trim() || 'Untitled form',
+    ...extra,
+    submit: { ...submit, label: form.submit.trim() || 'Submit' },
+  };
+}
+
+export function serialize(form: BuilderForm): Serialized {
+  const paths = new Map<string, string>();
+  const parts = groups(form);
+  if (!form.blocks.some(isPage)) {
+    const fields = (parts[0]?.questions ?? []).map((item, index) => field(item, `fields.${index}`, paths));
+    return { definition: { ...head(form), fields } as FormDefinition, paths };
+  }
+  const ids = parts.map((part, index) => part.page?.id || `page-${index + 1}`);
+  const fields = parts.map((part, step) => part.questions.map((item, index) => field(item, `steps.${step}.fields.${index}`, paths)));
+  const routes = routesFor(parts, ids, fields);
+  const steps = parts.map((part, index): FormStep => {
+    if (part.page) paths.set(`steps.${index}`, part.page.uid);
+    const next = part.page?.nextLabel.trim();
+    const back = part.page?.backLabel.trim();
+    const step: FormStep = {
+      id: ids[index],
+      title: pageTitle(part.page, index),
+      ...part.page?.extra,
+      ...(next ? { next: { label: next } } : {}),
+      ...(back ? { back: { label: back } } : {}),
+      fields: fields[index],
+    };
+    const own = part.page?.routes ?? routes[index];
+    if (own.length) step.routes = own;
+    return step;
+  });
+  return { definition: { ...head(form), steps } as FormDefinition, paths };
+}
+
+export const toDefinition = (form: BuilderForm): FormDefinition => serialize(form).definition;
