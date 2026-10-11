@@ -5,10 +5,10 @@ import BuilderMenu from './BuilderMenu.vue';
 import BuilderOptions from './BuilderOptions.vue';
 import LucideIcon from './LucideIcon.vue';
 import {
-  QUESTION_TYPES, TYPE_ITEMS, hasOptions, placeholderFor, setType, typeLabel,
-  type BuilderOption, type BuilderQuestion, type QuestionType,
-} from './builder-model';
-import { inferType, questionSlash, shortcut, slashQuery, type Shortcut } from './builder-smart';
+  QUESTION_TYPES, TYPE_ITEMS, hasOptions, inferType, placeholderFor, questionSlash, setType, shortcut, slashQuery, typeLabel,
+  type BuilderOption, type BuilderQuestion, type QuestionType, type Shortcut,
+} from '@formhaus/builder';
+import { useBuilderForm } from './builder-form';
 
 const props = defineProps<{ question: BuilderQuestion; pages: { uid: string; title: string }[]; picker?: boolean }>();
 const emit = defineEmits<{
@@ -16,6 +16,7 @@ const emit = defineEmits<{
   shortcut: [shortcut: Shortcut]; newPage: [option: BuilderOption]; branch: []; edit: [];
 }>();
 
+const form = useBuilderForm();
 const root = ref<HTMLElement>();
 const textAnchor = ref<HTMLElement>();
 const typeAnchor = ref<HTMLElement>();
@@ -48,7 +49,7 @@ onMounted(() => { if (props.picker) openPicker(); });
 watch(() => props.picker, (next) => { if (next) openPicker(); });
 
 function apply(type: QuestionType) {
-  setType(props.question, type);
+  setType(form, props.question, type);
   dismissed.value = type !== 'text';
   emit('edit');
 }

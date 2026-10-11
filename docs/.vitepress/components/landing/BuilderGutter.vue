@@ -2,8 +2,7 @@
 import { computed, ref, useId } from 'vue';
 import BuilderMenu from './BuilderMenu.vue';
 import LucideIcon from './LucideIcon.vue';
-import type { BuilderForm, MenuItem } from './builder-model';
-import { canMove, canRemove, pageCount } from './builder-ops';
+import { canMove, canRemove, pageCount, type BuilderForm, type MenuItem } from '@formhaus/builder';
 
 export type GutterAction = 'insert' | 'page' | 'up' | 'down' | 'remove' | 'required';
 

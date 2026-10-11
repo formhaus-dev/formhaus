@@ -3,7 +3,7 @@ import { computed, nextTick, ref } from 'vue';
 import AutoInput from './AutoInput.vue';
 import BuilderMenu from './BuilderMenu.vue';
 import LucideIcon from './LucideIcon.vue';
-import type { BuilderPage, MenuItem } from './builder-model';
+import type { BuilderPage, MenuItem } from '@formhaus/builder';
 
 const props = defineProps<{ page: BuilderPage; position: number; pages: { uid: string; title: string }[] }>();
 const emit = defineEmits<{ after: []; remove: []; edit: [] }>();

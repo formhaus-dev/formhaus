@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
 import LucideIcon from './LucideIcon.vue';
-import type { MenuItem } from './builder-model';
+import type { MenuItem } from '@formhaus/builder';
 import { useFloating, type Anchor } from './builder-float';
 
 const props = defineProps<{ id: string; items: MenuItem[]; current?: string; label: string; anchor: Anchor; passive?: boolean; align?: 'start' | 'end' }>();

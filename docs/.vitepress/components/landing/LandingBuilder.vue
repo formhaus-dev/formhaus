@@ -7,10 +7,12 @@ import BuilderGap from './BuilderGap.vue';
 import BuilderGutter, { type GutterAction } from './BuilderGutter.vue';
 import BuilderQuestion from './BuilderQuestion.vue';
 import BuilderTooltip from './BuilderTooltip.vue';
-import { moveTo, usePointerDrag } from './builder-drag';
-import { newPage, pagesAfter, type BuilderForm, type BuilderOption, type BuilderPage } from './builder-model';
-import { convertToPage, insertPage, insertQuestion, moveBlock, outdent, pageSpan, removeBlock, startOptions } from './builder-ops';
-import type { Shortcut } from './builder-smart';
+import { usePointerDrag } from './builder-drag';
+import { provideBuilderForm } from './builder-form';
+import {
+  convertToPage, insertPage, insertQuestion, moveBlock, moveTo, newPage, outdent, pageSpan, pagesAfter, removeBlock, startOptions,
+  type BuilderForm, type BuilderOption, type BuilderPage, type Shortcut,
+} from '@formhaus/builder';
 import './builder.css';
 import './builder-tools.css';
 import './builder-menu.css';
@@ -18,6 +20,7 @@ import './builder-menu.css';
 const props = defineProps<{ form: BuilderForm; edited: boolean }>();
 const emit = defineEmits<{ edit: [] }>();
 
+provideBuilderForm(props.form);
 const root = ref<HTMLElement>();
 const pending = ref<string | null>(null);
 const drag = usePointerDrag({
@@ -124,7 +127,7 @@ function onBranch(index: number) {
 }
 
 function onNewPage(option: BuilderOption) {
-  const page = newPage();
+  const page = newPage(props.form);
   blocks().push(page);
   option.jump = page.uid;
   touch();

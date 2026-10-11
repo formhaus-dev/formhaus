@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import AutoInput from './AutoInput.vue';
-import { DEFAULT_BACK, DEFAULT_NEXT, type BuilderForm, type BuilderPage } from './builder-model';
+import { DEFAULT_BACK, DEFAULT_NEXT, type BuilderForm, type BuilderPage } from '@formhaus/builder';
 
 defineProps<{ form: BuilderForm; page?: BuilderPage; first: boolean; last: boolean }>();
 const emit = defineEmits<{ edit: [] }>();

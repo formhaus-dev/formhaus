@@ -3,13 +3,17 @@ import { computed, nextTick, ref } from 'vue';
 import AutoInput from './AutoInput.vue';
 import BuilderMenu from './BuilderMenu.vue';
 import LucideIcon from './LucideIcon.vue';
-import { canBranch, newOption, type BuilderOption, type BuilderQuestion, type MenuItem } from './builder-model';
-import { BRANCH_ITEM, UNBRANCH_ITEM, branchShortcut, filterItems, slashQuery } from './builder-smart';
-import { moveItem, usePointerDrag } from './builder-drag';
+import {
+  BRANCH_ITEM, UNBRANCH_ITEM, branchShortcut, canBranch, filterItems, moveItem, newOption, slashQuery,
+  type BuilderOption, type BuilderQuestion, type MenuItem,
+} from '@formhaus/builder';
+import { usePointerDrag } from './builder-drag';
+import { useBuilderForm } from './builder-form';
 
 const props = defineProps<{ question: BuilderQuestion; pages: { uid: string; title: string }[] }>();
 const emit = defineEmits<{ outdent: [position: number]; edit: []; branch: []; newPage: [option: BuilderOption] }>();
 
+const form = useBuilderForm();
 const root = ref<HTMLElement>();
 const drag = usePointerDrag({
   root,
@@ -45,7 +49,7 @@ function close(uid: string) {
 }
 
 function add(index = props.question.options.length) {
-  const option = newOption();
+  const option = newOption(form);
   props.question.options.splice(index, 0, option);
   emit('edit');
   focusOption(option.uid);
