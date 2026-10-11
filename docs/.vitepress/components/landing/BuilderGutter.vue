@@ -16,12 +16,12 @@ const block = computed(() => props.form.blocks[props.index]);
 const items = computed<MenuItem[]>(() => {
   const page = block.value.kind === 'page';
   const noun = page ? 'page' : 'question';
-  const list: MenuItem[] = [{ id: 'insert', label: 'Add question below', icon: 'plus' }];
+  const list: MenuItem[] = [{ id: 'insert', label: 'Add field below', icon: 'plus' }];
   if (block.value.kind === 'question') list.push({ id: 'required', label: 'Required', hint: 'Must be answered', icon: 'asterisk', checked: block.value.required });
   if (canMove(props.form, props.index, -1)) list.push({ id: 'up', label: `Move ${noun} up`, icon: 'arrow-up' });
   if (canMove(props.form, props.index, 1)) list.push({ id: 'down', label: `Move ${noun} down`, icon: 'arrow-down' });
   if (!page) list.push({ id: 'page', label: 'New page below', hint: 'Split the form here', icon: 'file' });
-  if (canRemove(props.form, props.index)) list.push({ id: 'remove', label: page ? 'Delete page' : 'Delete', hint: page ? (pageCount(props.form) > 1 ? 'With its questions' : 'Questions stay as one page') : undefined, icon: 'trash', danger: true });
+  if (canRemove(props.form, props.index)) list.push({ id: 'remove', label: page ? 'Delete step' : 'Delete', hint: page ? (pageCount(props.form) > 1 ? 'With its fields' : 'Fields stay as one step') : undefined, icon: 'trash', danger: true });
   return list;
 });
 

@@ -13,7 +13,7 @@ const anchor = ref<HTMLElement>();
 const open = ref(false);
 const title = computed(() => props.pages.find((page) => page.uid === props.page.next)?.title);
 const items = computed<MenuItem[]>(() => [
-  { id: 'next', label: 'Next page', hint: 'Continue in order', icon: 'arrow-down' },
+  { id: 'next', label: 'Next step', hint: 'Continue in order', icon: 'arrow-down' },
   ...props.pages.map((page) => ({ id: page.uid, label: page.title, hint: 'Skip ahead to this page', icon: 'file' as const })),
 ]);
 
@@ -54,7 +54,7 @@ function onKey(event: KeyboardEvent) {
           class="nb-tag"
           :class="page.next ? 'nb-tag--branch' : 'nb-tag--ghost'"
           :data-warn="!!page.next && !title"
-          data-tip="Where this page continues after its questions"
+          data-tip="Where this step continues after its fields"
           :aria-label="`After this page: ${page.next ? title ?? 'missing page' : 'next page'}`"
           @click="open = true"
         >
@@ -65,7 +65,7 @@ function onKey(event: KeyboardEvent) {
         </button>
         <BuilderMenu v-if="open" :id="`${page.uid}-next`" :items="items" :current="page.next ?? 'next'" :anchor="anchor" label="Where this page continues" @pick="pick" @close="open = false; focusText()" />
       </span>
-      <span class="nb-page__count">Page {{ position + 1 }}</span>
+      <span class="nb-page__count">Step {{ position + 1 }}</span>
     </div>
   </div>
 </template>

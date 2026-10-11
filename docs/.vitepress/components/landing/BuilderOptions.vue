@@ -30,9 +30,9 @@ const title = (uid: string) => props.pages.find((page) => page.uid === uid)?.tit
 
 const branchItems = (option: BuilderOption): MenuItem[] => [
   ...(option.jump ? [UNBRANCH_ITEM] : []),
-  { id: 'next', label: 'Next page', hint: 'Continue in order', icon: 'arrow-down' },
+  { id: 'next', label: 'Next step', hint: 'Continue in order', icon: 'arrow-down' },
   ...props.pages.map((page) => ({ id: page.uid, label: page.title, hint: 'Jump here when picked', icon: 'file' as const })),
-  { id: 'new', label: 'New page', hint: 'Create a page and jump to it', icon: 'plus' },
+  { id: 'new', label: 'New step', hint: 'Create a step and jump to it', icon: 'plus' },
 ];
 
 const slashItems = (option: BuilderOption) => filterItems(option.jump ? [UNBRANCH_ITEM, BRANCH_ITEM] : [BRANCH_ITEM], slashQuery(option.label) ?? '');
@@ -157,11 +157,11 @@ function pickSlash(option: BuilderOption, id: string) {
           :class="option.jump ? 'nb-tag--branch' : 'nb-tag--ghost'"
           :data-warn="!!option.jump && !title(option.jump)"
           data-tip="Where this answer leads"
-          :aria-label="`Where this answer leads: ${option.jump ? title(option.jump) ?? 'missing page' : 'next page'}`"
+          :aria-label="`Where this answer leads: ${option.jump ? title(option.jump) ?? 'missing step' : 'next step'}`"
           @click="menu = { uid: option.uid, kind: 'branch' }"
         >
           <LucideIcon name="split" />
-          {{ option.jump ? title(option.jump) ?? 'Missing page' : 'Branch' }}
+          {{ option.jump ? title(option.jump) ?? 'Missing step' : 'Branch' }}
           <LucideIcon name="chevron-down" class="nb-tag__chevron" />
         </button>
         <BuilderMenu
