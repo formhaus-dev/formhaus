@@ -63,7 +63,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `accept` | string | Accepted file types for `file`. |
 | `rows` | number | Row count for `textarea`. |
 | `mask` | string | Input mask. Built-in renderers use it as the placeholder when `placeholder` is absent. |
-| `inputMode` | `text`, `numeric`, `tel`, `email` | Virtual keyboard hint. |
+| `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint. |
 
 Field keys SHOULD be unique across the whole definition. Fields with the same key share one value. `validateDefinition()` warns about duplicates.
 

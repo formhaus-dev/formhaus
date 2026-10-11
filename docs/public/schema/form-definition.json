@@ -237,8 +237,11 @@
           "enum": [
             "text",
             "numeric",
+            "decimal",
             "tel",
-            "email"
+            "email",
+            "url",
+            "search"
           ]
         }
       },
