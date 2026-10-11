@@ -1,11 +1,42 @@
 import { FormRenderer } from '@formhaus/react';
+import { focusFirstInvalid, type CloudAction } from '@formhaus/core/cloud';
+import { useCallback, useEffect, useRef } from 'react';
+import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
-export function FormhausForm({ id, apiBase, onSuccess, fallback, success, ...rendererProps }: FormhausFormProps) {
-  const { definition, loadError, errors, done, submit } = useCloudForm({ id, apiBase, onSuccess, onError: rendererProps.onError });
-  if (loadError) return <p role="alert" className="fh-form__error">{loadError.message}</p>;
-  if (!definition) return <div className="fh-form" aria-busy="true">{fallback}</div>;
-  if (done) return <>{success ?? <p role="status" className="fh-form__success">Thank you. Your response was submitted.</p>}</>;
-  return <FormRenderer {...rendererProps} definition={definition} errors={errors} onSubmit={submit} />;
+function handled() {}
+
+export function FormhausForm({ id, apiBase, onSuccess, onError, fallback, success, initialValues, ...rendererProps }: FormhausFormProps) {
+  const cloud = useCloudForm({ id, apiBase, onSuccess, onError });
+  const root = useRef<HTMLDivElement>(null);
+  const notice = useRef<HTMLDivElement>(null);
+  const act = useCallback((action: Exclude<CloudAction, null>) => {
+    if (action === 'reload') window.location.reload();
+    else root.current?.querySelector('form')?.requestSubmit();
+  }, []);
+
+  useEffect(() => {
+    if (cloud.attempt === 0) return;
+    const frame = requestAnimationFrame(() => focusFirstInvalid(root.current, notice.current));
+    return () => cancelAnimationFrame(frame);
+  }, [cloud.attempt]);
+
+  if (cloud.loadError) return <p role="alert" className="fh-form__error">{cloud.loadError.message}</p>;
+  if (!cloud.definition) return <div className="fh-form" aria-busy="true">{fallback}</div>;
+  if (cloud.done) return <>{success ?? <p role="status" className="fh-form__success">Thank you. Your response was submitted.</p>}</>;
+  return (
+    <div ref={root} className="fh-cloud">
+      <CloudNotice notice={cloud.notice} noticeRef={notice} onAction={act} />
+      <FormRenderer
+        {...rendererProps}
+        key={cloud.revision}
+        definition={cloud.definition}
+        initialValues={cloud.initialValues ?? initialValues}
+        errors={cloud.errors}
+        onSubmit={cloud.submit}
+        onError={handled}
+      />
+    </div>
+  );
 }
