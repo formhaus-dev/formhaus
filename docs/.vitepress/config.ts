@@ -2,11 +2,12 @@ import { defineConfig } from 'vitepress'
 import { head, transformHead } from './head'
 import { transformPageData } from './templates'
 import { llms } from './llms'
+import { templateFiles } from './template-files'
 import { siteUrl } from './site'
 
 export default defineConfig({
   vite: {
-    plugins: [llms],
+    plugins: [llms, templateFiles()],
     server: {
       fs: { allow: ['..'] }
     }
