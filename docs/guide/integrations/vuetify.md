@@ -29,6 +29,6 @@ npm install @formhaus/core @formhaus/vue vuetify
 
 The other renderers are in [`src/fields`](https://github.com/ignsm/formhaus/tree/main/examples/vue-vuetify/src/fields) and [`src/actions`](https://github.com/ignsm/formhaus/tree/main/examples/vue-vuetify/src/actions).
 
-## Server re-validation
+## Server validation
 
-The example validates in the browser only. To check the same rules on the server, build a `FormEngine` from the same definition and call `validate()`, then pass the returned errors to the `errors` prop. See [Nuxt](/guide/integrations/nuxt#how-server-re-validation-works) for a complete server route.
+The example validates in the browser only. On the server, run `validateSubmission()` from `@formhaus/core/server` on the posted values and pass the returned errors to the `errors` prop. See [Server-side validation](/guide/server-validation) and [Nuxt](/guide/integrations/nuxt) for a complete server route.
