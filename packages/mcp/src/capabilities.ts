@@ -17,7 +17,7 @@ export const capabilities = {
     ],
     optionFieldTypes: OPTION_FIELD_TYPES,
     options: 'Array of { value: string, label: string }.',
-    inputMode: ['text', 'numeric', 'tel', 'email'],
+    inputMode: ['text', 'numeric', 'decimal', 'tel', 'email', 'url', 'search'],
     layout: 'radio and multiselect only: "stack" (default) or "inline" for short options.',
   },
   validationRules: {
