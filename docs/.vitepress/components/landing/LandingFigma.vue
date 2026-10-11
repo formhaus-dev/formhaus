@@ -75,7 +75,7 @@ const points = ['Your own components', 'Flow map for every branch', 'Clickable p
   height: auto;
   border: 1px solid var(--vp-c-divider);
   border-radius: 16px;
-  box-shadow: 0 12px 40px rgba(91, 63, 176, 0.14);
+  box-shadow: 0 12px 40px var(--fh-c-brand-shadow);
 }
 
 .figma__image--dark,
