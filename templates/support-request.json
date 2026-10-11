@@ -20,7 +20,7 @@
               { "value": "account", "label": "Account and sign-in" },
               { "value": "billing", "label": "Billing" },
               { "value": "bug", "label": "Something isn’t working" },
-              { "value": "how-to", "label": "How do I…" },
+              { "value": "how-to", "label": "A how-to question" },
               { "value": "other", "label": "Something else" }
             ],
             "validation": { "required": true }
@@ -31,6 +31,7 @@
             "label": "How urgent is it?",
             "layout": "inline",
             "helperText": "Urgent means you can’t work at all.",
+            "defaultValue": "normal",
             "options": [
               { "value": "low", "label": "Low" },
               { "value": "normal", "label": "Normal" },
@@ -50,6 +51,12 @@
             "label": "Describe the problem",
             "rows": 5,
             "validation": { "required": true }
+          },
+          {
+            "key": "attachment",
+            "type": "text",
+            "label": "Link to a screenshot or recording",
+            "placeholder": "https://"
           }
         ]
       },
