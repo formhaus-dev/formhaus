@@ -49,6 +49,17 @@ export default defineConfig({
         text: 'Cloud',
         items: [
           { text: 'Formhaus Cloud', link: '/cloud' },
+          { text: 'Overview', link: '/cloud/overview' },
+          { text: 'Quickstart', link: '/cloud/quickstart' },
+          { text: 'Publishing', link: '/cloud/publishing' },
+          { text: 'Collecting submissions', link: '/cloud/submissions' },
+          { text: 'Teams and roles', link: '/cloud/teams' },
+          { text: 'Dashboard', link: '/cloud/dashboard' },
+          { text: 'Webhooks', link: '/cloud/webhooks' },
+          { text: 'Email notifications', link: '/cloud/emails' },
+          { text: 'REST API', link: '/cloud/rest-api' },
+          { text: 'MCP reference', link: '/cloud/mcp' },
+          { text: 'Plans, limits and data', link: '/cloud/plans' },
         ]
       },
       {
