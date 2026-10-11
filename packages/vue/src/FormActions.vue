@@ -92,10 +92,10 @@ function getBackLabel(): string {
     </div>
     <button
       v-if="props.showPrimary !== false"
-      type="button"
+      type="submit"
       class="fh-form-actions__button fh-form-actions__button--primary"
       :disabled="isActionDisabled(props.isMultiStep && !props.isLastStep ? undefined : props.submitAction)"
-      @click="onPrimaryClick"
+      @click.prevent="onPrimaryClick"
     >
       {{ getPrimaryLabel() }}
     </button>
