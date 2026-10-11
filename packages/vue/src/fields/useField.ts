@@ -27,6 +27,7 @@ export function useField(props: FormFieldProps, emit: FieldEmits) {
     id: inputId.value,
     ...control.value,
     ...fieldAria(props.field, props.error),
+    'aria-required': !!props.field.validation?.required || undefined,
   }));
   return { inputId, control, input };
 }

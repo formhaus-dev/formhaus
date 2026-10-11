@@ -14,6 +14,7 @@ export function inputProps(props: FieldComponentProps) {
     id: props.field.key,
     ...optionProps(props),
     'aria-invalid': !!props.error,
+    'aria-required': !!props.field.validation?.required || undefined,
     'aria-describedby': describedBy(props.field, props.error),
   };
 }

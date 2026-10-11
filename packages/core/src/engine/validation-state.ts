@@ -10,13 +10,18 @@ export function applyValidationErrors(engine: EngineInternals, errors: Record<st
     if (engine.visibility.isFieldVisible(key, engine.values)) engine.errors[key] = message;
     else engine.topLevelErrors.push(message);
   }
+  const structureChanged = navigate && moveToFirstError(engine, errors);
+  engine.notify({ fieldKeys: getChangedKeys(previousErrors, engine.errors), structureChanged });
+}
+
+function moveToFirstError(engine: EngineInternals, errors: Record<string, string>): boolean {
   const firstErrorKey = Object.keys(errors).find((key) => engine.errors[key] !== undefined);
-  const targetIndex = navigate && firstErrorKey && engine.isMultiStep
+  const targetIndex = firstErrorKey && engine.isMultiStep
     ? engine.visibility.findStepIndex(firstErrorKey, engine.values, engine.currentStepIndex)
     : null;
-  const structureChanged = targetIndex !== null && targetIndex !== engine.currentStepIndex;
-  if (targetIndex !== null) engine.currentStepIndex = targetIndex;
-  engine.notify({ fieldKeys: getChangedKeys(previousErrors, engine.errors), structureChanged });
+  if (targetIndex === null || targetIndex === engine.currentStepIndex) return false;
+  engine.currentStepIndex = targetIndex;
+  return true;
 }
 
 export function clearResolvedMatchErrors(engine: EngineInternals, key: string): string[] {
@@ -46,7 +51,7 @@ function withoutSkipped(engine: EngineInternals, values: Record<string, unknown>
   return values;
 }
 
-export function validateForm(engine: EngineInternals): Record<string, string> {
+export function validateForm(engine: EngineInternals, navigate = false): Record<string, string> {
   const previousErrors = engine.errors;
   const errors: Record<string, string> = {};
   if (engine.isMultiStep) {
@@ -61,7 +66,8 @@ export function validateForm(engine: EngineInternals): Record<string, string> {
     );
   }
   engine.errors = errors;
-  engine.notify({ fieldKeys: getChangedKeys(previousErrors, errors) });
+  const structureChanged = navigate && moveToFirstError(engine, errors);
+  engine.notify({ fieldKeys: getChangedKeys(previousErrors, errors), structureChanged });
   return errors;
 }
 

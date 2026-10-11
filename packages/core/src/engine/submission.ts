@@ -19,14 +19,14 @@ export async function submitAsync(engine: EngineInternals, submit: SubmitFn, kee
   engine.notify();
   try {
     if (stale()) return false;
-    if (Object.keys(validateForm(engine)).length > 0 || stale()) return false;
+    if (Object.keys(validateForm(engine, true)).length > 0 || stale()) return false;
     if (lifecycle.onBeforeSubmit) {
       const allowed = await lifecycle.onBeforeSubmit(values);
       if (stale() || allowed === false) return false;
     }
     if (stale()) return false;
     if (lifecycle.onBeforeSubmit) {
-      if (Object.keys(validateForm(engine)).length > 0 || stale()) return false;
+      if (Object.keys(validateForm(engine, true)).length > 0 || stale()) return false;
       values = getSubmitValues(engine);
     }
     dispatched = true;

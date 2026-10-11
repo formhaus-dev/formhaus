@@ -59,7 +59,7 @@ watch(
   { immediate: true },
 );
 
-const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, skip: onSkip, submit: onSubmit, actionError } =
+const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, skip: onSkip, submit: onSubmit, actionError, invalidAttempts } =
   useRendererActions(form, props, emit);
 const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
 
@@ -67,10 +67,16 @@ let previousStep = currentStep.value?.id;
 let focusPending = false;
 let focusReturn: HTMLElement | null = null;
 let wasBusy = false;
+let handledInvalid = 0;
+const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
+function firstControl(root: Element | null | undefined) {
+  return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
+}
 function rememberFocus(event: FocusEvent) { focusReturn = event.target as HTMLElement; }
-watch([currentStep, stepValidating, submitting], async () => {
-  if (currentStep.value?.id !== previousStep) focusPending = true;
+watch([currentStep, stepValidating, submitting, invalidAttempts], async () => {
+  if (currentStep.value?.id !== previousStep || invalidAttempts.value !== handledInvalid) focusPending = true;
   previousStep = currentStep.value?.id;
+  handledInvalid = invalidAttempts.value;
   if (stepValidating.value || submitting.value) {
     wasBusy = true;
     return;
@@ -84,10 +90,9 @@ watch([currentStep, stepValidating, submitting], async () => {
   }
   focusPending = false;
   await nextTick();
-  const target = formRef.value?.querySelector<HTMLElement>(
-    '.fh-form__fields input:not(:disabled), .fh-form__fields select:not(:disabled), .fh-form__fields textarea:not(:disabled), .fh-form__fields button:not(:disabled)',
-  );
-  (target ?? formRef.value)?.focus();
+  const fields = formRef.value?.querySelector('.fh-form__fields');
+  const target = firstControl(fields?.querySelector('[aria-invalid="true"]')) ?? firstControl(fields);
+  ((target as HTMLElement | null | undefined) ?? formRef.value)?.focus();
 }, { flush: 'post' });
 
 function onFieldFocus(key: string) {
