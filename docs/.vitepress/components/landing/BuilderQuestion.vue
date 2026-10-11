@@ -126,7 +126,7 @@ function pickType(id: string) {
         <AutoInput
           v-model="question.label"
           :placeholder="picking ? 'Pick a type, or type to filter' : placeholderFor(question.type)"
-          label="Question"
+          label="Field label"
           @keydown="onTitleKey"
           @input="onInput"
           @blur="picking && closeSlash(true)"
@@ -137,7 +137,7 @@ function pickType(id: string) {
           ref="slashRef"
           :items="questionSlash(query)"
           :anchor="textAnchor"
-          label="Question types"
+          label="Field types"
           passive
           @pick="pickSlash"
           @close="closeSlash"
@@ -150,7 +150,7 @@ function pickType(id: string) {
             {{ typeLabel(question.type) }}
             <LucideIcon name="chevron-down" class="nb-tag__chevron" />
           </button>
-          <BuilderMenu v-if="menu === 'type'" :id="`${question.uid}-type`" :items="TYPE_ITEMS" :current="question.type" :anchor="typeAnchor" label="Question type" @pick="pickType" @close="menu = null; focus()" />
+          <BuilderMenu v-if="menu === 'type'" :id="`${question.uid}-type`" :items="TYPE_ITEMS" :current="question.type" :anchor="typeAnchor" label="Field type" @pick="pickType" @close="menu = null; focus()" />
         </span>
         <button
           type="button"
@@ -164,7 +164,7 @@ function pickType(id: string) {
           <LucideIcon name="asterisk" />
           Required
         </button>
-        <button type="button" class="nb-tool nb-tool--ghost" data-tip="Delete question" aria-label="Delete question" @mousedown.prevent @click="emit('remove')">
+        <button type="button" class="nb-tool nb-tool--ghost" data-tip="Delete field" aria-label="Delete field" @mousedown.prevent @click="emit('remove')">
           <LucideIcon name="x" />
         </button>
         <button v-if="suggestion" type="button" class="nb-suggest" data-tip="Press → at the end of the text to accept" @click="apply(suggestion); focus()">

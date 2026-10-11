@@ -69,7 +69,7 @@ const progress = computed(() => {
   const route: string[] = [];
   for (let id: string | undefined = first(); id && !route.includes(id); id = nextStep(live.value, id, values.value)) route.push(id);
   const at = route.indexOf(history_.value[history_.value.length - 1]);
-  return route.length > 1 ? `Step ${Math.max(1, at + 1)} of ${route.length}` : 'One page';
+  return route.length > 1 ? `Step ${Math.max(1, at + 1)} of ${route.length}` : 'One step';
 });
 
 function onStep(id: string) {
