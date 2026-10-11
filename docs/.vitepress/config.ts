@@ -14,6 +14,7 @@ export default defineConfig({
   titleTemplate: ':title · Formhaus',
   description: 'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
   lastUpdated: true,
+  ignoreDeadLinks: [/^\/legal\//],
   sitemap: { hostname: siteUrl },
   head,
   transformHead,
@@ -22,6 +23,7 @@ export default defineConfig({
     siteTitle: false,
     nav: [
       { text: 'Guide', link: '/guide/' },
+      { text: 'Cloud', link: '/cloud' },
       { text: 'API', link: '/api/definition' },
       { text: 'Playground', link: '/playground' },
       { text: 'GitHub', link: 'https://github.com/ignsm/formhaus' }
@@ -41,6 +43,23 @@ export default defineConfig({
           { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
           { text: 'Examples', link: '/guide/examples' },
           { text: 'Get an Endpoint', link: '/guide/endpoint' },
+        ]
+      },
+      {
+        text: 'Cloud',
+        items: [
+          { text: 'Formhaus Cloud', link: '/cloud' },
+          { text: 'Overview', link: '/cloud/overview' },
+          { text: 'Quickstart', link: '/cloud/quickstart' },
+          { text: 'Publishing', link: '/cloud/publishing' },
+          { text: 'Collecting submissions', link: '/cloud/submissions' },
+          { text: 'Teams and roles', link: '/cloud/teams' },
+          { text: 'Dashboard', link: '/cloud/dashboard' },
+          { text: 'Webhooks', link: '/cloud/webhooks' },
+          { text: 'Email notifications', link: '/cloud/emails' },
+          { text: 'REST API', link: '/cloud/rest-api' },
+          { text: 'MCP reference', link: '/cloud/mcp' },
+          { text: 'Plans, limits and data', link: '/cloud/plans' },
         ]
       },
       {

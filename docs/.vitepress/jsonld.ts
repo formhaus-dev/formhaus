@@ -66,3 +66,28 @@ export function articleJsonLd(headline: string, description: string, url: string
     isPartOf: { '@type': 'WebSite', name: siteName, url: `${siteUrl}/` },
   }
 }
+
+function plainText(html: string): string {
+  return html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .trim()
+}
+
+export function faqJsonLd(html: string) {
+  const faq = html.slice(html.indexOf('id="faq"'))
+  const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/g)]
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: entries.map(([, question, answer]) => ({
+      '@type': 'Question',
+      name: plainText(question.replace(/<a class="header-anchor"[\s\S]*?<\/a>/, '')),
+      acceptedAnswer: { '@type': 'Answer', text: plainText(answer) },
+    })),
+  }
+}
