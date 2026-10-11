@@ -17,7 +17,7 @@ export type QuestionType = (typeof QUESTION_TYPES)[number]['type'];
 export type IconName = (typeof QUESTION_TYPES)[number]['icon'] | 'file' | 'split' | 'x' | 'plus' | 'trash' | 'asterisk' | 'arrow-up' | 'arrow-down';
 export interface MenuItem { id: string; label: string; hint?: string; icon?: IconName; checked?: boolean; danger?: boolean }
 export const TYPE_ITEMS: MenuItem[] = QUESTION_TYPES.map(({ type, label, hint, icon }) => ({ id: type, label, hint, icon }));
-export const PAGE_ITEM: MenuItem = { id: 'page', label: 'New page', hint: 'Start a new step here', icon: 'file' };
+export const PAGE_ITEM: MenuItem = { id: 'page', label: 'New step', hint: 'Start a new step here', icon: 'file' };
 
 export interface BuilderOption {
   uid: string;
@@ -78,7 +78,7 @@ export const hasOptions = (type: FieldType) => type === 'radio' || type === 'mul
 export const canBranch = (type: FieldType) => type === 'radio' || type === 'select';
 export const placeholderFor = (type: FieldType) => QUESTION_TYPES.find((item) => item.type === type)?.placeholder ?? 'Question';
 export const typeLabel = (type: FieldType) => QUESTION_TYPES.find((item) => item.type === type)?.label ?? type.charAt(0).toUpperCase() + type.slice(1);
-export const pageTitle = (page: BuilderPage | undefined, position: number) => page?.title.trim() || `Page ${position + 1}`;
+export const pageTitle = (page: BuilderPage | undefined, position: number) => page?.title.trim() || `Step ${position + 1}`;
 
 export function newPage(form: BuilderForm, title = ''): BuilderPage {
   return { kind: 'page', uid: uid(form), title, id: '', idLocked: false, next: null, nextLabel: '', backLabel: '', extra: {} };

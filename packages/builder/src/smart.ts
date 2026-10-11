@@ -13,8 +13,8 @@ export function inferType(label: string): QuestionType | undefined {
   return RULES.find(([pattern]) => pattern.test(label))?.[1];
 }
 
-export const BRANCH_ITEM: MenuItem = { id: 'branch', label: 'Branch this answer', hint: 'Jump to a page when picked', icon: 'split' };
-export const UNBRANCH_ITEM: MenuItem = { id: 'unbranch', label: 'Remove branch', hint: 'Follow the page order', icon: 'x' };
+export const BRANCH_ITEM: MenuItem = { id: 'branch', label: 'Branch this answer', hint: 'Jump to a step when picked', icon: 'split' };
+export const UNBRANCH_ITEM: MenuItem = { id: 'unbranch', label: 'Remove branch', hint: 'Follow the step order', icon: 'x' };
 
 export function slashQuery(value: string): string | null {
   return value.startsWith('/') ? value.slice(1) : null;

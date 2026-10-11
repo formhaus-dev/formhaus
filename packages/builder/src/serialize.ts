@@ -62,7 +62,7 @@ export function serialize(form: BuilderForm): Serialized {
     const fields = (parts[0]?.questions ?? []).map((item, index) => field(item, `fields.${index}`, paths));
     return { definition: { ...head(form), fields } as FormDefinition, paths };
   }
-  const ids = parts.map((part, index) => part.page?.id || `page-${index + 1}`);
+  const ids = parts.map((part, index) => part.page?.id || `step-${index + 1}`);
   const fields = parts.map((part, step) => part.questions.map((item, index) => field(item, `steps.${step}.fields.${index}`, paths)));
   const routes = routesFor(parts, ids, fields);
   const steps = parts.map((part, index): FormStep => {

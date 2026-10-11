@@ -21,7 +21,7 @@ export function keyBase(label: string): string {
 export const slugBase = (label: string, fallback: string) => words(label).join('-') || fallback;
 export const keyFromLabel = (label: string, taken: Set<string>) => unique(keyBase(label), taken);
 export const optionBase = (label: string, position: number) => slugBase(label, `option-${position + 1}`);
-export const stepBase = (page: BuilderPage | undefined, position: number) => slugBase(pageTitle(page, position), `page-${position + 1}`);
+export const stepBase = (page: BuilderPage | undefined, position: number) => slugBase(pageTitle(page, position), `step-${position + 1}`);
 
 export function follows(value: string, base: string, join = ''): boolean {
   if (value === base) return true;

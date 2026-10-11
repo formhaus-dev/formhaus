@@ -18,7 +18,7 @@ export function insertQuestion(form: BuilderForm, at: number): BuilderQuestion {
   return question;
 }
 
-export function insertPage(form: BuilderForm, at: number, titles: [string, string] = ['Page 1', 'Page 2']): BuilderPage {
+export function insertPage(form: BuilderForm, at: number, titles: [string, string] = ['Step 1', 'Step 2']): BuilderPage {
   const flat = !isPage(form.blocks[0]);
   const page = newPage(form, flat ? titles[1] : '');
   if (at > 0 && flat) {
