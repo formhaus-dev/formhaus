@@ -44,7 +44,7 @@
   :where([data-fh-theme="dark"] .fh-form, .fh-form[data-fh-theme="dark"]) { --fh-color-primary-hover: color-mix(in srgb, var(--fh-color-primary) 85%, #ffffff); }
 }
 
-.fh-form, .fh-form__fields { display: flex; flex-direction: column; gap: var(--fh-gap); }
+.fh-form, .fh-form__fields { display: grid; grid-template-columns: 100%; gap: var(--fh-gap); }
 
 .fh-form { color: var(--fh-color-text); font-size: var(--fh-font-size); line-height: 1.5; }
 
