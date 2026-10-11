@@ -1,26 +1,7 @@
 import { onBeforeUnmount, ref, type Ref } from 'vue';
-import type { BuilderForm } from './builder-model';
-import { pageSpan } from './builder-ops';
 
 const THRESHOLD = 4;
 const EDGE = 32;
-
-export function moveTo(form: BuilderForm, from: number, at: number): boolean {
-  const list = form.blocks;
-  const span = list[from].kind === 'page' ? pageSpan(form, from) : 1;
-  if (at >= from && at <= from + span) return false;
-  if (list[from].kind !== 'page' && at === 0 && list[0]?.kind === 'page') return false;
-  const taken = list.splice(from, span);
-  list.splice(at > from ? at - span : at, 0, ...taken);
-  return true;
-}
-
-export function moveItem<T>(list: T[], from: number, at: number): boolean {
-  if (at === from || at === from + 1) return false;
-  const [item] = list.splice(from, 1);
-  list.splice(at > from ? at - 1 : at, 0, item);
-  return true;
-}
 
 export interface DragOptions {
   root: Ref<HTMLElement | undefined>;
