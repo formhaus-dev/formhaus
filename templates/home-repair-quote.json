@@ -6,7 +6,7 @@
   "definition": {
     "id": "home-repair-quote",
     "title": "Get a quote",
-    "submit": { "label": "Request quote" },
+    "submit": { "label": "Request a quote" },
     "steps": [
       {
         "id": "job",
@@ -20,7 +20,7 @@
               { "value": "plumbing", "label": "Plumbing" },
               { "value": "electrical", "label": "Electrical" },
               { "value": "carpentry", "label": "Carpentry" },
-              { "value": "painting", "label": "Painting and decorating" },
+              { "value": "painting", "label": "Painting" },
               { "value": "roofing", "label": "Roofing" },
               { "value": "heating-cooling", "label": "Heating and cooling" },
               { "value": "handyman", "label": "General repairs" },
@@ -42,6 +42,13 @@
             "rows": 4,
             "placeholder": "What needs fixing or installing? Add sizes or brands if you know them.",
             "validation": { "required": true }
+          },
+          {
+            "key": "photos",
+            "type": "text",
+            "label": "Link to photos of the problem",
+            "placeholder": "https://",
+            "helperText": "A shared album or folder. Photos help us quote without a visit."
           },
           {
             "key": "urgency",
@@ -67,8 +74,8 @@
             "label": "Property type",
             "options": [
               { "value": "house", "label": "House" },
-              { "value": "apartment", "label": "Apartment or flat" },
-              { "value": "commercial", "label": "Commercial premises" }
+              { "value": "apartment", "label": "Apartment or condo" },
+              { "value": "commercial", "label": "Commercial property" }
             ],
             "validation": { "required": true }
           },
@@ -84,9 +91,16 @@
             "validation": { "required": true }
           },
           {
-            "key": "postcode",
+            "key": "address",
             "type": "text",
-            "label": "Postcode or ZIP code",
+            "label": "Street address",
+            "helperText": "Optional for a quote. We’ll need it before a visit."
+          },
+          {
+            "key": "zip",
+            "type": "text",
+            "label": "ZIP code",
+            "inputMode": "numeric",
             "validation": { "required": true }
           },
           {
@@ -129,7 +143,8 @@
               { "value": "call", "label": "Phone call" },
               { "value": "text", "label": "Text message" },
               { "value": "email", "label": "Email" }
-            ]
+            ],
+            "validation": { "required": true }
           }
         ]
       }

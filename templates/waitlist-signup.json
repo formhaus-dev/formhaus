@@ -18,25 +18,30 @@
       {
         "key": "role",
         "type": "select",
-        "label": "What best describes you?",
+        "label": "What best describes your role?",
         "options": [
-          { "value": "developer", "label": "Developer" },
-          { "value": "designer", "label": "Designer" },
-          { "value": "product", "label": "Product manager" },
-          { "value": "founder", "label": "Founder" },
+          { "value": "engineering", "label": "Engineering" },
+          { "value": "product", "label": "Product" },
+          { "value": "design", "label": "Design" },
+          { "value": "marketing", "label": "Marketing" },
+          { "value": "sales", "label": "Sales" },
+          { "value": "support", "label": "Customer support" },
+          { "value": "operations", "label": "Operations" },
+          { "value": "executive", "label": "Founder or executive" },
           { "value": "other", "label": "Other" }
         ]
       },
       {
-        "key": "teamSize",
+        "key": "companySize",
         "type": "radio",
-        "label": "Team size",
-        "layout": "inline",
+        "label": "Company size",
         "options": [
           { "value": "solo", "label": "Just me" },
           { "value": "2-10", "label": "2 to 10" },
           { "value": "11-50", "label": "11 to 50" },
-          { "value": "50-plus", "label": "More than 50" }
+          { "value": "51-200", "label": "51 to 200" },
+          { "value": "201-1000", "label": "201 to 1,000" },
+          { "value": "1000-plus", "label": "More than 1,000" }
         ]
       },
       { "key": "useCase", "type": "textarea", "label": "What would you use it for?", "rows": 3 }

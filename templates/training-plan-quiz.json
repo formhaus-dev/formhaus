@@ -1,7 +1,7 @@
 {
   "slug": "training-plan-quiz",
   "title": "Training plan quiz",
-  "summary": "Goal, experience, time and equipment in one-tap questions, then an email to send the plan.",
+  "summary": "Goal, experience, schedule and equipment in one-tap questions, then an email to send the plan.",
   "category": "quiz",
   "definition": {
     "id": "training-plan-quiz",
@@ -49,8 +49,28 @@
         ]
       },
       {
+        "id": "days",
+        "title": "How many days a week can you train?",
+        "next": false,
+        "fields": [
+          {
+            "key": "days",
+            "type": "radio",
+            "label": "Days per week",
+            "options": [
+              { "value": "2", "label": "2 days" },
+              { "value": "3", "label": "3 days" },
+              { "value": "4", "label": "4 days" },
+              { "value": "5-plus", "label": "5 days or more" }
+            ],
+            "validation": { "required": true },
+            "autoAdvance": true
+          }
+        ]
+      },
+      {
         "id": "time",
-        "title": "How much time do you have?",
+        "title": "How much time do you have per session?",
         "next": false,
         "fields": [
           {
@@ -85,6 +105,21 @@
             ],
             "validation": { "required": true },
             "autoAdvance": true
+          }
+        ]
+      },
+      {
+        "id": "limitations",
+        "title": "Any injuries or limitations?",
+        "description": "We’ll leave out exercises that could make them worse.",
+        "fields": [
+          {
+            "key": "limitations",
+            "type": "textarea",
+            "label": "Injuries or limitations",
+            "rows": 2,
+            "placeholder": "Bad knee, recovering from back pain…",
+            "helperText": "Leave empty if there’s nothing to note."
           }
         ]
       },

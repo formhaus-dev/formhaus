@@ -71,6 +71,19 @@
             ]
           },
           {
+            "key": "slots",
+            "type": "multiselect",
+            "label": "When are you usually free?",
+            "helperText": "Pick all that apply.",
+            "options": [
+              { "value": "weekday-morning", "label": "Weekday mornings" },
+              { "value": "weekday-afternoon", "label": "Weekday afternoons" },
+              { "value": "weekday-evening", "label": "Weekday evenings" },
+              { "value": "weekends", "label": "Weekends" }
+            ],
+            "validation": { "required": true }
+          },
+          {
             "key": "budget",
             "type": "radio",
             "label": "Monthly budget",
@@ -102,7 +115,19 @@
             "validation": { "required": true }
           },
           { "key": "phone", "type": "phone", "label": "Phone", "inputMode": "tel" },
-          { "key": "timezone", "type": "text", "label": "Time zone", "placeholder": "City or UTC offset" }
+          { "key": "timezone", "type": "text", "label": "Time zone", "placeholder": "City or UTC offset" },
+          {
+            "key": "heardFrom",
+            "type": "select",
+            "label": "How did you hear about us?",
+            "options": [
+              { "value": "search", "label": "Search engine" },
+              { "value": "social", "label": "Social media" },
+              { "value": "referral", "label": "Friend or colleague" },
+              { "value": "article", "label": "Article or podcast" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
         ]
       }
     ]

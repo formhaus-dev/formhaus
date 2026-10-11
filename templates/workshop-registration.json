@@ -58,7 +58,7 @@
           {
             "key": "dietary",
             "type": "text",
-            "label": "Dietary requirements",
+            "label": "Dietary restrictions",
             "show": [{ "field": "attendance", "eq": "in-person" }]
           },
           {

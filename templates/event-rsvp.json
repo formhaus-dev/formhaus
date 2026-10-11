@@ -50,7 +50,13 @@
             "defaultValue": 1,
             "validation": { "required": true, "min": 1, "max": 10 }
           },
-          { "key": "dietary", "type": "text", "label": "Dietary requirements in your party" },
+          {
+            "key": "guestNames",
+            "type": "text",
+            "label": "Names of your guests",
+            "helperText": "Leave empty if it’s just you."
+          },
+          { "key": "dietary", "type": "text", "label": "Dietary restrictions in your party" },
           { "key": "note", "type": "textarea", "label": "A note for the hosts", "rows": 3 }
         ]
       }

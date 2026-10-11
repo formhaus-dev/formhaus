@@ -1,95 +1,93 @@
 {
   "slug": "event-feedback",
   "title": "Event feedback",
-  "summary": "Overall rating, highlights, what to change and whether people would come again.",
+  "summary": "Overall rating, best session, highlights, what to change and whether people would come again.",
   "category": "feedback",
   "definition": {
     "id": "event-feedback",
     "title": "Event feedback",
     "submit": { "label": "Send feedback" },
-    "steps": [
+    "fields": [
       {
-        "id": "overall",
-        "title": "Overall",
-        "fields": [
-          {
-            "key": "rating",
-            "type": "radio",
-            "label": "How would you rate the event overall?",
-            "options": [
-              { "value": "1", "label": "Poor" },
-              { "value": "2", "label": "Fair" },
-              { "value": "3", "label": "Good" },
-              { "value": "4", "label": "Very good" },
-              { "value": "5", "label": "Excellent" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "attended",
-            "type": "radio",
-            "label": "How did you attend?",
-            "layout": "inline",
-            "options": [
-              { "value": "in-person", "label": "In person" },
-              { "value": "online", "label": "Online" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "highlights",
-            "type": "multiselect",
-            "label": "What did you enjoy most?",
-            "helperText": "Pick all that apply.",
-            "options": [
-              { "value": "talks", "label": "Talks" },
-              { "value": "workshops", "label": "Workshops" },
-              { "value": "networking", "label": "Networking" },
-              { "value": "venue", "label": "Venue" },
-              { "value": "food", "label": "Food and drinks" },
-              { "value": "organization", "label": "Organization" },
-              { "value": "other", "label": "Something else" }
-            ]
-          }
+        "key": "rating",
+        "type": "radio",
+        "label": "How would you rate the event overall?",
+        "layout": "inline",
+        "helperText": "1 is poor, 5 is excellent.",
+        "options": [
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" },
+          { "value": "5", "label": "5" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "attended",
+        "type": "radio",
+        "label": "How did you attend?",
+        "layout": "inline",
+        "options": [
+          { "value": "in-person", "label": "In person" },
+          { "value": "online", "label": "Online" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "venueRating",
+        "type": "radio",
+        "label": "How would you rate the venue, food and drinks?",
+        "layout": "inline",
+        "helperText": "1 is poor, 5 is excellent.",
+        "show": [{ "field": "attended", "eq": "in-person" }],
+        "options": [
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" },
+          { "value": "5", "label": "5" }
         ]
       },
       {
-        "id": "details",
-        "title": "Next time",
-        "fields": [
-          {
-            "key": "change",
-            "type": "textarea",
-            "label": "What should we change next time?",
-            "rows": 3
-          },
-          {
-            "key": "return",
-            "type": "radio",
-            "label": "Would you come again?",
-            "layout": "inline",
-            "options": [
-              { "value": "yes", "label": "Yes" },
-              { "value": "maybe", "label": "Maybe" },
-              { "value": "no", "label": "No" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "updates",
-            "type": "switch",
-            "label": "Tell me about future events",
-            "defaultValue": false
-          },
-          {
-            "key": "email",
-            "type": "email",
-            "label": "Email",
-            "inputMode": "email",
-            "validation": { "required": true },
-            "show": [{ "field": "updates", "eq": true }]
-          }
+        "key": "highlights",
+        "type": "multiselect",
+        "label": "What did you enjoy most?",
+        "helperText": "Pick all that apply.",
+        "options": [
+          { "value": "talks", "label": "Talks" },
+          { "value": "workshops", "label": "Workshops" },
+          { "value": "networking", "label": "Networking" },
+          { "value": "organization", "label": "Organization" },
+          { "value": "other", "label": "Something else" }
         ]
+      },
+      { "key": "bestSession", "type": "text", "label": "Which session was most useful?" },
+      {
+        "key": "change",
+        "type": "textarea",
+        "label": "What should we change next time?",
+        "rows": 3
+      },
+      {
+        "key": "return",
+        "type": "radio",
+        "label": "Would you come again?",
+        "layout": "inline",
+        "options": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "maybe", "label": "Maybe" },
+          { "value": "no", "label": "No" }
+        ]
+      },
+      { "key": "updates", "type": "checkbox", "label": "Tell me about future events" },
+      {
+        "key": "email",
+        "type": "email",
+        "label": "Email",
+        "inputMode": "email",
+        "validation": { "required": true },
+        "show": [{ "field": "updates", "eq": true }]
       }
     ]
   }

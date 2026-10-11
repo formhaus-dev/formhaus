@@ -1,17 +1,17 @@
 {
   "slug": "patient-appointment-request",
-  "title": "New patient appointment request",
-  "summary": "First contact for a clinic: visit type, preferred times and contact details. No medical history.",
+  "title": "Patient appointment request",
+  "summary": "First contact for a clinic: visit type, preferred times, insurance and contact details. No medical history.",
   "category": "intake",
   "definition": {
     "id": "patient-appointment-request",
     "title": "Request an appointment",
-    "submit": { "label": "Request appointment" },
+    "submit": { "label": "Request an appointment" },
     "steps": [
       {
         "id": "visit",
         "title": "Your visit",
-        "description": "For a medical emergency, call your local emergency number instead.",
+        "description": "For a medical emergency, call 911 or your local emergency number.",
         "fields": [
           {
             "key": "patientIs",
@@ -25,12 +25,24 @@
             "validation": { "required": true }
           },
           {
+            "key": "newPatient",
+            "type": "radio",
+            "label": "Has the patient been seen here before?",
+            "layout": "inline",
+            "options": [
+              { "value": "no", "label": "No, new patient" },
+              { "value": "yes", "label": "Yes" }
+            ],
+            "validation": { "required": true }
+          },
+          {
             "key": "visitType",
             "type": "radio",
             "label": "Type of visit",
             "options": [
-              { "value": "check-up", "label": "General check-up" },
+              { "value": "check-up", "label": "General checkup" },
               { "value": "concern", "label": "A specific concern" },
+              { "value": "follow-up", "label": "Follow-up" },
               { "value": "second-opinion", "label": "Second opinion" },
               { "value": "not-sure", "label": "Not sure" }
             ],
@@ -40,14 +52,20 @@
             "key": "reason",
             "type": "text",
             "label": "In a few words, what is the visit for?",
-            "helperText": "Please don’t include medical details. We’ll ask at the appointment.",
+            "helperText": "Keep it brief. We’ll go into detail at the appointment.",
             "validation": { "maxLength": 200 }
+          },
+          {
+            "key": "provider",
+            "type": "text",
+            "label": "Preferred doctor or clinician",
+            "helperText": "Leave empty if you have no preference."
           }
         ]
       },
       {
         "id": "timing",
-        "title": "Timing and payment",
+        "title": "Timing and insurance",
         "fields": [
           {
             "key": "days",
@@ -90,14 +108,15 @@
           {
             "key": "insurer",
             "type": "text",
-            "label": "Insurance provider",
-            "show": [{ "field": "payment", "eq": "insurance" }]
+            "label": "Insurance provider and plan",
+            "show": [{ "field": "payment", "eq": "insurance" }],
+            "validation": { "required": true }
           }
         ]
       },
       {
         "id": "patient",
-        "title": "Patient",
+        "title": "Patient and contact details",
         "fields": [
           {
             "key": "firstName",
@@ -123,13 +142,21 @@
             "label": "Your name",
             "validation": { "required": true },
             "show": [{ "field": "patientIs", "in": ["child", "someone-else"] }]
-          }
-        ]
-      },
-      {
-        "id": "contact",
-        "title": "Contact details",
-        "fields": [
+          },
+          {
+            "key": "relationship",
+            "type": "select",
+            "label": "Your relationship to the patient",
+            "options": [
+              { "value": "parent", "label": "Parent" },
+              { "value": "guardian", "label": "Legal guardian" },
+              { "value": "caregiver", "label": "Caregiver" },
+              { "value": "spouse", "label": "Spouse or partner" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true },
+            "show": [{ "field": "patientIs", "in": ["child", "someone-else"] }]
+          },
           {
             "key": "phone",
             "type": "phone",

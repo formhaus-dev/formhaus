@@ -1,12 +1,12 @@
 {
   "slug": "demo-request",
   "title": "Product demo request",
-  "summary": "For SaaS sales teams. Qualifies by role, team size and timing before asking for a work email.",
+  "summary": "For SaaS sales teams. Qualifies by role, company size and timing before asking for a work email.",
   "category": "lead-gen",
   "definition": {
     "id": "demo-request",
     "title": "Book a demo",
-    "submit": { "label": "Book demo" },
+    "submit": { "label": "Request a demo" },
     "steps": [
       {
         "id": "needs",
@@ -15,13 +15,14 @@
           {
             "key": "role",
             "type": "select",
-            "label": "Your role",
+            "label": "What best describes your role?",
             "options": [
               { "value": "engineering", "label": "Engineering" },
               { "value": "product", "label": "Product" },
               { "value": "design", "label": "Design" },
               { "value": "marketing", "label": "Marketing" },
               { "value": "sales", "label": "Sales" },
+              { "value": "support", "label": "Customer support" },
               { "value": "operations", "label": "Operations" },
               { "value": "executive", "label": "Founder or executive" },
               { "value": "other", "label": "Other" }
@@ -29,11 +30,12 @@
             "validation": { "required": true }
           },
           {
-            "key": "teamSize",
+            "key": "companySize",
             "type": "radio",
             "label": "Company size",
             "options": [
-              { "value": "1-10", "label": "1 to 10" },
+              { "value": "solo", "label": "Just me" },
+              { "value": "2-10", "label": "2 to 10" },
               { "value": "11-50", "label": "11 to 50" },
               { "value": "51-200", "label": "51 to 200" },
               { "value": "201-1000", "label": "201 to 1,000" },
@@ -85,6 +87,7 @@
             "label": "Company",
             "validation": { "required": true }
           },
+          { "key": "website", "type": "text", "label": "Company website", "placeholder": "https://" },
           { "key": "phone", "type": "phone", "label": "Phone", "inputMode": "tel" }
         ]
       }

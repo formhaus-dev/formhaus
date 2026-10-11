@@ -67,6 +67,14 @@
             "validation": { "required": true }
           },
           {
+            "key": "guests",
+            "type": "number",
+            "label": "Approximate number of guests",
+            "inputMode": "numeric",
+            "show": [{ "field": "shootType", "in": ["wedding", "event"] }],
+            "validation": { "min": 1, "max": 5000 }
+          },
+          {
             "key": "budget",
             "type": "radio",
             "label": "Budget",
@@ -83,7 +91,7 @@
             "type": "textarea",
             "label": "Tell us a bit more",
             "rows": 4,
-            "placeholder": "Style you like, number of people, must-have shots…"
+            "placeholder": "Style you like, who’s in the photos, must-have shots…"
           }
         ]
       },
@@ -106,14 +114,15 @@
           },
           { "key": "phone", "type": "phone", "label": "Phone", "inputMode": "tel" },
           {
-            "key": "referral",
+            "key": "heardFrom",
             "type": "select",
-            "label": "How did you find us?",
+            "label": "How did you hear about us?",
             "options": [
-              { "value": "instagram", "label": "Instagram" },
-              { "value": "search", "label": "Google or other search" },
-              { "value": "friend", "label": "A friend or family member" },
+              { "value": "search", "label": "Search engine" },
+              { "value": "social", "label": "Social media" },
+              { "value": "referral", "label": "Friend or colleague" },
               { "value": "venue", "label": "A venue or planner" },
+              { "value": "article", "label": "Article or podcast" },
               { "value": "other", "label": "Other" }
             ]
           }

@@ -1,7 +1,7 @@
 {
   "slug": "volunteer-application",
   "title": "Volunteer application",
-  "summary": "Interests, availability and an emergency contact for volunteer programs.",
+  "summary": "Interests, skills, availability and contact details, plus a parent or guardian for volunteers under 18.",
   "category": "application",
   "definition": {
     "id": "volunteer-application",
@@ -43,7 +43,8 @@
           {
             "key": "slots",
             "type": "multiselect",
-            "label": "When are you free?",
+            "label": "When are you usually free?",
+            "helperText": "Pick all that apply.",
             "options": [
               { "value": "weekday-morning", "label": "Weekday mornings" },
               { "value": "weekday-afternoon", "label": "Weekday afternoons" },
@@ -98,26 +99,33 @@
             "layout": "inline",
             "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
             "validation": { "required": true }
-          }
-        ]
-      },
-      {
-        "id": "emergency",
-        "title": "Emergency contact",
-        "fields": [
+          },
           {
-            "key": "emergencyName",
+            "key": "guardianName",
             "type": "text",
-            "label": "Name",
+            "label": "Parent or guardian’s name",
+            "show": [{ "field": "adult", "eq": "no" }],
             "validation": { "required": true }
           },
-          { "key": "emergencyRelation", "type": "text", "label": "Relationship to you" },
           {
-            "key": "emergencyPhone",
+            "key": "guardianPhone",
             "type": "phone",
-            "label": "Phone",
+            "label": "Parent or guardian’s phone",
             "inputMode": "tel",
+            "show": [{ "field": "adult", "eq": "no" }],
             "validation": { "required": true }
+          },
+          {
+            "key": "heardFrom",
+            "type": "select",
+            "label": "How did you hear about us?",
+            "options": [
+              { "value": "search", "label": "Search engine" },
+              { "value": "social", "label": "Social media" },
+              { "value": "referral", "label": "Friend or colleague" },
+              { "value": "article", "label": "Article or podcast" },
+              { "value": "other", "label": "Other" }
+            ]
           }
         ]
       }

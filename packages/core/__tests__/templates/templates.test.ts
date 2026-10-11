@@ -6,7 +6,7 @@ import { FormEngine, validateDefinition } from '../../src';
 import { buildIndex } from '../../../../scripts/templates-index.mjs';
 
 const directory = resolve(__dirname, '../../../../templates');
-const files = readdirSync(directory).filter((name) => name.endsWith('.json') && name !== 'index.json');
+const files = readdirSync(directory).filter((name) => name.endsWith('.json') && !['index.json', 'order.json'].includes(name));
 const read = (name: string) => JSON.parse(readFileSync(resolve(directory, name), 'utf8'));
 const templates = files.map((file) => ({ file, template: read(file) }));
 const schema = JSON.parse(readFileSync(resolve(__dirname, '../../schema/form-definition.schema.json'), 'utf8'));
@@ -21,6 +21,12 @@ describe('form templates', () => {
   it('has unique slugs', () => {
     const slugs = templates.map(({ template }) => template.slug);
     expect(new Set(slugs).size).toBe(slugs.length);
+  });
+
+  it('lists every template exactly once in order.json', () => {
+    const order = read('order.json');
+    expect(new Set(order).size).toBe(order.length);
+    expect([...order].sort()).toEqual(templates.map(({ template }) => template.slug).sort());
   });
 
   it('has an up-to-date index', () => {

@@ -1,0 +1,157 @@
+{
+  "slug": "expense-reimbursement",
+  "title": "Expense reimbursement",
+  "summary": "One expense per request: date, category, amount, receipt, business purpose and approver.",
+  "category": "operations",
+  "definition": {
+    "id": "expense-reimbursement",
+    "title": "Claim an expense",
+    "submit": { "label": "Submit claim" },
+    "steps": [
+      {
+        "id": "you",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Work email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "approverEmail",
+            "type": "email",
+            "label": "Approver’s email",
+            "inputMode": "email",
+            "helperText": "Usually your manager.",
+            "validation": { "required": true }
+          },
+          { "key": "costCenter", "type": "text", "label": "Department or cost center" }
+        ]
+      },
+      {
+        "id": "expense",
+        "title": "The expense",
+        "description": "Submit one request per receipt.",
+        "fields": [
+          {
+            "key": "date",
+            "type": "date",
+            "label": "Date of the expense",
+            "validation": { "required": true }
+          },
+          {
+            "key": "category",
+            "type": "select",
+            "label": "Category",
+            "options": [
+              { "value": "travel", "label": "Flights, trains and taxis" },
+              { "value": "lodging", "label": "Hotel and lodging" },
+              { "value": "meals", "label": "Meals" },
+              { "value": "client-entertainment", "label": "Client entertainment" },
+              { "value": "mileage", "label": "Mileage in a personal car" },
+              { "value": "software", "label": "Software and subscriptions" },
+              { "value": "equipment", "label": "Equipment and office supplies" },
+              { "value": "training", "label": "Training and conferences" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "miles",
+            "type": "number",
+            "label": "Miles driven",
+            "inputMode": "numeric",
+            "show": [{ "field": "category", "eq": "mileage" }],
+            "validation": { "required": true, "min": 1 }
+          },
+          {
+            "key": "route",
+            "type": "text",
+            "label": "From and to",
+            "placeholder": "Office to client site in Austin and back",
+            "show": [{ "field": "category", "eq": "mileage" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "merchant",
+            "type": "text",
+            "label": "Merchant",
+            "placeholder": "Delta, Marriott, Figma…",
+            "show": [{ "field": "category", "neq": "mileage" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "amount",
+            "type": "number",
+            "label": "Amount",
+            "helperText": "In the currency of the receipt, including tax and tip.",
+            "show": [{ "field": "category", "neq": "mileage" }],
+            "validation": { "required": true, "min": 0.01 }
+          },
+          {
+            "key": "currency",
+            "type": "select",
+            "label": "Currency",
+            "defaultValue": "usd",
+            "options": [
+              { "value": "usd", "label": "USD" },
+              { "value": "eur", "label": "EUR" },
+              { "value": "gbp", "label": "GBP" },
+              { "value": "cad", "label": "CAD" },
+              { "value": "aud", "label": "AUD" },
+              { "value": "other", "label": "Other" }
+            ],
+            "show": [{ "field": "category", "neq": "mileage" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "currencyOther",
+            "type": "text",
+            "label": "Which currency?",
+            "show": [{ "field": "currency", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "receipt",
+            "type": "text",
+            "label": "Link to the receipt",
+            "placeholder": "https://",
+            "helperText": "A photo or PDF in a shared folder.",
+            "show": [{ "field": "category", "neq": "mileage" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "attendees",
+            "type": "text",
+            "label": "Who attended?",
+            "placeholder": "Names and companies",
+            "show": [{ "field": "category", "eq": "client-entertainment" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "purpose",
+            "type": "textarea",
+            "label": "Business purpose",
+            "rows": 2,
+            "validation": { "required": true }
+          },
+          { "key": "project", "type": "text", "label": "Client or project code" },
+          {
+            "key": "certify",
+            "type": "checkbox",
+            "label": "This was a business expense, paid personally, and I haven’t claimed it before",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

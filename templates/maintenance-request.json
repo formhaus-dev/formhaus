@@ -1,0 +1,150 @@
+{
+  "slug": "maintenance-request",
+  "title": "Maintenance request",
+  "summary": "For tenants and facilities teams. Unit, issue, urgency, photos and permission to enter.",
+  "category": "operations",
+  "definition": {
+    "id": "maintenance-request",
+    "title": "Request a repair",
+    "submit": { "label": "Send request" },
+    "steps": [
+      {
+        "id": "issue",
+        "title": "The problem",
+        "description": "For a fire, gas smell or flooding, call 911 first, then our emergency line.",
+        "fields": [
+          {
+            "key": "address",
+            "type": "text",
+            "label": "Property address",
+            "validation": { "required": true }
+          },
+          { "key": "unit", "type": "text", "label": "Unit or apartment number" },
+          {
+            "key": "category",
+            "type": "select",
+            "label": "Type of problem",
+            "options": [
+              { "value": "plumbing", "label": "Plumbing, leaks or drains" },
+              { "value": "electrical", "label": "Electrical or lighting" },
+              { "value": "hvac", "label": "Heating or air conditioning" },
+              { "value": "appliance", "label": "Appliance" },
+              { "value": "doors-locks", "label": "Doors, windows or locks" },
+              { "value": "pests", "label": "Pests" },
+              { "value": "mold", "label": "Mold or water damage" },
+              { "value": "common-area", "label": "Common area or building" },
+              { "value": "other", "label": "Something else" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "location",
+            "type": "text",
+            "label": "Where is it?",
+            "placeholder": "Kitchen sink, upstairs bathroom…",
+            "validation": { "required": true }
+          },
+          {
+            "key": "description",
+            "type": "textarea",
+            "label": "Describe the problem",
+            "rows": 4,
+            "placeholder": "What’s happening, since when, and anything you’ve already tried",
+            "validation": { "required": true }
+          },
+          {
+            "key": "urgency",
+            "type": "radio",
+            "label": "How urgent is it?",
+            "options": [
+              {
+                "value": "emergency",
+                "label": "Emergency: no heat or water, active leak, or the home can’t be locked"
+              },
+              { "value": "urgent", "label": "Urgent: needs fixing within a couple of days" },
+              { "value": "routine", "label": "Routine: can wait for a scheduled visit" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "photos",
+            "type": "text",
+            "label": "Link to photos or a video",
+            "placeholder": "https://",
+            "helperText": "A shared album or folder."
+          }
+        ]
+      },
+      {
+        "id": "access",
+        "title": "Access",
+        "fields": [
+          {
+            "key": "entry",
+            "type": "radio",
+            "label": "Can maintenance enter if you’re not home?",
+            "options": [
+              { "value": "yes", "label": "Yes, with notice" },
+              { "value": "home-only", "label": "Only when I’m home" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "slots",
+            "type": "multiselect",
+            "label": "When are you usually home?",
+            "helperText": "Pick all that apply.",
+            "show": [{ "field": "entry", "eq": "home-only" }],
+            "options": [
+              { "value": "weekday-morning", "label": "Weekday mornings" },
+              { "value": "weekday-afternoon", "label": "Weekday afternoons" },
+              { "value": "weekday-evening", "label": "Weekday evenings" },
+              { "value": "weekends", "label": "Weekends" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "pets",
+            "type": "radio",
+            "label": "Any pets in the home?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "accessNotes",
+            "type": "text",
+            "label": "Anything else about access?",
+            "placeholder": "Gate code, alarm, keep the cat inside…"
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

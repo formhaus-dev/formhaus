@@ -1,17 +1,24 @@
 {
-  "slug": "rental-viewing-request",
-  "title": "Rental viewing request",
-  "summary": "For landlords and letting agents. Move-in date, household, pets and viewing times.",
+  "slug": "rental-showing-request",
+  "title": "Rental showing request",
+  "summary": "For landlords and property managers. Property, move-in date, household, income, pets and showing times.",
   "category": "lead-gen",
   "definition": {
-    "id": "rental-viewing-request",
-    "title": "Request a viewing",
-    "submit": { "label": "Request viewing" },
+    "id": "rental-showing-request",
+    "title": "Request a showing",
+    "submit": { "label": "Request a showing" },
     "steps": [
       {
         "id": "move",
-        "title": "Your move",
+        "title": "The property and your move",
         "fields": [
+          {
+            "key": "property",
+            "type": "text",
+            "label": "Which property?",
+            "placeholder": "Address or listing ID",
+            "helperText": "Leave empty if you came from the listing page."
+          },
           {
             "key": "moveIn",
             "type": "date",
@@ -38,6 +45,19 @@
             "validation": { "required": true, "min": 1, "max": 20 }
           },
           {
+            "key": "income",
+            "type": "radio",
+            "label": "Combined monthly household income",
+            "helperText": "Before tax. We usually look for about three times the rent.",
+            "options": [
+              { "value": "under-3k", "label": "Under $3,000" },
+              { "value": "3k-5k", "label": "$3,000 to $4,999" },
+              { "value": "5k-8k", "label": "$5,000 to $7,999" },
+              { "value": "8k-plus", "label": "$8,000 or more" }
+            ],
+            "validation": { "required": true }
+          },
+          {
             "key": "pets",
             "type": "radio",
             "label": "Do you have pets?",
@@ -52,23 +72,24 @@
             "show": [{ "field": "pets", "eq": "yes" }],
             "placeholder": "One small dog",
             "validation": { "required": true }
+          },
+          {
+            "key": "smoking",
+            "type": "radio",
+            "label": "Does anyone in your household smoke?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }]
           }
         ]
       },
       {
-        "id": "viewing",
-        "title": "Viewing",
+        "id": "showing",
+        "title": "Showing",
         "fields": [
-          {
-            "key": "property",
-            "type": "text",
-            "label": "Which property?",
-            "placeholder": "Address or listing reference"
-          },
           {
             "key": "slots",
             "type": "multiselect",
-            "label": "When can you view?",
+            "label": "When are you usually free?",
             "helperText": "Pick all that apply.",
             "options": [
               { "value": "weekday-morning", "label": "Weekday mornings" },

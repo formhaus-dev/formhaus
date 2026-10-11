@@ -44,7 +44,7 @@
       },
       {
         "id": "environment",
-        "title": "Where and how bad",
+        "title": "Where it happened and how bad it is",
         "fields": [
           {
             "key": "platform",
@@ -74,7 +74,26 @@
             ],
             "validation": { "required": true }
           },
-          { "key": "version", "type": "text", "label": "App or browser version" },
+          {
+            "key": "os",
+            "type": "select",
+            "label": "Operating system",
+            "show": [{ "field": "platform", "eq": "web" }],
+            "options": [
+              { "value": "macos", "label": "macOS" },
+              { "value": "windows", "label": "Windows" },
+              { "value": "linux", "label": "Linux" },
+              { "value": "ios", "label": "iOS" },
+              { "value": "android", "label": "Android" },
+              { "value": "other", "label": "Other" }
+            ]
+          },
+          {
+            "key": "version",
+            "type": "text",
+            "label": "App or browser version",
+            "placeholder": "Version 4.2.1 or Chrome 129"
+          },
           {
             "key": "severity",
             "type": "radio",
@@ -97,13 +116,7 @@
               { "value": "once", "label": "Only once" }
             ],
             "validation": { "required": true }
-          }
-        ]
-      },
-      {
-        "id": "extra",
-        "title": "Anything else",
-        "fields": [
+          },
           {
             "key": "recording",
             "type": "text",
