@@ -1,11 +1,11 @@
 ---
 title: "Cloud quickstart"
-description: "Connect an agent to Formhaus Cloud over MCP, publish a form with publish_form, and claim it in the dashboard."
+description: "Connect an agent to Formhaus Cloud over MCP or REST, publish a form with publish_form or POST /v1/forms, and claim it in the dashboard."
 ---
 
 # Cloud quickstart
 
-An agent publishes a definition with `publish_form`; a human claims the form in the dashboard.
+An agent publishes a definition with `publish_form` or `POST /v1/forms`; a human claims the form in the dashboard.
 
 ## Agents
 
@@ -40,7 +40,7 @@ The remote server has four tools: `publish_form`, `list_forms`, `get_submissions
 
 ### Local MCP server
 
-`@formhaus/mcp` runs over stdio and proxies `publish_form`, `list_forms` and `get_submissions` to the [REST API](/cloud/rest-api). It reads the key from `FORMHAUS_API_KEY`.
+`@formhaus/mcp` runs over stdio. It has eight tools: `validate_definition`, `simulate_path`, `capabilities` and `example_definitions` run locally; `publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call the [REST API](/cloud/rest-api). It reads the key from `FORMHAUS_API_KEY`.
 
 ```bash
 claude mcp add formhaus -e FORMHAUS_API_KEY=$FORMHAUS_API_KEY -- npx -y @formhaus/mcp
@@ -48,7 +48,7 @@ claude mcp add formhaus -e FORMHAUS_API_KEY=$FORMHAUS_API_KEY -- npx -y @formhau
 
 | Variable | Default |
 |---|---|
-| `FORMHAUS_API_KEY` | None. `list_forms` and `get_submissions` need it. |
+| `FORMHAUS_API_KEY` | None. `list_forms` and `get_submissions` need it; `update_form_settings` needs an `fh_live_` key. |
 | `FORMHAUS_API_BASE` | `https://api.formhaus.dev` |
 
 Requests time out after 15 seconds. Setup for Claude Desktop and Cursor is in [MCP Server](/guide/mcp).
@@ -61,6 +61,18 @@ The plugin runs the local server and adds the [`formhaus-create-form`](/guide/fo
 claude plugin marketplace add ignsm/formhaus
 claude plugin install formhaus@formhaus
 ```
+
+### REST, without MCP
+
+`POST /v1/forms` needs no key. The response is the same as `publish_form`.
+
+```bash
+curl -X POST https://api.formhaus.dev/v1/forms \
+  -H 'Content-Type: application/json' \
+  -d '{"definition":{"id":"waitlist","title":"Join the waitlist","submit":{"label":"Join"},"fields":[{"key":"email","type":"email","label":"Email","validation":{"required":true}}]}}'
+```
+
+Send `Authorization: Bearer $FORMHAUS_API_KEY` on later calls. See [REST API](/cloud/rest-api).
 
 ### Publish
 
@@ -84,6 +96,7 @@ Add a waitlist form with an email field to this site and publish it with Formhau
 | `claim_url` | Only for unclaimed forms |
 | `expires_at` | Only for unclaimed forms |
 | `agent_key`, `agent_key_notice` | Only when a call without a key creates a new agent key |
+| `agent_key_instructions` | Local `@formhaus/mcp` only, with `agent_key` when `FORMHAUS_API_KEY` is not set |
 
 Store `agent_key` in `.env` as `FORMHAUS_API_KEY`. It is shown once. Without it, the next publish creates a new key and new forms. Never put a key in browser code: a page needs only `form_id`.
 

@@ -83,7 +83,7 @@ A stored submission returns `201` with `{ "id": "...", "values": {...} }`. The f
 - Dashboard with a responses table per form.
 - CSV export.
 - Webhooks signed with a per-form secret, retried with backoff for up to 24 hours.
-- Email notification for each submission.
+- Email when a form reaches a response milestone: the 1st, 10th, 100th response and so on.
 - REST API with an API key: `POST /v1/forms`, `GET /v1/forms` and `GET /v1/forms/{id}/submissions`, as JSON or CSV.
 
 ## Agents
@@ -162,7 +162,7 @@ Yes. The [form definition format](/spec), `@formhaus/core`, the React and Vue re
 
 ### Can I use my own backend instead?
 
-Yes. Render a definition with `FormRenderer` and post to your own server, and validate there with `validateSubmission` from `@formhaus/core`. See [Getting started](/guide/).
+Yes. Render a definition with `FormRenderer` and post to your own server, and validate there with `validateSubmission` from `@formhaus/core/server`. See [Server-side validation](/guide/server-validation).
 
 ### Which fields does the hosted form support?
 

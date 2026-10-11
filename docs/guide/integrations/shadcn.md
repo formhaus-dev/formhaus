@@ -72,6 +72,6 @@ shadcn/ui has no multiselect. A group of `Checkbox`es emits the string array a `
 }
 ```
 
-## Server re-validation
+## Server validation
 
-The example validates in the browser only. To check the same rules on the server, build a `FormEngine` from the same definition and call `validate()`, then pass the returned errors to the `errors` prop. See [Next.js](/guide/integrations/nextjs#how-server-re-validation-works) for a complete route handler.
+The example validates in the browser only. On the server, run `validateSubmission()` from `@formhaus/core/server` on the posted values and pass the returned errors to the `errors` prop. See [Server-side validation](/guide/server-validation) and [Next.js](/guide/integrations/nextjs) for a complete route handler.

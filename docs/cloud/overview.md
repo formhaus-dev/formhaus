@@ -14,8 +14,7 @@ Formhaus Cloud hosts the backend for a Formhaus definition. The open-source pack
 | Renderers `@formhaus/react`, `@formhaus/vue` | Yes | `FormhausForm` from `/cloud` entries loads a hosted definition |
 | [Figma plugin](/guide/figma) | Yes | No |
 | Local MCP server `@formhaus/mcp`: `validate_definition`, `simulate_path`, `capabilities`, `example_definitions` | Yes | No |
-| `publish_form`, `list_forms`, `get_submissions` | Proxies in `@formhaus/mcp` | Remote MCP server and REST API |
-| `update_form_settings` | No | Remote MCP server |
+| `publish_form`, `list_forms`, `get_submissions`, `update_form_settings` | Proxies in `@formhaus/mcp` | Remote MCP server and REST API |
 | Submission endpoint with server-side validation | No | `POST https://api.formhaus.dev/f/{id}` |
 | Hosted form page | No | `https://f.formhaus.dev/{id}` |
 | Embed script | No | `https://f.formhaus.dev/embed.js` |
