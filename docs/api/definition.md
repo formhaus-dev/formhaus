@@ -14,7 +14,7 @@ Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never b
 interface FormDefinition {
   id: string;            // Unique form identifier
   title: string;         // Form title for host UI and Figma output
-  description?: string;  // Text under the title, up to 1000 characters
+  description?: string;  // Text under the title, up to 1000 characters. Added in 0.10.0
   submit: FormAction;    // Submit button config
   cancel?: FormAction;   // Cancel button (optional)
   fields?: FormField[];  // Single-step form
@@ -34,12 +34,12 @@ interface FormField {
   placeholder?: string;           // Placeholder text
   helperText?: string;            // Hint text between the label and the control
   defaultValue?: unknown;         // Pre-filled value
-  autoAdvance?: boolean;          // Advance on explicit field activation
+  autoAdvance?: boolean;          // Advance on explicit field activation. Added in 0.7.0
   show?: ShowCondition[];         // AND conditions for visibility
   showAny?: ShowCondition[];      // OR conditions for visibility
   validation?: FieldValidation;   // Validation rules
   options?: FieldOption[];        // For select, radio, multiselect
-  layout?: 'stack' | 'inline';    // Radio and multiselect option layout
+  layout?: 'stack' | 'inline';    // Radio and multiselect option layout. Added in 0.10.0
   optionsFrom?: string;           // Dynamic options provider key
   optionsDependsOn?: string[];    // Re-fetch options when these fields change
   accept?: string;                // File input mime types
@@ -69,10 +69,10 @@ interface FormStep {
   fields: FormField[];
   show?: ShowCondition[];       // Step-level visibility
   showAny?: ShowCondition[];
-  routes?: StepRoute[];         // Ordered forward destinations
+  routes?: StepRoute[];         // Ordered forward destinations. Added in 0.7.0
   next?: FormAction | false;    // Override or hide "Continue" button
   back?: FormAction | false;    // Override or hide "Back" button
-  skip?: FormAction;            // Show a "Skip" button
+  skip?: FormAction;            // Show a "Skip" button. Added in 0.8.0
 }
 ```
 
@@ -234,3 +234,16 @@ Point editors at it with `$schema`:
   "fields": [{ "key": "name", "type": "text", "label": "Your name" }]
 }
 ```
+
+## Version history
+
+Definition properties added since 0.7.0. Earlier versions do not support them.
+
+| Property | Added in |
+|---|---|
+| `description` on `FormDefinition` | 0.10.0 |
+| `layout` on fields | 0.10.0 |
+| `skip` on steps | 0.8.0 |
+| `routes` on steps | 0.7.0 |
+| `next: false` on steps | 0.7.0 |
+| `autoAdvance` on fields | 0.7.0 |

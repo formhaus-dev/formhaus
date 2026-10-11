@@ -1,10 +1,12 @@
 import llmstxt from 'vitepress-plugin-llms'
-import { repoUrl, siteUrl } from './site'
+import { coreVersion, mcpVersion, repoUrl, siteUrl } from './site'
 
 const description =
   'Formhaus is an open-source JSON form definition that runs the same everywhere: a zero-dependency engine (@formhaus/core) with validation, conditional visibility, multi-step and branching routes; React (@formhaus/react) and Vue (@formhaus/vue) renderers; a Figma plugin that draws the same definition with your design system; a JSON Schema; an MCP server (@formhaus/mcp) that validates definitions and simulates step paths for AI agents; and Claude Code skills. MIT licensed.'
 
 const details = [
+  `Docs describe @formhaus/core, @formhaus/react and @formhaus/vue ${coreVersion}, and @formhaus/mcp ${mcpVersion}. Properties added in a recent release are marked "Added in" in ${siteUrl}/api/definition.`,
+  '',
   'Install: `npm i @formhaus/core @formhaus/react` (or `@formhaus/vue`).',
   '',
   `Server-side validation: \`validateSubmission(definition, body.values, { skippedSteps })\` from \`@formhaus/core/server\`. \`FormEngine.validate()\` is the browser check and does not verify value types or the email format. Docs: ${siteUrl}/guide/server-validation`,
