@@ -28,6 +28,6 @@ export const llms = llmstxt({
   description,
   details,
   ignoreFilesPerOutput: {
-    llmsFullTxt: ['playground.md', 'changelog.md'],
+    llmsFullTxt: ['playground.md', 'changelog.md', 'legal/*'],
   },
 })
