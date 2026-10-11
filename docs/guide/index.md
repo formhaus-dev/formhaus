@@ -23,13 +23,21 @@ Or use `@formhaus/core` directly with any framework. See the [Svelte example in 
 
 ### Optional baseline styles
 
-The default React and Vue components render unstyled HTML. For a starting look (padding, focus, error colour) import the shared stylesheet:
+The default React and Vue components render unstyled HTML. For a finished look import the shared stylesheet:
 
 ```ts
 import '@formhaus/core/style.css';
 ```
 
-Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). When you bring your own components via the `components` prop, the stylesheet doesn't apply to them.
+Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). The hover and selected-option colors are derived from `--fh-color-primary`.
+
+The stylesheet is light by default. For dark colors add `data-fh-theme="dark"` to the form or any ancestor:
+
+```html
+<div data-fh-theme="dark">
+  <!-- FormRenderer -->
+</div>
+``` When you bring your own components via the `components` prop, the stylesheet doesn't apply to them.
 
 Action buttons use these classes:
 
