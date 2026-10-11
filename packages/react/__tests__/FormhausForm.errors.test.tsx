@@ -57,7 +57,7 @@ it('shows a retryable notice on a network failure and keeps the values', async (
   stub(reply(200, v1, 1), new TypeError('Failed to fetch'), reply(201, { id: 's1', values: {} }));
   render(<FormhausForm id="abc" />);
   await fillAndSend();
-  expect(await screen.findByText(/You are offline/)).toBeDefined();
+  expect(await screen.findByText(/Could not reach the form server/)).toBeDefined();
   expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('Ada');
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('status')).toBeDefined();
