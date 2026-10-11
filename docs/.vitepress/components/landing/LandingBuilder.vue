@@ -37,7 +37,7 @@ const pageNumber = (index: number) => blocks().slice(0, index + 1).filter((block
 const lastOfPage = (index: number) => blocks()[index + 1]?.kind !== 'question' && (blocks()[index].kind === 'question' || blocks()[index].kind === 'page');
 const pageAt = (index: number) => blocks().slice(0, index + 1).reverse().find((block) => block.kind === 'page') as BuilderPage | undefined;
 
-function caretEnd(input: HTMLInputElement | null | undefined) {
+function caretEnd(input: HTMLInputElement | HTMLTextAreaElement | null | undefined) {
   if (!input) return;
   input.focus();
   input.setSelectionRange(input.value.length, input.value.length);
@@ -53,7 +53,7 @@ async function focusBefore(index: number) {
   await nextTick();
   const prev = blocks()[index - 1];
   if (prev) return focusUid(prev.uid, true);
-  caretEnd(root.value?.querySelector<HTMLInputElement>('.nb-title .auto__input'));
+  caretEnd(root.value?.querySelector<HTMLInputElement | HTMLTextAreaElement>('.nb-title .auto__input'));
 }
 
 const touch = () => emit('edit');
@@ -174,9 +174,9 @@ function onKey(event: KeyboardEvent) {
 <template>
   <div ref="root" class="nb" :data-dragging="drag.from.value !== null" @mousedown="onMouseDown">
     <div class="nb-doc" @keydown="onKey">
-      <p v-if="!edited" class="nb-hint">Click any line to edit · <kbd>Enter</kbd> adds a question · <kbd>⇧Tab</kbd> turns an answer into a question · hover an answer to branch</p>
+      <p v-if="!edited" class="nb-hint">Click any line to edit · <kbd>Enter</kbd> adds a field · <kbd>⇧Tab</kbd> turns an answer into a field · tap Branch on an answer to jump to a step</p>
       <div class="nb-line nb-title">
-        <AutoInput v-model="form.title" placeholder="Untitled form" label="Form title" @input="touch" />
+        <AutoInput v-model="form.title" placeholder="Untitled form" label="Form title" wrap @input="touch" />
       </div>
       <template v-for="(block, index) in form.blocks" :key="block.uid">
         <BuilderGap v-if="index > 0 || block.kind !== 'page' || drag.from.value !== null" :active="drag.over.value === index" @insert="addQuestion(index)" />
@@ -202,8 +202,8 @@ function onKey(event: KeyboardEvent) {
         </div>
         <template v-if="lastOfPage(index)">
           <div class="nb-add">
-            <BuilderAddRow label="Add question" @add="addQuestion(index + 1)" />
-            <BuilderAddRow v-if="index === form.blocks.length - 1" label="Add page" @add="addPage(index + 1)" />
+            <BuilderAddRow label="Add field" @add="addQuestion(index + 1)" />
+            <BuilderAddRow v-if="index === form.blocks.length - 1" label="Add step" @add="addPage(index + 1)" />
           </div>
           <BuilderActions :form="form" :page="pageAt(index)" :first="pageNumber(index) < 1" :last="index === form.blocks.length - 1" @edit="touch" />
         </template>
