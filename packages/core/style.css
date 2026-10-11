@@ -87,11 +87,9 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 }
 
 .fh-field__error, .fh-form__top-error { margin: 0; color: var(--fh-color-error); font-size: var(--fh-font-size-small); font-weight: 500; }
-
 .fh-form__top-errors { display: flex; flex-direction: column; gap: 4px; }
 
 .fh-field__radio-group, .fh-field__multiselect-group { display: flex; flex-direction: column; gap: 8px; }
-
 .fh-field__radio-group--inline, .fh-field__multiselect-group--inline { flex-flow: row wrap; }
 
 .fh-field__radio-option,
@@ -113,9 +111,9 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:focus-visible) { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
 @supports selector(:has(*)) { :is(.fh-field__radio-option, .fh-field__multiselect-option) input:focus-visible { outline: none; } }
 :is(.fh-field__radio-label, .fh-field__multiselect-label) { flex: 1 1 auto; cursor: pointer; }
-:is(.fh-field__radio-label, .fh-field__multiselect-label)::before { content: ""; position: absolute; inset: 0; border-radius: inherit; }
+:is(.fh-field__radio-label, .fh-field__multiselect-label, .fh-field__checkbox-wrapper .fh-field__label, .fh-field__switch-wrapper .fh-field__label)::before { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 
-.fh-field__checkbox-wrapper, .fh-field__switch-wrapper { display: flex; align-items: flex-start; gap: 12px; }
+.fh-field__checkbox-wrapper, .fh-field__switch-wrapper { position: relative; display: flex; align-items: flex-start; gap: 12px; }
 
 :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) .fh-field__label { font-weight: 400; line-height: 1.5; cursor: pointer; }
 
@@ -164,7 +162,6 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 }
 
 .fh-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 4px; }
-
 .fh-form-actions__secondary { display: flex; gap: 8px; margin-right: auto; }
 .fh-form-actions__secondary:empty { display: none; }
 
@@ -192,8 +189,15 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 .fh-form-actions__button--text:hover:not(:disabled) { color: var(--fh-color-text); }
 
 @media (max-width: 480px) {
-  .fh-form-actions__button--primary { flex: 1 0 100%; }
-  .fh-form-actions__secondary { flex: 1 0 100%; justify-content: space-between; }
+  .fh-form-actions__button--primary, .fh-form-actions__secondary { flex: 1 0 100%; }
+  .fh-form-actions__secondary { justify-content: space-between; }
+}
+
+@media (pointer: coarse) {
+  :where(.fh-form) { --fh-font-size: 17px; --fh-font-size-small: 15px; }
+  .fh-field__input { font-size: max(16px, var(--fh-font-size)); }
+  :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) { padding-block: 10px; }
+  .fh-field__radio, .fh-field__checkbox { margin-top: 4px; }
 }
 
 .fh-step-progress { display: flex; flex-direction: column; gap: 6px; }
