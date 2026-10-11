@@ -1,5 +1,18 @@
 # @formhaus/mcp
 
+## 0.2.1
+
+### Patch Changes
+
+- 0414183: - `inputMode` accepts `decimal`, `url` and `search`.
+- Updated dependencies [8630259]
+- Updated dependencies [8630259]
+- Updated dependencies [0414183]
+- Updated dependencies [a15c07f]
+- Updated dependencies [26eb04c]
+- Updated dependencies [4d656df]
+  - @formhaus/core@0.10.1
+
 ## 0.2.0
 
 ### Minor Changes
