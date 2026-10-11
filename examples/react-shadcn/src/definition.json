@@ -50,6 +50,17 @@
             { "value": "11-50", "label": "11 to 50" },
             { "value": "51+", "label": "51 or more" }
           ]
+        },
+        {
+          "key": "tools",
+          "type": "multiselect",
+          "label": "Tools you use",
+          "validation": { "required": true },
+          "options": [
+            { "value": "figma", "label": "Figma" },
+            { "value": "github", "label": "GitHub" },
+            { "value": "slack", "label": "Slack" }
+          ]
         }
       ],
       "routes": [{ "to": "confirm" }]
@@ -58,7 +69,8 @@
       "id": "profile",
       "title": "About you",
       "fields": [
-        { "key": "name", "type": "text", "label": "Full name", "validation": { "required": true } }
+        { "key": "name", "type": "text", "label": "Full name", "validation": { "required": true } },
+        { "key": "about", "type": "textarea", "label": "What will you use the workspace for?", "rows": 3 }
       ]
     },
     {

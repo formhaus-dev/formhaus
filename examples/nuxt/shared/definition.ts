@@ -5,5 +5,4 @@ export const definition = json as FormDefinition;
 
 export type SubmitResponse =
   | { values: Record<string, unknown> }
-  | { errors: Record<string, string> }
-  | { message: string };
+  | { errors: Record<string, string> };

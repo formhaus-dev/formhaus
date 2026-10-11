@@ -1,6 +1,6 @@
 ---
 title: "shadcn/ui integration"
-description: "Render Formhaus JSON forms with shadcn/ui: map Input, Select, Checkbox, RadioGroup and Button to field types through the React components prop."
+description: "Render Formhaus JSON forms with shadcn/ui: map Input, Textarea, Select, Checkbox, RadioGroup and Button to field types, including multiselect, through the React components prop."
 ---
 
 # shadcn/ui
@@ -15,7 +15,7 @@ The example is a Vite project with Tailwind CSS v4, created by the shadcn CLI wi
 
 ```bash
 pnpm dlx shadcn@latest init --template vite --base base --preset nova
-pnpm dlx shadcn@latest add input select checkbox radio-group button label card
+pnpm dlx shadcn@latest add input select checkbox radio-group button label card textarea
 pnpm add @formhaus/core @formhaus/react
 ```
 
@@ -41,6 +41,16 @@ The Base UI `Select` takes the options as `items`, so `SelectValue` shows the op
 
 <<< @/../examples/react-shadcn/src/fields/CheckboxField.tsx
 
+<<< @/../examples/react-shadcn/src/fields/TextareaField.tsx
+
+shadcn/ui has no multiselect. A group of `Checkbox`es emits the string array a `multiselect` field expects:
+
+<<< @/../examples/react-shadcn/src/fields/MultiselectField.tsx
+
+## Next.js
+
+`@formhaus/react` has no `'use client'` directive, and the component map holds functions that cannot cross from a server component. Render `FormRenderer` with the map in a file that starts with `'use client'`, and import that file from the server component. See [Next.js](/guide/integrations/nextjs#client-component).
+
 ## Actions and progress
 
 <<< @/../examples/react-shadcn/src/FormActions.tsx
@@ -62,6 +72,6 @@ The Base UI `Select` takes the options as `items`, so `SelectValue` shows the op
 }
 ```
 
-## Server re-validation
+## Server validation
 
-The example validates in the browser only. To check the same rules on the server, build a `FormEngine` from the same definition and call `validate()`, then pass the returned errors to the `errors` prop. See [Next.js](/guide/integrations/nextjs#how-server-re-validation-works) for a complete route handler.
+The example validates in the browser only. On the server, run `validateSubmission()` from `@formhaus/core/server` on the posted values and pass the returned errors to the `errors` prop. See [Server-side validation](/guide/server-validation) and [Next.js](/guide/integrations/nextjs) for a complete route handler.

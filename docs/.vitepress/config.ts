@@ -42,6 +42,7 @@ export default defineConfig({
           { text: 'Validation', link: '/guide/validation' },
           { text: 'Multi-Step Forms', link: '/guide/steps' },
           { text: 'Async Step Validation', link: '/guide/async-validation' },
+          { text: 'Server-side Validation', link: '/guide/server-validation' },
           { text: 'Error Handling', link: '/guide/errors' },
           { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
           { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
@@ -74,6 +75,7 @@ export default defineConfig({
           { text: 'Conditional fields', link: '/recipes/conditional-fields' },
           { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
           { text: 'Headless engine', link: '/recipes/headless-engine' },
+          { text: 'Svelte 5', link: '/recipes/svelte' },
           { text: 'Figma to React', link: '/recipes/figma-to-react' },
           { text: 'AI agents', link: '/recipes/ai-agents' },
         ]

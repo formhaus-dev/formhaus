@@ -36,11 +36,13 @@ All rules are optional. Combine them freely.
 | `matchField` | `string` | Value equals another field's value | "Fields must match" |
 | `validator` | `string` | Custom validator function returns null | (your message) |
 
+`pattern` is not anchored: `[0-9]{5}` accepts `abc12345x`. Add `^` and `$` to match the whole value.
+
 Length, range, pattern, and matching rules have a corresponding `...Message` field. For `required`, pass the message directly: `required: "Please enter your name"`.
 
 ## matchField
 
-Useful for "confirm email" or "confirm password" fields. The values are compared the next time validation runs.
+Useful for "confirm email" or "confirm password" fields. The values are compared the next time validation runs. `matchField` passes when the confirmation is empty, so keep `required` on it.
 
 ```json
 [
@@ -120,9 +122,11 @@ Reference the validator by name in the definition:
 - **Never on blur.** No errors while the user is still typing.
 - **Hidden fields are skipped.** If a `show` condition hides a field, it's not validated.
 - **Empty non-required fields are skipped.** `minLength`, `pattern`, etc. only run on non-empty values.
+- **On the server.** Run [`validateSubmission()`](/guide/server-validation) on the posted values. The browser check does not verify value types or the `email` format.
 
 ## Next steps
 
+- [Server-side Validation](/guide/server-validation): validate untrusted submissions
 - [Error Handling](/guide/errors): display errors and handle loading states
 - [Multi-Step Forms](/guide/steps): validate across multiple steps
 - [Definition Reference](/api/definition): full TypeScript types for all validation rules
