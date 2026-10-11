@@ -16,6 +16,7 @@ declare class AbortController {
 interface CloudResponse {
   readonly ok: boolean;
   readonly status: number;
+  readonly headers?: { get(name: string): string | null };
   json(): Promise<unknown>;
 }
 
