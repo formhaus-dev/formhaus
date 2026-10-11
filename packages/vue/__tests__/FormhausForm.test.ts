@@ -50,7 +50,7 @@ it('shows an error when the definition cannot be loaded', async () => {
   vi.stubGlobal('fetch', vi.fn(async () => reply(410, { error: 'form_closed' })));
   const onError = vi.fn();
   render(FormhausForm, { props: { id: 'abc', onError } });
-  expect((await screen.findByRole('alert')).textContent).toBe('This form no longer accepts submissions.');
+  expect((await screen.findByRole('alert')).textContent).toBe('This form has expired and no longer accepts responses.');
   expect(onError).toHaveBeenCalledWith(expect.objectContaining({ status: 410, code: 'form_closed' }));
 });
 
@@ -75,8 +75,9 @@ it('reuses the idempotency key when retrying the same body', async () => {
   const fetchMock = stubApi(reply(429, { error: 'rate_limited' }), reply(201, { id: 's1', values: {} }));
   render(FormhausForm, { props: { id: 'abc' } });
   await fillAndSend('a@b.co');
-  expect(await screen.findByText('Too many submissions. Try again shortly.')).toBeDefined();
-  await fireEvent.click(screen.getByText('Send'));
+  expect(await screen.findByText('Too many attempts. Wait a minute, then try again.')).toBeDefined();
+  await new Promise((resolve) => setTimeout(resolve));
+  await fireEvent.click(screen.getByText('Try again'));
   await waitFor(() => expect(posts(fetchMock)).toHaveLength(2));
   const [first, second] = posts(fetchMock).map(([, init]) => init.headers['Idempotency-Key']);
   expect(first).toBeTruthy();
