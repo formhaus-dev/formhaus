@@ -1,5 +1,5 @@
 import type { HeadConfig, TransformContext } from 'vitepress'
-import { articleJsonLd, homeJsonLd } from './jsonld'
+import { articleJsonLd, faqJsonLd, homeJsonLd } from './jsonld'
 import { pageUrl, siteName, siteUrl } from './site'
 
 export const head: HeadConfig[] = [
@@ -25,7 +25,7 @@ function isArticle(relativePath: string): boolean {
   return ['guide/', 'api/', 'recipes/', 'compare/'].some((section) => relativePath.startsWith(section))
 }
 
-export function transformHead({ pageData, title, description }: TransformContext): HeadConfig[] {
+export function transformHead({ pageData, title, description, content }: TransformContext): HeadConfig[] {
   if (pageData.isNotFound) return []
   const { relativePath } = pageData
   const url = pageUrl(relativePath)
@@ -36,6 +36,7 @@ export function transformHead({ pageData, title, description }: TransformContext
     ['meta', { property: 'og:url', content: url }],
   ]
   if (relativePath === 'index.md') tags.push(jsonLd(homeJsonLd(description)))
+  if (relativePath === 'cloud.md') tags.push(jsonLd(faqJsonLd(content)))
   if (isArticle(relativePath)) {
     tags.push(jsonLd(articleJsonLd(pageData.title, description, url, pageData.lastUpdated)))
   }
