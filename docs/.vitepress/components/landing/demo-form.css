@@ -58,8 +58,8 @@
 }
 
 .demo-form .fh-form__fields {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 100%;
   gap: 2px;
 }
 
