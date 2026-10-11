@@ -14,7 +14,7 @@ const { input } = useField(props, emit);
   <FieldShell :field="props.field" :error="props.error">
     <textarea
       v-bind="input"
-      class="fh-field__input"
+      class="fh-field__input fh-field__input--textarea"
       :value="String(props.value ?? '')"
       :placeholder="props.field.placeholder"
       :rows="props.field.rows ?? DEFAULT_ROWS"

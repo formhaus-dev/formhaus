@@ -4,13 +4,15 @@ import type { FieldEmits, FormFieldProps } from '../types';
 
 export function fieldIds(field: FormField) {
   const inputId = `fh-field-${field.key}`;
-  return { inputId, helperId: `${inputId}-helper` };
+  return { inputId, helperId: `${inputId}-helper`, errorId: `${inputId}-error` };
 }
 
 export function fieldAria(field: FormField, error?: string) {
+  const { helperId, errorId } = fieldIds(field);
+  const ids = [field.helperText && helperId, error && errorId].filter(Boolean);
   return {
     'aria-invalid': !!error || undefined,
-    'aria-describedby': error || field.helperText ? fieldIds(field).helperId : undefined,
+    'aria-describedby': ids.length ? ids.join(' ') : undefined,
   };
 }
 
