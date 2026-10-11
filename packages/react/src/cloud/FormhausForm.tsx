@@ -1,5 +1,5 @@
 import { FormRenderer } from '@formhaus/react';
-import { focusProblem, type CloudAction } from '@formhaus/core/cloud';
+import { CloudError, focusProblem, type CloudAction } from '@formhaus/core/cloud';
 import { useCallback, useEffect, useRef } from 'react';
 import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
@@ -22,7 +22,14 @@ export function FormhausForm({ id, apiBase, onSuccess, onError, fallback, succes
     return () => cancelAnimationFrame(frame);
   }, [cloud.attempt]);
 
-  if (cloud.loadError) return <p role="alert" className="fh-form__error">{cloud.loadError.message}</p>;
+  if (cloud.loadError) return (
+    <>
+      <p role="alert" className="fh-form__error">{cloud.loadError.message}</p>
+      {cloud.loadError instanceof CloudError && cloud.loadError.retryable && (
+        <button type="button" className="fh-form-actions__button fh-form-actions__button--secondary" onClick={cloud.retry}>Try again</button>
+      )}
+    </>
+  );
   if (!cloud.definition) return <div className="fh-form" aria-busy="true">{fallback}</div>;
   if (cloud.done) return <>{success ?? <p role="status" className="fh-form__success">Thank you. Your response was submitted.</p>}</>;
   return (

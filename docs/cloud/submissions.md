@@ -81,11 +81,11 @@ Callbacks:
 | `apiBase` | API origin. Default `https://api.formhaus.dev`. |
 | `components` | Custom field components, as in `FormRenderer`. |
 | `onSuccess` / `@success` | Called with `{ id, values }` after a `201`. |
-| `onError` | Called with a `CloudError` (`status`, `code`, `errors`) when loading or submitting fails. A network failure has `status` `0` and `code` `"network"`. |
+| `onError` | Called with a `CloudError` (`status`, `code`, `errors`) when loading or submitting fails. A network failure has `status` `0` and `code` `"network"`. A request that gets no response within 15 seconds for the definition or 30 seconds for a submission has `status` `0` and `code` `"timeout"`. |
 | `fallback` / `#fallback` | Shown while the definition loads. |
 | `success` / `#success` | Replaces the default message after a submission. |
 
-Other `FormRenderer` props pass through. A `422` maps `errors` onto fields and focuses the first one. Messages for keys the form does not render are listed in a notice above the form. Every other failure shows a short message in the same notice, which takes focus, with "Try again" for `429`, `5xx` and network failures. Entered values stay.
+Other `FormRenderer` props pass through. A `422` maps `errors` onto fields and focuses the first one. Messages for keys the form does not render are listed in a notice above the form. Every other failure shows a short message in the same notice, which takes focus, with "Try again" for `429`, `5xx`, network failures and timeouts. Entered values stay. When the definition fails to load for one of these reasons or returns a body that is not JSON, the error has a "Try again" button that loads it again.
 
 `FormhausForm` sends the version it rendered. If the form was republished and the values no longer pass, it loads the new version, keeps the answers whose field key and type still fit, marks dropped answers with "Please answer again." and asks the respondent to review and submit again.
 

@@ -263,13 +263,14 @@ Keys are field keys as written. The payload is not nested and not type-converted
 
 ## Definition checks
 
-The `FormEngine` constructor throws on:
+The `FormEngine` constructor throws an `Error` that lists the problems on:
 
+- a definition that is not an object, or `fields`, `steps`, `steps[].fields`, `routes`, `show` or `showAny` that is not an array of objects;
 - both `fields` and `steps` non-empty;
 - an invalid route target or route condition field;
 - duplicate step ids.
 
-`validateDefinition(definition)` returns warnings for the issues above and for duplicate field keys, conditions on unknown fields, circular show conditions, invalid `pattern` regexes, `skip` without a Continue or later step, branch fall-through, and step conditions on the same or a later step in a form with routes. The constructor logs these warnings with `console.warn`, together with a warning for each `validator` name missing from the `validators` option.
+`validateDefinition(definition)` never throws. It returns messages for the issues above and for a missing `submit` action, duplicate field keys, conditions without `field` or on unknown fields, circular show conditions, invalid `pattern` regexes, `skip` without a Continue or later step, branch fall-through, and step conditions on the same or a later step in a form with routes. The constructor logs these warnings with `console.warn`, together with a warning for each `validator` name missing from the `validators` option. `validateSubmission()` does not log them.
 
 ## JSON Schema
 

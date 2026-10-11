@@ -29,8 +29,23 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-export function networkError(cause: unknown): CloudError {
-  return new CloudError(0, 'network', undefined, undefined, cause);
+const LEGACY_CODES = new Map([
+  ['Form paused', 'paused'],
+  ['Form not found', 'not_found'],
+  ['Form expired', 'expired'],
+  ['internal error', 'internal'],
+]);
+
+export function networkError(cause: unknown, code = 'network'): CloudError {
+  return new CloudError(0, code, undefined, undefined, cause);
+}
+
+export async function readJson(response: CloudResponse): Promise<unknown> {
+  try {
+    return await response.json();
+  } catch (error) {
+    throw new CloudError(response.status, 'invalid_response', undefined, undefined, error);
+  }
 }
 
 export async function toCloudError(response: CloudResponse): Promise<CloudError> {
@@ -38,5 +53,6 @@ export async function toCloudError(response: CloudResponse): Promise<CloudError>
   if (!isRecord(body)) return new CloudError(response.status, 'unknown');
   const errors = isRecord(body.errors) ? body.errors as Record<string, string> : undefined;
   const version = typeof body.version === 'number' && Number.isInteger(body.version) ? body.version : undefined;
-  return new CloudError(response.status, typeof body.error === 'string' ? body.error : 'unknown', errors, version);
+  const code = typeof body.error === 'string' ? LEGACY_CODES.get(body.error) ?? body.error : 'unknown';
+  return new CloudError(response.status, code, errors, version);
 }
