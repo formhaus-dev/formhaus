@@ -17,7 +17,7 @@ Opens at http://localhost:5173.
 
 ## Setup
 
-The project was created with `shadcn init --template vite --base base --preset nova` (Vite, Tailwind CSS v4, Base UI primitives) and `shadcn add input select checkbox radio-group button label card`. The generated files in [src/components/ui](src/components/ui) are committed unchanged.
+The project was created with `shadcn init --template vite --base base --preset nova` (Vite, Tailwind CSS v4, Base UI primitives) and `shadcn add input select checkbox radio-group button label card textarea`. The generated files in [src/components/ui](src/components/ui) are committed unchanged.
 
 ## Files
 
@@ -25,6 +25,8 @@ The project was created with `shadcn init --template vite --base base --preset n
 - [src/fields/TextField.tsx](src/fields/TextField.tsx) renders text, email, phone, number, password, and date fields with `Input`.
 - [src/fields/SelectField.tsx](src/fields/SelectField.tsx) renders `select` with `Select`.
 - [src/fields/RadioField.tsx](src/fields/RadioField.tsx) and [src/fields/CheckboxField.tsx](src/fields/CheckboxField.tsx) use `RadioGroup` and `Checkbox`.
+- [src/fields/MultiselectField.tsx](src/fields/MultiselectField.tsx) renders `multiselect` as a group of `Checkbox`es and emits a string array.
+- [src/fields/TextareaField.tsx](src/fields/TextareaField.tsx) renders `textarea` with `Textarea`.
 - [src/FormActions.tsx](src/FormActions.tsx) renders Back and Continue with `Button`.
 - [src/definition.json](src/definition.json) is a branching form: the Team plan routes to company details, the Personal plan to a name step.
 

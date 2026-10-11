@@ -8,18 +8,21 @@ Formhaus keeps fields, validation, visibility, and steps in a JSON definition. T
 
 ## Install
 
-```bash
+::: code-group
+```bash [React]
+npm install @formhaus/core @formhaus/react
+```
+
+```bash [Vue]
+npm install @formhaus/core @formhaus/vue
+```
+
+```bash [Other]
 npm install @formhaus/core
 ```
+:::
 
-If you need a framework adapter:
-
-```bash
-npm install @formhaus/react   # React
-npm install @formhaus/vue     # Vue
-```
-
-Or use `@formhaus/core` directly with any framework. See the [Svelte example in the playground](/playground#svelte).
+Install `@formhaus/core` next to the adapter: the stylesheet and the `FormDefinition` type come from it. With any other framework, use `@formhaus/core` directly. See the [Svelte example in the playground](/playground#svelte).
 
 ### Optional baseline styles
 
@@ -37,7 +40,9 @@ The stylesheet is light by default. For dark colors add `data-fh-theme="dark"` t
 <div data-fh-theme="dark">
   <!-- FormRenderer -->
 </div>
-``` When you bring your own components via the `components` prop, the stylesheet doesn't apply to them.
+```
+
+When you bring your own components via the `components` prop, the stylesheet doesn't apply to them.
 
 Action buttons use these classes:
 
@@ -51,39 +56,32 @@ Every button also has `fh-form-actions__button`. A `variant` on the action repla
 
 ## Quick start
 
-```ts
-const definition = {
-  id: 'contact',
-  title: 'Contact Us',
-  submit: { label: 'Send' },
-  fields: [
-    { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
-    { key: 'email', type: 'email', label: 'Email', validation: { required: true } },
-  ],
-};
+Save the definition as `contact-form.json`:
+
+```json
+{
+  "id": "contact",
+  "title": "Contact Us",
+  "submit": { "label": "Send" },
+  "fields": [
+    { "key": "name", "type": "text", "label": "Name", "validation": { "required": true } },
+    { "key": "email", "type": "email", "label": "Email", "validation": { "required": true } }
+  ]
+}
 ```
+
+TypeScript types JSON strings as `string`, so values such as `layout` or `variant` do not match `FormDefinition`. Cast the import:
 
 ::: code-group
-```vue [Vue]
-<script setup>
-import { FormRenderer } from '@formhaus/vue';
-import definition from './contact-form.json';
-
-function onSubmit(values) {
-  console.log(values);
-}
-</script>
-
-<template>
-  <FormRenderer :definition="definition" @submit="onSubmit" />
-</template>
-```
-
 ```tsx [React]
+import type { FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
-import definition from './contact-form.json';
+import '@formhaus/core/style.css';
+import json from './contact-form.json';
 
-function MyForm() {
+const definition = json as FormDefinition;
+
+export function ContactForm() {
   return (
     <FormRenderer
       definition={definition}
@@ -91,6 +89,25 @@ function MyForm() {
     />
   );
 }
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import type { FormDefinition } from '@formhaus/core';
+import { FormRenderer } from '@formhaus/vue';
+import '@formhaus/core/style.css';
+import json from './contact-form.json';
+
+const definition = json as FormDefinition;
+
+async function submit(values: Record<string, unknown>) {
+  console.log(values);
+}
+</script>
+
+<template>
+  <FormRenderer :definition="definition" :submit-handler="submit" />
+</template>
 ```
 :::
 
@@ -107,13 +124,14 @@ Form definition --> FormEngine (TypeScript) --> Adapter --> UI components
                      +-- general, field, and structure subscriptions
 ```
 
-3 published packages:
+4 published packages:
 
 | Package | What it does | Dependencies |
 |---------|-------------|--------------|
 | `@formhaus/core` | Types, validation, visibility, FormEngine class | None (pure TS) |
 | `@formhaus/vue` | Vue adapter with default HTML field components | @formhaus/core |
 | `@formhaus/react` | React adapter with default HTML field components | @formhaus/core |
+| `@formhaus/mcp` | MCP server that validates definitions and simulates step paths for AI agents | @formhaus/core, MCP SDK |
 
 The engine is framework-agnostic. It holds form state, runs validation, tracks field visibility, and manages step navigation. Adapters connect the engine to framework-specific reactivity and render UI components.
 
@@ -135,6 +153,10 @@ Vue 3.3+. Renders native HTML form elements by default. Override any field type 
 ### @formhaus/react
 
 React 18+. Renders native HTML by default and accepts replacements through `components`. It works with Next.js prerendering and React's `renderToString` without a `next/dynamic` wrapper.
+
+### @formhaus/mcp
+
+Node 20+. Runs over stdio in Claude Code, Claude Desktop, Cursor and other MCP clients. See [MCP Server](/guide/mcp).
 
 ## Next steps
 
