@@ -45,7 +45,7 @@ interface FormField {
   accept?: string;                // File input mime types
   rows?: number;                  // Textarea row count
   mask?: string;                  // Input mask pattern (shown as placeholder, custom components get full access)
-  inputMode?: 'text' | 'numeric' | 'tel' | 'email';
+  inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
 }
 
 type DefaultFieldType =

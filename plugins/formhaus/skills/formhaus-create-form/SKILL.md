@@ -105,7 +105,7 @@ interface FormField {
   accept?: string;            // for file type: "image/*", ".pdf"
   rows?: number;              // for textarea
   mask?: string;              // input mask
-  inputMode?: 'text' | 'numeric' | 'tel' | 'email';
+  inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
 }
 
 type FieldType =
