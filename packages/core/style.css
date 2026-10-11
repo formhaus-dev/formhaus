@@ -210,3 +210,7 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:checked) { border-color: Highlight; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:focus-visible), .fh-form-actions__button:focus-visible, .fh-field__input:focus, :is(.fh-field__radio, .fh-field__checkbox, .fh-field__switch):focus-visible { outline: 2px solid CanvasText; }
 }
+
+.fh-form__notice { display: grid; gap: 8px; justify-items: start; margin-bottom: var(--fh-gap); padding: 12px 14px; border: 1px solid var(--fh-color-error); border-radius: var(--fh-radius); color: var(--fh-color-text); }
+.fh-form__notice--info { border-color: var(--fh-color-border-focus); }
+.fh-form__notice > p, .fh-form__notice > ul { margin: 0; }

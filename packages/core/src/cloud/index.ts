@@ -1,3 +1,5 @@
 export { CloudError } from './error';
-export { createSubmitter, fetchDefinition, type CloudClientOptions, type CloudSubmission } from './client';
-export { createCloudController, initialCloudState, type CloudCallbacks, type CloudState } from './controller';
+export { focusProblem } from './focus';
+export type { CloudAction } from './failures';
+export { createSubmitter, fetchDefinition, type CloudClientOptions, type CloudSubmission, type CloudSubmitterOptions } from './client';
+export { createCloudController, initialCloudState, type CloudCallbacks, type CloudNotice, type CloudState } from './controller';
