@@ -3,7 +3,7 @@ import { ACTION_VARIANTS, CONDITION_OPERATORS, FIELD_TYPES, OPTION_FIELD_TYPES, 
 export const capabilities = {
   definition: {
     required: ['id', 'title', 'submit'],
-    optional: ['cancel', 'fields', 'steps'],
+    optional: ['description', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
   },
   fieldTypes: FIELD_TYPES,
@@ -13,10 +13,12 @@ export const capabilities = {
     optional: [
       'placeholder', 'helperText', 'defaultValue', 'show', 'showAny', 'validation', 'options',
       'optionsFrom', 'optionsDependsOn', 'accept', 'rows', 'mask', 'inputMode', 'autoAdvance',
+      'layout',
     ],
     optionFieldTypes: OPTION_FIELD_TYPES,
     options: 'Array of { value: string, label: string }.',
     inputMode: ['text', 'numeric', 'tel', 'email'],
+    layout: 'radio and multiselect only: "stack" (default) or "inline" for short options.',
   },
   validationRules: {
     rules: VALIDATION_RULES,

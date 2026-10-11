@@ -31,8 +31,8 @@ describe('selectedForm', () => {
 
   it('folds steps into one page only for multi-step forms', () => {
     const steps = [{ id: 'a', title: 'A', fields: [] }, { id: 'b', title: 'B', fields: [] }];
-    const form = { ...definition, steps };
-    expect(layoutSteps(form, { actions: 'stacked', steps: 'page' })).toEqual([{ title: 'Sign up', fields: [], sections: steps }]);
+    const form = { ...definition, description: 'Intro', steps };
+    expect(layoutSteps(form, { actions: 'stacked', steps: 'page' })).toEqual([{ title: 'Sign up', description: 'Intro', fields: [], sections: steps }]);
     expect(layoutSteps(form, { actions: 'stacked', steps: 'screens' })).toEqual(steps);
     expect(layoutSteps({ ...definition, steps: [steps[0]] }, { actions: 'stacked', steps: 'page' })).toEqual([steps[0]]);
   });

@@ -3,6 +3,7 @@
   "definition": {
     "id": "contact",
     "title": "Contact",
+    "description": "We reply within two working days.",
     "submit": {
       "label": "Submit"
     },

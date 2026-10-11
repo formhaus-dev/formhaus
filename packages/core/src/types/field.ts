@@ -34,6 +34,7 @@ export interface FormField {
   showAny?: ShowCondition[];
   validation?: FieldValidation;
   options?: FieldOption[];
+  layout?: 'stack' | 'inline';
   optionsFrom?: string;
   optionsDependsOn?: string[];
   accept?: string;

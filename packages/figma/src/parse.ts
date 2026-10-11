@@ -24,9 +24,9 @@ export function countFields(definition: FormDefinition): number {
   return (definition.steps || []).reduce((sum, s) => sum + s.fields.length, 0);
 }
 
-export function getSteps(definition: FormDefinition): { title: string; fields: FormField[] }[] {
+export function getSteps(definition: FormDefinition): { title: string; description?: string; fields: FormField[] }[] {
   if (definition.steps && definition.steps.length > 0) {
     return definition.steps;
   }
-  return [{ title: definition.title, fields: definition.fields || [] }];
+  return [{ title: definition.title, description: definition.description, fields: definition.fields || [] }];
 }

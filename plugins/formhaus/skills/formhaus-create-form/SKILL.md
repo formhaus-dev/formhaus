@@ -61,6 +61,7 @@ These are the exact TypeScript types. Your output MUST conform to them.
 interface FormDefinition {
   id: string;           // kebab-case identifier
   title: string;        // human-readable form title
+  description?: string; // short intro under the title, up to 1000 characters
   submit: FormAction;   // submit button config (required)
   cancel?: FormAction;  // cancel button (optional)
   fields?: FormField[]; // single-step form
@@ -98,6 +99,7 @@ interface FormField {
   showAny?: ShowCondition[];  // field visible when ANY condition true
   validation?: FieldValidation;
   options?: FieldOption[];    // for select, multiselect, radio
+  layout?: 'stack' | 'inline'; // radio/multiselect; inline only for a few short options
   optionsFrom?: string;       // dynamic options loaded at runtime
   optionsDependsOn?: string[];
   accept?: string;            // for file type: "image/*", ".pdf"

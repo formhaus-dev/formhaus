@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
+import { focusProblem, type CloudAction } from '@formhaus/core/cloud';
+import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
 const props = defineProps<FormhausFormProps>();
 const emit = defineEmits<{ success: [submission: { id: string; values: Record<string, unknown> }] }>();
+const root = ref<HTMLDivElement | null>(null);
+const notice = ref<InstanceType<typeof CloudNotice> | null>(null);
 
 const { state, submit } = useCloudForm({
   id: () => props.id,
@@ -15,9 +19,23 @@ const { state, submit } = useCloudForm({
 });
 
 const rendererProps = computed(() => {
-  const { id, apiBase, ...rest } = props;
+  const { id, apiBase, onError, initialValues, ...rest } = props;
   return rest;
 });
+
+function handled() {}
+
+function act(action: Exclude<CloudAction, null>) {
+  if (action === 'reload') window.location.reload();
+  else root.value?.querySelector('form')?.requestSubmit();
+}
+
+let frame = 0;
+watch(() => state.value.attempt, () => {
+  cancelAnimationFrame(frame);
+  frame = requestAnimationFrame(() => focusProblem(root.value, notice.value?.box ?? null));
+}, { flush: 'post' });
+onBeforeUnmount(() => cancelAnimationFrame(frame));
 </script>
 
 <template>
@@ -26,5 +44,16 @@ const rendererProps = computed(() => {
   <slot v-else-if="state.done" name="success">
     <p role="status" class="fh-form__success">Thank you. Your response was submitted.</p>
   </slot>
-  <FormRenderer v-else v-bind="rendererProps" :definition="state.definition" :errors="state.errors" :submit-handler="submit" />
+  <div v-else ref="root" class="fh-cloud">
+    <CloudNotice ref="notice" :notice="state.notice" @action="act" />
+    <FormRenderer
+      v-bind="rendererProps"
+      :key="state.revision"
+      :definition="state.definition"
+      :initial-values="state.initialValues ?? initialValues"
+      :errors="state.errors"
+      :submit-handler="submit"
+      :on-error="handled"
+    />
+  </div>
 </template>

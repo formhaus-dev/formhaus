@@ -12,7 +12,7 @@ const { input } = useField(props, emit);
   <FieldShell :field="props.field" :error="props.error">
     <select
       v-bind="input"
-      class="fh-field__input"
+      class="fh-field__input fh-field__input--select"
       :value="String(props.value ?? '')"
       @change="(e) => emit('update:value', (e.target as HTMLSelectElement).value)"
     >

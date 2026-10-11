@@ -81,11 +81,13 @@ Callbacks:
 | `apiBase` | API origin. Default `https://api.formhaus.dev`. |
 | `components` | Custom field components, as in `FormRenderer`. |
 | `onSuccess` / `@success` | Called with `{ id, values }` after a `201`. |
-| `onError` | Called with a `CloudError` (`status`, `code`, `errors`) when loading or submitting fails, or with the `TypeError` from `fetch` on a network failure. |
+| `onError` | Called with a `CloudError` (`status`, `code`, `errors`) when loading or submitting fails. A network failure has `status` `0` and `code` `"network"`. |
 | `fallback` / `#fallback` | Shown while the definition loads. |
 | `success` / `#success` | Replaces the default message after a submission. |
 
-Other `FormRenderer` props pass through. A `422` maps `errors` onto fields.
+Other `FormRenderer` props pass through. A `422` maps `errors` onto fields and focuses the first one. Messages for keys the form does not render are listed in a notice above the form. Every other failure shows a short message in the same notice, which takes focus, with "Try again" for `429`, `5xx` and network failures. Entered values stay.
+
+`FormhausForm` sends the version it rendered. If the form was republished and the values no longer pass, it loads the new version, keeps the answers whose field key and type still fit, marks dropped answers with "Please answer again." and asks the respondent to review and submit again.
 
 ## POST JSON
 
@@ -100,6 +102,7 @@ curl -X POST https://api.formhaus.dev/f/Xk3d9QpL2a \
 |---|---|
 | `values` | Object, field key to value. Missing or `null` is `{}`. |
 | `skippedSteps` | Array of step ids. Honored only for steps with `skip`; their values are dropped. |
+| `version` | Optional integer, the definition version the form was rendered from. |
 
 | Status | Body |
 |---|---|
@@ -108,6 +111,7 @@ curl -X POST https://api.formhaus.dev/f/Xk3d9QpL2a \
 | `402` | `{ "error": "limit_reached", "upgrade_url": "...", "message": "Ask the user to upgrade at ..." }` |
 | `404` | `{ "error": "not_found" }` |
 | `409` | `{ "error": "paused" }` or `{ "error": "idempotency_key_reused" }` |
+| `409` | `{ "error": "form_updated", "version": 4, "errors": {...} }`, `version` is older than the latest and `values` fail the latest definition. Load the definition again and resubmit. With a valid body the submission is stored under the latest version. |
 | `410` | `{ "error": "expired" }` |
 | `413` | `{ "error": "body_too_large" }`, body or `values` over 64 KB |
 | `415` | `{ "error": "unsupported_media_type" }`, `Content-Type` is not `application/json` |
@@ -170,4 +174,4 @@ The server runs `validateSubmission()` from `@formhaus/core` against the latest 
 
 ## Public definition
 
-`GET https://api.formhaus.dev/f/{id}/definition` returns the latest definition. CORS `*`, `Cache-Control: public, max-age=60`. Unknown, paused and expired forms answer `404`, `409` and `410`.
+`GET https://api.formhaus.dev/f/{id}/definition` returns the latest definition. CORS `*`, `Cache-Control: public, max-age=60`. The `Formhaus-Version` header carries its version. Unknown, paused and expired forms answer `404`, `409` and `410`.
