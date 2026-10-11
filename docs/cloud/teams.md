@@ -56,15 +56,15 @@ An owner invites an email address with a role on **Settings > Members**.
 
 ## Member limits
 
-Members and pending unexpired invites count as seats.
+Owners and editors, plus pending unexpired editor invites, count as seats. Viewers are free and unlimited on every plan.
 
-| Plan | Members |
+| Plan | Editor seats |
 |---|---|
 | Free | 1 |
 | Pro | 3 |
 | Team | 10 |
 
-Over the limit, the invite is refused with `Your <plan> plan allows <n> member(s), pending invites included.` Plans are in [Plans, limits and data](/cloud/plans).
+When the seats are full, invites and role changes to editor or owner are refused. Viewer invites still work. Plans are in [Plans, limits and data](/cloud/plans).
 
 ## Removing a member
 

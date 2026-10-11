@@ -7,7 +7,7 @@ description: "Formhaus Cloud plan limits, submission counting, upgrade links, da
 
 Prices are on [Formhaus Cloud](/cloud). Limits enforced by the service:
 
-| Plan | Price | Forms | Submissions | Members | Webhooks and emails | Submission retention |
+| Plan | Price | Forms | Submissions | Editors | Webhooks and emails | Submission retention |
 |---|---|---|---|---|---|---|
 | Unclaimed | None | 3 per agent key | 100 in total per form | None | No | Deleted with the form after 7 days |
 | Free | $0 | 3 | 100 per month | 1 | Yes | 90 days |
@@ -17,7 +17,7 @@ Prices are on [Formhaus Cloud](/cloud). Limits enforced by the service:
 - The plan belongs to the workspace. Owners see it under **Settings > Usage and plan**.
 - Pro and Team are switched on by hand. Pro opens a Stripe checkout and is active within a day of payment. For Team, write to hello@formhaus.dev.
 - Monthly limits count all submissions to the workspace's forms in the calendar month, UTC.
-- Members count memberships plus pending unexpired invites. See [Teams and roles](/cloud/teams#member-limits).
+- Editor seats count owners and editors plus pending unexpired editor invites. Viewers are unlimited on every plan. See [Teams and roles](/cloud/teams#member-limits).
 - Over a limit, `POST /f/{id}` answers `402 limit_reached`, and the REST API and MCP tools return `upgrade_url` with `Ask the user to upgrade at <url>`. The URL is the payment link, or `https://app.formhaus.dev/usage` when none is set.
 - `list_forms` and `GET /v1/forms` return `upgrade_url` and `notice` from 80% of the monthly limit.
 - A definition is at most 32 KB and 100 fields. Rate limits are in [Publishing](/cloud/publishing#unclaimed-forms) and [Collecting submissions](/cloud/submissions#rate-limits).
