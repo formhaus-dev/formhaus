@@ -35,7 +35,7 @@ function onInput(event: Event) {
       v-bind="input"
       class="fh-field__input"
       :type="inputType"
-      :value="String(props.value ?? '')"
+      :value="Object.is(props.value, -0) ? '-0' : String(props.value ?? '')"
       :placeholder="props.field.placeholder ?? props.field.mask"
       :inputmode="props.field.inputMode"
       @input="onInput"
