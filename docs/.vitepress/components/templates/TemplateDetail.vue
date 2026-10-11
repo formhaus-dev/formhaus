@@ -41,7 +41,7 @@ async function copy(kind: 'JSON' | 'Prompt') {
     <p class="tpl-detail__summary">{{ template.summary }}</p>
     <div class="tpl-detail__actions">
       <a class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)">
-        Launch free <LucideIcon name="arrow-right" />
+        Launch for free <LucideIcon name="arrow-right" />
       </a>
     </div>
     <p class="tpl-detail__hint">Get a hosted link and a responses inbox in a minute. No backend, no credit card.</p>
