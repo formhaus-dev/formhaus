@@ -66,7 +66,7 @@ async function copy() {
   <div class="json" :data-active="active">
     <div class="json__tools">
       <button type="button" class="json__btn" title="Format (Shift+Alt+F)" @click="format"><LucideIcon name="braces" /> Format</button>
-      <button type="button" class="json__btn" aria-label="Copy JSON" @click="copy"><LucideIcon :name="copied ? 'check' : 'copy'" /> {{ copied ? 'Copied' : 'Copy' }}</button>
+      <button type="button" class="json__btn" aria-label="Copy JSON" @click="copy"><LucideIcon :name="copied ? 'check' : 'copy'" /> Copy</button>
     </div>
     <div ref="host" class="json__editor" :hidden="!ready" />
     <pre v-if="!ready" class="json__pre" aria-label="Generated form definition"><code><span v-for="(line, index) in lines" :key="index" class="json__line"><span class="json__num">{{ index + 1 }}</span><span v-for="(token, position) in line" :key="position" :class="`json__${token.kind}`">{{ token.text }}</span></span></code></pre>

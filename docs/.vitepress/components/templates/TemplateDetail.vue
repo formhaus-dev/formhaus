@@ -48,10 +48,10 @@ async function copy(kind: 'JSON' | 'Prompt') {
     <div class="tpl-detail__alt" role="group" aria-labelledby="tpl-alt-label">
       <p id="tpl-alt-label" class="tpl-detail__alt-label">Or set it up yourself</p>
       <button type="button" class="tpl-button tpl-button--secondary" @click="copy('Prompt')">
-        <LucideIcon :name="copied === 'Prompt' ? 'check' : 'bot'" /> {{ copied === 'Prompt' ? 'Copied' : 'Copy prompt for your AI agent' }}
+        <LucideIcon :name="copied === 'Prompt' ? 'check' : 'bot'" /> Copy prompt for your AI agent
       </button>
       <button type="button" class="tpl-button tpl-button--secondary" @click="copy('JSON')">
-        <LucideIcon :name="copied === 'JSON' ? 'check' : 'copy'" /> {{ copied === 'JSON' ? 'Copied' : 'Copy JSON for React or Vue' }}
+        <LucideIcon :name="copied === 'JSON' ? 'check' : 'copy'" /> Copy JSON for React or Vue
       </button>
       <span class="tpl-sr-only" role="status">{{ copied ? `${copied} copied` : '' }}</span>
     </div>
