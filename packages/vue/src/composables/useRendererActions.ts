@@ -11,8 +11,9 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     if (props.loading) return;
     const owner = form.engine;
     const onError = props.onError;
+    const errors = owner.errors;
     actionError.value = null;
-    try { if (!(await action()) && owner === form.engine && Object.keys(owner.errors).length > 0) invalidAttempts.value++; }
+    try { if (!(await action()) && owner === form.engine && owner.errors !== errors && Object.keys(owner.errors).length > 0) invalidAttempts.value++; }
     catch (error) {
       if (owner !== form.engine) return;
       if (onError) onError(error);

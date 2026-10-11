@@ -163,7 +163,7 @@ Core evaluates one field as follows and returns the first error:
 4. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 5. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
-Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur. When Submit fails validation, the engine moves to the first step with an error. Built-in renderers focus the first invalid field after a failed Continue or Submit.
+Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur. When Submit fails validation, the engine moves to the first step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
 
 ## Steps
 
