@@ -2,6 +2,7 @@
 import { computed, nextTick, ref } from 'vue';
 import AutoInput from './AutoInput.vue';
 import BuilderActions from './BuilderActions.vue';
+import BuilderAddRow from './BuilderAddRow.vue';
 import BuilderBreak from './BuilderBreak.vue';
 import BuilderGap from './BuilderGap.vue';
 import BuilderGutter, { type GutterAction } from './BuilderGutter.vue';
@@ -200,9 +201,9 @@ function onKey(event: KeyboardEvent) {
           />
         </div>
         <template v-if="lastOfPage(index)">
-          <div class="nb-line nb-add">
-            <button type="button" class="nb-ghost" @mousedown.prevent @click="addQuestion(index + 1)">+ Add question</button>
-            <button v-if="index === form.blocks.length - 1" type="button" class="nb-ghost" @mousedown.prevent @click="addPage(index + 1)">+ Add page</button>
+          <div class="nb-add">
+            <BuilderAddRow label="Add question" @add="addQuestion(index + 1)" />
+            <BuilderAddRow v-if="index === form.blocks.length - 1" label="Add page" @add="addPage(index + 1)" />
           </div>
           <BuilderActions :form="form" :page="pageAt(index)" :first="pageNumber(index) < 1" :last="index === form.blocks.length - 1" @edit="touch" />
         </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue';
 import AutoInput from './AutoInput.vue';
+import BuilderAddRow from './BuilderAddRow.vue';
 import BuilderMenu from './BuilderMenu.vue';
 import LucideIcon from './LucideIcon.vue';
 import {
@@ -185,8 +186,8 @@ function pickSlash(option: BuilderOption, id: string) {
         <LucideIcon name="x" />
       </button>
     </li>
-    <li class="nb-line nb-option nb-option--add">
-      <button type="button" class="nb-ghost" @mousedown.prevent @click="add()">+ Add option</button>
+    <li class="nb-option--add">
+      <BuilderAddRow label="Add option" @add="add()" />
     </li>
   </ul>
 </template>
