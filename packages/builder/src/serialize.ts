@@ -9,14 +9,14 @@ export interface Serialized {
 function field(item: BuilderQuestion, path: string, paths: Map<string, string>): FormField {
   const { validation, ...extra } = item.extra;
   const { required, ...rules } = validation ?? {};
-  const result: FormField = { key: item.key, type: item.type, label: item.label.trim() || 'Untitled question', ...extra };
+  const result: FormField = { key: item.key, type: item.type, label: item.label, ...extra };
   const merged = { ...(item.required ? { required: typeof required === 'string' ? required : true } : {}), ...rules };
   if (Object.keys(merged).length) result.validation = merged;
   paths.set(path, item.uid);
   if (hasOptions(item.type)) {
     result.options = item.options.map((option, index) => {
       paths.set(`${path}.options.${index}`, option.uid);
-      return { value: option.value, label: option.label.trim() || `Option ${index + 1}` };
+      return { value: option.value, label: option.label };
     });
   }
   return result;
@@ -49,9 +49,9 @@ function head(form: BuilderForm) {
   return {
     ...($schema ? { $schema } : {}),
     id: form.id,
-    title: form.title.trim() || 'Untitled form',
+    title: form.title,
     ...extra,
-    submit: { ...submit, label: form.submit.trim() || 'Submit' },
+    submit: { ...submit, label: form.submit },
   };
 }
 

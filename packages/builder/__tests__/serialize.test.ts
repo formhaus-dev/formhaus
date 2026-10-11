@@ -54,3 +54,14 @@ describe('smart', () => {
     expect(splitLines('- One\n2. Two\n\n• Three')).toEqual(['One', 'Two', 'Three']);
   });
 });
+
+describe('drafts', () => {
+  it('keeps empty labels so an unfinished draft reloads as typed', () => {
+    const form = createForm('x', '');
+    addField(form, { step: null }, { type: 'radio' });
+    const definition = serialize(form).definition;
+    expect(definition.title).toBe('');
+    expect(definition.fields?.[0]).toMatchObject({ label: '', options: [{ label: '' }, { label: '' }] });
+    expect(serialize(fromDefinition(definition)).definition).toEqual(definition);
+  });
+});
