@@ -21,7 +21,7 @@
           {
             "key": "type",
             "type": "select",
-            "label": "Type",
+            "label": "Vulnerability type",
             "options": [
               { "value": "xss", "label": "Cross-site scripting" },
               { "value": "rce", "label": "Remote code execution" },
@@ -82,7 +82,14 @@
             "label": "Link to a proof of concept",
             "placeholder": "https://",
             "helperText": "Use a private link. Don’t publish details yet."
-          }
+          },
+          {
+            "key": "cvss",
+            "type": "text",
+            "label": "CVSS score or vector",
+            "placeholder": "CVSS:3.1/AV:N/AC:L/…"
+          },
+          { "key": "discoveredAt", "type": "date", "label": "When did you find it?" }
         ]
       },
       {

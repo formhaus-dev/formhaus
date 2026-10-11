@@ -26,6 +26,20 @@
             "validation": { "required": true }
           },
           {
+            "key": "rating",
+            "type": "radio",
+            "label": "How would you rate working with us?",
+            "layout": "inline",
+            "helperText": "1 is poor, 5 is excellent.",
+            "options": [
+              { "value": "1", "label": "1" },
+              { "value": "2", "label": "2" },
+              { "value": "3", "label": "3" },
+              { "value": "4", "label": "4" },
+              { "value": "5", "label": "5" }
+            ]
+          },
+          {
             "key": "quote",
             "type": "textarea",
             "label": "Your testimonial in a sentence or two",
@@ -51,7 +65,7 @@
             "type": "email",
             "label": "Email",
             "inputMode": "email",
-            "validation": { "required": true }
+            "helperText": "Only if we should send you the final version to approve."
           },
           {
             "key": "permission",

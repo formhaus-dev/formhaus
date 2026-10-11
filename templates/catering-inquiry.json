@@ -38,9 +38,16 @@
             "validation": { "required": true }
           },
           {
+            "key": "serviceTime",
+            "type": "text",
+            "label": "Start time",
+            "placeholder": "7 pm"
+          },
+          {
             "key": "guests",
             "type": "number",
             "label": "Number of guests",
+            "helperText": "An estimate is fine.",
             "inputMode": "numeric",
             "validation": { "required": true, "min": 1, "max": 5000 }
           },
@@ -49,6 +56,17 @@
             "type": "text",
             "label": "Venue or city",
             "validation": { "required": true }
+          },
+          {
+            "key": "kitchen",
+            "type": "radio",
+            "label": "Does the venue have a kitchen we can use?",
+            "layout": "inline",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-sure", "label": "Not sure" }
+            ]
           }
         ]
       },
@@ -64,7 +82,7 @@
               { "value": "buffet", "label": "Buffet" },
               { "value": "plated", "label": "Plated meal" },
               { "value": "family-style", "label": "Sharing platters" },
-              { "value": "canapes", "label": "Canapés and finger food" },
+              { "value": "appetizers", "label": "Appetizers and finger food" },
               { "value": "drop-off", "label": "Drop-off only, no staff" },
               { "value": "not-sure", "label": "Not sure yet" }
             ],
@@ -80,7 +98,7 @@
               { "value": "vegan", "label": "Vegan" },
               { "value": "gluten-free", "label": "Gluten-free" },
               { "value": "dairy-free", "label": "Dairy-free" },
-              { "value": "nut-free", "label": "Nut allergy" },
+              { "value": "nut-free", "label": "Nut-free" },
               { "value": "halal", "label": "Halal" },
               { "value": "kosher", "label": "Kosher" }
             ]

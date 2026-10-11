@@ -1,7 +1,7 @@
 {
   "slug": "time-off-request",
   "title": "Time off request",
-  "summary": "Leave type, dates, handover and approver for small teams without an HR system.",
+  "summary": "Leave type, dates, half days, handover and approver for small teams without an HR system.",
   "category": "operations",
   "definition": {
     "id": "time-off-request",
@@ -61,31 +61,58 @@
             "validation": { "required": true }
           },
           {
+            "key": "doctorNote",
+            "type": "radio",
+            "label": "Will you provide a doctor’s note?",
+            "layout": "inline",
+            "show": [{ "field": "type", "eq": "sick" }],
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-needed", "label": "Not needed" }
+            ]
+          },
+          {
+            "key": "partial",
+            "type": "radio",
+            "label": "Full or half days?",
+            "options": [
+              { "value": "full", "label": "Full days" },
+              { "value": "half-first", "label": "Half day on the first day" },
+              { "value": "half-last", "label": "Half day on the last day" },
+              { "value": "half-only", "label": "A single half day" }
+            ],
+            "defaultValue": "full",
+            "validation": { "required": true }
+          },
+          {
             "key": "start",
             "type": "date",
-            "label": "First day off",
+            "label": "Start date",
             "validation": { "required": true }
           },
           {
             "key": "end",
             "type": "date",
-            "label": "Last day off",
+            "label": "End date",
+            "show": [{ "field": "partial", "neq": "half-only" }],
             "validation": { "required": true }
           },
-          { "key": "note", "type": "textarea", "label": "Note for your manager", "rows": 2 }
-        ]
-      },
-      {
-        "id": "handover",
-        "title": "Handover",
-        "fields": [
+          {
+            "key": "days",
+            "type": "number",
+            "label": "Working days requested",
+            "helperText": "Count a half day as 0.5.",
+            "validation": { "required": true, "min": 0.5, "max": 365 }
+          },
           { "key": "cover", "type": "text", "label": "Who will cover for you?" },
           {
             "key": "handover",
             "type": "textarea",
-            "label": "Anything urgent while you’re away?",
+            "label": "Anything that needs attention while you’re away?",
             "rows": 3
-          }
+          },
+          { "key": "note", "type": "textarea", "label": "Note for your manager", "rows": 2 }
         ]
       }
     ]

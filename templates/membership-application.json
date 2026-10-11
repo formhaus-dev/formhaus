@@ -1,0 +1,166 @@
+{
+  "slug": "membership-application",
+  "title": "Membership application",
+  "summary": "For gyms, fitness studios and sports clubs. Plan, billing, health screen, emergency contact and waiver.",
+  "category": "registration",
+  "definition": {
+    "id": "membership-application",
+    "title": "Become a member",
+    "submit": { "label": "Apply for membership" },
+    "steps": [
+      {
+        "id": "plan",
+        "title": "Your membership",
+        "fields": [
+          {
+            "key": "plan",
+            "type": "radio",
+            "label": "Membership type",
+            "options": [
+              { "value": "individual", "label": "Individual" },
+              { "value": "couple", "label": "Couple" },
+              { "value": "family", "label": "Family" },
+              { "value": "student", "label": "Student" },
+              { "value": "corporate", "label": "Through my employer" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "employer",
+            "type": "text",
+            "label": "Employer",
+            "show": [{ "field": "plan", "eq": "corporate" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "school",
+            "type": "text",
+            "label": "School or university",
+            "helperText": "Bring your student ID to your first visit.",
+            "show": [{ "field": "plan", "eq": "student" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "members",
+            "type": "textarea",
+            "label": "Names and dates of birth of everyone else on the membership",
+            "rows": 3,
+            "helperText": "Family plans cover two adults and their children under 18.",
+            "show": [{ "field": "plan", "in": ["couple", "family"] }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "billing",
+            "type": "radio",
+            "label": "Billing",
+            "layout": "inline",
+            "options": [
+              { "value": "monthly", "label": "Monthly" },
+              { "value": "annual", "label": "Annual" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "startDate",
+            "type": "date",
+            "label": "Start date",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "you",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "dateOfBirth",
+            "type": "date",
+            "label": "Date of birth",
+            "validation": { "required": true }
+          },
+          {
+            "key": "address",
+            "type": "textarea",
+            "label": "Home address",
+            "rows": 2,
+            "validation": { "required": true }
+          },
+          {
+            "key": "heardFrom",
+            "type": "select",
+            "label": "How did you hear about us?",
+            "options": [
+              { "value": "search", "label": "Search engine" },
+              { "value": "social", "label": "Social media" },
+              { "value": "referral", "label": "Friend or colleague" },
+              { "value": "article", "label": "Article or podcast" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "emergency",
+        "title": "Health and emergency contact",
+        "fields": [
+          {
+            "key": "healthConditions",
+            "type": "radio",
+            "label": "Do you have a medical condition or injury that could affect exercise?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "healthDetails",
+            "type": "textarea",
+            "label": "Tell us briefly so our staff can help you train safely",
+            "rows": 2,
+            "show": [{ "field": "healthConditions", "eq": "yes" }]
+          },
+          {
+            "key": "emergencyName",
+            "type": "text",
+            "label": "Emergency contact name",
+            "validation": { "required": true }
+          },
+          { "key": "emergencyRelation", "type": "text", "label": "Relationship to you" },
+          {
+            "key": "emergencyPhone",
+            "type": "phone",
+            "label": "Emergency contact phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "waiver",
+            "type": "checkbox",
+            "label": "I have read and accept the membership terms and liability waiver",
+            "validation": { "required": true }
+          },
+          { "key": "updates", "type": "checkbox", "label": "Email me about classes, events and offers" }
+        ]
+      }
+    ]
+  }
+}

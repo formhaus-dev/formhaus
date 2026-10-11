@@ -42,6 +42,19 @@
             "validation": { "required": true }
           },
           {
+            "key": "track",
+            "type": "select",
+            "label": "Track",
+            "options": [
+              { "value": "engineering", "label": "Engineering" },
+              { "value": "product-design", "label": "Product and design" },
+              { "value": "leadership", "label": "Leadership and culture" },
+              { "value": "case-study", "label": "Case studies" },
+              { "value": "not-sure", "label": "Not sure, let the committee decide" }
+            ],
+            "validation": { "required": true }
+          },
+          {
             "key": "abstract",
             "type": "textarea",
             "label": "Abstract",
@@ -133,6 +146,12 @@
             "type": "text",
             "label": "Website or social profile",
             "placeholder": "https://"
+          },
+          {
+            "key": "coSpeaker",
+            "type": "text",
+            "label": "Co-speaker name and email",
+            "helperText": "Leave empty if you’re presenting alone."
           }
         ]
       }
