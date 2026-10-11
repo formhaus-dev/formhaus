@@ -34,7 +34,6 @@ html.dark .sandbox {
 
 .sandbox__bar--left { grid-area: barl; }
 .sandbox__bar--right { grid-area: barr; }
-.sandbox__graph { grid-area: graph; }
 .sandbox__pane--write,
 .sandbox__pane--json { grid-area: left; }
 .sandbox__pane--preview { grid-area: preview; }
