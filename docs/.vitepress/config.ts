@@ -139,6 +139,9 @@ export default defineConfig({
         ]
       }
     ],
+    footer: {
+      message: 'Formhaus is MIT licensed. <a href="/legal/">Legal</a>'
+    },
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ignsm/formhaus' }
     ]
