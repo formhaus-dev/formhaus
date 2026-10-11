@@ -162,7 +162,7 @@ Yes. The [form definition format](/spec), `@formhaus/core`, the React and Vue re
 
 ### Can I use my own backend instead?
 
-Yes. Render a definition with `FormRenderer` and post to your own server, and validate there with `validateSubmission` from `@formhaus/core`. See [Getting started](/guide/).
+Yes. Render a definition with `FormRenderer` and post to your own server, and validate there with `validateSubmission` from `@formhaus/core/server`. See [Server-side validation](/guide/server-validation).
 
 ### Which fields does the hosted form support?
 

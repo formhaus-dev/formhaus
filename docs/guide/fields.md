@@ -157,7 +157,7 @@ Pick multiple from a list. Renders as a checkbox group. The value is an array of
 
 `minLength` / `maxLength` on multiselect controls how many options can be selected.
 
-Options stack vertically. Set `"layout": "inline"` to place short options side by side, as with radio.
+Options stack vertically. Set `"layout": "inline"` to place short options side by side, as with radio. `layout` was added in 0.10.0.
 
 ## Checkbox
 
@@ -191,7 +191,7 @@ Pick one from a list. Options stack vertically, one full-width row per option.
 }
 ```
 
-For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`. Options then sit side by side and wrap on narrow screens. Keep the default `stack` for options longer than a few words.
+For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`. Options then sit side by side and wrap on narrow screens. Keep the default `stack` for options longer than a few words. `layout` was added in 0.10.0.
 
 ## Switch
 
