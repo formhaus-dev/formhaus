@@ -1,6 +1,12 @@
 packages:
   - '.'
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@formhaus/*'
+blockExoticSubdeps: true
+strictDepBuilds: true
 allowBuilds:
   esbuild: true
-onlyBuiltDependencies:
-  - esbuild
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - svelte@4.2.20
