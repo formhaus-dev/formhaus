@@ -21,7 +21,7 @@ Formhaus Cloud hosts the backend for a Formhaus definition. The open-source pack
 | Embed script | No | `https://f.formhaus.dev/embed.js` |
 | Dashboard with workspaces, roles and invites | No | `https://app.formhaus.dev` |
 | Webhooks with signatures | No | Yes |
-| Email notifications: instant, daily digest, off | No | Yes |
+| Email notifications: response milestones, weekly summary, off | No | Yes |
 | REST API and CSV export | No | `https://api.formhaus.dev/v1` |
 
 ## Hosts
@@ -42,7 +42,7 @@ Formhaus Cloud hosts the backend for a Formhaus definition. The open-source pack
 | [Teams and roles](/cloud/teams) | Workspaces, owner, editor and viewer, invites, member limits, deletion |
 | [Dashboard](/cloud/dashboard) | Every page: forms, responses, settings, webhooks, keys, usage, members, account |
 | [Webhooks](/cloud/webhooks) | Payload, signature, retries, delivery log |
-| [Email notifications](/cloud/emails) | Notification modes, digest, other emails |
+| [Email notifications](/cloud/emails) | Notification modes, weekly summary, other emails |
 | [REST API](/cloud/rest-api) | Endpoints, auth, pagination, CSV |
 | [MCP reference](/cloud/mcp) | Remote tools, inputs, outputs, errors |
 | [Plans, limits and data](/cloud/plans) | Free, Pro and Team limits, region, retention, security |

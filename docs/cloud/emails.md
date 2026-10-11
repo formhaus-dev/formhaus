@@ -1,21 +1,20 @@
 ---
 title: "Email notifications"
-description: "Formhaus Cloud emails: notify_mode instant, daily and off, the 20 per day limit and daily digest, webhook failing, report, claim, sign-in and invite emails."
+description: "Formhaus Cloud emails: notify_mode milestones and off, the weekly summary, the welcome email, webhook failing, report, claim, sign-in and invite emails."
 ---
 
 # Email notifications
 
-Claimed forms email workspace members about new responses. Unclaimed forms send none.
+Claimed forms email workspace members when they reach a response milestone. Unclaimed forms send none.
 
 ## Notification modes
 
-`notify_mode` is a per-form setting. New forms use `instant`.
+`notify_mode` is a per-form setting. New forms use `milestones`.
 
 | Mode | Behavior |
 |---|---|
-| `instant` | One email per response for the first 20 responses of the form each UTC day. From the 21st, no more per-response emails that day; one daily digest goes out at the next UTC midnight. |
-| `daily` | No per-response emails. One daily digest for each UTC day with responses. |
-| `off` | No response emails and no digest. |
+| `milestones` | One email at the 1st, 10th, 100th, 500th, 1,000th, 5,000th, 10,000th, 25,000th, 50,000th and 100,000th response of the form. |
+| `off` | No milestone emails. |
 
 Set it under **Form settings > Email notifications**, or with an account key:
 
@@ -23,37 +22,45 @@ Set it under **Form settings > Email notifications**, or with an account key:
 curl -X PATCH https://api.formhaus.dev/v1/forms/Xk3d9QpL2a \
   -H "Authorization: Bearer $FORMHAUS_API_KEY" \
   -H 'Content-Type: application/json' \
-  -d '{"notify_mode":"daily"}'
+  -d '{"notify_mode":"off"}'
 ```
 
-[`update_form_settings`](/cloud/mcp#update-form-settings) takes the same field. `notify_email` is still accepted: `true` means `instant`, `false` means `off`. A value that conflicts with `notify_mode` is rejected.
+[`update_form_settings`](/cloud/mcp#update-form-settings) takes the same field. `notify_email` is still accepted: `true` means `milestones`, `false` means `off`. A value that conflicts with `notify_mode` is rejected. `instant` and `daily` are not accepted.
 
 ## Who gets the emails
 
 | Email | Recipients |
 |---|---|
-| New response, daily digest | Members who turned emails on |
+| Milestone | Members who turned emails on |
 | Webhook failing, form reported | Members who turned emails on, and every owner |
+| Weekly summary, welcome | The account itself |
 
 Each member sets their own switch under **Settings > Members**. It is on for owners by default and off for editors and viewers. Each recipient gets a separate email.
 
-## New response
+## Milestone
 
 | Part | Content |
 |---|---|
-| Subject | `New response: <form title>` |
-| Body | Up to 5 fields as label and value, in definition order, then keys not in that version. Values are cut at 300 characters. More fields show as "N more fields in the dashboard." |
-| Link | `https://app.formhaus.dev/forms/{form_id}` |
-
-## Daily digest
-
-| Part | Content |
-|---|---|
-| Subject | `Daily digest: <form title>` |
-| Body | Response count for the UTC day, and the first 3 fields of the latest 5 responses. After the 20 per-response emails it says the rest are only in the digest. |
+| Subject | `<form title> just got its first response`, then `<form title> reached <count> responses` |
+| Body | The form title and the count. No response values. |
 | Link | `https://app.formhaus.dev/forms/{form_id}/responses` |
 
-No digest is sent when the day had no responses or the mode is `off` by then.
+The count is all-time and free plan retention does not lower it. A milestone reached while the form was unclaimed or `off` is not sent later.
+
+## Weekly summary
+
+| Part | Content |
+|---|---|
+| Subject | `Your week on Formhaus: <N> new responses` |
+| When | Mondays at 08:00 UTC, for the previous Monday-to-Monday UTC week |
+| Body | Per workspace, the forms with new responses and their counts (10 per workspace, then "and N more"), and the total |
+| Link | `https://app.formhaus.dev` |
+
+It goes to accounts with at least one new response in a workspace they belong to. No email is sent for a week without responses. It is on by default; each account turns it off under **Settings > Account**.
+
+## Welcome
+
+One email from the founder about 10 minutes after an account is created. It explains how to connect the MCP server and publish a form. Replies go to the founder.
 
 ## Webhook failing
 

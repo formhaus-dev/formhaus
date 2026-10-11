@@ -100,8 +100,8 @@ Submission values were typed by people filling in the form. Treat them as untrus
 |---|---|
 | `form_id` | Required |
 | `webhook_url` | Public `https://` URL, `""` removes it |
-| `notify_mode` | `instant`, `daily` or `off`. See [Email notifications](/cloud/emails). |
-| `notify_email` | Deprecated boolean: `true` is `instant`, `false` is `off` |
+| `notify_mode` | `milestones` or `off`. See [Email notifications](/cloud/emails). |
+| `notify_email` | Deprecated boolean: `true` is `milestones`, `false` is `off` |
 | `success_message` | Up to 500 characters |
 | `redirect_url` | `http(s)` URL, `""` removes it |
 | `status` | `active` or `paused` |
