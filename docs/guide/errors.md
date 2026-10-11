@@ -62,7 +62,7 @@ function MyForm() {
 ```
 :::
 
-In a multi-step form, if the error is on a field in step 1 and the user is on step 3, the form auto-navigates back to step 1. If you catch a failed save to map its field errors, rethrow it so `onAfterSubmit` does not run as if saving succeeded. Rejections reach `onError`, or the form-level error banner when that callback is omitted.
+In a multi-step form, if the error is on a field in step 1 and the user is on step 3, the form auto-navigates back to step 1. If you catch a failed save to map its field errors, rethrow it so `onAfterSubmit` does not run as if saving succeeded. Rejections reach `onError`, or the form-level error banner when that callback is omitted. With `onError`, the banner does not show the rejection; display it yourself.
 
 ## Top-level errors
 
@@ -140,6 +140,31 @@ async function onSubmit(values) {
 With this legacy Vue pattern, `onAfterSubmit` means the event was dispatched, not that its async listener finished. Use `submitHandler` when the lifecycle must include the request.
 
 While busy, the default fields and action buttons are disabled. The form has `aria-busy`; the React primary button also has it. The built-in actions do not render a spinner; use a custom actions component if you need one. See [lifecycle ordering and after-hook failures](/guide/steps#lifecycle-hooks).
+
+### Loading button
+
+A custom actions component receives `loading` and the resolved `primaryLabel`:
+
+```tsx
+import { FormRenderer, type FormActionsProps } from '@formhaus/react';
+
+function SavingActions({ primaryLabel, showPrimary = true, showBack, backLabel, loading, onPrimary, onPrev }: FormActionsProps) {
+  return (
+    <div className="actions">
+      {showBack && <button type="button" disabled={loading} onClick={onPrev}>{backLabel}</button>}
+      {showPrimary && (
+        <button type="button" disabled={loading} aria-busy={loading} onClick={onPrimary}>
+          {loading ? 'Saving…' : primaryLabel}
+        </button>
+      )}
+    </div>
+  );
+}
+
+<FormRenderer definition={definition} onSubmit={save} ActionsComponent={SavingActions} />
+```
+
+`loading` is `true` while `onSubmit`, `onStepValidate` or a lifecycle hook runs. All props, and the Vue version, are in [Custom Actions & Progress](/guide/custom-components).
 
 ## Field-level loading
 
