@@ -7,7 +7,7 @@ sidebar: false
 # Formhaus Cloud Privacy Policy
 
 ::: warning Draft, pending legal review
-This document is a draft and is not in effect. Items marked [VERIFY] must be confirmed before launch.
+This document is a draft and is not in effect. It will be reviewed by a lawyer before Formhaus Cloud launches.
 :::
 
 **Effective date: [EFFECTIVE DATE]**
@@ -28,20 +28,20 @@ The open-source Formhaus libraries, Figma plugin and local MCP server run on you
 - Privacy, legal and security contact: **legal@formhaus.dev**
 - General questions: hello@formhaus.dev
 - Post: Fabrique-Futur LLC, 30 N Gould St, Ste R, Sheridan, WY 82801, United States
-- **EU and UK representative (Article 27):** where Article 27 of the EU or UK GDPR requires one, the details are available on request at legal@formhaus.dev. [VERIFY: appoint a representative or confirm the exemption applies.]
+- **EU and UK representative (Article 27):** where Article 27 of the EU or UK GDPR requires one, the details are available on request at legal@formhaus.dev.
 
 ---
 
 ## 2. If you filled in a form
 
-The form owner is responsible for your submission. Hosted pages do not show the owner's identity unless the owner puts it in the form.
+The form owner is responsible for your submission. Hosted pages show Formhaus branding and a "Report abuse" link. The form owner may also show their name and a link to their privacy policy there. It is the form owner's job to tell you who they are and how they use your data.
 
 - **What the Service stores:** the values you entered, the time of submission, your browser's user agent, the referring page, and which optional steps you skipped.
 - **What it does not store:** your IP address. The Service uses your IP address in memory for rate limiting and then discards it. Hosted pages and the embed set no cookies.
-- **Where it goes:** the form owner can see your submission in the dashboard, export it, receive it by email and send it to their own systems through a webhook or an AI agent. What happens to it there is up to the form owner.
+- **Where it goes:** the form owner can see your submission in the dashboard, export it and send it to their own systems through a webhook or an AI agent. Email notifications to the form owner contain form titles and counts, not your answers. What happens to it there is up to the form owner.
 - **Your rights:** contact the form owner to access, correct or delete your submission. If you cannot reach the form owner, write to legal@formhaus.dev with the form link; we will pass your request to the owner and help them respond.
 - **Unclaimed forms:** a form that an AI agent published without an account shows an "Unverified form" banner. It has no owner yet. Its submissions are deleted 7 days after the form was published unless someone claims it. If you want your submission to an unclaimed form deleted earlier, write to legal@formhaus.dev with the form link and we will delete it.
-- **Reporting a form:** if a form looks like phishing or abuse, use the "Report" link on the page or write to legal@formhaus.dev. When you use the Report link, we store a keyed hash of your IP address that changes every day, so we can count distinct reporters without storing your IP address.
+- **Reporting a form:** if a form looks like phishing or abuse, use the "Report abuse" link on the page or write to legal@formhaus.dev. When you use the link, we store your report and a keyed hash of your IP address that changes every day, so we can count distinct reporters without storing your IP address.
 
 ---
 
@@ -58,8 +58,8 @@ The form owner is responsible for your submission. Hosted pages do not show the 
 **We collect automatically:**
 
 - **Session data:** a session cookie on app.formhaus.dev and a keyed hash of the session token on our server.
-- **Security and operations data:** server logs with request paths, status codes, timings and error messages, used for security and debugging. [VERIFY: confirm the application logs do not contain IP addresses or submission values.] IP addresses are used in memory for rate limiting and are not stored.
-- **Website visit data:** formhaus.dev is hosted by Vercel, which processes your IP address and request data in its logs to serve the site. We do not run analytics or tracking on formhaus.dev. [VERIFY: Vercel Web Analytics is off for the project.]
+- **Security and operations data:** application logs with error messages, background job results and timings, used for security and debugging. They do not contain IP addresses or submission values. IP addresses are used in memory for rate limiting and are not stored with your data. The server's firewall and SSH logs record the IP addresses of blocked connections and SSH login attempts.
+- **Website visit data:** formhaus.dev is hosted by Vercel, which processes your IP address and request data in its logs to serve the site. We do not run analytics or tracking on formhaus.dev.
 
 We do not intentionally collect special categories of personal data about account holders.
 
@@ -69,7 +69,7 @@ We do not intentionally collect special categories of personal data about accoun
 
 We use the data in Section 3 to:
 
-- run the Service: sign you in, keep your forms and submissions, send claim links, notifications and webhooks;
+- run the Service: sign you in, keep your forms and submissions, deliver webhooks, and send sign-in, claim and invite links, milestone emails, weekly summaries and alerts. These emails contain form titles and counts, not submission values;
 - enforce plan limits, rate limits and abuse controls;
 - take payments and keep billing records;
 - answer support requests and abuse reports;
@@ -79,16 +79,15 @@ We use the data in Section 3 to:
 
 **We do not sell personal data. We do not use submissions or other customer data to train AI or machine-learning models. We do not show ads or share data for advertising.** The Service does not send submissions to any AI provider. If a form owner lets their own AI agent read submissions, that agent and its provider process them under the owner's agreements.
 
-We do not send marketing email without your consent. [VERIFY: founder decision on product update emails.]
+We send product update emails to account holders. Every product update email has an unsubscribe link, and you can opt out at any time. Service emails, such as sign-in links and notices about your account, are sent regardless.
 
 ---
 
 ## 5. Legal bases (EU and UK GDPR)
 
 - **Contract:** to provide the Service you signed up for, including sign-in, form hosting and billing.
-- **Legitimate interests:** to secure the Service, prevent abuse, handle reports, debug and plan the Service, and serve the website. We balance these against your rights.
+- **Legitimate interests:** to secure the Service, prevent abuse, handle reports, debug and plan the Service, serve the website, and send product update emails to existing customers, which you can opt out of at any time. We balance these against your rights.
 - **Legal obligation:** to keep billing records and respond to lawful requests.
-- **Consent:** for optional email, if we ever send it. You can withdraw consent at any time.
 
 For submissions, the form owner is responsible for the legal basis.
 
@@ -116,7 +115,7 @@ We use no analytics, advertising or cross-site tracking cookies.
 
 ## 8. Where data is stored and international transfers
 
-The Service and its database run on DigitalOcean in Frankfurt, Germany (region fra1). Encrypted backups are stored in DigitalOcean Spaces in the same region. Some sub-processors, such as our email and payment providers, process data in the United States; see the [Sub-processors](./sub-processors.md) page.
+The Service and its database run on DigitalOcean in Frankfurt, Germany (region fra1). Encrypted database backups are stored in DigitalOcean Spaces in the same region, and DigitalOcean keeps daily backup images of the server in the same datacenter. Email is sent from Resend's EU region in Ireland. Some providers, such as our payment provider and website host, process data in the United States; see the [Sub-processors](./sub-processors.md) page.
 
 Fabrique-Futur is a US company, and we access the Service from outside the EU to operate it. Where personal data is transferred from the EEA, UK or Switzerland to a country without an adequacy decision, we rely on the **2021 EU Standard Contractual Clauses** (with the **UK Addendum** for UK transfers), and on the **EU-US Data Privacy Framework** for certified providers as an additional basis. Ask at legal@formhaus.dev for details of these safeguards.
 
@@ -127,26 +126,28 @@ Fabrique-Futur is a US company, and we access the Service from outside the EU to
 | Data | Kept for |
 |---|---|
 | Submissions on an unclaimed form | Deleted with the form 7 days after it was published, unless it is claimed |
-| Submissions on the Free plan | 90 days after submission [VERIFY: the automatic deletion job runs before launch] |
-| Submissions on the Pro plan | Until the form owner deletes them or the account |
+| Submissions on the Free plan | 90 days after submission |
+| Submissions on the Pro and Team plans | Until the form owner deletes them or the account |
+| Submissions after a move from a paid plan to Free | Submissions older than 90 days are deleted 60 days after the change |
 | Forms and their versions | Until the owner deletes them or the account |
 | Account data and API key metadata | For the life of the account |
 | One-time sign-in links | 15 minutes, single use |
 | Sessions | Up to 30 days, or until you sign out |
 | Idempotency records (a hash of a submission, used to answer retries) | 24 hours |
-| Webhook delivery log | The last 100 deliveries per form [VERIFY: confirm the log stores status and timing only, not submission values] |
-| Abuse reports | For the life of the form [VERIFY] |
-| Server logs | [VERIFY: retention period, 30 days proposed] |
+| Webhook delivery log (status code, error type and timing, no submission values) | The last 100 delivery attempts per form |
+| Abuse reports | For the life of the form |
+| Server logs | Up to 90 days |
 | Billing records | Up to 7 years, for tax and accounting |
-| Encrypted backups | A server copy for 7 days and an off-site copy for 30 days |
+| Encrypted database backups | A server copy for 7 days and an off-site copy for 30 days |
+| DigitalOcean server backups | 7 days |
 
-When you delete a form, submissions or your account, we remove the data from the live database at once. Backups that contain it expire within 30 days. Copies held by our email provider expire on its schedule; see the [Sub-processors](./sub-processors.md) page.
+When you delete a form, submissions or your account, we remove the data from the live database at once. Backups that contain it expire within 30 days. Our email provider keeps sent emails for 30 days; see the [Sub-processors](./sub-processors.md) page.
 
 ---
 
 ## 10. Security
 
-The Service uses TLS for all connections, stores data in the EU, encrypts backups before they leave the server, stores only keyed hashes of sign-in tokens, session tokens, API keys and claim tokens, signs webhooks, blocks webhook requests to private networks, and rate-limits public endpoints. Annex II of the [Data Processing Addendum](./dpa.md) describes the measures in full.
+The Service uses TLS for all connections, stores data in the EU, encrypts off-site database backups before they leave the server, stores only keyed hashes of sign-in tokens, session tokens, API keys and claim tokens, signs webhooks, blocks webhook requests to private networks, and rate-limits public endpoints. Annex II of the [Data Processing Addendum](./dpa.md) describes the measures in full.
 
 If a breach affects your personal data, we will notify you and the relevant authorities as the law requires.
 
