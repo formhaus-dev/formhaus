@@ -1,2 +1,15 @@
 packages:
   - 'packages/*'
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@formhaus/*'
+blockExoticSubdeps: true
+strictDepBuilds: true
+allowBuilds:
+  esbuild: true
+trustPolicy: no-downgrade
+trustPolicyExclude:
+  - chokidar@4.0.3
+  - undici-types@6.21.0
+auditConfig:
+  ignoreGhsas: []

@@ -1,5 +1,6 @@
 {
-  "buildCommand": "cd docs && npm install && npx vitepress build",
+  "buildCommand": "pnpm --dir docs run build",
+  "installCommand": "pnpm --dir docs install --frozen-lockfile",
   "outputDirectory": "docs/.vitepress/dist",
   "framework": null,
   "git": {

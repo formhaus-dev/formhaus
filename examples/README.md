@@ -20,7 +20,7 @@ pnpm install
 pnpm dev
 ```
 
-Each example has its own `pnpm-workspace.yaml`, so it resolves `@formhaus/*` from the public npm registry instead of the local packages. The file also allows esbuild's install script, which pnpm 10 and later block by default.
+Each example has its own `pnpm-workspace.yaml` and lockfile, so it resolves `@formhaus/*` from the public npm registry instead of the local packages. The workspace file carries the same install rules as the repo root: a 7-day release age, a build-script allowlist and the trust policy.
 
 ## Form definitions
 
