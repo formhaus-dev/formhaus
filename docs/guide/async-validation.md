@@ -106,7 +106,7 @@ async function handleNext() {
 }
 ```
 
-With `FormRenderer` or `HeadlessFormRenderer`, rejections reach the `onError` callback, or display as a form-level error when it is omitted. You can also return a field or top-level error from `onStepValidate`:
+With `FormRenderer` or `HeadlessFormRenderer`, rejections reach the `onError` callback, or display as a form-level error when it is omitted. With `onError`, the form-level error is not shown. You can also return a field or top-level error from `onStepValidate`:
 
 ```ts
 async function validateStep(stepId, values) {

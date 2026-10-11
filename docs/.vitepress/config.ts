@@ -75,6 +75,7 @@ export default defineConfig({
           { text: 'Conditional fields', link: '/recipes/conditional-fields' },
           { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
           { text: 'Headless engine', link: '/recipes/headless-engine' },
+          { text: 'Svelte 5', link: '/recipes/svelte' },
           { text: 'Figma to React', link: '/recipes/figma-to-react' },
           { text: 'AI agents', link: '/recipes/ai-agents' },
         ]

@@ -109,6 +109,27 @@ export function Signup({ onDone }: { onDone: (values: Record<string, unknown>) =
 
 Rules move from `register` options to `validation`, the `watch` check becomes a `show` condition, and labels, options and error rendering come from the definition. To keep your own inputs, map them with the `components` prop.
 
+### Rule map
+
+| react-hook-form | zod | Formhaus |
+|---|---|---|
+| `required: 'Enter your name'` | `z.string().min(1, 'Enter your name')` | `"required": "Enter your name"` |
+| `minLength`, `maxLength` | `.min(n)`, `.max(n)` on a string | `"minLength"`, `"maxLength"` with `minLengthMessage`, `maxLengthMessage` |
+| `min`, `max` | `z.coerce.number().min(n)` | `"type": "number"` with `"min"`, `"max"` |
+| `pattern: { value: /^\d{5}$/ }` | `.regex(/^\d{5}$/)` | `"pattern": "^\\d{5}$"`, a string. Not anchored: keep `^` and `$`. |
+| `pattern` for email | `.email()` | `"type": "email"` plus a `pattern`. The browser does not check the format. |
+| Value from a list | `z.enum([...])` | `options` on `select` or `radio` |
+| `validate: (v) => v === true` on a checkbox | `z.literal(true)` | `"required": "Accept the terms"` on a `checkbox` |
+| At least one item | `z.array(z.string()).min(1)` | `"required": true` on a `multiselect`. `minLength` alone skips an empty array. |
+| No rule | `.optional()` | Leave out `required` |
+| `validate: (v, all) => v === all.password` | `.refine((d) => d.confirm === d.password, { path: ['confirm'] })` | `"matchField": "password"` plus `"required"`. `matchField` passes when the confirmation is empty. |
+| Other `validate` functions | `.refine(fn)`, `.superRefine(fn)` | `"validator": "name"`, and a `name` function in the `validators` prop that takes `(value, values)` and returns a message or `null` |
+| Async `validate` | `.refine(async fn)` | `onStepValidate` on the step. See [Async step validation](/guide/async-validation). |
+| `watch` and conditional render, `shouldUnregister` | `z.discriminatedUnion` | `show` or `showAny`. Hidden fields are not validated or submitted. |
+| Server-side `schema.parse(body)` | `schema.parse(body)` | `validateSubmission(definition, body.values)` from `@formhaus/core/server` |
+
+Rules run on Continue and Submit, not on change or blur. A field's error clears when its value changes.
+
 ## Related
 
 - [Compare overview](/compare/)
