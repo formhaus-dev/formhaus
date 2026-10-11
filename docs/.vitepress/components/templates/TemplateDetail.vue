@@ -4,6 +4,7 @@ import { useData, withBase } from 'vitepress';
 import { formatJson, tokenize } from '../landing/json-format';
 import LucideIcon from '../landing/LucideIcon.vue';
 import { categoryLabel, cloudUrl, counts, type TemplatePage } from './catalog';
+import { templatePrompt } from './prompt';
 import './templates.css';
 import './detail.css';
 
@@ -13,15 +14,18 @@ const { params } = useData();
 const template = computed(() => params.value as TemplatePage);
 const source = computed(() => formatJson(template.value.definition));
 const lines = computed(() => tokenize(source.value));
-const copied = ref(false);
+const copied = ref<'' | 'JSON' | 'Prompt'>('');
+let timer: ReturnType<typeof setTimeout> | undefined;
 
-async function copy() {
+async function copy(kind: 'JSON' | 'Prompt') {
+  const text = kind === 'JSON' ? source.value : templatePrompt(template.value.title, template.value.slug);
   try {
-    await navigator.clipboard.writeText(source.value);
-    copied.value = true;
-    setTimeout(() => { copied.value = false; }, 2000);
+    await navigator.clipboard.writeText(text);
+    copied.value = kind;
+    clearTimeout(timer);
+    timer = setTimeout(() => { copied.value = ''; }, 2000);
   } catch {
-    copied.value = false;
+    copied.value = '';
   }
 }
 </script>
@@ -39,10 +43,13 @@ async function copy() {
       <a class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)">
         Use this template <LucideIcon name="arrow-right" />
       </a>
-      <button type="button" class="tpl-button tpl-button--secondary" @click="copy">
-        <LucideIcon :name="copied ? 'check' : 'copy'" /> {{ copied ? 'Copied' : 'Copy JSON' }}
+      <button type="button" class="tpl-button tpl-button--secondary" @click="copy('Prompt')">
+        <LucideIcon :name="copied === 'Prompt' ? 'check' : 'bot'" /> {{ copied === 'Prompt' ? 'Copied' : 'Copy prompt' }}
       </button>
-      <span class="tpl-sr-only" role="status">{{ copied ? 'JSON copied' : '' }}</span>
+      <button type="button" class="tpl-button tpl-button--secondary" @click="copy('JSON')">
+        <LucideIcon :name="copied === 'JSON' ? 'check' : 'copy'" /> {{ copied === 'JSON' ? 'Copied' : 'Copy JSON' }}
+      </button>
+      <span class="tpl-sr-only" role="status">{{ copied ? `${copied} copied` : '' }}</span>
     </div>
     <p class="tpl-detail__hint">Opens a copy in Formhaus Cloud, where you can edit and publish it.</p>
 
