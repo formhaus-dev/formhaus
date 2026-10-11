@@ -6,6 +6,12 @@
   margin-top: auto;
 }
 
+@media (max-width: 767px) {
+  .demo-form .fh-form-actions {
+    margin-top: 0;
+  }
+}
+
 .demo-form .fh-form-actions__button,
 .demo-form .demo-form__restart {
   height: 42px;

@@ -3,15 +3,13 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, reactive, r
 import { validateDefinition, type FormDefinition } from '@formhaus/core';
 import seed from '../../../recipes/definitions/onboarding.json';
 import LandingBuilder from './LandingBuilder.vue';
-import LandingFlow from './LandingFlow.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
 import { useHistory } from './builder-history';
 import { toDefinition } from './builder-model';
 import { fromDefinition } from './builder-parse';
-import { buildGraph, nextStep } from './flow-graph';
-import { flowState } from './flow-state';
 import { formatJson } from './json-format';
+import { nextStep } from './route';
 
 const LandingDemoForm = defineAsyncComponent(() => import('./LandingDemoForm.vue'));
 
@@ -30,7 +28,6 @@ const problems = computed(() => safeValidate(definition.value));
 const issues = computed(() => problems.value.length);
 const liveVersion = ref(0);
 const live = shallowRef(definition.value);
-const graph = computed(() => buildGraph(live.value));
 const tab = ref<Tab>('write');
 onMounted(() => { if (window.matchMedia('(max-width: 767px)').matches) tab.value = 'preview'; });
 const edited = ref(false);
@@ -68,7 +65,6 @@ watch(definition, (next) => {
   }, 120);
 });
 
-const state = computed(() => flowState({ definition: live.value, graph: graph.value, history: history_.value, values: values.value, done: done.value }));
 const progress = computed(() => {
   const route: string[] = [];
   for (let id: string | undefined = first(); id && !route.includes(id); id = nextStep(live.value, id, values.value)) route.push(id);
@@ -145,7 +141,7 @@ function onTabKey(event: KeyboardEvent) {
   <section class="lp-section" aria-labelledby="demo-title">
     <p class="lp-eyebrow">Live demo</p>
     <h2 id="demo-title" class="lp-title">Write it like a doc</h2>
-    <p class="lp-lead">Type the questions. The form, the flow and the JSON follow.</p>
+    <p class="lp-lead">Type the questions. The form and the JSON follow.</p>
     <div class="sandbox" :data-tab="tab" @keydown="onSandboxKey">
       <div class="sandbox__bar sandbox__bar--left">
         <span class="sandbox__dots" aria-hidden="true"><i /><i /><i /></span>
@@ -184,7 +180,6 @@ function onTabKey(event: KeyboardEvent) {
       <div id="sandbox-json" class="sandbox__pane sandbox__pane--json" role="tabpanel" aria-labelledby="sandbox-tab-json">
         <LandingJson :source="source" :error="jsonError" :active="tab === 'json'" @change="onJson" />
       </div>
-      <div class="sandbox__graph"><LandingFlow :graph="graph" :state="state" /></div>
       <div id="sandbox-preview" class="sandbox__pane sandbox__pane--preview" role="tabpanel" aria-labelledby="sandbox-tab-preview">
         <div class="sandbox__preview">
           <ClientOnly>
