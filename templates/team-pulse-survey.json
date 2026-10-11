@@ -1,102 +1,98 @@
 {
   "slug": "team-pulse-survey",
   "title": "Team pulse survey",
-  "summary": "A short anonymous check-in on workload, clarity, support and morale.",
+  "summary": "A one-minute anonymous check-in: eNPS, workload, clarity, manager support and recognition.",
   "category": "survey",
   "definition": {
     "id": "team-pulse-survey",
     "title": "Team pulse",
+    "description": "Your answers are anonymous. It takes about a minute.",
     "submit": { "label": "Send answers" },
-    "steps": [
+    "fields": [
       {
-        "id": "work",
-        "title": "Your work",
-        "description": "Your answers are anonymous.",
-        "fields": [
-          {
-            "key": "workload",
-            "type": "radio",
-            "label": "How is your workload?",
-            "options": [
-              { "value": "too-much", "label": "Far too much" },
-              { "value": "bit-much", "label": "A bit too much" },
-              { "value": "right", "label": "About right" },
-              { "value": "room", "label": "I could take on more" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "clarity",
-            "type": "radio",
-            "label": "I know what is expected of me",
-            "options": [
-              { "value": "1", "label": "Strongly disagree" },
-              { "value": "2", "label": "Disagree" },
-              { "value": "3", "label": "Neutral" },
-              { "value": "4", "label": "Agree" },
-              { "value": "5", "label": "Strongly agree" }
-            ],
-            "validation": { "required": true }
-          }
-        ]
+        "key": "enps",
+        "type": "radio",
+        "label": "How likely are you to recommend this team as a place to work?",
+        "layout": "inline",
+        "helperText": "0 means not at all likely, 10 means extremely likely.",
+        "options": [
+          { "value": "0", "label": "0" },
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" },
+          { "value": "5", "label": "5" },
+          { "value": "6", "label": "6" },
+          { "value": "7", "label": "7" },
+          { "value": "8", "label": "8" },
+          { "value": "9", "label": "9" },
+          { "value": "10", "label": "10" }
+        ],
+        "validation": { "required": true }
       },
       {
-        "id": "team",
-        "title": "Your team",
-        "fields": [
-          {
-            "key": "support",
-            "type": "radio",
-            "label": "I get the support I need from my manager",
-            "options": [
-              { "value": "1", "label": "Strongly disagree" },
-              { "value": "2", "label": "Disagree" },
-              { "value": "3", "label": "Neutral" },
-              { "value": "4", "label": "Agree" },
-              { "value": "5", "label": "Strongly agree" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "recognition",
-            "type": "radio",
-            "label": "Good work gets recognized here",
-            "options": [
-              { "value": "1", "label": "Strongly disagree" },
-              { "value": "2", "label": "Disagree" },
-              { "value": "3", "label": "Neutral" },
-              { "value": "4", "label": "Agree" },
-              { "value": "5", "label": "Strongly agree" }
-            ],
-            "validation": { "required": true }
-          }
-        ]
+        "key": "workload",
+        "type": "radio",
+        "label": "How is your workload?",
+        "options": [
+          { "value": "too-much", "label": "Far too much" },
+          { "value": "bit-much", "label": "A bit too much" },
+          { "value": "right", "label": "About right" },
+          { "value": "room", "label": "I could take on more" }
+        ],
+        "validation": { "required": true }
       },
       {
-        "id": "overall",
-        "title": "Overall",
-        "fields": [
-          {
-            "key": "mood",
-            "type": "radio",
-            "label": "How do you feel about work this month?",
-            "layout": "inline",
-            "options": [
-              { "value": "1", "label": "Bad" },
-              { "value": "2", "label": "Not great" },
-              { "value": "3", "label": "Okay" },
-              { "value": "4", "label": "Good" },
-              { "value": "5", "label": "Great" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "oneThing",
-            "type": "textarea",
-            "label": "One thing that would make next month better",
-            "rows": 3
-          }
-        ]
+        "key": "clarity",
+        "type": "radio",
+        "label": "I know what is expected of me",
+        "layout": "inline",
+        "helperText": "1 means strongly disagree, 5 means strongly agree.",
+        "options": [
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" },
+          { "value": "5", "label": "5" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "support",
+        "type": "radio",
+        "label": "I get the support I need from my manager",
+        "layout": "inline",
+        "helperText": "1 means strongly disagree, 5 means strongly agree.",
+        "options": [
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" },
+          { "value": "5", "label": "5" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "recognition",
+        "type": "radio",
+        "label": "Good work gets recognized here",
+        "layout": "inline",
+        "helperText": "1 means strongly disagree, 5 means strongly agree.",
+        "options": [
+          { "value": "1", "label": "1" },
+          { "value": "2", "label": "2" },
+          { "value": "3", "label": "3" },
+          { "value": "4", "label": "4" },
+          { "value": "5", "label": "5" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "oneThing",
+        "type": "textarea",
+        "label": "One thing that would make next month better",
+        "rows": 3,
+        "helperText": "Leave out names and details that could identify you."
       }
     ]
   }
