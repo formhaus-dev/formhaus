@@ -89,3 +89,7 @@ Paste the same JSON into the plugin.
 </LandingAgents>
 
 <LandingRecipes />
+
+<section class="lp-section" aria-label="Formhaus Cloud">
+  <p class="lp-lead">Formhaus Cloud hosts the submission endpoint for a definition. <a class="lp-more" href="/cloud">Formhaus Cloud</a></p>
+</section>
