@@ -63,7 +63,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `accept` | string | Accepted file types for `file`. |
 | `rows` | number | Row count for `textarea`. |
 | `mask` | string | Input mask. Built-in renderers use it as the placeholder when `placeholder` is absent. |
-| `inputMode` | `text`, `numeric`, `tel`, `email` | Virtual keyboard hint. |
+| `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint. |
 
 Field keys SHOULD be unique across the whole definition. Fields with the same key share one value. `validateDefinition()` warns about duplicates.
 
@@ -163,7 +163,7 @@ Core evaluates one field as follows and returns the first error:
 4. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 5. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
-Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur.
+Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur. When Submit fails validation, the engine moves to the first step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
 
 ## Steps
 
@@ -204,7 +204,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`. Built-in renderers evaluate `disabled` only on `submit`, against `engine.values`, not the active projection. Values of fields off the active path still count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`. Built-in renderers evaluate `disabled` only on `submit`, against `engine.values`, not the active projection. Values of fields off the active path still count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 

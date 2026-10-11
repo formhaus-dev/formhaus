@@ -6,10 +6,12 @@ import type { FormRendererProps } from '../types';
 export function useRendererActions(engine: FormEngine, props: FormRendererProps) {
   const { loading, onError, onFieldChange, onSubmit, onAnalyticsEvent } = props;
   const [failure, setFailure] = useState<{ engine: FormEngine; message: string } | null>(null);
+  const [invalidAttempts, setInvalidAttempts] = useState(0);
   const run = useCallback(async (action: () => Promise<boolean>) => {
     if (loading) return;
     setFailure(null);
-    try { await action(); }
+    const errors = engine.errors;
+    try { if (!(await action()) && engine.errors !== errors && Object.keys(engine.errors).length > 0) setInvalidAttempts((count) => count + 1); }
     catch (error) {
       if (onError) onError(error);
       else setFailure({ engine, message: error instanceof Error ? error.message : 'Form action failed' });
@@ -51,5 +53,5 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
     return send(values, skippedSteps);
   }))), [run, engine, send, report, onAnalyticsEvent]);
   const actionError = failure?.engine === engine ? failure.message : null;
-  return { next, prev, skip, update, commit, submit, actionError };
+  return { next, prev, skip, update, commit, submit, actionError, invalidAttempts };
 }

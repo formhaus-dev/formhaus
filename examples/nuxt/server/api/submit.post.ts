@@ -1,21 +1,15 @@
-import { FormEngine } from '@formhaus/core';
+import { validateSubmission } from '@formhaus/core/server';
 import { definition } from '~~/shared/definition';
-import { parseValues } from '../parse-values';
-import { serverValidators } from '../validators';
+import { runServerValidators } from '../validators';
 
 export default defineEventHandler(async (event) => {
-  const values = parseValues(await readBody(event).catch(() => null));
-  if (!values) {
-    setResponseStatus(event, 400);
-    return { message: 'Expected an object of string, number or boolean values' };
-  }
-
-  const engine = new FormEngine(definition, values, { validators: serverValidators });
-  const errors = engine.validate();
+  const body = await readBody(event).catch(() => null);
+  const { values, errors } = validateSubmission(definition, body?.values, { skippedSteps: body?.skippedSteps });
+  runServerValidators(values, errors);
   if (Object.keys(errors).length > 0) {
     setResponseStatus(event, 422);
     return { errors };
   }
 
-  return { values: engine.getSubmitValues() };
+  return { values };
 });
