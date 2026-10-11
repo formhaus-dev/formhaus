@@ -1,0 +1,119 @@
+{
+  "slug": "beta-tester-application",
+  "title": "Beta tester application",
+  "summary": "Picks early users by role, platform, usage and willingness to give feedback.",
+  "category": "application",
+  "definition": {
+    "id": "beta-tester-application",
+    "title": "Join the beta",
+    "submit": { "label": "Apply" },
+    "steps": [
+      {
+        "id": "you",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "role",
+            "type": "select",
+            "label": "Your role",
+            "options": [
+              { "value": "developer", "label": "Developer" },
+              { "value": "designer", "label": "Designer" },
+              { "value": "product", "label": "Product manager" },
+              { "value": "founder", "label": "Founder" },
+              { "value": "marketing", "label": "Marketing" },
+              { "value": "student", "label": "Student" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "companySize",
+            "type": "radio",
+            "label": "Company size",
+            "options": [
+              { "value": "solo", "label": "Just me" },
+              { "value": "2-10", "label": "2 to 10" },
+              { "value": "11-50", "label": "11 to 50" },
+              { "value": "51-plus", "label": "More than 50" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "platforms",
+            "type": "multiselect",
+            "label": "Which platforms do you use?",
+            "layout": "inline",
+            "options": [
+              { "value": "macos", "label": "macOS" },
+              { "value": "windows", "label": "Windows" },
+              { "value": "linux", "label": "Linux" },
+              { "value": "ios", "label": "iOS" },
+              { "value": "android", "label": "Android" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "usage",
+            "type": "radio",
+            "label": "How often would you use it?",
+            "options": [
+              { "value": "daily", "label": "Daily" },
+              { "value": "few-times-week", "label": "A few times a week" },
+              { "value": "weekly", "label": "About once a week" },
+              { "value": "occasionally", "label": "Less often" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "fit",
+        "title": "Your use case",
+        "fields": [
+          {
+            "key": "problem",
+            "type": "textarea",
+            "label": "What problem are you hoping it will solve?",
+            "rows": 4,
+            "validation": { "required": true }
+          },
+          { "key": "currentTool", "type": "text", "label": "What do you use for this today?" },
+          {
+            "key": "feedbackCall",
+            "type": "radio",
+            "label": "Open to a 20-minute feedback call?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "confidential",
+            "type": "checkbox",
+            "label": "I’ll keep unreleased features confidential",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,124 @@
+{
+  "slug": "photography-inquiry",
+  "title": "Photography booking inquiry",
+  "summary": "Shoot type, date, location and coverage, so you can quote before the first call.",
+  "category": "lead-gen",
+  "definition": {
+    "id": "photography-inquiry",
+    "title": "Book a shoot",
+    "submit": { "label": "Check availability" },
+    "steps": [
+      {
+        "id": "shoot",
+        "title": "The shoot",
+        "fields": [
+          {
+            "key": "shootType",
+            "type": "radio",
+            "label": "What are we photographing?",
+            "options": [
+              { "value": "wedding", "label": "Wedding" },
+              { "value": "couple", "label": "Engagement or couple" },
+              { "value": "family", "label": "Family" },
+              { "value": "portrait", "label": "Portraits or headshots" },
+              { "value": "event", "label": "Event" },
+              { "value": "commercial", "label": "Product or commercial" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "shootTypeOther",
+            "type": "text",
+            "label": "What kind of shoot?",
+            "show": [{ "field": "shootType", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "date",
+            "type": "date",
+            "label": "Date",
+            "helperText": "Leave empty if you don’t have a date yet."
+          },
+          {
+            "key": "location",
+            "type": "text",
+            "label": "Location",
+            "placeholder": "City or venue",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "details",
+        "title": "Details",
+        "fields": [
+          {
+            "key": "coverage",
+            "type": "radio",
+            "label": "How much coverage do you need?",
+            "options": [
+              { "value": "under-2h", "label": "Up to 2 hours" },
+              { "value": "2-4h", "label": "2 to 4 hours" },
+              { "value": "4-8h", "label": "4 to 8 hours" },
+              { "value": "8h-plus", "label": "More than 8 hours" },
+              { "value": "not-sure", "label": "Not sure yet" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "budget",
+            "type": "radio",
+            "label": "Budget",
+            "options": [
+              { "value": "under-1k", "label": "Under $1,000" },
+              { "value": "1k-2500", "label": "$1,000 to $2,500" },
+              { "value": "2500-5k", "label": "$2,500 to $5,000" },
+              { "value": "5k-plus", "label": "More than $5,000" },
+              { "value": "not-sure", "label": "Not sure yet" }
+            ]
+          },
+          {
+            "key": "notes",
+            "type": "textarea",
+            "label": "Tell us a bit more",
+            "rows": 4,
+            "placeholder": "Style you like, number of people, must-have shots…"
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "phone", "type": "phone", "label": "Phone", "inputMode": "tel" },
+          {
+            "key": "referral",
+            "type": "select",
+            "label": "How did you find us?",
+            "options": [
+              { "value": "instagram", "label": "Instagram" },
+              { "value": "search", "label": "Google or other search" },
+              { "value": "friend", "label": "A friend or family member" },
+              { "value": "venue", "label": "A venue or planner" },
+              { "value": "other", "label": "Other" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

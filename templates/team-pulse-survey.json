@@ -1,0 +1,103 @@
+{
+  "slug": "team-pulse-survey",
+  "title": "Team pulse survey",
+  "summary": "A short anonymous check-in on workload, clarity, support and morale.",
+  "category": "survey",
+  "definition": {
+    "id": "team-pulse-survey",
+    "title": "Team pulse",
+    "submit": { "label": "Send answers" },
+    "steps": [
+      {
+        "id": "work",
+        "title": "Your work",
+        "description": "Your answers are anonymous.",
+        "fields": [
+          {
+            "key": "workload",
+            "type": "radio",
+            "label": "How is your workload?",
+            "options": [
+              { "value": "too-much", "label": "Far too much" },
+              { "value": "bit-much", "label": "A bit too much" },
+              { "value": "right", "label": "About right" },
+              { "value": "room", "label": "I could take on more" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "clarity",
+            "type": "radio",
+            "label": "I know what is expected of me",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "team",
+        "title": "Your team",
+        "fields": [
+          {
+            "key": "support",
+            "type": "radio",
+            "label": "I get the support I need from my manager",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "recognition",
+            "type": "radio",
+            "label": "Good work gets recognized here",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "overall",
+        "title": "Overall",
+        "fields": [
+          {
+            "key": "mood",
+            "type": "radio",
+            "label": "How do you feel about work this month?",
+            "layout": "inline",
+            "options": [
+              { "value": "1", "label": "Bad" },
+              { "value": "2", "label": "Not great" },
+              { "value": "3", "label": "Okay" },
+              { "value": "4", "label": "Good" },
+              { "value": "5", "label": "Great" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "oneThing",
+            "type": "textarea",
+            "label": "One thing that would make next month better",
+            "rows": 3
+          }
+        ]
+      }
+    ]
+  }
+}

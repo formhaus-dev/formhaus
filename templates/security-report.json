@@ -1,0 +1,126 @@
+{
+  "slug": "security-report",
+  "title": "Security vulnerability report",
+  "summary": "Responsible disclosure intake: affected asset, type, impact, reproduction steps and credit.",
+  "category": "operations",
+  "definition": {
+    "id": "security-report",
+    "title": "Report a vulnerability",
+    "submit": { "label": "Send report" },
+    "steps": [
+      {
+        "id": "issue",
+        "title": "The vulnerability",
+        "fields": [
+          {
+            "key": "asset",
+            "type": "text",
+            "label": "Affected URL, app or component",
+            "validation": { "required": true }
+          },
+          {
+            "key": "type",
+            "type": "select",
+            "label": "Type",
+            "options": [
+              { "value": "xss", "label": "Cross-site scripting" },
+              { "value": "rce", "label": "Remote code execution" },
+              { "value": "injection", "label": "SQL or command injection" },
+              { "value": "csrf", "label": "Cross-site request forgery" },
+              { "value": "auth", "label": "Authentication or session" },
+              { "value": "access", "label": "Broken access control" },
+              { "value": "exposure", "label": "Sensitive data exposure" },
+              { "value": "ssrf", "label": "Server-side request forgery" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "typeOther",
+            "type": "text",
+            "label": "What kind of issue?",
+            "show": [{ "field": "type", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "severity",
+            "type": "radio",
+            "label": "Your severity estimate",
+            "layout": "inline",
+            "options": [
+              { "value": "critical", "label": "Critical" },
+              { "value": "high", "label": "High" },
+              { "value": "medium", "label": "Medium" },
+              { "value": "low", "label": "Low" },
+              { "value": "unsure", "label": "Not sure" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "details",
+        "title": "Details",
+        "fields": [
+          {
+            "key": "steps",
+            "type": "textarea",
+            "label": "Steps to reproduce",
+            "rows": 5,
+            "validation": { "required": true }
+          },
+          {
+            "key": "impact",
+            "type": "textarea",
+            "label": "What could an attacker do with it?",
+            "rows": 3,
+            "validation": { "required": true }
+          },
+          {
+            "key": "poc",
+            "type": "text",
+            "label": "Link to a proof of concept",
+            "placeholder": "https://",
+            "helperText": "Use a private link. Don’t publish details yet."
+          }
+        ]
+      },
+      {
+        "id": "researcher",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Name or handle",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "credit",
+            "type": "radio",
+            "label": "Do you want public credit once it’s fixed?",
+            "layout": "inline",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No, keep me anonymous" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "policy",
+            "type": "checkbox",
+            "label": "I won’t access other users’ data and will keep this private until it’s fixed",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

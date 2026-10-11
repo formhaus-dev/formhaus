@@ -1,0 +1,63 @@
+{
+  "slug": "support-satisfaction-survey",
+  "title": "Support satisfaction survey",
+  "summary": "CSAT and customer effort after a support conversation, with a follow-up when it went badly.",
+  "category": "feedback",
+  "definition": {
+    "id": "support-satisfaction-survey",
+    "title": "How did we do?",
+    "submit": { "label": "Send feedback" },
+    "fields": [
+      {
+        "key": "csat",
+        "type": "radio",
+        "label": "How satisfied are you with the help you got?",
+        "options": [
+          { "value": "1", "label": "Very dissatisfied" },
+          { "value": "2", "label": "Dissatisfied" },
+          { "value": "3", "label": "Neutral" },
+          { "value": "4", "label": "Satisfied" },
+          { "value": "5", "label": "Very satisfied" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "resolved",
+        "type": "radio",
+        "label": "Was your issue resolved?",
+        "layout": "inline",
+        "options": [
+          { "value": "yes", "label": "Yes" },
+          { "value": "partly", "label": "Partly" },
+          { "value": "no", "label": "No" }
+        ],
+        "validation": { "required": true }
+      },
+      {
+        "key": "effort",
+        "type": "radio",
+        "label": "We made it easy to get your issue handled",
+        "helperText": "How much do you agree?",
+        "options": [
+          { "value": "1", "label": "Strongly disagree" },
+          { "value": "2", "label": "Disagree" },
+          { "value": "3", "label": "Somewhat disagree" },
+          { "value": "4", "label": "Neither agree nor disagree" },
+          { "value": "5", "label": "Somewhat agree" },
+          { "value": "6", "label": "Agree" },
+          { "value": "7", "label": "Strongly agree" }
+        ]
+      },
+      {
+        "key": "improve",
+        "type": "textarea",
+        "label": "What could we have done better?",
+        "rows": 3,
+        "showAny": [
+          { "field": "csat", "in": ["1", "2", "3"] },
+          { "field": "resolved", "in": ["partly", "no"] }
+        ]
+      }
+    ]
+  }
+}

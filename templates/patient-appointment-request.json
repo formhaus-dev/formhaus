@@ -1,0 +1,157 @@
+{
+  "slug": "patient-appointment-request",
+  "title": "New patient appointment request",
+  "summary": "First contact for a clinic: visit type, preferred times and contact details. No medical history.",
+  "category": "intake",
+  "definition": {
+    "id": "patient-appointment-request",
+    "title": "Request an appointment",
+    "submit": { "label": "Request appointment" },
+    "steps": [
+      {
+        "id": "visit",
+        "title": "Your visit",
+        "description": "For a medical emergency, call your local emergency number instead.",
+        "fields": [
+          {
+            "key": "patientIs",
+            "type": "radio",
+            "label": "Who is the appointment for?",
+            "options": [
+              { "value": "me", "label": "Me" },
+              { "value": "child", "label": "My child" },
+              { "value": "someone-else", "label": "Someone I care for" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "visitType",
+            "type": "radio",
+            "label": "Type of visit",
+            "options": [
+              { "value": "check-up", "label": "General check-up" },
+              { "value": "concern", "label": "A specific concern" },
+              { "value": "second-opinion", "label": "Second opinion" },
+              { "value": "not-sure", "label": "Not sure" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "reason",
+            "type": "text",
+            "label": "In a few words, what is the visit for?",
+            "helperText": "Please don’t include medical details. We’ll ask at the appointment.",
+            "validation": { "maxLength": 200 }
+          }
+        ]
+      },
+      {
+        "id": "timing",
+        "title": "Timing and payment",
+        "fields": [
+          {
+            "key": "days",
+            "type": "multiselect",
+            "label": "Which days work for you?",
+            "layout": "inline",
+            "options": [
+              { "value": "mon", "label": "Mon" },
+              { "value": "tue", "label": "Tue" },
+              { "value": "wed", "label": "Wed" },
+              { "value": "thu", "label": "Thu" },
+              { "value": "fri", "label": "Fri" },
+              { "value": "sat", "label": "Sat" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "timeOfDay",
+            "type": "radio",
+            "label": "Preferred time",
+            "layout": "inline",
+            "options": [
+              { "value": "morning", "label": "Morning" },
+              { "value": "afternoon", "label": "Afternoon" },
+              { "value": "any", "label": "Any time" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "payment",
+            "type": "radio",
+            "label": "How will you pay?",
+            "options": [
+              { "value": "insurance", "label": "Insurance" },
+              { "value": "self-pay", "label": "Self-pay" },
+              { "value": "not-sure", "label": "Not sure yet" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "insurer",
+            "type": "text",
+            "label": "Insurance provider",
+            "show": [{ "field": "payment", "eq": "insurance" }]
+          }
+        ]
+      },
+      {
+        "id": "patient",
+        "title": "Patient",
+        "fields": [
+          {
+            "key": "firstName",
+            "type": "text",
+            "label": "Patient’s first name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "lastName",
+            "type": "text",
+            "label": "Patient’s last name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "dateOfBirth",
+            "type": "date",
+            "label": "Patient’s date of birth",
+            "validation": { "required": true }
+          },
+          {
+            "key": "contactName",
+            "type": "text",
+            "label": "Your name",
+            "validation": { "required": true },
+            "show": [{ "field": "patientIs", "in": ["child", "someone-else"] }]
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Contact details",
+        "fields": [
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "consent",
+            "type": "checkbox",
+            "label": "You can contact me by phone or email about this appointment",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

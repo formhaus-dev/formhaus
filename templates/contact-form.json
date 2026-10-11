@@ -1,0 +1,40 @@
+{
+  "slug": "contact-form",
+  "title": "Contact form",
+  "summary": "Name, email, topic and message. The form almost every website needs.",
+  "category": "lead-gen",
+  "definition": {
+    "id": "contact-form",
+    "title": "Contact us",
+    "submit": { "label": "Send message" },
+    "fields": [
+      { "key": "name", "type": "text", "label": "Name", "validation": { "required": true } },
+      {
+        "key": "email",
+        "type": "email",
+        "label": "Email",
+        "inputMode": "email",
+        "validation": { "required": true }
+      },
+      {
+        "key": "topic",
+        "type": "select",
+        "label": "Topic",
+        "options": [
+          { "value": "question", "label": "General question" },
+          { "value": "sales", "label": "Sales" },
+          { "value": "support", "label": "Support" },
+          { "value": "press", "label": "Press and media" },
+          { "value": "other", "label": "Other" }
+        ]
+      },
+      {
+        "key": "message",
+        "type": "textarea",
+        "label": "Message",
+        "rows": 5,
+        "validation": { "required": true, "maxLength": 2000 }
+      }
+    ]
+  }
+}

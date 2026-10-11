@@ -1,0 +1,138 @@
+{
+  "slug": "home-repair-quote",
+  "title": "Home repair quote",
+  "summary": "For trades and home services. The job, the property and the timing first, then how to reach the customer.",
+  "category": "lead-gen",
+  "definition": {
+    "id": "home-repair-quote",
+    "title": "Get a quote",
+    "submit": { "label": "Request quote" },
+    "steps": [
+      {
+        "id": "job",
+        "title": "The job",
+        "fields": [
+          {
+            "key": "service",
+            "type": "select",
+            "label": "Type of work",
+            "options": [
+              { "value": "plumbing", "label": "Plumbing" },
+              { "value": "electrical", "label": "Electrical" },
+              { "value": "carpentry", "label": "Carpentry" },
+              { "value": "painting", "label": "Painting and decorating" },
+              { "value": "roofing", "label": "Roofing" },
+              { "value": "heating-cooling", "label": "Heating and cooling" },
+              { "value": "handyman", "label": "General repairs" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "serviceOther",
+            "type": "text",
+            "label": "What kind of work?",
+            "show": [{ "field": "service", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "description",
+            "type": "textarea",
+            "label": "Describe the job",
+            "rows": 4,
+            "placeholder": "What needs fixing or installing? Add sizes or brands if you know them.",
+            "validation": { "required": true }
+          },
+          {
+            "key": "urgency",
+            "type": "radio",
+            "label": "How soon do you need it done?",
+            "options": [
+              { "value": "emergency", "label": "It’s an emergency" },
+              { "value": "this-week", "label": "Within a week" },
+              { "value": "this-month", "label": "Within a month" },
+              { "value": "comparing", "label": "No rush, comparing quotes" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "property",
+        "title": "The property",
+        "fields": [
+          {
+            "key": "propertyType",
+            "type": "radio",
+            "label": "Property type",
+            "options": [
+              { "value": "house", "label": "House" },
+              { "value": "apartment", "label": "Apartment or flat" },
+              { "value": "commercial", "label": "Commercial premises" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "ownership",
+            "type": "radio",
+            "label": "Do you own the property?",
+            "options": [
+              { "value": "own", "label": "Yes, I own it" },
+              { "value": "rent", "label": "No, I rent it" },
+              { "value": "manage", "label": "I manage it for the owner" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "postcode",
+            "type": "text",
+            "label": "Postcode or ZIP code",
+            "validation": { "required": true }
+          },
+          {
+            "key": "access",
+            "type": "text",
+            "label": "Anything we should know about access or parking?"
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "contactBy",
+            "type": "radio",
+            "label": "Best way to reach you",
+            "layout": "inline",
+            "options": [
+              { "value": "call", "label": "Phone call" },
+              { "value": "text", "label": "Text message" },
+              { "value": "email", "label": "Email" }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

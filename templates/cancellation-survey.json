@@ -1,0 +1,85 @@
+{
+  "slug": "cancellation-survey",
+  "title": "Cancellation survey",
+  "summary": "Why customers leave, with follow-ups for price, missing features and switching to a competitor.",
+  "category": "feedback",
+  "definition": {
+    "id": "cancellation-survey",
+    "title": "Before you go",
+    "submit": { "label": "Send and cancel" },
+    "steps": [
+      {
+        "id": "reason",
+        "title": "Why you’re leaving",
+        "fields": [
+          {
+            "key": "reason",
+            "type": "radio",
+            "label": "What’s the main reason you’re canceling?",
+            "options": [
+              { "value": "price", "label": "It’s too expensive" },
+              { "value": "missing-feature", "label": "It’s missing something I need" },
+              { "value": "hard-to-use", "label": "It’s hard to use" },
+              { "value": "quality", "label": "Bugs or reliability problems" },
+              { "value": "support", "label": "I wasn’t happy with support" },
+              { "value": "switching", "label": "I’m switching to another product" },
+              { "value": "no-need", "label": "I don’t need it anymore" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "feature",
+            "type": "text",
+            "label": "What was missing?",
+            "show": [{ "field": "reason", "eq": "missing-feature" }]
+          },
+          {
+            "key": "competitor",
+            "type": "text",
+            "label": "Which product are you moving to?",
+            "show": [{ "field": "reason", "eq": "switching" }]
+          },
+          {
+            "key": "fairPrice",
+            "type": "text",
+            "label": "What price would have felt fair?",
+            "show": [{ "field": "reason", "eq": "price" }]
+          },
+          {
+            "key": "reasonOther",
+            "type": "text",
+            "label": "What’s the reason?",
+            "show": [{ "field": "reason", "eq": "other" }],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "next",
+        "title": "One more thing",
+        "fields": [
+          {
+            "key": "return",
+            "type": "radio",
+            "label": "Would you consider coming back?",
+            "layout": "inline",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "maybe", "label": "Maybe" },
+              { "value": "no", "label": "No" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "anything",
+            "type": "textarea",
+            "label": "Anything else we should know?",
+            "rows": 3
+          },
+          { "key": "followUp", "type": "checkbox", "label": "You can email me about my answers" }
+        ]
+      }
+    ]
+  }
+}

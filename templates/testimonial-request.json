@@ -1,0 +1,79 @@
+{
+  "slug": "testimonial-request",
+  "title": "Testimonial request",
+  "summary": "Collects a short quote, the result a client got and permission to publish it.",
+  "category": "feedback",
+  "definition": {
+    "id": "testimonial-request",
+    "title": "Share your experience",
+    "submit": { "label": "Send testimonial" },
+    "steps": [
+      {
+        "id": "story",
+        "title": "Your experience",
+        "fields": [
+          {
+            "key": "before",
+            "type": "textarea",
+            "label": "What was the situation before you worked with us?",
+            "rows": 3
+          },
+          {
+            "key": "result",
+            "type": "textarea",
+            "label": "What changed for you?",
+            "rows": 3,
+            "validation": { "required": true }
+          },
+          {
+            "key": "quote",
+            "type": "textarea",
+            "label": "Your testimonial in a sentence or two",
+            "rows": 3,
+            "validation": { "required": true, "maxLength": 400 }
+          }
+        ]
+      },
+      {
+        "id": "you",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          { "key": "jobTitle", "type": "text", "label": "Job title" },
+          { "key": "company", "type": "text", "label": "Company" },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "permission",
+            "type": "radio",
+            "label": "How can we use your testimonial?",
+            "options": [
+              { "value": "full", "label": "With my name, title and company" },
+              { "value": "first-name", "label": "With my first name only" },
+              { "value": "anonymous", "label": "Anonymously" },
+              { "value": "private", "label": "Please don’t publish it" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "photo",
+            "type": "text",
+            "label": "Link to a headshot",
+            "placeholder": "https://",
+            "show": [{ "field": "permission", "eq": "full" }]
+          }
+        ]
+      }
+    ]
+  }
+}

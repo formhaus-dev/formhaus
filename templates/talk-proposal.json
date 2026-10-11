@@ -1,0 +1,141 @@
+{
+  "slug": "talk-proposal",
+  "title": "Talk proposal (CFP)",
+  "summary": "Call for papers: talk title, format, level, abstract, reviewer notes and speaker bio.",
+  "category": "application",
+  "definition": {
+    "id": "talk-proposal",
+    "title": "Submit a talk",
+    "submit": { "label": "Submit proposal" },
+    "steps": [
+      {
+        "id": "talk",
+        "title": "Your talk",
+        "fields": [
+          {
+            "key": "title",
+            "type": "text",
+            "label": "Talk title",
+            "validation": { "required": true, "maxLength": 100 }
+          },
+          {
+            "key": "format",
+            "type": "radio",
+            "label": "Format",
+            "options": [
+              { "value": "lightning", "label": "Lightning talk, 5 to 10 minutes" },
+              { "value": "talk", "label": "Talk, 25 to 40 minutes" },
+              { "value": "workshop", "label": "Workshop, 2 hours or more" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "level",
+            "type": "radio",
+            "label": "Audience level",
+            "layout": "inline",
+            "options": [
+              { "value": "beginner", "label": "Beginner" },
+              { "value": "intermediate", "label": "Intermediate" },
+              { "value": "advanced", "label": "Advanced" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "abstract",
+            "type": "textarea",
+            "label": "Abstract",
+            "rows": 6,
+            "helperText": "Public. This is what attendees read in the schedule.",
+            "validation": { "required": true, "minLength": 100, "maxLength": 1500 }
+          }
+        ]
+      },
+      {
+        "id": "review",
+        "title": "For reviewers",
+        "fields": [
+          {
+            "key": "outline",
+            "type": "textarea",
+            "label": "Outline",
+            "rows": 5,
+            "helperText": "Not public. How the talk flows and what people will take away."
+          },
+          {
+            "key": "givenBefore",
+            "type": "radio",
+            "label": "Have you given this talk before?",
+            "layout": "inline",
+            "options": [
+              { "value": "no", "label": "No, it’s new" },
+              { "value": "yes", "label": "Yes" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "recording",
+            "type": "text",
+            "label": "Link to a recording",
+            "placeholder": "https://",
+            "show": [{ "field": "givenBefore", "eq": "yes" }]
+          },
+          {
+            "key": "firstTalk",
+            "type": "radio",
+            "label": "Is this your first conference talk?",
+            "layout": "inline",
+            "show": [{ "field": "givenBefore", "eq": "no" }],
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }]
+          },
+          {
+            "key": "travel",
+            "type": "radio",
+            "label": "Will you need help with travel costs?",
+            "layout": "inline",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "maybe", "label": "Maybe" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "speaker",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "company", "type": "text", "label": "Company or affiliation" },
+          {
+            "key": "bio",
+            "type": "textarea",
+            "label": "Short bio",
+            "rows": 4,
+            "helperText": "Public. Third person, two or three sentences.",
+            "validation": { "required": true, "maxLength": 600 }
+          },
+          {
+            "key": "profile",
+            "type": "text",
+            "label": "Website or social profile",
+            "placeholder": "https://"
+          }
+        ]
+      }
+    ]
+  }
+}
