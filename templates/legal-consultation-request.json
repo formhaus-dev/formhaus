@@ -6,7 +6,7 @@
   "definition": {
     "id": "legal-consultation-request",
     "title": "Request a consultation",
-    "submit": { "label": "Request consultation" },
+    "submit": { "label": "Request a consultation" },
     "steps": [
       {
         "id": "matter",
@@ -19,15 +19,31 @@
             "options": [
               { "value": "family", "label": "Family and divorce" },
               { "value": "employment", "label": "Employment" },
-              { "value": "housing", "label": "Housing and tenancy" },
+              { "value": "housing", "label": "Landlord and tenant" },
               { "value": "immigration", "label": "Immigration" },
               { "value": "business", "label": "Business and contracts" },
-              { "value": "estates", "label": "Wills and estates" },
+              { "value": "estates", "label": "Estate planning and probate" },
               { "value": "personal-injury", "label": "Personal injury" },
-              { "value": "criminal", "label": "Criminal" },
+              { "value": "criminal", "label": "Criminal defense" },
               { "value": "other", "label": "Something else or not sure" }
             ],
             "validation": { "required": true }
+          },
+          {
+            "key": "state",
+            "type": "text",
+            "label": "Which state is this matter in?",
+            "validation": { "required": true }
+          },
+          {
+            "key": "side",
+            "type": "radio",
+            "label": "Which describes you best?",
+            "options": [
+              { "value": "claimant", "label": "I want to bring a claim" },
+              { "value": "respondent", "label": "A claim was brought against me" },
+              { "value": "neither", "label": "Neither, or I’m not sure" }
+            ]
           },
           {
             "key": "urgency",
@@ -40,6 +56,13 @@
               { "value": "not-sure", "label": "I’m not sure" }
             ],
             "validation": { "required": true }
+          },
+          {
+            "key": "deadlineDate",
+            "type": "date",
+            "label": "Deadline date",
+            "helperText": "A court date, filing deadline or the date on a letter you received.",
+            "show": [{ "field": "urgency", "in": ["two-weeks", "later"] }]
           },
           {
             "key": "otherParty",
@@ -92,6 +115,18 @@
               { "value": "phone", "label": "Phone" }
             ],
             "validation": { "required": true }
+          },
+          {
+            "key": "heardFrom",
+            "type": "select",
+            "label": "How did you hear about us?",
+            "options": [
+              { "value": "search", "label": "Search engine" },
+              { "value": "social", "label": "Social media" },
+              { "value": "referral", "label": "Friend or colleague" },
+              { "value": "article", "label": "Article or podcast" },
+              { "value": "other", "label": "Other" }
+            ]
           },
           {
             "key": "notClient",

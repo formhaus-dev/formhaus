@@ -34,7 +34,7 @@
           {
             "key": "petName",
             "type": "text",
-            "label": "Which animal caught your eye?",
+            "label": "Which animal are you applying for?",
             "helperText": "Name or ID from the listing. Leave empty if you’re open to suggestions."
           }
         ]
@@ -48,9 +48,9 @@
             "type": "radio",
             "label": "Type of home",
             "options": [
-              { "value": "house-yard", "label": "House with a garden or yard" },
-              { "value": "house", "label": "House without a garden" },
-              { "value": "apartment", "label": "Apartment or flat" },
+              { "value": "house-yard", "label": "House with a yard" },
+              { "value": "house", "label": "House without a yard" },
+              { "value": "apartment", "label": "Apartment or condo" },
               { "value": "other", "label": "Other" }
             ],
             "validation": { "required": true }
@@ -77,11 +77,43 @@
             "validation": { "required": true }
           },
           {
+            "key": "landlordContact",
+            "type": "text",
+            "label": "Landlord or property manager’s name and phone",
+            "helperText": "We’ll check with them that pets are allowed.",
+            "show": [{ "field": "ownership", "eq": "rent" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "fence",
+            "type": "radio",
+            "label": "Is your yard fenced?",
+            "layout": "inline",
+            "show": [
+              { "field": "species", "eq": "dog" },
+              { "field": "homeType", "eq": "house-yard" }
+            ],
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "partly", "label": "Partly" },
+              { "value": "no", "label": "No" }
+            ],
+            "validation": { "required": true }
+          },
+          {
             "key": "children",
             "type": "radio",
             "label": "Do children live with you?",
             "layout": "inline",
             "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "childrenAges",
+            "type": "text",
+            "label": "How old are they?",
+            "placeholder": "4 and 9",
+            "show": [{ "field": "children", "eq": "yes" }],
             "validation": { "required": true }
           },
           {
@@ -120,6 +152,25 @@
             "validation": { "required": true }
           },
           {
+            "key": "vet",
+            "type": "text",
+            "label": "Your vet’s name or clinic",
+            "helperText": "We may call them for a reference.",
+            "show": [{ "field": "experience", "in": ["before", "now"] }]
+          },
+          {
+            "key": "activity",
+            "type": "radio",
+            "label": "How active is your household?",
+            "show": [{ "field": "species", "eq": "dog" }],
+            "options": [
+              { "value": "home", "label": "Mostly at home" },
+              { "value": "walks", "label": "Daily walks" },
+              { "value": "very-active", "label": "Very active, with runs or hikes" }
+            ],
+            "validation": { "required": true }
+          },
+          {
             "key": "alone",
             "type": "radio",
             "label": "How many hours a day would the pet be alone?",
@@ -137,6 +188,12 @@
         "id": "contact",
         "title": "Your details",
         "fields": [
+          {
+            "key": "adult",
+            "type": "checkbox",
+            "label": "I’m 18 or older",
+            "validation": { "required": true }
+          },
           {
             "key": "name",
             "type": "text",
@@ -158,9 +215,11 @@
             "validation": { "required": true }
           },
           {
-            "key": "town",
-            "type": "text",
-            "label": "Town or city",
+            "key": "address",
+            "type": "textarea",
+            "label": "Home address",
+            "rows": 2,
+            "helperText": "We arrange a home visit before most adoptions.",
             "validation": { "required": true }
           }
         ]
