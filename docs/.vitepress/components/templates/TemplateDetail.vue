@@ -41,17 +41,20 @@ async function copy(kind: 'JSON' | 'Prompt') {
     <p class="tpl-detail__summary">{{ template.summary }}</p>
     <div class="tpl-detail__actions">
       <a class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)">
-        Use this template <LucideIcon name="arrow-right" />
+        Launch free <LucideIcon name="arrow-right" />
       </a>
+    </div>
+    <p class="tpl-detail__hint">Get a hosted link and a responses inbox in a minute. No backend, no credit card.</p>
+    <div class="tpl-detail__alt" role="group" aria-labelledby="tpl-alt-label">
+      <p id="tpl-alt-label" class="tpl-detail__alt-label">Or set it up yourself</p>
       <button type="button" class="tpl-button tpl-button--secondary" @click="copy('Prompt')">
-        <LucideIcon :name="copied === 'Prompt' ? 'check' : 'bot'" /> {{ copied === 'Prompt' ? 'Copied' : 'Copy prompt' }}
+        <LucideIcon :name="copied === 'Prompt' ? 'check' : 'bot'" /> {{ copied === 'Prompt' ? 'Copied' : 'Copy prompt for your AI agent' }}
       </button>
       <button type="button" class="tpl-button tpl-button--secondary" @click="copy('JSON')">
-        <LucideIcon :name="copied === 'JSON' ? 'check' : 'copy'" /> {{ copied === 'JSON' ? 'Copied' : 'Copy JSON' }}
+        <LucideIcon :name="copied === 'JSON' ? 'check' : 'copy'" /> {{ copied === 'JSON' ? 'Copied' : 'Copy JSON for React or Vue' }}
       </button>
       <span class="tpl-sr-only" role="status">{{ copied ? `${copied} copied` : '' }}</span>
     </div>
-    <p class="tpl-detail__hint">Opens a copy in Formhaus Cloud, where you can edit and publish it.</p>
 
     <section class="tpl-preview" aria-label="Live preview">
       <p class="tpl-preview__label">Live preview</p>
