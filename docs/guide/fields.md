@@ -24,6 +24,10 @@ Types `text`, `email`, `phone`, `number`, `password` all render a text input. Th
 }
 ```
 
+`number` renders `<input type="number">` and stores a number, or `''` when the input is empty.
+
+The browser does not check the `email` format. `validateSubmission()` from `@formhaus/core/server` does. For a browser check, add a `pattern` as above.
+
 `inputMode` controls the mobile keyboard without changing the field type:
 
 ```json
@@ -35,6 +39,8 @@ Types `text`, `email`, `phone`, `number`, `password` all render a text input. Th
   "validation": { "pattern": "^[0-9]{5}$" }
 }
 ```
+
+In 0.10.0 the React renderer does not pass `inputMode` to the input. The Vue renderer does.
 
 `mask` provides a pattern hint. The default TextField uses it as a placeholder when no `placeholder` is set. Custom components receive `field.mask` and can implement full input masking:
 
@@ -409,6 +415,16 @@ const emit = defineEmits<{
 ```
 
 `field` has everything from the definition: `key`, `type`, `label`, `placeholder`, `helperText`, `options`, `validation`. Full type in the [Definition Reference](/api/definition).
+
+## Default values
+
+`defaultValue` fills the field when the initial values have no entry for its key:
+
+```json
+{ "key": "country", "type": "text", "label": "Country", "defaultValue": "DE" }
+```
+
+Skip resets the fields of a step to their defaults.
 
 ## Nested keys
 
