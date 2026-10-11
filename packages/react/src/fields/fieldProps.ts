@@ -2,7 +2,7 @@ import type { FormField } from '@formhaus/core';
 import type { FieldComponentProps } from '../types';
 
 export function describedBy(field: FormField, error?: string) {
-  return error ? `${field.key}-error` : field.helperText ? `${field.key}-helper` : undefined;
+  return [field.helperText && `${field.key}-helper`, error && `${field.key}-error`].filter(Boolean).join(' ') || undefined;
 }
 
 export function optionProps({ disabled, loading, onBlur, onFocus }: FieldComponentProps) {
