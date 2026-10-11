@@ -7,7 +7,7 @@ sidebar: false
 # Formhaus Cloud Terms of Service
 
 ::: warning Draft, pending legal review
-This document is a draft and is not in effect. Items marked [VERIFY] must be confirmed before launch.
+This document is a draft and is not in effect. It will be reviewed by a lawyer before Formhaus Cloud launches.
 :::
 
 **Effective date: [EFFECTIVE DATE]**
@@ -30,7 +30,8 @@ If you do not agree to these Terms, do not use the Service.
 - **API Key**: a secret key (prefix `fh_live_`) that authenticates requests to the REST API and the MCP server for your account, including a key that you give to an AI agent.
 - **Agent**: software, including an AI model or coding assistant, that calls the Service on behalf of a person.
 - **Unclaimed Form**: a Form published without an API Key, which no account owns yet.
-- **Owner**: the account that has claimed or created a Form.
+- **Workspace**: the space in the dashboard that holds Forms, API Keys and a plan, and that one or more accounts belong to as members.
+- **Owner**: the account that has claimed or created a Form, and the owners of the Workspace that holds it.
 - **Sub-processor**: a third party we engage to process Customer Data, as listed on the [Sub-processors](./sub-processors.md) page.
 
 ---
@@ -47,9 +48,10 @@ We may add, change or remove features. We will not materially reduce the core fu
 
 ## 3. Eligibility and accounts
 
-- You must be at least 18 years old to use the Service. The Service is intended for use in a business, trade or profession, including running your own projects as a developer or creator. [VERIFY: founder decision on whether personal, non-business use is in scope.] Nothing in these Terms limits non-waivable consumer rights that mandatory law gives you.
+- You must be at least 18 years old to use the Service. You may use the Service for business or personal purposes. Nothing in these Terms limits non-waivable consumer rights that mandatory law gives you.
 - You sign in with a one-time link sent to your email address. You must use an email address that you control and keep it current. Anyone with access to that mailbox can access your account.
 - You are responsible for all activity under your account, including activity through your API Keys and through Agents that you let act for you.
+- A Workspace owner can invite members and give them the owner, editor or viewer role. The owners of a Workspace are responsible for its members, Forms, API Keys and plan.
 - Tell us at legal@formhaus.dev without delay if you suspect unauthorized use of your account or an API Key.
 
 ---
@@ -83,9 +85,9 @@ When you collect personal data with a Form, you decide what to collect and why. 
 You are responsible for:
 
 - having a lawful basis for collecting and using Submission Data, and getting any consent the law requires;
-- telling Respondents who you are and how you use their data, in the Form itself or in a privacy notice the Form links to. Hosted pages do not show the Owner's identity unless you put it in the Form. [VERIFY: founder decision on whether hosted pages should show the Owner's name or privacy link.]
+- telling Respondents who you are and how you use their data, in the Form itself or in a privacy notice the Form links to. Hosted pages show Formhaus branding and a "Report abuse" link. Hosted pages may show your company name and a link to your privacy policy, and on paid plans your logo, if you set them. These settings are under your control and do not replace your notice to Respondents;
 - answering Respondents' requests to access, correct or delete their data. You can export and delete submissions yourself in the dashboard and through the API;
-- the systems that receive Submission Data from you, including webhook endpoints, notification mailboxes and Agents. Our responsibility for a copy ends when we deliver it to an endpoint or address that you configured;
+- the systems that receive Submission Data from you, including webhook endpoints and Agents. Our responsibility for a copy ends when we deliver it to an endpoint or address that you configured;
 - the content, legality and accuracy of your Forms.
 
 ---
@@ -122,7 +124,7 @@ Hosted pages and the embed do not render password fields or file upload fields. 
 
 ## 8. Abuse reports, pausing and removal
 
-- Anyone can report a Form through the "Report" link on an Unclaimed Form or by email to legal@formhaus.dev with the form link.
+- Anyone can report a Form through the "Report abuse" link on its hosted page or by email to legal@formhaus.dev with the form link.
 - An Unclaimed Form is paused automatically after reports from 3 different reporters. A claimed Form is not paused automatically; we email its Owner.
 - We may pause, disable or delete a Form, revoke API Keys, or suspend an account without liability if we reasonably believe it breaks Section 7, puts Respondents or the Service at risk, or is required by law. Where it is practical and lawful, we will tell the Owner and give a chance to fix the issue first. A paused Form rejects new submissions.
 - If you think we paused or removed a Form by mistake, write to legal@formhaus.dev.
@@ -131,21 +133,23 @@ Hosted pages and the embed do not render password fields or file upload fields. 
 
 ## 9. Plans, limits and fees
 
-- **Plans.** The Service has a Free plan, a Pro plan and any other plans listed on the pricing page at formhaus.dev [VERIFY: pricing page URL]. Prices are on the pricing page. At the effective date, the limits are [VERIFY: matches the pricing page at launch]:
+- **Plans.** The Service has Free, Pro and Team plans, listed on the pricing page at https://formhaus.dev/cloud#pricing. At the effective date, the prices and limits are:
 
-  | Plan | Forms | Submissions per month | Webhooks | Submission retention |
-  |---|---|---|---|---|
-  | Unclaimed Form | 1 per publish | 100 in total | No | 7 days |
-  | Free | 3 | 100 | Yes | 90 days |
-  | Pro | Unlimited | 25,000 | Yes | Until you delete them |
+  | Plan | Price | Forms | Submissions per month | Members | Webhooks | Submission retention |
+  |---|---|---|---|---|---|---|
+  | Unclaimed Form | $0 | 1 per publish | 100 in total | None | No | 7 days |
+  | Free | $0 | 3 | 100 | 1 | Yes | 90 days |
+  | Pro | $19/month or $190/year | Unlimited | 25,000 | 3 | Yes | Until you delete them |
+  | Team | $49/month or $490/year | Unlimited | 100,000 | 10 | Yes | Until you delete them |
 
-- **Counting.** Submissions are counted per account per calendar month (UTC). Submissions to an Unclaimed Form are counted per Form.
+- **Counting.** Submissions are counted per Workspace per calendar month (UTC). Submissions to an Unclaimed Form are counted per Form.
 - **Over the limit.** When an account reaches its monthly submission limit, the endpoint rejects new submissions until the next month or until you upgrade. We do not store rejected submissions.
-- **Payment.** Pro is paid through our payment processor, Stripe. Stripe collects your payment details; we do not store card numbers. [VERIFY: whether Pro is a recurring subscription, how it renews and how it is cancelled.]
-- **Downgrade.** If you move from Pro to Free, Free limits apply from the change, and submissions older than 90 days are deleted 30 days after the change. [VERIFY: founder decision on the grace period.]
+- **Subscriptions.** Paid plans are subscriptions billed monthly or yearly in advance through our payment processor, Stripe. Stripe collects your payment details; we do not store card numbers.
+- **Renewal and cancellation.** A subscription renews automatically at the end of each billing period at the then-current price until you cancel. You can cancel at any time. Cancellation takes effect at the end of the current paid period, and you keep paid-plan access until then.
+- **Downgrade.** If you move from a paid plan to Free, Free limits apply from the change, and submissions older than 90 days are deleted 60 days after the change.
 - **Changes to prices or limits.** We may change prices or plan limits for future billing periods with at least 30 days' notice by email.
 - **Taxes.** Prices do not include taxes. You pay all applicable taxes other than taxes on our net income.
-- **Refunds.** Fees are non-refundable and there are no credits for partial periods, except where the law requires a refund or we state otherwise in writing.
+- **Refunds.** Fees are non-refundable and there are no refunds or credits for partial periods, except where the law requires a refund or we state otherwise in writing.
 - **Non-payment.** If a payment fails, we may move the account to the Free plan after notice.
 
 ---
@@ -181,9 +185,9 @@ We protect the Service and Customer Data with the measures described in Annex II
 ## 14. Term, termination and deletion
 
 - These Terms apply while you have an account, own a Form, or use the Service.
-- You can delete Forms, submissions and your account at any time. [VERIFY: account deletion is self-service in the dashboard, or by request to legal@formhaus.dev until it is.]
+- You can delete Forms, submissions, Workspaces and your account at any time in the dashboard. Deleting your account also deletes the Workspaces where you are the only member. If you are the only owner of a Workspace that has other members, make another member an owner or remove the members first.
 - We may suspend or terminate your access for a material breach of these Terms (including Section 7), for non-payment, or when the law requires it. We may close a Free account with 30 days' notice.
-- **Deletion.** When you delete a Form, submissions or your account, we remove the data from the live database at once. Encrypted backups that contain it expire within 30 days. If your account is terminated for another reason, we delete Customer Data within 30 days of termination, and its backup copies expire within a further 30 days, unless the law requires us to keep it.
+- **Deletion.** When you delete a Form, submissions or your account, we remove the data from the live database at once. Backups that contain it expire within 30 days. If your account is terminated for another reason, we delete Customer Data within 30 days of termination, and its backup copies expire within a further 30 days, unless the law requires us to keep it.
 - **Export.** You can export submissions as CSV or JSON at any time before deletion. Deleted data cannot be restored or exported.
 - **Survival.** Sections 6, 11, 12, 15, 16, 17, 18 and 20, accrued payment obligations, and the [Data Processing Addendum](./dpa.md) until Customer Data is deleted, survive termination.
 
@@ -202,10 +206,9 @@ This Section does not limit our express commitments in the [Data Processing Adde
 TO THE MAXIMUM EXTENT PERMITTED BY LAW:
 
 - NEITHER PARTY IS LIABLE FOR ANY INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR EXEMPLARY DAMAGES, OR FOR LOST PROFITS, REVENUE, DATA OR GOODWILL, EVEN IF ADVISED OF THE POSSIBILITY.
-- **General cap.** EXCEPT AS STATED BELOW, OUR TOTAL LIABILITY ARISING OUT OF OR RELATED TO THE SERVICE OR THESE TERMS WILL NOT EXCEED THE GREATER OF (A) THE AMOUNTS YOU PAID US FOR THE SERVICE IN THE 12 MONTHS BEFORE THE EVENT GIVING RISE TO THE CLAIM, OR (B) USD 1,000.
-- **Data and security cap.** FOR CLAIMS ARISING FROM OUR BREACH OF OUR CONFIDENTIALITY, DATA-PROTECTION OR SECURITY OBLIGATIONS (INCLUDING THE DATA PROCESSING ADDENDUM), OUR TOTAL LIABILITY WILL NOT EXCEED THE GREATER OF (A) TWO TIMES THE AMOUNTS YOU PAID US FOR THE SERVICE IN THE 12 MONTHS BEFORE THE EVENT, OR (B) USD 5,000.
+- OUR TOTAL LIABILITY ARISING OUT OF OR RELATED TO THE SERVICE, THESE TERMS OR THE DATA PROCESSING ADDENDUM, FOR ALL CLAIMS TOGETHER, WILL NOT EXCEED THE GREATER OF (A) THE AMOUNTS YOU PAID US FOR THE SERVICE IN THE 12 MONTHS BEFORE THE EVENT GIVING RISE TO THE CLAIM, OR (B) USD 100.
 
-**Exclusions.** The caps do not apply to a party's indemnification obligations, your payment obligations, a party's infringement or misuse of the other's intellectual property, or a party's fraud, gross negligence or willful misconduct. Nothing in these Terms excludes or limits liability that cannot be excluded or limited under applicable law.
+This Section does not limit your payment obligations. Nothing in these Terms excludes or limits liability that cannot be excluded or limited under applicable law.
 
 **No individual liability.** To the extent permitted by law, no member, manager, officer, employee, agent or affiliate of Fabrique-Futur LLC has personal liability under these Terms or in connection with the Service. Your remedies are against Fabrique-Futur LLC only.
 
