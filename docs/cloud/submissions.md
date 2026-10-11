@@ -85,7 +85,7 @@ Callbacks:
 | `fallback` / `#fallback` | Shown while the definition loads. |
 | `success` / `#success` | Replaces the default message after a submission. |
 
-Other `FormRenderer` props pass through. A `422` maps `errors` onto fields and focuses the first one. Messages for keys the form does not render are listed in a notice above the form. Every other failure shows a short message in the same notice, which takes focus, with "Try again" for `429`, `5xx`, network failures and timeouts. Entered values stay. When the definition fails to load for one of these reasons, the error has a "Try again" button that loads it again.
+Other `FormRenderer` props pass through. A `422` maps `errors` onto fields and focuses the first one. Messages for keys the form does not render are listed in a notice above the form. Every other failure shows a short message in the same notice, which takes focus, with "Try again" for `429`, `5xx`, network failures and timeouts. Entered values stay. When the definition fails to load for one of these reasons or returns a body that is not JSON, the error has a "Try again" button that loads it again.
 
 `FormhausForm` sends the version it rendered. If the form was republished and the values no longer pass, it loads the new version, keeps the answers whose field key and type still fit, marks dropped answers with "Please answer again." and asks the respondent to review and submit again.
 

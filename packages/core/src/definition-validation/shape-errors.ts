@@ -5,7 +5,7 @@ export const isEntry = (value: unknown): value is Entry =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
 
 function listOf(value: unknown, path: string, check: Check, required = false): string[] {
-  if (value === undefined && !required) return [];
+  if (value == null && !required) return [];
   if (!Array.isArray(value)) return [`${path} must be an array.`];
   return value.flatMap((item, index) => check(item, `${path}[${index}]`));
 }

@@ -31,8 +31,18 @@ describe('malformed definitions', () => {
 
     expect(validateDefinition(input)).toEqual([
       'Form definition is missing the "submit" action.',
-      'Field "x" has a show condition without "field"',
+      'Field "x" has a show condition without a "field" name',
     ]);
+  });
+
+  it('accepts null for optional lists', () => {
+    const input = {
+      id: 'a', title: 'A', submit: { label: 'Go' }, fields: null,
+      steps: [{ id: 's', title: 'S', show: null, routes: null, fields: [{ key: 'x', type: 'text', label: 'X', showAny: null }] }],
+    };
+
+    expect(validateDefinition(input)).toEqual([]);
+    expect(() => new FormEngine(input as unknown as FormDefinition)).not.toThrow();
   });
 
   it('accepts $schema in a typed definition', () => {

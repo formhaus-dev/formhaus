@@ -18,7 +18,7 @@ export function analyzeDefinition(definition: FormDefinition): DefinitionAnalysi
   const depend = (owner: string, id: string, source: Pick<FormField, 'show' | 'showAny'>, keys: string[]) => {
     const dependencies = conditionFields(source);
     for (const dependency of dependencies) {
-      if (typeof dependency !== 'string') warnings.push(`${owner} "${id}" has a show condition without "field"`);
+      if (typeof dependency !== 'string') warnings.push(`${owner} "${id}" has a show condition without a "field" name`);
       else if (!fieldKeys.has(dependency)) warnings.push(`${owner} "${id}" has show condition referencing non-existent field "${dependency}"`);
     }
     if (dependencies.length) for (const key of keys) graph.set(key, [...(graph.get(key) ?? []), ...dependencies]);
