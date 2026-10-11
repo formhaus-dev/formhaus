@@ -2,15 +2,18 @@
 import { computed, nextTick, ref } from 'vue';
 import AutoInput from './AutoInput.vue';
 import BuilderActions from './BuilderActions.vue';
+import BuilderAddRow from './BuilderAddRow.vue';
 import BuilderBreak from './BuilderBreak.vue';
 import BuilderGap from './BuilderGap.vue';
 import BuilderGutter, { type GutterAction } from './BuilderGutter.vue';
 import BuilderQuestion from './BuilderQuestion.vue';
 import BuilderTooltip from './BuilderTooltip.vue';
-import { moveTo, usePointerDrag } from './builder-drag';
-import { newPage, pagesAfter, type BuilderForm, type BuilderOption, type BuilderPage } from './builder-model';
-import { convertToPage, insertPage, insertQuestion, moveBlock, outdent, pageSpan, removeBlock, startOptions } from './builder-ops';
-import type { Shortcut } from './builder-smart';
+import { usePointerDrag } from './builder-drag';
+import { provideBuilderForm } from './builder-form';
+import {
+  convertToPage, insertPage, insertQuestion, moveBlock, moveTo, newPage, outdent, pageSpan, pagesAfter, removeBlock, startOptions,
+  type BuilderForm, type BuilderOption, type BuilderPage, type Shortcut,
+} from '@formhaus/builder';
 import './builder.css';
 import './builder-tools.css';
 import './builder-menu.css';
@@ -18,6 +21,7 @@ import './builder-menu.css';
 const props = defineProps<{ form: BuilderForm; edited: boolean }>();
 const emit = defineEmits<{ edit: [] }>();
 
+provideBuilderForm(props.form);
 const root = ref<HTMLElement>();
 const pending = ref<string | null>(null);
 const drag = usePointerDrag({
@@ -33,7 +37,7 @@ const pageNumber = (index: number) => blocks().slice(0, index + 1).filter((block
 const lastOfPage = (index: number) => blocks()[index + 1]?.kind !== 'question' && (blocks()[index].kind === 'question' || blocks()[index].kind === 'page');
 const pageAt = (index: number) => blocks().slice(0, index + 1).reverse().find((block) => block.kind === 'page') as BuilderPage | undefined;
 
-function caretEnd(input: HTMLInputElement | null | undefined) {
+function caretEnd(input: HTMLInputElement | HTMLTextAreaElement | null | undefined) {
   if (!input) return;
   input.focus();
   input.setSelectionRange(input.value.length, input.value.length);
@@ -49,7 +53,7 @@ async function focusBefore(index: number) {
   await nextTick();
   const prev = blocks()[index - 1];
   if (prev) return focusUid(prev.uid, true);
-  caretEnd(root.value?.querySelector<HTMLInputElement>('.nb-title .auto__input'));
+  caretEnd(root.value?.querySelector<HTMLInputElement | HTMLTextAreaElement>('.nb-title .auto__input'));
 }
 
 const touch = () => emit('edit');
@@ -124,7 +128,7 @@ function onBranch(index: number) {
 }
 
 function onNewPage(option: BuilderOption) {
-  const page = newPage();
+  const page = newPage(props.form);
   blocks().push(page);
   option.jump = page.uid;
   touch();
@@ -170,9 +174,9 @@ function onKey(event: KeyboardEvent) {
 <template>
   <div ref="root" class="nb" :data-dragging="drag.from.value !== null" @mousedown="onMouseDown">
     <div class="nb-doc" @keydown="onKey">
-      <p v-if="!edited" class="nb-hint">Click any line to edit · <kbd>Enter</kbd> adds a question · <kbd>⇧Tab</kbd> turns an answer into a question · hover an answer to branch</p>
+      <p v-if="!edited" class="nb-hint">Click any line to edit · <kbd>Enter</kbd> adds a field · <kbd>⇧Tab</kbd> turns an answer into a field · tap Branch on an answer to jump to a step</p>
       <div class="nb-line nb-title">
-        <AutoInput v-model="form.title" placeholder="Untitled form" label="Form title" @input="touch" />
+        <AutoInput v-model="form.title" placeholder="Untitled form" label="Form title" wrap @input="touch" />
       </div>
       <template v-for="(block, index) in form.blocks" :key="block.uid">
         <BuilderGap v-if="index > 0 || block.kind !== 'page' || drag.from.value !== null" :active="drag.over.value === index" @insert="addQuestion(index)" />
@@ -197,9 +201,9 @@ function onKey(event: KeyboardEvent) {
           />
         </div>
         <template v-if="lastOfPage(index)">
-          <div class="nb-line nb-add">
-            <button type="button" class="nb-ghost" @mousedown.prevent @click="addQuestion(index + 1)">+ Add question</button>
-            <button v-if="index === form.blocks.length - 1" type="button" class="nb-ghost" @mousedown.prevent @click="addPage(index + 1)">+ Add page</button>
+          <div class="nb-add">
+            <BuilderAddRow label="Add field" @add="addQuestion(index + 1)" />
+            <BuilderAddRow v-if="index === form.blocks.length - 1" label="Add step" @add="addPage(index + 1)" />
           </div>
           <BuilderActions :form="form" :page="pageAt(index)" :first="pageNumber(index) < 1" :last="index === form.blocks.length - 1" @edit="touch" />
         </template>

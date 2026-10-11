@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
 import { head, transformHead } from './head'
 import { transformPageData } from './templates'
@@ -8,6 +9,10 @@ import { siteUrl } from './site'
 export default defineConfig({
   vite: {
     plugins: [llms, templateFiles()],
+    resolve: {
+      alias: { '@formhaus/builder': fileURLToPath(new URL('../../packages/builder/src/index.ts', import.meta.url)) },
+      dedupe: ['@formhaus/core', 'vue']
+    },
     server: {
       fs: { allow: ['..'] }
     }

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import AutoInput from './AutoInput.vue';
-import { DEFAULT_BACK, DEFAULT_NEXT, type BuilderForm, type BuilderPage } from './builder-model';
+import { DEFAULT_BACK, DEFAULT_NEXT, type BuilderForm, type BuilderPage } from '@formhaus/builder';
 
 defineProps<{ form: BuilderForm; page?: BuilderPage; first: boolean; last: boolean }>();
 const emit = defineEmits<{ edit: [] }>();
 </script>
 
 <template>
-  <div class="nb-line nb-buttons" aria-label="Page buttons">
+  <div class="nb-line nb-buttons" aria-label="Step buttons">
     <span class="nb-buttons__caption">Buttons:</span>
     <template v-if="page && !first">
       <span class="nb-buttons__label" data-tip="Edit label">
