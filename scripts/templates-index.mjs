@@ -4,12 +4,19 @@ import { fileURLToPath } from 'node:url';
 
 const directory = fileURLToPath(new URL('../templates/', import.meta.url));
 const indexPath = resolve(directory, 'index.json');
-const CATEGORIES = ['lead-gen', 'intake', 'application', 'feedback', 'survey', 'registration', 'quiz', 'operations'];
+const SKIP = new Set(['index.json', 'order.json']);
 
 const countFields = ({ fields = [], steps = [] }) =>
   fields.length + steps.reduce((total, step) => total + step.fields.length, 0);
 
-export function buildIndex(templates) {
+export function readOrder() {
+  return JSON.parse(readFileSync(resolve(directory, 'order.json'), 'utf8'));
+}
+
+export function buildIndex(templates, order = readOrder()) {
+  const rank = new Map(order.map((slug, position) => [slug, position]));
+  const missing = templates.filter(({ slug }) => !rank.has(slug)).map(({ slug }) => slug);
+  if (missing.length) throw new Error(`templates/order.json is missing: ${missing.join(', ')}`);
   return templates
     .map(({ slug, title, summary, category, definition }) => ({
       slug,
@@ -19,12 +26,12 @@ export function buildIndex(templates) {
       steps: definition.steps?.length || 1,
       fields: countFields(definition),
     }))
-    .sort((a, b) => CATEGORIES.indexOf(a.category) - CATEGORIES.indexOf(b.category) || a.title.localeCompare(b.title, 'en'));
+    .sort((a, b) => rank.get(a.slug) - rank.get(b.slug));
 }
 
 function readTemplates() {
   return readdirSync(directory)
-    .filter((name) => name.endsWith('.json') && name !== 'index.json')
+    .filter((name) => name.endsWith('.json') && !SKIP.has(name))
     .map((name) => JSON.parse(readFileSync(resolve(directory, name), 'utf8')));
 }
 

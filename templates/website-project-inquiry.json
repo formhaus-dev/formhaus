@@ -38,7 +38,7 @@
             "type": "text",
             "label": "Current website",
             "placeholder": "https://",
-            "show": [{ "field": "projectType", "in": ["redesign", "online-store", "landing-page"] }]
+            "show": [{ "field": "projectType", "in": ["redesign", "online-store"] }]
           },
           {
             "key": "goals",
@@ -91,6 +91,13 @@
               { "value": "need-help", "label": "No, we need help with it" }
             ],
             "validation": { "required": true }
+          },
+          {
+            "key": "examples",
+            "type": "textarea",
+            "label": "Sites you like",
+            "rows": 3,
+            "placeholder": "Links and what you like about each one"
           }
         ]
       },

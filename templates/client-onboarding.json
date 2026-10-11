@@ -26,13 +26,39 @@
             "rows": 3,
             "validation": { "required": true }
           },
-          { "key": "taxId", "type": "text", "label": "VAT or tax ID" },
+          {
+            "key": "taxId",
+            "type": "text",
+            "label": "Tax ID",
+            "helperText": "EIN in the US, or your VAT or local tax number."
+          },
+          {
+            "key": "billingContact",
+            "type": "text",
+            "label": "Who handles invoices?",
+            "placeholder": "Name and role"
+          },
           {
             "key": "billingEmail",
             "type": "email",
             "label": "Email for invoices",
             "inputMode": "email",
             "validation": { "required": true }
+          },
+          {
+            "key": "poRequired",
+            "type": "radio",
+            "label": "Do you need a purchase order number on invoices?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "poNumber",
+            "type": "text",
+            "label": "PO number",
+            "helperText": "Leave empty if you’ll send it later.",
+            "show": [{ "field": "poRequired", "eq": "yes" }]
           }
         ]
       },
@@ -75,7 +101,8 @@
               { "value": "calls", "label": "Scheduled calls" }
             ],
             "validation": { "required": true }
-          }
+          },
+          { "key": "timezone", "type": "text", "label": "Time zone", "placeholder": "City or UTC offset" }
         ]
       },
       {

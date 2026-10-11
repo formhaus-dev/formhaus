@@ -1,7 +1,7 @@
 {
   "slug": "supplier-registration",
   "title": "Supplier registration",
-  "summary": "Company, tax, offering and contact details for onboarding new suppliers. No bank details.",
+  "summary": "Legal entity, tax, address, insurance and offering details to set up a new vendor. No bank details.",
   "category": "operations",
   "definition": {
     "id": "supplier-registration",
@@ -15,32 +15,48 @@
           {
             "key": "legalName",
             "type": "text",
-            "label": "Legal company name",
+            "label": "Legal business name",
             "validation": { "required": true }
           },
+          { "key": "tradingName", "type": "text", "label": "Doing business as (DBA), if different" },
           {
             "key": "entity",
             "type": "radio",
             "label": "Business type",
             "options": [
-              { "value": "sole-trader", "label": "Sole trader or freelancer" },
+              { "value": "sole-proprietor", "label": "Sole proprietor or freelancer" },
               { "value": "partnership", "label": "Partnership" },
-              { "value": "company", "label": "Limited company or corporation" },
-              { "value": "nonprofit", "label": "Non-profit" }
+              { "value": "company", "label": "LLC or corporation" },
+              { "value": "nonprofit", "label": "Nonprofit" }
             ],
             "validation": { "required": true }
           },
-          { "key": "registrationNumber", "type": "text", "label": "Company registration number" },
+          {
+            "key": "registrationNumber",
+            "type": "text",
+            "label": "Business registration number",
+            "helperText": "State file number or the equivalent where you’re registered.",
+            "show": [{ "field": "entity", "in": ["partnership", "company", "nonprofit"] }],
+            "validation": { "required": true }
+          },
           {
             "key": "taxId",
             "type": "text",
-            "label": "Tax ID or VAT number",
+            "label": "Tax ID",
+            "helperText": "EIN in the US, or your VAT or local tax number. We’ll ask for a W-9 or W-8 separately.",
             "validation": { "required": true }
           },
           {
             "key": "country",
             "type": "text",
             "label": "Country of registration",
+            "validation": { "required": true }
+          },
+          {
+            "key": "address",
+            "type": "textarea",
+            "label": "Registered business address",
+            "rows": 3,
             "validation": { "required": true }
           }
         ]
@@ -72,6 +88,35 @@
           },
           { "key": "website", "type": "text", "label": "Website", "placeholder": "https://" },
           {
+            "key": "insurance",
+            "type": "radio",
+            "label": "Do you carry general or professional liability insurance?",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-applicable", "label": "Not applicable to what we supply" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "certifications",
+            "type": "text",
+            "label": "Certifications or accreditations",
+            "placeholder": "ISO 9001, SOC 2, B Corp…"
+          },
+          {
+            "key": "diversity",
+            "type": "multiselect",
+            "label": "Business classifications",
+            "helperText": "Optional. Pick all that apply.",
+            "options": [
+              { "value": "small", "label": "Small business" },
+              { "value": "minority-owned", "label": "Minority-owned" },
+              { "value": "women-owned", "label": "Women-owned" },
+              { "value": "veteran-owned", "label": "Veteran-owned" }
+            ]
+          },
+          {
             "key": "currency",
             "type": "select",
             "label": "Invoice currency",
@@ -79,15 +124,25 @@
               { "value": "usd", "label": "USD" },
               { "value": "eur", "label": "EUR" },
               { "value": "gbp", "label": "GBP" },
+              { "value": "cad", "label": "CAD" },
+              { "value": "aud", "label": "AUD" },
+              { "value": "chf", "label": "CHF" },
               { "value": "other", "label": "Other" }
             ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "currencyOther",
+            "type": "text",
+            "label": "Which currency?",
+            "show": [{ "field": "currency", "eq": "other" }],
             "validation": { "required": true }
           }
         ]
       },
       {
         "id": "contact",
-        "title": "Contact",
+        "title": "Your details",
         "fields": [
           {
             "key": "name",
@@ -95,7 +150,7 @@
             "label": "Contact name",
             "validation": { "required": true }
           },
-          { "key": "role", "type": "text", "label": "Role" },
+          { "key": "jobTitle", "type": "text", "label": "Job title" },
           {
             "key": "email",
             "type": "email",
@@ -108,6 +163,18 @@
             "type": "phone",
             "label": "Phone",
             "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "accountsEmail",
+            "type": "email",
+            "label": "Email for remittance and purchase orders, if different",
+            "inputMode": "email"
+          },
+          {
+            "key": "terms",
+            "type": "checkbox",
+            "label": "I have read and accept the supplier terms",
             "validation": { "required": true }
           }
         ]

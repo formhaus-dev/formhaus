@@ -15,14 +15,16 @@
           {
             "key": "role",
             "type": "select",
-            "label": "Your role",
+            "label": "What best describes your role?",
             "options": [
-              { "value": "developer", "label": "Developer" },
-              { "value": "designer", "label": "Designer" },
-              { "value": "product", "label": "Product manager" },
-              { "value": "founder", "label": "Founder" },
+              { "value": "engineering", "label": "Engineering" },
+              { "value": "product", "label": "Product" },
+              { "value": "design", "label": "Design" },
               { "value": "marketing", "label": "Marketing" },
-              { "value": "student", "label": "Student" },
+              { "value": "sales", "label": "Sales" },
+              { "value": "support", "label": "Customer support" },
+              { "value": "operations", "label": "Operations" },
+              { "value": "executive", "label": "Founder or executive" },
               { "value": "other", "label": "Other" }
             ],
             "validation": { "required": true }
@@ -35,16 +37,18 @@
               { "value": "solo", "label": "Just me" },
               { "value": "2-10", "label": "2 to 10" },
               { "value": "11-50", "label": "11 to 50" },
-              { "value": "51-plus", "label": "More than 50" }
-            ],
-            "validation": { "required": true }
+              { "value": "51-200", "label": "51 to 200" },
+              { "value": "201-1000", "label": "201 to 1,000" },
+              { "value": "1000-plus", "label": "More than 1,000" }
+            ]
           },
           {
             "key": "platforms",
             "type": "multiselect",
-            "label": "Which platforms do you use?",
+            "label": "Where would you use it?",
             "layout": "inline",
             "options": [
+              { "value": "web", "label": "Web browser" },
               { "value": "macos", "label": "macOS" },
               { "value": "windows", "label": "Windows" },
               { "value": "linux", "label": "Linux" },
@@ -105,6 +109,18 @@
             "label": "Email",
             "inputMode": "email",
             "validation": { "required": true }
+          },
+          {
+            "key": "heardFrom",
+            "type": "select",
+            "label": "How did you hear about us?",
+            "options": [
+              { "value": "search", "label": "Search engine" },
+              { "value": "social", "label": "Social media" },
+              { "value": "referral", "label": "Friend or colleague" },
+              { "value": "article", "label": "Article or podcast" },
+              { "value": "other", "label": "Other" }
+            ]
           },
           {
             "key": "confidential",

@@ -8,11 +8,13 @@ import './templates.css';
 
 const templates = index as TemplateEntry[];
 const active = ref('all');
+const firstIndex = (category: string) => templates.findIndex((template) => template.category === category);
 const chips = computed(() => [
   { id: 'all', label: 'All', count: templates.length },
   ...categories
     .map((category) => ({ ...category, count: templates.filter((template) => template.category === category.id).length }))
-    .filter((category) => category.count > 0),
+    .filter((category) => category.count > 0)
+    .sort((a, b) => firstIndex(a.id) - firstIndex(b.id)),
 ]);
 const visible = computed(() => (active.value === 'all' ? templates : templates.filter((template) => template.category === active.value)));
 
