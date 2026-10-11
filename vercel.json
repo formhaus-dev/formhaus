@@ -7,5 +7,6 @@
       "main": true,
       "*": false
     }
-  }
+  },
+  "cleanUrls": true
 }

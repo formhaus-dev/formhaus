@@ -14,6 +14,7 @@ export default defineConfig({
   titleTemplate: ':title · Formhaus',
   description: 'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
   lastUpdated: true,
+  cleanUrls: true,
   ignoreDeadLinks: [/^\/legal\//],
   sitemap: { hostname: siteUrl },
   head,
