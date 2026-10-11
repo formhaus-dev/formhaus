@@ -1,5 +1,23 @@
 # @formhaus/react
 
+## 0.10.1
+
+### Patch Changes
+
+- 8630259: - `FormhausForm` shows "Try again" when the definition fails to load on a network failure, a timeout, a response that is not JSON, `429` or `5xx`.
+- 26eb04c: - Enter in a single-line input runs Continue or Submit. The primary button is now `type="submit"`.
+  - After a failed Continue or Submit, focus moves to the first invalid field.
+  - Required inputs have `aria-required="true"`.
+- 0414183: - Number fields keep decimals, trailing zeros and the minus sign while typing. Typing `1.05` no longer gives `15`.
+  - Text fields render the `inputMode` attribute.
+- Updated dependencies [8630259]
+- Updated dependencies [8630259]
+- Updated dependencies [0414183]
+- Updated dependencies [a15c07f]
+- Updated dependencies [26eb04c]
+- Updated dependencies [4d656df]
+  - @formhaus/core@0.10.1
+
 ## 0.10.0
 
 ### Minor Changes

@@ -1,5 +1,25 @@
 # @formhaus/core
 
+## 0.10.1
+
+### Patch Changes
+
+- 8630259: - A paused form loaded from `@formhaus/core/cloud` fails with code `"paused"` and "This form is paused." instead of "Could not send. Try again."
+  - Cloud requests time out after 15 seconds for the definition and 30 seconds for a submission. The `CloudError` has `status` `0`, code `"timeout"` and the `"retry"` action.
+  - The network failure message is "Could not reach the form server. Check your connection and try again." instead of "You are offline".
+  - A response body that is not JSON fails with a `CloudError` with code `"invalid_response"` instead of a `SyntaxError`.
+  - `start()` of `createCloudController()` loads the definition again after a load error.
+- 8630259: - `validateDefinition()` and `checkDefinition()` from `@formhaus/core/server` return messages for malformed input instead of throwing. This covers `null`, `fields` or `steps` that are not arrays, a step without `fields`, and `show`, `showAny` or `routes` that are not arrays.
+  - The `FormEngine` constructor throws an `Error` that names the malformed part instead of a `TypeError`.
+  - `validateDefinition()` reports a missing `submit` action and a condition without a `field` name.
+  - `FormDefinition` accepts `$schema`.
+  - `validateSubmission()` no longer logs definition warnings with `console.warn`.
+- 0414183: - `inputMode` accepts `decimal`, `url` and `search`.
+- a15c07f: Fixed fields below a radio or multiselect group jumping when an input gets focus in Safari.
+- 26eb04c: - A submit that fails on a field of an earlier step moves the form to that step.
+- 4d656df: - On touch screens the stylesheet uses 17px text and 15px helper and error text. Inputs stay at 16px or more, so iOS Safari does not zoom in on focus.
+  - The whole checkbox and switch row toggles the control. On touch screens the row is at least 44px tall.
+
 ## 0.10.0
 
 ### Minor Changes
