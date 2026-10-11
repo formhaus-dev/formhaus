@@ -25,6 +25,7 @@
       {
         "key": "size",
         "type": "radio",
+        "layout": "inline",
         "label": "Size",
         "options": [
           {
