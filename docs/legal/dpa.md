@@ -7,7 +7,7 @@ sidebar: false
 # Formhaus Cloud Data Processing Addendum
 
 ::: warning Draft, pending legal review
-This document is a draft and is not in effect. Items marked [VERIFY] must be confirmed before launch.
+This document is a draft and is not in effect. It will be reviewed by a lawyer before Formhaus Cloud launches.
 :::
 
 **Effective date: [EFFECTIVE DATE]**
@@ -41,7 +41,7 @@ When you use the Service to process Personal Data subject to Data Protection Law
 ## 3. Processing instructions
 
 - We process Customer Personal Data only on your documented instructions, including the Agreement and this DPA, and as needed to **provide, secure, support and debug the Service** for you (the "**Permitted Purposes**"), unless the law requires otherwise. In that case we will tell you before processing, unless the law forbids it.
-- Your configuration of the Service is an instruction. This includes the fields of your Forms, your plan's retention period, email notifications, webhook URLs, API Keys and the Agents that you let use them. When you send Submission Data to a webhook, a mailbox or an Agent, you instruct us to deliver it there.
+- Your configuration of the Service is an instruction. This includes the fields of your Forms, your plan's retention period, email notifications, webhook URLs, API Keys and the Agents that you let use them. When you send Submission Data to a webhook or an Agent, you instruct us to deliver it there.
 - We will tell you if, in our opinion, an instruction breaks Data Protection Laws.
 - **We do not use Customer Personal Data to train AI or machine-learning models, and we do not send it to any AI provider.** We do not use it for advertising.
 - **CCPA service-provider terms.** For Personal Information governed by the CCPA, we act as a **Service Provider** and:
@@ -110,9 +110,9 @@ Taking into account the nature of the processing and the information available t
 
 ## 11. Retention, deletion and return
 
-- During the Agreement, Customer Personal Data is kept for the retention period of your plan, as stated in the [Terms](./terms.md): 90 days per submission on the Free plan, and until you delete it on the Pro plan.
+- During the Agreement, Customer Personal Data is kept for the retention period of your plan, as stated in the [Terms](./terms.md): 90 days per submission on the Free plan, and until you delete it on the Pro and Team plans. After a move from a paid plan to Free, submissions older than 90 days are deleted 60 days after the change.
 - You can export Customer Personal Data as CSV or JSON at any time. This is how we return it.
-- When you delete Forms, submissions or your account, we delete the data from the live database at once. Encrypted backups that contain it expire within **30 days**, and stay protected by this DPA until then.
+- When you delete Forms, submissions or your account, we delete the data from the live database at once. Backups that contain it expire within **30 days**, and stay protected by this DPA until then.
 - On termination for any other reason, we delete Customer Personal Data within **30 days**, and its backup copies expire within a further **30 days**, unless the law requires us to keep it.
 - This Section controls over any conflicting deletion or retention statement in the Agreement or the Privacy Policy for Customer Personal Data.
 
@@ -134,7 +134,7 @@ Each party's liability under this DPA is subject to the limitations in the Agree
 
 - **Subject matter:** hosting forms and receiving, validating, storing and delivering form submissions for the Customer.
 - **Duration:** the term of the Agreement, plus the deletion period in Section 11.
-- **Nature and purpose:** storing Form definitions; receiving submissions through the public endpoint, hosted pages and the embed; validating them against the Form definition; storing them; showing them in the dashboard; exporting them as CSV or JSON; returning them through the REST API and MCP server to the Customer and its Agents; sending them to the Customer by email notification and webhook; applying rate limits, plan limits and abuse controls; backing them up; and securing, supporting and debugging the Service.
+- **Nature and purpose:** storing Form definitions; receiving submissions through the public endpoint, hosted pages and the embed; validating them against the Form definition; storing them; showing them in the dashboard; exporting them as CSV or JSON; returning them through the REST API and MCP server to the Customer and its Agents; sending them to the Customer by webhook; notifying the Customer by email of new submissions with form titles and counts only; applying rate limits, plan limits and abuse controls; backing them up; and securing, supporting and debugging the Service.
 - **Types of Personal Data:** decided by the Customer through the fields of its Forms. Typically names, email addresses, phone numbers, company details and free-text answers. Submission metadata: submission time, user agent, referrer and skipped steps. The Service does not store Respondents' IP addresses. The Customer must not collect credentials or payment card data, and collects Special Categories of Personal Data only under Section 7 of the Terms.
 - **Categories of Data Subjects:** Respondents to the Customer's Forms, and any people that Respondents mention in their answers.
 - **Special Categories:** none expected. See Annex III.
@@ -146,15 +146,15 @@ Each party's liability under this DPA is subject to the limitations in the Agree
 
 - **Location:** the application, database and backups are hosted by DigitalOcean in the fra1 region (Frankfurt, Germany).
 - **Encryption in transit:** TLS on all public hosts (api.formhaus.dev, app.formhaus.dev, f.formhaus.dev), with HTTP Strict Transport Security. Webhooks are delivered only to HTTPS URLs.
-- **Encryption at rest:** backups are encrypted on the server with public-key encryption (age) before they are copied off-site, so the storage provider cannot read them. [VERIFY: whether DigitalOcean encrypts the droplet's local disk at rest; do not claim it until confirmed.]
+- **Encryption at rest:** database backups are encrypted on the server with public-key encryption (age) before they are copied off-site, so the storage provider cannot read them. DigitalOcean does not encrypt the server's local disk at rest.
 - **Secrets and credentials:** sign-in tokens, session tokens, API Keys and claim tokens are stored only as keyed hashes (HMAC-SHA256). API Keys are shown once. Production secrets are kept out of source control.
 - **Authentication and access:** passwordless sign-in with single-use links that expire after 15 minutes; sessions in HttpOnly, Secure, SameSite=Lax cookies that expire after 30 days; rate limits on sign-in per email and per IP; sign-in responses do not reveal whether an account exists. State-changing dashboard requests are checked against `Sec-Fetch-Site` and `Origin`. Each account sees only its own Forms and submissions.
-- **Administrative access:** production access is limited to Fabrique-Futur personnel who need it, over SSH with keys. [VERIFY: SSH key-only, firewall rules and the hardening done after the security audit.]
+- **Administrative access:** production access is limited to Fabrique-Futur personnel who need it, over SSH with keys only; password login is disabled. A host firewall denies all incoming traffic except SSH, HTTP and HTTPS, and repeated failed SSH logins are blocked. The application listens only on the local interface behind a TLS reverse proxy and runs as an unprivileged user with a restricted system profile.
 - **Data minimization:** Respondents' IP addresses are used in memory for rate limiting and are not stored. Abuse reports store a keyed hash of the reporter's IP address with a key that changes daily. The claim email for an Unclaimed Form contains no form content.
 - **Input handling:** every submission is validated on the server against the Form definition, with limits on body size (64 KB) and definition size (32 KB). User-supplied patterns run in a sandbox with a time limit. Unknown fields are dropped. CSV exports escape cells that spreadsheets would run as formulas.
 - **Webhook safety:** each Form has its own signing secret and every webhook is signed with HMAC-SHA256. The Service resolves the webhook host and refuses private, loopback, link-local and cloud-metadata addresses, connects to the resolved address, follows no redirects and reads at most 1 KB of the response.
 - **Abuse controls:** rate limits per IP and per Form, a honeypot field and a minimum fill time on hosted pages, a banner and `noindex` on Unclaimed Forms, and automatic pausing of an Unclaimed Form after reports from 3 distinct reporters.
-- **Availability and recovery:** nightly encrypted database backups, kept on the server for 7 days and off-site for 30 days, with a restore test before launch and monthly after it. A submission and its notification and webhook jobs are written in one transaction, so an accepted submission is not lost if the server stops.
+- **Availability and recovery:** nightly encrypted database backups, kept on the server for 7 days and off-site for 30 days, and daily DigitalOcean backups of the server kept for 7 days, with a restore test before launch and monthly after it. A submission and its notification and webhook jobs are written in one transaction, so an accepted submission is not lost if the server stops.
 - **Development:** security review of security-relevant changes, dependency vulnerability scanning, and a security audit before launch.
 
 ---
