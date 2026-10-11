@@ -86,6 +86,24 @@ describe('form definition JSON Schema', () => {
     expect(validate(definition)).toBe(false);
   });
 
+  it('accepts a form description up to 1000 characters', () => {
+    expect(validate({ ...validDefinition(), description: 'a'.repeat(1000) })).toBe(true);
+    expect(validate({ ...validDefinition(), description: 'a'.repeat(1001) })).toBe(false);
+    expect(validate({ ...validDefinition(), description: 42 })).toBe(false);
+  });
+
+  it.each(['stack', 'inline'])('accepts the %s option layout', (layout) => {
+    const definition = validDefinition();
+    Object.assign(definition.steps[0].fields[0], { type: 'radio', options: [{ value: 'a', label: 'A' }], layout });
+    expect(validate(definition)).toBe(true);
+  });
+
+  it('rejects an unknown option layout', () => {
+    const definition = validDefinition();
+    Object.assign(definition.steps[0].fields[0], { layout: 'grid' });
+    expect(validate(definition)).toBe(false);
+  });
+
   it('rejects unknown properties', () => {
     expect(validate({ ...validDefinition(), layout: 'grid' })).toBe(false);
   });

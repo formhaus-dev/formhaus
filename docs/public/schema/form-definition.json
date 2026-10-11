@@ -15,6 +15,11 @@
       "type": "string",
       "description": "Form title for host UI and Figma output. Renderers do not display it."
     },
+    "description": {
+      "type": "string",
+      "description": "Plain text shown under the title by the host UI and Figma output. Renderers do not display it. Up to 1000 characters.",
+      "maxLength": 1000
+    },
     "submit": {
       "$ref": "#/definitions/FormAction",
       "description": "Submit button on the last step."
@@ -166,7 +171,7 @@
         },
         "helperText": {
           "type": "string",
-          "description": "Hint text below the field."
+          "description": "Hint text between the label and the control."
         },
         "autoAdvance": {
           "type": "boolean",
@@ -199,6 +204,14 @@
             "$ref": "#/definitions/FieldOption"
           },
           "description": "Static options for select, autocomplete, multiselect and radio fields."
+        },
+        "layout": {
+          "type": "string",
+          "enum": [
+            "stack",
+            "inline"
+          ],
+          "description": "Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them."
         },
         "optionsFrom": {
           "type": "string",

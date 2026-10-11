@@ -14,6 +14,7 @@ Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never b
 interface FormDefinition {
   id: string;            // Unique form identifier
   title: string;         // Form title for host UI and Figma output
+  description?: string;  // Text under the title, up to 1000 characters
   submit: FormAction;    // Submit button config
   cancel?: FormAction;   // Cancel button (optional)
   fields?: FormField[];  // Single-step form
@@ -31,13 +32,14 @@ interface FormField {
   type: FieldType;                // What to render (see Field Types page)
   label: string;                  // Label text
   placeholder?: string;           // Placeholder text
-  helperText?: string;            // Hint text below the field
+  helperText?: string;            // Hint text between the label and the control
   defaultValue?: unknown;         // Pre-filled value
   autoAdvance?: boolean;          // Advance on explicit field activation
   show?: ShowCondition[];         // AND conditions for visibility
   showAny?: ShowCondition[];      // OR conditions for visibility
   validation?: FieldValidation;   // Validation rules
   options?: FieldOption[];        // For select, radio, multiselect
+  layout?: 'stack' | 'inline';    // Radio and multiselect option layout
   optionsFrom?: string;           // Dynamic options provider key
   optionsDependsOn?: string[];    // Re-fetch options when these fields change
   accept?: string;                // File input mime types
@@ -160,7 +162,7 @@ type StepValidateFn = (
 ) => Promise<Record<string, string> | null | void>;
 ```
 
-`FormRenderer` does not render the form title. Use it in your page heading or other host UI. The Figma plugin uses it for frame names and headings.
+`FormRenderer` does not render the form title or description. Use them in your page heading or other host UI. The Figma plugin uses the title for frame names and headings and shows the description under it.
 
 For runtime state and methods, see the [FormEngine reference](/api/form-engine).
 

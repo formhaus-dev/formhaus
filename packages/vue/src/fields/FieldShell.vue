@@ -10,9 +10,17 @@ const props = defineProps<{
 }>();
 
 const group = computed(() => props.variant === 'radio' || props.variant === 'multiselect');
+const inline = computed(() => !!props.variant && !group.value);
 const ids = computed(() => fieldIds(props.field));
+const container = computed(() => {
+  const name = `fh-field__${props.variant}-${group.value ? 'group' : 'wrapper'}`;
+  return group.value && props.field.layout === 'inline' ? [name, `${name}--inline`] : name;
+});
 const Label = () => props.field.label
   ? h('label', { for: ids.value.inputId, class: 'fh-field__label' }, props.field.label)
+  : null;
+const Helper = () => props.field.helperText
+  ? h('p', { id: ids.value.helperId, class: 'fh-field__helper' }, props.field.helperText)
   : null;
 </script>
 
@@ -25,15 +33,14 @@ const Label = () => props.field.label
     <legend v-if="group && props.field.label" class="fh-field__label">
       {{ props.field.label }}
     </legend>
-    <div v-if="props.variant" :class="`fh-field__${props.variant}-${group ? 'group' : 'wrapper'}`">
+    <Label v-if="!props.variant" />
+    <Helper v-if="!inline" />
+    <div v-if="props.variant" :class="container">
       <slot />
-      <Label v-if="!group" />
+      <Label v-if="inline" />
     </div>
-    <template v-else>
-      <Label />
-      <slot />
-    </template>
-    <p v-if="props.error" :id="ids.helperId" class="fh-field__error">{{ props.error }}</p>
-    <p v-else-if="props.field.helperText" :id="ids.helperId" class="fh-field__helper">{{ props.field.helperText }}</p>
+    <slot v-else />
+    <Helper v-if="inline" />
+    <p v-if="props.error" :id="ids.errorId" class="fh-field__error" role="alert">{{ props.error }}</p>
   </component>
 </template>

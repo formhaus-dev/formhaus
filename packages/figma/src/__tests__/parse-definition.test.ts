@@ -82,6 +82,11 @@ describe('getSteps', () => {
     expect(steps[0].fields).toHaveLength(1);
   });
 
+  it('carries the form description into a single-step form', () => {
+    const steps = getSteps(definition({ title: 'Form', description: 'Intro', fields: [] }));
+    expect(steps[0].description).toBe('Intro');
+  });
+
   it('handles missing fields gracefully', () => {
     const steps = getSteps(definition({ title: 'Empty' }));
     expect(steps[0].fields).toEqual([]);

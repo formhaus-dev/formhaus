@@ -1,7 +1,6 @@
 import type { FormField } from '@formhaus/core';
 import type { ReactNode } from 'react';
 import { FieldLabel } from './FieldLabel';
-import { FieldMessage } from './FieldMessage';
 import { describedBy } from './fieldProps';
 
 interface FieldShellProps {
@@ -13,7 +12,10 @@ interface FieldShellProps {
 
 export function FieldShell({ field, error, variant, children }: FieldShellProps) {
   const group = variant === 'radio' || variant === 'multiselect';
+  const inline = variant && !group;
   const Root = group ? 'fieldset' : 'div';
+  const container = `fh-field__${variant}-${group ? 'group' : 'wrapper'}`;
+  const helper = field.helperText && <p id={`${field.key}-helper`} className="fh-field__helper">{field.helperText}</p>;
 
   return (
     <Root
@@ -22,22 +24,20 @@ export function FieldShell({ field, error, variant, children }: FieldShellProps)
       aria-describedby={group ? describedBy(field, error) : undefined}
     >
       {group && field.label && <legend className="fh-field__label">{field.label}</legend>}
+      {!variant && <FieldLabel field={field} inputId={field.key} />}
+      {!inline && helper}
       {variant ? (
-        <div className={`fh-field__${variant}-${group ? 'group' : 'wrapper'}`}>
+        <div className={group && field.layout === 'inline' ? `${container} ${container}--inline` : container}>
           {children}
-          {!group && field.label && (
+          {inline && field.label && (
             <label className="fh-field__label" htmlFor={field.key}>
               {field.label}
             </label>
           )}
         </div>
-      ) : (
-        <>
-          <FieldLabel field={field} inputId={field.key} />
-          {children}
-        </>
-      )}
-      <FieldMessage field={field} error={error} />
+      ) : children}
+      {inline && helper}
+      {error && <p id={`${field.key}-error`} className="fh-field__error" role="alert">{error}</p>}
     </Root>
   );
 }
