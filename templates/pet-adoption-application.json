@@ -1,0 +1,170 @@
+{
+  "slug": "pet-adoption-application",
+  "title": "Pet adoption application",
+  "summary": "Home, household and experience questions for shelters and rescues.",
+  "category": "application",
+  "definition": {
+    "id": "pet-adoption-application",
+    "title": "Adoption application",
+    "submit": { "label": "Send application" },
+    "steps": [
+      {
+        "id": "pet",
+        "title": "The pet",
+        "fields": [
+          {
+            "key": "species",
+            "type": "radio",
+            "label": "What are you looking to adopt?",
+            "layout": "inline",
+            "options": [
+              { "value": "dog", "label": "Dog" },
+              { "value": "cat", "label": "Cat" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "speciesOther",
+            "type": "text",
+            "label": "What kind of animal?",
+            "show": [{ "field": "species", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "petName",
+            "type": "text",
+            "label": "Which animal caught your eye?",
+            "helperText": "Name or ID from the listing. Leave empty if you’re open to suggestions."
+          }
+        ]
+      },
+      {
+        "id": "home",
+        "title": "Your home",
+        "fields": [
+          {
+            "key": "homeType",
+            "type": "radio",
+            "label": "Type of home",
+            "options": [
+              { "value": "house-yard", "label": "House with a garden or yard" },
+              { "value": "house", "label": "House without a garden" },
+              { "value": "apartment", "label": "Apartment or flat" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "ownership",
+            "type": "radio",
+            "label": "Do you own or rent?",
+            "layout": "inline",
+            "options": [{ "value": "own", "label": "Own" }, { "value": "rent", "label": "Rent" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "landlord",
+            "type": "radio",
+            "label": "Does your landlord allow pets?",
+            "layout": "inline",
+            "show": [{ "field": "ownership", "eq": "rent" }],
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-sure", "label": "Not sure" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "children",
+            "type": "radio",
+            "label": "Do children live with you?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "household",
+            "type": "radio",
+            "label": "Does everyone you live with agree to adopting?",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "Not yet" },
+              { "value": "alone", "label": "I live alone" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "otherPets",
+            "type": "textarea",
+            "label": "Other pets in your home",
+            "rows": 2,
+            "placeholder": "Type, age, and whether they’re spayed or neutered"
+          }
+        ]
+      },
+      {
+        "id": "experience",
+        "title": "Daily life",
+        "fields": [
+          {
+            "key": "experience",
+            "type": "radio",
+            "label": "Experience with pets",
+            "options": [
+              { "value": "first", "label": "This would be my first" },
+              { "value": "before", "label": "I’ve had pets before" },
+              { "value": "now", "label": "I have pets now" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "alone",
+            "type": "radio",
+            "label": "How many hours a day would the pet be alone?",
+            "options": [
+              { "value": "under-4", "label": "Less than 4" },
+              { "value": "4-8", "label": "4 to 8" },
+              { "value": "8-plus", "label": "More than 8" }
+            ],
+            "validation": { "required": true }
+          },
+          { "key": "why", "type": "textarea", "label": "Why do you want to adopt now?", "rows": 3 }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "town",
+            "type": "text",
+            "label": "Town or city",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

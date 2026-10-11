@@ -1,0 +1,120 @@
+{
+  "slug": "job-application",
+  "title": "Job application",
+  "summary": "Contact details, CV link instead of an upload, experience, work eligibility and start date.",
+  "category": "application",
+  "definition": {
+    "id": "job-application",
+    "title": "Apply for this role",
+    "submit": { "label": "Submit application" },
+    "steps": [
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "position",
+            "type": "text",
+            "label": "Which role are you applying for?",
+            "validation": { "required": true }
+          },
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "phone", "type": "phone", "label": "Phone", "inputMode": "tel" },
+          {
+            "key": "location",
+            "type": "text",
+            "label": "Where are you based?",
+            "placeholder": "City and country",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "experience",
+        "title": "Experience",
+        "fields": [
+          {
+            "key": "cv",
+            "type": "text",
+            "label": "Link to your CV or LinkedIn profile",
+            "placeholder": "https://",
+            "validation": { "required": true }
+          },
+          {
+            "key": "portfolio",
+            "type": "text",
+            "label": "Portfolio, GitHub or personal site",
+            "placeholder": "https://"
+          },
+          {
+            "key": "years",
+            "type": "radio",
+            "label": "Years of relevant experience",
+            "options": [
+              { "value": "0-1", "label": "Less than 1" },
+              { "value": "1-3", "label": "1 to 3" },
+              { "value": "3-5", "label": "3 to 5" },
+              { "value": "5-10", "label": "5 to 10" },
+              { "value": "10-plus", "label": "More than 10" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "motivation",
+            "type": "textarea",
+            "label": "Why are you interested in this role?",
+            "rows": 4,
+            "validation": { "required": true, "maxLength": 1500 }
+          }
+        ]
+      },
+      {
+        "id": "logistics",
+        "title": "Work setup and start date",
+        "fields": [
+          {
+            "key": "workRights",
+            "type": "radio",
+            "label": "Do you have the right to work in the country of this role?",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "sponsorship", "label": "No, I would need sponsorship" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "workSetup",
+            "type": "radio",
+            "label": "Preferred work setup",
+            "options": [
+              { "value": "on-site", "label": "On-site" },
+              { "value": "hybrid", "label": "Hybrid" },
+              { "value": "remote", "label": "Remote" },
+              { "value": "any", "label": "No preference" }
+            ],
+            "validation": { "required": true }
+          },
+          { "key": "startDate", "type": "date", "label": "Earliest start date" },
+          {
+            "key": "salary",
+            "type": "text",
+            "label": "Salary expectation",
+            "placeholder": "Amount and currency"
+          }
+        ]
+      }
+    ]
+  }
+}

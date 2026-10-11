@@ -1,0 +1,110 @@
+{
+  "slug": "coaching-intake",
+  "title": "Coaching intake",
+  "summary": "Focus area, goals and preferred format before a first coaching session.",
+  "category": "intake",
+  "definition": {
+    "id": "coaching-intake",
+    "title": "Coaching intake",
+    "submit": { "label": "Send" },
+    "steps": [
+      {
+        "id": "goals",
+        "title": "Your goals",
+        "fields": [
+          {
+            "key": "focus",
+            "type": "radio",
+            "label": "What do you want to work on?",
+            "options": [
+              { "value": "career", "label": "Career" },
+              { "value": "leadership", "label": "Leadership" },
+              { "value": "business", "label": "Running a business" },
+              { "value": "habits", "label": "Health and habits" },
+              { "value": "relationships", "label": "Life and relationships" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "focusOther",
+            "type": "text",
+            "label": "Which area?",
+            "show": [{ "field": "focus", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "goal",
+            "type": "textarea",
+            "label": "What would you like to be different in three months?",
+            "rows": 4,
+            "validation": { "required": true }
+          },
+          { "key": "tried", "type": "textarea", "label": "What have you tried so far?", "rows": 3 }
+        ]
+      },
+      {
+        "id": "format",
+        "title": "Format",
+        "fields": [
+          {
+            "key": "format",
+            "type": "radio",
+            "label": "How would you like to meet?",
+            "layout": "inline",
+            "options": [
+              { "value": "video", "label": "Video call" },
+              { "value": "in-person", "label": "In person" },
+              { "value": "phone", "label": "Phone" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "frequency",
+            "type": "radio",
+            "label": "How often?",
+            "options": [
+              { "value": "weekly", "label": "Weekly" },
+              { "value": "biweekly", "label": "Every two weeks" },
+              { "value": "monthly", "label": "Monthly" },
+              { "value": "not-sure", "label": "Not sure yet" }
+            ]
+          },
+          {
+            "key": "budget",
+            "type": "radio",
+            "label": "Monthly budget",
+            "options": [
+              { "value": "under-200", "label": "Under $200" },
+              { "value": "200-500", "label": "$200 to $500" },
+              { "value": "500-1000", "label": "$500 to $1,000" },
+              { "value": "1000-plus", "label": "More than $1,000" },
+              { "value": "discuss", "label": "I’d rather discuss it" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          { "key": "phone", "type": "phone", "label": "Phone", "inputMode": "tel" },
+          { "key": "timezone", "type": "text", "label": "Time zone", "placeholder": "City or UTC offset" }
+        ]
+      }
+    ]
+  }
+}

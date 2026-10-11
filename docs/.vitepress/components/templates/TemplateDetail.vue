@@ -1,0 +1,66 @@
+<script setup lang="ts">
+import { computed, defineAsyncComponent, ref } from 'vue';
+import { useData, withBase } from 'vitepress';
+import { formatJson, tokenize } from '../landing/json-format';
+import LucideIcon from '../landing/LucideIcon.vue';
+import { categoryLabel, cloudUrl, counts, type TemplatePage } from './catalog';
+import './templates.css';
+import './detail.css';
+
+const TemplatePreview = defineAsyncComponent(() => import('./TemplatePreview.vue'));
+
+const { params } = useData();
+const template = computed(() => params.value as TemplatePage);
+const source = computed(() => formatJson(template.value.definition));
+const lines = computed(() => tokenize(source.value));
+const copied = ref(false);
+
+async function copy() {
+  try {
+    await navigator.clipboard.writeText(source.value);
+    copied.value = true;
+    setTimeout(() => { copied.value = false; }, 2000);
+  } catch {
+    copied.value = false;
+  }
+}
+</script>
+
+<template>
+  <div class="tpl-detail">
+    <a class="tpl-back" :href="withBase('/templates/')"><LucideIcon name="arrow-left" /> All templates</a>
+    <p class="tpl-detail__eyebrow">
+      <a :href="withBase(`/templates/?category=${template.category}`)">{{ categoryLabel(template.category) }}</a>
+      <span aria-hidden="true">·</span> {{ counts(template) }}
+    </p>
+    <h1 class="tpl-detail__title">{{ template.title }}</h1>
+    <p class="tpl-detail__summary">{{ template.summary }}</p>
+    <div class="tpl-detail__actions">
+      <a class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)">
+        Use this template <LucideIcon name="arrow-right" />
+      </a>
+      <button type="button" class="tpl-button tpl-button--secondary" @click="copy">
+        <LucideIcon :name="copied ? 'check' : 'copy'" /> {{ copied ? 'Copied' : 'Copy JSON' }}
+      </button>
+      <span class="tpl-sr-only" role="status">{{ copied ? 'JSON copied' : '' }}</span>
+    </div>
+    <p class="tpl-detail__hint">Opens a copy in Formhaus Cloud, where you can edit and publish it.</p>
+
+    <section class="tpl-preview" aria-label="Live preview">
+      <p class="tpl-preview__label">Live preview</p>
+      <ClientOnly>
+        <TemplatePreview :definition="template.definition" />
+      </ClientOnly>
+    </section>
+
+    <details class="tpl-json">
+      <summary class="tpl-json__summary">
+        Form definition <span class="tpl-json__meta">JSON · {{ lines.length }} lines</span>
+        <LucideIcon name="chevron-down" />
+      </summary>
+      <pre class="tpl-json__pre"><code><span v-for="(line, index) in lines" :key="index" class="tpl-json__line"><span v-for="(token, position) in line" :key="position" :class="`tpl-json__${token.kind}`">{{ token.text }}</span></span></code></pre>
+    </details>
+
+    <slot />
+  </div>
+</template>

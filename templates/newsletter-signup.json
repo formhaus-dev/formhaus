@@ -1,0 +1,38 @@
+{
+  "slug": "newsletter-signup",
+  "title": "Newsletter signup",
+  "summary": "Email, first name, topics and an explicit consent checkbox.",
+  "category": "registration",
+  "definition": {
+    "id": "newsletter-signup",
+    "title": "Get the newsletter",
+    "submit": { "label": "Subscribe" },
+    "fields": [
+      {
+        "key": "email",
+        "type": "email",
+        "label": "Email",
+        "inputMode": "email",
+        "validation": { "required": true }
+      },
+      { "key": "firstName", "type": "text", "label": "First name" },
+      {
+        "key": "topics",
+        "type": "multiselect",
+        "label": "What would you like to hear about?",
+        "options": [
+          { "value": "product", "label": "Product updates" },
+          { "value": "guides", "label": "Guides and tutorials" },
+          { "value": "events", "label": "Events" },
+          { "value": "offers", "label": "Offers" }
+        ]
+      },
+      {
+        "key": "consent",
+        "type": "checkbox",
+        "label": "I agree to receive emails and know I can unsubscribe at any time",
+        "validation": { "required": true }
+      }
+    ]
+  }
+}

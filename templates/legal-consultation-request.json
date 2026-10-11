@@ -1,0 +1,106 @@
+{
+  "slug": "legal-consultation-request",
+  "title": "Legal consultation request",
+  "summary": "Area of law, deadline, a short summary and a conflict check. Nothing confidential up front.",
+  "category": "intake",
+  "definition": {
+    "id": "legal-consultation-request",
+    "title": "Request a consultation",
+    "submit": { "label": "Request consultation" },
+    "steps": [
+      {
+        "id": "matter",
+        "title": "Your matter",
+        "fields": [
+          {
+            "key": "area",
+            "type": "select",
+            "label": "Area of law",
+            "options": [
+              { "value": "family", "label": "Family and divorce" },
+              { "value": "employment", "label": "Employment" },
+              { "value": "housing", "label": "Housing and tenancy" },
+              { "value": "immigration", "label": "Immigration" },
+              { "value": "business", "label": "Business and contracts" },
+              { "value": "estates", "label": "Wills and estates" },
+              { "value": "personal-injury", "label": "Personal injury" },
+              { "value": "criminal", "label": "Criminal" },
+              { "value": "other", "label": "Something else or not sure" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "urgency",
+            "type": "radio",
+            "label": "Is there a deadline?",
+            "options": [
+              { "value": "two-weeks", "label": "Yes, within 2 weeks" },
+              { "value": "later", "label": "Yes, later than that" },
+              { "value": "none", "label": "No deadline" },
+              { "value": "not-sure", "label": "I’m not sure" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "otherParty",
+            "type": "text",
+            "label": "Name of the other party",
+            "helperText": "Person or company, if there is one. We use it to check for conflicts of interest."
+          },
+          {
+            "key": "summary",
+            "type": "textarea",
+            "label": "What do you need help with?",
+            "rows": 3,
+            "helperText": "A few sentences is enough. Please don’t share confidential details until we confirm we can help.",
+            "validation": { "required": true, "maxLength": 500 }
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "meeting",
+            "type": "radio",
+            "label": "How would you like to meet?",
+            "layout": "inline",
+            "options": [
+              { "value": "in-person", "label": "In person" },
+              { "value": "video", "label": "Video call" },
+              { "value": "phone", "label": "Phone" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "notClient",
+            "type": "checkbox",
+            "label": "I understand that sending this form does not make me a client",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

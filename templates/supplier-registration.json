@@ -1,0 +1,117 @@
+{
+  "slug": "supplier-registration",
+  "title": "Supplier registration",
+  "summary": "Company, tax, offering and contact details for onboarding new suppliers. No bank details.",
+  "category": "operations",
+  "definition": {
+    "id": "supplier-registration",
+    "title": "Become a supplier",
+    "submit": { "label": "Register" },
+    "steps": [
+      {
+        "id": "company",
+        "title": "Company",
+        "fields": [
+          {
+            "key": "legalName",
+            "type": "text",
+            "label": "Legal company name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "entity",
+            "type": "radio",
+            "label": "Business type",
+            "options": [
+              { "value": "sole-trader", "label": "Sole trader or freelancer" },
+              { "value": "partnership", "label": "Partnership" },
+              { "value": "company", "label": "Limited company or corporation" },
+              { "value": "nonprofit", "label": "Non-profit" }
+            ],
+            "validation": { "required": true }
+          },
+          { "key": "registrationNumber", "type": "text", "label": "Company registration number" },
+          {
+            "key": "taxId",
+            "type": "text",
+            "label": "Tax ID or VAT number",
+            "validation": { "required": true }
+          },
+          {
+            "key": "country",
+            "type": "text",
+            "label": "Country of registration",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "offering",
+        "title": "What you supply",
+        "fields": [
+          {
+            "key": "category",
+            "type": "select",
+            "label": "Main category",
+            "options": [
+              { "value": "goods", "label": "Physical goods" },
+              { "value": "software", "label": "Software and SaaS" },
+              { "value": "professional", "label": "Professional services" },
+              { "value": "facilities", "label": "Facilities and maintenance" },
+              { "value": "logistics", "label": "Logistics" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "description",
+            "type": "textarea",
+            "label": "Describe what you offer",
+            "rows": 3,
+            "validation": { "required": true }
+          },
+          { "key": "website", "type": "text", "label": "Website", "placeholder": "https://" },
+          {
+            "key": "currency",
+            "type": "select",
+            "label": "Invoice currency",
+            "options": [
+              { "value": "usd", "label": "USD" },
+              { "value": "eur", "label": "EUR" },
+              { "value": "gbp", "label": "GBP" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Contact",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Contact name",
+            "validation": { "required": true }
+          },
+          { "key": "role", "type": "text", "label": "Role" },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

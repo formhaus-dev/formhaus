@@ -1,0 +1,290 @@
+[
+  {
+    "slug": "catering-inquiry",
+    "title": "Catering inquiry",
+    "summary": "Event type, guest count, service style and dietary needs for a catering quote.",
+    "category": "lead-gen",
+    "steps": 3,
+    "fields": 13
+  },
+  {
+    "slug": "contact-form",
+    "title": "Contact form",
+    "summary": "Name, email, topic and message. The form almost every website needs.",
+    "category": "lead-gen",
+    "steps": 1,
+    "fields": 4
+  },
+  {
+    "slug": "home-repair-quote",
+    "title": "Home repair quote",
+    "summary": "For trades and home services. The job, the property and the timing first, then how to reach the customer.",
+    "category": "lead-gen",
+    "steps": 3,
+    "fields": 12
+  },
+  {
+    "slug": "photography-inquiry",
+    "title": "Photography booking inquiry",
+    "summary": "Shoot type, date, location and coverage, so you can quote before the first call.",
+    "category": "lead-gen",
+    "steps": 3,
+    "fields": 11
+  },
+  {
+    "slug": "demo-request",
+    "title": "Product demo request",
+    "summary": "For SaaS sales teams. Qualifies by role, team size and timing before asking for a work email.",
+    "category": "lead-gen",
+    "steps": 2,
+    "fields": 9
+  },
+  {
+    "slug": "rental-viewing-request",
+    "title": "Rental viewing request",
+    "summary": "For landlords and letting agents. Move-in date, household, pets and viewing times.",
+    "category": "lead-gen",
+    "steps": 3,
+    "fields": 11
+  },
+  {
+    "slug": "website-project-inquiry",
+    "title": "Website project inquiry",
+    "summary": "For studios and freelancers. Asks about the project, scope and budget before contact details.",
+    "category": "lead-gen",
+    "steps": 4,
+    "fields": 14
+  },
+  {
+    "slug": "client-onboarding",
+    "title": "Client onboarding",
+    "summary": "Billing details, key contacts, brand assets and access, collected once when a client signs.",
+    "category": "intake",
+    "steps": 3,
+    "fields": 14
+  },
+  {
+    "slug": "coaching-intake",
+    "title": "Coaching intake",
+    "summary": "Focus area, goals and preferred format before a first coaching session.",
+    "category": "intake",
+    "steps": 3,
+    "fields": 11
+  },
+  {
+    "slug": "legal-consultation-request",
+    "title": "Legal consultation request",
+    "summary": "Area of law, deadline, a short summary and a conflict check. Nothing confidential up front.",
+    "category": "intake",
+    "steps": 2,
+    "fields": 9
+  },
+  {
+    "slug": "patient-appointment-request",
+    "title": "New patient appointment request",
+    "summary": "First contact for a clinic: visit type, preferred times and contact details. No medical history.",
+    "category": "intake",
+    "steps": 4,
+    "fields": 14
+  },
+  {
+    "slug": "beta-tester-application",
+    "title": "Beta tester application",
+    "summary": "Picks early users by role, platform, usage and willingness to give feedback.",
+    "category": "application",
+    "steps": 3,
+    "fields": 10
+  },
+  {
+    "slug": "job-application",
+    "title": "Job application",
+    "summary": "Contact details, CV link instead of an upload, experience, work eligibility and start date.",
+    "category": "application",
+    "steps": 3,
+    "fields": 13
+  },
+  {
+    "slug": "pet-adoption-application",
+    "title": "Pet adoption application",
+    "summary": "Home, household and experience questions for shelters and rescues.",
+    "category": "application",
+    "steps": 4,
+    "fields": 16
+  },
+  {
+    "slug": "talk-proposal",
+    "title": "Talk proposal (CFP)",
+    "summary": "Call for papers: talk title, format, level, abstract, reviewer notes and speaker bio.",
+    "category": "application",
+    "steps": 3,
+    "fields": 14
+  },
+  {
+    "slug": "volunteer-application",
+    "title": "Volunteer application",
+    "summary": "Interests, availability and an emergency contact for volunteer programs.",
+    "category": "application",
+    "steps": 4,
+    "fields": 13
+  },
+  {
+    "slug": "bug-report",
+    "title": "Bug report",
+    "summary": "Steps to reproduce, expected and actual result, environment and severity.",
+    "category": "feedback",
+    "steps": 3,
+    "fields": 11
+  },
+  {
+    "slug": "cancellation-survey",
+    "title": "Cancellation survey",
+    "summary": "Why customers leave, with follow-ups for price, missing features and switching to a competitor.",
+    "category": "feedback",
+    "steps": 2,
+    "fields": 8
+  },
+  {
+    "slug": "event-feedback",
+    "title": "Event feedback",
+    "summary": "Overall rating, highlights, what to change and whether people would come again.",
+    "category": "feedback",
+    "steps": 2,
+    "fields": 7
+  },
+  {
+    "slug": "feature-request",
+    "title": "Feature request",
+    "summary": "Starts with the problem, then the idea, how much it hurts and how often it comes up.",
+    "category": "feedback",
+    "steps": 2,
+    "fields": 7
+  },
+  {
+    "slug": "nps-survey",
+    "title": "NPS survey",
+    "summary": "The standard 0 to 10 recommend question with a follow-up that changes with the score.",
+    "category": "feedback",
+    "steps": 1,
+    "fields": 4
+  },
+  {
+    "slug": "support-satisfaction-survey",
+    "title": "Support satisfaction survey",
+    "summary": "CSAT and customer effort after a support conversation, with a follow-up when it went badly.",
+    "category": "feedback",
+    "steps": 1,
+    "fields": 4
+  },
+  {
+    "slug": "testimonial-request",
+    "title": "Testimonial request",
+    "summary": "Collects a short quote, the result a client got and permission to publish it.",
+    "category": "feedback",
+    "steps": 2,
+    "fields": 9
+  },
+  {
+    "slug": "product-market-fit-survey",
+    "title": "Product-market fit survey",
+    "summary": "The “how disappointed would you be” question, plus who gets the most value and why.",
+    "category": "survey",
+    "steps": 3,
+    "fields": 8
+  },
+  {
+    "slug": "team-pulse-survey",
+    "title": "Team pulse survey",
+    "summary": "A short anonymous check-in on workload, clarity, support and morale.",
+    "category": "survey",
+    "steps": 3,
+    "fields": 6
+  },
+  {
+    "slug": "user-research-screener",
+    "title": "User research screener",
+    "summary": "Finds interview participants by role, product usage and availability.",
+    "category": "survey",
+    "steps": 3,
+    "fields": 10
+  },
+  {
+    "slug": "event-rsvp",
+    "title": "Event RSVP",
+    "summary": "Yes or no first. Party size and dietary needs only appear for guests who are coming.",
+    "category": "registration",
+    "steps": 2,
+    "fields": 6
+  },
+  {
+    "slug": "newsletter-signup",
+    "title": "Newsletter signup",
+    "summary": "Email, first name, topics and an explicit consent checkbox.",
+    "category": "registration",
+    "steps": 1,
+    "fields": 4
+  },
+  {
+    "slug": "waitlist-signup",
+    "title": "Waitlist signup",
+    "summary": "Email plus three questions that help you decide who gets access first.",
+    "category": "registration",
+    "steps": 1,
+    "fields": 4
+  },
+  {
+    "slug": "workshop-registration",
+    "title": "Workshop registration",
+    "summary": "Attendee details first, then attendance mode, experience level, and dietary and access needs.",
+    "category": "registration",
+    "steps": 2,
+    "fields": 9
+  },
+  {
+    "slug": "agency-fit-quiz",
+    "title": "Agency fit quiz",
+    "summary": "Qualifies leads in a few taps and sends small budgets to a free resources signup instead of a sales call.",
+    "category": "quiz",
+    "steps": 6,
+    "fields": 12
+  },
+  {
+    "slug": "training-plan-quiz",
+    "title": "Training plan quiz",
+    "summary": "Goal, experience, time and equipment in one-tap questions, then an email to send the plan.",
+    "category": "quiz",
+    "steps": 5,
+    "fields": 7
+  },
+  {
+    "slug": "security-report",
+    "title": "Security vulnerability report",
+    "summary": "Responsible disclosure intake: affected asset, type, impact, reproduction steps and credit.",
+    "category": "operations",
+    "steps": 3,
+    "fields": 11
+  },
+  {
+    "slug": "supplier-registration",
+    "title": "Supplier registration",
+    "summary": "Company, tax, offering and contact details for onboarding new suppliers. No bank details.",
+    "category": "operations",
+    "steps": 3,
+    "fields": 13
+  },
+  {
+    "slug": "support-request",
+    "title": "Support request",
+    "summary": "Category, urgency and details first. Account and invoice fields only show when they’re relevant.",
+    "category": "operations",
+    "steps": 2,
+    "fields": 8
+  },
+  {
+    "slug": "time-off-request",
+    "title": "Time off request",
+    "summary": "Leave type, dates, handover and approver for small teams without an HR system.",
+    "category": "operations",
+    "steps": 3,
+    "fields": 10
+  }
+]

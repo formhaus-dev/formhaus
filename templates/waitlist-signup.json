@@ -1,0 +1,45 @@
+{
+  "slug": "waitlist-signup",
+  "title": "Waitlist signup",
+  "summary": "Email plus three questions that help you decide who gets access first.",
+  "category": "registration",
+  "definition": {
+    "id": "waitlist-signup",
+    "title": "Join the waitlist",
+    "submit": { "label": "Join waitlist" },
+    "fields": [
+      {
+        "key": "email",
+        "type": "email",
+        "label": "Email",
+        "inputMode": "email",
+        "validation": { "required": true }
+      },
+      {
+        "key": "role",
+        "type": "select",
+        "label": "What best describes you?",
+        "options": [
+          { "value": "developer", "label": "Developer" },
+          { "value": "designer", "label": "Designer" },
+          { "value": "product", "label": "Product manager" },
+          { "value": "founder", "label": "Founder" },
+          { "value": "other", "label": "Other" }
+        ]
+      },
+      {
+        "key": "teamSize",
+        "type": "radio",
+        "label": "Team size",
+        "layout": "inline",
+        "options": [
+          { "value": "solo", "label": "Just me" },
+          { "value": "2-10", "label": "2 to 10" },
+          { "value": "11-50", "label": "11 to 50" },
+          { "value": "50-plus", "label": "More than 50" }
+        ]
+      },
+      { "key": "useCase", "type": "textarea", "label": "What would you use it for?", "rows": 3 }
+    ]
+  }
+}

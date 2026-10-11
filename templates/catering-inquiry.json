@@ -1,0 +1,143 @@
+{
+  "slug": "catering-inquiry",
+  "title": "Catering inquiry",
+  "summary": "Event type, guest count, service style and dietary needs for a catering quote.",
+  "category": "lead-gen",
+  "definition": {
+    "id": "catering-inquiry",
+    "title": "Catering inquiry",
+    "submit": { "label": "Request a quote" },
+    "steps": [
+      {
+        "id": "event",
+        "title": "The event",
+        "fields": [
+          {
+            "key": "eventType",
+            "type": "radio",
+            "label": "Type of event",
+            "options": [
+              { "value": "wedding", "label": "Wedding" },
+              { "value": "corporate", "label": "Corporate event" },
+              { "value": "private", "label": "Private party" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "eventTypeOther",
+            "type": "text",
+            "label": "What’s the occasion?",
+            "show": [{ "field": "eventType", "eq": "other" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "date",
+            "type": "date",
+            "label": "Event date",
+            "validation": { "required": true }
+          },
+          {
+            "key": "guests",
+            "type": "number",
+            "label": "Number of guests",
+            "inputMode": "numeric",
+            "validation": { "required": true, "min": 1, "max": 5000 }
+          },
+          {
+            "key": "venue",
+            "type": "text",
+            "label": "Venue or city",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "menu",
+        "title": "Food and service",
+        "fields": [
+          {
+            "key": "style",
+            "type": "radio",
+            "label": "Service style",
+            "options": [
+              { "value": "buffet", "label": "Buffet" },
+              { "value": "plated", "label": "Plated meal" },
+              { "value": "family-style", "label": "Sharing platters" },
+              { "value": "canapes", "label": "Canapés and finger food" },
+              { "value": "drop-off", "label": "Drop-off only, no staff" },
+              { "value": "not-sure", "label": "Not sure yet" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "dietary",
+            "type": "multiselect",
+            "label": "Dietary needs among guests",
+            "helperText": "Pick all that apply.",
+            "options": [
+              { "value": "vegetarian", "label": "Vegetarian" },
+              { "value": "vegan", "label": "Vegan" },
+              { "value": "gluten-free", "label": "Gluten-free" },
+              { "value": "dairy-free", "label": "Dairy-free" },
+              { "value": "nut-free", "label": "Nut allergy" },
+              { "value": "halal", "label": "Halal" },
+              { "value": "kosher", "label": "Kosher" }
+            ]
+          },
+          {
+            "key": "budget",
+            "type": "radio",
+            "label": "Budget per guest",
+            "options": [
+              { "value": "under-25", "label": "Under $25" },
+              { "value": "25-50", "label": "$25 to $50" },
+              { "value": "50-100", "label": "$50 to $100" },
+              { "value": "100-plus", "label": "More than $100" },
+              { "value": "not-sure", "label": "Not sure yet" }
+            ]
+          },
+          {
+            "key": "notes",
+            "type": "textarea",
+            "label": "Anything else?",
+            "rows": 4,
+            "placeholder": "Bar service, rentals, timings, themes…"
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          },
+          {
+            "key": "company",
+            "type": "text",
+            "label": "Company",
+            "show": [{ "field": "eventType", "eq": "corporate" }]
+          }
+        ]
+      }
+    ]
+  }
+}

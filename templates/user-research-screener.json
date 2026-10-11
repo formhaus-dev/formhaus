@@ -1,0 +1,129 @@
+{
+  "slug": "user-research-screener",
+  "title": "User research screener",
+  "summary": "Finds interview participants by role, product usage and availability.",
+  "category": "survey",
+  "definition": {
+    "id": "user-research-screener",
+    "title": "Take part in research",
+    "submit": { "label": "Sign me up" },
+    "steps": [
+      {
+        "id": "background",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "role",
+            "type": "select",
+            "label": "Your role",
+            "options": [
+              { "value": "engineering", "label": "Engineering" },
+              { "value": "product", "label": "Product" },
+              { "value": "design", "label": "Design" },
+              { "value": "marketing", "label": "Marketing" },
+              { "value": "sales", "label": "Sales" },
+              { "value": "support", "label": "Customer support" },
+              { "value": "operations", "label": "Operations" },
+              { "value": "other", "label": "Other" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "companySize",
+            "type": "radio",
+            "label": "Company size",
+            "options": [
+              { "value": "1-10", "label": "1 to 10" },
+              { "value": "11-50", "label": "11 to 50" },
+              { "value": "51-500", "label": "51 to 500" },
+              { "value": "500-plus", "label": "More than 500" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "usage",
+            "type": "radio",
+            "label": "How often do you use our product?",
+            "options": [
+              { "value": "daily", "label": "Daily" },
+              { "value": "weekly", "label": "Weekly" },
+              { "value": "monthly", "label": "Monthly" },
+              { "value": "rarely", "label": "Rarely" },
+              { "value": "never", "label": "I haven’t used it yet" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "useCase",
+            "type": "textarea",
+            "label": "What do you mainly use it for?",
+            "rows": 3,
+            "show": [{ "field": "usage", "in": ["daily", "weekly", "monthly", "rarely"] }],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "availability",
+        "title": "Availability",
+        "fields": [
+          {
+            "key": "format",
+            "type": "radio",
+            "label": "How would you like to take part?",
+            "layout": "inline",
+            "options": [
+              { "value": "video", "label": "Video call" },
+              { "value": "in-person", "label": "In person" },
+              { "value": "either", "label": "Either" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "slots",
+            "type": "multiselect",
+            "label": "When are you usually free?",
+            "options": [
+              { "value": "morning", "label": "Weekday mornings" },
+              { "value": "afternoon", "label": "Weekday afternoons" },
+              { "value": "evening", "label": "Weekday evenings" },
+              { "value": "weekends", "label": "Weekends" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "timezone",
+            "type": "text",
+            "label": "Time zone",
+            "placeholder": "City or UTC offset"
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "consent",
+            "type": "checkbox",
+            "label": "I agree to be contacted about research sessions",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}

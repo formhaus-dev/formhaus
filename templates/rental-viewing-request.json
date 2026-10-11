@@ -1,0 +1,117 @@
+{
+  "slug": "rental-viewing-request",
+  "title": "Rental viewing request",
+  "summary": "For landlords and letting agents. Move-in date, household, pets and viewing times.",
+  "category": "lead-gen",
+  "definition": {
+    "id": "rental-viewing-request",
+    "title": "Request a viewing",
+    "submit": { "label": "Request viewing" },
+    "steps": [
+      {
+        "id": "move",
+        "title": "Your move",
+        "fields": [
+          {
+            "key": "moveIn",
+            "type": "date",
+            "label": "Earliest move-in date",
+            "validation": { "required": true }
+          },
+          {
+            "key": "term",
+            "type": "radio",
+            "label": "How long do you want to rent?",
+            "options": [
+              { "value": "under-12-months", "label": "Less than 12 months" },
+              { "value": "12-months", "label": "12 months" },
+              { "value": "over-12-months", "label": "More than 12 months" },
+              { "value": "flexible", "label": "I’m flexible" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "occupants",
+            "type": "number",
+            "label": "How many people will live there?",
+            "inputMode": "numeric",
+            "validation": { "required": true, "min": 1, "max": 20 }
+          },
+          {
+            "key": "pets",
+            "type": "radio",
+            "label": "Do you have pets?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "petDetails",
+            "type": "text",
+            "label": "What pets?",
+            "show": [{ "field": "pets", "eq": "yes" }],
+            "placeholder": "One small dog",
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "viewing",
+        "title": "Viewing",
+        "fields": [
+          {
+            "key": "property",
+            "type": "text",
+            "label": "Which property?",
+            "placeholder": "Address or listing reference"
+          },
+          {
+            "key": "slots",
+            "type": "multiselect",
+            "label": "When can you view?",
+            "helperText": "Pick all that apply.",
+            "options": [
+              { "value": "weekday-morning", "label": "Weekday mornings" },
+              { "value": "weekday-afternoon", "label": "Weekday afternoons" },
+              { "value": "weekday-evening", "label": "Weekday evenings" },
+              { "value": "weekends", "label": "Weekends" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "questions",
+            "type": "textarea",
+            "label": "Questions about the property",
+            "rows": 3
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": { "required": true }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "inputMode": "tel",
+            "validation": { "required": true }
+          }
+        ]
+      }
+    ]
+  }
+}
