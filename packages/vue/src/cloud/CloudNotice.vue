@@ -10,20 +10,18 @@ defineExpose({ box });
 </script>
 
 <template>
-  <div class="fh-form__notices" aria-live="assertive" aria-atomic="true">
-    <div v-if="notice" ref="box" tabindex="-1" :class="['fh-form__notice', `fh-form__notice--${notice.tone}`]">
-      <p>{{ notice.message }}</p>
-      <ul v-if="notice.details.length > 0">
-        <li v-for="detail in notice.details" :key="detail">{{ detail }}</li>
-      </ul>
-      <button
-        v-if="notice.action"
-        type="button"
-        class="fh-form-actions__button fh-form-actions__button--secondary"
-        @click="emit('action', notice.action!)"
-      >
-        {{ LABELS[notice.action] }}
-      </button>
-    </div>
+  <div v-if="notice" ref="box" tabindex="-1" :class="['fh-form__notice', `fh-form__notice--${notice.tone}`]">
+    <p>{{ notice.message }}</p>
+    <ul v-if="notice.details.length > 0">
+      <li v-for="detail in notice.details" :key="detail">{{ detail }}</li>
+    </ul>
+    <button
+      v-if="notice.action"
+      type="button"
+      class="fh-form-actions__button fh-form-actions__button--secondary"
+      @click="emit('action', notice.action!)"
+    >
+      {{ LABELS[notice.action] }}
+    </button>
   </div>
 </template>

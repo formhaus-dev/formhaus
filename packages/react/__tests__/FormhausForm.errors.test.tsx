@@ -49,24 +49,24 @@ it('re-renders the updated form, keeps compatible values and announces it', asyn
   expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body)).version).toBe(1);
   expect(fetchMock.mock.calls[2][0]).toBe('https://api.formhaus.dev/f/abc/definition?v=2');
   expect(onError).toHaveBeenCalledWith(expect.objectContaining({ code: 'form_updated' }));
-  expect(document.querySelector('.fh-form__notices')?.getAttribute('aria-live')).toBe('assertive');
+  await waitFor(() => expect(document.activeElement?.className).toContain('fh-form__notice'));
+  expect(screen.getAllByText('Please answer again.')).toHaveLength(1);
 });
 
 it('shows a retryable notice on a network failure and keeps the values', async () => {
   stub(reply(200, v1, 1), new TypeError('Failed to fetch'), reply(201, { id: 's1', values: {} }));
   render(<FormhausForm id="abc" />);
   await fillAndSend();
-  expect(await screen.findByText(/You seem to be offline/)).toBeDefined();
+  expect(await screen.findByText(/You are offline/)).toBeDefined();
   expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('Ada');
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByRole('status')).toBeDefined();
 });
 
-it('lists errors for keys the form does not render and focuses the first invalid field', async () => {
-  stub(reply(200, v1, 1), reply(422, { errors: { name: 'Taken', referral: 'Unknown code' } }));
+it('focuses the first invalid field when there is no notice', async () => {
+  stub(reply(200, v1, 1), reply(422, { errors: { name: 'Taken' } }));
   render(<FormhausForm id="abc" />);
   await fillAndSend();
-  expect(await screen.findByText('referral: Unknown code')).toBeDefined();
   expect(await screen.findByText('Taken')).toBeDefined();
   await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Name')));
 });
@@ -77,4 +77,13 @@ it('shows a notice for server errors without a retry for a paused form', async (
   await fillAndSend();
   expect(await screen.findByText(/This form is paused/)).toBeDefined();
   expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+});
+
+it('lists messages for keys the form does not render without the key and focuses the notice', async () => {
+  stub(reply(200, v1, 1), reply(422, { errors: { name: 'Taken', referral: 'Unknown code' } }));
+  render(<FormhausForm id="abc" />);
+  await fillAndSend();
+  expect(await screen.findByText('Unknown code')).toBeDefined();
+  expect(screen.queryByText(/referral/)).toBeNull();
+  await waitFor(() => expect(document.activeElement?.className).toContain('fh-form__notice'));
 });

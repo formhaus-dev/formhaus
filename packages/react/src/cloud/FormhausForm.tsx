@@ -1,5 +1,5 @@
 import { FormRenderer } from '@formhaus/react';
-import { focusFirstInvalid, type CloudAction } from '@formhaus/core/cloud';
+import { focusProblem, type CloudAction } from '@formhaus/core/cloud';
 import { useCallback, useEffect, useRef } from 'react';
 import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
@@ -18,7 +18,7 @@ export function FormhausForm({ id, apiBase, onSuccess, onError, fallback, succes
 
   useEffect(() => {
     if (cloud.attempt === 0) return;
-    const frame = requestAnimationFrame(() => focusFirstInvalid(root.current, notice.current));
+    const frame = requestAnimationFrame(() => focusProblem(root.current, notice.current));
     return () => cancelAnimationFrame(frame);
   }, [cloud.attempt]);
 

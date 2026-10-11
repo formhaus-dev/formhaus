@@ -46,25 +46,34 @@ it('re-renders the updated form, keeps compatible values and announces it', asyn
   expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('Ada');
   expect(JSON.parse(String((fetchMock.mock.calls[1] as unknown as [string, { body: string }])[1].body)).version).toBe(1);
   expect(onError).toHaveBeenCalledWith(expect.objectContaining({ code: 'form_updated' }));
-  expect(document.querySelector('.fh-form__notices')?.getAttribute('aria-live')).toBe('assertive');
+  await waitFor(() => expect(document.activeElement?.className).toContain('fh-form__notice'));
+  expect(screen.getAllByText('Please answer again.')).toHaveLength(1);
 });
 
 it('shows a retryable notice on a network failure and keeps the values', async () => {
   stub(reply(200, v1, 1), new TypeError('Failed to fetch'), reply(201, { id: 's1', values: {} }));
   render(FormhausForm, { props: { id: 'abc' } });
   await fillAndSend();
-  expect(await screen.findByText(/You seem to be offline/)).toBeDefined();
+  expect(await screen.findByText(/You are offline/)).toBeDefined();
   expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('Ada');
   await new Promise((resolve) => setTimeout(resolve));
   await fireEvent.click(screen.getByText('Try again'));
   expect(await screen.findByRole('status')).toBeDefined();
 });
 
-it('lists errors for keys the form does not render and focuses the first invalid field', async () => {
+it('focuses the first invalid field when there is no notice', async () => {
+  stub(reply(200, v1, 1), reply(422, { errors: { name: 'Taken' } }));
+  render(FormhausForm, { props: { id: 'abc' } });
+  await fillAndSend();
+  expect(await screen.findByText('Taken')).toBeDefined();
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Name')));
+});
+
+it('lists messages for keys the form does not render without the key and focuses the notice', async () => {
   stub(reply(200, v1, 1), reply(422, { errors: { name: 'Taken', referral: 'Unknown code' } }));
   render(FormhausForm, { props: { id: 'abc' } });
   await fillAndSend();
-  expect(await screen.findByText('referral: Unknown code')).toBeDefined();
-  expect(await screen.findByText('Taken')).toBeDefined();
-  await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Name')));
+  expect(await screen.findByText('Unknown code')).toBeDefined();
+  expect(screen.queryByText(/referral/)).toBeNull();
+  await waitFor(() => expect(document.activeElement?.className).toContain('fh-form__notice'));
 });

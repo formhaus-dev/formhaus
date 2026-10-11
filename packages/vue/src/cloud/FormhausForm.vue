@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
-import { focusFirstInvalid, type CloudAction } from '@formhaus/core/cloud';
+import { focusProblem, type CloudAction } from '@formhaus/core/cloud';
 import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
@@ -30,9 +30,12 @@ function act(action: Exclude<CloudAction, null>) {
   else root.value?.querySelector('form')?.requestSubmit();
 }
 
+let frame = 0;
 watch(() => state.value.attempt, () => {
-  requestAnimationFrame(() => focusFirstInvalid(root.value, notice.value?.box ?? null));
+  cancelAnimationFrame(frame);
+  frame = requestAnimationFrame(() => focusProblem(root.value, notice.value?.box ?? null));
 }, { flush: 'post' });
+onBeforeUnmount(() => cancelAnimationFrame(frame));
 </script>
 
 <template>
