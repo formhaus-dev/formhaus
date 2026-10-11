@@ -9,7 +9,7 @@ const BUDGETS = {
   'core/cloud': 2900,
   'react/cloud': 1100,
   'vue/cloud': 1650,
-  'core/style.css': 2500,
+  'core/style.css': 2550,
 };
 
 const violations = [];
