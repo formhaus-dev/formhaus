@@ -5,13 +5,14 @@ import type { UseFormEngineReturn } from './useFormEngine';
 
 export function useRendererActions(form: UseFormEngineReturn, props: FormRendererProps, emit: FormRendererEmits) {
   const actionError = ref<string | null>(null);
+  const invalidAttempts = ref(0);
   watch(() => form.engine, () => { actionError.value = null; });
   async function run(action: () => Promise<boolean>) {
     if (props.loading) return;
     const owner = form.engine;
     const onError = props.onError;
     actionError.value = null;
-    try { await action(); }
+    try { if (!(await action()) && owner === form.engine && Object.keys(owner.errors).length > 0) invalidAttempts.value++; }
     catch (error) {
       if (owner !== form.engine) return;
       if (onError) onError(error);
@@ -64,5 +65,5 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
       return submit(values, skippedSteps);
     }));
   });
-  return { update, commit, next, prev, skip, submit, actionError };
+  return { update, commit, next, prev, skip, submit, actionError, invalidAttempts };
 }
