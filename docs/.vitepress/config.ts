@@ -18,6 +18,8 @@ export default defineConfig({
   head,
   transformHead,
   themeConfig: {
+    logo: { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg', alt: 'Formhaus' },
+    siteTitle: false,
     nav: [
       { text: 'Guide', link: '/guide/' },
       { text: 'API', link: '/api/definition' },
