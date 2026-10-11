@@ -143,13 +143,13 @@ describe('update_form_settings', () => {
 
   it('patches only the given settings', async () => {
     fetchMock.mockResolvedValue(reply(200, { form_id: 'f1', status: 'paused' }));
-    const { isError, body } = await call('update_form_settings', { form_id: 'f1', status: 'paused', notify_email: true, notify_mode: 'daily' });
+    const { isError, body } = await call('update_form_settings', { form_id: 'f1', status: 'paused', notify_email: true, notify_mode: 'off' });
     expect(isError).toBe(false);
     expect(body.status).toBe('paused');
     const { url, init } = lastRequest();
     expect(url).toBe('https://api.example.test/v1/forms/f1');
     expect(init.method).toBe('PATCH');
-    expect(JSON.parse(init.body!)).toEqual({ status: 'paused', notify_email: true, notify_mode: 'daily' });
+    expect(JSON.parse(init.body!)).toEqual({ status: 'paused', notify_email: true, notify_mode: 'off' });
   });
 
   it('reveals the webhook secret', async () => {
