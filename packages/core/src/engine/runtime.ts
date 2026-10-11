@@ -1,4 +1,5 @@
 import { validateDefinition } from '../definition-validation';
+import { shapeErrors } from '../definition-validation/shape-errors';
 import type { ValidatorFn } from '../validation';
 import type { FormDefinition, FormField, FormStep } from '../types';
 import type { FormEngineOptions, StepValidateFn, SubmitFn } from './engine-options';
@@ -18,6 +19,8 @@ import {
 import { submitAsync } from './submission';
 import { definitionErrors, reconcileStepIndex } from './step-routes';
 import { VisibilityState } from './visibility-state';
+
+export const quietEngines = new WeakSet<FormEngineOptions>();
 
 export class FormEngine {
   values: Record<string, unknown>;
@@ -42,17 +45,13 @@ export class FormEngine {
     initialValues?: Record<string, unknown>,
     options?: FormEngineOptions,
   ) {
-    const errors = definitionErrors(definition);
+    const shape = shapeErrors(definition);
+    const errors = shape.length ? shape : definitionErrors(definition);
     if (errors.length) throw new Error(errors.join('\n'));
     this.lifecycle = options ?? {};
     this.validators = options?.validators ?? {};
     this.visibility = new VisibilityState(definition);
-    const warnings = validateDefinition(definition);
-    for (const { key, validation } of this.visibility.allFields) {
-      const name = validation?.validator;
-      if (name && !this.validators[name]) warnings.push(`Field "${key}" references unknown validator "${name}".`);
-    }
-    for (const warning of warnings) console.warn(`[FormEngine] ${warning}`);
+    if (!quietEngines.has(this.lifecycle)) this.warnAboutDefinition();
     this.values = createValues(this.visibility.allFields, initialValues);
     this.visibility.reconcileHidden(this.values, this.errors);
   }
@@ -167,6 +166,15 @@ export class FormEngine {
   getSubmitValues(): Record<string, unknown> { return getSubmitValues(this.internals); }
   goToStepWithField(key: string): void { goToStepWithField(this.internals, key); }
   reset(values?: Record<string, unknown>): void { resetEngine(this.internals, values); }
+
+  private warnAboutDefinition(): void {
+    const warnings = validateDefinition(this.definition);
+    for (const { key, validation } of this.visibility.allFields) {
+      const name = validation?.validator;
+      if (name && !this.validators[name]) warnings.push(`Field "${key}" references unknown validator "${name}".`);
+    }
+    for (const warning of warnings) console.warn(`[FormEngine] ${warning}`);
+  }
 
   private get internals(): EngineInternals {
     return this as unknown as EngineInternals;

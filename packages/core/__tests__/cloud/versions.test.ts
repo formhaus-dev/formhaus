@@ -34,11 +34,14 @@ afterEach(() => vi.unstubAllGlobals());
 
 describe('failure messages', () => {
   it.each([
-    [0, 'network', 'offline', 'retry'],
+    [0, 'network', 'Could not reach the form server', 'retry'],
+    [0, 'timeout', 'did not respond', 'retry'],
+    [200, 'invalid_response', 'Something went wrong', 'retry'],
     [400, 'malformed_body', 'Reload the page', 'reload'],
     [402, 'limit_reached', 'not accepting responses', null],
     [404, 'not_found', 'no longer exists', null],
     [409, 'paused', 'paused', null],
+    [409, 'unknown', 'paused', null],
     [409, 'idempotency_key_reused', 'changed while', 'retry'],
     [410, 'expired', 'expired', null],
     [413, 'body_too_large', 'too long', null],

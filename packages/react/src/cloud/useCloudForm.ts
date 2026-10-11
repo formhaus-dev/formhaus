@@ -30,5 +30,7 @@ export function useCloudForm({ id, apiBase, onSuccess, onError }: CloudFormOptio
     controller.current!.submit(values, skippedSteps)
   ), []);
 
-  return { ...state, submit };
+  const retry = useCallback(() => controller.current!.start(), []);
+
+  return { ...state, submit, retry };
 }

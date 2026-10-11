@@ -81,6 +81,7 @@ export function createCloudController(options: CloudClientOptions, callbacks: Cl
 
   return {
     start() {
+      if (state.loadError) update({ loadError: null });
       fetchPublished(options, controller.signal).then(
         (published) => {
           if (!alive()) return;

@@ -1,5 +1,5 @@
 import type { FormDefinition } from '../types';
-import { networkError, toCloudError } from './error';
+import { networkError, readJson, toCloudError } from './error';
 import { randomId } from './uuid';
 
 const DEFAULT_API_BASE = 'https://api.formhaus.dev';
@@ -24,12 +24,23 @@ function endpoint({ id, apiBase = DEFAULT_API_BASE }: CloudClientOptions): strin
   return `${apiBase.replace(/\/+$/, '')}/f/${encodeURIComponent(id)}`;
 }
 
-async function send(url: string, init?: CloudRequestInit): Promise<CloudResponse> {
+const LOAD_TIMEOUT = 15_000;
+const SUBMIT_TIMEOUT = 30_000;
+
+async function send(url: string, timeout: number, init: CloudRequestInit = {}, signal?: AbortSignal): Promise<CloudResponse> {
+  const controller = new AbortController();
+  const abort = () => controller.abort();
+  const timer = setTimeout(abort, timeout);
+  if (signal?.aborted) abort();
+  signal?.addEventListener('abort', abort);
   try {
-    return await fetch(url, init);
+    return await fetch(url, { ...init, signal: controller.signal });
   } catch (error) {
-    if (init?.signal?.aborted) throw error;
-    throw networkError(error);
+    if (signal?.aborted) throw error;
+    throw networkError(error, controller.signal.aborted ? 'timeout' : 'network');
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', abort);
   }
 }
 
@@ -40,9 +51,9 @@ function versionOf(response: CloudResponse): number | undefined {
 
 export async function fetchPublished(options: CloudClientOptions, signal?: AbortSignal, after?: number): Promise<PublishedDefinition> {
   const query = after === undefined ? '' : `?v=${after}`;
-  const response = await send(`${endpoint(options)}/definition${query}`, { signal });
+  const response = await send(`${endpoint(options)}/definition${query}`, LOAD_TIMEOUT, {}, signal);
   if (!response.ok) throw await toCloudError(response);
-  return { definition: await response.json() as FormDefinition, version: versionOf(response) };
+  return { definition: await readJson(response) as FormDefinition, version: versionOf(response) };
 }
 
 export async function fetchDefinition(options: CloudClientOptions, signal?: AbortSignal): Promise<FormDefinition> {
@@ -59,13 +70,14 @@ export function createSubmitter(options: CloudSubmitterOptions) {
   return async (values: Record<string, unknown>, skippedSteps: string[] = []): Promise<CloudSubmission> => {
     const body = JSON.stringify({ values, skippedSteps, version: options.version });
     if (pending?.body !== body) pending = { body, key: randomId() };
-    const response = await send(endpoint(options), {
+    const response = await send(endpoint(options), SUBMIT_TIMEOUT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Idempotency-Key': pending.key },
       body,
     });
     if (!response.ok) throw await toCloudError(response);
+    const submission = await readJson(response) as CloudSubmission;
     pending = null;
-    return await response.json() as CloudSubmission;
+    return submission;
   };
 }

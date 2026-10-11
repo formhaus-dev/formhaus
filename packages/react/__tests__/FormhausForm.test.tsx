@@ -54,6 +54,21 @@ it('shows an error when the definition cannot be loaded', async () => {
   expect(onError).toHaveBeenCalledWith(expect.objectContaining({ status: 410, code: 'form_closed' }));
 });
 
+it('shows a paused form without a retry', async () => {
+  vi.stubGlobal('fetch', vi.fn(async () => reply(409, { error: 'Form paused' })));
+  render(<FormhausForm id="abc" />);
+  expect((await screen.findByRole('alert')).textContent).toBe('This form is paused.');
+  expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+});
+
+it('loads the form again after a failed load', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockRejectedValueOnce(new TypeError('Failed to fetch')).mockResolvedValue(reply(200, definition)));
+  render(<FormhausForm id="abc" />);
+  expect((await screen.findByRole('alert')).textContent).toContain('Could not reach the form server');
+  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(await screen.findByRole('textbox', { name: /Email/ })).toBeDefined();
+});
+
 it('posts values and reports the submission', async () => {
   const fetchMock = stubApi(reply(201, { id: 's1', values: { email: 'a@b.co' } }));
   const onSuccess = vi.fn();

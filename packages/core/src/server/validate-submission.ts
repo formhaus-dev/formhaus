@@ -2,7 +2,7 @@ import type { FormDefinition, FormField } from '../types';
 import type { ValidatorFn } from '../validation';
 import { getAllFields } from '../engine/engine-utils';
 import type { EngineInternals } from '../engine/runtime-internals';
-import { FormEngine } from '../engine/runtime';
+import { FormEngine, quietEngines } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
 import { normalizeValue, typeError } from './type-checks';
 
@@ -66,7 +66,9 @@ export function validateSubmission(
   const fields = getAllFields(definition);
   const initialValues = knownValues(fields, input);
   const invalid = typeErrors(fields, initialValues);
-  const engine = new FormEngine(withoutRules(definition, invalid), initialValues, { validators: ignoredValidators(fields) });
+  const engineOptions = { validators: ignoredValidators(fields) };
+  quietEngines.add(engineOptions);
+  const engine = new FormEngine(withoutRules(definition, invalid), initialValues, engineOptions);
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();
   const values = engine.getSubmitValues();

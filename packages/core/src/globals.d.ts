@@ -6,7 +6,12 @@ declare const console: {
 
 interface AbortSignal {
   readonly aborted: boolean;
+  addEventListener(type: 'abort', listener: () => void): void;
+  removeEventListener(type: 'abort', listener: () => void): void;
 }
+
+declare function setTimeout(handler: () => void, timeout: number): unknown;
+declare function clearTimeout(id: unknown): void;
 
 declare class AbortController {
   readonly signal: AbortSignal;

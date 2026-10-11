@@ -2,6 +2,7 @@ import type { FormAction } from './action';
 import type { FormField, ShowCondition } from './field';
 
 export interface FormDefinition {
+  $schema?: string;
   id: string;
   title: string;
   description?: string;
