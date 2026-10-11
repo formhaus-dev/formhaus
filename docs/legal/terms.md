@@ -135,13 +135,14 @@ Hosted pages and the embed do not render password fields or file upload fields. 
 
 - **Plans.** The Service has Free, Pro and Team plans, listed on the pricing page at https://formhaus.dev/cloud#pricing. At the effective date, the prices and limits are:
 
-  | Plan | Price | Forms | Submissions per month | Members | Webhooks | Submission retention |
+  | Plan | Price | Forms | Submissions per month | Editors | Webhooks | Submission retention |
   |---|---|---|---|---|---|---|
   | Unclaimed Form | $0 | 1 per publish | 100 in total | None | No | 7 days |
   | Free | $0 | 3 | 100 | 1 | Yes | 90 days |
   | Pro | $19/month or $190/year | Unlimited | 25,000 | 3 | Yes | Until you delete them |
   | Team | $49/month or $490/year | Unlimited | 100,000 | 10 | Yes | Until you delete them |
 
+- **Seats.** Editor limits count owners and editors. Viewers are unlimited on every plan.
 - **Counting.** Submissions are counted per Workspace per calendar month (UTC). Submissions to an Unclaimed Form are counted per Form.
 - **Over the limit.** When an account reaches its monthly submission limit, the endpoint rejects new submissions until the next month or until you upgrade. We do not store rejected submissions.
 - **Subscriptions.** Paid plans are subscriptions billed monthly or yearly in advance through our payment processor, Stripe. Stripe collects your payment details; we do not store card numbers.

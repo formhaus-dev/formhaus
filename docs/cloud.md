@@ -123,7 +123,8 @@ See the [privacy policy](/legal/privacy), the [terms](/legal/terms) and the [DPA
 | | Free | Pro | Team |
 |---|---|---|---|
 | Price | $0 | $19/month or $190/year | $49/month or $490/year |
-| Members | 1 | 3 | 10 |
+| Editors (owners included) | 1 | 3 | 10 |
+| Viewers | Unlimited | Unlimited | Unlimited |
 | Forms | 3 | Unlimited | Unlimited |
 | Submissions per month | 100 | 25,000 | 100,000 |
 | Retention | 90 days | Unlimited | Unlimited |
