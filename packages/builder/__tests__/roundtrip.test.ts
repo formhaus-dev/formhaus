@@ -1,0 +1,37 @@
+import { describe, expect, it } from 'vitest';
+import { fromDefinition, isPage, isQuestion, syncIdentifiers, toDefinition } from '../src';
+import { normalize, recipes, templates } from './fixtures';
+
+describe('round trip', () => {
+  it('covers every template', () => {
+    expect(templates.length).toBe(41);
+  });
+
+  it.each([...templates, ...recipes])('%s survives fromDefinition and toDefinition', (_name, definition) => {
+    expect(normalize(toDefinition(fromDefinition(definition)))).toEqual(normalize(definition));
+  });
+
+  it.each([...templates, ...recipes])('%s keeps every identifier after a sync', (_name, definition) => {
+    const form = fromDefinition(definition);
+    syncIdentifiers(form);
+    expect(normalize(toDefinition(form))).toEqual(normalize(definition));
+  });
+
+  it.each(templates)('%s locks every identifier of the published version', (_name, definition) => {
+    const form = fromDefinition(definition, { lockedFrom: definition });
+    for (const block of form.blocks) {
+      if (isPage(block)) expect(block.idLocked).toBe(true);
+      if (isQuestion(block)) {
+        expect(block.keyLocked).toBe(true);
+        for (const option of block.options) expect(option.valueLocked).toBe(true);
+      }
+    }
+  });
+
+  it('assigns deterministic uids per form', () => {
+    const [, definition] = templates[0];
+    const first = fromDefinition(definition).blocks.map((block) => block.uid);
+    const second = fromDefinition(definition).blocks.map((block) => block.uid);
+    expect(first).toEqual(second);
+  });
+});
