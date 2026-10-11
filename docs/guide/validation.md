@@ -36,11 +36,13 @@ All rules are optional. Combine them freely.
 | `matchField` | `string` | Value equals another field's value | "Fields must match" |
 | `validator` | `string` | Custom validator function returns null | (your message) |
 
+`pattern` is not anchored: `[0-9]{5}` accepts `abc12345x`. Add `^` and `$` to match the whole value.
+
 Length, range, pattern, and matching rules have a corresponding `...Message` field. For `required`, pass the message directly: `required: "Please enter your name"`.
 
 ## matchField
 
-Useful for "confirm email" or "confirm password" fields. The values are compared the next time validation runs.
+Useful for "confirm email" or "confirm password" fields. The values are compared the next time validation runs. `matchField` passes when the confirmation is empty, so keep `required` on it.
 
 ```json
 [
