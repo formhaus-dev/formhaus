@@ -27,7 +27,7 @@ interface RenderableStep extends StepActions {
 
 export function layoutSteps(definition: FormDefinition, layout: FormLayout): RenderableStep[] {
   const steps = getSteps(definition) as RenderableStep[];
-  return layout.steps === 'page' && steps.length > 1 ? [{ title: definition.title, fields: [], sections: steps }] : steps;
+  return layout.steps === 'page' && steps.length > 1 ? [{ title: definition.title, description: definition.description, fields: [], sections: steps }] : steps;
 }
 
 interface StepContext {

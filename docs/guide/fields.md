@@ -157,6 +157,8 @@ Pick multiple from a list. Renders as a checkbox group. The value is an array of
 
 `minLength` / `maxLength` on multiselect controls how many options can be selected.
 
+Options stack vertically. Set `"layout": "inline"` to place short options side by side, as with radio.
+
 ## Checkbox
 
 Boolean toggle with a label.
@@ -174,7 +176,7 @@ Boolean toggle with a label.
 
 ## Radio
 
-Pick one from a list. Options render vertically.
+Pick one from a list. Options stack vertically, one full-width row per option.
 
 ```json
 {
@@ -188,6 +190,8 @@ Pick one from a list. Options render vertically.
   "validation": { "required": true }
 }
 ```
+
+For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`. Options then sit side by side and wrap on narrow screens. Keep the default `stack` for options longer than a few words.
 
 ## Switch
 

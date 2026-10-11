@@ -32,6 +32,7 @@ A definition is a JSON object. The [JSON Schema](https://formhaus.dev/schema/for
 | `$schema` | string | no | Editor hint. Core ignores it. |
 | `id` | string | yes | Form identifier. Renderers use it to detect a new form. |
 | `title` | string | yes | Form title for host UI and Figma output. Renderers do not display it. |
+| `description` | string | no | Plain text shown under the title by host UI and Figma output, up to 1000 characters. Renderers do not display it. |
 | `submit` | [action](#actions) | yes | The submit action on the last step. |
 | `cancel` | [action](#actions) | no | A cancel action. Renderers show it on every step. |
 | `fields` | [field](#fields)[] | no | Fields of a single-step form. |
@@ -49,12 +50,13 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `type` | string, required | [Field type](#field-types). |
 | `label` | string, required | Label text. |
 | `placeholder` | string | Placeholder text. |
-| `helperText` | string | Hint text below the field. |
+| `helperText` | string | Hint text between the label and the control. |
 | `defaultValue` | any | Initial value. See [Defaults](#defaults-and-initial-values). |
 | `show` | [condition](#conditions)[] | Visible when all conditions match. |
 | `showAny` | [condition](#conditions)[] | Visible when at least one condition matches. |
 | `validation` | [validation](#validation) | Validation rules. |
 | `options` | `{ value: string, label: string }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. |
+| `layout` | `"stack"` or `"inline"` | Option layout for `radio` and `multiselect`. `stack` (default) lists options vertically. `inline` places short options side by side. |
 | `optionsFrom` | string | Name of a renderer options provider. |
 | `optionsDependsOn` | string[] | Field keys whose changes reload `optionsFrom`. |
 | `autoAdvance` | boolean | See [Auto-advance](#auto-advance). |

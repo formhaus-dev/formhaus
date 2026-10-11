@@ -44,6 +44,10 @@ describe('checkDefinition', () => {
   it('returns empty lists for a valid definition', () => {
     expect(checkDefinition(clean)).toEqual({ errors: [], warnings: [] });
   });
+
+  it('accepts a form description', () => {
+    expect(checkDefinition({ ...clean, description: 'Takes two minutes.' })).toEqual({ errors: [], warnings: [] });
+  });
 });
 
 describe.skipIf(!existsSync(iifePath) && !process.env.CI)('server IIFE checkDefinition', () => {

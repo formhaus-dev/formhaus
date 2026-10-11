@@ -4,6 +4,7 @@ import type { FormField, ShowCondition } from './field';
 export interface FormDefinition {
   id: string;
   title: string;
+  description?: string;
   submit: FormAction;
   cancel?: FormAction;
   fields?: FormField[];
