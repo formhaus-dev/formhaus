@@ -1,15 +1,20 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue';
 import AutoInput from './AutoInput.vue';
+import BuilderAddRow from './BuilderAddRow.vue';
 import BuilderMenu from './BuilderMenu.vue';
 import LucideIcon from './LucideIcon.vue';
-import { canBranch, newOption, type BuilderOption, type BuilderQuestion, type MenuItem } from './builder-model';
-import { BRANCH_ITEM, UNBRANCH_ITEM, branchShortcut, filterItems, slashQuery } from './builder-smart';
-import { moveItem, usePointerDrag } from './builder-drag';
+import {
+  BRANCH_ITEM, UNBRANCH_ITEM, branchShortcut, canBranch, filterItems, moveItem, newOption, slashQuery,
+  type BuilderOption, type BuilderQuestion, type MenuItem,
+} from '@formhaus/builder';
+import { usePointerDrag } from './builder-drag';
+import { useBuilderForm } from './builder-form';
 
 const props = defineProps<{ question: BuilderQuestion; pages: { uid: string; title: string }[] }>();
 const emit = defineEmits<{ outdent: [position: number]; edit: []; branch: []; newPage: [option: BuilderOption] }>();
 
+const form = useBuilderForm();
 const root = ref<HTMLElement>();
 const drag = usePointerDrag({
   root,
@@ -25,9 +30,9 @@ const title = (uid: string) => props.pages.find((page) => page.uid === uid)?.tit
 
 const branchItems = (option: BuilderOption): MenuItem[] => [
   ...(option.jump ? [UNBRANCH_ITEM] : []),
-  { id: 'next', label: 'Next page', hint: 'Continue in order', icon: 'arrow-down' },
+  { id: 'next', label: 'Next step', hint: 'Continue in order', icon: 'arrow-down' },
   ...props.pages.map((page) => ({ id: page.uid, label: page.title, hint: 'Jump here when picked', icon: 'file' as const })),
-  { id: 'new', label: 'New page', hint: 'Create a page and jump to it', icon: 'plus' },
+  { id: 'new', label: 'New step', hint: 'Create a step and jump to it', icon: 'plus' },
 ];
 
 const slashItems = (option: BuilderOption) => filterItems(option.jump ? [UNBRANCH_ITEM, BRANCH_ITEM] : [BRANCH_ITEM], slashQuery(option.label) ?? '');
@@ -45,7 +50,7 @@ function close(uid: string) {
 }
 
 function add(index = props.question.options.length) {
-  const option = newOption();
+  const option = newOption(form);
   props.question.options.splice(index, 0, option);
   emit('edit');
   focusOption(option.uid);
@@ -152,11 +157,11 @@ function pickSlash(option: BuilderOption, id: string) {
           :class="option.jump ? 'nb-tag--branch' : 'nb-tag--ghost'"
           :data-warn="!!option.jump && !title(option.jump)"
           data-tip="Where this answer leads"
-          :aria-label="`Where this answer leads: ${option.jump ? title(option.jump) ?? 'missing page' : 'next page'}`"
+          :aria-label="`Where this answer leads: ${option.jump ? title(option.jump) ?? 'missing step' : 'next step'}`"
           @click="menu = { uid: option.uid, kind: 'branch' }"
         >
           <LucideIcon name="split" />
-          {{ option.jump ? title(option.jump) ?? 'Missing page' : 'Branch' }}
+          {{ option.jump ? title(option.jump) ?? 'Missing step' : 'Branch' }}
           <LucideIcon name="chevron-down" class="nb-tag__chevron" />
         </button>
         <BuilderMenu
@@ -181,8 +186,8 @@ function pickSlash(option: BuilderOption, id: string) {
         <LucideIcon name="x" />
       </button>
     </li>
-    <li class="nb-line nb-option nb-option--add">
-      <button type="button" class="nb-ghost" @mousedown.prevent @click="add()">+ Add option</button>
+    <li class="nb-option--add">
+      <BuilderAddRow label="Add option" @add="add()" />
     </li>
   </ul>
 </template>

@@ -6,8 +6,7 @@ import LandingBuilder from './LandingBuilder.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
 import { useHistory } from './builder-history';
-import { toDefinition } from './builder-model';
-import { fromDefinition } from './builder-parse';
+import { fromDefinition, syncIdentifiers, toDefinition } from '@formhaus/builder';
 import { formatJson } from './json-format';
 import { nextStep } from './route';
 
@@ -21,6 +20,7 @@ const tabs = [
 type Tab = (typeof tabs)[number]['id'];
 
 const model = reactive(fromDefinition(seed as FormDefinition));
+watch(model, () => syncIdentifiers(model), { deep: true });
 const history = useHistory(model);
 const definition = computed(() => toDefinition(model));
 const source = computed(() => formatJson(definition.value));
@@ -69,7 +69,7 @@ const progress = computed(() => {
   const route: string[] = [];
   for (let id: string | undefined = first(); id && !route.includes(id); id = nextStep(live.value, id, values.value)) route.push(id);
   const at = route.indexOf(history_.value[history_.value.length - 1]);
-  return route.length > 1 ? `Step ${Math.max(1, at + 1)} of ${route.length}` : 'One page';
+  return route.length > 1 ? `Step ${Math.max(1, at + 1)} of ${route.length}` : 'One step';
 });
 
 function onStep(id: string) {

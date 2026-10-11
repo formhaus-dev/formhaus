@@ -4,7 +4,7 @@
   right: 100%;
   display: flex;
   margin-right: 2px;
-  opacity: 0;
+  opacity: 0.35;
   transition: opacity 0.12s ease-out;
 }
 
@@ -59,8 +59,14 @@
 }
 
 .nb-tool--ghost {
-  margin-left: auto;
-  opacity: 0;
+  position: absolute;
+  top: 4px;
+  right: 8px;
+  opacity: 0.55;
+}
+
+.nb-line:has(> .nb-tool--ghost) {
+  padding-right: 40px;
 }
 
 .nb-line:hover .nb-tool--ghost,
@@ -172,7 +178,7 @@
 
 .nb-tag--ghost {
   background: transparent;
-  opacity: 0;
+  box-shadow: inset 0 0 0 1px var(--vp-c-divider);
 }
 
 .nb-tag--ghost .lucide {
@@ -180,11 +186,6 @@
   opacity: 0.7;
 }
 
-.nb-line:hover .nb-tag--ghost,
-.nb-line:focus-within .nb-tag--ghost,
-.nb-tag--ghost:focus-visible {
-  opacity: 1;
-}
 
 .nb-tag--branch {
   color: var(--vp-c-brand-1);

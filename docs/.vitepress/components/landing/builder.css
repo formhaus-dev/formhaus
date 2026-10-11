@@ -113,9 +113,6 @@
   color: var(--vp-c-text-2);
 }
 
-.nb-option--add {
-  min-height: 26px;
-}
 
 .nb-glyph {
   flex: none;
@@ -139,24 +136,48 @@
 
 .nb-add {
   margin-top: 6px;
-  gap: 16px;
 }
 
-.nb-add:hover,
-.nb-add:focus-within {
-  background: transparent;
+.vp-doc .nb-option--add {
+  margin: 0;
 }
 
-.nb-ghost {
-  min-height: 26px;
-  padding: 2px 0;
-  font-size: 13px;
+.nb-add-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% + 16px);
+  min-height: 32px;
+  margin: 0 -8px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
   color: var(--vp-c-text-3);
-  transition: color 0.12s;
+  transition: background-color 0.12s ease-out, color 0.12s ease-out;
 }
 
-.nb-ghost:hover {
+.nb-add-row:hover {
+  background: var(--vp-c-bg-soft);
   color: var(--vp-c-text-1);
+}
+
+.nb-add-row__icon {
+  flex: none;
+  width: 13px;
+  height: 13px;
+}
+
+.nb-add .nb-add-row {
+  width: calc(100% + 37px);
+  margin-left: -29px;
+}
+
+@media (pointer: coarse) {
+  .nb-add-row {
+    min-height: 44px;
+  }
 }
 
 .nb button {

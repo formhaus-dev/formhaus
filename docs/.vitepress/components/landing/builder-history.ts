@@ -1,30 +1,26 @@
 import { computed, nextTick, onScopeDispose, ref, watch } from 'vue';
-import type { BuilderForm } from './builder-model';
-
-const LIMIT = 200;
+import { createHistory, isUndoKey, type BuilderForm } from '@formhaus/builder';
 
 export function useHistory(form: BuilderForm, delay = 300) {
-  const past = ref<string[]>([]);
-  const future = ref<string[]>([]);
-  let last = JSON.stringify(form);
+  const history = createHistory(JSON.stringify(form));
+  const version = ref(0);
   let muted = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   function commit() {
     clearTimeout(timer);
     const now = JSON.stringify(form);
-    if (now === last) return;
-    past.value.push(last);
-    if (past.value.length > LIMIT) past.value.shift();
-    future.value = [];
-    last = now;
+    if (now === history.present) return;
+    history.push(now);
+    version.value += 1;
   }
 
-  function apply(snapshot: string) {
+  function apply(snapshot: string | undefined) {
+    if (snapshot === undefined) return;
     muted = true;
     clearTimeout(timer);
     Object.assign(form, JSON.parse(snapshot));
-    last = snapshot;
+    version.value += 1;
     nextTick(() => { muted = false; });
   }
 
@@ -40,37 +36,33 @@ export function useHistory(form: BuilderForm, delay = 300) {
 
   function undo() {
     commit();
-    const snapshot = past.value.pop();
-    if (snapshot === undefined) return;
-    future.value.push(last);
-    apply(snapshot);
+    apply(history.undo());
   }
 
   function redo() {
     commit();
-    const snapshot = future.value.pop();
-    if (snapshot === undefined) return;
-    past.value.push(last);
-    apply(snapshot);
+    apply(history.redo());
   }
 
   function replace(next: BuilderForm) {
     commit();
     const snapshot = JSON.stringify(next);
-    if (snapshot === last) return;
-    past.value.push(last);
-    future.value = [];
+    if (snapshot === history.present) return;
+    history.push(snapshot);
     apply(snapshot);
   }
 
   onScopeDispose(() => clearTimeout(timer));
 
   function onKey(event: KeyboardEvent) {
-    if (!(event.metaKey || event.ctrlKey) || event.key.toLowerCase() !== 'z') return;
+    const action = isUndoKey(event);
+    if (!action || (event.ctrlKey && event.key.toLowerCase() === 'y')) return;
     event.preventDefault();
-    if (event.shiftKey) redo();
+    if (action === 'redo') redo();
     else undo();
   }
 
-  return { undo, redo, replace, onKey, canUndo: computed(() => past.value.length > 0), canRedo: computed(() => future.value.length > 0) };
+  const canUndo = computed(() => version.value >= 0 && history.canUndo);
+  const canRedo = computed(() => version.value >= 0 && history.canRedo);
+  return { undo, redo, replace, onKey, canUndo, canRedo };
 }
