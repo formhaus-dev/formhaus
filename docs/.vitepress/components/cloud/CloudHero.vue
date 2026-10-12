@@ -18,7 +18,7 @@ const alt = 'Form builder showing Save your seat: Spring launch webinar, with st
       </div>
       <p class="hero-trust">Free for 3 forms · No credit card</p>
     </header>
-    <LandingHeroVideo v-if="video" :prefix="video" :start="0" :length="30" :mobile-length="30" mobile-ratio="1 / 1" :caption="caption" />
+    <LandingHeroVideo v-if="video" :prefix="video" :start="0" :length="31" :mobile-length="31" mobile-ratio="1 / 1" :caption="caption" />
     <figure v-else class="cloud-frame hero-preview">
       <img class="cloud-light" src="/media/cloud-builder.png" width="2336" height="1232" :alt="alt" loading="eager" fetchpriority="high" />
       <img class="cloud-dark" src="/media/cloud-builder-dark.png" width="2336" height="1232" :alt="alt" loading="eager" fetchpriority="high" />
