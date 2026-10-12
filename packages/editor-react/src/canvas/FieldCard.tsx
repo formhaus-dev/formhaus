@@ -21,7 +21,7 @@ import { focusCard, useFocusRequests } from './focus';
 import { OptionsEditor } from './OptionsEditor';
 import { TypeChip } from './TypeChip';
 import { useCardKeys } from './useCardKeys';
-import { toggleSettings } from './settings';
+import { closeSettingsOnEscape, toggleSettings } from './settings';
 
 interface Props {
   uid: string;
@@ -96,6 +96,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
                 label="Field settings"
                 shortcut={keyHint('.')}
                 aria-expanded={expanded}
+                data-settings-toggle={uid}
                 className={cx(expanded && styles.on)}
                 icon={<Settings2 aria-hidden />}
                 onClick={(event) => {
@@ -139,7 +140,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
           </ul>
         )}
         {expanded && (
-          <div className={settings.settings} data-settings={uid}>
+          <div className={settings.settings} data-settings={uid} onKeyDown={closeSettingsOnEscape(store, uid)}>
             <FieldPanel field={field} actions={actions} />
           </div>
         )}

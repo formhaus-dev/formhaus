@@ -7,7 +7,7 @@ import { useForm, useIsExpanded, useIsSelected, useReadOnly } from '../store/hoo
 import type { EditorActions } from '../useEditorActions';
 import { phone, useMedia } from '../useMedia';
 import styles from './Canvas.module.css';
-import { toggleSettings } from './settings';
+import { closeSettingsOnEscape, toggleSettings } from './settings';
 
 export function FormHeaderCard({ actions }: { actions: EditorActions }) {
   const form = useForm();
@@ -22,7 +22,7 @@ export function FormHeaderCard({ actions }: { actions: EditorActions }) {
     if (!selected) store.select({ kind: 'form' });
   };
   const settings = (
-    <div className={styles.headerSettings} data-settings="form">
+    <div className={styles.headerSettings} data-settings="form" onKeyDown={closeSettingsOnEscape(store, 'form')}>
       <label className={styles.settingRow}>
         <span className={styles.settingLabel}>Submit button</span>
         <Input
@@ -85,6 +85,7 @@ export function FormHeaderCard({ actions }: { actions: EditorActions }) {
             type="button"
             className={styles.headerToggle}
             aria-expanded={expanded}
+            data-settings-toggle="form"
             onClick={() => {
               toggleSettings(store, 'form', expanded);
             }}

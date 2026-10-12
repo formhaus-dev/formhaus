@@ -30,7 +30,8 @@ export function useNotices() {
 
 export function Notices({ entries, dismiss }: { entries: Entry[]; dismiss: (id: number) => void }): ReactNode {
   return (
-    <ol className={styles.stack} role="status" aria-live="polite">
+    <div role="status" aria-live="polite">
+      <ol className={styles.stack}>
       {entries.map((entry) => (
         <li key={entry.id} className={styles.notice} data-tone={entry.tone ?? 'neutral'}>
           <div className={styles.text}>
@@ -57,6 +58,7 @@ export function Notices({ entries, dismiss }: { entries: Entry[]; dismiss: (id: 
           />
         </li>
       ))}
-    </ol>
+      </ol>
+    </div>
   );
 }

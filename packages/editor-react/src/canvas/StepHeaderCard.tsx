@@ -11,7 +11,7 @@ import type { EditorActions } from '../useEditorActions';
 import styles from './Canvas.module.css';
 import { DeleteStepDialog } from './DeleteStepDialog';
 import { focusCard, useFocusRequests } from './focus';
-import { toggleSettings } from './settings';
+import { closeSettingsOnEscape, toggleSettings } from './settings';
 import { StepMenu } from './StepMenu';
 
 interface Props {
@@ -71,6 +71,7 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
             <IconButton
               label="Step settings"
               aria-expanded={expanded}
+              data-settings-toggle={uid}
               icon={<Settings2 aria-hidden />}
               onClick={(event) => {
                 event.stopPropagation();
@@ -113,7 +114,7 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
         }}
       />
       {expanded && (
-        <div className={settings.settings} data-settings={uid}>
+        <div className={settings.settings} data-settings={uid} onKeyDown={closeSettingsOnEscape(store, uid)}>
           <StepPanel step={step} actions={actions} />
         </div>
       )}
