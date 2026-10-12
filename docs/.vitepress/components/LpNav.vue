@@ -6,9 +6,9 @@ const { page, frontmatter } = useData();
 const closeScreen = inject<() => void>('close-screen');
 const landing = computed(() => String(frontmatter.value.pageClass || '').split(/\s+/).includes('lp-page'));
 const links = [
+  { text: 'Cloud', href: '/cloud', match: (path: string) => path === 'cloud.md' },
   { text: 'Templates', href: '/templates/', match: (path: string) => path.startsWith('templates/') },
   { text: 'Builder', href: '/build', match: (path: string) => path === 'build.md' },
-  { text: 'Cloud', href: '/cloud', match: (path: string) => path === 'cloud.md' },
   { text: 'Pricing', href: '/pricing', match: (path: string) => path === 'pricing.md' },
   { text: 'Docs', href: '/guide/', match: () => false },
 ];
