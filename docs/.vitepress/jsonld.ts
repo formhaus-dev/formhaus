@@ -119,8 +119,9 @@ function plainText(html: string): string {
 }
 
 export function faqJsonLd(html: string) {
-  const faq = html.slice(html.indexOf('id="faq"'))
-  const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/g)]
+  const start = html.indexOf('id="faq"')
+  const faq = start < 0 ? '' : html.slice(start).split('</section>')[0]
+  const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*(?:<div\b[^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/g)]
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
