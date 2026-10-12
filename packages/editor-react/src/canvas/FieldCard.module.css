@@ -185,7 +185,7 @@
   }
 }
 
-@media (hover: none) {
+@media (hover: none), (width < 640px) {
   .handle {
     opacity: 1;
   }
