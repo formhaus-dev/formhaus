@@ -32,7 +32,7 @@ async function onSubmit(values) {
   <FormRenderer
     :definition="definition"
     :errors="serverErrors"
-    :submit-handler="onSubmit"
+    @submit="onSubmit"
   />
 </template>
 ```
@@ -86,13 +86,13 @@ See [Async Step Validation](/guide/async-validation#error-handling) for how `onS
 
 ## Loading state
 
-React awaits the Promise returned by `onSubmit`. Vue awaits `submitHandler`; the legacy `@submit` event is a notification and cannot await an async listener. `FormRenderer` and `HeadlessFormRenderer` keep fields and actions busy during awaited navigation, submission and lifecycle hooks.
+React awaits the Promise returned by `onSubmit`, and Vue the one returned by the `@submit` listener. `FormRenderer` and `HeadlessFormRenderer` keep fields and actions busy during awaited navigation, submission and lifecycle hooks.
 
 ::: code-group
 ```vue [Vue]
 <FormRenderer
   :definition="definition"
-  :submit-handler="save"
+  @submit="save"
   :on-error="handleRequestError"
 />
 ```
@@ -106,9 +106,9 @@ React awaits the Promise returned by `onSubmit`. Vue awaits `submitHandler`; the
 ```
 :::
 
-Here `save(values)` returns the request Promise and rejects on failure. No separate loading state is required for that request. In Vue, `@submit` still fires after `submitHandler` succeeds; do not send the same request from both.
+Here `save(values)` returns the request Promise and rejects on failure. No separate loading state is required for that request.
 
-Keep parent-owned `loading` for other work that should disable the form, or for a legacy Vue `@submit` listener that performs the save itself:
+Keep parent-owned `loading` for other work that should disable the form:
 
 ```vue
 <script setup>
@@ -137,8 +137,6 @@ async function onSubmit(values) {
 </template>
 ```
 
-With this legacy Vue pattern, `onAfterSubmit` means the event was dispatched, not that its async listener finished. Use `submitHandler` when the lifecycle must include the request.
-
 While busy, the default fields and action buttons are disabled. The form has `aria-busy`; the React primary button also has it. The built-in actions do not render a spinner; use a custom actions component if you need one. See [lifecycle ordering and after-hook failures](/guide/steps#lifecycle-hooks).
 
 ### Loading button
@@ -161,7 +159,7 @@ function SavingActions({ primaryLabel, showPrimary = true, showBack, backLabel, 
   );
 }
 
-<FormRenderer definition={definition} onSubmit={save} ActionsComponent={SavingActions} />
+<FormRenderer definition={definition} onSubmit={save} actionsComponent={SavingActions} />
 ```
 
 `loading` is `true` while `onSubmit`, `onStepValidate` or a lifecycle hook runs. All props, and the Vue version, are in [Custom Actions & Progress](/guide/custom-components).

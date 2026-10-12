@@ -36,7 +36,7 @@ Write the form JSON by hand, or use the [`/formhaus:formhaus-create-form`](https
 
 ## Navigation and submission
 
-`FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. Use `:submit-handler="save"` to await saving and track loading. Legacy `@submit` is a notification whose listeners cannot be awaited; do not save in both places. Custom fields emit `commit`; custom actions honor `showPrimary`. See the [complete Vue example and lifecycle semantics](https://formhaus.dev/guide/steps.html#vue-lifecycle-example).
+`FormRenderer` and `HeadlessFormRenderer` support radio `autoAdvance`, `next: false`, and async before/after navigation and submission hooks. `@submit="save"` is awaited: the form shows its busy state until `save(values, skippedSteps)` resolves, and a thrown error is shown or passed to `onError`. Custom fields emit `commit`; custom actions honor `showPrimary`. See the [complete Vue example and lifecycle semantics](https://formhaus.dev/guide/steps.html#vue-lifecycle-example).
 
 Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](https://formhaus.dev/guide/steps.html#route-between-branches).
 
@@ -50,15 +50,15 @@ Swap native HTML for your own UI kit:
 import type { FormFieldProps } from '@formhaus/vue';
 
 defineProps<FormFieldProps>();
-defineEmits<{ (e: 'update:value', value: unknown): void }>();
+defineEmits<{ (e: 'update:modelValue', value: unknown): void }>();
 </script>
 
 <template>
   <div>
     <label>{{ field.label }}</label>
     <input
-      :value="value"
-      @input="$emit('update:value', ($event.target as HTMLInputElement).value)"
+      :value="modelValue"
+      @input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
     />
     <span v-if="error">{{ error }}</span>
   </div>

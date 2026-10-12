@@ -26,7 +26,7 @@ export function ProjectInquiry() {
   return (
     <FormRenderer
       definition={definition}
-      onStepChange={(stepId, direction) => console.log(stepId, direction)}
+      onAfterStepChange={({ toStepId }) => console.log(toStepId)}
       onSubmit={async (values) => {
         await fetch('/api/inquiries', { method: 'POST', body: JSON.stringify(values) });
       }}
@@ -51,7 +51,7 @@ async function save(values: Record<string, unknown>) {
 </script>
 
 <template>
-  <FormRenderer :definition="definition" :submit-handler="save" />
+  <FormRenderer :definition="definition" @submit="save" />
 </template>
 ```
 
