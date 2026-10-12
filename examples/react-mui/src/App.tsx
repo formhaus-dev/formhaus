@@ -1,10 +1,12 @@
+import { parseDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { Container, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 import { FormActions } from './actions/FormActions';
 import { StepProgress } from './actions/StepProgress';
 import { components } from './component-map';
-import definition from './definition.json';
+import json from './definition.json';
 
+const definition = parseDefinition(json);
 const theme = createTheme();
 
 export default function App() {
@@ -15,8 +17,8 @@ export default function App() {
         <FormRenderer
           definition={definition}
           components={components}
-          ActionsComponent={FormActions}
-          ProgressComponent={StepProgress}
+          actionsComponent={FormActions}
+          progressComponent={StepProgress}
           onSubmit={(values) => console.log('Submitted:', values)}
         />
       </Container>
