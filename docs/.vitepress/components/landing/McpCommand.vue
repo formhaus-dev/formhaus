@@ -106,6 +106,8 @@ function onKey(event: KeyboardEvent) {
   }
 
   .mcp__tab {
+    display: inline-flex;
+    align-items: flex-end;
     min-height: 40px;
   }
 }

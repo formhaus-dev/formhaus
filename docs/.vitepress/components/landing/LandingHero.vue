@@ -35,8 +35,16 @@ import McpCommand from './McpCommand.vue';
   text-align: center;
 }
 
-.hero__mcp :deep(.mcp__tabs) {
-  justify-content: center;
+@media (max-width: 767px) {
+  .hero__mcp :deep(.mcp__tabs) {
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero__mcp {
+    text-align: left;
+  }
 }
 
 .lp .hero__title {
