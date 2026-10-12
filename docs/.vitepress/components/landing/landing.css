@@ -173,6 +173,10 @@
 }
 
 @media (max-width: 767px) {
+  .lp {
+    --lp-gutter: 16px;
+  }
+
   .lp-section {
     padding-top: 64px;
   }

@@ -42,6 +42,8 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
     '.cm-lineNumbers .cm-gutterElement': { minWidth: '44px', padding: '0 10px 0 16px' },
     '.cm-activeLine': { backgroundColor: 'var(--vp-code-line-highlight-color)' },
     '.cm-activeLineGutter': { color: 'var(--vp-c-text-2)', backgroundColor: 'var(--vp-code-line-highlight-color)' },
+    '&:not(.cm-focused) .cm-activeLine, &:not(.cm-focused) .cm-activeLineGutter': { backgroundColor: 'transparent', color: 'inherit' },
+    '&:not(.cm-focused) .cm-matchingBracket': { outline: 'none' },
     '.cm-cursor, .cm-dropCursor': { borderLeftColor: 'var(--vp-c-brand-1)' },
     '&.cm-focused > .cm-scroller > .cm-selectionLayer .cm-selectionBackground, .cm-selectionBackground': { backgroundColor: 'var(--vp-c-brand-soft)' },
     '.cm-matchingBracket': { outline: '1px solid var(--vp-c-brand-2)', backgroundColor: 'transparent' },
@@ -64,6 +66,7 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
       doc: options.doc,
       extensions: [
         view.lineNumbers(),
+        view.EditorView.lineWrapping,
         view.highlightActiveLine(),
         view.highlightActiveLineGutter(),
         view.drawSelection(),

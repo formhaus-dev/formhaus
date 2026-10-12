@@ -160,7 +160,7 @@
   flex: 1;
 }
 
-@media (width < 640px) {
+@container (width < 640px) {
   .body {
     padding: var(--fh-ed-space-4);
   }
@@ -169,7 +169,6 @@
     top: var(--fh-ed-space-3);
     right: var(--fh-ed-space-2);
     left: auto;
-    opacity: 1;
   }
 
   .label,
@@ -183,6 +182,12 @@
 
   .spacer + * {
     margin-right: auto;
+  }
+}
+
+@media (hover: none) {
+  .handle {
+    opacity: 1;
   }
 }
 

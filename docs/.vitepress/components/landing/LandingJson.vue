@@ -51,6 +51,8 @@ function format() {
   handle?.format();
 }
 
+defineExpose({ format: () => format(), copy: () => copy(), copied });
+
 async function copy() {
   try {
     await navigator.clipboard.writeText(handle?.text() ?? props.source);
@@ -64,10 +66,6 @@ async function copy() {
 
 <template>
   <div class="json" :data-active="active">
-    <div class="json__tools">
-      <button type="button" class="json__btn" title="Format (Shift+Alt+F)" @click="format"><LucideIcon name="braces" /> Format</button>
-      <button type="button" class="json__btn" aria-label="Copy JSON" @click="copy"><LucideIcon :name="copied ? 'check' : 'copy'" /> Copy</button>
-    </div>
     <div ref="host" class="json__editor" :hidden="!ready" />
     <pre v-if="!ready" class="json__pre" aria-label="Generated form definition"><code><span v-for="(line, index) in lines" :key="index" class="json__line"><span class="json__num">{{ index + 1 }}</span><span v-for="(token, position) in line" :key="position" :class="`json__${token.kind}`">{{ token.text }}</span></span></code></pre>
     <div class="json__status" role="status" :data-error="!!error">
@@ -87,40 +85,6 @@ async function copy() {
   background: var(--vp-code-block-bg);
 }
 
-.json__tools {
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  z-index: 2;
-  display: flex;
-  gap: 6px;
-}
-
-.json__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 5px 9px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 7px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--vp-c-text-2);
-  background: var(--vp-c-bg);
-  opacity: 0.85;
-  transition: opacity 0.12s, color 0.12s;
-}
-
-.json__btn:hover {
-  color: var(--vp-c-text-1);
-  opacity: 1;
-}
-
-.json__btn .lucide {
-  width: 13px;
-  height: 13px;
-}
-
 .json__editor,
 .json__pre {
   flex: 1;
@@ -133,6 +97,13 @@ async function copy() {
 
 .json__editor :deep(.cm-editor) {
   height: 100%;
+}
+
+@media (max-width: 767px) {
+  .json__editor :deep(.cm-lineNumbers .cm-gutterElement) {
+    min-width: 32px;
+    padding: 0 8px 0 4px;
+  }
 }
 
 .json__pre {

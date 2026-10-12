@@ -31,7 +31,7 @@ const live = shallowRef(definition.value);
 const tab = ref<Tab>('write');
 onMounted(() => { if (window.matchMedia('(max-width: 767px)').matches) tab.value = 'preview'; });
 const edited = ref(false);
-const editor = ref(false);
+const json = ref<InstanceType<typeof LandingJson> | null>(null);
 const run = ref(0);
 const first = () => live.value.steps?.[0]?.id ?? 'form';
 const path = ref<string[]>([]);
@@ -167,6 +167,10 @@ function onTabKey(event: KeyboardEvent) {
         </div>
         <span v-if="issues" class="sandbox__issues" role="status" :title="problems.join('\n')">{{ issues }} {{ issues === 1 ? 'issue' : 'issues' }}</span>
         <div class="sandbox__actions">
+          <template v-if="tab === 'json'">
+            <button type="button" class="sandbox__tool" title="Format (Shift+Alt+F)" @click="json?.format()"><LucideIcon name="braces" /> Format</button>
+            <button type="button" class="sandbox__tool" aria-label="Copy JSON" @click="json?.copy()"><LucideIcon :name="json?.copied ? 'check' : 'copy'" /> Copy</button>
+          </template>
           <button type="button" class="sandbox__text" title="Reset to example" @click="reset"><LucideIcon name="restart" /> Reset</button>
         </div>
       </template>
@@ -176,13 +180,12 @@ function onTabKey(event: KeyboardEvent) {
         <button type="button" class="sandbox__restart" @click="restart"><LucideIcon name="restart" /> Restart</button>
       </template>
       <div id="sandbox-write" class="sandbox__pane sandbox__pane--write" role="tabpanel" aria-labelledby="sandbox-tab-write">
-        <p v-if="!edited && editor" class="sandbox__hint">Click a line to edit · <kbd>Enter</kbd> adds a field · Go to sends an answer to a step</p>
         <ClientOnly>
-          <EditorIsland :key="generation" storage="memory" compact lazy :definition="loaded" @ready="editor = true" @change="onEdit" />
+          <EditorIsland :key="generation" storage="memory" compact lazy :definition="loaded" @change="onEdit" />
         </ClientOnly>
       </div>
       <div id="sandbox-json" class="sandbox__pane sandbox__pane--json" role="tabpanel" aria-labelledby="sandbox-tab-json">
-        <LandingJson :source="source" :error="jsonError" :active="tab === 'json'" @change="onJson" />
+        <LandingJson ref="json" :source="source" :error="jsonError" :active="tab === 'json'" @change="onJson" />
       </div>
       <template #aside>
         <div id="sandbox-preview" class="sandbox__pane sandbox__pane--preview" role="tabpanel" aria-labelledby="sandbox-tab-preview">

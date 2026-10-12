@@ -12,22 +12,11 @@
 .sandbox__pane--write {
   overflow: auto;
   overscroll-behavior: contain;
-  padding: 24px 32px 24px 48px;
+  padding: 16px;
 }
 
-.sandbox__hint {
-  margin: 0 0 12px;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--vp-c-text-3);
-}
-
-.sandbox__hint kbd {
-  padding: 0 4px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 3px;
-  font-family: inherit;
-  font-size: 11px;
+.sandbox :deep(.frame__bar--aside) {
+  padding-left: 24px;
 }
 
 .sandbox__pane--preview {
@@ -42,7 +31,7 @@
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  padding: 24px 32px;
+  padding: 24px;
 }
 
 .sandbox__preview :deep(.fh-step-progress__counter) {
@@ -58,14 +47,15 @@
 @media (max-width: 767px) {
   .sandbox :deep(.frame__bar--aside),
   .sandbox__text,
-  .sandbox__actions,
+  .sandbox__actions::before,
   .sandbox__tab[data-tab='write'],
   .sandbox__pane--write {
     display: none;
   }
 
-  .sandbox__pane--json {
-    height: 480px;
+  .sandbox[data-tab='json'] {
+    grid-template-rows: auto minmax(0, 1fr);
+    height: min(600px, 70vh);
   }
 
   .sandbox[data-tab='json'] :deep(.frame__aside),
