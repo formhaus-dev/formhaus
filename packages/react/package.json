@@ -5,7 +5,7 @@
   "type": "module",
   "sideEffects": false,
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
   },
   "exports": {
     ".": {
@@ -27,13 +27,12 @@
     "test:resolve": "node --input-type=module -e \"import('./dist/index.js').then(m => { if (!m.FormRenderer) process.exit(1); console.log('ESM resolve OK'); })\"",
     "clean": "rm -rf dist"
   },
-  "dependencies": {
-    "@formhaus/core": "workspace:*"
-  },
   "peerDependencies": {
-    "react": ">=18.0.0"
+    "@formhaus/core": "^0.11.0",
+    "react": "^18.0.0 || ^19.0.0"
   },
   "devDependencies": {
+    "@formhaus/core": "workspace:*",
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
