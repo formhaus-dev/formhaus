@@ -100,6 +100,12 @@
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
+.demo-form select.fh-field__input {
+  padding-right: 40px;
+  background: var(--vp-c-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238b8b93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;
+  cursor: pointer;
+}
+
 .demo-form .fh-field__input::placeholder {
   color: var(--vp-c-text-3);
 }
