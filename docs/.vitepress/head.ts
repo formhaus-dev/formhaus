@@ -1,20 +1,17 @@
 import type { HeadConfig, TransformContext } from 'vitepress'
-import { articleJsonLd, faqJsonLd, homeJsonLd } from './jsonld'
-import { pageUrl, siteName, siteUrl } from './site'
+import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, homeJsonLd } from './jsonld'
+import { breadcrumbs, ogImage } from './meta'
+import { pageUrl, siteName } from './site'
 
 export const head: HeadConfig[] = [
   ['link', { rel: 'icon', href: '/favicon.ico', sizes: '32x32' }],
   ['link', { rel: 'icon', type: 'image/svg+xml', href: '/brand/mark.svg' }],
   ['link', { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' }],
   ['link', { rel: 'manifest', href: '/site.webmanifest' }],
-  ['meta', { name: 'theme-color', content: '#5502fb' }],
-  ['meta', { property: 'og:type', content: 'website' }],
+  ['meta', { name: 'theme-color', media: '(prefers-color-scheme: light)', content: '#ffffff' }],
+  ['meta', { name: 'theme-color', media: '(prefers-color-scheme: dark)', content: '#1b1b1f' }],
   ['meta', { property: 'og:site_name', content: siteName }],
-  ['meta', { property: 'og:image', content: `${siteUrl}/og.jpg` }],
-  ['meta', { property: 'og:image:width', content: '1200' }],
-  ['meta', { property: 'og:image:height', content: '630' }],
   ['meta', { name: 'twitter:card', content: 'summary_large_image' }],
-  ['meta', { name: 'twitter:image', content: `${siteUrl}/og.jpg` }],
 ]
 
 function jsonLd(data: object): HeadConfig {
@@ -22,20 +19,30 @@ function jsonLd(data: object): HeadConfig {
 }
 
 function isArticle(relativePath: string): boolean {
-  return ['guide/', 'api/', 'recipes/', 'compare/'].some((section) => relativePath.startsWith(section))
+  return ['guide/', 'api/', 'recipes/', 'compare/', 'cloud/', 'spec.md'].some((section) => relativePath.startsWith(section))
 }
 
 export function transformHead({ pageData, title, description, content }: TransformContext): HeadConfig[] {
   if (pageData.isNotFound) return []
-  const { relativePath } = pageData
+  const { relativePath, params } = pageData
+  const home = relativePath === 'index.md'
   const url = pageUrl(relativePath)
+  const image = ogImage(relativePath, params?.slug ? { slug: params.slug, title: params.title } : undefined)
   const tags: HeadConfig[] = [
     ['link', { rel: 'canonical', href: url }],
-    ['meta', { property: 'og:title', content: relativePath === 'index.md' ? title : pageData.title }],
+    ['meta', { property: 'og:type', content: home ? 'website' : 'article' }],
+    ['meta', { property: 'og:title', content: home ? title : pageData.title }],
     ['meta', { property: 'og:description', content: description }],
     ['meta', { property: 'og:url', content: url }],
+    ['meta', { property: 'og:image', content: image.url }],
+    ['meta', { property: 'og:image:width', content: '1200' }],
+    ['meta', { property: 'og:image:height', content: '630' }],
+    ['meta', { property: 'og:image:alt', content: image.alt }],
+    ['meta', { name: 'twitter:image', content: image.url }],
+    ['meta', { name: 'twitter:image:alt', content: image.alt }],
   ]
-  if (relativePath === 'index.md') tags.push(jsonLd(homeJsonLd(description)))
+  if (home) tags.push(jsonLd(homeJsonLd(description)))
+  else tags.push(jsonLd(breadcrumbJsonLd(breadcrumbs(relativePath, pageData.title, url))))
   if (relativePath === 'cloud.md') tags.push(jsonLd(faqJsonLd(content)))
   if (isArticle(relativePath)) {
     tags.push(jsonLd(articleJsonLd(pageData.title, description, url, pageData.lastUpdated)))
