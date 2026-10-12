@@ -10,19 +10,21 @@ const shared = {
   target: 'es2020',
 };
 
+async function useClient(file: string): Promise<void> {
+  await writeFile(file, `'use client';${await readFile(file, 'utf8')}`);
+}
+
 export default defineConfig([
   {
     ...shared,
     entry: { index: 'src/index.ts' },
+    onSuccess: () => useClient('dist/index.js'),
     external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/internal'],
   },
   {
     ...shared,
     entry: { cloud: 'src/cloud/index.ts' },
-    async onSuccess() {
-      const file = 'dist/cloud.js';
-      await writeFile(file, `'use client';${await readFile(file, 'utf8')}`);
-    },
+    onSuccess: () => useClient('dist/cloud.js'),
     external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/react'],
   },
 ]);
