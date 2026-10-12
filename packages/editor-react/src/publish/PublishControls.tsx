@@ -39,7 +39,14 @@ export function PublishAction({ published, compact }: ActionProps) {
           </span>
         </Tooltip>
       )}
-      <PublishButton label="Publish" hint={next} disabled={!!published && !changed} compact={compact} state={state} />
+      <PublishButton
+        label="Publish"
+        hint={next}
+        idleHint={published ? `Nothing to publish. v${String(published.version)} is live.` : 'Nothing to publish yet'}
+        disabled={!!published && !changed}
+        compact={compact}
+        state={state}
+      />
     </>
   );
 }

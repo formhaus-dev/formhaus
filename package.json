@@ -19,7 +19,8 @@
     "templates:check": "node scripts/templates-index.mjs --check",
     "changeset": "changeset",
     "version": "changeset version && node scripts/sync-mcp-server-json.mjs",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "check:build-page": "node scripts/check-build-page.mjs"
   },
   "engines": {
     "node": ">=20"

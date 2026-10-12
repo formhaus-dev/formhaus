@@ -8,6 +8,14 @@
   background: var(--fh-ed-panel);
 }
 
+.caption {
+  margin: calc(var(--fh-ed-space-2) * -1) 0 var(--fh-ed-space-4);
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-sm);
+  line-height: 18px;
+  text-align: center;
+}
+
 .sent {
   display: flex;
   flex-direction: column;

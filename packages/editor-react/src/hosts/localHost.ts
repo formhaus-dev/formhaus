@@ -9,8 +9,7 @@ export interface LocalHostOptions extends HostOptions {
   storage?: Storage;
 }
 
-const isObject = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+const isObject = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
 export function readLocalDraft(storage: Storage, key = LOCAL_KEY): SavedDraft | null {
   try {
@@ -33,7 +32,13 @@ function browserStorage(): Storage | null {
   }
 }
 
-export function createLocalHost({ key = LOCAL_KEY, storage = browserStorage() ?? undefined, ...options }: LocalHostOptions): EditorHost {
+export function createLocalHost({
+  key = LOCAL_KEY,
+  storage = browserStorage() ?? undefined,
+  onChange,
+  definition,
+  ...options
+}: LocalHostOptions): EditorHost {
   const base = baseHost(options);
   let warned = false;
   const attempt = <T>(run: (store: Storage) => T, fallback: T): T => {
@@ -45,7 +50,11 @@ export function createLocalHost({ key = LOCAL_KEY, storage = browserStorage() ??
   };
   return {
     ...base,
-    load: () => Promise.resolve({ draft: storage ? readLocalDraft(storage, key) : null, published: null }),
+    load: () =>
+      Promise.resolve({
+        draft: (storage && readLocalDraft(storage, key)) ?? (definition ? savedDraft(definition, 0) : null),
+        published: null,
+      }),
     save: (definition, revision) => {
       const draft = savedDraft(definition, revision + 1);
       try {
@@ -54,11 +63,16 @@ export function createLocalHost({ key = LOCAL_KEY, storage = browserStorage() ??
       } catch (error) {
         if (quota(error) && !warned) {
           warned = true;
-          base.notify({ title: 'This form is too large to keep in the browser', description: 'Copy or download the JSON to keep it.', tone: 'danger' });
+          base.notify({
+            title: 'This form is too large to keep in the browser',
+            description: 'Copy or download the JSON to keep it.',
+            tone: 'danger',
+          });
         }
         return Promise.reject(new Error(error instanceof Error ? error.message : String(error)));
       }
       warned = false;
+      onChange?.(definition);
       return Promise.resolve(draft);
     },
     discard: () => {

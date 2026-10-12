@@ -1,6 +1,6 @@
 {
-  "buildCommand": "pnpm --dir docs run build",
-  "installCommand": "pnpm --dir docs install --frozen-lockfile",
+  "buildCommand": "pnpm --filter \"@formhaus/editor-react...\" run build && pnpm --dir docs run build",
+  "installCommand": "pnpm install --frozen-lockfile && pnpm --dir docs install --frozen-lockfile",
   "outputDirectory": "docs/.vitepress/dist",
   "framework": null,
   "git": {

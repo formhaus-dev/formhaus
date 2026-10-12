@@ -91,5 +91,6 @@ export interface EditorHost {
   notify: (notice: Notice) => void;
   describeError: (error: unknown) => string;
   ago: (iso: string) => string;
+  savedHint?: string;
   Preview: ComponentType<{ definition: FormDefinition }>;
 }

@@ -84,9 +84,10 @@ button.row:focus-visible {
 }
 
 .idle.idle[aria-disabled='true'] {
-  border-color: var(--fh-ed-action);
-  background: var(--fh-ed-action);
-  color: var(--fh-ed-action-fg);
-  opacity: 0.4;
+  border-color: transparent;
+  background: var(--fh-ed-sub);
+  color: var(--fh-ed-fg-subtle);
+  box-shadow: none;
+  opacity: 1;
   cursor: default;
 }
