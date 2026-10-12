@@ -131,10 +131,15 @@
   gap: 10px;
 }
 
-.demo-form .fh-field__radio-option,
-.demo-form .fh-field__multiselect-option {
+.demo-form .fh-field .fh-field__radio-option,
+.demo-form .fh-field .fh-field__multiselect-option {
   position: relative;
   display: flex;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  outline: none;
 }
 
 .demo-form .fh-field__radio,
@@ -161,9 +166,10 @@
   transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
 }
 
-.demo-form .fh-field__radio-label::before,
-.demo-form .fh-field__multiselect-label::before {
+.demo-form .fh-field .fh-field__radio-label::before,
+.demo-form .fh-field .fh-field__multiselect-label::before {
   content: '';
+  position: static;
   flex: none;
   width: 16px;
   height: 16px;
@@ -197,7 +203,7 @@
   outline-offset: 2px;
 }
 
-.demo-form .fh-field__multiselect-label::before {
+.demo-form .fh-field .fh-field__multiselect-label::before {
   border-radius: 4px;
 }
 
