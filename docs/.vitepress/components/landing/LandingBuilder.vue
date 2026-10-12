@@ -174,7 +174,7 @@ function onKey(event: KeyboardEvent) {
 <template>
   <div ref="root" class="nb" :data-dragging="drag.from.value !== null" @mousedown="onMouseDown">
     <div class="nb-doc" @keydown="onKey">
-      <p v-if="!edited" class="nb-hint">Click any line to edit · <kbd>Enter</kbd> adds a field · <kbd>⇧Tab</kbd> turns an answer into a field · tap Branch on an answer to jump to a step</p>
+      <p v-if="!edited" class="nb-hint">Click a line to edit · <kbd>Enter</kbd> adds a field · <kbd>⇧Tab</kbd> turns an answer into a field · Branch sends an answer to a step</p>
       <div class="nb-line nb-title">
         <AutoInput v-model="form.title" placeholder="Untitled form" label="Form title" wrap @input="touch" />
       </div>
