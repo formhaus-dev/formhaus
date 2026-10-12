@@ -1,46 +1,34 @@
 import type { FormDefinition, FormField, FormStep } from '@formhaus/core';
+import { issue, type Issue } from './issues';
 import { FIELD_TYPES } from './vocabulary';
-
-export interface Findings {
-  errors: string[];
-  warnings: string[];
-}
 
 const KNOWN_TYPES = new Set<string>(FIELD_TYPES);
 
-function checkField(field: FormField, path: string, findings: Findings): void {
-  const { type } = field;
-  if (!KNOWN_TYPES.has(type)) {
-    findings.warnings.push(`${path} uses custom type "${type}"; adapters need a component registered for it.`);
+function fieldIssues(field: FormField, path: string): Issue[] {
+  const issues: Issue[] = [];
+  if (!KNOWN_TYPES.has(field.type)) {
+    issues.push(issue('custom-field-type', 'warning', `${path}/type`, `"${field.type}" is a custom type`, 'Register a component for it in the renderer, or use a built-in type'));
   }
-  if (field.autoAdvance && type !== 'radio') {
-    findings.warnings.push(`${path} has autoAdvance but only radio fields advance automatically.`);
+  if (field.autoAdvance && field.type !== 'radio') {
+    issues.push(issue('auto-advance-ignored', 'warning', `${path}/autoAdvance`, 'only radio fields advance automatically', 'Remove autoAdvance or use a radio field'));
   }
+  return issues;
 }
 
 export function advancingRadios(step: FormStep): FormField[] {
   return step.fields.filter((field) => field.type === 'radio' && field.autoAdvance);
 }
 
-function checkStep(step: FormStep, path: string, findings: Findings, isLast: boolean): void {
-  step.fields.forEach((field, index) => checkField(field, `${path}.fields[${index}]`, findings));
-  if (step.next === false && !isLast && advancingRadios(step).length === 0) {
-    findings.warnings.push(`${path} has next: false but no autoAdvance radio, so users cannot move forward.`);
-  }
-}
-
-export function checkStructure(definition: FormDefinition): Findings {
-  const findings: Findings = { errors: [], warnings: [] };
+export function structureIssues(definition: FormDefinition): Issue[] {
   const fields = definition.fields ?? [];
   const steps = definition.steps ?? [];
-  if (fields.length > 0 && steps.length > 0) findings.errors.push('Definition cannot have both non-empty "fields" and "steps".');
-  if (fields.length === 0 && steps.length === 0) findings.warnings.push('Definition has no fields and no steps.');
-  fields.forEach((field, index) => checkField(field, `fields[${index}]`, findings));
-  const stepIds = new Set<string>();
+  const issues = fields.flatMap((field, index) => fieldIssues(field, `/fields/${index}`));
+  if (!fields.length && !steps.length) issues.push(issue('empty-form', 'warning', '', 'the definition has no fields and no steps', 'Add "fields" or "steps"'));
   steps.forEach((step, index) => {
-    if (stepIds.has(step.id)) findings.errors.push(`Duplicate step id "${step.id}" at steps[${index}].`);
-    stepIds.add(step.id);
-    checkStep(step, `steps[${index}]`, findings, index === steps.length - 1);
+    issues.push(...step.fields.flatMap((field, position) => fieldIssues(field, `/steps/${index}/fields/${position}`)));
+    if (step.next === false && index < steps.length - 1 && !advancingRadios(step).length) {
+      issues.push(issue('next-hidden', 'warning', `/steps/${index}/next`, 'next is false and no autoAdvance radio moves the form forward', 'Add an autoAdvance radio or remove "next": false'));
+    }
   });
-  return findings;
+  return issues;
 }

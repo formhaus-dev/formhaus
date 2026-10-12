@@ -26,7 +26,8 @@ export const capabilities = {
     semantics: [
       'minLength/maxLength apply to strings and arrays; min/max apply to numbers.',
       'pattern is a JavaScript regular expression string.',
-      'matchField requires the value to equal another field.',
+      'matchField requires the value to equal another field, and fails when this field is empty and the other is not.',
+      'Built-in types are checked: email format, date and datetime shape, numbers, booleans and option values.',
       'validator names a custom function passed to the engine.',
       'Hidden fields and skipped steps are not validated.',
     ],
@@ -37,7 +38,9 @@ export const capabilities = {
     show: 'All conditions must match.',
     showAny: 'At least one condition must match.',
     appliesTo: ['field', 'step', 'route', 'action.disabled'],
-    hiddenValues: 'Hidden fields are cleared and left out of submitted values.',
+    comparisons: 'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values.',
+    scope: 'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
+    hiddenValues: 'Hidden fields are cleared at once and left out of submitted values.',
   },
   steps: {
     props: ['id', 'title', 'description', 'fields', 'show', 'showAny', 'routes', 'next', 'back', 'skip'],
@@ -62,7 +65,7 @@ export const capabilities = {
     autoAdvance: 'autoAdvance: true on a radio field advances after the user picks an option and the step validates.',
   },
   actions: {
-    shape: '{ label, variant?, action?, disabled? }',
+    shape: '{ label, variant?, disabled? }',
     variants: ACTION_VARIANTS,
     slots: ['submit', 'cancel', 'step.next', 'step.back', 'step.skip'],
   },
