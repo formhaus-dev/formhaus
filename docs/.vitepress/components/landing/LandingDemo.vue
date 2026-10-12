@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
-import { validateDefinition, type FormDefinition } from '@formhaus/core';
+import { checkDefinition, type FormDefinition } from '@formhaus/core';
 import seed from '../../../recipes/definitions/onboarding.json';
 import EditorIsland from '../editor/EditorIsland.vue';
 import LandingFrame from './LandingFrame.vue';
@@ -42,7 +42,7 @@ const jsonError = ref('');
 
 function safeValidate(value: FormDefinition): string[] {
   try {
-    return validateDefinition(value);
+    return checkDefinition(value).filter((issue) => issue.severity === 'error').map((issue) => issue.message);
   } catch (error) {
     return [error instanceof Error ? error.message : 'Invalid definition'];
   }

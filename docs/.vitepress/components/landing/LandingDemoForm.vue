@@ -70,7 +70,7 @@ async function onSubmit(values: Record<string, unknown>) {
       :definition="props.definition"
       :initial-values="props.initial"
       :actions-component="DemoActions"
-      @step-change="onStep"
+      :on-after-step-change="({ toStepId }) => onStep(toStepId)"
       @field-change="(_key, _value, values) => emit('values', { ...values })"
       @submit="onSubmit"
     />
