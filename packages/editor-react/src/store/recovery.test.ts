@@ -1,12 +1,12 @@
 import { setLabel, toDefinition, type BuilderForm } from '@formhaus/builder';
 import type { FormDefinition } from '@formhaus/core';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { SavedDraft } from '../host';
+import type { BackupBase, SavedDraft } from '../host';
 import { createAutosave } from './autosave';
 import { readBackup, writeBackup } from './backup';
 import { blankForm, loader } from './initial';
-import { createRecovery } from './recovery';
-import { createEditorStore } from './store';
+import { createRecovery, offerKey } from './recovery';
+import { createEditorStore, type EditorStore } from './store';
 
 const saved = (definition: FormDefinition, revision: number): SavedDraft => ({
   definition,
@@ -16,97 +16,104 @@ const saved = (definition: FormDefinition, revision: number): SavedDraft => ({
   savedBy: '',
 });
 
-function setup({ mirror = true, fail = false, key = (): string => 'backup' } = {}) {
-  const store = createEditorStore(blankForm());
-  const state = { fail };
-  const save = vi.fn((definition: FormDefinition, revision: number) =>
-    state.fail ? Promise.reject(new TypeError('offline')) : Promise.resolve(saved(definition, revision + 1)),
-  );
-  const autosave = createAutosave(store, { adapter: { save }, revision: 0, load: loader(null) });
-  const recovery = createRecovery({ store, autosave, slot: { key, mirror }, revision: 0, savedAt: null, load: loader(null) });
-  const stop = recovery.start();
+interface Setup {
+  mirror?: boolean;
+  fail?: boolean;
+  key?: () => string;
+  base?: () => BackupBase;
+  form?: BuilderForm;
+  revision?: number;
+}
+
+function setup({
+  mirror = true,
+  fail = false,
+  key = () => 'backup',
+  base = () => ({ version: 1, draft: 'd1' }),
+  form,
+  revision = 0,
+}: Setup = {}) {
+  const store = createEditorStore(form ?? blankForm());
+  const state = { fail, release: (): void => undefined, hold: false };
+  const save = vi.fn((definition: FormDefinition, current: number) => {
+    if (state.fail) return Promise.reject(new TypeError('offline'));
+    if (!state.hold) return Promise.resolve(saved(definition, current + 1));
+    return new Promise<SavedDraft>((resolve) => {
+      state.release = () => {
+        resolve(saved(definition, current + 1));
+      };
+    });
+  });
+  const autosave = createAutosave(store, { adapter: { save }, revision, load: loader(null) });
+  const recovery = createRecovery({ store, autosave, slot: { key, mirror, base }, revision, load: loader(null) });
+  recovery.start();
   autosave.start();
+  return { store, autosave, recovery, state };
+}
+
+function type(store: EditorStore, label: string) {
   const uid = store.getState().form.blocks[0]?.uid ?? '';
-  const type = (label: string) => {
-    store.update((form: BuilderForm) => {
-      setLabel(form, uid, label);
-    }, `${uid}:label`);
-  };
-  return { store, autosave, recovery, stop, type, state, save };
+  store.update((form: BuilderForm) => {
+    setLabel(form, uid, label);
+  }, `${uid}:label`);
 }
 
 const label = (key: string) => readBackup(key)?.definition.fields?.[0]?.label;
+const stored = (title: string, revision = 0, base: BackupBase = { version: 1, draft: 'd1' }) => {
+  writeBackup('backup', { definition: { ...toDefinition(blankForm()), title }, revision, at: new Date().toISOString(), ...base });
+};
 
-describe('createRecovery', () => {
+describe('mirroring', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     localStorage.clear();
   });
   afterEach(() => vi.useRealTimers());
 
-  it('mirrors every edit and clears the copy once the save matches it', async () => {
-    const { type } = setup();
-    type('W');
-    expect(label('backup')).toBe('W');
-    type('Work');
+  it('mirrors every edit with its base and clears the copy once the save matches it', async () => {
+    const { store, recovery } = setup();
+    type(store, 'W');
+    expect(readBackup('backup')).toMatchObject({ version: 1, draft: 'd1', revision: 0 });
+    type(store, 'Work');
     expect(label('backup')).toBe('Work');
+    expect(recovery.kept()).toBe(true);
     await vi.advanceTimersByTimeAsync(1000);
     expect(readBackup('backup')).toBeNull();
+    expect(recovery.kept()).toBe(false);
   });
 
   it('keeps the copy while saves fail', async () => {
-    const { type, store } = setup({ fail: true });
-    type('Offline');
+    const { store } = setup({ fail: true });
+    type(store, 'Offline');
     await vi.advanceTimersByTimeAsync(1000);
     expect(store.getState().save.status).toBe('error');
     expect(label('backup')).toBe('Offline');
   });
 
   it('keeps the newer copy when an edit lands during a save', async () => {
-    let release: () => void = () => undefined;
-    const store = createEditorStore(blankForm());
-    const save = (definition: FormDefinition, revision: number) =>
-      new Promise<SavedDraft>((resolve) => {
-        release = () => {
-          resolve(saved(definition, revision + 1));
-        };
-      });
-    const autosave = createAutosave(store, { adapter: { save }, revision: 0, load: loader(null) });
-    createRecovery({
-      store,
-      autosave,
-      slot: { key: () => 'backup', mirror: true },
-      revision: 0,
-      savedAt: null,
-      load: loader(null),
-    }).start();
-    autosave.start();
-    const uid = store.getState().form.blocks[0]?.uid ?? '';
-    store.update((form) => {
-      setLabel(form, uid, 'A');
-    });
+    const { store, autosave, state } = setup();
+    state.hold = true;
+    type(store, 'A');
     const first = autosave.flush();
-    store.update((form) => {
-      setLabel(form, uid, 'AB');
-    });
-    release();
+    type(store, 'AB');
+    state.release();
     await first;
     expect(label('backup')).toBe('AB');
   });
 
   it('moves the copy when the host key changes', () => {
     let key = 'new';
-    const { type } = setup({ key: () => key });
-    type('A');
+    const { store } = setup({ key: () => key });
+    type(store, 'A');
     key = 'draft-1';
-    type('AB');
+    type(store, 'AB');
     expect(readBackup('new')).toBeNull();
     expect(label('draft-1')).toBe('AB');
   });
 
   it('does not mirror for hosts that save locally', () => {
-    const { type } = setup({ mirror: false });
-    type('A');
+    const { store } = setup({ mirror: false });
+    type(store, 'A');
     expect(readBackup('backup')).toBeNull();
   });
 });
@@ -116,67 +123,56 @@ describe('restore offer', () => {
     localStorage.clear();
   });
 
-  function offered() {
-    const form = blankForm();
-    const definition = { ...toDefinition(form), title: 'Recovered' };
-    writeBackup('backup', { definition, revision: 0, at: new Date().toISOString() });
-    const store = createEditorStore(form);
-    const autosave = createAutosave(store, {
-      adapter: { save: (d, r) => Promise.resolve(saved(d, r + 1)) },
-      revision: 0,
-      load: loader(null),
-    });
-    const recovery = createRecovery({
-      store,
-      autosave,
-      slot: { key: () => 'backup', mirror: true },
-      revision: 0,
-      savedAt: null,
-      load: loader(null),
-    });
-    recovery.start();
-    return { store, recovery };
-  }
-
   it('offers a newer copy and restores it as one undoable step', () => {
-    const { store, recovery } = offered();
+    stored('Recovered');
+    const { store, recovery } = setup();
     expect(recovery.offer()?.definition.title).toBe('Recovered');
     store.update((form) => {
       form.title = 'Typed meanwhile';
     });
-    expect(readBackup('backup')?.definition.title).toBe('Recovered');
+    expect(readBackup('backup')?.definition.title).toBe('Typed meanwhile');
+    expect(readBackup(offerKey('backup'))?.definition.title).toBe('Recovered');
     recovery.restore();
     expect(recovery.offer()).toBeNull();
+    expect(readBackup(offerKey('backup'))).toBeNull();
     expect(store.getState().form.title).toBe('Recovered');
     store.undo();
     expect(store.getState().form.title).toBe('Typed meanwhile');
   });
 
+  it('keeps the offer across a reload while it is unanswered', () => {
+    stored('Recovered');
+    setup();
+    const again = setup();
+    expect(again.recovery.offer()?.definition.title).toBe('Recovered');
+  });
+
   it('drops the copy on discard', () => {
-    const { store, recovery } = offered();
+    stored('Recovered');
+    const { store, recovery } = setup();
     recovery.dismiss();
     expect(recovery.offer()).toBeNull();
-    expect(readBackup('backup')).toBeNull();
+    expect(readBackup(offerKey('backup'))).toBeNull();
     expect(store.getState().form.title).toBe('Untitled form');
   });
 
   it('drops a copy that matches what loaded', () => {
-    writeBackup('backup', { definition: toDefinition(blankForm()), revision: 0, at: new Date().toISOString() });
-    const store = createEditorStore(blankForm());
-    const autosave = createAutosave(store, {
-      adapter: { save: (d, r) => Promise.resolve(saved(d, r + 1)) },
-      revision: 0,
-      load: loader(null),
-    });
-    const recovery = createRecovery({
-      store,
-      autosave,
-      slot: { key: () => 'backup', mirror: true },
-      revision: 0,
-      savedAt: null,
-      load: loader(null),
-    });
+    stored('Untitled form');
+    const { recovery } = setup();
     expect(recovery.offer()).toBeNull();
     expect(readBackup('backup')).toBeNull();
+  });
+
+  it('drops a copy after another user published a new version', () => {
+    stored('Mine', 3, { version: 1, draft: 'd1' });
+    const { recovery } = setup({ base: () => ({ version: 2, draft: null }) });
+    expect(recovery.offer()).toBeNull();
+    expect(readBackup('backup')).toBeNull();
+  });
+
+  it('drops a copy after the draft was discarded and a new one started', () => {
+    stored('Mine', 3, { version: 1, draft: 'd1' });
+    const { recovery } = setup({ base: () => ({ version: 1, draft: 'd2' }), revision: 1 });
+    expect(recovery.offer()).toBeNull();
   });
 });

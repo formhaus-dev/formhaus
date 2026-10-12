@@ -22,9 +22,7 @@ function createSession({ host, initial, published }: SessionOptions): EditorHand
     ? null
     : createAutosave(store, { adapter: host, revision: initial.revision, load, baseline: baselineOf(published) });
   const recovery =
-    autosave && host.backup
-      ? createRecovery({ store, autosave, slot: host.backup, revision: initial.revision, savedAt: initial.savedAt, load })
-      : null;
+    autosave && host.backup ? createRecovery({ store, autosave, slot: host.backup, revision: initial.revision, load }) : null;
   const discard = async () => {
     await host.discard();
     recovery?.clear();

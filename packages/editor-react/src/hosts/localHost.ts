@@ -53,7 +53,7 @@ export function createLocalHost({
   };
   return {
     ...base,
-    backup: { key: () => backupKey(key), mirror: false },
+    backup: { key: () => backupKey(key), mirror: false, base: () => ({ version: null, draft: null }) },
     load: () =>
       Promise.resolve({
         draft: (storage && readLocalDraft(storage, key)) ?? (definition ? savedDraft(definition, 0) : null),
@@ -102,5 +102,5 @@ export function carryToBuild(definition: FormDefinition, storage: Storage | null
   } catch {
     return;
   }
-  if (!sameDefinition(current.definition, definition)) writeBackup(backupKey(LOCAL_KEY), { definition, revision: current.revision, at }, storage);
+  if (!sameDefinition(current.definition, definition)) writeBackup(backupKey(LOCAL_KEY), { definition, revision: current.revision, at, version: null, draft: null }, storage);
 }

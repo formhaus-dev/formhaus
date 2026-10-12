@@ -77,9 +77,15 @@ export class PublishRefused extends Error {
   }
 }
 
+export interface BackupBase {
+  version: number | null;
+  draft: string | null;
+}
+
 export interface BackupSlot {
   key: () => string;
   mirror: boolean;
+  base: () => BackupBase;
 }
 
 export interface EditorHost {
