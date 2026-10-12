@@ -14,8 +14,8 @@ const { input } = useField(props, emit);
       v-bind="input"
       class="fh-field__checkbox"
       type="checkbox"
-      :checked="!!props.value"
-      @change="(e) => emit('update:value', (e.target as HTMLInputElement).checked)"
+      :checked="!!props.modelValue"
+      @change="(e) => emit('update:modelValue', (e.target as HTMLInputElement).checked)"
     />
   </FieldShell>
 </template>

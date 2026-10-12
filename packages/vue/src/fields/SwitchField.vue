@@ -15,8 +15,8 @@ const { input } = useField(props, emit);
       class="fh-field__switch"
       type="checkbox"
       role="switch"
-      :checked="!!props.value"
-      @change="(e) => emit('update:value', (e.target as HTMLInputElement).checked)"
+      :checked="!!props.modelValue"
+      @change="(e) => emit('update:modelValue', (e.target as HTMLInputElement).checked)"
     />
   </FieldShell>
 </template>

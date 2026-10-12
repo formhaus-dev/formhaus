@@ -41,12 +41,12 @@ function onKeyUp(event: KeyboardEvent, value: string) {
         type="radio"
         :name="props.field.key"
         :value="option.value"
-        :checked="String(props.value) === String(option.value)"
+        :checked="String(props.modelValue) === String(option.value)"
         @keydown="onKeyDown($event, option.value)"
         @keyup="onKeyUp($event, option.value)"
         @pointerdown="arrowSelection = false"
         @click="onClick($event, option.value)"
-        @change="() => { if (!props.field.autoAdvance || arrowSelection) emit('update:value', option.value); }"
+        @change="() => { if (!props.field.autoAdvance || arrowSelection) emit('update:modelValue', option.value); }"
       />
       <label :for="`${inputId}-${option.value}`" class="fh-field__radio-label">
         {{ option.label }}

@@ -2,10 +2,10 @@
 import { computed } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import { withDefaultFields } from './constants';
-import type { FieldEmits, FieldResolverProps } from './types';
+import type { CommitFieldEmits, FieldResolverProps } from './types';
 
 const props = defineProps<FieldResolverProps>();
-const emit = defineEmits<FieldEmits>();
+const emit = defineEmits<CommitFieldEmits>();
 
 const components = computed(() => withDefaultFields(props.components));
 </script>
@@ -14,7 +14,8 @@ const components = computed(() => withDefaultFields(props.components));
   <FieldResolver
     v-bind="props"
     :components="components"
-    @update:value="(v: unknown) => emit('update:value', v)"
+    @update:model-value="(v: unknown) => emit('update:modelValue', v)"
+    @commit="(v: unknown) => { emit('commit', v); emit('update:modelValue', v); }"
     @blur="emit('blur')"
     @focus="emit('focus')"
   />

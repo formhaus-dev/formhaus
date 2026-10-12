@@ -70,7 +70,7 @@ async function submit(values: Record<string, unknown>, skippedSteps?: string[]) 
 </script>
 
 <template>
-  <FormRenderer :definition="definition" :errors="errors" :submit-handler="submit" />
+  <FormRenderer :definition="definition" :errors="errors" @submit="submit" />
 </template>
 ```
 :::

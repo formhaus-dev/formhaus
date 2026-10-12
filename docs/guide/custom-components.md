@@ -8,7 +8,7 @@ Replace the built-in form buttons and step progress bar with your own components
 
 ## Custom actions component
 
-Pass your component via the `actionsComponent` (Vue) or `ActionsComponent` (React) prop:
+Pass your component via the `actionsComponent` prop:
 
 ::: code-group
 ```vue [Vue]
@@ -32,7 +32,7 @@ import { MyFormActions } from './MyFormActions'
 
 <FormRenderer
   definition={definition}
-  ActionsComponent={MyFormActions}
+  actionsComponent={MyFormActions}
   onSubmit={handleSubmit}
 />
 ```
@@ -110,7 +110,7 @@ In Vue, you can also emit `submit`, `next`, `prev`, `cancel` events directly. In
 
 ## Custom progress component
 
-Pass your component via the `progressComponent` (Vue) or `ProgressComponent` (React) prop:
+Pass your component via the `progressComponent` prop:
 
 ::: code-group
 ```vue [Vue]
@@ -126,7 +126,7 @@ Pass your component via the `progressComponent` (Vue) or `ProgressComponent` (Re
 ```tsx [React]
 <FormRenderer
   definition={definition}
-  ProgressComponent={MyStepProgress}
+  progressComponent={MyStepProgress}
   onSubmit={handleSubmit}
 />
 ```
@@ -140,6 +140,7 @@ Your component receives these props:
 | `total` | `number` | Total visible steps |
 | `stepTitle` | `string?` | Title of the current step |
 | `stepDescription` | `string?` | Description of the current step |
+| `headingLevel` | `1` to `6`, optional | Heading level for the step title, from the renderer's `headingLevel` prop. The built-in progress renders `<h2>` by default |
 
 The progress component only renders for multi-step forms.
 
@@ -164,8 +165,8 @@ Use all custom component props together:
 <FormRenderer
   definition={definition}
   components={{ phone: CustomPhoneInput }}
-  ActionsComponent={MyFormActions}
-  ProgressComponent={MyStepProgress}
+  actionsComponent={MyFormActions}
+  progressComponent={MyStepProgress}
   onSubmit={handleSubmit}
 />
 ```
@@ -200,8 +201,8 @@ import { HeadlessFormRenderer } from '@formhaus/react'
 <HeadlessFormRenderer
   definition={definition}
   components={{ text: MyInput, email: MyInput, select: MySelect }}
-  ActionsComponent={MyFormActions}
-  ProgressComponent={MyStepProgress}
+  actionsComponent={MyFormActions}
+  progressComponent={MyStepProgress}
   onSubmit={handleSubmit}
 />
 ```
@@ -214,6 +215,20 @@ import { HeadlessFormRenderer } from '@formhaus/react'
 - A field type with no mapped component renders an "Unsupported field type" placeholder.
 - Without an actions component, the form renders no buttons.
 - Without a progress component, a multi-step form renders no progress bar.
+
+## Render one field
+
+`FormhausField` renders a single field with the built-in components as fallbacks. Pass `components` to override some types. Both packages also export every built-in field (`TextField`, `TextareaField`, `SelectField`, `AutocompleteField`, `MultiselectField`, `CheckboxField`, `RadioField`, `SwitchField`, `FileField`, `DateField`, `DateTimeField`) and `defaultFieldComponents`.
+
+::: code-group
+```vue [Vue]
+<FormhausField :field="field" v-model="value" />
+```
+
+```tsx [React]
+<FormhausField field={field} value={value} onChange={setValue} onBlur={() => {}} />
+```
+:::
 
 ## Exported types
 

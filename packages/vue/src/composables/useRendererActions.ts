@@ -41,7 +41,6 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     return async (values: Record<string, unknown>, skippedSteps: string[]) => {
       emit('analyticsEvent', { type: 'form_submitted', fieldCount: Object.keys(values).length });
       if (handler) await handler(values, skippedSteps);
-      if (engine === form.engine) emit('submit', values);
     };
   }
   async function report(engine: typeof form.engine, action: Promise<boolean>) {
@@ -58,11 +57,11 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     const values = engine.getSubmitValues();
     if (engine.definition.submit.disabled?.every((condition) => evaluateCondition(condition, values))
       && engine.definition.submit.disabled.length > 0) return false;
-    return report(engine, engine.submit(send(engine, props.submitHandler)));
+    return report(engine, engine.submit(send(engine, props.onSubmit ?? props.submitHandler)));
   });
   const skip = () => run(() => {
     const engine = form.engine;
-    const submit = send(engine, props.submitHandler);
+    const submit = send(engine, props.onSubmit ?? props.submitHandler);
     return report(engine, engine.skip((values, skippedSteps) => {
       emit('analyticsEvent', { type: 'step_skipped', stepId: engine.currentStep!.id });
       return submit(values, skippedSteps);

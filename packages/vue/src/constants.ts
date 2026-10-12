@@ -32,9 +32,9 @@ export const defaultFieldComponents: Record<DefaultFieldType, Component> = {
 };
 
 export function withDefaultFields(
-  components?: Partial<FieldComponentMap>,
-): Partial<FieldComponentMap> {
-  const merged: Partial<FieldComponentMap> = { ...defaultFieldComponents };
+  components?: FieldComponentMap,
+): FieldComponentMap {
+  const merged: FieldComponentMap = { ...defaultFieldComponents };
   for (const [type, component] of Object.entries(components ?? {})) {
     if (component) merged[type] = component;
   }

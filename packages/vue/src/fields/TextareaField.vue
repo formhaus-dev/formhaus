@@ -15,10 +15,10 @@ const { input } = useField(props, emit);
     <textarea
       v-bind="input"
       class="fh-field__input fh-field__input--textarea"
-      :value="String(props.value ?? '')"
+      :value="String(props.modelValue ?? '')"
       :placeholder="props.field.placeholder"
       :rows="props.field.rows ?? DEFAULT_ROWS"
-      @input="(e) => emit('update:value', (e.target as HTMLTextAreaElement).value)"
+      @input="(e) => emit('update:modelValue', (e.target as HTMLTextAreaElement).value)"
     />
   </FieldShell>
 </template>

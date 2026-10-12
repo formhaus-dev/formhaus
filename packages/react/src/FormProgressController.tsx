@@ -4,12 +4,14 @@ import type { FormRendererProps } from './types';
 
 interface FormProgressControllerProps {
   engine: FormEngine;
-  ProgressComponent: FormRendererProps['ProgressComponent'];
+  ProgressComponent: FormRendererProps['progressComponent'];
+  headingLevel: FormRendererProps['headingLevel'];
 }
 
 export function FormProgressController({
   engine,
   ProgressComponent,
+  headingLevel,
 }: FormProgressControllerProps) {
   useStructureSnapshot(engine);
   if (!engine.isMultiStep || !ProgressComponent) return null;
@@ -20,6 +22,7 @@ export function FormProgressController({
       total={engine.progress.total}
       stepTitle={engine.currentStep?.title}
       stepDescription={engine.currentStep?.description}
+      headingLevel={headingLevel}
     />
   );
 }

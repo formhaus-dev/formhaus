@@ -65,9 +65,6 @@
             "text"
           ]
         },
-        "action": {
-          "type": "string"
-        },
         "disabled": {
           "type": "array",
           "items": {

@@ -62,7 +62,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
       :definition="state.definition"
       :initial-values="state.initialValues ?? initialValues"
       :errors="state.errors"
-      :submit-handler="submit"
+      :on-submit="submit"
       :on-error="handled"
     />
   </div>

@@ -27,22 +27,23 @@ export interface UseFormEngineReturn {
 
 export function useFormEngine(
   definitionOrGetter: FormDefinition | (() => FormDefinition),
-  initialValues?: Record<string, unknown>,
+  initialValues?: Record<string, unknown> | (() => Record<string, unknown> | undefined),
   options?: FormEngineOptions,
 ): UseFormEngineReturn {
   const getDefinition = typeof definitionOrGetter === 'function' ? definitionOrGetter : () => definitionOrGetter;
+  const getValues = typeof initialValues === 'function' ? initialValues : () => initialValues;
   const version = ref(0);
-  let engine = new FormEngine(getDefinition(), initialValues, options);
+  let engine = new FormEngine(getDefinition(), getValues(), options);
   let unsubscribe = engine.subscribe(() => { version.value++; });
 
   const engineRef = ref(engine) as Ref<FormEngine>;
 
   watch(
-    () => getDefinition().id,
+    getDefinition,
     () => {
       engine.cancelPendingActions();
       unsubscribe();
-      engine = new FormEngine(getDefinition(), initialValues, options);
+      engine = new FormEngine(getDefinition(), getValues(), options);
       unsubscribe = engine.subscribe(() => { version.value++; });
       engineRef.value = engine;
       version.value++;

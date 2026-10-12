@@ -14,7 +14,7 @@ it.each([FormRenderer, HeadlessFormRenderer])('runs routes and hooks through %s'
   const submit = vi.fn();
   const change = vi.fn();
   render(<Renderer definition={definition} components={{ radio: RadioField, text: TextField }}
-    ActionsComponent={FormActions} onSubmit={submit} onAfterStepChange={change} />);
+    actionsComponent={FormActions} onSubmit={submit} onAfterStepChange={change} />);
   fireEvent.click(screen.getByLabelText('Business'));
   const company = await screen.findByRole('textbox', { name: /Company/ });
   await waitFor(() => expect((company as HTMLInputElement).disabled).toBe(false));

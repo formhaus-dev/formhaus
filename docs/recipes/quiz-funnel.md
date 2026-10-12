@@ -73,7 +73,7 @@ async function bookCall(values: Record<string, unknown>) {
   <FormRenderer
     :definition="definition"
     :on-before-step-change="captureLead"
-    :submit-handler="bookCall"
+    @submit="bookCall"
     @analytics-event="(event) => track(event.type, event)"
   />
 </template>

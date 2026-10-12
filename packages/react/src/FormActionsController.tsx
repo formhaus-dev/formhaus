@@ -7,7 +7,7 @@ interface FormActionsControllerProps {
   engine: FormEngine;
   definition: FormRendererProps['definition'];
   loading: boolean;
-  ActionsComponent: FormRendererProps['ActionsComponent'];
+  ActionsComponent: FormRendererProps['actionsComponent'];
   onSubmit: () => void;
   onNext: () => Promise<void>;
   onPrev: () => void;

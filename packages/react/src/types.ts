@@ -1,4 +1,4 @@
-import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, StepValidateFn, ValidatorFn } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, StepValidateFn, SubmitFn, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
 
 export type OptionsProvider = (
@@ -43,20 +43,22 @@ export interface FormActionsProps {
   onPrimary?: () => void;
 }
 
+export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
 export interface FormStepProgressProps {
   current: number;
   total: number;
   stepTitle?: string;
   stepDescription?: string;
+  headingLevel?: HeadingLevel;
 }
 
 export interface FormRendererProps extends FormEngineOptions {
   onError?: (error: unknown) => void;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
-  onSubmit: (values: Record<string, unknown>, skippedSteps?: string[]) => Promise<void> | void;
+  onSubmit: SubmitFn;
   onCancel?: () => void;
-  onStepChange?: (stepId: string, direction: 'next' | 'back') => void;
   onFieldChange?: (key: string, value: unknown, allValues: Record<string, unknown>) => void;
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
@@ -64,7 +66,8 @@ export interface FormRendererProps extends FormEngineOptions {
   loading?: boolean;
   components?: FieldComponentMap;
   optionsProviders?: Record<string, OptionsProvider>;
-  ActionsComponent?: ComponentType<FormActionsProps>;
-  ProgressComponent?: ComponentType<FormStepProgressProps>;
+  actionsComponent?: ComponentType<FormActionsProps>;
+  progressComponent?: ComponentType<FormStepProgressProps>;
+  headingLevel?: HeadingLevel;
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
 }

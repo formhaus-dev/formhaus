@@ -25,13 +25,13 @@ const inputType = computed(() => {
 
 const draft = ref('');
 const text = computed(() => (
-  props.field.type === 'number' && draft.value && Object.is(Number(draft.value), props.value) ? draft.value : String(props.value ?? '')
+  props.field.type === 'number' && draft.value && Object.is(Number(draft.value), props.modelValue) ? draft.value : String(props.modelValue ?? '')
 ));
 
 function onInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
   draft.value = value;
-  emit('update:value', props.field.type === 'number' && value !== '' ? Number(value) : value);
+  emit('update:modelValue', props.field.type === 'number' && value !== '' ? Number(value) : value);
 }
 </script>
 

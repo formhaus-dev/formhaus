@@ -12,16 +12,16 @@ const field: FormField = {
 
 const ControlledNumber = defineComponent(() => {
   const value = ref<unknown>(undefined);
-  return () => h(TextField, { field, value: value.value, 'onUpdate:value': (next: unknown) => (value.value = next) });
+  return () => h(TextField, { field, modelValue: value.value, 'onUpdate:modelValue': (next: unknown) => (value.value = next) });
 });
 
 describe('TextField', () => {
   it('keeps an empty number input empty', async () => {
-    const { emitted } = render(TextField, { props: { field, value: 42 } });
+    const { emitted } = render(TextField, { props: { field, modelValue: 42 } });
 
     await fireEvent.update(screen.getByRole('spinbutton', { name: 'Age' }), '');
 
-    expect(emitted()['update:value']).toEqual([['']]);
+    expect(emitted()['update:modelValue']).toEqual([['']]);
   });
 
   it.each([

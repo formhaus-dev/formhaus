@@ -106,7 +106,7 @@ async function submit(values: Record<string, unknown>) {
 </script>
 
 <template>
-  <FormRenderer :definition="definition" :submit-handler="submit" />
+  <FormRenderer :definition="definition" @submit="submit" />
 </template>
 ```
 :::

@@ -15,10 +15,10 @@ const { inputId, input } = useField(props, emit);
       class="fh-field__input"
       type="text"
       :list="`${inputId}-list`"
-      :value="(props.value as string) ?? ''"
+      :value="(props.modelValue as string) ?? ''"
       :placeholder="props.field.placeholder"
       autocomplete="off"
-      @input="(e) => emit('update:value', (e.target as HTMLInputElement).value)"
+      @input="(e) => emit('update:modelValue', (e.target as HTMLInputElement).value)"
     />
     <datalist :id="`${inputId}-list`">
       <option v-for="opt in (props.field.options ?? [])" :key="opt.value" :value="opt.value">

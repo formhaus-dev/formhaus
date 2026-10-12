@@ -5,7 +5,9 @@ export function FormStepProgress({
   total,
   stepTitle,
   stepDescription,
+  headingLevel = 2,
 }: FormStepProgressProps) {
+  const Heading = `h${headingLevel}` as const;
   const percent = (current / total) * 100;
 
   return (
@@ -18,7 +20,7 @@ export function FormStepProgress({
           Step {current} of {total}
         </span>
       </div>
-      {stepTitle && <h3 className="fh-step-progress__title">{stepTitle}</h3>}
+      {stepTitle && <Heading className="fh-step-progress__title">{stepTitle}</Heading>}
       {stepDescription && <p className="fh-step-progress__description">{stepDescription}</p>}
     </div>
   );
