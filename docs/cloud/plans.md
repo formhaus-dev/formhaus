@@ -1,6 +1,6 @@
 ---
 title: "Plans, limits and data"
-description: "Formhaus Cloud plan limits, submission counting, upgrade links, data region, what is stored, retention and deletion."
+description: "Formhaus Cloud plans and limits: Free, Pro and Team, how submissions are counted, upgrades, data region, what is stored, retention and deletion."
 ---
 
 # Plans, limits and data

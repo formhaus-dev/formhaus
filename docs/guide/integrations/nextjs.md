@@ -1,6 +1,6 @@
 ---
 title: "Next.js App Router integration"
-description: "Use Formhaus with the Next.js App Router: load the JSON definition in a server component, render it in a client component, validate the submission in a route handler with validateSubmission."
+description: "Use Formhaus with the Next.js App Router: load the definition in a server component, render it on the client, validate submissions in a route handler."
 ---
 
 # Next.js App Router

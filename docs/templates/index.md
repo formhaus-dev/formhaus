@@ -1,6 +1,6 @@
 ---
 title: Form templates
-description: Free form templates for lead generation, intake, applications, feedback, surveys, registration, quizzes and operations. Preview live, then use in Formhaus Cloud or as JSON.
+description: "Free form templates for lead generation, intake, applications, feedback, surveys, quizzes and operations. Preview live, launch in Cloud or copy the JSON."
 layout: page
 sidebar: false
 pageClass: lp-page

@@ -15,10 +15,33 @@ const keywords = [
   'JSON Schema',
 ]
 
+const plans = [
+  { name: 'Free', price: '0' },
+  { name: 'Pro', price: '19' },
+  { name: 'Team', price: '49' },
+]
+
 export function homeJsonLd(description: string) {
+  const organization = { '@id': `${siteUrl}/#organization` }
   return {
     '@context': 'https://schema.org',
     '@graph': [
+      {
+        '@type': 'Organization',
+        ...organization,
+        name: siteName,
+        legalName: 'Fabrique-Futur LLC',
+        url: `${siteUrl}/`,
+        logo: `${siteUrl}/brand/icon-512.png`,
+        sameAs: [repoUrl],
+      },
+      {
+        '@type': 'WebSite',
+        '@id': `${siteUrl}/#website`,
+        name: siteName,
+        url: `${siteUrl}/`,
+        publisher: organization,
+      },
       {
         '@type': 'SoftwareSourceCode',
         '@id': `${siteUrl}/#source`,
@@ -40,8 +63,17 @@ export function homeJsonLd(description: string) {
         applicationCategory: 'DeveloperApplication',
         operatingSystem: 'Any',
         softwareVersion: coreVersion,
-        offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-        author,
+        publisher: organization,
+        offers: plans.map(({ name, price }) => ({
+          '@type': 'Offer',
+          name,
+          price,
+          priceCurrency: 'USD',
+          url: `${siteUrl}/cloud/plans`,
+          ...(price === '0' ? {} : {
+            priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: 'USD', unitText: 'MONTH' },
+          }),
+        })),
         sameAs: [
           repoUrl,
           'https://www.npmjs.com/package/@formhaus/core',
@@ -51,6 +83,14 @@ export function homeJsonLd(description: string) {
         ],
       },
     ],
+  }
+}
+
+export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map(({ name, url }, index) => ({ '@type': 'ListItem', position: index + 1, name, item: url })),
   }
 }
 

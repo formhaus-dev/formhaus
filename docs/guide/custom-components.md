@@ -1,4 +1,5 @@
 ---
+title: "Custom actions and progress bar"
 description: "Replace Formhaus buttons and the step progress bar with design system components in React or Vue, or render everything with the headless renderer."
 ---
 

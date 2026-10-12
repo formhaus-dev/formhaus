@@ -1,5 +1,5 @@
 ---
-title: "Formhaus vs react-hook-form"
+title: "Compared with react-hook-form"
 description: "Formhaus vs react-hook-form: JSON definition or React code, multi-step and branching, validation, bundle size, Figma and AI tooling, with migration code."
 ---
 

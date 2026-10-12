@@ -1,6 +1,6 @@
 ---
 title: Sub-processors
-description: Third parties that Fabrique-Futur LLC uses to run Formhaus Cloud, what data they process and where.
+description: "Sub-processors of Formhaus Cloud: the third parties Fabrique-Futur LLC uses to run the service, what personal data each one processes and where."
 sidebar: false
 pageClass: lp-page
 ---

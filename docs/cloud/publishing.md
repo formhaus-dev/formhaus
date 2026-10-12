@@ -1,5 +1,5 @@
 ---
-title: "Publishing"
+title: "Publishing forms"
 description: "How Formhaus Cloud publishes definitions: versions, publishing rules and limits, errors and warnings, unclaimed forms, agent keys and claiming."
 ---
 
