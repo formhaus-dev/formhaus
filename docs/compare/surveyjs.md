@@ -1,5 +1,5 @@
 ---
-title: "Formhaus vs SurveyJS"
+title: "Compared with SurveyJS"
 description: "Formhaus vs SurveyJS Form Library: JSON formats, multi-page and skip logic, validation, licensing, bundle size, Figma and AI tooling, with migration JSON."
 ---
 

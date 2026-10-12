@@ -1,4 +1,5 @@
 ---
+title: "Inline edit and per-field save"
 description: "Save account settings one field at a time with one FormRenderer per editable row, each with its own validation and submit handler."
 ---
 

@@ -1,4 +1,5 @@
 ---
+title: "Field types"
 description: "Field types in a Formhaus definition: text, select, autocomplete, multiselect, checkbox, radio, switch, date, file, plus custom field components."
 ---
 

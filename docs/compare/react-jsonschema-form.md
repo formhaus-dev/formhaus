@@ -1,5 +1,5 @@
 ---
-title: "Formhaus vs react-jsonschema-form"
+title: "Compared with react-jsonschema-form"
 description: "Formhaus vs react-jsonschema-form: form definition or JSON Schema, multi-step, conditional fields, themes, bundle size and AI tooling, with migration code."
 ---
 

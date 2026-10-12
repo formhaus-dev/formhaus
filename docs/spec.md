@@ -1,4 +1,5 @@
 ---
+title: "Form definition 1.0 specification"
 description: "Specification of the Formhaus form definition format 1.0: structure, fields, conditions, validation, steps, routes, skip and the submit payload."
 ---
 

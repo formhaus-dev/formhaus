@@ -1,4 +1,5 @@
 ---
+title: "Error handling"
 description: "Show server-side errors in a Formhaus form: field-level and top-level errors, navigation to the failing step, and form and field loading states."
 ---
 

@@ -1,4 +1,5 @@
 ---
+title: "FormEngine API reference"
 description: "FormEngine API reference: constructor, values, errors, visibility, step navigation, subscriptions and the submission lifecycle in @formhaus/core."
 ---
 

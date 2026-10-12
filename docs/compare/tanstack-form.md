@@ -1,5 +1,5 @@
 ---
-title: "Formhaus vs TanStack Form"
+title: "Compared with TanStack Form"
 description: "Formhaus vs TanStack Form: JSON definition or typed code, multi-step and branching, validation, frameworks, bundle size and AI tooling, with migration."
 ---
 

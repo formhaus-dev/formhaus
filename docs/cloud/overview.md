@@ -1,6 +1,6 @@
 ---
 title: "Cloud overview"
-description: "What Formhaus Cloud adds to the open-source Formhaus packages: a submission endpoint, hosted page, embed script, dashboard, webhooks, emails, REST API and remote MCP server."
+description: "What Formhaus Cloud adds to the open-source packages: a submission endpoint, hosted page, embed, dashboard, webhooks, emails, REST API and remote MCP."
 ---
 
 # Cloud overview

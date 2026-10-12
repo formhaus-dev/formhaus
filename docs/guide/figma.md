@@ -1,5 +1,6 @@
 ---
-description: "Generate form mockups, flow maps and clickable prototypes in Figma from the same JSON definition your React or Vue app renders."
+title: "Figma plugin"
+description: "Generate form mockups, flow maps and clickable prototypes in Figma from the same JSON definition your app renders in React, Vue or any framework."
 ---
 
 # Figma Plugin

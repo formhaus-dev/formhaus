@@ -1,5 +1,6 @@
 ---
-description: "Validate untrusted form submissions on the server with validateSubmission from @formhaus/core/server: value types, options, email and date formats, hidden and skipped steps, unknown keys."
+title: "Server-side validation"
+description: "Validate untrusted submissions on the server with validateSubmission from @formhaus/core/server: types, options, formats, hidden fields and skipped steps."
 ---
 
 # Server-side validation

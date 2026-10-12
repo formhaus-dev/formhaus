@@ -1,5 +1,5 @@
 ---
-title: "/formhaus:formhaus-create-form Claude Code skill"
+title: "formhaus-create-form skill for Claude Code"
 description: "Generate a Formhaus JSON form definition from a text description, CSV data or a screenshot of a form with the /formhaus:formhaus-create-form Claude Code skill."
 ---
 

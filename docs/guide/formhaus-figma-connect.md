@@ -1,5 +1,5 @@
 ---
-title: "/formhaus:formhaus-figma-connect Claude Code skill"
+title: "formhaus-figma-connect skill for Claude Code"
 description: "Find form components in your Figma library and bind them to the Formhaus Figma plugin with the /formhaus:formhaus-figma-connect skill and Figma MCP."
 ---
 
