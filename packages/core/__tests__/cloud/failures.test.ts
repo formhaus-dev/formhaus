@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CloudError, createCloudController, createSubmitter, fetchDefinition, type CloudState } from '../../src/cloud';
+import { CloudError, createSubmitter, fetchDefinition } from '../../src/cloud';
+import { createCloudController, type CloudState } from '../../src/internal';
 import type { FormDefinition } from '../../src';
 
 const definition: FormDefinition = {

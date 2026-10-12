@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { shouldApplyExternalErrors, type FormEngineOptions, type StepChangeContext } from '@formhaus/core';
+import type { FormEngineOptions, StepChangeContext } from '@formhaus/core';
+import { shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { computed, nextTick, ref, watch } from 'vue';
 import { fieldDomId } from '@formhaus/core/internal';
 import FieldResolver from './FieldResolver.vue';

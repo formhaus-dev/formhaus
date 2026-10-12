@@ -244,7 +244,7 @@ import type { FormActionsProps, FormStepProgressProps } from '@formhaus/react'
 
 ## Analytics events
 
-Track form interactions via `onAnalyticsEvent` (React) or `@analyticsEvent` (Vue):
+Track form interactions via `onAnalyticsEvent` (React) or `@analyticsEvent` (Vue). Event `type` names are `snake_case`, the usual convention for analytics tools:
 
 ::: code-group
 ```tsx [React]
