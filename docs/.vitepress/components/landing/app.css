@@ -46,11 +46,18 @@
 }
 
 .app__form {
-  flex: 1;
-  min-height: 0;
-  overflow: auto;
-  overscroll-behavior: contain;
   padding: 32px 40px;
+}
+
+@media (min-width: 768px) {
+  .app :deep(.frame__main) {
+    position: relative;
+  }
+
+  .app .app__code {
+    position: absolute;
+    inset: 0;
+  }
 }
 
 .app__form :deep(select.fh-field__input) {

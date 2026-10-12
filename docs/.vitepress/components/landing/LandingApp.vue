@@ -32,7 +32,7 @@ function onKey(event: KeyboardEvent) {
     title="Use your own components"
     lead="Build forms in React or Vue with your design system."
   >
-    <LandingFrame class="app" fixed>
+    <LandingFrame class="app">
       <template #bar>
         <div class="app__tabs" role="tablist" aria-label="Code sample" @keydown="onKey">
           <button

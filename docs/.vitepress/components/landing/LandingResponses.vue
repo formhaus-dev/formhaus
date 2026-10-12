@@ -16,11 +16,16 @@ const alt = 'Formhaus Cloud dashboard showing the Responses tab of a Contact us 
 
 <style scoped>
 .responses {
+  --shot-bg: #fafaf9;
   margin: 0;
   overflow: hidden;
   border: 1px solid var(--vp-c-divider);
   border-radius: 16px;
-  background: var(--vp-c-bg);
+  background: var(--shot-bg);
+}
+
+html.dark .responses {
+  --shot-bg: #09090b;
 }
 
 .responses__shot {
@@ -36,5 +41,25 @@ html.dark .responses__shot--light {
 
 html.dark .responses__shot--dark {
   display: block;
+}
+
+@media (max-width: 767px) {
+  .responses {
+    position: relative;
+  }
+
+  .responses__shot {
+    width: 922px;
+    max-width: none;
+    margin-left: -12px;
+  }
+
+  .responses::after {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: 48px;
+    background: linear-gradient(to right, transparent, var(--shot-bg));
+    content: '';
+  }
 }
 </style>
