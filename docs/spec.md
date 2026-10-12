@@ -273,7 +273,7 @@ Keys are field keys as written. The payload is not nested and not type-converted
 
 `checkDefinition(definition)` never throws. It returns a list of issues. Each issue has a `code`, a `severity` (`error` or `warning`), a JSON pointer `path` to the node, a `message` of the form `<path>: <what is wrong>. <how to fix>.`, and an optional `hint` with the fix. Errors come before warnings.
 
-The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionError` with the errors in `issues`, and passes each warning to the `onWarning` option. Without `onWarning`, it logs warnings with `console.warn`, except when `process.env.NODE_ENV` is `production`. `validateSubmission()` does not log them.
+The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionError` with the errors in `issues`, and passes each warning to the `onWarning` option. Without `onWarning`, it logs warnings with `console.warn`. When `process.env.NODE_ENV` is `production`, or `process` is not defined, the constructor runs only the error checks: it reports no warnings, and its errors have no typo suggestions. `validateSubmission()` does not log warnings.
 
 | Code | Severity | Reported for |
 |---|---|---|

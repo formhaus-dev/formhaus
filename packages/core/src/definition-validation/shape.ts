@@ -1,5 +1,5 @@
 import type { DefinitionIssue } from './issues';
-import { error, pointer, warning } from './issues';
+import { error, pointer } from './issues';
 
 type Entry = Record<string, unknown>;
 type Check = (value: Entry, path: string) => DefinitionIssue[];
@@ -99,7 +99,6 @@ export function shapeIssues(input: unknown): DefinitionIssue[] {
 export function metaIssues(input: Entry): DefinitionIssue[] {
   return [
     ...text(input, 'id', ''),
-    ...(typeof input.title === 'string' ? [] : [warning('missing-property', '/title', '"title" must be a string', 'Add a title for host UI and editors')]),
     ...(isEntry(input.submit) ? [] : [error('missing-property', '/submit', 'the submit action is missing', 'Add "submit": { "label": "Submit" }')]),
   ];
 }
