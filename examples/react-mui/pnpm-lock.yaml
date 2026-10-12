@@ -15,11 +15,11 @@ importers:
         specifier: ^11.14.0
         version: 11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1)
       '@formhaus/core':
-        specifier: ^0.11.0
-        version: 0.11.0
+        specifier: ^0.11.1
+        version: 0.11.1
       '@formhaus/react':
-        specifier: ^0.11.0
-        version: 0.11.0(@formhaus/core@0.11.0)(react@18.3.1)
+        specifier: ^0.11.1
+        version: 0.11.1(@formhaus/core@0.11.1)(react@18.3.1)
       '@mui/material':
         specifier: ^6.4.0
         version: 6.5.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -345,15 +345,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@formhaus/core@0.11.0':
-    resolution: {integrity: sha512-AIe8t+VAAzCxonOo/fCt4vizd8BMMN3py6nqZNDWOBBww2liBZqrlZhQAXOy5lJQjo98oPvTdAiuDDBdpIMz3w==}
+  '@formhaus/core@0.11.1':
+    resolution: {integrity: sha512-cFVK2Xba6CaJdYZmXvfiyYlY845BUQ08v3lg/ig5bcRBHyCbgLFwunaLoBhIFiMAGP21unXYNkIeip3u2mI17g==}
     engines: {node: '>=20'}
 
-  '@formhaus/react@0.11.0':
-    resolution: {integrity: sha512-QTyA+8VRaoDnnRINg2eQIRhhv6yTEJY1O3ElT3RrRPN7g3x8ujVGDNRvo7JnEU9WyDVYd68Sv4ukzu/9fCoepw==}
+  '@formhaus/react@0.11.1':
+    resolution: {integrity: sha512-CvxL+stS+uQGxqvUhqBbHQ5zm6/cclR7AkRcYbcA7DQqM5dAMwLZlC755wC9D6AKRkbDxCOY+66nFSDg56As3Q==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@formhaus/core': ^0.11.0
+      '@formhaus/core': ^0.11.1
       react: ^18.0.0 || ^19.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
@@ -1229,11 +1229,11 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@formhaus/core@0.11.0': {}
+  '@formhaus/core@0.11.1': {}
 
-  '@formhaus/react@0.11.0(@formhaus/core@0.11.0)(react@18.3.1)':
+  '@formhaus/react@0.11.1(@formhaus/core@0.11.1)(react@18.3.1)':
     dependencies:
-      '@formhaus/core': 0.11.0
+      '@formhaus/core': 0.11.1
       react: 18.3.1
 
   '@jridgewell/gen-mapping@0.3.13':
