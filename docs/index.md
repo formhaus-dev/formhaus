@@ -1,31 +1,27 @@
 ---
 layout: home
-title: "Formhaus — JSON form definition for React, Vue, Figma and AI agents"
+title: "Formhaus — Make a working form with AI"
 titleTemplate: false
-description: "Define fields, validation, conditional visibility and multi-step routes in one JSON form definition. Render it in React, Vue or Figma."
+description: "Describe a form, share it with your audience, and collect responses. Build with AI, use the free builder, or add Formhaus to your React or Vue app."
 markdownStyles: false
 footer: false
 ---
 
 <script setup>
 import LandingHero from './.vitepress/components/landing/LandingHero.vue';
-import LandingOutputs from './.vitepress/components/landing/LandingOutputs.vue';
+import LandingResponses from './.vitepress/components/landing/LandingResponses.vue';
 import LandingApp from './.vitepress/components/landing/LandingApp.vue';
 import LandingDemo from './.vitepress/components/landing/LandingDemo.vue';
-import LandingAgents from './.vitepress/components/landing/LandingAgents.vue';
 import LandingFigma from './.vitepress/components/landing/LandingFigma.vue';
-import LandingWhy from './.vitepress/components/landing/LandingWhy.vue';
 import LandingClosing from './.vitepress/components/landing/LandingClosing.vue';
 import './.vitepress/components/landing/landing.css';
 </script>
 
 <div class="lp">
   <LandingHero />
-  <LandingOutputs />
-  <LandingApp />
   <LandingDemo />
-  <LandingAgents />
+  <LandingResponses />
+  <LandingApp />
   <LandingFigma />
-  <LandingWhy />
   <LandingClosing />
 </div>

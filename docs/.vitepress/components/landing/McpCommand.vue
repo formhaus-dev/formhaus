@@ -45,7 +45,7 @@ function onKey(event: KeyboardEvent) {
       <LucideIcon :name="copied ? 'check' : 'copy'" />
       {{ copied ? 'Copied' : 'Copy MCP setup' }}
     </button>
-    <p class="mcp__note">No account needed for the first form.</p>
+    <p class="mcp__note">Connect your AI agent. No account needed for your first form.</p>
   </div>
 </template>
 

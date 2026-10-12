@@ -9,20 +9,19 @@ import McpCommand from './McpCommand.vue';
     <div class="hero__copy">
       <h1 id="hero-title" class="hero__title">The form framework for the AI&nbsp;era.</h1>
       <p class="hero__lead">
-        One JSON definition. Your agent publishes it and hands back a link, embed, endpoint and webhook.
-        The same file renders natively in React, Vue and Figma.
+        Describe a form to share, embed, or use in your app.
       </p>
       <LandingActions class="hero__actions" />
     </div>
-    <LandingHeroVideo class="hero__video" />
     <McpCommand id="hero-mcp" class="hero__mcp" />
+    <LandingHeroVideo class="hero__video" />
   </section>
 </template>
 
 <style scoped>
 .hero {
   display: grid;
-  grid-template-areas: 'copy' 'video' 'mcp';
+  grid-template-areas: 'copy' 'mcp' 'video';
   gap: 40px;
   padding-top: 48px;
 }
@@ -54,17 +53,20 @@ import McpCommand from './McpCommand.vue';
 
 @media (min-width: 960px) {
   .hero {
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    grid-template-areas: none;
-    column-gap: 24px;
-    row-gap: 32px;
-    align-items: center;
     padding-top: 80px;
+    gap: 48px;
   }
 
-  .hero__copy { grid-area: 1 / 1 / 2 / 7; }
-  .hero__video { grid-area: 1 / 7 / 3 / 13; align-self: start; margin-top: 9px; }
-  .hero__mcp { grid-area: 2 / 1 / 3 / 7; align-self: start; }
+  .hero__copy,
+  .hero__mcp {
+    max-width: 760px;
+    margin: 0 auto;
+    text-align: center;
+  }
+
+  .hero__actions {
+    justify-content: center;
+  }
 
   .lp .hero__title {
     font-size: 56px;
