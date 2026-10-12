@@ -1,7 +1,8 @@
-import type { BuilderQuestion } from '@formhaus/builder';
+import type { BuilderPage, BuilderQuestion } from '@formhaus/builder';
 import { Rows3 } from 'lucide-react';
 import { useState } from 'react';
 import { AddRow, Button, Sortable } from '../ui';
+import { ButtonsCard } from './ButtonsCard';
 import { useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Canvas.module.css';
@@ -14,12 +15,15 @@ import { StepHeaderCard } from './StepHeaderCard';
 
 interface Props {
   step: string | null;
+  page: BuilderPage | null;
+  first: boolean;
+  last: boolean;
   fields: BuilderQuestion[];
   header: { position: number; total: number } | null;
   actions: EditorActions;
 }
 
-export function StepSection({ step, fields, header, actions }: Props) {
+export function StepSection({ step, page, first, last, fields, header, actions }: Props) {
   const readOnly = useReadOnly();
   const focus = useFocusRequests();
   const [palette, setPalette] = useState(false);
@@ -68,6 +72,7 @@ export function StepSection({ step, fields, header, actions }: Props) {
           </Button>
         </div>
       )}
+      <ButtonsCard step={page} first={first} last={last} actions={actions} />
     </section>
   );
 }

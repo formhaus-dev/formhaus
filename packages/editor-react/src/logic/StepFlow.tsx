@@ -1,5 +1,5 @@
-import { hasCustomRoutes, setStepProp, type BuilderPage } from '@formhaus/builder';
-import { Field, Input, Select, Switch, Text } from '../ui';
+import { hasCustomRoutes, type BuilderPage } from '@formhaus/builder';
+import { Field, Select, Text } from '../ui';
 import { useForm, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Logic.module.css';
@@ -11,8 +11,6 @@ export function StepFlow({ step, actions }: { step: BuilderPage; actions: Editor
   const targets = targetsAfter(form, step.uid);
   const custom = hasCustomRoutes(form, step.uid);
   const last = !targets.length;
-  const noContinue = step.extra.next === false;
-  const skip = step.extra.skip;
   return (
     <section className={styles.section} aria-label="Flow">
       <span className={styles.title}>Flow</span>
@@ -36,35 +34,6 @@ export function StepFlow({ step, actions }: { step: BuilderPage; actions: Editor
             />
           </Field>
         )
-      )}
-      <Switch
-        label="Allow skipping"
-        checked={!!skip}
-        disabled={readOnly || last || noContinue}
-        onCheckedChange={(next) => {
-          actions.edit((draft) => {
-            setStepProp(draft, step.uid, 'skip', next ? { label: 'Skip' } : undefined);
-          });
-        }}
-      />
-      {(last || noContinue) && (
-        <Text size="xs" tone="muted">
-          {last ? 'The last step cannot be skipped.' : 'A step without a Continue button cannot be skipped.'}
-        </Text>
-      )}
-      {skip && (
-        <Field label="Skip button">
-          <Input
-            value={skip.label}
-            readOnly={readOnly}
-            onChange={(event) => {
-              const label = event.target.value;
-              actions.edit((draft) => {
-                setStepProp(draft, step.uid, 'skip', { ...skip, label });
-              }, `${step.uid}:skip`);
-            }}
-          />
-        </Field>
       )}
     </section>
   );

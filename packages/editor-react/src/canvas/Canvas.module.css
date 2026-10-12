@@ -22,57 +22,6 @@
   cursor: text;
 }
 
-.headerSettings {
-  display: flex;
-  flex-direction: column;
-  gap: var(--fh-ed-space-3);
-  margin-top: var(--fh-ed-space-3);
-  padding-top: var(--fh-ed-space-4);
-  border-top: var(--fh-ed-border-thin) solid var(--fh-ed-line);
-  cursor: default;
-}
-
-.settingRow {
-  display: grid;
-  grid-template-columns: calc(var(--fh-ed-size-tile) + var(--fh-ed-space-5)) minmax(0, 1fr);
-  align-items: center;
-  gap: var(--fh-ed-space-3);
-}
-
-.settingLabel {
-  color: var(--fh-ed-fg-muted);
-  font-size: var(--fh-ed-font-size-sm);
-  font-weight: var(--fh-ed-font-weight-medium);
-}
-
-.headerToggle {
-  display: flex;
-  align-items: center;
-  gap: var(--fh-ed-space-2);
-  width: 100%;
-  min-height: var(--fh-ed-space-10);
-  margin-top: var(--fh-ed-space-2);
-  padding: 0;
-  border: 0;
-  border-radius: var(--fh-ed-radius-md);
-  background: transparent;
-  color: var(--fh-ed-fg-muted);
-  font: inherit;
-  font-size: var(--fh-ed-font-size-md);
-  font-weight: var(--fh-ed-font-weight-medium);
-  text-align: left;
-}
-
-.headerToggle svg {
-  width: var(--fh-ed-size-icon-md);
-  height: var(--fh-ed-size-icon-md);
-}
-
-.headerToggle:hover,
-.headerToggle[aria-expanded='true'] {
-  color: var(--fh-ed-fg);
-}
-
 .stepHeader {
   display: flex;
   flex-direction: column;
@@ -155,10 +104,5 @@
 
   .formHeader {
     padding: var(--fh-ed-space-4);
-  }
-
-  .settingRow {
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--fh-ed-space-1-5);
   }
 }

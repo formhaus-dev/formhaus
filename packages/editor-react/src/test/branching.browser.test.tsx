@@ -55,7 +55,7 @@ describe('branching in a browser', () => {
     await userEvent.click(within(screen.getByRole('group', { name: 'Team, step 2 of 3' })).getByRole('button', { name: 'Step settings' }));
     const flow = screen.getByRole('region', { name: 'Flow' });
     await userEvent.selectOptions(within(flow).getByRole('combobox', { name: 'After this step' }), 'End form');
-    await userEvent.click(within(flow).getByRole('switch', { name: 'Allow skipping' }));
+    await userEvent.click(within(screen.getByRole('group', { name: 'Buttons for Team' })).getByRole('switch', { name: 'Allow skipping' }));
     await waitFor(() => {
       expect(toDefinition(store.getState().form).steps?.[1]).toMatchObject({ routes: [{ to: null }], skip: { label: 'Skip' } });
     });
