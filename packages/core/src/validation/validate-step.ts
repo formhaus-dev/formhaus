@@ -1,6 +1,6 @@
 import type { FormField, FormStep } from '../types';
 import { isVisible } from '../visibility';
-import { type ValidatorFn, validateField } from './validate-field';
+import { type ValidatorFn, validateFieldValue } from './validate-field';
 
 export function validateStep(
   step: FormStep,
@@ -20,7 +20,7 @@ export function validateFields(
   for (const field of fields) {
     if (!isVisible(field, values)) continue;
 
-    const error = validateField(field, values[field.key], values, validators);
+    const error = validateFieldValue(field, values[field.key], values, validators);
     if (error) {
       errors[field.key] = error;
     }
