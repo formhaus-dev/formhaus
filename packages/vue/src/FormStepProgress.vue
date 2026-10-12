@@ -1,10 +1,7 @@
 <script setup lang="ts">
-const props = defineProps<{
-  current: number;
-  total: number;
-  stepTitle?: string;
-  stepDescription?: string;
-}>();
+import type { FormStepProgressProps } from './types';
+
+const props = withDefaults(defineProps<FormStepProgressProps>(), { headingLevel: 2 });
 </script>
 
 <template>
@@ -18,7 +15,7 @@ const props = defineProps<{
     <div class="fh-step-progress__info">
       <span class="fh-step-progress__counter">Step {{ props.current }} of {{ props.total }}</span>
     </div>
-    <h3 v-if="props.stepTitle" class="fh-step-progress__title">{{ props.stepTitle }}</h3>
+    <component :is="`h${props.headingLevel}`" v-if="props.stepTitle" class="fh-step-progress__title">{{ props.stepTitle }}</component>
     <p v-if="props.stepDescription" class="fh-step-progress__description">{{ props.stepDescription }}</p>
   </div>
 </template>

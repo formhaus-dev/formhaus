@@ -60,12 +60,12 @@ describe('auto advance lifecycle', () => {
     expect(await screen.findByLabelText('Yes')).toBeDefined();
   });
 
-  it('awaits submitHandler and ignores duplicate submissions', async () => {
+  it('awaits onSubmit and ignores duplicate submissions', async () => {
     let resolve!: () => void;
     const submitHandler = vi.fn(() => new Promise<void>((done) => { resolve = done; }));
     const after = vi.fn();
-    const { emitted } = render(FormRenderer, { props: {
-      definition: { id: 'single', title: '', submit: { label: 'Send' } }, submitHandler, onAfterSubmit: after,
+    render(FormRenderer, { props: {
+      definition: { id: 'single', title: '', submit: { label: 'Send' } }, onSubmit: submitHandler, onAfterSubmit: after,
     } });
     await fireEvent.click(screen.getByText('Send'));
     await fireEvent.click(screen.getByText('Send'));
@@ -73,7 +73,7 @@ describe('auto advance lifecycle', () => {
     expect(after).not.toHaveBeenCalled();
     resolve();
     await waitFor(() => expect(after).toHaveBeenCalledTimes(1));
-    expect(emitted().submit).toEqual([[{}]]);
+    expect(submitHandler).toHaveBeenCalledWith({}, []);
   });
 });
 

@@ -13,7 +13,7 @@ import { TextField } from './fields/TextField';
 import { TextareaField } from './fields/TextareaField';
 import type { FieldComponentMap, FieldComponentProps } from './types';
 
-const defaultFieldComponents: Record<DefaultFieldType, ComponentType<FieldComponentProps>> = {
+export const defaultFieldComponents: Record<DefaultFieldType, ComponentType<FieldComponentProps>> = {
   text: TextField,
   email: TextField,
   phone: TextField,

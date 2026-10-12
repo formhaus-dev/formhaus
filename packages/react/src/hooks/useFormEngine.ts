@@ -10,9 +10,9 @@ export function useFormEngineStore(
   const optionsRef = useRef(options);
   optionsRef.current = options;
   const engineRef = useRef<FormEngine | null>(null);
-  const definitionIdRef = useRef<string>(definition.id);
+  const definitionRef = useRef(definition);
 
-  if (engineRef.current === null || definitionIdRef.current !== definition.id) {
+  if (engineRef.current === null || definitionRef.current !== definition) {
     engineRef.current = new FormEngine(definition, initialValues, {
       validators: options?.validators,
       get onStepValidate() { return optionsRef.current?.onStepValidate; },
@@ -22,7 +22,7 @@ export function useFormEngineStore(
       get onAfterSubmit() { return optionsRef.current?.onAfterSubmit; },
       onWarning: options?.onWarning,
     });
-    definitionIdRef.current = definition.id;
+    definitionRef.current = definition;
   }
 
   const engine = engineRef.current;

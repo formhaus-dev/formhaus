@@ -86,9 +86,9 @@ describe('HeadlessFormRenderer', () => {
       <HeadlessFormRenderer
         definition={steps}
         components={{ text: CustomText }}
-        ActionsComponent={CustomActions}
-        ProgressComponent={CustomProgress}
-        onStepChange={onStepChange}
+        actionsComponent={CustomActions}
+        progressComponent={CustomProgress}
+        onAfterStepChange={onStepChange}
         onSubmit={() => {}}
       />,
     );
@@ -96,7 +96,7 @@ describe('HeadlessFormRenderer', () => {
     fireEvent.click(screen.getByText('Continue'));
     expect(await screen.findByTestId('custom-city')).toBeDefined();
     expect(screen.getByTestId('custom-progress').textContent).toBe('2/2');
-    expect(onStepChange).toHaveBeenCalledWith('two', 'next');
+    expect(onStepChange).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'two', reason: 'next' }));
   });
 });
 
@@ -125,7 +125,7 @@ describe('FormRenderer built-in fallbacks', () => {
       <FormRenderer
         definition={definition}
         components={{ text: CustomText }}
-        ActionsComponent={CustomActions}
+        actionsComponent={CustomActions}
         onSubmit={onSubmit}
         onCancel={onCancel}
         onFieldChange={onFieldChange}

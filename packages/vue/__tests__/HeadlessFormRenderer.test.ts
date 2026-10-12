@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/vue';
 import type { FormDefinition, FormField } from '@formhaus/core';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { defineComponent, h, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import HeadlessFormRenderer from '../src/HeadlessFormRenderer.vue';
@@ -8,14 +8,14 @@ import HeadlessFormRenderer from '../src/HeadlessFormRenderer.vue';
 const CustomText = defineComponent({
   props: {
     field: { type: Object as PropType<FormField>, required: true },
-    value: { type: null, default: undefined },
+    modelValue: { type: null, default: undefined },
   },
-  emits: ['update:value', 'blur', 'focus'],
+  emits: ['update:modelValue', 'blur', 'focus'],
   setup(props, { emit }) {
     return () => h('input', {
       'data-testid': `custom-${props.field.key}`,
-      value: props.value ?? '',
-      onInput: (e: Event) => emit('update:value', (e.target as HTMLInputElement).value),
+      value: props.modelValue ?? '',
+      onInput: (e: Event) => emit('update:modelValue', (e.target as HTMLInputElement).value),
     });
   },
 });
@@ -89,19 +89,21 @@ describe('HeadlessFormRenderer', () => {
   });
 
   it('renders the custom actions and progress when passed', async () => {
-    const { emitted } = render(HeadlessFormRenderer, {
+    const onAfterStepChange = vi.fn();
+    render(HeadlessFormRenderer, {
       props: {
         definition: steps,
         components: { text: CustomText },
         actionsComponent: CustomActions,
         progressComponent: CustomProgress,
+        onAfterStepChange,
       },
     });
     expect(screen.getByTestId('custom-progress').textContent).toBe('1/2');
     await fireEvent.click(screen.getByText('Continue'));
     expect(await screen.findByTestId('custom-city')).toBeDefined();
     expect(screen.getByTestId('custom-progress').textContent).toBe('2/2');
-    expect(emitted().stepChange).toEqual([['two', 'next']]);
+    expect(onAfterStepChange).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'two', reason: 'next' }));
   });
 });
 
@@ -123,15 +125,16 @@ describe('FormRenderer built-in fallbacks', () => {
   });
 
   it('forwards every event from the headless core', async () => {
+    const onSubmit = vi.fn();
     const { emitted } = render(FormRenderer, {
-      props: { definition, components: { text: CustomText }, actionsComponent: CustomActions },
+      props: { definition, components: { text: CustomText }, actionsComponent: CustomActions, onSubmit },
     });
     await fireEvent.update(screen.getByTestId('custom-name'), 'Ann');
     await fireEvent.click(screen.getByText('Send'));
     await fireEvent.click(screen.getByText('Custom cancel'));
 
     expect(emitted().fieldChange[0]).toEqual(['name', 'Ann', { name: 'Ann' }]);
-    expect(emitted().submit).toEqual([[{ name: 'Ann' }]]);
+    expect(onSubmit).toHaveBeenCalledWith({ name: 'Ann' }, []);
     expect(emitted().cancel).toHaveLength(1);
     expect(emitted().analyticsEvent).toContainEqual([{ type: 'form_submitted', fieldCount: 1 }]);
   });

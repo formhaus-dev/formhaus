@@ -352,11 +352,11 @@ Each custom component gets the field descriptor, the current value, and validati
 | `loading` | `boolean?` | Field loading state set through `FormEngine.setFieldLoading()` |
 | `disabled` | `boolean?` | Form is disabled |
 
-In React, call `onChange(value)` and `onBlur()`. In Vue, emit `update:value` and `blur`.
+In React, call `onChange(value)` and `onBlur()`. In Vue, read `modelValue` and emit `update:modelValue` and `blur`, so `v-model` works on the component.
 
 ### Explicit field activation
 
-For a deliberate activation that may advance a step, React fields call the optional `onCommit(value)` callback; Vue fields emit `commit` with the value. This saves the value and, when `field.autoAdvance` is true, validates and advances a non-final step. Emit only the commit event for an activation, because it also updates the value. Ordinary edits use `onChange`/`update:value` and never navigate.
+For a deliberate activation that may advance a step, React fields call the optional `onCommit(value)` callback; Vue fields emit `commit` with the value. This saves the value and, when `field.autoAdvance` is true, validates and advances a non-final step. Emit only the commit event for an activation, because it also updates the value. Ordinary edits use `onChange`/`update:modelValue` and never navigate.
 
 The built-in radio activates on click, Space or Enter; arrows only change the selection. A custom radio should preserve that distinction and allow the selected option to be activated again after a cancelled guard. Respect `disabled` while hooks or submission are pending. See the [complete radio example](/guide/steps#advance-when-an-answer-is-activated).
 
@@ -392,7 +392,7 @@ import type { FormFieldProps } from '@formhaus/vue'
 
 const props = defineProps<FormFieldProps>()
 const emit = defineEmits<{
-  (e: 'update:value', value: unknown): void
+  (e: 'update:modelValue', value: unknown): void
   (e: 'blur'): void
 }>()
 </script>
@@ -402,10 +402,10 @@ const emit = defineEmits<{
     <label>{{ props.field.label }}</label>
     <input
       type="tel"
-      :value="(props.value as string) ?? ''"
+      :value="(props.modelValue as string) ?? ''"
       :placeholder="props.field.placeholder"
       :disabled="props.disabled"
-      @input="emit('update:value', ($event.target as HTMLInputElement).value)"
+      @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
       @blur="emit('blur')"
     />
     <span v-if="props.field.helperText">{{ props.field.helperText }}</span>

@@ -19,9 +19,7 @@ const components = computed(() => withDefaultFields(props.components));
     :components="components"
     :actions-component="props.actionsComponent ?? FormActions"
     :progress-component="props.progressComponent ?? FormStepProgress"
-    @submit="(values) => emit('submit', values)"
     @cancel="emit('cancel')"
-    @step-change="(stepId, direction) => emit('stepChange', stepId, direction)"
     @field-change="(key, value, allValues) => emit('fieldChange', key, value, allValues)"
     @analytics-event="(event) => emit('analyticsEvent', event)"
   />

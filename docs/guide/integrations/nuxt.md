@@ -29,7 +29,7 @@ The definition lives in `shared/`, so the page and the server route import the s
 
 ## Page
 
-`submitHandler` keeps the form in its loading state until the request finishes. `ignoreResponseError` makes `$fetch` return the `422` body instead of throwing. Field errors go to the `errors` prop.
+The awaited `@submit` handler keeps the form in its loading state until the request finishes. `ignoreResponseError` makes `$fetch` return the `422` body instead of throwing. Field errors go to the `errors` prop.
 
 <<< @/../examples/nuxt/app/pages/index.vue
 

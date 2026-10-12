@@ -1,7 +1,9 @@
 import type { FormField as FormFieldType } from '@formhaus/core';
 import type { FieldComponentMap, FieldComponentProps } from './types';
 
-interface FormFieldProps {
+const noop = () => {};
+
+export interface FieldResolverProps {
   field: FormFieldType;
   value: unknown;
   error?: string;
@@ -10,11 +12,11 @@ interface FormFieldProps {
   components?: FieldComponentMap;
   onChange: (value: unknown) => void;
   onCommit?: (value: unknown) => void;
-  onBlur: () => void;
+  onBlur?: () => void;
   onFocus?: () => void;
 }
 
-export function FormField({
+export function FieldResolver({
   field,
   value,
   error,
@@ -25,7 +27,7 @@ export function FormField({
   onCommit,
   onBlur,
   onFocus,
-}: FormFieldProps) {
+}: FieldResolverProps) {
   const Component = components?.[field.type];
 
   if (!Component) {
@@ -41,7 +43,7 @@ export function FormField({
       disabled={disabled}
       onChange={onChange}
       onCommit={onCommit}
-      onBlur={onBlur}
+      onBlur={onBlur ?? noop}
       onFocus={onFocus}
     />
   );

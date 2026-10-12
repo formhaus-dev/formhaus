@@ -71,18 +71,18 @@ async function handleSubmit(values) {
   <FormRenderer
     :definition="definition"
     :initial-values="{ name: user.name }"
-    :submit-handler="handleSubmit"
+    @submit="handleSubmit"
     :on-error="props.onError"
   />
 </template>
 ```
 :::
 
-Each row gets validation, error display and automatic busy state while React `onSubmit` or Vue `submitHandler` is pending. Rejections reach `onError`. Vue legacy `@submit` listeners cannot be awaited: if a listener performs the request, the parent must supply `loading` and its after-submit hook only observes event dispatch. Do not perform the same save in both `submitHandler` and `@submit`.
+Each row gets validation, error display and automatic busy state while React `onSubmit` or Vue `@submit` is pending. Rejections reach `onError`.
 
 ## Inline button layout
 
-If the default actions footer is too heavy for a settings row, swap it via `ActionsComponent` (React) or `actionsComponent` (Vue):
+If the default actions footer is too heavy for a settings row, swap it via `actionsComponent`:
 
 ::: code-group
 ```tsx [React]
@@ -101,7 +101,7 @@ function InlineSaveActions({ onSubmit, loading }: FormActionsProps) {
   definition={definition}
   initialValues={{ name: user.name }}
   onSubmit={onSave}
-  ActionsComponent={InlineSaveActions}
+  actionsComponent={InlineSaveActions}
 />;
 ```
 :::

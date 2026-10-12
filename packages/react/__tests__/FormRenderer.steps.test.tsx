@@ -55,19 +55,19 @@ describe('FormRenderer multi-step', () => {
     });
   });
 
-  it('calls onStepChange when advancing', async () => {
+  it('calls onAfterStepChange when advancing', async () => {
     const onStepChange = vi.fn();
     render(
       <FormRenderer
         definition={definition}
         onSubmit={() => {}}
-        onStepChange={onStepChange}
+        onAfterStepChange={onStepChange}
       />,
     );
     fireEvent.change(getInput('First'), { target: { value: 'ok' } });
     fireEvent.click(screen.getByText('Continue'));
     await waitFor(() => {
-      expect(onStepChange).toHaveBeenCalledWith('step2', 'next');
+      expect(onStepChange).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'step2', reason: 'next' }));
     });
   });
 });

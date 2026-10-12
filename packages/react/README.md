@@ -70,7 +70,7 @@ Unmapped field types fall back to native HTML.
 
 `FormRenderer` imports the built-in native fields, so they stay in your bundle even when you replace them. If you map every field type you use, import `HeadlessFormRenderer` instead. It takes the same props as `FormRenderer`. It does not import the built-in fields, actions or step progress, so they stay out of your bundle.
 
-`HeadlessFormRenderer` has no fallbacks. An unmapped field type renders an "Unsupported field type" placeholder. Pass `ActionsComponent` and `ProgressComponent` too, or the form renders no buttons and no progress bar.
+`HeadlessFormRenderer` has no fallbacks. An unmapped field type renders an "Unsupported field type" placeholder. Pass `actionsComponent` and `progressComponent` too, or the form renders no buttons and no progress bar.
 
 ## Dynamic options
 

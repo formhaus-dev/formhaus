@@ -118,7 +118,7 @@ When the user picks "personal" instead of "business", this step vanishes. The pr
 <template>
   <FormRenderer
     :definition="definition"
-    @step-change="(stepId, direction) => console.log(stepId, direction)"
+    :on-after-step-change="({ toStepId, reason }) => console.log(toStepId, reason)"
     @submit="onSubmit"
   />
 </template>
@@ -127,13 +127,13 @@ When the user picks "personal" instead of "business", this step vanishes. The pr
 ```tsx [React]
 <FormRenderer
   definition={definition}
-  onStepChange={(stepId, direction) => console.log(stepId, direction)}
+  onAfterStepChange={({ toStepId, reason }) => console.log(toStepId, reason)}
   onSubmit={handleSubmit}
 />
 ```
 :::
 
-`direction` is `'next'` or `'back'`.
+`reason` is `'next'`, `'back'`, `'autoAdvance'` or `'skip'`.
 
 ## Async step validation
 
@@ -177,7 +177,7 @@ const definition: FormDefinition = {
 
 `next: false` hides the built-in Next button; it does not forbid navigation and never hides the final Submit button. After a validation error or a cancelled/failed guard, activate the same selected option again to retry. Only hide Next when every user has an accessible way to retry. Keep Next for steps with several inputs or custom fields that do not support activation. Custom action components receive `showPrimary` and must honor it.
 
-Custom React fields call `onChange(value)` for editing and `onCommit(value)` for intentional activation. Custom Vue fields emit `update:value` and `commit` respectively. `onCommit`/`commit` also saves the value; emit only one of them for an activation. For repeat clicks (`event.detail > 1`), call `event.preventDefault()` and skip the commit, so a double-click neither commits nor checks an option on the next step. The built-in radio supports this contract. Other built-in field types do not auto-advance.
+Custom React fields call `onChange(value)` for editing and `onCommit(value)` for intentional activation. Custom Vue fields emit `update:modelValue` and `commit` respectively. `onCommit`/`commit` also saves the value; emit only one of them for an activation. For repeat clicks (`event.detail > 1`), call `event.preventDefault()` and skip the commit, so a double-click neither commits nor checks an option on the next step. The built-in radio supports this contract. Other built-in field types do not auto-advance.
 
 ## Lifecycle hooks
 
@@ -207,9 +207,9 @@ A hook may fill a value whose key was absent from the action's checked snapshot 
 
 Changing a value the pending check already received, changing the active path, or resetting the core engine discards the pending pre-transition/pre-submit result. Reset cannot undo a submission already sent. `cancelPendingActions()` invalidates pending guards without clearing answers; adapters call it when their definition id changes or they unmount. Each operation captures its callbacks so changing props cannot redirect an old payload to a new handler.
 
-`next()`, `back()`, `skip()` and `submit(handler)` run the lifecycle hooks. `goToStepWithField()`, error redirection and `reset()` do not call the hooks and can invalidate pending navigation. `onStepChange`/Vue `stepChange` still report committed Next/Back transitions before the after-hook.
+`next()`, `back()`, `skip()` and `submit(handler)` run the lifecycle hooks. `goToStepWithField()`, error redirection and `reset()` do not call the hooks and can invalidate pending navigation.
 
-Vue uses `:on-before-step-change`, `:on-after-step-change`, `:on-before-submit`, `:on-after-submit` and `:on-error` callback props. To await saving, pass `:submit-handler="save"`. The existing `@submit` event still fires after that handler succeeds; without `submitHandler`, after-submit means the event was dispatched. Vue event listeners cannot be awaited, so do not put the same network request in both places.
+Vue uses `:on-before-step-change`, `:on-after-step-change`, `:on-before-submit`, `:on-after-submit` and `:on-error` callback props. `@submit="save"` is awaited: the form stays busy until `save(values, skippedSteps)` resolves. Pass a function reference, not an inline call such as `save($event)`, and do not use the `.once` modifier.
 
 ### Vue lifecycle example
 
@@ -261,7 +261,7 @@ function showError(cause: unknown) {
     :on-before-step-change="props.mayLeave"
     :on-after-step-change="afterStep"
     :on-before-submit="beforeSubmit"
-    :submit-handler="props.save"
+    @submit="props.save"
     :on-after-submit="afterSubmit"
     :on-error="showError"
   />

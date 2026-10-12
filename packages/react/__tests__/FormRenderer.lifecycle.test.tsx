@@ -21,12 +21,12 @@ describe('auto advance and lifecycle', () => {
   it('advances on activation without Next, focuses the next step, and never submits a radio', async () => {
     const onSubmit = vi.fn();
     const onStepChange = vi.fn();
-    render(<FormRenderer definition={definition} onSubmit={onSubmit} onStepChange={onStepChange} />);
+    render(<FormRenderer definition={definition} onSubmit={onSubmit} onAfterStepChange={onStepChange} />);
     expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
     fireEvent.click(screen.getByLabelText('A'));
     const radio = await screen.findByLabelText('Yes');
     await waitFor(() => expect(document.activeElement).toBe(radio));
-    expect(onStepChange).toHaveBeenCalledWith('confirm', 'next');
+    expect(onStepChange).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'confirm', reason: 'autoAdvance' }));
     fireEvent.click(radio);
     expect(onSubmit).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: 'Back' }));

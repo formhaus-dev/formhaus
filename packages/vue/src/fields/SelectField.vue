@@ -13,8 +13,8 @@ const { input } = useField(props, emit);
     <select
       v-bind="input"
       class="fh-field__input fh-field__input--select"
-      :value="String(props.value ?? '')"
-      @change="(e) => emit('update:value', (e.target as HTMLSelectElement).value)"
+      :value="String(props.modelValue ?? '')"
+      @change="(e) => emit('update:modelValue', (e.target as HTMLSelectElement).value)"
     >
       <option v-if="props.field.placeholder" value="" disabled>
         {{ props.field.placeholder }}

@@ -7,7 +7,7 @@ import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false });
+const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2 });
 
 const emit = defineEmits<FormRendererEmits>();
 
@@ -22,9 +22,7 @@ const engineOptions: FormEngineOptions = {
   get onAfterStepChange() {
     const after = props.onAfterStepChange;
     return async (context: StepChangeContext) => {
-      const direction = context.reason === 'back' ? 'back' : 'next';
-      emit('stepChange', context.toStepId, direction);
-      if (direction === 'next') {
+      if (context.reason !== 'back') {
         emit('analyticsEvent', { type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
         emit('analyticsEvent', { type: 'step_viewed', stepId: context.toStepId, stepIndex: form.engine.currentStepIndex });
       }
@@ -33,7 +31,7 @@ const engineOptions: FormEngineOptions = {
   },
 };
 
-const form = useFormEngine(() => props.definition, props.initialValues, engineOptions);
+const form = useFormEngine(() => props.definition, () => props.initialValues, engineOptions);
 const {
   values,
   errors,
@@ -156,6 +154,7 @@ async function onPrimary() {
       :total="progress.total"
       :step-title="currentStep?.title"
       :step-description="currentStep?.description"
+      :heading-level="props.headingLevel"
     />
 
     <div class="fh-form__fields">
@@ -163,12 +162,12 @@ async function onPrimary() {
         v-for="field in fieldsWithOptions"
         :key="field.key"
         :field="field"
-        :value="values[field.key]"
+        :model-value="values[field.key]"
         :error="errors[field.key]"
         :loading="fieldLoading[field.key]"
         :disabled="props.loading || stepValidating || submitting"
         :components="props.components"
-        @update:value="(v) => onFieldUpdate(field.key, v)"
+        @update:model-value="(v) => onFieldUpdate(field.key, v)"
         @commit="(v) => onFieldCommit(field.key, v)"
         @blur="() => onFieldBlur(field.key)"
         @focus="() => onFieldFocus(field.key)"

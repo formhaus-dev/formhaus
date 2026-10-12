@@ -224,14 +224,14 @@ const components: FieldComponentMap = {
 import type { FormFieldProps } from '@formhaus/vue';
 
 const props = defineProps<FormFieldProps>();
-const emit = defineEmits<{ (e: 'update:value', value: unknown): void }>();
+const emit = defineEmits<{ (e: 'update:modelValue', value: unknown): void }>();
 </script>
 
 <template>
   <label>{{ props.field.label }}</label>
   <input
-    :value="(props.value as string) ?? ''"
-    @input="emit('update:value', ($event.target as HTMLInputElement).value)"
+    :value="(props.modelValue as string) ?? ''"
+    @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
   />
 </template>
 ```

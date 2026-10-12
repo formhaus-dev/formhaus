@@ -7,8 +7,8 @@ import type { FormRendererProps } from './types';
 
 export function FormRenderer({
   components,
-  ActionsComponent,
-  ProgressComponent,
+  actionsComponent,
+  progressComponent,
   ...props
 }: FormRendererProps) {
   const fieldComponents = useMemo(() => withDefaultFields(components), [components]);
@@ -17,8 +17,8 @@ export function FormRenderer({
     <HeadlessFormRenderer
       {...props}
       components={fieldComponents}
-      ActionsComponent={ActionsComponent ?? FormActions}
-      ProgressComponent={ProgressComponent ?? FormStepProgress}
+      actionsComponent={actionsComponent ?? FormActions}
+      progressComponent={progressComponent ?? FormStepProgress}
     />
   );
 }
