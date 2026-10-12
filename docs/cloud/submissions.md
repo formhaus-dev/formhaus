@@ -165,7 +165,7 @@ A network is the IPv6 `/48` of the sender, or the IPv4 address itself. The bucke
 
 ### Anti-spam
 
-The hosted page, the embed and `FormhausForm` send two extra body fields. `_fh_hp` is a hidden honeypot input. `_fh_rt` is the render token from the form response. A filled `_fh_hp`, an invalid `_fh_rt`, or less than 2 seconds between render and submit returns the usual `201` and stores nothing. Requests without `_fh_rt` skip the timing check.
+The hosted page, the embed and `FormhausForm` send two extra body fields. `_fh_hp` is a hidden honeypot input. `_fh_rt` is the render token from the form response. A filled `_fh_hp`, an invalid `_fh_rt`, or less than 2 seconds between render and submit returns the usual `201` and stores nothing. Requests without `_fh_rt` skip the timing check. After a `409 form_updated` refresh, they also send `_fh_rt_first`, the first render token the page received, and the server measures the time from that token.
 
 ## Server-side validation
 

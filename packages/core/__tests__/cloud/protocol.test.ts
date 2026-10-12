@@ -39,6 +39,19 @@ describe('cloud protocol', () => {
     expect(states.at(-1)).toMatchObject({ done: false, revision: 1 });
   });
 
+  it('sends the first render token alongside the new one after a form refresh', async () => {
+    const updated = { ok: false, status: 409, headers: { get: () => null }, json: async () => ({ error: 'form_updated', version: 6 }) };
+    const refreshed = { ok: true, status: 200, headers: { get: () => null }, json: async () => ({ definition, version: 6, renderToken: 'rt_2' }) };
+    const fetchMock = vi.fn().mockResolvedValueOnce(updated).mockResolvedValueOnce(refreshed).mockResolvedValue(created());
+    vi.stubGlobal('fetch', fetchMock);
+    const controller = createCloudController({ id: 'abc', initialForm: form, extraBody: () => ({ _fh_hp: '' }) }, { onChange: () => {} });
+    controller.start();
+    await expect(controller.submit({ name: 'Ada' }, [])).rejects.toMatchObject({ code: 'form_updated' });
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body)).not.toHaveProperty('_fh_rt_first');
+    await controller.submit({ name: 'Ada' }, []);
+    expect(JSON.parse(fetchMock.mock.calls[2][1].body)).toMatchObject({ _fh_hp: '', version: 6, _fh_rt: 'rt_2', _fh_rt_first: 'rt_1' });
+  });
+
   it('restores a draft without sensitive fields and clears it after a submission', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(created()));
     const backing = storage();

@@ -5,17 +5,18 @@ import { fieldId, inputProps } from './fieldProps';
 export function SelectField(props: FieldComponentProps) {
   const { field, value, error, onChange } = props;
   const options = field.options ?? [];
+  const current = (value as string) ?? '';
 
   return (
     <FieldShell id={fieldId(props)} field={field} error={error}>
       <select
         {...inputProps(props)}
         className="fh-field__input fh-field__input--select"
-        value={(value as string) ?? ''}
+        value={current}
         onChange={(e) => onChange(e.target.value)}
       >
-        {field.placeholder && (
-          <option value="" disabled>
+        {(field.placeholder || current === '') && (
+          <option value="" disabled hidden={!field.placeholder}>
             {field.placeholder}
           </option>
         )}
