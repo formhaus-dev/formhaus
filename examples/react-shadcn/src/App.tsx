@@ -1,4 +1,4 @@
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,7 +7,7 @@ import json from './definition.json';
 import { FormActions } from './FormActions';
 import { StepProgress } from './StepProgress';
 
-const definition = json as FormDefinition;
+const definition = parseDefinition(json);
 
 export function App() {
   const [submitted, setSubmitted] = useState<Record<string, unknown> | null>(null);
@@ -25,8 +25,8 @@ export function App() {
             <FormRenderer
               definition={definition}
               components={components}
-              ActionsComponent={FormActions}
-              ProgressComponent={StepProgress}
+              actionsComponent={FormActions}
+              progressComponent={StepProgress}
               onSubmit={setSubmitted}
             />
           )}

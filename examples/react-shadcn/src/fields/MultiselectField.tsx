@@ -3,7 +3,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
 import { FieldShell } from './FieldShell';
 
-export function MultiselectField({ field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
+export function MultiselectField({ id, field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
   const selected = Array.isArray(value) ? (value as string[]) : [];
 
   function toggle(option: string, checked: boolean) {
@@ -11,8 +11,8 @@ export function MultiselectField({ field, value, error, loading, disabled, onCha
   }
 
   return (
-    <FieldShell field={field} error={error} group>
-      <div role="group" aria-labelledby={`${field.key}-label`} className="grid gap-2">
+    <FieldShell id={id} field={field} error={error} group>
+      <div role="group" aria-labelledby={`${id}-label`} className="grid gap-2">
         {(field.options ?? []).map((option) => (
           <Label key={option.value} className="font-normal">
             <Checkbox
