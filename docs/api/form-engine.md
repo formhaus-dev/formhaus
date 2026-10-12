@@ -18,10 +18,46 @@ const engine = new FormEngine(definition, initialValues, {
   onAfterStepChange,
   onBeforeSubmit,
   onAfterSubmit,
+  onWarning,
 });
 ```
 
 Both `initialValues` and the options object are optional. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
+
+## Definition checks
+
+The constructor runs `checkDefinition()`. It throws a `FormDefinitionError` when the definition has an issue with `severity: 'error'`, and passes each warning to `onWarning`. Without `onWarning`, warnings go to `console.warn` unless `process.env.NODE_ENV` is `production`.
+
+```ts
+import { checkDefinition, FormDefinitionError, parseDefinition } from '@formhaus/core';
+
+const issues = checkDefinition(json);
+const definition = parseDefinition(json);
+
+try {
+  new FormEngine(json);
+} catch (error) {
+  if (error instanceof FormDefinitionError) console.log(error.issues);
+}
+```
+
+| Function | Returns | Description |
+|---|---|---|
+| `checkDefinition(input, { validators? })` | `DefinitionIssue[]` | Never throws. Errors come first. With `validators`, also reports `validator` names missing from it |
+| `parseDefinition(input, { validators? })` | `FormDefinition` | Returns the input typed as `FormDefinition`, or throws `FormDefinitionError` with the errors |
+| `validateDefinition(input)` | `string[]` | Deprecated. The messages of `checkDefinition()`. Removed in 1.0 |
+
+```ts
+interface DefinitionIssue {
+  code: DefinitionIssueCode
+  severity: 'error' | 'warning'
+  path: string
+  message: string
+  hint?: string
+}
+```
+
+`path` is a JSON pointer to the node, such as `/steps/0/routes/1/show/0/field`. `message` has the form `<path>: <what is wrong>. <how to fix>.` and `hint` holds the fix part. The codes are listed in the [specification](/spec#definition-checks).
 
 ## State
 

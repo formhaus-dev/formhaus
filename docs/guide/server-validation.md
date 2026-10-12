@@ -130,12 +130,12 @@ runValidators(values, errors);
 
 ## Check a definition
 
-`checkDefinition()` returns definition errors and warnings, for example before you store a definition an agent wrote:
+`checkDefinition()` returns a list of issues, for example before you store a definition an agent wrote. Each issue has a `code`, a `severity` of `error` or `warning`, a JSON pointer `path`, and a `message`:
 
 ```ts
 import { checkDefinition } from '@formhaus/core/server';
 
-const { errors, warnings } = checkDefinition(definition);
+const errors = checkDefinition(definition).filter((issue) => issue.severity === 'error');
 ```
 
 ## Embedded runtimes

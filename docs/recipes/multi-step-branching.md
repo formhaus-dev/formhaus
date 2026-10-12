@@ -59,7 +59,7 @@ async function save(values: Record<string, unknown>) {
 
 - `routes` on the `service` step are checked in order. `{ "field": "service", "eq": "design" }` sends the user to `design`; the `development` route matches the other answer.
 - `design` and `development` each end with `{ "to": "budget" }`. Without that route, `design` would fall through to the next declared step, `development`, and both branches would run.
-- Route targets must be later declared steps. Backward targets and unknown step ids throw when the engine is created and are reported by `validateDefinition()`.
+- Route targets must be later declared steps. Backward targets and unknown step ids throw when the engine is created and are reported by `checkDefinition()`.
 - `skip` on `budget` renders a Skip button labelled "Not sure yet". Skip resets the step to its defaults and leaves its fields out of validation and the submitted values.
 - `back` on `contact` relabels the Back button. Back follows the path the user took, so from `contact` it returns to `budget`, then to the branch step.
 - Progress shows "Step N of 4" for either branch. Before the service is answered the path is provisional.
