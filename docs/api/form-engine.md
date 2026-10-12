@@ -27,7 +27,7 @@ Both `initialValues` and the options object are optional. Pass a values type to 
 
 ## Definition checks
 
-The constructor runs `checkDefinition()`. It throws a `FormDefinitionError` when the definition has an issue with `severity: 'error'`, and passes each warning to `onWarning`. Without `onWarning`, warnings go to `console.warn` unless `process.env.NODE_ENV` is `production`.
+The constructor runs `checkDefinition()`. It throws a `FormDefinitionError` when the definition has an issue with `severity: 'error'`, and passes each warning to `onWarning`. Without `onWarning`, warnings go to `console.warn`. In production builds, where `process.env.NODE_ENV` is `production`, and in a browser without a bundler, where `process` is not defined, the constructor runs only the error checks and reports no warnings. Call `checkDefinition()` to get warnings in production.
 
 ```ts
 import { checkDefinition, FormDefinitionError, parseDefinition } from '@formhaus/core';
