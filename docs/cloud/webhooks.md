@@ -38,14 +38,16 @@ User-Agent: Formhaus-Webhooks/1
 Formhaus-Signature: t=1760000000,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd
 Formhaus-Submission-Id: 0b8e8a52-6c1b-4f4e-9d0a-2f4f7d3c1a9e
 
-{"form_id":"Xk3d9QpL2a","submission_id":"0b8e8a52-6c1b-4f4e-9d0a-2f4f7d3c1a9e","version":2,"values":{"email":"ada@example.com"},"created_at":"2026-10-10T12:00:00.123456Z"}
+{"type":"submission.created","form_id":"Xk3d9QpL2a","submission_id":"0b8e8a52-6c1b-4f4e-9d0a-2f4f7d3c1a9e","form_version":2,"version":2,"values":{"email":"ada@example.com"},"created_at":"2026-10-10T12:00:00.123456Z"}
 ```
 
 | Field | Value |
 |---|---|
+| `type` | Event type, always `submission.created` |
 | `form_id` | Form id |
 | `submission_id` | Submission UUID, same as `Formhaus-Submission-Id` |
-| `version` | Definition version the values were validated against |
+| `form_version` | Definition version the values were validated against |
+| `version` | Same value as `form_version`, kept for older receivers |
 | `values` | Validated values |
 | `created_at` | RFC 3339, UTC |
 
