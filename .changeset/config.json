@@ -7,5 +7,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": ["@formhaus/figma", "@formhaus/builder"]
+  "ignore": ["@formhaus/figma", "@formhaus/builder", "@formhaus/editor-react"]
 }

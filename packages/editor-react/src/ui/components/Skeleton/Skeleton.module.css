@@ -1,0 +1,14 @@
+.skeleton {
+  display: block;
+  width: 100%;
+  height: var(--fh-ed-font-size-xs);
+  border-radius: var(--fh-ed-radius-sm);
+  background: var(--fh-ed-sub);
+  animation: pulse var(--fh-ed-duration-pulse) ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: var(--fh-ed-opacity-disabled);
+  }
+}

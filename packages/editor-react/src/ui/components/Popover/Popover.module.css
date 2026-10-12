@@ -1,0 +1,42 @@
+.content {
+  z-index: var(--fh-ed-z-popover);
+  display: flex;
+  flex-direction: column;
+  max-width: calc(100vw - var(--fh-ed-space-4));
+  max-height: var(--radix-popover-content-available-height);
+  padding: var(--fh-ed-space-3);
+  overflow-y: auto;
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  border-radius: var(--fh-ed-radius-lg);
+  background: var(--fh-ed-panel);
+  color: var(--fh-ed-fg);
+  box-shadow: var(--fh-ed-shadow-pop);
+  animation: appear var(--fh-ed-duration-fast) var(--fh-ed-easing-out);
+}
+
+.content:focus-visible {
+  outline: none;
+}
+
+.menu {
+  width: var(--fh-ed-size-menu);
+}
+
+.wide {
+  width: min(var(--fh-ed-size-toast), calc(100vw - var(--fh-ed-space-4)));
+}
+
+.canvas {
+  width: min(var(--fh-ed-size-editor-canvas), calc(100vw - var(--fh-ed-space-4)));
+}
+
+.flush {
+  padding: var(--fh-ed-space-1);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--fh-ed-space-1) * -1));
+  }
+}

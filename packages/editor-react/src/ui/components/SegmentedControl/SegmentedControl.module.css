@@ -1,0 +1,64 @@
+.group {
+  display: inline-flex;
+  gap: var(--fh-ed-space-0-5);
+  padding: var(--fh-ed-space-0-5);
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  border-radius: var(--fh-ed-radius-md);
+  background: var(--fh-ed-sub);
+}
+
+.segment {
+  position: relative;
+  display: inline-flex;
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.input:disabled {
+  cursor: not-allowed;
+}
+
+.label {
+  display: inline-flex;
+  align-items: center;
+  height: calc(var(--fh-ed-size-control-md) - var(--fh-ed-space-1-5));
+  padding: 0 var(--fh-ed-space-3);
+  border-radius: var(--fh-ed-radius-sm);
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-sm);
+  font-weight: var(--fh-ed-font-weight-medium);
+  white-space: nowrap;
+  transition:
+    background-color var(--fh-ed-duration-fast),
+    color var(--fh-ed-duration-fast);
+}
+
+.label svg {
+  width: var(--fh-ed-size-icon-md);
+  height: var(--fh-ed-size-icon-md);
+}
+
+.input:hover:not(:disabled) + .label {
+  color: var(--fh-ed-fg);
+}
+
+.input:checked + .label {
+  background: var(--fh-ed-panel);
+  color: var(--fh-ed-fg);
+  box-shadow: inset 0 0 0 var(--fh-ed-border-thin) var(--fh-ed-line-strong);
+}
+
+.input:focus-visible + .label {
+  outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
+  outline-offset: var(--fh-ed-border-thin);
+}
+
+.input:disabled + .label {
+  color: var(--fh-ed-fg-subtle);
+}

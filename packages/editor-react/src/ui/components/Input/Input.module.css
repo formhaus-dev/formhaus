@@ -1,0 +1,28 @@
+.mono {
+  font-family: var(--fh-ed-font-family-mono);
+  font-size: var(--fh-ed-font-size-input-mono);
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.icon {
+  position: absolute;
+  left: var(--fh-ed-space-2-5);
+  width: var(--fh-ed-size-icon-md);
+  height: var(--fh-ed-size-icon-md);
+  color: var(--fh-ed-fg-subtle);
+  pointer-events: none;
+}
+
+.searchInput {
+  padding-left: var(--fh-ed-space-8);
+}
+
+.searchInput::-webkit-search-cancel-button {
+  cursor: pointer;
+}

@@ -1,0 +1,20 @@
+.content {
+  z-index: var(--fh-ed-z-tooltip);
+  max-width: var(--fh-ed-size-tooltip);
+  padding: var(--fh-ed-space-1) var(--fh-ed-space-2);
+  border-radius: var(--fh-ed-radius-md);
+  background: var(--fh-ed-fg);
+  color: var(--fh-ed-bg);
+  font-size: var(--fh-ed-font-size-xs);
+  font-weight: var(--fh-ed-font-weight-medium);
+  line-height: var(--fh-ed-font-leading-tight);
+  box-shadow: var(--fh-ed-shadow-pop);
+  user-select: none;
+  animation: fade var(--fh-ed-duration-fast) ease-out;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}

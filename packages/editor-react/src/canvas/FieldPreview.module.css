@@ -1,0 +1,98 @@
+.box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fh-ed-space-2);
+  min-height: var(--fh-ed-size-control-lg);
+  padding: var(--fh-ed-space-1-5) var(--fh-ed-space-3);
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  border-radius: var(--fh-ed-radius-md);
+  background: var(--fh-ed-bg);
+  font-size: var(--fh-ed-font-size-md);
+  pointer-events: none;
+}
+
+.area {
+  align-items: flex-start;
+  min-height: var(--fh-ed-size-row-dense);
+  padding-block: var(--fh-ed-space-2);
+}
+
+.placeholder {
+  color: var(--fh-ed-fg-subtle);
+  overflow-wrap: anywhere;
+}
+
+.chevron {
+  flex: none;
+  width: var(--fh-ed-size-icon-md);
+  height: var(--fh-ed-size-icon-md);
+  color: var(--fh-ed-fg-muted);
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.inline {
+  flex-flow: row wrap;
+  column-gap: var(--fh-ed-space-4);
+}
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fh-ed-space-2);
+  min-width: 0;
+  font-size: var(--fh-ed-font-size-md);
+  overflow-wrap: anywhere;
+}
+
+.glyph {
+  flex: none;
+  width: var(--fh-ed-size-choice);
+  height: var(--fh-ed-size-choice);
+  border: var(--fh-ed-border-focus) solid var(--fh-ed-line-strong);
+  border-radius: var(--fh-ed-radius-full);
+}
+
+.square {
+  border-radius: var(--fh-ed-radius-sm);
+}
+
+.toggle {
+  width: var(--fh-ed-size-switch-width);
+  height: var(--fh-ed-size-switch-height);
+}
+
+.jump {
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-sm);
+  white-space: nowrap;
+}
+
+.editable {
+  width: 100%;
+  color: var(--fh-ed-fg-muted);
+  font: inherit;
+  font-size: var(--fh-ed-font-size-md);
+  pointer-events: auto;
+}
+
+.editable::placeholder {
+  color: var(--fh-ed-fg-subtle);
+}
+
+.editable:hover {
+  border-color: var(--fh-ed-line-strong);
+}
+
+.editable:focus-visible {
+  outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
+  outline-offset: calc(var(--fh-ed-border-thin) * -1);
+}

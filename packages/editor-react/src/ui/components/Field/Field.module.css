@@ -1,0 +1,30 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-1-5);
+  min-width: 0;
+}
+
+.label {
+  font-size: var(--fh-ed-font-size-sm);
+  font-weight: var(--fh-ed-font-weight-medium);
+  color: var(--fh-ed-fg);
+}
+
+.required {
+  margin-left: var(--fh-ed-space-0-5);
+  color: var(--fh-ed-danger);
+}
+
+.hint,
+.error {
+  font-size: var(--fh-ed-font-size-xs);
+}
+
+.hint {
+  color: var(--fh-ed-fg-muted);
+}
+
+.error {
+  color: var(--fh-ed-danger);
+}
