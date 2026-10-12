@@ -5,11 +5,12 @@ import LucideIcon from './LucideIcon.vue';
 import './hero-video.css';
 
 const hiDpiWide = '(min-width: 960px) and (min-resolution: 1.5dppx)';
-const posterSizes = '(min-width: 1200px) 564px, (min-width: 960px) 50vw, calc(100vw - 48px)';
+const posterSizes = '(min-width: 1200px) 1152px, calc(100vw - 48px)';
+const startAt = 5;
 const themes = [
   { name: 'light', base: '/media/formhaus-hero' },
   { name: 'dark', base: '/media/formhaus-hero-dark' },
-].map((t) => ({ ...t, srcset: [640, 1280, 1920].map((w) => `${t.base}-poster-${w}.webp ${w}w`).join(', ') }));
+].map((t) => ({ ...t, srcset: [640, 1280, 1920, 2560].map((w) => `${t.base}-poster-${w}.jpg ${w}w`).join(', ') }));
 
 const { isDark } = useData();
 const video = ref<HTMLVideoElement>();
@@ -24,10 +25,10 @@ let observer: IntersectionObserver | undefined;
 
 const base = computed(() => themes[isDark.value ? 1 : 0].base);
 const sources = computed(() => [
-  { src: `${base.value}-1080.webm`, type: 'video/webm', media: hiDpiWide },
-  { src: `${base.value}-1080.mp4`, type: 'video/mp4', media: hiDpiWide },
-  { src: `${base.value}-720.webm`, type: 'video/webm' },
-  { src: `${base.value}-720.mp4`, type: 'video/mp4' },
+  { src: `${base.value}-1440.webm`, type: 'video/webm', media: hiDpiWide },
+  { src: `${base.value}-1440.mp4`, type: 'video/mp4', media: hiDpiWide },
+  { src: `${base.value}-1080.webm`, type: 'video/webm' },
+  { src: `${base.value}-1080.mp4`, type: 'video/mp4' },
 ]);
 
 function sync() {
@@ -43,6 +44,8 @@ function toggle() {
 }
 
 function onPlay() {
+  const el = video.value;
+  if (!started.value && el && el.currentTime < startAt) el.currentTime = startAt;
   started.value = true;
   playing.value = true;
 }
@@ -82,8 +85,9 @@ onBeforeUnmount(() => observer?.disconnect());
 <template>
   <figure ref="figure" class="hero-video" :class="{ 'hero-video--started': started }">
     <picture v-for="t in themes" :key="t.name">
-      <source type="image/webp" :srcset="t.srcset" :sizes="posterSizes" />
       <img
+        :srcset="t.srcset"
+        :sizes="posterSizes"
         :class="['hero-video__poster', `hero-video__poster--${t.name}`]"
         :src="`${t.base}-poster-1280.jpg`"
         width="1280"
@@ -103,7 +107,7 @@ onBeforeUnmount(() => observer?.disconnect());
       playsinline
       preload="metadata"
       :poster="poster"
-      aria-label="Formhaus product tour, 22 seconds, silent"
+      aria-label="Formhaus product tour, 33 seconds, silent"
       aria-describedby="hero-video-caption"
       @play="onPlay"
       @pause="playing = false"
@@ -113,14 +117,14 @@ onBeforeUnmount(() => observer?.disconnect());
       </template>
     </video>
     <figcaption id="hero-video-caption" class="lp-sr-only">
-      An agent writes a form definition and publishes it.
-      The React app and the Figma mockup update.
-      Someone fills in the hosted form, and the response lands in the dashboard and the webhook.
+      An agent writes a waitlist form and publishes it.
+      The same form runs in React, Vue, a hosted page and Figma.
+      Someone fills it in, and the response lands in the dashboard, a webhook and a CSV file.
     </figcaption>
     <button v-if="ready && !started" type="button" class="hero-video__start" @click="toggle">
       <LucideIcon name="play" />
       <span>Play video</span>
-      <span class="hero-video__time">· 0:22</span>
+      <span class="hero-video__time">· 0:33</span>
     </button>
     <button
       type="button"
