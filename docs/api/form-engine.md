@@ -101,12 +101,16 @@ All state properties are read-only. Change values with `setValue()` and errors w
 A custom renderer that receives external errors as a prop can skip redundant `setErrors()` calls:
 
 ```ts
-import { shouldApplyExternalErrors } from '@formhaus/core';
+import { shouldApplyExternalErrors } from '@formhaus/core/internal';
 
 if (shouldApplyExternalErrors(engine, previousErrors, nextErrors)) engine.setErrors(nextErrors);
 ```
 
 It returns `false` only when `nextErrors` equals `previousErrors` and the engine still shows every one of them. Pass `undefined` as `previousErrors` for a new engine.
+
+::: warning
+`@formhaus/core/internal` holds the plumbing the React and Vue renderers share: `shouldApplyExternalErrors`, `autoAdvance`, `fieldDomId`, and the Cloud form controller (`createCloudController`, `initialCloudState`, `focusProblem`). It has no semver guarantee and can change in any release. Pin the exact `@formhaus/core` version if you import it.
+:::
 
 ## Navigation
 

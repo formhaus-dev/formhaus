@@ -5,5 +5,4 @@ export type FormAnalyticsEvent =
   | { type: 'field_error'; fieldKey: string; error: string }
   | { type: 'step_completed'; stepId: string }
   | { type: 'step_skipped'; stepId: string }
-  | { type: 'form_submitted'; fieldCount: number }
-  | { type: 'form_abandoned'; lastStepId: string; filledFields: number };
+  | { type: 'form_submitted'; fieldCount: number };

@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CloudError, createCloudController, createSubmitter, focusProblem, type CloudState } from '../../src/cloud';
+import { CloudError, createSubmitter } from '../../src/cloud';
+import { createCloudController, focusProblem, type CloudState } from '../../src/internal';
 import { carryValues } from '../../src/cloud/carry';
 import { fetchPublished } from '../../src/cloud/client';
 import { failureFor } from '../../src/cloud/failures';
