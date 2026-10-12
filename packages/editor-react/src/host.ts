@@ -77,9 +77,16 @@ export class PublishRefused extends Error {
   }
 }
 
+export interface BackupSlot {
+  key: () => string;
+  mirror: boolean;
+}
+
 export interface EditorHost {
   readonly isNew: boolean;
   readonly readOnly: boolean;
+  readonly ephemeral?: boolean;
+  backup?: BackupSlot;
   load: () => Promise<EditorDocument>;
   save: (definition: FormDefinition, revision: number) => Promise<SavedDraft>;
   discard: () => Promise<void>;

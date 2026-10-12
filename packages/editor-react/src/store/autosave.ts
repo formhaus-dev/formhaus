@@ -25,6 +25,7 @@ export interface Autosave {
   resolve: (choice: 'reload' | 'overwrite') => Promise<void>;
   rebase: (revision: number) => void;
   revision: () => number;
+  dirty: () => boolean;
 }
 
 export function createAutosave(
@@ -127,5 +128,6 @@ export function createAutosave(
       store.setSave({ status: 'saved', savedAt: new Date(), conflict: null });
     },
     revision: () => revision,
+    dirty,
   };
 }
