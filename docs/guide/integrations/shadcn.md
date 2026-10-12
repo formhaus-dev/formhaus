@@ -1,6 +1,6 @@
 ---
 title: "shadcn/ui integration"
-description: "Render Formhaus JSON forms with shadcn/ui: map Input, Textarea, Select, Checkbox, RadioGroup and Button to field types, including multiselect, through the React components prop."
+description: "Render Formhaus JSON forms with shadcn/ui: map Input, Textarea, Select, Checkbox, RadioGroup and Button to field types through the components prop."
 ---
 
 # shadcn/ui
