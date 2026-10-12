@@ -2,7 +2,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { cloudRequest } from './cloud-client';
 import { result } from './cloud-result';
-import { SETTINGS_DESCRIPTION, WEBHOOK_DESCRIPTION } from './cloud-text';
+import { REVEAL_DESCRIPTION, SETTINGS_DESCRIPTION, WEBHOOK_DESCRIPTION } from './cloud-text';
+import { isRecord } from './definition-input';
 import { cloudOutput } from './outputs';
 
 export function registerSettingsTool(server: McpServer): void {
@@ -26,13 +27,29 @@ export function registerSettingsTool(server: McpServer): void {
   server.registerTool('get_webhook', {
     title: 'Get the webhook of a form',
     description: WEBHOOK_DESCRIPTION,
-    inputSchema: {
-      form_id: z.string().describe('The form_id returned by publish_form or list_forms.'),
-      reveal_secret: z.boolean().optional().describe('true returns the full signing secret (whsec_...) instead of a masked one.'),
-    },
+    inputSchema: { form_id: z.string().describe('The form_id returned by publish_form or list_forms.') },
     outputSchema: cloudOutput,
     annotations: { readOnlyHint: true, openWorldHint: true },
-  }, async ({ form_id, reveal_secret }) => (
-    result(await cloudRequest(`/v1/forms/${encodeURIComponent(form_id)}/webhook${reveal_secret ? '?reveal=true' : ''}`, { auth: 'required' }))
-  ));
+  }, async ({ form_id }) => {
+    const webhook = await cloudRequest(`/v1/forms/${encodeURIComponent(form_id)}/webhook`, { auth: 'required' });
+    if (!webhook.ok || !isRecord(webhook.body)) return result(webhook);
+    return result({ ok: true, body: { ...webhook.body, secret: masked(webhook.body.secret) } });
+  });
+
+  server.registerTool('reveal_webhook_secret', {
+    title: 'Reveal the webhook signing secret',
+    description: REVEAL_DESCRIPTION,
+    inputSchema: { form_id: z.string().describe('The form_id returned by publish_form or list_forms.') },
+    outputSchema: { ...cloudOutput, webhook_secret: z.string().optional() },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
+  }, async ({ form_id }) => {
+    const webhook = await cloudRequest(`/v1/forms/${encodeURIComponent(form_id)}/webhook?reveal=true`, { auth: 'required' });
+    if (!webhook.ok || !isRecord(webhook.body)) return result(webhook);
+    return result({ ok: true, body: { form_id, webhook_secret: webhook.body.secret } });
+  });
+}
+
+function masked(secret: unknown): unknown {
+  if (typeof secret !== 'string' || secret.includes('…')) return secret;
+  return `whsec_…${secret.slice(-4)}`;
 }
