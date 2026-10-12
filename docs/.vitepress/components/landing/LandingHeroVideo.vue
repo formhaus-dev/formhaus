@@ -7,11 +7,12 @@ import './hero-video.css';
 const hiDpiWide = '(min-width: 960px) and (min-resolution: 1.5dppx)';
 const narrow = '(max-width: 639px)';
 const posterSizes = '(min-width: 1200px) 1152px, calc(100vw - 32px)';
-const props = withDefaults(defineProps<{ prefix?: string; start?: number; length?: number; mobileLength?: number; caption?: string }>(), {
+const props = withDefaults(defineProps<{ prefix?: string; start?: number; length?: number; mobileLength?: number; mobileRatio?: string; caption?: string }>(), {
   prefix: 'formhaus-hero',
   start: 5,
   length: 33,
   mobileLength: 22,
+  mobileRatio: '16 / 9',
   caption: 'An agent writes a waitlist form and publishes it. The same form runs in React, Vue, a hosted page and Figma. Someone fills it in, and the response lands in the dashboard, a webhook and a CSV file.',
 });
 const themes = [
@@ -103,7 +104,7 @@ onBeforeUnmount(() => observer?.disconnect());
 </script>
 
 <template>
-  <figure ref="figure" class="hero-video" :class="{ 'hero-video--started': started }">
+  <figure ref="figure" class="hero-video" :class="{ 'hero-video--started': started }" :style="{ '--hero-video-mobile-ratio': props.mobileRatio }">
     <picture v-for="t in themes" :key="t.name">
       <source :media="narrow" :srcset="t.mobileSrcset" :sizes="posterSizes" />
       <img

@@ -2,7 +2,8 @@
 import LandingHeroVideo from '../landing/LandingHeroVideo.vue';
 import LucideIcon from '../landing/LucideIcon.vue';
 
-const video = '';
+const video = 'formhaus-cloud';
+const caption = 'A webinar signup form is built in the editor and previewed. In a chat, Claude adds a question and counts today’s sign-ups. Responses arrive in the dashboard with a new response notice.';
 const alt = 'Form builder showing Save your seat: Spring launch webinar, with steps and fields';
 </script>
 
@@ -17,7 +18,7 @@ const alt = 'Form builder showing Save your seat: Spring launch webinar, with st
       </div>
       <p class="hero-trust">Free for 3 forms · No credit card</p>
     </header>
-    <LandingHeroVideo v-if="video" :prefix="video" />
+    <LandingHeroVideo v-if="video" :prefix="video" :start="0" :length="30" :mobile-length="30" mobile-ratio="1 / 1" :caption="caption" />
     <figure v-else class="cloud-frame hero-preview">
       <img class="cloud-light" src="/media/cloud-builder.png" width="2336" height="1232" :alt="alt" loading="eager" fetchpriority="high" />
       <img class="cloud-dark" src="/media/cloud-builder-dark.png" width="2336" height="1232" :alt="alt" loading="eager" fetchpriority="high" />
