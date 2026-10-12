@@ -70,6 +70,7 @@ export interface FormRendererEmits {
 }
 
 export interface FormFieldProps {
+  id?: string;
   field: FormField;
   modelValue: unknown;
   error?: string;

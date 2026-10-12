@@ -12,6 +12,7 @@ const fieldComponent = computed<Component | null>(() => props.components?.[props
   <component
     :is="fieldComponent"
     v-if="fieldComponent"
+    :id="props.id"
     :field="props.field"
     :model-value="props.modelValue"
     :error="props.error"

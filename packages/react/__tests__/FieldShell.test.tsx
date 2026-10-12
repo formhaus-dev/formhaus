@@ -17,11 +17,11 @@ describe('FieldShell', () => {
 
     expect(root.className).toBe('fh-field');
     expect([...root.children].map((el) => el.className)).toEqual(['fh-field__label', 'fh-field__helper', 'fh-field__input', 'fh-field__error']);
-    expect(root.querySelector('label')!.getAttribute('for')).toBe('name');
+    expect(root.querySelector('label')!.getAttribute('for')).toBe('fh-name');
     expect(root.querySelector('.fh-field__required')).not.toBeNull();
-    expect(root.querySelector('input')!.getAttribute('aria-describedby')).toBe('name-helper name-error');
-    expect(root.querySelector('.fh-field__helper')!.id).toBe('name-helper');
-    expect(root.querySelector('.fh-field__error')!.id).toBe('name-error');
+    expect(root.querySelector('input')!.getAttribute('aria-describedby')).toBe('fh-name-helper fh-name-error');
+    expect(root.querySelector('.fh-field__helper')!.id).toBe('fh-name-helper');
+    expect(root.querySelector('.fh-field__error')!.id).toBe('fh-name-error');
   });
 
   it('puts the checkbox label after the input inside the wrapper', () => {
@@ -33,7 +33,7 @@ describe('FieldShell', () => {
     expect(root.className).toBe('fh-field fh-field--checkbox');
     expect([...wrapper.children].map((el) => el.tagName)).toEqual(['INPUT', 'LABEL']);
     expect([...root.children].map((el) => el.className)).toEqual(['fh-field__checkbox-wrapper', 'fh-field__helper', 'fh-field__error']);
-    expect(wrapper.querySelector('input')!.getAttribute('aria-describedby')).toBe('agree-helper agree-error');
+    expect(wrapper.querySelector('input')!.getAttribute('aria-describedby')).toBe('fh-agree-helper fh-agree-error');
     expect(root.lastElementChild!.getAttribute('role')).toBe('alert');
   });
 
@@ -45,7 +45,7 @@ describe('FieldShell', () => {
     expect(root.tagName).toBe('FIELDSET');
     expect(root.className).toBe('fh-field fh-field--radio');
     expect(root.getAttribute('aria-invalid')).toBe('true');
-    expect(root.getAttribute('aria-describedby')).toBe('plan-helper plan-error');
+    expect(root.getAttribute('aria-describedby')).toBe('fh-plan-helper fh-plan-error');
     expect([...root.children].map((el) => el.className || el.tagName)).toEqual(['fh-field__label', 'fh-field__helper', 'fh-field__radio-group', 'fh-field__error']);
     expect(root.querySelector('legend')!.textContent).toBe('Plan');
     expect(root.querySelector('input')!.hasAttribute('aria-describedby')).toBe(false);

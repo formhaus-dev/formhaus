@@ -20,21 +20,22 @@ function handleToggle(optValue: string) {
 </script>
 
 <template>
-  <FieldShell :field="props.field" :error="props.error" variant="multiselect">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" variant="multiselect">
     <div
-      v-for="option in (props.field.options ?? [])"
+      v-for="(option, index) in (props.field.options ?? [])"
       :key="String(option.value)"
       class="fh-field__multiselect-option"
     >
       <input
         v-bind="control"
-        :id="`${inputId}-${option.value}`"
+        :id="`${inputId}-${index}`"
+        :name="props.field.key"
         class="fh-field__checkbox"
         type="checkbox"
         :checked="selected.includes(option.value)"
         @change="handleToggle(option.value)"
       />
-      <label :for="`${inputId}-${option.value}`" class="fh-field__multiselect-label">
+      <label :for="`${inputId}-${index}`" class="fh-field__multiselect-label">
         {{ option.label }}
       </label>
     </div>

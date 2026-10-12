@@ -1,14 +1,14 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { inputProps } from './fieldProps';
+import { fieldId, inputProps } from './fieldProps';
 
 export function AutocompleteField(props: FieldComponentProps) {
   const { field, value, error, onChange } = props;
-  const listId = `${field.key}-list`;
+  const listId = `${fieldId(props)}-list`;
   const options = field.options ?? [];
 
   return (
-    <FieldShell field={field} error={error}>
+    <FieldShell id={fieldId(props)} field={field} error={error}>
       <input
         {...inputProps(props)}
         type="text"

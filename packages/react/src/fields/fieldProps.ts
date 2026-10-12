@@ -1,8 +1,13 @@
+import { fieldDomId } from '@formhaus/core/internal';
 import type { FormField } from '@formhaus/core';
 import type { FieldComponentProps } from '../types';
 
-export function describedBy(field: FormField, error?: string) {
-  return [field.helperText && `${field.key}-helper`, error && `${field.key}-error`].filter(Boolean).join(' ') || undefined;
+export function fieldId(props: Pick<FieldComponentProps, 'id' | 'field'>): string {
+  return props.id ?? fieldDomId(undefined, props.field.key);
+}
+
+export function describedBy(field: FormField, id: string, error?: string) {
+  return [field.helperText && `${id}-helper`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
 }
 
 export function optionProps({ disabled, loading, onBlur, onFocus }: FieldComponentProps) {
@@ -10,11 +15,13 @@ export function optionProps({ disabled, loading, onBlur, onFocus }: FieldCompone
 }
 
 export function inputProps(props: FieldComponentProps) {
+  const id = fieldId(props);
   return {
-    id: props.field.key,
+    id,
+    name: props.field.key,
     ...optionProps(props),
     'aria-invalid': !!props.error,
     'aria-required': !!props.field.validation?.required || undefined,
-    'aria-describedby': describedBy(props.field, props.error),
+    'aria-describedby': describedBy(props.field, id, props.error),
   };
 }

@@ -1,6 +1,6 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { optionProps } from './fieldProps';
+import { fieldId, optionProps } from './fieldProps';
 
 export function MultiselectField(props: FieldComponentProps) {
   const { field, value, error, onChange } = props;
@@ -15,14 +15,15 @@ export function MultiselectField(props: FieldComponentProps) {
   }
 
   return (
-    <FieldShell field={field} error={error} variant="multiselect">
-      {options.map((opt) => {
-        const optionId = `${field.key}-${opt.value}`;
+    <FieldShell id={fieldId(props)} field={field} error={error} variant="multiselect">
+      {options.map((opt, index) => {
+        const optionId = `${fieldId(props)}-${index}`;
         return (
           <div key={opt.value} className="fh-field__multiselect-option">
             <input
               {...optionProps(props)}
               id={optionId}
+              name={field.key}
               type="checkbox"
               className="fh-field__checkbox"
               checked={selected.includes(opt.value)}

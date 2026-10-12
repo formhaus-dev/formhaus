@@ -1,5 +1,5 @@
 import { shouldApplyExternalErrors, type FormEngineOptions } from '@formhaus/core';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useId, useRef } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
@@ -27,6 +27,7 @@ function firstControl(root: Element | null | undefined) {
 export function HeadlessFormRenderer(props: FormRendererProps) {
   const { definition, initialValues, loading = false, components, optionsProviders,
     actionsComponent, progressComponent, headingLevel = 2, onAnalyticsEvent } = props;
+  const formId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const focusPending = useRef(false);
   const focusReturn = useRef<HTMLElement | null>(null);
@@ -91,7 +92,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     <form ref={formRef} onFocusCapture={(event) => { focusReturn.current = event.target; }} className="fh-form" tabIndex={-1} aria-busy={engine.stepValidating || engine.submitting || loading}
       onSubmit={(event) => { event.preventDefault(); void (engine.isLastStep ? actions.submit() : actions.next()); }}>
       <FormProgressController engine={engine} ProgressComponent={progressComponent} headingLevel={headingLevel} />
-      <FormFieldsController key={engineKey(engine)} engine={engine} loading={loading} components={components}
+      <FormFieldsController key={engineKey(engine)} engine={engine} formId={formId} loading={loading} components={components}
         optionsProviders={optionsProviders} onChange={actions.update} onCommit={actions.commit}
         onBlur={handleFieldBlur} onFocus={handleFieldFocus} />
       <FormTopLevelErrors engine={engine} actionError={actions.actionError} />

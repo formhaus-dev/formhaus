@@ -36,7 +36,7 @@ function onInput(event: Event) {
 </script>
 
 <template>
-  <FieldShell :field="props.field" :error="props.error">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error">
     <input
       v-bind="input"
       class="fh-field__input"

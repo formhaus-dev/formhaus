@@ -1,13 +1,13 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { inputProps } from './fieldProps';
+import { fieldId, inputProps } from './fieldProps';
 
 export function SelectField(props: FieldComponentProps) {
   const { field, value, error, onChange } = props;
   const options = field.options ?? [];
 
   return (
-    <FieldShell field={field} error={error}>
+    <FieldShell id={fieldId(props)} field={field} error={error}>
       <select
         {...inputProps(props)}
         className="fh-field__input fh-field__input--select"

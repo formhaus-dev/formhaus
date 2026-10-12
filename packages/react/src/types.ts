@@ -6,6 +6,7 @@ export type OptionsProvider = (
 ) => FieldOption[] | Promise<FieldOption[]>;
 
 export interface FieldComponentProps {
+  id?: string;
   field: import('@formhaus/core').FormField;
   value: unknown;
   error?: string;

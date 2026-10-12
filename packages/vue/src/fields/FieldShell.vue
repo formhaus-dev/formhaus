@@ -4,6 +4,7 @@ import { computed, h } from 'vue';
 import { fieldAria, fieldIds } from './useField';
 
 const props = defineProps<{
+  id?: string;
   field: FormField;
   error?: string;
   variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect';
@@ -11,7 +12,7 @@ const props = defineProps<{
 
 const group = computed(() => props.variant === 'radio' || props.variant === 'multiselect');
 const inline = computed(() => !!props.variant && !group.value);
-const ids = computed(() => fieldIds(props.field));
+const ids = computed(() => fieldIds(props.field, props.id));
 const container = computed(() => {
   const name = `fh-field__${props.variant}-${group.value ? 'group' : 'wrapper'}`;
   return group.value && props.field.layout === 'inline' ? [name, `${name}--inline`] : name;
@@ -31,7 +32,7 @@ const Helper = () => props.field.helperText
   <component
     :is="group ? 'fieldset' : 'div'"
     :class="['fh-field', props.variant && `fh-field--${props.variant}`]"
-    v-bind="group ? fieldAria(props.field, props.error) : {}"
+    v-bind="group ? fieldAria(props.field, props.id, props.error) : {}"
   >
     <legend v-if="group && props.field.label" class="fh-field__label">
       {{ props.field.label }}
