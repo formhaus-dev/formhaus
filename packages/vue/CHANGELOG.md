@@ -4,6 +4,7 @@
 
 ### Patch Changes
 
+- `FormhausForm` keeps the response when it is sent again right after a "form updated" notice.
 - e23e684: - Fixed type errors in `@formhaus/vue/cloud` when `skipLibCheck` is off.
 - Updated dependencies [2d103ac]
   - @formhaus/core@0.11.1
