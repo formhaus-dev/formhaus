@@ -1,9 +1,5 @@
 import type { FormDefinition, FormField } from '../types';
 
-export function hasRoutes(definition: FormDefinition): boolean {
-  return !!definition.steps?.some((step) => step.routes?.length);
-}
-
 export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): string[] {
   return [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
 }

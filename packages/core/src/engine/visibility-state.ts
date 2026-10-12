@@ -15,12 +15,12 @@ interface VisibilityCache {
 
 export class VisibilityState {
   readonly allFields: FormField[];
-  readonly fieldByKey: Map<string, FormField>;
+  private readonly fieldsByKey = new Map<string, FormField[]>();
   private routeFields = new Set<string>();
   private readonly path: ActivePath;
   private fieldDependents = new Map<string, Set<FormField>>();
   private stepDependents = new Map<string, Set<FormStep>>();
-  private stepByFieldKey = new Map<string, FormStep>();
+  private stepOfField = new Map<FormField, FormStep>();
   private visibilityDirty = true;
   private canGoNextDirty = true;
   private cache: VisibilityCache = {
@@ -32,10 +32,10 @@ export class VisibilityState {
 
   constructor(private definition: FormDefinition) {
     this.allFields = getAllFields(definition);
-    this.fieldByKey = new Map(this.allFields.map((field) => [field.key, field]));
+    for (const field of this.allFields) this.fieldsByKey.set(field.key, [...(this.fieldsByKey.get(field.key) ?? []), field]);
     this.path = new ActivePath(definition);
     for (const step of definition.steps ?? []) {
-      for (const field of step.fields) this.stepByFieldKey.set(field.key, step);
+      for (const field of step.fields) this.stepOfField.set(field, step);
     }
     this.buildIndexes();
   }
@@ -80,13 +80,10 @@ export class VisibilityState {
   }
 
   cascadeHiddenFields(
-    changedKey: string,
     values: Record<string, unknown>,
     errors: Record<string, string>,
   ): Set<string> {
-    this.path.invalidate();
-    if (this.hasRoutes) return this.reconcileHidden(values, errors);
-    return this.drainQueue(new Set([changedKey]), values, errors);
+    return this.reconcileHidden(values, errors);
   }
 
   reconcileHidden(values: Record<string, unknown>, errors: Record<string, string>): Set<string> {
@@ -121,26 +118,19 @@ export class VisibilityState {
     return cleared;
   }
 
-  isFieldVisible(key: string, values: Record<string, unknown>): boolean {
-    const field = this.fieldByKey.get(key);
-    if (!field || !isVisible(field, this.conditionValues(values))) return false;
-    const step = this.stepByFieldKey.get(key);
-    return !step || this.path.steps(values).includes(step);
+  activeField(key: string, values: Record<string, unknown>): FormField | undefined {
+    return this.fieldsByKey.get(key)?.find((field) => this.onPath(field, values) && isVisible(field, this.conditionValues(values)));
   }
 
-  getVisibleFieldKeys(values: Record<string, unknown>, stepIndex: number): Set<string> {
-    if (this.hasRoutes) return new Set(Object.keys(this.path.values(values)));
-    const keys = new Set<string>();
-    const fields = this.isMultiStep
-      ? this.state(values, stepIndex).visibleSteps.flatMap((step) => step.fields)
-      : this.definition.fields ?? [];
-    for (const field of fields) {
-      if (isVisible(field, this.conditionValues(values))) keys.add(field.key);
-    }
-    return keys;
+  isFieldVisible(key: string, values: Record<string, unknown>): boolean {
+    return this.activeField(key, values) !== undefined;
   }
-  private conditionValues(values: Record<string, unknown>) { return this.hasRoutes ? this.path.values(values) : values; }
-  private get hasRoutes(): boolean { return this.path.enabled; }
+
+  conditionValues(values: Record<string, unknown>): Record<string, unknown> { return this.path.values(values); }
+  private onPath(field: FormField, values: Record<string, unknown>): boolean {
+    const step = this.stepOfField.get(field);
+    return !step || this.path.steps(values).includes(step);
+  }
   private get isMultiStep(): boolean { return (this.definition.steps ?? []).length > 0; }
   private buildIndexes(): void {
     for (const field of this.allFields) {
@@ -176,8 +166,7 @@ export class VisibilityState {
     clear: (key: string) => void,
   ): void {
     for (const field of fields ?? []) {
-      const step = this.stepByFieldKey.get(field.key);
-      if (this.hasRoutes && step && !this.path.steps(values).includes(step)) continue;
+      if (!this.onPath(field, values)) continue;
       if (isVisible(field, this.conditionValues(values)) || values[field.key] === undefined) continue;
       clear(field.key);
     }

@@ -1,6 +1,7 @@
-import type { CheckContext } from './context';
+import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
-import { error, oneOf, warning } from './issues';
+import { error, oneOf } from './issues';
+import { reachableSteps } from './paths';
 
 const RESERVED = new Set([...Object.getOwnPropertyNames(Object.prototype), 'prototype']);
 
@@ -25,16 +26,19 @@ function stepIssues({ definition }: CheckContext): DefinitionIssue[] {
   return issues;
 }
 
-function keyIssues({ entries, keys }: CheckContext): DefinitionIssue[] {
+function keyIssues({ definition, entries }: CheckContext): DefinitionIssue[] {
   const issues: DefinitionIssue[] = [];
-  for (const { field, path } of entries) {
-    const first = keys.get(field.key)!;
+  const reachable = reachableSteps(definition.steps ?? []);
+  const exclusive = (a: FieldEntry, b: FieldEntry) => a.step !== b.step && !reachable[a.step]?.has(b.step);
+  entries.forEach((entry, index) => {
+    const { field, path } = entry;
+    const clash = entries.slice(0, index).find((other) => other.field.key === field.key && !exclusive(other, entry));
     if (RESERVED.has(field.key)) {
       issues.push(error('reserved-key', `${path}/key`, `"${field.key}" is a built-in object property name`, 'Rename the field key'));
-    } else if (first.path !== path) {
-      issues.push(warning('duplicate-key', `${path}/key`, `key "${field.key}" is already used by ${first.path}`, 'Give each field a unique key, because fields with one key share one value'));
+    } else if (clash) {
+      issues.push(error('duplicate-key', `${path}/key`, `key "${field.key}" is already used by ${clash.path} on the same path`, 'Rename one of the fields, or move them to route branches that never meet'));
     }
-  }
+  });
   return issues;
 }
 

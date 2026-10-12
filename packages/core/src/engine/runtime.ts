@@ -120,7 +120,7 @@ export class FormEngine {
     this.values[key] = value;
     delete this.errors[key];
     for (const [stepId, keys] of this.skipped) if (valueChanged && keys.includes(key)) this.skipped.delete(stepId);
-    const clearedFields = this.visibility.cascadeHiddenFields(key, this.values, this.errors);
+    const clearedFields = this.visibility.cascadeHiddenFields(this.values, this.errors);
     const revalidated = clearResolvedMatchErrors(this.internals, key);
     const changedFields = new Set([...clearedFields, ...revalidated]);
     if (valueChanged || hadError) changedFields.add(key);
