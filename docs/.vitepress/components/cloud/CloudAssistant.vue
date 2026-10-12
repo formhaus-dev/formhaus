@@ -2,16 +2,22 @@
 import LandingSection from '../landing/LandingSection.vue';
 import LandingFrame from '../landing/LandingFrame.vue';
 import SectionCta from '../landing/SectionCta.vue';
+
+const props = withDefaults(defineProps<{ variant?: 'make' | 'summary' }>(), { variant: 'make' });
+const copy = {
+  make: { title: 'Make forms with Claude', lead: 'Describe the form you need and get a link back.', ask: 'Make a webinar signup form' },
+  summary: { title: 'Ask Claude about your responses', lead: 'Find common themes and hear what people need.', ask: "Make a webinar signup form and send me today's responses" },
+}[props.variant];
 </script>
 
 <template>
-  <LandingSection id="assistant" title="Ask Claude about your responses" lead="Find common themes and hear what people need.">
+  <LandingSection id="assistant" :title="copy.title" :lead="copy.lead">
     <LandingFrame class="conversation" label="Claude">
       <div class="chat">
-        <p class="chat-user">Make a webinar signup form and send me today's responses</p>
+        <p class="chat-user">{{ copy.ask }}</p>
         <div class="chat-reply">
           <p>Your webinar signup form is ready.<br /><span class="form-link">https://f.formhaus.dev/spring-webinar</span></p>
-          <p>38 people signed up today. Most are in marketing (21) and sales (9). 27 will join live, 11 want the replay. Top question: pricing for small teams.</p>
+          <p v-if="props.variant === 'summary'">38 people signed up today. Most are in marketing (21) and sales (9). 27 will join live, 11 want the replay. Top question: pricing for small teams.</p>
         </div>
         <div class="chat-input" aria-hidden="true">Reply to Claude</div>
       </div>

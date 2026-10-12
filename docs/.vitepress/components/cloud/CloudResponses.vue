@@ -5,7 +5,8 @@ const alt = 'Responses dashboard showing names, emails and messages from a conta
 </script>
 
 <template>
-  <LandingSection id="responses" title="Responses in one place" lead="Get email alerts, export a CSV, or send webhooks to Zapier and Make.">
+  <LandingSection id="responses" title="Responses in one place">
+    <template #lead>Email alerts, CSV export, or send them to <a href="/cloud/zapier-make">Zapier and Make</a>.</template>
     <figure class="cloud-frame responses">
       <img class="cloud-light" src="/media/landing-responses.png" width="2304" height="1250" :alt="alt" loading="lazy" decoding="async" />
       <img class="cloud-dark" src="/media/landing-responses-dark.png" width="2304" height="1250" :alt="alt" loading="lazy" decoding="async" />
