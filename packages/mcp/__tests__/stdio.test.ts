@@ -18,7 +18,7 @@ describe('formhaus-mcp over stdio', () => {
 
   it('lists tools and resources', async () => {
     const { tools } = await client.listTools();
-    expect(tools.map(({ name }) => name).sort()).toEqual(['capabilities', 'example_definitions', 'get_submissions', 'get_webhook', 'list_forms', 'publish_form', 'simulate_path', 'update_form_settings', 'validate_definition']);
+    expect(tools.map(({ name }) => name).sort()).toEqual(['capabilities', 'example_definitions', 'get_submissions', 'get_webhook', 'list_forms', 'publish_form', 'reveal_webhook_secret', 'simulate_path', 'update_form_settings', 'validate_definition']);
     const { resources } = await client.listResources();
     expect(resources.map(({ uri }) => uri)).toEqual(['formhaus://capabilities']);
   });
