@@ -9,6 +9,8 @@ const details = [
   '',
   'Install: `npm i @formhaus/core @formhaus/react` (or `@formhaus/vue`).',
   '',
+  `Upgrading from 0.10: ${siteUrl}/migrate/0.11 lists every renamed or removed API with before and after code and a grep list.`,
+  '',
   `Server-side validation: \`validateSubmission(definition, body.values, { skippedSteps })\` from \`@formhaus/core/server\`. \`FormEngine.validate()\` runs the same type checks in the browser, but only the server call protects against untrusted input. Docs: ${siteUrl}/guide/server-validation`,
   '',
   'Claude Code plugin (skills and MCP server): `claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus`',

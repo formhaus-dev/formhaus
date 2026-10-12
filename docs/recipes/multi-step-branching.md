@@ -17,10 +17,10 @@ The service answer sends the user to a design or a development step. Both branch
 
 ```tsx
 import { FormRenderer } from '@formhaus/react';
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import inquiry from './project-inquiry.json';
 
-const definition = inquiry as FormDefinition;
+const definition = parseDefinition(inquiry);
 
 export function ProjectInquiry() {
   return (
@@ -40,10 +40,10 @@ export function ProjectInquiry() {
 ```vue
 <script setup lang="ts">
 import { FormRenderer } from '@formhaus/vue';
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import inquiry from './project-inquiry.json';
 
-const definition = inquiry as FormDefinition;
+const definition = parseDefinition(inquiry);
 
 async function save(values: Record<string, unknown>) {
   await fetch('/api/inquiries', { method: 'POST', body: JSON.stringify(values) });
