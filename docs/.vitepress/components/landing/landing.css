@@ -69,11 +69,19 @@
 
 .lp-link .lucide {
   color: var(--vp-c-brand-1);
+  transition: transform 0.2s;
 }
 
 .lp-link:hover {
-  text-decoration: underline;
-  text-underline-offset: 3px;
+  color: var(--vp-c-brand-1);
+}
+
+.lp-link:hover .lucide {
+  transform: translateX(2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lp-link .lucide { transition: none; }
 }
 
 .lp-button {
