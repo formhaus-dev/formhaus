@@ -56,7 +56,10 @@ async function leaveGuard(context, theme, width) {
   await page.goto(`${base}/build`);
   await blockSaves(page, true);
   await editLabel(page, 'Unsaved email');
-  await page.waitForTimeout(1500);
+  await page.getByRole('button', { name: 'Retry' }).waitFor({ timeout: 10000 });
+  await page.keyboard.press('Escape');
+  await page.mouse.click(1, 1);
+  await shoot(page, 'status-error', theme, width);
   await page.getByRole('link', { name: 'React' }).first().click();
   const dialog = page.getByRole('dialog', { name: 'Leave without saving?' });
   await dialog.waitFor({ timeout: 10000 });
@@ -105,7 +108,30 @@ async function carryOver(context, theme, width) {
   await page.reload();
   await page.getByRole('textbox', { name: 'Field label' }).first().waitFor();
   if (await offer.count()) throw new Error('the restore offer came back after the restored form was saved');
+  if (width >= 768) await explicitStart(page);
   await page.close();
+}
+
+async function explicitStart(page) {
+  await page.goto(`${base}/`);
+  await page.locator('#demo-title').scrollIntoViewIfNeeded();
+  const label = page.locator('#sandbox-write').getByRole('textbox', { name: 'Field label' }).first();
+  await label.waitFor({ timeout: 15000 });
+  await label.click();
+  await page.keyboard.type(' again');
+  await page.evaluate(() => {
+    const link = Object.assign(document.createElement('a'), { href: '/build?new', textContent: 'blank' });
+    link.id = 'fh-blank-start';
+    window.__fhSpa = true;
+    document.querySelector('#demo-title')?.after(link);
+  });
+  await page.locator('#fh-blank-start').click();
+  await page.waitForURL(/\/build/);
+  if (!(await page.evaluate(() => window.__fhSpa))) throw new Error('the blank start link did a full page load');
+  await page.getByRole('heading', { name: 'Replace your current draft?' }).waitFor({ timeout: 10000 });
+  await page.getByRole('button', { name: 'Replace draft' }).click();
+  await page.getByRole('button', { name: 'Add field' }).first().waitFor();
+  if (await page.getByText(/^Restore unsaved changes/).count()) throw new Error('an explicit blank start also showed the restore offer');
 }
 
 async function check() {
