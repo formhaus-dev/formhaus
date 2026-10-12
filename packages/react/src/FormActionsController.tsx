@@ -51,7 +51,7 @@ export function FormActionsController({
       isLastStep={isLastStep}
       isMultiStep={engine.isMultiStep}
       loading={loading || engine.stepValidating || engine.submitting}
-      values={engine.values}
+      values={engine.getSubmitValues()}
       onSubmit={onSubmit}
       onNext={onNext}
       onPrev={onPrev}

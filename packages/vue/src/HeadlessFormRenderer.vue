@@ -191,7 +191,7 @@ async function onPrimary() {
       :is-last-step="effectiveIsLastStep"
       :is-multi-step="isMultiStep"
       :loading="props.loading || stepValidating || submitting"
-      :values="values"
+      :values="form.engine.getSubmitValues()"
       :primary-label="primaryLabel"
       :show-primary="effectiveIsLastStep || currentStep?.next !== false"
       :show-back="showBack"

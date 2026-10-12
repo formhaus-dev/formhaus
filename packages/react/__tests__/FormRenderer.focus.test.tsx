@@ -14,6 +14,8 @@ const contact: FormDefinition = {
   ],
 };
 
+const validators = { neededForY: (_: unknown, values: Record<string, unknown>) => (values.y === 'yes' ? 'Not with Y' : null) };
+
 const steps: FormDefinition = {
   id: 'steps',
   title: 'Steps',
@@ -21,7 +23,7 @@ const steps: FormDefinition = {
   steps: [
     { id: 's1', title: 'One', fields: [
       { key: 'a', type: 'text', label: 'A' },
-      { key: 'x', type: 'text', label: 'X', validation: { required: true }, show: [{ field: 'y', eq: 'yes' }] },
+      { key: 'x', type: 'text', label: 'X', validation: { validator: 'neededForY' } },
     ] },
     { id: 's2', title: 'Two', fields: [{ key: 'y', type: 'text', label: 'Y' }] },
   ],
@@ -44,7 +46,7 @@ describe('FormRenderer focus and keyboard', () => {
 
   it('shows the step with the error and focuses the field', async () => {
     const onSubmit = vi.fn();
-    render(<FormRenderer definition={steps} onSubmit={onSubmit} />);
+    render(<FormRenderer definition={steps} validators={validators} initialValues={{ x: 'filled' }} onSubmit={onSubmit} />);
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     fireEvent.change(await screen.findByRole('textbox', { name: 'Y' }), { target: { value: 'yes' } });
     await waitFor(() => expect(document.querySelector('form')?.getAttribute('aria-busy')).toBe('false'));

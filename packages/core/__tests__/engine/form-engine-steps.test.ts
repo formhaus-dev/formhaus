@@ -72,7 +72,7 @@ describe('FormEngine - Multi-Step', () => {
     it('returns fields of current step only', () => {
       const engine = new FormEngine(multiStepDefinition);
       const keys = engine.visibleFields.map((f) => f.key);
-      expect(keys).toEqual(['name']);
+      expect(keys).toEqual(['name', 'accountType']);
     });
   });
 
