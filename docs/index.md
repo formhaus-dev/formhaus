@@ -12,6 +12,7 @@ import LandingTabs from './.vitepress/components/landing/LandingTabs.vue';
 import LandingFigma from './.vitepress/components/landing/LandingFigma.vue';
 import LandingAgents from './.vitepress/components/landing/LandingAgents.vue';
 import LandingRecipes from './.vitepress/components/landing/LandingRecipes.vue';
+import LandingOpenSource from './.vitepress/components/landing/LandingOpenSource.vue';
 import './.vitepress/components/landing/landing.css';
 </script>
 
@@ -93,3 +94,5 @@ Paste the same JSON into the plugin.
 <section class="lp-section" aria-label="Formhaus Cloud">
   <p class="lp-lead">Formhaus Cloud hosts the submission endpoint for a definition. <a class="lp-more" href="/cloud">Formhaus Cloud</a></p>
 </section>
+
+<LandingOpenSource />
