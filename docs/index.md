@@ -7,6 +7,7 @@ description: "Define fields, validation, conditional visibility and multi-step r
 
 <script setup>
 import LandingHero from './.vitepress/components/landing/LandingHero.vue';
+import LandingWhy from './.vitepress/components/landing/LandingWhy.vue';
 import LandingDemo from './.vitepress/components/landing/LandingDemo.vue';
 import LandingToggle from './.vitepress/components/landing/LandingToggle.vue';
 import LandingTabs from './.vitepress/components/landing/LandingTabs.vue';
@@ -18,6 +19,8 @@ import './.vitepress/components/landing/landing.css';
 </script>
 
 <LandingHero />
+
+<LandingWhy />
 
 <LandingDemo />
 
