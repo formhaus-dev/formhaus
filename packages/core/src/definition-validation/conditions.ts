@@ -7,6 +7,7 @@ import { error, oneOf, pointer, suggest, warning } from './issues';
 const OPERATORS: readonly string[] = CONDITION_OPERATORS;
 const LIST_OPERATORS = new Set(['in', 'notIn']);
 const NEGATIONS = new Set(['neq', 'notIn']);
+const COMPARISONS = new Set(['gt', 'gte', 'lt', 'lte']);
 const STRING_TYPES = new Set(['text', 'email', 'phone', 'password', 'textarea', 'date', 'datetime', 'select', 'radio', 'autocomplete']);
 const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
 
@@ -16,8 +17,14 @@ function expectedType(field: FormField): string | undefined {
   return STRING_TYPES.has(field.type) ? 'string' : undefined;
 }
 
+function comparisonIssue(target: FormField, operator: string, path: string): DefinitionIssue | undefined {
+  if (target.type !== 'multiselect' && !BOOLEAN_TYPES.has(target.type)) return undefined;
+  return warning('condition-value-mismatch', path, `"${target.key}" is a ${target.type} field, so "${operator}" never matches it`, 'Compare a number, text, radio or select field');
+}
+
 function valueIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue | undefined {
   if (operator === 'notEmpty') return undefined;
+  if (COMPARISONS.has(operator)) return comparisonIssue(target, operator, path);
   if (target.type === 'multiselect') {
     const result = NEGATIONS.has(operator) ? 'always' : 'never';
     return warning('condition-value-mismatch', path, `"${target.key}" holds a list of values, so "${operator}" ${result} matches it`, 'Use notEmpty, or a select or radio field');

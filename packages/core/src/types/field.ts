@@ -50,6 +50,10 @@ export interface ShowCondition {
   in?: (string | number)[];
   notIn?: (string | number)[];
   notEmpty?: boolean;
+  gt?: number;
+  gte?: number;
+  lt?: number;
+  lte?: number;
 }
 
 export interface FieldValidation {
