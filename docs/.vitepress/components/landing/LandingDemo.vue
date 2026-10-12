@@ -9,6 +9,7 @@ import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
 import { formatJson, parseJson } from './json-format';
 import { useDemoCore } from './demo-checks';
+import { useCardClip } from './card-clip';
 
 const LandingDemoForm = defineAsyncComponent(() => import('./demo-lazy').then((lazy) => lazy.loadDemoForm()));
 
@@ -42,6 +43,8 @@ const values = ref<Record<string, unknown>>({});
 const done = ref(false);
 const jsonError = ref('');
 const { core, near, validate: safeValidate } = useDemoCore('demo');
+const writePane = ref<HTMLElement | null>(null);
+const fitCards = useCardClip(writePane);
 
 let timer: ReturnType<typeof setTimeout> | undefined;
 watch(definition, (next) => {
@@ -177,9 +180,9 @@ function onTabKey(event: KeyboardEvent) {
         <span class="sandbox__muted">{{ progress }}</span>
         <button type="button" class="sandbox__restart" @click="restart"><LucideIcon name="restart" /> Restart</button>
       </template>
-      <div id="sandbox-write" class="sandbox__pane sandbox__pane--write" role="tabpanel" aria-labelledby="sandbox-tab-write">
+      <div id="sandbox-write" ref="writePane" class="sandbox__pane sandbox__pane--write" role="tabpanel" aria-labelledby="sandbox-tab-write">
         <ClientOnly>
-          <EditorIsland :key="generation" storage="memory" compact lazy :definition="loaded" @change="onEdit" />
+          <EditorIsland :key="generation" storage="memory" compact lazy :definition="loaded" @change="onEdit" @ready="fitCards" />
         </ClientOnly>
       </div>
       <div v-if="props.json" id="sandbox-json" class="sandbox__pane sandbox__pane--json" role="tabpanel" aria-labelledby="sandbox-tab-json">
