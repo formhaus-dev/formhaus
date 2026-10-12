@@ -1,16 +1,14 @@
 <script setup lang="ts">
 import type { FormField } from '@formhaus/core';
-import { useId } from 'vue';
 import LucideIcon from './LucideIcon.vue';
 import { choices, type StartChoice } from './onboarding';
 
 const props = defineProps<{ field: FormField; value?: unknown; error?: string; disabled?: boolean }>();
 const emit = defineEmits<{ 'update:value': [value: unknown]; commit: [value: unknown]; blur: []; focus: [] }>();
-const errorId = useId();
 </script>
 
 <template>
-  <fieldset class="ob-choices" :aria-invalid="!!props.error" :aria-describedby="props.error ? errorId : undefined">
+  <fieldset class="ob-choices">
     <legend class="lp-sr-only">{{ props.field.label }}</legend>
     <label v-for="option in props.field.options ?? []" :key="option.value" class="ob-choice">
       <input
@@ -21,6 +19,8 @@ const errorId = useId();
         :checked="props.value === option.value"
         :disabled="props.disabled"
         @change="emit('update:value', option.value)"
+        @click="emit('commit', option.value)"
+        @keydown.enter.prevent="emit('commit', option.value)"
         @focus="emit('focus')"
         @blur="emit('blur')"
       />
@@ -30,7 +30,6 @@ const errorId = useId();
         <span class="ob-choice__text">{{ choices[option.value as StartChoice].text }}</span>
       </span>
     </label>
-    <p v-if="props.error" :id="errorId" class="ob-choices__error" role="alert">{{ props.error }}</p>
   </fieldset>
 </template>
 
@@ -106,16 +105,9 @@ const errorId = useId();
   background: var(--vp-c-brand-3);
 }
 
-.ob-choice:has(:focus-visible) {
-  outline: 2px solid var(--vp-c-brand-3);
-  outline-offset: 2px;
-}
-
-.ob-choices__error {
-  margin: 0;
-  font-size: 13px;
-  line-height: 18px;
-  color: var(--vp-c-danger-1);
+.ob-choice:has(.ob-choice__input:focus-visible) {
+  outline: 2px solid var(--vp-c-text-1);
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
