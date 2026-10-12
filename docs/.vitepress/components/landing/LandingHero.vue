@@ -2,6 +2,7 @@
 import CopyLine from './CopyLine.vue';
 import LucideIcon from './LucideIcon.vue';
 
+const mcpCommand = 'claude mcp add --transport http formhaus https://api.formhaus.dev/mcp';
 const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework'];
 </script>
 
@@ -12,12 +13,16 @@ const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework
     </h1>
     <p class="hero__lead">
       One JSON file runs your React and Vue forms, Figma mockups and AI agents.
+      Your AI agent can publish it to Formhaus Cloud and give you a link, an embed and a webhook.
     </p>
     <div class="hero__actions">
-      <a class="hero__button hero__button--brand" href="/guide/">Get started <LucideIcon name="arrow-right" /></a>
-      <a class="hero__button" href="/playground">Playground</a>
+      <a class="hero__button hero__button--brand" href="/cloud/quickstart">Publish with your AI agent <LucideIcon name="arrow-right" /></a>
+      <a class="hero__button" href="/guide/">Use the library</a>
     </div>
-    <CopyLine class="hero__install" command="npm i @formhaus/core @formhaus/react" label="Copy install command" />
+    <CopyLine class="hero__install" :command="mcpCommand" label="Copy MCP setup command" />
+    <p class="hero__hint">
+      Then ask: “Make me a waitlist form and give me the link.” Cursor and other MCP clients use the same URL.
+    </p>
     <ul class="hero__facts" aria-label="Key facts">
       <li v-for="fact in facts" :key="fact">{{ fact }}</li>
     </ul>
@@ -112,9 +117,18 @@ const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework
 }
 
 .hero__install {
-  width: 420px;
+  width: 680px;
   margin: 28px auto 0;
   text-align: left;
+}
+
+.hero .hero__hint {
+  max-width: 640px;
+  margin: 12px auto 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--vp-c-text-2);
+  text-wrap: pretty;
 }
 
 .hero .hero__facts {
