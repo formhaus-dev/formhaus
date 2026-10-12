@@ -107,7 +107,6 @@ onBeforeUnmount(() => observer?.disconnect());
         width="1280"
         height="720"
         alt=""
-        loading="lazy"
         fetchpriority="high"
         @load="syncPoster"
       />
