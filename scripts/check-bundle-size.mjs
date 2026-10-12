@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 const BUDGETS = {
-  core: 10450,
+  core: 11100,
   react: 5450,
   vue: 7100,
   'core/cloud': 3000,

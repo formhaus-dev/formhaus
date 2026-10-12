@@ -93,7 +93,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
 
 ::: warning
-`validate()` is the browser check. It does not check value types, `options` or the `email` format, and a string such as `"5"` skips `min` and `max`. On the server, use [`validateSubmission()`](/guide/server-validation).
+`validate()` is the browser check. It runs the same type checks as the server for built-in types, but trusts the values your app put in the engine. On the server, use [`validateSubmission()`](/guide/server-validation).
 :::
 
 `reset()` also removes values hidden by the new reset values, while preserving answers in skipped route branches. Independently hidden fields still follow visibility clearing rules. Pending navigation and pre-submit results are discarded. A submission already dispatched cannot be undone.

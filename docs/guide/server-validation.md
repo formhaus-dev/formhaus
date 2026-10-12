@@ -75,7 +75,7 @@ async function submit(values: Record<string, unknown>, skippedSteps?: string[]) 
 ```
 :::
 
-The second argument of `validateSubmission()` is the values object, not the whole request body. Passing the body returns "This field is required" for every required field.
+The second argument of `validateSubmission()` is the values object, not the whole request body. Passing the body adds an error under the `values` key that says so.
 
 ## What it checks
 
@@ -93,11 +93,11 @@ Both run the `validation` rules on the active path and skip hidden fields, hidde
 
 `FormEngine.validate()` is the browser check. Do not use it on untrusted input.
 
-The `email` format is checked only by `validateSubmission()`. To check it in the browser too, add a `pattern` to the field.
+The browser runs the same type checks as `validateSubmission()` for the built-in types: `email` format, `date` and `datetime` shape, numbers, booleans, static `options`, and the 10,000 character cap on text.
 
 ## Custom validators
 
-`validateSubmission()` ignores `validation.validator`. Run your server validators on the returned values:
+`validateSubmission()` ignores `validation.validator` unless you pass the function in `validators`:
 
 ```ts
 import type { ValidatorFn } from '@formhaus/core';
@@ -106,22 +106,13 @@ const validators: Record<string, ValidatorFn> = {
   companyAvailable: (value) => (String(value).toLowerCase() === 'acme' ? 'This company already has a workspace' : null),
 };
 
-function runValidators(values: Record<string, unknown>, errors: Record<string, string>) {
-  const fields = definition.steps?.flatMap((step) => step.fields) ?? definition.fields ?? [];
-  for (const field of fields) {
-    const validate = validators[field.validation?.validator ?? ''];
-    const value = values[field.key];
-    if (!validate || errors[field.key] || value === undefined || value === '') continue;
-    const error = validate(value, values);
-    if (error) errors[field.key] = error;
-  }
-}
-
-const { values, errors } = validateSubmission(definition, req.body?.values, { skippedSteps: req.body?.skippedSteps });
-runValidators(values, errors);
+const { values, errors } = validateSubmission(definition, req.body?.values, {
+  skippedSteps: req.body?.skippedSteps,
+  validators,
+});
 ```
 
-`values` holds only fields on the active path, so validators of hidden fields do not run.
+Validators run only for fields on the active path, never on an empty value.
 
 ## Limits
 
