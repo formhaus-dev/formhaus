@@ -9,7 +9,27 @@
 
 Formhaus is a JSON form definition with a zero-dependency engine, React and Vue renderers, a Figma plugin, a JSON Schema and an MCP server for AI agents. One file describes fields, validation, conditional fields, multi-step navigation, branching routes and skippable steps.
 
-**[Example](#example) · [Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Spec](https://formhaus.dev/spec.html) · [Playground](https://formhaus.dev/playground.html)**
+Your AI agent can publish a form to [Formhaus Cloud](https://formhaus.dev/cloud) and give you a link, an embed and a webhook.
+
+**[Start here](#start-here) · [Example](#example) · [Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Spec](https://formhaus.dev/spec.html) · [Playground](https://formhaus.dev/playground.html)**
+
+## Start here
+
+Add the remote MCP server to Claude Code:
+
+```bash
+claude mcp add --transport http formhaus https://api.formhaus.dev/mcp
+```
+
+Then ask: "Make me a waitlist form and give me the link." Cursor and other MCP clients use the same URL. The first form needs no account. See the [Cloud quickstart](https://formhaus.dev/cloud/quickstart).
+
+To render forms in your own React or Vue app, go to [Install](#install).
+
+## How it differs from Typeform, Google Forms and Tally
+
+- Claude Code, Cursor or any MCP client publishes and edits the form from a prompt and reads the submissions.
+- The form is a JSON file you keep in git. It renders natively in React or Vue, or as a hosted page and embed.
+- Each form gets a submission endpoint, a REST API and CSV export, plus webhooks once claimed. The format and renderers are MIT licensed.
 
 ## What it's for
 
