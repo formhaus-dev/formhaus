@@ -46,6 +46,8 @@ jobs:
 
       - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve
 
+      - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium
+
       - run: pnpm test
 
   lowest-peers:
