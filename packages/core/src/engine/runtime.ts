@@ -21,7 +21,7 @@ import { reconcileStepIndex } from './step-routes';
 import { warnInDevelopment } from './warnings';
 import { VisibilityState } from './visibility-state';
 
-export class FormEngine<TValues extends Record<string, unknown> = Record<string, unknown>> {
+export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly state: EngineState;
   private readonly skipped = new Map<string, string[]>();
   private validationEpoch = 0;
@@ -35,7 +35,7 @@ export class FormEngine<TValues extends Record<string, unknown> = Record<string,
 
   constructor(
     readonly definition: FormDefinition,
-    initialValues?: Partial<TValues>,
+    initialValues?: Partial<NoInfer<TValues>>,
     options?: FormEngineOptions,
   ) {
     this.lifecycle = options ?? {};
@@ -46,7 +46,7 @@ export class FormEngine<TValues extends Record<string, unknown> = Record<string,
     const warn = this.lifecycle.onWarning ?? warnInDevelopment;
     for (const issue of issues) warn(issue);
     this.visibility = new VisibilityState(definition);
-    const values = createValues(this.visibility.allFields, initialValues);
+    const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
     this.state = { values, errors: {}, topLevelErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };
     this.visibility.reconcileHidden(values, this.state.errors);
   }

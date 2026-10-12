@@ -31,7 +31,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitFn, keep
     }
     dispatched = true;
     const skippedSteps = [...engine.skipped.keys()];
-    await submit(values, skippedSteps);
+    await submit(values, [...skippedSteps]);
     if (operation !== engine.operationEpoch) return true;
     await afterCommit('afterSubmit', () => lifecycle.onAfterSubmit?.(values, skippedSteps));
     return true;

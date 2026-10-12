@@ -22,7 +22,7 @@ const engine = new FormEngine(definition, initialValues, {
 });
 ```
 
-Both `initialValues` and the options object are optional. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
+Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
 ## Definition checks
 
@@ -110,7 +110,7 @@ It returns `false` only when `nextErrors` equals `previousErrors` and the engine
 
 ## Navigation
 
-Every action is async, runs the lifecycle hooks and resolves to `true` when it completed.
+`next()`, `back()`, `skip()` and `submit()` are async, run the lifecycle hooks and resolve to `true` when the action completed. While one of them is pending, the others resolve to `false`; call `cancelPendingActions()` to drop the pending one.
 
 | Method | Returns | Description |
 |---|---|---|

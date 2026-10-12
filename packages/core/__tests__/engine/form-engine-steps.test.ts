@@ -17,7 +17,7 @@ describe('FormEngine - Multi-Step', () => {
 
     it('nextStep validates before advancing', async () => {
       const engine = new FormEngine(multiStepDefinition);
-      // Name is required, so nextStep should fail
+
       const result = await engine.next();
       expect(result).toBe(false);
       expect(engine.currentStepIndex).toBe(0);
@@ -28,7 +28,7 @@ describe('FormEngine - Multi-Step', () => {
       const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       const result = await engine.next();
       expect(result).toBe(true);
-      // Business step is hidden (accountType != business), so we skip to payment
+
       expect(engine.currentStep?.id).toBe('payment');
     });
 
@@ -47,8 +47,8 @@ describe('FormEngine - Multi-Step', () => {
 
     it('nextStep on last step is a no-op', async () => {
       const engine = new FormEngine(multiStepDefinition, { name: 'John' });
-      await engine.next(); // Go to payment (business hidden)
-      const result = await engine.next(); // Already on last step
+      await engine.next();
+      const result = await engine.next();
       expect(result).toBe(false);
     });
   });
@@ -86,7 +86,7 @@ describe('FormEngine - Multi-Step', () => {
     it('updates when step becomes visible', () => {
       const engine = new FormEngine(multiStepDefinition);
       engine.setValue('accountType', 'business');
-      // Now 3 visible steps
+
       expect(engine.progress.total).toBe(3);
     });
   });
@@ -102,7 +102,7 @@ describe('FormEngine - Multi-Step', () => {
     it('no-op when field is in hidden step', () => {
       const engine = new FormEngine(multiStepDefinition);
       engine.goToStepWithField('company'); // company is in hidden business step
-      expect(engine.currentStepIndex).toBe(0); // Unchanged
+      expect(engine.currentStepIndex).toBe(0);
     });
 
     it('no-op when field does not exist', () => {
@@ -137,9 +137,9 @@ describe('FormEngine - Multi-Step', () => {
   describe('setErrors navigates to step', () => {
     it('navigates to step containing first errored field', async () => {
       const engine = new FormEngine(multiStepDefinition, { name: 'John' });
-      await engine.next(); // Go to payment
+      await engine.next();
       engine.setErrors({ name: 'Server error on name' });
-      // Should navigate back to personal step
+
       expect(engine.currentStep?.id).toBe('personal');
     });
   });

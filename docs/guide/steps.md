@@ -186,7 +186,7 @@ React `FormRenderer` and `HeadlessFormRenderer` accept the same hooks as `new Fo
 ```tsx
 <FormRenderer
   definition={definition}
-  onBeforeStepChange={async ({ fromStepId, toStepId, direction, values }) => {
+  onBeforeStepChange={async ({ fromStepId, toStepId, values }) => {
     return await mayLeaveStep(fromStepId, toStepId, values) // false cancels
   }}
   onAfterStepChange={({ toStepId }) => trackStep(toStepId)}
@@ -197,7 +197,7 @@ React `FormRenderer` and `HeadlessFormRenderer` accept the same hooks as `new Fo
 />
 ```
 
-Forward navigation runs field validation → `onStepValidate` → `onBeforeStepChange` → commit step → `onAfterStepChange`. Back runs the before/after hooks without field or server validation. Only an explicit `false` from a before-hook cancels; `void` allows the operation. Hooks may be synchronous or async. The step context includes `fromStepId`, `toStepId`, `direction` and `reason` (`next`, `back`, `autoAdvance`, or `skip`). Before-hooks receive a shallow values snapshot. Errors reject core promises; renderers call `onError`, or display the error at the form level if it is omitted.
+Forward navigation runs field validation → `onStepValidate` → `onBeforeStepChange` → commit step → `onAfterStepChange`. Back runs the before/after hooks without field or server validation. Only an explicit `false` from a before-hook cancels; `void` allows the operation. Hooks may be synchronous or async. The step context includes `fromStepId`, `toStepId` and `reason` (`next`, `back`, `autoAdvance`, or `skip`). Before-hooks receive a shallow values snapshot. Errors reject core promises; renderers call `onError`, or display the error at the form level if it is omitted.
 
 Submission runs whole-form validation → `onBeforeSubmit` → the awaited submit handler → `onAfterSubmit`. Only successful handlers reach the after-hook. `FormLifecycleError` identifies an after-hook failure with `committed: true`, `phase` and `cause`: navigation or submission already happened. Do not automatically retry a submission because its receipt/analytics hook failed. Inputs stay disabled until after-hooks resolve, so fire analytics without `await`.
 
@@ -207,7 +207,7 @@ A hook may fill a value whose key was absent from the action's checked snapshot 
 
 Changing a value the pending check already received, changing the active path, or resetting the core engine discards the pending pre-transition/pre-submit result. Reset cannot undo a submission already sent. `cancelPendingActions()` invalidates pending guards without clearing answers; adapters call it when their definition id changes or they unmount. Each operation captures its callbacks so changing props cannot redirect an old payload to a new handler.
 
-Use `nextStepAsync()`, `prevStepAsync()` and `submitAsync(handler)` for lifecycle-aware core actions. Existing synchronous `nextStep()`, `prevStep()`, `goToStepWithField()`, error redirection and `reset()` remain low-level operations and do not call async lifecycle hooks. They can invalidate pending navigation. `onStepChange`/Vue `stepChange` still report committed Next/Back transitions before the after-hook.
+`next()`, `back()`, `skip()` and `submit(handler)` run the lifecycle hooks. `goToStepWithField()`, error redirection and `reset()` do not call the hooks and can invalidate pending navigation. `onStepChange`/Vue `stepChange` still report committed Next/Back transitions before the after-hook.
 
 Vue uses `:on-before-step-change`, `:on-after-step-change`, `:on-before-submit`, `:on-after-submit` and `:on-error` callback props. To await saving, pass `:submit-handler="save"`. The existing `@submit` event still fires after that handler succeeds; without `submitHandler`, after-submit means the event was dispatched. Vue event listeners cannot be awaited, so do not put the same network request in both places.
 

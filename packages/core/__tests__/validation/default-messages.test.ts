@@ -23,6 +23,6 @@ describe('getDefaultMessage', () => {
   });
 
   it('returns default message for unknown rule', () => {
-    expect(getDefaultMessage('unknown')).toBe('Invalid value');
+    expect(getDefaultMessage('unknown' as never)).toBe('Invalid value');
   });
 });

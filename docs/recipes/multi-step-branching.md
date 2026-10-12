@@ -71,4 +71,4 @@ async function save(values: Record<string, unknown>) {
 - [Conditional Fields](/guide/conditions): the `show` and `showAny` operators routes use
 - [Async Step Validation](/guide/async-validation): server checks before the next step
 - [Definition Reference](/api/definition#step-routes): the `StepRoute` type
-- [FormEngine](/api/form-engine#navigation): `nextStepAsync`, `prevStepAsync` and `skipStepAsync`
+- [FormEngine](/api/form-engine#navigation): `next`, `back` and `skip`
