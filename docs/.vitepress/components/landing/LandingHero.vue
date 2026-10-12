@@ -3,7 +3,6 @@ import CopyLine from './CopyLine.vue';
 import LucideIcon from './LucideIcon.vue';
 
 const mcpCommand = 'claude mcp add --transport http formhaus https://api.formhaus.dev/mcp';
-const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework'];
 </script>
 
 <template>
@@ -13,7 +12,7 @@ const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework
     </h1>
     <p class="hero__lead">
       One JSON file runs your React and Vue forms, Figma mockups and AI agents.
-      Your AI agent can publish it to Formhaus Cloud and give you a link, an embed and a webhook.
+      Your agent publishes it to Formhaus Cloud and hands you a link, an embed and a webhook.
     </p>
     <div class="hero__actions">
       <a class="hero__button hero__button--brand" href="/cloud/quickstart">Publish with your AI agent <LucideIcon name="arrow-right" /></a>
@@ -21,11 +20,8 @@ const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework
     </div>
     <CopyLine class="hero__install" :command="mcpCommand" label="Copy MCP setup command" />
     <p class="hero__hint">
-      Then ask: “Make me a waitlist form and give me the link.” Cursor and other MCP clients use the same URL.
+      Then ask: “Make me a waitlist form and give me the link.” No account needed for the first form.
     </p>
-    <ul class="hero__facts" aria-label="Key facts">
-      <li v-for="fact in facts" :key="fact">{{ fact }}</li>
-    </ul>
   </section>
 </template>
 
@@ -123,39 +119,12 @@ const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework
 }
 
 .hero .hero__hint {
-  max-width: 640px;
+  max-width: 680px;
   margin: 12px auto 0;
   font-size: 14px;
   line-height: 1.6;
   color: var(--vp-c-text-2);
   text-wrap: pretty;
-}
-
-.hero .hero__facts {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 24px;
-  margin: 24px 0 0;
-  padding: 0;
-  list-style: none;
-  font-size: 14px;
-  color: var(--vp-c-text-2);
-}
-
-.hero .hero__facts li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-}
-
-.hero .hero__facts li::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--vp-c-brand-2);
 }
 
 @media (min-width: 640px) {

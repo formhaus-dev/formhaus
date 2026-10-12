@@ -10,14 +10,16 @@ const points = [
   },
   {
     title: 'Open by default',
-    text: 'Each form gets a submission endpoint, a REST API and CSV export, plus webhooks once claimed. The format and renderers are MIT licensed.',
+    text: 'Each form gets a submission endpoint, a REST API and CSV export, plus webhooks once you sign in. The format and renderers are MIT licensed.',
   },
 ];
 </script>
 
 <template>
   <section class="lp-section why" aria-labelledby="why-title">
-    <h2 id="why-title" class="lp-title">How it differs from Typeform, Google Forms and Tally</h2>
+    <p class="lp-eyebrow">Compared</p>
+    <h2 id="why-title" class="lp-title">How it differs from<br class="why__break" /> Typeform, Google&nbsp;Forms and Tally</h2>
+    <p class="lp-lead">Same hosted page, link and submissions. Three things the others do not do.</p>
     <ul class="why__list">
       <li v-for="point in points" :key="point.title" class="lp-card why__item">
         <strong class="why__title">{{ point.title }}</strong>
@@ -53,6 +55,16 @@ const points = [
   font-size: 15px;
   line-height: 1.6;
   color: var(--vp-c-text-2);
+}
+
+.why__break {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .why__break {
+    display: inline;
+  }
 }
 
 @media (min-width: 768px) {
