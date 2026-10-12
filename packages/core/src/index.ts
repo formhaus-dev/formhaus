@@ -24,7 +24,15 @@ export {
   validateStep,
 } from './validation';
 
-export { validateDefinition } from './definition-validation';
+export {
+  checkDefinition,
+  FormDefinitionError,
+  parseDefinition,
+  validateDefinition,
+  type CheckDefinitionOptions,
+  type DefinitionIssue,
+  type DefinitionIssueCode,
+} from './definition-validation';
 
 export { FormLifecycleError } from './engine/lifecycle-error';
 

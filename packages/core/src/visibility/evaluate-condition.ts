@@ -1,5 +1,7 @@
 import type { ShowCondition } from '../types';
 
+export const CONDITION_OPERATORS = ['eq', 'neq', 'in', 'notIn', 'notEmpty'] as const;
+
 export function isBlank(value: unknown): boolean {
   return value == null || value === '' || (Array.isArray(value) && !value.length);
 }
@@ -9,26 +11,10 @@ export function evaluateCondition(
   values: Record<string, unknown>,
 ): boolean {
   const value = values[condition.field];
-
-  if (condition.eq !== undefined) {
-    return value === condition.eq;
-  }
-
-  if (condition.neq !== undefined) {
-    return value !== condition.neq;
-  }
-
-  if (condition.in !== undefined) {
-    return condition.in.includes(value as string | number);
-  }
-
-  if (condition.notIn !== undefined) {
-    return !condition.notIn.includes(value as string | number);
-  }
-
-  if (condition.notEmpty === true) {
-    return !isBlank(value);
-  }
-
-  return true;
+  if (condition.eq !== undefined) return value === condition.eq;
+  if (condition.neq !== undefined) return value !== condition.neq;
+  if (condition.in !== undefined) return condition.in.includes(value as string | number);
+  if (condition.notIn !== undefined) return !condition.notIn.includes(value as string | number);
+  if (condition.notEmpty !== undefined) return !condition.notEmpty || !isBlank(value);
+  return false;
 }

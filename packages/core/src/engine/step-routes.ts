@@ -1,53 +1,6 @@
 import type { FormDefinition, FormStep } from '../types';
 import { isStepVisible, isVisible } from '../visibility';
-import { conditionFields, getAllFields, hasFieldsAndSteps, hasRoutes } from './engine-utils';
-
-export function definitionErrors(definition: FormDefinition): string[] {
-  const steps = definition.steps ?? [];
-  const warnings = hasFieldsAndSteps(definition) ? ['FormEngine rejects a definition with both "fields" and "steps".'] : [];
-  const stepIndexes = new Map<string, number>();
-  const fieldIndexes = new Map<string, number>();
-  steps.forEach((step, index) => {
-    if (stepIndexes.has(step.id)) warnings.push(`Duplicate step id "${step.id}".`);
-    stepIndexes.set(step.id, index);
-    for (const field of step.fields) fieldIndexes.set(field.key, index);
-  });
-  for (const { key } of getAllFields(definition)) {
-    if (key in Object.prototype || key === 'prototype') warnings.push(`Reserved field key "${key}".`);
-  }
-  if (!hasRoutes(definition)) return warnings;
-  steps.forEach((step, index) => {
-    for (const route of step.routes ?? []) {
-      const target = route.to === null ? null : stepIndexes.get(route.to);
-      if (target === undefined || (target !== null && target <= index)) {
-        warnings.push(`Invalid route from "${step.id}" to "${route.to}": targets must be later steps or null.`);
-      }
-      for (const field of conditionFields(route)) {
-        if (!((fieldIndexes.get(field) ?? Infinity) <= index)) {
-          warnings.push(`Invalid route on "${step.id}": condition field "${field}" must belong to this or an earlier step.`);
-        }
-      }
-    }
-  });
-  return warnings;
-}
-
-export function routeFallthroughWarnings(definition: FormDefinition): string[] {
-  const steps = definition.steps ?? [];
-  const warnings: string[] = [];
-  for (const step of steps) {
-    const targets = new Set((step.routes ?? []).map((route) => route.to).filter((to) => to !== null));
-    for (const target of targets) {
-      const index = steps.findIndex((candidate) => candidate.id === target);
-      const sibling = steps[index + 1];
-      const exits = steps[index]?.routes?.some((route) => !route.show?.length && !route.showAny?.length);
-      if (sibling && targets.has(sibling.id) && !exits) {
-        warnings.push(`Route branch "${target}" from "${step.id}" continues into sibling branch "${sibling.id}". Add an unconditional route where it should continue.`);
-      }
-    }
-  }
-  return warnings;
-}
+import { hasRoutes } from './engine-utils';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
   const steps = definition.steps ?? [];
