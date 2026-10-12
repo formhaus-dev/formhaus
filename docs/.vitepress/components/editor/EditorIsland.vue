@@ -2,8 +2,6 @@
 import type { FormDefinition } from '@formhaus/core';
 import { useRouter } from 'vitepress';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
-import { takeCarried } from './carry';
-import { addRouteGuard, pathOf } from './routeGuard';
 import './editor-tokens.css';
 
 const props = defineProps<{ storage: 'local' | 'memory'; definition?: FormDefinition; lazy?: boolean; savedHint?: string; compact?: boolean }>();
@@ -33,14 +31,13 @@ async function stylesheet(name: keyof typeof sheets): Promise<void> {
 
 async function start() {
   observer?.disconnect();
-  const [editor] = await Promise.all([
+  const [editor, { addRouteGuard, pathOf }] = await Promise.all([
     import('@formhaus/editor-react/mount.js'),
+    import('./routeGuard'),
     stylesheet('editor'),
     props.storage === 'local' ? stylesheet('preview') : null,
   ]);
   if (disposed || !root.value) return;
-  const carried = props.storage === 'local' ? takeCarried() : null;
-  if (carried) editor.carryToBuild(carried);
   const onChange = (definition: FormDefinition) => emit('change', definition);
   const options = { onChange, ...(props.definition ? { definition: props.definition } : {}), ...(props.savedHint ? { savedHint: props.savedHint } : {}) };
   const host = props.storage === 'local' ? editor.createLocalHost(options) : editor.createMemoryHost(options);
