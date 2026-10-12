@@ -28,11 +28,11 @@ export function registerSettingsTool(server: McpServer): void {
     description: WEBHOOK_DESCRIPTION,
     inputSchema: {
       form_id: z.string().describe('The form_id returned by publish_form or list_forms.'),
-      reveal: z.boolean().optional().describe('true returns the full signing secret (whsec_...) instead of a masked one.'),
+      reveal_secret: z.boolean().optional().describe('true returns the full signing secret (whsec_...) instead of a masked one.'),
     },
     outputSchema: cloudOutput,
     annotations: { readOnlyHint: true, openWorldHint: true },
-  }, async ({ form_id, reveal }) => (
-    result(await cloudRequest(`/v1/forms/${encodeURIComponent(form_id)}/webhook${reveal ? '?reveal=true' : ''}`, { auth: 'required' }))
+  }, async ({ form_id, reveal_secret }) => (
+    result(await cloudRequest(`/v1/forms/${encodeURIComponent(form_id)}/webhook${reveal_secret ? '?reveal=true' : ''}`, { auth: 'required' }))
   ));
 }

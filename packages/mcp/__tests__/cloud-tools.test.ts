@@ -154,7 +154,7 @@ describe('update_form_settings', () => {
 
   it('reads the webhook with get_webhook', async () => {
     fetchMock.mockResolvedValue(reply(200, { url: 'https://example.com/hook', secret: 'whsec_full' }));
-    const { body } = await call('get_webhook', { form_id: 'f1', reveal: true });
+    const { body } = await call('get_webhook', { form_id: 'f1', reveal_secret: true });
     expect(body.secret).toBe('whsec_full');
     expect(lastRequest().url).toBe('https://api.example.test/v1/forms/f1/webhook?reveal=true');
     await call('get_webhook', { form_id: 'f1' });
