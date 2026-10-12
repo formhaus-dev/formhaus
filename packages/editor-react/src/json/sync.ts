@@ -9,7 +9,7 @@ export interface JsonError {
 
 export type ParsedJson = { form: BuilderForm; problems: string[] } | { error: JsonError };
 
-export const formatDefinition = (form: BuilderForm) => `${JSON.stringify(toDefinition(form), null, 2)}\n`;
+export const formatDefinition = (form: BuilderForm) => JSON.stringify(toDefinition(form), null, 2);
 
 export const sameDefinition = (a: BuilderForm, b: BuilderForm) => JSON.stringify(toDefinition(a)) === JSON.stringify(toDefinition(b));
 

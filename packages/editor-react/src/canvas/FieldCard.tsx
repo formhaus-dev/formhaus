@@ -3,7 +3,7 @@ import { CircleAlert, Settings2 } from 'lucide-react';
 import { useId, useLayoutEffect, useRef } from 'react';
 import { IconButton, SortableHandle, type SortableHandleProps } from '../ui';
 import { cx } from '../ui/lib/cx';
-import { typeLabel } from '../fieldTypes';
+import { typeIcon, typeLabel } from '../fieldTypes';
 import { FieldPanel } from '../inspector/FieldPanel';
 import settings from '../inspector/Inspector.module.css';
 import { LogicBadge } from '../logic/LogicBadge';
@@ -12,6 +12,7 @@ import { useEditorStore } from '../store/context';
 import { useField, useIsExpanded, useIsSelected, useIssues, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
+import suggestionStyles from './TypeSuggestion.module.css';
 import { HelpText, PlaceholderInput } from './FieldDetails';
 import { takesPlaceholder } from './placeholder';
 import { FieldLabel } from './FieldLabel';
@@ -111,14 +112,15 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
         {suggestion && suggestion !== 'text' && (
           <button
             type="button"
-            className={styles.suggestion}
+            className={suggestionStyles.suggestion}
             onClick={() => {
               actions.edit((form) => {
                 setFieldType(form, uid, suggestion);
               });
             }}
           >
-            Use {typeLabel(suggestion).toLowerCase()}
+            {typeIcon(suggestion)}
+            Switch to {typeLabel(suggestion)}
           </button>
         )}
         <HelpText field={field} actions={actions} readOnly={readOnly} selected={selected} />

@@ -12,11 +12,13 @@ describe('createLocalHost', () => {
   });
 
   it('round-trips a draft through localStorage', async () => {
-    const host = createLocalHost({ Preview });
+    const onChange = vi.fn();
+    const host = createLocalHost({ Preview, onChange });
     expect(await host.load()).toEqual({ draft: null, published: null });
     expect(host.stored()).toBe(false);
     const saved = await host.save(definition, 0);
     expect(saved.revision).toBe(1);
+    expect(onChange).toHaveBeenCalledWith(definition);
     expect(host.stored()).toBe(true);
     const { draft } = await createLocalHost({ Preview }).load();
     expect(draft?.definition).toEqual(definition);

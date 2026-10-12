@@ -13,34 +13,34 @@ export default function ReactPreview({ definition }: { definition: FormDefinitio
   const [round, setRound] = useState(0);
   const [sent, setSent] = useState(false);
   return (
-    <section className={styles.panel} aria-label="Preview">
-      <Text size="sm" tone="muted">
-        Nothing is sent.
-      </Text>
-      {sent ? (
-        <div role="status" className={styles.sent}>
-          <Text weight="medium">Preview only, nothing was sent</Text>
-          <Button
-            icon={<RotateCcw aria-hidden />}
-            onClick={() => {
-              setSent(false);
-              setRound((value) => value + 1);
-            }}
-          >
-            Start over
-          </Button>
-        </div>
-      ) : (
-        <div className={styles.sample} data-fh-theme={dark ? 'dark' : 'light'}>
-          <FormRenderer
-            key={round}
-            definition={definition}
-            onSubmit={() => {
-              setSent(true);
-            }}
-          />
-        </div>
-      )}
-    </section>
+    <>
+      <p className={styles.caption}>Nothing is sent.</p>
+      <section className={styles.panel} aria-label="Preview">
+        {sent ? (
+          <div role="status" className={styles.sent}>
+            <Text weight="medium">Preview only, nothing was sent</Text>
+            <Button
+              icon={<RotateCcw aria-hidden />}
+              onClick={() => {
+                setSent(false);
+                setRound((value) => value + 1);
+              }}
+            >
+              Start over
+            </Button>
+          </div>
+        ) : (
+          <div className={styles.sample} data-fh-theme={dark ? 'dark' : 'light'}>
+            <FormRenderer
+              key={round}
+              definition={definition}
+              onSubmit={() => {
+                setSent(true);
+              }}
+            />
+          </div>
+        )}
+      </section>
+    </>
   );
 }

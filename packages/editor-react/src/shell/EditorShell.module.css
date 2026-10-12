@@ -61,12 +61,16 @@
 
 .layout {
   display: grid;
-  grid-template-areas:
-    'outline'
-    'canvas';
+  grid-template-areas: 'canvas';
   grid-template-columns: minmax(0, 1fr);
   gap: var(--fh-ed-space-5) var(--fh-ed-space-6);
   padding: 0 0 var(--fh-ed-space-12);
+}
+
+.layout[data-stepped] {
+  grid-template-areas:
+    'outline'
+    'canvas';
 }
 
 .outline {

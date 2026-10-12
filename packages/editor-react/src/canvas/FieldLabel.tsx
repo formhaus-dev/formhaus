@@ -51,6 +51,7 @@ export function FieldLabel({ field, actions, readOnly, inputRef, onSelect, onAdd
       label="Field label"
       placeholder="Question"
       size="lg"
+      ring
       readOnly={readOnly}
       rowClassName={styles.label}
       onFocus={onSelect}

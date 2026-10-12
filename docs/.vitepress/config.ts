@@ -14,7 +14,10 @@ export default defineConfig({
   vite: {
     plugins: [llms, templateFiles()],
     resolve: {
-      alias: { '@formhaus/builder': fileURLToPath(new URL('../../packages/builder/src/index.ts', import.meta.url)) },
+      alias: {
+        '@formhaus/builder': fileURLToPath(new URL('../../packages/builder/src/index.ts', import.meta.url)),
+        '@formhaus/editor-react': fileURLToPath(new URL('../../packages/editor-react/dist', import.meta.url))
+      },
       dedupe: ['@formhaus/core', 'vue']
     },
     server: {
@@ -39,6 +42,7 @@ export default defineConfig({
       { text: 'Templates', link: '/templates/', activeMatch: '^/templates/' },
       { text: 'Cloud', link: '/cloud' },
       { text: 'API', link: '/api/definition' },
+      { text: 'Builder', link: '/build' },
       { text: 'Playground', link: '/playground' }
     ],
     sidebar: [
@@ -144,7 +148,8 @@ export default defineConfig({
       {
         text: 'Interactive',
         items: [
-          { text: 'Playground', link: '/playground' },
+          { text: 'Builder', link: '/build' },
+      { text: 'Playground', link: '/playground' },
         ]
       },
       {

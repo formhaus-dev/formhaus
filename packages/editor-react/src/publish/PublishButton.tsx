@@ -9,18 +9,19 @@ import type { usePublish } from './usePublish';
 interface Props {
   label: string;
   hint: string;
+  idleHint: string;
   disabled: boolean;
   compact: boolean;
   state: ReturnType<typeof usePublish>;
 }
 
-export function PublishButton({ label, hint, disabled, state }: Props) {
+export function PublishButton({ label, hint, idleHint, disabled, state }: Props) {
   const store = useEditorStore();
   const blocking = state.problems.filter((problem) => problem.severity === 'error').length;
   const button = (
     <Button
       variant="primary"
-      title={disabled ? 'Nothing to publish yet' : hint}
+      title={disabled ? idleHint : hint}
       aria-disabled={disabled || undefined}
       className={cx(disabled && styles.idle)}
       loading={state.pending}

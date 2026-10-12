@@ -121,19 +121,6 @@
   color: var(--fh-ed-fg-subtle);
 }
 
-.suggestion {
-  align-self: flex-start;
-  min-height: var(--fh-ed-size-control-md);
-  padding: 0 var(--fh-ed-space-2-5);
-  border: 0;
-  border-radius: var(--fh-ed-radius-full);
-  background: var(--fh-ed-accent-soft);
-  color: var(--fh-ed-accent);
-  font: inherit;
-  font-size: var(--fh-ed-font-size-sm);
-  cursor: pointer;
-}
-
 .helper {
   margin: 0;
   color: var(--fh-ed-fg-muted);
