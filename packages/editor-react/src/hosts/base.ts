@@ -7,6 +7,7 @@ export interface HostOptions {
   Preview: ComponentType<{ definition: FormDefinition }>;
   notify?: (notice: Notice) => void;
   onTitle?: (title: string | null) => void;
+  onChange?: (definition: FormDefinition) => void;
 }
 
 export const savedDraft = (definition: FormDefinition, revision: number): SavedDraft => ({
@@ -17,7 +18,7 @@ export const savedDraft = (definition: FormDefinition, revision: number): SavedD
   savedBy: '',
 });
 
-export function baseHost({ Preview, notify = () => undefined, onTitle }: HostOptions) {
+export function baseHost({ Preview, notify = () => undefined, onTitle }: Omit<HostOptions, 'onChange'>) {
   return {
     isNew: true,
     readOnly: false,

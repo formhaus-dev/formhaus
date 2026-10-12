@@ -33,7 +33,7 @@ function browserStorage(): Storage | null {
   }
 }
 
-export function createLocalHost({ key = LOCAL_KEY, storage = browserStorage() ?? undefined, ...options }: LocalHostOptions): EditorHost {
+export function createLocalHost({ key = LOCAL_KEY, storage = browserStorage() ?? undefined, onChange, ...options }: LocalHostOptions): EditorHost {
   const base = baseHost(options);
   let warned = false;
   const attempt = <T>(run: (store: Storage) => T, fallback: T): T => {
@@ -59,6 +59,7 @@ export function createLocalHost({ key = LOCAL_KEY, storage = browserStorage() ??
         return Promise.reject(new Error(error instanceof Error ? error.message : String(error)));
       }
       warned = false;
+      onChange?.(definition);
       return Promise.resolve(draft);
     },
     discard: () => {

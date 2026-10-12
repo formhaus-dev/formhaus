@@ -4,7 +4,6 @@ import { baseHost, savedDraft, type HostOptions } from './base';
 
 export interface MemoryHostOptions extends HostOptions {
   definition?: FormDefinition;
-  onChange?: (definition: FormDefinition) => void;
 }
 
 export function createMemoryHost({ definition, onChange, ...options }: MemoryHostOptions): EditorHost {
