@@ -14,7 +14,7 @@ describe('FormEngine validation and errors', () => {
       id: 'hidden-validation',
       title: 'Hidden',
       submit: { label: 'Submit' },
-      fields: [{
+      fields: [{ key: 'x', type: 'text', label: 'X' }, {
         key: 'hidden',
         type: 'text',
         label: 'Hidden',
@@ -130,17 +130,18 @@ describe('FormEngine validation and errors', () => {
       title: 'Earlier step error',
       submit: { label: 'Submit' },
       steps: [
-        { id: 's1', title: 'One', fields: [{ key: 'x', type: 'text', label: 'X', validation: { required: true }, show: [{ field: 'y', eq: 'yes' }] }] },
+        { id: 's1', title: 'One', fields: [{ key: 'x', type: 'text', label: 'X', validation: { validator: 'notWithY' } }] },
         { id: 's2', title: 'Two', fields: [{ key: 'y', type: 'text', label: 'Y' }] },
       ],
     };
-    const engine = new FormEngine(definition);
+    const validators = { notWithY: (_: unknown, values: Record<string, unknown>) => (values.y === 'yes' ? 'Not with y' : null) };
+    const engine = new FormEngine(definition, { x: 'a' }, { validators });
     await engine.nextStepAsync();
     engine.setValue('y', 'yes');
 
     expect(await engine.submitAsync(() => {})).toBe(false);
     expect(engine.currentStep?.id).toBe('s1');
-    expect(engine.errors.x).toBe('This field is required');
+    expect(engine.errors.x).toBe('Not with y');
   });
 
   it('stays on the last step when its own field is invalid', async () => {

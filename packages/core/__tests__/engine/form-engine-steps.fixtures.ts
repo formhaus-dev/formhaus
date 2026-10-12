@@ -8,7 +8,10 @@ export const multiStepDefinition: FormDefinition = {
     {
       id: 'personal',
       title: 'Personal Info',
-      fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }],
+      fields: [
+        { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
+        { key: 'accountType', type: 'radio', label: 'Account', options: [{ value: 'personal', label: 'Personal' }, { value: 'business', label: 'Business' }] },
+      ],
     },
     {
       id: 'business',
