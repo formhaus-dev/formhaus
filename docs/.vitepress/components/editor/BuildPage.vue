@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { FormDefinition } from '@formhaus/core';
 import { computed, ref } from 'vue';
+import LucideIcon from '../landing/LucideIcon.vue';
 import EditorIsland from './EditorIsland.vue';
+import { launch } from './launch';
 
 const starter: FormDefinition = {
   id: 'untitled-form',
@@ -11,6 +13,8 @@ const starter: FormDefinition = {
 };
 const definition = ref<FormDefinition | null>(null);
 const copied = ref(false);
+const launching = ref(false);
+const failure = ref('');
 const json = computed(() => (definition.value ? `${JSON.stringify(definition.value, null, 2)}\n` : ''));
 
 async function copy() {
@@ -18,6 +22,18 @@ async function copy() {
   await navigator.clipboard.writeText(json.value);
   copied.value = true;
   setTimeout(() => (copied.value = false), 1600);
+}
+
+async function start() {
+  if (!definition.value || launching.value) return;
+  launching.value = true;
+  failure.value = '';
+  try {
+    window.location.assign(await launch(definition.value));
+  } catch (error) {
+    failure.value = error instanceof Error ? error.message : String(error);
+    launching.value = false;
+  }
 }
 
 function download() {
@@ -37,8 +53,8 @@ function download() {
       <div class="build-title">
         <h1>Form builder</h1>
         <p>
-          Build a form, preview it and copy the JSON into <a href="/guide/#formhaus-react">React</a>, <a href="/guide/#formhaus-vue">Vue</a> or your agent. Your draft stays in
-          this browser.
+          Build a form, preview it, then launch it on Formhaus Cloud or copy the JSON for <a href="/guide/#formhaus-react">React</a> and
+          <a href="/guide/#formhaus-vue">Vue</a>. Your draft stays in this browser.
         </p>
       </div>
       <div class="build-actions">
@@ -46,7 +62,17 @@ function download() {
           {{ copied ? 'Copied' : 'Copy JSON' }}
         </button>
         <button type="button" class="build-button" :disabled="!definition" @click="download">Download JSON</button>
+        <button
+          type="button"
+          class="build-button build-primary"
+          title="Opens Formhaus Cloud. Sign in with an email link to keep the form."
+          :disabled="!definition || launching"
+          @click="start"
+        >
+          {{ launching ? 'Opening Cloud…' : 'Launch for free' }}
+        </button>
       </div>
+      <p v-if="failure" class="build-failure" role="alert"><LucideIcon name="circle-alert" />{{ failure }}</p>
     </header>
     <ClientOnly>
       <EditorIsland storage="local" :definition="starter" saved-hint="Saved in this browser" @change="definition = $event" />
@@ -62,6 +88,7 @@ function download() {
 }
 
 .build-head {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -83,8 +110,14 @@ function download() {
   line-height: 20px;
 }
 
+.build-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .build-actions {
   display: flex;
+  flex: none;
   gap: 8px;
 }
 
@@ -104,6 +137,44 @@ function download() {
   background: var(--vp-c-bg-soft);
 }
 
+.build-primary {
+  border-color: var(--vp-c-brand-3);
+  background: var(--vp-c-brand-3);
+  color: var(--vp-c-white);
+}
+
+.build-primary:hover:not(:disabled) {
+  border-color: var(--vp-c-brand-2);
+  background: var(--vp-c-brand-2);
+}
+
+.build-primary:disabled {
+  border-color: var(--vp-c-border);
+  background: var(--vp-c-bg-soft);
+}
+
+.build-failure {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  gap: 6px;
+  z-index: 20;
+  max-width: 420px;
+  margin: 0;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-danger-1);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.build-failure :deep(svg) {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+}
+
 .build-button:disabled {
   color: var(--vp-c-text-3);
   cursor: default;
@@ -117,6 +188,22 @@ function download() {
   .build-head {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .build-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .build-primary {
+    grid-column: 1 / -1;
+    order: -1;
+  }
+
+  .build-failure {
+    position: static;
+    max-width: none;
+    margin-top: -8px;
   }
 }
 </style>
