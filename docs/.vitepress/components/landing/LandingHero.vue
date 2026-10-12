@@ -2,7 +2,7 @@
 import CopyLine from './CopyLine.vue';
 import LucideIcon from './LucideIcon.vue';
 
-const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework'];
+const mcpCommand = 'claude mcp add --transport http formhaus https://api.formhaus.dev/mcp';
 </script>
 
 <template>
@@ -12,15 +12,16 @@ const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework
     </h1>
     <p class="hero__lead">
       One JSON file runs your React and Vue forms, Figma mockups and AI agents.
+      Your agent publishes it to Formhaus Cloud and hands you a link, an embed and a webhook.
     </p>
     <div class="hero__actions">
-      <a class="hero__button hero__button--brand" href="/guide/">Get started <LucideIcon name="arrow-right" /></a>
-      <a class="hero__button" href="/playground">Playground</a>
+      <a class="hero__button hero__button--brand" href="/cloud/quickstart">Publish with your AI agent <LucideIcon name="arrow-right" /></a>
+      <a class="hero__button" href="/guide/">Use the library</a>
     </div>
-    <CopyLine class="hero__install" command="npm i @formhaus/core @formhaus/react" label="Copy install command" />
-    <ul class="hero__facts" aria-label="Key facts">
-      <li v-for="fact in facts" :key="fact">{{ fact }}</li>
-    </ul>
+    <CopyLine class="hero__install" :command="mcpCommand" label="Copy MCP setup command" />
+    <p class="hero__hint">
+      Then ask: “Make me a waitlist form and give me the link.” No account needed for the first form.
+    </p>
   </section>
 </template>
 
@@ -112,36 +113,18 @@ const facts = ['MIT', 'Core 6.2 KB gzipped', 'Zero dependencies', 'Any framework
 }
 
 .hero__install {
-  width: 420px;
+  width: 680px;
   margin: 28px auto 0;
   text-align: left;
 }
 
-.hero .hero__facts {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 8px 24px;
-  margin: 24px 0 0;
-  padding: 0;
-  list-style: none;
+.hero .hero__hint {
+  max-width: 680px;
+  margin: 12px auto 0;
   font-size: 14px;
+  line-height: 1.6;
   color: var(--vp-c-text-2);
-}
-
-.hero .hero__facts li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0;
-}
-
-.hero .hero__facts li::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--vp-c-brand-2);
+  text-wrap: pretty;
 }
 
 @media (min-width: 640px) {

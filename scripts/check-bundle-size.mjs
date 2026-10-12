@@ -2,16 +2,7 @@ import { build } from 'esbuild';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
-const BUDGETS = {
-  core: 11100,
-  react: 5550,
-  vue: 7250,
-  'core/cloud': 2300,
-  'core/internal': 6650,
-  'react/cloud': 1450,
-  'vue/cloud': 2050,
-  'core/style.css': 2570,
-};
+const BUDGETS = JSON.parse(readFileSync(new URL('./bundle-budgets.json', import.meta.url), 'utf8'));
 
 const violations = [];
 for (const [name, budget] of Object.entries(BUDGETS)) {

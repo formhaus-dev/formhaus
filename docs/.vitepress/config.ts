@@ -4,7 +4,7 @@ import { head, transformHead } from './head'
 import { transformPageData } from './templates'
 import { llms } from './llms'
 import { templateFiles } from './template-files'
-import { siteUrl } from './site'
+import { coreBudgetKB, siteUrl } from './site'
 import { fetchStarCount, formatStarCount } from './stars'
 
 const starCount = await fetchStarCount()
@@ -157,6 +157,6 @@ export default defineConfig({
     footer: {
       message: 'Formhaus is MIT licensed. <a href="/legal/">Legal</a>'
     },
-    ...{ githubStars }
+    ...{ githubStars, coreBudgetKB }
   }
 })

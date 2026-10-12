@@ -15,6 +15,8 @@ An agent publishes a definition with `publish_form` or `POST /v1/forms`; a human
 claude mcp add --transport http formhaus https://api.formhaus.dev/mcp
 ```
 
+Then ask: "Make me a waitlist form and give me the link." The first `publish_form` needs no key or account. Cursor and other MCP clients use the same URL as a remote HTTP server.
+
 With a key, add the header. The MCP client sends it; a tool argument cannot.
 
 ```bash
@@ -36,7 +38,7 @@ In a `.mcp.json` file, refer to the environment variable so the file holds no se
 }
 ```
 
-The remote server has four tools: `publish_form`, `list_forms`, `get_submissions`, `update_form_settings`. See [MCP reference](/cloud/mcp).
+The remote server has seven tools: `publish_form`, `list_forms`, `get_submissions`, `update_form_settings`, `get_webhook`, `reveal_webhook_secret` and `delete_form`. See [MCP reference](/cloud/mcp).
 
 ### Local MCP server
 
