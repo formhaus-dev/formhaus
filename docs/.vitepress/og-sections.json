@@ -1,12 +1,12 @@
 {
   "home": {
     "title": "The form framework for the AI era",
-    "subtitle": "Describe a form, share the link, collect responses. Open source for React and Vue, with a hosted backend."
+    "subtitle": "Describe a form, share the link, collect responses. Open source for React, Vue or any framework, with a hosted backend."
   },
   "guide": {
     "eyebrow": "Guide",
     "title": "Forms from one JSON definition",
-    "subtitle": "Fields, conditions, validation, steps and branching routes in React and Vue."
+    "subtitle": "Fields, conditions, validation, steps and branching routes in React, Vue or any framework."
   },
   "api": {
     "eyebrow": "Reference",

@@ -22,16 +22,18 @@ h1 { margin: 0; font-size: 68px; line-height: 1.06; font-weight: 700; letter-spa
   overflow: hidden; }
 .panel--clip { height: 620px; -webkit-mask-image: linear-gradient(#000 78%, transparent 96%); }
 .panel img { display: block; width: 100%; }
-.frame { position: absolute; left: 672px; top: 64px; width: 600px; height: 620px; border-radius: 20px 0 0 0;
-  background-repeat: no-repeat; -webkit-mask-image: linear-gradient(#000 80%, transparent 97%); }
+.bar { display: flex; align-items: center; gap: 12px; margin: -28px -32px 20px; padding: 12px 18px; background: #fafafa;
+  border-bottom: 1px solid #e4e4e7; }
+.dots { display: flex; gap: 6px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: #d4d4d8; }
+.address { flex: 1; text-align: center; margin-right: 48px; font-size: 15px; color: #52525b; }
 `
 
-export function card({ font, eyebrow, title, subtitle, meta, form, poster }) {
+export function card({ font, eyebrow, title, subtitle, meta, form, address }) {
+  const bar = address ? `<div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="address">${escape(address)}</span></div>` : ''
   const visual = form
-    ? `<div class="panel${form.clip ? ' panel--clip' : ''}"><img src="${form.src}" alt=""></div>`
-    : poster
-      ? `<div class="frame" style="background-image:url(${poster.url});${poster.style}"></div>`
-      : ''
+    ? `<div class="panel${form.clip ? ' panel--clip' : ''}">${bar}<img src="${form.src}" alt=""></div>`
+    : ''
   return `<!doctype html><html><head><meta charset="utf-8"><style>${styles(font)}</style></head><body>
 <div class="card${visual ? ' card--visual' : ''}">
   <img class="logo" src="/brand/logo-full.svg" alt="">

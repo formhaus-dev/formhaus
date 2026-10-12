@@ -58,13 +58,10 @@ await new Promise((done) => server.listen(0, '127.0.0.1', done))
 const origin = `http://127.0.0.1:${server.address().port}`
 const font = `/assets/${readdirSync(join(dist, 'assets')).find((name) => /^inter-roman-latin\.[^.]+\.woff2$/.test(name))}`
 
-const poster = {
-  url: '/media/formhaus-hero-poster-2560.jpg',
-  style: 'background-size: 1280px auto; background-position: -64px -180px;',
-}
+const home = { slug: 'contact-form', address: 'f.formhaus.dev/k3Fq9xT2bW' }
 
 const jobs = [
-  ...Object.entries(sections).map(([name, section]) => ({ name, ...section, poster: name === 'home' ? poster : undefined })),
+  ...Object.entries(sections).map(([name, section]) => ({ name, ...section, ...(name === 'home' ? home : {}) })),
   ...templates.map((template) => ({
     name: `templates/${template.slug}`,
     slug: template.slug,
@@ -80,18 +77,18 @@ const options = { colorScheme: 'light', reducedMotion: 'reduce' }
 const cards = await browser.newPage({ ...options, viewport: { width: 1200, height: 630 } })
 const forms = await browser.newPage({ ...options, viewport: { width: 520, height: 2400 }, deviceScaleFactor: 2 })
 
-async function formShot(slug) {
+async function formShot(slug, chrome = 0) {
   await forms.goto(`${origin}/templates/${slug}`, { waitUntil: 'networkidle' })
   const form = forms.locator('.tpl-preview__form')
   await form.locator('input, select, textarea').first().waitFor()
   await forms.evaluate(() => document.activeElement?.blur())
   const shot = await form.screenshot({ animations: 'disabled', caret: 'hide' })
   const height = (404 * shot.readUInt32BE(20)) / shot.readUInt32BE(16)
-  return { src: `data:image/png;base64,${shot.toString('base64')}`, clip: height + 56 > 566 - 24 }
+  return { src: `data:image/png;base64,${shot.toString('base64')}`, clip: 64 + 28 + chrome + height > 630 - 8 }
 }
 
 async function render(job) {
-  const form = job.slug ? await formShot(job.slug) : undefined
+  const form = job.slug ? await formShot(job.slug, job.address ? 38 : 0) : undefined
   generated.set('/__og', card({ ...job, font, form }))
   await cards.goto(`${origin}/__og`, { waitUntil: 'networkidle' })
   await cards.evaluate(() => document.fonts.ready)

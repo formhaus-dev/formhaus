@@ -36,7 +36,7 @@ export function ogImage(relativePath: string, template?: { slug: string; title: 
   return {
     url: `${siteUrl}/og/${name}.jpg`,
     alt: name === 'home'
-      ? `${siteName}: ${section.title}, next to an agent chat that publishes a form`
+      ? `${siteName}: ${section.title}, next to a published contact form at its link`
       : `${siteName} ${section.eyebrow}: ${section.title}`,
   }
 }
