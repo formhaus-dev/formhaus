@@ -17,11 +17,11 @@ import SectionCta from '../landing/SectionCta.vue';
         </article>
         <article>
           <h3>Do I need a developer?</h3>
-          <p>No. Build in the browser or ask Claude, then share the link.</p>
+          <p>No. Build in the browser or ask your AI agent, then share the link.</p>
         </article>
         <article>
-          <h3>How do I connect Claude?</h3>
-          <p>Add the Formhaus connector in Claude, then ask for a form. The <a class="lp-link" href="/cloud/quickstart">setup guide</a> has the steps.</p>
+          <h3>How do I connect my AI agent?</h3>
+          <p>Add the Formhaus connector in Claude or another assistant that supports connectors, then ask for a form. The <a class="lp-link" href="/cloud/quickstart">setup guide</a> has the steps.</p>
         </article>
         <article>
           <h3>How do I cancel?</h3>

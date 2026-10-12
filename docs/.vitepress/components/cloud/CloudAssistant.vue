@@ -5,25 +5,25 @@ import SectionCta from '../landing/SectionCta.vue';
 
 const props = withDefaults(defineProps<{ variant?: 'make' | 'summary' }>(), { variant: 'make' });
 const copy = {
-  make: { title: 'Make forms with Claude', lead: 'Describe the form you need and get a link back.', ask: 'Make a webinar signup form' },
-  summary: { title: 'Ask Claude about your responses', lead: 'Find common themes and hear what people need.', ask: "Make a webinar signup form and send me today's responses" },
+  make: { title: 'Make forms with your AI agent', lead: 'Describe the form you need and get a link back.', ask: 'Make a webinar signup form' },
+  summary: { title: 'Ask your AI agent about responses', lead: 'Find common themes and hear what people need.', ask: "Make a webinar signup form and send me today's responses" },
 }[props.variant];
 </script>
 
 <template>
   <LandingSection id="assistant" :title="copy.title" :lead="copy.lead">
-    <LandingFrame class="conversation" label="Claude">
+    <LandingFrame class="conversation" label="AI Agent">
       <div class="chat">
         <p class="chat-user">{{ copy.ask }}</p>
         <div class="chat-reply">
           <p>Your webinar signup form is ready.<br /><span class="form-link">https://f.formhaus.dev/spring-webinar</span></p>
           <p v-if="props.variant === 'summary'">38 people signed up today. Most are in marketing (21) and sales (9). 27 will join live, 11 want the replay. Top question: pricing for small teams.</p>
         </div>
-        <div class="chat-input" aria-hidden="true">Reply to Claude</div>
+        <div class="chat-input" aria-hidden="true">Ask your agent anything</div>
       </div>
     </LandingFrame>
-    <p class="connector-note">Works through the Formhaus connector (MCP) in Claude and other assistants.</p>
-    <SectionCta href="/cloud/quickstart" label="Connect Claude" />
+    <p class="connector-note">Works with Claude and other AI assistants that support connectors.</p>
+    <SectionCta href="/cloud/quickstart" label="Connect your AI agent" />
   </LandingSection>
 </template>
 
