@@ -112,8 +112,8 @@ export class VisibilityState {
     for (let index = 0; index < queue.length; index++) {
       const key = queue[index];
       queued.delete(key);
-      this.clearHiddenFields(this.fieldDependents.get(key), values, clear);
-      this.clearHiddenSteps(this.stepDependents.get(key), values, clear);
+      this.clearHiddenFields(this.fieldDependents.get(key), values, errors, clear);
+      this.clearHiddenSteps(this.stepDependents.get(key), values, errors, clear);
     }
     return cleared;
   }
@@ -163,23 +163,25 @@ export class VisibilityState {
   private clearHiddenFields(
     fields: Iterable<FormField> | undefined,
     values: Record<string, unknown>,
+    errors: Record<string, string>,
     clear: (key: string) => void,
   ): void {
     for (const field of fields ?? []) {
       if (!this.onPath(field, values)) continue;
-      if (isVisible(field, this.conditionValues(values)) || values[field.key] === undefined) continue;
+      if (isVisible(field, this.conditionValues(values)) || (values[field.key] === undefined && errors[field.key] === undefined)) continue;
       clear(field.key);
     }
   }
   private clearHiddenSteps(
     steps: Iterable<FormStep> | undefined,
     values: Record<string, unknown>,
+    errors: Record<string, string>,
     clear: (key: string) => void,
   ): void {
     for (const step of steps ?? []) {
       if (isVisible(step, this.conditionValues(values))) continue;
       for (const field of step.fields) {
-        if (values[field.key] === undefined) continue;
+        if (values[field.key] === undefined && errors[field.key] === undefined) continue;
         clear(field.key);
       }
     }

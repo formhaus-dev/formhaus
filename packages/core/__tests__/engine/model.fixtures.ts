@@ -15,11 +15,11 @@ export const modelDefinition: FormDefinition = {
       { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
       { key: 'confirm', type: 'text', label: 'Confirm', validation: { matchField: 'name' } },
     ] },
-    { id: 'extra', title: '', show: [{ field: 'name', eq: 'vip' }], fields: [
-      { key: 'perk', type: 'text', label: 'Perk' },
+    { id: 'extra', title: '', show: [{ field: 'name', in: ['vip', 'Ada'] }], skip: { label: 'Skip' }, fields: [
+      { key: 'perk', type: 'text', label: 'Perk', show: [{ field: 'name', notIn: ['Ada'] }], validation: { required: true } },
     ] },
     { id: 'review', title: '', fields: [
-      { key: 'note', type: 'text', label: 'Note', show: [{ field: 'agree', eq: true }] },
+      { key: 'note', type: 'text', label: 'Note', showAny: [{ field: 'agree', eq: true }, { field: 'kind', in: ['business'] }] },
     ] },
   ],
 };
@@ -37,7 +37,7 @@ const fieldValues: Record<string, unknown[]> = {
 export type ModelCommand =
   | { type: 'set'; key: string; value: unknown }
   | { type: 'server' | 'jump' | 'validateOne'; key: string }
-  | { type: 'next' | 'back' | 'submit' | 'reset' | 'cancel' }
+  | { type: 'next' | 'back' | 'skip' | 'submit' | 'reset' | 'cancel' }
   | { type: 'settle'; index: number; outcome: 'allow' | 'deny' | 'fail' };
 
 const setCommand = fc.constantFrom(...Object.keys(fieldValues)).chain((key) =>
@@ -48,7 +48,7 @@ export const commandArbitrary: fc.Arbitrary<ModelCommand> = fc.oneof(
   { arbitrary: fc.tuple(fc.constantFrom('server' as const, 'jump' as const, 'validateOne' as const), fc.constantFrom(...Object.keys(fieldValues)))
     .map(([type, key]): ModelCommand => ({ type, key })), weight: 2 },
   { arbitrary: fc.constantFrom<ModelCommand>(
-    { type: 'next' }, { type: 'back' }, { type: 'submit' }, { type: 'reset' },
+    { type: 'next' }, { type: 'back' }, { type: 'skip' }, { type: 'submit' }, { type: 'reset' },
     { type: 'cancel' },
   ), weight: 3 },
   { arbitrary: fc.record({
