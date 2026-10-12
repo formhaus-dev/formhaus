@@ -5,6 +5,7 @@ import { result, withAgentKeyInstructions, withNotice } from './cloud-result';
 import { registerSettingsTool } from './cloud-settings-tool';
 import { LIST_DESCRIPTION, PUBLISH_DESCRIPTION, SUBMISSIONS_DESCRIPTION } from './cloud-text';
 import { definitionInput, parseDefinition } from './definition-input';
+import { cloudOutput } from './outputs';
 
 export function registerCloudTools(server: McpServer): void {
   server.registerTool('publish_form', {
@@ -17,6 +18,7 @@ export function registerCloudTools(server: McpServer): void {
       success_message: z.string().max(500).optional().describe('Text shown after a successful submission on the hosted page and embed.'),
       redirect_url: z.string().optional().describe('http(s) URL to open after a successful submission instead of the success message. Empty string removes it.'),
     },
+    outputSchema: cloudOutput,
     annotations: { readOnlyHint: false, openWorldHint: true },
   }, async ({ definition, ...rest }) => {
     const parsed = parseDefinition(definition);
@@ -28,6 +30,7 @@ export function registerCloudTools(server: McpServer): void {
   server.registerTool('list_forms', {
     title: 'List forms',
     description: LIST_DESCRIPTION,
+    outputSchema: cloudOutput,
     annotations: { readOnlyHint: true, openWorldHint: true },
   }, async () => result(await cloudRequest('/v1/forms', { auth: 'required' })));
 
@@ -39,6 +42,7 @@ export function registerCloudTools(server: McpServer): void {
       limit: z.number().int().min(1).max(100).optional().describe('Page size from 1 to 100. Default 50.'),
       cursor: z.string().optional().describe('next_cursor from the previous call. Omit for the newest submissions.'),
     },
+    outputSchema: cloudOutput,
     annotations: { readOnlyHint: true, openWorldHint: true },
   }, async ({ form_id, limit, cursor }) => {
     const query = new URLSearchParams();

@@ -22,7 +22,7 @@ describe('example_definitions', () => {
     for (const { id } of listed.examples) {
       const result = exampleDefinitionsTool({ id });
       if (!('definition' in result)) throw new Error(`missing ${id}`);
-      expect((await validateDefinitionTool({ definition: result.definition })).errors).toEqual([]);
+      expect((await validateDefinitionTool({ definition: result.definition })).issues).toEqual([]);
     }
   });
 

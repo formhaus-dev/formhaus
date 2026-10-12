@@ -10,7 +10,8 @@ export interface ToolOutcome {
 }
 
 export function result({ ok, body }: ToolOutcome) {
-  return { isError: !ok, content: [{ type: 'text' as const, text: JSON.stringify(body, null, 2) }] };
+  const structured = isRecord(body) ? body : { value: body };
+  return { isError: !ok, content: [{ type: 'text' as const, text: JSON.stringify(body, null, 2) }], structuredContent: structured };
 }
 
 export function withNotice({ ok, body }: ToolOutcome) {

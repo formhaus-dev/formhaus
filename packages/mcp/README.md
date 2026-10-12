@@ -36,14 +36,15 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 
 | Tool | Input | Output |
 |------|-------|--------|
-| `validate_definition` | `definition` (object or JSON string) | `{ valid, errors, warnings }` |
-| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, validation `errors`, `wouldSubmit`, `submitValues` |
+| `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
+| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
 | `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, adapters |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
 | `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `dashboard_url`, `warnings` |
 | `list_forms` | none | Forms the API key reaches with status, version, submission count and endpoint |
 | `get_submissions` | `form_id`, optional `limit`, `cursor` | `submissions` and `next_cursor` |
-| `update_form_settings` | `form_id`, optional `webhook_url`, `notify_email`, `notify_mode`, `success_message`, `redirect_url`, `status`, `reveal_secret` | `form_id`, `status`, `success_message`, `redirect_url`, `notify_mode`, `webhook_url`, `webhook_secret` |
+| `update_form_settings` | `form_id`, optional `webhook_url`, `notify_mode`, `success_message`, `redirect_url`, `status` | `form_id`, `status`, `success_message`, `redirect_url`, `notify_mode`, `webhook_url`, masked `webhook_secret` |
+| `get_webhook` | `form_id`, optional `reveal_secret` | `url` and `secret`, masked unless `reveal_secret` is `true` |
 
 `publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call Formhaus Cloud at `https://api.formhaus.dev`. The last three need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set. An account key (`fh_live_...`) reaches every form and all four tools. An agent key (`fh_agent_...`, returned once by the first keyless `publish_form`) reaches only the forms it created, and `update_form_settings` needs an account key. The server reads `FORMHAUS_API_KEY` from its own environment, not from the project `.env`. Add it to the `env` of the formhaus server in your MCP client config (for example `.mcp.json` with `${FORMHAUS_API_KEY}` and the value in your shell or a gitignored `.env` your client loads), then restart the server.
 

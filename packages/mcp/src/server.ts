@@ -6,12 +6,13 @@ import { registerCloudTools } from './cloud-tools';
 import { definitionInput } from './definition-input';
 import { exampleDefinitionsTool } from './examples';
 import { simulatePathTool } from './simulate';
+import { capabilitiesOutput, examplesOutput, simulationOutput, validationOutput } from './outputs';
 import { validateDefinitionTool } from './validate';
 
 const CAPABILITIES_URI = 'formhaus://capabilities';
 
-function json(value: unknown) {
-  return { content: [{ type: 'text' as const, text: JSON.stringify(value, null, 2) }] };
+function json(value: object) {
+  return { content: [{ type: 'text' as const, text: JSON.stringify(value, null, 2) }], structuredContent: { ...value } as Record<string, unknown> };
 }
 
 export function createServer(): McpServer {
@@ -19,29 +20,28 @@ export function createServer(): McpServer {
 
   server.registerTool('validate_definition', {
     title: 'Validate a Formhaus definition',
-    description: 'Checks a Formhaus form definition against the JSON Schema and the engine. Returns { valid, errors, warnings }. Errors make the engine reject the definition; warnings point to likely mistakes such as conditions on unknown fields, invalid regex, circular conditions, branches that fall through or next: false without an autoAdvance radio.',
+    description: 'Checks a Formhaus form definition against the JSON Schema and the engine. Returns { valid, issues }. Each issue has code, severity ("error" or "warning"), a JSON pointer path, message and hint. Errors make the engine reject the definition, such as a condition with zero or two operators, a condition on a later step, a duplicate key or a route to an earlier step. Warnings point to likely mistakes, such as a condition value that is not an option, a select without options or next: false without an autoAdvance radio. Fix each error at its path and call again.',
     inputSchema: { definition: definitionInput },
-    outputSchema: { valid: z.boolean(), errors: z.array(z.string()), warnings: z.array(z.string()) },
+    outputSchema: validationOutput,
     annotations: { readOnlyHint: true },
-  }, async (input) => {
-    const report = validateDefinitionTool(input);
-    return { ...json(report), structuredContent: { ...report } };
-  });
+  }, async (input) => json(validateDefinitionTool(input)));
 
   server.registerTool('simulate_path', {
     title: 'Simulate a path through a form',
-    description: 'Runs a headless FormEngine. answers are applied as initial values, then actions are pressed in order like a user would: next is refused on next: false steps until an autoAdvance radio is answered, skip only works on steps with a skip action and submits on the last step. Without actions it presses Next until the last step or a blocking error. Custom validators, onStepValidate and lifecycle hooks are not run. Returns the active step path (visited, skipped, visible fields), a trace of each action with errors or a reason when it did not move, validation errors for visited steps only, wouldSubmit and the submit payload. Use it to check branching, routes, skip and conditional fields.',
+    description: 'Runs a headless FormEngine. answers are applied as initial values, then actions are pressed in order like a user would: next is refused on next: false steps until an autoAdvance radio is answered, skip only works on steps with a skip action and submits on the last step. Without actions it presses Next until the last step or a blocking error. Custom validators, onStepValidate and lifecycle hooks are not run. When the definition has errors, returns ok: false and the same validation issues as validate_definition. Otherwise returns the active step path (visited, skipped, visible fields), a trace of each action with errors or a reason when it did not move, validation errors for visited steps only, wouldSubmit and the submit payload. Use it to check branching, routes, skip and conditional fields.',
     inputSchema: {
       definition: definitionInput,
       answers: z.record(z.string(), z.unknown()).optional().describe('Field values keyed by field key.'),
       actions: z.array(z.enum(['next', 'back', 'skip'])).optional().describe('Navigation actions applied in order.'),
     },
+    outputSchema: simulationOutput,
     annotations: { readOnlyHint: true },
   }, async (input) => json(await simulatePathTool(input)));
 
   server.registerTool('capabilities', {
     title: 'Formhaus capabilities',
     description: 'Lists what a Formhaus definition supports: field types, field props, validation rules, condition operators, step and route semantics, actions and adapters.',
+    outputSchema: capabilitiesOutput,
     annotations: { readOnlyHint: true },
   }, async () => json(capabilitiesTool()));
 
@@ -49,6 +49,7 @@ export function createServer(): McpServer {
     title: 'Example definitions',
     description: 'Without id, lists the bundled example definitions. With id, returns that definition.',
     inputSchema: { id: z.string().optional().describe('Example id from the list.') },
+    outputSchema: examplesOutput,
     annotations: { readOnlyHint: true },
   }, async (input) => json(exampleDefinitionsTool(input)));
 

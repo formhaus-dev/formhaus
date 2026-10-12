@@ -53,18 +53,19 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 
 | Tool | Input | Output |
 |------|-------|--------|
-| `validate_definition` | `definition` (object or JSON string) | `{ valid, errors, warnings }` |
-| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, validation `errors`, `wouldSubmit`, `submitValues` |
+| `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
+| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
 | `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, adapters |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
 | `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `version`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet`, `dashboard_url`, `warnings`; for unclaimed forms `claim_url`, `expires_at`; with a new agent key `agent_key`, `agent_key_notice` and, when `FORMHAUS_API_KEY` is not set, `agent_key_instructions` |
 | `list_forms` | none | Forms the key reaches with status, version, submission count and endpoint |
 | `get_submissions` | `form_id`, optional `limit`, `cursor` | `submissions` and `next_cursor` |
-| `update_form_settings` | `form_id`, optional `webhook_url`, `notify_mode`, `success_message`, `redirect_url`, `status`, `reveal_secret` | The form settings |
+| `update_form_settings` | `form_id`, optional `webhook_url`, `notify_mode`, `success_message`, `redirect_url`, `status` | The form settings |
+| `get_webhook` | `form_id`, optional `reveal_secret` | The webhook URL and signing secret, masked unless `reveal_secret` is `true` |
 
-`publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, `update_form_settings` needs an `fh_live_` key, and `publish_form` uses the key when set. `FORMHAUS_API_BASE` overrides the API origin. See [Cloud MCP reference](/cloud/mcp) for keys, results and errors.
+`publish_form`, `list_forms`, `get_submissions`, `update_form_settings` and `get_webhook` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, `update_form_settings` and `get_webhook` need an `fh_live_` key, and `publish_form` uses the key when set. `FORMHAUS_API_BASE` overrides the API origin. See [Cloud MCP reference](/cloud/mcp) for keys, results and errors.
 
-Errors come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or duplicate step ids. Warnings come from `checkDefinition()` and point to likely mistakes.
+Issues with `severity: "error"` come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or a condition with two operators. Warnings point to likely mistakes. Issue codes are listed in the [specification](/spec#definition-checks). Every tool declares an `outputSchema` and returns `structuredContent`.
 
 `simulate_path` applies `answers` as initial values, then presses the actions in order. Without `actions` it presses Next until the last step or the first blocking error. Next is refused on `next: false` steps until an autoAdvance radio is answered. Skip works only on steps with `skip` and submits on the last step. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run.
 
