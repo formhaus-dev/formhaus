@@ -53,8 +53,8 @@ function download() {
       <div class="build-title">
         <h1>Form builder</h1>
         <p>
-          Build a form, preview it, then launch it on Formhaus Cloud or copy the JSON for <a href="/guide/#formhaus-react">React</a> and
-          <a href="/guide/#formhaus-vue">Vue</a>. Your draft stays in this browser.
+          Build a form, preview it, then launch it on Formhaus Cloud or copy the JSON for <a href="/guide/#formhaus-react">React</a>,
+          <a href="/guide/#formhaus-vue">Vue</a> or <a href="/guide/#install">any framework</a>. Your draft stays in this browser.
         </p>
       </div>
       <div class="build-actions">
@@ -92,7 +92,7 @@ function download() {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 16px;
+  gap: 16px 32px;
   margin-bottom: 24px;
 }
 
@@ -104,6 +104,7 @@ function download() {
 }
 
 .build-title p {
+  max-width: 60ch;
   margin: 4px 0 0;
   color: var(--vp-c-text-2);
   font-size: 14px;
