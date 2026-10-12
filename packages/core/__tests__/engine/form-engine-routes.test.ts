@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
-import { validateDefinition } from '../../src';
+import { checkDefinition } from '../../src';
 import { routedDefinition } from './form-engine-routes.fixtures';
 
 describe('declarative step routes', () => {
@@ -87,7 +87,7 @@ describe('declarative step routes', () => {
     const definition = routedDefinition();
     definition.steps![1].routes = [{ to }];
     expect(() => new FormEngine(definition)).toThrow(/route/i);
-    expect(validateDefinition(definition).some((warning) => /route/i.test(warning))).toBe(true);
+    expect(checkDefinition(definition).map((issue) => issue.code)).toContain('route-target');
   });
 
   it('rejects future and missing predicate fields and duplicate step ids', () => {
@@ -98,7 +98,7 @@ describe('declarative step routes', () => {
     expect(() => new FormEngine(definition)).toThrow(/route/i);
     definition.steps![0].routes![0].show = [];
     definition.steps![1].id = 'kind';
-    expect(() => new FormEngine(definition)).toThrow('Duplicate step id "kind".');
+    expect(() => new FormEngine(definition)).toThrow('/steps/1/id: step id "kind" is already used by /steps/0.');
   });
 
   it('drops pending validation when changing an answer changes the path', async () => {
@@ -116,11 +116,15 @@ describe('declarative step routes', () => {
 
   it('warns when a branch falls through into its sibling branch', () => {
     const definition = routedDefinition();
-    expect(validateDefinition(definition).filter((warning) => /sibling/.test(warning))).toEqual([]);
+    expect(checkDefinition(definition).filter((issue) => issue.code === 'route-fallthrough')).toEqual([]);
     delete definition.steps![1].routes;
-    expect(validateDefinition(definition)).toContain(
-      'Route branch "business" from "kind" continues into sibling branch "personal". Add an unconditional route where it should continue.',
-    );
+    expect(checkDefinition(definition)).toContainEqual({
+      code: 'route-fallthrough',
+      severity: 'warning',
+      path: '/steps/1',
+      message: '/steps/1: branch "business" from "kind" continues into the sibling branch "personal". Add an unconditional route on "business" to the step where the branches meet.',
+      hint: 'Add an unconditional route on "business" to the step where the branches meet.',
+    });
     expect(() => new FormEngine(definition)).not.toThrow();
   });
 

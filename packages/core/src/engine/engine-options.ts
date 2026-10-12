@@ -1,3 +1,4 @@
+import type { DefinitionIssue } from '../definition-validation';
 import type { ValidatorFn } from '../validation';
 
 export type StepValidateFn = (
@@ -25,4 +26,5 @@ export interface FormEngineOptions {
   onAfterSubmit?: SubmitFn;
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
+  onWarning?: (issue: DefinitionIssue) => void;
 }

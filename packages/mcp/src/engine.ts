@@ -1,20 +1,14 @@
-import { FormEngine, type FormDefinition } from '@formhaus/core';
+import { FormDefinitionError, FormEngine, type FormDefinition } from '@formhaus/core';
 
 export type EngineResult =
-  | { ok: true; engine: FormEngine; warnings: string[] }
+  | { ok: true; engine: FormEngine }
   | { ok: false; errors: string[] };
 
-const PREFIX = '[FormEngine] ';
-
 export function createEngine(definition: FormDefinition, values?: Record<string, unknown>): EngineResult {
-  const warnings: string[] = [];
-  const warn = console.warn;
-  console.warn = (message: unknown) => { warnings.push(String(message).replace(PREFIX, '')); };
   try {
-    return { ok: true, engine: new FormEngine(definition, values), warnings };
+    return { ok: true, engine: new FormEngine(definition, values, { onWarning: () => {} }) };
   } catch (error) {
-    return { ok: false, errors: (error instanceof Error ? error.message : String(error)).split('\n') };
-  } finally {
-    console.warn = warn;
+    if (error instanceof FormDefinitionError) return { ok: false, errors: error.issues.map((issue) => issue.message) };
+    return { ok: false, errors: [error instanceof Error ? error.message : String(error)] };
   }
 }

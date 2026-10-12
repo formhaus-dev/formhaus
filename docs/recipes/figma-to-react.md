@@ -60,7 +60,7 @@ To use the components the designs were drawn with, pass them through the `compon
 - The flow map and prototype come from `routes`. The radio with `autoAdvance` links each option to the step its route picks.
 - **Update form** keeps step positions you moved on the canvas, redraws the arrows and rewires the prototype.
 - The plugin editor keeps conditions, routes and validation rules it does not show, so a round trip through Figma does not drop logic.
-- Run `validateDefinition()` from `@formhaus/core` in CI, or the MCP server's `validate_definition`, on JSON copied from Figma before it ships.
+- Run `checkDefinition()` from `@formhaus/core` in CI, or the MCP server's `validate_definition`, on JSON copied from Figma before it ships.
 
 ## Related
 

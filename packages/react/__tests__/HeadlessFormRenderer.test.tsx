@@ -140,3 +140,12 @@ describe('FormRenderer built-in fallbacks', () => {
     expect(onCancel).toHaveBeenCalledOnce();
   });
 });
+
+describe('definition warnings', () => {
+  it('passes onWarning to the engine', () => {
+    const onWarning = vi.fn();
+    const definition: FormDefinition = { id: 'w', title: 'W', submit: { label: 'Go' }, fields: [{ key: 'a', type: 'txt', label: 'A' }] };
+    render(<FormRenderer definition={definition} onSubmit={() => {}} onWarning={onWarning} components={{ txt: CustomText }} />);
+    expect(onWarning.mock.calls.map(([issue]) => issue.code)).toEqual(['unknown-field-type']);
+  });
+});

@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
-import { validateDefinition } from '../../src/definition-validation';
+import { checkDefinition } from '../../src/definition-validation';
 import { validateField } from '../../src/validation';
 import { evaluateCondition } from '../../src/visibility';
 import type { FormDefinition, FormStep } from '../../src/types';
@@ -18,8 +18,9 @@ afterEach(() => { vi.restoreAllMocks(); });
 describe('definition checks', () => {
   it('warns that the engine rejects fields and steps together', () => {
     const definition = { ...form([{ id: 'a', title: '', fields: [text('a')] }]), fields: [text('b')] };
-    expect(validateDefinition(definition)[0]).toBe('FormEngine rejects a definition with both "fields" and "steps".');
-    expect(() => new FormEngine(definition)).toThrow('FormEngine rejects a definition with both "fields" and "steps".');
+    const message = '/: the definition has both "fields" and "steps". Move the top-level fields into a step, or remove "steps".';
+    expect(checkDefinition(definition)[0].message).toBe(message);
+    expect(() => new FormEngine(definition)).toThrow(message);
   });
 
   it('rejects duplicate step ids without routes', () => {
@@ -27,22 +28,23 @@ describe('definition checks', () => {
       { id: 'a', title: '', fields: [text('x')] },
       { id: 'a', title: '', fields: [text('y')] },
     ]);
-    expect(() => new FormEngine(definition)).toThrow('Duplicate step id "a"');
-    expect(validateDefinition(definition)).toContain('Duplicate step id "a".');
+    expect(() => new FormEngine(definition)).toThrow('/steps/1/id: step id "a" is already used by /steps/0.');
+    expect(checkDefinition(definition).map((issue) => issue.code)).toEqual(['duplicate-step-id']);
   });
 
   it.each(['__proto__', 'constructor', 'prototype', 'toString', 'hasOwnProperty'])(
     'rejects the reserved field key %s',
     (key) => {
       const definition = form([{ id: 'a', title: '', fields: [text(key, { validation: { required: true } })] }]);
-      expect(() => new FormEngine(definition)).toThrow(`Reserved field key "${key}".`);
-      expect(validateDefinition(definition)).toContain(`Reserved field key "${key}".`);
+      const message = `/steps/0/fields/0/key: "${key}" is a built-in object property name. Rename the field key.`;
+      expect(() => new FormEngine(definition)).toThrow(message);
+      expect(checkDefinition(definition).map((issue) => issue.message)).toEqual([message]);
     },
   );
 
   it('rejects a reserved field key in a single-step form', () => {
     const definition: FormDefinition = { id: 'flat', title: '', submit: { label: 'Submit' }, fields: [text('constructor')] as FormDefinition['fields'] };
-    expect(() => new FormEngine(definition)).toThrow('Reserved field key "constructor".');
+    expect(() => new FormEngine(definition)).toThrow('/fields/0/key: "constructor" is a built-in object property name.');
   });
 
   it('warns when a routed step condition references its own or a later step', () => {
@@ -52,19 +54,33 @@ describe('definition checks', () => {
       { id: 'c', title: '', showAny: [{ field: 'later', eq: 'y' }], fields: [] },
       { id: 'd', title: '', show: [{ field: 'kind', eq: 'x' }], fields: [text('later')] },
     ]);
-    const warnings = validateDefinition(definition);
-    expect(warnings).toContain('Step "b" condition field "own" must belong to an earlier step.');
-    expect(warnings).toContain('Step "c" condition field "later" must belong to an earlier step.');
-    expect(warnings.some((warning) => warning.includes('Step "d"'))).toBe(false);
+    const forward = () => checkDefinition(definition).filter((issue) => issue.code === 'forward-reference').map((issue) => issue.path);
+    expect(forward()).toEqual(['/steps/1/show/0/field', '/steps/2/showAny/0/field']);
     definition.steps!.forEach((step) => { delete step.routes; });
-    expect(validateDefinition(definition).some((warning) => warning.includes('earlier step'))).toBe(false);
+    expect(forward()).toEqual([]);
   });
 
   it('warns about validator names missing from options', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const definition = form([{ id: 'a', title: '', fields: [text('x', { validation: { validator: 'nope' } }), text('y', { validation: { validator: 'ok' } })] }]);
     new FormEngine(definition, {}, { validators: { ok: () => null } });
-    expect(warn.mock.calls.map(([message]) => message)).toEqual(['[FormEngine] Field "x" references unknown validator "nope".']);
+    expect(warn.mock.calls.map(([message]) => message)).toEqual(['[formhaus] /steps/0/fields/0/validation/validator: the validator "nope" is not registered. Pass it in the "validators" option.']);
+  });
+
+  it('sends warnings to onWarning instead of the console', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const onWarning = vi.fn();
+    new FormEngine(form([{ id: 'a', title: '', fields: [text('x', { type: 'txt' })] }]), {}, { onWarning });
+    expect(onWarning.mock.calls.map(([issue]) => issue.code)).toEqual(['unknown-field-type']);
+    expect(warn).not.toHaveBeenCalled();
+  });
+
+  it('does not log warnings in production', () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    vi.stubEnv('NODE_ENV', 'production');
+    new FormEngine(form([{ id: 'a', title: '', fields: [text('x', { type: 'txt' })] }]));
+    vi.unstubAllEnvs();
+    expect(warn).not.toHaveBeenCalled();
   });
 });
 

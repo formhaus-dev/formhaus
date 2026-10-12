@@ -65,7 +65,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `mask` | string | Input mask. Built-in renderers use it as the placeholder when `placeholder` is absent. |
 | `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint. |
 
-Field keys SHOULD be unique across the whole definition. Fields with the same key share one value. `validateDefinition()` warns about duplicates.
+Field keys SHOULD be unique across the whole definition. Fields with the same key share one value. `checkDefinition()` warns about duplicates.
 
 ### Field types
 
@@ -101,7 +101,7 @@ A condition tests the value of one field:
 | `notIn` | (string or number)[] | the list does not contain the value |
 | `notEmpty` | boolean | `true`: the value is not empty |
 
-Each condition uses one operator. If several are present, only the first one in the order `eq`, `neq`, `in`, `notIn`, `notEmpty` applies. A condition without an operator, or with `notEmpty: false`, always matches.
+A condition MUST use exactly one operator. The constructor throws on a condition with no operator, with several operators, or with a key that is not an operator. At runtime, a condition without a known operator never matches. `notEmpty: false` always matches.
 
 Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
 
@@ -159,7 +159,7 @@ Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string, otherwise no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
 2. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
-3. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is ignored at runtime and reported by `validateDefinition()`.
+3. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it.
 4. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 5. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
@@ -183,7 +183,7 @@ Step ids MUST be unique. The constructor throws on duplicates.
 
 A hidden step is left out of navigation, progress, validation and submission, and its field values are cleared.
 
-In a form with routes, step `show`/`showAny` SHOULD reference fields of earlier steps only. A step condition sees only the values of earlier steps on the path, so a field of the same or a later step has no value there. `validateDefinition()` warns about such conditions; the constructor does not throw.
+In a form with routes, step `show`/`showAny` SHOULD reference fields of earlier steps only. A step condition sees only the values of earlier steps on the path, so a field of the same or a later step has no value there. `checkDefinition()` warns about such conditions; the constructor does not throw.
 
 ## Actions
 
@@ -222,7 +222,7 @@ Route selection on a step:
 3. A matching `to: null` makes this step the last step of the path. Submit appears there. It does not submit the form.
 4. If no route matches, the path continues with the next declared step.
 
-Branches converge only through routes. A branch step without an exit route falls through to the next declared step, which may be a sibling branch. `validateDefinition()` warns when a route target has no unconditional route and the next declared step is another target of the same step.
+Branches converge only through routes. A branch step without an exit route falls through to the next declared step, which may be a sibling branch. `checkDefinition()` warns when a route target has no unconditional route and the next declared step is another target of the same step.
 
 ### Active path
 
@@ -245,7 +245,7 @@ Skip on a step with `skip`:
 2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skipStepAsync()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
 3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 
-On the last step, `skipStepAsync(submit)` submits the form without that step and runs the submit hooks. Built-in renderers pass their submit handler, so their Skip submits. `skipStep()` and `skipStepAsync()` without a handler return `false` there. Continue or Submit on a skipped step, or a changed value of one of its fields, includes it again. `validateDefinition()` warns about `skip` on a step with `next: false` or in a form with one step.
+On the last step, `skipStepAsync(submit)` submits the form without that step and runs the submit hooks. Built-in renderers pass their submit handler, so their Skip submits. `skipStep()` and `skipStepAsync()` without a handler return `false` there. Continue or Submit on a skipped step, or a changed value of one of its fields, includes it again. `checkDefinition()` warns about `skip` on a step with `next: false` or in a form with one step.
 
 ## Auto-advance
 
@@ -263,18 +263,40 @@ Keys are field keys as written. The payload is not nested and not type-converted
 
 ## Definition checks
 
-The `FormEngine` constructor throws an `Error` that lists the problems on:
+`checkDefinition(definition)` never throws. It returns a list of issues. Each issue has a `code`, a `severity` (`error` or `warning`), a JSON pointer `path` to the node, a `message` of the form `<path>: <what is wrong>. <how to fix>.`, and an optional `hint` with the fix. Errors come before warnings.
 
-- a definition that is not an object, or `fields`, `steps`, `steps[].fields`, `routes`, `show` or `showAny` that is not an array of objects;
-- both `fields` and `steps` non-empty;
-- an invalid route target or route condition field;
-- duplicate step ids.
+The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionError` with the errors in `issues`, and passes each warning to the `onWarning` option. Without `onWarning`, it logs warnings with `console.warn`, except when `process.env.NODE_ENV` is `production`. `validateSubmission()` does not log them.
 
-`validateDefinition(definition)` never throws. It returns messages for the issues above and for a missing `submit` action, duplicate field keys, conditions without `field` or on unknown fields, circular show conditions, invalid `pattern` regexes, `skip` without a Continue or later step, branch fall-through, and step conditions on the same or a later step in a form with routes. The constructor logs these warnings with `console.warn`, together with a warning for each `validator` name missing from the `validators` option. `validateSubmission()` does not log them.
+| Code | Severity | Reported for |
+|---|---|---|
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array or `max` that is not a number |
+| `missing-property` | error | A missing `id`, `submit`, step `id`, field `key` or `type`, route `to` or condition `field`. A missing `title` is a warning |
+| `fields-and-steps` | error | Both `fields` and `steps` non-empty |
+| `duplicate-step-id` | error | Two steps with one id |
+| `reserved-key` | error | A field key that is a built-in object property name, such as `constructor` |
+| `route-target` | error | A route target that is not a later declared step id or `null` |
+| `unknown-field` | error in routes, warning elsewhere | A condition, `matchField` or `optionsDependsOn` key that is not a field key |
+| `forward-reference` | error in routes, warning in step conditions | A route condition on a later step, or a step condition on the same or a later step in a form with routes |
+| `condition-operator-count` | error | A condition with no operator or with several |
+| `unknown-operator` | error | A condition key that is not an operator |
+| `condition-cycle` | error | Show conditions that depend on each other in a cycle |
+| `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
+| `invalid-range` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
+| `duplicate-key` | warning | A field key that an earlier field already uses |
+| `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
+| `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
+| `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
+| `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
+| `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt` |
+| `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
+| `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
+| `route-fallthrough` | warning | A branch that falls through into a sibling branch |
+
+`parseDefinition(input)` returns the input typed as a definition, or throws a `FormDefinitionError` with the errors.
 
 ## JSON Schema
 
-The JSON Schema is published at [`https://formhaus.dev/schema/form-definition.json`](https://formhaus.dev/schema/form-definition.json) and ships as `@formhaus/core/schema.json`. A definition MAY set `$schema` to that URL for editor validation and completion. The schema checks shape only. Rules that depend on other parts of the definition, such as route targets, are checked by `validateDefinition()`.
+The JSON Schema is published at [`https://formhaus.dev/schema/form-definition.json`](https://formhaus.dev/schema/form-definition.json) and ships as `@formhaus/core/schema.json`. A definition MAY set `$schema` to that URL for editor validation and completion. The schema checks shape only. Rules that depend on other parts of the definition, such as route targets, are checked by `checkDefinition()`.
 
 Minimal single-step definition:
 

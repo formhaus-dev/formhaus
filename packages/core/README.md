@@ -61,12 +61,12 @@ import { validateSubmission } from '@formhaus/core/server';
 const { values, errors } = validateSubmission(definition, body.values, { skippedSteps: body.skippedSteps });
 ```
 
-`checkDefinition()` splits the `validateDefinition()` output into errors, which `FormEngine` rejects, and warnings.
+`checkDefinition()` returns a list of issues with a `code`, a `severity` (`error` or `warning`), a JSON pointer `path` and a `message`. `FormEngine` throws a `FormDefinitionError` on errors.
 
 ```ts
-import { checkDefinition } from '@formhaus/core/server';
+import { checkDefinition } from '@formhaus/core';
 
-const { errors, warnings } = checkDefinition(definition);
+const errors = checkDefinition(definition).filter((issue) => issue.severity === 'error');
 ```
 
 `@formhaus/core/server.iife.js` exposes both functions on a `Formhaus` global for embedded JS runtimes.

@@ -33,7 +33,7 @@ app.post('/api/submit', (req, res) => {
 app.listen(3000);
 ```
 
-Save `values`, not `req.body.values`. Next.js and Nuxt versions are in [Next.js](/guide/integrations/nextjs) and [Nuxt](/guide/integrations/nuxt).
+Save `values`, not `req.body.values`. `validateSubmission()` throws a `FormDefinitionError` when the definition itself has an error, so check stored definitions with `checkDefinition()` before you save them. Next.js and Nuxt versions are in [Next.js](/guide/integrations/nextjs) and [Nuxt](/guide/integrations/nuxt).
 
 ## Client
 
@@ -130,12 +130,12 @@ runValidators(values, errors);
 
 ## Check a definition
 
-`checkDefinition()` returns definition errors and warnings, for example before you store a definition an agent wrote:
+`checkDefinition()` returns a list of issues, for example before you store a definition an agent wrote. Each issue has a `code`, a `severity` of `error` or `warning`, a JSON pointer `path`, and a `message`:
 
 ```ts
 import { checkDefinition } from '@formhaus/core/server';
 
-const { errors, warnings } = checkDefinition(definition);
+const errors = checkDefinition(definition).filter((issue) => issue.severity === 'error');
 ```
 
 ## Embedded runtimes

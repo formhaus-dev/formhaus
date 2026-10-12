@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
-import { validateDefinition } from '../../src';
+import { checkDefinition } from '../../src';
 import { onExtras, routedSkipDefinition } from './form-engine-skip.fixtures';
 
 describe('FormEngine step skip', () => {
@@ -107,12 +107,12 @@ describe('FormEngine step skip', () => {
   });
 
   it('warns about skip on a single-step form and with next: false', () => {
-    const warning = 'has "skip" but no Next button or later step.';
     const step = { title: 'Step', skip: { label: 'Skip' }, fields: [] };
-    expect(validateDefinition({ id: 'one', title: 'One', submit: { label: 'Submit' }, steps: [{ ...step, id: 'only' }] }))
-      .toContain(`Step "only" ${warning}`);
-    expect(validateDefinition({
+    const paths = (definition: unknown) => checkDefinition(definition).map(({ code, path }) => `${code} ${path}`);
+    expect(paths({ id: 'one', title: 'One', submit: { label: 'Submit' }, steps: [{ ...step, id: 'only' }] }))
+      .toEqual(['skip-unreachable /steps/0/skip']);
+    expect(paths({
       id: 'two', title: 'Two', submit: { label: 'Submit' }, steps: [{ ...step, id: 'a', next: false }, { ...step, id: 'b' }],
-    })).toEqual([`Step "a" ${warning}`]);
+    })).toEqual(['skip-unreachable /steps/0/skip']);
   });
 });

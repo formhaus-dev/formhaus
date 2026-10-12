@@ -108,7 +108,7 @@ Forms are Formhaus JSON definitions rendered with `FormRenderer` from `@formhaus
 ## How it works
 
 - The schema is generated from the TypeScript `FormDefinition` type and ships in `@formhaus/core` as `@formhaus/core/schema.json`.
-- `validate_definition` runs the schema and `validateDefinition()` from `@formhaus/core`. It reports unknown route targets, backward routes, duplicate step ids and branches that fall through into a sibling.
+- `validate_definition` runs the schema and `checkDefinition()` from `@formhaus/core`. It reports unknown route targets, backward routes, duplicate step ids and branches that fall through into a sibling.
 - `simulate_path` applies `answers` as initial values and presses `next`, `back` and `skip` in order. Without `actions` it presses Next until the last step or the first blocking error.
 - `simulate_path` does not run custom validators, `onStepValidate` or lifecycle hooks. Test those in the app.
 - `capabilities` lists field types, field props, validation rules, condition operators and route semantics, so the agent does not invent keys.

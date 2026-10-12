@@ -26,6 +26,7 @@ export function buildSchema() {
   applyDescriptions(generated.definitions);
   generated.definitions.FormField.properties.key.not = { enum: [...Object.getOwnPropertyNames(Object.prototype), 'prototype'].sort() };
   generated.definitions.FormDefinition.properties.description.maxLength = 1000;
+  Object.assign(generated.definitions.ShowCondition, { minProperties: 2, maxProperties: 2 });
   const { FormDefinition, ...definitions } = generated.definitions;
 
   return {

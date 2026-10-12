@@ -64,7 +64,7 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 
 `publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, `update_form_settings` needs an `fh_live_` key, and `publish_form` uses the key when set. `FORMHAUS_API_BASE` overrides the API origin. See [Cloud MCP reference](/cloud/mcp) for keys, results and errors.
 
-Errors come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or duplicate step ids. Warnings come from `validateDefinition()` and point to likely mistakes.
+Errors come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or duplicate step ids. Warnings come from `checkDefinition()` and point to likely mistakes.
 
 `simulate_path` applies `answers` as initial values, then presses the actions in order. Without `actions` it presses Next until the last step or the first blocking error. Next is refused on `next: false` steps until an autoAdvance radio is answered. Skip works only on steps with `skip` and submits on the last step. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run.
 

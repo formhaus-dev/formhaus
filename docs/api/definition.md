@@ -212,7 +212,7 @@ interface StepRoute {
 }
 ```
 
-The first matching route with a visible target wins. An unconditional last route is a fallback; no match continues to the next visible declared step. `to: null` makes this step terminal without submitting. Targets must be later declared step ids. Route conditions may reference this or earlier steps. Invalid targets and forward-field references are reported by `validateDefinition()`, and the `FormEngine` constructor throws on them. Step `show`/`showAny` conditions on the same or a later step never match in a routed form; `validateDefinition()` warns about them. `validateDefinition()` also warns when a branch falls through into a sibling branch.
+The first matching route with a visible target wins. An unconditional last route is a fallback; no match continues to the next visible declared step. `to: null` makes this step terminal without submitting. Targets must be later declared step ids. Route conditions may reference this or earlier steps. Invalid targets and forward-field references are reported by `checkDefinition()`, and the `FormEngine` constructor throws on them. Step `show`/`showAny` conditions on the same or a later step never match in a routed form; `checkDefinition()` warns about them. `checkDefinition()` also warns when a branch falls through into a sibling branch.
 
 With routes enabled, progress, Back, validation, hooks and submission use the active path. Skipped values remain in `engine.values` but are excluded from the active projection. See [branch convergence, visibility, retained values and reconciliation](../guide/steps#route-between-branches) and [the complete JSON example](/guide/examples#branching-form).
 

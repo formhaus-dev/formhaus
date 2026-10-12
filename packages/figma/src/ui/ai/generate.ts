@@ -1,4 +1,4 @@
-import { validateDefinition, type FormDefinition } from '@formhaus/core';
+import { checkDefinition, type DefinitionIssue, type FormDefinition } from '@formhaus/core';
 import { firstJsonObject, repairMessage, requestMessage, SCHEMA_URL, SYSTEM_PROMPT, type ChatMessage } from './prompt';
 import { complete, type ProviderId } from './providers';
 
@@ -16,7 +16,7 @@ export interface Checked {
   warnings: string[];
 }
 
-const FATAL = /^(Invalid route|FormEngine rejects|Duplicate (field key|step id)|Circular show condition)/;
+const fatalIssue = (issue: DefinitionIssue) => issue.severity === 'error' || issue.code === 'duplicate-key';
 
 export const messageOf = (error: unknown): string => (error instanceof Error ? error.message : String(error));
 const isRecord = (value: unknown): value is Record<string, unknown> => Boolean(value) && typeof value === 'object' && !Array.isArray(value);
@@ -53,13 +53,14 @@ export function checkReply(reply: string): Checked {
   const fatal = shapeErrors(value);
   if (fatal.length) return { fatal, warnings: [] };
   const definition = { ...value, $schema: SCHEMA_URL } as unknown as FormDefinition;
-  let problems: string[];
+  let problems: DefinitionIssue[];
   try {
-    problems = validateDefinition(definition);
+    problems = checkDefinition(definition);
   } catch (error) {
     return { fatal: [`The definition could not be read: ${messageOf(error)}`], warnings: [] };
   }
-  return { definition, fatal: problems.filter((problem) => FATAL.test(problem)), warnings: problems.filter((problem) => !FATAL.test(problem)) };
+  const messages = (fatal: boolean) => problems.filter((issue) => fatalIssue(issue) === fatal).map((issue) => issue.message);
+  return { definition, fatal: messages(true), warnings: messages(false) };
 }
 
 export interface Generated {
