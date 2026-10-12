@@ -52,8 +52,13 @@ async function check() {
     await page.getByRole('button', { name: 'Launch for free' }).click();
     await page.waitForURL('https://app.formhaus.dev/start/abc');
     if (sent?.fields?.[0]?.label !== 'Work email') throw new Error('Launch for free did not send the current definition');
+    await page.goto(`${base}/`);
+    if (await page.locator('[data-card]').count()) throw new Error('the landing editor loaded before it was scrolled into view');
+    await page.locator('#demo-title').scrollIntoViewIfNeeded();
+    await page.locator('[data-card]').first().waitFor({ timeout: 15000 });
+    if (await page.locator('[data-topbar]').count()) throw new Error('the landing editor shows the full top bar');
     if (errors.length) throw new Error(`page errors: ${errors.join('; ')}`);
-    console.log('/build keeps the draft, downloads its JSON and hands it off to Cloud.');
+    console.log('/build keeps the draft, downloads its JSON and hands it off to Cloud; the landing editor loads on scroll.');
   } finally {
     await browser.close();
   }

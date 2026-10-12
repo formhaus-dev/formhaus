@@ -20,6 +20,12 @@ describe('EditorRoot', () => {
     expect(screen.queryByRole('button', { name: 'Publish' })).toBeNull();
   });
 
+  it('drops the top bar in compact mode', async () => {
+    render(<EditorRoot compact host={createMemoryHost({ Preview: () => null, definition })} />);
+    expect(await screen.findByDisplayValue('Email')).toBeInTheDocument();
+    expect(document.querySelector('[data-topbar]')).toBeNull();
+  });
+
   it('renders links through the host link component', () => {
     render(
       <LinkProvider value={({ href, children }) => <a href={`/app${href}`}>{children}</a>}>

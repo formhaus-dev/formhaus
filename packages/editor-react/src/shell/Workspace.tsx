@@ -10,11 +10,12 @@ import styles from './EditorShell.module.css';
 
 const OUTLINE = 960;
 
-export function Workspace() {
+export function Workspace({ outline = true }: { outline?: boolean }) {
   const actions = useEditorActions();
   const root = useRef<HTMLDivElement>(null);
   const width = useWidth(root);
-  const stepped = useForm().blocks.filter(isPage).length > 1;
+  const pages = useForm().blocks.filter(isPage).length;
+  const stepped = outline && pages > 1;
   return (
     <div ref={root} className={styles.workspace}>
       <div className={styles.layout} data-stepped={stepped || undefined}>

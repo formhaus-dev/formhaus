@@ -1,4 +1,3 @@
-import '@formhaus/core/style.css';
 import type { FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { RotateCcw } from 'lucide-react';

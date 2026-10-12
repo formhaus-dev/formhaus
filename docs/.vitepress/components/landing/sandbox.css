@@ -66,6 +66,10 @@ html.dark .sandbox {
   margin-left: 0;
 }
 
+.sandbox__actions:not(:has(.sandbox__tool))::before {
+  display: none;
+}
+
 .sandbox__actions::before {
   order: 2;
   width: 1px;
@@ -76,6 +80,7 @@ html.dark .sandbox {
 }
 
 .sandbox__icon,
+.sandbox__tool,
 .sandbox__text,
 .sandbox__restart {
   display: inline-flex;
@@ -100,12 +105,19 @@ html.dark .sandbox {
   padding: 0 8px;
 }
 
+.sandbox__tool {
+  order: 1;
+  height: 32px;
+  padding: 0 8px;
+}
+
 .sandbox__restart {
   margin-left: auto;
   padding: 0 8px;
 }
 
 .sandbox__icon .lucide,
+.sandbox__tool .lucide,
 .sandbox__text .lucide,
 .sandbox__restart .lucide {
   width: 16px;
@@ -114,6 +126,7 @@ html.dark .sandbox {
 }
 
 .sandbox__icon:hover:not(:disabled),
+.sandbox__tool:hover,
 .sandbox__text:hover,
 .sandbox__restart:hover {
   color: var(--vp-c-text-1);

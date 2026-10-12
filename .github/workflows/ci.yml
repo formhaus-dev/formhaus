@@ -112,6 +112,8 @@ jobs:
 
       - run: pnpm docs:build
 
+      - run: pnpm check:docs-bundle
+
       - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium
 
       - run: pnpm check:build-page
