@@ -122,16 +122,29 @@
 }
 
 .suggestion {
+  display: inline-flex;
   align-self: flex-start;
+  align-items: center;
+  gap: var(--fh-ed-space-1-5);
   min-height: var(--fh-ed-size-control-md);
   padding: 0 var(--fh-ed-space-2-5);
-  border: 0;
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-line-strong);
   border-radius: var(--fh-ed-radius-full);
-  background: var(--fh-ed-accent-soft);
-  color: var(--fh-ed-accent);
+  background: transparent;
+  color: var(--fh-ed-fg);
   font: inherit;
   font-size: var(--fh-ed-font-size-sm);
   cursor: pointer;
+}
+
+.suggestion:hover {
+  background: var(--fh-ed-sub);
+}
+
+.suggestion svg {
+  width: var(--fh-ed-size-icon-sm);
+  height: var(--fh-ed-size-icon-sm);
+  color: var(--fh-ed-fg-muted);
 }
 
 .helper {

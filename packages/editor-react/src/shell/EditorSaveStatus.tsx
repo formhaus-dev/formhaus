@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { SaveStatus, useAnnounce, type SaveState } from '../ui';
+import { SaveStatus, Tooltip, useAnnounce, type SaveState } from '../ui';
 import { useEditorHandle } from '../store/context';
 import { useSave } from '../store/hooks';
 import type { SaveStatus as Status } from '../store/store';
@@ -16,7 +16,7 @@ const shown: Record<Status, SaveState | null> = {
 
 export function EditorSaveStatus({ compact = false }: { compact?: boolean }) {
   const save = useSave();
-  const { autosave } = useEditorHandle();
+  const { autosave, host } = useEditorHandle();
   const [review, setReview] = useState(false);
   const announce = useAnnounce();
   const troubled = useRef(false);
@@ -31,14 +31,22 @@ export function EditorSaveStatus({ compact = false }: { compact?: boolean }) {
   const status = compact && save.status !== 'error' && save.status !== 'conflict' ? null : shown[save.status];
   return (
     <>
-      {status && (
-        <SaveStatus
-          status={status}
-          onRetry={() => void autosave?.flush()}
-          onResolve={() => {
-            setReview(true);
-          }}
-        />
+      {status === 'saved' && host.savedHint ? (
+        <Tooltip content={host.savedHint}>
+          <span tabIndex={0}>
+            <SaveStatus status={status} />
+          </span>
+        </Tooltip>
+      ) : (
+        status && (
+          <SaveStatus
+            status={status}
+            onRetry={() => void autosave?.flush()}
+            onResolve={() => {
+              setReview(true);
+            }}
+          />
+        )
       )}
       <ConflictDialog
         open={review || save.status === 'conflict'}

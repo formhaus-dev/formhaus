@@ -3,7 +3,7 @@ import { CircleAlert, Settings2 } from 'lucide-react';
 import { useId, useLayoutEffect, useRef } from 'react';
 import { IconButton, SortableHandle, type SortableHandleProps } from '../ui';
 import { cx } from '../ui/lib/cx';
-import { typeLabel } from '../fieldTypes';
+import { typeIcon, typeLabel } from '../fieldTypes';
 import { FieldPanel } from '../inspector/FieldPanel';
 import settings from '../inspector/Inspector.module.css';
 import { LogicBadge } from '../logic/LogicBadge';
@@ -118,7 +118,8 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
               });
             }}
           >
-            Use {typeLabel(suggestion).toLowerCase()}
+            {typeIcon(suggestion)}
+            Switch to {typeLabel(suggestion)}
           </button>
         )}
         <HelpText field={field} actions={actions} readOnly={readOnly} selected={selected} />
