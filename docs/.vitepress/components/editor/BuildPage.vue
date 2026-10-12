@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import type { FormDefinition } from '@formhaus/core';
-import { computed, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import LucideIcon from '../landing/LucideIcon.vue';
+import BuildReplace from './BuildReplace.vue';
+import { conflicts, hasStart, requestedStart, starter, type Start } from './build-start';
 import EditorIsland from './EditorIsland.vue';
 import { launch } from './launch';
 
-const starter: FormDefinition = {
-  id: 'untitled-form',
-  title: 'Untitled form',
-  submit: { label: 'Submit' },
-  fields: [{ key: 'email', type: 'email', label: 'Email' }],
-};
+const initial = ref<FormDefinition>(starter);
+const ready = ref(false);
+const pending = ref<Start | null>(null);
+const draftTitle = ref('');
+let clear = () => {};
 const definition = ref<FormDefinition | null>(null);
 const copied = ref(false);
 const launching = ref(false);
@@ -34,6 +35,29 @@ async function start() {
     failure.value = error instanceof Error ? error.message : String(error);
     launching.value = false;
   }
+}
+
+onMounted(async () => {
+  if (!hasStart(location.search)) {
+    ready.value = true;
+    return;
+  }
+  const [next, editor] = await Promise.all([requestedStart(location.search), import('@formhaus/editor-react/mount.js')]);
+  history.replaceState(history.state, '', location.pathname + location.hash);
+  const draft = editor.readLocalDraft(window.localStorage)?.definition;
+  clear = () => window.localStorage.removeItem(editor.LOCAL_KEY);
+  pending.value = next;
+  if (next && conflicts(draft, next.definition)) draftTitle.value = draft.title || 'Untitled form';
+  else choose(true);
+});
+
+function choose(replace: boolean) {
+  if (replace && pending.value) {
+    clear();
+    initial.value = pending.value.definition;
+  }
+  draftTitle.value = '';
+  ready.value = true;
 }
 
 function download() {
@@ -75,136 +99,10 @@ function download() {
       <p v-if="failure" class="build-failure" role="alert"><LucideIcon name="circle-alert" />{{ failure }}</p>
     </header>
     <ClientOnly>
-      <EditorIsland storage="local" :definition="starter" saved-hint="Saved in this browser" @change="definition = $event" />
+      <BuildReplace v-if="draftTitle && pending" :draft="draftTitle" :next="pending.label" @keep="choose(false)" @replace="choose(true)" />
+      <EditorIsland v-else-if="ready" storage="local" :definition="initial" saved-hint="Saved in this browser" @change="definition = $event" />
     </ClientOnly>
   </div>
 </template>
 
-<style scoped>
-.build {
-  max-width: 1216px;
-  margin: 0 auto;
-  padding: 32px 32px 96px;
-}
-
-.build-head {
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 16px 32px;
-  margin-bottom: 24px;
-}
-
-.build-title h1 {
-  margin: 0;
-  font-size: 24px;
-  line-height: 32px;
-  font-weight: 600;
-}
-
-.build-title p {
-  max-width: 60ch;
-  margin: 4px 0 0;
-  color: var(--vp-c-text-2);
-  font-size: 14px;
-  line-height: 20px;
-}
-
-.build-title {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.build-actions {
-  display: flex;
-  flex: none;
-  gap: 8px;
-}
-
-.build-button {
-  height: 36px;
-  padding: 0 14px;
-  border: 1px solid var(--vp-c-border);
-  border-radius: 6px;
-  background: var(--vp-c-bg);
-  color: var(--vp-c-text-1);
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.build-button:hover:not(:disabled) {
-  background: var(--vp-c-bg-soft);
-}
-
-.build-primary {
-  border-color: var(--vp-c-brand-3);
-  background: var(--vp-c-brand-3);
-  color: var(--vp-c-white);
-}
-
-.build-primary:hover:not(:disabled) {
-  border-color: var(--vp-c-brand-2);
-  background: var(--vp-c-brand-2);
-}
-
-.build-primary:disabled {
-  border-color: var(--vp-c-border);
-  background: var(--vp-c-bg-soft);
-}
-
-.build-failure {
-  position: absolute;
-  top: calc(100% + 8px);
-  right: 0;
-  display: flex;
-  gap: 6px;
-  z-index: 20;
-  max-width: 420px;
-  margin: 0;
-  background: var(--vp-c-bg);
-  color: var(--vp-c-danger-1);
-  font-size: 13px;
-  line-height: 18px;
-}
-
-.build-failure :deep(svg) {
-  flex: none;
-  width: 16px;
-  height: 16px;
-  margin-top: 1px;
-}
-
-.build-button:disabled {
-  color: var(--vp-c-text-3);
-  cursor: default;
-}
-
-@media (max-width: 640px) {
-  .build {
-    padding: 24px 16px 64px;
-  }
-
-  .build-head {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .build-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .build-primary {
-    grid-column: 1 / -1;
-    order: -1;
-  }
-
-  .build-failure {
-    position: static;
-    max-width: none;
-    margin-top: -8px;
-  }
-}
-</style>
+<style scoped src="./build-page.css"></style>
