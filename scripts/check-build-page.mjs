@@ -53,7 +53,7 @@ async function check() {
     await page.waitForURL('https://app.formhaus.dev/start/abc');
     if (sent?.fields?.[0]?.label !== 'Work email') throw new Error('Launch for free did not send the current definition');
     if (errors.length) throw new Error(`page errors: ${errors.join('; ')}`);
-    console.log('/build keeps the draft, downloads its JSON and hands it off to Cloud.');
+    console.log('/build keeps the draft, downloads its JSON and hands it off to Cloud');
   } finally {
     await browser.close();
   }

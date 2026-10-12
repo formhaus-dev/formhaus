@@ -16,7 +16,8 @@
       "import": "./dist/mount.js"
     },
     "./style.css": "./dist/style.css",
-    "./mount.css": "./dist/mount.css"
+    "./mount.css": "./dist/mount.css",
+    "./preview.css": "./dist/preview.css"
   },
   "files": [
     "dist"

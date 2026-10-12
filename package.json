@@ -20,7 +20,8 @@
     "changeset": "changeset",
     "version": "changeset version && node scripts/sync-mcp-server-json.mjs",
     "release": "pnpm build && changeset publish",
-    "check:build-page": "node scripts/check-build-page.mjs"
+    "check:build-page": "node scripts/check-build-page.mjs",
+    "check:docs-bundle": "node scripts/check-docs-bundle.mjs"
   },
   "engines": {
     "node": ">=20"

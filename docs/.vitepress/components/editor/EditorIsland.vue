@@ -3,7 +3,7 @@ import type { FormDefinition } from '@formhaus/core';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import './editor-tokens.css';
 
-const props = defineProps<{ storage: 'local' | 'memory'; definition?: FormDefinition; lazy?: boolean; savedHint?: string }>();
+const props = defineProps<{ storage: 'local' | 'memory'; definition?: FormDefinition; lazy?: boolean; savedHint?: string; compact?: boolean }>();
 const emit = defineEmits<{ change: [definition: FormDefinition]; ready: [] }>();
 
 const root = ref<HTMLElement | null>(null);
@@ -12,17 +12,26 @@ let unmount: (() => void) | null = null;
 let observer: IntersectionObserver | null = null;
 let disposed = false;
 
-async function stylesheet(): Promise<void> {
-  if (document.querySelector('style[data-fh-editor]')) return;
-  const { default: css } = await import('@formhaus/editor-react/mount.css?inline');
+const sheets = {
+  editor: () => import('@formhaus/editor-react/mount.css?inline'),
+  preview: () => import('@formhaus/editor-react/preview.css?inline'),
+};
+
+async function stylesheet(name: keyof typeof sheets): Promise<void> {
+  if (document.querySelector(`style[data-fh-editor="${name}"]`)) return;
+  const { default: css } = await sheets[name]();
   const style = Object.assign(document.createElement('style'), { textContent: css });
-  style.dataset.fhEditor = '';
+  style.dataset.fhEditor = name;
   document.head.append(style);
 }
 
 async function start() {
   observer?.disconnect();
-  const [editor] = await Promise.all([import('@formhaus/editor-react/mount.js'), stylesheet()]);
+  const [editor] = await Promise.all([
+    import('@formhaus/editor-react/mount.js'),
+    stylesheet('editor'),
+    props.storage === 'local' ? stylesheet('preview') : null,
+  ]);
   if (disposed || !root.value) return;
   const onChange = (definition: FormDefinition) => emit('change', definition);
   const options = { onChange, ...(props.definition ? { definition: props.definition } : {}), ...(props.savedHint ? { savedHint: props.savedHint } : {}) };
@@ -30,7 +39,7 @@ async function start() {
   const stored = props.storage === 'local' ? editor.readLocalDraft(window.localStorage)?.definition : undefined;
   const initial = stored ?? props.definition;
   if (initial) emit('change', initial);
-  unmount = editor.mount(root.value, { host });
+  unmount = editor.mount(root.value, { host, compact: props.compact });
   loaded.value = true;
   emit('ready');
 }
@@ -65,6 +74,28 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.editor-island :deep(:is(ul, ol)) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.editor-island :deep(li + li) {
+  margin-top: 0;
+}
+
+.editor-island :deep(:is(p, h1, h2, h3)) {
+  margin: 0;
+  line-height: inherit;
+}
+
+.editor-island :deep(:not(pre) > code) {
+  padding: 0;
+  background: none;
+  color: inherit;
+  font-size: inherit;
+}
+
 .editor-island-placeholder {
   display: flex;
   flex-direction: column;

@@ -38,16 +38,17 @@ interface Props {
   handle: EditorHandle;
   stale: boolean;
   mode?: EditorMode;
+  compact?: boolean;
 }
 
-export function EditorView({ handle, stale, mode: initialMode = 'edit' }: Props) {
+export function EditorView({ handle, stale, mode: initialMode = 'edit', compact = false }: Props) {
   const { published } = handle;
   const [mode, setMode] = useState<string>(initialMode);
   const small = useMedia(phone);
   const [help, setHelp] = useState(false);
   const onToggleJson = useCallback(() => {
-    setMode((current) => (current === 'json' ? 'edit' : 'json'));
-  }, []);
+    if (!compact) setMode((current) => (current === 'json' ? 'edit' : 'json'));
+  }, [compact]);
   const onHelp = useCallback(() => {
     setHelp(true);
   }, []);
@@ -56,16 +57,18 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit' }: Props)
   const publish = <PublishAction published={published} compact={small} />;
   return (
     <EditorShell handle={handle}>
-      <EditorTopBar
-        compact={small}
-        start={modes}
-        end={
-          <>
-            {publish}
-            <EditorMenu published={published} compact={small} onHelp={onHelp} />
-          </>
-        }
-      />
+      {!compact && (
+        <EditorTopBar
+          compact={small}
+          start={modes}
+          end={
+            <>
+              {publish}
+              <EditorMenu published={published} compact={small} onHelp={onHelp} />
+            </>
+          }
+        />
+      )}
       {stale && published && (
         <div className={styles.layout}>
           <Banner
@@ -88,7 +91,7 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit' }: Props)
         </div>
       )}
       <div hidden={mode !== 'edit'}>
-        <Workspace />
+        <Workspace outline={!compact} />
       </div>
       <ShortcutsDialog open={help} onOpenChange={setHelp} />
     </EditorShell>
