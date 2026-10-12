@@ -77,6 +77,17 @@ html.dark .figma__image--dark {
 @media (max-width: 767px) {
   .figma__canvas {
     padding: 16px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+  }
+
+  .figma__image {
+    flex: none;
+    width: 760px;
+    max-width: none;
+    height: auto;
   }
 }
 </style>

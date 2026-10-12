@@ -96,10 +96,22 @@ html.dark .hero-video__poster--dark {
   background: var(--vp-c-bg);
 }
 
+@media (min-width: 640px) {
+  .hero-video .hero-video__toggle--idle {
+    display: none;
+  }
+}
+
 @media (max-width: 639px) {
-  .hero-video__start {
+  .hero-video .hero-video__start {
+    display: none;
+  }
+
+  .hero-video__toggle {
+    right: 12px;
+    bottom: 12px;
+    width: 44px;
     height: 44px;
     border-radius: 22px;
-    font-size: 14px;
   }
 }
