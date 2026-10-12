@@ -53,7 +53,6 @@ function onKey(event: KeyboardEvent) {
 .mcp__tabs {
   display: flex;
   gap: 20px;
-  margin-bottom: 8px;
 }
 
 .mcp__tab {
