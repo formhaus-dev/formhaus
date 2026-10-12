@@ -103,7 +103,6 @@ describe('validateFieldValue', () => {
 
     it('handles invalid regex gracefully', () => {
       const field = makeField({ validation: { pattern: '[invalid(' } });
-      // Should not throw, just skip validation
       expect(validateFieldValue(field, 'anything', {}, {})).toBeNull();
     });
   });
