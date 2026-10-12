@@ -79,7 +79,6 @@ describe('FormEngine - Multi-Step', () => {
   describe('progress', () => {
     it('reports correct progress', () => {
       const engine = new FormEngine(multiStepDefinition);
-      // 2 visible steps (personal, payment)
       expect(engine.progress).toEqual({ current: 1, total: 2 });
     });
 
@@ -95,7 +94,6 @@ describe('FormEngine - Multi-Step', () => {
     it('navigates to step containing field', () => {
       const engine = new FormEngine(multiStepDefinition, { name: 'John' });
       engine.goToStepWithField('method');
-      // method is in 'payment' step, which is index 1 in visible steps (personal=0, payment=1)
       expect(engine.currentStep?.id).toBe('payment');
     });
 
@@ -118,7 +116,6 @@ describe('FormEngine - Multi-Step', () => {
       const values = engine.getSubmitValues();
       expect(values.name).toBe('John');
       expect(values.method).toBe('bank');
-      // company is in hidden step, should not appear
       expect(values.company).toBeUndefined();
     });
 

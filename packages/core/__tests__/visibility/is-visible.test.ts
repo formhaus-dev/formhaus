@@ -38,12 +38,9 @@ describe('isVisible', () => {
         { field: 'method', eq: 'clabe' as const },
       ],
     };
-    // Country matches AND method matches one of the options
     expect(isVisible(field, { country: 'MX', method: 'bank' })).toBe(true);
     expect(isVisible(field, { country: 'MX', method: 'clabe' })).toBe(true);
-    // Country matches but method doesn't
     expect(isVisible(field, { country: 'MX', method: 'cash' })).toBe(false);
-    // Country doesn't match
     expect(isVisible(field, { country: 'US', method: 'bank' })).toBe(false);
   });
 

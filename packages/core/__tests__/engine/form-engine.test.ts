@@ -71,7 +71,6 @@ describe('FormEngine', () => {
       const engine = new FormEngine(conditionalDefinition, { country: 'MX', clabe: '123' });
       expect(engine.values.clabe).toBe('123');
 
-      // Change country to US, clabe should be cleared
       engine.setValue('country', 'US');
       expect(engine.values.clabe).toBeUndefined();
     });
@@ -90,9 +89,7 @@ describe('FormEngine', () => {
       const engine = new FormEngine(definition, { a: 'show', b: 'hello', c: 'world' });
       expect(engine.values.c).toBe('world');
 
-      // Hide B by changing A
       engine.setValue('a', 'hide');
-      // B cleared (hidden), C cleared (depends on B which is now empty)
       expect(engine.values.b).toBeUndefined();
       expect(engine.values.c).toBeUndefined();
     });
