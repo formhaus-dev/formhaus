@@ -1,81 +1,85 @@
 <script setup lang="ts">
+import LandingFrame from './LandingFrame.vue';
+import LandingSection from './LandingSection.vue';
 import LucideIcon from './LucideIcon.vue';
-
-const points = ['Your own components', 'Flow map for every branch', 'Clickable prototype', 'AI drafts from a text prompt'];
 </script>
 
 <template>
-  <section class="lp-section" aria-labelledby="figma-title">
-    <div class="figma">
-      <div class="figma__text">
-        <p class="lp-eyebrow">Figma plugin</p>
-        <h2 id="figma-title" class="lp-title">Designers see the real form</h2>
-        <p class="lp-lead">Mockups, flow map and prototype from the same JSON.</p>
-        <ul class="figma__points">
-          <li v-for="point in points" :key="point">{{ point }}</li>
-        </ul>
-        <a class="lp-more" href="/guide/figma">Figma plugin guide <LucideIcon name="arrow-right" /></a>
+  <LandingSection
+    id="figma"
+    eyebrow="Figma plugin"
+    title="Designers see the real form."
+    lead="Paste the same JSON into the plugin for mockups in your own components, a flow map of every branch and a clickable prototype."
+  >
+    <LandingFrame class="figma">
+      <template #bar>
+        <svg class="figma__logo" viewBox="0 0 38 57" width="10" height="15" aria-hidden="true">
+          <path fill="currentColor" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0zM0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0zM19 0v19h9.5a9.5 9.5 0 1 0 0-19H19zM0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5zM0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" />
+        </svg>
+        <span class="figma__file">Account form</span>
+        <span class="figma__page">Flow map</span>
+        <span class="figma__zoom">Formhaus plugin</span>
+      </template>
+      <div class="figma__canvas">
+        <img
+          v-for="theme in ['light', 'dark']"
+          :key="theme"
+          :class="['figma__image', `figma__image--${theme}`]"
+          :src="theme === 'dark' ? '/figma/flow-map-frame-dark.webp' : '/figma/flow-map-frame.webp'"
+          width="1742"
+          height="752"
+          loading="lazy"
+          decoding="async"
+          alt="A branching account form laid out in Figma as a flow map with labelled arrows"
+        />
       </div>
-      <img
-        v-for="theme in ['light', 'dark']"
-        :key="theme"
-        :class="['figma__image', `figma__image--${theme}`]"
-        :src="theme === 'dark' ? '/figma/flow-map-dark.png' : '/figma/flow-map.png'"
-        width="1952"
-        height="964"
-        loading="lazy"
-        decoding="async"
-        alt="A branching account form laid out in Figma as a flow map with labelled arrows"
-      />
+    </LandingFrame>
+    <div class="lp-links">
+      <a class="lp-link" href="/guide/figma">Figma plugin guide <LucideIcon name="arrow-right" /></a>
     </div>
-  </section>
+  </LandingSection>
 </template>
 
 <style scoped>
-.figma {
-  display: grid;
-  gap: 40px;
-  align-items: center;
-}
-
-.figma__text {
-  min-width: 0;
-}
-
-.vp-doc .figma__points {
-  display: grid;
-  gap: 14px;
-  margin: 28px 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.vp-doc .figma__points li {
-  position: relative;
-  margin: 0;
-  padding-left: 22px;
-  line-height: 1.6;
+.figma__logo {
+  flex: none;
   color: var(--vp-c-text-2);
 }
 
-.vp-doc .figma__points li::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0.6em;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--vp-c-brand-2);
+.figma__file {
+  font-weight: 600;
+  color: var(--vp-c-text-1);
+}
+
+.figma__page {
+  color: var(--vp-c-text-2);
+}
+
+.figma__page::before {
+  content: '/';
+  margin-right: 12px;
+  color: var(--vp-c-text-3);
+}
+
+.figma__zoom {
+  margin-left: auto;
+  color: var(--vp-c-text-3);
+}
+
+.figma__canvas {
+  flex: 1;
+  padding: 32px;
+  background: #f6f3fb;
+}
+
+html.dark .figma__canvas {
+  background: #161619;
 }
 
 .figma__image {
   display: block;
   width: 100%;
   height: auto;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 16px;
-  box-shadow: 0 12px 40px var(--fh-c-brand-shadow);
 }
 
 .figma__image--dark,
@@ -85,12 +89,5 @@ html.dark .figma__image--light {
 
 html.dark .figma__image--dark {
   display: block;
-}
-
-@media (min-width: 960px) {
-  .figma {
-    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-    gap: 64px;
-  }
 }
 </style>

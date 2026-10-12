@@ -3,6 +3,8 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, reactive, r
 import { validateDefinition, type FormDefinition } from '@formhaus/core';
 import seed from '../../../recipes/definitions/onboarding.json';
 import LandingBuilder from './LandingBuilder.vue';
+import LandingFrame from './LandingFrame.vue';
+import LandingSection from './LandingSection.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
 import { useHistory } from './builder-history';
@@ -138,13 +140,9 @@ function onTabKey(event: KeyboardEvent) {
 </script>
 
 <template>
-  <section class="lp-section" aria-labelledby="demo-title">
-    <p class="lp-eyebrow">Live demo</p>
-    <h2 id="demo-title" class="lp-title">Write it like a doc</h2>
-    <p class="lp-lead">Type the questions. The form and the JSON follow.</p>
-    <div class="sandbox" :data-tab="tab" @keydown="onSandboxKey">
-      <div class="sandbox__bar sandbox__bar--left">
-        <span class="sandbox__dots" aria-hidden="true"><i /><i /><i /></span>
+  <LandingSection id="demo" band eyebrow="Playground" title="Edit the definition, watch the form." lead="Fields, validation, branching and steps, live.">
+    <LandingFrame class="sandbox" fixed :data-tab="tab" @keydown="onSandboxKey">
+      <template #bar>
         <div class="sandbox__tabs" role="tablist" aria-label="Demo view" @keydown="onTabKey">
           <button
             v-for="item in tabs"
@@ -168,36 +166,37 @@ function onTabKey(event: KeyboardEvent) {
           <button type="button" class="sandbox__icon" title="Redo ⇧⌘Z" aria-label="Redo" :disabled="!history.canRedo.value" @click="history.redo()"><LucideIcon name="redo" /></button>
           <button type="button" class="sandbox__text" title="Reset to example" @click="reset"><LucideIcon name="restart" /> Reset</button>
         </div>
-      </div>
-      <div class="sandbox__bar sandbox__bar--right">
+      </template>
+      <template #aside-bar>
         <span class="sandbox__label">Preview</span>
         <span class="sandbox__muted">{{ progress }}</span>
         <button type="button" class="sandbox__restart" @click="restart"><LucideIcon name="restart" /> Restart</button>
-      </div>
+      </template>
       <div id="sandbox-write" class="sandbox__pane sandbox__pane--write" role="tabpanel" aria-labelledby="sandbox-tab-write">
         <LandingBuilder :form="model" :edited="edited" @edit="edited = true" />
       </div>
       <div id="sandbox-json" class="sandbox__pane sandbox__pane--json" role="tabpanel" aria-labelledby="sandbox-tab-json">
         <LandingJson :source="source" :error="jsonError" :active="tab === 'json'" @change="onJson" />
       </div>
-      <div id="sandbox-preview" class="sandbox__pane sandbox__pane--preview" role="tabpanel" aria-labelledby="sandbox-tab-preview">
-        <div class="sandbox__preview">
-          <ClientOnly>
-            <LandingDemoForm
-              :key="`${run}-${liveVersion}`"
-              :definition="live"
-              :initial="values"
-              :path="path"
-              @step="onStep"
-              @values="(next) => (values = next)"
-              @done="(value) => (done = value)"
-            />
-          </ClientOnly>
+      <template #aside>
+        <div id="sandbox-preview" class="sandbox__pane sandbox__pane--preview" role="tabpanel" aria-labelledby="sandbox-tab-preview">
+          <div class="sandbox__preview">
+            <ClientOnly>
+              <LandingDemoForm
+                :key="`${run}-${liveVersion}`"
+                :definition="live"
+                :initial="values"
+                :path="path"
+                @step="onStep"
+                @values="(next) => (values = next)"
+                @done="(value) => (done = value)"
+              />
+            </ClientOnly>
+          </div>
         </div>
-      </div>
-    </div>
-    <p class="sandbox__caption">The editor is available on desktop.</p>
-  </section>
+      </template>
+    </LandingFrame>
+  </LandingSection>
 </template>
 
 <style scoped src="./sandbox.css"></style>
