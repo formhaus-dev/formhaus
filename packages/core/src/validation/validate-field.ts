@@ -1,13 +1,13 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
 import { getDefaultMessage } from './default-messages';
+import { BOOLEAN_TYPES, clientTypeError } from './type-checks';
 
 export type ValidatorFn = (
   value: unknown,
   allValues: Record<string, unknown>,
 ) => string | null;
 
-export const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
 
 function isEmpty(value: unknown, field: FormField): boolean {
   return isBlank(value) || (value === false && BOOLEAN_TYPES.has(field.type));
@@ -41,18 +41,18 @@ export function validateFieldValue(
   allValues: Record<string, unknown>,
   validators?: Record<string, ValidatorFn>,
 ): string | null {
-  const rules = field.validation;
-  if (!rules) return null;
+  const rules = field.validation ?? {};
+  const matchMessage = rules.matchFieldMessage ?? getDefaultMessage('matchField');
   if (isEmpty(value, field)) {
-    if (!rules.required) return null;
-    return typeof rules.required === 'string' ? rules.required : getDefaultMessage('required');
+    if (rules.required) return typeof rules.required === 'string' ? rules.required : getDefaultMessage('required');
+    return rules.matchField !== undefined && !isBlank(allValues[rules.matchField]) ? matchMessage : null;
   }
+  const typeIssue = clientTypeError(field, value);
+  if (typeIssue) return typeIssue;
   const sizeError = typeof value === 'string' || Array.isArray(value)
     ? boundError(value.length, 'Length', rules, Array.isArray(value) ? 'items' : undefined)
     : typeof value === 'number' ? boundError(value, '', rules) : undefined;
-  const matchError = rules.matchField !== undefined && value !== allValues[rules.matchField]
-    ? rules.matchFieldMessage ?? getDefaultMessage('matchField')
-    : undefined;
+  const matchError = rules.matchField !== undefined && value !== allValues[rules.matchField] ? matchMessage : undefined;
   return (sizeError
     ?? patternError(value, rules)
     ?? matchError

@@ -1,0 +1,74 @@
+import { describe, expect, it } from 'vitest';
+import { FormEngine, validateFieldValue, type FormField } from '../../src';
+import { validateSubmission } from '../../src/server';
+
+const field = (type: string, extra: Partial<FormField> = {}): FormField => ({ key: 'x', type, label: 'X', ...extra });
+
+describe('client type checks', () => {
+  it.each([
+    ['email', 'user@localhost', 'Enter a valid email'],
+    ['email', `${'a'.repeat(250)}@b.co`, 'Enter a valid email'],
+    ['datetime', '2026-01-01T12:00:00.123456', 'Enter a valid date and time'],
+    ['date', '01/02/2026', 'Enter a valid date'],
+    ['number', Number.NaN, 'Enter a number'],
+    ['number', Infinity, 'Enter a number'],
+    ['number', '5', 'Enter a number'],
+    ['textarea', 'a'.repeat(10001), 'Must be at most 10000 characters'],
+    ['checkbox', 'yes', 'Must be true or false'],
+  ])('rejects %s %j like the server', (type, value, message) => {
+    expect(validateFieldValue(field(type), value, {})).toBe(message);
+    const definition = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [field(type)] };
+    if (typeof value !== 'number' || Number.isFinite(value)) expect(validateSubmission(definition, { x: value }).errors.x ?? message).toBe(message);
+  });
+
+  it.each([
+    ['email', 'ada@example.com'],
+    ['datetime', '2026-01-01T12:00'],
+    ['date', '2026-01-01'],
+    ['number', 0],
+    ['file', { name: 'cv.pdf' }],
+    ['rating', { stars: 4 }],
+  ])('accepts %s %j', (type, value) => {
+    expect(validateFieldValue(field(type), value, {})).toBeNull();
+  });
+
+  it('checks static options but not options loaded from a provider', () => {
+    const options = [{ value: 'a', label: 'A' }];
+    expect(validateFieldValue(field('select', { options }), 'z', {})).toBe('Select one of the available options');
+    expect(validateFieldValue(field('select', { options, optionsFrom: 'cities' }), 'z', {})).toBeNull();
+  });
+
+  it('runs the type check before size and pattern rules', () => {
+    expect(validateFieldValue(field('email', { validation: { minLength: 50, pattern: '^z' } }), 'a@b', {})).toBe('Enter a valid email');
+  });
+
+  it('fails an empty matchField when the other field has a value', () => {
+    const confirm = field('text', { validation: { matchField: 'password', matchFieldMessage: 'Must match' } });
+    expect(validateFieldValue(confirm, '', { password: 'secret' })).toBe('Must match');
+    expect(validateFieldValue(confirm, '', {})).toBeNull();
+  });
+
+  it('blocks Continue on an invalid email in the engine', async () => {
+    const engine = new FormEngine({ id: 'f', title: 'F', submit: { label: 'Go' }, steps: [
+      { id: 'a', title: 'A', fields: [field('email', { key: 'email' })] },
+      { id: 'b', title: 'B', fields: [] },
+    ] }, { email: 'user@localhost' });
+    expect(await engine.next()).toBe(false);
+    expect(engine.errors.email).toBe('Enter a valid email');
+  });
+});
+
+describe('validateSubmission options', () => {
+  const definition = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [field('text', { key: 'card', validation: { validator: 'luhn' } })] };
+
+  it('runs validators passed in options', () => {
+    const luhn = (value: unknown) => (value === '4242' ? null : 'Invalid card');
+    expect(validateSubmission(definition, { card: '1234' }, { validators: { luhn } }).errors).toEqual({ card: 'Invalid card' });
+    expect(validateSubmission(definition, { card: '1234' }).errors).toEqual({});
+  });
+
+  it('reports a request body passed instead of the values', () => {
+    const result = validateSubmission(definition, { values: { card: '4242' }, skippedSteps: [] });
+    expect(result.errors.values).toBe('Pass the values object as the second argument, not the request body with "values" and "skippedSteps".');
+  });
+});

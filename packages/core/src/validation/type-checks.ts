@@ -1,6 +1,8 @@
 import type { FormField } from '../types';
-import { getDefaultMessage, TYPE_MESSAGES } from '../validation/default-messages';
-import { BOOLEAN_TYPES } from '../validation/validate-field';
+import { getDefaultMessage, TYPE_MESSAGES } from './default-messages';
+
+export const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
+const CLIENT_TYPES = new Set(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'multiselect', 'checkbox', 'radio', 'switch', 'date', 'datetime', 'textarea']);
 
 export const MAX_STRING_LENGTH = 10000;
 const MAX_EMAIL_LENGTH = 254;
@@ -68,4 +70,9 @@ export function typeError(field: FormField, value: unknown): string | null {
   if (format) return formatError(field, value, format);
   if (field.type === 'select' || field.type === 'radio') return stringError(field, value, TYPE_MESSAGES.option) ?? (isOption(field, value) ? null : TYPE_MESSAGES.option);
   return TEXT_TYPES.has(field.type) ? stringError(field, value, TYPE_MESSAGES.string) : primitiveError(field, value);
+}
+
+export function clientTypeError(field: FormField, value: unknown): string | null {
+  if (!CLIENT_TYPES.has(field.type)) return null;
+  return typeError(field.optionsFrom ? { ...field, options: undefined } : field, value);
 }
