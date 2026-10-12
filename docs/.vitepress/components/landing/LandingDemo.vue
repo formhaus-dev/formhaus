@@ -8,7 +8,7 @@ import LandingSection from './LandingSection.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
 import { formatJson } from './json-format';
-import { useNear } from './near';
+import { useDemoCore } from './demo-checks';
 
 const LandingDemoForm = defineAsyncComponent(() => import('./demo-lazy').then((lazy) => lazy.loadDemoForm()));
 
@@ -39,18 +39,7 @@ const history_ = ref<string[]>([first()]);
 const values = ref<Record<string, unknown>>({});
 const done = ref(false);
 const jsonError = ref('');
-const core = shallowRef<typeof import('./demo-core')>();
-const near = useNear(() => document.getElementById('demo-title')?.closest('section') ?? null);
-watch(near, async () => { core.value = await (await import('./demo-lazy')).loadDemoCore(); });
-
-function safeValidate(value: FormDefinition): string[] {
-  if (!core.value) return [];
-  try {
-    return core.value.checkDefinition(value).filter((issue) => issue.severity === 'error').map((issue) => issue.message);
-  } catch (error) {
-    return [error instanceof Error ? error.message : 'Invalid definition'];
-  }
-}
+const { core, near, validate: safeValidate } = useDemoCore('demo');
 
 let timer: ReturnType<typeof setTimeout> | undefined;
 watch(definition, (next) => {
