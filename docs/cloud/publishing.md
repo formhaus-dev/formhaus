@@ -50,7 +50,7 @@ A publish without an account key creates an unclaimed form.
 | Submissions | 100 in total |
 | Webhooks and emails | None |
 | `redirect_url` | Ignored |
-| Hosted page | Banner "Unverified form, do not enter passwords or payment details", `noindex`, Report link |
+| Hosted page and embed | Notice "Published by an AI agent and not yet linked to an account. Whoever runs the agent can read what you send. Don't enter passwords or payment details.", `noindex`, Report link |
 
 Limits per IP for publishes without an account key:
 
@@ -83,4 +83,5 @@ Send keys as `Authorization: Bearer <key>`. Keep them in server-side configurati
 
 - The claim takes every unclaimed form of the same agent key that was published for the same `email` or without one. Forms published for another email stay unclaimed; the page shows how many.
 - Claimed forms stop expiring and count toward the workspace plan. On the Free plan, all forms in the claim must fit the 3-form limit, or nothing is claimed.
-- The agent key moves to the workspace as `Agent key (claimed YYYY-MM-DD), limited to forms it created`. It keeps working for the forms it created, and new forms it publishes go to the workspace. It still cannot change settings. Revoke it under **API keys**.
+- The claim page lists the forms that move and says the agent's key can read their responses. By default the claim turns the agent key off. If the person ticks **Let the agent keep access**, the key moves to the workspace as `Agent key (claimed YYYY-MM-DD), limited to forms it created`: it keeps working for the forms it created, new forms it publishes go to the workspace, and it still cannot change settings. Revoke it under **API keys**.
+- Sign-in and claim pages say that continuing accepts the [Terms](/legal/terms) and [Privacy Policy](/legal/privacy). An unclaimed publish returns `terms_url`.

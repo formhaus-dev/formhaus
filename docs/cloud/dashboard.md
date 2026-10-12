@@ -84,7 +84,7 @@ Lists each form with its URL, a status (`Healthy`, `Failing`, `No deliveries yet
 | List | Name, prefix, created, last used, revoked state |
 | Revoke | The key stops working at once |
 
-A workspace has at most 20 active keys. Keys act as editors of the workspace. Agent keys moved by a claim appear here as `Agent key (claimed YYYY-MM-DD), limited to forms it created`. Use: `Authorization: Bearer <key>` on `https://api.formhaus.dev/mcp` and `https://api.formhaus.dev/v1`.
+A workspace has at most 20 active keys. Keys act as editors of the workspace. Agent keys kept at a claim appear here as `Agent key (claimed YYYY-MM-DD), limited to forms it created`. Use: `Authorization: Bearer <key>` on `https://api.formhaus.dev/mcp` and `https://api.formhaus.dev/v1`.
 
 ## Usage and plan
 
@@ -96,7 +96,7 @@ Shows submissions used this month against the limit, a bar per form, the reset d
 
 ## Claim
 
-The claim page lists the forms that move together and says how many forms of the same agent were published for another email and stay unclaimed. Without a session it links to sign-in and returns after the link is opened in the same browser. Viewers see a notice to switch to a workspace where they are an editor or owner. Rules: [Publishing](/cloud/publishing#claim).
+The claim page lists the forms that move together, explains that the agent's key can read their responses and turns it off unless **Let the agent keep access** is ticked, and says how many forms of the same agent were published for another email and stay unclaimed. Without a session it links to sign-in and returns after the link is opened in the same browser. Viewers see a notice to switch to a workspace where they are an editor or owner. Rules: [Publishing](/cloud/publishing#claim).
 
 ## Hidden characters
 

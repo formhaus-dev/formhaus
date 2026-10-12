@@ -16,7 +16,7 @@ A page needs only the public `form_id`. API keys never go into browser code.
 
 ## Hosted link
 
-The page renders the latest version with the default fields and a "Made with Formhaus" footer. `?theme=light` or `?theme=dark` sets the theme. Unclaimed forms show an "Unverified form" banner and `noindex`.
+The page renders the latest version with the default fields and a "Made with Formhaus" footer. `?theme=light` or `?theme=dark` sets the theme. Unclaimed forms show a notice that an AI agent published the form and can read the responses, and `noindex`. The footer links to the Terms, the Privacy Policy and Report abuse.
 
 ## Embed
 
