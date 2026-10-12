@@ -464,5 +464,149 @@
         "action": null
       }
     }
+  },
+  {
+    "name": "load envelope without a render token and with an unsafe redirect",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "body": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 1,
+        "settings": {
+          "redirectUrl": "javascript:alert(1)"
+        }
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 1,
+        "settings": {}
+      }
+    }
+  },
+  {
+    "name": "load legacy definition with Formhaus-Form-Version",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "headers": {
+        "Formhaus-Form-Version": "7"
+      },
+      "body": {
+        "id": "contact",
+        "title": "Contact",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email"
+          }
+        ]
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 7,
+        "settings": {}
+      }
+    }
+  },
+  {
+    "name": "load envelope with a null definition",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "body": {
+        "definition": null,
+        "version": 1
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 200,
+        "code": "invalid_response",
+        "action": "retry"
+      }
+    }
+  },
+  {
+    "name": "load client outdated",
+    "request": "load",
+    "response": {
+      "status": 426,
+      "body": {
+        "error": "client_outdated",
+        "minCore": "0.12.0"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 426,
+        "code": "client_outdated",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "load internal error",
+    "request": "load",
+    "response": {
+      "status": 500,
+      "body": {
+        "error": "internal"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 500,
+        "code": "internal",
+        "action": "retry"
+      }
+    }
   }
 ]

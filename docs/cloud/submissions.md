@@ -11,7 +11,7 @@ A page needs only the public `form_id`. API keys never go into browser code.
 |---|---|---|
 | Hosted link | `https://f.formhaus.dev/Xk3d9QpL2a` | Yes |
 | Embed | `<script src="https://f.formhaus.dev/embed.js" data-form="Xk3d9QpL2a" async></script>` | Yes |
-| `FormhausForm` | `<FormhausForm id="Xk3d9QpL2a" />` | Yes, unless you pass `success` |
+| `FormhausForm` | `<FormhausForm id="Xk3d9QpL2a" />` | Yes, unless you pass `success`, which also skips the redirect |
 | POST JSON | `POST https://api.formhaus.dev/f/Xk3d9QpL2a` | Your code |
 
 ## Hosted link
@@ -83,7 +83,7 @@ Callbacks:
 | `onSuccess` / `@success` | Called with `{ id, values }` after a `201`. |
 | `onError` | Called with a `CloudError` (`status`, `code`, `errors`) when loading or submitting fails. A network failure has `status` `0` and `code` `"network"`. A request that gets no response within 15 seconds for the definition or 30 seconds for a submission has `status` `0` and `code` `"timeout"`. |
 | `initialForm` | A form loaded on the server with `fetchForm()` from `@formhaus/core/cloud`. The component renders it without a request. |
-| `draftStore` | Keeps unsent answers across reloads. `sessionDraftStore()` from `@formhaus/core/cloud` keeps them in `sessionStorage` for 7 days and leaves out `password` and `file` fields. |
+| `draftStore` | Keeps unsent answers across reloads. `sessionDraftStore()` from `@formhaus/core/cloud` keeps them in `sessionStorage`, until the tab closes and at most 7 days, and leaves out `password` and `file` fields. Values of custom field types are kept. |
 | `fallback` / `#fallback` | Shown while the definition loads. |
 | `success` / `#success` | Replaces the default message after a submission. |
 
@@ -190,6 +190,6 @@ The server runs `validateSubmission()` from `@formhaus/core` against the latest 
 
 `core` is the `@formhaus/core` version of the client. `FormhausForm` sends it on the GET and on the POST. CORS `*`. Unknown, paused and expired forms answer `404`, `409` and `410` with `{ "error": "not_found" | "paused" | "expired", "message": "..." }`.
 
-`GET /f/{id}/definition` returns the bare definition with the version in the `Formhaus-Version` header, for clients older than 0.11.
+`GET /f/{id}/definition` returns the bare definition with the version in the `Formhaus-Version` and `Formhaus-Form-Version` headers, for clients older than 0.11.
 
 The `_fh_*` body keys and a top-level `meta` key are reserved.

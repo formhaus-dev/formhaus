@@ -1,5 +1,11 @@
 import type { FormDefinition } from '../types';
 
+export interface DraftStorage {
+  getItem(key: string): string | null;
+  setItem(key: string, value: string): void;
+  removeItem(key: string): void;
+}
+
 export interface DraftStore {
   load(id: string, version: number | undefined): Record<string, unknown> | null;
   save(id: string, version: number | undefined, values: Record<string, unknown>): void;
@@ -18,17 +24,24 @@ export function draftValues(definition: FormDefinition, values: Record<string, u
   return kept;
 }
 
-export function sessionDraftStore(maxAge = WEEK, storage = (globalThis as { sessionStorage?: DraftStorage }).sessionStorage): DraftStore {
+const sessionStorageOf = () => (globalThis as { sessionStorage?: DraftStorage }).sessionStorage;
+
+export function sessionDraftStore(maxAge = WEEK, storageOf: () => DraftStorage | undefined = sessionStorageOf): DraftStore {
   const key = (id: string) => `formhaus:draft:${id}`;
-  const attempt = <T>(action: () => T, fallback: T): T => {
-    try { return storage ? action() : fallback; } catch { return fallback; }
+  const attempt = <T>(action: (storage: DraftStorage) => T, fallback: T): T => {
+    try {
+      const storage = storageOf();
+      return storage ? action(storage) : fallback;
+    } catch {
+      return fallback;
+    }
   };
   return {
-    load: (id, version) => attempt(() => {
-      const draft = JSON.parse(storage!.getItem(key(id)) ?? 'null') as { version?: number; savedAt: number; values: Record<string, unknown> } | null;
+    load: (id, version) => attempt((storage) => {
+      const draft = JSON.parse(storage.getItem(key(id)) ?? 'null') as { version?: number; savedAt: number; values: Record<string, unknown> } | null;
       return draft && draft.version === version && Date.now() - draft.savedAt < maxAge ? draft.values : null;
     }, null),
-    save: (id, version, values) => attempt(() => storage!.setItem(key(id), JSON.stringify({ version, savedAt: Date.now(), values })), undefined),
-    clear: (id) => attempt(() => storage!.removeItem(key(id)), undefined),
+    save: (id, version, values) => attempt((storage) => storage.setItem(key(id), JSON.stringify({ version, savedAt: Date.now(), values })), undefined),
+    clear: (id) => attempt((storage) => storage.removeItem(key(id)), undefined),
   };
 }

@@ -2,7 +2,7 @@ import type { FormDefinition } from '../types';
 import { carryValues, splitErrors, updatedErrors } from './carry';
 import { createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
 import { draftValues, type DraftStore } from './draft';
-import type { CloudSettings, PublishedForm } from './envelope';
+import { parseSettings, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
 
@@ -43,6 +43,11 @@ export const initialCloudState: CloudState = {
   initialValues: null, revision: 0, attempt: 0, done: false,
 };
 
+export function cloudStateFor(form?: PublishedForm): CloudState {
+  if (!form) return initialCloudState;
+  return { ...initialCloudState, definition: form.definition, version: form.version ?? null, settings: parseSettings(form.settings) };
+}
+
 function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
   return { tone: 'error', message: error.message, action: error.action, details };
 }
@@ -63,7 +68,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   function show(form: PublishedForm) {
     submitter = submitterFor(form);
     const draft = options.draftStore?.load(options.id, form.version) ?? null;
-    update({ definition: form.definition, version: form.version ?? null, settings: form.settings ?? {}, initialValues: draft });
+    update({ ...cloudStateFor(form), revision: state.revision, attempt: state.attempt, initialValues: draft });
   }
 
   async function refresh(error: CloudError, sent: Record<string, unknown>) {
@@ -77,7 +82,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
       report({
         definition: next.definition,
         version: next.version,
-        settings: next.settings ?? {},
+        settings: parseSettings(next.settings),
         initialValues: kept,
         revision: state.revision + 1,
         errors: updatedErrors(next.definition, sent, kept, error.errors ?? {}),

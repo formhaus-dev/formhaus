@@ -1,4 +1,4 @@
-export { createCloudController, initialCloudState, type CloudCallbacks, type CloudControllerOptions, type CloudState } from '../cloud/controller';
+export { cloudStateFor, createCloudController, initialCloudState, type CloudCallbacks, type CloudControllerOptions, type CloudState } from '../cloud/controller';
 export { focusProblem } from '../cloud/focus';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 import type { FormEngine } from '../engine';

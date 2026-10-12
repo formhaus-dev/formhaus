@@ -6,7 +6,7 @@ import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
-const HIDDEN = { position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' } as const;
+const HIDDEN = { position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0 0 0 0)', clipPath: 'inset(50%)' } as const;
 
 function handled() {}
 
@@ -29,8 +29,8 @@ export function FormhausForm({ id, apiBase, initialForm, draftStore, onSuccess, 
   }, [cloud.attempt]);
 
   useEffect(() => {
-    if (cloud.done && redirectUrl) window.location.assign(redirectUrl);
-  }, [cloud.done, redirectUrl]);
+    if (cloud.done && redirectUrl && !success) window.location.assign(redirectUrl);
+  }, [cloud.done, redirectUrl, success]);
 
   if (cloud.loadError) return (
     <>

@@ -1,5 +1,5 @@
 import type { CloudSubmission, DraftStore, PublishedForm } from '@formhaus/core/cloud';
-import { createCloudController, initialCloudState } from '@formhaus/core/internal';
+import { cloudStateFor, createCloudController } from '@formhaus/core/internal';
 import { onBeforeUnmount, onMounted, shallowRef, watch } from 'vue';
 
 interface CloudFormOptions {
@@ -13,12 +13,12 @@ interface CloudFormOptions {
 }
 
 export function useCloudForm(options: CloudFormOptions) {
-  const state = shallowRef(initialCloudState);
+  const state = shallowRef(cloudStateFor(options.initialForm()));
   let controller: ReturnType<typeof createCloudController> | undefined;
 
   function boot() {
     controller?.dispose();
-    state.value = initialCloudState;
+    state.value = cloudStateFor(options.initialForm());
     controller = createCloudController({
       id: options.id(), apiBase: options.apiBase(), initialForm: options.initialForm(), draftStore: options.draftStore(), extraBody: options.extraBody,
     }, {

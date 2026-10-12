@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, useSlots, watch } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
 import { CloudError, type CloudAction } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
@@ -8,10 +8,14 @@ import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
 const props = defineProps<FormhausFormProps>();
-const emit = defineEmits<{ success: [submission: { id: string; values: Record<string, unknown> }] }>();
+const emit = defineEmits<{
+  success: [submission: { id: string; values: Record<string, unknown> }];
+  fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
+}>();
 const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
-const hidden = { position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' } as const;
+const hidden = { position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0 0 0 0)', clipPath: 'inset(50%)' } as const;
+const slots = useSlots();
 const notice = ref<InstanceType<typeof CloudNotice> | null>(null);
 
 const { state, submit, retry, again, saveDraft } = useCloudForm({
@@ -43,11 +47,12 @@ watch(() => state.value.attempt, () => {
 }, { flush: 'post' });
 onBeforeUnmount(() => cancelAnimationFrame(frame));
 watch(() => state.value.done, (done) => {
-  if (done && state.value.settings.redirectUrl) window.location.assign(state.value.settings.redirectUrl);
+  if (done && state.value.settings.redirectUrl && !slots.success) window.location.assign(state.value.settings.redirectUrl);
 });
 
-function onFieldChange(_key: string, _value: unknown, values: Record<string, unknown>) {
+function onFieldChange(key: string, value: unknown, values: Record<string, unknown>) {
   saveDraft(values);
+  emit('fieldChange', key, value, values);
 }
 </script>
 

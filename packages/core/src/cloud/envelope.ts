@@ -37,7 +37,7 @@ function text(value: unknown): string | undefined {
   return typeof value === 'string' && value !== '' ? value : undefined;
 }
 
-function parseSettings(value: unknown): CloudSettings {
+export function parseSettings(value: unknown): CloudSettings {
   if (!isRecord(value)) return {};
   const redirect = text(value.redirectUrl);
   return {
@@ -49,7 +49,8 @@ function parseSettings(value: unknown): CloudSettings {
 
 export function parseForm(body: unknown, response: CloudResponse): PublishedForm {
   if (!isRecord(body)) throw new CloudError(response.status, 'invalid_response');
-  if (!isRecord(body.definition)) return { definition: body as unknown as FormDefinition, version: headerVersion(response), settings: {} };
+  if (!('definition' in body)) return { definition: body as unknown as FormDefinition, version: headerVersion(response), settings: {} };
+  if (!isRecord(body.definition)) throw new CloudError(response.status, 'invalid_response');
   return {
     definition: body.definition as unknown as FormDefinition,
     version: toVersion(body.version) ?? headerVersion(response),

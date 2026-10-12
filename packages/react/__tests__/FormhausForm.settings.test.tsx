@@ -29,3 +29,20 @@ it('redirects after a submission when the form has a redirect URL', async () => 
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   await waitFor(() => expect(assign).toHaveBeenCalledWith('https://example.com/thanks'));
 });
+
+it('renders an initial form on the server without the fallback', async () => {
+  const { renderToString } = await import('react-dom/server');
+  const html = renderToString(<FormhausForm id="abc" initialForm={{ definition }} fallback="LOADING" />);
+  expect(html).toContain('Email');
+  expect(html).not.toContain('LOADING');
+});
+
+it('keeps its own success handling when success is passed', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 201, json: async () => ({ id: 's1', values: {} }) }));
+  const assign = vi.fn();
+  vi.stubGlobal('location', { ...window.location, assign });
+  render(<FormhausForm id="abc" initialForm={{ definition, settings: { redirectUrl: 'https://example.com/thanks' } }} success={<p>Mine</p>} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+  expect(await screen.findByText('Mine')).toBeDefined();
+  expect(assign).not.toHaveBeenCalled();
+});

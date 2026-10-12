@@ -41,9 +41,3 @@ declare const crypto: {
 declare const process: { env: Record<string, string | undefined> };
 
 declare const __FORMHAUS_CORE_VERSION__: string;
-
-interface DraftStorage {
-  getItem(key: string): string | null;
-  setItem(key: string, value: string): void;
-  removeItem(key: string): void;
-}

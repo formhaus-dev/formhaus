@@ -41,7 +41,8 @@ describe('cloud protocol', () => {
 
   it('restores a draft without sensitive fields and clears it after a submission', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(created()));
-    const draftStore = sessionDraftStore(1000, storage());
+    const backing = storage();
+    const draftStore = sessionDraftStore(1000, () => backing);
     const first = createCloudController({ id: 'abc', initialForm: form, draftStore }, { onChange: () => {} });
     first.start();
     first.saveDraft({ name: 'Ada', secret: 'hunter2' });
@@ -54,12 +55,24 @@ describe('cloud protocol', () => {
   });
 
   it('ignores a draft of another version or an expired one', () => {
-    const store = sessionDraftStore(-1, storage());
+    const first = storage();
+    const store = sessionDraftStore(-1, () => first);
     store.save('abc', 5, { name: 'Ada' });
     expect(store.load('abc', 5)).toBeNull();
-    const fresh = sessionDraftStore(1000, storage());
+    const second = storage();
+    const fresh = sessionDraftStore(1000, () => second);
     fresh.save('abc', 4, { name: 'Ada' });
     expect(fresh.load('abc', 5)).toBeNull();
     expect(sessionDraftStore(1000, undefined).load('abc', 5)).toBeNull();
+    const blocked = sessionDraftStore(1000, () => { throw new Error('SecurityError'); });
+    expect(() => blocked.save('abc', 5, {})).not.toThrow();
+    expect(blocked.load('abc', 5)).toBeNull();
+  });
+
+  it('drops a redirect URL that is not http or https from an initial form', () => {
+    const states: CloudState[] = [];
+    const controller = createCloudController({ id: 'abc', initialForm: { definition, settings: { redirectUrl: 'javascript:alert(1)', successMessage: 'Hi' } } }, { onChange: (state) => states.push(state) });
+    controller.start();
+    expect(states.at(-1)?.settings).toEqual({ successMessage: 'Hi' });
   });
 });
