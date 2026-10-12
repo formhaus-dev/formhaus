@@ -1,9 +1,10 @@
 import type { FormDefinition } from '../types';
 import { networkError, readJson, toCloudError } from './error';
+import { parseForm, type PublishedForm } from './envelope';
 import { randomId } from './uuid';
 
 const DEFAULT_API_BASE = 'https://api.formhaus.dev';
-const VERSION_HEADER = 'Formhaus-Version';
+const CORE = `core=${__FORMHAUS_CORE_VERSION__}`;
 
 export interface CloudSubmission {
   id: string;
@@ -13,11 +14,6 @@ export interface CloudSubmission {
 export interface CloudClientOptions {
   id: string;
   apiBase?: string;
-}
-
-export interface PublishedDefinition {
-  definition: FormDefinition;
-  version?: number;
 }
 
 function endpoint({ id, apiBase = DEFAULT_API_BASE }: CloudClientOptions): string {
@@ -44,33 +40,30 @@ async function send(url: string, timeout: number, init: CloudRequestInit = {}, s
   }
 }
 
-function versionOf(response: CloudResponse): number | undefined {
-  const version = Number(response.headers?.get(VERSION_HEADER));
-  return Number.isInteger(version) && version > 0 ? version : undefined;
-}
-
-export async function fetchPublished(options: CloudClientOptions, signal?: AbortSignal, after?: number): Promise<PublishedDefinition> {
-  const query = after === undefined ? '' : `?v=${after}`;
-  const response = await send(`${endpoint(options)}/definition${query}`, LOAD_TIMEOUT, {}, signal);
+export async function fetchForm(options: CloudClientOptions, signal?: AbortSignal, after?: number): Promise<PublishedForm> {
+  const query = after === undefined ? CORE : `${CORE}&v=${after}`;
+  const response = await send(`${endpoint(options)}/form?${query}`, LOAD_TIMEOUT, {}, signal);
   if (!response.ok) throw await toCloudError(response);
-  return { definition: await readJson(response) as FormDefinition, version: versionOf(response) };
+  return parseForm(await readJson(response), response);
 }
 
 export async function fetchDefinition(options: CloudClientOptions, signal?: AbortSignal): Promise<FormDefinition> {
-  return (await fetchPublished(options, signal)).definition;
+  return (await fetchForm(options, signal)).definition;
 }
 
 export interface CloudSubmitterOptions extends CloudClientOptions {
   version?: number;
+  renderToken?: string;
+  extraBody?: () => Record<string, unknown>;
 }
 
 export function createSubmitter(options: CloudSubmitterOptions) {
   let pending: { body: string; key: string } | null = null;
 
   return async (values: Record<string, unknown>, skippedSteps: string[] = []): Promise<CloudSubmission> => {
-    const body = JSON.stringify({ values, skippedSteps, version: options.version });
+    const body = JSON.stringify({ ...options.extraBody?.(), values, skippedSteps, version: options.version, _fh_rt: options.renderToken });
     if (pending?.body !== body) pending = { body, key: randomId() };
-    const response = await send(endpoint(options), SUBMIT_TIMEOUT, {
+    const response = await send(`${endpoint(options)}?${CORE}`, SUBMIT_TIMEOUT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Idempotency-Key': pending.key },
       body,

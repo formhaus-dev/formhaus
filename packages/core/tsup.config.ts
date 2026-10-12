@@ -1,6 +1,10 @@
+import { readFileSync } from 'node:fs';
 import { defineConfig } from 'tsup';
 
+const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
+
 const shared = {
+  define: { __FORMHAUS_CORE_VERSION__: JSON.stringify(version) },
   treeshake: true,
   minify: true,
   sourcemap: true,

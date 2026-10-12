@@ -39,3 +39,5 @@ declare const crypto: {
 };
 
 declare const process: { env: Record<string, string | undefined> };
+
+declare const __FORMHAUS_CORE_VERSION__: string;

@@ -1,6 +1,8 @@
 import type { FormDefinition } from '../types';
 import { carryValues, splitErrors, updatedErrors } from './carry';
-import { createSubmitter, fetchPublished, type CloudClientOptions, type CloudSubmission } from './client';
+import { createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
+import { draftValues, type DraftStore } from './draft';
+import { parseSettings, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
 
@@ -14,6 +16,7 @@ export interface CloudNotice {
 export interface CloudState {
   definition: FormDefinition | null;
   version: number | null;
+  settings: CloudSettings;
   loadError: Error | null;
   errors: Record<string, string>;
   notice: CloudNotice | null;
@@ -29,18 +32,31 @@ export interface CloudCallbacks {
   onError?(error: unknown): void;
 }
 
+export interface CloudControllerOptions extends CloudClientOptions {
+  initialForm?: PublishedForm;
+  extraBody?: () => Record<string, unknown>;
+  draftStore?: DraftStore;
+}
+
 export const initialCloudState: CloudState = {
-  definition: null, version: null, loadError: null, errors: {}, notice: null,
+  definition: null, version: null, settings: {}, loadError: null, errors: {}, notice: null,
   initialValues: null, revision: 0, attempt: 0, done: false,
 };
+
+export function cloudStateFor(form?: PublishedForm): CloudState {
+  if (!form) return initialCloudState;
+  return { ...initialCloudState, definition: form.definition, version: form.version ?? null, settings: parseSettings(form.settings) };
+}
 
 function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
   return { tone: 'error', message: error.message, action: error.action, details };
 }
 
-export function createCloudController(options: CloudClientOptions, callbacks: CloudCallbacks) {
+export function createCloudController(options: CloudControllerOptions, callbacks: CloudCallbacks) {
   const controller = new AbortController();
+  const submitterFor = (form: PublishedForm) => createSubmitter({ ...options, version: form.version, renderToken: form.renderToken });
   let submitter = createSubmitter(options);
+  let initial = options.initialForm;
   const alive = () => !controller.signal.aborted;
   let state = initialCloudState;
   const update = (patch: Partial<CloudState>) => {
@@ -49,17 +65,24 @@ export function createCloudController(options: CloudClientOptions, callbacks: Cl
   };
   const report = (patch: Partial<CloudState>) => update({ ...patch, attempt: state.attempt + 1 });
 
+  function show(form: PublishedForm) {
+    submitter = submitterFor(form);
+    const draft = options.draftStore?.load(options.id, form.version) ?? null;
+    update({ ...cloudStateFor(form), revision: state.revision, attempt: state.attempt, initialValues: draft });
+  }
+
   async function refresh(error: CloudError, sent: Record<string, unknown>) {
     const before = state.definition;
     try {
-      const next = await fetchPublished(options, controller.signal, error.version);
+      const next = await fetchForm(options, controller.signal, error.version);
       if (!alive()) return;
       if (next.version === undefined || next.version < (error.version ?? 0)) throw new CloudError(409, 'form_updated');
       const kept = before ? carryValues(sent, next.definition, before) : {};
-      submitter = createSubmitter({ ...options, version: next.version });
+      submitter = submitterFor(next);
       report({
         definition: next.definition,
         version: next.version,
+        settings: parseSettings(next.settings),
         initialValues: kept,
         revision: state.revision + 1,
         errors: updatedErrors(next.definition, sent, kept, error.errors ?? {}),
@@ -82,12 +105,13 @@ export function createCloudController(options: CloudClientOptions, callbacks: Cl
   return {
     start() {
       if (state.loadError) update({ loadError: null });
-      fetchPublished(options, controller.signal).then(
-        (published) => {
-          if (!alive()) return;
-          submitter = createSubmitter({ ...options, version: published.version });
-          update({ definition: published.definition, version: published.version ?? null });
-        },
+      if (initial) {
+        show(initial);
+        initial = undefined;
+        return;
+      }
+      fetchForm(options, controller.signal).then(
+        (form) => { if (alive()) show(form); },
         (error: Error) => {
           if (!alive()) return;
           update({ loadError: error });
@@ -98,11 +122,18 @@ export function createCloudController(options: CloudClientOptions, callbacks: Cl
     dispose() {
       controller.abort();
     },
+    saveDraft(values: Record<string, unknown>) {
+      if (state.definition && !state.done) options.draftStore?.save(options.id, state.version ?? undefined, draftValues(state.definition, values));
+    },
+    again() {
+      update({ done: false, errors: {}, notice: null, initialValues: null, revision: state.revision + 1 });
+    },
     async submit(values: Record<string, unknown>, skippedSteps?: string[]) {
       if (state.notice) update({ notice: null });
       try {
         const submission = await submitter(values, skippedSteps);
         if (!alive()) return;
+        options.draftStore?.clear(options.id);
         update({ done: true });
         callbacks.onSuccess?.(submission);
       } catch (error) {

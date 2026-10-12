@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CloudError, createSubmitter } from '../../src/cloud';
 import { createCloudController, focusProblem, type CloudState } from '../../src/internal';
 import { carryValues } from '../../src/cloud/carry';
-import { fetchPublished } from '../../src/cloud/client';
+import { fetchForm } from '../../src/cloud/client';
 import { failureFor } from '../../src/cloud/failures';
 import type { FormDefinition } from '../../src';
 
@@ -63,8 +63,8 @@ describe('versions', () => {
   it('reads the version header and busts the cache after an update', async () => {
     const fetchMock = vi.fn().mockResolvedValue(reply(200, v2, 2));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchPublished({ id: 'abc' }, undefined, 2)).resolves.toEqual({ definition: v2, version: 2 });
-    expect(fetchMock.mock.calls[0][0]).toBe('https://api.formhaus.dev/f/abc/definition?v=2');
+    await expect(fetchForm({ id: 'abc' }, undefined, 2)).resolves.toEqual({ definition: v2, version: 2, settings: {} });
+    expect(fetchMock.mock.calls[0][0]).toBe(`https://api.formhaus.dev/f/abc/form?core=${__FORMHAUS_CORE_VERSION__}&v=2`);
   });
 
   it('sends the version and wraps network failures', async () => {

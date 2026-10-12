@@ -43,7 +43,7 @@ it('renders the fetched definition', async () => {
   const fetchMock = stubApi();
   render(FormhausForm, { props: { id: 'abc', apiBase: 'https://example.test' } });
   expect(await screen.findByText('Email')).toBeDefined();
-  expect(fetchMock.mock.calls[0][0]).toBe('https://example.test/f/abc/definition');
+  expect(fetchMock.mock.calls[0][0]).toMatch(/^https:\/\/example\.test\/f\/abc\/form\?core=\d/);
 });
 
 it('shows an error when the definition cannot be loaded', async () => {
@@ -74,7 +74,7 @@ it('posts values and emits success', async () => {
   const { emitted } = render(FormhausForm, { props: { id: 'abc' } });
   await fillAndSend('a@b.co');
   await waitFor(() => expect(emitted().success).toEqual([[{ id: 's1', values: { email: 'a@b.co' } }]]));
-  expect(JSON.parse(posts(fetchMock)[0][1].body)).toEqual({ values: { email: 'a@b.co' }, skippedSteps: [] });
+  expect(JSON.parse(posts(fetchMock)[0][1].body)).toEqual({ _fh_hp: '', values: { email: 'a@b.co' }, skippedSteps: [] });
   expect(screen.getByRole('status')).toBeDefined();
 });
 

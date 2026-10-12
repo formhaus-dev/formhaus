@@ -1,0 +1,612 @@
+[
+  {
+    "name": "201 stores the submission",
+    "request": "submit",
+    "response": {
+      "status": 201,
+      "body": {
+        "id": "7b2f",
+        "values": {
+          "email": "ada@example.com"
+        }
+      }
+    },
+    "expect": {
+      "submission": {
+        "id": "7b2f",
+        "values": {
+          "email": "ada@example.com"
+        }
+      }
+    }
+  },
+  {
+    "name": "400 malformed body",
+    "request": "submit",
+    "response": {
+      "status": 400,
+      "body": {
+        "error": "malformed_body"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 400,
+        "code": "malformed_body",
+        "action": "reload"
+      }
+    }
+  },
+  {
+    "name": "400 invalid idempotency key",
+    "request": "submit",
+    "response": {
+      "status": 400,
+      "body": {
+        "error": "invalid_idempotency_key"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 400,
+        "code": "invalid_idempotency_key",
+        "action": "reload"
+      }
+    }
+  },
+  {
+    "name": "402 limit reached",
+    "request": "submit",
+    "response": {
+      "status": 402,
+      "body": {
+        "error": "limit_reached"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 402,
+        "code": "limit_reached",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "404 not found",
+    "request": "submit",
+    "response": {
+      "status": 404,
+      "body": {
+        "error": "not_found"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 404,
+        "code": "not_found",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "409 paused",
+    "request": "submit",
+    "response": {
+      "status": 409,
+      "body": {
+        "error": "paused"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 409,
+        "code": "paused",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "409 idempotency key reused",
+    "request": "submit",
+    "response": {
+      "status": 409,
+      "body": {
+        "error": "idempotency_key_reused"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 409,
+        "code": "idempotency_key_reused",
+        "action": "retry"
+      }
+    }
+  },
+  {
+    "name": "409 form updated",
+    "request": "submit",
+    "response": {
+      "status": 409,
+      "body": {
+        "error": "form_updated",
+        "version": 4,
+        "errors": {
+          "email": "Enter a valid email"
+        }
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 409,
+        "code": "form_updated",
+        "action": "reload",
+        "version": 4,
+        "errors": {
+          "email": "Enter a valid email"
+        }
+      }
+    }
+  },
+  {
+    "name": "410 expired",
+    "request": "submit",
+    "response": {
+      "status": 410,
+      "body": {
+        "error": "expired"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 410,
+        "code": "expired",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "413 body too large",
+    "request": "submit",
+    "response": {
+      "status": 413,
+      "body": {
+        "error": "body_too_large"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 413,
+        "code": "body_too_large",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "415 unsupported media type",
+    "request": "submit",
+    "response": {
+      "status": 415,
+      "body": {
+        "error": "unsupported_media_type"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 415,
+        "code": "unsupported_media_type",
+        "action": "reload"
+      }
+    }
+  },
+  {
+    "name": "422 field errors without a code",
+    "request": "submit",
+    "response": {
+      "status": 422,
+      "body": {
+        "errors": {
+          "email": "Enter a valid email"
+        }
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 422,
+        "code": "unknown",
+        "action": null,
+        "errors": {
+          "email": "Enter a valid email"
+        }
+      }
+    }
+  },
+  {
+    "name": "422 invalid with field errors",
+    "request": "submit",
+    "response": {
+      "status": 422,
+      "body": {
+        "error": "invalid",
+        "errors": {
+          "email": "Enter a valid email"
+        }
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 422,
+        "code": "invalid",
+        "action": null,
+        "errors": {
+          "email": "Enter a valid email"
+        }
+      }
+    }
+  },
+  {
+    "name": "426 client outdated",
+    "request": "submit",
+    "response": {
+      "status": 426,
+      "body": {
+        "error": "client_outdated",
+        "minCore": "0.12.0"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 426,
+        "code": "client_outdated",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "429 rate limited",
+    "request": "submit",
+    "response": {
+      "status": 429,
+      "body": {
+        "error": "rate_limited",
+        "message": "Too many requests"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 429,
+        "code": "rate_limited",
+        "action": "retry"
+      }
+    }
+  },
+  {
+    "name": "500 internal",
+    "request": "submit",
+    "response": {
+      "status": 500,
+      "body": {
+        "error": "internal"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 500,
+        "code": "internal",
+        "action": "retry"
+      }
+    }
+  },
+  {
+    "name": "503 unavailable",
+    "request": "submit",
+    "response": {
+      "status": 503,
+      "body": {
+        "error": "unavailable"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 503,
+        "code": "unavailable",
+        "action": "retry"
+      }
+    }
+  },
+  {
+    "name": "load envelope",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "body": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 3,
+        "settings": {
+          "successMessage": "Thanks!",
+          "redirectUrl": "https://example.com/done",
+          "allowAnother": true
+        },
+        "renderToken": "rt_abc"
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 3,
+        "settings": {
+          "successMessage": "Thanks!",
+          "redirectUrl": "https://example.com/done",
+          "allowAnother": true
+        },
+        "renderToken": "rt_abc"
+      }
+    }
+  },
+  {
+    "name": "load legacy bare definition",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "headers": {
+        "Formhaus-Version": "2"
+      },
+      "body": {
+        "id": "contact",
+        "title": "Contact",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email"
+          }
+        ]
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 2,
+        "settings": {}
+      }
+    }
+  },
+  {
+    "name": "load not found",
+    "request": "load",
+    "response": {
+      "status": 404,
+      "body": {
+        "error": "not_found",
+        "message": "Form not found"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 404,
+        "code": "not_found",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "load paused, legacy text",
+    "request": "load",
+    "response": {
+      "status": 409,
+      "body": {
+        "error": "Form paused"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 409,
+        "code": "paused",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "load expired",
+    "request": "load",
+    "response": {
+      "status": 410,
+      "body": {
+        "error": "expired",
+        "message": "Form expired"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 410,
+        "code": "expired",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "load envelope without a render token and with an unsafe redirect",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "body": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 1,
+        "settings": {
+          "redirectUrl": "javascript:alert(1)"
+        }
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 1,
+        "settings": {}
+      }
+    }
+  },
+  {
+    "name": "load legacy definition with Formhaus-Form-Version",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "headers": {
+        "Formhaus-Form-Version": "7"
+      },
+      "body": {
+        "id": "contact",
+        "title": "Contact",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email"
+          }
+        ]
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 7,
+        "settings": {}
+      }
+    }
+  },
+  {
+    "name": "load envelope with a null definition",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "body": {
+        "definition": null,
+        "version": 1
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 200,
+        "code": "invalid_response",
+        "action": "retry"
+      }
+    }
+  },
+  {
+    "name": "load client outdated",
+    "request": "load",
+    "response": {
+      "status": 426,
+      "body": {
+        "error": "client_outdated",
+        "minCore": "0.12.0"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 426,
+        "code": "client_outdated",
+        "action": null
+      }
+    }
+  },
+  {
+    "name": "load internal error",
+    "request": "load",
+    "response": {
+      "status": 500,
+      "body": {
+        "error": "internal"
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 500,
+        "code": "internal",
+        "action": "retry"
+      }
+    }
+  }
+]
