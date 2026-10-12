@@ -32,27 +32,28 @@
   outline: none;
 }
 
-.row:hover:not(:focus-within):has(.text:not([readonly], :disabled)) {
-  box-shadow: inset 0 calc(var(--fh-ed-border-thin) * -1) 0 var(--fh-ed-line-strong);
-}
-
-.row:focus-within {
-  box-shadow: inset 0 calc(var(--fh-ed-border-thin) * -1) 0 var(--fh-ed-accent);
-}
-
 .ring {
   margin-inline: calc(var(--fh-ed-space-2) * -1);
   padding-inline: var(--fh-ed-space-2);
   border-radius: var(--fh-ed-radius-md);
+  transition: box-shadow var(--fh-ed-duration-fast);
 }
 
-.ring:hover:not(:focus-within) {
-  box-shadow: inset 0 calc(var(--fh-ed-border-thin) * -1) 0 var(--fh-ed-line-strong);
+.boxed {
+  box-shadow: inset 0 0 0 var(--fh-ed-border-thin) var(--fh-ed-line-strong);
 }
 
-.ring:focus-within {
-  outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
-  outline-offset: calc(var(--fh-ed-border-thin) * -1);
+.ring:hover:not(:focus-within):has(.text:not([readonly], :disabled)) {
+  box-shadow: inset 0 0 0 var(--fh-ed-border-thin) var(--fh-ed-fg-subtle);
+}
+
+.ring:focus-within:has(.text:not([readonly], :disabled)) {
+  box-shadow:
+    inset 0 0 0 var(--fh-ed-border-thin) var(--fh-ed-accent),
+    0 0 0 var(--fh-ed-border-thin) var(--fh-ed-accent);
+}
+
+.boxed:has(.text[readonly], .text:disabled) {
   box-shadow: none;
 }
 

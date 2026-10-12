@@ -109,7 +109,7 @@
     left: 0;
     width: auto;
     padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    border-width: var(--fh-ed-border-thin) 0 0;
+    border-width: var(--fh-ed-border-thin);
     border-radius: var(--fh-ed-radius-xl) var(--fh-ed-radius-xl) 0 0;
     transform: none;
     animation: sheet var(--fh-ed-duration-slow) var(--fh-ed-easing-out);

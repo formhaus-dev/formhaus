@@ -58,6 +58,7 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
           placeholder={`Step ${String(position)}`}
           size="lg"
           readOnly={readOnly}
+          ring
           rowClassName={styles.stepTitle}
           onFocus={select}
           onValueChange={(value) => {
@@ -96,6 +97,7 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
           label="Step description"
           placeholder="Description"
           size="sm"
+          ring
           tone="muted"
           multiline
           readOnly={readOnly}
