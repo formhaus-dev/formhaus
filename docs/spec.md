@@ -65,7 +65,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `mask` | string | Input mask. Built-in renderers use it as the placeholder when `placeholder` is absent. |
 | `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint. |
 
-Field keys SHOULD be unique across the whole definition. Fields with the same key share one value. `checkDefinition()` warns about duplicates.
+Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate.
 
 ### Field types
 
@@ -122,17 +122,17 @@ An empty `show` array always passes. An empty `showAny` array is treated as abse
 
 ## Visibility
 
-A field is visible when its own conditions pass and, in a multi-step form, its step is on the [active path](#active-path).
+Every condition sees the **active projection**: the values of visible fields on the steps of the [active path](#active-path) before the current one, plus the values of its own step. Field, step, route and action conditions use the same rule, with or without routes. In a single-step form, the projection is the values of the visible fields.
 
-Core clears the value of a field that becomes hidden. The key is removed from `engine.values` and its error is removed. Clearing runs on transitions: when the engine is constructed, after `reset()`, after `setValue()` and after Skip. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a hidden step is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored.
+A field condition MUST reference a field of the same or an earlier step. A step condition MUST reference a field of an earlier step. The constructor throws on a condition that references a later step or a key that is not a field key. Values for keys that are not field keys, such as extra initial values, are never in the projection.
 
-Clearing reacts to a field becoming hidden, not to writes into a hidden field. Without routes, a value passed to `setValue()` for a field that is already hidden stays in `engine.values` until a field its conditions reference changes, or until `reset()`. With routes, every `setValue()` re-checks all conditions, so such a value is cleared at once. A hidden value is never validated or submitted.
+A field is visible when its own conditions pass and, in a multi-step form, its step is on the active path.
+
+Core clears the value of a field that is hidden. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a hidden field is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored.
 
 In a form with [routes](#routes), fields on steps that are off the active path keep their values. See [Routes](#routes).
 
 Hidden fields are not validated and not submitted.
-
-Without routes, field and step conditions see all values, including values of later steps.
 
 ## Defaults and initial values
 
@@ -189,7 +189,7 @@ Step ids MUST be unique. The constructor throws on duplicates.
 
 A hidden step is left out of navigation, progress, validation and submission, and its field values are cleared.
 
-In a form with routes, step `show`/`showAny` SHOULD reference fields of earlier steps only. A step condition sees only the values of earlier steps on the path, so a field of the same or a later step has no value there. `checkDefinition()` warns about such conditions; the constructor does not throw.
+Step `show`/`showAny` MUST reference fields of earlier steps. A step condition sees only the values of earlier steps on the path.
 
 ## Actions
 
@@ -210,7 +210,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`. Built-in renderers evaluate `disabled` only on `submit`, against `engine.values`, not the active projection. Values of fields off the active path still count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`. Built-in renderers evaluate `disabled` only on `submit`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 
@@ -232,14 +232,14 @@ Branches converge only through routes. A branch step without an exit route falls
 
 ### Active path
 
-With routes, core computes the active path from the first declared step:
+Core computes the active path from the first declared step, with or without routes:
 
 1. Start with an empty set of path values.
 2. A step whose `show`/`showAny` fails against the path values of earlier steps is passed over and the next declared step is tried.
 3. A visible step joins the path. Its visible fields with defined values are added to the path values. Field conditions in that step see the earlier path values and every value of the same step.
-4. The next step comes from [route selection](#routes), evaluated against the path values.
+4. The next step comes from [route selection](#routes), evaluated against the path values. Without routes, it is the next declared step.
 
-The path values are the **active projection**. Route conditions, step conditions, field visibility, validation, lifecycle hooks and submission use the active projection, not `engine.values`. Values of fields on steps off the path stay in `engine.values`, so returning to a branch restores them, but they cannot select a route or enter the payload.
+The path values are the **active projection**. Route conditions, step conditions, field visibility, action `disabled`, validation, lifecycle hooks and submission use the active projection, not `engine.values`. Values of fields on steps off the path stay in `engine.values`, so returning to a branch restores them, but they cannot select a route or enter the payload.
 
 When a value change removes the current step from the path, core moves to the nearest earlier step of the old path that is still on the new path. Back moves to the previous step of the current path.
 
@@ -281,14 +281,14 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `duplicate-step-id` | error | Two steps with one id |
 | `reserved-key` | error | A field key that is a built-in object property name, such as `constructor` |
 | `route-target` | error | A route target that is not a later declared step id or `null` |
-| `unknown-field` | error in routes, warning elsewhere | A condition, `matchField` or `optionsDependsOn` key that is not a field key |
-| `forward-reference` | error in routes, warning in step conditions | A route condition on a later step, or a step condition on the same or a later step in a form with routes |
+| `unknown-field` | error, warning for `optionsDependsOn` | A condition, `matchField` or `optionsDependsOn` key that is not a field key |
+| `forward-reference` | error | A field or route condition on a later step, or a step condition on the same or a later step |
 | `condition-operator-count` | error | A condition with no operator or with several |
 | `unknown-operator` | error | A condition key that is not an operator |
 | `condition-cycle` | error | Show conditions that depend on each other in a cycle |
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
+| `duplicate-key` | error | A field key that an earlier field on a possible path already uses |
 | `invalid-range` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
-| `duplicate-key` | warning | A field key that an earlier field already uses |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |

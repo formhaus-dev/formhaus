@@ -54,7 +54,8 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
   }
   const submit = () => run(async () => {
     const engine = form.engine;
-    if (engine.definition.submit.disabled?.every((condition) => evaluateCondition(condition, engine.values))
+    const values = engine.getSubmitValues();
+    if (engine.definition.submit.disabled?.every((condition) => evaluateCondition(condition, values))
       && engine.definition.submit.disabled.length > 0) return false;
     return report(engine, engine.submitAsync(send(engine, props.submitHandler)));
   });

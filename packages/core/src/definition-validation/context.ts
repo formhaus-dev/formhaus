@@ -20,7 +20,6 @@ export interface CheckContext {
   keys: Map<string, FieldEntry>;
   keyList: string[];
   conditions: ConditionEntry[];
-  routed: boolean;
   validators?: Record<string, unknown>;
 }
 
@@ -60,7 +59,6 @@ export function createContext(definition: FormDefinition, validators?: Record<st
     keys,
     keyList: [...keys.keys()],
     conditions,
-    routed: steps.some((step) => step.routes?.length),
     validators,
   };
 }

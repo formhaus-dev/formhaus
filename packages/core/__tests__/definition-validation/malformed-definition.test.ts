@@ -97,7 +97,7 @@ describe('validateSubmission warnings', () => {
     const definition: FormDefinition = {
       ...base,
       fields: [
-        { key: 'x', type: 'text', label: 'X', show: [{ field: 'missing', eq: 'y' }] },
+        { key: 'x', type: 'txt', label: 'X' },
         { key: 'code', type: 'text', label: 'Code', validation: { validator: 'checkCode' } },
       ],
     };

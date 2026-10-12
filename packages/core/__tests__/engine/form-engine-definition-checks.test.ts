@@ -47,17 +47,18 @@ describe('definition checks', () => {
     expect(() => new FormEngine(definition)).toThrow('/fields/0/key: "constructor" is a built-in object property name.');
   });
 
-  it('warns when a routed step condition references its own or a later step', () => {
+  it.each([true, false])('rejects conditions on the same or a later step (routes: %s)', (routed) => {
     const definition = form([
-      { id: 'a', title: '', fields: [text('kind')], routes: [{ to: 'c', show: [{ field: 'kind', eq: 'x' }] }] },
-      { id: 'b', title: '', show: [{ field: 'own', notEmpty: true }], fields: [text('own')] },
+      { id: 'a', title: '', fields: [text('kind'), text('early', { show: [{ field: 'later', eq: 'y' }] })], routes: routed ? [{ to: 'c', show: [{ field: 'kind', eq: 'x' }] }] : undefined },
+      { id: 'b', title: '', show: [{ field: 'own', notEmpty: true }], fields: [text('own'), text('mine', { show: [{ field: 'own', eq: 'z' }] })] },
       { id: 'c', title: '', showAny: [{ field: 'later', eq: 'y' }], fields: [] },
       { id: 'd', title: '', show: [{ field: 'kind', eq: 'x' }], fields: [text('later')] },
     ]);
-    const forward = () => checkDefinition(definition).filter((issue) => issue.code === 'forward-reference').map((issue) => issue.path);
-    expect(forward()).toEqual(['/steps/1/show/0/field', '/steps/2/showAny/0/field']);
-    definition.steps!.forEach((step) => { delete step.routes; });
-    expect(forward()).toEqual([]);
+    expect(checkDefinition(definition).filter((issue) => issue.code === 'forward-reference').map(({ severity, path }) => `${severity} ${path}`)).toEqual([
+      'error /steps/0/fields/1/show/0/field',
+      'error /steps/1/show/0/field',
+      'error /steps/2/showAny/0/field',
+    ]);
   });
 
   it('warns about validator names missing from options', () => {
