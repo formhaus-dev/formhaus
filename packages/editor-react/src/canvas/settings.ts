@@ -1,3 +1,4 @@
+import type { KeyboardEvent } from 'react';
 import type { EditorStore } from '../store/store';
 
 export function toggleSettings(store: EditorStore, uid: string, open: boolean): void {
@@ -20,4 +21,17 @@ export function toggleSettings(store: EditorStore, uid: string, open: boolean): 
       ?.querySelector<HTMLElement>('input:not([type=hidden]), textarea, select, button')
       ?.focus();
   });
+}
+
+const innerLayer = '[data-radix-popper-content-wrapper]:not(:has([role="tooltip"])), [role="dialog"]';
+
+export function closeSettingsOnEscape(store: EditorStore, uid: string) {
+  return (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Escape' || !(event.target instanceof Node) || !event.currentTarget.contains(event.target)) return;
+    if (event.defaultPrevented && document.querySelector(innerLayer)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    document.querySelector<HTMLElement>(`[data-settings-toggle="${CSS.escape(uid)}"]`)?.focus();
+    store.expand(null);
+  };
 }
