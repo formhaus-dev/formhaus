@@ -20,7 +20,7 @@ import './.vitepress/components/landing/landing.css';
 
 <div class="lp">
   <LandingHero />
-  <LandingDemo />
+  <LandingDemo :height="693" />
   <LandingResponses />
   <LandingApp />
   <LandingFigma />

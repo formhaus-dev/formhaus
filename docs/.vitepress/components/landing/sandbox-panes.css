@@ -81,3 +81,14 @@
     padding: 20px 16px;
   }
 }
+
+@media (min-width: 768px) {
+  .sandbox--fixed {
+    height: var(--sandbox-height);
+  }
+
+  .sandbox--fixed .sandbox__pane--write,
+  .sandbox--fixed .sandbox__preview {
+    overflow: auto;
+  }
+}

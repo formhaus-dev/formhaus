@@ -12,7 +12,7 @@ import { useDemoCore } from './demo-checks';
 
 const LandingDemoForm = defineAsyncComponent(() => import('./demo-lazy').then((lazy) => lazy.loadDemoForm()));
 
-const props = withDefaults(defineProps<{ seed?: FormDefinition; title?: string; lead?: string; json?: boolean }>(), { title: 'Try making a form', json: true });
+const props = withDefaults(defineProps<{ seed?: FormDefinition; title?: string; lead?: string; json?: boolean; height?: number }>(), { title: 'Try making a form', json: true });
 const allTabs = [
   { id: 'write', label: 'Write' },
   { id: 'json', label: 'JSON' },
@@ -144,7 +144,7 @@ function onTabKey(event: KeyboardEvent) {
 <template>
   <LandingSection id="demo" band :title="props.title">
     <template #lead><template v-if="props.lead">{{ props.lead }}</template><template v-else>Edit this example or <a href="/build">open the free builder</a>, no signup needed.</template></template>
-    <LandingFrame class="sandbox" :data-tab="tab">
+    <LandingFrame :class="['sandbox', { 'sandbox--fixed': props.height }]" :style="props.height ? { '--sandbox-height': `${props.height}px` } : undefined" :data-tab="tab">
       <template #bar>
         <div class="sandbox__tabs" :class="{ 'sandbox__tabs--single': !props.json }" role="tablist" aria-label="Playground view" @keydown="onTabKey">
           <button
