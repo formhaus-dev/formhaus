@@ -20,6 +20,7 @@ const sheets = {
 async function stylesheet(name: keyof typeof sheets): Promise<void> {
   if (document.querySelector(`style[data-fh-editor="${name}"]`)) return;
   const { default: css } = await sheets[name]();
+  if (disposed) return;
   const style = Object.assign(document.createElement('style'), { textContent: css });
   style.dataset.fhEditor = name;
   document.head.append(style);
@@ -59,6 +60,7 @@ onBeforeUnmount(() => {
   disposed = true;
   observer?.disconnect();
   unmount?.();
+  if (props.storage === 'local') document.querySelector('style[data-fh-editor="preview"]')?.remove();
 });
 </script>
 

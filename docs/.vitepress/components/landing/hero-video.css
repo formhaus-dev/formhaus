@@ -114,4 +114,29 @@ html.dark .hero-video__poster--dark {
     height: 44px;
     border-radius: 22px;
   }
+
+  .hero-video .hero-video__toggle--idle {
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    width: 64px;
+    height: 64px;
+    border: 0;
+    border-radius: 50%;
+    color: #0d0d15;
+    background: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 8px 24px rgba(13, 13, 21, 0.24);
+    transform: translate(-50%, -50%);
+  }
+
+  .hero-video .hero-video__toggle--idle:hover {
+    background: #fff;
+  }
+
+  .hero-video__toggle--idle .lucide {
+    width: 24px;
+    height: 24px;
+    margin-left: 3px;
+  }
 }

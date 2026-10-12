@@ -35,7 +35,7 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
   const theme = view.EditorView.theme({
     '&': { height: '100%', color: 'var(--vp-c-text-1)', backgroundColor: 'transparent', fontSize: '13px' },
     '&.cm-focused': { outline: 'none' },
-    '.cm-scroller': { fontFamily: 'var(--vp-font-family-mono)', lineHeight: '1.6', overscrollBehavior: 'contain' },
+    '.cm-scroller': { fontFamily: 'var(--vp-font-family-mono)', lineHeight: '1.6' },
     '.cm-content': { padding: '12px 0 24px', caretColor: 'var(--vp-c-brand-1)' },
     '.cm-line': { padding: '0 16px 0 8px' },
     '.cm-gutters': { border: 'none', color: 'var(--vp-code-line-number-color)', backgroundColor: 'transparent' },

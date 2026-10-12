@@ -26,11 +26,7 @@ function onKey(event: KeyboardEvent) {
 
 <template>
   <div class="ob-next">
-    <template v-if="props.choice === 'browser'">
-      <a class="ob-next__primary lp-button" href="/build">Open the builder</a>
-    </template>
-
-    <template v-else-if="props.choice === 'agent'">
+    <template v-if="props.choice === 'agent'">
       <McpCommand :id="`${uid}-mcp`" :note="false" />
       <p class="ob-next__label">Then ask your agent</p>
       <CopyLine command="Make me a waitlist form and give me the link." label="Copy prompt" />

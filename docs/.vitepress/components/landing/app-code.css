@@ -6,7 +6,6 @@
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  overscroll-behavior: contain;
   scrollbar-width: thin;
   background: var(--lp-ink);
   outline-offset: -2px;

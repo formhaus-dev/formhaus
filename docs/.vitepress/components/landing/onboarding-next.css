@@ -4,7 +4,6 @@
 }
 
 .lp-link,
-.ob-next__primary,
 .ob-next__switch {
   justify-self: start;
 }
@@ -74,12 +73,6 @@
   mask-image: none;
 }
 
-@media (max-width: 639px) {
-  .ob-next__primary {
-    justify-content: center;
-    justify-self: stretch;
-  }
-}
 
 @media (prefers-reduced-motion: reduce) {
   .ob-next__segment {
