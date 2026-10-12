@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { FormDefinition } from '@formhaus/core';
+import { useRouter } from 'vitepress';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
+import { takeCarried } from './carry';
+import { addRouteGuard, pathOf } from './routeGuard';
 import './editor-tokens.css';
 
 const props = defineProps<{ storage: 'local' | 'memory'; definition?: FormDefinition; lazy?: boolean; savedHint?: string; compact?: boolean }>();
@@ -8,7 +11,9 @@ const emit = defineEmits<{ change: [definition: FormDefinition]; ready: [] }>();
 
 const root = ref<HTMLElement | null>(null);
 const loaded = ref(false);
+const router = useRouter();
 let unmount: (() => void) | null = null;
+let unguard: (() => void) | null = null;
 let observer: IntersectionObserver | null = null;
 let disposed = false;
 
@@ -34,6 +39,8 @@ async function start() {
     props.storage === 'local' ? stylesheet('preview') : null,
   ]);
   if (disposed || !root.value) return;
+  const carried = props.storage === 'local' ? takeCarried() : null;
+  if (carried) editor.carryToBuild(carried);
   const onChange = (definition: FormDefinition) => emit('change', definition);
   const options = { onChange, ...(props.definition ? { definition: props.definition } : {}), ...(props.savedHint ? { savedHint: props.savedHint } : {}) };
   const host = props.storage === 'local' ? editor.createLocalHost(options) : editor.createMemoryHost(options);
@@ -41,6 +48,7 @@ async function start() {
   const initial = stored ?? props.definition;
   if (initial) emit('change', initial);
   unmount = editor.mount(root.value, { host, compact: props.compact });
+  unguard = addRouteGuard(router, (to) => pathOf(to) === pathOf(window.location.href) || editor.confirmLeave());
   loaded.value = true;
   emit('ready');
 }
@@ -59,6 +67,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   disposed = true;
   observer?.disconnect();
+  unguard?.();
   unmount?.();
   if (props.storage === 'local') document.querySelector('style[data-fh-editor="preview"]')?.remove();
 });
