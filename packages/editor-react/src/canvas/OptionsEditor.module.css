@@ -1,0 +1,85 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-1);
+  margin-inline: calc(var(--fh-ed-space-3) * -1);
+}
+
+.list {
+  gap: 0;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fh-ed-space-2);
+  min-height: var(--fh-ed-size-control-md);
+  padding-inline: var(--fh-ed-space-1) var(--fh-ed-space-1);
+  border-radius: var(--fh-ed-radius-md);
+}
+
+.row:focus-within {
+  background: var(--fh-ed-sub);
+}
+
+.grip {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--fh-ed-size-drag-handle);
+  min-height: var(--fh-ed-size-control-md);
+  padding: 0;
+  border: 0;
+  border-radius: var(--fh-ed-radius-sm);
+  background: transparent;
+  color: var(--fh-ed-fg-subtle);
+  cursor: grab;
+  touch-action: none;
+}
+
+.grip:hover {
+  color: var(--fh-ed-fg);
+}
+
+.grip svg {
+  width: var(--fh-ed-size-icon-sm);
+  height: var(--fh-ed-size-icon-sm);
+}
+
+.grip:focus-visible {
+  outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
+  outline-offset: var(--fh-ed-border-thin);
+}
+
+.glyph {
+  flex: none;
+  align-self: center;
+  width: var(--fh-ed-size-choice);
+  height: var(--fh-ed-size-choice);
+  border: var(--fh-ed-border-focus) solid var(--fh-ed-line-strong);
+  border-radius: var(--fh-ed-radius-full);
+}
+
+.square {
+  border-radius: var(--fh-ed-radius-sm);
+}
+
+.text {
+  flex: 1;
+  align-self: center;
+}
+
+.remove {
+  flex: none;
+}
+
+.goTo {
+  flex: 0 1 calc(var(--fh-ed-size-menu) - var(--fh-ed-space-8));
+  min-width: 0;
+}
+
+.goTo select {
+  min-height: var(--fh-ed-size-control-md);
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-sm);
+}

@@ -1,4 +1,9 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useData } from 'vitepress';
+
+const { theme } = useData();
+const facts = computed(() => ['MIT', `Core under ${theme.value.coreBudgetKB} KB gzipped`, 'Zero dependencies', 'Any framework']);
 const tabs = [
   { id: 'react', label: 'React' },
   { id: 'vue', label: 'Vue' },
@@ -12,6 +17,9 @@ const tabs = [
     <p class="lp-eyebrow">Renderers</p>
     <h2 id="everywhere-title" class="lp-title">Same file in every framework</h2>
     <p class="lp-lead">React and Vue renderers, or the headless core for Svelte, Solid or vanilla JS.</p>
+    <ul class="facts" aria-label="Library facts">
+      <li v-for="fact in facts" :key="fact">{{ fact }}</li>
+    </ul>
     <div class="tabs">
       <div class="tabs__bar" role="radiogroup" aria-label="Renderer">
         <template v-for="(tab, index) in tabs" :key="tab.id">
@@ -37,6 +45,32 @@ const tabs = [
 </template>
 
 <style scoped>
+.vp-doc .facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  color: var(--vp-c-text-2);
+}
+
+.vp-doc .facts li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.vp-doc .facts li::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--vp-c-brand-2);
+}
+
 .tabs {
   margin-top: 40px;
 }

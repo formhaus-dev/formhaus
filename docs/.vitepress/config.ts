@@ -4,7 +4,7 @@ import { head, transformHead } from './head'
 import { transformPageData } from './templates'
 import { llms } from './llms'
 import { templateFiles } from './template-files'
-import { siteUrl } from './site'
+import { coreBudgetKB, siteUrl } from './site'
 import { fetchStarCount, formatStarCount } from './stars'
 
 const starCount = await fetchStarCount()
@@ -27,7 +27,7 @@ export default defineConfig({
   lastUpdated: true,
   cleanUrls: true,
   ignoreDeadLinks: [/^\/legal\//],
-  sitemap: { hostname: siteUrl },
+  sitemap: { hostname: siteUrl, transformItems: (items) => items.filter((item) => !item.url.startsWith('migrate/')) },
   head,
   transformHead,
   transformPageData,
@@ -57,7 +57,6 @@ export default defineConfig({
           { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
           { text: 'Examples', link: '/guide/examples' },
           { text: 'Get an Endpoint', link: '/guide/endpoint' },
-          { text: 'Migrate to 0.11', link: '/migrate/0.11' },
         ]
       },
       {
@@ -158,6 +157,6 @@ export default defineConfig({
     footer: {
       message: 'Formhaus is MIT licensed. <a href="/legal/">Legal</a>'
     },
-    ...{ githubStars }
+    ...{ githubStars, coreBudgetKB }
   }
 })
