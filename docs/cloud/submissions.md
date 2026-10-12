@@ -11,7 +11,7 @@ A page needs only the public `form_id`. API keys never go into browser code.
 |---|---|---|
 | Hosted link | `https://f.formhaus.dev/Xk3d9QpL2a` | Yes |
 | Embed | `<script src="https://f.formhaus.dev/embed.js" data-form="Xk3d9QpL2a" async></script>` | Yes |
-| `FormhausForm` | `<FormhausForm id="Xk3d9QpL2a" />` | No, use `success` and `onSuccess` |
+| `FormhausForm` | `<FormhausForm id="Xk3d9QpL2a" />` | Yes, unless you pass `success` |
 | POST JSON | `POST https://api.formhaus.dev/f/Xk3d9QpL2a` | Your code |
 
 ## Hosted link
@@ -32,7 +32,7 @@ A `redirect_url` opens in the parent page.
 
 ## FormhausForm
 
-`FormhausForm` loads the definition from `GET /f/{id}/definition`, renders it and posts submissions. `publish_form` returns both files below as `react_snippet` and `vue_snippet`.
+`FormhausForm` loads the form from `GET /f/{id}/form`, renders it and posts submissions. It shows the form's success message, opens its redirect URL after a submission, and offers "Submit another response" when the form allows it. `publish_form` returns both files below as `react_snippet` and `vue_snippet`.
 
 ```bash
 npm install @formhaus/react @formhaus/core
@@ -82,6 +82,8 @@ Callbacks:
 | `components` | Custom field components, as in `FormRenderer`. |
 | `onSuccess` / `@success` | Called with `{ id, values }` after a `201`. |
 | `onError` | Called with a `CloudError` (`status`, `code`, `errors`) when loading or submitting fails. A network failure has `status` `0` and `code` `"network"`. A request that gets no response within 15 seconds for the definition or 30 seconds for a submission has `status` `0` and `code` `"timeout"`. |
+| `initialForm` | A form loaded on the server with `fetchForm()` from `@formhaus/core/cloud`. The component renders it without a request. |
+| `draftStore` | Keeps unsent answers across reloads. `sessionDraftStore()` from `@formhaus/core/cloud` keeps them in `sessionStorage` for 7 days and leaves out `password` and `file` fields. |
 | `fallback` / `#fallback` | Shown while the definition loads. |
 | `success` / `#success` | Replaces the default message after a submission. |
 
@@ -115,7 +117,8 @@ curl -X POST https://api.formhaus.dev/f/Xk3d9QpL2a \
 | `410` | `{ "error": "expired" }` |
 | `413` | `{ "error": "body_too_large" }`, body or `values` over 64 KB |
 | `415` | `{ "error": "unsupported_media_type" }`, `Content-Type` is not `application/json` |
-| `422` | `{ "errors": { "<field key>": "<message>" } }` |
+| `422` | `{ "error": "invalid", "errors": { "<field key>": "<message>" } }` |
+| `426` | `{ "error": "client_outdated", "minCore": "<version>" }`, the definition needs a newer `@formhaus/core` than the `core` query parameter |
 | `429` | `{ "error": "rate_limited" }` |
 | `500` | `{ "error": "internal" }` |
 | `503` | `{ "error": "unavailable" }`, validation timed out |
@@ -157,9 +160,9 @@ The buckets run before every other check, so `4xx` responses and replays consume
 
 `Access-Control-Allow-Origin: *`. `OPTIONS` answers `204` with `POST, OPTIONS` and the headers `Content-Type, Idempotency-Key`. No cookies.
 
-### Hosted page anti-spam
+### Anti-spam
 
-The hosted page and the embed send two extra body fields. `_fh_hp` is a hidden honeypot input. `_fh_rt` is a render token signed when the page was served; it has no expiry. A filled `_fh_hp`, an invalid `_fh_rt`, or less than 2 seconds between render and submit returns the usual `201` and stores nothing. Requests without `_fh_rt` skip the timing check.
+The hosted page, the embed and `FormhausForm` send two extra body fields. `_fh_hp` is a hidden honeypot input. `_fh_rt` is the render token from the form response. A filled `_fh_hp`, an invalid `_fh_rt`, or less than 2 seconds between render and submit returns the usual `201` and stores nothing. Requests without `_fh_rt` skip the timing check.
 
 ## Server-side validation
 
@@ -172,6 +175,21 @@ The server runs `validateSubmission()` from `@formhaus/core` against the latest 
 - Custom `validators` and field actions run only in the browser.
 - A `pattern` that runs over 50 ms fails the submission with `422` or `503`.
 
-## Public definition
+## Public form
 
-`GET https://api.formhaus.dev/f/{id}/definition` returns the latest definition. CORS `*`, `Cache-Control: public, max-age=60`. The `Formhaus-Version` header carries its version. Unknown, paused and expired forms answer `404`, `409` and `410`.
+`GET https://api.formhaus.dev/f/{id}/form?core=<version>` returns the latest version:
+
+```json
+{
+  "definition": { "id": "contact", "title": "Contact", "submit": { "label": "Send" }, "fields": [] },
+  "version": 4,
+  "settings": { "successMessage": "Thanks!", "redirectUrl": "https://example.com/thanks", "allowAnother": false },
+  "renderToken": "..."
+}
+```
+
+`core` is the `@formhaus/core` version of the client. `FormhausForm` sends it on the GET and on the POST. CORS `*`. Unknown, paused and expired forms answer `404`, `409` and `410` with `{ "error": "not_found" | "paused" | "expired", "message": "..." }`.
+
+`GET /f/{id}/definition` returns the bare definition with the version in the `Formhaus-Version` header, for clients older than 0.11.
+
+The `_fh_*` body keys and a top-level `meta` key are reserved.
