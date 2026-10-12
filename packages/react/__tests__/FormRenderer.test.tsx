@@ -141,8 +141,8 @@ describe('FormRenderer', () => {
     };
     const { container } = render(<FormRenderer definition={acDefinition} onSubmit={() => {}} />);
     const input = screen.getByRole('combobox', { name: /Fruit/ }) as HTMLInputElement;
-    expect(input.getAttribute('list')).toBe('fruit-list');
-    const datalist = container.querySelector('datalist#fruit-list');
+    expect(input.getAttribute('list')).toBe(`${input.id}-list`);
+    const datalist = container.querySelector(`datalist[id="${input.id}-list"]`);
     expect(datalist).not.toBeNull();
     expect(datalist?.querySelectorAll('option').length).toBe(2);
   });

@@ -4,40 +4,41 @@ import { FieldLabel } from './FieldLabel';
 import { describedBy } from './fieldProps';
 
 interface FieldShellProps {
+  id: string;
   field: FormField;
   error?: string;
   variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect';
   children: ReactNode;
 }
 
-export function FieldShell({ field, error, variant, children }: FieldShellProps) {
+export function FieldShell({ id, field, error, variant, children }: FieldShellProps) {
   const group = variant === 'radio' || variant === 'multiselect';
   const inline = variant && !group;
   const Root = group ? 'fieldset' : 'div';
   const container = `fh-field__${variant}-${group ? 'group' : 'wrapper'}`;
-  const helper = field.helperText && <p id={`${field.key}-helper`} className="fh-field__helper">{field.helperText}</p>;
+  const helper = field.helperText && <p id={`${id}-helper`} className="fh-field__helper">{field.helperText}</p>;
 
   return (
     <Root
       className={variant ? `fh-field fh-field--${variant}` : 'fh-field'}
       aria-invalid={group ? !!error || undefined : undefined}
-      aria-describedby={group ? describedBy(field, error) : undefined}
+      aria-describedby={group ? describedBy(field, id, error) : undefined}
     >
       {group && field.label && <legend className="fh-field__label">{field.label}</legend>}
-      {!variant && <FieldLabel field={field} inputId={field.key} />}
+      {!variant && <FieldLabel field={field} inputId={id} />}
       {!inline && helper}
       {variant ? (
         <div className={group && field.layout === 'inline' ? `${container} ${container}--inline` : container}>
           {children}
           {inline && field.label && (
-            <label className="fh-field__label" htmlFor={field.key}>
+            <label className="fh-field__label" htmlFor={id}>
               {field.label}
             </label>
           )}
         </div>
       ) : children}
       {inline && helper}
-      {error && <p id={`${field.key}-error`} className="fh-field__error" role="alert">{error}</p>}
+      {error && <p id={`${id}-error`} className="fh-field__error" role="alert">{error}</p>}
     </Root>
   );
 }

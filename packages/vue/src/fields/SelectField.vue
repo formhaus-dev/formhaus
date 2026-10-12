@@ -9,7 +9,7 @@ const { input } = useField(props, emit);
 </script>
 
 <template>
-  <FieldShell :field="props.field" :error="props.error">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error">
     <select
       v-bind="input"
       class="fh-field__input fh-field__input--select"
@@ -19,7 +19,7 @@ const { input } = useField(props, emit);
       <option v-if="props.field.placeholder" value="" disabled>
         {{ props.field.placeholder }}
       </option>
-      <option v-for="option in (props.field.options ?? [])" :key="String(option.value)" :value="option.value">
+      <option v-for="(option, index) in (props.field.options ?? [])" :key="String(option.value)" :value="option.value">
         {{ option.label }}
       </option>
     </select>

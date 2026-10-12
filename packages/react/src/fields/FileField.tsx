@@ -1,12 +1,12 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { inputProps } from './fieldProps';
+import { fieldId, inputProps } from './fieldProps';
 
 export function FileField(props: FieldComponentProps) {
   const { field, error, onChange } = props;
 
   return (
-    <FieldShell field={field} error={error}>
+    <FieldShell id={fieldId(props)} field={field} error={error}>
       <input
         {...inputProps(props)}
         type="file"

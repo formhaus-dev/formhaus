@@ -1,10 +1,10 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { inputProps } from './fieldProps';
+import { fieldId, inputProps } from './fieldProps';
 
 export function CheckboxField(props: FieldComponentProps) {
   return (
-    <FieldShell field={props.field} error={props.error} variant="checkbox">
+    <FieldShell id={fieldId(props)} field={props.field} error={props.error} variant="checkbox">
       <input
         {...inputProps(props)}
         type="checkbox"

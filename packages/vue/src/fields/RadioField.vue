@@ -28,15 +28,15 @@ function onKeyUp(event: KeyboardEvent, value: string) {
 </script>
 
 <template>
-  <FieldShell :field="props.field" :error="props.error" variant="radio">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" variant="radio">
     <div
-      v-for="option in (props.field.options ?? [])"
+      v-for="(option, index) in (props.field.options ?? [])"
       :key="String(option.value)"
       class="fh-field__radio-option"
     >
       <input
         v-bind="control"
-        :id="`${inputId}-${option.value}`"
+        :id="`${inputId}-${index}`"
         class="fh-field__radio"
         type="radio"
         :name="props.field.key"
@@ -48,7 +48,7 @@ function onKeyUp(event: KeyboardEvent, value: string) {
         @click="onClick($event, option.value)"
         @change="() => { if (!props.field.autoAdvance || arrowSelection) emit('update:modelValue', option.value); }"
       />
-      <label :for="`${inputId}-${option.value}`" class="fh-field__radio-label">
+      <label :for="`${inputId}-${index}`" class="fh-field__radio-label">
         {{ option.label }}
       </label>
     </div>

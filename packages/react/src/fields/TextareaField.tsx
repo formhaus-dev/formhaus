@@ -1,6 +1,6 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { inputProps } from './fieldProps';
+import { fieldId, inputProps } from './fieldProps';
 
 const DEFAULT_ROWS = 3;
 
@@ -8,7 +8,7 @@ export function TextareaField(props: FieldComponentProps) {
   const { field, value, error, onChange } = props;
 
   return (
-    <FieldShell field={field} error={error}>
+    <FieldShell id={fieldId(props)} field={field} error={error}>
       <textarea
         {...inputProps(props)}
         className="fh-field__input fh-field__input--textarea"

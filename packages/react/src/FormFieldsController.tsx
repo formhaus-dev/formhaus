@@ -11,6 +11,7 @@ interface FormFieldsControllerProps extends ControllerProps {
 
 export const FormFieldsController = memo(function FormFieldsController({
   engine,
+  formId,
   loading,
   components,
   optionsProviders,
@@ -30,6 +31,7 @@ export const FormFieldsController = memo(function FormFieldsController({
         <FormFieldController
           key={field.key}
           engine={engine}
+          formId={formId}
           field={field}
           options={resolvedOptions[field.key] ?? field.options}
           disabled={loading || engine.stepValidating || engine.submitting}

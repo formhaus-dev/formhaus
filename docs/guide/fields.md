@@ -352,7 +352,7 @@ Each custom component gets the field descriptor, the current value, and validati
 | `loading` | `boolean?` | Field loading state set through `FormEngine.setFieldLoading()` |
 | `disabled` | `boolean?` | Form is disabled |
 
-In React, call `onChange(value)` and `onBlur()`. In Vue, read `modelValue` and emit `update:modelValue` and `blur`, so `v-model` works on the component.
+Put the `id` prop on the control, so the label and error messages stay linked. In React, call `onChange(value)` and `onBlur()`. In Vue, read `modelValue` and emit `update:modelValue` and `blur`, so `v-model` works on the component.
 
 ### Explicit field activation
 

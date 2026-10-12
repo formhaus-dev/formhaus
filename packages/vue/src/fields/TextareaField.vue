@@ -11,7 +11,7 @@ const { input } = useField(props, emit);
 </script>
 
 <template>
-  <FieldShell :field="props.field" :error="props.error">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error">
     <textarea
       v-bind="input"
       class="fh-field__input fh-field__input--textarea"

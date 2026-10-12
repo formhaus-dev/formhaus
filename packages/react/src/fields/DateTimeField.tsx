@@ -1,10 +1,10 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { inputProps } from './fieldProps';
+import { fieldId, inputProps } from './fieldProps';
 
 export function DateTimeField(props: FieldComponentProps) {
   return (
-    <FieldShell field={props.field} error={props.error}>
+    <FieldShell id={fieldId(props)} field={props.field} error={props.error}>
       <input
         {...inputProps(props)}
         type="datetime-local"

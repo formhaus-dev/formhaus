@@ -12,7 +12,7 @@ const definition: FormDefinition = { id: 'blur', title: '', submit: { label: 'Se
 
 it.each(['agree', 'alerts', 'plan', 'resume'])('reports field_blurred for %s', async (key) => {
   const { container, emitted } = render(FormRenderer, { props: { definition } });
-  const control = container.querySelector(`#fh-field-${key}`)!;
+  const control = container.querySelector(`[name="${key}"]`)!;
   await fireEvent.focus(control);
   await fireEvent.blur(control);
   const events = (emitted().analyticsEvent ?? []).map(([event]) => event as { type: string; fieldKey?: string });
