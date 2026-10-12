@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
-import { useRouter } from 'vitepress';
 import LucideIcon from './LucideIcon.vue';
 import OnboardingChoices from './OnboardingChoices.vue';
 import { choices, definition, type StartChoice } from './onboarding';
@@ -9,7 +8,6 @@ import './demo-form.css';
 import './demo-actions.css';
 
 const emit = defineEmits<{ close: [] }>();
-const router = useRouter();
 const dialog = ref<HTMLDialogElement>();
 const heading = ref<HTMLElement>();
 const choice = ref<StartChoice>();
@@ -38,11 +36,6 @@ onBeforeUnmount(() => {
 });
 
 async function onSubmit(values: Record<string, unknown>) {
-  if (values.start === 'browser') {
-    emit('close');
-    await router.go('/build');
-    return;
-  }
   initial.value = { start: values.start };
   choice.value = values.start as StartChoice;
   await nextTick();

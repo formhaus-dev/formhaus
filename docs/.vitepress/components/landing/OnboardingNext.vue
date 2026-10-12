@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, ref, useId } from 'vue';
+import { computed, defineAsyncComponent, ref, useId } from 'vue';
 import CopyLine from './CopyLine.vue';
 import LucideIcon from './LucideIcon.vue';
 import McpCommand from './McpCommand.vue';
 import { highlight, panes } from './app-code';
 import type { StartChoice } from './onboarding';
 
+const OnboardingStart = defineAsyncComponent(() => import('./onboarding-lazy').then((lazy) => lazy.loadStart()));
 const props = defineProps<{ choice: StartChoice }>();
 const uid = useId();
 const frameworks = ['react', 'vue'].map((id) => {
@@ -26,7 +27,8 @@ function onKey(event: KeyboardEvent) {
 
 <template>
   <div class="ob-next">
-    <template v-if="props.choice === 'agent'">
+    <OnboardingStart v-if="props.choice === 'browser'" />
+    <template v-else-if="props.choice === 'agent'">
       <McpCommand :id="`${uid}-mcp`" :note="false" />
       <p class="ob-next__label">Then ask your agent</p>
       <CopyLine command="Make me a waitlist form and give me the link." label="Copy prompt" />
