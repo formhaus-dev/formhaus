@@ -152,13 +152,18 @@ describe('update_form_settings', () => {
     expect(JSON.parse(init.body!)).toEqual({ status: 'paused', notify_mode: 'off' });
   });
 
-  it('reads the webhook with get_webhook', async () => {
-    fetchMock.mockResolvedValue(reply(200, { url: 'https://example.com/hook', secret: 'whsec_full' }));
+  it('never returns an unmasked secret from get_webhook', async () => {
+    fetchMock.mockResolvedValue(reply(200, { url: 'https://example.com/hook', secret: 'whsec_full_secret_1234' }));
     const { body } = await call('get_webhook', { form_id: 'f1', reveal_secret: true });
-    expect(body.secret).toBe('whsec_full');
-    expect(lastRequest().url).toBe('https://api.example.test/v1/forms/f1/webhook?reveal=true');
-    await call('get_webhook', { form_id: 'f1' });
+    expect(body.secret).toBe('whsec_…1234');
     expect(lastRequest().url).toBe('https://api.example.test/v1/forms/f1/webhook');
+  });
+
+  it('reveals the secret only through reveal_webhook_secret', async () => {
+    fetchMock.mockResolvedValue(reply(200, { url: 'https://example.com/hook', secret: 'whsec_full' }));
+    const { body } = await call('reveal_webhook_secret', { form_id: 'f1' });
+    expect(body).toEqual({ form_id: 'f1', webhook_secret: 'whsec_full' });
+    expect(lastRequest().url).toBe('https://api.example.test/v1/forms/f1/webhook?reveal=true');
   });
 
   it.each(['owner_key_required', 'paused_by_moderation'])('maps the %s error', async (code) => {
