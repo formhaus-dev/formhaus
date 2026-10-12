@@ -1,4 +1,5 @@
 import type { FormDefinition } from '@formhaus/core';
+import { appUrl } from '../editor/launch';
 
 export interface TemplateEntry {
   slug: string;
@@ -30,4 +31,4 @@ export const plural = (count: number, word: string) => `${count} ${word}${count 
 
 export const counts = ({ steps, fields }: TemplateEntry) => `${plural(steps, 'step')} · ${plural(fields, 'field')}`;
 
-export const cloudUrl = (slug: string) => `https://app.formhaus.dev/forms/new?template=${encodeURIComponent(slug)}`;
+export const cloudUrl = (slug: string) => `${appUrl}/forms/new?template=${encodeURIComponent(slug)}`;

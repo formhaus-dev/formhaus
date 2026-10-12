@@ -39,8 +39,21 @@ async function check() {
     const [download] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Download JSON' }).click()]);
     const definition = JSON.parse(await readFile(await download.path(), 'utf8'));
     if (definition.fields?.[0]?.label !== 'Work email') throw new Error('the downloaded JSON does not contain the edited field');
+    await page.route('https://app.formhaus.dev/api/handoffs', (route) => route.fulfill({ status: 429, json: { error: 'rate_limited' } }));
+    await page.getByRole('button', { name: 'Launch for free' }).click();
+    await page.getByRole('alert').filter({ hasText: 'Too many launches' }).waitFor();
+    let sent = null;
+    await page.unroute('https://app.formhaus.dev/api/handoffs');
+    await page.route('https://app.formhaus.dev/api/handoffs', (route) => {
+      sent = route.request().postDataJSON();
+      return route.fulfill({ status: 201, json: { url: 'https://app.formhaus.dev/start/abc', expires_at: new Date().toISOString() } });
+    });
+    await page.route('https://app.formhaus.dev/start/abc', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: 'start' }));
+    await page.getByRole('button', { name: 'Launch for free' }).click();
+    await page.waitForURL('https://app.formhaus.dev/start/abc');
+    if (sent?.fields?.[0]?.label !== 'Work email') throw new Error('Launch for free did not send the current definition');
     if (errors.length) throw new Error(`page errors: ${errors.join('; ')}`);
-    console.log('/build keeps the draft across a reload and downloads its JSON.');
+    console.log('/build keeps the draft, downloads its JSON and hands it off to Cloud.');
   } finally {
     await browser.close();
   }
