@@ -4,6 +4,8 @@
 
 ### Patch Changes
 
+- `FormhausForm` keeps the response when it is sent again right after a "form updated" notice.
+- A required select without `placeholder` starts empty, so its first option can be picked.
 - Updated dependencies [2d103ac]
   - @formhaus/core@0.11.1
 
