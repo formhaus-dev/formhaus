@@ -1,6 +1,7 @@
 ---
 layout: page
 sidebar: false
+pageClass: lp-page
 ---
 
 <script setup>

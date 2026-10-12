@@ -2,6 +2,7 @@
 title: Privacy Policy
 description: How Fabrique-Futur LLC handles personal data in Formhaus Cloud, for account holders, people who fill in forms and site visitors.
 sidebar: false
+pageClass: lp-page
 ---
 
 # Formhaus Cloud Privacy Policy

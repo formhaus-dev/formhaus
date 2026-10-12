@@ -2,6 +2,7 @@
 title: Legal
 description: Terms of Service, Privacy Policy, Data Processing Addendum and sub-processor list for Formhaus Cloud.
 sidebar: false
+pageClass: lp-page
 ---
 
 # Legal

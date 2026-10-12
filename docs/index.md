@@ -5,6 +5,7 @@ titleTemplate: false
 description: "Describe a form, share it with your audience, and collect responses. Build with AI, use the free builder, or add Formhaus to your React or Vue app."
 markdownStyles: false
 footer: false
+pageClass: lp-page
 ---
 
 <script setup>
