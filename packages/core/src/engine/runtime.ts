@@ -4,7 +4,7 @@ import type { FormEngineOptions, StepValidateFn, SubmitFn } from './engine-optio
 import { createValues } from './engine-utils';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineInternals, EngineState, RuntimeNotifyOptions } from './runtime-internals';
-import { FormSubscriptions, type NotifyOptions } from './subscriptions';
+import { createSubscriptions, type NotifyOptions } from './subscriptions';
 import {
   applyValidationErrors,
   getSubmitValues,
@@ -17,7 +17,7 @@ import {
 import { submitForm } from './submission';
 import { reconcileStepIndex } from './step-routes';
 import { assertDefinition } from './warnings';
-import { VisibilityState } from './visibility-state';
+import { createVisibility, type VisibilityState } from './visibility-state';
 
 export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly state: EngineState;
@@ -29,7 +29,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly validators: Record<string, ValidatorFn>;
   private get onStepValidate(): StepValidateFn | undefined { return this.lifecycle.onStepValidate; }
   private readonly visibility: VisibilityState;
-  private readonly subscriptions = new FormSubscriptions();
+  private readonly subscriptions = createSubscriptions();
 
   constructor(
     readonly definition: FormDefinition,
@@ -39,7 +39,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.lifecycle = options ?? {};
     this.validators = options?.validators ?? {};
     assertDefinition(definition, this.lifecycle, this.validators);
-    this.visibility = new VisibilityState(definition);
+    this.visibility = createVisibility(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
     this.state = { values, errors: {}, topLevelErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };
     this.visibility.reconcileHidden(values, this.state.errors);
@@ -58,15 +58,15 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   get visibleSteps(): FormStep[] {
-    return this.visibility.state(this.state.values, this.currentStepIndex).visibleSteps;
+    return this.view.visibleSteps;
   }
 
   get currentStep(): FormStep | null {
-    return this.visibility.state(this.state.values, this.currentStepIndex).currentStep;
+    return this.view.currentStep;
   }
 
   get visibleFields(): FormField[] {
-    return this.visibility.state(this.state.values, this.currentStepIndex).visibleFields;
+    return this.view.visibleFields;
   }
 
   get isFirstStep(): boolean {
@@ -118,7 +118,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     values[key] = value;
     delete errors[key];
     for (const [stepId, keys] of this.skipped) if (valueChanged && keys.includes(key)) this.skipped.delete(stepId);
-    const clearedFields = this.visibility.cascadeHiddenFields(values, errors);
+    const clearedFields = this.visibility.reconcileHidden(values, errors);
     const revalidated = clearResolvedMatchErrors(this.internals, key);
     const changedFields = new Set([...clearedFields, ...revalidated]);
     if (valueChanged || hadError) changedFields.add(key);
@@ -161,6 +161,10 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   getSubmitValues(): Partial<TValues> { return getSubmitValues(this.internals) as Partial<TValues>; }
   goToStepWithField(key: string): void { goToStepWithField(this.internals, key); }
   reset(values?: Record<string, unknown>): void { resetEngine(this.internals, values); }
+
+  private get view() {
+    return this.visibility.state(this.state.values, this.currentStepIndex);
+  }
 
   private get internals(): EngineInternals {
     return this as unknown as EngineInternals;
