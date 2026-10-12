@@ -1,7 +1,7 @@
 import type { FormField as FormFieldType } from '@formhaus/core';
 import type { FieldComponentMap, FieldComponentProps } from './types';
 
-interface FormFieldProps {
+export interface FieldResolverProps {
   field: FormFieldType;
   value: unknown;
   error?: string;
@@ -14,7 +14,7 @@ interface FormFieldProps {
   onFocus?: () => void;
 }
 
-export function FormField({
+export function FieldResolver({
   field,
   value,
   error,
@@ -25,7 +25,7 @@ export function FormField({
   onCommit,
   onBlur,
   onFocus,
-}: FormFieldProps) {
+}: FieldResolverProps) {
   const Component = components?.[field.type];
 
   if (!Component) {

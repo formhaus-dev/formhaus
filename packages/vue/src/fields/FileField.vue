@@ -9,7 +9,7 @@ const { input } = useField(props, emit);
 
 function onFileChange(event: Event) {
   const files = (event.target as HTMLInputElement).files;
-  emit('update:value', files && files.length > 0 ? files[0] : null);
+  emit('update:modelValue', files && files.length > 0 ? files[0] : null);
 }
 </script>
 

@@ -1,6 +1,6 @@
 export { default as FormRenderer } from './FormRenderer.vue';
 export { default as HeadlessFormRenderer } from './HeadlessFormRenderer.vue';
-export { default as FormField } from './FormField.vue';
+export { default as FormhausField } from './FormhausField.vue';
 export { default as FormActions } from './FormActions.vue';
 export { default as FormStepProgress } from './FormStepProgress.vue';
 export { default as TextField } from './fields/TextField.vue';
@@ -11,6 +11,9 @@ export { default as RadioField } from './fields/RadioField.vue';
 export { default as SwitchField } from './fields/SwitchField.vue';
 export { default as FileField } from './fields/FileField.vue';
 export { default as DateField } from './fields/DateField.vue';
+export { default as DateTimeField } from './fields/DateTimeField.vue';
+export { default as AutocompleteField } from './fields/AutocompleteField.vue';
+export { default as MultiselectField } from './fields/MultiselectField.vue';
 export { useFormEngine } from './composables/useFormEngine';
 export type { UseFormEngineReturn } from './composables/useFormEngine';
 export { defaultFieldComponents } from './constants';
@@ -21,5 +24,6 @@ export type {
   FormFieldProps,
   FormActionsProps,
   FormStepProgressProps,
+  HeadingLevel,
   OptionsProvider,
 } from './types';

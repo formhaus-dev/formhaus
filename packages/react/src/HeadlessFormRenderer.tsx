@@ -17,7 +17,7 @@ function firstControl(root: Element | null | undefined) {
 
 export function HeadlessFormRenderer(props: FormRendererProps) {
   const { definition, initialValues, loading = false, components, optionsProviders,
-    ActionsComponent, ProgressComponent, onAnalyticsEvent } = props;
+    actionsComponent, progressComponent, headingLevel, onAnalyticsEvent } = props;
   const formRef = useRef<HTMLFormElement>(null);
   const focusPending = useRef(false);
   const focusReturn = useRef<HTMLElement | null>(null);
@@ -26,9 +26,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     ...props,
     onAfterStepChange: async (context) => {
       focusPending.current = true;
-      const direction = context.reason === 'back' ? 'back' : 'next';
-      props.onStepChange?.(context.toStepId, direction);
-      if (direction === 'next') {
+      if (context.reason !== 'back') {
         onAnalyticsEvent?.({ type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
         onAnalyticsEvent?.({ type: 'step_viewed', stepId: context.toStepId, stepIndex: engine.currentStepIndex });
       }
@@ -83,13 +81,13 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   return (
     <form ref={formRef} onFocusCapture={(event) => { focusReturn.current = event.target; }} className="fh-form" tabIndex={-1} aria-busy={engine.stepValidating || engine.submitting || loading}
       onSubmit={(event) => { event.preventDefault(); void (engine.isLastStep ? actions.submit() : actions.next()); }}>
-      <FormProgressController engine={engine} ProgressComponent={ProgressComponent} />
+      <FormProgressController engine={engine} ProgressComponent={progressComponent} headingLevel={headingLevel} />
       <FormFieldsController key={definition.id} engine={engine} loading={loading} components={components}
         optionsProviders={optionsProviders} onChange={actions.update} onCommit={actions.commit}
         onBlur={handleFieldBlur} onFocus={handleFieldFocus} />
       <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
       <FormActionsController engine={engine} definition={definition} loading={loading}
-        ActionsComponent={ActionsComponent} onSubmit={actions.submit} onNext={actions.next}
+        ActionsComponent={actionsComponent} onSubmit={actions.submit} onNext={actions.next}
         onPrev={actions.prev} onSkip={actions.skip} onCancel={handleCancel} />
     </form>
   );

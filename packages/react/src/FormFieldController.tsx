@@ -1,6 +1,6 @@
 import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
 import { memo, useCallback, useSyncExternalStore } from 'react';
-import { FormField } from './FormField';
+import { FieldResolver } from './FieldResolver';
 import type { FieldComponentMap } from './types';
 
 export interface ControllerProps {
@@ -50,7 +50,7 @@ export const FormFieldController = memo(function FormFieldController({
   const fieldWithOptions = options ? { ...field, options } : field;
 
   return (
-    <FormField
+    <FieldResolver
       field={fieldWithOptions}
       value={engine.values[field.key]}
       error={engine.errors[field.key]}

@@ -38,7 +38,7 @@ export function useFormEngine(
   const engineRef = ref(engine) as Ref<FormEngine>;
 
   watch(
-    () => getDefinition().id,
+    getDefinition,
     () => {
       engine.cancelPendingActions();
       unsubscribe();

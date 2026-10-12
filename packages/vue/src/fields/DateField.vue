@@ -14,9 +14,9 @@ const { input } = useField(props, emit);
       v-bind="input"
       class="fh-field__input"
       type="date"
-      :value="String(props.value ?? '')"
+      :value="String(props.modelValue ?? '')"
       :placeholder="props.field.placeholder"
-      @input="(e) => emit('update:value', (e.target as HTMLInputElement).value)"
+      @input="(e) => emit('update:modelValue', (e.target as HTMLInputElement).value)"
     />
   </FieldShell>
 </template>

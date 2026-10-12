@@ -15,7 +15,6 @@ const emit = defineEmits<{
   (e: 'cancel'): void;
   (e: 'skip'): void;
   (e: 'primary'): void;
-  (e: 'action', name: string): void;
 }>();
 
 function isActionDisabled(action: FormAction | undefined): boolean {
