@@ -38,7 +38,7 @@ Add a waitlist form with an email field and publish it.
 `@formhaus/core` checks every submission against the published definition. An invalid one gets a `422` with a message per field, and nothing is stored.
 
 ```json
-{ "errors": { "email": "Enter a valid email" } }
+{ "error": "invalid", "message": "Some values are invalid. Fix each field in errors and submit again.", "errors": { "email": "Enter a valid email" } }
 ```
 
 ## Put a form on a site
@@ -128,6 +128,7 @@ See the [privacy policy](/legal/privacy), the [terms](/legal/terms) and the [DPA
 | Forms | 3 | Unlimited | Unlimited |
 | Submissions per month | 100 | 25,000 | 100,000 |
 | Retention | 90 days | Unlimited | Unlimited |
+| CSV export | Yes | Yes | Yes |
 | Roles (owner, editor, viewer) | Yes | Yes | Yes |
 | Webhooks | Yes | Yes | Yes |
 | Email notifications | Yes | Yes | Yes |

@@ -9,7 +9,7 @@ Prices are on [Formhaus Cloud](/cloud). Limits enforced by the service:
 
 | Plan | Price | Forms | Submissions | Editors | Webhooks and emails | Submission retention |
 |---|---|---|---|---|---|---|
-| Unclaimed | None | 3 per agent key | 100 in total per form | None | No | Deleted with the form after 7 days |
+| Unclaimed | None | 3 per agent key, deleted forms count for 24 hours | 100 in total per form | None | No | Deleted with the form after 7 days |
 | Free | $0 | 3 | 100 per month | 1 | Yes | 90 days |
 | Pro | $19 per month or $190 per year | Unlimited | 25,000 per month | 3 | Yes | Until deleted |
 | Team | $49 per month or $490 per year | Unlimited | 100,000 per month | 10 | Yes | Until deleted |
