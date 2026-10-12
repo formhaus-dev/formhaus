@@ -3,22 +3,22 @@ import LandingSection from './LandingSection.vue';
 
 const points = [
   {
-    title: 'Built by your agent',
-    text: 'Claude Code, Cursor or any MCP client publishes the form from a prompt, edits it and reads the submissions.',
+    title: 'Versioned like code',
+    text: 'The definition lives in your repo. Formhaus Cloud keeps every published version.',
   },
   {
-    title: 'Your JSON, your app',
-    text: 'The form is a JSON file you keep in git. It renders natively in React or Vue, or as a hosted page and embed.',
+    title: 'Runs in your bundle',
+    text: 'The React and Vue renderers ship with your app. Rendering needs no Formhaus service.',
   },
   {
-    title: 'Open by default',
-    text: 'An open format with a public spec. Every submission is yours over the REST API, by webhook or as CSV.',
+    title: 'Open format',
+    text: 'The definition follows a public spec. Any tool can read or write it.',
   },
 ];
 </script>
 
 <template>
-  <LandingSection id="why" eyebrow="Why Formhaus" title="The form stays yours." lead="JSON in git, native in your app, open endpoint and API.">
+  <LandingSection id="why" eyebrow="Why Formhaus" title="The form stays yours.">
     <ul class="why lp-grid lp-grid--3">
       <li v-for="point in points" :key="point.title" class="lp-card">
         <h3>{{ point.title }}</h3>

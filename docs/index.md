@@ -4,6 +4,7 @@ title: "Formhaus — JSON form definition for React, Vue, Figma and AI agents"
 titleTemplate: false
 description: "Define fields, validation, conditional visibility and multi-step routes in one JSON form definition. Render it in React, Vue or Figma."
 markdownStyles: false
+footer: false
 ---
 
 <script setup>

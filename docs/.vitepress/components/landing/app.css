@@ -87,10 +87,6 @@
 }
 
 @media (max-width: 767px) {
-  .app__code {
-    height: 240px;
-  }
-
   .app__count {
     display: none;
   }

@@ -13,25 +13,25 @@ const plugin = ['claude plugin marketplace add ignsm/formhaus', 'claude plugin i
 </script>
 
 <template>
-  <LandingSection id="agents" eyebrow="Agent tooling" title="Works in Claude Code, Cursor and any MCP client.">
-    <template #lead><code>validate_definition</code> finds errors and <code>simulate_path</code> walks every branch before you review.</template>
+  <LandingSection id="agents" eyebrow="Agents" title="Works in Claude Code, Cursor and any MCP client.">
+    <template #lead>Your agent validates, simulates, publishes and reads responses, all over MCP.</template>
     <div class="lp-grid lp-grid--2">
       <article class="lp-card">
         <h3>MCP tools</h3>
-        <p>The same engine that renders the form checks it.</p>
+        <p>The engine that renders the form also checks it.</p>
         <ul class="agents__tools">
           <li v-for="tool in tools" :key="tool.name"><code>{{ tool.name }}</code><span>{{ tool.text }}</span></li>
         </ul>
       </article>
-      <article class="lp-card agents__plugin">
+      <article class="lp-card">
         <h3>Claude Code plugin</h3>
-        <p>The MCP server plus a skill that drafts forms from a prompt.</p>
-        <CopyLine class="agents__copy" :command="plugin" prompt="$" label="Copy Claude Code plugin install commands" />
-        <div class="lp-links agents__links">
-          <a class="lp-link" href="/guide/mcp">MCP setup <LucideIcon name="arrow-right" /></a>
-          <a class="lp-link" href="/recipes/ai-agents">AI agents recipe <LucideIcon name="arrow-right" /></a>
-        </div>
+        <p>The MCP server plus a skill that drafts a form from a prompt, a table or a screenshot.</p>
+        <CopyLine class="agents__copy" :command="plugin" prompt="$" label="Copy plugin install commands" />
       </article>
+    </div>
+    <div class="lp-links">
+      <a class="lp-link" href="/cloud/quickstart#agents">MCP setup <LucideIcon name="arrow-right" /></a>
+      <a class="lp-link" href="/recipes/ai-agents">AI agents recipe <LucideIcon name="arrow-right" /></a>
     </div>
   </LandingSection>
 </template>
@@ -55,18 +55,8 @@ const plugin = ['claude plugin marketplace add ignsm/formhaus', 'claude plugin i
   color: var(--vp-c-text-1);
 }
 
-.agents__plugin {
-  display: flex;
-  flex-direction: column;
-}
-
 .agents__copy {
   margin-top: 24px;
   background: var(--vp-c-bg);
-}
-
-.agents__links {
-  margin-top: auto;
-  padding-top: 24px;
 }
 </style>

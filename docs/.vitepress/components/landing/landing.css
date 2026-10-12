@@ -2,6 +2,7 @@
   --lp-gutter: 24px;
   --lp-max: 1152px;
   --lp-ink: var(--fh-c-logo-ink);
+  padding-bottom: 96px;
   font-size: 15px;
   line-height: 24px;
   color: var(--vp-c-text-1);
@@ -80,6 +81,10 @@
   gap: 6px;
   font-weight: 600;
   text-decoration: none;
+  color: var(--vp-c-text-1);
+}
+
+.lp-link .lucide {
   color: var(--vp-c-brand-1);
 }
 
@@ -149,6 +154,10 @@
   .lp-grid--3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+}
+
+.VPContent.is-home .VPHome {
+  margin-bottom: 0;
 }
 
 @media (min-width: 1200px) {

@@ -13,13 +13,14 @@ const links = [
 </script>
 
 <template>
-  <LandingSection id="start" eyebrow="Get started" title="Publish your first form.">
+  <LandingSection id="start" eyebrow="Get started" title="Ask your agent for a form.">
     <div class="closing">
       <LandingActions />
       <McpCommand id="closing-mcp" />
     </div>
     <nav class="closing__footer" aria-label="Project links">
       <a v-for="link in links" :key="link.text" :href="link.href" v-bind="link.href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {}">{{ link.text }}</a>
+      <span class="closing__legal">MIT licensed · <a href="/legal/">Legal</a></span>
     </nav>
   </LandingSection>
 </template>
@@ -41,6 +42,10 @@ const links = [
   font-size: 13px;
   line-height: 20px;
   color: var(--vp-c-text-2);
+}
+
+.closing__legal {
+  margin-left: auto;
 }
 
 .closing__footer a {

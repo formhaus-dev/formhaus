@@ -5,12 +5,13 @@ import type { FormDefinition } from '@formhaus/core';
 import template from '../../../../templates/contact-form.json';
 import LandingFrame from './LandingFrame.vue';
 import LandingSection from './LandingSection.vue';
+import { version } from '../../../../packages/core/package.json';
 import { handRolled, highlight, panes } from './app-code';
 
 const LandingDemoForm = defineAsyncComponent(() => import('./LandingDemoForm.vue'));
 
 const { theme } = useData();
-const facts = computed(() => ['MIT', `Core under ${theme.value.coreBudgetKB} KB gzipped`, 'Zero dependencies']);
+const facts = computed(() => [`v${version}`, 'MIT', `Core under ${theme.value.coreBudgetKB} KB gzipped`, 'Zero dependencies']);
 const definition = template.definition as FormDefinition;
 const views = panes.map((pane) => {
   const shown = pane.source.split('\n').length;
@@ -33,15 +34,15 @@ function onKey(event: KeyboardEvent) {
   <LandingSection
     id="app"
     eyebrow="In your app"
-    title="The same file, native in your app."
-    :lead="`React and Vue renderers, or the headless core for anything else. A contact form takes ${views[0].total} lines with Formhaus and ${handRolled.total} by hand.`"
+    title="Native in React and Vue."
+    :lead="`Headless core for everything else. This contact form takes ${views[0].total} lines. By hand, ${handRolled.total}.`"
   >
     <ul class="facts" aria-label="Library facts">
       <li v-for="fact in facts" :key="fact">{{ fact }}</li>
     </ul>
     <LandingFrame class="app" fixed>
       <template #bar>
-        <div class="app__tabs" role="tablist" aria-label="Code" @keydown="onKey">
+        <div class="app__tabs" role="tablist" aria-label="Code sample" @keydown="onKey">
           <button
             v-for="view in views"
             :id="`app-tab-${view.id}`"

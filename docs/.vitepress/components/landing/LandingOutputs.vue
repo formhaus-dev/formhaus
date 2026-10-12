@@ -3,10 +3,10 @@ import LandingSection from './LandingSection.vue';
 import LucideIcon from './LucideIcon.vue';
 
 const outputs = [
-  { icon: 'globe', title: 'Hosted page', text: 'A link to share or send.', sample: 'f.formhaus.dev/Xk3d9QpL2a' },
-  { icon: 'code', title: 'Embed', text: 'One script tag on any site.', sample: '<script src=".../embed.js" data-form>' },
-  { icon: 'send', title: 'Endpoint', text: 'Validated submissions from your own UI.', sample: 'POST api.formhaus.dev/f/Xk3d9QpL2a' },
-  { icon: 'webhook', title: 'Webhook', text: 'A signed POST for every submission.', sample: 'Formhaus-Signature: t=…,v1=…' },
+  { icon: 'globe', title: 'Hosted page', text: 'A link to share.', sample: 'f.formhaus.dev/Xk3d9QpL2a' },
+  { icon: 'code', title: 'Embed', text: 'One script tag on any site.', sample: '<script src="https://f.formhaus.dev/embed.js" data-form="Xk3d9QpL2a" async><\/script>' },
+  { icon: 'send', title: 'Endpoint', text: 'Server-side validation for your own UI.', sample: 'POST api.formhaus.dev/f/Xk3d9QpL2a' },
+  { icon: 'webhook', title: 'Webhook', text: 'A signed POST for every submission.', sample: 'Formhaus-Signature: t=1760000000,v1=5257a869e7ecebeda32affa62cdca3fa51cad7e77a0e56ff536d0ce8e108d8bd' },
   { icon: 'server', title: 'REST API', text: 'Forms and submissions over HTTP.', sample: 'GET /v1/forms/{id}/submissions' },
   { icon: 'sheet', title: 'CSV', text: 'Every submission in one file.', sample: '?format=csv' },
 ] as const;
@@ -28,7 +28,7 @@ const outputs = [
     </ul>
     <p class="outputs__price">
       Free for 3 forms. Pro $19/mo, Team $49/mo.
-      <a class="lp-link" href="/cloud">Formhaus Cloud <LucideIcon name="arrow-right" /></a>
+      <a class="lp-link" href="/cloud/plans">Plans and limits <LucideIcon name="arrow-right" /></a>
     </p>
   </LandingSection>
 </template>
@@ -55,9 +55,7 @@ const outputs = [
 .outputs__sample {
   display: block;
   margin-top: 16px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
   color: var(--vp-c-text-2);
 }
 
@@ -81,6 +79,10 @@ const outputs = [
 
   .outputs__item h3 {
     font-size: 16px;
+  }
+
+  .outputs__item h3 .lucide {
+    display: none;
   }
 
   .outputs__sample {

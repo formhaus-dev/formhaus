@@ -4,7 +4,10 @@
   position: relative;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
   background: var(--lp-ink);
   outline-offset: -2px;
 }
@@ -24,7 +27,7 @@
   overflow: hidden;
   font-family: var(--vp-font-family-mono);
   font-size: 13px;
-  line-height: 21px;
+  line-height: 20px;
   color: var(--code-text);
   background: none;
 }
@@ -71,13 +74,13 @@
 .app__punct { color: var(--code-muted); }
 
 .app__more {
-  position: absolute;
-  inset: auto 0 0;
+  position: sticky;
+  bottom: 0;
   display: flex;
   align-items: flex-end;
   justify-content: center;
   height: 120px;
-  margin: 0;
+  margin: -120px 0 0;
   padding-bottom: 16px;
   font-size: 13px;
   font-weight: 600;
@@ -86,9 +89,8 @@
 }
 
 @media (max-width: 767px) {
-  .app__pre {
-    font-size: 12px;
-    line-height: 20px;
+  .app__code {
+    flex: 0 0 240px;
   }
 
   .app__num,

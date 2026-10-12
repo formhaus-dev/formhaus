@@ -35,6 +35,9 @@ export function ContactForm({ onSubmit }: { onSubmit: (values: Values) => Promis
   const [serverError, setServerError] = useState('');`,
 };
 
+import template from '../../../../templates/contact-form.json';
+import { formatJson } from './json-format';
+
 export const panes = [
   {
     id: 'react',
@@ -74,6 +77,12 @@ engine.setValue('name', 'Ada');
 engine.setValue('email', 'ada@example.com');
 engine.setValue('message', 'Hello');
 await engine.submit(send);`,
+  },
+  {
+    id: 'json',
+    label: 'contact-form.json',
+    file: 'contact-form.json',
+    source: formatJson(template.definition).trimEnd(),
   },
   {
     id: 'hand',

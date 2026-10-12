@@ -9,7 +9,7 @@ import McpCommand from './McpCommand.vue';
     <div class="hero__copy">
       <h1 id="hero-title" class="hero__title">The form framework for the AI&nbsp;era.</h1>
       <p class="hero__lead">
-        One JSON definition. Your agent publishes it and hands back a link, an embed, an endpoint and a webhook.
+        One JSON definition. Your agent publishes it and hands back a link, embed, endpoint and webhook.
         The same file renders natively in React, Vue and Figma.
       </p>
       <LandingActions class="hero__actions" />
@@ -63,7 +63,7 @@ import McpCommand from './McpCommand.vue';
   }
 
   .hero__copy { grid-area: 1 / 1 / 2 / 7; }
-  .hero__video { grid-area: 1 / 7 / 3 / 13; }
+  .hero__video { grid-area: 1 / 7 / 3 / 13; align-self: start; margin-top: 9px; }
   .hero__mcp { grid-area: 2 / 1 / 3 / 7; align-self: start; }
 
   .lp .hero__title {

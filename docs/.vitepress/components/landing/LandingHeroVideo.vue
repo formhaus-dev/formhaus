@@ -107,7 +107,7 @@ onBeforeUnmount(() => observer?.disconnect());
       playsinline
       preload="metadata"
       :poster="poster"
-      aria-label="Formhaus product tour, 33 seconds, no sound"
+      aria-label="Formhaus product tour, 33 seconds, silent"
       aria-describedby="hero-video-caption"
       @play="onPlay"
       @pause="playing = false"
@@ -118,8 +118,8 @@ onBeforeUnmount(() => observer?.disconnect());
     </video>
     <figcaption id="hero-video-caption" class="lp-sr-only">
       An agent is asked for a waitlist form and writes one JSON definition.
-      The same form renders in React, Vue, a hosted page and Figma.
-      It is published at a link, someone fills it in, and responses arrive.
+      It renders in React, Vue, a hosted page and Figma.
+      The agent publishes a link, someone fills the form in, and the responses arrive.
     </figcaption>
     <button v-if="ready && !started" type="button" class="hero-video__start" @click="toggle">
       <LucideIcon name="play" />
@@ -129,8 +129,7 @@ onBeforeUnmount(() => observer?.disconnect());
     <button
       type="button"
       class="hero-video__toggle"
-      aria-label="Pause video"
-      :aria-pressed="!playing"
+      :aria-label="playing ? 'Pause video' : 'Play video'"
       @click="toggle"
     >
       <LucideIcon :name="playing ? 'pause' : 'play'" />

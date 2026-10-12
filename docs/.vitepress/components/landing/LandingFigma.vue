@@ -9,9 +9,9 @@ import LucideIcon from './LucideIcon.vue';
     id="figma"
     eyebrow="Figma plugin"
     title="Designers see the real form."
-    lead="Paste the same JSON into the plugin for mockups in your own components, a flow map of every branch and a clickable prototype."
+    lead="Paste the definition into the plugin: mockups in your own components, a flow map of every branch, a clickable prototype."
   >
-    <LandingFrame class="figma">
+    <LandingFrame class="figma" fixed>
       <template #bar>
         <svg class="figma__logo" viewBox="0 0 38 57" width="10" height="15" aria-hidden="true">
           <path fill="currentColor" d="M19 28.5a9.5 9.5 0 1 1 19 0 9.5 9.5 0 0 1-19 0zM0 47.5A9.5 9.5 0 0 1 9.5 38H19v9.5a9.5 9.5 0 1 1-19 0zM19 0v19h9.5a9.5 9.5 0 1 0 0-19H19zM0 9.5A9.5 9.5 0 0 0 9.5 19H19V0H9.5A9.5 9.5 0 0 0 0 9.5zM0 28.5A9.5 9.5 0 0 0 9.5 38H19V19H9.5A9.5 9.5 0 0 0 0 28.5z" />
@@ -67,19 +67,18 @@ import LucideIcon from './LucideIcon.vue';
 }
 
 .figma__canvas {
+  display: flex;
   flex: 1;
+  min-height: 0;
   padding: 32px;
-  background: #f6f3fb;
-}
-
-html.dark .figma__canvas {
-  background: #161619;
+  background: var(--vp-c-bg-soft);
 }
 
 .figma__image {
   display: block;
   width: 100%;
-  height: auto;
+  height: 100%;
+  object-fit: contain;
 }
 
 .figma__image--dark,
@@ -89,5 +88,11 @@ html.dark .figma__image--light {
 
 html.dark .figma__image--dark {
   display: block;
+}
+
+@media (max-width: 767px) {
+  .figma__canvas {
+    padding: 16px;
+  }
 }
 </style>

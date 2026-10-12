@@ -140,10 +140,10 @@ function onTabKey(event: KeyboardEvent) {
 </script>
 
 <template>
-  <LandingSection id="demo" band eyebrow="Playground" title="Edit the definition, watch the form." lead="Fields, validation, branching and steps, live.">
+  <LandingSection id="demo" band eyebrow="Playground" title="Edit the definition, watch the form." lead="Fields, validation, steps and branches, live.">
     <LandingFrame class="sandbox" fixed :data-tab="tab" @keydown="onSandboxKey">
       <template #bar>
-        <div class="sandbox__tabs" role="tablist" aria-label="Demo view" @keydown="onTabKey">
+        <div class="sandbox__tabs" role="tablist" aria-label="Playground view" @keydown="onTabKey">
           <button
             v-for="item in tabs"
             :id="`sandbox-tab-${item.id}`"
