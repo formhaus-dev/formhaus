@@ -3,6 +3,12 @@ import type { FormDefinition } from '@formhaus/core';
 import { computed, ref } from 'vue';
 import EditorIsland from './EditorIsland.vue';
 
+const starter: FormDefinition = {
+  id: 'untitled-form',
+  title: 'Untitled form',
+  submit: { label: 'Submit' },
+  fields: [{ key: 'email', type: 'email', label: 'Email' }],
+};
 const definition = ref<FormDefinition | null>(null);
 const copied = ref(false);
 const json = computed(() => (definition.value ? `${JSON.stringify(definition.value, null, 2)}\n` : ''));
@@ -30,7 +36,10 @@ function download() {
     <header class="build-head">
       <div class="build-title">
         <h1>Form builder</h1>
-        <p>Build a form, preview it and copy the JSON. Your draft stays in this browser.</p>
+        <p>
+          Build a form, preview it and copy the JSON into <a href="/guide/#formhaus-react">React</a>, <a href="/guide/#formhaus-vue">Vue</a> or your agent. Your draft stays in
+          this browser.
+        </p>
       </div>
       <div class="build-actions">
         <button type="button" class="build-button" :disabled="!definition" @click="copy">
@@ -40,14 +49,14 @@ function download() {
       </div>
     </header>
     <ClientOnly>
-      <EditorIsland storage="local" @change="definition = $event" />
+      <EditorIsland storage="local" :definition="starter" saved-hint="Saved in this browser" @change="definition = $event" />
     </ClientOnly>
   </div>
 </template>
 
 <style scoped>
 .build {
-  max-width: 1104px;
+  max-width: 1216px;
   margin: 0 auto;
   padding: 32px 32px 96px;
 }

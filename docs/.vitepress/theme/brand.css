@@ -10,6 +10,7 @@
 }
 
 .dark {
+  --vp-c-gutter: var(--vp-c-divider);
   --fh-c-brand-shadow: rgba(85, 2, 251, 0.3);
   --vp-c-brand-1: #a98bff;
   --vp-c-brand-2: #7a3dff;

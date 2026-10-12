@@ -3,7 +3,7 @@ import type { FormDefinition } from '@formhaus/core';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import './editor-tokens.css';
 
-const props = defineProps<{ storage: 'local' | 'memory'; definition?: FormDefinition; lazy?: boolean }>();
+const props = defineProps<{ storage: 'local' | 'memory'; definition?: FormDefinition; lazy?: boolean; savedHint?: string }>();
 const emit = defineEmits<{ change: [definition: FormDefinition]; ready: [] }>();
 
 const root = ref<HTMLElement | null>(null);
@@ -25,14 +25,11 @@ async function start() {
   const [editor] = await Promise.all([import('@formhaus/editor-react/mount.js'), stylesheet()]);
   if (disposed || !root.value) return;
   const onChange = (definition: FormDefinition) => emit('change', definition);
-  const host =
-    props.storage === 'local'
-      ? editor.createLocalHost({ onChange })
-      : editor.createMemoryHost({ onChange, ...(props.definition ? { definition: props.definition } : {}) });
-  if (props.storage === 'local') {
-    const draft = editor.readLocalDraft(window.localStorage);
-    if (draft) emit('change', draft.definition);
-  }
+  const options = { onChange, ...(props.definition ? { definition: props.definition } : {}), ...(props.savedHint ? { savedHint: props.savedHint } : {}) };
+  const host = props.storage === 'local' ? editor.createLocalHost(options) : editor.createMemoryHost(options);
+  const stored = props.storage === 'local' ? editor.readLocalDraft(window.localStorage)?.definition : undefined;
+  const initial = stored ?? props.definition;
+  if (initial) emit('change', initial);
   unmount = editor.mount(root.value, { host });
   loaded.value = true;
   emit('ready');

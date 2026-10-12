@@ -29,6 +29,7 @@ async function check() {
     await page.goto(`${base}/build`);
     const label = page.getByRole('textbox', { name: 'Field label' }).first();
     await label.click();
+    await page.keyboard.press('ControlOrMeta+A');
     await page.keyboard.type('Work email');
     await page.getByText('Saved', { exact: false }).first().waitFor({ timeout: 10000 });
     await page.reload();
