@@ -5,6 +5,12 @@
   border-top: var(--fh-ed-border-thin) solid var(--fh-ed-line);
 }
 
+.settings.plain {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
 .panel {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
