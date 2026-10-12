@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FormDefinition } from '@formhaus/core';
 import { computed, ref } from 'vue';
+import LucideIcon from '../landing/LucideIcon.vue';
 import EditorIsland from './EditorIsland.vue';
 import { launch } from './launch';
 
@@ -52,8 +53,8 @@ function download() {
       <div class="build-title">
         <h1>Form builder</h1>
         <p>
-          Build a form, preview it and copy the JSON into <a href="/guide/#formhaus-react">React</a>, <a href="/guide/#formhaus-vue">Vue</a> or your agent. Your draft stays in
-          this browser.
+          Build a form, preview it, then launch it on Formhaus Cloud or copy the JSON for <a href="/guide/#formhaus-react">React</a> and
+          <a href="/guide/#formhaus-vue">Vue</a>. Your draft stays in this browser.
         </p>
       </div>
       <div class="build-actions">
@@ -61,12 +62,18 @@ function download() {
           {{ copied ? 'Copied' : 'Copy JSON' }}
         </button>
         <button type="button" class="build-button" :disabled="!definition" @click="download">Download JSON</button>
-        <button type="button" class="build-button build-primary" :disabled="!definition || launching" @click="start">
+        <button
+          type="button"
+          class="build-button build-primary"
+          title="Opens Formhaus Cloud. Sign in with an email link to keep the form."
+          :disabled="!definition || launching"
+          @click="start"
+        >
           {{ launching ? 'Opening Cloud…' : 'Launch for free' }}
         </button>
       </div>
+      <p v-if="failure" class="build-failure" role="alert"><LucideIcon name="circle-alert" />{{ failure }}</p>
     </header>
-    <p v-if="failure" class="build-failure" role="alert">{{ failure }}</p>
     <ClientOnly>
       <EditorIsland storage="local" :definition="starter" saved-hint="Saved in this browser" @change="definition = $event" />
     </ClientOnly>
@@ -81,6 +88,7 @@ function download() {
 }
 
 .build-head {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -102,9 +110,14 @@ function download() {
   line-height: 20px;
 }
 
+.build-title {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .build-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex: none;
   gap: 8px;
 }
 
@@ -141,10 +154,25 @@ function download() {
 }
 
 .build-failure {
-  margin: -8px 0 16px;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  display: flex;
+  gap: 6px;
+  z-index: 20;
+  max-width: 420px;
+  margin: 0;
+  background: var(--vp-c-bg);
   color: var(--vp-c-danger-1);
-  font-size: 14px;
-  line-height: 20px;
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.build-failure :deep(svg) {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
 }
 
 .build-button:disabled {
@@ -170,6 +198,12 @@ function download() {
   .build-primary {
     grid-column: 1 / -1;
     order: -1;
+  }
+
+  .build-failure {
+    position: static;
+    max-width: none;
+    margin-top: -8px;
   }
 }
 </style>
