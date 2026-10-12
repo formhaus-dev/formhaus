@@ -28,17 +28,8 @@
 
 .lp-head {
   max-width: 760px;
-  margin-bottom: 40px;
-}
-
-.lp-eyebrow {
-  margin: 0 0 12px;
-  font-size: 12px;
-  line-height: 16px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--vp-c-text-2);
+  margin: 0 auto 40px;
+  text-align: center;
 }
 
 .lp .lp-title {
@@ -67,14 +58,6 @@
   line-height: 20px;
 }
 
-.lp-lead code {
-  padding: 2px 6px;
-  border-radius: 6px;
-  font-size: 15px;
-  color: var(--vp-c-text-1);
-  background: var(--vp-c-default-soft);
-}
-
 .lp-link {
   display: inline-flex;
   align-items: center;
@@ -91,38 +74,6 @@
 .lp-link:hover {
   text-decoration: underline;
   text-underline-offset: 3px;
-}
-
-.lp-links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 24px;
-  margin-top: 24px;
-}
-
-.lp-card {
-  min-width: 0;
-  padding: 24px;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 12px;
-  background: var(--vp-c-bg-soft);
-}
-
-.lp-card h3 {
-  margin: 0;
-  font-size: 18px;
-  line-height: 24px;
-  font-weight: 600;
-}
-
-.lp-card p {
-  margin: 8px 0 0;
-  color: var(--vp-c-text-2);
-}
-
-.lp-grid {
-  display: grid;
-  gap: 16px;
 }
 
 .lp a:focus-visible,
@@ -145,14 +96,6 @@
   .lp .lp-title {
     font-size: 36px;
     line-height: 40px;
-  }
-
-  .lp-grid--2 {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .lp-grid--3 {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 

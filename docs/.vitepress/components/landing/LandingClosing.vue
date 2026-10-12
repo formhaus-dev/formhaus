@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import LandingActions from './LandingActions.vue';
 import LandingSection from './LandingSection.vue';
-import McpCommand from './McpCommand.vue';
 
 const repo = 'https://github.com/ignsm/formhaus';
 const links = [
@@ -13,10 +12,10 @@ const links = [
 </script>
 
 <template>
-  <LandingSection id="start" eyebrow="Get started" title="Ask your agent for a form.">
+  <LandingSection id="start" title="Make your first form">
     <div class="closing">
       <LandingActions />
-      <McpCommand id="closing-mcp" />
+      <p class="closing__price"><a href="/cloud/plans">Free for 3 forms. Pro $19/mo. Team $49/mo.</a></p>
     </div>
     <nav class="closing__footer" aria-label="Project links">
       <a v-for="link in links" :key="link.text" :href="link.href" v-bind="link.href.startsWith('http') ? { target: '_blank', rel: 'noopener' } : {}">{{ link.text }}</a>
@@ -29,7 +28,13 @@ const links = [
 .closing {
   display: grid;
   gap: 32px;
-  max-width: 564px;
+  justify-items: center;
+  text-align: center;
+}
+
+.closing__price {
+  margin: 0;
+  color: var(--vp-c-text-2);
 }
 
 .closing__footer {

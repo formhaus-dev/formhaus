@@ -145,7 +145,8 @@ function onTabKey(event: KeyboardEvent) {
 </script>
 
 <template>
-  <LandingSection id="demo" band eyebrow="Playground" title="Edit the definition, watch the form." lead="Fields, validation, steps and branches, live.">
+  <LandingSection id="demo" band title="Try making a form">
+    <template #lead>Edit this example or <a href="/build">open the free builder</a>, no signup needed.</template>
     <LandingFrame class="sandbox" fixed :data-tab="tab">
       <template #bar>
         <div class="sandbox__tabs" role="tablist" aria-label="Playground view" @keydown="onTabKey">
