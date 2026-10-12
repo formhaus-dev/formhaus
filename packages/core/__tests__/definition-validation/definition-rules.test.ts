@@ -20,6 +20,22 @@ describe('condition rules', () => {
     expect(checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', eg: 'x' } as never] })]))[0].hint).toBe('Use "eq".');
   });
 
+  it('says that a negated condition on a list field always matches', () => {
+    const issues = checkDefinition(form([field('tags', { type: 'multiselect', options }), field('b', { show: [{ field: 'tags', neq: 'a' }] })]));
+    expect(issues[0].message).toBe('/fields/1/show/0/neq: "tags" holds a list of values, so "neq" always matches it. Use notEmpty, or a select or radio field.');
+  });
+
+  it('escapes the operator key in the path and does not suggest the owner key', () => {
+    const issues = checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', 'x/y~z': 1 } as never] }), field('c', { show: [{ field: 'zzz', eq: 'q' }] })]));
+    expect(issues.map((issue) => issue.path)).toEqual(['/fields/1/show/0/x~1y~0z', '/fields/2/show/0/field']);
+    expect(issues[1].hint).toBe('Use one of: "a", "b".');
+  });
+
+  it('skips option checks when options load from a provider', () => {
+    const city = field('city', { type: 'select', optionsFrom: 'cities', options, defaultValue: 'paris' });
+    expect(checkDefinition(form([city, field('b', { show: [{ field: 'city', eq: 'rome' }] })]))).toEqual([]);
+  });
+
   it('checks conditions on actions', () => {
     expect(codes(form([field('a')], { submit: { label: 'Go', disabled: [{ field: 'nope', eq: 'x' }] } }))).toEqual(['warning unknown-field /submit/disabled/0/field']);
   });

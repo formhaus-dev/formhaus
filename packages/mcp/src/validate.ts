@@ -41,9 +41,8 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   if (errors.length > 0) return { report: finish(errors, warnings) };
   const engine = createEngine(definition, values);
   if (!engine.ok) errors.push(...engine.errors);
-  warnings.push(...checkDefinition(definition).map((issue) => issue.message).filter((message) => !errors.includes(message)));
+  warnings.push(...checkDefinition(definition, { validators: {} }).filter((issue) => issue.severity === 'warning').map((issue) => issue.message));
   if (!engine.ok) return { report: finish(errors, warnings) };
-  warnings.push(...engine.warnings);
   return { report: finish(errors, warnings), definition, engine: engine.engine };
 }
 

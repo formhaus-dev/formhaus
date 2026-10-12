@@ -269,7 +269,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 
 | Code | Severity | Reported for |
 |---|---|---|
-| `invalid-type` | error | A definition that is not an object, or `fields`, `steps`, `steps[].fields`, `routes`, `show`, `showAny` or `disabled` that is not an array of objects |
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array or `max` that is not a number |
 | `missing-property` | error | A missing `id`, `submit`, step `id`, field `key` or `type`, route `to` or condition `field`. A missing `title` is a warning |
 | `fields-and-steps` | error | Both `fields` and `steps` non-empty |
 | `duplicate-step-id` | error | Two steps with one id |
@@ -283,7 +283,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `invalid-range` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
 | `duplicate-key` | warning | A field key that an earlier field already uses |
-| `condition-value-mismatch` | warning | A condition value that can never match the field: wrong type, not one of its `options`, or a list field |
+| `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |

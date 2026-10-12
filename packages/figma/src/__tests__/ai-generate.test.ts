@@ -51,7 +51,7 @@ describe('checkReply', () => {
     expect(checkReply(JSON.stringify(twice)).fatal).toEqual(['/steps/1/id: step id "s" is already used by /steps/0. Give each step a unique id.']);
     const result = checkReply(JSON.stringify(withWarning));
     expect(result.fatal).toEqual([]);
-    expect(result.warnings).toEqual(['/fields/0/show/0/field: "ghost" is not a field key. Use "email".']);
+    expect(result.warnings).toEqual(['/fields/0/show/0/field: "ghost" is not a field key.']);
   });
 });
 

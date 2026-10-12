@@ -20,6 +20,7 @@ export function useFormEngineStore(
       get onAfterStepChange() { return optionsRef.current?.onAfterStepChange; },
       get onBeforeSubmit() { return optionsRef.current?.onBeforeSubmit; },
       get onAfterSubmit() { return optionsRef.current?.onAfterSubmit; },
+      onWarning: options?.onWarning,
     });
     definitionIdRef.current = definition.id;
   }

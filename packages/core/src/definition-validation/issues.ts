@@ -53,6 +53,10 @@ function create(severity: DefinitionIssue['severity']) {
 export const error = create('error');
 export const warning = create('warning');
 
+export function pointer(key: string): string {
+  return key.replace(/~/g, '~0').replace(/\//g, '~1');
+}
+
 export function isError(issue: DefinitionIssue): boolean {
   return issue.severity === 'error';
 }

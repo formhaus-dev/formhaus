@@ -92,9 +92,9 @@ describe('validate_definition', () => {
     };
     const report = await validateDefinitionTool({ definition });
     expect(report.valid).toBe(true);
-    expect(report.warnings).toEqual(expect.arrayContaining([
-      '/fields/0/show/0/field: "ghost" is not a field key. Use one of: "a", "c".',
-      'fields[1] of type "select" has no "options" or "optionsFrom".',
-    ]));
+    expect(report.warnings).toEqual([
+      '/fields/0/show/0/field: "ghost" is not a field key. Use "c".',
+      '/fields/1/options: the select field "c" has no options. Add "options" or "optionsFrom".',
+    ]);
   });
 });

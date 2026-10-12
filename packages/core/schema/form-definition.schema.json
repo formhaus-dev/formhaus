@@ -132,7 +132,7 @@
         "field"
       ],
       "additionalProperties": false,
-      "description": "A condition on another field value. Use one operator per condition; only the first of eq, neq, in, notIn, notEmpty applies.",
+      "description": "A condition on another field value. Use exactly one operator: eq, neq, in, notIn or notEmpty.",
       "minProperties": 2,
       "maxProperties": 2
     },

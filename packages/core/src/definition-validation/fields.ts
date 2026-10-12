@@ -20,7 +20,7 @@ function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
   }
   const values = field.options.map((option) => option.value);
   const defaults = field.type === 'multiselect' && Array.isArray(field.defaultValue) ? field.defaultValue : [field.defaultValue];
-  const missing = field.defaultValue === undefined || !values.length ? undefined : defaults.find((value) => !values.includes(value as string));
+  const missing = field.defaultValue === undefined || !values.length || field.optionsFrom ? undefined : defaults.find((value) => !values.includes(value as string));
   if (missing === undefined) return [];
   return [warning('default-not-in-options', `${path}/defaultValue`, `${JSON.stringify(missing)} is not an option of "${field.key}"`, oneOf(values))];
 }

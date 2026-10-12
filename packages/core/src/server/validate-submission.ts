@@ -1,5 +1,6 @@
 import type { FormDefinition, FormField } from '../types';
 import type { ValidatorFn } from '../validation';
+import { parseDefinition } from '../definition-validation';
 import { getAllFields } from '../engine/engine-utils';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { FormEngine } from '../engine/runtime';
@@ -63,6 +64,7 @@ export function validateSubmission(
   input: unknown,
   options: SubmissionOptions = {},
 ): SubmissionResult {
+  parseDefinition(definition);
   const fields = getAllFields(definition);
   const initialValues = knownValues(fields, input);
   const invalid = typeErrors(fields, initialValues);

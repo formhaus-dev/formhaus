@@ -33,7 +33,7 @@ app.post('/api/submit', (req, res) => {
 app.listen(3000);
 ```
 
-Save `values`, not `req.body.values`. Next.js and Nuxt versions are in [Next.js](/guide/integrations/nextjs) and [Nuxt](/guide/integrations/nuxt).
+Save `values`, not `req.body.values`. `validateSubmission()` throws a `FormDefinitionError` when the definition itself has an error, so check stored definitions with `checkDefinition()` before you save them. Next.js and Nuxt versions are in [Next.js](/guide/integrations/nextjs) and [Nuxt](/guide/integrations/nuxt).
 
 ## Client
 

@@ -11,6 +11,7 @@ export interface ConditionEntry {
   path: string;
   owner: 'field' | 'step' | 'route' | 'action';
   step: number;
+  key?: string;
 }
 
 export interface CheckContext {
@@ -25,9 +26,9 @@ export interface CheckContext {
 
 type Owner = { show?: ShowCondition[]; showAny?: ShowCondition[] };
 
-function collect(target: ConditionEntry[], source: Owner, path: string, owner: ConditionEntry['owner'], step: number): void {
+function collect(target: ConditionEntry[], source: Owner, path: string, owner: ConditionEntry['owner'], step: number, key?: string): void {
   for (const name of ['show', 'showAny'] as const) {
-    (source[name] ?? []).forEach((condition, index) => target.push({ condition, path: `${path}/${name}/${index}`, owner, step }));
+    (source[name] ?? []).forEach((condition, index) => target.push({ condition, path: `${path}/${name}/${index}`, owner, step, key }));
   }
 }
 
@@ -45,7 +46,7 @@ export function createContext(definition: FormDefinition, validators?: Record<st
   const keys = new Map<string, FieldEntry>();
   for (const entry of entries) if (!keys.has(entry.field.key)) keys.set(entry.field.key, entry);
   const conditions: ConditionEntry[] = [];
-  for (const entry of entries) collect(conditions, entry.field, entry.path, 'field', entry.step);
+  for (const entry of entries) collect(conditions, entry.field, entry.path, 'field', entry.step, entry.field.key);
   steps.forEach((step, index) => {
     collect(conditions, step, `/steps/${index}`, 'step', index);
     (step.routes ?? []).forEach((route, position) => collect(conditions, route, `/steps/${index}/routes/${position}`, 'route', index));

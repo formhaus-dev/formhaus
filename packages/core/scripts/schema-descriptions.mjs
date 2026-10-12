@@ -31,7 +31,7 @@ export const DESCRIPTIONS = {
   'StepRoute.to': 'Id of a later step. null makes the current step the last one on this path.',
   'StepRoute.show': 'Route matches only when all conditions match. Without show or showAny the route always matches.',
   'StepRoute.showAny': 'Route matches when any condition matches.',
-  ShowCondition: 'A condition on another field value. Use one operator per condition; only the first of eq, neq, in, notIn, notEmpty applies.',
+  ShowCondition: 'A condition on another field value. Use exactly one operator: eq, neq, in, notIn or notEmpty.',
   'ShowCondition.field': 'Key of the field to check.',
   'ShowCondition.eq': 'Matches when the value strictly equals this.',
   'ShowCondition.neq': 'Matches when the value does not strictly equal this.',
