@@ -39,3 +39,19 @@
     max-width: 1152px;
   }
 }
+
+@media (max-width: 767px) {
+  .Layout.lp-page .VPNavBar .wrapper {
+    padding: 0 0 0 16px;
+  }
+
+  .Layout.lp-page .VPDoc {
+    padding-inline: 16px;
+  }
+}
+
+@media (max-width: 639px) {
+  .Layout.lp-page .vp-doc div[class*='language-'] {
+    margin-inline: -16px;
+  }
+}
