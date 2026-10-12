@@ -42,7 +42,6 @@ export default defineConfig({
       { text: 'Cloud', link: '/cloud' },
       { text: 'API', link: '/api/definition' },
       { text: 'Builder', link: '/build' },
-      { text: 'Pricing', link: '/cloud#pricing' },
       { text: 'Playground', link: '/playground' }
     ],
     sidebar: [

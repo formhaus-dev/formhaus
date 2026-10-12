@@ -1,6 +1,4 @@
-.Layout:not(.lp-page) :is(.VPNavBarMenu, .VPNavScreenMenu) a[href="/cloud#pricing"] { display: none; }
-.Layout.lp-page :is(.VPNavBarMenu, .VPNavScreenMenu) a[href="/cloud#pricing"] { min-height: 44px; cursor: pointer; }
-.Layout.lp-cloud :is(.VPNavBarMenu, .VPNavScreenMenu, .VPNavBarSearch) { display: none; }
+.Layout.lp-page :is(.VPNavBarMenu, .VPNavScreenMenu, .VPNavBarSearch) { display: none; }
 .Layout.lp-page .VPNavBar .gh-star { position: relative; cursor: pointer; }
 .Layout.lp-page .VPNavBar .gh-star::before { content: ""; position: absolute; inset: -9px -1px; }
 @media (max-width: 959px) {
@@ -8,4 +6,7 @@
   .Layout.lp-page .VPNavBarHamburger { display: flex; }
   .Layout.lp-page .VPNavScreen { display: block; padding-inline: 16px; }
   .Layout.lp-page .VPNavScreen .container { max-width: none; }
+}
+@media (min-width: 960px) and (max-width: 1279px) {
+  .Layout.lp-page .VPNavBarSearch { padding-left: 0; }
 }
