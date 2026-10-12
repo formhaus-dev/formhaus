@@ -11,7 +11,6 @@
 
 .sandbox__pane--write {
   overflow: auto;
-  overscroll-behavior: contain;
   padding: 16px;
 }
 
@@ -30,7 +29,6 @@
   flex-direction: column;
   min-height: 0;
   overflow: auto;
-  overscroll-behavior: contain;
   padding: 24px;
 }
 
