@@ -31,7 +31,7 @@ describe('restore offer', () => {
 
   it('offers a newer copy and loads it on Restore', async () => {
     localStorage.setItem(LOCAL_KEY, JSON.stringify({ definition, revision: 2, savedAt: '2026-10-12T10:00:00Z' }));
-    writeBackup(backupKey(LOCAL_KEY), { definition: carried, revision: 2, at: new Date().toISOString() });
+    writeBackup(backupKey(LOCAL_KEY), { definition: carried, revision: 2, at: new Date().toISOString(), version: null, draft: null });
     render(<EditorRoot host={createLocalHost({ Preview })} />);
     expect(await screen.findByText(/^Restore unsaved changes from .+\?$/)).toBeInTheDocument();
     expect(screen.getByDisplayValue('Email')).toBeInTheDocument();
@@ -41,7 +41,7 @@ describe('restore offer', () => {
   });
 
   it('drops the copy on Discard', async () => {
-    writeBackup(backupKey(LOCAL_KEY), { definition: carried, revision: 0, at: new Date().toISOString() });
+    writeBackup(backupKey(LOCAL_KEY), { definition: carried, revision: 0, at: new Date().toISOString(), version: null, draft: null });
     render(<EditorRoot host={createLocalHost({ Preview, definition })} />);
     await userEvent.click(await screen.findByRole('button', { name: 'Discard' }));
     expect(screen.getByDisplayValue('Email')).toBeInTheDocument();
@@ -81,7 +81,7 @@ describe('leave guard', () => {
       answer = confirmLeave();
       await Promise.resolve();
     });
-    expect(await screen.findByRole('dialog', { name: 'Leave without saving?' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Leave without saving?' })).toHaveTextContent('If you leave now, they are lost.');
     await userEvent.click(screen.getByRole('button', { name: 'Cancel' }));
     expect(await answer).toBe(false);
     act(() => {

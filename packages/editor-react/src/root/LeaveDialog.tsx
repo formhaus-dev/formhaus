@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
-import { setLeavePrompt } from '../store/leave';
+import { leaveMessage, setLeavePrompt } from '../store/leave';
 import { ConfirmDialog } from '../ui';
 
 export function LeaveDialog() {
   const [open, setOpen] = useState(false);
+  const [message, setMessage] = useState('');
   const answer = useRef<((leave: boolean) => void) | null>(null);
   useEffect(
     () =>
@@ -12,6 +13,7 @@ export function LeaveDialog() {
           new Promise<boolean>((resolve) => {
             answer.current?.(false);
             answer.current = resolve;
+            setMessage(leaveMessage());
             setOpen(true);
           }),
       ),
@@ -29,7 +31,7 @@ export function LeaveDialog() {
         if (!next) close(false);
       }}
       title="Leave without saving?"
-      description="Your latest changes are not saved yet. If you leave now, they are lost."
+      description={message}
       confirmLabel="Leave"
       onConfirm={() => {
         close(true);
