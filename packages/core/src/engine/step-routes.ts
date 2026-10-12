@@ -43,32 +43,22 @@ function stepValues(step: { fields: FormField[] }, values: Record<string, unknow
   return result;
 }
 
-export class ActivePath {
-  private source: Record<string, unknown> | null = null;
-  private activeStepList: FormStep[] = [];
-  private activeValueMap: Record<string, unknown> = {};
-
-  constructor(private definition: FormDefinition) {}
-
-  invalidate(): void { this.source = null; }
-
-  steps(values: Record<string, unknown>): FormStep[] {
-    this.refresh(values);
-    return this.activeStepList;
-  }
-
-  values(values: Record<string, unknown>): Record<string, unknown> {
-    this.refresh(values);
-    return this.activeValueMap;
-  }
-
-  private refresh(values: Record<string, unknown>): void {
-    if (this.source === values) return;
-    this.source = values;
-    this.activeStepList = activeSteps(this.definition, values);
+export function createActivePath(definition: FormDefinition) {
+  let source: Record<string, unknown> | null = null;
+  let steps: FormStep[] = [];
+  let active: Record<string, unknown> = {};
+  const refresh = (values: Record<string, unknown>) => {
+    if (source === values) return;
+    source = values;
+    steps = activeSteps(definition, values);
     const result: Record<string, unknown> = {};
-    const groups = this.definition.steps?.length ? this.activeStepList : [{ fields: this.definition.fields ?? [] }];
+    const groups = definition.steps?.length ? steps : [{ fields: definition.fields ?? [] }];
     for (const step of groups) Object.assign(result, stepValues(step, values, result));
-    this.activeValueMap = result;
-  }
+    active = result;
+  };
+  return {
+    invalidate(): void { source = null; },
+    steps(values: Record<string, unknown>): FormStep[] { refresh(values); return steps; },
+    values(values: Record<string, unknown>): Record<string, unknown> { refresh(values); return active; },
+  };
 }

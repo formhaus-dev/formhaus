@@ -21,6 +21,7 @@ export interface CheckContext {
   keyList: string[];
   conditions: ConditionEntry[];
   validators?: Record<string, unknown>;
+  suggest: (value: string, candidates: string[]) => string | undefined;
 }
 
 type Owner = { show?: ShowCondition[]; showAny?: ShowCondition[] };
@@ -37,7 +38,7 @@ function collectAction(target: ConditionEntry[], action: FormAction | false | un
   ));
 }
 
-export function createContext(definition: FormDefinition, validators?: Record<string, unknown>): CheckContext {
+export function createContext(definition: FormDefinition, validators?: Record<string, unknown>, suggest: CheckContext['suggest'] = () => undefined): CheckContext {
   const steps = definition.steps ?? [];
   const entries: FieldEntry[] = steps.length
     ? steps.flatMap((step, index) => step.fields.map((field, position) => ({ field, path: `/steps/${index}/fields/${position}`, step: index })))
@@ -60,5 +61,6 @@ export function createContext(definition: FormDefinition, validators?: Record<st
     keyList: [...keys.keys()],
     conditions,
     validators,
+    suggest,
   };
 }

@@ -7,7 +7,7 @@ export function applyValidationErrors(engine: EngineInternals, errors: Record<st
   engine.state.errors = {};
   engine.state.topLevelErrors = [];
   for (const [key, message] of Object.entries(errors)) {
-    if (engine.visibility.isFieldVisible(key, engine.values)) engine.errors[key] = message;
+    if (engine.visibility.activeField(key, engine.values)) engine.errors[key] = message;
     else engine.topLevelErrors.push(message);
   }
   const structureChanged = navigate && moveToFirstError(engine, errors);
