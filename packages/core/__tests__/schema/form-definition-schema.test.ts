@@ -49,6 +49,13 @@ describe('form definition JSON Schema', () => {
     expect(validate(readJson(path)), JSON.stringify(validate.errors)).toBe(true);
   });
 
+  it('rejects a condition with no operator or with two', () => {
+    const withCondition = (condition: object) => ({ ...validDefinition(), fields: undefined, steps: [{ id: 'one', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A', show: [condition] }] }] });
+    expect(validate(withCondition({ field: 'a', eq: 'x' }))).toBe(true);
+    expect(validate(withCondition({ field: 'a' }))).toBe(false);
+    expect(validate(withCondition({ field: 'a', eq: 'x', neq: 'y' }))).toBe(false);
+  });
+
   it('accepts a minimal definition', () => {
     expect(validate(validDefinition())).toBe(true);
   });

@@ -67,8 +67,9 @@ describe('evaluateCondition', () => {
     expect(evaluateCondition({ field: 'amount', notEmpty: true }, { amount: 0 })).toBe(true);
   });
 
-  it('returns true when field references non-existent key (no operator)', () => {
-    expect(evaluateCondition({ field: 'missing' }, {})).toBe(true);
+  it('never matches a condition without a known operator', () => {
+    expect(evaluateCondition({ field: 'missing' }, {})).toBe(false);
+    expect(evaluateCondition({ field: 'a', equals: 'x' } as never, { a: 'x' })).toBe(false);
   });
 
   it('eq: returns false for non-existent field (undefined !== value)', () => {
