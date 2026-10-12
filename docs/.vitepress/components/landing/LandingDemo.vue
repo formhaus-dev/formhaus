@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
-import { checkDefinition, type FormDefinition } from '@formhaus/core';
+import type { FormDefinition } from '@formhaus/core';
 import seed from '../../../recipes/definitions/onboarding.json';
 import EditorIsland from '../editor/EditorIsland.vue';
 import LandingFrame from './LandingFrame.vue';
@@ -8,9 +8,9 @@ import LandingSection from './LandingSection.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
 import { formatJson } from './json-format';
-import { nextStep } from './route';
+import { useNear } from './near';
 
-const LandingDemoForm = defineAsyncComponent(() => import('./LandingDemoForm.vue'));
+const LandingDemoForm = defineAsyncComponent(() => import('./demo-lazy').then((lazy) => lazy.loadDemoForm()));
 
 const tabs = [
   { id: 'write', label: 'Write' },
@@ -39,10 +39,14 @@ const history_ = ref<string[]>([first()]);
 const values = ref<Record<string, unknown>>({});
 const done = ref(false);
 const jsonError = ref('');
+const core = shallowRef<typeof import('./demo-core')>();
+const near = useNear(() => document.getElementById('demo-title')?.closest('section') ?? null);
+watch(near, async () => { core.value = await (await import('./demo-lazy')).loadDemoCore(); });
 
 function safeValidate(value: FormDefinition): string[] {
+  if (!core.value) return [];
   try {
-    return checkDefinition(value).filter((issue) => issue.severity === 'error').map((issue) => issue.message);
+    return core.value.checkDefinition(value).filter((issue) => issue.severity === 'error').map((issue) => issue.message);
   } catch (error) {
     return [error instanceof Error ? error.message : 'Invalid definition'];
   }
@@ -67,6 +71,8 @@ watch(definition, (next) => {
 });
 
 const progress = computed(() => {
+  if (!core.value) return '';
+  const { nextStep } = core.value;
   const route: string[] = [];
   for (let id: string | undefined = first(); id && !route.includes(id); id = nextStep(live.value, id, values.value)) route.push(id);
   const at = route.indexOf(history_.value[history_.value.length - 1]);
@@ -200,6 +206,7 @@ function onTabKey(event: KeyboardEvent) {
           <div class="sandbox__preview">
             <ClientOnly>
               <LandingDemoForm
+                v-if="near"
                 :key="`${run}-${liveVersion}`"
                 :definition="live"
                 :initial="values"

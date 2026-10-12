@@ -5,8 +5,10 @@ import template from '../../../../templates/contact-form.json';
 import LandingFrame from './LandingFrame.vue';
 import LandingSection from './LandingSection.vue';
 import { handRolled, highlight, panes } from './app-code';
+import { useNear } from './near';
 
-const LandingDemoForm = defineAsyncComponent(() => import('./LandingDemoForm.vue'));
+const LandingDemoForm = defineAsyncComponent(() => import('./demo-lazy').then((lazy) => lazy.loadDemoForm()));
+const near = useNear(() => document.getElementById('app-title')?.closest('section') ?? null);
 
 const definition = template.definition as FormDefinition;
 const views = panes.map((pane) => {
@@ -74,7 +76,7 @@ function onKey(event: KeyboardEvent) {
       <template #aside>
         <div class="app__form">
           <ClientOnly>
-            <LandingDemoForm :definition="definition" />
+            <LandingDemoForm v-if="near" :definition="definition" />
           </ClientOnly>
         </div>
       </template>
