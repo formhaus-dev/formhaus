@@ -41,6 +41,7 @@ export function EditorSaveStatus({ compact = false }: { compact?: boolean }) {
         status && (
           <SaveStatus
             status={status}
+            compact={compact}
             onRetry={() => void autosave?.flush()}
             onResolve={() => {
               setReview(true);

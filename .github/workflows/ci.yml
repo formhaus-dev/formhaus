@@ -120,6 +120,8 @@ jobs:
 
       - run: pnpm check:build-page
 
+      - run: pnpm check:editor-guard
+
   examples:
     runs-on: ubuntu-latest
 

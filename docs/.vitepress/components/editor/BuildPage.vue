@@ -3,7 +3,7 @@ import type { FormDefinition } from '@formhaus/core';
 import { computed, onMounted, ref } from 'vue';
 import LucideIcon from '../landing/LucideIcon.vue';
 import BuildReplace from './BuildReplace.vue';
-import { conflicts, hasStart, requestedStart, starter, type Start } from './build-start';
+import { conflicts, hasStart, requestedStart, starter, takeCarried, type Start } from './build-start';
 import EditorIsland from './EditorIsland.vue';
 import { launch } from './launch';
 
@@ -38,6 +38,12 @@ async function start() {
 }
 
 onMounted(async () => {
+  const carried = takeCarried();
+  if (carried && !hasStart(location.search)) {
+    const editor = await import('@formhaus/editor-react/mount.js');
+    if (!conflicts(editor.readLocalDraft(window.localStorage)?.definition, carried)) window.localStorage.removeItem(editor.LOCAL_KEY);
+    editor.carryToBuild(carried);
+  }
   if (!hasStart(location.search)) {
     ready.value = true;
     return;
@@ -45,6 +51,8 @@ onMounted(async () => {
   const [next, editor] = await Promise.all([requestedStart(location.search), import('@formhaus/editor-react/mount.js')]);
   history.replaceState(history.state, '', location.pathname + location.hash);
   const draft = editor.readLocalDraft(window.localStorage)?.definition;
+  const backup = editor.backupKey(editor.LOCAL_KEY);
+  for (const key of [backup, editor.offerKey(backup)]) window.localStorage.removeItem(key);
   clear = () => window.localStorage.removeItem(editor.LOCAL_KEY);
   pending.value = next;
   if (next && conflicts(draft, next.definition)) draftTitle.value = draft.title || 'Untitled form';

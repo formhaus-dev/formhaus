@@ -32,8 +32,16 @@
 
 .status {
   display: inline-flex;
+  flex: none;
   justify-content: flex-end;
-  width: calc(var(--fh-ed-space-10) * 2 + var(--fh-ed-space-2));
+  min-width: calc(var(--fh-ed-space-10) * 2 + var(--fh-ed-space-2));
+  white-space: nowrap;
+}
+
+.statusCompact {
+  display: inline-flex;
+  flex: 0 1 auto;
+  min-width: 0;
   white-space: nowrap;
 }
 

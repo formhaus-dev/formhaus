@@ -88,7 +88,7 @@ export function EditorTopBar({ start, end, compact = false }: { start?: ReactNod
         {readOnly ? (
           <span className={styles.readOnly}>View only</span>
         ) : (
-          <span className={compact ? undefined : styles.status}>
+          <span className={compact ? styles.statusCompact : styles.status}>
             <EditorSaveStatus compact={compact} />
           </span>
         )}

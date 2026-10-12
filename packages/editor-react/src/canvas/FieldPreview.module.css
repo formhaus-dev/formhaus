@@ -4,7 +4,7 @@
   justify-content: space-between;
   gap: var(--fh-ed-space-2);
   min-height: var(--fh-ed-size-control-lg);
-  padding: var(--fh-ed-space-1-5) var(--fh-ed-space-3);
+  padding: var(--fh-ed-space-1-5) var(--fh-ed-space-2-5);
   border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
   border-radius: var(--fh-ed-radius-md);
   background: var(--fh-ed-bg);

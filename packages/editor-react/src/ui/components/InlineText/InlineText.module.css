@@ -33,8 +33,7 @@
 }
 
 .ring {
-  margin-inline: calc(var(--fh-ed-space-2) * -1);
-  padding-inline: var(--fh-ed-space-2);
+  padding-inline: calc(var(--fh-ed-space-2-5) + var(--fh-ed-border-thin));
   border-radius: var(--fh-ed-radius-md);
   transition: box-shadow var(--fh-ed-duration-fast);
 }

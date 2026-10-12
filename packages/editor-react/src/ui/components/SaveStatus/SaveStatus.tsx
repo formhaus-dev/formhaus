@@ -13,6 +13,7 @@ export interface SaveStatusProps {
   savedAt?: string | undefined;
   onRetry?: () => void;
   onResolve?: () => void;
+  compact?: boolean;
   className?: string;
 }
 
@@ -38,7 +39,7 @@ function useNow(active: boolean) {
   return now;
 }
 
-export function SaveStatus({ status, savedAt, onRetry, onResolve, className }: SaveStatusProps) {
+export function SaveStatus({ status, savedAt, onRetry, onResolve, compact = false, className }: SaveStatusProps) {
   const look = looks[status];
   const now = useNow(status === 'saved' && !!savedAt);
   const when = status === 'saved' && savedAt ? formatAgo(savedAt, now) : '';
@@ -46,7 +47,7 @@ export function SaveStatus({ status, savedAt, onRetry, onResolve, className }: S
     <div className={cx(styles.root, look.tone && styles[look.tone], className)}>
       <span className={styles.state}>
         <span className={styles.icon}>{look.icon}</span>
-        <span>
+        <span className={compact ? 'fh-ed-sr-only' : styles.text}>
           {look.text}
           {when && <span className={styles.when}> · {when}</span>}
         </span>
@@ -55,12 +56,12 @@ export function SaveStatus({ status, savedAt, onRetry, onResolve, className }: S
         {look.tone ? look.text : ''}
       </span>
       {status === 'error' && onRetry && (
-        <Button variant="ghost" onClick={onRetry}>
+        <Button variant="ghost" className={styles.action} onClick={onRetry}>
           Retry
         </Button>
       )}
       {status === 'conflict' && onResolve && (
-        <Button variant="ghost" onClick={onResolve}>
+        <Button variant="ghost" className={styles.action} onClick={onResolve}>
           Review
         </Button>
       )}

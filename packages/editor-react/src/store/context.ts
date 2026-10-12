@@ -1,6 +1,7 @@
 import { createContext, useContext, useSyncExternalStore } from 'react';
 import type { EditorHost, Published } from '../host';
 import type { Autosave } from './autosave';
+import type { Recovery } from './recovery';
 import type { EditorState, EditorStore } from './store';
 
 export interface EditorHandle {
@@ -8,6 +9,7 @@ export interface EditorHandle {
   autosave: Autosave | null;
   host: EditorHost;
   published: Published | null;
+  recovery?: Recovery | null;
 }
 
 export const EditorContext = createContext<EditorHandle | null>(null);

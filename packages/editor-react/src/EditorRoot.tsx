@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { EditorHost } from './host';
+import { LeaveDialog } from './root/LeaveDialog';
 import { Notices, useNotices } from './root/Notices';
 import { EditorScreen } from './shell/EditorScreen';
 import type { EditorMode } from './shell/EditorView';
@@ -25,6 +26,7 @@ export function EditorRoot({ host, mode, compact = false }: EditorRootProps) {
       <TooltipProvider>
         <EditorScreen host={shown} compact={compact} {...(mode ? { mode } : {})} />
         <Notices entries={entries} dismiss={dismiss} />
+        <LeaveDialog />
       </TooltipProvider>
     </div>
   );
