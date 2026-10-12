@@ -132,7 +132,9 @@
         "field"
       ],
       "additionalProperties": false,
-      "description": "A condition on another field value. Use one operator per condition; only the first of eq, neq, in, notIn, notEmpty applies."
+      "description": "A condition on another field value. Use one operator per condition; only the first of eq, neq, in, notIn, notEmpty applies.",
+      "minProperties": 2,
+      "maxProperties": 2
     },
     "FormField": {
       "type": "object",
