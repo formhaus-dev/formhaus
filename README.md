@@ -65,8 +65,8 @@ import definition from './signup.json';
 | Package | Description | npm |
 |---------|-------------|-----|
 | `@formhaus/core` | Zero-dependency form engine: types, validation, visibility, multi-step | `npm i @formhaus/core` |
-| `@formhaus/react` | React adapter with native HTML defaults and custom component support | `npm i @formhaus/react` |
-| `@formhaus/vue` | Vue 3 adapter with native HTML defaults and custom component support | `npm i @formhaus/vue` |
+| `@formhaus/react` | React adapter with native HTML defaults and custom component support | `npm i @formhaus/core @formhaus/react` |
+| `@formhaus/vue` | Vue 3 adapter with native HTML defaults and custom component support | `npm i @formhaus/core @formhaus/vue` |
 | `@formhaus/mcp` | MCP server: validate definitions and simulate paths from AI agents | `claude mcp add formhaus -- npx -y @formhaus/mcp` |
 
 `@formhaus/figma` generates form mockups on the Figma canvas. It is not on Figma Community yet; build it locally, then import `packages/figma/manifest.json`.
@@ -82,8 +82,8 @@ npm install @formhaus/core
 If you need a framework adapter:
 
 ```bash
-npm install @formhaus/react   # React
-npm install @formhaus/vue     # Vue
+npm install @formhaus/core @formhaus/react   # React
+npm install @formhaus/core @formhaus/vue     # Vue
 ```
 
 Or use `@formhaus/core` directly with any framework. See the [Svelte example](https://formhaus.dev/playground.html).
