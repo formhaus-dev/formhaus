@@ -15,6 +15,6 @@ const budgets = JSON.parse(readFileSync(new URL('../../scripts/bundle-budgets.js
 export const coreBudgetKB = Math.ceil(budgets.core / 1024)
 
 export function pageUrl(relativePath: string): string {
-  const path = relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '.html')
+  const path = relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '')
   return `${siteUrl}/${path}`
 }
