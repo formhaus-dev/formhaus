@@ -26,8 +26,9 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     ...props,
     onAfterStepChange: async (context) => {
       focusPending.current = true;
-      props.onStepChange?.(context.toStepId, context.direction);
-      if (context.direction === 'next') {
+      const direction = context.reason === 'back' ? 'back' : 'next';
+      props.onStepChange?.(context.toStepId, direction);
+      if (direction === 'next') {
         onAnalyticsEvent?.({ type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
         onAnalyticsEvent?.({ type: 'step_viewed', stepId: context.toStepId, stepIndex: engine.currentStepIndex });
       }
