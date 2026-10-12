@@ -53,7 +53,7 @@ Step `routes` choose an ordered forward path from answers. Back, progress, valid
 
 ## Server-side validation
 
-`validateSubmission()` checks a submitted payload against the definition without a browser. It drops hidden, skipped and unknown keys, checks value types and ignores custom validators. Strings over 10,000 characters or the field's `maxLength` fail before any rule runs. `pattern` rules still run on untrusted input, so bound the execution time of the call.
+`validateSubmission()` checks a submitted payload against the definition without a browser. It drops hidden, skipped and unknown keys and checks value types. Custom validators run only when you pass them in `validators`. Strings over 10,000 characters or the field's `maxLength` fail before any rule runs. `pattern` rules still run on untrusted input, so bound the execution time of the call.
 
 ```ts
 import { validateSubmission } from '@formhaus/core/server';

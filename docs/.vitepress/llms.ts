@@ -9,7 +9,7 @@ const details = [
   '',
   'Install: `npm i @formhaus/core @formhaus/react` (or `@formhaus/vue`).',
   '',
-  `Server-side validation: \`validateSubmission(definition, body.values, { skippedSteps })\` from \`@formhaus/core/server\`. \`FormEngine.validate()\` is the browser check and does not verify value types or the email format. Docs: ${siteUrl}/guide/server-validation`,
+  `Server-side validation: \`validateSubmission(definition, body.values, { skippedSteps })\` from \`@formhaus/core/server\`. \`FormEngine.validate()\` runs the same type checks in the browser, but only the server call protects against untrusted input. Docs: ${siteUrl}/guide/server-validation`,
   '',
   'Claude Code plugin (skills and MCP server): `claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus`',
   '',

@@ -5,11 +5,14 @@ import { getAllFields } from '../engine/engine-utils';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
-import { normalizeValue, typeError } from './type-checks';
+import { normalizeValue, typeError } from '../validation/type-checks';
 
 export interface SubmissionOptions {
   skippedSteps?: string[];
+  validators?: Record<string, ValidatorFn>;
 }
+
+const BODY_MESSAGE = 'Pass the values object as the second argument, not the request body with "values" and "skippedSteps".';
 
 export interface SubmissionResult {
   values: Record<string, unknown>;
@@ -44,10 +47,15 @@ function withoutRules(definition: FormDefinition, invalid: Map<string, string>):
   return { ...definition, ...(definition.fields && { fields: strip(definition.fields) }), ...(steps && { steps }) };
 }
 
-function ignoredValidators(fields: FormField[]): Record<string, ValidatorFn> {
+function ignoredValidators(fields: FormField[], given: Record<string, ValidatorFn> = {}): Record<string, ValidatorFn> {
   const validators: Record<string, ValidatorFn> = {};
   for (const { validation } of fields) if (validation?.validator) validators[validation.validator] = allow;
-  return validators;
+  return { ...validators, ...given };
+}
+
+function isBody(fields: FormField[], input: unknown): boolean {
+  if (input === null || typeof input !== 'object' || !hasOwn(input, 'values')) return false;
+  return !fields.some((field) => field.key === 'values' || field.key === 'skippedSteps');
 }
 
 function applySkips(engine: FormEngine, skippedSteps: unknown): void {
@@ -61,18 +69,19 @@ function applySkips(engine: FormEngine, skippedSteps: unknown): void {
 
 export function validateSubmission(
   definition: FormDefinition,
-  input: unknown,
+  values: unknown,
   options: SubmissionOptions = {},
 ): SubmissionResult {
   parseDefinition(definition);
   const fields = getAllFields(definition);
-  const initialValues = knownValues(fields, input);
+  const initialValues = knownValues(fields, values);
   const invalid = typeErrors(fields, initialValues);
-  const engineOptions = { validators: ignoredValidators(fields), onWarning: () => {} };
+  const engineOptions = { validators: ignoredValidators(fields, options.validators), onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), initialValues, engineOptions);
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();
-  const values = engine.getSubmitValues();
-  for (const [key, error] of invalid) if (hasOwn(values, key)) errors[key] = error;
-  return { values, errors };
+  const submitted = engine.getSubmitValues();
+  for (const [key, error] of invalid) if (hasOwn(submitted, key)) errors[key] = error;
+  if (isBody(fields, values)) errors.values = BODY_MESSAGE;
+  return { values: submitted, errors };
 }
