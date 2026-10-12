@@ -45,13 +45,13 @@ describe('checkReply', () => {
   });
 
   it('splits fatal route and structure errors from warnings', () => {
-    expect(checkReply(JSON.stringify(badRoute)).fatal[0]).toMatch(/^Invalid route from "one" to "missing"/);
-    expect(checkReply(JSON.stringify({ ...valid, steps: [{ id: 's', title: 'S', fields: [valid.fields[0]] }] })).fatal[0]).toMatch(/^FormEngine rejects a definition with both/);
+    expect(checkReply(JSON.stringify(badRoute)).fatal[0]).toMatch(/^\/steps\/0\/routes\/0\/to: "missing" is not a step id/);
+    expect(checkReply(JSON.stringify({ ...valid, steps: [{ id: 's', title: 'S', fields: [valid.fields[0]] }] })).fatal[0]).toMatch(/the definition has both "fields" and "steps"/);
     const twice = { ...valid, fields: undefined, steps: [{ id: 's', title: 'S', fields: [] }, { id: 's', title: 'S', fields: [] }] };
-    expect(checkReply(JSON.stringify(twice)).fatal).toEqual(['Duplicate step id "s".']);
+    expect(checkReply(JSON.stringify(twice)).fatal).toEqual(['/steps/1/id: step id "s" is already used by /steps/0. Give each step a unique id.']);
     const result = checkReply(JSON.stringify(withWarning));
     expect(result.fatal).toEqual([]);
-    expect(result.warnings).toEqual(['Field "email" has show condition referencing non-existent field "ghost"']);
+    expect(result.warnings).toEqual(['/fields/0/show/0/field: "ghost" is not a field key. Use "email".']);
   });
 });
 
