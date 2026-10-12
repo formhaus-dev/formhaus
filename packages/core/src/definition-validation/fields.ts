@@ -1,7 +1,7 @@
 import type { FieldValidation } from '../types';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
-import { error, suggest } from './issues';
+import { error } from './issues';
 
 function rangeIssue(rules: FieldValidation, path: string, min: 'min' | 'minLength', max: 'max' | 'maxLength'): DefinitionIssue[] {
   const low = rules[min];
@@ -28,7 +28,7 @@ function ruleIssues(context: CheckContext, { field, path }: FieldEntry): Definit
     ...rangeIssue(rules, path, 'minLength', 'maxLength'),
     ...rangeIssue(rules, path, 'min', 'max'),
     ...patternIssue(rules.pattern, path),
-    ...(match === undefined || context.keys.has(match) ? [] : [error('unknown-field', `${path}/validation/matchField`, `"${match}" is not a field key`, suggest(match, context.keyList))]),
+    ...(match === undefined || context.keys.has(match) ? [] : [error('unknown-field', `${path}/validation/matchField`, `"${match}" is not a field key`, context.suggest(match, context.keyList))]),
   ];
 }
 
