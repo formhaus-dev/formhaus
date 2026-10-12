@@ -44,7 +44,7 @@ Never commit a `.mcp.json` with a literal key. Setup commands are in [Quickstart
 | Key | Created by | Reaches |
 |---|---|---|
 | None | | `publish_form` only. Creates an unclaimed form and, on the first call, an agent key. |
-| `fh_agent_...` | `publish_form` without a key, returned once as `agent_key` | Unclaimed, unexpired forms it created, at most 3. After a claim: forms it created in the claiming workspace. |
+| `fh_agent_...` | `publish_form` without a key, returned once as `agent_key` | Unclaimed, unexpired forms it created, at most 3. A deleted form counts toward the 3 for 24 hours. After a claim: forms it created in the claiming workspace. |
 | `fh_live_...` | An owner, under **API keys** | Every form of the workspace. Acts as an editor. |
 
 An `fh_live_` key works only while the owner who created it is still an owner of the workspace. Agent keys cannot change settings, also after a claim. Role rules are in [Teams and roles](/cloud/teams#api-keys-in-a-team).
@@ -56,9 +56,12 @@ An `fh_live_` key works only while the owner who created it is still an owner of
 | `publish_form` | New unclaimed form | Own forms, new unclaimed forms | Workspace forms |
 | `list_forms` | Error | Own forms | Workspace forms |
 | `get_submissions` | Error | Own forms | Workspace forms |
-| `update_form_settings` | Error | `owner_key_required` | Workspace forms |
+| `update_form_settings` | Error | `status` only, own forms | Workspace forms |
+| `get_webhook` | Error | `owner_key_required` | Workspace forms |
+| `reveal_webhook_secret` | Error | `owner_key_required` | Workspace forms |
+| `delete_form` | Error | Own unclaimed forms | Workspace forms, owner role |
 
-The local server `@formhaus/mcp` 0.2.0 has the same four tools. It calls the [REST API](/cloud/rest-api) and returns the response JSON as text; `get_submissions` adds the same `notice`. Its `publish_form` and `update_form_settings` do not take `allow_another_response`; set it over REST or the remote server. When `publish_form` creates an agent key and `FORMHAUS_API_KEY` is not set, the result also has `agent_key_instructions`: how to pass the key to the local server through the MCP client config.
+The local server `@formhaus/mcp` 0.2.1 has `publish_form`, `list_forms`, `get_submissions` and `update_form_settings`. It calls the [REST API](/cloud/rest-api) and returns the response JSON as text; `get_submissions` adds the same `notice`. Its `publish_form` and `update_form_settings` do not take `allow_another_response`; set it over REST or the remote server. When `publish_form` creates an agent key and `FORMHAUS_API_KEY` is not set, the result also has `agent_key_instructions`: how to pass the key to the local server through the MCP client config.
 
 ### `publish_form`
 
@@ -71,7 +74,7 @@ The local server `@formhaus/mcp` 0.2.0 has the same four tools. It calls the [RE
 | `redirect_url` | Optional. `http(s)` URL, `""` removes it |
 | `allow_another_response` | Optional boolean. `true` shows a **Submit another response** button on the success screen. A new form starts with `false`; a new version keeps the current value when omitted. No effect while `redirect_url` is set. |
 
-Output: `form_id`, `version`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet`, `dashboard_url`, `warnings`, and for unclaimed forms `claim_url`, `expires_at`, `agent_key`, `agent_key_notice`. Field values are in [Quickstart](/cloud/quickstart#publish); rules in [Publishing](/cloud/publishing).
+Output: `form_id`, `version`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet`, `dashboard_url`, `warnings`, and for unclaimed forms `claim_url`, `expires_at`, `agent_key`, `agent_key_notice`. The text content repeats `hosted_url`, `endpoint`, `embed_snippet`, `agent_key` and `claim_url` for clients that read only text. Field values are in [Quickstart](/cloud/quickstart#publish); rules in [Publishing](/cloud/publishing).
 
 ### `list_forms`
 
@@ -123,8 +126,8 @@ Tool errors are text results with `isError: true`.
 | `owner_key_required` | Use an `fh_live_` key or the dashboard |
 | HTTP `401` before any tool runs | The key is invalid, revoked or expired, or its creator is no longer an owner. Create a new key. |
 | `paused_by_moderation` | Write to hello@formhaus.dev |
-| `too many publishes` / `too many publish attempts` / `too many new agent keys` | Wait, or send a key |
-| `this agent key already has 3 unclaimed forms` | Publish a version with `form_id`, or claim the forms |
+| `[rate_limited]`, `[too_many_attempts]`, `[agent_key_limit]` | The text ends with `retry_after: <n> seconds`. Wait that long, or send a key |
+| `this agent key already has 3 unclaimed forms` | Publish a version with `form_id`, claim the forms, or wait 24 hours after a delete |
 | `a user just claimed the forms of this agent key` | Call again |
 | `the free plan allows 3 forms` … `Ask the user to upgrade at <url>` | Give the URL to the user |
 | `internal error` | Retry in a minute |
