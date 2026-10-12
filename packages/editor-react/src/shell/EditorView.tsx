@@ -10,6 +10,7 @@ import { EditorShell } from './EditorShell';
 import styles from './EditorShell.module.css';
 import { EditorTopBar } from './EditorTopBar';
 import { ShortcutsDialog } from './ShortcutsDialog';
+import { RestoreOffer } from './RestoreOffer';
 import { useEditorKeys } from './useEditorKeys';
 import { Workspace } from './Workspace';
 
@@ -69,6 +70,7 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit', compact 
           }
         />
       )}
+      <RestoreOffer recovery={handle.recovery} />
       {stale && published && (
         <div className={styles.layout}>
           <Banner
