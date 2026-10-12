@@ -36,7 +36,7 @@ The top bar shows the submissions meter, the plan, a link to the docs, a theme t
 | Sign-in link | One use, valid 15 minutes |
 | Session cookie | 30 days, `HttpOnly`, `Secure`, `SameSite=Lax` |
 | Google, GitHub | Google uses the verified account email, GitHub the primary verified email. An unverified email is refused. |
-| Same email | Signs in to the existing account and links the provider to it |
+| Same email | Google links to the existing account for Gmail addresses and Workspace domains. Otherwise sign in with email first, then connect the provider in Settings → Sign-in methods. |
 | Account | Created on the first sign-in, with a personal workspace |
 | Sign-in methods | Account settings list linked providers, connect another and disconnect one. Email sign-in always stays on. |
 
