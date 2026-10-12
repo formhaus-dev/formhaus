@@ -7,9 +7,11 @@ import { definitionInput } from './definition-input';
 import { exampleDefinitionsTool } from './examples';
 import { simulatePathTool } from './simulate';
 import { capabilitiesOutput, examplesOutput, simulationOutput, validationOutput } from './outputs';
+import migration from '../../../docs/migrate/0.11.md';
 import { validateDefinitionTool } from './validate';
 
 const CAPABILITIES_URI = 'formhaus://capabilities';
+const MIGRATION_URI = 'formhaus://migrate/0.11';
 
 function json(value: object) {
   return { content: [{ type: 'text' as const, text: JSON.stringify(value, null, 2) }], structuredContent: { ...value } as Record<string, unknown> };
@@ -40,7 +42,7 @@ export function createServer(): McpServer {
 
   server.registerTool('capabilities', {
     title: 'Formhaus capabilities',
-    description: 'Lists what a Formhaus definition supports: field types, field props, validation rules, condition operators, step and route semantics, actions and adapters.',
+    description: 'Lists what a Formhaus definition supports: field types, field props, validation rules, condition operators, step and route semantics, actions and adapters. To upgrade a 0.10 project, read the formhaus://migrate/0.11 resource.',
     outputSchema: capabilitiesOutput,
     annotations: { readOnlyHint: true },
   }, async () => json(capabilitiesTool()));
@@ -60,6 +62,12 @@ export function createServer(): McpServer {
     description: 'Field types, validation rules, conditions and step semantics of Formhaus definitions.',
     mimeType: 'application/json',
   }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(capabilities, null, 2) }] }));
+
+  server.registerResource('migrate-0.11', MIGRATION_URI, {
+    title: 'Migrate Formhaus code and definitions to 0.11',
+    description: 'Every renamed or removed API, prop, event and definition rule from 0.10 to 0.11, with before and after code and a grep list. Read it before upgrading a project.',
+    mimeType: 'text/markdown',
+  }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'text/markdown', text: migration }] }));
 
   return server;
 }

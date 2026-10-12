@@ -45,7 +45,7 @@ try {
 |---|---|---|
 | `checkDefinition(input, { validators? })` | `DefinitionIssue[]` | Never throws. Errors come first. With `validators`, also reports `validator` names missing from it |
 | `parseDefinition(input, { validators? })` | `FormDefinition` | Returns the input typed as `FormDefinition`, or throws `FormDefinitionError` with the errors |
-| `validateDefinition(input)` | `string[]` | Deprecated. The messages of `checkDefinition()`. Removed in 1.0 |
+| `validateDefinition` | `string[]` | Deprecated. The messages of `checkDefinition()`. Removed in 1.0 |
 
 ```ts
 interface DefinitionIssue {

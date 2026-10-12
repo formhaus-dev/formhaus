@@ -70,16 +70,16 @@ Save the definition as `contact-form.json`:
 }
 ```
 
-TypeScript types JSON strings as `string`, so values such as `layout` or `variant` do not match `FormDefinition`. Cast the import:
+TypeScript types JSON strings as `string`, so values such as `layout` or `variant` do not match `FormDefinition`. `parseDefinition()` checks the JSON and returns it typed, or throws a `FormDefinitionError` that lists every problem:
 
 ::: code-group
 ```tsx [React]
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import '@formhaus/core/style.css';
 import json from './contact-form.json';
 
-const definition = json as FormDefinition;
+const definition = parseDefinition(json);
 
 export function ContactForm() {
   return (
@@ -93,12 +93,12 @@ export function ContactForm() {
 
 ```vue [Vue]
 <script setup lang="ts">
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/vue';
 import '@formhaus/core/style.css';
 import json from './contact-form.json';
 
-const definition = json as FormDefinition;
+const definition = parseDefinition(json);
 
 async function submit(values: Record<string, unknown>) {
   console.log(values);

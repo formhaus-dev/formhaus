@@ -106,11 +106,11 @@ npm install @formhaus/core
 
 ```svelte
 <script lang="ts">
-  import type { FormDefinition } from '@formhaus/core';
+  import { parseDefinition } from '@formhaus/core';
   import FormhausForm from './FormhausForm.svelte';
   import json from './project-inquiry.json';
 
-  const definition = json as FormDefinition;
+  const definition = parseDefinition(json);
   let sent = $state<Record<string, unknown> | null>(null);
 
   async function submit(values: Record<string, unknown>, skippedSteps?: string[]) {

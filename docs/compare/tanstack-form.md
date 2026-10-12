@@ -115,10 +115,10 @@ export function Signup({ onDone }: { onDone: (values: Values) => void }) {
 
 ```tsx
 import { FormRenderer } from '@formhaus/react';
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import signup from './signup.json';
 
-const definition = signup as FormDefinition;
+const definition = parseDefinition(signup);
 
 export function Signup({ onDone }: { onDone: (values: Record<string, unknown>) => void }) {
   return <FormRenderer definition={definition} onSubmit={onDone} />;

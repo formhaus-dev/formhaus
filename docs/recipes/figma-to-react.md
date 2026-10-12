@@ -34,11 +34,11 @@ Select a generated form and the plugin opens it for editing. Designers change la
 
 ```tsx
 import { FormRenderer } from '@formhaus/react';
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import '@formhaus/core/style.css';
 import accountFlow from './account-flow.json';
 
-const definition = accountFlow as FormDefinition;
+const definition = parseDefinition(accountFlow);
 
 export function CreateAccount() {
   return (
