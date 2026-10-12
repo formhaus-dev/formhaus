@@ -1,4 +1,4 @@
-import { validateDefinition, type FormDefinition, type FormEngine } from '@formhaus/core';
+import { checkDefinition, type FormDefinition, type FormEngine } from '@formhaus/core';
 import { parseDefinition } from './definition-input';
 import { createEngine } from './engine';
 import { schemaErrors } from './schema-validation';
@@ -41,9 +41,8 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   if (errors.length > 0) return { report: finish(errors, warnings) };
   const engine = createEngine(definition, values);
   if (!engine.ok) errors.push(...engine.errors);
-  warnings.push(...validateDefinition(definition).filter((warning) => !errors.includes(warning)));
+  warnings.push(...checkDefinition(definition, { validators: {} }).filter((issue) => issue.severity === 'warning').map((issue) => issue.message));
   if (!engine.ok) return { report: finish(errors, warnings) };
-  warnings.push(...engine.warnings);
   return { report: finish(errors, warnings), definition, engine: engine.engine };
 }
 

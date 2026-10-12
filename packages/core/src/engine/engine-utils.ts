@@ -1,9 +1,5 @@
 import type { FormDefinition, FormField } from '../types';
 
-export function hasFieldsAndSteps(definition: FormDefinition): boolean {
-  return !!definition.fields?.length && !!definition.steps?.length;
-}
-
 export function hasRoutes(definition: FormDefinition): boolean {
   return !!definition.steps?.some((step) => step.routes?.length);
 }

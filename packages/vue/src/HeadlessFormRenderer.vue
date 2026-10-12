@@ -14,6 +14,7 @@ const emit = defineEmits<FormRendererEmits>();
 const formRef = ref<HTMLFormElement>();
 const engineOptions: FormEngineOptions = {
   validators: props.validators,
+  onWarning: props.onWarning,
   get onStepValidate() { return props.onStepValidate; },
   get onBeforeStepChange() { return props.onBeforeStepChange; },
   get onBeforeSubmit() { return props.onBeforeSubmit; },

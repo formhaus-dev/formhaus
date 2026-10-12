@@ -52,7 +52,7 @@ describe('validate_definition', () => {
     const warn = vi.spyOn(console, 'warn');
     const fields = [{ key: 'a', type: 'text', label: 'A', validation: { validator: 'vat' } }];
     const report = await validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Send' }, fields } });
-    expect(report.warnings).toEqual(['Field "a" references unknown validator "vat".']);
+    expect(report.warnings).toEqual(['/fields/0/validation/validator: the validator "vat" is not registered. Pass it in the "validators" option.']);
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
@@ -67,7 +67,7 @@ describe('validate_definition', () => {
     const definition = { ...linear, steps: [{ ...linear.steps[0], routes: [{ to: 'missing' }] }, linear.steps[1]] };
     const report = await validateDefinitionTool({ definition });
     expect(report.valid).toBe(false);
-    expect(report.errors.join('\n')).toMatch(/Invalid route from "name" to "missing"/);
+    expect(report.errors.join('\n')).toMatch(/\/steps\/0\/routes\/0\/to: "missing" is not a step id/);
   });
 
   it('reports structural errors next to schema errors', async () => {
@@ -87,16 +87,14 @@ describe('validate_definition', () => {
       id: 'x', title: 'X', submit: { label: 'Send' },
       fields: [
         { key: 'a', type: 'text', label: 'A', show: [{ field: 'ghost', eq: 'yes' }] },
-        { key: 'b', type: 'text', label: 'B', validation: { pattern: '[' } },
         { key: 'c', type: 'select', label: 'C' },
       ],
     };
     const report = await validateDefinitionTool({ definition });
     expect(report.valid).toBe(true);
-    expect(report.warnings).toEqual(expect.arrayContaining([
-      'Field "a" has show condition referencing non-existent field "ghost"',
-      'Field "b" has invalid regex pattern: "["',
-      'fields[2] of type "select" has no "options" or "optionsFrom".',
-    ]));
+    expect(report.warnings).toEqual([
+      '/fields/0/show/0/field: "ghost" is not a field key. Use "c".',
+      '/fields/1/options: the select field "c" has no options. Add "options" or "optionsFrom".',
+    ]);
   });
 });

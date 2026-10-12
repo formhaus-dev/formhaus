@@ -32,21 +32,20 @@ const clean: FormDefinition = {
 };
 
 describe('checkDefinition', () => {
-  it('splits errors the engine rejects from warnings', () => {
-    const { errors, warnings } = checkDefinition(routed);
-    expect(errors).toEqual(['Invalid route from "first" to "first": targets must be later steps or null.']);
-    expect(warnings).toEqual([
-      'Duplicate field key "name" — fields will share state and overwrite each other',
-      'Field "name" has show condition referencing non-existent field "missing"',
+  it('lists errors the engine rejects before warnings', () => {
+    expect(checkDefinition(routed).map(({ severity, code, path }) => `${severity} ${code} ${path}`)).toEqual([
+      'error route-target /steps/0/routes/0/to',
+      'warning duplicate-key /steps/0/fields/1/key',
+      'warning unknown-field /steps/0/fields/0/show/0/field',
     ]);
   });
 
-  it('returns empty lists for a valid definition', () => {
-    expect(checkDefinition(clean)).toEqual({ errors: [], warnings: [] });
+  it('returns no issues for a valid definition', () => {
+    expect(checkDefinition(clean)).toEqual([]);
   });
 
   it('accepts a form description', () => {
-    expect(checkDefinition({ ...clean, description: 'Takes two minutes.' })).toEqual({ errors: [], warnings: [] });
+    expect(checkDefinition({ ...clean, description: 'Takes two minutes.' })).toEqual([]);
   });
 });
 
