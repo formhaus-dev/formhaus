@@ -110,7 +110,7 @@ curl -X POST https://api.formhaus.dev/f/Xk3d9QpL2a \
 |---|---|
 | `201` | `{ "id": "<uuid>", "values": {...} }`, the values as stored |
 | `400` | `{ "error": "malformed_body" }` or `{ "error": "invalid_idempotency_key" }` |
-| `402` | `{ "error": "limit_reached", "upgrade_url": "...", "message": "Ask the user to upgrade at ..." }` |
+| `402` | `{ "error": "limit_reached" }`, no upgrade link: the owner learns from email and the dashboard |
 | `404` | `{ "error": "not_found" }` |
 | `409` | `{ "error": "paused" }` or `{ "error": "idempotency_key_reused" }` |
 | `409` | `{ "error": "form_updated", "version": 4, "errors": {...} }`, `version` is older than the latest and `values` fail the latest definition. Load the definition again and resubmit. With a valid body the submission is stored under the latest version. |
@@ -122,6 +122,8 @@ curl -X POST https://api.formhaus.dev/f/Xk3d9QpL2a \
 | `429` | `{ "error": "rate_limited" }` |
 | `500` | `{ "error": "internal" }` |
 | `503` | `{ "error": "unavailable" }`, validation timed out |
+
+Every error body also has `message`, one sentence on how to fix the request. Branch on `error`, not on `message`.
 
 ### Option values
 
@@ -152,9 +154,10 @@ Keys are kept per form for 24 hours with a SHA-256 of the normalized body. `Form
 | Bucket | Burst | Refill |
 |---|---|---|
 | Per IP | 20 | 1 every 3 seconds |
+| Per network | 100 | 1 every 0.6 seconds |
 | Per form | 60 | 1 per second |
 
-The buckets run before every other check, so `4xx` responses and replays consume tokens.
+A network is the IPv6 `/48` of the sender, or the IPv4 address itself. The buckets run before every other check, so `4xx` responses and replays consume tokens. A `429` carries `Retry-After` in seconds.
 
 ### CORS
 
