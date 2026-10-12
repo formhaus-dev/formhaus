@@ -4,25 +4,6 @@
   --json-number: #116329;
   --json-bool: #cf222e;
   --json-punct: var(--vp-c-text-2);
-  display: grid;
-  max-width: 1120px;
-  margin: 40px auto 0;
-  overflow: hidden;
-  border: 1px solid var(--vp-c-divider);
-  border-radius: 16px;
-  background: var(--vp-c-bg);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 24px 64px -20px var(--fh-c-brand-shadow);
-}
-
-.sandbox__bar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-  padding: 0 16px;
-  border-bottom: 1px solid var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
-  font-size: 13px;
 }
 
 html.dark .sandbox {
@@ -30,24 +11,6 @@ html.dark .sandbox {
   --json-string: #a5d6ff;
   --json-number: #7ee787;
   --json-bool: #ff7b72;
-}
-
-.sandbox__bar--left { grid-area: barl; }
-.sandbox__bar--right { grid-area: barr; }
-.sandbox__pane--write,
-.sandbox__pane--json { grid-area: left; }
-.sandbox__pane--preview { grid-area: preview; }
-
-.sandbox__dots {
-  display: flex;
-  gap: 6px;
-}
-
-.sandbox__dots i {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--vp-c-divider);
 }
 
 .sandbox__tabs {

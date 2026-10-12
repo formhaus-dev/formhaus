@@ -1,25 +1,17 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
 import LucideIcon from './LucideIcon.vue';
+import { useCopy } from './copy';
 
-const props = defineProps<{ command: string; label: string }>();
-const copied = ref(false);
-
-async function copy() {
-  try {
-    await navigator.clipboard.writeText(props.command);
-    copied.value = true;
-    setTimeout(() => { copied.value = false; }, 2000);
-  } catch {
-    copied.value = false;
-  }
-}
+const props = defineProps<{ command: string | string[]; label: string; prompt?: string }>();
+const lines = computed(() => [props.command].flat());
+const { copied, copy } = useCopy();
 </script>
 
 <template>
   <div class="copy-line">
-    <code class="copy-line__code"><span class="copy-line__prompt" aria-hidden="true">$</span>{{ props.command }}</code>
-    <button type="button" class="copy-line__button" :aria-label="props.label" @click="copy">
+    <code class="copy-line__code"><span v-for="line in lines" :key="line" class="copy-line__row"><span v-if="props.prompt" class="copy-line__prompt" aria-hidden="true">{{ props.prompt }}</span>{{ line }}</span></code>
+    <button type="button" class="copy-line__button" :aria-label="props.label" @click="copy(lines.join('\n'))">
       <LucideIcon :name="copied ? 'check' : 'copy'" />
     </button>
     <span class="lp-sr-only" role="status">{{ copied ? 'Copied' : '' }}</span>
@@ -31,10 +23,10 @@ async function copy() {
   display: flex;
   align-items: center;
   gap: 8px;
-  max-width: 100%;
-  padding: 6px 6px 6px 16px;
+  min-width: 0;
+  padding: 4px 4px 4px 16px;
   border: 1px solid var(--vp-c-divider);
-  border-radius: 10px;
+  border-radius: 12px;
   background: var(--vp-c-bg-soft);
 }
 
@@ -42,24 +34,19 @@ async function copy() {
   flex: 1;
   min-width: 0;
   overflow-x: auto;
-  padding: 0;
+  padding: 8px 0;
   background: none;
   white-space: nowrap;
-  font-family: var(--vp-font-family-mono);
-  font-size: 14px;
   color: var(--vp-c-text-1);
 }
 
-@media (max-width: 479px) {
-  .copy-line__code {
-    white-space: normal;
-    line-height: 1.6;
-  }
+.copy-line__row {
+  display: block;
 }
 
 .copy-line__prompt {
-  margin-right: 10px;
-  color: var(--vp-c-text-2);
+  margin-right: 8px;
+  color: var(--vp-c-text-3);
   user-select: none;
 }
 
@@ -67,8 +54,9 @@ async function copy() {
   display: grid;
   place-items: center;
   flex: none;
-  width: 44px;
-  height: 44px;
+  align-self: flex-start;
+  width: 36px;
+  height: 36px;
   border-radius: 8px;
   color: var(--vp-c-text-2);
   transition: background-color 0.2s, color 0.2s;
@@ -77,5 +65,17 @@ async function copy() {
 .copy-line__button:hover {
   background: var(--vp-c-default-soft);
   color: var(--vp-c-text-1);
+}
+
+@media (max-width: 767px) {
+  .copy-line__code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .copy-line__button {
+    width: 44px;
+    height: 44px;
+  }
 }
 </style>

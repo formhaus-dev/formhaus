@@ -52,9 +52,9 @@
 .nb-title {
   margin-bottom: 6px;
   font-size: 28px;
-  font-weight: 800;
+  font-weight: 650;
   letter-spacing: -0.02em;
-  line-height: 1.25;
+  line-height: 32px;
 }
 
 .nb-page {
@@ -205,6 +205,7 @@
 
   .nb-title {
     font-size: 24px;
+    line-height: 28px;
   }
 }
 
