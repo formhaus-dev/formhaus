@@ -10,7 +10,6 @@
 }
 
 .sandbox__pane--write {
-  overflow: auto;
   padding: 16px;
 }
 
@@ -28,7 +27,6 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  overflow: auto;
   padding: 24px;
 }
 

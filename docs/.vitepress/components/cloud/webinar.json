@@ -5,111 +5,44 @@
   "submit": {
     "label": "Save my seat"
   },
-  "steps": [
+  "fields": [
     {
-      "id": "you",
-      "title": "About you",
-      "fields": [
-        {
-          "key": "name",
-          "type": "text",
-          "label": "Full name",
-          "validation": {
-            "required": true
-          }
-        },
-        {
-          "key": "email",
-          "type": "email",
-          "label": "Work email",
-          "inputMode": "email",
-          "validation": {
-            "required": true
-          }
-        },
-        {
-          "key": "role",
-          "type": "select",
-          "label": "Your role",
-          "options": [
-            {
-              "value": "marketing",
-              "label": "Marketing"
-            },
-            {
-              "value": "sales",
-              "label": "Sales"
-            },
-            {
-              "value": "founder",
-              "label": "Founder"
-            },
-            {
-              "value": "other",
-              "label": "Other"
-            }
-          ]
-        }
-      ]
+      "key": "name",
+      "type": "text",
+      "label": "Full name",
+      "validation": {
+        "required": true
+      }
     },
     {
-      "id": "session",
-      "title": "Your session",
-      "fields": [
+      "key": "email",
+      "type": "email",
+      "label": "Work email",
+      "inputMode": "email",
+      "validation": {
+        "required": true
+      }
+    },
+    {
+      "key": "role",
+      "type": "select",
+      "label": "Your role",
+      "options": [
         {
-          "key": "session",
-          "type": "radio",
-          "label": "How will you join?",
-          "layout": "inline",
-          "options": [
-            {
-              "value": "live",
-              "label": "Live"
-            },
-            {
-              "value": "replay",
-              "label": "Send me the replay"
-            }
-          ],
-          "validation": {
-            "required": true
-          }
+          "value": "marketing",
+          "label": "Marketing"
         },
         {
-          "key": "question",
-          "type": "textarea",
-          "label": "A question for the speakers",
-          "rows": 2,
-          "show": [
-            {
-              "field": "session",
-              "eq": "live"
-            }
-          ]
+          "value": "sales",
+          "label": "Sales"
         },
         {
-          "key": "source",
-          "type": "radio",
-          "label": "How did you hear about us?",
-          "options": [
-            {
-              "value": "newsletter",
-              "label": "Newsletter"
-            },
-            {
-              "value": "linkedin",
-              "label": "LinkedIn"
-            },
-            {
-              "value": "friend",
-              "label": "A colleague"
-            }
-          ]
+          "value": "founder",
+          "label": "Founder"
         },
         {
-          "key": "updates",
-          "type": "checkbox",
-          "label": "Email me about future webinars"
+          "value": "other",
+          "label": "Other"
         }
       ]
     }
