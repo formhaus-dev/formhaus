@@ -2,99 +2,77 @@ import { describe, expect, it, vi } from 'vitest';
 import { validateDefinitionTool } from '../src/validate';
 import { branching, linear } from './fixtures';
 
+const summary = (definition: unknown) => validateDefinitionTool({ definition }).issues.map(({ severity, code, path }) => `${severity} ${code} ${path}`);
+
 describe('validate_definition', () => {
-  it('accepts a valid definition', async () => {
-    const report = await validateDefinitionTool({ definition: branching });
-    expect(report).toMatchObject({ valid: true, errors: [], warnings: [] });
+  it('accepts a valid definition', () => {
+    expect(validateDefinitionTool({ definition: branching })).toEqual({ valid: true, issues: [] });
   });
 
-  it('accepts a JSON string', async () => {
-    const report = await validateDefinitionTool({ definition: JSON.stringify(linear) });
-    expect(report.valid).toBe(true);
+  it('accepts a JSON string', () => {
+    expect(validateDefinitionTool({ definition: JSON.stringify(linear) }).valid).toBe(true);
   });
 
-  it('reports malformed JSON', async () => {
-    const report = await validateDefinitionTool({ definition: '{ "id": ' });
+  it('reports malformed JSON', () => {
+    const report = validateDefinitionTool({ definition: '{ "id": ' });
     expect(report.valid).toBe(false);
-    expect(report.errors[0]).toMatch(/not valid JSON/);
+    expect(report.issues[0]).toMatchObject({ code: 'invalid-json', severity: 'error', path: '' });
+    expect(report.issues[0].message).toMatch(/^\/: Definition is not valid JSON/);
   });
 
-  it('reports JSON Schema errors', async () => {
-    const report = await validateDefinitionTool({ definition: { steps: [{ id: 's', fields: [{ key: 'a', colour: 'red' }] }] } });
-    expect(report.valid).toBe(false);
-    expect(report.errors).toEqual(expect.arrayContaining([
-      "Schema: / must have required property 'id'",
-      "Schema: / must have required property 'submit'",
-      "Schema: /steps/0 must have required property 'title'",
-      "Schema: /steps/0/fields/0 must have required property 'type'",
-      'Schema: /steps/0/fields/0 must NOT have additional properties "colour"',
-    ]));
+  it('reports schema and core issues with JSON pointers, without duplicates', () => {
+    expect(summary({ steps: [{ id: 's', fields: [{ key: 'a', colour: 'red' }] }] })).toEqual([
+      'error schema /id',
+      'error schema /title',
+      'error schema /submit',
+      'error schema /steps/0/title',
+      'error schema /steps/0/fields/0/label',
+      'error schema /steps/0/fields/0/colour',
+      'error missing-property /steps/0/fields/0/type',
+    ]);
   });
 
-  it('reports wrong value types from the schema', async () => {
-    const report = await validateDefinitionTool({ definition: { ...linear, steps: [{ ...linear.steps[0], routes: [{ to: 3 }] }] } });
-    expect(report.errors).toContain('Schema: /steps/0/routes/0/to must be string,null');
+  it('hints where a misplaced rule belongs', () => {
+    const fields = [{ key: 'a', type: 'text', label: 'A', required: true }];
+    const issue = validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Go' }, fields } }).issues[0];
+    expect(issue).toMatchObject({ code: 'schema', path: '/fields/0/required', hint: 'Move "required" into "validation": { "required": ... }.' });
   });
 
-  it('rejects duplicate step ids without routes', async () => {
-    const report = await validateDefinitionTool({ definition: { ...linear, steps: [linear.steps[0], { ...linear.steps[1], id: 'name' }] } });
-    expect(report.valid).toBe(false);
-    expect(report.errors).toEqual(['Duplicate step id "name" at steps[1].']);
+  it('suggests an operator for an unknown condition key', () => {
+    const fields = [{ key: 'a', type: 'text', label: 'A' }, { key: 'b', type: 'text', label: 'B', show: [{ field: 'a', equals: 'x' }] }];
+    const issues = validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Go' }, fields } }).issues;
+    expect(issues.map(({ code, path }) => `${code} ${path}`)).toEqual(['unknown-operator /fields/1/show/0/equals']);
+    expect(issues[0].hint).toMatch(/^Use one of: "eq", "neq"/);
   });
 
-  it('rejects duplicate step ids with routes', async () => {
-    const steps = [{ ...linear.steps[0], routes: [{ to: null }] }, { ...linear.steps[1], id: 'name' }];
-    const report = await validateDefinitionTool({ definition: { ...linear, steps } });
-    expect(report.errors).toEqual(['Duplicate step id "name" at steps[1].']);
+  it('reports duplicate step ids and route errors from the engine', () => {
+    expect(summary({ ...linear, steps: [linear.steps[0], { ...linear.steps[1], id: 'name' }] })).toEqual(['error duplicate-step-id /steps/1/id']);
+    expect(summary({ ...linear, steps: [{ ...linear.steps[0], routes: [{ to: 'missing' }] }, linear.steps[1]] })).toEqual(['error route-target /steps/0/routes/0/to']);
   });
 
-  it('returns unknown validator names as warnings without logging', async () => {
+  it('returns unknown validator names as warnings without logging', () => {
     const warn = vi.spyOn(console, 'warn');
     const fields = [{ key: 'a', type: 'text', label: 'A', validation: { validator: 'vat' } }];
-    const report = await validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Send' }, fields } });
-    expect(report.warnings).toEqual(['/fields/0/validation/validator: the validator "vat" is not registered. Pass it in the "validators" option.']);
+    expect(summary({ id: 'x', title: 'X', submit: { label: 'Send' }, fields })).toEqual(['warning unknown-validator /fields/0/validation/validator']);
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
 
-  it('warns about next: false without an autoAdvance radio', async () => {
-    const report = await validateDefinitionTool({ definition: { ...linear, steps: [{ ...linear.steps[0], next: false }, linear.steps[1]] } });
+  it('warns about next: false without an autoAdvance radio', () => {
+    const report = validateDefinitionTool({ definition: { ...linear, steps: [{ ...linear.steps[0], next: false }, linear.steps[1]] } });
     expect(report.valid).toBe(true);
-    expect(report.warnings).toContain('steps[0] has next: false but no autoAdvance radio, so users cannot move forward.');
+    expect(report.issues.map(({ code, path }) => `${code} ${path}`)).toEqual(['next-hidden /steps/0/next']);
   });
 
-  it('reports route errors the engine rejects', async () => {
-    const definition = { ...linear, steps: [{ ...linear.steps[0], routes: [{ to: 'missing' }] }, linear.steps[1]] };
-    const report = await validateDefinitionTool({ definition });
-    expect(report.valid).toBe(false);
-    expect(report.errors.join('\n')).toMatch(/\/steps\/0\/routes\/0\/to: "missing" is not a step id/);
+  it('rejects fields and steps together', () => {
+    expect(summary({ ...linear, fields: linear.steps[0].fields })).toContain('error fields-and-steps ');
   });
 
-  it('reports structural errors next to schema errors', async () => {
-    const definition = { ...linear, colour: 'blue', steps: [linear.steps[0], { ...linear.steps[1], id: 'name' }] };
-    const report = await validateDefinitionTool({ definition });
-    expect(report.errors.some((error) => error.startsWith('Schema:'))).toBe(true);
-    expect(report.errors).toContain('Duplicate step id "name" at steps[1].');
-  });
-
-  it('rejects fields and steps together', async () => {
-    const report = await validateDefinitionTool({ definition: { ...linear, fields: linear.steps[0].fields } });
-    expect(report.errors).toContain('Definition cannot have both non-empty "fields" and "steps".');
-  });
-
-  it('returns core warnings for likely mistakes', async () => {
-    const definition = {
-      id: 'x', title: 'X', submit: { label: 'Send' },
-      fields: [
-        { key: 'a', type: 'text', label: 'A', validation: { min: 1 } },
-        { key: 'c', type: 'select', label: 'C' },
-      ],
-    };
-    const report = await validateDefinitionTool({ definition });
-    expect(report.valid).toBe(true);
-    expect(report.warnings).toEqual([
-      '/fields/0/validation/min: "min" applies to number fields only. Use minLength to limit text length.',
-      '/fields/1/options: the select field "c" has no options. Add "options" or "optionsFrom".',
+  it('returns core warnings for likely mistakes', () => {
+    const fields = [{ key: 'a', type: 'text', label: 'A', validation: { min: 1 } }, { key: 'c', type: 'select', label: 'C' }];
+    expect(summary({ id: 'x', title: 'X', submit: { label: 'Send' }, fields })).toEqual([
+      'warning rule-not-applicable /fields/0/validation/min',
+      'warning missing-options /fields/1/options',
     ]);
   });
 });

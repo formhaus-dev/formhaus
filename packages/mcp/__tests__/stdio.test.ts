@@ -18,14 +18,14 @@ describe('formhaus-mcp over stdio', () => {
 
   it('lists tools and resources', async () => {
     const { tools } = await client.listTools();
-    expect(tools.map(({ name }) => name).sort()).toEqual(['capabilities', 'example_definitions', 'get_submissions', 'list_forms', 'publish_form', 'simulate_path', 'update_form_settings', 'validate_definition']);
+    expect(tools.map(({ name }) => name).sort()).toEqual(['capabilities', 'example_definitions', 'get_submissions', 'get_webhook', 'list_forms', 'publish_form', 'simulate_path', 'update_form_settings', 'validate_definition']);
     const { resources } = await client.listResources();
     expect(resources.map(({ uri }) => uri)).toEqual(['formhaus://capabilities']);
   });
 
   it('returns structured content from validate_definition', async () => {
     const result = await client.callTool({ name: 'validate_definition', arguments: { definition: linear } });
-    expect(result.structuredContent).toEqual({ valid: true, errors: [], warnings: [] });
+    expect(result.structuredContent).toEqual({ valid: true, issues: [] });
   });
 
   it('calls simulate_path', async () => {
