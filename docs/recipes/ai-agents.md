@@ -36,16 +36,23 @@ Then describe the form: "Support form: topic select, order number for billing, m
 `validate_definition` with `{ "definition": <the JSON above> }` returns:
 
 ```json
-{ "valid": true, "errors": [], "warnings": [] }
+{ "valid": true, "issues": [] }
 ```
 
-Errors come from the JSON Schema and from checks the engine enforces. A route from `details` back to `topic` returns:
+Issues come from the JSON Schema and from checks the engine enforces. A route from `details` back to `topic` returns:
 
 ```json
 {
   "valid": false,
-  "errors": ["Invalid route from \"details\" to \"topic\": targets must be later steps or null."],
-  "warnings": []
+  "issues": [
+    {
+      "code": "route-target",
+      "severity": "error",
+      "path": "/steps/1/routes/0/to",
+      "message": "/steps/1/routes/0/to: \"topic\" is not a later step. Use one of: \"screenshot\", \"contact\", or null to end the form here.",
+      "hint": "Use one of: \"screenshot\", \"contact\", or null to end the form here."
+    }
+  ]
 }
 ```
 
@@ -100,7 +107,7 @@ Forms are Formhaus JSON definitions rendered with `FormRenderer` from `@formhaus
 - Use `fields` for a single page or `steps` for a multi-step form, never both.
 - Put conditional fields and steps in `show` / `showAny`, and branching in `routes`. Route targets must be later steps or `null`.
 - Keep visibility, validation and step logic in the definition, not in components.
-- After every change, call the `formhaus` MCP tool `validate_definition` and fix all errors and warnings.
+- After every change, call the `formhaus` MCP tool `validate_definition` and fix every issue.
 - For multi-step forms, call `simulate_path` once per branch and check `path` and `submitValues`.
 - Call `capabilities` for the supported field types, validation rules and condition operators.
 ```
