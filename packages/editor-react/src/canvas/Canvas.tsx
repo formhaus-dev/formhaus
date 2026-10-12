@@ -27,6 +27,9 @@ export function Canvas({ actions }: Props) {
         <StepSection
           key={part.page?.uid ?? 'root'}
           step={part.page?.uid ?? null}
+          page={part.page ?? null}
+          last={index === Math.max(parts.length, 1) - 1}
+          first={index === 0}
           fields={part.questions}
           header={stepped ? { position: index + 1, total: parts.length } : null}
           actions={actions}

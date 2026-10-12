@@ -1,0 +1,13 @@
+.title {
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-sm);
+  font-weight: var(--fh-ed-font-weight-medium);
+  line-height: var(--fh-ed-space-6);
+}
+
+.skip {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-direction: column;
+  gap: var(--fh-ed-space-3);
+}
