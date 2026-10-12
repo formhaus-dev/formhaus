@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CopyLine from './CopyLine.vue';
 import LandingSection from './LandingSection.vue';
+import SectionCta from './SectionCta.vue';
 
 const embed = '<script src="https://f.formhaus.dev/embed.js" data-form="contact-us" async><' + '/script>';
 const alt = 'Formhaus Cloud dashboard showing the Responses tab of a Contact us form, with seven submissions listing name, email, message, form version and when each was sent.';
@@ -16,14 +17,7 @@ const alt = 'Formhaus Cloud dashboard showing the Responses tab of a Contact us 
       <img class="responses__shot responses__shot--light" src="/media/landing-responses.png" width="2304" height="1250" :alt="alt" loading="lazy" decoding="async" />
       <img class="responses__shot responses__shot--dark" src="/media/landing-responses-dark.png" width="2304" height="1250" :alt="alt" loading="lazy" decoding="async" />
     </figure>
-    <div class="responses__actions">
-      <a class="lp-button" href="/cloud">Start free</a>
-      <div class="responses__links">
-        <a href="/cloud/webhooks">Webhooks</a>
-        <span aria-hidden="true">·</span>
-        <a href="/cloud/submissions">CSV export</a>
-      </div>
-    </div>
+    <SectionCta href="/cloud" label="Learn about Cloud" />
   </LandingSection>
 </template>
 
@@ -44,21 +38,6 @@ const alt = 'Formhaus Cloud dashboard showing the Responses tab of a Contact us 
   height: 44px;
   cursor: pointer;
 }
-
-.responses__actions,
-.responses__links {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 16px;
-}
-
-.responses__actions { margin-top: 24px; }
-.responses__actions a { cursor: pointer; }
-.responses__links { gap: 8px; color: var(--vp-c-text-2); font-size: 14px; }
-.responses__links a { display: inline-flex; align-items: center; min-height: 44px; }
-.responses__links a:hover { color: var(--vp-c-brand-1); }
 
 .responses {
   --shot-bg: #fafaf9;

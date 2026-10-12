@@ -6,7 +6,6 @@
 .cloud-dark, html.dark .cloud-light { display: none !important; }
 html.dark .cloud-dark { display: block !important; }
 .cloud :is(#pricing, #faq) { scroll-margin-top: var(--vp-nav-height); }
-.cloud .copy-line__button { width: 44px; height: 44px; }
 @media (max-width: 767px) {
   .cloud-columns { grid-template-columns: 1fr; gap: 32px; }
 }
