@@ -10,7 +10,7 @@ export type ValidatorFn = (
 
 
 function isEmpty(value: unknown, field: FormField): boolean {
-  return isBlank(value) || (value === false && BOOLEAN_TYPES.has(field.type));
+  return isBlank(value) || (value === false && BOOLEAN_TYPES.includes(field.type));
 }
 
 function boundError(

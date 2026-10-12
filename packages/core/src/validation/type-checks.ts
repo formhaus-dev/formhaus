@@ -1,8 +1,8 @@
 import type { FormField } from '../types';
 import { getDefaultMessage, TYPE_MESSAGES } from './default-messages';
 
-export const BOOLEAN_TYPES = new Set(['checkbox', 'switch']);
-const CLIENT_TYPES = new Set(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'multiselect', 'checkbox', 'radio', 'switch', 'date', 'datetime', 'textarea']);
+export const BOOLEAN_TYPES = ['checkbox', 'switch'];
+export const BUILT_IN_TYPES = ['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'multiselect', 'checkbox', 'radio', 'switch', 'file', 'date', 'datetime', 'textarea'];
 
 export const MAX_STRING_LENGTH = 10000;
 const MAX_EMAIL_LENGTH = 254;
@@ -62,7 +62,7 @@ function isBlank(field: FormField, value: unknown): boolean {
 
 export function typeError(field: FormField, value: unknown): string | null {
   if (isBlank(field, value)) return null;
-  if (BOOLEAN_TYPES.has(field.type)) return typeof value === 'boolean' ? null : TYPE_MESSAGES.boolean;
+  if (BOOLEAN_TYPES.includes(field.type)) return typeof value === 'boolean' ? null : TYPE_MESSAGES.boolean;
   if (field.type === 'number') return typeof value === 'number' && Number.isFinite(value) ? null : TYPE_MESSAGES.number;
   if (field.type === 'multiselect') return multiselectError(field, value);
   if (field.type === 'file') return stringError(field, value, TYPE_MESSAGES.file);
@@ -73,6 +73,6 @@ export function typeError(field: FormField, value: unknown): string | null {
 }
 
 export function clientTypeError(field: FormField, value: unknown): string | null {
-  if (!CLIENT_TYPES.has(field.type)) return null;
+  if (field.type === 'file' || !BUILT_IN_TYPES.includes(field.type)) return null;
   return typeError(field.optionsFrom ? { ...field, options: undefined } : field, value);
 }
