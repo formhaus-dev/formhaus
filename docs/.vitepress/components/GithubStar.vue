@@ -5,14 +5,15 @@ import { useData } from 'vitepress';
 const { theme } = useData();
 const repo = 'https://github.com/ignsm/formhaus';
 
-const stars = computed<{ count: number; label: string } | null>(() => theme.value.githubStars ?? null);
-const name = computed(() =>
-  stars.value ? `Star Formhaus on GitHub, ${stars.value.count} stars` : 'Star Formhaus on GitHub',
-);
+const minimumCount = 100;
+const stars = computed<{ count: number; label: string } | null>(() => {
+  const value = theme.value.githubStars;
+  return value && value.count >= minimumCount ? value : null;
+});
 </script>
 
 <template>
-  <a class="gh-star" :href="repo" :aria-label="name" target="_blank" rel="noopener">
+  <a class="gh-star" :class="{ 'gh-star--count': stars }" :href="repo" aria-label="Star Formhaus on GitHub" target="_blank" rel="noopener">
     <svg class="gh-star__mark" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
       <path
         fill="currentColor"
@@ -37,18 +38,21 @@ const name = computed(() =>
   padding: 0 10px;
   border: 1px solid var(--vp-c-divider);
   border-radius: 14px;
-  color: var(--vp-c-text-2);
+  color: var(--vp-c-text-1);
   font-size: 13px;
   font-weight: 500;
   line-height: 1;
   white-space: nowrap;
   text-decoration: none;
-  transition: color 0.2s, border-color 0.2s;
+  transition: background-color 0.2s;
+}
+
+.dark .gh-star {
+  border-color: #3f3f46;
 }
 
 .gh-star:hover {
-  color: var(--vp-c-text-1);
-  border-color: var(--vp-c-text-3);
+  background: var(--vp-c-bg-soft);
 }
 
 .gh-star__count {
@@ -66,7 +70,7 @@ const name = computed(() =>
     padding: 0 8px;
   }
 
-  .gh-star__label {
+  .gh-star--count .gh-star__label {
     display: none;
   }
 

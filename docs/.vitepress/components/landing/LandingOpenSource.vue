@@ -4,9 +4,12 @@ const repo = 'https://github.com/ignsm/formhaus';
 
 <template>
   <p class="open-source">
-    Formhaus is open source (MIT).
-    <a :href="repo" target="_blank" rel="noopener">Star it on GitHub</a>
-    if it saves you time.
+    <span>Formhaus is MIT-licensed and free.</span>
+    <span>
+      If it saved you time,
+      <a :href="repo" target="_blank" rel="noopener">a star on GitHub</a>
+      helps others find it.
+    </span>
   </p>
 </template>
 
@@ -30,5 +33,11 @@ const repo = 'https://github.com/ignsm/formhaus';
 
 .vp-doc .open-source a:hover {
   color: var(--vp-c-brand-1);
+}
+
+@media (max-width: 639px) {
+  .vp-doc .open-source span {
+    display: block;
+  }
 }
 </style>
