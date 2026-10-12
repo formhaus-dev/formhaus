@@ -24,6 +24,7 @@ const BY_CODE: Record<string, CloudFailure> = {
   body_too_large: { message: 'Your answers are too long. Shorten them and try again.', action: null },
   idempotency_key_reused: { message: 'Your answers changed while sending. Try again.', action: 'retry' },
   form_updated: { message: 'This form was updated. Reload the page.', action: 'reload' },
+  client_outdated: { message: 'This form needs a newer version of this page.', action: null },
   malformed_body: BROKEN,
   unsupported_media_type: BROKEN,
   invalid_idempotency_key: BROKEN,
@@ -41,6 +42,7 @@ const CODE_BY_STATUS: Record<number, string> = {
   410: 'expired',
   413: 'body_too_large',
   422: 'invalid',
+  426: 'client_outdated',
   429: 'rate_limited',
 };
 

@@ -30,11 +30,13 @@
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
     "./schema.json": "./schema/form-definition.schema.json",
-    "./fixtures/submissions/*": "./fixtures/submissions/*"
+    "./fixtures/submissions/*": "./fixtures/submissions/*",
+    "./fixtures/cloud/*": "./fixtures/cloud/*"
   },
   "files": [
     "dist",
     "fixtures/submissions",
+    "fixtures/cloud",
     "schema",
     "style.css"
   ],

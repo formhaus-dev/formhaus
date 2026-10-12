@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, ref, useSlots, watch } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
 import { CloudError, type CloudAction } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
@@ -8,19 +8,28 @@ import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
 const props = defineProps<FormhausFormProps>();
-const emit = defineEmits<{ success: [submission: { id: string; values: Record<string, unknown> }] }>();
+const emit = defineEmits<{
+  success: [submission: { id: string; values: Record<string, unknown> }];
+  fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
+}>();
 const root = ref<HTMLDivElement | null>(null);
+const trap = ref<HTMLInputElement | null>(null);
+const hidden = { position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0 0 0 0)', clipPath: 'inset(50%)' } as const;
+const slots = useSlots();
 const notice = ref<InstanceType<typeof CloudNotice> | null>(null);
 
-const { state, submit, retry } = useCloudForm({
+const { state, submit, retry, again, saveDraft } = useCloudForm({
   id: () => props.id,
   apiBase: () => props.apiBase,
+  initialForm: () => props.initialForm,
+  draftStore: () => props.draftStore,
+  extraBody: () => ({ _fh_hp: trap.value?.value ?? '' }),
   onSuccess: (submission) => emit('success', submission),
   onError: () => props.onError,
 });
 
 const rendererProps = computed(() => {
-  const { id, apiBase, onError, initialValues, ...rest } = props;
+  const { id, apiBase, onError, initialValues, initialForm, draftStore, ...rest } = props;
   return rest;
 });
 
@@ -37,6 +46,14 @@ watch(() => state.value.attempt, () => {
   frame = requestAnimationFrame(() => focusProblem(root.value, notice.value?.box ?? null));
 }, { flush: 'post' });
 onBeforeUnmount(() => cancelAnimationFrame(frame));
+watch(() => state.value.done, (done) => {
+  if (done && state.value.settings.redirectUrl && !slots.success) window.location.assign(state.value.settings.redirectUrl);
+});
+
+function onFieldChange(key: string, value: unknown, values: Record<string, unknown>) {
+  saveDraft(values);
+  emit('fieldChange', key, value, values);
+}
 </script>
 
 <template>
@@ -52,10 +69,21 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
     </button>
   </template>
   <div v-else-if="!state.definition" class="fh-form" aria-busy="true"><slot name="fallback" /></div>
-  <slot v-else-if="state.done" name="success">
-    <p role="status" class="fh-form__success">Thank you. Your response was submitted.</p>
-  </slot>
+  <template v-else-if="state.done">
+    <slot name="success">
+      <p role="status" class="fh-form__success">{{ state.settings.successMessage ?? 'Thank you. Your response was submitted.' }}</p>
+    </slot>
+    <button
+      v-if="state.settings.allowAnother"
+      type="button"
+      class="fh-form-actions__button fh-form-actions__button--secondary"
+      @click="again"
+    >
+      Submit another response
+    </button>
+  </template>
   <div v-else ref="root" class="fh-cloud">
+    <input ref="trap" name="_fh_hp" tabindex="-1" autocomplete="off" aria-hidden="true" :style="hidden" />
     <CloudNotice ref="notice" :notice="state.notice" @action="act" />
     <FormRenderer
       v-bind="rendererProps"
@@ -65,6 +93,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
       :errors="state.errors"
       :on-submit="submit"
       :on-error="handled"
+      @field-change="onFieldChange"
     />
   </div>
 </template>

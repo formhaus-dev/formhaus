@@ -1,22 +1,27 @@
-import type { CloudSubmission } from '@formhaus/core/cloud';
-import { createCloudController, initialCloudState } from '@formhaus/core/internal';
+import type { CloudSubmission, DraftStore, PublishedForm } from '@formhaus/core/cloud';
+import { cloudStateFor, createCloudController } from '@formhaus/core/internal';
 import { onBeforeUnmount, onMounted, shallowRef, watch } from 'vue';
 
 interface CloudFormOptions {
   id: () => string;
   apiBase: () => string | undefined;
+  initialForm: () => PublishedForm | undefined;
+  draftStore: () => DraftStore | undefined;
+  extraBody: () => Record<string, unknown>;
   onSuccess: (submission: CloudSubmission) => void;
   onError: () => ((error: unknown) => void) | undefined;
 }
 
 export function useCloudForm(options: CloudFormOptions) {
-  const state = shallowRef(initialCloudState);
+  const state = shallowRef(cloudStateFor(options.initialForm()));
   let controller: ReturnType<typeof createCloudController> | undefined;
 
   function boot() {
     controller?.dispose();
-    state.value = initialCloudState;
-    controller = createCloudController({ id: options.id(), apiBase: options.apiBase() }, {
+    state.value = cloudStateFor(options.initialForm());
+    controller = createCloudController({
+      id: options.id(), apiBase: options.apiBase(), initialForm: options.initialForm(), draftStore: options.draftStore(), extraBody: options.extraBody,
+    }, {
       onChange: (next) => { state.value = next; },
       onSuccess: options.onSuccess,
       onError: (error) => options.onError()?.(error),
@@ -30,5 +35,7 @@ export function useCloudForm(options: CloudFormOptions) {
 
   const submit = (values: Record<string, unknown>, skippedSteps?: string[]) => controller!.submit(values, skippedSteps);
   const retry = () => controller!.start();
-  return { state, submit, retry };
+  const again = () => controller!.again();
+  const saveDraft = (values: Record<string, unknown>) => controller?.saveDraft(values);
+  return { state, submit, retry, again, saveDraft };
 }
