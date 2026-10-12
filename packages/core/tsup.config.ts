@@ -9,11 +9,11 @@ const shared = {
 export default defineConfig([
   {
     ...shared,
-    entry: { index: 'src/index.ts', cloud: 'src/cloud/index.ts', server: 'src/server/index.ts' },
+    entry: { index: 'src/index.ts', cloud: 'src/cloud/index.ts', server: 'src/server/index.ts', internal: 'src/internal/index.ts' },
     format: ['esm'],
     dts: true,
     clean: true,
-    splitting: false,
+    splitting: true,
     target: 'es2020',
   },
   {

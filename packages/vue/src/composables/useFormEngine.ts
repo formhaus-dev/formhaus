@@ -9,10 +9,10 @@ import { type ComputedRef, type Ref, computed, onScopeDispose, ref, watch } from
 
 export interface UseFormEngineReturn {
   engine: FormEngine;
-  values: ComputedRef<Record<string, unknown>>;
-  errors: ComputedRef<Record<string, string>>;
-  topLevelErrors: ComputedRef<string[]>;
-  fieldLoading: ComputedRef<Record<string, boolean>>;
+  values: ComputedRef<Readonly<Record<string, unknown>>>;
+  errors: ComputedRef<Readonly<Record<string, string>>>;
+  topLevelErrors: ComputedRef<readonly string[]>;
+  fieldLoading: ComputedRef<Readonly<Record<string, boolean>>>;
   visibleFields: ComputedRef<FormField[]>;
   visibleSteps: ComputedRef<FormStep[]>;
   currentStep: ComputedRef<FormStep | null>;

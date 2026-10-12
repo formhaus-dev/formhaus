@@ -32,12 +32,11 @@ function blockedReason(engine: FormEngine, step: FormStep | null, action: Simula
 
 async function apply(engine: FormEngine, action: SimulationAction): Promise<boolean> {
   if (action !== 'skip') {
-    if (action === 'next') engine.nextStep();
-    else engine.prevStep();
+    await (action === 'next' ? engine.next() : engine.back());
     return false;
   }
   let submitted = false;
-  await engine.skipStepAsync(async () => {
+  await engine.skip(async () => {
     submitted = true;
   });
   return submitted;

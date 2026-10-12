@@ -14,7 +14,7 @@ export default defineConfig([
   {
     ...shared,
     entry: { index: 'src/index.ts' },
-    external: ['react', 'react-dom', '@formhaus/core'],
+    external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/internal'],
   },
   {
     ...shared,

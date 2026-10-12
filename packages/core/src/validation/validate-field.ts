@@ -35,7 +35,7 @@ function patternError(value: unknown, rules: FieldValidation): string | undefine
   }
 }
 
-export function validateField(
+export function validateFieldValue(
   field: FormField,
   value: unknown,
   allValues: Record<string, unknown>,

@@ -1,4 +1,5 @@
 import { evaluateCondition } from '@formhaus/core';
+import { autoAdvance } from '@formhaus/core/internal';
 import { ref, watch } from 'vue';
 import type { FormRendererEmits, FormRendererProps } from '../types';
 import type { UseFormEngineReturn } from './useFormEngine';
@@ -20,8 +21,8 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
       else actionError.value = error instanceof Error ? error.message : 'Form action failed';
     }
   }
-  const next = () => run(() => form.engine.nextStepAsync());
-  const prev = () => run(() => form.engine.prevStepAsync());
+  const next = () => run(() => form.engine.next());
+  const prev = () => run(() => form.engine.back());
   function update(key: string, value: unknown) {
     if (props.loading || form.engine.stepValidating || form.engine.submitting) return;
     form.engine.setValue(key, value);
@@ -34,10 +35,10 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     const field = engine.visibleFields.find((field) => field.key === key);
     if (!field) return;
     update(key, value);
-    if (field.autoAdvance && engine.currentStep?.id === step?.id && !engine.isLastStep) void run(() => engine.nextStepAsync('autoAdvance'));
+    if (field.autoAdvance && engine.currentStep?.id === step?.id && !engine.isLastStep) void run(() => autoAdvance(engine));
   }
   function send(engine: typeof form.engine, handler: typeof props.submitHandler) {
-    return async (values: Record<string, unknown>, skippedSteps?: string[]) => {
+    return async (values: Record<string, unknown>, skippedSteps: string[]) => {
       emit('analyticsEvent', { type: 'form_submitted', fieldCount: Object.keys(values).length });
       if (handler) await handler(values, skippedSteps);
       if (engine === form.engine) emit('submit', values);
@@ -57,12 +58,12 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     const values = engine.getSubmitValues();
     if (engine.definition.submit.disabled?.every((condition) => evaluateCondition(condition, values))
       && engine.definition.submit.disabled.length > 0) return false;
-    return report(engine, engine.submitAsync(send(engine, props.submitHandler)));
+    return report(engine, engine.submit(send(engine, props.submitHandler)));
   });
   const skip = () => run(() => {
     const engine = form.engine;
     const submit = send(engine, props.submitHandler);
-    return report(engine, engine.skipStepAsync((values, skippedSteps) => {
+    return report(engine, engine.skip((values, skippedSteps) => {
       emit('analyticsEvent', { type: 'step_skipped', stepId: engine.currentStep!.id });
       return submit(values, skippedSteps);
     }));

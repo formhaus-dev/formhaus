@@ -53,7 +53,7 @@ describe('FormEngine', () => {
   describe('setValue', () => {
     it('sets a value and clears field error', () => {
       const engine = new FormEngine(basicDefinition);
-      engine.errors = { name: 'Required' };
+      engine.setErrors({ name: 'Required' });
       engine.setValue('name', 'John');
       expect(engine.values.name).toBe('John');
       expect(engine.errors.name).toBeUndefined();

@@ -4,7 +4,7 @@ import { ActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
 import { validateStep } from '../validation';
 import type { FormDefinition, FormField, FormStep } from '../types';
-import { isStepVisible, isVisible } from '../visibility';
+import { isVisible } from '../visibility';
 
 interface VisibilityCache {
   visibleSteps: FormStep[];
@@ -177,7 +177,7 @@ export class VisibilityState {
     clear: (key: string) => void,
   ): void {
     for (const step of steps ?? []) {
-      if (isStepVisible(step, this.conditionValues(values))) continue;
+      if (isVisible(step, this.conditionValues(values))) continue;
       for (const field of step.fields) {
         if (values[field.key] === undefined) continue;
         clear(field.key);

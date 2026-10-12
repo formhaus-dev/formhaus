@@ -1,4 +1,4 @@
-import { isStepVisible, isVisible, type FormDefinition, type FormStep } from '@formhaus/core';
+import { isVisible, type FormDefinition, type FormStep } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from '../config';
 import { ACTION_KEY, type ButtonAction } from '../render-actions';
 
@@ -6,7 +6,7 @@ const TRANSITION: Transition = { type: 'DISSOLVE', easing: { type: 'EASE_OUT' },
 const FORWARD: ButtonAction[] = ['next', 'skip'];
 
 export function routeTarget(steps: FormStep[], index: number, values: Record<string, unknown>): string | null {
-  const visibleAfter = (target: number) => target > index && isStepVisible(steps[target], values);
+  const visibleAfter = (target: number) => target > index && isVisible(steps[target], values);
   const route = steps[index].routes?.find((candidate) => isVisible(candidate, values)
     && (candidate.to === null || visibleAfter(steps.findIndex((other) => other.id === candidate.to))));
   if (route) return route.to;

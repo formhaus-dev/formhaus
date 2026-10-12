@@ -42,7 +42,7 @@ describe('FormEngine subscriptions, reset and loading', () => {
       fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'default' }],
     };
     const engine = new FormEngine(definition, { name: 'modified' });
-    engine.errors = { name: 'error' };
+    engine.setErrors({ name: 'error' });
     engine.reset();
     expect(engine.values.name).toBe('default');
     expect(engine.errors).toEqual({});

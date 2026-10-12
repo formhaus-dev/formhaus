@@ -22,8 +22,9 @@ const engineOptions: FormEngineOptions = {
   get onAfterStepChange() {
     const after = props.onAfterStepChange;
     return async (context: StepChangeContext) => {
-      emit('stepChange', context.toStepId, context.direction);
-      if (context.direction === 'next') {
+      const direction = context.reason === 'back' ? 'back' : 'next';
+      emit('stepChange', context.toStepId, direction);
+      if (direction === 'next') {
         emit('analyticsEvent', { type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
         emit('analyticsEvent', { type: 'step_viewed', stepId: context.toStepId, stepIndex: form.engine.currentStepIndex });
       }

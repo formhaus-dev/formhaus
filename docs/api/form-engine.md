@@ -22,7 +22,7 @@ const engine = new FormEngine(definition, initialValues, {
 });
 ```
 
-Both `initialValues` and the options object are optional. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
+Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
 ## Definition checks
 
@@ -61,12 +61,14 @@ interface DefinitionIssue {
 
 ## State
 
+All state properties are read-only. Change values with `setValue()` and errors with `setErrors()`.
+
 | Property | Type | Description |
 |---|---|---|
-| `values` | `Record<string, unknown>` | Current draft values, including retained inactive branch answers in routed forms |
-| `errors` | `Record<string, string>` | Errors attached to visible fields |
-| `topLevelErrors` | `string[]` | Errors for missing or hidden fields |
-| `fieldLoading` | `Record<string, boolean>` | Per-field loading state |
+| `values` | `Readonly<Partial<TValues>>` | Current draft values, including retained inactive branch answers in routed forms |
+| `errors` | `Readonly<Record<string, string>>` | Errors attached to visible fields |
+| `topLevelErrors` | `readonly string[]` | Errors for missing or hidden fields |
+| `fieldLoading` | `Readonly<Record<string, boolean>>` | Per-field loading state |
 | `stepValidating` | `boolean` | Whether async navigation, including validation and before/after hooks, is running |
 | `submitting` | `boolean` | Whether submission validation, hooks or the submit handler are running |
 | `currentStepIndex` | `number` | Zero-based index in the visible step list (active path when routes are enabled) |
@@ -87,7 +89,7 @@ interface DefinitionIssue {
 | `setFieldLoading(key, loading)` | `void` | Updates loading state for one field |
 | `validate()` | `Record<string, string>` | Validates visible fields on the active path; skipped branch values are excluded |
 | `validateField(key)` | `string \| null` | Validates one visible field |
-| `getSubmitValues()` | `Record<string, unknown>` | Returns visible field values on the active path, excluding inactive branch answers |
+| `getSubmitValues()` | `Partial<TValues>` | Returns visible field values on the active path, excluding inactive branch answers |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
 
 ::: warning
@@ -108,14 +110,14 @@ It returns `false` only when `nextErrors` equals `previousErrors` and the engine
 
 ## Navigation
 
+`next()`, `back()`, `skip()` and `submit()` are async, run the lifecycle hooks and resolve to `true` when the action completed. While one of them is pending, the others resolve to `false`; call `cancelPendingActions()` to drop the pending one.
+
 | Method | Returns | Description |
 |---|---|---|
-| `nextStep()` | `boolean` | Validates and advances without async validation or lifecycle hooks |
-| `nextStepAsync(reason?)` | `Promise<boolean>` | Validates, awaits `onStepValidate` and navigation hooks; `reason` is `next` (default) or `autoAdvance` |
-| `prevStep()` | `void` | Moves to the previous visible step without lifecycle hooks |
-| `prevStepAsync()` | `Promise<boolean>` | Runs navigation hooks and moves back without forward validation |
-| `skipStep()` | `boolean` | Resets the current step to defaults, marks it skipped and advances without validation or lifecycle hooks; returns `false` without changes when no step follows |
-| `skipStepAsync(submit?)` | `Promise<boolean>` | Runs navigation hooks with `reason: 'skip'` and the pre-skip values, then resets and advances; when no step follows, it submits through `submit` without the step |
+| `next()` | `Promise<boolean>` | Validates the current step, awaits `onStepValidate` and the step hooks, then advances |
+| `back()` | `Promise<boolean>` | Runs the step hooks and moves to the previous step of the path without validation |
+| `skip(submit?)` | `Promise<boolean>` | Runs the step hooks with `reason: 'skip'` and the pre-skip values, then resets the step and advances. When no step follows, it submits through `submit` without the step |
+| `submit(handler)` | `Promise<boolean>` | Validates every step of the path, runs `onBeforeSubmit`, awaits `handler(values, skippedSteps)` and then `onAfterSubmit` |
 | `isStepSkipped(stepId)` | `boolean` | Whether the step is skipped and left out of validation and submitted values |
 | `goToStepWithField(key)` | `void` | Moves to the visible step containing a field without lifecycle hooks |
 
@@ -154,7 +156,6 @@ These types are exported by `@formhaus/core`:
 interface StepChangeContext {
   fromStepId: string
   toStepId: string
-  direction: 'next' | 'back'
   reason: 'next' | 'back' | 'autoAdvance' | 'skip'
   values: Record<string, unknown>
 }
@@ -162,17 +163,14 @@ interface StepChangeContext {
 type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>
 type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>
 type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>
-type SubmitFn = (values: Record<string, unknown>) => void | Promise<void>
+type SubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>
 ```
 
-`onAfterSubmit` and `submitAsync(handler)` use `SubmitFn`. Callback values are shallow snapshots. For a complete Vue component and React usage, see [lifecycle hooks](/guide/steps#lifecycle-hooks).
+`onAfterSubmit` and `submit(handler)` use `SubmitFn`. `reason` is `autoAdvance` when a renderer advances after an `autoAdvance` field commits. Callback values are shallow snapshots. For a complete Vue component and React usage, see [lifecycle hooks](/guide/steps#lifecycle-hooks).
 
 | API | Result |
 | --- | --- |
-| `nextStepAsync(reason = 'next')` | `Promise<boolean>`; validates and runs hooks. Renderers use `reason: 'autoAdvance'` for field activation. |
-| `prevStepAsync()` | `Promise<boolean>`; runs hooks without forward validation. |
-| `submitAsync(handler)` | `Promise<boolean>`; validates, runs the before-hook, awaits the handler and then the after-hook. |
 | `cancelPendingActions()` | Invalidates pending guards without clearing answers. Cannot undo a dispatched submission. |
 | `submitting` | True while submission and its hooks are pending. |
 
-A cancelled, invalid or concurrent action resolves to `false`. Exceptions reject. `FormLifecycleError` has `committed: true`, `phase` and `cause` for an after-hook failure: the action already completed. `stepValidating` remains true throughout navigation hooks. Existing synchronous methods, error redirection and reset do not run async hooks. See [lifecycle ordering, recovery and adapter examples](../guide/steps#lifecycle-hooks).
+A cancelled, invalid or concurrent action resolves to `false`. Exceptions reject. `FormLifecycleError` has `committed: true`, `phase` and `cause` for an after-hook failure: the action already completed. `stepValidating` remains true throughout navigation hooks. `setErrors()`, `goToStepWithField()` and `reset()` do not run the hooks. See [lifecycle ordering, recovery and adapter examples](../guide/steps#lifecycle-hooks).

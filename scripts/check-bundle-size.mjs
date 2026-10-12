@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 const BUDGETS = {
-  core: 10350,
+  core: 10450,
   react: 5150,
   vue: 7000,
   'core/cloud': 3000,
@@ -28,7 +28,7 @@ async function bundleSize(pkg, entry) {
     format: 'esm',
     write: false,
     logLevel: 'error',
-    external: ['@formhaus/core', '@formhaus/core/cloud', '@formhaus/react', '@formhaus/vue', 'react', 'react/jsx-runtime', 'vue'],
+    external: ['@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/react', '@formhaus/vue', 'react', 'react/jsx-runtime', 'vue'],
   });
   return gzipSync(result.outputFiles[0].contents, { level: 9 }).length;
 }

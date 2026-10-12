@@ -99,7 +99,7 @@ If your function throws, `stepValidating` resets and the error propagates to you
 // React example: catch and show a toast
 async function handleNext() {
   try {
-    await engine.nextStepAsync();
+    await engine.next();
   } catch (err) {
     toast.error('Connection failed. Check your internet and try again.');
   }
@@ -125,7 +125,7 @@ async function validateStep(stepId, values) {
 
 **Last step.** The renderer Submit action does not invoke `onStepValidate`. Perform final server validation in the submit handler before saving.
 
-`nextStepAsync()` returns `false` on the final step without running validation or navigation hooks. Use `onBeforeSubmit` for cancellable checks before submission; see [lifecycle hooks](/guide/steps#lifecycle-hooks).
+`next()` returns `false` on the final step without running validation or navigation hooks. Use `onBeforeSubmit` for cancellable checks before submission; see [lifecycle hooks](/guide/steps#lifecycle-hooks).
 
 ## Type reference
 
@@ -146,7 +146,7 @@ Return:
 
 ## Using the engine directly
 
-If you use `FormEngine` without the React/Vue adapter, call `nextStepAsync()` instead of `nextStep()`:
+If you use `FormEngine` without the React/Vue adapter, await `next()`:
 
 ```ts
 import { FormEngine } from '@formhaus/core';
@@ -159,13 +159,13 @@ const engine = new FormEngine(definition, initialValues, {
 });
 
 // In your navigation handler:
-const advanced = await engine.nextStepAsync();
+const advanced = await engine.next();
 
 // Check loading state for your UI:
 engine.stepValidating; // true while navigation validation and hooks are running
 ```
 
-`nextStep()` ignores `onStepValidate` and lifecycle hooks. `nextStepAsync()` also awaits the [before/after navigation hooks](/guide/steps#lifecycle-hooks); a before-hook can cancel an otherwise valid transition.
+`next()` also awaits the [before/after navigation hooks](/guide/steps#lifecycle-hooks); a before-hook can cancel an otherwise valid transition.
 
 ## Next steps
 

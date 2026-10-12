@@ -76,7 +76,7 @@ render();
 
 form.addEventListener('submit', async (event) => {
   event.preventDefault();
-  await engine.submitAsync(async (values) => {
+  await engine.submit(async (values) => {
     await fetch('/api/subscribe', { method: 'POST', body: JSON.stringify(values) });
   });
 });
@@ -91,9 +91,9 @@ const engine = new FormEngine(definition, {}, {
   onAfterStepChange: ({ toStepId }) => console.log('step', toStepId),
 });
 
-await engine.nextStepAsync();
-await engine.prevStepAsync();
-await engine.skipStepAsync();
+await engine.next();
+await engine.back();
+await engine.skip();
 
 const { current, total } = engine.progress;
 const label = engine.isLastStep ? definition.submit.label : 'Continue';
@@ -105,7 +105,7 @@ const label = engine.isLastStep ? definition.submit.label : 'Continue';
 - `subscribeStructure()` fires when visible fields, visible steps or the current step change. Rebuilding the DOM only then keeps focus in text inputs while the user types.
 - `subscribe()` fires on every change, including errors. `showErrors()` updates the error text in place.
 - `setValue()` clears the field's error and re-evaluates `show` conditions, removing values of fields that become hidden.
-- `submitAsync(handler)` validates the visible fields, runs `onBeforeSubmit`, awaits the handler, then runs `onAfterSubmit`. It resolves to `false` and fills `engine.errors` when validation fails.
+- `submit(handler)` validates the visible fields, runs `onBeforeSubmit`, awaits the handler, then runs `onAfterSubmit`. It resolves to `false` and fills `engine.errors` when validation fails.
 - `getSubmitValues()` returns the visible values on the active path, the same payload the handler receives.
 - `subscribeField(key, listener)` and the snapshot methods let a renderer update one field at a time.
 

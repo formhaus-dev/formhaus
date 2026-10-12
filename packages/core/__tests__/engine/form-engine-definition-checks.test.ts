@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
 import { checkDefinition } from '../../src/definition-validation';
-import { validateField } from '../../src/validation';
+import { validateFieldValue } from '../../src/validation';
 import { evaluateCondition } from '../../src/visibility';
 import type { FormDefinition, FormStep } from '../../src/types';
 
@@ -94,18 +94,18 @@ describe('runtime consistency', () => {
 
   it('normalises an empty validator result to null', () => {
     const field = text('x', { validation: { validator: 'blank' } });
-    expect(validateField(field, 'a', {}, { blank: () => '' })).toBeNull();
+    expect(validateFieldValue(field, 'a', {}, { blank: () => '' })).toBeNull();
   });
 
-  it.each([false, true])('gives skipped step fields no value for matchField (routes: %s)', (routes) => {
+  it.each([false, true])('gives skipped step fields no value for matchField (routes: %s)', async (routes) => {
     const definition = form([
       { id: 'a', title: '', fields: [text('start')], ...(routes ? { routes: [{ to: 'b' }] } : {}) },
       { id: 'b', title: '', skip: { label: 'Skip' }, fields: [text('plan', { defaultValue: 'free' })] },
       { id: 'c', title: '', fields: [text('confirm', { validation: { matchField: 'plan' } })] },
     ]);
     const engine = new FormEngine(definition, { confirm: 'free' });
-    engine.nextStep();
-    engine.skipStep();
+    await engine.next();
+    await engine.skip();
     expect(engine.currentStep?.id).toBe('c');
     expect(engine.validateField('confirm')).toBe('Fields must match');
   });

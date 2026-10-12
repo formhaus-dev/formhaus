@@ -11,7 +11,9 @@ export const TYPE_MESSAGES = {
   value: 'Invalid value',
 };
 
-export function getDefaultMessage(rule: string, params?: Record<string, unknown>): string {
+export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
+
+export function getDefaultMessage(rule: ValidationRule, params?: Record<string, unknown>): string {
   switch (rule) {
     case 'required':
       return 'This field is required';

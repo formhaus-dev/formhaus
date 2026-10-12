@@ -1,5 +1,5 @@
 import type { FormDefinition, FormField, FormStep } from '../types';
-import { isStepVisible, isVisible } from '../visibility';
+import { isVisible } from '../visibility';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
   const steps = definition.steps ?? [];
@@ -8,12 +8,12 @@ export function activeSteps(definition: FormDefinition, values: Record<string, u
   const available: Record<string, unknown> = {};
   for (let index = 0; index < steps.length;) {
     const step = steps[index];
-    if (!isStepVisible(step, available)) { index++; continue; }
+    if (!isVisible(step, available)) { index++; continue; }
     result.push(step);
     Object.assign(available, stepValues(step, values, available));
     const route = step.routes?.find((route) => (
       isVisible(route, available) && (route.to === null || ((indexes.get(route.to) ?? -1) > index
-        && isStepVisible(steps[indexes.get(route.to)!], available)))
+        && isVisible(steps[indexes.get(route.to)!], available)))
     ));
     if (route?.to === null) break;
     index = route ? indexes.get(route.to)! : index + 1;

@@ -1,11 +1,11 @@
 import type { FormEngine } from '../../src/engine';
-import type { validateField, validateStep } from '../../src/validation';
+import type { validateFieldValue, validateStep } from '../../src/validation';
 import type { FormDefinition, FormField } from '../../src/types';
 import type { ModelCommand } from './model.fixtures';
 
 export interface EngineApi {
   FormEngine: new (definition: FormDefinition, values?: Record<string, unknown>, options?: object) => FormEngine;
-  validateField: typeof validateField;
+  validateFieldValue: typeof validateFieldValue;
   validateStep: typeof validateStep;
 }
 
@@ -59,14 +59,14 @@ export async function runModel(
     for (const [key, message] of Object.entries(engine.errors)) {
       if (!pathFields.has(key)) fail(`error on off-path field ${key}`);
       const field = fields.get(key)!;
-      if (message !== SERVER_ERROR && !api.validateField(field, engine.values[key], active, {})) fail(`stale error on ${key}: ${message}`);
+      if (message !== SERVER_ERROR && !api.validateFieldValue(field, engine.values[key], active, {})) fail(`stale error on ${key}: ${message}`);
     }
   };
 
   const submit = () => {
     const startGeneration = generation;
     const startPath = stepIds(engine);
-    return engine.submitAsync((payload) => {
+    return engine.submit((payload) => {
       if (generation !== startGeneration) fail('submission dispatched after reset or cancel');
       if (stepIds(engine) !== startPath) fail('submission dispatched after the path changed');
       for (const step of engine.visibleSteps) {
@@ -88,11 +88,9 @@ export async function runModel(
     if (command.type === 'server') engine.setErrors({ [command.key]: SERVER_ERROR });
     if (command.type === 'jump') engine.goToStepWithField(command.key);
     if (command.type === 'validateOne') engine.validateField(command.key);
-    if (command.type === 'next') run(engine.nextStepAsync());
-    if (command.type === 'back') run(engine.prevStepAsync());
+    if (command.type === 'next') run(engine.next());
+    if (command.type === 'back') run(engine.back());
     if (command.type === 'submit') run(submit());
-    if (command.type === 'syncNext') engine.nextStep();
-    if (command.type === 'syncBack') engine.prevStep();
     if (command.type === 'reset') { generation++; engine.reset(); }
     if (command.type === 'cancel') { generation++; engine.cancelPendingActions(); }
     if (command.type === 'settle' && pending.length > 0) {

@@ -8,7 +8,7 @@ it.each(['step', 'submit'])('discards rejected stale %s guards', async (action) 
   const engine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
     onBeforeStepChange: wait, onBeforeSubmit: wait,
   });
-  const pending = action === 'step' ? engine.nextStepAsync() : engine.submitAsync(() => {});
+  const pending = action === 'step' ? engine.next() : engine.submit(() => {});
   engine.cancelPendingActions();
   reject(new Error('Old failure'));
   await expect(pending).resolves.toBe(false);
@@ -21,7 +21,7 @@ it('uses the original callbacks for an already dispatched submission', async () 
   const calls: string[] = [];
   const options = { onAfterSubmit: () => { calls.push('A'); } };
   const engine = new FormEngine(multiStepDefinition, { name: 'Ada' }, options);
-  const pending = engine.submitAsync(() => new Promise<void>((done) => { resolve = done; }));
+  const pending = engine.submit(() => new Promise<void>((done) => { resolve = done; }));
   options.onAfterSubmit = () => { calls.push('B'); };
   resolve();
   expect(await pending).toBe(true);
@@ -36,9 +36,9 @@ it('locks submission before notifying validation subscribers', async () => {
   engine.subscribe(() => {
     if (attempted) return;
     attempted = true;
-    void engine.submitAsync(send);
+    void engine.submit(send);
   });
-  await engine.submitAsync(send);
+  await engine.submit(send);
   expect(calls).toBe(1);
 });
 
@@ -48,9 +48,9 @@ it('keeps values written by before-hooks in the action', async () => {
     onBeforeStepChange: async () => { engine.setValue('company', 'lead-1'); },
     onBeforeSubmit: async () => { engine.setValue('method', 'bank'); },
   });
-  expect(await engine.nextStepAsync()).toBe(true);
+  expect(await engine.next()).toBe(true);
   expect(engine.currentStep?.id).toBe('payment');
-  expect(await engine.submitAsync((values) => { submitted = values; })).toBe(true);
+  expect(await engine.submit((values) => { submitted = values; })).toBe(true);
   expect(submitted).toMatchObject({ name: 'Ada', method: 'bank' });
 });
 
@@ -59,7 +59,7 @@ it('discards a submission when a checked value changes during its before-hook', 
   const engine: FormEngine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
     onBeforeSubmit: () => { engine.setValue('name', 'Grace'); },
   });
-  expect(await engine.submitAsync(send)).toBe(false);
+  expect(await engine.submit(send)).toBe(false);
   expect(send).not.toHaveBeenCalled();
 });
 
@@ -74,7 +74,7 @@ it('does not dispatch when a listener resets the form during final validation', 
     armed = false;
     engine.reset({ name: 'Replacement' });
   });
-  expect(await engine.submitAsync(send)).toBe(false);
+  expect(await engine.submit(send)).toBe(false);
   expect(send).not.toHaveBeenCalled();
 });
 
@@ -83,7 +83,7 @@ it('does not let a pending server check approve a different answer', async () =>
   const engine = new FormEngine(multiStepDefinition, { name: 'allowed' }, {
     onStepValidate: () => new Promise<void>((done) => { approve = done; }),
   });
-  const pending = engine.nextStepAsync();
+  const pending = engine.next();
   engine.setValue('name', 'blocked');
   approve();
   expect(await pending).toBe(false);
@@ -96,7 +96,7 @@ it('discards a pending submission when the active path changes', async () => {
   const engine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
     onBeforeSubmit: () => new Promise<void>((done) => { allow = done; }),
   });
-  const pending = engine.submitAsync(send);
+  const pending = engine.submit(send);
   engine.setValue('accountType', 'business');
   allow();
   expect(await pending).toBe(false);

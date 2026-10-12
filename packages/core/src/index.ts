@@ -14,12 +14,13 @@ export type {
 
 export { FormEngine, type FormEngineOptions, type StepValidateFn, type StepChangeContext, type BeforeStepChangeFn, type AfterStepChangeFn, type BeforeSubmitFn, type SubmitFn } from './engine';
 
-export { evaluateCondition, isStepVisible, isVisible } from './visibility';
+export { evaluateCondition, isVisible } from './visibility';
 
 export {
+  type ValidationRule,
   type ValidatorFn,
   getDefaultMessage,
-  validateField,
+  validateFieldValue,
   validateFields,
   validateStep,
 } from './validation';
