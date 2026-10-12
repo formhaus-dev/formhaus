@@ -5,11 +5,10 @@ import LucideIcon from './LucideIcon.vue';
 import './hero-video.css';
 
 const hiDpiWide = '(min-width: 960px) and (min-resolution: 1.5dppx)';
-const posterTime = 5;
 const posterSizes = '(min-width: 1200px) 564px, (min-width: 960px) 50vw, calc(100vw - 48px)';
 const themes = [
-  { name: 'light', base: '/media/formhaus-promo' },
-  { name: 'dark', base: '/media/formhaus-promo-dark' },
+  { name: 'light', base: '/media/formhaus-hero' },
+  { name: 'dark', base: '/media/formhaus-hero-dark' },
 ].map((t) => ({ ...t, srcset: [640, 1280, 1920].map((w) => `${t.base}-poster-${w}.webp ${w}w`).join(', ') }));
 
 const { isDark } = useData();
@@ -69,10 +68,7 @@ onMounted(async () => {
   ready.value = true;
   syncPoster();
   await nextTick();
-  if (video.value) {
-    video.value.load();
-    video.value.currentTime = posterTime;
-  }
+  video.value?.load();
   observer = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
     sync();
@@ -107,7 +103,7 @@ onBeforeUnmount(() => observer?.disconnect());
       playsinline
       preload="metadata"
       :poster="poster"
-      aria-label="Formhaus product tour, 33 seconds, silent"
+      aria-label="Formhaus product tour, 22 seconds, silent"
       aria-describedby="hero-video-caption"
       @play="onPlay"
       @pause="playing = false"
@@ -117,14 +113,14 @@ onBeforeUnmount(() => observer?.disconnect());
       </template>
     </video>
     <figcaption id="hero-video-caption" class="lp-sr-only">
-      An agent is asked for a waitlist form and writes one JSON definition.
-      It renders in React, Vue, a hosted page and Figma.
-      The agent publishes a link, someone fills the form in, and the responses arrive.
+      An agent writes a form definition and publishes it.
+      The React app and the Figma mockup update.
+      Someone fills in the hosted form, and the response lands in the dashboard and the webhook.
     </figcaption>
     <button v-if="ready && !started" type="button" class="hero-video__start" @click="toggle">
       <LucideIcon name="play" />
       <span>Play video</span>
-      <span class="hero-video__time">0:33</span>
+      <span class="hero-video__time">· 0:22</span>
     </button>
     <button
       type="button"
