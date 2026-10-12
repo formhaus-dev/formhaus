@@ -21,7 +21,7 @@ describe('cloud client', () => {
     const fetchMock = vi.fn().mockResolvedValue(reply(200, definition));
     vi.stubGlobal('fetch', fetchMock);
     await expect(fetchDefinition({ id: 'abc', apiBase: 'https://example.test/' })).resolves.toEqual(definition);
-    expect(fetchMock.mock.calls[0][0]).toBe('https://example.test/f/abc/definition');
+    expect(fetchMock.mock.calls[0][0]).toBe(`https://example.test/f/abc/form?core=${__FORMHAUS_CORE_VERSION__}`);
   });
 
   it('throws a CloudError with the response code', async () => {
