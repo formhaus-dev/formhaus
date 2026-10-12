@@ -69,6 +69,7 @@ export interface Group { page?: BuilderPage; questions: BuilderQuestion[] }
 
 export const DEFAULT_NEXT = 'Continue';
 export const DEFAULT_BACK = 'Back';
+export const END = 'end';
 export const SCHEMA_URL = 'https://formhaus.dev/schema/form-definition.json';
 
 export const uid = (form: { seq: number }) => `b${(form.seq += 1)}`;

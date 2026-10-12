@@ -1,4 +1,5 @@
 import { syncIdentifiers } from '../identifiers';
+import { dropReferences } from '../references';
 import { isPage, isQuestion, newOption, newPage, newQuestion, setType, type BuilderForm, type BuilderPage, type BuilderQuestion } from '../model';
 
 export function pageSpan(form: BuilderForm, index: number): number {
@@ -59,9 +60,10 @@ export function removeBlock(form: BuilderForm, index: number): boolean {
   if (!canRemove(form, index)) return false;
   const block = form.blocks[index];
   const span = isPage(block) && pageCount(form) > 1 ? pageSpan(form, index) : 1;
-  const gone = new Set(form.blocks.slice(index, index + span).map((item) => item.uid));
-  clearTargets(form, gone);
+  const removed = form.blocks.slice(index, index + span);
+  clearTargets(form, new Set(removed.map((item) => item.uid)));
   form.blocks.splice(index, span);
+  dropReferences(form, new Set(removed.filter(isQuestion).map((item) => item.key)));
   if (form.blocks.length && !form.blocks.some(isQuestion)) form.blocks.push(newQuestion(form));
   syncIdentifiers(form);
   return true;

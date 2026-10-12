@@ -32,6 +32,29 @@ function renameRoutes(routes: StepRoute[] | undefined, renames: Renames): void {
   }
 }
 
+const keep = (gone: Set<string>) => (condition: ShowCondition) => !gone.has(condition.field);
+
+function prune(target: { show?: ShowCondition[]; showAny?: ShowCondition[] }, gone: Set<string>): void {
+  for (const prop of ['show', 'showAny'] as const) {
+    const list = target[prop]?.filter(keep(gone));
+    if (list?.length) target[prop] = list;
+    else delete target[prop];
+  }
+}
+
+export function dropReferences(form: BuilderForm, keys: Set<string>): void {
+  if (!keys.size) return;
+  for (const block of form.blocks) {
+    prune(block.extra, keys);
+    if (isPage(block)) {
+      if (block.routes) block.routes = block.routes.filter((route) => [...(route.show ?? []), ...(route.showAny ?? [])].every(keep(keys)));
+      continue;
+    }
+    const validation = block.extra.validation;
+    if (validation?.matchField && keys.has(validation.matchField)) delete validation.matchField;
+  }
+}
+
 export function renameReferences(form: BuilderForm, renames: Renames): void {
   if (!renames.keys.size && !renames.values.size && !renames.steps.size) return;
   for (const block of form.blocks) {

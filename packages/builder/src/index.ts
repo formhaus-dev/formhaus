@@ -1,6 +1,7 @@
 export * from './model';
 export { follows, keyBase, keyFromLabel, lockIdentifiers, optionBase, slugBase, stepBase, syncIdentifiers, unique, words } from './identifiers';
-export { renameReferences, type Renames } from './references';
+export { dropReferences, renameReferences, type Renames } from './references';
+export * from './conditions';
 export { serialize, toDefinition, type Serialized } from './serialize';
 export { fromDefinition, type ParseOptions } from './parse';
 export * from './ops/blocks';
@@ -9,6 +10,7 @@ export * from './ops/fields';
 export * from './ops/steps';
 export * from './ops/options';
 export * from './ops/form';
+export * from './ops/routes';
 export * from './smart';
 export * from './history';
 export * from './issues';

@@ -1,6 +1,6 @@
 import type { FormAction, FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
 import { follows, keyBase, optionBase, stepBase } from './identifiers';
-import { clone, hasOptions, newPage, uid, type BuilderBlock, type BuilderForm, type BuilderOption, type BuilderPage, type BuilderQuestion, type FormExtra } from './model';
+import { clone, END, hasOptions, newPage, uid, type BuilderBlock, type BuilderForm, type BuilderOption, type BuilderPage, type BuilderQuestion, type FormExtra } from './model';
 import { toDefinition } from './serialize';
 
 export interface ParseOptions {
@@ -22,13 +22,22 @@ function locksOf(definition: FormDefinition | undefined): Locks {
   };
 }
 
+const fallbackOf = (routes: StepRoute[] | undefined) => routes?.find((item) => !item.show?.length && !item.showAny?.length);
+
+function target(to: string | null | undefined, ids: Map<string, string>): string | null {
+  if (to === null) return END;
+  return to ? ids.get(to) ?? null : null;
+}
+
 function jumps(key: string, routes: StepRoute[], ids: Map<string, string>, options: { value: string }[]) {
-  const shown = (value: string) => routes.find((item) => item.show?.length === 1 && item.show[0].field === key && item.show[0].eq === value)?.to;
-  const fallback = routes.find((item) => !item.show?.length && !item.showAny?.length)?.to;
-  const open = options.filter((option) => !shown(option.value));
+  const match = (value: string) => routes.find((item) => item.show?.length === 1 && item.show[0].field === key && item.show[0].eq === value);
+  const fallback = fallbackOf(routes);
+  const open = options.filter((option) => !match(option.value));
+  const branching = routes.some((item) => item.show?.[0]?.field === key);
   return (value: string) => {
-    const to = shown(value) ?? (routes.some((item) => item.show?.[0]?.field === key) && open.length === 1 && open[0].value === value ? fallback : undefined);
-    return to ? ids.get(to) ?? null : null;
+    const own = match(value);
+    if (own) return target(own.to, ids);
+    return fallback && branching && open.length === 1 && open[0].value === value ? target(fallback.to, ids) : null;
   };
 }
 
@@ -90,9 +99,10 @@ export function fromDefinition(source: FormDefinition, options: ParseOptions = {
   const ids = new Map(steps.map((step, index) => [step.id, pages[index].uid]));
   form.blocks = steps.flatMap((step, index): BuilderBlock[] => {
     const questions = (step.fields ?? []).map((field) => question(form, field, step.routes ?? [], ids, locks));
-    const fallback = step.routes?.find((item) => !item.show?.length && !item.showAny?.length)?.to;
-    const claimed = questions.some((item) => item.options.some((option) => option.jump === (fallback && ids.get(fallback))));
-    if (fallback && fallback !== steps[index + 1]?.id && !claimed) pages[index].next = ids.get(fallback) ?? null;
+    const fallback = fallbackOf(step.routes);
+    const to = fallback && target(fallback.to, ids);
+    const claimed = questions.some((item) => item.options.some((option) => option.jump === to));
+    if (fallback && fallback.to !== steps[index + 1]?.id && !claimed) pages[index].next = to ?? null;
     return [pages[index], ...questions];
   });
   const generated = toDefinition(form).steps ?? [];
