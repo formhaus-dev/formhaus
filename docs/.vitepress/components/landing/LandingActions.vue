@@ -1,11 +1,42 @@
 <script setup lang="ts">
+import { defineAsyncComponent, nextTick, ref } from 'vue';
 import LucideIcon from './LucideIcon.vue';
+import OnboardingNext from './OnboardingNext.vue';
+
+const load = () => import('./onboarding-lazy').then((lazy) => lazy.loadModal());
+const OnboardingModal = defineAsyncComponent(load);
+const open = ref(false);
+const trigger = ref<HTMLAnchorElement>();
+
+function onOpen(event: MouseEvent) {
+  if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+  event.preventDefault();
+  open.value = true;
+}
+
+async function onClose() {
+  open.value = false;
+  await nextTick();
+  trigger.value?.focus();
+}
 </script>
 
 <template>
   <div class="actions">
-    <a class="actions__primary" href="/cloud/quickstart">Publish your first form</a>
+    <a
+      ref="trigger"
+      class="actions__primary lp-button"
+      href="/cloud/quickstart"
+      target="_self"
+      aria-haspopup="dialog"
+      @click="onOpen"
+      @pointerenter="load"
+      @focus="load"
+    >Publish your first form</a>
     <a class="lp-link" href="/guide/">Install the library <LucideIcon name="arrow-right" /></a>
+    <OnboardingModal v-if="open" v-slot="{ choice }" @close="onClose">
+      <OnboardingNext :choice="choice" />
+    </OnboardingModal>
   </div>
 </template>
 
@@ -15,24 +46,6 @@ import LucideIcon from './LucideIcon.vue';
   flex-wrap: wrap;
   align-items: center;
   gap: 16px 24px;
-}
-
-.actions__primary {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0 20px;
-  border-radius: 22px;
-  font-weight: 600;
-  text-decoration: none;
-  color: var(--vp-button-brand-text);
-  background: var(--vp-button-brand-bg);
-  transition: background-color 0.2s;
-}
-
-.actions__primary:hover {
-  color: var(--vp-button-brand-hover-text);
-  background: var(--vp-button-brand-hover-bg);
 }
 
 @media (max-width: 479px) {
