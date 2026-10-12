@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
 
@@ -8,6 +9,7 @@ const { chromium } = require('playwright');
 const port = process.env.EDITOR_GUARD_PORT ?? String(4900 + Math.floor(Math.random() * 600));
 const base = `http://localhost:${port}`;
 const shots = process.env.EDITOR_GUARD_SHOTS;
+const template = JSON.parse(readFileSync(new URL('../templates/index.json', import.meta.url), 'utf8'))[0].slug;
 const server = spawn('pnpm', ['--dir', 'docs', 'exec', 'vitepress', 'preview', '--port', port, '--strictPort'], { stdio: 'ignore' });
 
 async function ready() {
@@ -69,6 +71,8 @@ async function leaveGuard(context, theme, width) {
   await page.waitForTimeout(200);
   if (!page.url().endsWith('/build')) throw new Error('Cancel did not keep the user on /build');
   await blockSaves(page, false);
+  await page.getByRole('button', { name: 'Retry' }).click();
+  await savedLabel(page, 'Unsaved email');
   await page.getByRole('link', { name: 'React' }).first().click();
   await page.waitForURL(/\/guide\//);
   if (await page.getByRole('dialog').count()) throw new Error('the leave dialog showed after the retry saved');
@@ -158,6 +162,29 @@ async function alignment(page, theme, width) {
   }
 }
 
+async function startDropsOffers(context) {
+  const page = await context.newPage();
+  await page.goto(`${base}/build`);
+  for (const choice of ['Replace draft', 'Keep my draft']) {
+    await page.evaluate(() => {
+      const definition = { id: 'mine', title: 'Mine', submit: { label: 'Send' }, fields: [{ key: 'email', type: 'email', label: 'Mine email' }] };
+      localStorage.setItem('fh:build:v1', JSON.stringify({ definition, revision: 3, savedAt: new Date().toISOString() }));
+      const pending = { ...definition, fields: [{ key: 'email', type: 'email', label: 'Pending email' }] };
+      localStorage.setItem('fh:build:v1:backup', JSON.stringify({ definition: pending, revision: 3, at: new Date().toISOString(), version: null, draft: null }));
+      sessionStorage.setItem('fh:build:carry', JSON.stringify({ ...definition, title: 'Carried' }));
+    });
+    await page.goto(`${base}/build?template=${template}`);
+    await page.getByRole('heading', { name: 'Replace your current draft?' }).waitFor({ timeout: 10000 });
+    await page.getByRole('button', { name: choice }).click();
+    await page.getByRole('textbox', { name: 'Field label' }).first().waitFor();
+    await page.waitForTimeout(300);
+    if (await page.getByText(/^Restore unsaved changes/).count()) throw new Error(`"${choice}" after ?template= still showed the restore offer`);
+    const labels = await page.getByRole('textbox', { name: 'Field label' }).evaluateAll((nodes) => nodes.map((node) => node.value));
+    if (labels.includes('Pending email')) throw new Error(`"${choice}" loaded the pending copy`);
+  }
+  await page.close();
+}
+
 async function check() {
   await ready();
   const browser = await chromium.launch();
@@ -173,6 +200,7 @@ async function check() {
         await page.close();
         await leaveGuard(context, theme, width);
         await carryOver(context, theme, width);
+        if (width === 1440 && theme === 'light') await startDropsOffers(context);
         await context.close();
       }
     }

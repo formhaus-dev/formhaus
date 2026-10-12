@@ -51,6 +51,8 @@ onMounted(async () => {
   const [next, editor] = await Promise.all([requestedStart(location.search), import('@formhaus/editor-react/mount.js')]);
   history.replaceState(history.state, '', location.pathname + location.hash);
   const draft = editor.readLocalDraft(window.localStorage)?.definition;
+  const backup = editor.backupKey(editor.LOCAL_KEY);
+  for (const key of [backup, editor.offerKey(backup)]) window.localStorage.removeItem(key);
   clear = () => window.localStorage.removeItem(editor.LOCAL_KEY);
   pending.value = next;
   if (next && conflicts(draft, next.definition)) draftTitle.value = draft.title || 'Untitled form';
