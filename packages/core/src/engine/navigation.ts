@@ -26,7 +26,7 @@ function moveTo(engine: EngineInternals, index: number): void {
 }
 
 export async function skipStep(engine: EngineInternals, submit?: SubmitFn): Promise<boolean> {
-  if (!engine.isMultiStep || engine.stepValidating || engine.submitting) return false;
+  if (!engine.isMultiStep || engine.stepValidating || engine.submitting || !engine.currentStep?.skip) return false;
   if (skipTarget(engine)) return changeStep(engine, 'next', 'skip');
   const step = engine.currentStep;
   if (!submit || !step) return false;
