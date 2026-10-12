@@ -6,11 +6,7 @@ sidebar: false
 
 # Formhaus Cloud Terms of Service
 
-::: warning Draft, pending legal review
-This document is a draft and is not in effect. It will be reviewed by a lawyer before Formhaus Cloud launches.
-:::
-
-**Effective date: [EFFECTIVE DATE]**
+**Effective date: October 12, 2026**
 
 These Terms of Service ("**Terms**") are a binding agreement between **Fabrique-Futur LLC**, a Wyoming limited liability company ("**Fabrique-Futur**," "**we**," "**us**," "**our**"), and the person or organization that uses **Formhaus Cloud** (the "**Service**"). You accept these Terms when you create an account, claim a form, create an API key, publish a form through the Service, or let an AI agent publish a form for you. If you accept on behalf of a company or other entity, you represent that you have authority to bind it, and "**you**" and "**Customer**" mean that entity.
 
