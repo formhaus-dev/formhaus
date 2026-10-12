@@ -86,14 +86,14 @@ describe('validate_definition', () => {
     const definition = {
       id: 'x', title: 'X', submit: { label: 'Send' },
       fields: [
-        { key: 'a', type: 'text', label: 'A', show: [{ field: 'ghost', eq: 'yes' }] },
+        { key: 'a', type: 'text', label: 'A', validation: { min: 1 } },
         { key: 'c', type: 'select', label: 'C' },
       ],
     };
     const report = await validateDefinitionTool({ definition });
     expect(report.valid).toBe(true);
     expect(report.warnings).toEqual([
-      '/fields/0/show/0/field: "ghost" is not a field key. Use "c".',
+      '/fields/0/validation/min: "min" applies to number fields only. Use minLength to limit text length.',
       '/fields/1/options: the select field "c" has no options. Add "options" or "optionsFrom".',
     ]);
   });

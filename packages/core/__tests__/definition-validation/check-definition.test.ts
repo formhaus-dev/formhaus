@@ -17,7 +17,7 @@ describe('checkDefinition', () => {
     expect(checkDefinition(form([text('name'), text('email', { type: 'email' })]))).toEqual([]);
   });
 
-  it('warns about duplicate keys with the path of the first declaration', () => {
+  it('rejects duplicate keys on one path with the path of the first declaration', () => {
     const definition: FormDefinition = {
       id: 'dup', title: 'Dup', submit: { label: 'Submit' },
       steps: [
@@ -27,10 +27,10 @@ describe('checkDefinition', () => {
     };
     expect(checkDefinition(definition)).toEqual([{
       code: 'duplicate-key',
-      severity: 'warning',
+      severity: 'error',
       path: '/steps/1/fields/0/key',
-      message: '/steps/1/fields/0/key: key "name" is already used by /steps/0/fields/0. Give each field a unique key, because fields with one key share one value.',
-      hint: 'Give each field a unique key, because fields with one key share one value.',
+      message: '/steps/1/fields/0/key: key "name" is already used by /steps/0/fields/0 on the same path. Rename one of the fields, or move them to route branches that never meet.',
+      hint: 'Rename one of the fields, or move them to route branches that never meet.',
     }]);
   });
 
@@ -73,10 +73,10 @@ describe('checkDefinition', () => {
   });
 
   it('lists errors before warnings', () => {
-    const definition = form([text('a', { validation: { matchField: 'nope' } }), text('b', { validation: { pattern: '(' } })]);
+    const definition = form([text('a', { type: 'txt' }), text('b', { validation: { pattern: '(' } })]);
     expect(codes(definition)).toEqual([
       'error invalid-pattern /fields/1/validation/pattern',
-      'warning unknown-field /fields/0/validation/matchField',
+      'warning unknown-field-type /fields/0/type',
     ]);
   });
 });

@@ -100,7 +100,7 @@ describe('simulate_path', () => {
 
   it('constructs the engine once', async () => {
     constructed.count = 0;
-    await simulatePathTool({ definition: { ...linear, steps: [{ ...linear.steps[0], show: [{ field: 'ghost', eq: 1 }] }, linear.steps[1]] } });
+    await simulatePathTool({ definition: linear });
     expect(constructed.count).toBe(1);
   });
 

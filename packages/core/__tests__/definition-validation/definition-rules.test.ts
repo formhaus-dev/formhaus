@@ -37,7 +37,7 @@ describe('condition rules', () => {
   });
 
   it('checks conditions on actions', () => {
-    expect(codes(form([field('a')], { submit: { label: 'Go', disabled: [{ field: 'nope', eq: 'x' }] } }))).toEqual(['warning unknown-field /submit/disabled/0/field']);
+    expect(codes(form([field('a')], { submit: { label: 'Go', disabled: [{ field: 'nope', eq: 'x' }] } }))).toEqual(['error unknown-field /submit/disabled/0/field']);
   });
 
   it('warns when a condition value can never match the field', () => {
@@ -110,9 +110,9 @@ describe('field rules', () => {
     ]);
   });
 
-  it('warns about matchField and optionsDependsOn on unknown keys', () => {
+  it('rejects matchField and warns about optionsDependsOn on unknown keys', () => {
     expect(codes(form([field('a', { validation: { matchField: 'nope' } }), field('b', { type: 'select', optionsFrom: 'x', optionsDependsOn: ['a', 'zzz'] })]))).toEqual([
-      'warning unknown-field /fields/0/validation/matchField',
+      'error unknown-field /fields/0/validation/matchField',
       'warning unknown-field /fields/1/optionsDependsOn/1',
     ]);
   });

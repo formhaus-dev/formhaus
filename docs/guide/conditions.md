@@ -126,7 +126,7 @@ If field A hides field B, and field B controls field C, the engine checks C next
 
 ## Conditional steps
 
-Steps support `show`/`showAny` too. Hidden steps are skipped during navigation. In a form with routes, a step condition must reference fields of earlier steps; `checkDefinition()` warns otherwise.
+Steps support `show`/`showAny` too. Hidden steps are skipped during navigation. A step condition must reference fields of earlier steps, and a field condition fields of the same or an earlier step. The engine throws on a condition that references a later step, because conditions only see answers that come before them.
 
 ```json
 {

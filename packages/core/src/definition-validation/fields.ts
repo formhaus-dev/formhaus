@@ -64,7 +64,7 @@ function ruleIssues(context: CheckContext, entry: FieldEntry): DefinitionIssue[]
     ...patternIssue(rules.pattern, path),
   ];
   if (rules.matchField !== undefined && !context.keys.has(rules.matchField)) {
-    issues.push(warning('unknown-field', `${path}/validation/matchField`, `"${rules.matchField}" is not a field key`, suggest(rules.matchField, context.keyList)));
+    issues.push(error('unknown-field', `${path}/validation/matchField`, `"${rules.matchField}" is not a field key`, suggest(rules.matchField, context.keyList)));
   }
   const validators = context.validators;
   if (rules.validator !== undefined && validators && !Object.prototype.hasOwnProperty.call(validators, rules.validator)) {

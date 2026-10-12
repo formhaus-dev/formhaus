@@ -58,16 +58,14 @@ function operatorIssues(condition: ShowCondition, path: string): DefinitionIssue
 function referenceIssue(context: CheckContext, { condition, path, owner, step, key }: ConditionEntry): DefinitionIssue | undefined {
   const target = context.keys.get(condition.field);
   if (!target) {
-    const report = owner === 'route' ? error : warning;
     const candidates = context.keyList.filter((candidate) => candidate !== key);
-    return report('unknown-field', `${path}/field`, `"${condition.field}" is not a field key`, suggest(condition.field, candidates));
+    return error('unknown-field', `${path}/field`, `"${condition.field}" is not a field key`, suggest(condition.field, candidates));
   }
-  if (!context.routed || target.step < step || (owner === 'route' && target.step === step)) return undefined;
-  if (owner === 'route') {
-    return error('forward-reference', `${path}/field`, `"${condition.field}" belongs to a later step`, 'Route conditions can use fields of this or an earlier step');
-  }
-  if (owner !== 'step') return undefined;
-  return warning('forward-reference', `${path}/field`, `"${condition.field}" belongs to this or a later step`, 'Step conditions can use fields of earlier steps');
+  if (step < 0 || owner === 'action') return undefined;
+  const sameStep = owner === 'step' ? 'this or a later step' : 'a later step';
+  if (target.step < step || (owner !== 'step' && target.step === step)) return undefined;
+  const allowed = owner === 'step' ? 'earlier steps' : 'this or an earlier step';
+  return error('forward-reference', `${path}/field`, `"${condition.field}" belongs to ${sameStep}`, `${owner === 'route' ? 'Route' : owner === 'step' ? 'Step' : 'Field'} conditions can use fields of ${allowed}`);
 }
 
 export function conditionIssues(context: CheckContext): DefinitionIssue[] {

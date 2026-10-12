@@ -35,8 +35,8 @@ describe('checkDefinition', () => {
   it('lists errors the engine rejects before warnings', () => {
     expect(checkDefinition(routed).map(({ severity, code, path }) => `${severity} ${code} ${path}`)).toEqual([
       'error route-target /steps/0/routes/0/to',
-      'warning duplicate-key /steps/0/fields/1/key',
-      'warning unknown-field /steps/0/fields/0/show/0/field',
+      'error duplicate-key /steps/0/fields/1/key',
+      'error unknown-field /steps/0/fields/0/show/0/field',
     ]);
   });
 

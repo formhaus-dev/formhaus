@@ -1,10 +1,8 @@
-import type { FormDefinition, FormStep } from '../types';
+import type { FormDefinition, FormField, FormStep } from '../types';
 import { isStepVisible, isVisible } from '../visibility';
-import { hasRoutes } from './engine-utils';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
   const steps = definition.steps ?? [];
-  if (!hasRoutes(definition)) return steps.filter((step) => isStepVisible(step, values));
   const indexes = new Map(steps.map((step, index) => [step.id, index]));
   const result: FormStep[] = [];
   const available: Record<string, unknown> = {};
@@ -35,7 +33,7 @@ export function reconcileStepIndex(previous: FormStep[], next: FormStep[], index
   return 0;
 }
 
-function stepValues(step: FormStep, values: Record<string, unknown>, previous: Record<string, unknown>) {
+function stepValues(step: { fields: FormField[] }, values: Record<string, unknown>, previous: Record<string, unknown>) {
   const candidates = { ...previous };
   for (const field of step.fields) candidates[field.key] = values[field.key];
   const result: Record<string, unknown> = {};
@@ -46,14 +44,11 @@ function stepValues(step: FormStep, values: Record<string, unknown>, previous: R
 }
 
 export class ActivePath {
-  readonly enabled: boolean;
   private source: Record<string, unknown> | null = null;
   private activeStepList: FormStep[] = [];
   private activeValueMap: Record<string, unknown> = {};
 
-  constructor(private definition: FormDefinition) {
-    this.enabled = hasRoutes(definition);
-  }
+  constructor(private definition: FormDefinition) {}
 
   invalidate(): void { this.source = null; }
 
@@ -72,7 +67,8 @@ export class ActivePath {
     this.source = values;
     this.activeStepList = activeSteps(this.definition, values);
     const result: Record<string, unknown> = {};
-    for (const step of this.activeStepList) Object.assign(result, stepValues(step, values, result));
+    const groups = this.definition.steps?.length ? this.activeStepList : [{ fields: this.definition.fields ?? [] }];
+    for (const step of groups) Object.assign(result, stepValues(step, values, result));
     this.activeValueMap = result;
   }
 }

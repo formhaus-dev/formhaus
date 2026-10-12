@@ -1,5 +1,5 @@
 import { validateField, validateFields, validateStep } from '../validation';
-import { createValues, getChangedKeys, hasRoutes } from './engine-utils';
+import { createValues, getChangedKeys } from './engine-utils';
 import type { EngineInternals } from './runtime-internals';
 
 export function applyValidationErrors(engine: EngineInternals, errors: Record<string, string>, navigate = false): void {
@@ -43,7 +43,7 @@ export function pruneOffPathErrors(engine: EngineInternals): string[] {
 }
 
 export function getValidationValues(engine: EngineInternals): Record<string, unknown> {
-  return hasRoutes(engine.definition) ? getSubmitValues(engine) : withoutSkipped(engine, { ...engine.values });
+  return getSubmitValues(engine);
 }
 
 function withoutSkipped(engine: EngineInternals, values: Record<string, unknown>): Record<string, unknown> {
@@ -62,7 +62,7 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   } else {
     Object.assign(
       errors,
-      validateFields(engine.definition.fields ?? [], engine.values, engine.validators),
+      validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators),
     );
   }
   engine.errors = errors;
@@ -72,8 +72,8 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
 }
 
 export function validateOne(engine: EngineInternals, key: string): string | null {
-  const field = engine.visibility.fieldByKey.get(key);
-  if (!field || !engine.visibility.isFieldVisible(key, engine.values)) return null;
+  const field = engine.visibility.activeField(key, engine.values);
+  if (!field) return null;
   const previousError = engine.errors[key];
   const error = validateField(field, engine.values[key], getValidationValues(engine), engine.validators);
   if (error) engine.errors[key] = error;
@@ -84,15 +84,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
 }
 
 export function getSubmitValues(engine: EngineInternals): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  const visibleKeys = engine.visibility.getVisibleFieldKeys(
-    engine.values,
-    engine.currentStepIndex,
-  );
-  for (const key of visibleKeys) {
-    if (engine.values[key] !== undefined) result[key] = engine.values[key];
-  }
-  return withoutSkipped(engine, result);
+  return withoutSkipped(engine, { ...engine.visibility.conditionValues(engine.values) });
 }
 
 export function resetEngine(engine: EngineInternals, values?: Record<string, unknown>): void {
