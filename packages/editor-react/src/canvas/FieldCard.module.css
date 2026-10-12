@@ -68,6 +68,7 @@
 
 .requiredTag {
   flex: none;
+  margin-left: var(--fh-ed-space-2);
   color: var(--fh-ed-fg-muted);
   font-size: var(--fh-ed-font-size-xs);
   font-weight: var(--fh-ed-font-weight-medium);

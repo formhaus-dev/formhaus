@@ -9,6 +9,27 @@
   display: none;
 }
 
+.sandbox__pane--write {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 24px 32px 24px 48px;
+}
+
+.sandbox__hint {
+  margin: 0 0 12px;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--vp-c-text-3);
+}
+
+.sandbox__hint kbd {
+  padding: 0 4px;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 11px;
+}
+
 .sandbox__pane--preview {
   display: flex;
   flex-direction: column;

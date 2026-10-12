@@ -1,14 +1,12 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue';
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { validateDefinition, type FormDefinition } from '@formhaus/core';
 import seed from '../../../recipes/definitions/onboarding.json';
-import LandingBuilder from './LandingBuilder.vue';
+import EditorIsland from '../editor/EditorIsland.vue';
 import LandingFrame from './LandingFrame.vue';
 import LandingSection from './LandingSection.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
-import { useHistory } from './builder-history';
-import { fromDefinition, syncIdentifiers, toDefinition } from '@formhaus/builder';
 import { formatJson } from './json-format';
 import { nextStep } from './route';
 
@@ -21,10 +19,10 @@ const tabs = [
 ] as const;
 type Tab = (typeof tabs)[number]['id'];
 
-const model = reactive(fromDefinition(seed as FormDefinition));
-watch(model, () => syncIdentifiers(model), { deep: true });
-const history = useHistory(model);
-const definition = computed(() => toDefinition(model));
+const start = seed as FormDefinition;
+const definition = shallowRef<FormDefinition>(start);
+const loaded = shallowRef<FormDefinition>(start);
+const generation = ref(0);
 const source = computed(() => formatJson(definition.value));
 const problems = computed(() => safeValidate(definition.value));
 const issues = computed(() => problems.value.length);
@@ -33,6 +31,7 @@ const live = shallowRef(definition.value);
 const tab = ref<Tab>('write');
 onMounted(() => { if (window.matchMedia('(max-width: 767px)').matches) tab.value = 'preview'; });
 const edited = ref(false);
+const editor = ref(false);
 const run = ref(0);
 const first = () => live.value.steps?.[0]?.id ?? 'form';
 const path = ref<string[]>([]);
@@ -87,11 +86,22 @@ function restart() {
   run.value += 1;
 }
 
+function load(next: FormDefinition) {
+  definition.value = next;
+  loaded.value = next;
+  generation.value += 1;
+}
+
 function reset() {
-  history.replace(fromDefinition(seed as FormDefinition));
+  load(start);
   jsonError.value = '';
   edited.value = false;
   restart();
+}
+
+function onEdit(next: FormDefinition) {
+  if (next !== loaded.value) edited.value = true;
+  definition.value = next;
 }
 
 let jsonTimer: ReturnType<typeof setTimeout> | undefined;
@@ -116,18 +126,13 @@ function applyJson(text: string) {
   if (problems.length) return void (jsonError.value = problems[0]);
   jsonError.value = '';
   edited.value = true;
-  history.replace(fromDefinition(parsed as FormDefinition));
+  load(parsed as FormDefinition);
 }
 
 onBeforeUnmount(() => {
   clearTimeout(timer);
   clearTimeout(jsonTimer);
 });
-
-function onSandboxKey(event: KeyboardEvent) {
-  if ((event.target as HTMLElement).closest('.cm-editor')) return;
-  history.onKey(event);
-}
 
 function onTabKey(event: KeyboardEvent) {
   if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
@@ -141,7 +146,7 @@ function onTabKey(event: KeyboardEvent) {
 
 <template>
   <LandingSection id="demo" band eyebrow="Playground" title="Edit the definition, watch the form." lead="Fields, validation, steps and branches, live.">
-    <LandingFrame class="sandbox" fixed :data-tab="tab" @keydown="onSandboxKey">
+    <LandingFrame class="sandbox" fixed :data-tab="tab">
       <template #bar>
         <div class="sandbox__tabs" role="tablist" aria-label="Playground view" @keydown="onTabKey">
           <button
@@ -162,8 +167,6 @@ function onTabKey(event: KeyboardEvent) {
         </div>
         <span v-if="issues" class="sandbox__issues" role="status" :title="problems.join('\n')">{{ issues }} {{ issues === 1 ? 'issue' : 'issues' }}</span>
         <div class="sandbox__actions">
-          <button type="button" class="sandbox__icon" title="Undo ⌘Z" aria-label="Undo" :disabled="!history.canUndo.value" @click="history.undo()"><LucideIcon name="undo" /></button>
-          <button type="button" class="sandbox__icon" title="Redo ⇧⌘Z" aria-label="Redo" :disabled="!history.canRedo.value" @click="history.redo()"><LucideIcon name="redo" /></button>
           <button type="button" class="sandbox__text" title="Reset to example" @click="reset"><LucideIcon name="restart" /> Reset</button>
         </div>
       </template>
@@ -173,7 +176,10 @@ function onTabKey(event: KeyboardEvent) {
         <button type="button" class="sandbox__restart" @click="restart"><LucideIcon name="restart" /> Restart</button>
       </template>
       <div id="sandbox-write" class="sandbox__pane sandbox__pane--write" role="tabpanel" aria-labelledby="sandbox-tab-write">
-        <LandingBuilder :form="model" :edited="edited" @edit="edited = true" />
+        <p v-if="!edited && editor" class="sandbox__hint">Click a line to edit · <kbd>Enter</kbd> adds a field · Go to sends an answer to a step</p>
+        <ClientOnly>
+          <EditorIsland :key="generation" storage="memory" compact lazy :definition="loaded" @ready="editor = true" @change="onEdit" />
+        </ClientOnly>
       </div>
       <div id="sandbox-json" class="sandbox__pane sandbox__pane--json" role="tabpanel" aria-labelledby="sandbox-tab-json">
         <LandingJson :source="source" :error="jsonError" :active="tab === 'json'" @change="onJson" />
