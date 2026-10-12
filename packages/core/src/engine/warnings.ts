@@ -7,7 +7,9 @@ import type { FormEngineOptions } from './engine-options';
 function developmentIssues(definition: FormDefinition, validators: Record<string, unknown>): DefinitionIssue[] | undefined {
   try {
     if (process.env.NODE_ENV !== 'production') return checkDefinition(definition, { validators });
-  } catch {}
+  } catch (error) {
+    if (!(error instanceof ReferenceError)) throw error;
+  }
   return undefined;
 }
 
