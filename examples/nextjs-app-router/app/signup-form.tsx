@@ -12,7 +12,7 @@ export function SignupForm({ definition }: { definition: FormDefinition }) {
   const [errors, setErrors] = useState<Record<string, string>>();
   const [saved, setSaved] = useState<Record<string, unknown> | null>(null);
 
-  async function submit(values: Record<string, unknown>, skippedSteps?: string[]) {
+  async function submit(values: Record<string, unknown>, skippedSteps: string[]) {
     const response = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

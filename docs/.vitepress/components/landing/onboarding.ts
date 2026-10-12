@@ -11,6 +11,7 @@ export const choices: Record<StartChoice, { label: string; text: string; icon: '
 export const definition: FormDefinition = {
   id: 'onboarding',
   title: 'How do you want to start?',
+  submit: { label: 'Continue' },
   steps: [
     {
       id: 'start',

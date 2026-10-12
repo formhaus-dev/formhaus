@@ -3,16 +3,17 @@ import type { ReactNode } from 'react';
 import { Label } from '@/components/ui/label';
 
 interface FieldShellProps {
+  id?: string;
   field: FormField;
   error?: string;
   group?: boolean;
   children: ReactNode;
 }
 
-export function FieldShell({ field, error, group, children }: FieldShellProps) {
+export function FieldShell({ id, field, error, group, children }: FieldShellProps) {
   return (
     <div className="grid gap-2">
-      <Label id={`${field.key}-label`} htmlFor={group ? undefined : field.key}>
+      <Label id={`${id}-label`} htmlFor={group ? undefined : id}>
         {field.label}
       </Label>
       {children}

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
-import { validateDefinition, type FormDefinition } from '@formhaus/core';
+import type { FormDefinition } from '@formhaus/core';
 import seed from '../../../recipes/definitions/onboarding.json';
 import EditorIsland from '../editor/EditorIsland.vue';
 import LandingFrame from './LandingFrame.vue';
@@ -8,9 +8,9 @@ import LandingSection from './LandingSection.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
 import { formatJson } from './json-format';
-import { nextStep } from './route';
+import { useDemoCore } from './demo-checks';
 
-const LandingDemoForm = defineAsyncComponent(() => import('./LandingDemoForm.vue'));
+const LandingDemoForm = defineAsyncComponent(() => import('./demo-lazy').then((lazy) => lazy.loadDemoForm()));
 
 const tabs = [
   { id: 'write', label: 'Write' },
@@ -39,14 +39,7 @@ const history_ = ref<string[]>([first()]);
 const values = ref<Record<string, unknown>>({});
 const done = ref(false);
 const jsonError = ref('');
-
-function safeValidate(value: FormDefinition): string[] {
-  try {
-    return validateDefinition(value);
-  } catch (error) {
-    return [error instanceof Error ? error.message : 'Invalid definition'];
-  }
-}
+const { core, near, validate: safeValidate } = useDemoCore('demo');
 
 let timer: ReturnType<typeof setTimeout> | undefined;
 watch(definition, (next) => {
@@ -67,6 +60,8 @@ watch(definition, (next) => {
 });
 
 const progress = computed(() => {
+  if (!core.value) return '';
+  const { nextStep } = core.value;
   const route: string[] = [];
   for (let id: string | undefined = first(); id && !route.includes(id); id = nextStep(live.value, id, values.value)) route.push(id);
   const at = route.indexOf(history_.value[history_.value.length - 1]);
@@ -200,6 +195,7 @@ function onTabKey(event: KeyboardEvent) {
           <div class="sandbox__preview">
             <ClientOnly>
               <LandingDemoForm
+                v-if="near"
                 :key="`${run}-${liveVersion}`"
                 :definition="live"
                 :initial="values"

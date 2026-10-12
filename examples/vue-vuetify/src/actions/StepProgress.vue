@@ -6,6 +6,7 @@ const props = defineProps({
   total: { type: Number, required: true },
   stepTitle: { type: String, default: undefined },
   stepDescription: { type: String, default: undefined },
+  headingLevel: { type: Number, default: 2 },
 });
 
 const percent = computed(() => (props.current / props.total) * 100);
@@ -17,7 +18,7 @@ const percent = computed(() => (props.current / props.total) * 100);
     <span class="text-caption text-medium-emphasis">
       Step {{ current }} of {{ total }}
     </span>
-    <h3 v-if="stepTitle" class="text-h6" style="margin: 0">{{ stepTitle }}</h3>
+    <component :is="`h${headingLevel}`" v-if="stepTitle" class="text-h6" style="margin: 0">{{ stepTitle }}</component>
     <p v-if="stepDescription" class="text-body-2 text-medium-emphasis" style="margin: 0">
       {{ stepDescription }}
     </p>

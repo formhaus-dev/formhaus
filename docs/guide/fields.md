@@ -41,8 +41,6 @@ The browser does not check the `email` format. `validateSubmission()` from `@for
 }
 ```
 
-In 0.10.0 the React renderer does not pass `inputMode` to the input. The Vue renderer does.
-
 `mask` provides a pattern hint. The default TextField uses it as a placeholder when no `placeholder` is set. Custom components receive `field.mask` and can implement full input masking:
 
 ```json

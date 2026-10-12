@@ -2,11 +2,11 @@ import type { FieldComponentProps } from '@formhaus/react';
 import { Textarea } from '@/components/ui/textarea';
 import { FieldShell } from './FieldShell';
 
-export function TextareaField({ field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
+export function TextareaField({ id, field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
   return (
-    <FieldShell field={field} error={error}>
+    <FieldShell id={id} field={field} error={error}>
       <Textarea
-        id={field.key}
+        id={id}
         rows={field.rows}
         value={typeof value === 'string' ? value : ''}
         placeholder={field.placeholder}

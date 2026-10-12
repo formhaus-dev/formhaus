@@ -11,11 +11,11 @@ const inputTypes: Record<string, string> = {
   datetime: 'datetime-local',
 };
 
-export function TextField({ field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
+export function TextField({ id, field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
   return (
-    <FieldShell field={field} error={error}>
+    <FieldShell id={id} field={field} error={error}>
       <Input
-        id={field.key}
+        id={id}
         type={inputTypes[field.type] ?? 'text'}
         value={value != null ? String(value) : ''}
         placeholder={field.placeholder}
