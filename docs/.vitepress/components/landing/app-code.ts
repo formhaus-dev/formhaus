@@ -35,16 +35,54 @@ export function ContactForm({ onSubmit }: { onSubmit: (values: Values) => Promis
   const [serverError, setServerError] = useState('');`,
 };
 
-export const withFormhaus = {
-  total: 7,
-  source: `import { FormRenderer } from '@formhaus/react';
+export const panes = [
+  {
+    id: 'react',
+    label: 'React',
+    file: 'ContactForm.tsx',
+    source: `import { FormRenderer } from '@formhaus/react';
 import '@formhaus/core/style.css';
 import definition from './contact-form.json';
 
 export const ContactForm = (props) => (
   <FormRenderer definition={definition} {...props} />
 );`,
-};
+  },
+  {
+    id: 'vue',
+    label: 'Vue',
+    file: 'ContactForm.vue',
+    source: `<script setup lang="ts">
+import { FormRenderer } from '@formhaus/vue';
+import '@formhaus/core/style.css';
+import definition from './contact-form.json';
+</script>
+
+<template>
+  <FormRenderer :definition="definition" @submit="send" />
+</template>`,
+  },
+  {
+    id: 'headless',
+    label: 'Headless',
+    file: 'contact.ts',
+    source: `import { FormEngine } from '@formhaus/core';
+import definition from './contact-form.json';
+
+const engine = new FormEngine(definition);
+engine.setValue('name', 'Ada');
+engine.setValue('email', 'ada@example.com');
+engine.setValue('message', 'Hello');
+await engine.submit(send);`,
+  },
+  {
+    id: 'hand',
+    label: 'By hand',
+    count: `(${handRolled.total} lines)`,
+    file: 'ContactForm.tsx',
+    source: handRolled.source,
+  },
+];
 
 const KEYWORDS = new Set(['import', 'from', 'type', 'const', 'function', 'return', 'if', 'else', 'export', 'async', 'await', 'try', 'catch', 'finally']);
 const TOKEN = /('(?:[^'\\]|\\.)*'|`[^`]*`|"[^"]*")|(\/\^.*?\$\/)|(\b\d+\b)|([A-Za-z_$][\w$]*)|(\s+)|(.)/g;
