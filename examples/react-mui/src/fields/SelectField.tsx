@@ -3,6 +3,7 @@ import MuiTextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 
 export function SelectField({
+  id,
   field,
   value,
   error,
@@ -18,7 +19,7 @@ export function SelectField({
 
   return (
     <MuiTextField
-      id={field.key}
+      id={id}
       label={field.label}
       select
       value={selectValue}

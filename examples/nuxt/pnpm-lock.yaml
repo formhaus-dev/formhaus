@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^0.10.1
-        version: 0.10.1
+        specifier: ^0.11.0
+        version: 0.11.0
       '@formhaus/vue':
-        specifier: ^0.10.1
-        version: 0.10.1(vue@3.5.43(typescript@5.9.3))
+        specifier: ^0.11.0
+        version: 0.11.0(@formhaus/core@0.11.0)(vue@3.5.43(typescript@5.9.3))
       nuxt:
         specifier: ^4.5.2
         version: 4.5.2(@babel/plugin-syntax-jsx@7.29.7(@babel/core@7.29.7))(@babel/plugin-syntax-typescript@7.29.7(@babel/core@7.29.7))(@oxc-project/types@0.152.0)(@vue/compiler-sfc@3.5.43)(db0@0.3.4)(esbuild@0.28.2)(ioredis@5.11.1)(lightningcss@1.33.0)(magicast@0.5.5)(rolldown@1.2.12)(rollup-plugin-visualizer@7.1.1(rolldown@1.2.12)(rollup@4.64.0))(rollup@4.64.0)(srvx@0.11.22)(terser@5.51.2)(typescript@5.9.3)(vite@8.3.2(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2))(vue-tsc@3.3.12(typescript@5.9.3))
@@ -342,15 +342,16 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@formhaus/core@0.10.1':
-    resolution: {integrity: sha512-JFBYA+XsescgZIAV/DwlZXaLlalkWV0wAXpzmGpCxToQxPZ0u5xwPRycKNKPHL1+HlCTlF40Pcjm5IfZi0yxcw==}
-    engines: {node: '>=18'}
+  '@formhaus/core@0.11.0':
+    resolution: {integrity: sha512-AIe8t+VAAzCxonOo/fCt4vizd8BMMN3py6nqZNDWOBBww2liBZqrlZhQAXOy5lJQjo98oPvTdAiuDDBdpIMz3w==}
+    engines: {node: '>=20'}
 
-  '@formhaus/vue@0.10.1':
-    resolution: {integrity: sha512-QAMr5HM8UOHPDcyzI5yrmcuYmRcpvlnQS9trAEmogUFBXn7cSlzsuPsyaBn7vi9DifWU06FiG/d4GlzQ5FBUHg==}
-    engines: {node: '>=18'}
+  '@formhaus/vue@0.11.0':
+    resolution: {integrity: sha512-ybAHo2LSSaHg1hvw43jHWPclI84glU3AwQ6RXpfaLLV3yM+lw9/ERoUnMgklODsYb4YvVe0gxqoJC2Ap9dXfKw==}
+    engines: {node: '>=20'}
     peerDependencies:
-      vue: '>=3.3.0'
+      '@formhaus/core': ^0.11.0
+      vue: ^3.3.3
 
   '@ioredis/commands@1.10.0':
     resolution: {integrity: sha512-UmeW7z4LfctwoQ5wkhVzgq8tXkreED2xZGpX+Bg+zA+WJFZCT6c062AfCK/Dfk81xZnnwdhJCUMkitihRaoC2Q==}
@@ -3433,11 +3434,11 @@ snapshots:
   '@esbuild/win32-x64@0.28.2':
     optional: true
 
-  '@formhaus/core@0.10.1': {}
+  '@formhaus/core@0.11.0': {}
 
-  '@formhaus/vue@0.10.1(vue@3.5.43(typescript@5.9.3))':
+  '@formhaus/vue@0.11.0(@formhaus/core@0.11.0)(vue@3.5.43(typescript@5.9.3))':
     dependencies:
-      '@formhaus/core': 0.10.1
+      '@formhaus/core': 0.11.0
       vue: 3.5.43(typescript@5.9.3)
 
   '@ioredis/commands@1.10.0': {}

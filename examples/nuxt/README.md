@@ -18,7 +18,7 @@ Opens at http://localhost:3000. Choose the Team plan and enter `Acme` as the com
 ## Files
 
 - [shared/definition.json](shared/definition.json) is a branching form: the Team plan routes to company details, the Personal plan to a name step. The page and the server route import the same file.
-- [app/pages/index.vue](app/pages/index.vue) posts values and skipped steps with `$fetch` from `submitHandler` and passes returned errors to `FormRenderer`.
+- [app/pages/index.vue](app/pages/index.vue) posts values and skipped steps with `$fetch` from the awaited `@submit` handler and passes returned errors to `FormRenderer`.
 - [server/api/submit.post.ts](server/api/submit.post.ts) runs `validateSubmission()` on the posted values and skipped steps and returns `422` with field errors.
 - [server/validators.ts](server/validators.ts) holds the server-only `companyAvailable` validator. `validateSubmission()` ignores named validators, so the server route runs it on the returned values.
 

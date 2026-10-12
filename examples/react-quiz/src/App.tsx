@@ -1,12 +1,12 @@
 import { FormRenderer } from '@formhaus/react';
-import type { FormDefinition, StepChangeContext } from '@formhaus/core';
+import { parseDefinition, type StepChangeContext } from '@formhaus/core';
 import { useRef, useState } from 'react';
 import { saveLead } from './api';
 import { EventLog, describeEvent } from './EventLog';
 import { recommendPlan } from './plan';
 import quiz from './quiz.json';
 
-const definition = quiz as FormDefinition;
+const definition = parseDefinition(quiz);
 
 export default function App() {
   const leadId = useRef<string | null>(null);
@@ -16,8 +16,8 @@ export default function App() {
   const [booked, setBooked] = useState(false);
   const plan = recommendPlan(answers);
 
-  async function captureLead({ fromStepId, direction, values }: StepChangeContext) {
-    if (fromStepId !== 'contact' || direction !== 'next') return;
+  async function captureLead({ fromStepId, reason, values }: StepChangeContext) {
+    if (fromStepId !== 'contact' || reason !== 'next') return;
     leadId.current = await saveLead(leadId.current, values);
     setEvents((list) => [...list, `lead_saved · ${leadId.current!.slice(0, 8)}`]);
   }
@@ -46,7 +46,7 @@ export default function App() {
             <FormRenderer
               definition={definition}
               onFieldChange={(_key, _value, values) => setAnswers({ ...values })}
-              onStepChange={setStepId}
+              onAfterStepChange={({ toStepId }) => setStepId(toStepId)}
               onBeforeStepChange={captureLead}
               onAnalyticsEvent={(event) => setEvents((list) => [...list, describeEvent(event)])}
               onSubmit={bookCall}

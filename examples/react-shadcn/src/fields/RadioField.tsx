@@ -3,12 +3,12 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FieldShell } from './FieldShell';
 
-export function RadioField({ field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
+export function RadioField({ id, field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
   return (
-    <FieldShell field={field} error={error} group>
+    <FieldShell id={id} field={field} error={error} group>
       <RadioGroup
-        id={field.key}
-        aria-labelledby={`${field.key}-label`}
+        id={id}
+        aria-labelledby={`${id}-label`}
         value={typeof value === 'string' ? value : null}
         disabled={disabled || loading}
         aria-invalid={!!error}

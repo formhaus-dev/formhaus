@@ -8,7 +8,7 @@ import SwitchField from './fields/SwitchField.vue';
 import TextField from './fields/TextField.vue';
 import TextareaField from './fields/TextareaField.vue';
 
-export const components: Partial<FieldComponentMap> = {
+export const components: FieldComponentMap = {
   text: TextField,
   email: TextField,
   phone: TextField,

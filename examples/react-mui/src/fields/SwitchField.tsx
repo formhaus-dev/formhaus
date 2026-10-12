@@ -4,6 +4,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import Switch from '@mui/material/Switch';
 
 export function SwitchField({
+  id,
   field,
   value,
   error,
@@ -16,7 +17,7 @@ export function SwitchField({
       <FormControlLabel
         control={
           <Switch
-            id={field.key}
+            id={id}
             checked={!!value}
             onChange={(e) => onChange(e.target.checked)}
             disabled={disabled || loading}

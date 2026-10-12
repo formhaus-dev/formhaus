@@ -7,6 +7,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 
 export function RadioField({
+  id,
   field,
   value,
   error,
@@ -16,9 +17,9 @@ export function RadioField({
 }: FieldComponentProps) {
   return (
     <FormControl error={!!error} disabled={disabled || loading} sx={{ mt: 1, mb: 0.5 }}>
-      <FormLabel id={`${field.key}-label`}>{field.label}</FormLabel>
+      <FormLabel id={`${id}-label`}>{field.label}</FormLabel>
       <RadioGroup
-        aria-labelledby={`${field.key}-label`}
+        aria-labelledby={`${id}-label`}
         value={(value as string) ?? ''}
         onChange={(e) => onChange(e.target.value)}
       >

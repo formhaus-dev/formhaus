@@ -1,7 +1,7 @@
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import json from './definition.json';
 
-export const definition = json as FormDefinition;
+export const definition = parseDefinition(json);
 
 export type SubmitResponse =
   | { values: Record<string, unknown> }

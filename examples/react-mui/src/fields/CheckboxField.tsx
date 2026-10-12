@@ -4,6 +4,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 
 export function CheckboxField({
+  id,
   field,
   value,
   error,
@@ -16,7 +17,7 @@ export function CheckboxField({
       <FormControlLabel
         control={
           <Checkbox
-            id={field.key}
+            id={id}
             checked={!!value}
             onChange={(e) => onChange(e.target.checked)}
             disabled={disabled || loading}

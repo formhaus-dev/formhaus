@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import FormHelperText from '@mui/material/FormHelperText';
 
 export function FileField({
+  id,
   field,
   error,
   loading,
@@ -22,7 +23,7 @@ export function FileField({
       <Button variant="outlined" component="label" disabled={disabled || loading}>
         Choose file
         <input
-          id={field.key}
+          id={id}
           type="file"
           accept={field.accept}
           hidden

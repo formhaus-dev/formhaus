@@ -2,6 +2,7 @@ import type { FieldComponentProps } from '@formhaus/react';
 import MuiTextField from '@mui/material/TextField';
 
 export function TextareaField({
+  id,
   field,
   value,
   error,
@@ -11,7 +12,7 @@ export function TextareaField({
 }: FieldComponentProps) {
   return (
     <MuiTextField
-      id={field.key}
+      id={id}
       label={field.label}
       value={(value as string) ?? ''}
       placeholder={field.placeholder}

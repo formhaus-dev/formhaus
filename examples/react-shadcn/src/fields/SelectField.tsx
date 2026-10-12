@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FieldShell } from './FieldShell';
 
-export function SelectField({ field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
+export function SelectField({ id, field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {
   const options = field.options ?? [];
   const [open, setOpen] = useState(false);
 
   return (
-    <FieldShell field={field} error={error}>
+    <FieldShell id={id} field={field} error={error}>
       <Select
         items={options}
         value={typeof value === 'string' && value !== '' ? value : null}
@@ -21,7 +21,7 @@ export function SelectField({ field, value, error, loading, disabled, onChange, 
         onValueChange={(next) => onChange(next ?? '')}
       >
         <SelectTrigger
-          id={field.key}
+          id={id}
           className="w-full"
           aria-invalid={!!error}
           onBlur={() => {

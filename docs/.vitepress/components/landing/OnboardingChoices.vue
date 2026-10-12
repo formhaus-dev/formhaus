@@ -3,8 +3,8 @@ import type { FormField } from '@formhaus/core';
 import LucideIcon from './LucideIcon.vue';
 import { choices, type StartChoice } from './onboarding';
 
-const props = defineProps<{ field: FormField; value?: unknown; error?: string; disabled?: boolean }>();
-const emit = defineEmits<{ 'update:value': [value: unknown]; commit: [value: unknown]; blur: []; focus: [] }>();
+const props = defineProps<{ field: FormField; modelValue?: unknown; error?: string; disabled?: boolean }>();
+const emit = defineEmits<{ 'update:modelValue': [value: unknown]; commit: [value: unknown]; blur: []; focus: [] }>();
 </script>
 
 <template>
@@ -16,9 +16,9 @@ const emit = defineEmits<{ 'update:value': [value: unknown]; commit: [value: unk
         type="radio"
         :name="props.field.key"
         :value="option.value"
-        :checked="props.value === option.value"
+        :checked="props.modelValue === option.value"
         :disabled="props.disabled"
-        @change="emit('update:value', option.value)"
+        @change="emit('update:modelValue', option.value)"
         @click="emit('commit', option.value)"
         @keydown.enter.prevent="emit('commit', option.value)"
         @focus="emit('focus')"

@@ -8,6 +8,7 @@ interface Option {
 }
 
 export function AutocompleteField({
+  id,
   field,
   value,
   error,
@@ -22,7 +23,7 @@ export function AutocompleteField({
 
   return (
     <Autocomplete
-      id={field.key}
+      id={id}
       options={options}
       value={selected}
       getOptionLabel={(opt) => opt.label}

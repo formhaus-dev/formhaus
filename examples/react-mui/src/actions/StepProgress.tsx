@@ -8,6 +8,7 @@ export function StepProgress({
   total,
   stepTitle,
   stepDescription,
+  headingLevel = 2,
 }: FormStepProgressProps) {
   const percent = (current / total) * 100;
 
@@ -18,7 +19,7 @@ export function StepProgress({
         Step {current} of {total}
       </Typography>
       {stepTitle && (
-        <Typography variant="h6" sx={{ mt: 0.5 }}>
+        <Typography variant="h6" component={`h${headingLevel}`} sx={{ mt: 0.5 }}>
           {stepTitle}
         </Typography>
       )}

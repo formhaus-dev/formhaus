@@ -31,26 +31,23 @@
     sync();
   }
 
-  function handleNext() {
-    engine.nextStep();
+  async function handleNext() {
+    await engine.next();
     sync();
   }
 
-  function handleBack() {
-    engine.prevStep();
+  async function handleBack() {
+    await engine.back();
     sync();
   }
 
-  function handleSubmit() {
+  async function handleSubmit() {
     if (isMultiStep && !isLastStep) {
-      handleNext();
+      await handleNext();
       return;
     }
-    const result = engine.validate();
+    await engine.submit((submitted) => console.log("Submitted:", submitted));
     sync();
-    if (Object.keys(result).length === 0) {
-      console.log("Submitted:", engine.getSubmitValues());
-    }
   }
 </script>
 
@@ -101,7 +98,7 @@
           type={field.type === 'email' ? 'email' : field.type === 'password' ? 'password' : field.type === 'number' ? 'number' : field.type === 'date' ? 'date' : field.type === 'datetime' ? 'datetime-local' : 'text'}
           placeholder={field.placeholder ?? ''}
           value={values[field.key] ?? ''}
-          on:input={e => handleFieldChange(field.key, e.target.value)}
+          on:input={e => handleFieldChange(field.key, field.type === 'number' && e.target.value !== '' ? Number(e.target.value) : e.target.value)}
         />
       {/if}
       {#if field.helperText && !errors[field.key]}
