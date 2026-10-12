@@ -7,11 +7,19 @@ const backup = (title: string, revision: number, at: string) => ({ definition: f
 
 describe('worthRestoring', () => {
   it('skips a backup that matches the loaded draft', () => {
-    expect(worthRestoring(backup('Same', 3, '2026-10-12T10:05:00Z'), { definition: form('Same'), revision: 3, savedAt: '2026-10-12T10:00:00Z' })).toBe(false);
+    expect(
+      worthRestoring(backup('Same', 3, '2026-10-12T10:05:00Z'), { definition: form('Same'), revision: 3, savedAt: '2026-10-12T10:00:00Z' }),
+    ).toBe(false);
   });
 
   it('offers a backup made on top of the loaded revision', () => {
-    expect(worthRestoring(backup('Mine', 3, '2026-10-12T09:00:00Z'), { definition: form('Saved'), revision: 3, savedAt: '2026-10-12T10:00:00Z' })).toBe(true);
+    expect(
+      worthRestoring(backup('Mine', 3, '2026-10-12T09:00:00Z'), {
+        definition: form('Saved'),
+        revision: 3,
+        savedAt: '2026-10-12T10:00:00Z',
+      }),
+    ).toBe(true);
   });
 
   it('offers a backup of a form that was never saved', () => {

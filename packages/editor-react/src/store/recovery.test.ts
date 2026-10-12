@@ -72,12 +72,23 @@ describe('createRecovery', () => {
         };
       });
     const autosave = createAutosave(store, { adapter: { save }, revision: 0, load: loader(null) });
-    createRecovery({ store, autosave, slot: { key: () => 'backup', mirror: true }, revision: 0, savedAt: null, load: loader(null) }).start();
+    createRecovery({
+      store,
+      autosave,
+      slot: { key: () => 'backup', mirror: true },
+      revision: 0,
+      savedAt: null,
+      load: loader(null),
+    }).start();
     autosave.start();
     const uid = store.getState().form.blocks[0]?.uid ?? '';
-    store.update((form) => setLabel(form, uid, 'A'));
+    store.update((form) => {
+      setLabel(form, uid, 'A');
+    });
     const first = autosave.flush();
-    store.update((form) => setLabel(form, uid, 'AB'));
+    store.update((form) => {
+      setLabel(form, uid, 'AB');
+    });
     release();
     await first;
     expect(label('backup')).toBe('AB');
@@ -110,8 +121,19 @@ describe('restore offer', () => {
     const definition = { ...toDefinition(form), title: 'Recovered' };
     writeBackup('backup', { definition, revision: 0, at: new Date().toISOString() });
     const store = createEditorStore(form);
-    const autosave = createAutosave(store, { adapter: { save: (d, r) => Promise.resolve(saved(d, r + 1)) }, revision: 0, load: loader(null) });
-    const recovery = createRecovery({ store, autosave, slot: { key: () => 'backup', mirror: true }, revision: 0, savedAt: null, load: loader(null) });
+    const autosave = createAutosave(store, {
+      adapter: { save: (d, r) => Promise.resolve(saved(d, r + 1)) },
+      revision: 0,
+      load: loader(null),
+    });
+    const recovery = createRecovery({
+      store,
+      autosave,
+      slot: { key: () => 'backup', mirror: true },
+      revision: 0,
+      savedAt: null,
+      load: loader(null),
+    });
     recovery.start();
     return { store, recovery };
   }
@@ -141,8 +163,19 @@ describe('restore offer', () => {
   it('drops a copy that matches what loaded', () => {
     writeBackup('backup', { definition: toDefinition(blankForm()), revision: 0, at: new Date().toISOString() });
     const store = createEditorStore(blankForm());
-    const autosave = createAutosave(store, { adapter: { save: (d, r) => Promise.resolve(saved(d, r + 1)) }, revision: 0, load: loader(null) });
-    const recovery = createRecovery({ store, autosave, slot: { key: () => 'backup', mirror: true }, revision: 0, savedAt: null, load: loader(null) });
+    const autosave = createAutosave(store, {
+      adapter: { save: (d, r) => Promise.resolve(saved(d, r + 1)) },
+      revision: 0,
+      load: loader(null),
+    });
+    const recovery = createRecovery({
+      store,
+      autosave,
+      slot: { key: () => 'backup', mirror: true },
+      revision: 0,
+      savedAt: null,
+      load: loader(null),
+    });
     expect(recovery.offer()).toBeNull();
     expect(readBackup('backup')).toBeNull();
   });

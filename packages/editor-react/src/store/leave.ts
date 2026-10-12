@@ -21,7 +21,7 @@ export async function settleChanges(timeout = 4000): Promise<boolean> {
   const late = new Promise<void>((resolve) => {
     timer = setTimeout(resolve, timeout);
   });
-  await Promise.race([Promise.all([...sessions].map((handle) => handle.autosave?.flush())), late]);
+  await Promise.race([Promise.all([...sessions].map((handle) => handle.autosave?.flush() ?? Promise.resolve())), late]);
   clearTimeout(timer);
   return !hasUnsavedChanges();
 }

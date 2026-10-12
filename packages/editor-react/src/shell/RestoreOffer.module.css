@@ -20,7 +20,7 @@
 }
 
 .text {
-  flex: 1 1 14rem;
+  flex: 1 1 calc(var(--fh-ed-space-10) * 5);
   min-width: 0;
   margin: 0;
 }

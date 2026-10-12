@@ -18,7 +18,9 @@ function createSession({ host, initial, published }: SessionOptions): EditorHand
   const store = createEditorStore(initial.form, { readOnly: host.readOnly });
   if (initial.savedAt && initial.revision > 0) store.setSave({ status: 'saved', savedAt: new Date(initial.savedAt) });
   const load = loader(published);
-  const autosave = host.readOnly ? null : createAutosave(store, { adapter: host, revision: initial.revision, load, baseline: baselineOf(published) });
+  const autosave = host.readOnly
+    ? null
+    : createAutosave(store, { adapter: host, revision: initial.revision, load, baseline: baselineOf(published) });
   const recovery =
     autosave && host.backup
       ? createRecovery({ store, autosave, slot: host.backup, revision: initial.revision, savedAt: initial.savedAt, load })

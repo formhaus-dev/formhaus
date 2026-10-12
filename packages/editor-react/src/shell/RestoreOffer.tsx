@@ -7,7 +7,7 @@ import styles from './RestoreOffer.module.css';
 const clock = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
 const dated = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 
-export function restoreTime(iso: string, now: Date = new Date()): string {
+function restoreTime(iso: string, now: Date = new Date()): string {
   const at = new Date(iso);
   return (at.toDateString() === now.toDateString() ? clock : dated).format(at);
 }
