@@ -20,4 +20,5 @@
 
 .dark {
   color-scheme: dark;
+  --fh-ed-accent: var(--vp-c-brand-2);
 }

@@ -9,6 +9,16 @@
   display: none;
 }
 
+.sandbox__pane--write {
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+}
+
+.sandbox :deep(.frame__bar--aside) {
+  padding-left: 24px;
+}
+
 .sandbox__pane--preview {
   display: flex;
   flex-direction: column;
@@ -21,7 +31,7 @@
   min-height: 0;
   overflow: auto;
   overscroll-behavior: contain;
-  padding: 24px 32px;
+  padding: 24px;
 }
 
 .sandbox__preview :deep(.fh-step-progress__counter) {
@@ -37,14 +47,15 @@
 @media (max-width: 767px) {
   .sandbox :deep(.frame__bar--aside),
   .sandbox__text,
-  .sandbox__actions,
+  .sandbox__actions::before,
   .sandbox__tab[data-tab='write'],
   .sandbox__pane--write {
     display: none;
   }
 
-  .sandbox__pane--json {
-    height: 480px;
+  .sandbox[data-tab='json'] {
+    grid-template-rows: auto minmax(0, 1fr);
+    height: min(600px, 70vh);
   }
 
   .sandbox[data-tab='json'] :deep(.frame__aside),

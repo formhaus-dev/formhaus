@@ -3,14 +3,9 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: auto;
+  margin-top: 0;
 }
 
-@media (max-width: 767px) {
-  .demo-form .fh-form-actions {
-    margin-top: 0;
-  }
-}
 
 .demo-form .fh-form-actions__button,
 .demo-form .demo-form__restart {

@@ -1,4 +1,5 @@
 import { readdir, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { createRequire } from 'node:module';
 import { basename, dirname, join } from 'node:path';
 import { transform } from 'esbuild';
 import { defineConfig, type Options } from 'tsup';
@@ -22,8 +23,11 @@ const prefixed: Plugin = {
 async function minifyMount() {
   const files = await readdir('dist');
   const chunks = files.filter((file) => file.endsWith('.css') && !['mount.css', 'style.css', 'index.css'].includes(file));
-  const css = [await readFile('dist/mount.css', 'utf8'), ...(await Promise.all(chunks.map((file) => readFile(`dist/${file}`, 'utf8'))))];
-  await writeFile('dist/mount.css', (await transform(css.join('\n'), { loader: 'css', minify: true })).code);
+  const core = await readFile(createRequire(import.meta.url).resolve('@formhaus/core/style.css'), 'utf8');
+  const preview = [core, ...(await Promise.all(chunks.map((file) => readFile(`dist/${file}`, 'utf8'))))];
+  const minify = async (css: string) => (await transform(css, { loader: 'css', minify: true })).code;
+  await writeFile('dist/mount.css', await minify(await readFile('dist/mount.css', 'utf8')));
+  await writeFile('dist/preview.css', await minify(preview.join('\n')));
   await Promise.all(chunks.map((file) => rm(`dist/${file}`)));
   for (const file of files.filter((name) => name.endsWith('.js') && name !== 'index.js')) {
     const code = await readFile(`dist/${file}`, 'utf8');

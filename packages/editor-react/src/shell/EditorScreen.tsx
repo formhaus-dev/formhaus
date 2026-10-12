@@ -9,9 +9,10 @@ import styles from './EditorShell.module.css';
 interface Props {
   host: EditorHost;
   mode?: EditorMode;
+  compact?: boolean;
 }
 
-export function EditorScreen({ host, mode }: Props) {
+export function EditorScreen({ host, mode, compact = false }: Props) {
   const source = useEditorSource(host);
   if (source.status === 'error') {
     return (
@@ -33,10 +34,10 @@ export function EditorScreen({ host, mode }: Props) {
       </div>
     );
   }
-  return <Session host={host} initial={source.initial} published={source.published} {...(mode ? { mode } : {})} />;
+  return <Session host={host} initial={source.initial} published={source.published} compact={compact} {...(mode ? { mode } : {})} />;
 }
 
-function Session({ host, initial, published, mode }: Props & { initial: InitialEditor; published: Published | null }) {
+function Session({ host, initial, published, mode, compact }: Props & { initial: InitialEditor; published: Published | null }) {
   const handle = useEditorSession({ host, initial, published });
-  return <EditorView handle={handle} stale={initial.stale} {...(mode ? { mode } : {})} />;
+  return <EditorView handle={handle} stale={initial.stale} compact={!!compact} {...(mode ? { mode } : {})} />;
 }

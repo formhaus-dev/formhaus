@@ -15,7 +15,6 @@ export default defineConfig({
     plugins: [llms, templateFiles()],
     resolve: {
       alias: {
-        '@formhaus/builder': fileURLToPath(new URL('../../packages/builder/src/index.ts', import.meta.url)),
         '@formhaus/editor-react': fileURLToPath(new URL('../../packages/editor-react/dist', import.meta.url))
       },
       dedupe: ['@formhaus/core', 'vue']
