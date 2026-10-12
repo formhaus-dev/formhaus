@@ -21,7 +21,7 @@ const prefixed: Plugin = {
 
 async function minifyMount() {
   const files = await readdir('dist');
-  const chunks = files.filter((file) => file.endsWith('.css') && file !== 'mount.css' && file !== 'style.css');
+  const chunks = files.filter((file) => file.endsWith('.css') && !['mount.css', 'style.css', 'index.css'].includes(file));
   const css = [await readFile('dist/mount.css', 'utf8'), ...(await Promise.all(chunks.map((file) => readFile(`dist/${file}`, 'utf8'))))];
   await writeFile('dist/mount.css', (await transform(css.join('\n'), { loader: 'css', minify: true })).code);
   await Promise.all(chunks.map((file) => rm(`dist/${file}`)));

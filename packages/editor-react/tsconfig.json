@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "types": ["@testing-library/jest-dom/vitest"]
+    "types": []
   },
   "include": ["src", "tsup.config.ts", "vitest.config.ts"]
 }

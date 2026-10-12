@@ -28,6 +28,6 @@ export { Stack } from './components/Stack/Stack';
 export { Switch } from './components/Switch/Switch';
 export { Text } from './components/Text/Text';
 export { TextLink } from './components/TextLink/TextLink';
-export { Tooltip } from './components/Tooltip/Tooltip';
+export { Tooltip, TooltipProvider } from './components/Tooltip/Tooltip';
 export { LinkProvider } from './components/AppLink/AppLink';
 export { cx } from './lib/cx';
