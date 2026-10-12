@@ -19,7 +19,6 @@ describe('validateStep', () => {
       ],
     };
 
-    // Country is not MX, so clabe is hidden and not validated
     const errors = validateStep(step, { country: 'US' });
     expect(errors).toEqual({ name: 'This field is required' });
     expect(errors.clabe).toBeUndefined();

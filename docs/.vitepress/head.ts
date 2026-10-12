@@ -18,7 +18,7 @@ export const head: HeadConfig[] = [
 ]
 
 function jsonLd(data: object): HeadConfig {
-  return ['script', { type: 'application/ld+json' }, JSON.stringify(data)]
+  return ['script', { type: 'application/ld+json' }, JSON.stringify(data).replace(/</g, '\\u003c')]
 }
 
 function isArticle(relativePath: string): boolean {
