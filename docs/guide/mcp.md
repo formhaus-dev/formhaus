@@ -1,5 +1,6 @@
 ---
-description: "Check Formhaus definitions from Claude Code, Claude Desktop or Cursor with validate_definition, simulate_path, capabilities, example_definitions and publish_form."
+title: "MCP server"
+description: "Check Formhaus definitions from Claude Code, Claude Desktop or Cursor with validate_definition, simulate_path, example_definitions and publish_form."
 ---
 
 # MCP Server

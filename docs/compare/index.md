@@ -1,5 +1,5 @@
 ---
-title: "Compare Formhaus with other form libraries"
+title: "Compare form libraries"
 description: "How Formhaus compares with react-hook-form, TanStack Form, react-jsonschema-form and SurveyJS, with sources, bundle sizes and migration examples."
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Terms of Service
-description: The contract for using Formhaus Cloud, the hosted form backend operated by Fabrique-Futur LLC.
+description: "Terms of Service for Formhaus Cloud, the hosted form backend operated by Fabrique-Futur LLC: accounts, plans and fees, acceptable use and liability."
 sidebar: false
 pageClass: lp-page
 ---

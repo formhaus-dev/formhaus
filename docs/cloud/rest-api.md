@@ -1,5 +1,5 @@
 ---
-title: "REST API"
+title: "Cloud REST API"
 description: "Formhaus Cloud REST API reference: publish forms, list forms, read submissions as JSON or CSV, update settings, read and test webhooks."
 ---
 

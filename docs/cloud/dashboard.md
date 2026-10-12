@@ -1,5 +1,5 @@
 ---
-title: "Dashboard"
+title: "Cloud dashboard"
 description: "Formhaus Cloud dashboard pages: forms, responses, form settings, webhooks, New from JSON, API keys, usage, members, account, claim and invite links."
 ---
 

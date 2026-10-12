@@ -1,6 +1,6 @@
 ---
-title: "Formhaus Cloud: a form backend for apps built with AI"
-description: "Formhaus Cloud gives an AI agent one MCP call to publish a form and get a validated submission endpoint, a hosted link and an embed. Free, Pro and Team plans, EU-hosted."
+title: "Cloud: hosted form backend"
+description: "Formhaus Cloud gives an AI agent one MCP call to publish a form and get a submission endpoint, a hosted link and an embed. Free, Pro and Team plans."
 pageClass: lp-page
 sidebar: false
 ---

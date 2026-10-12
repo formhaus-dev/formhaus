@@ -1,6 +1,6 @@
 ---
 title: Legal
-description: Terms of Service, Privacy Policy, Data Processing Addendum and sub-processor list for Formhaus Cloud.
+description: "Legal documents for Formhaus Cloud: Terms of Service, Privacy Policy, Data Processing Addendum and sub-processors, operated by Fabrique-Futur LLC in Wyoming."
 sidebar: false
 pageClass: lp-page
 ---
