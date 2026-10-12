@@ -5,7 +5,6 @@
   height: var(--fh-ed-size-avatar-sm);
   padding: 0 var(--fh-ed-space-1-5);
   border: var(--fh-ed-border-thin) solid var(--fh-ed-line-strong);
-  border-bottom-width: var(--fh-ed-border-focus);
   border-radius: var(--fh-ed-radius-sm);
   background: var(--fh-ed-panel);
   color: var(--fh-ed-fg-muted);
