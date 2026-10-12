@@ -7,7 +7,7 @@ export const FIELD_TYPES = [
 
 export const OPTION_FIELD_TYPES = ['select', 'autocomplete', 'multiselect', 'radio'] as const satisfies readonly DefaultFieldType[];
 
-export const CONDITION_OPERATORS = ['eq', 'neq', 'in', 'notIn', 'notEmpty'] as const satisfies readonly (keyof ShowCondition)[];
+export const CONDITION_OPERATORS = ['eq', 'neq', 'in', 'notIn', 'notEmpty', 'gt', 'gte', 'lt', 'lte'] as const satisfies readonly (keyof ShowCondition)[];
 
 export const VALIDATION_RULES = [
   'required', 'minLength', 'maxLength', 'min', 'max', 'pattern', 'matchField', 'validator',

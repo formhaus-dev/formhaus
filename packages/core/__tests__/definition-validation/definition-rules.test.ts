@@ -16,7 +16,7 @@ describe('condition rules', () => {
 
   it('rejects an unknown operator and suggests a known one', () => {
     const issues = checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', equals: 'x' } as never] })]));
-    expect(issues.map((issue) => issue.message)).toEqual(['/fields/1/show/0/equals: "equals" is not a condition operator. Use one of: "eq", "neq", "in", "notIn", "notEmpty".']);
+    expect(issues.map((issue) => issue.message)).toEqual(['/fields/1/show/0/equals: "equals" is not a condition operator. Use one of: "eq", "neq", "in", "notIn", "notEmpty", "gt", "gte", "lt", "lte".']);
     expect(checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', eg: 'x' } as never] })]))[0].hint).toBe('Use "eq".');
   });
 
@@ -122,5 +122,24 @@ describe('field rules', () => {
     expect(checkDefinition(definition)).toEqual([]);
     expect(checkDefinition(definition, { validators: {} }).map((issue) => issue.code)).toEqual(['unknown-validator']);
     expect(checkDefinition(definition, { validators: { luhn: () => null } })).toEqual([]);
+  });
+});
+
+describe('comparison rules', () => {
+  it('accepts comparisons on numbers and numeric radio options', () => {
+    const score = field('score', { type: 'radio', options: [{ value: '0', label: '0' }, { value: '10', label: '10' }] });
+    expect(checkDefinition(form([score, field('why', { show: [{ field: 'score', lte: 6 }] }), field('count', { type: 'number', show: [{ field: 'score', gt: 1 }] })]))).toEqual([]);
+  });
+
+  it('rejects a non-number operand', () => {
+    const fields = [field('count', { type: 'number' }), field('x', { show: [{ field: 'count', gte: '5' as never }] })];
+    expect(checkDefinition(form(fields)).map((issue) => issue.message)).toEqual(['/fields/1/show/0/gte: "gte" must be a number.']);
+  });
+
+  it('warns about a comparison on a list or boolean field', () => {
+    const fields = [field('agree', { type: 'checkbox' }), field('x', { show: [{ field: 'agree', gt: 0 }] })];
+    expect(checkDefinition(form(fields)).map((issue) => issue.message)).toEqual([
+      '/fields/1/show/0/gt: "agree" is a checkbox field, so "gt" never matches it. Compare a number, text, radio or select field.',
+    ]);
   });
 });

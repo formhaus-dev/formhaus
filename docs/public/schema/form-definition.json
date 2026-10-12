@@ -126,13 +126,29 @@
         "notEmpty": {
           "type": "boolean",
           "description": "Matches when the value is not undefined, null, an empty string or an empty array."
+        },
+        "gt": {
+          "type": "number",
+          "description": "Matches when the value is a number, or a numeric string, greater than this."
+        },
+        "gte": {
+          "type": "number",
+          "description": "Matches when the value is a number, or a numeric string, greater than or equal to this."
+        },
+        "lt": {
+          "type": "number",
+          "description": "Matches when the value is a number, or a numeric string, less than this."
+        },
+        "lte": {
+          "type": "number",
+          "description": "Matches when the value is a number, or a numeric string, less than or equal to this."
         }
       },
       "required": [
         "field"
       ],
       "additionalProperties": false,
-      "description": "A condition on another field value. Use exactly one operator: eq, neq, in, notIn or notEmpty.",
+      "description": "A condition on another field value. Use exactly one operator: eq, neq, in, notIn, notEmpty, gt, gte, lt or lte.",
       "minProperties": 2,
       "maxProperties": 2
     },

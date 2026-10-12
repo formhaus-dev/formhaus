@@ -26,6 +26,39 @@ Hidden fields are not validated and not included in submit values.
 | In list | `in` | Value is one of the listed values |
 | Not in list | `notIn` | Value is not in the list |
 | Not empty | `notEmpty` | Value is not null, undefined, empty string, or empty array |
+| Greater than | `gt` | Value is a number greater than the given number |
+| At least | `gte` | Value is a number greater than or equal to the given number |
+| Less than | `lt` | Value is a number less than the given number |
+| At most | `lte` | Value is a number less than or equal to the given number |
+
+Each condition uses exactly one operator. A condition with no operator or with two is a definition error.
+
+`gt`, `gte`, `lt` and `lte` take a number. They also compare a numeric string, such as the `value` of a radio option `"9"`. Any other value, including an empty one, does not match.
+
+## Example: NPS follow-up
+
+Ask detractors what went wrong and promoters what they liked:
+
+```json
+{
+  "fields": [
+    {
+      "key": "score",
+      "type": "radio",
+      "label": "How likely are you to recommend us?",
+      "layout": "inline",
+      "options": [
+        { "value": "0", "label": "0" }, { "value": "1", "label": "1" }, { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" }, { "value": "4", "label": "4" }, { "value": "5", "label": "5" },
+        { "value": "6", "label": "6" }, { "value": "7", "label": "7" }, { "value": "8", "label": "8" },
+        { "value": "9", "label": "9" }, { "value": "10", "label": "10" }
+      ]
+    },
+    { "key": "problem", "type": "textarea", "label": "What went wrong?", "show": [{ "field": "score", "lte": 6 }] },
+    { "key": "favorite", "type": "textarea", "label": "What did you like most?", "show": [{ "field": "score", "gte": 9 }] }
+  ]
+}
+```
 
 ## Example: show field when select changes
 

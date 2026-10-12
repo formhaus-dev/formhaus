@@ -100,10 +100,16 @@ A condition tests the value of one field:
 | `in` | (string or number)[] | the list contains the value |
 | `notIn` | (string or number)[] | the list does not contain the value |
 | `notEmpty` | boolean | `true`: the value is not empty |
+| `gt` | number | the numeric value `>` `gt` |
+| `gte` | number | the numeric value `>=` `gte` |
+| `lt` | number | the numeric value `<` `lt` |
+| `lte` | number | the numeric value `<=` `lte` |
 
 A condition MUST use exactly one operator. The constructor throws on a condition with no operator, with several operators, or with a key that is not an operator. At runtime, a condition without a known operator never matches. `notEmpty: false` always matches.
 
 Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
+
+For `gt`, `gte`, `lt` and `lte`, the numeric value is the value itself when it is a finite number, or `Number(value)` when it is a non-empty string that converts to a finite number. Any other value, including an empty one, does not match.
 
 ### Combining conditions
 

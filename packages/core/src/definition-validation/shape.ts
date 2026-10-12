@@ -35,7 +35,7 @@ function text(value: Entry, key: string, path: string): DefinitionIssue[] {
   return typeof value[key] === 'string' ? [] : [error('missing-property', `${path}/${key}`, `"${key}" must be a string`)];
 }
 
-const condition: Check = (value, path) => typed(value, { field: 'string', eq: 'scalar', neq: 'scalar', in: 'list', notIn: 'list', notEmpty: 'boolean' }, path);
+const condition: Check = (value, path) => typed(value, { field: 'string', eq: 'scalar', neq: 'scalar', in: 'list', notIn: 'list', notEmpty: 'boolean', gt: 'number', gte: 'number', lt: 'number', lte: 'number' }, path);
 
 function conditions(value: Entry, path: string): DefinitionIssue[] {
   return [

@@ -31,13 +31,17 @@ export const DESCRIPTIONS = {
   'StepRoute.to': 'Id of a later step. null makes the current step the last one on this path.',
   'StepRoute.show': 'Route matches only when all conditions match. Without show or showAny the route always matches.',
   'StepRoute.showAny': 'Route matches when any condition matches.',
-  ShowCondition: 'A condition on another field value. Use exactly one operator: eq, neq, in, notIn or notEmpty.',
+  ShowCondition: 'A condition on another field value. Use exactly one operator: eq, neq, in, notIn, notEmpty, gt, gte, lt or lte.',
   'ShowCondition.field': 'Key of the field to check.',
   'ShowCondition.eq': 'Matches when the value strictly equals this.',
   'ShowCondition.neq': 'Matches when the value does not strictly equal this.',
   'ShowCondition.in': 'Matches when the value is one of these.',
   'ShowCondition.notIn': 'Matches when the value is none of these.',
   'ShowCondition.notEmpty': 'Matches when the value is not undefined, null, an empty string or an empty array.',
+  'ShowCondition.gt': 'Matches when the value is a number, or a numeric string, greater than this.',
+  'ShowCondition.gte': 'Matches when the value is a number, or a numeric string, greater than or equal to this.',
+  'ShowCondition.lt': 'Matches when the value is a number, or a numeric string, less than this.',
+  'ShowCondition.lte': 'Matches when the value is a number, or a numeric string, less than or equal to this.',
 };
 
 export function applyDescriptions(definitions) {

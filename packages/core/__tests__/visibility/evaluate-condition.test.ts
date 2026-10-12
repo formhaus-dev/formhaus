@@ -76,3 +76,20 @@ describe('evaluateCondition', () => {
     expect(evaluateCondition({ field: 'missing', eq: 'MX' }, {})).toBe(false);
   });
 });
+
+describe('comparison operators', () => {
+  it.each([
+    [{ gt: 5 }, [6, '6', '5.5'], [5, '5', 4]],
+    [{ gte: 9 }, [9, '9', 10], [8, '8.99']],
+    [{ lt: 7 }, [6, '0', -1], [7, '7']],
+    [{ lte: 6 }, [6, '-0.5'], [6.01, '7']],
+  ])('%j compares numbers and numeric strings', (operator, matching, failing) => {
+    for (const value of matching) expect(evaluateCondition({ field: 'x', ...operator }, { x: value })).toBe(true);
+    for (const value of failing) expect(evaluateCondition({ field: 'x', ...operator }, { x: value })).toBe(false);
+  });
+
+  it.each([undefined, null, '', ' ', 'abc', true, [], [9], NaN, Infinity])('never matches %j', (value) => {
+    expect(evaluateCondition({ field: 'x', gte: 0 }, { x: value })).toBe(false);
+    expect(evaluateCondition({ field: 'x', lt: 1e9 }, { x: value })).toBe(false);
+  });
+});
