@@ -209,7 +209,7 @@ Changing a value the pending check already received, changing the active path, o
 
 `next()`, `back()`, `skip()` and `submit(handler)` run the lifecycle hooks. `goToStepWithField()`, error redirection and `reset()` do not call the hooks and can invalidate pending navigation.
 
-Vue uses `:on-before-step-change`, `:on-after-step-change`, `:on-before-submit`, `:on-after-submit` and `:on-error` callback props. `@submit="save"` is awaited: the form stays busy until `save(values, skippedSteps)` resolves.
+Vue uses `:on-before-step-change`, `:on-after-step-change`, `:on-before-submit`, `:on-after-submit` and `:on-error` callback props. `@submit="save"` is awaited: the form stays busy until `save(values, skippedSteps)` resolves. Pass a function reference, not an inline call such as `save($event)`, and do not use the `.once` modifier.
 
 ### Vue lifecycle example
 

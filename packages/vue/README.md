@@ -26,7 +26,7 @@ async function handleSubmit(values: Record<string, unknown>) {
 </script>
 
 <template>
-  <FormRenderer :definition="definition" :submit-handler="handleSubmit" />
+  <FormRenderer :definition="definition" @submit="handleSubmit" />
 </template>
 ```
 

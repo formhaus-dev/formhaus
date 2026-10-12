@@ -15,7 +15,7 @@ const components = computed(() => withDefaultFields(props.components));
     v-bind="props"
     :components="components"
     @update:model-value="(v: unknown) => emit('update:modelValue', v)"
-    @commit="(v: unknown) => emit('commit', v)"
+    @commit="(v: unknown) => { emit('commit', v); emit('update:modelValue', v); }"
     @blur="emit('blur')"
     @focus="emit('focus')"
   />

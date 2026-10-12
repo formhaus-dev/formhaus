@@ -4,7 +4,7 @@ import { gzipSync } from 'node:zlib';
 
 const BUDGETS = {
   core: 10450,
-  react: 5350,
+  react: 5450,
   vue: 7100,
   'core/cloud': 3000,
   'react/cloud': 1100,

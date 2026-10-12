@@ -7,7 +7,7 @@ import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false });
+const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2 });
 
 const emit = defineEmits<FormRendererEmits>();
 
@@ -31,7 +31,7 @@ const engineOptions: FormEngineOptions = {
   },
 };
 
-const form = useFormEngine(() => props.definition, props.initialValues, engineOptions);
+const form = useFormEngine(() => props.definition, () => props.initialValues, engineOptions);
 const {
   values,
   errors,

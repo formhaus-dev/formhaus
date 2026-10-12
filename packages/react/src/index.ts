@@ -2,6 +2,7 @@ export { FormRenderer } from './FormRenderer';
 export { HeadlessFormRenderer } from './HeadlessFormRenderer';
 export { FormActions } from './FormActions';
 export { FormhausField } from './FormhausField';
+export type { FieldResolverProps as FormhausFieldProps } from './FieldResolver';
 export { defaultFieldComponents } from './defaultFieldComponents';
 export { AutocompleteField } from './fields/AutocompleteField';
 export { CheckboxField } from './fields/CheckboxField';
