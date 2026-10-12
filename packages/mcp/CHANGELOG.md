@@ -1,5 +1,12 @@
 # @formhaus/mcp
 
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies [2d103ac]
+  - @formhaus/core@0.11.1
+
 ## 0.3.0
 
 ### Minor Changes
