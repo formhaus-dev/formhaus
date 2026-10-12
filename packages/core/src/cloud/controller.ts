@@ -54,7 +54,12 @@ function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
 
 export function createCloudController(options: CloudControllerOptions, callbacks: CloudCallbacks) {
   const controller = new AbortController();
-  const submitterFor = (form: PublishedForm) => createSubmitter({ ...options, version: form.version, renderToken: form.renderToken });
+  let firstRenderToken: string | undefined;
+  const submitterFor = (form: PublishedForm) => {
+    firstRenderToken ??= form.renderToken;
+    const first = firstRenderToken === form.renderToken ? undefined : firstRenderToken;
+    return createSubmitter({ ...options, version: form.version, renderToken: form.renderToken, firstRenderToken: first });
+  };
   let submitter = createSubmitter(options);
   let initial = options.initialForm;
   const alive = () => !controller.signal.aborted;

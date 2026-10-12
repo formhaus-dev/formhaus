@@ -54,6 +54,7 @@ export async function fetchDefinition(options: CloudClientOptions, signal?: Abor
 export interface CloudSubmitterOptions extends CloudClientOptions {
   version?: number;
   renderToken?: string;
+  firstRenderToken?: string;
   extraBody?: () => Record<string, unknown>;
 }
 
@@ -61,7 +62,7 @@ export function createSubmitter(options: CloudSubmitterOptions) {
   let pending: { body: string; key: string } | null = null;
 
   return async (values: Record<string, unknown>, skippedSteps: string[] = []): Promise<CloudSubmission> => {
-    const body = JSON.stringify({ ...options.extraBody?.(), values, skippedSteps, version: options.version, _fh_rt: options.renderToken });
+    const body = JSON.stringify({ ...options.extraBody?.(), values, skippedSteps, version: options.version, _fh_rt: options.renderToken, ...(options.firstRenderToken && { _fh_rt_first: options.firstRenderToken }) });
     if (pending?.body !== body) pending = { body, key: randomId() };
     const response = await send(`${endpoint(options)}?${CORE}`, SUBMIT_TIMEOUT, {
       method: 'POST',
