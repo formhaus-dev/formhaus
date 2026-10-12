@@ -1,6 +1,8 @@
 ---
 title: "Playground"
 description: "Edit a Formhaus form definition in the browser and see it render live in React, Vue and Svelte, with validation and multi-step navigation."
+pageClass: lp-page
+sidebar: false
 ---
 
 # Playground
