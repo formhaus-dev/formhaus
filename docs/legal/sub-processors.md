@@ -6,11 +6,7 @@ sidebar: false
 
 # Formhaus Cloud Sub-processors
 
-::: warning Draft, pending legal review
-This document is a draft and is not in effect. It will be reviewed by a lawyer before Formhaus Cloud launches.
-:::
-
-**Effective date: [EFFECTIVE DATE]**
+**Effective date: October 12, 2026**
 
 This page lists the third parties that **Fabrique-Futur LLC** uses to run **Formhaus Cloud**. It is part of our [Data Processing Addendum](./dpa.md) and supports our [Privacy Policy](./privacy.md). We give at least 15 days' notice by email before a new Sub-processor starts processing Customer Data, as described in the DPA.
 

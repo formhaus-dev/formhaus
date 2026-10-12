@@ -6,11 +6,7 @@ sidebar: false
 
 # Formhaus Cloud Privacy Policy
 
-::: warning Draft, pending legal review
-This document is a draft and is not in effect. It will be reviewed by a lawyer before Formhaus Cloud launches.
-:::
-
-**Effective date: [EFFECTIVE DATE]**
+**Effective date: October 12, 2026**
 
 This Privacy Policy explains how **Fabrique-Futur LLC**, a Wyoming limited liability company ("**Fabrique-Futur**," "**we**," "**us**," "**our**"), handles personal data in **Formhaus Cloud** (the "**Service**"): the hosted form backend at api.formhaus.dev, app.formhaus.dev and f.formhaus.dev, and the website at formhaus.dev.
 

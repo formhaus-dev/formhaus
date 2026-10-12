@@ -6,11 +6,7 @@ sidebar: false
 
 # Formhaus Cloud Data Processing Addendum
 
-::: warning Draft, pending legal review
-This document is a draft and is not in effect. It will be reviewed by a lawyer before Formhaus Cloud launches.
-:::
-
-**Effective date: [EFFECTIVE DATE]**
+**Effective date: October 12, 2026**
 
 This Data Processing Addendum ("**DPA**") is part of the [Terms of Service](./terms.md) or other written agreement (the "**Agreement**") between **Fabrique-Futur LLC**, a Wyoming limited liability company ("**Fabrique-Futur**," "**we**," "**Processor**"), and the customer that accepts the Agreement ("**Customer**," "**Controller**," "**you**"). It governs the processing of Personal Data in **Formhaus Cloud** (the "**Service**").
 
