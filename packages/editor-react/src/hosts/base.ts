@@ -8,6 +8,8 @@ export interface HostOptions {
   notify?: (notice: Notice) => void;
   onTitle?: (title: string | null) => void;
   onChange?: (definition: FormDefinition) => void;
+  definition?: FormDefinition;
+  savedHint?: string;
 }
 
 export const savedDraft = (definition: FormDefinition, revision: number): SavedDraft => ({
@@ -18,7 +20,7 @@ export const savedDraft = (definition: FormDefinition, revision: number): SavedD
   savedBy: '',
 });
 
-export function baseHost({ Preview, notify = () => undefined, onTitle }: Omit<HostOptions, 'onChange'>) {
+export function baseHost({ Preview, notify = () => undefined, onTitle, savedHint }: Omit<HostOptions, 'onChange' | 'definition'>) {
   return {
     isNew: true,
     readOnly: false,
@@ -27,5 +29,6 @@ export function baseHost({ Preview, notify = () => undefined, onTitle }: Omit<Ho
     ago: (iso: string) => formatAgo(iso),
     Preview,
     ...(onTitle ? { onTitle } : {}),
+    ...(savedHint ? { savedHint } : {}),
   } satisfies Partial<EditorHost>;
 }
