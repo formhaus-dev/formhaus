@@ -7,8 +7,12 @@
   color: var(--vp-c-text-1);
 }
 
-.tpl-gallery { max-width: 1152px; }
+.tpl-gallery { max-width: 1152px; box-sizing: content-box; }
 .tpl-detail { max-width: 800px; }
+
+@media (min-width: 960px) {
+  .tpl-gallery { padding-inline: 32px; }
+}
 
 .tpl-gallery__header {
   max-width: 680px;

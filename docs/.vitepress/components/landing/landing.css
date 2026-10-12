@@ -121,13 +121,7 @@
   margin-bottom: 0;
 }
 
-@media (min-width: 1200px) {
-  .VPNavBar.home .container {
-    max-width: var(--lp-max, 1152px);
-  }
-}
-
-@media (min-width: 1280px) {
+@media (min-width: 960px) {
   .lp {
     --lp-gutter: 32px;
   }
