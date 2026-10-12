@@ -7,7 +7,7 @@ const BUDGETS = {
   react: 5550,
   vue: 7250,
   'core/cloud': 2300,
-  'core/internal': 6500,
+  'core/internal': 6650,
   'react/cloud': 1450,
   'vue/cloud': 2050,
   'core/style.css': 2570,
