@@ -17,19 +17,19 @@ The plan quiz from [`examples/react-quiz`](https://github.com/ignsm/formhaus/tre
 
 ```tsx
 import { FormRenderer } from '@formhaus/react';
-import type { FormDefinition, StepChangeContext } from '@formhaus/core';
+import { parseDefinition, type StepChangeContext } from '@formhaus/core';
 import { useRef } from 'react';
 import quiz from './quiz.json';
 import { saveLead } from './api';
 import { track } from './analytics';
 
-const definition = quiz as FormDefinition;
+const definition = parseDefinition(quiz);
 
 export function PlanQuiz() {
   const leadId = useRef<string | null>(null);
 
-  async function captureLead({ fromStepId, direction, values }: StepChangeContext) {
-    if (fromStepId !== 'contact' || direction !== 'next') return;
+  async function captureLead({ fromStepId, reason, values }: StepChangeContext) {
+    if (fromStepId !== 'contact' || reason === 'back') return;
     leadId.current = await saveLead(leadId.current, values);
   }
 
@@ -51,16 +51,16 @@ export function PlanQuiz() {
 ```vue
 <script setup lang="ts">
 import { FormRenderer } from '@formhaus/vue';
-import type { FormDefinition, StepChangeContext } from '@formhaus/core';
+import { parseDefinition, type StepChangeContext } from '@formhaus/core';
 import quiz from './quiz.json';
 import { saveLead } from './api';
 import { track } from './analytics';
 
-const definition = quiz as FormDefinition;
+const definition = parseDefinition(quiz);
 let leadId: string | null = null;
 
-async function captureLead({ fromStepId, direction, values }: StepChangeContext) {
-  if (fromStepId !== 'contact' || direction !== 'next') return;
+async function captureLead({ fromStepId, reason, values }: StepChangeContext) {
+  if (fromStepId !== 'contact' || reason === 'back') return;
   leadId = await saveLead(leadId, values);
 }
 

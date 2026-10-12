@@ -17,10 +17,10 @@ A checkout form: company name for business buyers, an invoice email for business
 
 ```tsx
 import { FormRenderer } from '@formhaus/react';
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import checkout from './checkout-details.json';
 
-const definition = checkout as FormDefinition;
+const definition = parseDefinition(checkout);
 
 export function CheckoutDetails({ onDone }: { onDone: (values: Record<string, unknown>) => void }) {
   return <FormRenderer definition={definition} onSubmit={onDone} />;
@@ -32,10 +32,10 @@ export function CheckoutDetails({ onDone }: { onDone: (values: Record<string, un
 ```vue
 <script setup lang="ts">
 import { FormRenderer } from '@formhaus/vue';
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import checkout from './checkout-details.json';
 
-const definition = checkout as FormDefinition;
+const definition = parseDefinition(checkout);
 const emit = defineEmits<{ done: [values: Record<string, unknown>] }>();
 </script>
 

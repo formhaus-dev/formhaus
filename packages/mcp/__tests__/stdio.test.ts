@@ -20,7 +20,9 @@ describe('formhaus-mcp over stdio', () => {
     const { tools } = await client.listTools();
     expect(tools.map(({ name }) => name).sort()).toEqual(['capabilities', 'example_definitions', 'get_submissions', 'get_webhook', 'list_forms', 'publish_form', 'reveal_webhook_secret', 'simulate_path', 'update_form_settings', 'validate_definition']);
     const { resources } = await client.listResources();
-    expect(resources.map(({ uri }) => uri)).toEqual(['formhaus://capabilities']);
+    expect(resources.map(({ uri }) => uri)).toEqual(['formhaus://capabilities', 'formhaus://migrate/0.11']);
+    const { contents } = await client.readResource({ uri: 'formhaus://migrate/0.11' });
+    expect('text' in contents[0] && contents[0].text).toContain('# Migrate to 0.11');
   });
 
   it('returns structured content from validate_definition', async () => {

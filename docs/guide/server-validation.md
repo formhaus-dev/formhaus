@@ -14,11 +14,11 @@ npm install @formhaus/core
 
 ```ts
 import express from 'express';
-import type { FormDefinition } from '@formhaus/core';
+import { parseDefinition } from '@formhaus/core';
 import { validateSubmission } from '@formhaus/core/server';
 import json from './definition.json' with { type: 'json' };
 
-const definition = json as FormDefinition;
+const definition = parseDefinition(json);
 const app = express();
 app.use(express.json({ limit: '100kb' }));
 
