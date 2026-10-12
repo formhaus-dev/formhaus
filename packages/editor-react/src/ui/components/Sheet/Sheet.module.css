@@ -80,8 +80,7 @@
     width: auto;
     height: var(--fh-ed-size-sheet-medium);
     padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-    border-top: var(--fh-ed-border-thin) solid var(--fh-ed-line);
-    border-left: 0;
+    border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
     border-radius: var(--fh-ed-radius-xl) var(--fh-ed-radius-xl) 0 0;
     transition: height var(--fh-ed-duration-slow) var(--fh-ed-easing-out);
     animation: sheet var(--fh-ed-duration-slow) var(--fh-ed-easing-out);

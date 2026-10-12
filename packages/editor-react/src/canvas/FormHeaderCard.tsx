@@ -32,7 +32,7 @@ export function FormHeaderCard({ actions }: { actions: EditorActions }) {
         label="Form title"
         placeholder="Form title"
         size="xl"
-        ring
+        boxed
         readOnly={readOnly}
         onFocus={select}
         onValueChange={(value) => {
@@ -47,7 +47,7 @@ export function FormHeaderCard({ actions }: { actions: EditorActions }) {
         placeholder="Description"
         tone="muted"
         multiline
-        ring
+        boxed
         readOnly={readOnly}
         onFocus={select}
         onValueChange={(value) => {

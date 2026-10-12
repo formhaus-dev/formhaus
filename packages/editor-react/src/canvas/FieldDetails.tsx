@@ -22,6 +22,7 @@ export function HelpText({ field, actions, readOnly, selected }: Props & { selec
       size="sm"
       tone="muted"
       multiline
+      ring
       readOnly={readOnly}
       rowClassName={styles.help}
       onValueChange={(value) => {

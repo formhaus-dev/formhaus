@@ -13,6 +13,7 @@ export type InlineTextProps = Omit<ComponentPropsWithRef<'textarea'>, 'value' | 
   tone?: 'default' | 'muted';
   rowClassName?: string;
   ring?: boolean;
+  boxed?: boolean;
 };
 
 function assign<T>(ref: Ref<T> | undefined, node: T | null) {
@@ -39,6 +40,7 @@ export function InlineText({
   className,
   rowClassName,
   ring = false,
+  boxed = false,
   ref,
   ...rest
 }: InlineTextProps) {
@@ -69,7 +71,7 @@ export function InlineText({
 
   return (
     <div
-      className={cx(styles.row, ring && styles.ring, rowClassName)}
+      className={cx(styles.row, (ring || boxed) && styles.ring, boxed && styles.boxed, rowClassName)}
       onPointerDown={(event) => {
         if (event.target !== node.current) {
           event.preventDefault();
