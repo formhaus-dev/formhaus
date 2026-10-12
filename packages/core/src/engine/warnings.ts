@@ -1,13 +1,20 @@
-import type { DefinitionIssue } from '../definition-validation';
+import { checkDefinition, FormDefinitionError, type DefinitionIssue } from '../definition-validation';
+import { definitionErrors } from '../definition-validation/check-definition';
+import { isError } from '../definition-validation/issues';
+import type { FormDefinition } from '../types';
+import type { FormEngineOptions } from './engine-options';
 
-function isProduction(): boolean {
+function developmentIssues(definition: FormDefinition, validators: Record<string, unknown>): DefinitionIssue[] | undefined {
   try {
-    return process.env.NODE_ENV === 'production';
-  } catch {
-    return false;
-  }
+    if (process.env.NODE_ENV !== 'production') return checkDefinition(definition, { validators });
+  } catch {}
+  return undefined;
 }
 
-export function warnInDevelopment(issue: DefinitionIssue): void {
-  if (!isProduction()) console.warn(`[formhaus] ${issue.message}`);
+export function assertDefinition(definition: FormDefinition, options: FormEngineOptions, validators: Record<string, unknown>): void {
+  const issues = developmentIssues(definition, validators) ?? definitionErrors(definition);
+  const errors = issues.filter(isError);
+  if (errors.length) throw new FormDefinitionError(errors);
+  const warn = options.onWarning ?? ((issue: DefinitionIssue) => console.warn(`[formhaus] ${issue.message}`));
+  for (const issue of issues) warn(issue);
 }

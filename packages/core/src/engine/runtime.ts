@@ -1,5 +1,3 @@
-import { checkDefinition, FormDefinitionError } from '../definition-validation';
-import { isError } from '../definition-validation/issues';
 import type { ValidatorFn } from '../validation';
 import type { FormDefinition, FormField, FormStep } from '../types';
 import type { FormEngineOptions, StepValidateFn, SubmitFn } from './engine-options';
@@ -18,7 +16,7 @@ import {
 } from './validation-state';
 import { submitForm } from './submission';
 import { reconcileStepIndex } from './step-routes';
-import { warnInDevelopment } from './warnings';
+import { assertDefinition } from './warnings';
 import { VisibilityState } from './visibility-state';
 
 export class FormEngine<TValues extends object = Record<string, unknown>> {
@@ -40,11 +38,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   ) {
     this.lifecycle = options ?? {};
     this.validators = options?.validators ?? {};
-    const issues = checkDefinition(definition, { validators: this.validators });
-    const errors = issues.filter(isError);
-    if (errors.length) throw new FormDefinitionError(errors);
-    const warn = this.lifecycle.onWarning ?? warnInDevelopment;
-    for (const issue of issues) warn(issue);
+    assertDefinition(definition, this.lifecycle, this.validators);
     this.visibility = new VisibilityState(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
     this.state = { values, errors: {}, topLevelErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };
