@@ -33,7 +33,7 @@ react-jsonschema-form (rjsf) builds a React form from a JSON Schema that describ
 | Custom components | `components` map per field type ([guide](/guide/custom-components)) | Custom widgets, fields and templates ([custom widgets and fields](https://rjsf-team.github.io/react-jsonschema-form/docs/advanced-customization/custom-widgets-fields)) |
 | Figma | Plugin draws the definition ([guide](/guide/figma)) | Not documented |
 | AI tooling | JSON Schema, [MCP server](/guide/mcp), Claude Code plugin | Input is standard JSON Schema ([docs](https://rjsf-team.github.io/react-jsonschema-form/docs/)); no AI tooling documented |
-| Frameworks | React 18+, Vue 3.3+, headless engine | React 18+ ([npm](https://www.npmjs.com/package/@rjsf/core)) |
+| Frameworks | React 18 and 19, Vue 3.3.3+, headless engine | React 18+ ([npm](https://www.npmjs.com/package/@rjsf/core)) |
 | Bundle size (gzipped) | 6.2 KB core + 4.8 KB React | 50.6 KB `@rjsf/core` 6.11.0 ([bundlephobia](https://bundlephobia.com/package/@rjsf/core@6.11.0)) + 38.2 KB `@rjsf/validator-ajv8` 6.11.0 ([bundlephobia](https://bundlephobia.com/package/@rjsf/validator-ajv8@6.11.0)), plus the `@rjsf/utils` peer; other themes are separate packages |
 | License | MIT | Apache-2.0 ([docs](https://rjsf-team.github.io/react-jsonschema-form/docs/)) |
 

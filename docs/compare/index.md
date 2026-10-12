@@ -26,7 +26,7 @@ Formhaus fits forms that are data: one JSON definition with steps, branching rou
 | Custom components | `components` map per field type, headless renderer ([guide](/guide/custom-components)) |
 | Figma | Plugin draws the same definition with your design system ([guide](/guide/figma)) |
 | AI tooling | JSON Schema, `@formhaus/mcp` server, Claude Code plugin ([guide](/guide/mcp)) |
-| Frameworks | React 18+, Vue 3.3+, framework-agnostic engine |
+| Frameworks | React 18 and 19, Vue 3.3.3+, framework-agnostic engine |
 | Bundle size | `@formhaus/core` 6.2 KB, `@formhaus/react` 4.8 KB, `@formhaus/vue` 6.4 KB gzipped |
 | License | MIT |
 

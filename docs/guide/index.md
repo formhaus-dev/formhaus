@@ -152,11 +152,11 @@ Pure TypeScript, zero deps. Contains:
 
 ### @formhaus/vue
 
-Vue 3.3+. Renders native HTML form elements by default. Override any field type with your own components via the `components` prop.
+Vue 3.3.3+. Renders native HTML form elements by default. Override any field type with your own components via the `components` prop.
 
 ### @formhaus/react
 
-React 18+. Renders native HTML by default and accepts replacements through `components`. It works with Next.js prerendering and React's `renderToString` without a `next/dynamic` wrapper.
+React 18 and 19. Renders native HTML by default and accepts replacements through `components`. It works with Next.js prerendering and React's `renderToString` without a `next/dynamic` wrapper.
 
 ### @formhaus/mcp
 

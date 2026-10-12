@@ -34,7 +34,7 @@ SurveyJS and Formhaus both render forms from JSON. SurveyJS is a full survey pla
 | Custom components | `components` map per field type ([guide](/guide/custom-components)) | Custom question types and third-party components ([integration](https://surveyjs.io/form-library/documentation/customize-question-types-third-party-component-integration-react)) |
 | Figma | Plugin draws the definition ([guide](/guide/figma)) | Figma design kit of SurveyJS components ([FAQ](https://surveyjs.io/faq/customization), [kit](https://www.figma.com/@surveyjs)) |
 | AI tooling | JSON Schema, [MCP server](/guide/mcp) that validates definitions and simulates paths, Claude Code plugin | [MCP server](https://surveyjs.io/documentation/surveyjs-mcp-server) for docs search, [agent skills](https://surveyjs.io/documentation/surveyjs-ai-agent-skills), AI chat in Survey Creator ([demo](https://surveyjs.io/survey-creator/examples/ai-assisted-survey-design-chat)) |
-| Frameworks | React 18+, Vue 3.3+, headless engine | React, Angular, Vue 3, plain JavaScript ([overview](https://surveyjs.io/form-library/documentation/overview)) |
+| Frameworks | React 18 and 19, Vue 3.3.3+, headless engine | React, Angular, Vue 3, plain JavaScript ([overview](https://surveyjs.io/form-library/documentation/overview)) |
 | Bundle size (gzipped) | 6.2 KB core + 4.8 KB React | 322.5 KB `survey-core` 3.2.0 ([bundlephobia](https://bundlephobia.com/package/survey-core@3.2.0)) + 46.2 KB `survey-react-ui` 3.2.0 ([bundlephobia](https://bundlephobia.com/package/survey-react-ui@3.2.0)) |
 | License | MIT, all packages | Form Library MIT; Survey Creator, Dashboard and PDF Generator commercial ([licensing](https://surveyjs.io/licensing)) |
 
