@@ -131,15 +131,15 @@ describe('comparison rules', () => {
     expect(checkDefinition(form([score, field('why', { show: [{ field: 'score', lte: 6 }] }), field('count', { type: 'number', show: [{ field: 'score', gt: 1 }] })]))).toEqual([]);
   });
 
-  it('warns about a non-number operand and about list or boolean fields', () => {
-    const fields = [
-      field('count', { type: 'number' }),
-      field('agree', { type: 'checkbox' }),
-      field('x', { showAny: [{ field: 'count', gte: '5' as never }, { field: 'agree', gt: 0 }] }),
-    ];
+  it('rejects a non-number operand', () => {
+    const fields = [field('count', { type: 'number' }), field('x', { show: [{ field: 'count', gte: '5' as never }] })];
+    expect(checkDefinition(form(fields)).map((issue) => issue.message)).toEqual(['/fields/1/show/0/gte: "gte" must be a number.']);
+  });
+
+  it('warns about a comparison on a list or boolean field', () => {
+    const fields = [field('agree', { type: 'checkbox' }), field('x', { show: [{ field: 'agree', gt: 0 }] })];
     expect(checkDefinition(form(fields)).map((issue) => issue.message)).toEqual([
-      '/fields/2/showAny/0/gte: "gte" needs a number, not "5". Write it as gte: 5.',
-      '/fields/2/showAny/1/gt: "agree" is a checkbox field, so "gt" never matches it. Compare a number, text, radio or select field.',
+      '/fields/1/show/0/gt: "agree" is a checkbox field, so "gt" never matches it. Compare a number, text, radio or select field.',
     ]);
   });
 });
