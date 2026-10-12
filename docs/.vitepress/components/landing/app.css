@@ -23,6 +23,10 @@
   margin-left: 0.3em;
 }
 
+.app__short {
+  display: none;
+}
+
 .app__tab:hover {
   color: var(--vp-c-text-1);
 }
@@ -67,8 +71,28 @@
 }
 
 @media (max-width: 767px) {
-  .app__count {
+  .app__count,
+  .app__long {
     display: none;
+  }
+
+  .app__short {
+    display: inline;
+  }
+
+  .app__tab {
+    padding: 4px 10px;
+  }
+
+  .app__tabs {
+    scroll-padding-inline: 24px;
+    mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+  }
+
+  .app__tabs::after {
+    flex: none;
+    width: 20px;
+    content: '';
   }
 
   .app__form {

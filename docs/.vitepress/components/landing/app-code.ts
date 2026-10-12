@@ -81,6 +81,7 @@ await engine.submit(send);`,
   {
     id: 'json',
     label: 'contact-form.json',
+    short: 'JSON',
     file: 'contact-form.json',
     source: formatJson(template.definition).trimEnd(),
   },

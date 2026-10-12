@@ -79,11 +79,6 @@
     justify-content: center;
     justify-self: stretch;
   }
-
-  .ob-next__code .app__num {
-    width: 32px;
-    padding-right: 10px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {
