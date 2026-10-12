@@ -16,7 +16,6 @@ const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
 const hidden = { position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0 0 0 0)', clipPath: 'inset(50%)' } as const;
 const slots = useSlots();
-const notice = ref<InstanceType<typeof CloudNotice> | null>(null);
 
 const { state, submit, retry, again, saveDraft } = useCloudForm({
   id: () => props.id,
@@ -43,7 +42,7 @@ function act(action: Exclude<CloudAction, null>) {
 let frame = 0;
 watch(() => state.value.attempt, () => {
   cancelAnimationFrame(frame);
-  frame = requestAnimationFrame(() => focusProblem(root.value, notice.value?.box ?? null));
+  frame = requestAnimationFrame(() => focusProblem(root.value, root.value?.querySelector<HTMLDivElement>(':scope > .fh-form__notice') ?? null));
 }, { flush: 'post' });
 onBeforeUnmount(() => cancelAnimationFrame(frame));
 watch(() => state.value.done, (done) => {
@@ -84,7 +83,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
   </template>
   <div v-else ref="root" class="fh-cloud">
     <input ref="trap" name="_fh_hp" tabindex="-1" autocomplete="off" aria-hidden="true" :style="hidden" />
-    <CloudNotice ref="notice" :notice="state.notice" @action="act" />
+    <CloudNotice :notice="state.notice" @action="act" />
     <FormRenderer
       v-bind="rendererProps"
       :key="state.revision"
