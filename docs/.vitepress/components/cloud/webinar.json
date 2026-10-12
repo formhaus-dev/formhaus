@@ -1,0 +1,122 @@
+{
+  "id": "webinar-signup",
+  "title": "Save your seat: Spring launch webinar",
+  "description": "Live on Thursday, 24 April at 17:00 CET. 45 minutes plus Q&A.",
+  "submit": {
+    "label": "Save my seat"
+  },
+  "steps": [
+    {
+      "id": "you",
+      "title": "About you",
+      "fields": [
+        {
+          "key": "name",
+          "type": "text",
+          "label": "Full name",
+          "validation": {
+            "required": true
+          }
+        },
+        {
+          "key": "email",
+          "type": "email",
+          "label": "Work email",
+          "inputMode": "email",
+          "validation": {
+            "required": true
+          }
+        },
+        {
+          "key": "company",
+          "type": "text",
+          "label": "Company"
+        },
+        {
+          "key": "role",
+          "type": "select",
+          "label": "Your role",
+          "options": [
+            {
+              "value": "marketing",
+              "label": "Marketing"
+            },
+            {
+              "value": "sales",
+              "label": "Sales"
+            },
+            {
+              "value": "founder",
+              "label": "Founder"
+            },
+            {
+              "value": "other",
+              "label": "Other"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "session",
+      "title": "Your session",
+      "fields": [
+        {
+          "key": "session",
+          "type": "radio",
+          "label": "How will you join?",
+          "layout": "inline",
+          "options": [
+            {
+              "value": "live",
+              "label": "Live"
+            },
+            {
+              "value": "replay",
+              "label": "Send me the replay"
+            }
+          ],
+          "validation": {
+            "required": true
+          }
+        },
+        {
+          "key": "question",
+          "type": "textarea",
+          "label": "A question for the speakers",
+          "rows": 2,
+          "show": [
+            {
+              "field": "session",
+              "eq": "live"
+            }
+          ]
+        },
+        {
+          "key": "source",
+          "type": "radio",
+          "label": "How did you hear about us?",
+          "options": [
+            {
+              "value": "newsletter",
+              "label": "Newsletter"
+            },
+            {
+              "value": "linkedin",
+              "label": "LinkedIn"
+            },
+            {
+              "value": "friend",
+              "label": "A colleague"
+            }
+          ]
+        },
+        {
+          "key": "updates",
+          "type": "checkbox",
+          "label": "Email me about future webinars"
+        }
+      ]
+    }
+  ]
+}
