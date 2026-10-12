@@ -1,13 +1,13 @@
 import { checkDefinition, type FormDefinition, type FormEngine } from '@formhaus/core';
 import { parseDefinition } from './definition-input';
 import { createEngine } from './engine';
-import { schemaErrors } from './schema-validation';
-import { checkStructure } from './structure';
+import { fromCore, issue, ordered, type Issue } from './issues';
+import { schemaIssues } from './schema-validation';
+import { structureIssues } from './structure';
 
 export interface ValidationReport {
   valid: boolean;
-  errors: string[];
-  warnings: string[];
+  issues: Issue[];
 }
 
 export interface Inspection {
@@ -16,34 +16,22 @@ export interface Inspection {
   engine?: FormEngine;
 }
 
-function finish(errors: string[], warnings: string[]): ValidationReport {
-  return { valid: errors.length === 0, errors: [...new Set(errors)], warnings: [...new Set(warnings)] };
-}
-
-function bestEffortErrors(definition: FormDefinition): string[] {
-  try {
-    const { errors } = checkStructure(definition);
-    if (errors.length > 0) return errors;
-    const engine = createEngine(definition);
-    return engine.ok ? [] : engine.errors;
-  } catch {
-    return [];
-  }
+function finish(issues: Issue[]): ValidationReport {
+  const list = ordered(issues);
+  return { valid: !list.some(({ severity }) => severity === 'error'), issues: list };
 }
 
 export function inspectDefinition(input: unknown, values?: Record<string, unknown>): Inspection {
   const parsed = parseDefinition(input);
-  if (!parsed.ok) return { report: finish([parsed.error], []) };
+  if (!parsed.ok) return { report: finish([issue('invalid-json', 'error', '', parsed.error.replace(/\.$/, ''))]) };
   const definition = parsed.value as unknown as FormDefinition;
-  const invalid = schemaErrors(parsed.value);
-  if (invalid.length > 0) return { report: finish([...invalid, ...bestEffortErrors(definition)], []) };
-  const { errors, warnings } = checkStructure(definition);
-  if (errors.length > 0) return { report: finish(errors, warnings) };
+  const core = fromCore(checkDefinition(definition, { validators: {} }));
+  const schema = schemaIssues(parsed.value).filter(({ path }) => !core.some((found) => found.path === path));
+  const report = finish([...schema, ...core, ...(schema.length ? [] : structureIssues(definition))]);
+  if (!report.valid) return { report };
   const engine = createEngine(definition, values);
-  if (!engine.ok) errors.push(...engine.errors);
-  warnings.push(...checkDefinition(definition, { validators: {} }).filter((issue) => issue.severity === 'warning').map((issue) => issue.message));
-  if (!engine.ok) return { report: finish(errors, warnings) };
-  return { report: finish(errors, warnings), definition, engine: engine.engine };
+  if (!engine.ok) return { report: finish([...report.issues, ...fromCore(engine.issues)]) };
+  return { report, definition, engine: engine.engine };
 }
 
 export function validateDefinitionTool(input: { definition: unknown }): ValidationReport {
