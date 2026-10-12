@@ -25,7 +25,9 @@ Then ask: "Make me a waitlist form and give me the link." The first form needs n
 
 Rendering forms in your own React or Vue app starts at [Install](#install).
 
-## How it differs from Typeform, Google Forms and Tally
+![An agent publishes a waitlist form, the hosted form takes a response, and the agent reads it back](docs/public/media/agent-publishes-a-form.gif)
+
+## Why Formhaus
 
 - Claude Code, Cursor or any MCP client publishes and edits the form from a prompt and reads the submissions.
 - The form is a JSON file you keep in git. It renders natively in React or Vue, or as a hosted page and embed.
