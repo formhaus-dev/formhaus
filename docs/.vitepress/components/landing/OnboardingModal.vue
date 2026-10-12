@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, useId } from 'vue';
+import type { StepChangeContext } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/vue';
 import LucideIcon from './LucideIcon.vue';
 import OnboardingChoices from './OnboardingChoices.vue';
@@ -14,38 +15,35 @@ const choice = ref<StartChoice>();
 const initial = ref<Record<string, unknown>>();
 const titleId = useId();
 const components = { radio: OnboardingChoices };
+const noProgress = () => null;
 const title = computed(() => (choice.value ? choices[choice.value].title : definition.title));
 const FOCUSABLE = 'a[href], button:not(:disabled), input:not(:disabled), [tabindex="0"]';
 let pressedBackdrop = false;
 let overflow = '';
 
-function focusChoice() {
-  const radios = [...(dialog.value?.querySelectorAll<HTMLInputElement>('input[type="radio"]') ?? [])];
-  (radios.find((radio) => radio.checked) ?? radios[0])?.focus();
-}
-
 onMounted(() => {
   overflow = document.documentElement.style.overflow;
   document.documentElement.style.overflow = 'hidden';
   dialog.value?.showModal();
-  focusChoice();
+  dialog.value?.focus();
 });
 
 onBeforeUnmount(() => {
   document.documentElement.style.overflow = overflow;
 });
 
-async function onSubmit(values: Record<string, unknown>) {
-  initial.value = { start: values.start };
-  choice.value = values.start as StartChoice;
+async function onBeforeStepChange(context: StepChangeContext) {
+  initial.value = { start: context.values.start };
+  choice.value = context.values.start as StartChoice;
   await nextTick();
   heading.value?.focus();
+  return false;
 }
 
 async function back() {
   choice.value = undefined;
   await nextTick();
-  focusChoice();
+  dialog.value?.focus();
 }
 
 function onKey(event: KeyboardEvent) {
@@ -71,6 +69,7 @@ function onClick(event: MouseEvent) {
   <dialog
     ref="dialog"
     class="ob"
+    tabindex="-1"
     :aria-labelledby="titleId"
     aria-modal="true"
     @cancel.prevent="emit('close')"
@@ -93,7 +92,8 @@ function onClick(event: MouseEvent) {
           :definition="definition"
           :initial-values="initial"
           :components="components"
-          @submit="onSubmit"
+          :progress-component="noProgress"
+          :on-before-step-change="onBeforeStepChange"
         />
       </div>
       <slot v-else :choice="choice" />
