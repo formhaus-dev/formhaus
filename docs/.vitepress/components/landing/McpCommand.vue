@@ -4,7 +4,7 @@ import CopyLine from './CopyLine.vue';
 import LucideIcon from './LucideIcon.vue';
 import { useCopy } from './copy';
 
-const props = defineProps<{ id: string }>();
+const props = withDefaults(defineProps<{ id: string; note?: boolean }>(), { note: true });
 const url = 'https://api.formhaus.dev/mcp';
 const clients = [
   { id: 'claude', label: 'Claude Code', command: `claude mcp add -t http formhaus ${url}` },
@@ -45,7 +45,7 @@ function onKey(event: KeyboardEvent) {
       <LucideIcon :name="copied ? 'check' : 'copy'" />
       {{ copied ? 'Copied' : 'Copy MCP setup' }}
     </button>
-    <p class="mcp__note">Connect your AI agent. No account needed for your first form.</p>
+    <p v-if="props.note" class="mcp__note">Connect your AI agent. No account needed for your first form.</p>
   </div>
 </template>
 
