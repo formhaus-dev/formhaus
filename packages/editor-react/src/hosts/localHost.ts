@@ -1,8 +1,11 @@
 import type { FormDefinition } from '@formhaus/core';
 import type { EditorHost, SavedDraft } from '../host';
+import { clearBackup, sameDefinition, writeBackup } from '../store/backup';
 import { baseHost, savedDraft, type HostOptions } from './base';
 
 export const LOCAL_KEY = 'fh:build:v1';
+
+export const backupKey = (key: string) => `${key}:backup`;
 
 export interface LocalHostOptions extends HostOptions {
   key?: string;
@@ -50,6 +53,7 @@ export function createLocalHost({
   };
   return {
     ...base,
+    backup: { key: () => backupKey(key), mirror: false },
     load: () =>
       Promise.resolve({
         draft: (storage && readLocalDraft(storage, key)) ?? (definition ? savedDraft(definition, 0) : null),
@@ -83,4 +87,20 @@ export function createLocalHost({
     },
     stored: () => attempt((store) => store.getItem(key) !== null, false),
   };
+}
+
+export function carryToBuild(definition: FormDefinition, storage: Storage | null = browserStorage()): void {
+  if (!storage) return;
+  const current = readLocalDraft(storage);
+  const at = new Date().toISOString();
+  try {
+    if (!current) {
+      storage.setItem(LOCAL_KEY, JSON.stringify({ definition, revision: 1, savedAt: at }));
+      clearBackup(backupKey(LOCAL_KEY), storage);
+      return;
+    }
+  } catch {
+    return;
+  }
+  if (!sameDefinition(current.definition, definition)) writeBackup(backupKey(LOCAL_KEY), { definition, revision: current.revision, at }, storage);
 }
