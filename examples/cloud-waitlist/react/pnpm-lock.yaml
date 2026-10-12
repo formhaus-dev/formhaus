@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^0.10.1
-        version: 0.10.1
+        specifier: ^0.11.0
+        version: 0.11.0
       '@formhaus/react':
-        specifier: ^0.10.1
-        version: 0.10.1(react@18.3.1)
+        specifier: ^0.11.0
+        version: 0.11.0(@formhaus/core@0.11.0)(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -278,15 +278,16 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@formhaus/core@0.10.1':
-    resolution: {integrity: sha512-JFBYA+XsescgZIAV/DwlZXaLlalkWV0wAXpzmGpCxToQxPZ0u5xwPRycKNKPHL1+HlCTlF40Pcjm5IfZi0yxcw==}
-    engines: {node: '>=18'}
+  '@formhaus/core@0.11.0':
+    resolution: {integrity: sha512-AIe8t+VAAzCxonOo/fCt4vizd8BMMN3py6nqZNDWOBBww2liBZqrlZhQAXOy5lJQjo98oPvTdAiuDDBdpIMz3w==}
+    engines: {node: '>=20'}
 
-  '@formhaus/react@0.10.1':
-    resolution: {integrity: sha512-i6hmh1pYzOSi8C86kSHjUdiwY/oBwkJX8FbcqFUpPkyCu9gYLGShSTi6gkedeZhzEbnzou+bs+Asv5FlEf9SYQ==}
-    engines: {node: '>=18'}
+  '@formhaus/react@0.11.0':
+    resolution: {integrity: sha512-QTyA+8VRaoDnnRINg2eQIRhhv6yTEJY1O3ElT3RrRPN7g3x8ujVGDNRvo7JnEU9WyDVYd68Sv4ukzu/9fCoepw==}
+    engines: {node: '>=20'}
     peerDependencies:
-      react: '>=18.0.0'
+      '@formhaus/core': ^0.11.0
+      react: ^18.0.0 || ^19.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
     resolution: {integrity: sha512-2kkt/7niJ6MgEPxF0bYdQ6etZaA+fQvDcLKckhy1yIQOzaoKjBBjSj63/aLVjYE3qhRt5dvM+uUyfCg6UKCBbA==}
@@ -864,11 +865,11 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@formhaus/core@0.10.1': {}
+  '@formhaus/core@0.11.0': {}
 
-  '@formhaus/react@0.10.1(react@18.3.1)':
+  '@formhaus/react@0.11.0(@formhaus/core@0.11.0)(react@18.3.1)':
     dependencies:
-      '@formhaus/core': 0.10.1
+      '@formhaus/core': 0.11.0
       react: 18.3.1
 
   '@jridgewell/gen-mapping@0.3.13':
