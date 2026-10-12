@@ -10,17 +10,22 @@ import { useCloudForm } from './useCloudForm';
 const props = defineProps<FormhausFormProps>();
 const emit = defineEmits<{ success: [submission: { id: string; values: Record<string, unknown> }] }>();
 const root = ref<HTMLDivElement | null>(null);
+const trap = ref<HTMLInputElement | null>(null);
+const hidden = { position: 'absolute', left: '-10000px', width: '1px', height: '1px', overflow: 'hidden' } as const;
 const notice = ref<InstanceType<typeof CloudNotice> | null>(null);
 
-const { state, submit, retry } = useCloudForm({
+const { state, submit, retry, again, saveDraft } = useCloudForm({
   id: () => props.id,
   apiBase: () => props.apiBase,
+  initialForm: () => props.initialForm,
+  draftStore: () => props.draftStore,
+  extraBody: () => ({ _fh_hp: trap.value?.value ?? '' }),
   onSuccess: (submission) => emit('success', submission),
   onError: () => props.onError,
 });
 
 const rendererProps = computed(() => {
-  const { id, apiBase, onError, initialValues, ...rest } = props;
+  const { id, apiBase, onError, initialValues, initialForm, draftStore, ...rest } = props;
   return rest;
 });
 
@@ -37,6 +42,13 @@ watch(() => state.value.attempt, () => {
   frame = requestAnimationFrame(() => focusProblem(root.value, notice.value?.box ?? null));
 }, { flush: 'post' });
 onBeforeUnmount(() => cancelAnimationFrame(frame));
+watch(() => state.value.done, (done) => {
+  if (done && state.value.settings.redirectUrl) window.location.assign(state.value.settings.redirectUrl);
+});
+
+function onFieldChange(_key: string, _value: unknown, values: Record<string, unknown>) {
+  saveDraft(values);
+}
 </script>
 
 <template>
@@ -52,10 +64,21 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
     </button>
   </template>
   <div v-else-if="!state.definition" class="fh-form" aria-busy="true"><slot name="fallback" /></div>
-  <slot v-else-if="state.done" name="success">
-    <p role="status" class="fh-form__success">Thank you. Your response was submitted.</p>
-  </slot>
+  <template v-else-if="state.done">
+    <slot name="success">
+      <p role="status" class="fh-form__success">{{ state.settings.successMessage ?? 'Thank you. Your response was submitted.' }}</p>
+    </slot>
+    <button
+      v-if="state.settings.allowAnother"
+      type="button"
+      class="fh-form-actions__button fh-form-actions__button--secondary"
+      @click="again"
+    >
+      Submit another response
+    </button>
+  </template>
   <div v-else ref="root" class="fh-cloud">
+    <input ref="trap" name="_fh_hp" tabindex="-1" autocomplete="off" aria-hidden="true" :style="hidden" />
     <CloudNotice ref="notice" :notice="state.notice" @action="act" />
     <FormRenderer
       v-bind="rendererProps"
@@ -65,6 +88,7 @@ onBeforeUnmount(() => cancelAnimationFrame(frame));
       :errors="state.errors"
       :on-submit="submit"
       :on-error="handled"
+      @field-change="onFieldChange"
     />
   </div>
 </template>
