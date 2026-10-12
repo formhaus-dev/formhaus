@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { FormDefinition } from '@formhaus/core';
+import { useRouter } from 'vitepress';
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import './editor-tokens.css';
 
@@ -8,7 +9,9 @@ const emit = defineEmits<{ change: [definition: FormDefinition]; ready: [] }>();
 
 const root = ref<HTMLElement | null>(null);
 const loaded = ref(false);
+const router = useRouter();
 let unmount: (() => void) | null = null;
+let unguard: (() => void) | null = null;
 let observer: IntersectionObserver | null = null;
 let disposed = false;
 
@@ -28,8 +31,9 @@ async function stylesheet(name: keyof typeof sheets): Promise<void> {
 
 async function start() {
   observer?.disconnect();
-  const [editor] = await Promise.all([
+  const [editor, { addRouteGuard, pathOf }] = await Promise.all([
     import('@formhaus/editor-react/mount.js'),
+    import('./routeGuard'),
     stylesheet('editor'),
     props.storage === 'local' ? stylesheet('preview') : null,
   ]);
@@ -41,6 +45,7 @@ async function start() {
   const initial = stored ?? props.definition;
   if (initial) emit('change', initial);
   unmount = editor.mount(root.value, { host, compact: props.compact });
+  unguard = addRouteGuard(router, (to) => pathOf(to) === pathOf(window.location.href) || editor.confirmLeave());
   loaded.value = true;
   emit('ready');
 }
@@ -59,6 +64,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   disposed = true;
   observer?.disconnect();
+  unguard?.();
   unmount?.();
   if (props.storage === 'local') document.querySelector('style[data-fh-editor="preview"]')?.remove();
 });

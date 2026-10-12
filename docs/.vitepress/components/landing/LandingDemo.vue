@@ -129,6 +129,13 @@ function applyJson(text: string) {
   load(parsed as FormDefinition);
 }
 
+watch([definition, edited], ([next, dirty]) => {
+  try {
+    if (dirty) sessionStorage.setItem('fh:build:carry', JSON.stringify(next));
+    else sessionStorage.removeItem('fh:build:carry');
+  } catch {}
+});
+
 onBeforeUnmount(() => {
   clearTimeout(timer);
   clearTimeout(jsonTimer);

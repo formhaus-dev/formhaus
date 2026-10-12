@@ -7,7 +7,9 @@ import type { EditorHost } from './host';
 import { createLocalHost as localHost, type LocalHostOptions } from './hosts/localHost';
 import { createMemoryHost as memoryHost, type MemoryHostOptions } from './hosts/memoryHost';
 
-export { readLocalDraft, LOCAL_KEY } from './hosts/localHost';
+export { readLocalDraft, LOCAL_KEY, carryToBuild, backupKey } from './hosts/localHost';
+export { offerKey } from './store/recovery';
+export { confirmLeave, hasUnsavedChanges } from './store/leave';
 export type { EditorHost, Notice } from './host';
 export type { EditorMode } from './shell/EditorView';
 

@@ -7,6 +7,7 @@ export function createMemoryHost({ definition, onChange, ...options }: MemoryHos
   let draft: SavedDraft | null = definition ? savedDraft(definition, 1) : null;
   return {
     ...baseHost(options),
+    ephemeral: true,
     load: () => Promise.resolve({ draft, published: null }),
     save: (next, revision) => {
       draft = savedDraft(next, revision + 1);

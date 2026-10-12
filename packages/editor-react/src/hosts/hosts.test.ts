@@ -1,6 +1,7 @@
 import type { FormDefinition } from '@formhaus/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { createLocalHost, LOCAL_KEY, readLocalDraft } from './localHost';
+import { readBackup } from '../store/backup';
+import { backupKey, carryToBuild, createLocalHost, LOCAL_KEY, readLocalDraft } from './localHost';
 import { createMemoryHost } from './memoryHost';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', submit: { label: 'Send' }, fields: [] };
@@ -47,6 +48,32 @@ describe('createLocalHost', () => {
     await expect(host.save(definition, 0)).rejects.toBeInstanceOf(Error);
     expect(notify).toHaveBeenCalledTimes(1);
     expect(notify).toHaveBeenCalledWith(expect.objectContaining({ tone: 'danger' }));
+  });
+});
+
+describe('carryToBuild', () => {
+  beforeEach(() => {
+    localStorage.clear();
+  });
+
+  it('becomes the builder draft when the builder is empty', () => {
+    carryToBuild(definition);
+    expect(readLocalDraft(localStorage)?.definition).toEqual(definition);
+    expect(readBackup(backupKey(LOCAL_KEY))).toBeNull();
+  });
+
+  it('waits as a restore offer next to an existing builder draft', () => {
+    const other = { ...definition, title: 'Other' };
+    localStorage.setItem(LOCAL_KEY, JSON.stringify({ definition: other, revision: 4, savedAt: '2026-10-12T10:00:00Z' }));
+    carryToBuild(definition);
+    expect(readLocalDraft(localStorage)?.definition).toEqual(other);
+    expect(readBackup(backupKey(LOCAL_KEY))).toMatchObject({ definition, revision: 4 });
+  });
+
+  it('does nothing when the builder already has the same form', () => {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify({ definition, revision: 2, savedAt: '2026-10-12T10:00:00Z' }));
+    carryToBuild(definition);
+    expect(readBackup(backupKey(LOCAL_KEY))).toBeNull();
   });
 });
 

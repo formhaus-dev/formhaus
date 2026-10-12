@@ -1,8 +1,9 @@
 .root {
   display: inline-flex;
   align-items: center;
-  gap: var(--fh-ed-space-1);
+  gap: var(--fh-ed-space-2);
   min-width: 0;
+  max-width: 100%;
   color: var(--fh-ed-fg-muted);
   font-size: var(--fh-ed-font-size-sm);
 }
@@ -12,6 +13,17 @@
   align-items: center;
   gap: var(--fh-ed-space-1-5);
   min-width: 0;
+}
+
+.text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action {
+  flex: none;
 }
 
 .icon {
@@ -29,7 +41,18 @@
   color: var(--fh-ed-fg-subtle);
 }
 
-.warning .icon {
+.warning .text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.action {
+  flex: none;
+}
+
+.icon {
   color: var(--fh-ed-warning);
 }
 
