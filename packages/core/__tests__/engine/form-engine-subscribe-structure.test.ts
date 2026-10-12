@@ -51,22 +51,22 @@ describe('FormEngine structure subscriptions', () => {
     expect(engine.getStructureSnapshot()).toBe(snapshot + 1);
   });
 
-  it('notifies when the current step changes', () => {
+  it('notifies when the current step changes', async () => {
     const engine = new FormEngine(createStepDefinition('step-structure'));
     const listener = vi.fn();
     engine.subscribeStructure(listener);
-    expect(engine.nextStep()).toBe(true);
-    engine.prevStep();
+    expect(await engine.next()).toBe(true);
+    await engine.back();
     expect(listener).toHaveBeenCalledTimes(2);
   });
 
-  it('publishes sync validation errors without a structure update', () => {
+  it('publishes sync validation errors without a structure update', async () => {
     const engine = new FormEngine(createStepDefinition('step-errors', true));
     const fieldListener = vi.fn();
     const structureListener = vi.fn();
     engine.subscribeField('a', fieldListener);
     engine.subscribeStructure(structureListener);
-    expect(engine.nextStep()).toBe(false);
+    expect(await engine.next()).toBe(false);
     expect(fieldListener).toHaveBeenCalledOnce();
     expect(structureListener).not.toHaveBeenCalled();
   });
@@ -79,7 +79,7 @@ describe('FormEngine structure subscriptions', () => {
     const structureListener = vi.fn();
     engine.subscribeField('a', fieldListener);
     engine.subscribeStructure(structureListener);
-    await expect(engine.nextStepAsync()).resolves.toBe(false);
+    await expect(engine.next()).resolves.toBe(false);
     expect(fieldListener).toHaveBeenCalledOnce();
     expect(structureListener).not.toHaveBeenCalled();
   });
@@ -94,15 +94,15 @@ describe('FormEngine structure subscriptions', () => {
     const structureListener = vi.fn();
     engine.subscribeField('a', fieldListener);
     engine.subscribeStructure(structureListener);
-    await expect(engine.nextStepAsync()).rejects.toThrow('Network error');
+    await expect(engine.next()).rejects.toThrow('Network error');
     expect(engine.stepValidating).toBe(false);
     expect(fieldListener).not.toHaveBeenCalled();
     expect(structureListener).not.toHaveBeenCalled();
   });
 
-  it('notifies form subscribers once when setErrors changes the step', () => {
+  it('notifies form subscribers once when setErrors changes the step', async () => {
     const engine = new FormEngine(createStepDefinition('set-errors-step'));
-    expect(engine.nextStep()).toBe(true);
+    expect(await engine.next()).toBe(true);
     const listener = vi.fn();
     engine.subscribe(listener);
     engine.setErrors({ a: 'Server error' });

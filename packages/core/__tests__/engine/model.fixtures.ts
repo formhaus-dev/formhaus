@@ -37,7 +37,7 @@ const fieldValues: Record<string, unknown[]> = {
 export type ModelCommand =
   | { type: 'set'; key: string; value: unknown }
   | { type: 'server' | 'jump' | 'validateOne'; key: string }
-  | { type: 'next' | 'back' | 'submit' | 'reset' | 'cancel' | 'syncNext' | 'syncBack' }
+  | { type: 'next' | 'back' | 'submit' | 'reset' | 'cancel' }
   | { type: 'settle'; index: number; outcome: 'allow' | 'deny' | 'fail' };
 
 const setCommand = fc.constantFrom(...Object.keys(fieldValues)).chain((key) =>
@@ -49,7 +49,7 @@ export const commandArbitrary: fc.Arbitrary<ModelCommand> = fc.oneof(
     .map(([type, key]): ModelCommand => ({ type, key })), weight: 2 },
   { arbitrary: fc.constantFrom<ModelCommand>(
     { type: 'next' }, { type: 'back' }, { type: 'submit' }, { type: 'reset' },
-    { type: 'cancel' }, { type: 'syncNext' }, { type: 'syncBack' },
+    { type: 'cancel' },
   ), weight: 3 },
   { arbitrary: fc.record({
     type: fc.constant('settle' as const),

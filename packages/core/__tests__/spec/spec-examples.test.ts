@@ -48,9 +48,9 @@ describe('specification examples', () => {
     };
     const engine = new FormEngine(example, values);
     let submitted: Record<string, unknown> | undefined;
-    for (let step = 0; step < 3; step++) expect(engine.nextStep()).toBe(true);
+    for (let step = 0; step < 3; step++) expect(await engine.next()).toBe(true);
     expect(engine.currentStep?.id).toBe('newsletter');
-    expect(await engine.skipStepAsync((payload) => { submitted = payload; })).toBe(true);
+    expect(await engine.skip((payload) => { submitted = payload; })).toBe(true);
     expect(submitted).toMatchObject({ name: 'Ada', terms: true });
     expect(submitted).not.toHaveProperty('subscribe');
     expect(submitted).not.toHaveProperty('topics');
