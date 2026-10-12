@@ -71,7 +71,7 @@ The claim email contains the claim link and no form content. An unclaimed form i
 | `fh_agent_...` | `publish_form` without a key, returned once as `agent_key` | Unclaimed, unexpired forms it created |
 | `fh_live_...` | A workspace owner in the dashboard, under **API keys** | Every form of the workspace |
 
-An agent key can list its forms, read their submissions and CSV, publish new versions, and publish up to 3 unclaimed forms. It cannot change settings: settings calls answer `owner_key_required`. It expires with its last form.
+An agent key can list its forms, read their submissions and CSV, publish new versions, and publish up to 3 unclaimed forms. It can pause, resume and delete those forms; a deleted form counts toward the 3 for 24 hours after the delete. It cannot change other settings: settings calls answer `owner_key_required`. It expires with its last form.
 
 An `fh_live_` key acts as an editor of its workspace and works only while the owner who created it is still an owner. See [Teams and roles](/cloud/teams#api-keys-in-a-team).
 
