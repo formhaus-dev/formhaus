@@ -2,6 +2,7 @@
 title: Data Processing Addendum
 description: The terms under which Fabrique-Futur LLC processes form submissions as a processor for Formhaus Cloud customers.
 sidebar: false
+pageClass: lp-page
 ---
 
 # Formhaus Cloud Data Processing Addendum
