@@ -1,0 +1,51 @@
+{
+  "home": {
+    "title": "The form framework for the AI era",
+    "subtitle": "Describe a form, share the link, collect responses. Open source for React and Vue, with a hosted backend."
+  },
+  "guide": {
+    "eyebrow": "Guide",
+    "title": "Forms from one JSON definition",
+    "subtitle": "Fields, conditions, validation, steps and branching routes in React and Vue."
+  },
+  "api": {
+    "eyebrow": "Reference",
+    "title": "API reference",
+    "subtitle": "FormDefinition, FormEngine and the form definition 1.0 specification."
+  },
+  "cloud": {
+    "eyebrow": "Formhaus Cloud",
+    "title": "A hosted backend for your forms",
+    "subtitle": "Publish over MCP or REST and get a hosted link, an embed and a submission endpoint."
+  },
+  "templates": {
+    "eyebrow": "Templates",
+    "title": "Form templates",
+    "subtitle": "Contact, intake, surveys, applications and quizzes. Preview live, launch or copy the JSON."
+  },
+  "build": {
+    "eyebrow": "Builder",
+    "title": "Form builder",
+    "subtitle": "Build a form in the browser, preview it and copy the JSON definition. No signup."
+  },
+  "playground": {
+    "eyebrow": "Playground",
+    "title": "Form playground",
+    "subtitle": "Edit a definition and watch it render in React, Vue and Svelte."
+  },
+  "recipes": {
+    "eyebrow": "Recipes",
+    "title": "Recipes",
+    "subtitle": "Branching steps, quiz funnels, headless use, Svelte, Figma to React and AI agents."
+  },
+  "compare": {
+    "eyebrow": "Compare",
+    "title": "Formhaus and other form libraries",
+    "subtitle": "Next to react-hook-form, TanStack Form, react-jsonschema-form and SurveyJS."
+  },
+  "legal": {
+    "eyebrow": "Legal",
+    "title": "Legal",
+    "subtitle": "Terms of Service, Privacy Policy, Data Processing Addendum and sub-processors."
+  }
+}
