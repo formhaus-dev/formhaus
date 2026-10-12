@@ -33,7 +33,7 @@ export const capabilities = {
   },
   conditions: {
     operators: CONDITION_OPERATORS,
-    shape: '{ field, eq | neq | in | notIn | notEmpty }',
+    shape: '{ field, eq | neq | in | notIn | notEmpty | gt | gte | lt | lte }, exactly one operator',
     show: 'All conditions must match.',
     showAny: 'At least one condition must match.',
     appliesTo: ['field', 'step', 'route', 'action.disabled'],
