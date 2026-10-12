@@ -1,0 +1,96 @@
+.content {
+  z-index: var(--fh-ed-z-popover);
+  min-width: var(--fh-ed-size-menu);
+  max-width: min(var(--fh-ed-size-toast), calc(100vw - var(--fh-ed-space-4)));
+  padding: var(--fh-ed-space-1);
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  border-radius: var(--fh-ed-radius-lg);
+  background: var(--fh-ed-panel);
+  box-shadow: var(--fh-ed-shadow-pop);
+  animation: appear var(--fh-ed-duration-fast) var(--fh-ed-easing-out);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--fh-ed-space-2-5);
+  min-height: var(--fh-ed-size-control-md);
+  padding: 0 var(--fh-ed-space-2-5);
+  border-radius: var(--fh-ed-radius-md);
+  color: var(--fh-ed-fg);
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+}
+
+.item[data-highlighted] {
+  background: var(--fh-ed-sub);
+  color: var(--fh-ed-fg);
+}
+
+.item[data-disabled] {
+  opacity: var(--fh-ed-opacity-disabled);
+  cursor: not-allowed;
+}
+
+.danger {
+  color: var(--fh-ed-danger);
+}
+
+.danger[data-highlighted] {
+  background: var(--fh-ed-danger-soft);
+  color: var(--fh-ed-danger);
+}
+
+.icon {
+  display: inline-grid;
+  flex: none;
+  color: var(--fh-ed-fg-muted);
+}
+
+.icon svg,
+.check {
+  width: var(--fh-ed-size-icon-md);
+  height: var(--fh-ed-size-icon-md);
+}
+
+.label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.hint {
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-xs);
+}
+
+.check {
+  flex: none;
+  color: var(--fh-ed-accent);
+}
+
+.menuLabel {
+  padding: var(--fh-ed-space-1-5) var(--fh-ed-space-2-5) var(--fh-ed-space-1);
+  overflow: hidden;
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.separator {
+  height: var(--fh-ed-border-thin);
+  margin: var(--fh-ed-space-1) 0;
+  background: var(--fh-ed-line);
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--fh-ed-space-1) * -1));
+  }
+}

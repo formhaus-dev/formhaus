@@ -1,0 +1,24 @@
+.wrap {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+}
+
+.box {
+  border-radius: var(--fh-ed-radius-sm);
+}
+
+.mark {
+  position: absolute;
+  width: var(--fh-ed-size-icon-sm);
+  height: var(--fh-ed-size-icon-sm);
+  color: var(--fh-ed-accent-fg);
+  stroke-width: 3;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.box:checked + .mark {
+  opacity: 1;
+}

@@ -1,0 +1,63 @@
+@property --layout-gap {
+  syntax: '*';
+  inherits: false;
+}
+
+@property --layout-align {
+  syntax: '*';
+  inherits: false;
+}
+
+@property --layout-justify {
+  syntax: '*';
+  inherits: false;
+}
+
+.stack,
+.inline {
+  display: flex;
+  min-width: 0;
+  gap: var(--layout-gap, var(--fh-ed-space-2));
+  align-items: var(--layout-align, stretch);
+  justify-content: var(--layout-justify, flex-start);
+}
+
+.stack {
+  flex-direction: column;
+}
+
+.inline {
+  flex-wrap: wrap;
+  align-items: var(--layout-align, center);
+}
+
+.inline:has(> button, > a) {
+  gap: max(var(--layout-gap, var(--fh-ed-space-2)), var(--fh-ed-layout-target-gap));
+}
+
+.nowrap {
+  flex-wrap: nowrap;
+}
+
+.grid {
+  display: grid;
+  gap: var(--layout-gap, var(--fh-ed-space-4));
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--grid-min), 100%), 1fr));
+}
+
+.grow {
+  flex: 1 1 auto;
+}
+
+.inline > svg {
+  flex: none;
+  width: var(--fh-ed-size-icon-md);
+  height: var(--fh-ed-size-icon-md);
+}
+
+@media (width < 860px) {
+  .stackMd {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

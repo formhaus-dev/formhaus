@@ -1,0 +1,106 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.topBar {
+  position: sticky;
+  top: var(--fh-ed-layout-topbar);
+  z-index: var(--fh-ed-z-sticky);
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fh-ed-space-2) var(--fh-ed-space-4);
+  min-height: var(--fh-ed-size-control-md);
+  margin-top: calc(var(--fh-ed-space-6) - var(--fh-ed-space-5));
+  margin-bottom: var(--fh-ed-space-6);
+  background: var(--fh-ed-bg);
+}
+
+.topBar[data-stuck] {
+  margin-bottom: var(--fh-ed-space-4);
+  padding-bottom: var(--fh-ed-space-2);
+  border-bottom: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  background: var(--fh-ed-panel);
+}
+
+.shell[data-route='new'] .topBar {
+  margin-top: calc(var(--fh-ed-space-6) - var(--fh-ed-space-7));
+}
+
+.status {
+  display: inline-flex;
+  justify-content: flex-end;
+  width: calc(var(--fh-ed-space-10) * 2 + var(--fh-ed-space-2));
+  white-space: nowrap;
+}
+
+.topStart,
+.topEnd {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--fh-ed-space-2);
+  min-width: 0;
+}
+
+.topEnd {
+  margin-left: auto;
+}
+
+.readOnly {
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-sm);
+}
+
+.workspace {
+  container: editor / inline-size;
+}
+
+.layout {
+  display: grid;
+  grid-template-areas:
+    'outline'
+    'canvas';
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--fh-ed-space-5) var(--fh-ed-space-6);
+  padding: 0 0 var(--fh-ed-space-12);
+}
+
+.outline {
+  grid-area: outline;
+  min-width: 0;
+}
+
+.canvas {
+  grid-area: canvas;
+  min-width: 0;
+}
+
+@container editor (width >= 960px) {
+  .layout[data-stepped] {
+    grid-template-areas: 'outline canvas';
+    grid-template-columns: var(--fh-ed-size-editor-outline) minmax(0, 1fr);
+    column-gap: var(--fh-ed-space-8);
+  }
+
+  .layout[data-stepped] .outline {
+    position: sticky;
+    top: calc(var(--fh-ed-layout-topbar) + var(--fh-ed-size-control-xl) + var(--fh-ed-space-4));
+    align-self: start;
+  }
+}
+
+.notice {
+  width: 100%;
+  max-width: var(--fh-ed-size-editor-canvas);
+  margin-inline: auto;
+}
+
+@media (width < 640px) {
+  .shell[data-route='new'] .topBar {
+    margin-top: calc(var(--fh-ed-space-6) - var(--fh-ed-space-5));
+  }
+}

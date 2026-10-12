@@ -1,0 +1,211 @@
+.card {
+  position: relative;
+  min-width: 0;
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  border-radius: var(--fh-ed-radius-lg);
+  background: var(--fh-ed-panel);
+  cursor: pointer;
+  transition:
+    border-color var(--fh-ed-duration-select),
+    background-color var(--fh-ed-duration-select),
+    box-shadow var(--fh-ed-duration-select);
+}
+
+.card:hover {
+  border-color: var(--fh-ed-line-strong);
+}
+
+.card:focus-visible {
+  outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
+  outline-offset: var(--fh-ed-border-thin);
+}
+
+:root[data-input='pointer'] .card:focus-visible {
+  outline: none;
+}
+
+.selected,
+.selected:hover {
+  border-color: var(--fh-ed-fg);
+  cursor: default;
+}
+
+.invalid {
+  border-color: var(--fh-ed-danger);
+}
+
+.handle {
+  position: absolute;
+  top: calc(var(--fh-ed-space-5) + (var(--fh-ed-size-control-md) - var(--fh-ed-space-8)) / 2);
+  left: calc(var(--fh-ed-space-8) * -1);
+  width: var(--fh-ed-space-8);
+  min-height: var(--fh-ed-space-8);
+  border-radius: var(--fh-ed-radius-md);
+  color: var(--fh-ed-fg-muted);
+  opacity: 0;
+}
+
+.selected .handle,
+.card:hover .handle,
+.handle:focus-visible {
+  opacity: 1;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-3);
+  padding: var(--fh-ed-space-5) var(--fh-ed-space-6);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fh-ed-space-2);
+  min-height: var(--fh-ed-size-control-md);
+}
+
+.requiredTag {
+  flex: none;
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-xs);
+  font-weight: var(--fh-ed-font-weight-medium);
+}
+
+.on {
+  background: var(--fh-ed-sub);
+}
+
+.help {
+  margin-top: calc(var(--fh-ed-space-2) * -1);
+}
+
+.label,
+.anchor {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.chip {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: var(--fh-ed-space-1-5);
+  min-height: var(--fh-ed-size-control-md);
+  padding: 0 var(--fh-ed-space-2-5);
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  border-radius: var(--fh-ed-radius-md);
+  background: var(--fh-ed-panel);
+  color: var(--fh-ed-fg-muted);
+  font: inherit;
+  font-size: var(--fh-ed-font-size-sm);
+  cursor: pointer;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--fh-ed-line-strong);
+  color: var(--fh-ed-fg);
+}
+
+.chip:disabled {
+  cursor: default;
+}
+
+.chip svg {
+  width: var(--fh-ed-size-icon-sm);
+  height: var(--fh-ed-size-icon-sm);
+}
+
+.chipChevron {
+  color: var(--fh-ed-fg-subtle);
+}
+
+.suggestion {
+  align-self: flex-start;
+  min-height: var(--fh-ed-size-control-md);
+  padding: 0 var(--fh-ed-space-2-5);
+  border: 0;
+  border-radius: var(--fh-ed-radius-full);
+  background: var(--fh-ed-accent-soft);
+  color: var(--fh-ed-accent);
+  font: inherit;
+  font-size: var(--fh-ed-font-size-sm);
+  cursor: pointer;
+}
+
+.helper {
+  margin: 0;
+  color: var(--fh-ed-fg-muted);
+  font-size: var(--fh-ed-font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.issues {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.issue {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fh-ed-space-1-5);
+  font-size: var(--fh-ed-font-size-sm);
+}
+
+.issue svg {
+  flex: none;
+  width: var(--fh-ed-size-icon-sm);
+  height: var(--fh-ed-size-icon-sm);
+  margin-top: var(--fh-ed-space-0-5);
+}
+
+.error {
+  color: var(--fh-ed-danger);
+}
+
+.spacer {
+  flex: 1;
+}
+
+@media (width < 640px) {
+  .body {
+    padding: var(--fh-ed-space-4);
+  }
+
+  .handle {
+    top: var(--fh-ed-space-3);
+    right: var(--fh-ed-space-2);
+    left: auto;
+    opacity: 1;
+  }
+
+  .label,
+  .anchor {
+    max-width: calc(100% - var(--fh-ed-space-10));
+  }
+
+  .spacer {
+    flex-basis: 100%;
+  }
+
+  .spacer + * {
+    margin-right: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}
+
+.label > textarea {
+  width: auto;
+  min-width: var(--fh-ed-space-10);
+  max-width: 100%;
+}
