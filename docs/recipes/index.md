@@ -1,5 +1,5 @@
 ---
-title: "Formhaus recipes"
+title: "Recipes"
 description: "Complete Formhaus recipes for common form jobs: branching multi-step forms, conditional fields, quiz funnels, headless use, Figma to React and AI agents."
 ---
 

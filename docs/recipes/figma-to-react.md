@@ -1,5 +1,5 @@
 ---
-title: "Design a form in Figma and ship the same form in React"
+title: "Design a form in Figma, ship it in React"
 description: "Design a form in Figma and ship it in React from one JSON file: the Formhaus Figma plugin draws screens, flow map and prototype from the definition."
 ---
 
