@@ -1,0 +1,62 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  position: relative;
+  min-width: 0;
+  touch-action: manipulation;
+}
+
+.dragging {
+  border: var(--fh-ed-border-thin) dashed var(--fh-ed-line-strong);
+  border-radius: var(--fh-ed-radius-lg);
+}
+
+.dragging > * {
+  opacity: 0;
+}
+
+.dragging::before {
+  position: absolute;
+  inset: calc((var(--fh-ed-space-3) + var(--fh-ed-border-focus)) / -2) 0 auto;
+  height: var(--fh-ed-border-focus);
+  border-radius: var(--fh-ed-radius-full);
+  background: var(--fh-ed-fg);
+  content: '';
+}
+
+.overlay {
+  border-radius: var(--fh-ed-radius-lg);
+  box-shadow: var(--fh-ed-shadow-pop);
+  cursor: grabbing;
+}
+
+.handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--fh-ed-size-drag-handle);
+  padding: 0;
+  border: 0;
+  border-radius: var(--fh-ed-radius-md) var(--fh-ed-radius-md) 0 0;
+  background: transparent;
+  color: var(--fh-ed-fg-subtle);
+  cursor: grab;
+  touch-action: none;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle svg {
+  width: var(--fh-ed-size-icon-md);
+  height: var(--fh-ed-size-icon-md);
+}

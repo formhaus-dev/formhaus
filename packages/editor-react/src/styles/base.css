@@ -1,0 +1,47 @@
+.fh-editor {
+  font-family: var(--fh-ed-font-family-sans);
+  font-size: var(--fh-ed-font-size-md);
+  line-height: var(--fh-ed-font-leading-base);
+  color: var(--fh-ed-fg);
+  -webkit-font-smoothing: antialiased;
+}
+
+.fh-editor *,
+.fh-editor *::before,
+.fh-editor *::after {
+  box-sizing: border-box;
+}
+
+.fh-editor :is(h1, h2, h3, p, ul, ol, dl, dd, pre) {
+  margin: 0;
+}
+
+.fh-editor :is(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+}
+
+.fh-editor :focus-visible {
+  outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
+  outline-offset: var(--fh-ed-border-thin);
+}
+
+.fh-ed-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@media (width < 860px) {
+  .fh-ed-sr-only-md {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
