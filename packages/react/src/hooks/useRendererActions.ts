@@ -46,7 +46,7 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
     return result;
   }, [engine, onAnalyticsEvent]);
   const submit = useCallback(() => run(async () => (
-    !isActionDisabled(engine.definition.submit, engine.values) && report(engine.submitAsync(send))
+    !isActionDisabled(engine.definition.submit, engine.getSubmitValues()) && report(engine.submitAsync(send))
   )), [engine, run, send, report]);
   const skip = useCallback(() => run(() => report(engine.skipStepAsync((values, skippedSteps) => {
     onAnalyticsEvent?.({ type: 'step_skipped', stepId: engine.currentStep!.id });
