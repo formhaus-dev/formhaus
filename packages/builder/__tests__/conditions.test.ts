@@ -102,4 +102,14 @@ describe('branching and routes', () => {
     setRoutes(form, step!.uid, undefined);
     expect(toDefinition(form).steps?.[0].routes).toBeUndefined();
   });
+
+  it('treats routes with reordered keys as the simple model', () => {
+    const { form, plan } = plans();
+    const second = addStep(form);
+    addField(form, { step: second.uid }, { label: 'Team size' });
+    plan.options[0].jump = END;
+    const definition = JSON.parse(JSON.stringify(toDefinition(form)).replace('"field":"plan","eq":"free"', '"eq":"free","field":"plan"'));
+    const back = fromDefinition(definition);
+    expect(back.blocks.some((block) => block.kind === 'page' && block.routes)).toBe(false);
+  });
 });
