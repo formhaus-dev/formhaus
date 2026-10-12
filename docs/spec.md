@@ -13,11 +13,11 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 - **Core** means `FormEngine` from `@formhaus/core`.
 - **Renderer** means a UI layer that draws a definition: `@formhaus/react`, `@formhaus/vue`, the Figma plugin, or a custom renderer built on core.
 - **Value** means an entry in `engine.values`, keyed by field `key`.
-- **Empty** means `undefined`, `null`, `''` or `[]` unless a section says otherwise.
+- **Empty** (blank) means `undefined`, `null`, `''` or `[]`. `notEmpty` matches any value that is not blank, so `false` and `0` count as values. For `required`, an unchecked `checkbox` or `switch` (`false`) is also empty.
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.0**. `@formhaus/core` 0.9.x implements it. A definition carries no version marker.
+This document describes **Formhaus form definition 1.0**. `@formhaus/core` 0.11 and every later 1.x release implement it. A definition carries no version marker.
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
@@ -62,8 +62,8 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `autoAdvance` | boolean | See [Auto-advance](#auto-advance). |
 | `accept` | string | Accepted file types for `file`. |
 | `rows` | number | Row count for `textarea`. |
-| `mask` | string | Input mask. Built-in renderers use it as the placeholder when `placeholder` is absent. |
-| `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint. |
+| `mask` | string | Input mask. The built-in `text`, `email`, `phone`, `number` and `password` inputs use it as the placeholder when `placeholder` is absent. |
+| `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint, applied by the built-in `text`, `email`, `phone`, `number` and `password` inputs. |
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate.
 
@@ -211,7 +211,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`. Built-in renderers evaluate `disabled` only on `submit`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` only on `submit`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 
@@ -219,7 +219,7 @@ A route is `{ "to": string | null, "show"?: condition[], "showAny"?: condition[]
 
 Rules enforced by the constructor:
 
-- `to` MUST be the id of a later declared step, or `null`. Unknown, self and backward targets throw. Routes cannot form cycles.
+- `to` MUST be the id of a later declared step, or `null`. Unknown, self and backward targets throw. Because every target is a later step, routes cannot form cycles.
 - Route conditions MUST reference fields of the same step or an earlier step.
 
 Route selection on a step:
@@ -246,9 +246,9 @@ When a value change removes the current step from the path, core moves to the ne
 
 ## Skip
 
-Skip on a step with `skip`:
+Skip on a step with `skip` (`skip()` returns `false` on a step without it):
 
-1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors.
+1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors. Hidden fields are cleared after the reset, so a default of a field that the reset values hide is removed too.
 2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skip()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
 3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 

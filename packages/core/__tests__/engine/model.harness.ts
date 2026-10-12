@@ -63,17 +63,18 @@ export async function runModel(
     }
   };
 
-  const submit = () => {
+  const submit = (skip = false) => {
     const startGeneration = generation;
     const startPath = stepIds(engine);
-    return engine.submit((payload) => {
+    const send = (payload: Record<string, unknown>) => {
       if (generation !== startGeneration) fail('submission dispatched after reset or cancel');
       if (stepIds(engine) !== startPath) fail('submission dispatched after the path changed');
       for (const step of engine.visibleSteps) {
         const errors = api.validateStep(step, payload, {});
-        if (Object.keys(errors).length > 0) fail(`invalid payload dispatched: ${JSON.stringify(errors)}`);
+        if (!engine.isStepSkipped(step.id) && Object.keys(errors).length > 0) fail(`invalid payload dispatched: ${JSON.stringify(errors)}`);
       }
-    });
+    };
+    return skip ? engine.skip(send) : engine.submit(send);
   };
 
   const run = (action: Promise<unknown>) => { action.catch(() => {}); };
@@ -91,6 +92,7 @@ export async function runModel(
     if (command.type === 'next') run(engine.next());
     if (command.type === 'back') run(engine.back());
     if (command.type === 'submit') run(submit());
+    if (command.type === 'skip') run(submit(true));
     if (command.type === 'reset') { generation++; engine.reset(); }
     if (command.type === 'cancel') { generation++; engine.cancelPendingActions(); }
     if (command.type === 'settle' && pending.length > 0) {
