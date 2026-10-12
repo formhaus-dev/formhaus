@@ -248,10 +248,10 @@ When a value change removes the current step from the path, core moves to the ne
 Skip on a step with `skip`:
 
 1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors.
-2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skipStepAsync()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
+2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skip()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
 3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 
-On the last step, `skipStepAsync(submit)` submits the form without that step and runs the submit hooks. Built-in renderers pass their submit handler, so their Skip submits. `skipStep()` and `skipStepAsync()` without a handler return `false` there. Continue or Submit on a skipped step, or a changed value of one of its fields, includes it again. `checkDefinition()` warns about `skip` on a step with `next: false` or in a form with one step.
+On the last step, `skip(submit)` submits the form without that step and runs the submit hooks. Built-in renderers pass their submit handler, so their Skip submits. `skip()` without a handler returns `false` there. Continue or Submit on a skipped step, or a changed value of one of its fields, includes it again. `checkDefinition()` warns about `skip` on a step with `next: false` or in a form with one step.
 
 ## Auto-advance
 
