@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, shallo
 import { validateDefinition, type FormDefinition } from '@formhaus/core';
 import seed from '../../../recipes/definitions/onboarding.json';
 import EditorIsland from '../editor/EditorIsland.vue';
+import { useCarryToBuild } from './carry';
 import LandingFrame from './LandingFrame.vue';
 import LandingSection from './LandingSection.vue';
 import LandingJson from './LandingJson.vue';
@@ -128,6 +129,8 @@ function applyJson(text: string) {
   edited.value = true;
   load(parsed as FormDefinition);
 }
+
+useCarryToBuild(() => (edited.value ? definition.value : null));
 
 onBeforeUnmount(() => {
   clearTimeout(timer);
