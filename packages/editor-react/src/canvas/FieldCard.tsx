@@ -12,6 +12,7 @@ import { useEditorStore } from '../store/context';
 import { useField, useIsExpanded, useIsSelected, useIssues, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
+import suggestionStyles from './TypeSuggestion.module.css';
 import { HelpText, PlaceholderInput } from './FieldDetails';
 import { takesPlaceholder } from './placeholder';
 import { FieldLabel } from './FieldLabel';
@@ -111,7 +112,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
         {suggestion && suggestion !== 'text' && (
           <button
             type="button"
-            className={styles.suggestion}
+            className={suggestionStyles.suggestion}
             onClick={() => {
               actions.edit((form) => {
                 setFieldType(form, uid, suggestion);

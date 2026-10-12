@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { act, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { LiveRegionProvider } from './LiveRegion';
 import { useAnnounce } from './useAnnounce';
 
@@ -31,8 +31,13 @@ describe('LiveRegion', () => {
     await waitFor(() => {
       expect(region).toHaveTextContent('Email moved to position 3 of 5');
     });
+    const frames: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((callback) => frames.push(callback));
     await userEvent.click(screen.getByRole('button', { name: 'Move' }));
     expect(region).toHaveTextContent('');
+    act(() => {
+      for (const frame of frames.splice(0)) frame(0);
+    });
     await waitFor(() => {
       expect(region).toHaveTextContent('Email moved to position 3 of 5');
     });
