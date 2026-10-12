@@ -5,6 +5,10 @@ import { transformPageData } from './templates'
 import { llms } from './llms'
 import { templateFiles } from './template-files'
 import { siteUrl } from './site'
+import { fetchStarCount, formatStarCount } from './stars'
+
+const starCount = await fetchStarCount()
+const githubStars = starCount === null ? null : { count: starCount, label: formatStarCount(starCount) }
 
 export default defineConfig({
   vite: {
@@ -35,8 +39,7 @@ export default defineConfig({
       { text: 'Templates', link: '/templates/', activeMatch: '^/templates/' },
       { text: 'Cloud', link: '/cloud' },
       { text: 'API', link: '/api/definition' },
-      { text: 'Playground', link: '/playground' },
-      { text: 'GitHub', link: 'https://github.com/ignsm/formhaus' }
+      { text: 'Playground', link: '/playground' }
     ],
     sidebar: [
       {
@@ -154,8 +157,6 @@ export default defineConfig({
     footer: {
       message: 'Formhaus is MIT licensed. <a href="/legal/">Legal</a>'
     },
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/ignsm/formhaus' }
-    ]
+    ...{ githubStars }
   }
 })
