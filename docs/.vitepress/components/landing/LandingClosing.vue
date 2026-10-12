@@ -27,7 +27,7 @@ const links = [
 <style scoped>
 .closing {
   display: grid;
-  gap: 32px;
+  gap: 24px;
   justify-items: center;
   text-align: center;
 }

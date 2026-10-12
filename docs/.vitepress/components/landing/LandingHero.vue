@@ -30,6 +30,15 @@ import McpCommand from './McpCommand.vue';
 .hero__video { grid-area: video; }
 .hero__mcp { grid-area: mcp; }
 
+.hero__copy,
+.hero__mcp {
+  text-align: center;
+}
+
+.hero__mcp :deep(.mcp__tabs) {
+  justify-content: center;
+}
+
 .lp .hero__title {
   margin: 0;
   font-size: 36px;
@@ -61,11 +70,6 @@ import McpCommand from './McpCommand.vue';
   .hero__mcp {
     max-width: 760px;
     margin: 0 auto;
-    text-align: center;
-  }
-
-  .hero__actions {
-    justify-content: center;
   }
 
   .lp .hero__title {

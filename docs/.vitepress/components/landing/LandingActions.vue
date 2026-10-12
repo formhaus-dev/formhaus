@@ -45,10 +45,15 @@ async function onClose() {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 16px 24px;
 }
 
 @media (max-width: 479px) {
+  .actions {
+    row-gap: 24px;
+  }
+
   .actions__primary {
     justify-content: center;
     width: 100%;
