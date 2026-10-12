@@ -1,5 +1,5 @@
 import { isUndoKey } from '@formhaus/builder';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { LiveRegionProvider } from '../ui';
 import { RemovalGuardProvider } from '../logic/RemovalGuard';
 import { createFocusRequests, FocusContext } from '../canvas/focus';
@@ -8,6 +8,7 @@ import styles from './EditorShell.module.css';
 
 export function EditorShell({ handle, children }: { handle: EditorHandle; children: ReactNode }) {
   const [focus] = useState(createFocusRequests);
+  const root = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const { onTitle } = handle.host;
@@ -43,7 +44,8 @@ export function EditorShell({ handle, children }: { handle: EditorHandle; childr
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const action = isUndoKey(event);
-      if (!action || event.defaultPrevented || handle.store.getState().readOnly) return;
+      const inside = event.target === document.body || (event.target instanceof Node && !!root.current?.contains(event.target));
+      if (!action || !inside || event.defaultPrevented || handle.store.getState().readOnly) return;
       event.preventDefault();
       if (action === 'undo') handle.store.undo();
       else handle.store.redo();
@@ -59,7 +61,7 @@ export function EditorShell({ handle, children }: { handle: EditorHandle; childr
       <FocusContext value={focus}>
         <LiveRegionProvider>
           <RemovalGuardProvider>
-            <div className={styles.shell} data-route={handle.host.isNew ? 'new' : 'form'}>
+            <div ref={root} className={styles.shell} data-route={handle.host.isNew ? 'new' : 'form'}>
               {children}
             </div>
           </RemovalGuardProvider>

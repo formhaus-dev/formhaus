@@ -6,24 +6,47 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.fh-editor *,
-.fh-editor *::before,
-.fh-editor *::after {
+:where(.fh-editor, [class*='fh_ed_']),
+:where(.fh-editor, [class*='fh_ed_']) *,
+:where(.fh-editor, [class*='fh_ed_']) *::before,
+:where(.fh-editor, [class*='fh_ed_']) *::after {
   box-sizing: border-box;
 }
 
-.fh-editor :is(h1, h2, h3, p, ul, ol, dl, dd, pre) {
+:where(.fh-editor, [class*='fh_ed_']) :where(h1, h2, h3, p, ul, ol, dl, dd, pre) {
   margin: 0;
 }
 
-.fh-editor :is(button, input, select, textarea) {
+:where(.fh-editor, [class*='fh_ed_']) :where(button, input, select, textarea) {
   font: inherit;
   color: inherit;
 }
 
-.fh-editor :focus-visible {
+:where(.fh-editor, [class*='fh_ed_']) :focus-visible {
   outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
   outline-offset: var(--fh-ed-border-thin);
+}
+
+:where(.fh-editor, [class*='fh_ed_'])
+  :where(
+    button:not(:disabled),
+    [role='button'],
+    [role='tab'],
+    [role='option'],
+    [role='menuitem'],
+    [role='radio'],
+    [role='switch'],
+    label[for],
+    label:has(input:not(:disabled)),
+    a[href],
+    select
+  ),
+:where([class*='fh_ed_']):where(button:not(:disabled), [role='option'], [role='menuitem'], [role='radio'], [role='switch'], a[href]) {
+  cursor: pointer;
+}
+
+:where(.fh-editor, [class*='fh_ed_']) [aria-disabled='true'] {
+  cursor: default;
 }
 
 .fh-ed-sr-only {
@@ -43,5 +66,14 @@
     overflow: hidden;
     clip-path: inset(50%);
     white-space: nowrap;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.fh-editor, [class*='fh_ed_']) *,
+  :where(.fh-editor, [class*='fh_ed_']) *::before,
+  :where(.fh-editor, [class*='fh_ed_']) *::after {
+    animation-duration: 0s !important;
+    transition-duration: 0s !important;
   }
 }

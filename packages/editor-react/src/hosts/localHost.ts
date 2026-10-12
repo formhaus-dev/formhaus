@@ -25,27 +25,48 @@ export function readLocalDraft(storage: Storage, key = LOCAL_KEY): SavedDraft | 
 
 const quota = (error: unknown) => error instanceof DOMException && error.name === 'QuotaExceededError';
 
-export function createLocalHost({ key = LOCAL_KEY, storage = window.localStorage, ...options }: LocalHostOptions): EditorHost {
+function browserStorage(): Storage | null {
+  try {
+    return window.localStorage;
+  } catch {
+    return null;
+  }
+}
+
+export function createLocalHost({ key = LOCAL_KEY, storage = browserStorage() ?? undefined, ...options }: LocalHostOptions): EditorHost {
   const base = baseHost(options);
+  let warned = false;
+  const attempt = <T>(run: (store: Storage) => T, fallback: T): T => {
+    try {
+      return storage ? run(storage) : fallback;
+    } catch {
+      return fallback;
+    }
+  };
   return {
     ...base,
-    load: () => Promise.resolve({ draft: readLocalDraft(storage, key), published: null }),
+    load: () => Promise.resolve({ draft: storage ? readLocalDraft(storage, key) : null, published: null }),
     save: (definition, revision) => {
       const draft = savedDraft(definition, revision + 1);
       try {
+        if (!storage) throw new Error('Browser storage is not available');
         storage.setItem(key, JSON.stringify({ definition, revision: draft.revision, savedAt: draft.savedAt }));
       } catch (error) {
-        if (quota(error)) {
+        if (quota(error) && !warned) {
+          warned = true;
           base.notify({ title: 'This form is too large to keep in the browser', description: 'Copy or download the JSON to keep it.', tone: 'danger' });
         }
-        return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+        return Promise.reject(new Error(error instanceof Error ? error.message : String(error)));
       }
+      warned = false;
       return Promise.resolve(draft);
     },
     discard: () => {
-      storage.removeItem(key);
+      attempt((store) => {
+        store.removeItem(key);
+      }, undefined);
       return Promise.resolve();
     },
-    stored: () => storage.getItem(key) !== null,
+    stored: () => attempt((store) => store.getItem(key) !== null, false),
   };
 }

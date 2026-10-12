@@ -32,16 +32,18 @@ describe('createLocalHost', () => {
     }
   });
 
-  it('tells the user when the browser storage is full', async () => {
+  it('tells the user once when the browser storage is full', async () => {
     const notify = vi.fn();
     const storage = {
-      ...localStorage,
       getItem: () => null,
       setItem: () => {
         throw new DOMException('full', 'QuotaExceededError');
       },
     } as unknown as Storage;
-    await expect(createLocalHost({ Preview, notify, storage }).save(definition, 0)).rejects.toThrow('full');
+    const host = createLocalHost({ Preview, notify, storage });
+    await expect(host.save(definition, 0)).rejects.toBeInstanceOf(Error);
+    await expect(host.save(definition, 0)).rejects.toBeInstanceOf(Error);
+    expect(notify).toHaveBeenCalledTimes(1);
     expect(notify).toHaveBeenCalledWith(expect.objectContaining({ tone: 'danger' }));
   });
 });
