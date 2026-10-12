@@ -120,7 +120,7 @@ function plainText(html: string): string {
 
 export function faqJsonLd(html: string) {
   const faq = html.slice(html.indexOf('id="faq"'))
-  const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*<p>([\s\S]*?)<\/p>/g)]
+  const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*<p[^>]*>([\s\S]*?)<\/p>/g)]
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',

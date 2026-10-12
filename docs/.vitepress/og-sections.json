@@ -15,8 +15,8 @@
   },
   "cloud": {
     "eyebrow": "Formhaus Cloud",
-    "title": "A hosted backend for your forms",
-    "subtitle": "Publish over MCP or REST and get a hosted link, an embed and a submission endpoint."
+    "title": "Forms for your AI-built app",
+    "subtitle": "Collect responses from your app, without setting up a backend."
   },
   "templates": {
     "eyebrow": "Templates",
