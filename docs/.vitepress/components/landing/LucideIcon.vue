@@ -4,6 +4,8 @@ const props = defineProps<{ name: keyof typeof paths }>();
 const paths = {
   copy: ['M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2', 'M10 8h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10a2 2 0 0 1-2-2V10a2 2 0 0 1 2-2z'],
   check: ['M20 6 9 17l-5-5'],
+  play: ['M6 3l14 9-14 9z'],
+  pause: ['M6 4h4v16H6z', 'M14 4h4v16h-4z'],
   bot: ['M12 8V4H8', 'M6 8h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2z', 'M2 14h2', 'M20 14h2', 'M15 13v2', 'M9 13v2'],
   plus: ['M5 12h14', 'M12 5v14'],
   restart: ['M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8', 'M3 3v5h5'],

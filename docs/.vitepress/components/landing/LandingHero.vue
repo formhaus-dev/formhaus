@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CopyLine from './CopyLine.vue';
 import LucideIcon from './LucideIcon.vue';
+import LandingHeroVideo from './LandingHeroVideo.vue';
 
 const mcpCommand = 'claude mcp add --transport http formhaus https://api.formhaus.dev/mcp';
 </script>
@@ -22,6 +23,7 @@ const mcpCommand = 'claude mcp add --transport http formhaus https://api.formhau
     <p class="hero__hint">
       Then ask: “Make me a waitlist form and give me the link.” No account needed for the first form.
     </p>
+    <LandingHeroVideo />
   </section>
 </template>
 
