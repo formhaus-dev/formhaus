@@ -11,7 +11,7 @@ The dashboard at `https://app.formhaus.dev` is for the people who own the forms.
 
 | Page | Path | Who | What it does |
 |---|---|---|---|
-| Sign in | `/login` | Anyone | Takes an email and sends a one-time link. The answer is the same whether or not an account exists. |
+| Sign in | `/login` | Anyone | Continue with Google or GitHub, or enter an email to get a one-time link. The email answer is the same whether or not an account exists. |
 | Continue | `/auth/{token}` | Anyone | Confirms the link on this device and starts a session. |
 | Forms | `/` | All roles | Forms of the workspace, search by title or ID |
 | New from JSON | `/forms/new` | Owner, editor | Publishes a pasted definition as a new form |
@@ -35,7 +35,10 @@ The top bar shows the submissions meter, the plan, a link to the docs, a theme t
 |---|---|
 | Sign-in link | One use, valid 15 minutes |
 | Session cookie | 30 days, `HttpOnly`, `Secure`, `SameSite=Lax` |
+| Google, GitHub | Google uses the verified account email, GitHub the primary verified email. An unverified email is refused. |
+| Same email | Signs in to the existing account and links the provider to it |
 | Account | Created on the first sign-in, with a personal workspace |
+| Sign-in methods | Account settings list linked providers, connect another and disconnect one. Email sign-in always stays on. |
 
 ## Forms
 
