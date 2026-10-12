@@ -44,6 +44,6 @@ export function routedSkipDefinition(): FormDefinition {
 
 export async function onExtras(options: FormEngineOptions = {}) {
   const engine = new FormEngine(skipDefinition(), { name: 'Ada' }, options);
-  await engine.nextStepAsync();
+  await engine.next();
   return engine;
 }

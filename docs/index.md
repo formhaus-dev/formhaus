@@ -56,14 +56,14 @@ import definition from './onboarding.json';
 
 const engine = new FormEngine(definition);
 engine.setValue('whoIsItFor', 'my-team');
-await engine.nextStepAsync();
+await engine.next();
 
 engine.setValue('company', 'Acme');
 engine.setValue('teamSize', '11-50');
-await engine.nextStepAsync();
+await engine.next();
 
 engine.setValue('workEmail', 'team@acme.dev');
-await engine.submitAsync(save);
+await engine.submit(save);
 ```
 
 </template>

@@ -33,7 +33,7 @@ describe('FormEngine validation and errors', () => {
 
   it('clears a field error when the field is valid', () => {
     const engine = new FormEngine(basicDefinition, { name: 'John' });
-    engine.errors = { name: 'old error' };
+    engine.setErrors({ name: 'old error' });
     expect(engine.validateField('name')).toBeNull();
     expect(engine.errors.name).toBeUndefined();
   });
@@ -136,10 +136,10 @@ describe('FormEngine validation and errors', () => {
     };
     const validators = { notWithY: (_: unknown, values: Record<string, unknown>) => (values.y === 'yes' ? 'Not with y' : null) };
     const engine = new FormEngine(definition, { x: 'a' }, { validators });
-    await engine.nextStepAsync();
+    await engine.next();
     engine.setValue('y', 'yes');
 
-    expect(await engine.submitAsync(() => {})).toBe(false);
+    expect(await engine.submit(() => {})).toBe(false);
     expect(engine.currentStep?.id).toBe('s1');
     expect(engine.errors.x).toBe('Not with y');
   });
@@ -155,9 +155,9 @@ describe('FormEngine validation and errors', () => {
       ],
     };
     const engine = new FormEngine(definition);
-    await engine.nextStepAsync();
+    await engine.next();
 
-    expect(await engine.submitAsync(() => {})).toBe(false);
+    expect(await engine.submit(() => {})).toBe(false);
     expect(engine.currentStep?.id).toBe('s2');
   });
 });

@@ -13,16 +13,16 @@ const definition: FormDefinition = {
 
 it('passes skipped step ids to the submit function', async () => {
   const engine = new FormEngine(definition, { name: 'Ada' });
-  engine.nextStep();
+  await engine.next();
   const submit = vi.fn();
-  await engine.skipStepAsync(submit);
+  await engine.skip(submit);
   expect(submit).toHaveBeenCalledWith({ name: 'Ada' }, ['two']);
 });
 
 it('does not report a visited empty step as skipped', async () => {
   const engine = new FormEngine(definition, { name: 'Ada' });
-  engine.nextStep();
+  await engine.next();
   const submit = vi.fn();
-  await engine.submitAsync(submit);
+  await engine.submit(submit);
   expect(submit).toHaveBeenCalledWith(expect.any(Object), []);
 });

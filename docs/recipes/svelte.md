@@ -46,8 +46,8 @@ npm install @formhaus/core
 
   function primary(event: SubmitEvent) {
     event.preventDefault();
-    if (view.last) engine.submitAsync(onsubmit);
-    else engine.nextStepAsync();
+    if (view.last) engine.submit(onsubmit);
+    else engine.next();
   }
 </script>
 
@@ -95,9 +95,9 @@ npm install @formhaus/core
   {/each}
 
   {#if !view.first && view.step?.back !== false}
-    <button type="button" disabled={view.busy} onclick={() => engine.prevStepAsync()}>{view.step?.back?.label ?? 'Back'}</button>
+    <button type="button" disabled={view.busy} onclick={() => engine.back()}>{view.step?.back?.label ?? 'Back'}</button>
   {/if}
-  {#if view.step?.skip}<button type="button" disabled={view.busy} onclick={() => engine.skipStepAsync(onsubmit)}>{view.step.skip.label}</button>{/if}
+  {#if view.step?.skip}<button type="button" disabled={view.busy} onclick={() => engine.skip(onsubmit)}>{view.step.skip.label}</button>{/if}
   <button type="submit" disabled={view.busy}>{view.last ? definition.submit.label : 'Continue'}</button>
 </form>
 ```
@@ -129,8 +129,8 @@ npm install @formhaus/core
 ## How it works
 
 - `engine.subscribe()` returns the unsubscribe function, so `$effect` cleans it up.
-- `nextStepAsync()` validates the current step and follows `routes`. `submitAsync(onsubmit)` validates every visible step and calls `onsubmit(values, skippedSteps)`.
-- `skipStepAsync(onsubmit)` skips a step with `skip`, and submits when it is the last step.
+- `next()` validates the current step and follows `routes`. `submit(onsubmit)` validates every visible step and calls `onsubmit(values, skippedSteps)`.
+- `skip(onsubmit)` skips a step with `skip`, and submits when it is the last step.
 - `stepValidating` and `submitting` are `true` while navigation or the submit handler runs; the buttons are disabled then.
 - `number` fields store a number, or `''` when empty. Checkbox and switch store booleans.
 - Add `multiselect`, `file` and custom types the same way: call `engine.setValue(field.key, value)` with the value shape from [Field Types](/guide/fields).

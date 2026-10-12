@@ -1,11 +1,11 @@
-import { validateField, validateFields, validateStep } from '../validation';
+import { validateFieldValue, validateFields, validateStep } from '../validation';
 import { createValues, getChangedKeys } from './engine-utils';
 import type { EngineInternals } from './runtime-internals';
 
 export function applyValidationErrors(engine: EngineInternals, errors: Record<string, string>, navigate = false): void {
   const previousErrors = engine.errors;
-  engine.errors = {};
-  engine.topLevelErrors = [];
+  engine.state.errors = {};
+  engine.state.topLevelErrors = [];
   for (const [key, message] of Object.entries(errors)) {
     if (engine.visibility.isFieldVisible(key, engine.values)) engine.errors[key] = message;
     else engine.topLevelErrors.push(message);
@@ -20,7 +20,7 @@ function moveToFirstError(engine: EngineInternals, errors: Record<string, string
     ? engine.visibility.findStepIndex(firstErrorKey, engine.values, engine.currentStepIndex)
     : null;
   if (targetIndex === null || targetIndex === engine.currentStepIndex) return false;
-  engine.currentStepIndex = targetIndex;
+  engine.state.currentStepIndex = targetIndex;
   return true;
 }
 
@@ -28,7 +28,7 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string): 
   const cleared: string[] = [];
   for (const field of engine.visibility.allFields) {
     if (field.validation?.matchField !== key || engine.errors[field.key] === undefined) continue;
-    if (validateField(field, engine.values[field.key], getValidationValues(engine), engine.validators)) continue;
+    if (validateFieldValue(field, engine.values[field.key], getValidationValues(engine), engine.validators)) continue;
     delete engine.errors[field.key];
     cleared.push(field.key);
   }
@@ -65,7 +65,7 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
       validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators),
     );
   }
-  engine.errors = errors;
+  engine.state.errors = errors;
   const structureChanged = navigate && moveToFirstError(engine, errors);
   engine.notify({ fieldKeys: getChangedKeys(previousErrors, errors), structureChanged });
   return errors;
@@ -75,7 +75,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
   const field = engine.visibility.activeField(key, engine.values);
   if (!field) return null;
   const previousError = engine.errors[key];
-  const error = validateField(field, engine.values[key], getValidationValues(engine), engine.validators);
+  const error = validateFieldValue(field, engine.values[key], getValidationValues(engine), engine.validators);
   if (error) engine.errors[key] = error;
   else delete engine.errors[key];
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];
@@ -93,13 +93,13 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   const loadingFields = Object.keys(engine.fieldLoading);
   engine.validationEpoch++;
   engine.operationEpoch++;
-  engine.submitting = false;
-  engine.values = createValues(engine.visibility.allFields, values);
-  engine.errors = {};
-  engine.topLevelErrors = [];
-  engine.fieldLoading = {};
-  engine.stepValidating = false;
-  engine.currentStepIndex = 0;
+  engine.state.submitting = false;
+  engine.state.values = createValues(engine.visibility.allFields, values);
+  engine.state.errors = {};
+  engine.state.topLevelErrors = [];
+  engine.state.fieldLoading = {};
+  engine.state.stepValidating = false;
+  engine.state.currentStepIndex = 0;
   engine.skipped.clear();
   engine.visibility.reconcileHidden(engine.values, engine.errors);
   const changedValues = getChangedKeys(previousValues, engine.values);

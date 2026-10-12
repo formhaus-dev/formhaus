@@ -59,13 +59,13 @@ describe('duplicate keys', () => {
 
   it('validates the declaration on the active branch', async () => {
     const engine = new FormEngine(branches(), { kind: 'me', name: 'Al' });
-    await engine.nextStepAsync();
+    await engine.next();
     expect(engine.currentStep?.id).toBe('me');
     expect(engine.validateField('name')).toBe('Must be at least 3 characters');
     engine.setValue('kind', 'biz');
     engine.setValue('name', '');
     expect(engine.currentStep?.id).toBe('kind');
-    await engine.nextStepAsync();
+    await engine.next();
     expect(engine.currentStep?.id).toBe('biz');
     expect(engine.validateField('name')).toBe('Company name');
   });

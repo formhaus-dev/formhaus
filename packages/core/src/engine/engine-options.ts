@@ -9,7 +9,6 @@ export type StepValidateFn = (
 export interface StepChangeContext {
   fromStepId: string;
   toStepId: string;
-  direction: 'next' | 'back';
   reason: 'next' | 'back' | 'autoAdvance' | 'skip';
   values: Record<string, unknown>;
 }
@@ -17,7 +16,7 @@ export interface StepChangeContext {
 export type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>;
 export type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>;
 export type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>;
-export type SubmitFn = (values: Record<string, unknown>, skippedSteps?: string[]) => void | Promise<void>;
+export type SubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>;
 
 export interface FormEngineOptions {
   onBeforeStepChange?: BeforeStepChangeFn;

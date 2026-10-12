@@ -47,7 +47,7 @@ Write the JSON by hand, or use the [`/formhaus:formhaus-create-form`](https://fo
 
 ## Navigation and submission
 
-Use `nextStepAsync()`, `prevStepAsync()` and `submitAsync(handler)` for cancellable async before/after hooks. Synchronous navigation remains available without lifecycle hooks. See [step navigation and lifecycle](https://formhaus.dev/guide/steps.html#lifecycle-hooks).
+`await engine.next()`, `back()`, `skip()` and `submit(handler)` validate and run the async before/after hooks, which can cancel the action. See [step navigation and lifecycle](https://formhaus.dev/guide/steps.html#lifecycle-hooks).
 
 Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](https://formhaus.dev/guide/steps.html#route-between-branches).
 
@@ -88,7 +88,7 @@ Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`
 - Field validation (required, min/max, pattern, matchField, custom validators)
 - Visibility conditions (`show` / `showAny`) with cascade-clearing of hidden values
 - Multi-step forms with conditional steps and per-step validation
-- Async step validation via `onStepValidate` + `nextStepAsync()`
+- Async step validation via `onStepValidate` + `next()`
 - Definition validation (duplicate keys, invalid regex, circular show conditions)
 
 ## Granular subscriptions

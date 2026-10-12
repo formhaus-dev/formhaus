@@ -8,17 +8,28 @@ export interface RuntimeNotifyOptions extends NotifyOptions {
   valuesChanged?: boolean;
 }
 
-export interface EngineInternals {
-  readonly definition: FormDefinition;
+export interface EngineState {
   values: Record<string, unknown>;
   errors: Record<string, string>;
   topLevelErrors: string[];
   currentStepIndex: number;
   fieldLoading: Record<string, boolean>;
   stepValidating: boolean;
+  submitting: boolean;
+}
+
+export interface EngineInternals {
+  readonly definition: FormDefinition;
+  readonly state: EngineState;
+  readonly values: Record<string, unknown>;
+  readonly errors: Record<string, string>;
+  readonly topLevelErrors: string[];
+  readonly currentStepIndex: number;
+  readonly fieldLoading: Record<string, boolean>;
+  readonly stepValidating: boolean;
+  readonly submitting: boolean;
   validationEpoch: number;
   operationEpoch: number;
-  submitting: boolean;
   readonly skipped: Map<string, string[]>;
   readonly lifecycle: FormEngineOptions;
   readonly validators: Record<string, ValidatorFn>;

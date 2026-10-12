@@ -4,7 +4,7 @@ import { watchCheckedInputs } from './pending-inputs';
 import { validateStep } from '../validation';
 import { applyValidationErrors, getValidationValues } from './validation-state';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
-import { submitAsync } from './submission';
+import { submitForm } from './submission';
 import type { StepChangeContext, SubmitFn } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 
@@ -21,29 +21,11 @@ function hasStepErrors(engine: EngineInternals): boolean {
 
 function moveTo(engine: EngineInternals, index: number): void {
   engine.validationEpoch++;
-  engine.currentStepIndex = index;
+  engine.state.currentStepIndex = index;
   engine.notify({ structureChanged: true });
 }
 
-function advance(engine: EngineInternals): boolean {
-  if (engine.isLastStep) return false;
-  moveTo(engine, engine.currentStepIndex + 1);
-  return true;
-}
-
-export function nextStep(engine: EngineInternals): boolean {
-  if (!engine.isMultiStep) return false;
-  includeCurrentStep(engine);
-  return !hasStepErrors(engine) && advance(engine);
-}
-
-export function skipStep(engine: EngineInternals): boolean {
-  if (!engine.isMultiStep || !skipTarget(engine)) return false;
-  skipCurrentStep(engine);
-  return advance(engine);
-}
-
-export async function skipStepAsync(engine: EngineInternals, submit?: SubmitFn): Promise<boolean> {
+export async function skipStep(engine: EngineInternals, submit?: SubmitFn): Promise<boolean> {
   if (!engine.isMultiStep || engine.stepValidating || engine.submitting) return false;
   if (skipTarget(engine)) return changeStep(engine, 'next', 'skip');
   const step = engine.currentStep;
@@ -55,14 +37,14 @@ export async function skipStepAsync(engine: EngineInternals, submit?: SubmitFn):
   const skippedValues = engine.values;
   const edited = watchCheckedInputs(engine, { ...skippedValues });
   try {
-    return await submitAsync(engine, async (submitted, skipped) => {
+    return await submitForm(engine, async (submitted, skipped) => {
       await submit(submitted, skipped);
       committed = true;
     }, true);
   } finally {
     if (!committed && engine.values === skippedValues && !edited()) {
-      engine.values = values;
-      engine.errors = { ...errors, ...engine.errors };
+      engine.state.values = values;
+      engine.state.errors = { ...errors, ...engine.errors };
       engine.skipped.delete(step.id);
       engine.notify({ fieldKeys, structureChanged: true, valuesChanged: true });
     }
@@ -84,13 +66,13 @@ export async function changeStep(engine: EngineInternals, direction: 'next' | 'b
   const toIndex = fromIndex + (direction === 'next' ? 1 : -1);
   const target = skipping ? skipTarget(engine) : engine.visibleSteps[toIndex];
   if (!target) return false;
-  const context = { fromStepId: step.id, toStepId: target.id, direction, reason, values: { ...getValidationValues(engine) } };
+  const context: StepChangeContext = { fromStepId: step.id, toStepId: target.id, reason, values: { ...getValidationValues(engine) } };
   const epoch = engine.validationEpoch;
   const operation = ++engine.operationEpoch;
   const inputsChanged = watchCheckedInputs(engine, context.values);
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch
     || engine.currentStep?.id !== step.id || inputsChanged();
-  engine.stepValidating = true;
+  engine.state.stepValidating = true;
   engine.notify();
   try {
     if (stale()) return false;
@@ -118,14 +100,10 @@ export async function changeStep(engine: EngineInternals, direction: 'next' | 'b
     throw error;
   } finally {
     if (operation === engine.operationEpoch) {
-      engine.stepValidating = false;
+      engine.state.stepValidating = false;
       engine.notify();
     }
   }
-}
-
-export function prevStep(engine: EngineInternals): void {
-  if (engine.isMultiStep && !engine.isFirstStep) moveTo(engine, engine.currentStepIndex - 1);
 }
 
 export function goToStepWithField(engine: EngineInternals, fieldKey: string): void {

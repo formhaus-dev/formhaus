@@ -5,7 +5,7 @@ import type { EngineInternals } from './runtime-internals';
 import { getSubmitValues, validateForm } from './validation-state';
 import { includeCurrentStep } from './step-skip';
 
-export async function submitAsync(engine: EngineInternals, submit: SubmitFn, keepSkipped = false): Promise<boolean> {
+export async function submitForm(engine: EngineInternals, submit: SubmitFn, keepSkipped = false): Promise<boolean> {
   if (engine.submitting || engine.stepValidating) return false;
   if (!keepSkipped) includeCurrentStep(engine);
   const lifecycle = { ...engine.lifecycle };
@@ -15,7 +15,7 @@ export async function submitAsync(engine: EngineInternals, submit: SubmitFn, kee
   let values = getSubmitValues(engine);
   const inputsChanged = watchCheckedInputs(engine, values);
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged();
-  engine.submitting = true;
+  engine.state.submitting = true;
   engine.notify();
   try {
     if (stale()) return false;
@@ -30,16 +30,17 @@ export async function submitAsync(engine: EngineInternals, submit: SubmitFn, kee
       values = getSubmitValues(engine);
     }
     dispatched = true;
-    await submit(values, [...engine.skipped.keys()]);
+    const skippedSteps = [...engine.skipped.keys()];
+    await submit(values, [...skippedSteps]);
     if (operation !== engine.operationEpoch) return true;
-    await afterCommit('afterSubmit', () => lifecycle.onAfterSubmit?.(values));
+    await afterCommit('afterSubmit', () => lifecycle.onAfterSubmit?.(values, skippedSteps));
     return true;
   } catch (error) {
     if (!dispatched && stale()) return false;
     throw error;
   } finally {
     if (operation === engine.operationEpoch) {
-      engine.submitting = false;
+      engine.state.submitting = false;
       engine.notify();
     }
   }
