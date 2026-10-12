@@ -67,6 +67,10 @@
     flex: 1;
   }
 
+  .sandbox__actions:not(:has(.sandbox__tool)) {
+    display: none;
+  }
+
   .sandbox__tab {
     flex: 1;
     min-height: 40px;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref } from 'vue';
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import type { FormDefinition } from '@formhaus/core';
 import template from '../../../../templates/contact-form.json';
 import LandingFrame from './LandingFrame.vue';
@@ -16,6 +16,10 @@ const views = panes.map((pane) => {
 });
 const activeId = ref(views[0].id);
 const active = computed(() => views.find((item) => item.id === activeId.value) ?? views[0]);
+
+watch(activeId, (id) => {
+  document.getElementById(`app-tab-${id}`)?.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+});
 
 function onKey(event: KeyboardEvent) {
   const step = { ArrowRight: 1, ArrowLeft: -1 }[event.key];
@@ -46,7 +50,7 @@ function onKey(event: KeyboardEvent) {
             :aria-selected="view.id === activeId"
             :tabindex="view.id === activeId ? 0 : -1"
             @click="activeId = view.id"
-          >{{ view.label }}<span v-if="'count' in view" class="app__count">{{ view.count }}</span></button>
+          ><span :class="{ app__long: 'short' in view }">{{ view.label }}</span><span v-if="'short' in view" class="app__short">{{ view.short }}</span><span v-if="'count' in view" class="app__count">{{ view.count }}</span></button>
         </div>
       </template>
       <div id="app-code" class="app__code" role="tabpanel" :aria-labelledby="`app-tab-${active.id}`" tabindex="0">

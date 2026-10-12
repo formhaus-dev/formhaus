@@ -57,8 +57,8 @@ html.dark .responses__shot--dark {
   .responses::after {
     position: absolute;
     inset: 0 0 0 auto;
-    width: 48px;
-    background: linear-gradient(to right, transparent, var(--shot-bg));
+    width: 96px;
+    background: linear-gradient(to right, transparent, var(--shot-bg) 80%);
     content: '';
   }
 }

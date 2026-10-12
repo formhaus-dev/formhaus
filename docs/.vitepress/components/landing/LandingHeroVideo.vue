@@ -5,12 +5,16 @@ import LucideIcon from './LucideIcon.vue';
 import './hero-video.css';
 
 const hiDpiWide = '(min-width: 960px) and (min-resolution: 1.5dppx)';
-const posterSizes = '(min-width: 1200px) 1152px, calc(100vw - 48px)';
-const startAt = 5;
+const narrow = '(max-width: 639px)';
+const posterSizes = '(min-width: 1200px) 1152px, calc(100vw - 32px)';
 const themes = [
-  { name: 'light', base: '/media/formhaus-hero' },
-  { name: 'dark', base: '/media/formhaus-hero-dark' },
-].map((t) => ({ ...t, srcset: [640, 1280, 1920, 2560].map((w) => `${t.base}-poster-${w}.jpg ${w}w`).join(', ') }));
+  { name: 'light', base: '/media/formhaus-hero', mobile: '/media/formhaus-hero-mobile' },
+  { name: 'dark', base: '/media/formhaus-hero-dark', mobile: '/media/formhaus-hero-mobile-dark' },
+].map((t) => ({
+  ...t,
+  srcset: [640, 1280, 1920, 2560].map((w) => `${t.base}-poster-${w}.jpg ${w}w`).join(', '),
+  mobileSrcset: [640, 1280].map((w) => `${t.mobile}-poster-${w}.jpg ${w}w`).join(', '),
+}));
 
 const { isDark } = useData();
 const video = ref<HTMLVideoElement>();
@@ -20,11 +24,19 @@ const ready = ref(false);
 const wanted = ref(false);
 const started = ref(false);
 const playing = ref(false);
+const mobile = ref(false);
 let visible = false;
 let observer: IntersectionObserver | undefined;
 
-const base = computed(() => themes[isDark.value ? 1 : 0].base);
-const sources = computed(() => [
+const theme = computed(() => themes[isDark.value ? 1 : 0]);
+const base = computed(() => (mobile.value ? theme.value.mobile : theme.value.base));
+const startAt = computed(() => (mobile.value ? 0 : 5));
+const duration = computed(() => (mobile.value ? 22 : 33));
+const sources = computed(() => mobile.value ? [
+  { src: `${base.value}-1080.mp4`, type: 'video/mp4', media: '(min-resolution: 2dppx)' },
+  { src: `${base.value}-720.mp4`, type: 'video/mp4' },
+  { src: `${base.value}-720.webm`, type: 'video/webm' },
+] : [
   { src: `${base.value}-1440.webm`, type: 'video/webm', media: hiDpiWide },
   { src: `${base.value}-1440.mp4`, type: 'video/mp4', media: hiDpiWide },
   { src: `${base.value}-1080.webm`, type: 'video/webm' },
@@ -45,7 +57,7 @@ function toggle() {
 
 function onPlay() {
   const el = video.value;
-  if (!started.value && el && el.currentTime < startAt) el.currentTime = startAt;
+  if (!started.value && el && el.currentTime < startAt.value) el.currentTime = startAt.value;
   started.value = true;
   playing.value = true;
 }
@@ -67,6 +79,7 @@ watch(isDark, async () => {
 });
 
 onMounted(async () => {
+  mobile.value = matchMedia(narrow).matches;
   wanted.value = matchMedia('(min-width: 640px) and (prefers-reduced-motion: no-preference)').matches;
   ready.value = true;
   syncPoster();
@@ -85,6 +98,7 @@ onBeforeUnmount(() => observer?.disconnect());
 <template>
   <figure ref="figure" class="hero-video" :class="{ 'hero-video--started': started }">
     <picture v-for="t in themes" :key="t.name">
+      <source :media="narrow" :srcset="t.mobileSrcset" :sizes="posterSizes" />
       <img
         :srcset="t.srcset"
         :sizes="posterSizes"
@@ -107,7 +121,7 @@ onBeforeUnmount(() => observer?.disconnect());
       playsinline
       preload="metadata"
       :poster="poster"
-      aria-label="Formhaus product tour, 33 seconds, silent"
+      :aria-label="`Formhaus product tour, ${duration} seconds, silent`"
       aria-describedby="hero-video-caption"
       @play="onPlay"
       @pause="playing = false"
@@ -124,11 +138,11 @@ onBeforeUnmount(() => observer?.disconnect());
     <button v-if="ready && !started" type="button" class="hero-video__start" @click="toggle">
       <LucideIcon name="play" />
       <span>Play video</span>
-      <span class="hero-video__time">· 0:33</span>
+      <span class="hero-video__time">· 0:{{ duration }}</span>
     </button>
     <button
       type="button"
-      class="hero-video__toggle"
+      :class="['hero-video__toggle', { 'hero-video__toggle--idle': !started }]"
       :aria-label="playing ? 'Pause video' : 'Play video'"
       @click="toggle"
     >

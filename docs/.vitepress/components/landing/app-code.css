@@ -93,6 +93,18 @@
     flex: 0 0 240px;
   }
 
+  .app__pre {
+    padding-right: 16px;
+  }
+
+  .app__line {
+    padding-left: 40px;
+    text-indent: -40px;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    mask-image: none;
+  }
+
   .app__num,
   .app__file {
     padding-left: 0;
@@ -101,6 +113,7 @@
   .app__num {
     width: 40px;
     padding-right: 12px;
+    text-indent: 0;
   }
 
   .app__file {
