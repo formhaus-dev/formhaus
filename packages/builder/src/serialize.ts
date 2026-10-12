@@ -1,5 +1,5 @@
 import type { FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
-import { canBranch, groups, hasOptions, isPage, pageTitle, type BuilderForm, type BuilderQuestion, type Group } from './model';
+import { canBranch, END, groups, hasOptions, isPage, pageTitle, type BuilderForm, type BuilderQuestion, type Group } from './model';
 
 export interface Serialized {
   definition: FormDefinition;
@@ -25,20 +25,24 @@ function field(item: BuilderQuestion, path: string, paths: Map<string, string>):
 function routesFor(parts: Group[], ids: string[], fields: FormField[][]): StepRoute[][] {
   const routes: StepRoute[][] = parts.map(() => []);
   parts.forEach((part, index) => {
-    const indexOf = (uid: string | null) => parts.findIndex((other, at) => at > index && other.page?.uid === uid);
-    const branching = part.questions.filter((item) => canBranch(item.type) && item.options.some((option) => indexOf(option.jump) >= 0));
+    const resolve = (uid: string | null): { to: string | null } | undefined => {
+      if (uid === END) return { to: null };
+      const at = parts.findIndex((other, position) => position > index && other.page?.uid === uid);
+      return at >= 0 ? { to: ids[at] } : undefined;
+    };
+    const branching = part.questions.filter((item) => canBranch(item.type) && item.options.some((option) => resolve(option.jump)));
     for (const item of branching) {
       const key = fields[index][part.questions.indexOf(item)].key;
       item.options.forEach((option, at) => {
-        const target = indexOf(option.jump);
+        const target = resolve(option.jump);
         const value = fields[index][part.questions.indexOf(item)].options![at].value;
-        if (target >= 0) routes[index].push({ to: ids[target], show: [{ field: key, eq: value }] });
+        if (target) routes[index].push({ to: target.to, show: [{ field: key, eq: value }] });
       });
     }
-    const covered = branching.length === 1 && branching[0].options.every((option) => indexOf(option.jump) >= 0);
-    const next = indexOf(part.page?.next ?? null);
+    const covered = branching.length === 1 && branching[0].options.every((option) => resolve(option.jump));
+    const next = resolve(part.page?.next ?? null);
     if (covered) delete routes[index][routes[index].length - 1].show;
-    else if (next >= 0) routes[index].push({ to: ids[next] });
+    else if (next) routes[index].push({ to: next.to });
     else if (routes[index].length && index + 1 < parts.length) routes[index].push({ to: ids[index + 1] });
   });
   return routes;

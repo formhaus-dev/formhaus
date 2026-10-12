@@ -1,6 +1,7 @@
 import type { FormStep } from '@formhaus/core';
 import { syncIdentifiers } from '../identifiers';
-import { isPage, newPage, type BuilderForm, type BuilderPage } from '../model';
+import { dropReferences } from '../references';
+import { isPage, isQuestion, newPage, type BuilderForm, type BuilderPage } from '../model';
 import { clearTargets, moveBlock, pageCount, pageSpan } from './blocks';
 import { blockIndex, findStep } from './locate';
 
@@ -66,8 +67,9 @@ export function removeStep(form: BuilderForm, uid: string, mode: StepRemoval): b
   if (index < 0 || !isPage(form.blocks[index]) || pageCount(form) < 2) return false;
   const span = pageSpan(form, index);
   if (mode === 'with-fields') {
-    clearTargets(form, new Set(form.blocks.slice(index, index + span).map((block) => block.uid)));
-    form.blocks.splice(index, span);
+    const removed = form.blocks.splice(index, span);
+    clearTargets(form, new Set(removed.map((block) => block.uid)));
+    dropReferences(form, new Set(removed.filter(isQuestion).map((block) => block.key)));
   } else {
     clearTargets(form, new Set([uid]));
     const [, ...fields] = form.blocks.splice(index, span);
