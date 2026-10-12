@@ -22,7 +22,7 @@ The open-source Formhaus project (the form definition format, `@formhaus/core`, 
 - **AI agents and unclaimed forms.** The Terms define Agent Keys, their scope and expiry, and who accepts the Terms when an agent publishes without an account. Unclaimed forms tell respondents that whoever runs the agent can read what they send. A claim turns the agent's key off unless the person who claims keeps it. Before a claim, Formhaus is the controller of the submissions for a limited purpose.
 - **Acceptance.** The sign-in and claim pages link these documents, and we record the version you accept.
 - **Consumers.** Consumers can use the Service. EU, UK and Swiss consumers have a 14-day right of withdrawal and can bring claims in their home courts. The class-action waiver is removed.
-- **Billing.** Clearer renewal, cancellation, non-payment, refund and tax terms.
+- **Billing.** Renewal, cancellation, non-payment, refund and tax terms.
 - **Prohibited data.** Forms must not collect special categories of personal data, criminal-offence data, government identification numbers or children's data. HIPAA health data needs a prior written agreement.
 - **Downgrades.** After a move to Free, older submissions are kept for 60 days before deletion.
 - **Abuse and copyright.** How to send a notice, how we decide, appeals, and repeat infringers.

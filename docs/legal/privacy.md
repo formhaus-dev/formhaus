@@ -41,7 +41,7 @@ For a form that a Workspace holds, the form owner is responsible for your submis
 
 - The AI agent that published the form, and the person it works for, can read your submission through the Agent Key the Service gave the agent. The person who instructs the agent is responsible for what they do with it.
 - We keep your submission so the form works, return it to that Agent Key, and apply abuse controls. Our legal basis is our legitimate interest in letting AI agents publish working forms without an account first.
-- If nobody claims the form, we delete it and its submissions 7 days after it was published. If someone claims it, the account that claims it becomes the form owner and the controller of your submission, and we process it for them as described above.
+- If nobody claims the form, it expires 7 days after it was published, and we delete it and its submissions within the following day. If someone claims it, the account that claims it becomes the form owner and the controller of your submission, and we process it for them as described above. The agent's access then ends, unless the person who claims chooses to let it keep access.
 - To have your submission to an unclaimed form deleted earlier, write to legal@formhaus.dev with the form link and enough detail for us to find your submission, such as the time you sent it and a value you entered. We may ask for more to make sure the request is yours.
 
 **Reporting a form.** If a form looks like phishing or abuse, use the "Report abuse" link on the page or write to legal@formhaus.dev. When you use the link, we store your report and a keyed hash of your network prefix (the first 24 bits of an IPv4 address or the first 48 bits of an IPv6 address, not your full IP address). The hash key changes every day, so we can count distinct reporters without storing your IP address.
@@ -84,7 +84,7 @@ We use the data in Section 3 to:
 - secure, debug and improve the Service, using account and operations data, not Submission Data;
 - comply with the law and enforce our [Terms](./terms.md).
 
-**We do not sell personal data. We do not use submissions or other customer data to train AI or machine-learning models. We do not show ads or share data for advertising.** The Service does not send submissions to any AI provider. We disclose submissions to an AI agent only when the form owner, or for an unclaimed form the person who instructs the agent, has given that agent a key.
+**We do not sell personal data. We do not use submissions or other customer data to train AI or machine-learning models. We do not show ads or share data for advertising.** The Service does not send submissions to any AI provider. We disclose submissions to an AI agent only when the form owner has given it a key, or, for an unclaimed form, to the agent that published it through the Agent Key the Service returned to it.
 
 **No marketing emails.** We do not send newsletters or product update emails. If we start, we will ask for your consent where the law requires it, or rely on the existing-customer exception where it applies, and every such email will have an unsubscribe link. Service emails, such as sign-in links and notices about your account, are sent regardless.
 
@@ -142,13 +142,14 @@ Fabrique-Futur is a US company, and our personnel access the Service from outsid
 
 | Data | Kept for |
 |---|---|
-| Submissions on an unclaimed form | Deleted with the form 7 days after it was published, unless it is claimed |
+| Submissions on an unclaimed form | Deleted with the form within a day after it expires, 7 days after it was published, unless it is claimed |
 | Submissions on the Free plan | 90 days after submission |
 | Submissions on the Pro and Team plans | Until the form owner deletes the form or the account |
 | Submissions after a move from a paid plan to Free | Submissions older than 90 days are kept for 60 days after the change, then deleted |
 | Forms and their versions | Until the owner deletes them or the account |
-| Account data, acceptance records, and API Key metadata | For the life of the account |
-| Agent Keys of unclaimed forms | Until the last form they created expires, then deleted |
+| Account data and API Key metadata | For the life of the account |
+| Acceptance records | For the life of the account |
+| Agent Keys | Deleted when the last unclaimed form they created expires, or turned off at a claim. A key kept at a claim is kept as an API Key |
 | Invitations | For the life of the Workspace; an unused invite stops working after 7 days |
 | One-time sign-in links | 15 minutes, single use |
 | Sessions | Up to 30 days, or until you sign out |
@@ -163,7 +164,7 @@ Fabrique-Futur is a US company, and our personnel access the Service from outsid
 | DigitalOcean server backup images | 7 days |
 | Emails at Resend | 30 days |
 
-When you delete a form or your account, we remove the data from the live database at once. Backups that contain it expire within 30 days.
+When you delete a form, we remove it and its submissions from the live database at once. When you delete your account, we remove your account data at once, except the billing records, acceptance records, support emails and logs listed above, which we keep for the periods shown. Backups that contain deleted data expire within 30 days.
 
 ---
 

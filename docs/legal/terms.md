@@ -10,7 +10,7 @@ sidebar: false
 
 These Terms of Service ("**Terms**") are a binding agreement between **Fabrique-Futur LLC**, a Wyoming limited liability company ("**Fabrique-Futur**," "**we**," "**us**," "**our**"), and the person or organization that uses **Formhaus Cloud** (the "**Service**").
 
-You accept these Terms when you sign in to the Service, claim a Form, or create an API Key. The sign-in page and the claim page say that continuing accepts these Terms and the [Privacy Policy](./privacy.md), and we record the version you accepted and when. When an Agent publishes a Form without an account, the person who instructs the Agent accepts the parts of these Terms listed in Section 4 for that Form. If you accept on behalf of a company or other entity, you represent that you have authority to bind it, and "**you**" and "**Customer**" mean that entity.
+You accept these Terms when you sign in to the Service, claim a Form, or create an API Key. The sign-in page and the claim page say that continuing accepts these Terms and the [Privacy Policy](./privacy.md), and we record the version you accepted and when. When an Agent publishes a Form without an account, the person who instructs the Agent accepts the parts of these Terms listed in Section 4 for that Form. "**You**" and "**Customer**" mean the person or organization that accepts these Terms. If you accept on behalf of a company or other entity, you represent that you have authority to bind it, and they mean that entity.
 
 If you do not agree to these Terms, do not use the Service.
 
@@ -30,7 +30,7 @@ If you do not agree to these Terms, do not use the Service.
 - **Agent Key**: a secret key (prefix `fh_agent_`) that the Service returns once to an Agent that publishes a Form without any key. Section 4 describes its scope, limits and expiry.
 - **Unclaimed Form**: a Form published without an API Key that is not yet linked to a Workspace.
 - **Workspace**: the space in the dashboard that holds Forms, API Keys and a plan, and that one or more accounts belong to as members.
-- **Owner**: the account that has claimed or created a Form, and the owners of the Workspace that holds it.
+- **Owner**: for a Form, the owners of the Workspace that holds it.
 - **Consumer**: an individual who uses the Service for purposes outside their trade, business, craft or profession.
 - **Sub-processor**: a third party we engage to process Customer Data, as listed on the [Sub-processors](./sub-processors.md) page.
 
@@ -70,17 +70,17 @@ We may add, change or remove features. Section 10 describes what happens if a ch
 **Agent Keys.**
 
 - The Service returns an Agent Key once, in the result of the first publish without any key. It reaches only the Forms that it created. It can list them, read their Submission Data, publish new versions, pause, resume and delete them, and publish up to 3 Unclaimed Forms at a time. A Form it deletes counts toward the 3 for 24 hours. It cannot change other settings.
-- An Agent Key expires when the last Unclaimed Form it created expires.
+- An Agent Key expires when the last Unclaimed Form it created expires, unless it was kept at a claim.
 - **At a claim**, the claim page lists the Forms that move to the Workspace and says that the Agent Key can read their responses. By default, the claim turns the Agent Key off. If the person who claims chooses to let the Agent keep access, the key moves to the Workspace under API Keys. It then reaches only the Forms that it created, and any owner can revoke it there.
 
 **Unclaimed Forms.**
 
-- An Agent can publish a Form without an account. The person who instructs the Agent, or on whose behalf it publishes, accepts Sections 4, 5, 7, 8, 16, 17 and 18 of these Terms for that Form, and is responsible for the Form, for keeping the Agent Key secret, and for the Submission Data that the Agent reads. The publish result includes a link to these Terms and tells the Agent to pass it on.
-- An Unclaimed Form accepts at most 100 submissions and expires 7 days after it is published. A daily job then deletes the Form and its Submission Data.
-- The hosted page and the embed of an Unclaimed Form show this notice to Respondents: "Published by an AI agent and not yet linked to an account. Whoever runs the agent can read what you send. Don't enter passwords or payment details." with a "Report" link. The page is not indexed by search engines.
+- An Agent can publish a Form without an account. The person who instructs the Agent, or on whose behalf it publishes, accepts Sections 4, 7, 8, 13, 15, 16, 17, 18 and 20 of these Terms for that Form, and is responsible for the Form, for keeping the Agent Key secret, and for the Submission Data that the Agent reads. The publish result includes a link to these Terms and tells the Agent to pass it on.
+- An Unclaimed Form accepts at most 100 submissions and expires 7 days after it is published. We delete the Form and its Submission Data within the following day.
+- The hosted page and the embed of an Unclaimed Form show Respondents this notice and a "Report" link: "Published by an AI agent and not yet linked to an account. Whoever runs the agent can read what you send. Don't enter passwords or payment details." The page is not indexed by search engines.
 - Unclaimed Forms do not send email notifications or webhooks.
 - **Our role before a claim.** Until a Form is claimed, no Workspace holds it, so we handle its Submission Data as a controller for a limited purpose: to run the Form, return the Submission Data to the Agent Key that created it, apply abuse controls and delete it on expiry. Section 2 of the [Privacy Policy](./privacy.md) and Section 2 of the [Data Processing Addendum](./dpa.md) describe this.
-- To keep a Form, open the claim link and sign in. The account that claims a Form becomes its Owner, accepts these Terms for it, and takes responsibility for its Submission Data from the claim on, including the Submission Data the Form collected before the claim. Claiming a Form does not mean we have checked that it is legitimate.
+- To keep a Form, open the claim link and sign in. The account that claims a Form moves it to its Workspace, whose owners become its Owner. That account accepts these Terms for it, and takes responsibility for its Submission Data from the claim on, including the Submission Data the Form collected before the claim. Claiming a Form does not mean we have checked that it is legitimate.
 - If an Agent gives an email address when it publishes, we send a claim email to that address. The email does not contain form content. If you did not ask for it, you can ignore it.
 
 ---
@@ -121,7 +121,7 @@ You must not use the Service, and must not let an Agent or another person use it
 - collect protected health information that is subject to the US Health Insurance Portability and Accountability Act (HIPAA), unless we have agreed to it in writing beforehand;
 - collect personal data without the notices or consent the law requires;
 - send spam or unsolicited messages, or use Forms or notifications to harass anyone;
-- give the Service an email address that is not your own or your principal's when publishing a Form;
+- give the Service an email address that belongs to neither you nor the person you act for when publishing a Form;
 - host or distribute malware, or content that is illegal or infringes the rights of others;
 - attack, probe or overload the Service, bypass rate limits, plan limits or abuse controls, or access another customer's data;
 - use webhooks to make requests to systems you are not authorized to reach;
@@ -137,10 +137,10 @@ Hosted pages and the embed do not render password fields or file upload fields. 
 ## 8. Abuse reports, notices and removal
 
 - **How to report.** Anyone can report a Form through the "Report abuse" link on its hosted page, or by email to legal@formhaus.dev. The report link is anonymous and shows a confirmation on the page. An email notice should include the form link, an explanation of why the content is illegal or breaks these Terms, your name and email address, and a statement that you make the notice in good faith and that its content is accurate. We acknowledge email notices without undue delay.
-- **What we do.** We review reports and may pause, disable or delete a Form, revoke API Keys or Agent Keys, or suspend an account, without liability, if we reasonably believe it breaks Section 7, puts Respondents or the Service at risk, or if the law requires it. For phishing, credential theft or other illegal activity, we may restrict any Form, claimed or unclaimed, at once on a credible report or other evidence. We do not need to wait for more reports or for the Owner's response. In other cases, where it is practical and lawful, we tell the Owner and give a chance to fix the issue first. A paused Form rejects new submissions.
+- **What we do.** We review reports and may pause, disable or delete a Form, revoke API Keys or Agent Keys, or suspend an account, without liability, if we reasonably believe it breaks Section 7, puts Respondents or the Service at risk, or if the law requires it. For phishing, credential theft or other illegal activity, we may restrict any Form, claimed or unclaimed, at once on a credible report or other evidence. We do not need to wait for more reports or for the Owner's response. In other cases, where it is practical and lawful, we tell the Owner and give a chance to fix the issue first. A paused Form rejects new submissions. We tell the person who sent an email notice what we decided.
 - **Automatic controls.** An Unclaimed Form is paused automatically after reports from 3 different networks within 24 hours. A report on a claimed Form is emailed to its Owner. These controls do not limit what we can do under this Section.
 - **Decisions and appeals.** When we restrict a Form, we tell the Owner by email which Form, what we did and why, unless the law forbids it. If you think we restricted a Form by mistake, or you sent a notice and disagree with our decision, write to legal@formhaus.dev. A person reviews every appeal.
-- **Copyright complaints.** If you believe a Form infringes your copyright, send a notice to legal@formhaus.dev that identifies the work, the Form link, your contact details, a statement that you believe in good faith that the use is not authorized, a statement that the notice is accurate and that you are the owner or authorized to act for the owner, and your signature. We remove or disable access to the material and tell the Owner. The Owner can send a counter-notice to the same address with the same elements and a statement, under penalty of perjury, that the material was removed by mistake. We terminate, in appropriate circumstances, the accounts of users who repeatedly infringe.
+- **Copyright complaints.** If you believe a Form infringes your copyright, send a notice to legal@formhaus.dev that identifies the work, the Form link, your contact details, a statement that you believe in good faith that the use is not authorized, a statement that the notice is accurate and that you are the owner or authorized to act for the owner, and your signature. We may remove or disable access to the material and, if we do, we tell the Owner. The Owner can send a counter-notice to the same address with the same elements and a statement, under penalty of perjury, that the material was removed by mistake. If we receive a counter-notice, we may restore the material. We terminate, in appropriate circumstances, the accounts of users who repeatedly infringe.
 
 ---
 
@@ -163,7 +163,7 @@ Hosted pages and the embed do not render password fields or file upload fields. 
 - **Cancellation.** You can cancel at any time in Settings → Usage and plan → **Manage billing**, or by email to hello@formhaus.dev. We confirm the cancellation by email. Cancellation stops the next renewal. You keep paid-plan access until the end of the current paid period, and the Workspace then moves to the Free plan.
 - **Downgrade.** If a Workspace moves from a paid plan to Free, including after cancellation or non-payment, Free limits apply from the change. Submissions older than 90 days are kept for 60 days after the change and then deleted. Export them before then if you need them.
 - **Changes to prices or limits.** We may change prices or plan limits for future billing periods. We give at least 30 days' notice by email, and for a yearly subscription at least 30 days before its renewal. A change applies from your next renewal, and you can cancel before it does.
-- **Refunds.** Fees are not refundable for partial periods, except: (a) under the right of withdrawal below; (b) under Sections 10, 17 and 19; and (c) where the law requires a refund. Mandatory refund, withdrawal and conformity rights are not affected.
+- **Refunds.** Fees are not refundable for partial periods, except: (a) under the right of withdrawal below; (b) under Sections 10, 17 and 19 of these Terms and Section 6 of the Data Processing Addendum; and (c) where the law requires a refund. Mandatory refund, withdrawal and conformity rights are not affected.
 - **Consumers in the EU, UK and Switzerland: right of withdrawal.** If you are a Consumer, you can withdraw from a paid subscription within 14 days of buying it, without giving a reason, by a clear statement by email to hello@formhaus.dev. By starting the subscription, you ask us to provide the paid plan at once, during the withdrawal period. If you withdraw, you pay a proportionate amount for the days the paid plan was active, and we refund the rest within 14 days of your statement, to the original payment method.
 - **Non-payment.** If a payment fails, we email you and our payment processor retries the payment for at least 14 days. If the payment still fails, the subscription ends and the Workspace moves to the Free plan.
 
@@ -201,7 +201,7 @@ We protect the Service and Customer Data with the measures described in Annex II
 
 - These Terms apply while you have an account, own a Form, or use the Service.
 - You can delete Forms (with all of their submissions), Workspaces and your account at any time in the dashboard. Deleting your account also deletes the Workspaces where you are the only member. Workspaces with other members stay, with their Forms and data. If you are the only owner of a Workspace that has other members, make another member an owner or remove the members first.
-- We may suspend or terminate your access for a material breach of these Terms (including Section 7) that you do not fix within 14 days of our notice, for non-payment, or when the law requires it. We may suspend at once where security, Respondents or the law require it. We may close a Free account with 30 days' notice.
+- We may suspend or terminate your access for a material breach of these Terms (including Section 7) that you do not fix within 14 days of our notice, or when the law requires it. Non-payment moves the Workspace to the Free plan as described in Section 9. We may suspend at once where security, Respondents or the law require it. We may close a Free account with 30 days' notice.
 - **Deletion.** When you delete a Form or your account, we remove the data from the live database at once. Backups that contain it expire within 30 days. If we restore a backup, we delete again the data that was deleted after the backup was taken. If your account is terminated for another reason, we delete Customer Data within 30 days of termination, and its backup copies expire within a further 30 days, unless the law requires us to keep it.
 - **Export.** Before deletion, you can export submissions as CSV from the dashboard, or read them as JSON through the REST API and the MCP server. If we disable your dashboard access, we provide an export on a verified request to legal@formhaus.dev made within 30 days of termination, unless the law forbids it. Deleted data cannot be restored or exported.
 - **Survival.** Sections 6, 11, 12, 15, 16, 17, 18 and 20, accrued payment obligations, and the [Data Processing Addendum](./dpa.md) until Customer Data is deleted, survive termination.

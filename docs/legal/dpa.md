@@ -64,7 +64,7 @@ Personnel who can access Customer Personal Data are bound by confidentiality obl
 
 We implement and maintain the technical and organizational measures in **Annex II**. We review them regularly and may update them, provided the overall protection is not materially reduced.
 
-The Service is not designed for payment card data, credentials, Special Categories of Personal Data, data about criminal convictions or offences, government identification numbers or data about children, and Section 7 of the Terms forbids collecting them. Hosted pages and the embed do not render password or file upload fields.
+The Service is not designed for payment card data, credentials, Special Categories of Personal Data, data about criminal convictions or offences, government identification numbers, personal data collected from children or protected health information subject to HIPAA, and Section 7 of the Terms forbids collecting them, except protected health information under our prior written agreement. Hosted pages and the embed do not render password or file upload fields.
 
 ---
 
@@ -140,7 +140,7 @@ Each party's liability under this DPA is subject to the limitations in the Agree
 - **Subject matter:** hosting forms and receiving, validating, storing and delivering form submissions for the Customer.
 - **Duration:** the term of the Agreement, plus the deletion period in Section 11.
 - **Nature and purpose (the business purposes):** storing Form definitions; receiving submissions through the public endpoint, hosted pages and the embed; validating them against the Form definition; storing them; showing them in the dashboard; exporting them as CSV; returning them as JSON through the REST API and MCP server to the Customer and to Agents that hold the Customer's keys; sending them to the Customer by webhook; notifying the Customer by email of new submissions with form titles and counts only; applying rate limits, plan limits and abuse controls; backing them up; and securing, supporting and debugging the Service.
-- **Types of Personal Data:** decided by the Customer through the fields of its Forms. Typically names, email addresses, phone numbers, company details and free-text answers. Submission metadata: submission time, user agent, referrer and skipped steps. The Service does not store Respondents' IP addresses. Section 7 of the Terms forbids collecting credentials, payment card data, Special Categories of Personal Data, data about criminal convictions or offences, government identification numbers and data about children.
+- **Types of Personal Data:** decided by the Customer through the fields of its Forms. Typically names, email addresses, phone numbers, company details and free-text answers. Submission metadata: submission time, user agent, referrer and skipped steps. The Service does not store Respondents' IP addresses. Section 7 of the Terms forbids collecting credentials, payment card data, Special Categories of Personal Data, data about criminal convictions or offences, government identification numbers, personal data collected from children, and protected health information subject to HIPAA without our prior written agreement.
 - **Categories of Data Subjects:** Respondents to the Customer's Forms, and any people that Respondents mention in their answers.
 - **Special Categories:** none.
 - **Frequency:** continuous, while the Customer's Forms accept submissions.
