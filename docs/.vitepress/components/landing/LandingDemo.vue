@@ -7,19 +7,21 @@ import LandingFrame from './LandingFrame.vue';
 import LandingSection from './LandingSection.vue';
 import LandingJson from './LandingJson.vue';
 import LucideIcon from './LucideIcon.vue';
-import { formatJson } from './json-format';
+import { formatJson, parseJson } from './json-format';
 import { useDemoCore } from './demo-checks';
 
 const LandingDemoForm = defineAsyncComponent(() => import('./demo-lazy').then((lazy) => lazy.loadDemoForm()));
 
-const tabs = [
+const props = withDefaults(defineProps<{ seed?: FormDefinition; title?: string; lead?: string; json?: boolean }>(), { title: 'Try making a form', json: true });
+const allTabs = [
   { id: 'write', label: 'Write' },
   { id: 'json', label: 'JSON' },
   { id: 'preview', label: 'Preview' },
 ] as const;
-type Tab = (typeof tabs)[number]['id'];
+type Tab = (typeof allTabs)[number]['id'];
+const tabs = allTabs.filter((item) => props.json || item.id !== 'json');
 
-const start = seed as FormDefinition;
+const start = (props.seed ?? seed) as FormDefinition;
 const definition = shallowRef<FormDefinition>(start);
 const loaded = shallowRef<FormDefinition>(start);
 const generation = ref(0);
@@ -106,16 +108,9 @@ function onJson(text: string) {
 }
 
 function applyJson(text: string) {
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(text);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Invalid JSON';
-    const at = /position (\d+)/.exec(message);
-    const line = at ? text.slice(0, Number(at[1])).split('\n').length : undefined;
-    jsonError.value = `${line ? `Line ${line}: ` : ''}${message.replace(/ in JSON.*$/, '').replace(/^JSON\.parse: /, '')}`;
-    return;
-  }
+  const result = parseJson(text);
+  if ('error' in result) return void (jsonError.value = result.error);
+  const parsed = result.value;
   if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return void (jsonError.value = 'Expected an object with "fields" or "steps"');
   const problems = safeValidate(parsed as FormDefinition);
   if (problems.length) return void (jsonError.value = problems[0]);
@@ -147,11 +142,11 @@ function onTabKey(event: KeyboardEvent) {
 </script>
 
 <template>
-  <LandingSection id="demo" band title="Try making a form">
-    <template #lead>Edit this example or <a href="/build">open the free builder</a>, no signup needed.</template>
+  <LandingSection id="demo" band :title="props.title">
+    <template #lead><template v-if="props.lead">{{ props.lead }}</template><template v-else>Edit this example or <a href="/build">open the free builder</a>, no signup needed.</template></template>
     <LandingFrame class="sandbox" fixed :data-tab="tab">
       <template #bar>
-        <div class="sandbox__tabs" role="tablist" aria-label="Playground view" @keydown="onTabKey">
+        <div class="sandbox__tabs" :class="{ 'sandbox__tabs--single': !props.json }" role="tablist" aria-label="Playground view" @keydown="onTabKey">
           <button
             v-for="item in tabs"
             :id="`sandbox-tab-${item.id}`"
@@ -187,7 +182,7 @@ function onTabKey(event: KeyboardEvent) {
           <EditorIsland :key="generation" storage="memory" compact lazy :definition="loaded" @change="onEdit" />
         </ClientOnly>
       </div>
-      <div id="sandbox-json" class="sandbox__pane sandbox__pane--json" role="tabpanel" aria-labelledby="sandbox-tab-json">
+      <div v-if="props.json" id="sandbox-json" class="sandbox__pane sandbox__pane--json" role="tabpanel" aria-labelledby="sandbox-tab-json">
         <LandingJson ref="json" :source="source" :error="jsonError" :active="tab === 'json'" @change="onJson" />
       </div>
       <template #aside>
@@ -209,6 +204,7 @@ function onTabKey(event: KeyboardEvent) {
         </div>
       </template>
     </LandingFrame>
+    <slot name="after" />
   </LandingSection>
 </template>
 

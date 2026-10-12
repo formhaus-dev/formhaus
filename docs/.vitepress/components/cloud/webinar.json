@@ -28,11 +28,6 @@
           }
         },
         {
-          "key": "company",
-          "type": "text",
-          "label": "Company"
-        },
-        {
           "key": "role",
           "type": "select",
           "label": "Your role",
