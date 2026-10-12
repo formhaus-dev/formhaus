@@ -2,6 +2,7 @@ import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
+import { alignment } from './editor-edges.mjs';
 
 const require = createRequire(new URL('../packages/editor-react/package.json', import.meta.url));
 const { chromium } = require('playwright');
@@ -138,29 +139,6 @@ async function explicitStart(page) {
   if (await page.getByText(/^Restore unsaved changes/).count()) throw new Error('an explicit blank start also showed the restore offer');
 }
 
-async function alignment(page, theme, width) {
-  await page.goto(`${base}/build`);
-  await page.getByRole('textbox', { name: 'Field label' }).first().click();
-  const found = await page.evaluate(() => {
-    const rect = (node) => node?.getBoundingClientRect();
-    const card = document.querySelector('[data-card]');
-    const submit = [...document.querySelectorAll('label')].find((label) => label.textContent.trim() === 'Submit button');
-    return {
-      title: rect(document.querySelector('textarea[aria-label="Form title"]')?.parentElement),
-      description: rect(document.querySelector('textarea[aria-label="Form description"]')?.parentElement),
-      label: rect(document.querySelector('textarea[aria-label="Field label"]')?.parentElement),
-      placeholder: rect(card?.querySelector('input[placeholder]')),
-      submit: rect(submit && document.getElementById(submit.htmlFor)),
-    };
-  });
-  const lefts = Object.entries(found).map(([name, box]) => [name, box?.left]);
-  const rights = ['title', 'description', 'placeholder'].map((name) => [name, found[name]?.right]);
-  for (const [edge, list] of [['left', lefts], ['right', rights]]) {
-    const [, first] = list[0];
-    const off = list.filter(([, value]) => value === undefined || Math.abs(value - first) > 0.5);
-    if (off.length) throw new Error(`${theme} ${width}: ${edge} edges differ: ${JSON.stringify(list)}`);
-  }
-}
 
 async function startDropsOffers(context) {
   const page = await context.newPage();
@@ -196,7 +174,7 @@ async function check() {
         const context = await browser.newContext({ viewport: { width, height: width > 500 ? 900 : 844 }, colorScheme: theme });
         await context.addInitScript((mode) => localStorage.setItem('vitepress-theme-appearance', mode), theme);
         const page = await context.newPage();
-        await alignment(page, theme, width);
+        await alignment(page, base, `${theme} ${String(width)}`);
         await page.close();
         await leaveGuard(context, theme, width);
         await carryOver(context, theme, width);
