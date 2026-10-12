@@ -1,0 +1,57 @@
+@media (max-width: 959px) {
+  html:has(.VPNavScreen) {
+    overscroll-behavior: none;
+  }
+
+  .VPNavScreen {
+    overscroll-behavior: contain;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPNavBar :is(.menu, .translations, .appearance, .social-links, .extra, .gh-star) {
+    display: none;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPNav {
+    position: sticky;
+    top: 0;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPLocalNav {
+    top: var(--vp-nav-height);
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPLocalNavOutlineDropdown .items {
+    max-height: calc(100dvh - var(--vp-nav-height) - 100px);
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPNavBarHamburger {
+    display: flex;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPNavScreen {
+    display: block;
+    padding: 0 24px;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPNavScreen .container {
+    max-width: none;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPLocalNav .menu {
+    display: none;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPLocalNavOutlineDropdown {
+    padding-inline: 24px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 959px) {
+  .Layout:has(.VPContent.has-sidebar) .VPNavScreen {
+    padding: 0 32px;
+  }
+
+  .Layout:has(.VPContent.has-sidebar) .VPLocalNavOutlineDropdown {
+    padding-inline: 32px;
+  }
+}
