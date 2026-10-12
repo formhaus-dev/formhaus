@@ -3,7 +3,7 @@ import LandingHeroVideo from '../landing/LandingHeroVideo.vue';
 import LucideIcon from '../landing/LucideIcon.vue';
 
 const video = 'formhaus-cloud';
-const caption = 'A webinar signup form is built in the editor and previewed. In a chat, Claude adds a question and counts today’s sign-ups. Responses arrive in the dashboard with a new response notice.';
+const caption = 'A webinar signup form is built in the editor and previewed. In a chat with an AI agent, the agent adds a question and counts today’s sign-ups. Responses arrive in the dashboard with a new response notice.';
 const alt = 'Form builder showing Save your seat: Spring launch webinar, with steps and fields';
 </script>
 
