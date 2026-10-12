@@ -8,8 +8,8 @@ const LandingDemoForm = defineAsyncComponent(() => import('./LandingDemoForm.vue
 
 const definition = template.definition as FormDefinition;
 const panes = [
-  { id: 'off', lines: highlight(handRolled.source), more: handRolled.total - handRolled.source.split('\n').length },
-  { id: 'on', lines: highlight(withFormhaus.source), more: 0 },
+  { id: 'off', lines: highlight(handRolled.source), note: `+ ${handRolled.total - handRolled.source.split('\n').length} more lines` },
+  { id: 'on', lines: highlight(withFormhaus.source), note: 'End of file. The fields are in contact-form.json.' },
 ];
 const on = ref(false);
 const card = ref<HTMLElement>();
@@ -76,7 +76,7 @@ onBeforeUnmount(() => {
             v-for="(token, position) in line"
             :key="position"
             :class="`toggle__${token.kind}`"
-          >{{ token.text }}</span></span></code><span v-if="pane.more" class="toggle__more">+ {{ pane.more }} more lines</span></pre>
+          >{{ token.text }}</span></span></code><span class="toggle__more">{{ pane.note }}</span></pre>
         </div>
       </div>
       <div class="toggle__form">

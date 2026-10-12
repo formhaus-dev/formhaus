@@ -9,7 +9,7 @@
   position: absolute;
   inset: 0;
   margin: 0;
-  padding: 14px 0 0;
+  padding: 14px 24px 0 0;
   overflow: hidden;
   font-family: var(--vp-font-family-mono);
   font-size: 13px;
@@ -28,6 +28,9 @@
 .toggle__line {
   display: block;
   white-space: pre;
+  mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
   transition: opacity 0.3s var(--ease), transform 0.4s var(--ease);
 }
 
@@ -86,17 +89,18 @@
   transition: opacity 0.25s var(--ease);
 }
 
-.toggle[data-on='true'] .toggle__pre[data-pane='on'] {
-  overflow-x: auto;
-}
-
 .toggle[data-on='true'] .toggle__pre[data-pane='off'],
 .toggle[data-on='false'] .toggle__pre[data-pane='on'] {
   pointer-events: none;
 }
 
-.toggle[data-on='true'] .toggle__more {
+.toggle[data-on='true'] [data-pane='off'] .toggle__more,
+.toggle[data-on='false'] [data-pane='on'] .toggle__more {
   opacity: 0;
+}
+
+.toggle[data-on='true'] [data-pane='on'] .toggle__more {
+  transition-delay: 0.45s;
 }
 
 @media (max-width: 767px) {

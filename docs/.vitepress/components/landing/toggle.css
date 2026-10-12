@@ -5,8 +5,7 @@
   --code-muted: #8b949e;
   --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   display: grid;
-  max-width: 1120px;
-  margin: 40px auto 0;
+  margin: 40px 0 0;
   overflow: hidden;
   border: 1px solid var(--vp-c-divider);
   border-radius: 16px;
@@ -27,6 +26,7 @@
   flex: none;
   align-items: center;
   gap: 12px;
+  box-sizing: border-box;
   height: 52px;
   padding: 0 18px;
   border-bottom: 1px solid var(--ink-line);
@@ -76,7 +76,7 @@
 }
 
 .toggle[data-on='true'] .toggle__track {
-  background: rgba(255, 255, 255, 0.32);
+  background: rgba(0, 0, 0, 0.28);
 }
 
 .toggle[data-on='true'] .toggle__thumb {
