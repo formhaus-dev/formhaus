@@ -4,6 +4,7 @@ import type { FieldComponentMap, FieldComponentProps } from './types';
 const noop = () => {};
 
 export interface FieldResolverProps {
+  id?: string;
   field: FormFieldType;
   value: unknown;
   error?: string;
@@ -17,6 +18,7 @@ export interface FieldResolverProps {
 }
 
 export function FieldResolver({
+  id,
   field,
   value,
   error,
@@ -36,6 +38,7 @@ export function FieldResolver({
 
   return (
     <Component
+      id={id}
       field={field}
       value={value}
       error={error}

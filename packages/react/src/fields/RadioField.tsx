@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
-import { optionProps } from './fieldProps';
+import { fieldId, optionProps } from './fieldProps';
 
 export function RadioField(props: FieldComponentProps) {
   const { field, value, error, onChange, onCommit } = props;
@@ -10,9 +10,9 @@ export function RadioField(props: FieldComponentProps) {
   const options = field.options ?? [];
 
   return (
-    <FieldShell field={field} error={error} variant="radio">
-      {options.map((opt) => {
-        const optionId = `${field.key}-${opt.value}`;
+    <FieldShell id={fieldId(props)} field={field} error={error} variant="radio">
+      {options.map((opt, index) => {
+        const optionId = `${fieldId(props)}-${index}`;
         return (
           <div key={opt.value} className="fh-field__radio-option">
             <input

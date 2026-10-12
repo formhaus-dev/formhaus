@@ -9,7 +9,7 @@ const { input } = useField(props, emit);
 </script>
 
 <template>
-  <FieldShell :field="props.field" :error="props.error" variant="switch">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" variant="switch">
     <input
       v-bind="input"
       class="fh-field__switch"

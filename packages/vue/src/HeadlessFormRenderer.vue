@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { shouldApplyExternalErrors, type FormEngineOptions, type StepChangeContext } from '@formhaus/core';
 import { computed, nextTick, ref, watch } from 'vue';
+import { fieldDomId } from '@formhaus/core/internal';
 import FieldResolver from './FieldResolver.vue';
+import { useFormId } from './composables/useFormId';
 import { useFieldOptions } from './composables/useFieldOptions';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
@@ -11,6 +13,7 @@ const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, h
 
 const emit = defineEmits<FormRendererEmits>();
 
+const formId = useFormId();
 const formRef = ref<HTMLFormElement>();
 const engineOptions: FormEngineOptions = {
   validators: props.validators,
@@ -161,6 +164,7 @@ async function onPrimary() {
       <FieldResolver
         v-for="field in fieldsWithOptions"
         :key="field.key"
+        :id="fieldDomId(formId, field.key)"
         :field="field"
         :model-value="values[field.key]"
         :error="errors[field.key]"
