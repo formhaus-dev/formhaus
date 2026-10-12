@@ -5,8 +5,8 @@ import LucideIcon from './LucideIcon.vue';
 import './hero-video.css';
 
 const hiDpiWide = '(min-width: 960px) and (min-resolution: 1.5dppx)';
-const posterTime = 1.5;
-const posterSizes = '(min-width: 1000px) 920px, calc(100vw - 48px)';
+const posterTime = 5;
+const posterSizes = '(min-width: 1200px) 564px, (min-width: 960px) 50vw, calc(100vw - 48px)';
 const themes = [
   { name: 'light', base: '/media/formhaus-promo' },
   { name: 'dark', base: '/media/formhaus-promo-dark' },
