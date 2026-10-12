@@ -1,4 +1,5 @@
-import { shouldApplyExternalErrors, type FormEngineOptions } from '@formhaus/core';
+import type { FormEngineOptions } from '@formhaus/core';
+import { shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { useCallback, useEffect, useId, useRef } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormFieldsController } from './FormFieldsController';

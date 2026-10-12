@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { FormRenderer } from '@formhaus/vue';
-import { CloudError, focusProblem, type CloudAction } from '@formhaus/core/cloud';
+import { CloudError, type CloudAction } from '@formhaus/core/cloud';
+import { focusProblem } from '@formhaus/core/internal';
 import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';

@@ -23,6 +23,6 @@ export default defineConfig([
       const file = 'dist/cloud.js';
       await writeFile(file, `'use client';${await readFile(file, 'utf8')}`);
     },
-    external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/cloud', '@formhaus/react'],
+    external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/react'],
   },
 ]);

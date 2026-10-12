@@ -1,5 +1,6 @@
 import { FormRenderer } from '@formhaus/react';
-import { CloudError, focusProblem, type CloudAction } from '@formhaus/core/cloud';
+import { CloudError, type CloudAction } from '@formhaus/core/cloud';
+import { focusProblem } from '@formhaus/core/internal';
 import { useCallback, useEffect, useRef } from 'react';
 import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
