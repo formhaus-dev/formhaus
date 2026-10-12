@@ -104,6 +104,10 @@ interface ShowCondition {
   in?: (string | number)[];               // Value is in list
   notIn?: (string | number)[];            // Value is not in list
   notEmpty?: boolean;                     // Value is not null, undefined, '' or []
+  gt?: number;                            // Value is greater than
+  gte?: number;                           // Value is greater than or equal to
+  lt?: number;                            // Value is less than
+  lte?: number;                           // Value is less than or equal to
 }
 ```
 
