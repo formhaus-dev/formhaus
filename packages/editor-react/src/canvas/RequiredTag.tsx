@@ -24,8 +24,7 @@ export function RequiredTag({ field, actions, editable, reserve }: Props) {
       <button
         type="button"
         className={cx(styles.requiredTag, styles.toggle, !field.required && styles.optional)}
-        aria-label="Required"
-        aria-pressed={field.required}
+        aria-label={field.required ? 'Required, click to make optional' : 'Optional, click to make required'}
         onClick={(event) => {
           event.stopPropagation();
           actions.edit((form) => {
