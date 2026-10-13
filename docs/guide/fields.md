@@ -27,7 +27,7 @@ Types `text`, `email`, `phone`, `number`, `password` all render a text input. Th
 
 `number` renders `<input type="number">` and stores a number, or `''` when the input is empty.
 
-The browser does not check the `email` format. `validateSubmission()` from `@formhaus/core/server` does. For a browser check, add a `pattern` as above.
+The `email` type checks the format in the browser and in `validateSubmission()` from `@formhaus/core/server`. A `pattern` as above adds a stricter rule.
 
 `inputMode` controls the mobile keyboard without changing the field type:
 

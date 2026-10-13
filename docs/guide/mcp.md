@@ -63,7 +63,7 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 | `get_submissions` | `form_id`, optional `limit`, `cursor` | `submissions` and `next_cursor` |
 | `update_form_settings` | `form_id`, optional `webhook_url`, `notify_mode`, `success_message`, `redirect_url`, `status` | The form settings |
 | `get_webhook` | `form_id` | The webhook URL and the masked signing secret |
-| `reveal_webhook_secret` | `form_id` | The full signing secret. Not read-only, so MCP clients ask before running it |
+| `reveal_webhook_secret` | `form_id` | The full signing secret. Marked as a non-read-only, sensitive tool. Whether the client asks first depends on its permission settings |
 
 `publish_form`, `list_forms`, `get_submissions`, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` need an `fh_live_` key, and `publish_form` uses the key when set. `FORMHAUS_API_BASE` overrides the API origin. See [Cloud MCP reference](/cloud/mcp) for keys, results and errors.
 
