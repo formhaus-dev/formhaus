@@ -80,21 +80,15 @@ The second argument of `validateSubmission()` is the values object, not the whol
 
 ## What it checks
 
-Both run the `validation` rules on the active path and skip hidden fields, hidden steps and inactive branches. The returned `values` hold only fields on the active path; unknown keys are dropped. `validateSubmission()` also checks what a browser cannot be trusted to send:
+Both run the `validation` rules on the active path and skip hidden fields, hidden steps and inactive branches. Both also run the same type checks for built-in types: `email`, `date` (`YYYY-MM-DD`) and `datetime` (ISO 8601) formats, booleans for `checkbox` and `switch`, static `options` for `select`, `radio` and `multiselect`, and the 10,000 character cap on text. The browser skips `file` fields and the `options` check on fields with `optionsFrom`. The returned `values` hold only fields on the active path; unknown keys are dropped. `validateSubmission()` also handles what a browser cannot be trusted to send:
 
-| Check | `validateSubmission()` | `FormEngine.validate()` |
+| Behavior | `validateSubmission()` | `FormEngine.validate()` |
 |---|---|---|
 | Steps in `skippedSteps` dropped, only when the step has `skip` | Yes | No |
-| `number` takes a number or a decimal string, returned as a number | Yes | No. `"5"` skips `min` and `max` |
-| `checkbox` and `switch` take booleans | Yes | No |
-| `select` and `radio` values come from `options`, `multiselect` takes an array of them | Yes | No |
-| `email`, `date` (`YYYY-MM-DD`) and `datetime` (ISO 8601) formats | Yes | No |
-| Strings over 10,000 characters or `maxLength` rejected before other rules | Yes | No |
-| Named `validator` functions | Ignored | Yes |
+| `number` decimal string such as `"5"` converted to a number | Yes | No. The string fails the number check |
+| Named `validator` functions | Ignored unless passed in `validators` | Yes |
 
 `FormEngine.validate()` is the browser check. Do not use it on untrusted input.
-
-The browser runs the same type checks as `validateSubmission()` for the built-in types: `email` format, `date` and `datetime` shape, numbers, booleans, static `options`, and the 10,000 character cap on text.
 
 ## Custom validators
 
@@ -118,6 +112,7 @@ Validators run only for fields on the active path, never on an empty value.
 ## Limits
 
 - `pattern` rules run on untrusted input. Bound the execution time of the call, or keep patterns simple.
+- `pattern` regexes run synchronously, with no time limit, in the browser and in self-hosted servers. Avoid patterns prone to catastrophic backtracking. On Formhaus Cloud, server-side validation is time-bounded.
 - `validateSubmission()` does not limit the request body. Set a limit in your framework or proxy.
 
 ## Check a definition
