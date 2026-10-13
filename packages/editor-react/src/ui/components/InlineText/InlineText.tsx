@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useRef, type ComponentPropsWithRef, type KeyboardEvent, type Ref } from 'react';
+import { useCallback, useLayoutEffect, useRef, type ComponentPropsWithRef, type KeyboardEvent, type ReactNode, type Ref } from 'react';
 import { cx } from '../../lib/cx';
 import styles from './InlineText.module.css';
 
@@ -14,6 +14,7 @@ export type InlineTextProps = Omit<ComponentPropsWithRef<'textarea'>, 'value' | 
   rowClassName?: string;
   ring?: boolean;
   boxed?: boolean;
+  suffix?: ReactNode;
 };
 
 function assign<T>(ref: Ref<T> | undefined, node: T | null) {
@@ -41,6 +42,7 @@ export function InlineText({
   rowClassName,
   ring = false,
   boxed = false,
+  suffix,
   ref,
   ...rest
 }: InlineTextProps) {
@@ -91,6 +93,7 @@ export function InlineText({
         className={cx(styles.text, styles[size], tone === 'muted' && styles.muted, className)}
         {...rest}
       />
+      {suffix}
     </div>
   );
 }

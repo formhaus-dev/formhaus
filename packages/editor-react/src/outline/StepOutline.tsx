@@ -1,7 +1,7 @@
 import { groups, pageTitle } from '@formhaus/builder';
 import { CircleAlert } from 'lucide-react';
 import { cx } from '../ui/lib/cx';
-import { focusCard } from '../canvas/focus';
+import { revealStep } from '../canvas/focus';
 import { useEditorStore } from '../store/context';
 import { useForm, useIssues, useSelection, useStepOf } from '../store/hooks';
 import styles from './StepOutline.module.css';
@@ -32,7 +32,9 @@ export function StepOutline() {
                 aria-current={active === page.uid ? 'step' : undefined}
                 onClick={() => {
                   store.select({ kind: 'step', uid: page.uid });
-                  focusCard(page.uid);
+                  requestAnimationFrame(() => {
+                    revealStep(page.uid, true);
+                  });
                 }}
               >
                 <span className={styles.number}>{index + 1}</span>

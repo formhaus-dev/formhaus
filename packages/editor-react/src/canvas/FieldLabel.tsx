@@ -51,7 +51,8 @@ export function FieldLabel({ field, actions, readOnly, inputRef, onSelect, onAdd
       label="Field label"
       placeholder="Question"
       size="lg"
-      ring
+      boxed
+      suffix={field.required && <span className={styles.requiredTag}>Required</span>}
       readOnly={readOnly}
       rowClassName={styles.label}
       onFocus={onSelect}
@@ -78,7 +79,7 @@ export function FieldLabel({ field, actions, readOnly, inputRef, onSelect, onAdd
   return (
     <FieldPalette
       open
-      anchor={<div className={styles.label}>{input}</div>}
+      anchor={<div className={styles.anchor}>{input}</div>}
       onOpenChange={(open) => {
         if (!open) setSlash(false);
       }}
