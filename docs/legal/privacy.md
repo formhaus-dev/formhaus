@@ -144,7 +144,7 @@ When you delete a form, submissions or your account, we remove the data from the
 
 ## 10. Security
 
-The Service uses TLS for all connections, stores data in the EU, encrypts off-site database backups before they leave the server, stores only keyed hashes of sign-in tokens, session tokens, API keys and claim tokens, signs webhooks, blocks webhook requests to private networks, and rate-limits public endpoints. Annex II of the [Data Processing Addendum](./dpa.md) describes the measures in full.
+The Service uses TLS for all connections, stores data in the EU on storage that is encrypted at rest, encrypts off-site database backups before they leave the server, stores only keyed hashes of sign-in tokens, session tokens, API keys and claim tokens, signs webhooks, blocks webhook requests to private networks, and rate-limits public endpoints. Annex II of the [Data Processing Addendum](./dpa.md) describes the measures in full.
 
 If a breach affects your personal data, we will notify you and the relevant authorities as the law requires.
 
