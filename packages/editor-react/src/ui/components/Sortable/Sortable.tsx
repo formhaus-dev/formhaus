@@ -110,7 +110,9 @@ export function Sortable<T extends { id: string }>({
       {createPortal(
         <DragOverlay modifiers={[vertical]} dropAnimation={null}>
           {lifted && (
-            <div className={styles.overlay}>{renderItem(lifted, { handleProps: overlayHandle(getLabel(lifted)), isDragging: true })}</div>
+            <div className={styles.overlay}>
+              {renderItem(lifted, { handleProps: overlayHandle(getLabel(lifted)), isDragging: true, overlay: true })}
+            </div>
           )}
         </DragOverlay>,
         document.body,
