@@ -144,7 +144,7 @@ If the user selects "personal" account type, this entire step disappears and the
 
 ## Conditional submit button
 
-The default adapters evaluate `disabled` conditions on the top-level `submit` action:
+The default adapters evaluate `disabled` conditions on the top-level `submit` action and on the `next` action of a step:
 
 ```json
 {
@@ -157,7 +157,7 @@ The default adapters evaluate `disabled` conditions on the top-level `submit` ac
 
 The submit button stays disabled until `termsAccepted` is `true`. All conditions must pass (AND logic) for the button to be disabled.
 
-Other actions also expose `disabled` to custom action components, but the built-in adapters do not evaluate it for next, back, or cancel buttons.
+A step `next` with `disabled` keeps Continue disabled the same way. Custom action components can call `isActionDisabled(action, values)` from `@formhaus/core` to get the same result. The built-in adapters do not evaluate `disabled` for back, skip or cancel buttons.
 
 ## Next steps
 
