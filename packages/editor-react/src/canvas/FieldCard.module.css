@@ -24,6 +24,10 @@
   outline: none;
 }
 
+.lifted .handle {
+  opacity: 1;
+}
+
 .selected,
 .selected:hover {
   border-color: var(--fh-ed-fg);

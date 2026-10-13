@@ -22,6 +22,10 @@
   opacity: 0;
 }
 
+.row.dragging .handle {
+  opacity: 0;
+}
+
 .overlay {
   border-radius: var(--fh-ed-radius-lg);
   box-shadow: var(--fh-ed-shadow-pop);

@@ -27,10 +27,11 @@ import { closeSettingsOnEscape, toggleSettings } from './settings';
 interface Props {
   uid: string;
   handleProps: SortableHandleProps;
+  lifted?: boolean;
   actions: EditorActions;
 }
 
-export function FieldCard({ uid, handleProps, actions }: Props) {
+export function FieldCard({ uid, handleProps, actions, lifted = false }: Props) {
   const field = useField(uid);
   const store = useEditorStore();
   const selected = useIsSelected({ kind: 'field', uid });
@@ -66,7 +67,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
   return (
     <div
       data-card={uid}
-      className={cx(styles.card, selected && styles.selected, issues.length > 0 && styles.invalid)}
+      className={cx(styles.card, lifted && styles.lifted, selected && styles.selected, issues.length > 0 && styles.invalid)}
       tabIndex={selected ? 0 : -1}
       role="group"
       aria-label={`${field.label.trim() || 'Untitled question'} field`}
