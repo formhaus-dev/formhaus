@@ -1,4 +1,4 @@
-import { evaluateCondition } from '@formhaus/core';
+import { isActionDisabled } from '@formhaus/core';
 import { autoAdvance } from '@formhaus/core/internal';
 import { ref, watch } from 'vue';
 import type { FormRendererEmits, FormRendererProps } from '../types';
@@ -21,7 +21,10 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
       else actionError.value = error instanceof Error ? error.message : 'Form action failed';
     }
   }
-  const next = () => run(() => form.engine.next());
+  const next = () => run(async () => {
+    const engine = form.engine;
+    return !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, engine.getSubmitValues()) && engine.next();
+  });
   const prev = () => run(() => form.engine.back());
   function update(key: string, value: unknown) {
     if (props.loading || form.engine.stepValidating || form.engine.submitting) return;
@@ -54,9 +57,7 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
   }
   const submit = () => run(async () => {
     const engine = form.engine;
-    const values = engine.getSubmitValues();
-    if (engine.definition.submit.disabled?.every((condition) => evaluateCondition(condition, values))
-      && engine.definition.submit.disabled.length > 0) return false;
+    if (isActionDisabled(engine.definition.submit, engine.getSubmitValues())) return false;
     return report(engine, engine.submit(send(engine, props.onSubmit ?? props.submitHandler)));
   });
   const skip = () => run(() => {

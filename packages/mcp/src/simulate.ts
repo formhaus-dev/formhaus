@@ -1,4 +1,4 @@
-import { isVisible, type FormEngine, type FormField, type FormStep } from '@formhaus/core';
+import { isActionDisabled, isVisible, type FormEngine, type FormField, type FormStep } from '@formhaus/core';
 import { perform, type SimulationAction, type TraceEntry } from './simulate-actions';
 import { inspectDefinition, type ValidationReport } from './validate';
 
@@ -86,7 +86,7 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
     isLastStep: atEnd,
     trace,
     errors: visitedErrors(engine, visited, allErrors),
-    wouldSubmit: submitted || (atEnd && Object.keys(allErrors).length === 0),
+    wouldSubmit: submitted || (atEnd && Object.keys(allErrors).length === 0 && !isActionDisabled(definition.submit, engine.getSubmitValues())),
     submitValues: engine.getSubmitValues(),
   };
 }
