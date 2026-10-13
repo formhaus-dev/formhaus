@@ -1,0 +1,11 @@
+.cloud a, .cloud button { cursor: pointer; }
+.cloud .lp-link { min-height: 44px; }
+.cloud-actions { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 32px; }
+.cloud-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+.cloud-frame { overflow: hidden; border: 1px solid var(--vp-c-divider); border-radius: 16px; background: var(--vp-c-bg); }
+.cloud-dark, html.dark .cloud-light { display: none !important; }
+html.dark .cloud-dark { display: block !important; }
+.cloud :is(#pricing, #faq) { scroll-margin-top: var(--vp-nav-height); }
+@media (max-width: 767px) {
+  .cloud-columns { grid-template-columns: 1fr; gap: 32px; }
+}

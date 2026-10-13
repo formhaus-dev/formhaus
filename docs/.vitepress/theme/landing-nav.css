@@ -1,0 +1,12 @@
+.Layout.lp-page :is(.VPNavBarMenu, .VPNavScreenMenu, .VPNavBarSearch) { display: none; }
+.Layout.lp-page .VPNavBar .gh-star { position: relative; cursor: pointer; }
+.Layout.lp-page .VPNavBar .gh-star::before { content: ""; position: absolute; inset: -9px -1px; }
+@media (max-width: 959px) {
+  .Layout.lp-page .VPNavBar :is(.menu, .search, .translations, .appearance, .social-links, .extra) { display: none; }
+  .Layout.lp-page .VPNavBarHamburger { display: flex; }
+  .Layout.lp-page .VPNavScreen { display: block; padding-inline: 16px; }
+  .Layout.lp-page .VPNavScreen .container { max-width: none; }
+}
+@media (min-width: 960px) and (max-width: 1279px) {
+  .Layout.lp-page .VPNavBarSearch { padding-left: 0; }
+}

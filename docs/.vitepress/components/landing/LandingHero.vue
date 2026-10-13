@@ -12,6 +12,7 @@ import McpCommand from './McpCommand.vue';
         Describe a form to share, embed, or use in your app.
       </p>
       <LandingActions class="hero__actions" />
+      <p class="hero__note">No code needed. Free for 3 forms.</p>
     </div>
     <McpCommand id="hero-mcp" class="hero__mcp" />
     <LandingHeroVideo class="hero__video" />
@@ -58,6 +59,14 @@ import McpCommand from './McpCommand.vue';
 
 .hero__actions {
   margin-top: 32px;
+}
+
+.hero__note {
+  margin: 16px 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--vp-c-text-2);
+  text-align: center;
 }
 
 @media (min-width: 960px) {

@@ -7,9 +7,17 @@ import './hero-video.css';
 const hiDpiWide = '(min-width: 960px) and (min-resolution: 1.5dppx)';
 const narrow = '(max-width: 639px)';
 const posterSizes = '(min-width: 1200px) 1152px, calc(100vw - 32px)';
+const props = withDefaults(defineProps<{ prefix?: string; start?: number; length?: number; mobileLength?: number; mobileRatio?: string; caption?: string }>(), {
+  prefix: 'formhaus-hero',
+  start: 5,
+  length: 33,
+  mobileLength: 22,
+  mobileRatio: '16 / 9',
+  caption: 'An agent writes a waitlist form and publishes it. The same form runs in React, Vue, a hosted page and Figma. Someone fills it in, and the response lands in the dashboard, a webhook and a CSV file.',
+});
 const themes = [
-  { name: 'light', base: '/media/formhaus-hero', mobile: '/media/formhaus-hero-mobile' },
-  { name: 'dark', base: '/media/formhaus-hero-dark', mobile: '/media/formhaus-hero-mobile-dark' },
+  { name: 'light', base: `/media/${props.prefix}`, mobile: `/media/${props.prefix}-mobile` },
+  { name: 'dark', base: `/media/${props.prefix}-dark`, mobile: `/media/${props.prefix}-mobile-dark` },
 ].map((t) => ({
   ...t,
   srcset: [640, 1280, 1920, 2560].map((w) => `${t.base}-poster-${w}.jpg ${w}w`).join(', '),
@@ -30,8 +38,8 @@ let observer: IntersectionObserver | undefined;
 
 const theme = computed(() => themes[isDark.value ? 1 : 0]);
 const base = computed(() => (mobile.value ? theme.value.mobile : theme.value.base));
-const startAt = computed(() => (mobile.value ? 0 : 5));
-const duration = computed(() => (mobile.value ? 22 : 33));
+const startAt = computed(() => (mobile.value ? 0 : props.start));
+const duration = computed(() => (mobile.value ? props.mobileLength : props.length));
 const sources = computed(() => mobile.value ? [
   { src: `${base.value}-1080.mp4`, type: 'video/mp4', media: '(min-resolution: 2dppx)' },
   { src: `${base.value}-720.mp4`, type: 'video/mp4' },
@@ -96,7 +104,7 @@ onBeforeUnmount(() => observer?.disconnect());
 </script>
 
 <template>
-  <figure ref="figure" class="hero-video" :class="{ 'hero-video--started': started }">
+  <figure ref="figure" class="hero-video" :class="{ 'hero-video--started': started }" :style="{ '--hero-video-mobile-ratio': props.mobileRatio }">
     <picture v-for="t in themes" :key="t.name">
       <source :media="narrow" :srcset="t.mobileSrcset" :sizes="posterSizes" />
       <img
@@ -129,11 +137,7 @@ onBeforeUnmount(() => observer?.disconnect());
         <source v-for="s in sources" :key="s.src" :src="s.src" :type="s.type" :media="s.media" />
       </template>
     </video>
-    <figcaption id="hero-video-caption" class="lp-sr-only">
-      An agent writes a waitlist form and publishes it.
-      The same form runs in React, Vue, a hosted page and Figma.
-      Someone fills it in, and the response lands in the dashboard, a webhook and a CSV file.
-    </figcaption>
+    <figcaption id="hero-video-caption" class="lp-sr-only">{{ props.caption }}</figcaption>
     <button v-if="ready && !started" type="button" class="hero-video__start" @click="toggle">
       <LucideIcon name="play" />
       <span>Play video</span>

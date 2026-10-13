@@ -130,7 +130,7 @@ Hosted pages and the embed do not render password fields or file upload fields. 
 
 ## 9. Plans, limits and fees
 
-- **Plans.** The Service has Free, Pro and Team plans, listed on the pricing page at https://formhaus.dev/cloud#pricing. At the effective date, the prices and limits are:
+- **Plans.** The Service has Free, Pro and Team plans, listed on the pricing page at https://formhaus.dev/pricing. At the effective date, the prices and limits are:
 
   | Plan | Price | Forms | Submissions per month | Editors | Webhooks | Submission retention |
   |---|---|---|---|---|---|---|
