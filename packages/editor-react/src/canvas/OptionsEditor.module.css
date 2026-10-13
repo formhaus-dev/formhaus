@@ -1,12 +1,11 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--fh-ed-space-1);
-  margin-inline: calc(var(--fh-ed-space-3) * -1);
+  gap: var(--fh-ed-space-2);
 }
 
 .list {
-  gap: 0;
+  gap: var(--fh-ed-space-2);
 }
 
 .row {
@@ -14,12 +13,6 @@
   align-items: flex-start;
   gap: var(--fh-ed-space-2);
   min-height: var(--fh-ed-size-control-md);
-  padding-inline: var(--fh-ed-space-1) var(--fh-ed-space-1);
-  border-radius: var(--fh-ed-radius-md);
-}
-
-.row:focus-within {
-  background: var(--fh-ed-sub);
 }
 
 .grip {
@@ -66,7 +59,9 @@
 
 .text {
   flex: 1;
+  align-items: center;
   align-self: center;
+  min-height: var(--fh-ed-size-control-md);
 }
 
 .remove {
@@ -82,4 +77,17 @@
   min-height: var(--fh-ed-size-control-md);
   color: var(--fh-ed-fg-muted);
   font-size: var(--fh-ed-font-size-sm);
+}
+
+@container (width < 640px) {
+  .row {
+    flex-wrap: wrap;
+    row-gap: var(--fh-ed-space-2);
+  }
+
+  .goTo {
+    order: 1;
+    flex: 1 0 calc(100% - var(--fh-ed-size-choice) - var(--fh-ed-space-2));
+    margin-left: calc(var(--fh-ed-size-choice) + var(--fh-ed-space-2));
+  }
 }

@@ -1,6 +1,6 @@
 import { groups, pageTitle } from '@formhaus/builder';
 import { Select } from '../ui';
-import { focusCard } from '../canvas/focus';
+import { revealStep } from '../canvas/focus';
 import { useEditorStore } from '../store/context';
 import { useForm, useSelection, useStepOf } from '../store/hooks';
 import styles from './StepOutline.module.css';
@@ -27,7 +27,7 @@ export function StepJump() {
           const uid = event.target.value;
           store.select({ kind: 'step', uid });
           requestAnimationFrame(() => {
-            focusCard(uid);
+            revealStep(uid, false);
           });
         }}
       />

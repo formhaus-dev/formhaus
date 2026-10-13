@@ -88,8 +88,6 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
             onAddBelow={addBelow}
             onCardKey={onCardKey}
           />
-          {field.required && <span className={styles.requiredTag}>Required</span>}
-          <span className={styles.spacer} />
           <TypeChip field={field} actions={actions} disabled={readOnly} />
           {!readOnly && (
             <>
@@ -130,7 +128,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
             toggleSettings(store, uid, false);
           }}
         />
-        {body()}
+        <div className={styles.answer}>{body()}</div>
         {issues.length > 0 && (
           <ul id={issuesId} className={styles.issues}>
             {issues.map((issue) => (

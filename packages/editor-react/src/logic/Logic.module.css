@@ -42,7 +42,7 @@
   align-self: flex-start;
   gap: var(--fh-ed-space-1-5);
   max-width: 100%;
-  padding: var(--fh-ed-space-1) var(--fh-ed-space-2);
+  padding: var(--fh-ed-space-1) var(--fh-ed-space-2-5);
   border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
   border-radius: var(--fh-ed-radius-md);
   background: var(--fh-ed-sub);

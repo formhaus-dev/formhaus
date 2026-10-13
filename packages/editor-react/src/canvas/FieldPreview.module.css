@@ -78,6 +78,7 @@
 
 .editable {
   width: 100%;
+  border-color: var(--fh-ed-line-strong);
   color: var(--fh-ed-fg-muted);
   font: inherit;
   font-size: var(--fh-ed-font-size-md);
@@ -89,10 +90,11 @@
 }
 
 .editable:hover {
-  border-color: var(--fh-ed-line-strong);
+  border-color: var(--fh-ed-fg-subtle);
 }
 
 .editable:focus-visible {
-  outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
-  outline-offset: calc(var(--fh-ed-border-thin) * -1);
+  outline: none;
+  border-color: var(--fh-ed-accent);
+  box-shadow: 0 0 0 var(--fh-ed-border-thin) var(--fh-ed-accent);
 }

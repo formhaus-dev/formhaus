@@ -1,59 +1,48 @@
 {
   "id": "webinar-signup",
   "title": "Save your seat: Spring launch webinar",
-  "description": "Thursday, 24 April, 17:00 CET. 45 minutes plus Q&A.",
+  "description": "Live on Thursday, 24 April at 17:00 CET. 45 minutes plus Q&A.",
   "submit": {
     "label": "Save my seat"
   },
   "fields": [
     {
-      "key": "session",
-      "type": "radio",
-      "label": "How will you join?",
-      "layout": "inline",
-      "options": [
-        {
-          "value": "live",
-          "label": "Live"
-        },
-        {
-          "value": "replay",
-          "label": "Send me the replay"
-        }
-      ],
+      "key": "name",
+      "type": "text",
+      "label": "Full name",
       "validation": {
         "required": true
       }
     },
     {
-      "key": "before",
-      "type": "radio",
-      "label": "Have you joined one of our webinars before?",
-      "layout": "inline",
-      "options": [
-        {
-          "value": "yes",
-          "label": "Yes"
-        },
-        {
-          "value": "no",
-          "label": "No"
-        }
-      ]
+      "key": "email",
+      "type": "email",
+      "label": "Work email",
+      "inputMode": "email",
+      "validation": {
+        "required": true
+      }
     },
     {
-      "key": "slides",
-      "type": "radio",
-      "label": "Should we email you the slides?",
-      "layout": "inline",
+      "key": "role",
+      "type": "select",
+      "label": "Your role",
       "options": [
         {
-          "value": "yes",
-          "label": "Yes, please"
+          "value": "marketing",
+          "label": "Marketing"
         },
         {
-          "value": "no",
-          "label": "No, thanks"
+          "value": "sales",
+          "label": "Sales"
+        },
+        {
+          "value": "founder",
+          "label": "Founder"
+        },
+        {
+          "value": "other",
+          "label": "Other"
         }
       ]
     }
