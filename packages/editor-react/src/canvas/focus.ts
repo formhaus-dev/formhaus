@@ -37,3 +37,11 @@ export function neighbourCard(from: HTMLElement, delta: -1 | 1): HTMLElement | u
   const cards = [...document.querySelectorAll<HTMLElement>('[data-card]')];
   return cards[cards.indexOf(from) + delta];
 }
+
+export function revealStep(uid: string, focusTitle: boolean) {
+  const card = document.querySelector<HTMLElement>(`[data-card="${CSS.escape(uid)}"]`);
+  if (!card) return;
+  if (focusTitle) card.querySelector<HTMLElement>('[data-focus="label"]')?.focus({ preventScroll: true });
+  const instant = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  card.scrollIntoView({ block: 'start', behavior: instant ? 'auto' : 'smooth' });
+}
