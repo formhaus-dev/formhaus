@@ -1,7 +1,6 @@
-import type { FormEngine } from '@formhaus/core';
+import { isActionDisabled, type FormEngine } from '@formhaus/core';
 import { autoAdvance } from '@formhaus/core/internal';
 import { useCallback, useState } from 'react';
-import { isActionDisabled } from '../isActionDisabled';
 import type { FormRendererProps } from '../types';
 
 export function useRendererActions(engine: FormEngine, props: FormRendererProps) {
@@ -18,7 +17,9 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
       else setFailure({ engine, message: error instanceof Error ? error.message : 'Form action failed' });
     }
   }, [engine, loading, onError]);
-  const next = useCallback(() => run(() => engine.next()), [run, engine]);
+  const next = useCallback(() => run(async () => (
+    !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, engine.getSubmitValues()) && engine.next()
+  )), [run, engine]);
   const prev = useCallback(() => run(() => engine.back()), [run, engine]);
   const update = useCallback((key: string, value: unknown) => {
     if (loading || engine.stepValidating || engine.submitting) return;

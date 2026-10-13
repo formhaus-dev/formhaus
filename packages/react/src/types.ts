@@ -22,6 +22,7 @@ export type FieldComponentMap = Partial<Record<FieldType, ComponentType<FieldCom
 
 export interface FormActionsProps {
   submitAction?: FormAction;
+  nextAction?: FormAction | false;
   backAction?: FormAction | false;
   cancelAction?: FormAction;
   skipAction?: FormAction;
