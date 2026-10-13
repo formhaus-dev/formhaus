@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createRequire } from 'node:module';
 import { alignment } from './editor-edges.mjs';
+import { firstLine, layout } from './editor-layout.mjs';
 
 const require = createRequire(new URL('../packages/editor-react/package.json', import.meta.url));
 const { chromium } = require('playwright');
@@ -175,6 +176,8 @@ async function check() {
         await context.addInitScript((mode) => localStorage.setItem('vitepress-theme-appearance', mode), theme);
         const page = await context.newPage();
         await alignment(page, base, `${theme} ${String(width)}`);
+        await layout(page, base, `${theme} ${String(width)}`);
+        await firstLine(page, base, `${theme} ${String(width)}`);
         await page.close();
         await leaveGuard(context, theme, width);
         await carryOver(context, theme, width);
