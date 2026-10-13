@@ -76,6 +76,7 @@ export function OptionsEditor({ field, actions }: Props) {
                 label={`Option ${String(index + 1)}`}
                 placeholder={`Option ${String(index + 1)}`}
                 readOnly={readOnly}
+                boxed
                 rowClassName={styles.text}
                 onValueChange={(label) => {
                   actions.edit((form) => {

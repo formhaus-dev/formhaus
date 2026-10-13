@@ -54,7 +54,7 @@
 .body {
   display: flex;
   flex-direction: column;
-  gap: var(--fh-ed-space-3);
+  gap: var(--fh-ed-space-2);
   padding: var(--fh-ed-space-5) var(--fh-ed-space-6);
 }
 
@@ -132,11 +132,15 @@
   overflow-wrap: anywhere;
 }
 
+.answer {
+  margin-top: var(--fh-ed-space-1);
+}
+
 .issues {
   display: flex;
   flex-direction: column;
   gap: var(--fh-ed-space-1);
-  margin: 0;
+  margin: var(--fh-ed-space-1) 0 0;
   padding: 0;
   list-style: none;
 }
@@ -159,10 +163,6 @@
   color: var(--fh-ed-danger);
 }
 
-.spacer {
-  display: none;
-}
-
 @container (width < 640px) {
   .body {
     padding: var(--fh-ed-space-4);
@@ -176,15 +176,12 @@
 
   .label,
   .anchor {
+    flex-basis: calc(100% - var(--fh-ed-space-10));
     max-width: calc(100% - var(--fh-ed-space-10));
   }
 
-  .spacer {
-    display: block;
-    flex-basis: 100%;
-  }
-
-  .spacer + * {
+  .label + *,
+  .anchor + * {
     margin-right: auto;
   }
 }
