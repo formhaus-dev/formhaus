@@ -22,8 +22,8 @@
   opacity: 0;
 }
 
-.dragging .handle {
-  visibility: hidden;
+.row.dragging .handle {
+  opacity: 0;
 }
 
 .overlay {
