@@ -7,6 +7,8 @@ description: "Connect an agent to Formhaus Cloud over MCP or REST, publish a for
 
 An agent publishes a definition with `publish_form` or `POST /v1/forms`; a human claims the form in the dashboard.
 
+To manage forms by chatting in Claude or ChatGPT without code, see [Connect Claude](/cloud/connect-claude).
+
 ## Agents
 
 ### Remote MCP server
