@@ -39,8 +39,10 @@ describe('branching in a browser', () => {
     await page.viewport(1440, 1000);
     const { store } = renderEditor(fromDefinition(definition));
     await userEvent.click(screen.getByRole('group', { name: 'Plan field' }), { position: { x: 30, y: 20 } });
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'After Free, go to' }), 'End form');
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'After Pro, go to' }), 'Go to Notes');
+    await userEvent.click(screen.getByRole('button', { name: /^After Free, go to/ }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'End form' }));
+    await userEvent.click(screen.getByRole('button', { name: /^After Pro, go to/ }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Notes' }));
     await waitFor(() => {
       expect(toDefinition(store.getState().form).steps?.[0]?.routes).toEqual([
         { to: null, show: [{ field: 'plan', eq: 'free' }] },

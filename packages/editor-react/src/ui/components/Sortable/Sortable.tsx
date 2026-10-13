@@ -110,8 +110,8 @@ export function Sortable<T extends { id: string }>({
       {createPortal(
         <DragOverlay modifiers={[vertical]} dropAnimation={null}>
           {lifted && (
-            <div className={styles.overlay}>
-              {renderItem(lifted, { handleProps: overlayHandle(getLabel(lifted)), isDragging: true, overlay: true })}
+            <div className={cx('fh-editor', styles.overlay)}>
+              {renderItem(lifted, { handleProps: overlayHandle(getLabel(lifted)), isDragging: true })}
             </div>
           )}
         </DragOverlay>,

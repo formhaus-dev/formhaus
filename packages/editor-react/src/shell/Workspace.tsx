@@ -10,7 +10,7 @@ import styles from './EditorShell.module.css';
 
 const OUTLINE = 960;
 
-export function Workspace({ outline = true }: { outline?: boolean }) {
+export function Workspace({ outline = true, header = true }: { outline?: boolean; header?: boolean }) {
   const actions = useEditorActions();
   const root = useRef<HTMLDivElement>(null);
   const width = useWidth(root);
@@ -21,7 +21,7 @@ export function Workspace({ outline = true }: { outline?: boolean }) {
       <div className={styles.layout} data-stepped={stepped || undefined}>
         {stepped && <div className={styles.outline}>{width >= OUTLINE ? <StepOutline /> : <StepJump />}</div>}
         <div className={styles.canvas}>
-          <Canvas actions={actions} />
+          <Canvas actions={actions} header={header} />
         </div>
       </div>
     </div>

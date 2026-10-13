@@ -17,11 +17,12 @@ export interface SheetProps {
   footer?: ReactNode;
   detent?: SheetDetent;
   onDetentChange?: (detent: SheetDetent) => void;
+  onClosed?: () => boolean;
 }
 
 const SWIPE = 40;
 
-export function Sheet({ title, description, open, onOpenChange, children, footer, detent, onDetentChange }: SheetProps) {
+export function Sheet({ title, description, open, onOpenChange, children, footer, detent, onDetentChange, onClosed }: SheetProps) {
   const [own, setOwn] = useState<SheetDetent>('medium');
   const current = detent ?? own;
   const start = useRef<number | null>(null);
@@ -51,7 +52,13 @@ export function Sheet({ title, description, open, onOpenChange, children, footer
           className={cx(styles.sheet, styles[current])}
           data-detent={current}
           onOpenAutoFocus={focus.remember}
-          onCloseAutoFocus={focus.onCloseAutoFocus}
+          onCloseAutoFocus={(event) => {
+            if (onClosed?.()) {
+              event.preventDefault();
+              return;
+            }
+            focus.onCloseAutoFocus(event);
+          }}
           {...(description ? {} : { 'aria-describedby': undefined })}
         >
           <button

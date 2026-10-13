@@ -1,4 +1,4 @@
-import type { ReactElement } from 'react';
+import { useRef, type ReactElement } from 'react';
 import { CommandList, Popover, Sheet } from '../ui';
 import { paletteItems } from '../fieldTypes';
 import { phone, useMedia } from '../useMedia';
@@ -16,6 +16,7 @@ interface Props {
 
 export function FieldPalette({ open, onOpenChange, onPick, trigger, anchor, label = 'Field types', adding = false }: Props) {
   const small = useMedia(phone);
+  const picked = useRef<string | null>(null);
   const list = (
     <CommandList
       items={adding ? addItems : paletteItems}
@@ -24,7 +25,8 @@ export function FieldPalette({ open, onOpenChange, onPick, trigger, anchor, labe
       placeholder="Search field types"
       autoFocus={!small}
       onSelect={(id) => {
-        onPick(id);
+        if (small) picked.current = id;
+        else onPick(id);
         onOpenChange(false);
       }}
       onEscape={() => {
@@ -45,7 +47,21 @@ export function FieldPalette({ open, onOpenChange, onPick, trigger, anchor, labe
           </span>
         )}
         {anchor}
-        <Sheet title={label} open={open} onOpenChange={onOpenChange}>
+        <Sheet
+          title={label}
+          open={open}
+          onOpenChange={onOpenChange}
+          onClosed={() => {
+            const id = picked.current;
+            if (!id) return false;
+            picked.current = null;
+            onPick(id);
+            requestAnimationFrame(() => {
+              if (document.activeElement instanceof HTMLElement) document.activeElement.scrollIntoView({ block: 'center' });
+            });
+            return true;
+          }}
+        >
           {list}
         </Sheet>
       </>
@@ -58,6 +74,7 @@ export function FieldPalette({ open, onOpenChange, onPick, trigger, anchor, labe
       label={label}
       width="canvas"
       flush
+      capped
       {...(trigger ? { trigger } : {})}
       {...(anchor ? { anchor } : {})}
     >

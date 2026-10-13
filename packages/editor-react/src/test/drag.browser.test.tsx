@@ -44,7 +44,7 @@ describe('dragging a field card', () => {
     expect(box.width).toBeGreaterThan(200);
     expect(clipped(lifted)).toBe(false);
     const placeholder = document.querySelector<HTMLElement>('[data-dragging]');
-    expect(placeholder && getComputedStyle(placeholder).borderTopStyle).toBe('dashed');
+    expect(placeholder && getComputedStyle(placeholder).outlineStyle).toBe('dashed');
     await userEvent.keyboard(' ');
     await waitFor(() => {
       expect(toDefinition(store.getState().form).fields?.map((field) => field.key)).toEqual(['third', 'first', 'second']);
