@@ -11,6 +11,7 @@ import webinar from './webinar.json';
     title="Easy to build, easy to change"
     lead="Arrange fields, split long forms into steps, and add logic in a click."
     :json="false"
+    :height="693"
   >
     <template #after><SectionCta href="/build" label="Open the builder" /></template>
   </LandingDemo>
