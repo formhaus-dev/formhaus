@@ -45,3 +45,14 @@ export function tokenize(source: string): Token[][] {
     return tokens;
   });
 }
+
+export function parseJson(text: string): { value: unknown } | { error: string } {
+  try {
+    return { value: JSON.parse(text) };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Invalid JSON';
+    const at = /position (\d+)/.exec(message);
+    const line = at ? text.slice(0, Number(at[1])).split('\n').length : undefined;
+    return { error: `${line ? `Line ${line}: ` : ''}${message.replace(/ in JSON.*$/, '').replace(/^JSON\.parse: /, '')}` };
+  }
+}

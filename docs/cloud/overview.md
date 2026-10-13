@@ -5,7 +5,7 @@ description: "What Formhaus Cloud adds to the open-source packages: a submission
 
 # Cloud overview
 
-Formhaus Cloud hosts the backend for a Formhaus definition. The open-source packages work without it. Pricing is on [Formhaus Cloud](/cloud).
+Formhaus Cloud hosts the backend for a Formhaus definition. The open-source packages work without it. Pricing is on the [pricing page](/pricing).
 
 | Feature | Open source (MIT) | Cloud |
 |---|---|---|

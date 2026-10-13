@@ -103,6 +103,10 @@ html.dark .hero-video__poster--dark {
 }
 
 @media (max-width: 639px) {
+  .hero-video {
+    aspect-ratio: var(--hero-video-mobile-ratio, 16 / 9);
+  }
+
   .hero-video .hero-video__start {
     display: none;
   }

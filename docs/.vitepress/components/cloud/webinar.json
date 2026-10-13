@@ -1,0 +1,50 @@
+{
+  "id": "webinar-signup",
+  "title": "Save your seat: Spring launch webinar",
+  "description": "Live on Thursday, 24 April at 17:00 CET. 45 minutes plus Q&A.",
+  "submit": {
+    "label": "Save my seat"
+  },
+  "fields": [
+    {
+      "key": "name",
+      "type": "text",
+      "label": "Full name",
+      "validation": {
+        "required": true
+      }
+    },
+    {
+      "key": "email",
+      "type": "email",
+      "label": "Work email",
+      "inputMode": "email",
+      "validation": {
+        "required": true
+      }
+    },
+    {
+      "key": "role",
+      "type": "select",
+      "label": "Your role",
+      "options": [
+        {
+          "value": "marketing",
+          "label": "Marketing"
+        },
+        {
+          "value": "sales",
+          "label": "Sales"
+        },
+        {
+          "value": "founder",
+          "label": "Founder"
+        },
+        {
+          "value": "other",
+          "label": "Other"
+        }
+      ]
+    }
+  ]
+}
