@@ -88,7 +88,6 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
             onAddBelow={addBelow}
             onCardKey={onCardKey}
           />
-          {field.required && <span className={styles.requiredTag}>Required</span>}
           <span className={styles.spacer} />
           <TypeChip field={field} actions={actions} disabled={readOnly} />
           {!readOnly && (
