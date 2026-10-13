@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type FormAction, evaluateCondition } from '@formhaus/core';
+import { type FormAction, isActionDisabled } from '@formhaus/core';
 import type { FormActionsProps } from './types';
 
 const props = withDefaults(defineProps<FormActionsProps>(), {
@@ -17,10 +17,8 @@ const emit = defineEmits<{
   (e: 'primary'): void;
 }>();
 
-function isActionDisabled(action: FormAction | undefined): boolean {
-  if (props.loading) return true;
-  if (!action?.disabled || action.disabled.length === 0) return false;
-  return action.disabled.every((c) => evaluateCondition(c, props.values ?? {}));
+function isPrimaryDisabled(): boolean {
+  return !!props.loading || isActionDisabled(props.isMultiStep && !props.isLastStep ? props.nextAction : props.submitAction, props.values ?? {});
 }
 
 function getButtonClass(action: FormAction | false | undefined, variant: NonNullable<FormAction['variant']>): string {
@@ -93,7 +91,7 @@ function getBackLabel(): string {
       v-if="props.showPrimary !== false"
       type="submit"
       class="fh-form-actions__button fh-form-actions__button--primary"
-      :disabled="isActionDisabled(props.isMultiStep && !props.isLastStep ? undefined : props.submitAction)"
+      :disabled="isPrimaryDisabled()"
       @click.prevent="onPrimaryClick"
     >
       {{ getPrimaryLabel() }}

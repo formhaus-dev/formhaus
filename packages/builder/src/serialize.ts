@@ -13,7 +13,7 @@ function field(item: BuilderQuestion, path: string, paths: Map<string, string>):
   const merged = { ...(item.required ? { required: typeof required === 'string' ? required : true } : {}), ...rules };
   if (Object.keys(merged).length) result.validation = merged;
   paths.set(path, item.uid);
-  if (hasOptions(item.type)) {
+  if (hasOptions(item.type) && (item.options.length || !item.extra.optionsFrom)) {
     result.options = item.options.map((option, index) => {
       paths.set(`${path}.options.${index}`, option.uid);
       return { value: option.value, label: option.label };

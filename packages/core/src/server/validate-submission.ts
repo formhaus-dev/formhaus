@@ -5,6 +5,7 @@ import { getAllFields } from '../engine/engine-utils';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
+import { createVisibility } from '../engine/visibility-state';
 import { normalizeValue, typeError } from '../validation/type-checks';
 
 export interface SubmissionOptions {
@@ -23,20 +24,36 @@ const allow: ValidatorFn = () => null;
 
 const hasOwn = (source: object, key: string) => Object.prototype.hasOwnProperty.call(source, key);
 
-function knownValues(fields: FormField[], input: unknown): Record<string, unknown> {
-  const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? input as Record<string, unknown> : {};
-  const values: Record<string, unknown> = {};
-  for (const field of fields) {
-    if (hasOwn(source, field.key)) values[field.key] = normalizeValue(field, source[field.key]);
-  }
-  return values;
+interface ActiveValues {
+  values: Record<string, unknown>;
+  active: Map<string, FormField>;
 }
 
-function typeErrors(fields: FormField[], values: Record<string, unknown>): Map<string, string> {
+function activeValues(definition: FormDefinition, fields: FormField[], input: unknown): ActiveValues {
+  const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? input as Record<string, unknown> : {};
+  const visibility = createVisibility(definition);
+  const keys = [...new Set(fields.map(({ key }) => key))].filter((key) => hasOwn(source, key));
+  let result: ActiveValues = { values: {}, active: new Map() };
+  for (let round = 0; round <= fields.length; round++) {
+    const values: Record<string, unknown> = {};
+    for (const key of keys) values[key] = normalizeValue(result.active.get(key) ?? fields.find((field) => field.key === key)!, source[key]);
+    const active = new Map<string, FormField>();
+    for (const key of keys) {
+      const field = visibility.activeField(key, values);
+      if (field) active.set(key, field);
+    }
+    const settled = keys.every((key) => active.get(key) === result.active.get(key));
+    result = { values, active };
+    if (settled) break;
+  }
+  return result;
+}
+
+function typeErrors({ values, active }: ActiveValues): Map<string, string> {
   const errors = new Map<string, string>();
-  for (const field of fields) {
-    const error = hasOwn(values, field.key) ? typeError(field, values[field.key]) : null;
-    if (error) errors.set(field.key, error);
+  for (const [key, field] of active) {
+    const error = typeError(field, values[key]);
+    if (error) errors.set(key, error);
   }
   return errors;
 }
@@ -74,10 +91,10 @@ export function validateSubmission(
 ): SubmissionResult {
   parseDefinition(definition);
   const fields = getAllFields(definition);
-  const initialValues = knownValues(fields, values);
-  const invalid = typeErrors(fields, initialValues);
+  const resolved = activeValues(definition, fields, values);
+  const invalid = typeErrors(resolved);
   const engineOptions = { validators: ignoredValidators(fields, options.validators), onWarning: () => {} };
-  const engine = new FormEngine(withoutRules(definition, invalid), initialValues, engineOptions);
+  const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();
   const submitted = engine.getSubmitValues();

@@ -19,14 +19,22 @@ const FORMATS = new Map<string, [RegExp, string, number]>([
   ['datetime', [DATE_TIME, TYPE_MESSAGES.datetime, MAX_STRING_LENGTH]],
 ]);
 
+function isCalendarDate(value: string): boolean {
+  const [year, month, day] = value.split(/\D/).map(Number);
+  return day <= new Date(new Date(0).setUTCFullYear(year, month, 0)).getUTCDate();
+}
+
 export function normalizeValue(field: FormField, value: unknown): unknown {
   if (field.type !== 'number' || typeof value !== 'string' || !DECIMAL.test(value)) return value;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : value;
 }
 
+const staticOptions = (field: FormField) => (field.optionsFrom ? undefined : field.options);
+
 function isOption(field: FormField, value: unknown): boolean {
-  return !field.options || field.options.some((option) => option.value === value);
+  const options = staticOptions(field);
+  return !options || options.some((option) => option.value === value);
 }
 
 function lengthError(field: FormField, value: string): string | null {
@@ -37,7 +45,7 @@ function lengthError(field: FormField, value: string): string | null {
 
 function multiselectError(field: FormField, value: unknown): string | null {
   if (!Array.isArray(value)) return TYPE_MESSAGES.options;
-  if (value.length > (field.options?.length ?? MAX_ITEMS)) return TYPE_MESSAGES.option;
+  if (value.length > (staticOptions(field)?.length ?? MAX_ITEMS)) return TYPE_MESSAGES.option;
   const valid = value.every((item) => typeof item === 'string' && item.length <= MAX_STRING_LENGTH && isOption(field, item));
   return valid ? null : TYPE_MESSAGES.option;
 }
@@ -48,7 +56,7 @@ function stringError(field: FormField, value: unknown, message: string): string 
 
 function formatError(field: FormField, value: unknown, [format, message, max]: [RegExp, string, number]): string | null {
   if (typeof value !== 'string') return message;
-  return lengthError(field, value) ?? (value.length <= max && format.test(value) ? null : message);
+  return lengthError(field, value) ?? (value.length <= max && format.test(value) && (format === EMAIL || isCalendarDate(value)) ? null : message);
 }
 
 function primitiveError(field: FormField, value: unknown): string | null {
@@ -74,5 +82,5 @@ export function typeError(field: FormField, value: unknown): string | null {
 
 export function clientTypeError(field: FormField, value: unknown): string | null {
   if (field.type === 'file' || !BUILT_IN_TYPES.includes(field.type)) return null;
-  return typeError(field.optionsFrom ? { ...field, options: undefined } : field, value);
+  return typeError(field, value);
 }

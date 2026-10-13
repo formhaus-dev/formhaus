@@ -16,7 +16,11 @@ export function createValues(
   for (const field of fields) {
     if (field.defaultValue !== undefined) values[field.key] = field.defaultValue;
   }
-  return Object.assign(values, initialValues);
+  const source = initialValues ?? {};
+  for (const key of Object.keys(source)) {
+    if (key !== '__proto__') values[key] = source[key];
+  }
+  return values;
 }
 
 export function getChangedKeys(

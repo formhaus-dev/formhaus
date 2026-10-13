@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/vue';
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import type { FormDefinition } from '@formhaus/core';
 import { expect, it } from 'vitest';
 import FormRenderer from '../src/FormRenderer.vue';
@@ -17,4 +17,25 @@ it('evaluates submit.disabled against the active path, not off-path values', asy
   (screen.getByText('Continue') as HTMLButtonElement).click();
   const send = await screen.findByText('Send');
   await waitFor(() => expect((send as HTMLButtonElement).disabled).toBe(false));
+});
+
+const gated: FormDefinition = {
+  id: 'next-disabled', title: '', submit: { label: 'Send' },
+  steps: [
+    { id: 'terms', title: 'Terms', next: { label: 'Go on', disabled: [{ field: 'agree', neq: true }] }, fields: [{ key: 'agree', type: 'checkbox', label: 'Agree' }] },
+    { id: 'done', title: 'Done', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+  ],
+};
+
+it('disables Continue while next.disabled matches and does not advance on Enter', async () => {
+  const { container } = render(FormRenderer, { props: { definition: gated } });
+  const next = screen.getByText('Go on') as HTMLButtonElement;
+  expect(next.disabled).toBe(true);
+  await fireEvent.submit(container.querySelector('form')!);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  expect(screen.queryByText('Name')).toBeNull();
+  await fireEvent.click(screen.getByLabelText('Agree'));
+  await waitFor(() => expect(next.disabled).toBe(false));
+  await fireEvent.click(next);
+  expect(await screen.findByText('Name')).toBeTruthy();
 });

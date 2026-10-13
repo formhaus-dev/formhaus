@@ -189,6 +189,7 @@ async function onPrimary() {
       :is="props.actionsComponent"
       v-if="props.actionsComponent"
       :submit-action="props.definition.submit"
+      :next-action="currentStep?.next"
       :back-action="currentStep?.back"
       :cancel-action="props.definition.cancel"
       :skip-action="currentStep?.skip"

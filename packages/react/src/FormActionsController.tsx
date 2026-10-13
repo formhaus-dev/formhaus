@@ -44,6 +44,7 @@ export function FormActionsController({
   return (
     <ActionsComponent
       submitAction={definition.submit}
+      nextAction={step?.next}
       backAction={step?.back}
       cancelAction={definition.cancel}
       skipAction={step?.skip}
