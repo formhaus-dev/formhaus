@@ -6,6 +6,7 @@ import LucideIcon from './LucideIcon.vue';
 import OnboardingChoices from './OnboardingChoices.vue';
 import { choices, definition, type StartChoice } from './onboarding';
 import './demo-form.css';
+import './demo-options.css';
 import './demo-actions.css';
 
 const emit = defineEmits<{ close: [] }>();

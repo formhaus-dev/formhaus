@@ -18,12 +18,7 @@
   font-weight: 600;
   color: var(--vp-c-text-1);
   background: var(--vp-c-bg);
-  transition: background-color 0.2s, border-color 0.2s;
-}
-
-.demo-form .fh-form-actions__button:hover,
-.demo-form .demo-form__restart:hover {
-  border-color: var(--vp-c-text-3);
+  transition: background-color 140ms, border-color 140ms;
 }
 
 .demo-form .fh-form-actions__button--primary {
@@ -33,15 +28,23 @@
   background: var(--vp-button-brand-bg);
 }
 
-.demo-form .fh-form-actions__button--primary:hover {
-  border-color: transparent;
-  background: var(--vp-button-brand-hover-bg);
-}
-
 .demo-form .fh-form-actions__button:focus-visible,
 .demo-form .demo-form__restart:focus-visible {
   outline: 2px solid var(--vp-c-brand-1);
   outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .demo-form .fh-form-actions__button:hover:not(:disabled),
+  .demo-form .demo-form__restart:hover {
+    border-color: var(--vp-c-text-3);
+    background: var(--vp-c-bg-soft);
+  }
+
+  .demo-form .fh-form-actions__button--primary:hover:not(:disabled) {
+    border-color: transparent;
+    background: var(--vp-button-brand-hover-bg);
+  }
 }
 
 @media (max-width: 479px) {
