@@ -9,7 +9,13 @@ import { FieldPalette } from './FieldPalette';
 export function TypeChip({ field, actions, disabled }: { field: BuilderQuestion; actions: EditorActions; disabled: boolean }) {
   const [open, setOpen] = useState(false);
   const chip = (
-    <button type="button" className={styles.chip} disabled={disabled} aria-label={`Field type: ${typeLabel(field.type)}. Change type`} title={typeLabel(field.type)}>
+    <button
+      type="button"
+      className={styles.chip}
+      disabled={disabled}
+      aria-label={`Field type: ${typeLabel(field.type)}. Change type`}
+      title={typeLabel(field.type)}
+    >
       {typeIcon(field.type)}
       <span>{typeLabel(field.type)}</span>
       {!disabled && <ChevronDown aria-hidden className={styles.chipChevron} />}

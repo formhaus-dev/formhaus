@@ -19,7 +19,12 @@ export function GoTo({ option, name, targets, readOnly, onChange }: Props) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger>
-        <button type="button" className={cx(styles.goTo, value === NEXT && styles.next)} disabled={readOnly} aria-label={`After ${name}, go to: ${current?.label ?? ''}`}>
+        <button
+          type="button"
+          className={cx(styles.goTo, value === NEXT && styles.next)}
+          disabled={readOnly}
+          aria-label={`After ${name}, go to: ${current?.label ?? ''}`}
+        >
           <ArrowRight aria-hidden />
           <span>{current?.label}</span>
           {!readOnly && <ChevronDown aria-hidden className={styles.chevron} />}
