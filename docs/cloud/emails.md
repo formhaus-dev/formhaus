@@ -1,6 +1,6 @@
 ---
 title: "Email notifications"
-description: "Formhaus Cloud emails: notify_mode milestones and off, the weekly summary, the welcome email, webhook failing, report, claim, sign-in and invite emails."
+description: "Formhaus Cloud emails: milestones, every response on Team, the daily digest on Pro and Team, the weekly summary, usage alerts, webhook failing, report, claim, sign-in and invite emails."
 ---
 
 # Email notifications
@@ -27,13 +27,26 @@ curl -X PATCH https://api.formhaus.dev/v1/forms/Xk3d9QpL2a \
 
 [`update_form_settings`](/cloud/mcp#update-form-settings) takes the same field. `notify_email` is still accepted: `true` means `milestones`, `false` means `off`. A value that conflicts with `notify_mode` is rejected. `instant` and `daily` are not accepted.
 
+## Every response
+
+On the Team plan, a form can email every response instead of milestones. Choose **Every response** under **Form settings > Email notifications**. It is off by default. On Free and Pro the option is shown but cannot be selected.
+
+| Part | Content |
+|---|---|
+| Subject | `New response: <form title>`, or `<N> new responses: <form title>` |
+| Body | Up to 5 responses, newest first, with their time in UTC and their values. Password fields are left out. Values are cut at 300 characters and each response shows up to 20 fields. |
+| Links | Each response at `https://app.formhaus.dev/forms/{form_id}/responses?r={submission_id}`, and all responses of the form |
+
+The first response sends an email at once. Responses that arrive within 2 minutes of the last email are sent together in one email 2 minutes after it. While every response is on, milestone emails for the form are not sent. If the workspace leaves Team, the form goes back to milestone emails. `Off` stops both.
+
 ## Who gets the emails
 
 | Email | Recipients |
 |---|---|
-| Milestone | Members who turned emails on |
+| Milestone, every response | Members who turned emails on |
 | Webhook failing, form reported | Members who turned emails on, and every owner |
-| Weekly summary, welcome | The account itself |
+| Usage alert, payment failed | Every owner |
+| Weekly summary, daily digest, welcome | The account itself |
 
 Each member sets their own switch under **Settings > Members**. It is on for owners by default and off for editors and viewers. Each recipient gets a separate email.
 
@@ -57,6 +70,21 @@ The count is all-time and free plan retention does not lower it. A milestone rea
 | Link | `https://app.formhaus.dev` |
 
 It goes to accounts with at least one new response in a workspace they belong to. No email is sent for a week without responses. It is on by default; each account turns it off under **Settings > Account**.
+
+## Daily digest
+
+| Part | Content |
+|---|---|
+| Subject | `<N> new responses in <workspace>` |
+| When | About 09:00 in the time zone of the browser that turned it on, or UTC if unknown. It covers the 24 hours before 09:00. |
+| Body | The forms with new responses and their counts (10, then "and N more"), and the 3 latest responses with links |
+| Link | `https://app.formhaus.dev` |
+
+It is off by default. Members of a Pro or Team workspace turn it on under **Settings > Account**. One email per workspace per day, only for Pro and Team workspaces, and none for a day without new responses.
+
+## Usage alerts
+
+Owners get one email when the workspace reaches 80% of its monthly submission limit and one when it reaches 100%, once each per calendar month (UTC). The email shows the count, the grace and the date the count resets, with a link to **Usage and plan**. See [Plans, limits and data](/cloud/plans).
 
 ## Welcome
 
