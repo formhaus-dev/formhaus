@@ -37,7 +37,7 @@ On the Team plan, a form can email every response instead of milestones. Choose 
 | Body | Up to 5 responses, newest first, with their time in UTC and their values. Password fields are left out. Values are cut at 300 characters and each response shows up to 20 fields. |
 | Links | Each response at `https://app.formhaus.dev/forms/{form_id}/responses?r={submission_id}`, and all responses of the form |
 
-The first response sends an email at once. Responses that arrive within 2 minutes of the last email are sent together in one email 2 minutes after it. While every response is on, milestone emails for the form are not sent. If the workspace leaves Team, the form goes back to milestone emails. `Off` stops both.
+The first response sends an email at once. Responses that arrive within 2 minutes of the last email are sent together in one email 2 minutes after it. A workspace gets at most 100 response emails per day (UTC). After that, response emails stop until the next day, and the next day starts with one email that says how many more responses arrived after the cap. While every response is on, milestone emails for the form are not sent. If the workspace leaves Team, the form goes back to milestone emails. `Off` stops both.
 
 ## Who gets the emails
 
@@ -48,7 +48,7 @@ The first response sends an email at once. Responses that arrive within 2 minute
 | Usage alert, payment failed | Every owner |
 | Weekly summary, daily digest, welcome | The account itself |
 
-Each member sets their own switch under **Settings > Members**. It is on for owners by default and off for editors and viewers. Each recipient gets a separate email.
+Each member sets their own switch under **Settings > Members**. The daily digest and response emails also carry `List-Unsubscribe` headers with one-click unsubscribe: it turns the daily digest off, or turns that member's emails for the workspace off. It is on for owners by default and off for editors and viewers. Each recipient gets a separate email.
 
 ## Milestone
 
@@ -84,7 +84,7 @@ It is off by default. Members of a Pro or Team workspace turn it on under **Sett
 
 ## Usage alerts
 
-Owners get one email when the workspace reaches 80% of its monthly submission limit and one when it reaches 100%, once each per calendar month (UTC). The email shows the count, the grace and the date the count resets, with a link to **Usage and plan**. See [Plans, limits and data](/cloud/plans).
+Owners get one email when the workspace reaches 80% of its monthly submission limit and one when it reaches 100%, once each per calendar month (UTC). A plan change during the month starts the alerts again for the new limit. A workspace already past its limit after a downgrade gets the 100% email on its first rejected submission. The email shows the count, the grace and the date the count resets, with a link to **Usage and plan**. See [Plans, limits and data](/cloud/plans).
 
 ## Welcome
 

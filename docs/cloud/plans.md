@@ -17,7 +17,7 @@ Prices are on the [pricing page](/pricing). Limits enforced by the service:
 - The plan belongs to the workspace. Owners see it under **Settings > Usage and plan**.
 - Pro and Team are switched on by hand. Pro opens a Stripe checkout and is active within a day of payment. For Team, write to hello@formhaus.dev.
 - Monthly limits count all submissions to the workspace's forms in the calendar month, UTC.
-- Owners get an email at 80% and at 100% of the monthly limit, once each per month.
+- Owners get an email at 80% and at 100% of the monthly limit, once each per month and limit.
 - After the monthly limit, forms accept 10% more submissions as a grace: up to 110 on Free, 27,500 on Pro and 110,000 on Team. The dashboard usage meter shows the grace. Unclaimed forms have no grace.
 - Editor seats count owners and editors plus pending unexpired editor invites. Viewers are unlimited on every plan. See [Teams and roles](/cloud/teams#member-limits).
 - Past the grace, `POST /f/{id}` answers `402 limit_reached` and the hosted page says the form is not accepting responses until the count resets. The REST API and MCP tools return `upgrade_url` with `Ask the user to upgrade at <url>`. The URL is the payment link, or `https://app.formhaus.dev/usage` when none is set.

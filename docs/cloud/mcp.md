@@ -80,6 +80,10 @@ Output: `form_id`, `version`, `endpoint`, `hosted_url`, `embed_snippet`, `react_
 
 No input. Output: `forms` with `form_id`, `title`, `status`, `version`, `submissions`, `endpoint`, `hosted_url`, `created_at`, `expires_at`; `upgrade_url` and `notice` at 80% or more of the monthly limit.
 
+### `get_usage`
+
+No input. Output: `plan`, `submissions_used`, `submissions_limit`, `submissions_left` (left before the limit), `grace_limit`, `resets_at`, `forms` and `form_limit` (`0` means no limit). After `submissions_limit`, forms accept 10% more submissions as a grace, up to `grace_limit`. Past `grace_limit`, new submissions get `402 limit_reached` until `resets_at`.
+
 ### `get_submissions`
 
 | Input | Type |
