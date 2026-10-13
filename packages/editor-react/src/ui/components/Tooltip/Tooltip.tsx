@@ -1,5 +1,6 @@
 import * as RadixTooltip from '@radix-ui/react-tooltip';
-import type { ReactElement, ReactNode } from 'react';
+import { useState, type ReactElement, type ReactNode } from 'react';
+import { useDragActive } from '../../lib/dragState';
 import styles from './Tooltip.module.css';
 
 export interface TooltipProps {
@@ -17,8 +18,15 @@ export function TooltipProvider({ children }: { children: ReactNode }) {
 }
 
 export function Tooltip({ content, children, side = 'top' }: TooltipProps) {
+  const dragging = useDragActive();
+  const [open, setOpen] = useState(false);
   return (
-    <RadixTooltip.Root>
+    <RadixTooltip.Root
+      open={open && !dragging}
+      onOpenChange={(next) => {
+        setOpen(next && !dragging);
+      }}
+    >
       <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
       <RadixTooltip.Portal>
         <RadixTooltip.Content className={styles.content} side={side} sideOffset={6} collisionPadding={8}>

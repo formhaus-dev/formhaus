@@ -22,15 +22,6 @@
   opacity: 0;
 }
 
-.dragging::before {
-  position: absolute;
-  inset: calc((var(--fh-ed-space-3) + var(--fh-ed-border-focus)) / -2) 0 auto;
-  height: var(--fh-ed-border-focus);
-  border-radius: var(--fh-ed-radius-full);
-  background: var(--fh-ed-fg);
-  content: '';
-}
-
 .overlay {
   border-radius: var(--fh-ed-radius-lg);
   box-shadow: var(--fh-ed-shadow-pop);
