@@ -45,10 +45,11 @@ function conditions(value: Entry, path: string): DefinitionIssue[] {
 }
 
 function action(value: unknown, path: string): DefinitionIssue[] {
-  return isEntry(value) ? list(value.disabled, `${path}/disabled`, 'a condition object', condition) : [];
+  if (!isEntry(value)) return [];
+  return [...typed(value, { label: 'string' }, path), ...list(value.disabled, `${path}/disabled`, 'a condition object', condition)];
 }
 
-const option: Check = (value, path) => text(value, 'value', path);
+const option: Check = (value, path) => [...text(value, 'value', path), ...typed(value, { label: 'string' }, path)];
 
 const RULES: Record<string, Kind> = {
   minLength: 'number', maxLength: 'number', min: 'number', max: 'number', pattern: 'string', matchField: 'string', validator: 'string',
@@ -67,6 +68,7 @@ function dependencies(value: unknown, path: string): DefinitionIssue[] {
 const field: Check = (value, path) => [
   ...text(value, 'key', path),
   ...text(value, 'type', path),
+  ...typed(value, { label: 'string', placeholder: 'string', helperText: 'string' }, path),
   ...conditions(value, path),
   ...list(value.options, `${path}/options`, 'an option object', option),
   ...validation(value.validation, `${path}/validation`),
@@ -80,6 +82,7 @@ const route: Check = (value, path) => [
 
 const step: Check = (value, path) => [
   ...text(value, 'id', path),
+  ...typed(value, { title: 'string', description: 'string' }, path),
   ...list(value.fields, `${path}/fields`, 'a field object', field, true),
   ...conditions(value, path),
   ...list(value.routes, `${path}/routes`, 'a route object', route),

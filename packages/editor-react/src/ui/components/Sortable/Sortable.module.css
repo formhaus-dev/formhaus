@@ -14,21 +14,14 @@
 }
 
 .dragging {
-  border: var(--fh-ed-border-thin) dashed var(--fh-ed-line-strong);
+  border: 0;
+  outline: var(--fh-ed-border-thin) dashed var(--fh-ed-line-strong);
+  outline-offset: calc(-1 * var(--fh-ed-border-thin));
   border-radius: var(--fh-ed-radius-lg);
 }
 
 .dragging > * {
   opacity: 0;
-}
-
-.dragging::before {
-  position: absolute;
-  inset: calc((var(--fh-ed-space-3) + var(--fh-ed-border-focus)) / -2) 0 auto;
-  height: var(--fh-ed-border-focus);
-  border-radius: var(--fh-ed-radius-full);
-  background: var(--fh-ed-fg);
-  content: '';
 }
 
 .overlay {
@@ -52,7 +45,11 @@
   touch-action: none;
 }
 
-.handle:active {
+.handle:not(:disabled) {
+  cursor: grab;
+}
+
+.handle:not(:disabled):active {
   cursor: grabbing;
 }
 

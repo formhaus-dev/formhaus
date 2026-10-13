@@ -73,7 +73,13 @@ export function OptionsEditor({ field, actions }: Props) {
               <button {...handleProps} type="button" className={styles.grip} disabled={readOnly}>
                 <GripVertical aria-hidden />
               </button>
-              <span className={cx(styles.glyph, field.type === 'multiselect' && styles.square)} aria-hidden />
+              {field.type === 'select' ? (
+                <span className={styles.number} aria-hidden>
+                  {index + 1}
+                </span>
+              ) : (
+                <span className={cx(styles.glyph, field.type === 'multiselect' && styles.square)} aria-hidden />
+              )}
               <InlineText
                 value={option.label}
                 label={`Option ${String(index + 1)}`}

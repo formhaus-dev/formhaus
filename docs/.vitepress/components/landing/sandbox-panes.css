@@ -10,7 +10,6 @@
 }
 
 .sandbox__pane--write {
-  overflow: auto;
   padding: 16px;
 }
 
@@ -28,7 +27,6 @@
   flex: 1;
   flex-direction: column;
   min-height: 0;
-  overflow: auto;
   padding: 24px;
 }
 
@@ -81,5 +79,16 @@
 
   .sandbox__preview {
     padding: 20px 16px;
+  }
+}
+
+@media (min-width: 768px) {
+  .sandbox--fixed {
+    height: var(--sandbox-height);
+  }
+
+  .sandbox--fixed .sandbox__pane--write,
+  .sandbox--fixed .sandbox__preview {
+    overflow: auto;
   }
 }

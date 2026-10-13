@@ -75,6 +75,7 @@ export default defineConfig({
           { text: 'Teams and roles', link: '/cloud/teams' },
           { text: 'Dashboard', link: '/cloud/dashboard' },
           { text: 'Webhooks', link: '/cloud/webhooks' },
+          { text: 'Zapier and Make', link: '/cloud/zapier-make' },
           { text: 'Email notifications', link: '/cloud/emails' },
           { text: 'REST API', link: '/cloud/rest-api' },
           { text: 'MCP reference', link: '/cloud/mcp' },

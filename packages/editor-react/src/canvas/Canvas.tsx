@@ -8,9 +8,10 @@ import { StepSection } from './StepSection';
 
 interface Props {
   actions: EditorActions;
+  header?: boolean;
 }
 
-export function Canvas({ actions }: Props) {
+export function Canvas({ actions, header = true }: Props) {
   const form = useForm();
   const store = useEditorStore();
   const parts = groups(form);
@@ -22,7 +23,7 @@ export function Canvas({ actions }: Props) {
         if (event.target === event.currentTarget) store.select(null);
       }}
     >
-      <FormHeaderCard actions={actions} />
+      {header && <FormHeaderCard actions={actions} />}
       {(parts.length ? parts : [{ questions: [] }]).map((part, index) => (
         <StepSection
           key={part.page?.uid ?? 'root'}

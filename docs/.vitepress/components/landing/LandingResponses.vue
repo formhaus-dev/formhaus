@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import LandingSection from './LandingSection.vue';
+import SectionCta from './SectionCta.vue';
 
 const alt = 'Formhaus Cloud dashboard showing the Responses tab of a Contact us form, with seven submissions listing name, email, message, form version and when each was sent.';
 </script>
 
 <template>
-  <LandingSection id="responses" title="Keep track of responses">
-    <template #lead>Get responses through your dashboard, email notifications, <a href="/cloud/webhooks">webhooks</a> or <a href="/cloud/submissions">CSV downloads</a>.</template>
+  <LandingSection id="responses" title="Publish it, collect responses" lead="Formhaus Cloud gives every form a link, an embed and a dashboard. Free for 3 forms.">
     <figure class="responses">
       <img class="responses__shot responses__shot--light" src="/media/landing-responses.png" width="2304" height="1250" :alt="alt" loading="lazy" decoding="async" />
       <img class="responses__shot responses__shot--dark" src="/media/landing-responses-dark.png" width="2304" height="1250" :alt="alt" loading="lazy" decoding="async" />
     </figure>
+    <SectionCta href="/cloud" label="Learn about Cloud" />
   </LandingSection>
 </template>
 
@@ -44,22 +45,10 @@ html.dark .responses__shot--dark {
 }
 
 @media (max-width: 767px) {
-  .responses {
-    position: relative;
-  }
-
   .responses__shot {
     width: 922px;
     max-width: none;
     margin-left: -12px;
-  }
-
-  .responses::after {
-    position: absolute;
-    inset: 0 0 0 auto;
-    width: 96px;
-    background: linear-gradient(to right, transparent, var(--shot-bg) 80%);
-    content: '';
   }
 }
 </style>

@@ -113,7 +113,7 @@ describe('editor canvas in a browser', () => {
       'Long text',
       'Multiple choice',
       'Checkboxes',
-      'Dropdown',
+      'Select',
       'Email',
       'Phone',
       'Number',

@@ -14,7 +14,7 @@ export type {
 
 export { FormEngine, type FormEngineOptions, type StepValidateFn, type StepChangeContext, type BeforeStepChangeFn, type AfterStepChangeFn, type BeforeSubmitFn, type SubmitFn } from './engine';
 
-export { evaluateCondition, isVisible } from './visibility';
+export { evaluateCondition, isActionDisabled, isVisible } from './visibility';
 
 export {
   type ValidationRule,

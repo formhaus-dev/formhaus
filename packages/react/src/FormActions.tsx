@@ -1,5 +1,4 @@
-import type { FormAction } from '@formhaus/core';
-import { isActionDisabled } from './isActionDisabled';
+import { isActionDisabled, type FormAction } from '@formhaus/core';
 import type { FormActionsProps } from './types';
 
 function buttonClass(action: FormAction | false | undefined, variant: NonNullable<FormAction['variant']>): string {
@@ -8,6 +7,7 @@ function buttonClass(action: FormAction | false | undefined, variant: NonNullabl
 
 export function FormActions({
   submitAction,
+  nextAction,
   backAction,
   cancelAction,
   skipAction,
@@ -35,11 +35,7 @@ export function FormActions({
   const skipLabel = skipLabelProp ?? skipAction?.label ?? 'Skip';
   const primaryLabel = primaryLabelProp ?? (isMultiStep && !isLastStep ? 'Continue' : (submitAction?.label ?? 'Submit'));
 
-  const primaryDisabled = isActionDisabled(
-    isMultiStep && !isLastStep ? undefined : submitAction,
-    values,
-    loading,
-  );
+  const primaryDisabled = !!loading || isActionDisabled(isMultiStep && !isLastStep ? nextAction : submitAction, values);
 
   const handlePrimary = onPrimaryProp ?? (isMultiStep && !isLastStep ? onNext : onSubmit);
 

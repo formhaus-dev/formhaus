@@ -18,3 +18,24 @@ it('evaluates submit.disabled against the active path, not off-path values', asy
   const send = await screen.findByText('Send');
   await waitFor(() => expect((send as HTMLButtonElement).disabled).toBe(false));
 });
+
+const gated: FormDefinition = {
+  id: 'next-disabled', title: '', submit: { label: 'Send' },
+  steps: [
+    { id: 'terms', title: 'Terms', next: { label: 'Go on', disabled: [{ field: 'agree', neq: true }] }, fields: [{ key: 'agree', type: 'checkbox', label: 'Agree' }] },
+    { id: 'done', title: 'Done', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+  ],
+};
+
+it('disables Continue while next.disabled matches and does not advance on Enter', async () => {
+  const { container } = render(<FormRenderer definition={gated} onSubmit={() => {}} />);
+  const next = screen.getByText('Go on') as HTMLButtonElement;
+  expect(next.disabled).toBe(true);
+  fireEvent.submit(container.querySelector('form')!);
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  expect(screen.queryByText('Name')).toBeNull();
+  fireEvent.click(screen.getByLabelText('Agree'));
+  await waitFor(() => expect(next.disabled).toBe(false));
+  fireEvent.click(next);
+  expect(await screen.findByText('Name')).toBeTruthy();
+});

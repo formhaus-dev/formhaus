@@ -97,7 +97,12 @@
   font-size: 15px;
   color: var(--vp-c-text-1);
   background: var(--vp-c-bg);
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 140ms;
+}
+
+.demo-form select.fh-field__input {
+  padding-right: 40px;
+  background: var(--vp-c-bg) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%238b8b93' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' viewBox='0 0 24 24'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 14px center;
 }
 
 .demo-form .fh-field__input::placeholder {
@@ -124,91 +129,26 @@
   color: var(--vp-c-danger-1);
 }
 
-.demo-form .fh-field__radio-group,
-.demo-form .fh-field__multiselect-group {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-  gap: 10px;
-}
-
-.demo-form .fh-field .fh-field__radio-option,
-.demo-form .fh-field .fh-field__multiselect-option {
-  position: relative;
-  display: flex;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
-  outline: none;
-}
-
-.demo-form .fh-field__radio,
-.demo-form .fh-field__checkbox {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.demo-form .fh-field__radio-label,
-.demo-form .fh-field__multiselect-label {
-  display: flex;
-  flex: 1;
-  align-items: center;
-  gap: 10px;
-  min-height: 52px;
-  padding: 12px 14px;
-  border: 1px solid var(--vp-c-border);
-  border-radius: 12px;
-  font-weight: 500;
-  color: var(--vp-c-text-1);
-  background: var(--vp-c-bg);
-  cursor: pointer;
-  transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
-}
-
-.demo-form .fh-field .fh-field__radio-label::before,
-.demo-form .fh-field .fh-field__multiselect-label::before {
-  content: '';
-  position: static;
-  flex: none;
-  width: 16px;
-  height: 16px;
-  border: 1.5px solid var(--vp-c-text-3);
-  border-radius: 50%;
-  transition: all 0.2s;
-}
-
-.demo-form .fh-field__radio-label:hover,
-.demo-form .fh-field__multiselect-label:hover {
-  border-color: var(--vp-c-brand-2);
-}
-
-.demo-form .fh-field__radio:checked + .fh-field__radio-label,
-.demo-form .fh-field__checkbox:checked + .fh-field__multiselect-label {
-  border-color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-soft);
-  box-shadow: 0 0 0 1px var(--vp-c-brand-1);
-}
-
-.demo-form .fh-field__radio:checked + .fh-field__radio-label::before,
-.demo-form .fh-field__checkbox:checked + .fh-field__multiselect-label::before {
-  border-color: var(--vp-c-brand-1);
-  background: var(--vp-c-brand-1);
-  box-shadow: inset 0 0 0 3px var(--vp-c-bg);
-}
-
-.demo-form .fh-field__radio:focus-visible + .fh-field__radio-label,
-.demo-form .fh-field__checkbox:focus-visible + .fh-field__multiselect-label {
-  outline: 2px solid var(--vp-c-brand-1);
-  outline-offset: 2px;
-}
-
-.demo-form .fh-field .fh-field__multiselect-label::before {
-  border-radius: 4px;
-}
-
 .demo-form .fh-field__input--textarea {
   height: 88px;
   padding: 10px 14px;
   resize: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .demo-form .fh-field__input:hover:not(:disabled, :focus, [aria-invalid='true']) {
+    border-color: var(--vp-c-text-3);
+  }
+
+  .demo-form :is(select.fh-field__input, .fh-field__input--date, .fh-field__input--datetime):not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .demo-form *,
+  .demo-form ::before,
+  .demo-form ::after {
+    transition: none;
+  }
 }

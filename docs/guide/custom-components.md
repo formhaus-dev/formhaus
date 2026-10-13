@@ -99,6 +99,7 @@ export function MyFormActions({
 | Prop | Type | Description |
 |------|------|-------------|
 | `submitAction` | `FormAction?` | Label and variant for the submit button |
+| `nextAction` | `FormAction \| false?` | Next button config of the current step |
 | `backAction` | `FormAction \| false?` | Back button config, or `false` to hide |
 | `cancelAction` | `FormAction?` | Cancel button config |
 | `skipAction` | `FormAction?` | Skip button config of the current step |

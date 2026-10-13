@@ -13,9 +13,10 @@ import {
   type UniqueIdentifier,
 } from '@dnd-kit/core';
 import { SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { cx } from '../../lib/cx';
+import { setDragActive } from '../../lib/dragState';
 import { instructions, moveAnnouncements } from './announcements';
 import styles from './Sortable.module.css';
 import { overlayHandle } from './overlay';
@@ -72,6 +73,13 @@ export function Sortable<T extends { id: string }>({
     onMove(String(dragged.id), ids.indexOf(String(over.id)));
   }
 
+  useEffect(() => {
+    setDragActive(active !== null);
+    return () => {
+      setDragActive(false);
+    };
+  }, [active]);
+
   const lifted = active ? find(active) : undefined;
 
   return (
@@ -102,7 +110,9 @@ export function Sortable<T extends { id: string }>({
       {createPortal(
         <DragOverlay modifiers={[vertical]} dropAnimation={null}>
           {lifted && (
-            <div className={styles.overlay}>{renderItem(lifted, { handleProps: overlayHandle(getLabel(lifted)), isDragging: true })}</div>
+            <div className={cx('fh-editor', styles.overlay)}>
+              {renderItem(lifted, { handleProps: overlayHandle(getLabel(lifted)), isDragging: true })}
+            </div>
           )}
         </DragOverlay>,
         document.body,

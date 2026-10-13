@@ -38,6 +38,15 @@ import '@formhaus/core/style.css';
 
 Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). The hover and selected-option colors are derived from `--fh-color-primary`.
 
+Hover states apply only on devices with a mouse or trackpad, and transitions turn off under `prefers-reduced-motion`. These variables set the hover colors:
+
+| Variable | Used for |
+|---|---|
+| `--fh-color-border-hover` | Input, option and secondary button borders |
+| `--fh-color-control-hover` | Radio and checkbox borders |
+| `--fh-color-bg-hover` | Option, secondary and text button backgrounds |
+| `--fh-color-primary-hover` | Primary button background and checked switch track |
+
 The stylesheet is light by default. For dark colors add `data-fh-theme="dark"` to the form or any ancestor:
 
 ```html

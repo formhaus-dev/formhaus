@@ -57,6 +57,21 @@ export function InlineText({
     fit(node.current);
   }, [value]);
 
+  useLayoutEffect(() => {
+    const element = node.current;
+    if (!element || typeof ResizeObserver === 'undefined') return;
+    let width = element.clientWidth;
+    const observer = new ResizeObserver(() => {
+      if (element.clientWidth === width) return;
+      width = element.clientWidth;
+      fit(element);
+    });
+    observer.observe(element);
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   function handleKey(event: KeyboardEvent<HTMLTextAreaElement>) {
     onKeyDown?.(event);
     if (event.defaultPrevented || event.nativeEvent.isComposing) return;

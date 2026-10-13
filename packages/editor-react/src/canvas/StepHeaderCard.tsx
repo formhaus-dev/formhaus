@@ -1,5 +1,5 @@
 import { setStepProp, setStepTitle, stepFields } from '@formhaus/builder';
-import { Settings2 } from 'lucide-react';
+import { Info, Settings2 } from 'lucide-react';
 import { useLayoutEffect, useState } from 'react';
 import { IconButton, InlineText } from '../ui';
 import settings from '../inspector/Inspector.module.css';
@@ -53,9 +53,9 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
         <span className={styles.stepCount}>Step {position}</span>
         <InlineText
           data-focus="label"
-          value={step.title}
+          value={step.title.trim() === `Step ${String(position)}` ? '' : step.title}
           label="Step title"
-          placeholder={`Step ${String(position)}`}
+          placeholder="Step name"
           size="lg"
           readOnly={readOnly}
           ring
@@ -108,6 +108,12 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
             }, `${uid}:description`);
           }}
         />
+      )}
+      {!readOnly && stepFields(form, uid).length === 0 && (
+        <p className={styles.empty}>
+          <Info aria-hidden />
+          Add a field to this step.
+        </p>
       )}
       <LogicBadge
         block={step}
