@@ -5,6 +5,7 @@ import type { FormDefinition } from '@formhaus/core';
 import DemoActions from './DemoActions.vue';
 import LucideIcon from './LucideIcon.vue';
 import './demo-form.css';
+import './demo-options.css';
 import './demo-actions.css';
 
 const props = defineProps<{ definition: FormDefinition; initial?: Record<string, unknown>; path?: string[] }>();
