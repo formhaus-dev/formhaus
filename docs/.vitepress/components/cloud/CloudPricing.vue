@@ -63,12 +63,13 @@ h1 { margin: 0; font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; font
 .price span { font-size: 16px; font-weight: 400; color: var(--vp-c-text-2); letter-spacing: 0; }
 .library-note { margin: 24px auto 8px; max-width: 620px; color: var(--vp-c-text-2); }
 .library-link { min-height: 44px; cursor: pointer; }
-.billing { display: flex; width: fit-content; max-width: 100%; margin: 0 auto 32px; padding: 4px; border: 1px solid var(--vp-c-divider); border-radius: 12px; gap: 4px; }
-.billing button { min-height: 44px; padding: 8px 16px; border-radius: 8px; color: var(--vp-c-text-2); cursor: pointer; }
-.billing button[aria-checked="true"] { background: var(--vp-c-bg-soft); color: var(--vp-c-text-1); }
-.billing button:hover { color: var(--vp-c-brand-1); }
+.billing { display: flex; width: fit-content; max-width: 100%; margin: 0 auto 32px; padding: 4px; border-radius: 999px; gap: 4px; background: var(--vp-c-bg-soft); }
+.billing button { display: inline-flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 20px; border-radius: 999px; font-size: 15px; font-weight: 500; line-height: 1; color: var(--vp-c-text-2); cursor: pointer; transition: color 0.2s, background-color 0.2s; }
+.billing button[aria-checked="true"] { background: var(--vp-c-bg); color: var(--vp-c-text-1); box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--vp-c-divider); }
+.billing button:hover { color: var(--vp-c-text-1); }
 .billing button:focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 2px; }
-.billing span { display: block; font-size: 12px; line-height: 16px; }
+.billing span { font-size: 13px; font-weight: 500; color: var(--vp-c-brand-1); }
+@media (max-width: 640px) { .billing button { min-height: 44px; padding: 0 16px; } }
 .price { min-height: 48px; white-space: nowrap; }
 .lp-button { cursor: pointer; }
 ul { list-style: none; padding: 0; margin: 28px 0; }
