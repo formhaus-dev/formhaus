@@ -43,11 +43,13 @@ const plans = [
           <a class="lp-button" :class="{ 'plan-contact': plan.name === 'Team' }" :href="plan.href">{{ plan.label }}</a>
         </article>
       </div>
+      <p class="price-note">Formhaus Cloud is new, and we're still learning what teams need. Plans and prices may change as the product grows. If they do, we'll email you at least 30 days before your next billing period.</p>
     </div>
   </section>
 </template>
 
 <style scoped>
+.price-note { max-width: 640px; margin: 32px auto 0; font-size: 14px; line-height: 22px; text-align: center; color: var(--vp-c-text-2); }
 .pricing-hero { padding-top: 48px; }
 h1 { margin: 0; font-size: 36px; line-height: 1.1; letter-spacing: -0.03em; font-weight: 700; text-wrap: balance; }
 @media (min-width: 960px) {

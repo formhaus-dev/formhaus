@@ -41,6 +41,14 @@ const items = [
         "text": "Pro costs $19 monthly or $190 yearly. Team costs $49 monthly or $490 yearly."
       }
     ]
+  },
+  {
+    "question": "Will prices change?",
+    "answer": [
+      {
+        "text": "They might while we're early. Any change applies from a future billing period, and we'll email you at least 30 days before it."
+      }
+    ]
   }
 ];
 </script>
