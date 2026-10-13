@@ -40,9 +40,9 @@ export function StepSection({ step, page, first, last, fields, header, actions }
           focus.request(id, 'card');
           actions.moveTo(id, step, to);
         }}
-        renderItem={({ field }, { handleProps, overlay }) => (
+        renderItem={({ field }, { handleProps }) => (
           <>
-            <FieldCard uid={field.uid} handleProps={handleProps} actions={actions} lifted={overlay} />
+            <FieldCard uid={field.uid} handleProps={handleProps} actions={actions} />
             {!readOnly && field !== fields.at(-1) && <InsertGap after={field.uid} label={labelOf(field)} actions={actions} />}
           </>
         )}

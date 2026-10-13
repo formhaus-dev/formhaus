@@ -28,7 +28,8 @@ describe('editor accessibility', () => {
     await page.viewport(390, 844);
     renderEditor();
     await userEvent.click(fieldLabel(0));
-    await userEvent.click(screen.getByRole('button', { name: 'Field settings' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Field actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: /Field settings/ }));
     await screen.findByRole('group', { name: 'Field settings' });
     expect(await violations()).toEqual([]);
   });

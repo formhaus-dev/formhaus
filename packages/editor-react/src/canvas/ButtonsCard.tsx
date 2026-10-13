@@ -25,6 +25,8 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
   const skip = step?.extra.skip;
   const continues = !!step && !last && step.extra.next !== false;
   const name = step ? step.title.trim() || 'this step' : 'the form';
+  const back = !!step && !first;
+  const span = [continues, last, back].filter(Boolean).length === 1 ? settings.wide : undefined;
   return (
     <div className={card.card} role="group" aria-label={`Buttons for ${name}`}>
       <div className={card.body}>
@@ -32,7 +34,7 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
         <div className={`${settings.settings} ${settings.plain}`}>
           <div className={settings.panel}>
             {continues && (
-              <Field label="Continue button">
+              <Field label="Continue button" className={span}>
                 <Input
                   value={step.nextLabel}
                   placeholder={DEFAULT_NEXT}
@@ -44,7 +46,7 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
               </Field>
             )}
             {last && (
-              <Field label="Submit button">
+              <Field label="Submit button" className={span}>
                 <Input
                   value={form.submit}
                   placeholder="Submit"
@@ -57,8 +59,8 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
                 />
               </Field>
             )}
-            {step && !first && (
-              <Field label="Back button">
+            {back && (
+              <Field label="Back button" className={span}>
                 <Input
                   value={step.backLabel}
                   placeholder={DEFAULT_BACK}

@@ -16,7 +16,7 @@ export function addStep(form: BuilderForm, after?: string): BuilderPage {
   wrap(form);
   const index = after ? blockIndex(form, after) : -1;
   const at = index >= 0 ? index + pageSpan(form, index) : form.blocks.length;
-  const page = newPage(form, stepName(pageCount(form) + 1));
+  const page = newPage(form, '');
   form.blocks.splice(at, 0, page);
   syncIdentifiers(form);
   return page;
@@ -26,7 +26,7 @@ export function splitAt(form: BuilderForm, fieldUid: string): BuilderPage | unde
   const index = blockIndex(form, fieldUid);
   if (index <= 0 || isPage(form.blocks[index]) || isPage(form.blocks[index - 1])) return undefined;
   wrap(form);
-  const page = newPage(form, stepName(pageCount(form) + 1));
+  const page = newPage(form, '');
   form.blocks.splice(blockIndex(form, fieldUid), 0, page);
   syncIdentifiers(form);
   return page;

@@ -20,6 +20,7 @@ import { FieldMenu } from './FieldMenu';
 import { FieldPreview } from './FieldPreview';
 import { focusCard, useFocusRequests } from './focus';
 import { OptionsEditor } from './OptionsEditor';
+import { RequiredTag } from './RequiredTag';
 import { TypeChip } from './TypeChip';
 import { useCardKeys } from './useCardKeys';
 import { closeSettingsOnEscape, toggleSettings } from './settings';
@@ -27,11 +28,10 @@ import { closeSettingsOnEscape, toggleSettings } from './settings';
 interface Props {
   uid: string;
   handleProps: SortableHandleProps;
-  lifted?: boolean;
   actions: EditorActions;
 }
 
-export function FieldCard({ uid, handleProps, actions, lifted = false }: Props) {
+export function FieldCard({ uid, handleProps, actions }: Props) {
   const field = useField(uid);
   const store = useEditorStore();
   const selected = useIsSelected({ kind: 'field', uid });
@@ -67,7 +67,7 @@ export function FieldCard({ uid, handleProps, actions, lifted = false }: Props) 
   return (
     <div
       data-card={uid}
-      className={cx(styles.card, lifted && styles.lifted, selected && styles.selected, issues.length > 0 && styles.invalid)}
+      className={cx(styles.card, selected && styles.selected, issues.length > 0 && styles.invalid)}
       tabIndex={selected ? 0 : -1}
       role="group"
       aria-label={`${field.label.trim() || 'Untitled question'} field`}
@@ -80,15 +80,18 @@ export function FieldCard({ uid, handleProps, actions, lifted = false }: Props) 
       {!readOnly && <SortableHandle {...handleProps} className={styles.handle} />}
       <div className={styles.body}>
         <div className={styles.head}>
-          <FieldLabel
-            field={field}
-            actions={actions}
-            readOnly={readOnly}
-            inputRef={label}
-            onSelect={select}
-            onAddBelow={addBelow}
-            onCardKey={onCardKey}
-          />
+          <div className={styles.title}>
+            <FieldLabel
+              field={field}
+              actions={actions}
+              readOnly={readOnly}
+              inputRef={label}
+              onSelect={select}
+              onAddBelow={addBelow}
+              onCardKey={onCardKey}
+            />
+            <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />
+          </div>
           <TypeChip field={field} actions={actions} disabled={readOnly} />
           {!readOnly && (
             <>
@@ -97,14 +100,21 @@ export function FieldCard({ uid, handleProps, actions, lifted = false }: Props) 
                 shortcut={keyHint('.')}
                 aria-expanded={expanded}
                 data-settings-toggle={uid}
-                className={cx(expanded && styles.on)}
+                className={cx(styles.settings, expanded && styles.on)}
                 icon={<Settings2 aria-hidden />}
                 onClick={(event) => {
                   event.stopPropagation();
                   toggleSettings(store, uid, expanded);
                 }}
               />
-              <FieldMenu uid={uid} actions={actions} onAddBelow={addBelow} />
+              <FieldMenu
+                uid={uid}
+                actions={actions}
+                onAddBelow={addBelow}
+                onSettings={() => {
+                  toggleSettings(store, uid, expanded);
+                }}
+              />
             </>
           )}
         </div>
@@ -129,7 +139,7 @@ export function FieldCard({ uid, handleProps, actions, lifted = false }: Props) 
             toggleSettings(store, uid, false);
           }}
         />
-        <div className={styles.answer}>{body()}</div>
+        {body()}
         {issues.length > 0 && (
           <ul id={issuesId} className={styles.issues}>
             {issues.map((issue) => (

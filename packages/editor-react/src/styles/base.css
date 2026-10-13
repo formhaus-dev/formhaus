@@ -77,3 +77,8 @@
     transition-duration: 0s !important;
   }
 }
+
+:root[data-fh-dragging],
+:root[data-fh-dragging] * {
+  cursor: grabbing !important;
+}

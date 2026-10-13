@@ -96,9 +96,8 @@ describe('editor canvas in a browser', () => {
       expect(toDefinition(store.getState().form).steps?.map((step) => step.title)).toEqual(['Step 1', 'Details']);
     });
     expect(screen.getByRole('group', { name: 'Details, step 2 of 2' })).toBeVisible();
-    expect(getComputedStyle(screen.getByRole('group', { name: 'Step 1, step 1 of 2' })).cursor).toBe('pointer');
-    const titles = screen.getAllByRole('textbox', { name: 'Step title' }).map((box) => (box as HTMLTextAreaElement).value);
-    expect(titles).toEqual(['', 'Details']);
+    const row = screen.getByRole('group', { name: 'Details, step 2 of 2' }).firstElementChild;
+    expect(row && getComputedStyle(row).cursor).toBe('pointer');
     expect(getComputedStyle(screen.getAllByRole('button', { name: 'Add field' })[0] as Element).cursor).toBe('pointer');
   });
 
@@ -114,7 +113,7 @@ describe('editor canvas in a browser', () => {
       'Long text',
       'Multiple choice',
       'Checkboxes',
-      'Dropdown',
+      'Select',
       'Email',
       'Phone',
       'Number',

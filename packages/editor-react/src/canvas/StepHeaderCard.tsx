@@ -1,8 +1,7 @@
 import { setStepProp, setStepTitle, stepFields } from '@formhaus/builder';
-import { Settings2 } from 'lucide-react';
+import { Info, Settings2 } from 'lucide-react';
 import { useLayoutEffect, useState } from 'react';
 import { IconButton, InlineText } from '../ui';
-import { cx } from '../ui/lib/cx';
 import settings from '../inspector/Inspector.module.css';
 import { StepPanel } from '../inspector/StepPanel';
 import { LogicBadge } from '../logic/LogicBadge';
@@ -38,14 +37,13 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
   if (!step) return null;
   const title = step.title.trim() || `Step ${String(position)}`;
   const description = step.extra.description ?? '';
-  const shown = step.title.trim() === `Step ${String(position)}` ? '' : step.title;
   const select = () => {
     if (!selected) store.select({ kind: 'step', uid });
   };
   return (
     <div
       data-card={uid}
-      className={cx(styles.stepHeader, selected && styles.stepSelected)}
+      className={styles.stepHeader}
       tabIndex={selected ? 0 : -1}
       role="group"
       aria-label={`${title}, step ${String(position)} of ${String(total)}`}
@@ -53,6 +51,22 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
     >
       <div className={styles.stepRow}>
         <span className={styles.stepCount}>Step {position}</span>
+        <InlineText
+          data-focus="label"
+          value={step.title.trim() === `Step ${String(position)}` ? '' : step.title}
+          label="Step title"
+          placeholder="Step name"
+          size="lg"
+          readOnly={readOnly}
+          ring
+          rowClassName={styles.stepTitle}
+          onFocus={select}
+          onValueChange={(value) => {
+            actions.edit((draft) => {
+              setStepTitle(draft, uid, value);
+            }, `${uid}:title`);
+          }}
+        />
         {!readOnly && (
           <span className={styles.stepActions}>
             <IconButton
@@ -77,28 +91,13 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
           </span>
         )}
       </div>
-      <InlineText
-        data-focus="label"
-        value={shown}
-        label="Step title"
-        placeholder="Step title"
-        size="lg"
-        readOnly={readOnly}
-        boxed
-        rowClassName={styles.stepTitle}
-        onFocus={select}
-        onValueChange={(value) => {
-          actions.edit((draft) => {
-            setStepTitle(draft, uid, value);
-          }, `${uid}:title`);
-        }}
-      />
       {(description || (selected && !readOnly)) && (
         <InlineText
           value={description}
           label="Step description"
           placeholder="Description"
-          boxed
+          size="sm"
+          ring
           tone="muted"
           multiline
           readOnly={readOnly}
@@ -109,6 +108,12 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
             }, `${uid}:description`);
           }}
         />
+      )}
+      {!readOnly && stepFields(form, uid).length === 0 && (
+        <p className={styles.empty}>
+          <Info aria-hidden />
+          Add a field to this step.
+        </p>
       )}
       <LogicBadge
         block={step}

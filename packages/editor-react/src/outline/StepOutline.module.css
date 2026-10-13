@@ -98,3 +98,12 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.tip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

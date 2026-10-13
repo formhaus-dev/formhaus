@@ -93,7 +93,7 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit', compact 
         </div>
       )}
       <div hidden={mode !== 'edit'}>
-        <Workspace outline={!compact} />
+        <Workspace outline={!compact} header={!compact} />
       </div>
       <ShortcutsDialog open={help} onOpenChange={setHelp} />
     </EditorShell>

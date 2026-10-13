@@ -3,12 +3,15 @@
   flex-direction: column;
   gap: var(--fh-ed-space-2);
   min-width: 0;
+  min-height: 0;
 }
 
 .list {
   display: flex;
   flex-direction: column;
   gap: var(--fh-ed-space-2);
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .group {

@@ -14,15 +14,13 @@
 }
 
 .dragging {
-  border: var(--fh-ed-border-thin) dashed var(--fh-ed-line-strong);
+  border: 0;
+  outline: var(--fh-ed-border-thin) dashed var(--fh-ed-line-strong);
+  outline-offset: calc(-1 * var(--fh-ed-border-thin));
   border-radius: var(--fh-ed-radius-lg);
 }
 
 .dragging > * {
-  opacity: 0;
-}
-
-.row.dragging .handle {
   opacity: 0;
 }
 
@@ -47,7 +45,11 @@
   touch-action: none;
 }
 
-.handle:active {
+.handle:not(:disabled) {
+  cursor: grab;
+}
+
+.handle:not(:disabled):active {
   cursor: grabbing;
 }
 

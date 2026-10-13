@@ -9,7 +9,7 @@ export const QUESTION_TYPES = [
   { type: 'date', label: 'Date', hint: 'Date picker', icon: 'calendar', placeholder: 'When…?' },
   { type: 'radio', label: 'Multiple choice', hint: 'Pick one, answers can branch', icon: 'circle-dot', placeholder: 'Which one…?' },
   { type: 'multiselect', label: 'Checkboxes', hint: 'Pick all that apply', icon: 'check-square', placeholder: 'Which of these…?' },
-  { type: 'select', label: 'Dropdown', hint: 'Pick one from a list', icon: 'chevron-down', placeholder: 'Choose a…' },
+  { type: 'select', label: 'Select', hint: 'Pick one from a list', icon: 'chevron-down', placeholder: 'Choose a…' },
   { type: 'checkbox', label: 'Checkbox', hint: 'A single yes or no tick', icon: 'square-check', placeholder: 'I agree to…' },
 ] as const;
 

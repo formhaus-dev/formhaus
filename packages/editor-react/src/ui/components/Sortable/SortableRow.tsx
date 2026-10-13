@@ -18,7 +18,6 @@ type Listeners = Pick<SortableHandleProps, 'onKeyDown' | 'onMouseDown' | 'onTouc
 export interface SortableRenderState {
   handleProps: SortableHandleProps;
   isDragging: boolean;
-  overlay: boolean;
 }
 
 interface RowProps {
@@ -43,7 +42,7 @@ export function SortableRow({ id, label, className, render }: RowProps) {
       style={{ transform: CSS.Translate.toString(transform), transition }}
       data-dragging={isDragging || undefined}
     >
-      {render({ handleProps, isDragging, overlay: false })}
+      {render({ handleProps, isDragging })}
     </li>
   );
 }

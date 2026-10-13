@@ -1,5 +1,5 @@
 import { isPage, pageTitle, stepOf } from '@formhaus/builder';
-import { ArrowDown, ArrowUp, Copy, CornerDownRight, Ellipsis, Plus, SplitSquareVertical, Trash2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Copy, CornerDownRight, Ellipsis, Plus, Settings2, SplitSquareVertical, Trash2 } from 'lucide-react';
 import { useMemo } from 'react';
 import {
   DropdownMenu,
@@ -17,9 +17,10 @@ interface Props {
   uid: string;
   actions: EditorActions;
   onAddBelow: () => void;
+  onSettings: () => void;
 }
 
-export function FieldMenu({ uid, actions, onAddBelow }: Props) {
+export function FieldMenu({ uid, actions, onAddBelow, onSettings }: Props) {
   const form = useForm();
   const steps = useMemo(() => {
     const offset = isPage(form.blocks[0]) ? 0 : 1;
@@ -43,6 +44,9 @@ export function FieldMenu({ uid, actions, onAddBelow }: Props) {
           }}
         >
           Duplicate
+        </DropdownMenuItem>
+        <DropdownMenuItem icon={<Settings2 aria-hidden />} hint="." onSelect={onSettings}>
+          Field settings
         </DropdownMenuItem>
         <DropdownMenuItem icon={<Plus aria-hidden />} onSelect={onAddBelow}>
           Add field below

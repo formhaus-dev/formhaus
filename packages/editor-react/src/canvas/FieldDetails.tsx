@@ -19,8 +19,10 @@ export function HelpText({ field, actions, readOnly, selected }: Props & { selec
       value={text}
       label="Help text"
       placeholder="Help text"
+      size="sm"
       tone="muted"
-      boxed
+      multiline
+      ring
       readOnly={readOnly}
       rowClassName={styles.help}
       onValueChange={(value) => {

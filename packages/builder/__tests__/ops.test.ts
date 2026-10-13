@@ -47,9 +47,9 @@ describe('field ops', () => {
     expect(labels(form)).toEqual(['Name', 'Message', 'Email']);
     const step = addStep(form);
     moveFieldTo(form, name.uid, step.uid, 0);
-    expect(labels(form)).toEqual(['#Step 1', 'Message', 'Email', '#Step 2', 'Name']);
+    expect(labels(form)).toEqual(['#Step 1', 'Message', 'Email', '#', 'Name']);
     moveFieldTo(form, name.uid, form.blocks[0].uid, 1);
-    expect(labels(form)).toEqual(['#Step 1', 'Message', 'Name', 'Email', '#Step 2']);
+    expect(labels(form)).toEqual(['#Step 1', 'Message', 'Name', 'Email', '#']);
   });
 
   it('lists the blocks that reference a key', () => {
@@ -63,14 +63,14 @@ describe('step ops', () => {
   it('wraps a flat form into steps when the first step is added', () => {
     const { form } = contact();
     addStep(form);
-    expect(labels(form)).toEqual(['#Step 1', 'Name', 'Email', 'Message', '#Step 2']);
+    expect(labels(form)).toEqual(['#Step 1', 'Name', 'Email', 'Message', '#']);
     expect(toDefinition(form).steps?.map((step) => step.id)).toEqual(['step-1', 'step-2']);
   });
 
   it('splits at a field', () => {
     const { form, email } = contact();
     splitAt(form, email.uid);
-    expect(labels(form)).toEqual(['#Step 1', 'Name', '#Step 2', 'Email', 'Message']);
+    expect(labels(form)).toEqual(['#Step 1', 'Name', '#', 'Email', 'Message']);
     expect(stepNumber(form, form.blocks[2].uid)).toBe(2);
     expect(stepFields(form, form.blocks[2].uid).map((item) => item.label)).toEqual(['Email', 'Message']);
   });
@@ -97,7 +97,7 @@ describe('step ops', () => {
     const { form, email } = contact();
     const second = splitAt(form, email.uid)!;
     moveStep(form, second.uid, -1);
-    expect(labels(form)).toEqual(['#Step 2', 'Email', 'Message', '#Step 1', 'Name']);
+    expect(labels(form)).toEqual(['#', 'Email', 'Message', '#Step 1', 'Name']);
   });
 
   it('clears branch targets that point to a removed step', () => {
