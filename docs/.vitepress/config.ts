@@ -69,6 +69,7 @@ export default defineConfig({
           { text: 'Formhaus Cloud', link: '/cloud' },
           { text: 'Overview', link: '/cloud/overview' },
           { text: 'Quickstart', link: '/cloud/quickstart' },
+          { text: 'Connect Claude', link: '/cloud/connect-claude' },
           { text: 'Publishing', link: '/cloud/publishing' },
           { text: 'Collecting submissions', link: '/cloud/submissions' },
           { text: 'Teams and roles', link: '/cloud/teams' },
