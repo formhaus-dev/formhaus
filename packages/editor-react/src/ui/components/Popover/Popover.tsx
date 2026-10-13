@@ -14,6 +14,7 @@ export interface PopoverProps {
   align?: 'start' | 'center' | 'end';
   width?: 'auto' | 'menu' | 'wide' | 'canvas';
   flush?: boolean;
+  capped?: boolean;
   onOpenAutoFocus?: (event: Event) => void;
   onCloseAutoFocus?: (event: Event) => void;
 }
@@ -29,6 +30,7 @@ export function Popover({
   align = 'start',
   width = 'auto',
   flush = false,
+  capped = false,
   onOpenAutoFocus,
   onCloseAutoFocus,
 }: PopoverProps) {
@@ -39,7 +41,7 @@ export function Popover({
       {anchor && <RadixPopover.Anchor asChild>{anchor}</RadixPopover.Anchor>}
       <RadixPopover.Portal>
         <RadixPopover.Content
-          className={cx(styles.content, styles[width], flush && styles.flush)}
+          className={cx(styles.content, styles[width], flush && styles.flush, capped && styles.capped)}
           side={side}
           align={align}
           sideOffset={6}

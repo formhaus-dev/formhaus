@@ -34,6 +34,16 @@
   padding: var(--fh-ed-space-1);
 }
 
+.capped {
+  max-height: min(var(--fh-ed-size-toast), var(--radix-popover-content-available-height));
+  overflow: hidden;
+}
+
+.capped > * {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
 @keyframes appear {
   from {
     opacity: 0;
