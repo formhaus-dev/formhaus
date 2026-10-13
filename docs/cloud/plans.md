@@ -5,7 +5,7 @@ description: "Formhaus Cloud plans and limits: Free, Pro and Team, how submissio
 
 # Plans, limits and data
 
-Prices are on [Formhaus Cloud](/cloud). Limits enforced by the service:
+Prices are on the [pricing page](/pricing). Limits enforced by the service:
 
 | Plan | Price | Forms | Submissions | Editors | Webhooks and emails | Submission retention |
 |---|---|---|---|---|---|---|
