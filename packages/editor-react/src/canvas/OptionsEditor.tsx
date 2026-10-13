@@ -70,9 +70,6 @@ export function OptionsEditor({ field, actions }: Props) {
           const index = field.options.indexOf(option);
           return (
             <div className={styles.row} data-option={option.uid}>
-              <button {...handleProps} type="button" className={styles.grip} disabled={readOnly}>
-                <GripVertical aria-hidden />
-              </button>
               <span className={cx(styles.glyph, field.type === 'multiselect' && styles.square)} aria-hidden />
               <InlineText
                 value={option.label}
@@ -108,6 +105,9 @@ export function OptionsEditor({ field, actions }: Props) {
                   }}
                 />
               )}
+              <button {...handleProps} type="button" className={styles.grip} disabled={readOnly}>
+                <GripVertical aria-hidden />
+              </button>
               {field.options.length > 1 && !readOnly && (
                 <IconButton
                   label={`Remove ${optionLabel(option, index)}`}

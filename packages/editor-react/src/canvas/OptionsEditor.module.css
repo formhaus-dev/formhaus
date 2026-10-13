@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--fh-ed-space-1);
-  margin-inline: calc(var(--fh-ed-space-3) * -1);
 }
 
 .list {
@@ -14,12 +13,6 @@
   align-items: flex-start;
   gap: var(--fh-ed-space-2);
   min-height: var(--fh-ed-size-control-md);
-  padding-inline: var(--fh-ed-space-1) var(--fh-ed-space-1);
-  border-radius: var(--fh-ed-radius-md);
-}
-
-.row:focus-within {
-  background: var(--fh-ed-sub);
 }
 
 .grip {
