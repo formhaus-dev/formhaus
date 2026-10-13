@@ -40,6 +40,17 @@ describe('validateSubmission', () => {
     expect(values).toEqual(input.values);
   });
 
+  it('accepts loaded values for optionsFrom fields that also list static options', () => {
+    const definition: FormDefinition = {
+      id: 'remote', title: 'Remote', submit: { label: 'Send' },
+      fields: [
+        { key: 'city', type: 'select', label: 'City', optionsFrom: 'cities', options: [] },
+        { key: 'tags', type: 'multiselect', label: 'Tags', optionsFrom: 'tags', options: [] },
+      ],
+    };
+    expect(validateSubmission(definition, { city: 'paris', tags: ['a', 'b'] }).errors).toEqual({});
+  });
+
   it('treats non-object values and skippedSteps as empty', () => {
     const result = validateSubmission(skipFixture.definition, null, { skippedSteps: 'extras' as never });
     expect(result.values).toEqual({ tier: 'basic' });
