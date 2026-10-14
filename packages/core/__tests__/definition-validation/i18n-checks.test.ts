@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine } from '../../src';
+import { checkTranslations, localize } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
 
 const base = () => ({
@@ -9,7 +10,7 @@ const base = () => ({
   fields: [{ key: 'email', type: 'email', label: 'Email', options: undefined as unknown, validation: { required: true } as Record<string, unknown> }],
 });
 
-const codes = (definition: unknown) => checkDefinition(definition).map(({ code, severity, path }) => ({ code, severity, path }));
+const codes = (definition: unknown) => checkTranslations(definition as never).map(({ code, severity, path }) => ({ code, severity, path }));
 
 describe('i18n definition checks', () => {
   it('accepts lang, catalogs and translation keys on every node', () => {
@@ -27,6 +28,7 @@ describe('i18n definition checks', () => {
       }],
     };
     expect(codes(definition)).toEqual([]);
+    expect(checkDefinition(definition)).toEqual([]);
     expect(() => new FormEngine(definition)).not.toThrow();
   });
 
@@ -39,25 +41,28 @@ describe('i18n definition checks', () => {
       i18n: { title: 7, messages: { email: '' } },
       fields: [{ key: 'email', type: 'email', label: 'Email', i18n: [], validation: { i18n: { required: ' ' } } }],
     };
-    expect(codes(definition)).toEqual([
-      { code: 'invalid-type', severity: 'error', path: '/fields/0/validation/i18n/required' },
+    expect(codes(definition).sort((a, b) => a.path.localeCompare(b.path))).toEqual([
       { code: 'invalid-type', severity: 'error', path: '/fields/0/i18n' },
+      { code: 'invalid-type', severity: 'error', path: '/fields/0/validation/i18n/required' },
+      { code: 'invalid-type', severity: 'error', path: '/i18n/messages/email' },
+      { code: 'invalid-type', severity: 'error', path: '/i18n/title' },
+      { code: 'invalid-type', severity: 'error', path: '/labels' },
       { code: 'invalid-type', severity: 'error', path: '/lang' },
       { code: 'invalid-type', severity: 'error', path: '/messages/required' },
-      { code: 'invalid-type', severity: 'error', path: '/labels' },
-      { code: 'invalid-type', severity: 'error', path: '/i18n/title' },
-      { code: 'invalid-type', severity: 'error', path: '/i18n/messages/email' },
     ]);
+    expect(() => localize(definition as never, { overlay: {} })).toThrow(FormDefinitionError);
+    expect(() => new FormEngine(definition as never)).not.toThrow();
   });
 
-  it('rejects a key without its source text in the engine and on the server', () => {
+  it('rejects a key without its source text and leaves the engine and the server alone', () => {
     const definition = { ...base(), i18n: { description: 'signup.description' }, fields: [{ key: 'email', type: 'email', label: 'Email', i18n: { helperText: 'email.help' } }] };
     expect(codes(definition)).toEqual([
-      { code: 'i18n-unbound-slot', severity: 'error', path: '/fields/0/i18n/helperText' },
       { code: 'i18n-unbound-slot', severity: 'error', path: '/i18n/description' },
+      { code: 'i18n-unbound-slot', severity: 'error', path: '/fields/0/i18n/helperText' },
     ]);
-    expect(() => new FormEngine(definition as never)).toThrow(FormDefinitionError);
-    expect(() => validateSubmission(definition as never, {})).toThrow(FormDefinitionError);
+    expect(() => localize(definition as never, { translate: () => undefined })).toThrow(FormDefinitionError);
+    expect(() => new FormEngine(definition as never)).not.toThrow();
+    expect(validateSubmission(definition as never, {}).errors).toEqual({});
   });
 
   it('warns about unknown slots, catalog keys and rules without a key target', () => {

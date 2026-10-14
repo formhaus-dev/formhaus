@@ -1,4 +1,6 @@
 import { parseDefinition } from '../definition-validation/check-definition';
+import { FormDefinitionError, isError } from '../definition-validation/issues';
+import { checkTranslations } from './check';
 import type { FormDefinition, LabelFn, LabelSource } from '../types';
 import { DEFAULT_MESSAGES, formatText, type MessageFn, type MessageSource } from '../validation/default-messages';
 import { DEFAULT_LABELS } from './nodes';
@@ -68,7 +70,9 @@ function fromTranslate(definition: FormDefinition, { translate, prefix = definit
 }
 
 export function localize(input: FormDefinition, source: LocalizeSource): Localized {
-  const definition: FormDefinition = JSON.parse(JSON.stringify(parseDefinition(input)));
+  const errors = checkTranslations(parseDefinition(input)).filter(isError);
+  if (errors.length) throw new FormDefinitionError(errors);
+  const definition: FormDefinition = JSON.parse(JSON.stringify(input));
   if (source.lang) definition.lang = source.lang;
   return 'overlay' in source ? fromOverlay(definition, source.overlay) : fromTranslate(definition, source);
 }

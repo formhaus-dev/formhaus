@@ -1,8 +1,8 @@
 import { DEFAULT_MESSAGES } from '../validation/default-messages';
-import { DEFAULT_LABELS, hasRule, SLOTS } from '../i18n/nodes';
-import type { CheckContext } from './context';
-import type { DefinitionIssue, DefinitionIssueCode } from './issues';
-import { oneOf, pointer, warning } from './issues';
+import { DEFAULT_LABELS, hasRule, SLOTS } from './nodes';
+import type { CheckContext } from '../definition-validation/context';
+import type { DefinitionIssue, DefinitionIssueCode } from '../definition-validation/issues';
+import { oneOf, pointer, warning } from '../definition-validation/issues';
 
 type Node = Record<string, unknown> | undefined | false;
 

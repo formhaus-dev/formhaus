@@ -73,4 +73,9 @@ describe('engine messages', () => {
     const plain = { ...definition, messages: undefined };
     expect(new FormEngine(plain, { password: 'abc' }).validate()).toEqual({ password: 'Must be at least 8 characters', name: 'This field is required' });
   });
+
+  it('ignores catalog values that are not text', () => {
+    const odd = { ...definition, messages: { required: 5, minLength: '' } } as unknown as FormDefinition;
+    expect(new FormEngine(odd, { password: 'abc' }).validate()).toEqual({ password: 'Must be at least 8 characters', name: 'This field is required' });
+  });
 });

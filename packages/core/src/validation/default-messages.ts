@@ -38,8 +38,8 @@ type TextSource<K extends string> = Partial<Record<K, string>> | ((key: K, param
 
 export function resolveText<K extends string>(defaults: Record<K, string>, key: K, params: MessageParams, sources: (TextSource<K> | undefined)[], ...context: unknown[]): string {
   for (const source of sources) {
-    const text = typeof source === 'function' ? (source as (...args: unknown[]) => string | undefined)(key, params, ...context) : source?.[key] && formatText(source[key]!, params);
-    if (text) return text;
+    const text = typeof source === 'function' ? (source as (...args: unknown[]) => unknown)(key, params, ...context) : source?.[key];
+    if (text && typeof text === 'string') return typeof source === 'function' ? text : formatText(text, params);
   }
   return formatText(defaults[key], params);
 }
