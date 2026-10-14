@@ -34,7 +34,6 @@ export function buildSchema() {
   generated.definitions.FormField.properties.key.not = { enum: [...Object.getOwnPropertyNames(Object.prototype), 'prototype'].sort() };
   generated.definitions.FormDefinition.properties.description.maxLength = 1000;
   generated.definitions.FormDefinition.properties.formatVersion.pattern = '^[1-9]\\d*(\\.\\d+)?$';
-  generated.definitions.FormDefinition.properties.lang.pattern = '^[A-Za-z]{2,3}([-_][A-Za-z0-9]{2,8})*$';
   for (const name of I18N_DEFINITIONS) {
     for (const property of Object.values(generated.definitions[name].properties)) if (property.type === 'string') property.minLength = 1;
   }
