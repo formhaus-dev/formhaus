@@ -4,8 +4,8 @@
 '@formhaus/vue': minor
 ---
 
-- The submit handler can return `{ ok: true }` or `{ ok: false, errors, formErrors }`. A rejection keeps the answers, shows the errors and does not run `onAfterSubmit`. Handlers that return nothing work as before.
-- New `SubmitResult` and `SubmitHandler` types.
+- The submit handler can return `{ ok: true }` or `{ ok: false, errors, formErrors }`. A rejection keeps the answers, shows the errors and does not run `onAfterSubmit`. Handlers that return nothing, or anything other than a plain object with `ok: false`, work as before.
+- New `SubmitResult` and `SubmitHandler` types. The renderers' `onSubmit` prop is typed `SubmitHandler`, which accepts every `SubmitFn`.
 - Server errors from a rejection or `setErrors()` stay through step navigation and validation of other fields. Editing a field removes only that field's error.
 - `setErrors()` and a rejection open the earliest step with an error, whatever the key order.
 - A successful submission clears server errors and form-level errors.

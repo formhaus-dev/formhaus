@@ -305,12 +305,12 @@ A plain object is one whose prototype is `Object.prototype`. A `fetch` `Response
 
 ### Server errors
 
-`errors` keys are field keys. A rejection and `setErrors(errors)` apply a server error set the same way:
+`errors` keys are field keys. A message that is not a string is ignored; an array of strings is joined with spaces. `formErrors` other than an array of strings is ignored. A rejection and `setErrors(errors)` apply a server error set the same way:
 
 1. A key of a visible field on the active path becomes the error of that field. Every other key, including the key of a hidden field or a field off the active path, becomes a form-level error. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
 2. The set replaces all previous field errors and form-level errors at once.
 3. In a multi-step form, the engine opens the earliest step on the active path that has a field error. The key order of `errors` does not matter. The step change hooks do not run.
-4. The built-in renderers focus the first enabled control of the first invalid field on that step after it renders.
+4. The built-in renderers focus the first invalid field on that step after it renders: the checked option of a group, or its first enabled control.
 
 Field errors are kept until one of these events:
 
@@ -322,14 +322,14 @@ Field errors are kept until one of these events:
 | Navigation, Continue, `validate()` and `onStepValidate` errors | Kept | Kept |
 | A new submission is sent | Kept while it runs | Kept while it runs |
 | A rejection or `setErrors()` | Replaced | Replaced |
-| A successful submission or `reset()` | Removed | Removed |
+| A successful submission or `reset()` | Removed, unless `setErrors()` ran during the request | Removed, unless `setErrors()` ran during the request |
 
 Writing the same value again keeps the error. While a client rule fails on a field with a server error, the client error shows; the server error returns when the client error is resolved. Server errors do not block Continue or Submit. Client rules decide whether the request is sent.
 
 ### Concurrent submissions
 
 - One action runs at a time. `submit()` and `skip()` while a submission or navigation is pending resolve to `false` without calling the handler.
-- A response that arrives after `reset()`, `cancelPendingActions()`, a definition change or an unmount is ignored. It applies no errors, does not navigate and does not run `onAfterSubmit`.
+- A response that arrives after `reset()`, `cancelPendingActions()`, a definition change or an unmount is ignored. It applies no errors, does not navigate and does not run `onAfterSubmit`. `submit()` still resolves to `true` for a success and `false` for a rejection.
 - The built-in renderers disable fields while a submission runs. When the engine is driven directly and a value changes during the request, a success still runs `onAfterSubmit` with the values that were sent. A rejection skips the errors of fields whose value changed after the request was sent.
 - The engine does not abort a request. A handler that needs to abort uses its own `AbortController`.
 

@@ -4,6 +4,8 @@ A three-step account form that sends one flat request to an existing API. The AP
 
 ## Run
 
+Build the local packages first (see [Dependencies](#dependencies)), then:
+
 ```bash
 pnpm install
 pnpm dev

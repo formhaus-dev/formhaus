@@ -72,7 +72,7 @@ Let a failed request throw. The form keeps the answers and the previous server e
 ```
 :::
 
-A handler that sets `errors` and returns normally counts as a success, so `onAfterSubmit` runs. Rethrow the failure, or return `{ ok: false }`, to stop it.
+A handler that sets `errors` and returns normally counts as a success, so `onAfterSubmit` runs. The errors it set stay. Rethrow the failure, or return `{ ok: false }`, to stop the after-hook.
 
 ## Top-level errors
 
