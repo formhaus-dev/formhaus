@@ -81,7 +81,9 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     const id = focusKey.current && fieldDomId(formId, focusKey.current);
     focusKey.current = null;
     const chosen = id ? fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) : null;
-    const target = firstControl(chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) ?? firstControl(fields);
+    if (id && !chosen) return;
+    const field = chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]');
+    const target = field?.querySelector('input:checked:not(:disabled)') ?? firstControl(field) ?? firstControl(fields);
     ((target as HTMLElement | null | undefined) ?? formRef.current)?.focus();
   }, [engine, version, actions.invalidAttempts]);
 

@@ -39,7 +39,7 @@ describe('Vue error summary and step marks', () => {
     await screen.findByRole('heading', { name: 'Address' });
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Postcode/ })));
     await fireEvent.click(within(summary).getAllByRole('link')[1]);
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('radio', { name: 'Personal' })));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('radio', { name: 'Business' })));
     expect(links[2].getAttribute('href')).toMatch(/-postcode$/);
   });
 

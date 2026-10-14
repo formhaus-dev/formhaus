@@ -1,5 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
-import { useFormSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
+import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
 interface FormProgressControllerProps {
@@ -15,7 +15,7 @@ export function FormProgressController({
   headingLevel,
   marks,
 }: FormProgressControllerProps) {
-  (marks ? useFormSnapshot : useStructureSnapshot)(engine);
+  useFormSnapshot(engine);
   if (!engine.isMultiStep || !ProgressComponent) return null;
   const errors = marks ? engine.stepErrors : {};
 

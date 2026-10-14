@@ -41,7 +41,9 @@ export function useFormFocus(form: UseFormEngineReturn, formRef: Ref<HTMLFormEle
     const id = focusKey && fieldDomId(formId, focusKey);
     focusKey = null;
     const chosen = id ? fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) : null;
-    const target = firstControl(chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) ?? firstControl(fields);
+    if (id && !chosen) return;
+    const field = chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]');
+    const target = field?.querySelector('input:checked:not(:disabled)') ?? firstControl(field) ?? firstControl(fields);
     ((target as HTMLElement | null | undefined) ?? formRef.value)?.focus();
   }, { flush: 'post' });
 

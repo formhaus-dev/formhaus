@@ -38,7 +38,7 @@ describe('error summary and step marks', () => {
     await screen.findByRole('heading', { name: 'Address' });
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Postcode/ })));
     fireEvent.click(within(summary).getAllByRole('link')[1]);
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('radio', { name: 'Personal' })));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('radio', { name: 'Business' })));
     expect(links[2].getAttribute('href')).toMatch(/-postcode$/);
   });
 
@@ -65,4 +65,21 @@ describe('error summary and step marks', () => {
       { id: 'address', title: 'Address', errorCount: 0 },
     ]));
   });
+});
+
+it('keeps focus when a summary link points to a custom field without the id', async () => {
+  const Plain = ({ field, value, onChange }: { field: { label: string }; value: unknown; onChange: (value: unknown) => void }) => (
+    <label>{field.label}<input aria-invalid="true" value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} /></label>
+  );
+  const plain: FormDefinition = { id: 'plain', title: '', submit: { label: 'Send' }, fields: [
+    { key: 'a', type: 'text', label: 'A' }, { key: 'b', type: 'text', label: 'B' },
+  ] };
+  render(<FormRenderer definition={plain} components={{ text: Plain }} errorSummary
+    onSubmit={() => ({ ok: false, errors: { a: 'bad a', b: 'bad b' } })} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+  const link = await screen.findByRole('link', { name: 'B: bad b' });
+  link.focus();
+  fireEvent.click(link);
+  await new Promise((done) => setTimeout(done));
+  expect(document.activeElement).toBe(link);
 });
