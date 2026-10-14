@@ -47,10 +47,15 @@ body {
   padding-left: 18px;
 }
 
+.demo__toggles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
 .demo__toggle {
   display: flex;
   gap: 8px;
-  margin-top: 16px;
 }
 
 .demo__panel pre {

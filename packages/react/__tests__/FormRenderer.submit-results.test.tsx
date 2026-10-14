@@ -55,6 +55,29 @@ describe('FormRenderer submit results with a flat API', () => {
     expect(api.requests).toHaveLength(2);
   });
 
+  it('lands on the first step with focus on the field a toggle rejects, then shows a general error', async () => {
+    const api = createMockApi();
+    api.reject('email', true);
+    const onAfterSubmit = vi.fn();
+    render(<FormRenderer definition={definition} initialValues={valid} onSubmit={submitTo(api)} onAfterSubmit={onAfterSubmit} />);
+    await toLastStep();
+    fireEvent.click(screen.getByRole('button', { name: 'Open account' }));
+
+    await screen.findByRole('heading', { name: 'About you' });
+    await waitFor(() => expect(document.activeElement).toBe(field('Email')));
+    expect(screen.getByText('Email rejected by the mock API')).toBeDefined();
+    expect(onAfterSubmit).not.toHaveBeenCalled();
+
+    api.reject('email', false);
+    api.reject('general', true);
+    await toLastStep();
+    fireEvent.click(screen.getByRole('button', { name: 'Open account' }));
+    expect((await screen.findByText('The service is down for maintenance')).closest('[role="alert"]')).not.toBeNull();
+    expect(screen.queryByText('Email rejected by the mock API')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'Address' })).toBeDefined();
+    expect(api.requests).toHaveLength(2);
+  });
+
   it('shows unknown keys and a hidden field error as form errors', async () => {
     const onSubmit = vi.fn((): SubmitResult => ({ ok: false, errors: { account: 'Paused', companyName: 'Not registered' }, formErrors: ['Try again later'] }));
     render(<FormRenderer definition={definition} initialValues={valid} onSubmit={onSubmit} />);

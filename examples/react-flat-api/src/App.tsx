@@ -2,21 +2,36 @@ import { parseDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { useMemo, useState } from 'react';
 import { submitTo } from './adapter';
-import { createMockApi } from './api';
+import { createMockApi, type ForcedRejection } from './api';
 import account from './account.json';
 
 const definition = parseDefinition(account);
 const api = createMockApi({ latency: 400 });
 
+const toggles: [ForcedRejection, string][] = [
+  ['first_name', 'Reject first name'],
+  ['email', 'Reject email'],
+  ['company_name', 'Reject company'],
+  ['postal_code', 'Reject postcode'],
+  ['account', 'Unknown key error'],
+  ['general', 'General error'],
+];
+
 export default function App() {
   const submit = useMemo(() => submitTo(api), []);
   const [offline, setOffline] = useState(false);
+  const [forced, setForced] = useState<ForcedRejection[]>([]);
   const [requests, setRequests] = useState(api.requests.length);
   const [opened, setOpened] = useState<string | null>(null);
 
   async function onSubmit(values: Record<string, unknown>) {
     try { return await submit(values); }
     finally { setRequests(api.requests.length); }
+  }
+
+  function toggle(key: ForcedRejection, on: boolean) {
+    api.reject(key, on);
+    setForced(on ? [...forced, key] : forced.filter((item) => item !== key));
   }
 
   return (
@@ -47,10 +62,19 @@ export default function App() {
           <li>a company name with “test”</li>
           <li>a postcode that starts with 0</li>
         </ul>
-        <label className="demo__toggle">
-          <input type="checkbox" checked={offline} onChange={(event) => { setOffline(event.target.checked); api.setOffline(event.target.checked); }} />
-          Network down
-        </label>
+        <h2>Force a response</h2>
+        <div className="demo__toggles">
+          {toggles.map(([key, label]) => (
+            <label key={key} className="demo__toggle">
+              <input type="checkbox" checked={forced.includes(key)} onChange={(event) => toggle(key, event.target.checked)} />
+              {label}
+            </label>
+          ))}
+          <label className="demo__toggle">
+            <input type="checkbox" checked={offline} onChange={(event) => { setOffline(event.target.checked); api.setOffline(event.target.checked); }} />
+            Network down
+          </label>
+        </div>
         <h2>Last request</h2>
         <pre>{requests > 0 ? JSON.stringify(api.requests[requests - 1], null, 2) : 'None yet'}</pre>
       </aside>
