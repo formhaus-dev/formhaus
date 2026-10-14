@@ -187,3 +187,21 @@ describe('validateFieldValue', () => {
     });
   });
 });
+
+describe('whitespace trimming', () => {
+  it('treats a whitespace-only required value as empty', () => {
+    expect(validateFieldValue(makeField({ validation: { required: true } }), '   ', {}, {})).toBe('This field is required');
+  });
+
+  it('accepts an email with surrounding spaces', () => {
+    expect(validateFieldValue(makeField({ type: 'email', validation: { required: true } }), '  a@b.co ', {}, {})).toBeNull();
+  });
+
+  it('checks length on the trimmed value', () => {
+    expect(validateFieldValue(makeField({ validation: { minLength: 3 } }), ' ab ', {}, {})).toBe('Must be at least 3 characters');
+  });
+
+  it('does not trim a password', () => {
+    expect(validateFieldValue(makeField({ type: 'password', validation: { required: true } }), '   ', {}, {})).toBeNull();
+  });
+});
