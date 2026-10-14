@@ -140,7 +140,7 @@ async function onPrimary() {
     />
 
     <div v-if="props.errorSummary && summaryFields.length > 0" class="fh-error-summary" role="alert">
-      <p class="fh-error-summary__title">Check these answers</p>
+      <strong class="fh-error-summary__title">Check these answers</strong>
       <ul class="fh-error-summary__list">
         <li v-for="field in summaryFields" :key="field.key">
           <a class="fh-error-summary__link" :href="`#${fieldDomId(formId, field.key)}`" @click.prevent="showField(field.key)">{{ field.label }}: {{ errors[field.key] }}</a>

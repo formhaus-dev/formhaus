@@ -16,7 +16,7 @@ export function FormErrorSummary({ engine, formId, onSelect }: FormErrorSummaryP
 
   return (
     <div className="fh-error-summary" role="alert">
-      <p className="fh-error-summary__title">Check these answers</p>
+      <strong className="fh-error-summary__title">Check these answers</strong>
       <ul className="fh-error-summary__list">
         {invalid.map((field) => (
           <li key={field.key}>

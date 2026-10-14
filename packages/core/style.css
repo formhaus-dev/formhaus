@@ -90,11 +90,9 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 }
 
 .fh-field__error, .fh-form__top-error { margin: 0; color: var(--fh-color-error); font-size: var(--fh-font-size-small); font-weight: 500; }
-.fh-form__top-errors { display: flex; flex-direction: column; gap: 4px; }
+.fh-form__top-errors, .fh-error-summary { display: flex; flex-direction: column; gap: 4px; }
 .fh-error-summary { padding: 12px 14px; border: 1px solid var(--fh-color-error); border-radius: var(--fh-radius); }
-.fh-error-summary__title { margin: 0 0 4px; font-weight: 600; }
 .fh-error-summary__list { margin: 0; padding-left: 18px; }
-.fh-error-summary__link { color: var(--fh-color-error); }
 
 .fh-field__radio-group, .fh-field__multiselect-group { display: flex; flex-direction: column; gap: 8px; }
 .fh-field__radio-group--inline, .fh-field__multiselect-group--inline { flex-flow: row wrap; }
@@ -205,8 +203,7 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 .fh-step-progress__bar { height: 4px; border-radius: 999px; background: var(--fh-color-bg-disabled); overflow: hidden; }
 .fh-step-progress__fill { height: 100%; background: var(--fh-color-primary); transition: width 200ms ease-out; }
 .fh-step-progress__steps { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 0; padding: 0; list-style: none; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); }
-.fh-step-progress__step[aria-current] { color: var(--fh-color-text); font-weight: 600; }
-.fh-step-progress__step--invalid { color: var(--fh-color-error); }
+.fh-error-summary__link, .fh-step-progress__step--invalid { color: var(--fh-color-error); }
 
 @media (forced-colors: active) {
   .fh-field__radio, .fh-field__checkbox, .fh-field__switch { appearance: auto; width: 18px; height: 18px; box-shadow: none; }

@@ -23,13 +23,16 @@ export function FormStepProgress({
       </div>
       {steps && (
         <ol className="fh-step-progress__steps">
-          {steps.map((step, index) => (
-            <li key={step.id} className={`fh-step-progress__step${step.errorCount ? ' fh-step-progress__step--invalid' : ''}`}
-              aria-current={index + 1 === current ? 'step' : undefined}>
-              {step.title || `Step ${index + 1}`}
-              {step.errorCount > 0 && ` · ${step.errorCount} ${step.errorCount === 1 ? 'error' : 'errors'}`}
-            </li>
-          ))}
+          {steps.map((step, index) => {
+            const label = step.title || `Step ${index + 1}`;
+            return (
+              <li key={step.id} className={`fh-step-progress__step${step.errorCount ? ' fh-step-progress__step--invalid' : ''}`}
+                aria-current={index + 1 === current ? 'step' : undefined}>
+                {index + 1 === current ? <strong>{label}</strong> : label}
+                {step.errorCount > 0 && ` · ${step.errorCount} ${step.errorCount === 1 ? 'error' : 'errors'}`}
+              </li>
+            );
+          })}
         </ol>
       )}
       {stepTitle && <Heading className="fh-step-progress__title">{stepTitle}</Heading>}
