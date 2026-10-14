@@ -6,6 +6,7 @@ import type {
   FormField,
   FormDefinition,
   FormEngineOptions,
+  LabelSource,
   StepValidateFn,
   SubmitHandler,
   ValidatorFn,
@@ -46,6 +47,7 @@ export interface FormStepProgressProps {
   stepDescription?: string;
   headingLevel?: HeadingLevel;
   steps?: FormStepStatus[];
+  counterLabel?: string;
 }
 
 export type OptionsProvider = (
@@ -64,6 +66,7 @@ export interface FormRendererProps extends FormEngineOptions {
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
+  labels?: LabelSource;
   errorSummary?: boolean;
   stepErrorMarks?: boolean;
   loading?: boolean;
