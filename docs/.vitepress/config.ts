@@ -3,7 +3,7 @@ import { defineConfig } from 'vitepress'
 import { transformPageData } from './templates'
 import { llms } from './llms'
 import { templateFiles } from './template-files'
-import { copyHashmap, coreBudgetKB, head, ownHashmap, sharedDedupe, sharedPublic, sharedThemeConfig, siteUrl, transformHead } from '../../packages/site-theme/src/config'
+import { analyticsHead, copyHashmap, coreBudgetKB, head, ownHashmap, sharedDedupe, sharedPublic, sharedThemeConfig, siteUrl, transformHead } from '../../packages/site-theme/src/config'
 import { sitemapCollector, writeOwnSitemap } from '../../packages/site-theme/src/sitemap.js'
 
 const shared = await sharedThemeConfig()
@@ -30,7 +30,7 @@ export default defineConfig({
   cleanUrls: true,
   ignoreDeadLinks: [/^\/legal\//],
   sitemap: { hostname: siteUrl, transformItems: sitemap.transformItems },
-  head,
+  head: [...head, ...analyticsHead('docs')],
   transformHead,
   transformPageData,
   buildEnd: (config) => {
