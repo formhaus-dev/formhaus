@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 export const definitionInput = z
   .union([z.record(z.string(), z.unknown()), z.string()])
-  .describe('Formhaus form definition as a JSON object or a JSON string. JSON Schema: https://formhaus.dev/schema/form-definition.json. Top level: id, title, submit { label }, and fields (one step) or steps [{ id, title, fields }]. Field: { key, type, label, validation?, options?, show?, showAny? }. Rules go inside "validation": { required, minLength, maxLength, min, max, pattern, matchField }. Condition: { field, eq | neq | in | notIn | notEmpty | gt | gte | lt | lte } with exactly one operator, on a field of the same or an earlier step.');
+  .describe('Formhaus form definition as a JSON object or a JSON string. JSON Schema: https://formhaus.dev/schema/form-definition.json. Top level: id, title, submit { label }, and fields (one step) or steps [{ id, title, fields }]. Field: { key, type, label, validation?, options?, show?, showAny? }. Rules go inside "validation": { required, minLength, maxLength, min, max, pattern, matchField }. Condition: { field, eq | neq | in | notIn | notEmpty | gt | gte | lt | lte } with exactly one operator, on a field of the same or an earlier step. Optional: lang, messages and labels catalogs, and i18n objects that map texts to translation keys.');
 
 export type DefinitionInput = z.infer<typeof definitionInput>;
 

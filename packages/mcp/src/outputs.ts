@@ -47,6 +47,16 @@ export const capabilitiesOutput = {
   fieldTypes: z.array(z.string()),
   conditions: z.record(z.string(), z.unknown()),
   steps: z.record(z.string(), z.unknown()),
+  i18n: z.record(z.string(), z.unknown()).optional(),
+};
+
+export const templateOutput = {
+  ok: z.boolean(),
+  validation: z.object(validationOutput),
+  lang: z.string().optional(),
+  file: z.string().optional().describe('Suggested file name, such as signup.ru.json.'),
+  overlay: z.record(z.string(), z.unknown()).optional().describe('Translation skeleton with the source texts as values. Replace the values, keep the nesting.'),
+  slots: z.array(z.object({ address: z.string(), key: z.string().optional(), text: z.string(), params: z.array(z.string()), hash: z.string() })).optional(),
 };
 
 export const cloudOutput = {

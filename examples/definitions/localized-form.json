@@ -1,0 +1,44 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "formatVersion": "1.0",
+  "id": "feedback-ru",
+  "lang": "ru",
+  "title": "Обратная связь",
+  "messages": {
+    "required": "Обязательное поле",
+    "minLength": "Минимум {min} символов",
+    "maxLength": "Не более {max} символов",
+    "email": "Введите корректный email"
+  },
+  "labels": {
+    "continue": "Далее",
+    "back": "Назад",
+    "stepOf": "Шаг {current} из {total}",
+    "errorSummary": "Проверьте ответы"
+  },
+  "submit": { "label": "Отправить" },
+  "steps": [
+    {
+      "id": "contact",
+      "title": "Контакты",
+      "fields": [
+        { "key": "name", "type": "text", "label": "Имя", "validation": { "required": true, "minLength": 2 } },
+        { "key": "email", "type": "email", "label": "Email", "placeholder": "you@example.com", "validation": { "required": true } }
+      ]
+    },
+    {
+      "id": "message",
+      "title": "Сообщение",
+      "fields": [
+        {
+          "key": "topic", "type": "radio", "label": "Тема", "validation": { "required": "Выберите тему" },
+          "options": [
+            { "value": "bug", "label": "Ошибка" },
+            { "value": "idea", "label": "Идея" }
+          ]
+        },
+        { "key": "text", "type": "textarea", "label": "Текст", "validation": { "required": true, "maxLength": 2000 } }
+      ]
+    }
+  ]
+}

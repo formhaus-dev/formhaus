@@ -1,5 +1,6 @@
 import { isActionDisabled, isVisible, type FormEngine, type FormField, type FormStep } from '@formhaus/core';
 import { perform, type SimulationAction, type TraceEntry } from './simulate-actions';
+import { withOverlay } from './translation';
 import { inspectDefinition, type ValidationReport } from './validate';
 
 export type { SimulationAction, TraceEntry } from './simulate-actions';
@@ -8,6 +9,7 @@ export interface SimulationInput {
   definition: unknown;
   answers?: Record<string, unknown>;
   actions?: SimulationAction[];
+  overlay?: unknown;
 }
 
 export interface StepReport {
@@ -62,7 +64,7 @@ function visitedErrors(engine: FormEngine, visited: Set<string>, errors: Record<
 }
 
 export async function simulatePathTool(input: SimulationInput): Promise<SimulationResult> {
-  const { report, definition, engine } = inspectDefinition(input.definition, input.answers);
+  const { report, definition, engine } = inspectDefinition(input.overlay ? withOverlay(input.definition, input.overlay) : input.definition, input.answers);
   if (!definition || !engine) return { ok: false, validation: report };
   const first = engine.currentStep?.id;
   const trace = await run(engine, input.actions);

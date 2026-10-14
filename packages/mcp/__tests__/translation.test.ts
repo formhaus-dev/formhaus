@@ -1,0 +1,68 @@
+import { describe, expect, it } from 'vitest';
+import { capabilitiesTool } from '../src/capabilities';
+import { simulatePathTool } from '../src/simulate';
+import { translationTemplateTool } from '../src/translation';
+import { linear } from './fixtures';
+
+const keyed = {
+  ...linear,
+  i18n: { messages: { required: 'errors.required' } },
+  steps: linear.steps.map((step) => ({ ...step, fields: step.fields.map((field) => ({ ...field, i18n: { label: `signup.${field.key}` } })) })),
+};
+
+describe('translation_template', () => {
+  it('returns the overlay skeleton, the file name and the slots', () => {
+    const result = translationTemplateTool({ definition: keyed, lang: 'ru' });
+    if (!result.ok) throw new Error('expected a template');
+    expect(result.file).toBe('signup.ru.json');
+    expect(result.overlay).toEqual({
+      title: 'Sign up',
+      submit: { label: 'Create' },
+      steps: {
+        name: { title: 'Name', fields: { name: { label: 'Name' } } },
+        email: { title: 'Email', fields: { email: { label: 'Email' } } },
+      },
+      messages: { required: 'This field is required', email: 'Enter a valid email' },
+      labels: { continue: 'Continue', back: 'Back', stepOf: 'Step {current} of {total}', errorSummary: 'Check these answers' },
+    });
+    expect(result.slots.find(({ address }) => address === 'steps.name.fields.name.label')).toMatchObject({ key: 'signup.name', text: 'Name' });
+    expect(result.slots.find(({ address }) => address === 'messages.required')).toMatchObject({ key: 'errors.required' });
+    expect(result.slots.find(({ address }) => address === 'steps.name.title')).toMatchObject({ key: 'signup.steps.name.title' });
+  });
+
+  it('lists explicit keys only with prefix false', () => {
+    const result = translationTemplateTool({ definition: keyed, lang: 'de', prefix: false });
+    if (!result.ok) throw new Error('expected a template');
+    expect(result.slots.filter(({ key }) => key).map(({ key }) => key)).toEqual(['signup.name', 'signup.email', 'errors.required']);
+  });
+
+  it('returns validation issues for a broken definition', () => {
+    const result = translationTemplateTool({ definition: { ...keyed, i18n: { description: 'x' } }, lang: 'ru' });
+    expect(result.ok).toBe(false);
+    expect(result.validation.issues.map(({ code }) => code)).toContain('i18n-unbound-slot');
+  });
+});
+
+describe('simulate_path with an overlay', () => {
+  it('reports errors in the overlay language', async () => {
+    const overlay = { messages: { required: 'Обязательное поле' }, steps: { name: { title: 'Имя' } } };
+    const result = await simulatePathTool({ definition: linear, answers: {}, overlay });
+    expect(result.errors).toEqual({ name: 'Обязательное поле' });
+    expect(result.currentStep?.title).toBe('Имя');
+  });
+
+  it('ignores an overlay for an invalid definition and reports the issues', async () => {
+    const result = await simulatePathTool({ definition: { id: 'x' }, overlay: { title: 'X' } });
+    expect(result.ok).toBe(false);
+  });
+});
+
+describe('capabilities i18n', () => {
+  it('derives message and label defaults from core', () => {
+    const { i18n } = capabilitiesTool();
+    expect(i18n.messages.defaults.minItems).toBe('Must be at least {min} items');
+    expect(Object.keys(i18n.messages.defaults)).toHaveLength(19);
+    expect(i18n.labels.defaults.stepOf).toBe('Step {current} of {total}');
+    expect(i18n.keys.slots.validation).toContain('matchField');
+  });
+});
