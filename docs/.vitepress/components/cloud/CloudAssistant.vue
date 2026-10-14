@@ -34,7 +34,7 @@ const script = scripts[props.variant];
   <LandingSection id="assistant" :title="copy.title" :lead="copy.lead">
     <AgentChat :script="script" />
     <p class="connector-note">Works with Claude and other AI assistants that support connectors.</p>
-    <SectionCta href="/cloud/quickstart" label="Connect your AI agent" />
+    <SectionCta href="/cloud/connect-claude" label="Connect your AI agent" />
   </LandingSection>
 </template>
 

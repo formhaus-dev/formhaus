@@ -24,7 +24,7 @@ import './.vitepress/components/cloud/cloud.css';
 <div class="lp cloud">
   <CloudHero />
   <CloudBuilder />
-  <CloudAssistant />
+  <CloudAssistant variant="summary" />
   <CloudResponses />
   <CloudTemplates />
   <CloudFaq />
