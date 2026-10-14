@@ -33,7 +33,8 @@ export interface SimulationResult {
 
 function pathValues(engine: FormEngine): Record<string, unknown> {
   const keys = new Set(engine.visibleSteps.flatMap((step) => step.fields.map(({ key }) => key)));
-  return Object.fromEntries(Object.entries(engine.values).filter(([key]) => keys.has(key)));
+  const values = Object.fromEntries(Object.entries(engine.values).filter(([key]) => keys.has(key)));
+  return { ...values, ...engine.getSubmitValues() };
 }
 
 function visibleKeys(fields: FormField[], values: Record<string, unknown>): string[] {
@@ -66,7 +67,7 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
   const first = engine.currentStep?.id;
   const trace = await run(engine, input.actions);
   const visited = new Set([first, ...trace.map(({ to }) => to)].filter((id): id is string => typeof id === 'string'));
-  const values = engine.isMultiStep ? pathValues(engine) : engine.values;
+  const values = pathValues(engine);
   const stepReport = (step: FormStep): StepReport => ({
     id: step.id, title: step.title, visited: visited.has(step.id), skipped: engine.isStepSkipped(step.id), visibleFields: visibleKeys(step.fields, values),
   });

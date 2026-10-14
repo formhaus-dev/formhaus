@@ -4,7 +4,7 @@ import { error, pointer } from './issues';
 
 type Entry = Record<string, unknown>;
 type Check = (value: Entry, path: string) => DefinitionIssue[];
-type Kind = 'string' | 'number' | 'boolean' | 'scalar' | 'list';
+type Kind = 'string' | 'number' | 'boolean' | 'requirement' | 'scalar' | 'list';
 
 export const isEntry = (value: unknown): value is Entry =>
   typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -13,6 +13,7 @@ const KINDS: Record<Kind, [(value: unknown) => boolean, string]> = {
   string: [(value) => typeof value === 'string', 'a string'],
   number: [(value) => typeof value === 'number' && Number.isFinite(value), 'a number'],
   boolean: [(value) => typeof value === 'boolean', 'true or false'],
+  requirement: [(value) => ['boolean', 'string'].includes(typeof value), 'true, false or a message string'],
   scalar: [(value) => ['string', 'number', 'boolean'].includes(typeof value), 'a string, number or boolean'],
   list: [(value) => Array.isArray(value) && value.every((item) => ['string', 'number'].includes(typeof item)), 'an array of strings or numbers'],
 };
@@ -53,7 +54,8 @@ function action(value: unknown, path: string): DefinitionIssue[] {
 const option: Check = (value, path) => [...text(value, 'value', path), ...typed(value, { label: 'string' }, path)];
 
 const RULES: Record<string, Kind> = {
-  minLength: 'number', maxLength: 'number', min: 'number', max: 'number', pattern: 'string', matchField: 'string', validator: 'string',
+  required: 'requirement', minLength: 'number', maxLength: 'number', min: 'number', max: 'number', pattern: 'string', matchField: 'string', validator: 'string',
+  minLengthMessage: 'string', maxLengthMessage: 'string', minMessage: 'string', maxMessage: 'string', patternMessage: 'string', matchFieldMessage: 'string',
 };
 
 function validation(value: unknown, path: string): DefinitionIssue[] {
