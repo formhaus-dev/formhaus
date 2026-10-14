@@ -1,12 +1,26 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { join, relative, resolve } from 'node:path'
+import { parseArgs } from 'node:util'
+import { ownerOf } from '../packages/site-theme/src/routes.js'
 
-const dist = new URL('../docs/.vitepress/dist/', import.meta.url).pathname
+const { values: options } = parseArgs({
+  options: {
+    audit: { type: 'boolean', default: false },
+    dist: { type: 'string', default: new URL('../docs/.vitepress/dist/', import.meta.url).pathname },
+    sitemap: { type: 'string', default: 'sitemap.xml' },
+    owner: { type: 'string' },
+    assets: { type: 'string', multiple: true, default: [] },
+  },
+})
+const dist = resolve(options.dist)
+const assetRoots = [dist, ...options.assets.map((root) => resolve(root))]
 const siteUrl = 'https://formhaus.dev'
 const maxTitle = 60
 const minDescription = 120
 const maxDescription = 160
-const audit = process.argv.includes('--audit')
+const audit = options.audit
+const owned = (page) => !options.owner || ownerOf(page.path) === options.owner
+const assetExists = (path) => assetRoots.some((root) => existsSync(join(root, path)))
 
 function htmlFiles(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -65,7 +79,7 @@ function inspect(file) {
   }
 }
 
-const pages = htmlFiles(dist).filter((file) => !file.endsWith('/404.html')).map(inspect)
+const pages = htmlFiles(dist).filter((file) => !file.endsWith('/404.html')).map(inspect).filter(owned)
 const indexable = pages.filter((page) => !page.robots?.includes('noindex'))
 const errors = []
 const fail = (page, message) => errors.push(`${page.path}: ${message}`)
@@ -79,7 +93,7 @@ for (const page of indexable) {
   if (!page.canonical) fail(page, 'missing canonical')
   else if (page.canonical !== siteUrl + page.path) fail(page, `canonical ${page.canonical}`)
   if (!page.ogImage) fail(page, 'missing og:image')
-  else if (!page.ogImage.startsWith(siteUrl + '/') || !existsSync(join(dist, page.ogImage.slice(siteUrl.length)))) fail(page, `og:image not found: ${page.ogImage}`)
+  else if (!page.ogImage.startsWith(siteUrl + '/') || !assetExists(page.ogImage.slice(siteUrl.length))) fail(page, `og:image not found: ${page.ogImage}`)
   if (!page.ogImageAlt) fail(page, 'missing og:image:alt')
   if (page.twitterCard !== 'summary_large_image') fail(page, 'missing twitter:card')
   if (page.twitterImage !== page.ogImage) fail(page, 'twitter:image differs from og:image')
@@ -101,7 +115,7 @@ for (const key of ['title', 'description']) {
   }
 }
 
-const sitemap = new Set([...readFileSync(join(dist, 'sitemap.xml'), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url))
+const sitemap = new Set([...readFileSync(join(dist, options.sitemap), 'utf8').matchAll(/<loc>([^<]+)<\/loc>/g)].map(([, url]) => url))
 for (const page of pages) {
   const listed = sitemap.has(siteUrl + page.path)
   const noindex = page.robots?.includes('noindex')

@@ -1,4 +1,4 @@
-import { repoUrl } from './site'
+import { repoUrl } from './seo/site'
 
 const apiUrl = repoUrl.replace('https://github.com/', 'https://api.github.com/repos/')
 
