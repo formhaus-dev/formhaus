@@ -23,7 +23,7 @@ The dashboard at `https://app.formhaus.dev` is for the people who own the forms.
 | API keys | `/keys` | Owner | Creates, lists and revokes keys |
 | Usage and plan | `/usage` | All roles | Submissions this month, plans |
 | Members | `/settings/members` | All roles | Members, invites, roles, workspace name, leave, delete |
-| Account | `/settings/account` | All roles | Weekly summary on or off, delete the account |
+| Account | `/settings/account` | All roles | Weekly summary and daily digest on or off, delete the account |
 | Claim | `/claim/{token}` | Anyone | Moves forms published by an agent to the workspace |
 | Invite | `/invites/{token}` | Anyone | Joins a workspace |
 
@@ -66,7 +66,7 @@ Takes a [Formhaus definition](/api/definition). The definition is checked with `
 |---|---|
 | After submit | Success message with an optional **Submit another response** button, or a redirect URL. Applies to all versions. |
 | Webhook | URL, signing secret with **Reveal** and **Rotate**, **Send test**, last 100 deliveries. See [Webhooks](/cloud/webhooks). |
-| Email notifications | `Milestones` or `Off`. See [Email notifications](/cloud/emails). |
+| Email notifications | `Every response` (Team), `Milestones` or `Off`. See [Email notifications](/cloud/emails). |
 | Paste JSON as a new version | Publishes a version at the same endpoint. Responses keep the version they were submitted with. |
 | Danger zone | **Pause** or **Resume**, and **Delete form** (owner only, type the form title, or the ID for an untitled form, to confirm) |
 

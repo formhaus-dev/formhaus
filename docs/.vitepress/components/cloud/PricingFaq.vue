@@ -22,7 +22,15 @@ const items = [
     "question": "What happens at my limit?",
     "answer": [
       {
-        "text": "New responses stop until next month or until you upgrade. Rejected responses are not stored."
+        "text": "We email the workspace owners at 80% and at 100% of the monthly limit. After the limit, forms accept 10% more responses as a grace, so up to 110 on Free. Past that, new responses are rejected until next month or until you upgrade. Rejected responses are not stored."
+      }
+    ]
+  },
+  {
+    "question": "Which emails do I get about new responses?",
+    "answer": [
+      {
+        "text": "Every plan emails milestones, like the first and the 100th response. Pro and Team add an optional daily digest. Team can also email every response, with its values."
       }
     ]
   },

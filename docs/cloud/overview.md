@@ -20,7 +20,7 @@ Formhaus Cloud hosts the backend for a Formhaus definition. The open-source pack
 | Embed script | No | `https://f.formhaus.dev/embed.js` |
 | Dashboard with workspaces, roles and invites | No | `https://app.formhaus.dev` |
 | Webhooks with signatures | No | Yes |
-| Email notifications: response milestones, weekly summary, off | No | Yes |
+| Email notifications: response milestones, every response (Team), daily digest (Pro and Team), weekly summary, off | No | Yes |
 | REST API and CSV export | No | `https://api.formhaus.dev/v1` |
 
 ## Hosts
