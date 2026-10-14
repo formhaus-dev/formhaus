@@ -26,6 +26,8 @@ const files = {
   'package.json': JSON.stringify({ name: 'consumer', private: true, type: 'module' }),
   'src/react.tsx': `import { FormRenderer, HeadlessFormRenderer, TextField } from '@formhaus/react';
 import { FormhausForm, CloudError } from '@formhaus/react/cloud';
+import { useLocalizedForm } from '@formhaus/react/i18n';
+import { localize, type Overlay } from '@formhaus/core/i18n';
 import type { FormDefinition } from '@formhaus/core';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
@@ -35,10 +37,17 @@ export const views = [
   <FormhausForm id="abc" />,
 ];
 export const extras = [TextField, CloudError];
+const overlay: Overlay = { title: 'Kontakt' };
+export const localized = localize(definition, { overlay, lang: 'de' });
+export function Localized() {
+  const form = useLocalizedForm(definition, { translate: (key, params, fallback) => fallback, prefix: false });
+  return <FormRenderer {...form} onSubmit={() => {}} />;
+}
 `,
   'src/vue.ts': `import { createApp, h } from 'vue';
 import * as Formhaus from '@formhaus/vue';
 import { FormhausForm, CloudError } from '@formhaus/vue/cloud';
+import { useLocalizedForm } from '@formhaus/vue/i18n';
 import type { FormDefinition } from '@formhaus/core';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
@@ -47,6 +56,7 @@ export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definit
   .component('TextField', Formhaus.TextField)
   .component('FormhausForm', FormhausForm);
 export const extras = [Formhaus, CloudError];
+export const localized = useLocalizedForm(() => definition, () => ({ overlay: { title: 'Kontakt' } }));
 `,
 };
 
