@@ -13,10 +13,13 @@ export function isRejection(result: unknown): result is Rejection {
 
 function applyRejection(engine: EngineInternals, result: Rejection, sent: Record<string, unknown>): void {
   const errors: Record<string, string> = {};
-  for (const [key, message] of Object.entries(result.errors ?? {})) {
-    if (Object.is(engine.values[key], sent[key])) errors[key] = message;
+  const source = typeof result.errors === 'object' && result.errors ? result.errors : {};
+  for (const [key, value] of Object.entries(source)) {
+    const message: unknown = Array.isArray(value) ? value.join(' ') : value;
+    if (typeof message === 'string' && Object.is(engine.values[key], sent[key])) errors[key] = message;
   }
-  applyValidationErrors(engine, errors, true, result.formErrors);
+  const formErrors = Array.isArray(result.formErrors) ? result.formErrors.filter((message) => typeof message === 'string') : [];
+  applyValidationErrors(engine, errors, true, formErrors);
 }
 
 export async function submitForm(engine: EngineInternals, submit: SubmitHandler, keepSkipped = false): Promise<boolean> {
@@ -46,6 +49,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
     dispatched = true;
     const skippedSteps = [...engine.skipped.keys()];
     const sent = { ...engine.values };
+    const serverErrors = engine.state.serverErrors;
     const result = await submit(values, [...skippedSteps]);
     const rejected = isRejection(result);
     if (operation !== engine.operationEpoch) return !rejected;
@@ -53,7 +57,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
       applyRejection(engine, result, sent);
       return false;
     }
-    applyValidationErrors(engine, {}, true);
+    if (engine.state.serverErrors === serverErrors) applyValidationErrors(engine, {}, true);
     await afterCommit('afterSubmit', () => lifecycle.onAfterSubmit?.(values, skippedSteps));
     return true;
   } catch (error) {

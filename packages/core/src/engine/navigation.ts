@@ -39,8 +39,10 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   const edited = watchCheckedInputs(engine, { ...skippedValues });
   try {
     return await submitForm(engine, async (submitted, skipped) => {
+      const operation = engine.operationEpoch;
       const result = await submit(submitted, skipped);
-      outcome = isRejection(result);
+      const rejected = isRejection(result);
+      if (!rejected || operation === engine.operationEpoch) outcome = rejected;
       return result;
     }, true);
   } finally {
