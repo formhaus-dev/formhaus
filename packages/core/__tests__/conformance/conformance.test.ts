@@ -15,7 +15,7 @@ async function browserCanSubmit(definition: FormDefinition, values: Record<strin
 
 describe('conformance corpus', () => {
   it('covers every audited case', () => {
-    expect(corpus.map(({ name }) => name).sort()).toEqual(['disabled-actions', 'format-version', 'impossible-dates', 'invalid-labels', 'options-from', 'proto-keys', 'shared-key-branches', 'trimmed-text', 'unsupported-format-version']);
+    expect(corpus.map(({ name }) => name).sort()).toEqual(['disabled-actions', 'format-version', 'impossible-dates', 'invalid-labels', 'invalid-messages', 'options-from', 'proto-keys', 'shared-key-branches', 'trimmed-conditions', 'trimmed-text', 'unsupported-format-version']);
   });
 
   it.each(corpus.map((fixture) => [fixture.name, fixture] as const))('%s: checkDefinition', (_, { definition, issues }) => {
@@ -40,5 +40,10 @@ describe('conformance corpus', () => {
     expect(engine.validate()).toEqual(expected.errors);
     expect(engine.getSubmitValues()).toEqual(expected.values);
     expect(await browserCanSubmit(definition, input.values)).toBe(canSubmit);
+  });
+
+  it.each(cases)('%s: a payload the browser accepts passes the server', async (_, definition, { input }) => {
+    if (!(await browserCanSubmit(definition, input.values))) return;
+    expect(validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps }).errors).toEqual({});
   });
 });

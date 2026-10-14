@@ -123,4 +123,19 @@ describe('simulate_path', () => {
     expect(result.errors).toEqual({ a: 'This field is required' });
     expect(result.wouldSubmit).toBe(false);
   });
+
+  it('evaluates conditions on trimmed text', async () => {
+    const definition = {
+      id: 'f', title: 'F', submit: { label: 'Send' },
+      fields: [
+        { key: 'a', type: 'text', label: 'A' },
+        { key: 'b', type: 'text', label: 'B', show: [{ field: 'a', eq: 'yes' }] },
+        { key: 'c', type: 'text', label: 'C', show: [{ field: 'a', notEmpty: true }], validation: { required: true } },
+      ],
+    };
+    expect((await simulatePathTool({ definition, answers: { a: ' yes ', c: 'x' } })).path?.[0].visibleFields).toEqual(['a', 'b', 'c']);
+    const blank = await simulatePathTool({ definition, answers: { a: '   ' } });
+    expect(blank.path?.[0].visibleFields).toEqual(['a']);
+    expect(blank.wouldSubmit).toBe(true);
+  });
 });
