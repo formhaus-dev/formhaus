@@ -7,7 +7,7 @@ pageClass: lp-page
 
 # Formhaus Cloud Privacy Policy
 
-**Effective date: October 12, 2026**
+**Effective date: October 15, 2026**
 
 This Privacy Policy explains how **Fabrique-Futur LLC**, a Wyoming limited liability company ("**Fabrique-Futur**," "**we**," "**us**," "**our**"), handles personal data in **Formhaus Cloud** (the "**Service**"): the hosted form backend at api.formhaus.dev, app.formhaus.dev and f.formhaus.dev, and the website at formhaus.dev.
 
@@ -56,7 +56,8 @@ The form owner is responsible for your submission. Hosted pages show Formhaus br
 
 - **Session data:** a session cookie on app.formhaus.dev and a keyed hash of the session token on our server.
 - **Security and operations data:** application logs with error messages, background job results and timings, used for security and debugging. They do not contain IP addresses or submission values. IP addresses are used in memory for rate limiting and are not stored with your data. The server's firewall and SSH logs record the IP addresses of blocked connections and SSH login attempts.
-- **Website visit data:** formhaus.dev is hosted by Vercel, which processes your IP address and request data in its logs to serve the site. We do not run analytics or tracking on formhaus.dev.
+- **Website visit data:** formhaus.dev is served from our server in Frankfurt through Cloudflare's network. Cloudflare processes your IP address and request data to deliver the site and protect it from attacks.
+- **Website analytics:** we measure visits to formhaus.dev with Umami, a cookieless analytics tool that we run ourselves on DigitalOcean in New York, United States. It records the page address, the referring site, campaign parameters in the link, page title, browser, operating system, device type, screen size, language, approximate location (country, region and city) and the buttons you click on the site. Umami uses your IP address to find the location and to make a visitor ID that changes every month, and does not store the IP address. It sets no cookies and stores nothing in your browser. It sends nothing when your browser sends a Do Not Track or Global Privacy Control signal. We look only at aggregate reports. We run no analytics on app.formhaus.dev, f.formhaus.dev or api.formhaus.dev.
 
 We do not intentionally collect special categories of personal data about account holders.
 
@@ -72,6 +73,7 @@ We use the data in Section 3 to:
 - answer support requests and abuse reports;
 - send service messages, such as notices about changes to these documents, security incidents or your plan;
 - secure, debug and improve the Service, using account and operations data, not Submission Data;
+- measure visits to formhaus.dev in aggregate, to see which pages and links people use;
 - comply with the law and enforce our [Terms](./terms.md).
 
 **We do not sell personal data. We do not use submissions or other customer data to train AI or machine-learning models. We do not show ads or share data for advertising.** The Service does not send submissions to any AI provider. If a form owner lets their own AI agent read submissions, that agent and its provider process them under the owner's agreements.
@@ -83,7 +85,7 @@ We send product update emails to account holders. Every product update email has
 ## 5. Legal bases (EU and UK GDPR)
 
 - **Contract:** to provide the Service you signed up for, including sign-in, form hosting and billing.
-- **Legitimate interests:** to secure the Service, prevent abuse, handle reports, debug and plan the Service, serve the website, and send product update emails to existing customers, which you can opt out of at any time. We balance these against your rights.
+- **Legitimate interests:** to secure the Service, prevent abuse, handle reports, debug and plan the Service, serve the website and measure its use, and send product update emails to existing customers, which you can opt out of at any time. We balance these against your rights.
 - **Legal obligation:** to keep billing records and respond to lawful requests.
 
 For submissions, the form owner is responsible for the legal basis.
@@ -104,7 +106,7 @@ For submissions, the form owner is responsible for the legal basis.
 
 - **app.formhaus.dev** sets one strictly necessary cookie, `__Host-fh_session`, to keep you signed in. It lasts up to 30 days, is HttpOnly and Secure, and needs no consent.
 - **f.formhaus.dev** (hosted pages and the embed) and **api.formhaus.dev** set no cookies.
-- **formhaus.dev** sets no cookies. It stores your light or dark theme choice in your browser's local storage. This value is not sent to us.
+- **formhaus.dev** sets no cookies, and our analytics stores nothing in your browser. The site stores your light or dark theme choice in your browser's local storage. This value is not sent to us.
 
 We use no analytics, advertising or cross-site tracking cookies.
 
@@ -112,7 +114,7 @@ We use no analytics, advertising or cross-site tracking cookies.
 
 ## 8. Where data is stored and international transfers
 
-The Service and its database run on DigitalOcean in Frankfurt, Germany (region fra1). Encrypted database backups are stored in DigitalOcean Spaces in the same region, and DigitalOcean keeps daily backup images of the server in the same datacenter. Email is sent from Resend's EU region in Ireland. Some providers, such as our payment provider and website host, process data in the United States; see the [Sub-processors](./sub-processors.md) page.
+The Service and its database run on DigitalOcean in Frankfurt, Germany (region fra1). Encrypted database backups are stored in DigitalOcean Spaces in the same region, and DigitalOcean keeps daily backup images of the server in the same datacenter. Email is sent from Resend's EU region in Ireland. Website analytics run on DigitalOcean in New York, United States. Some providers, such as our payment provider and Cloudflare, process data in the United States; see the [Sub-processors](./sub-processors.md) page.
 
 Fabrique-Futur is a US company, and we access the Service from outside the EU to operate it. Where personal data is transferred from the EEA, UK or Switzerland to a country without an adequacy decision, we rely on the **2021 EU Standard Contractual Clauses** (with the **UK Addendum** for UK transfers), and on the **EU-US Data Privacy Framework** for certified providers as an additional basis. Ask at legal@formhaus.dev for details of these safeguards.
 
@@ -133,6 +135,7 @@ Fabrique-Futur is a US company, and we access the Service from outside the EU to
 | Idempotency records (a hash of a submission, used to answer retries) | 24 hours |
 | Webhook delivery log (status code, error type and timing, no submission values) | The last 100 delivery attempts per form |
 | Abuse reports | For the life of the form |
+| Website analytics (no IP addresses) | Up to 25 months |
 | Server logs | Up to 90 days |
 | Billing records | Up to 7 years, for tax and accounting |
 | Encrypted database backups | A server copy for 7 days and an off-site copy for 30 days |
