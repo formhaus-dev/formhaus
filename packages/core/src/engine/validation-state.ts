@@ -3,26 +3,41 @@ import { createValues, getChangedKeys } from './engine-utils';
 import { trimValue } from '../validation/type-checks';
 import type { EngineInternals } from './runtime-internals';
 
-export function applyValidationErrors(engine: EngineInternals, errors: Record<string, string>, navigate = false): void {
+export function applyValidationErrors(engine: EngineInternals, errors: Record<string, string>, server = false, formErrors: string[] = []): void {
+  const { state } = engine;
   const previousErrors = engine.errors;
-  engine.state.errors = {};
-  engine.state.topLevelErrors = [];
+  const bound: Record<string, string> = {};
+  const general = [...formErrors];
   for (const [key, message] of Object.entries(errors)) {
-    if (engine.visibility.activeField(key, engine.values)) engine.errors[key] = message;
-    else engine.topLevelErrors.push(message);
+    if (engine.visibility.activeField(key, engine.values)) bound[key] = message;
+    else general.push(message);
   }
-  const structureChanged = navigate && moveToFirstError(engine, errors);
+  if (server) {
+    state.serverErrors = bound;
+    state.serverFormErrors = general;
+  }
+  state.errors = { ...state.serverErrors, ...bound };
+  state.topLevelErrors = server ? general : [...state.serverFormErrors, ...general];
+  const structureChanged = server && moveToFirstError(engine, bound);
   engine.notify({ fieldKeys: getChangedKeys(previousErrors, engine.errors), structureChanged });
 }
 
 function moveToFirstError(engine: EngineInternals, errors: Record<string, string>): boolean {
-  const firstErrorKey = Object.keys(errors).find((key) => engine.errors[key] !== undefined);
-  const targetIndex = firstErrorKey && engine.isMultiStep
-    ? engine.visibility.findStepIndex(firstErrorKey, engine.values, engine.currentStepIndex)
-    : null;
-  if (targetIndex === null || targetIndex === engine.currentStepIndex) return false;
+  const targetIndex = engine.visibleSteps.findIndex((step) => step.fields.some((field) => errors[field.key] !== undefined));
+  if (targetIndex < 0 || targetIndex === engine.currentStepIndex) return false;
   engine.state.currentStepIndex = targetIndex;
   return true;
+}
+
+export function clearError(engine: EngineInternals, key: string, server = false): void {
+  if (server) delete engine.state.serverErrors[key];
+  const kept = engine.state.serverErrors[key];
+  if (kept === undefined) delete engine.errors[key];
+  else engine.errors[key] = kept;
+}
+
+export function dropServerErrors(engine: EngineInternals, keys: Iterable<string>): void {
+  for (const key of keys) delete engine.state.serverErrors[key];
 }
 
 export function clearResolvedMatchErrors(engine: EngineInternals, key: string): string[] {
@@ -30,7 +45,7 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string): 
   for (const field of engine.visibility.allFields) {
     if (field.validation?.matchField !== key || engine.errors[field.key] === undefined) continue;
     if (validateFieldValue(field, engine.values[field.key], getValidationValues(engine), engine.validators)) continue;
-    delete engine.errors[field.key];
+    clearError(engine, field.key);
     cleared.push(field.key);
   }
   return cleared;
@@ -40,6 +55,7 @@ export function pruneOffPathErrors(engine: EngineInternals): string[] {
   const pathFields = new Set(engine.visibleSteps.flatMap((step) => step.fields.map((field) => field.key)));
   const pruned = Object.keys(engine.errors).filter((key) => !pathFields.has(key));
   for (const key of pruned) delete engine.errors[key];
+  dropServerErrors(engine, pruned);
   return pruned;
 }
 
@@ -66,7 +82,7 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
       validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators),
     );
   }
-  engine.state.errors = errors;
+  engine.state.errors = { ...engine.state.serverErrors, ...errors };
   const structureChanged = navigate && moveToFirstError(engine, errors);
   engine.notify({ fieldKeys: getChangedKeys(previousErrors, errors), structureChanged });
   return errors;
@@ -78,7 +94,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
   const previousError = engine.errors[key];
   const error = validateFieldValue(field, engine.values[key], getValidationValues(engine), engine.validators);
   if (error) engine.errors[key] = error;
-  else delete engine.errors[key];
+  else clearError(engine, key, true);
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];
   engine.notify({ fieldKeys });
   return error;
@@ -103,6 +119,8 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   engine.state.values = createValues(engine.visibility.allFields, values);
   engine.state.errors = {};
   engine.state.topLevelErrors = [];
+  engine.state.serverErrors = {};
+  engine.state.serverFormErrors = [];
   engine.state.fieldLoading = {};
   engine.state.stepValidating = false;
   engine.state.currentStepIndex = 0;

@@ -12,7 +12,7 @@ export type {
   ShowCondition,
 } from './types';
 
-export { FormEngine, type FormEngineOptions, type StepValidateFn, type StepChangeContext, type BeforeStepChangeFn, type AfterStepChangeFn, type BeforeSubmitFn, type SubmitFn } from './engine';
+export { FormEngine, type FormEngineOptions, type StepValidateFn, type StepChangeContext, type BeforeStepChangeFn, type AfterStepChangeFn, type BeforeSubmitFn, type SubmitFn, type SubmitHandler, type SubmitResult } from './engine';
 
 export { evaluateCondition, isActionDisabled, isVisible } from './visibility';
 

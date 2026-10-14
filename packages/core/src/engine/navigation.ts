@@ -4,8 +4,8 @@ import { watchCheckedInputs } from './pending-inputs';
 import { validateStep } from '../validation';
 import { applyValidationErrors, getValidationValues } from './validation-state';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
-import { submitForm } from './submission';
-import type { StepChangeContext, SubmitFn } from './engine-options';
+import { isRejection, submitForm } from './submission';
+import type { StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 
 function hasStepErrors(engine: EngineInternals): boolean {
@@ -25,26 +25,29 @@ function moveTo(engine: EngineInternals, index: number): void {
   engine.notify({ structureChanged: true });
 }
 
-export async function skipStep(engine: EngineInternals, submit?: SubmitFn): Promise<boolean> {
+export async function skipStep(engine: EngineInternals, submit?: SubmitHandler): Promise<boolean> {
   if (!engine.isMultiStep || engine.stepValidating || engine.submitting || !engine.currentStep?.skip) return false;
   if (skipTarget(engine)) return changeStep(engine, 'next', 'skip');
   const step = engine.currentStep;
   if (!submit || !step) return false;
   const values = engine.values;
   const errors = { ...engine.errors };
-  let committed = false;
+  const serverErrors = { ...engine.state.serverErrors };
+  let outcome: boolean | undefined;
   const fieldKeys = skipCurrentStep(engine);
   const skippedValues = engine.values;
   const edited = watchCheckedInputs(engine, { ...skippedValues });
   try {
     return await submitForm(engine, async (submitted, skipped) => {
-      await submit(submitted, skipped);
-      committed = true;
+      const result = await submit(submitted, skipped);
+      outcome = isRejection(result);
+      return result;
     }, true);
   } finally {
-    if (!committed && engine.values === skippedValues && !edited()) {
+    if (outcome !== false && engine.values === skippedValues && !edited()) {
       engine.state.values = values;
-      engine.state.errors = { ...errors, ...engine.errors };
+      if (outcome === undefined) engine.state.serverErrors = serverErrors;
+      engine.state.errors = { ...(outcome ? {} : errors), ...engine.errors };
       engine.skipped.delete(step.id);
       engine.notify({ fieldKeys, structureChanged: true, valuesChanged: true });
     }
