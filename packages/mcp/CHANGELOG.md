@@ -1,5 +1,20 @@
 # @formhaus/mcp
 
+## 0.3.2
+
+### Patch Changes
+
+- 434db0c: - `simulate_path` refuses Next while the `disabled` conditions of the step `next` action match.
+  - `simulate_path` returns `wouldSubmit: false` while the `disabled` conditions of `submit` match.
+- 960d281: - Definitions can declare their format version with `formatVersion`. A core that does not support it reports `unsupported-format-version`.
+  - New `FORMAT_VERSION` export names the definition format this core reads.
+  - The MCP `capabilities` tool reports the supported definition format version.
+- Updated dependencies [434db0c]
+- Updated dependencies [4fb22ad]
+- Updated dependencies [960d281]
+- Updated dependencies [97441bb]
+  - @formhaus/core@0.11.2
+
 ## 0.3.1
 
 ### Patch Changes
