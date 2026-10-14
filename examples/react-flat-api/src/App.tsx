@@ -1,4 +1,4 @@
-import { parseDefinition } from '@formhaus/core';
+import { parseDefinition, type SubmitResult } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { useMemo, useState } from 'react';
 import { submitTo } from './adapter';
@@ -35,8 +35,12 @@ export default function App() {
   const [opened, setOpened] = useState<string | null>(null);
   const [seed, setSeed] = useState<{ run: number; values?: Record<string, unknown> }>({ run: 0 });
 
-  async function onSubmit(values: Record<string, unknown>) {
+  async function onSubmit(values: Record<string, unknown>): Promise<SubmitResult> {
     try { return await submit(values); }
+    catch (error) {
+      if (!(error instanceof TypeError)) throw error;
+      return { ok: false, formErrors: ['Could not reach the server. Check your connection and try again.'] };
+    }
     finally { setRequests(api.requests.length); }
   }
 

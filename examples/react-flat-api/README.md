@@ -19,7 +19,7 @@ Opens at http://localhost:5173. The mock API rejects:
 - a company name with "test" (step 2, business accounts only)
 - a postcode that starts with `0` (step 3)
 
-The "Force a response" toggles make the server reject a field whatever its value, answer with a key the form does not have, or fail with a general error. Fill the form normally, tick a toggle for step 1 and submit from step 3 to watch the form jump back. "Network down" makes the request throw before it reaches the server.
+The "Force a response" toggles make the server reject a field whatever its value, answer with a key the form does not have, or fail with a general error. Fill the form normally, tick a toggle for step 1 and submit from step 3 to watch the form jump back. "Network down" makes the request throw before it reaches the server; the example turns that into a form error with a readable message.
 
 ## Files
 
