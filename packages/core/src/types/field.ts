@@ -1,3 +1,5 @@
+import type { FieldI18n, LabelI18n, ValidationI18n } from './i18n';
+
 export type DefaultFieldType =
   | 'text'
   | 'email'
@@ -20,6 +22,7 @@ export type FieldType = DefaultFieldType | (string & {});
 export interface FieldOption {
   value: string;
   label: string;
+  i18n?: LabelI18n;
 }
 
 export interface FormField {
@@ -41,6 +44,7 @@ export interface FormField {
   rows?: number;
   mask?: string;
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
+  i18n?: FieldI18n;
 }
 
 export interface ShowCondition {
@@ -71,4 +75,5 @@ export interface FieldValidation {
   matchField?: string;
   matchFieldMessage?: string;
   validator?: string;
+  i18n?: ValidationI18n;
 }
