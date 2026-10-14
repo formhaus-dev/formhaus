@@ -24,7 +24,7 @@ async function bundleSize(pkg, entry, only, mode) {
     write: false,
     logLevel: 'error',
     define: { 'process.env.NODE_ENV': JSON.stringify(mode) },
-    external: ['@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/react', '@formhaus/vue', 'react', 'react/jsx-runtime', 'vue'],
+    external: ['@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/core/i18n', '@formhaus/react', '@formhaus/vue', 'react', 'react/jsx-runtime', 'vue'],
   });
   return gzipSync(result.outputFiles[0].contents, { level: 9 }).length;
 }
