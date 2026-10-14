@@ -456,13 +456,13 @@ An overlay is a JSON object of translated texts, nested by address. Every leaf i
 
 - A text is replaced only by a non-empty string. Missing, empty and non-string entries keep the source text.
 - Entries without a source slot are ignored. An overlay never adds fields, options, rules or actions.
-- A validation entry applies only when its rule is set. It becomes the field message, with `{min}` and `{max}` replaced by the rule value.
+- A validation entry applies only when its rule is set. It becomes the field message, with `{min}` and `{max}` replaced by the rule value. Field messages in the definition itself are used as written.
 - `messages` and `labels` entries are merged into the definition catalogs.
 - Only own properties are read.
 
 ### Translate function
 
-`localize(definition, { translate, prefix })` calls `translate(key, params, defaultText)` for each slot. The key is the explicit `i18n` key, or `<prefix>.<address>`, where `prefix` defaults to the form id. With `prefix: false` only explicit keys are asked. A result of `undefined`, `''` or the key itself means no translation, and the source text stays.
+`localize(definition, { translate, prefix })` calls `translate(key, params, defaultText)` for each slot. The key is the explicit `i18n` key, or `<prefix>.<address>`, where `prefix` defaults to the form id. With `prefix: false` only explicit keys are asked. A result of `undefined`, `''` or the key itself, or a thrown error, means no translation, and the source text stays. `{name}` placeholders left in a result are filled in like overlay templates.
 
 Texts, options, action labels and field messages are translated once. For a rule without a field message, a result equal to `defaultText` is not written, so the catalog still applies. Catalog messages and labels are translated when they are shown, through the `messages` and `labels` functions that `localize()` returns.
 

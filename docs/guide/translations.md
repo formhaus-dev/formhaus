@@ -49,7 +49,7 @@ Put your existing keys in `i18n` objects. The literal texts stay as the fallback
 }
 ```
 
-Texts without a key fall back to the source text. `prefix: false` keeps it that way; without it, Formhaus also asks derived keys such as `signup.fields.password.placeholder`.
+Texts without a key keep the source text with `prefix: false`. Without it, Formhaus also asks derived keys such as `signup.title` and `signup.messages.minLength`.
 
 ### React with react-i18next
 
@@ -69,6 +69,8 @@ export function Signup() {
   return <FormRenderer {...form} onSubmit={save} />;
 }
 ```
+
+The hook rebuilds the form when `lang` changes. Pass other changes, such as a namespace that finished loading, as the third argument: `useLocalizedForm(definition, source, [ready])`.
 
 Lokalise: export the `forms` namespace as nested JSON with i18next placeholders, so `errors.password.tooShort` can read `Не менее {{min}} символов`.
 
@@ -94,7 +96,7 @@ const form = useLocalizedForm(definition, () => ({
 </template>
 ```
 
-`te` keeps vue-i18n from returning the key for a missing message. vue-i18n placeholders are `{min}`.
+`te` keeps vue-i18n from returning the key for a missing message. vue-i18n placeholders are `{min}`. Write `@` as `{'@'}` in vue-i18n messages; a message that fails to compile falls back to the source text.
 
 ## Overlays
 

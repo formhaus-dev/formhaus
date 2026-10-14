@@ -12,3 +12,4 @@
 - New JSON Schema for translation files at `@formhaus/core/translation.schema.json` and https://formhaus.dev/schema/form-translation.json.
 - New definition checks: `i18n-unbound-slot` (error), `unknown-i18n-slot`, `unknown-message-key`, `unknown-label-key` and `i18n-unsafe-identifier` (warnings).
 - Definitions that use `lang`, `messages`, `labels` or `i18n` fail the JSON Schema of 0.12 and earlier. Older cores ignore these properties.
+- `lang`, `messages`, `labels` and `i18n` are reserved. A definition that used them for other data now fails the definition checks.
