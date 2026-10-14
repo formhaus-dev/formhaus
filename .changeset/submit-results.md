@@ -15,3 +15,4 @@
 - New `errorSummary` renderer prop lists every field error with a link that opens its step and focuses the field.
 - New `stepErrorMarks` renderer prop lists the steps under the progress bar and marks the steps with errors. Custom progress components receive the list as `steps`.
 - The form-level error banner has `role="alert"`.
+- The renderers focus the first invalid field after a failed Continue.

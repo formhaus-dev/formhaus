@@ -13,8 +13,8 @@ function hasStepErrors(engine: EngineInternals): boolean {
   if (!step) return true;
   const errors = validateStep(step, getValidationValues(engine), engine.validators);
   if (Object.keys(errors).length === 0) return false;
-  const previousErrors = { ...engine.errors };
-  Object.assign(engine.errors, errors);
+  const previousErrors = engine.errors;
+  engine.state.errors = { ...previousErrors, ...errors };
   engine.notify({ fieldKeys: getChangedKeys(previousErrors, engine.errors) });
   return true;
 }
