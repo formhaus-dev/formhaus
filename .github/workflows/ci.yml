@@ -143,10 +143,6 @@ jobs:
           node-version: 22
           cache: pnpm
 
-      - name: Build local packages
-        if: matrix.example == 'react-flat-api'
-        run: pnpm install --frozen-lockfile && pnpm --filter @formhaus/core --filter @formhaus/react run build
-
       - name: Install example deps
         working-directory: examples/${{ matrix.example }}
         run: pnpm install --frozen-lockfile
