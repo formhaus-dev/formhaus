@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: file:../../packages/core
-        version: file:../../packages/core
+        specifier: ^0.12.0
+        version: 0.12.0
       '@formhaus/react':
-        specifier: file:../../packages/react
-        version: file:../../packages/react(@formhaus/core@file:../../packages/core)(react@18.3.1)
+        specifier: ^0.12.0
+        version: 0.12.0(@formhaus/core@0.12.0)(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -278,15 +278,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@formhaus/core@file:../../packages/core':
-    resolution: {directory: ../../packages/core, type: directory}
+  '@formhaus/core@0.12.0':
+    resolution: {integrity: sha512-mS0v4eaVNqNm1NP4qZA9hk9SxBExBUhdePYmpKzW/wlQrQQrtQH7e2UuCYEZSzx+kZ+UKKj1IYIohbkBvT+T8Q==}
     engines: {node: '>=20'}
 
-  '@formhaus/react@file:../../packages/react':
-    resolution: {directory: ../../packages/react, type: directory}
+  '@formhaus/react@0.12.0':
+    resolution: {integrity: sha512-uvbkixyDpYRCcyiqE9KJGJMFLdKGsxwvbqRxxYQ53C945m27/EuWcO7Ms27338VVnVfy4TsWdXDfUH8NH1uxPw==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@formhaus/core': ^0.11.2
+      '@formhaus/core': ^0.12.0
       react: ^18.0.0 || ^19.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
@@ -865,11 +865,11 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@formhaus/core@file:../../packages/core': {}
+  '@formhaus/core@0.12.0': {}
 
-  '@formhaus/react@file:../../packages/react(@formhaus/core@file:../../packages/core)(react@18.3.1)':
+  '@formhaus/react@0.12.0(@formhaus/core@0.12.0)(react@18.3.1)':
     dependencies:
-      '@formhaus/core': file:../../packages/core
+      '@formhaus/core': 0.12.0
       react: 18.3.1
 
   '@jridgewell/gen-mapping@0.3.13':
