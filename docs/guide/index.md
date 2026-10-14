@@ -6,8 +6,10 @@ description: "Install @formhaus/core with the React or Vue renderer, write a JSO
 
 Formhaus keeps fields, validation, visibility, and steps in a JSON definition. The core engine runs without a UI framework; React, Vue, Figma, and custom renderers use the same format.
 
-::: tip Hosted form from your AI agent
-Run `claude mcp add --transport http formhaus https://api.formhaus.dev/mcp` and ask: "Make me a waitlist form and give me the link." Formhaus Cloud hosts the form. See the [Cloud quickstart](/cloud/quickstart).
+This guide covers the open-source library: MIT, no account, and `onSubmit` sends the data to your own backend.
+
+::: tip Hosted form without a backend
+[Formhaus Cloud](/cloud/overview) is a separate, optional service. Run `claude mcp add --transport http formhaus https://api.formhaus.dev/mcp` and ask: "Make me a waitlist form and give me the link." See the [Cloud quickstart](/cloud/quickstart).
 :::
 
 ## Install
