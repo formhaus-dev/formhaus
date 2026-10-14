@@ -1,4 +1,8 @@
 import type {
+  AfterStepChangeFn,
+  BeforeStepChangeFn,
+  BeforeSubmitFn,
+  DefinitionIssue,
   FieldOption,
   FieldType,
   FormAction,
@@ -7,7 +11,10 @@ import type {
   FormDefinition,
   FormEngineOptions,
   LabelSource,
+  MessageFn,
+  MessageKey,
   StepValidateFn,
+  SubmitFn,
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
@@ -56,7 +63,15 @@ export type OptionsProvider = (
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-export interface FormRendererProps extends FormEngineOptions {
+type Callback<T extends (...args: never[]) => unknown> = (...args: Parameters<T>) => ReturnType<T>;
+
+export interface FormRendererProps {
+  onBeforeStepChange?: Callback<BeforeStepChangeFn>;
+  onAfterStepChange?: Callback<AfterStepChangeFn>;
+  onBeforeSubmit?: Callback<BeforeSubmitFn>;
+  onAfterSubmit?: Callback<SubmitFn>;
+  onWarning?: (issue: DefinitionIssue) => void;
+  messages?: Partial<Record<MessageKey, string>> | Callback<MessageFn>;
   onError?: (error: unknown) => void;
   onSubmit?: SubmitHandler;
   submitHandler?: SubmitHandler;
@@ -64,7 +79,7 @@ export interface FormRendererProps extends FormEngineOptions {
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
   validators?: Record<string, ValidatorFn>;
-  onStepValidate?: StepValidateFn;
+  onStepValidate?: Callback<StepValidateFn>;
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;
@@ -75,6 +90,8 @@ export interface FormRendererProps extends FormEngineOptions {
   progressComponent?: Component;
   optionsProviders?: Record<string, OptionsProvider>;
 }
+
+type EngineOptionKeys = Pick<FormRendererProps, keyof FormEngineOptions>;
 
 export interface FormRendererEmits {
   (e: 'cancel'): void;
