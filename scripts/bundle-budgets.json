@@ -1,12 +1,12 @@
 {
-  "core": 11290,
-  "core:production": 11260,
-  "core#FormEngine:production": 9610,
-  "react": 5500,
-  "vue": 7250,
+  "core": 11760,
+  "core:production": 11730,
+  "core#FormEngine:production": 10080,
+  "react": 5990,
+  "vue": 7880,
   "core/cloud": 2270,
-  "core/internal": 6750,
+  "core/internal": 6890,
   "react/cloud": 1450,
   "vue/cloud": 2050,
-  "core/style.css": 2740
+  "core/style.css": 2860
 }

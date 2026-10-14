@@ -82,6 +82,7 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/recipes/' },
           { text: 'Multi-step with branching', link: '/recipes/multi-step-branching' },
+          { text: 'Flat API', link: '/recipes/flat-api' },
           { text: 'Conditional fields', link: '/recipes/conditional-fields' },
           { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
           { text: 'Headless engine', link: '/recipes/headless-engine' },

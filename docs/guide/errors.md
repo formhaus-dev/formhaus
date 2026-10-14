@@ -5,69 +5,78 @@ description: "Show server-side errors in a Formhaus form: field-level and top-le
 
 # Error Handling
 
-The server might reject submitted data. Pass errors back to the form and it handles display.
+The server might reject submitted data. Return its errors from the submit handler and the form shows them.
 
-## Field-level errors
+## Submit results
 
-Pass a `{ fieldKey: message }` object. The error shows on the field, and the form navigates to the step containing it.
+Return `{ ok: false, errors }` to reject a submission with field errors, `formErrors` for messages that belong to no field, or nothing for a success. `SubmitResult` is exported by `@formhaus/core`.
 
 ::: code-group
 ```vue [Vue]
-<script setup>
-import { ref } from 'vue';
+<script setup lang="ts">
+import type { SubmitResult } from '@formhaus/core';
 
-const serverErrors = ref({});
-
-async function onSubmit(values) {
-  try {
-    await api.submitForm(values);
-  } catch (err) {
-    // Server returns: { email: "Already registered" }
-    serverErrors.value = err.fieldErrors;
-    throw err;
-  }
+async function onSubmit(values: Record<string, unknown>): Promise<SubmitResult> {
+  const response = await fetch('/api/accounts', { method: 'POST', body: JSON.stringify(values) });
+  if (response.status === 422) return { ok: false, errors: (await response.json()).errors };
+  if (!response.ok) return { ok: false, formErrors: ['We could not save your answers. Try again.'] };
+  return { ok: true };
 }
 </script>
 
 <template>
-  <FormRenderer
-    :definition="definition"
-    :errors="serverErrors"
-    @submit="onSubmit"
-  />
+  <FormRenderer :definition="definition" @submit="onSubmit" :on-after-submit="showReceipt" />
 </template>
 ```
 
 ```tsx [React]
-function MyForm() {
-  const [errors, setErrors] = useState({});
+import type { SubmitResult } from '@formhaus/core';
 
-  async function handleSubmit(values) {
-    try {
-      await api.submitForm(values);
-    } catch (err) {
-      // Server returns: { email: "Already registered" }
-      setErrors(err.fieldErrors);
-      throw err;
-    }
-  }
-
-  return (
-    <FormRenderer
-      definition={definition}
-      errors={errors}
-      onSubmit={handleSubmit}
-    />
-  );
+async function onSubmit(values: Record<string, unknown>): Promise<SubmitResult> {
+  const response = await fetch('/api/accounts', { method: 'POST', body: JSON.stringify(values) });
+  if (response.status === 422) return { ok: false, errors: (await response.json()).errors };
+  if (!response.ok) return { ok: false, formErrors: ['We could not save your answers. Try again.'] };
+  return { ok: true };
 }
+
+<FormRenderer definition={definition} onSubmit={onSubmit} onAfterSubmit={showReceipt} />
 ```
 :::
 
-In a multi-step form, if the error is on a field in step 1 and the user is on step 3, the form auto-navigates back to step 1. If you catch a failed save to map its field errors, rethrow it so `onAfterSubmit` does not run as if saving succeeded. Rejections reach `onError`, or the form-level error banner when that callback is omitted. With `onError`, the banner does not show the rejection; display it yourself.
+After a rejection:
+
+- Every answer stays in the form.
+- All errors apply at once. In a multi-step form the form opens the earliest step with an error, whatever order the keys come in, and focuses the first invalid field.
+- `onAfterSubmit` does not run. It runs exactly once after a success.
+- An error for a key the form does not have, or for a hidden field, shows above the buttons.
+
+Editing a field removes only that field's server error. Errors on other steps stay while the user moves back and forward and while other fields are validated. The next response replaces the whole set. The [specification](/spec#server-errors) lists every clearing rule.
+
+If your API uses other key names, map them in the handler. See [Multi-step form on a flat API](/recipes/flat-api).
+
+## Network failures and exceptions
+
+Let a failed request throw. The form keeps the answers and the previous server errors, and `onAfterSubmit` does not run. The rejection reaches `onError`, or the form-level error banner when that callback is omitted. With `onError`, the banner does not show the rejection; display it yourself.
+
+## The errors prop
+
+`errors` takes the same `{ fieldKey: message }` object and applies it like a rejection. It predates submit results and still works. Use one of the two for the same request, not both.
+
+::: code-group
+```vue [Vue]
+<FormRenderer :definition="definition" :errors="serverErrors" @submit="onSubmit" />
+```
+
+```tsx [React]
+<FormRenderer definition={definition} errors={errors} onSubmit={handleSubmit} />
+```
+:::
+
+A handler that sets `errors` and returns normally counts as a success, so `onAfterSubmit` runs. The errors it set stay. Rethrow the failure, or return `{ ok: false }`, to stop the after-hook.
 
 ## Top-level errors
 
-If the error targets a field that doesn't exist (or is hidden), it shows as a banner above the action buttons.
+Errors without a visible field show as a banner between the fields and the Submit/Continue buttons. The banner has `role="alert"`.
 
 Covers cases like:
 - Account suspended
@@ -75,11 +84,24 @@ Covers cases like:
 - Generic server errors
 
 ```ts
-// Server returns an error for a non-existent field key
-setErrors({ _general: 'Your account has been temporarily suspended.' });
+return { ok: false, formErrors: ['Your account has been temporarily suspended.'] };
 ```
 
-The banner renders between the fields and the Submit/Continue buttons.
+## Error summary and step marks
+
+`errorSummary` adds a list of every field error above the fields, in step order. Each entry is a link that opens the step of the field and focuses it. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. Both are off by default.
+
+::: code-group
+```vue [Vue]
+<FormRenderer :definition="definition" error-summary step-error-marks @submit="onSubmit" />
+```
+
+```tsx [React]
+<FormRenderer definition={definition} errorSummary stepErrorMarks onSubmit={onSubmit} />
+```
+:::
+
+A custom progress component receives the step list as `steps` when `stepErrorMarks` is on. Headless code reads `engine.stepErrors`.
 
 ## Async step validation errors
 

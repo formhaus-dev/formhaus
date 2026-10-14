@@ -25,6 +25,7 @@ export type {
   FormFieldProps,
   FormActionsProps,
   FormStepProgressProps,
+  FormStepStatus,
   HeadingLevel,
   OptionsProvider,
 } from './types';

@@ -178,7 +178,7 @@ Core evaluates one field as follows and returns the first error:
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 6. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
-Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur. When Submit fails validation, the engine moves to the first step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
+Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
 
 ## Steps
 
@@ -284,6 +284,54 @@ Core trims leading and trailing whitespace from string values of every built-in 
 - fields of skipped steps, hidden fields, fields off the active path and keys that are not field keys excluded.
 
 Keys are field keys as written. The payload is not nested and not type-converted.
+
+## Submit results
+
+The submit handler receives the [submit payload](#submit-payload) and the skipped step ids. It MAY return a result, directly or through a Promise:
+
+```ts
+type SubmitResult =
+  | { ok: true }
+  | { ok: false; errors?: Record<string, string>; formErrors?: string[] }
+```
+
+| Handler outcome | `submit()` resolves | Values | Errors | `onAfterSubmit` |
+|---|---|---|---|---|
+| `{ ok: true }`, `undefined` or any value other than a rejection | `true` | Kept | Cleared | Runs once |
+| A rejection: a plain object with `ok: false` | `false` | Kept | Replaced by the result | Does not run |
+| Throws or rejects | Rejects with the same error | Kept | Unchanged | Does not run |
+
+A plain object is one whose prototype is `Object.prototype`. A `fetch` `Response` with `ok: false` is not a rejection, so a handler that returned it still counts as a success.
+
+### Server errors
+
+`errors` keys are field keys. A message that is not a string is ignored; an array of strings is joined with spaces. `formErrors` other than an array of strings is ignored. A rejection and `setErrors(errors)` apply a server error set the same way:
+
+1. A key of a visible field on the active path becomes the error of that field. Every other key, including the key of a hidden field or a field off the active path, becomes a form-level error. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
+2. The set replaces all previous field errors and form-level errors at once.
+3. In a multi-step form, the engine opens the earliest step on the active path that has a field error. The key order of `errors` does not matter. The step change hooks do not run.
+4. The built-in renderers focus the first invalid field on that step after it renders: the checked option of a group, or its first enabled control.
+
+Field errors are kept until one of these events:
+
+| Event | Server field errors | Form-level errors |
+|---|---|---|
+| The field gets a different value | That field's error is removed | Kept |
+| The field is hidden, its step leaves the active path, or its step is skipped | That field's error is removed | Kept |
+| `validateField(key)` finds no client error | That field's error is removed | Kept |
+| Navigation, Continue, `validate()` and `onStepValidate` errors | Kept | Kept |
+| A new submission is sent | Kept while it runs | Kept while it runs |
+| A rejection or `setErrors()` | Replaced | Replaced |
+| A successful submission or `reset()` | Removed, unless `setErrors()` ran during the request | Removed, unless `setErrors()` ran during the request |
+
+Writing the same value again keeps the error. While a client rule fails on a field with a server error, the client error shows; the server error returns when the client error is resolved. Server errors do not block Continue or Submit. Client rules decide whether the request is sent.
+
+### Concurrent submissions
+
+- One action runs at a time. `submit()` and `skip()` while a submission or navigation is pending resolve to `false` without calling the handler.
+- A response that arrives after `reset()`, `cancelPendingActions()`, a definition change or an unmount is ignored. It applies no errors, does not navigate and does not run `onAfterSubmit`. `submit()` still resolves to `true` for a success and `false` for a rejection.
+- The built-in renderers disable fields while a submission runs. When the engine is driven directly and a value changes during the request, a success still runs `onAfterSubmit` with the values that were sent. A rejection skips the errors of fields whose value changed after the request was sent.
+- The engine does not abort a request. A handler that needs to abort uses its own `AbortController`.
 
 ## Definition checks
 

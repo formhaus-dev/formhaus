@@ -56,6 +56,18 @@ describe('FormRenderer focus and keyboard', () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 
+  it('focuses the first invalid field after a failed Continue', async () => {
+    const required: FormDefinition = { ...steps, steps: [
+      { id: 's1', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }, { key: 'b', type: 'text', label: 'B', validation: { required: true } }] },
+      steps.steps![1],
+    ] };
+    render(<FormRenderer definition={required} onSubmit={() => {}} />);
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /B/ })));
+    expect(screen.getByRole('heading', { name: 'One' })).toBeDefined();
+  });
+
   it('marks required inputs with aria-required', () => {
     render(<FormRenderer definition={contact} onSubmit={() => {}} />);
 

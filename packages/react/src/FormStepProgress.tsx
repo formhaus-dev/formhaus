@@ -6,6 +6,7 @@ export function FormStepProgress({
   stepTitle,
   stepDescription,
   headingLevel = 2,
+  steps,
 }: FormStepProgressProps) {
   const Heading = `h${headingLevel}` as const;
   const percent = (current / total) * 100;
@@ -20,6 +21,20 @@ export function FormStepProgress({
           Step {current} of {total}
         </span>
       </div>
+      {steps && (
+        <ol className="fh-step-progress__steps">
+          {steps.map((step, index) => {
+            const label = step.title || `Step ${index + 1}`;
+            return (
+              <li key={step.id} className={`fh-step-progress__step${step.errorCount ? ' fh-step-progress__step--invalid' : ''}`}
+                aria-current={index + 1 === current ? 'step' : undefined}>
+                {index + 1 === current ? <strong>{label}</strong> : label}
+                {step.errorCount > 0 && ` · ${step.errorCount} ${step.errorCount === 1 ? 'error' : 'errors'}`}
+              </li>
+            );
+          })}
+        </ol>
+      )}
       {stepTitle && <Heading className="fh-step-progress__title">{stepTitle}</Heading>}
       {stepDescription && <p className="fh-step-progress__description">{stepDescription}</p>}
     </div>

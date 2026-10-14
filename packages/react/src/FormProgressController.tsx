@@ -1,20 +1,23 @@
 import type { FormEngine } from '@formhaus/core';
-import { useStructureSnapshot } from './hooks/useEngineSnapshot';
+import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
 interface FormProgressControllerProps {
   engine: FormEngine;
   ProgressComponent: FormRendererProps['progressComponent'];
   headingLevel: FormRendererProps['headingLevel'];
+  marks?: boolean;
 }
 
 export function FormProgressController({
   engine,
   ProgressComponent,
   headingLevel,
+  marks,
 }: FormProgressControllerProps) {
-  useStructureSnapshot(engine);
+  useFormSnapshot(engine);
   if (!engine.isMultiStep || !ProgressComponent) return null;
+  const errors = marks ? engine.stepErrors : {};
 
   return (
     <ProgressComponent
@@ -23,6 +26,7 @@ export function FormProgressController({
       stepTitle={engine.currentStep?.title}
       stepDescription={engine.currentStep?.description}
       headingLevel={headingLevel}
+      steps={marks ? engine.visibleSteps.map(({ id, title }) => ({ id, title, errorCount: errors[id]?.length ?? 0 })) : undefined}
     />
   );
 }

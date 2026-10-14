@@ -38,40 +38,44 @@ Save `values`, not `req.body.values`. `validateSubmission()` throws a `FormDefin
 
 ## Client
 
-Post the values and the skipped step ids. Pass the `422` errors back through the `errors` prop.
+Post the values and the skipped step ids. Return the `422` errors as a [submit result](/guide/errors#submit-results).
 
 ::: code-group
 ```tsx [React]
-const [errors, setErrors] = useState<Record<string, string>>();
+import type { SubmitResult } from '@formhaus/core';
 
-async function submit(values: Record<string, unknown>, skippedSteps?: string[]) {
+async function submit(values: Record<string, unknown>, skippedSteps: string[]): Promise<SubmitResult> {
   const response = await fetch('/api/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ values, skippedSteps }),
   });
-  if (response.status === 422) setErrors((await response.json()).errors);
+  if (response.status === 422) return { ok: false, errors: (await response.json()).errors };
+  if (!response.ok) throw new Error('Could not save the form');
+  return { ok: true };
 }
 
-<FormRenderer definition={definition} errors={errors} onSubmit={submit} />
+<FormRenderer definition={definition} onSubmit={submit} />
 ```
 
 ```vue [Vue]
 <script setup lang="ts">
-const errors = ref<Record<string, string>>();
+import type { SubmitResult } from '@formhaus/core';
 
-async function submit(values: Record<string, unknown>, skippedSteps?: string[]) {
+async function submit(values: Record<string, unknown>, skippedSteps: string[]): Promise<SubmitResult> {
   const response = await fetch('/api/submit', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ values, skippedSteps }),
   });
-  if (response.status === 422) errors.value = (await response.json()).errors;
+  if (response.status === 422) return { ok: false, errors: (await response.json()).errors };
+  if (!response.ok) throw new Error('Could not save the form');
+  return { ok: true };
 }
 </script>
 
 <template>
-  <FormRenderer :definition="definition" :errors="errors" @submit="submit" />
+  <FormRenderer :definition="definition" @submit="submit" />
 </template>
 ```
 :::

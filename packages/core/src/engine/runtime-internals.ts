@@ -12,6 +12,8 @@ export interface EngineState {
   values: Record<string, unknown>;
   errors: Record<string, string>;
   topLevelErrors: string[];
+  serverErrors: Record<string, string>;
+  serverFormErrors: string[];
   currentStepIndex: number;
   fieldLoading: Record<string, boolean>;
   stepValidating: boolean;
