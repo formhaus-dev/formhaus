@@ -1,4 +1,4 @@
-import type { FormDefinition, FormField } from '../types';
+import type { FormDefinition, FormField, LabelKey } from '../types';
 
 export type NodeKind = 'form' | 'step' | 'field' | 'option' | 'action' | 'validation';
 
@@ -58,7 +58,7 @@ export function hasRule(node: Entry, slot: string): boolean {
   return node[slot] !== undefined && node[slot] !== false;
 }
 
-export const DEFAULT_LABELS = {
+export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = {
   continue: 'Continue',
   back: 'Back',
   stepOf: 'Step {current} of {total}',

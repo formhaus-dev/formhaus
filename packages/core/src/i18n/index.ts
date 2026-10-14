@@ -2,3 +2,5 @@ export { localize, type Localized, type LocalizeSource, type OverlaySource, type
 export { textSlots, translationTemplate, type TextSlot, type TextSlotOptions } from './template';
 export { translationIssues, type TranslationIssues, type TranslationMeta } from './issues';
 export type { Overlay } from './overlay';
+export { DEFAULT_LABELS as defaultLabels } from './nodes';
+export { DEFAULT_MESSAGES as defaultMessages } from '../validation/default-messages';

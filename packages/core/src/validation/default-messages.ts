@@ -6,7 +6,7 @@ export type MessageFn = (key: MessageKey, params: MessageParams, field: FormFiel
 export type MessageSource = MessageCatalog | MessageFn;
 export type ResolveMessage = (key: MessageKey, params: MessageParams, field: FormField) => string;
 
-export const DEFAULT_MESSAGES: Record<MessageKey, string> = {
+export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = {
   required: 'This field is required',
   minLength: 'Must be at least {min} characters',
   maxLength: 'Must be at most {max} characters',
