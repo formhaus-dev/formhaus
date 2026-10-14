@@ -24,7 +24,14 @@ function isCalendarDate(value: string): boolean {
   return day <= new Date(new Date(0).setUTCFullYear(year, month, 0)).getUTCDate();
 }
 
-export function normalizeValue(field: FormField, value: unknown): unknown {
+const UNTRIMMED_TYPES = new Set(['password', 'number', 'select', 'radio', 'file']);
+
+export function trimValue(field: FormField, value: unknown): unknown {
+  return typeof value === 'string' && !UNTRIMMED_TYPES.has(field.type) ? value.trim() : value;
+}
+
+export function normalizeValue(field: FormField, input: unknown): unknown {
+  const value = trimValue(field, input);
   if (field.type !== 'number' || typeof value !== 'string' || !DECIMAL.test(value)) return value;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : value;
