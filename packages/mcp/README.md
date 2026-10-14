@@ -1,6 +1,8 @@
 # @formhaus/mcp
 
-MCP server that lets AI agents check [Formhaus](https://github.com/ignsm/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later.
+MCP server that lets AI agents check [Formhaus](https://github.com/ignsm/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later. The checks need no account or key.
+
+`validate_definition`, `simulate_path`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
 
 ## Setup
 

@@ -288,6 +288,7 @@ validation, show conditions, linear steps, and branching steps with routes.
 
 ## Rules
 
+- NEVER call `publish_form` unless the user asked for a hosted form or Formhaus Cloud. If the project has its own backend, render with `FormRenderer` and submit to that backend.
 - NEVER output invalid JSON. Validate before presenting, with `validate_definition` when available.
 - NEVER invent field types not in the FieldType union.
 - NEVER use `fields` AND `steps` in the same definition. Pick one.

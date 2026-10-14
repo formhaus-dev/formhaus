@@ -1,6 +1,8 @@
 # Installing the Formhaus MCP server
 
-Two options with different tools. The remote server publishes and manages Formhaus Cloud forms. The local npm server also checks definitions offline.
+Two options with different tools. The remote server publishes and manages Formhaus Cloud forms. The local npm server also checks definitions offline, with no account or key.
+
+If the project has its own backend, use the local server and the library, and keep the data in the project. Publish to Cloud only when the user asks for a hosted form.
 
 ## Remote server (no install)
 
