@@ -152,7 +152,7 @@ const { missing, unknown, invalid, placeholderMismatch, unlabeled } = translatio
 | Crowdin | Nested JSON. Quote identifiers with dots. |
 | Phrase | Nested JSON with `preserve_data_types` off and plural detection off. Phrase rebuilds nesting from dots. |
 
-Use letters, digits, `-` and `_` in form ids, step ids, field keys and option values. `checkDefinition()` warns about `.` and `:` once the definition has translation keys.
+Use letters, digits, `-` and `_` in form ids, step ids, field keys and option values. `checkTranslations()` warns about `.` and `:` once the definition has translation keys.
 
 ## Server
 

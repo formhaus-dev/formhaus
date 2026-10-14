@@ -348,7 +348,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 
 ### Message and label catalogs
 
-`messages` replaces the built-in validation messages and `labels` the built-in renderer texts. Values are templates: `{name}` is replaced by the param of that name, and unknown placeholders stay as they are. An empty value is an `invalid-type` error, because an empty message would hide the error.
+`messages` replaces the built-in validation messages and `labels` the built-in renderer texts. Values are templates: `{name}` is replaced by the param of that name, and unknown placeholders stay as they are. Core skips a value that is not a non-empty string. `checkTranslations()` reports it as `invalid-type`.
 
 | Message key | Default | Params |
 |---|---|---|
@@ -401,7 +401,7 @@ An `i18n` object maps texts of its node to keys of the app dictionary, such as L
 | option, action | `label` |
 | validation | `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `matchField` |
 
-The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-unbound-slot` error. A validation slot MAY bind a rule without a field message. Core ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it.
+The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-unbound-slot` error. A validation slot MAY bind a rule without a field message. `FormEngine` ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it and throws a `FormDefinitionError` on translation errors.
 
 ```json
 {
@@ -476,7 +476,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 
 | Code | Severity | Reported for |
 |---|---|---|
-| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array, `max` that is not a number a `formatVersion` that is not a version string, or a catalog or `i18n` value that is not a non-empty string |
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array, `max` that is not a number a `formatVersion` that is not a version string |
 | `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
 | `missing-property` | error | A missing `id`, `submit`, step `id`, field `key` or `type`, route `to` or condition `field`. A missing `title` is a warning |
 | `fields-and-steps` | error | Both `fields` and `steps` non-empty |
@@ -499,11 +499,13 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |
-| `i18n-unbound-slot` | error | A translation key for a text the node does not have, such as `i18n.placeholder` without `placeholder` |
-| `unknown-i18n-slot` | warning | An `i18n` key for a text the node cannot have, or for a rule that is not set |
-| `unknown-message-key` | warning | A `messages` or `i18n.messages` key that is not a message key |
-| `unknown-label-key` | warning | A `labels` or `i18n.labels` key that is not a label key |
-| `i18n-unsafe-identifier` | warning | A form id, step id, field key or option value with `.` or `:` in a definition with translation keys |
+| `i18n-unbound-slot` | error, from `checkTranslations()` | A translation key for a text the node does not have, such as `i18n.placeholder` without `placeholder` |
+| `unknown-i18n-slot` | warning, from `checkTranslations()` | An `i18n` key for a text the node cannot have, or for a rule that is not set |
+| `unknown-message-key` | warning, from `checkTranslations()` | A `messages` or `i18n.messages` key that is not a message key |
+| `unknown-label-key` | warning, from `checkTranslations()` | A `labels` or `i18n.labels` key that is not a label key |
+| `i18n-unsafe-identifier` | warning, from `checkTranslations()` | A form id, step id, field key or option value with `.` or `:` in a definition with translation keys |
+
+`checkTranslations(definition)` from `@formhaus/core/i18n` checks `lang`, `messages`, `labels` and `i18n`: it reports `invalid-type` for a value that is not a non-empty string and the translation codes above. `checkDefinition()` and the `FormEngine` constructor do not run it.
 
 `parseDefinition(input)` returns the input typed as a definition, or throws a `FormDefinitionError` with the errors.
 

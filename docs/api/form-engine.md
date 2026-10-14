@@ -134,6 +134,7 @@ const engine = new FormEngine(de.definition, {}, { messages: de.messages });
 | `translationTemplate(definition)` | overlay | Skeleton with the source texts as values |
 | `textSlots(definition, { prefix? })` | `TextSlot[]` | `{ address, key, text, params, hash }` for every translatable text |
 | `translationIssues(definition, overlay, meta?)` | `TranslationIssues` | `missing`, `unknown`, `invalid`, `placeholderMismatch`, `unlabeled`, and `stale` when `meta.slots` has hashes from `textSlots()`; pass the same `prefix` in `meta` |
+| `checkTranslations(definition)` | `DefinitionIssue[]` | Checks `lang`, `messages`, `labels` and `i18n`. `localize()` throws on its errors |
 | `defaultMessages`, `defaultLabels` | object | English templates |
 
 `localize()` throws a `FormDefinitionError` for an invalid definition and never mutates its input. Pass `messages` and `labels` to the renderer, or spread the result:
