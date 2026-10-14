@@ -7,7 +7,7 @@ pageClass: lp-page
 
 # Formhaus Cloud Sub-processors
 
-**Effective date: October 12, 2026**
+**Effective date: October 15, 2026**
 
 This page lists the third parties that **Fabrique-Futur LLC** uses to run **Formhaus Cloud**. It is part of our [Data Processing Addendum](./dpa.md) and supports our [Privacy Policy](./privacy.md). We give at least 15 days' notice by email before a new Sub-processor starts processing Customer Data, as described in the DPA.
 
@@ -33,7 +33,8 @@ These process data that we control as described in the [Privacy Policy](./privac
 | Provider (entity) | Purpose | Data processed | Location | Transfer mechanism |
 |---|---|---|---|---|
 | **Stripe, LLC** | Subscription payments for paid plans | Your email address, payment details and payment status, collected on Stripe's own checkout page. We receive payment status, not card numbers | United States and international | DPF and SCCs |
-| **Vercel Inc.** | Hosting the website and documentation at formhaus.dev | Visitor IP addresses and request data in Vercel's logs. No forms, submissions or account data | United States and global edge network | DPF and SCCs |
+| **Cloudflare, Inc.** | DNS for formhaus.dev, and network and attack protection in front of the website at formhaus.dev | Visitor IP addresses and request data. No forms, submissions or account data | Global network; Cloudflare is a US company | DPF and SCCs |
+| **DigitalOcean, LLC** | Hosting our self-hosted Umami analytics for formhaus.dev | Website visit records: pages, referrers, browser, device, approximate location and clicks. IP addresses pass through to find the location and are not stored. No cookies, forms, submissions or account data | New York, United States (region nyc1) | DPF and SCCs |
 | **GitHub, Inc.** | Source code hosting and the build and deploy pipeline (GitHub Actions), which copies new releases to our server | Source code and build artifacts. Deploy jobs do not read forms, submissions or account data | United States | DPF and SCCs |
 
 ---
@@ -43,7 +44,7 @@ These process data that we control as described in the [Privacy Policy](./privac
 - **No AI providers.** Formhaus Cloud does not send forms or submissions to any AI or model provider. When a customer connects their own AI agent to the MCP server or the REST API, the agent and its provider are chosen by the customer and process data under the customer's agreements. They are not our Sub-processors.
 - **Customer-configured destinations.** Webhook endpoints belong to the customer. Data delivered there is outside our processing.
 - **Email retention at Resend.** Resend keeps sent emails, including their content, for 30 days.
-- **DNS and domain registration** for formhaus.dev are provided by GoDaddy. GoDaddy answers DNS queries only and does not proxy traffic to the Service or the website.
+- **DNS and domain registration.** Cloudflare answers DNS queries for formhaus.dev and its subdomains. It proxies only the website at formhaus.dev; api, app and f.formhaus.dev connect straight to our server. GoDaddy is the domain registrar only.
 - **Open-source project.** The Formhaus libraries, Figma plugin and local `@formhaus/mcp` run on your machines. The npm registry and the Figma Community distribute them; they are not Sub-processors of Formhaus Cloud.
 
 For questions about this list, write to **legal@formhaus.dev**.

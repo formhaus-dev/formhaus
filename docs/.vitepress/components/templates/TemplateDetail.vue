@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, ref } from 'vue';
 import { useData, withBase } from 'vitepress';
+import { track } from '@formhaus/site-theme';
 import { formatJson, tokenize } from '../landing/json-format';
 import LucideIcon from '../landing/LucideIcon.vue';
 import { categoryLabel, cloudUrl, counts, type TemplatePage } from './catalog';
@@ -21,6 +22,8 @@ async function copy(kind: 'JSON' | 'Prompt') {
   const text = kind === 'JSON' ? source.value : templatePrompt(template.value.title, template.value.slug);
   try {
     await navigator.clipboard.writeText(text);
+    track('template_action', { slug: template.value.slug, action: kind === 'JSON' ? 'json' : 'prompt' });
+    if (kind === 'Prompt') track('mcp_copy', { client: 'prompt', location: 'template' });
     copied.value = kind;
     clearTimeout(timer);
     timer = setTimeout(() => { copied.value = ''; }, 2000);
@@ -40,7 +43,7 @@ async function copy(kind: 'JSON' | 'Prompt') {
     <h1 class="tpl-detail__title">{{ template.title }}</h1>
     <p class="tpl-detail__summary">{{ template.summary }}</p>
     <div class="tpl-detail__actions">
-      <a class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)">
+      <a class="tpl-button tpl-button--primary" :href="cloudUrl(template.slug)" data-umami-event="template_action" data-umami-event-action="launch" :data-umami-event-slug="template.slug">
         Launch for free <LucideIcon name="arrow-right" />
       </a>
     </div>

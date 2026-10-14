@@ -1,23 +1,23 @@
 import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'vitepress'
-import { head, transformHead } from './head'
 import { transformPageData } from './templates'
 import { llms } from './llms'
 import { templateFiles } from './template-files'
-import { coreBudgetKB, siteUrl } from './site'
-import { fetchStarCount, formatStarCount } from './stars'
+import { analyticsHead, copyHashmap, coreBudgetKB, head, ownHashmap, sharedDedupe, sharedPublic, sharedThemeConfig, siteUrl, transformHead } from '../../packages/site-theme/src/config'
+import { sitemapCollector, writeOwnSitemap } from '../../packages/site-theme/src/sitemap.js'
 
-const starCount = await fetchStarCount()
-const githubStars = starCount === null ? null : { count: starCount, label: formatStarCount(starCount) }
+const shared = await sharedThemeConfig()
+const sitemap = sitemapCollector()
 
 export default defineConfig({
   vite: {
-    plugins: [llms, templateFiles()],
+    plugins: [llms, templateFiles(), sharedPublic(), ownHashmap()],
     resolve: {
       alias: {
-        '@formhaus/editor-react': fileURLToPath(new URL('../../packages/editor-react/dist', import.meta.url))
+        '@formhaus/editor-react': fileURLToPath(new URL('../../packages/editor-react/dist', import.meta.url)),
+        '@formhaus/site-theme': fileURLToPath(new URL('../../packages/site-theme/src/index.ts', import.meta.url))
       },
-      dedupe: ['@formhaus/core', 'vue']
+      dedupe: sharedDedupe
     },
     server: {
       fs: { allow: ['..'] }
@@ -29,21 +29,16 @@ export default defineConfig({
   lastUpdated: true,
   cleanUrls: true,
   ignoreDeadLinks: [/^\/legal\//],
-  sitemap: { hostname: siteUrl },
-  head,
+  sitemap: { hostname: siteUrl, transformItems: sitemap.transformItems },
+  head: [...head, ...analyticsHead('docs')],
   transformHead,
   transformPageData,
+  buildEnd: (config) => {
+    copyHashmap(config)
+    writeOwnSitemap(config.outDir, 'docs', sitemap.items())
+  },
   themeConfig: {
-    logo: { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg', alt: 'Formhaus' },
-    siteTitle: false,
-    nav: [
-      { text: 'Guide', link: '/guide/' },
-      { text: 'Templates', link: '/templates/', activeMatch: '^/templates/' },
-      { text: 'Cloud', link: '/cloud' },
-      { text: 'API', link: '/api/definition' },
-      { text: 'Builder', link: '/build' },
-      { text: 'Playground', link: '/playground' }
-    ],
+    ...shared,
     sidebar: [
       {
         text: 'Guide',
@@ -162,9 +157,6 @@ export default defineConfig({
         ]
       }
     ],
-    footer: {
-      message: 'Formhaus is MIT licensed. <a href="/legal/">Legal</a>'
-    },
-    ...{ githubStars, coreBudgetKB }
+    ...{ coreBudgetKB }
   }
 })

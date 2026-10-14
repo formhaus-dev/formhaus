@@ -8,7 +8,7 @@ const root = new URL('..', import.meta.url).pathname
 const dist = join(root, 'docs/.vitepress/dist')
 const out = join(root, 'docs/public/og')
 const read = (path) => JSON.parse(readFileSync(join(root, path), 'utf8'))
-const sections = read('docs/.vitepress/og-sections.json')
+const sections = read('packages/site-theme/src/seo/og-sections.json')
 const templates = read('templates/index.json')
 const only = process.argv.slice(2)
 const maxBytes = 60 * 1024

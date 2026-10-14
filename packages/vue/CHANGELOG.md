@@ -1,5 +1,12 @@
 # @formhaus/vue
 
+## 0.11.3
+
+### Patch Changes
+
+- Updated dependencies [5daae4d]
+  - @formhaus/core@0.11.3
+
 ## 0.11.2
 
 ### Patch Changes
