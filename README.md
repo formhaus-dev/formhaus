@@ -17,11 +17,17 @@ Two independent ways to use it:
   npm install @formhaus/core   # plus @formhaus/react or @formhaus/vue
   ```
 
+  [Install](#install) · [Quick start](#quick-start) · [Guide](https://formhaus.dev/guide/) · [Playground](https://formhaus.dev/playground)
+
 - **Use [Formhaus Cloud](https://formhaus.dev/cloud).** A hosted form backend: a submission endpoint with server validation, a dashboard and webhooks, plus hosted links, embeds and a visual builder. The first form needs no account.
+
+  Build in the browser at [app.formhaus.dev](https://app.formhaus.dev/login), or let your AI agent publish the form:
 
   ```bash
   claude mcp add --transport http formhaus https://api.formhaus.dev/mcp
   ```
+
+  [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard) · [Pricing](https://formhaus.dev/pricing)
 
 **[Start here](#start-here) · [Example](#example) · [Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Spec](https://formhaus.dev/spec.html) · [Playground](https://formhaus.dev/playground.html)**
 
