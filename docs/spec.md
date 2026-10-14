@@ -466,7 +466,7 @@ An overlay is a JSON object of translated texts, nested by address. Every leaf i
 
 Texts, options, action labels and field messages are translated once. For a rule without a field message, a result equal to `defaultText` is not written, so the catalog still applies. Catalog messages and labels are translated when they are shown, through the `messages` and `labels` functions that `localize()` returns.
 
-`lang` is metadata. It does not select a translation and does not set text direction.
+`lang` is metadata. It does not select a translation and does not set `dir`.
 
 ## Definition checks
 

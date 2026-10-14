@@ -175,4 +175,4 @@ The MCP tool `translation_template` returns the overlay skeleton and the slot li
 - The language is set when the form is created. A new language recreates the form and clears its answers.
 - Options from `optionsFrom` and messages from custom validators are not translated here; translate them in the provider or the validator.
 - Templates have no plural forms. A translate function can choose the plural itself.
-- `lang` does not set text direction.
+- `lang` does not set `dir` or right-to-left layout.
