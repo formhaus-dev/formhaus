@@ -1,6 +1,6 @@
 ---
 title: "Email notifications"
-description: "Formhaus Cloud emails: milestones, every response on Team, the daily digest on Pro and Team, the weekly summary, usage alerts, webhook failing, report, claim, sign-in and invite emails."
+description: "Formhaus Cloud emails: response milestones, every response on Team, the daily digest on Pro and Team, usage alerts, webhook failures and account emails."
 ---
 
 # Email notifications
