@@ -1,5 +1,12 @@
 # @formhaus/mcp
 
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [9298412]
+  - @formhaus/core@0.12.0
+
 ## 0.3.3
 
 ### Patch Changes
