@@ -34,7 +34,7 @@ const items = [
       },
       {
         "text": "setup guide",
-        "href": "/cloud/quickstart"
+        "href": "/cloud/connect-claude"
       },
       {
         "text": " has the steps."
