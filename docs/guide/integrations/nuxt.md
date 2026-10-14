@@ -45,7 +45,7 @@ The awaited `@submit` handler keeps the form in its loading state until the requ
 - It returns `{ values, errors }`. A non-empty `errors` becomes a `422`.
 - When `FormRenderer` receives errors through the `errors` prop, it moves to the first step with an error and shows the messages there.
 
-`validateSubmission()` ignores named validators. The server route runs them on the returned values. The client has no `companyAvailable` validator, so the rule is skipped in the browser and enforced on the server:
+`validateSubmission()` runs named validators only when they are passed in `options.validators`. This route does not pass them, so it runs them itself on the returned values. The client has no `companyAvailable` validator, so the rule is skipped in the browser and enforced on the server:
 
 <<< @/../examples/nuxt/server/validators.ts
 
