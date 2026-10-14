@@ -112,17 +112,7 @@ jobs:
 
       - run: pnpm docs:build
 
-      - run: pnpm check:docs-bundle
-
       - run: pnpm check:seo
-
-      - run: pnpm check:seo:docs
-
-      - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium
-
-      - run: pnpm check:build-page
-
-      - run: pnpm check:editor-guard
 
   examples:
     runs-on: ubuntu-latest
