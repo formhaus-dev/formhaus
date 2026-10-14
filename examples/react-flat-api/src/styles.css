@@ -1,0 +1,63 @@
+:root {
+  font-family: system-ui, sans-serif;
+  color: #1a1a1a;
+  background: #f6f6f4;
+}
+
+body {
+  margin: 0;
+}
+
+.demo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 280px;
+  gap: 24px;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
+
+.demo__main,
+.demo__card {
+  padding: 20px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.demo__card h1 {
+  margin: 0 0 8px;
+  font-size: 22px;
+}
+
+.demo__panel {
+  font-size: 13px;
+}
+
+.demo__panel h2 {
+  margin: 16px 0 8px;
+  font-size: 14px;
+}
+
+.demo__panel ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.demo__toggle {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.demo__panel pre {
+  overflow: auto;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff;
+}
+
+@media (max-width: 720px) {
+  .demo {
+    grid-template-columns: 1fr;
+  }
+}
