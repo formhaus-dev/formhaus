@@ -23,6 +23,7 @@ export type {
   FormRendererProps,
   FormActionsProps,
   FormStepProgressProps,
+  FormStepStatus,
   HeadingLevel,
   OptionsProvider,
 } from './types';

@@ -23,7 +23,7 @@ export default function App() {
     <div className="demo">
       <main className="demo__main">
         {opened ? (
-          <section className="demo__card" role="status">
+          <section className="demo__done" role="status">
             <h1>Account opened</h1>
             <p>We sent a confirmation to {opened}.</p>
           </section>
@@ -31,6 +31,8 @@ export default function App() {
           <FormRenderer
             definition={definition}
             onSubmit={onSubmit}
+            errorSummary
+            stepErrorMarks
             onAfterSubmit={(values) => setOpened(String(values.email))}
           />
         )}

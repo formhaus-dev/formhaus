@@ -47,12 +47,19 @@ export interface FormActionsProps {
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
+export interface FormStepStatus {
+  id: string;
+  title?: string;
+  errorCount: number;
+}
+
 export interface FormStepProgressProps {
   current: number;
   total: number;
   stepTitle?: string;
   stepDescription?: string;
   headingLevel?: HeadingLevel;
+  steps?: FormStepStatus[];
 }
 
 export interface FormRendererProps extends FormEngineOptions {
@@ -65,6 +72,8 @@ export interface FormRendererProps extends FormEngineOptions {
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
+  errorSummary?: boolean;
+  stepErrorMarks?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;
   optionsProviders?: Record<string, OptionsProvider>;

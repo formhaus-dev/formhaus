@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { FormEngineOptions, StepChangeContext } from '@formhaus/core';
 import { shouldApplyExternalErrors } from '@formhaus/core/internal';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { fieldDomId } from '@formhaus/core/internal';
 import FieldResolver from './FieldResolver.vue';
+import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
 import { useFieldOptions } from './composables/useFieldOptions';
 import { useRendererActions } from './composables/useRendererActions';
@@ -67,37 +68,13 @@ const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev
   useRendererActions(form, props, emit);
 const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
 
-let previousStep = currentStep.value?.id;
-let focusPending = false;
-let focusReturn: HTMLElement | null = null;
-let wasBusy = false;
-let handledInvalid = 0;
-const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
-function firstControl(root: Element | null | undefined) {
-  return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
-}
-function rememberFocus(event: FocusEvent) { focusReturn = event.target as HTMLElement; }
-watch([currentStep, stepValidating, submitting, invalidAttempts], async () => {
-  if (currentStep.value?.id !== previousStep || invalidAttempts.value !== handledInvalid) focusPending = true;
-  previousStep = currentStep.value?.id;
-  handledInvalid = invalidAttempts.value;
-  if (stepValidating.value || submitting.value) {
-    wasBusy = true;
-    return;
-  }
-  const restore = wasBusy;
-  wasBusy = false;
-  if (!focusPending) {
-    const document = formRef.value?.ownerDocument;
-    if (restore && document?.activeElement === document?.body && focusReturn?.isConnected) focusReturn.focus();
-    return;
-  }
-  focusPending = false;
-  await nextTick();
-  const fields = formRef.value?.querySelector('.fh-form__fields');
-  const target = firstControl(fields?.querySelector('[aria-invalid="true"]')) ?? firstControl(fields);
-  ((target as HTMLElement | null | undefined) ?? formRef.value)?.focus();
-}, { flush: 'post' });
+const { rememberFocus, showField } = useFormFocus(form, formRef, formId, invalidAttempts);
+
+const summaryFields = computed(() => (isMultiStep.value ? form.visibleSteps.value.flatMap((step) => step.fields) : visibleFields.value)
+  .filter((field) => errors.value[field.key] !== undefined));
+const stepStatuses = computed(() => props.stepErrorMarks ? form.visibleSteps.value.map(({ id, title, fields }) => ({
+  id, title, errorCount: fields.filter((field) => errors.value[field.key] !== undefined).length,
+})) : undefined);
 
 function onFieldFocus(key: string) {
   emit('analyticsEvent', { type: 'field_focused', fieldKey: key });
@@ -159,7 +136,17 @@ async function onPrimary() {
       :step-title="currentStep?.title"
       :step-description="currentStep?.description"
       :heading-level="props.headingLevel"
+      :steps="stepStatuses"
     />
+
+    <div v-if="props.errorSummary && summaryFields.length > 0" class="fh-error-summary" role="alert">
+      <p class="fh-error-summary__title">Check these answers</p>
+      <ul class="fh-error-summary__list">
+        <li v-for="field in summaryFields" :key="field.key">
+          <a class="fh-error-summary__link" :href="`#${fieldDomId(formId, field.key)}`" @click.prevent="showField(field.key)">{{ field.label }}: {{ errors[field.key] }}</a>
+        </li>
+      </ul>
+    </div>
 
     <div class="fh-form__fields">
       <FieldResolver

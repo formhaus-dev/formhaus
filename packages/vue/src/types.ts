@@ -33,12 +33,19 @@ export interface FormActionsProps {
   skipLabel?: string;
 }
 
+export interface FormStepStatus {
+  id: string;
+  title?: string;
+  errorCount: number;
+}
+
 export interface FormStepProgressProps {
   current: number;
   total: number;
   stepTitle?: string;
   stepDescription?: string;
   headingLevel?: HeadingLevel;
+  steps?: FormStepStatus[];
 }
 
 export type OptionsProvider = (
@@ -57,6 +64,8 @@ export interface FormRendererProps extends FormEngineOptions {
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
+  errorSummary?: boolean;
+  stepErrorMarks?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;
   actionsComponent?: Component;

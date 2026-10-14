@@ -1,7 +1,8 @@
 import type { FormEngineOptions } from '@formhaus/core';
-import { shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { fieldDomId, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { useCallback, useEffect, useId, useRef } from 'react';
 import { FormActionsController } from './FormActionsController';
+import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
 import { FormTopLevelErrors } from './FormTopLevelErrors';
@@ -31,6 +32,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   const formId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const focusPending = useRef(false);
+  const focusKey = useRef<string | null>(null);
   const focusReturn = useRef<HTMLElement | null>(null);
   const wasBusy = useRef(false);
   const engineOptions: FormEngineOptions = {
@@ -76,7 +78,10 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     }
     focusPending.current = false;
     const fields = formRef.current?.querySelector('.fh-form__fields');
-    const target = firstControl(fields?.querySelector('[aria-invalid="true"]')) ?? firstControl(fields);
+    const id = focusKey.current && fieldDomId(formId, focusKey.current);
+    focusKey.current = null;
+    const chosen = id ? fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) : null;
+    const target = firstControl(chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) ?? firstControl(fields);
     ((target as HTMLElement | null | undefined) ?? formRef.current)?.focus();
   }, [engine, version, actions.invalidAttempts]);
 
@@ -88,11 +93,17 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
       hasValue: engine.values[key] !== undefined && engine.values[key] !== '' });
   }, [engine, onAnalyticsEvent]);
   const handleCancel = useCallback(() => props.onCancel?.(), [props.onCancel]);
+  const showField = useCallback((key: string) => {
+    focusKey.current = key;
+    focusPending.current = true;
+    engine.goToStepWithField(key);
+  }, [engine]);
 
   return (
     <form ref={formRef} onFocusCapture={(event) => { focusReturn.current = event.target; }} className="fh-form" tabIndex={-1} aria-busy={engine.stepValidating || engine.submitting || loading}
       onSubmit={(event) => { event.preventDefault(); void (engine.isLastStep ? actions.submit() : actions.next()); }}>
-      <FormProgressController engine={engine} ProgressComponent={progressComponent} headingLevel={headingLevel} />
+      <FormProgressController engine={engine} ProgressComponent={progressComponent} headingLevel={headingLevel} marks={props.stepErrorMarks} />
+      {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} />}
       <FormFieldsController key={engineKey(engine)} engine={engine} formId={formId} loading={loading} components={components}
         optionsProviders={optionsProviders} onChange={actions.update} onCommit={actions.commit}
         onBlur={handleFieldBlur} onFocus={handleFieldFocus} />

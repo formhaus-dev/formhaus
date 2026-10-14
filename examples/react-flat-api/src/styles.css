@@ -17,16 +17,20 @@ body {
   padding: 32px 16px;
 }
 
-.demo__main,
-.demo__card {
+.demo__main {
+  align-self: start;
   padding: 20px;
   border-radius: 12px;
   background: #fff;
 }
 
-.demo__card h1 {
+.demo__done h1 {
   margin: 0 0 8px;
   font-size: 22px;
+}
+
+.demo__done p {
+  margin: 0;
 }
 
 .demo__panel {
@@ -50,7 +54,8 @@ body {
 }
 
 .demo__panel pre {
-  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
   padding: 12px;
   border-radius: 8px;
   background: #fff;
