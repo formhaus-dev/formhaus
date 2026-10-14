@@ -71,3 +71,21 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+.demo__actions {
+  display: flex;
+  gap: 8px;
+}
+
+.demo__actions button {
+  padding: 6px 12px;
+  border: 1px solid #d4d4d8;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.demo__actions button:hover {
+  background: #f4f4f5;
+}

@@ -17,12 +17,23 @@ const toggles: [ForcedRejection, string][] = [
   ['general', 'General error'],
 ];
 
+const testData = {
+  firstName: 'Ann',
+  lastName: 'Lee',
+  email: 'ann@example.com',
+  accountType: 'business',
+  companyName: 'Acme',
+  street: '1 Main St',
+  postcode: '12345',
+};
+
 export default function App() {
   const submit = useMemo(() => submitTo(api), []);
   const [offline, setOffline] = useState(false);
   const [forced, setForced] = useState<ForcedRejection[]>([]);
   const [requests, setRequests] = useState(api.requests.length);
   const [opened, setOpened] = useState<string | null>(null);
+  const [seed, setSeed] = useState<{ run: number; values?: Record<string, unknown> }>({ run: 0 });
 
   async function onSubmit(values: Record<string, unknown>) {
     try { return await submit(values); }
@@ -32,6 +43,11 @@ export default function App() {
   function toggle(key: ForcedRejection, on: boolean) {
     api.reject(key, on);
     setForced(on ? [...forced, key] : forced.filter((item) => item !== key));
+  }
+
+  function restart(values?: Record<string, unknown>) {
+    setOpened(null);
+    setSeed({ run: seed.run + 1, values });
   }
 
   return (
@@ -44,6 +60,8 @@ export default function App() {
           </section>
         ) : (
           <FormRenderer
+            key={seed.run}
+            initialValues={seed.values}
             definition={definition}
             onSubmit={onSubmit}
             errorSummary
@@ -53,6 +71,10 @@ export default function App() {
         )}
       </main>
       <aside className="demo__panel">
+        <div className="demo__actions">
+          <button type="button" onClick={() => restart(testData)}>Fill test data</button>
+          <button type="button" onClick={() => restart()}>Clear</button>
+        </div>
         <h2>Mock API</h2>
         <p>The server rejects:</p>
         <ul>
