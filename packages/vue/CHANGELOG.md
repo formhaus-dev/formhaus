@@ -1,5 +1,17 @@
 # @formhaus/vue
 
+## 0.11.2
+
+### Patch Changes
+
+- 434db0c: - Continue is disabled while the `disabled` conditions of the step `next` action match. Enter does not advance the step either.
+  - Custom actions components receive the `next` action of the current step as `nextAction`.
+- Updated dependencies [434db0c]
+- Updated dependencies [4fb22ad]
+- Updated dependencies [960d281]
+- Updated dependencies [97441bb]
+  - @formhaus/core@0.11.2
+
 ## 0.11.1
 
 ### Patch Changes

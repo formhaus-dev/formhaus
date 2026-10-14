@@ -1,5 +1,24 @@
 # @formhaus/core
 
+## 0.11.2
+
+### Patch Changes
+
+- 434db0c: - `validateSubmission()` accepts answers when fields on route branches that never meet share a key with different types. Only the field on the active path is type-checked.
+  - `validateSubmission()` accepts any value for an `optionsFrom` field, as the browser does, also when the field has static `options`.
+  - `date` and `datetime` values must be real calendar dates. `2026-02-31` fails with "Enter a valid date".
+  - `checkDefinition()` and the `FormEngine` constructor report `invalid-type` when a field `label`, `placeholder` or `helperText`, an option `label`, a step `title` or `description`, or an action `label` is not a string.
+  - A `__proto__` key in initial values no longer changes the prototype of `engine.values`.
+  - New `isActionDisabled(action, values)` returns `true` when every `disabled` condition of the action matches.
+- 4fb22ad: - The default theme shows hover states on fields, options and buttons on devices with a mouse.
+  - New `--fh-color-control-hover` and `--fh-color-bg-hover` theme variables.
+  - Hover no longer replaces the error border on invalid inputs.
+  - Transitions turn off under `prefers-reduced-motion`.
+- 960d281: - Definitions can declare their format version with `formatVersion`. A core that does not support it reports `unsupported-format-version`.
+  - New `FORMAT_VERSION` export names the definition format this core reads.
+  - The MCP `capabilities` tool reports the supported definition format version.
+- 97441bb: - Text answers are trimmed of leading and trailing spaces before validation and submit. A `required` field with only spaces is empty. Passwords are not trimmed.
+
 ## 0.11.1
 
 ### Patch Changes
