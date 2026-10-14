@@ -1,5 +1,15 @@
 # @formhaus/mcp
 
+## 0.3.3
+
+### Patch Changes
+
+- 5daae4d: - `show`, `showAny` and step `routes` conditions compare trimmed text answers. `" yes "` matches `eq: "yes"` and a text answer with only spaces fails `notEmpty`, the same as in `validateSubmission()`.
+  - `checkDefinition()` and the `FormEngine` constructor report `invalid-type` when a validation `*Message` is not a string or `required` is not `true`, `false` or a string.
+  - The MCP `simulate_path` tool lists visible fields from trimmed text answers.
+- Updated dependencies [5daae4d]
+  - @formhaus/core@0.11.3
+
 ## 0.3.2
 
 ### Patch Changes
