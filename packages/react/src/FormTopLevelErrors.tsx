@@ -7,7 +7,7 @@ export function FormTopLevelErrors({ engine, actionError }: { engine: FormEngine
   if (errors.length === 0) return null;
 
   return (
-    <div className="fh-form__top-errors">
+    <div className="fh-form__top-errors" role="alert">
       {errors.map((error, index) => (
         <p key={index} className="fh-form__top-error">
           {error}

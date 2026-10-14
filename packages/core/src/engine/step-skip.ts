@@ -2,7 +2,7 @@ import type { FormStep } from '../types';
 import { createValues } from './engine-utils';
 import type { EngineInternals } from './runtime-internals';
 import { activeSteps } from './step-routes';
-import { pruneOffPathErrors } from './validation-state';
+import { dropServerErrors, pruneOffPathErrors } from './validation-state';
 
 function resetValues(engine: EngineInternals): Record<string, unknown> {
   const fields = engine.currentStep?.fields ?? [];
@@ -20,8 +20,9 @@ export function skipCurrentStep(engine: EngineInternals): string[] {
   const fieldKeys = step.fields.map(({ key }) => key);
   engine.state.values = resetValues(engine);
   for (const key of fieldKeys) delete engine.errors[key];
+  dropServerErrors(engine, fieldKeys);
   engine.skipped.set(step.id, fieldKeys);
-  engine.visibility.reconcileHidden(engine.values, engine.errors);
+  dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
   engine.visibility.markChanged(true, true);
   const pruned = pruneOffPathErrors(engine);
   engine.notify({ fieldKeys: [...fieldKeys, ...pruned], structureChanged: true, valuesChanged: true });

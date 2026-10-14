@@ -17,6 +17,11 @@ export type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void 
 export type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>;
 export type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>;
 export type SubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>;
+export type SubmitResult = { ok: true } | { ok: false; errors?: Record<string, string>; formErrors?: string[] };
+export type SubmitHandler = (
+  values: Record<string, unknown>,
+  skippedSteps: string[],
+) => void | SubmitResult | Promise<void | SubmitResult>;
 
 export interface FormEngineOptions {
   onBeforeStepChange?: BeforeStepChangeFn;

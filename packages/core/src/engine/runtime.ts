@@ -1,6 +1,6 @@
 import type { ValidatorFn } from '../validation';
 import type { FormDefinition, FormField, FormStep } from '../types';
-import type { FormEngineOptions, StepValidateFn, SubmitFn } from './engine-options';
+import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-options';
 import { createValues } from './engine-utils';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineInternals, EngineState, RuntimeNotifyOptions } from './runtime-internals';
@@ -11,7 +11,9 @@ import {
   resetEngine,
   validateForm,
   validateOne,
+  clearError,
   clearResolvedMatchErrors,
+  dropServerErrors,
   pruneOffPathErrors,
 } from './validation-state';
 import { submitForm } from './submission';
@@ -41,7 +43,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     assertDefinition(definition, this.lifecycle, this.validators);
     this.visibility = createVisibility(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
-    this.state = { values, errors: {}, topLevelErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };
+    this.state = { values, errors: {}, topLevelErrors: [], serverErrors: {}, serverFormErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };
     this.visibility.reconcileHidden(values, this.state.errors);
   }
 
@@ -81,6 +83,15 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return this.visibility.getCanGoNext(this.state.values, this.currentStepIndex, this.validators);
   }
 
+  get stepErrors(): Record<string, string[]> {
+    const result: Record<string, string[]> = {};
+    for (const step of this.visibleSteps) {
+      const keys = step.fields.map((field) => field.key).filter((key) => this.errors[key] !== undefined);
+      if (keys.length > 0) result[step.id] = keys;
+    }
+    return result;
+  }
+
   get progress(): { current: number; total: number } {
     const total = this.visibleSteps.length;
     return { current: Math.min(this.currentStepIndex + 1, total), total };
@@ -114,14 +125,15 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     const { values, errors } = this.state;
     const previousSteps = this.isMultiStep ? this.visibleSteps : null;
     const valueChanged = !Object.is(values[key], value);
-    const hadError = errors[key] !== undefined;
+    const previousError = errors[key];
     values[key] = value;
-    delete errors[key];
+    clearError(this.internals, key, valueChanged);
     for (const [stepId, keys] of this.skipped) if (valueChanged && keys.includes(key)) this.skipped.delete(stepId);
     const clearedFields = this.visibility.reconcileHidden(values, errors);
+    dropServerErrors(this.internals, clearedFields);
     const revalidated = clearResolvedMatchErrors(this.internals, key);
     const changedFields = new Set([...clearedFields, ...revalidated]);
-    if (valueChanged || hadError) changedFields.add(key);
+    if (valueChanged || previousError !== errors[key]) changedFields.add(key);
     const valuesChanged = valueChanged || clearedFields.size > 0;
     const structureChanged = valuesChanged && this.visibility.affectsStructure(key, clearedFields);
     if (previousSteps && structureChanged) {
@@ -153,8 +165,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
 
   next(): Promise<boolean> { return changeStep(this.internals, 'next'); }
   back(): Promise<boolean> { return changeStep(this.internals, 'back'); }
-  skip(submit?: SubmitFn): Promise<boolean> { return skipStep(this.internals, submit); }
-  submit(handler: SubmitFn): Promise<boolean> { return submitForm(this.internals, handler); }
+  skip(submit?: SubmitHandler): Promise<boolean> { return skipStep(this.internals, submit); }
+  submit(handler: SubmitHandler): Promise<boolean> { return submitForm(this.internals, handler); }
   isStepSkipped(stepId: string): boolean { return this.skipped.has(stepId); }
   validate(): Record<string, string> { return validateForm(this.internals); }
   validateField(key: string): string | null { return validateOne(this.internals, key); }

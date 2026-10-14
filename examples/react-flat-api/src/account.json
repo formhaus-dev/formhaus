@@ -1,0 +1,101 @@
+{
+  "id": "flat-api",
+  "title": "Open an account",
+  "submit": {
+    "label": "Open account"
+  },
+  "steps": [
+    {
+      "id": "about",
+      "title": "About you",
+      "fields": [
+        {
+          "key": "firstName",
+          "type": "text",
+          "label": "First name",
+          "validation": {
+            "required": true
+          }
+        },
+        {
+          "key": "lastName",
+          "type": "text",
+          "label": "Last name",
+          "validation": {
+            "required": true
+          }
+        },
+        {
+          "key": "email",
+          "type": "email",
+          "label": "Email",
+          "validation": {
+            "required": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "account",
+      "title": "Account",
+      "fields": [
+        {
+          "key": "accountType",
+          "type": "radio",
+          "label": "Account type",
+          "validation": {
+            "required": true
+          },
+          "options": [
+            {
+              "value": "personal",
+              "label": "Personal"
+            },
+            {
+              "value": "business",
+              "label": "Business"
+            }
+          ]
+        },
+        {
+          "key": "companyName",
+          "type": "text",
+          "label": "Company name",
+          "validation": {
+            "required": true
+          },
+          "show": [
+            {
+              "field": "accountType",
+              "eq": "business"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "address",
+      "title": "Address",
+      "fields": [
+        {
+          "key": "street",
+          "type": "text",
+          "label": "Street",
+          "validation": {
+            "required": true
+          }
+        },
+        {
+          "key": "postcode",
+          "type": "text",
+          "label": "Postcode",
+          "validation": {
+            "required": true,
+            "pattern": "^[0-9]{5}$",
+            "patternMessage": "Enter 5 digits"
+          }
+        }
+      ]
+    }
+  ]
+}

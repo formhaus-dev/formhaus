@@ -43,7 +43,7 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
   function send(engine: typeof form.engine, handler: typeof props.submitHandler) {
     return async (values: Record<string, unknown>, skippedSteps: string[]) => {
       emit('analyticsEvent', { type: 'form_submitted', fieldCount: Object.keys(values).length });
-      if (handler) await handler(values, skippedSteps);
+      return handler?.(values, skippedSteps);
     };
   }
   async function report(engine: typeof form.engine, action: Promise<boolean>) {

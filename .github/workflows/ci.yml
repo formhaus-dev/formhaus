@@ -129,7 +129,7 @@ jobs:
 
     strategy:
       matrix:
-        example: [react-mui, vue-vuetify, vanilla-svelte, react-quiz, nextjs-app-router, nuxt, react-shadcn, cloud-waitlist/react]
+        example: [react-mui, vue-vuetify, vanilla-svelte, react-quiz, react-flat-api, nextjs-app-router, nuxt, react-shadcn, cloud-waitlist/react]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -142,6 +142,10 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+
+      - name: Build local packages
+        if: matrix.example == 'react-flat-api'
+        run: pnpm install --frozen-lockfile && pnpm --filter @formhaus/core --filter @formhaus/react run build
 
       - name: Install example deps
         working-directory: examples/${{ matrix.example }}

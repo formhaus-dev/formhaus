@@ -67,8 +67,9 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | Property | Type | Description |
 |---|---|---|
 | `values` | `Readonly<Partial<TValues>>` | Current draft values, including retained inactive branch answers in routed forms |
-| `errors` | `Readonly<Record<string, string>>` | Errors attached to visible fields |
-| `topLevelErrors` | `readonly string[]` | Errors for missing or hidden fields |
+| `errors` | `Readonly<Record<string, string>>` | Client and server errors attached to visible fields on the active path |
+| `topLevelErrors` | `readonly string[]` | Form-level errors: `formErrors` from a submit result and errors for unknown, hidden or off-path keys |
+| `stepErrors` | `Record<string, string[]>` | Keys of fields with errors, by step id, for steps on the active path that have errors |
 | `fieldLoading` | `Readonly<Record<string, boolean>>` | Per-field loading state |
 | `stepValidating` | `boolean` | Whether async navigation, including validation and before/after hooks, is running |
 | `submitting` | `boolean` | Whether submission validation, hooks or the submit handler are running |
@@ -86,10 +87,10 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | Method | Returns | Description |
 |---|---|---|
 | `setValue(key, value)` | `void` | Sets a value, clears its error, and reconciles dependent visibility |
-| `setErrors(errors)` | `void` | Replaces existing errors and navigates to the first visible field with an error |
+| `setErrors(errors)` | `void` | Applies a server error set: replaces existing errors and opens the earliest step with a field error. See [server errors](/spec#server-errors) |
 | `setFieldLoading(key, loading)` | `void` | Updates loading state for one field |
-| `validate()` | `Record<string, string>` | Validates visible fields on the active path; skipped branch values are excluded |
-| `validateField(key)` | `string \| null` | Validates one visible field |
+| `validate()` | `Record<string, string>` | Validates visible fields on the active path and returns the client errors. Unresolved server errors stay in `errors` |
+| `validateField(key)` | `string \| null` | Validates one visible field. When it passes, it also removes the field's server error |
 | `getSubmitValues()` | `Partial<TValues>` | Returns visible field values on the active path, excluding inactive branch answers |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
 
@@ -122,7 +123,7 @@ It returns `false` only when `nextErrors` equals `previousErrors` and the engine
 | `next()` | `Promise<boolean>` | Validates the current step, awaits `onStepValidate` and the step hooks, then advances |
 | `back()` | `Promise<boolean>` | Runs the step hooks and moves to the previous step of the path without validation |
 | `skip(submit?)` | `Promise<boolean>` | Runs the step hooks with `reason: 'skip'` and the pre-skip values, then resets the step and advances. When no step follows, it submits through `submit` without the step |
-| `submit(handler)` | `Promise<boolean>` | Validates every step of the path, runs `onBeforeSubmit`, awaits `handler(values, skippedSteps)` and then `onAfterSubmit` |
+| `submit(handler)` | `Promise<boolean>` | Validates every step of the path, runs `onBeforeSubmit`, awaits `handler(values, skippedSteps)` and then `onAfterSubmit`. Resolves to `false` when the handler returns `{ ok: false }` |
 | `isStepSkipped(stepId)` | `boolean` | Whether the step is skipped and left out of validation and submitted values |
 | `goToStepWithField(key)` | `void` | Moves to the visible step containing a field without lifecycle hooks |
 
@@ -169,13 +170,20 @@ type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promi
 type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>
 type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>
 type SubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>
+type SubmitResult =
+  | { ok: true }
+  | { ok: false; errors?: Record<string, string>; formErrors?: string[] }
+type SubmitHandler = (
+  values: Record<string, unknown>,
+  skippedSteps: string[],
+) => void | SubmitResult | Promise<void | SubmitResult>
 ```
 
-`onAfterSubmit` and `submit(handler)` use `SubmitFn`. `reason` is `autoAdvance` when a renderer advances after an `autoAdvance` field commits. Callback values are shallow snapshots. For a complete Vue component and React usage, see [lifecycle hooks](/guide/steps#lifecycle-hooks).
+`submit(handler)` and `skip(submit)` take a `SubmitHandler`; `onAfterSubmit` is a `SubmitFn`. Every `SubmitFn` is a valid `SubmitHandler`. The [submit results](/spec#submit-results) section of the specification defines success, rejection, the error rules and concurrent submissions. `reason` is `autoAdvance` when a renderer advances after an `autoAdvance` field commits. Callback values are shallow snapshots. For a complete Vue component and React usage, see [lifecycle hooks](/guide/steps#lifecycle-hooks).
 
 | API | Result |
 | --- | --- |
 | `cancelPendingActions()` | Invalidates pending guards without clearing answers. Cannot undo a dispatched submission. |
 | `submitting` | True while submission and its hooks are pending. |
 
-A cancelled, invalid or concurrent action resolves to `false`. Exceptions reject. `FormLifecycleError` has `committed: true`, `phase` and `cause` for an after-hook failure: the action already completed. `stepValidating` remains true throughout navigation hooks. `setErrors()`, `goToStepWithField()` and `reset()` do not run the hooks. See [lifecycle ordering, recovery and adapter examples](../guide/steps#lifecycle-hooks).
+A cancelled, invalid, rejected or concurrent action resolves to `false`. Exceptions reject. `FormLifecycleError` has `committed: true`, `phase` and `cause` for an after-hook failure: the action already completed. `stepValidating` remains true throughout navigation hooks. `setErrors()`, `goToStepWithField()` and `reset()` do not run the hooks. See [lifecycle ordering, recovery and adapter examples](../guide/steps#lifecycle-hooks).

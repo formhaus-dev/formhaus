@@ -36,7 +36,7 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
   }, [engine, loading, run, update]);
   const send = useCallback(async (values: Record<string, unknown>, skippedSteps: string[]) => {
     onAnalyticsEvent?.({ type: 'form_submitted', fieldCount: Object.keys(values).length });
-    await onSubmit(values, skippedSteps);
+    return onSubmit(values, skippedSteps);
   }, [onSubmit, onAnalyticsEvent]);
   const report = useCallback(async (action: Promise<boolean>) => {
     const result = await action;
