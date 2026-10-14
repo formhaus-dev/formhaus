@@ -7,6 +7,11 @@
     "$schema": {
       "type": "string"
     },
+    "formatVersion": {
+      "type": "string",
+      "description": "Format version of the definition, such as \"1.0\". Core rejects a newer major version.",
+      "pattern": "^[1-9]\\d*(\\.\\d+)?$"
+    },
     "id": {
       "type": "string",
       "description": "Unique form identifier."

@@ -1,5 +1,6 @@
 export const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
+  'FormDefinition.formatVersion': 'Format version of the definition, such as "1.0". Core rejects a newer major version.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.title': 'Form title for host UI and Figma output. Renderers do not display it.',
   'FormDefinition.description': 'Plain text shown under the title by the host UI and Figma output. Renderers do not display it. Up to 1000 characters.',

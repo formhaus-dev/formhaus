@@ -27,6 +27,7 @@ export {
 
 export {
   checkDefinition,
+  FORMAT_VERSION,
   FormDefinitionError,
   parseDefinition,
   validateDefinition,

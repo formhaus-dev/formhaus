@@ -28,6 +28,13 @@ describe('round trip', () => {
     }
   });
 
+  it('keeps formatVersion', () => {
+    const [, definition] = templates[0];
+    const versioned = { ...definition, formatVersion: '1.0' };
+    expect(toDefinition(fromDefinition(versioned)).formatVersion).toBe('1.0');
+    expect(normalize(toDefinition(fromDefinition(versioned)))).toEqual(normalize(versioned));
+  });
+
   it('assigns deterministic uids per form', () => {
     const [, definition] = templates[0];
     const first = fromDefinition(definition).blocks.map((block) => block.uid);

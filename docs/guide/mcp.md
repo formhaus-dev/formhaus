@@ -66,7 +66,7 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 |------|-------|--------|
 | `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
 | `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
-| `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, adapters |
+| `capabilities` | none | Supported definition format version, field types, field props, validation rules, condition operators, step and route semantics, adapters |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
 | `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `version`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet`, `dashboard_url`, `warnings`; for unclaimed forms `claim_url`, `expires_at`; with a new agent key `agent_key`, `agent_key_notice` and, when `FORMHAUS_API_KEY` is not set, `agent_key_instructions` |
 | `list_forms` | none | Forms the key reaches with status, version, submission count and endpoint |

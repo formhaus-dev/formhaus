@@ -18,11 +18,17 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.0**. `@formhaus/core` 0.11 and every later 1.x release implement it. A definition carries no version marker.
+This document describes **Formhaus form definition 1.0**. `@formhaus/core` 0.11 and every later 1.x release implement it.
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
+
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.0"`. Without it, core reads the definition as 1.0. A minor version newer than 1.0 is also read as 1.0. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+
+```json
+{ "formatVersion": "1.0", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
+```
 
 ## Document structure
 
@@ -31,6 +37,7 @@ A definition is a JSON object. The [JSON Schema](https://formhaus.dev/schema/for
 | Property | Type | Required | Meaning |
 |---|---|---|---|
 | `$schema` | string | no | Editor hint. Core ignores it. |
+| `formatVersion` | string | no | [Format version](#versioning) of the definition. |
 | `id` | string | yes | Form identifier. Renderers use it to detect a new form. |
 | `title` | string | yes | Form title for host UI and Figma output. Renderers do not display it. |
 | `description` | string | no | Plain text shown under the title by host UI and Figma output, up to 1000 characters. Renderers do not display it. |
@@ -277,7 +284,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 
 | Code | Severity | Reported for |
 |---|---|---|
-| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array or `max` that is not a number |
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array, `max` that is not a number or a `formatVersion` that is not a version string |
+| `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
 | `missing-property` | error | A missing `id`, `submit`, step `id`, field `key` or `type`, route `to` or condition `field`. A missing `title` is a warning |
 | `fields-and-steps` | error | Both `fields` and `steps` non-empty |
 | `duplicate-step-id` | error | Two steps with one id |

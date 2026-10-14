@@ -1,4 +1,5 @@
 import type { DefinitionIssue } from './issues';
+import { formatIssues } from './format';
 import { error, pointer } from './issues';
 
 type Entry = Record<string, unknown>;
@@ -91,6 +92,8 @@ const step: Check = (value, path) => [
 
 export function shapeIssues(input: unknown): DefinitionIssue[] {
   if (!isEntry(input)) return [error('invalid-type', '', 'the form definition must be an object')];
+  const format = formatIssues(input);
+  if (format.length) return format;
   return [
     ...list(input.fields, '/fields', 'a field object', field),
     ...list(input.steps, '/steps', 'a step object', step),

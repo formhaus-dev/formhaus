@@ -1,10 +1,13 @@
+import { FORMAT_VERSION } from '@formhaus/core';
 import { ACTION_VARIANTS, CONDITION_OPERATORS, FIELD_TYPES, OPTION_FIELD_TYPES, VALIDATION_RULES } from './vocabulary';
 
 export const capabilities = {
   definition: {
     required: ['id', 'title', 'submit'],
-    optional: ['description', 'cancel', 'fields', 'steps'],
+    optional: ['formatVersion', 'description', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
+    formatVersion: FORMAT_VERSION,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version.`,
   },
   fieldTypes: FIELD_TYPES,
   customFieldTypes: 'Any other string is allowed; the renderer must register a component for it.',

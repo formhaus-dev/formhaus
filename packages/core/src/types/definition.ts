@@ -3,6 +3,7 @@ import type { FormField, ShowCondition } from './field';
 
 export interface FormDefinition {
   $schema?: string;
+  formatVersion?: string;
   id: string;
   title: string;
   description?: string;

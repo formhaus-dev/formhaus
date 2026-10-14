@@ -14,6 +14,7 @@ Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never b
 ```ts
 interface FormDefinition {
   $schema?: string;      // JSON Schema URL for editor validation
+  formatVersion?: string; // Definition format, such as "1.0". Added in 0.11.2
   id: string;            // Unique form identifier
   title: string;         // Form title for host UI and Figma output
   description?: string;  // Text under the title, up to 1000 characters. Added in 0.10.0
@@ -23,6 +24,8 @@ interface FormDefinition {
   steps?: FormStep[];    // Multi-step form
 }
 ```
+
+`formatVersion` names the [definition format](/spec#versioning). Omit it to use the format of the installed core. `FORMAT_VERSION` exports the format this core reads. `checkDefinition()` reports `unsupported-format-version` for a newer major version, and the `FormEngine` constructor throws on it.
 
 ## FormField
 
@@ -247,6 +250,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `formatVersion` on `FormDefinition` | 0.11.2 |
 | `description` on `FormDefinition` | 0.10.0 |
 | `layout` on fields | 0.10.0 |
 | `skip` on steps | 0.8.0 |

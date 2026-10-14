@@ -20,7 +20,8 @@ export type DefinitionIssueCode =
   | 'unknown-field-type'
   | 'unknown-validator'
   | 'skip-unreachable'
-  | 'route-fallthrough';
+  | 'route-fallthrough'
+  | 'unsupported-format-version';
 
 export interface DefinitionIssue {
   code: DefinitionIssueCode;
