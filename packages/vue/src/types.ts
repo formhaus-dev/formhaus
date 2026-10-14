@@ -7,7 +7,7 @@ import type {
   FormDefinition,
   FormEngineOptions,
   StepValidateFn,
-  SubmitFn,
+  SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
 import type { Component } from 'vue';
@@ -49,8 +49,8 @@ export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 export interface FormRendererProps extends FormEngineOptions {
   onError?: (error: unknown) => void;
-  onSubmit?: SubmitFn;
-  submitHandler?: SubmitFn;
+  onSubmit?: SubmitHandler;
+  submitHandler?: SubmitHandler;
   headingLevel?: HeadingLevel;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;

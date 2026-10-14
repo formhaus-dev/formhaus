@@ -1,4 +1,4 @@
-import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, StepValidateFn, SubmitFn, ValidatorFn } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, StepValidateFn, SubmitHandler, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
 
 export type OptionsProvider = (
@@ -59,7 +59,7 @@ export interface FormRendererProps extends FormEngineOptions {
   onError?: (error: unknown) => void;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
-  onSubmit: SubmitFn;
+  onSubmit: SubmitHandler;
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, allValues: Record<string, unknown>) => void;
   validators?: Record<string, ValidatorFn>;

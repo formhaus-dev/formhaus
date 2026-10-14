@@ -179,7 +179,7 @@ async function onPrimary() {
       />
     </div>
 
-    <div v-if="formErrors.length > 0" class="fh-form__top-errors">
+    <div v-if="formErrors.length > 0" class="fh-form__top-errors" role="alert">
       <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">
         {{ error }}
       </p>
