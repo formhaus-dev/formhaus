@@ -105,7 +105,7 @@ const label = engine.isLastStep ? definition.submit.label : 'Continue';
 - `subscribeStructure()` fires when visible fields, visible steps or the current step change. Rebuilding the DOM only then keeps focus in text inputs while the user types.
 - `subscribe()` fires on every change, including errors. `showErrors()` updates the error text in place.
 - `setValue()` clears the field's error and re-evaluates `show` conditions, removing values of fields that become hidden.
-- `submit(handler)` validates the visible fields, runs `onBeforeSubmit`, awaits the handler, then runs `onAfterSubmit`. It resolves to `false` and fills `engine.errors` when validation fails.
+- `submit(handler)` validates the visible fields, runs `onBeforeSubmit`, awaits the handler, then runs `onAfterSubmit`. It resolves to `false` and fills `engine.errors` when validation fails or the handler returns `{ ok: false, errors }`. `engine.stepErrors` lists the invalid fields by step.
 - `getSubmitValues()` returns the visible values on the active path, the same payload the handler receives.
 - `subscribeField(key, listener)` and the snapshot methods let a renderer update one field at a time.
 
