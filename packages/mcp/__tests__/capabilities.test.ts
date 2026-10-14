@@ -10,6 +10,8 @@ describe('capabilities', () => {
     expect(result.validationRules.rules).toContain('matchField');
     expect(result.conditions.operators).toEqual(['eq', 'neq', 'in', 'notIn', 'notEmpty', 'gt', 'gte', 'lt', 'lte']);
     expect(result.steps.routes.join(' ')).toMatch(/to: null/);
+    expect(result.definition.formatVersion).toBe('1.0');
+    expect(result.definition.optional).toContain('formatVersion');
     expect(result.adapters.map(({ name }) => name)).toContain('@formhaus/react');
   });
 });
