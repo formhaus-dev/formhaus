@@ -3,6 +3,7 @@ import { BOOLEAN_TYPES, BUILT_IN_TYPES } from '../validation/type-checks';
 import { conditionErrors, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
+import { i18nWarnings } from './i18n-warnings';
 import { closest, oneOf, suggest, warning } from './issues';
 
 const LIST_OPERATORS = ['in', 'notIn'];
@@ -110,5 +111,6 @@ export function definitionWarnings(context: CheckContext): DefinitionIssue[] {
     ...context.conditions.flatMap((entry) => conditionWarnings(context, entry)),
     ...context.entries.flatMap((entry) => fieldWarnings(context, entry)),
     ...routeWarnings(context),
+    ...i18nWarnings(context),
   ];
 }

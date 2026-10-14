@@ -39,6 +39,25 @@ function text(value: Entry, key: string, path: string): DefinitionIssue[] {
 
 const condition: Check = (value, path) => typed(value, { field: 'string', eq: 'scalar', neq: 'scalar', in: 'list', notIn: 'list', notEmpty: 'boolean', gt: 'number', gte: 'number', lt: 'number', lte: 'number' }, path);
 
+function strings(value: unknown, path: string, what: string, nested: string[] = []): DefinitionIssue[] {
+  if (value === undefined) return [];
+  if (!isEntry(value)) return [error('invalid-type', path, `must be an object of ${what}`)];
+  return Object.entries(value).flatMap(([key, item]) => (nested.includes(key)
+    ? strings(item, `${path}/${key}`, what)
+    : typeof item === 'string' && item.trim() ? [] : [error('invalid-type', `${path}/${pointer(key)}`, 'must be a non-empty string')]));
+}
+
+function keys(value: Entry, path: string, texts: string[], nested?: string[]): DefinitionIssue[] {
+  const block = value.i18n;
+  const unbound = isEntry(block) ? texts.filter((slot) => block[slot] !== undefined && typeof value[slot] !== 'string') : [];
+  return [
+    ...strings(block, `${path}/i18n`, 'translation keys', nested),
+    ...unbound.map((slot) => error('i18n-unbound-slot', `${path}/i18n/${slot}`, `"${slot}" has a translation key but no source text`, `Add "${slot}" as the fallback text`)),
+  ];
+}
+
+const TITLES = ['title', 'description'];
+
 function conditions(value: Entry, path: string): DefinitionIssue[] {
   return [
     ...list(value.show, `${path}/show`, 'a condition object', condition),
@@ -48,10 +67,10 @@ function conditions(value: Entry, path: string): DefinitionIssue[] {
 
 function action(value: unknown, path: string): DefinitionIssue[] {
   if (!isEntry(value)) return [];
-  return [...typed(value, { label: 'string' }, path), ...list(value.disabled, `${path}/disabled`, 'a condition object', condition)];
+  return [...typed(value, { label: 'string' }, path), ...list(value.disabled, `${path}/disabled`, 'a condition object', condition), ...keys(value, path, ['label'])];
 }
 
-const option: Check = (value, path) => [...text(value, 'value', path), ...typed(value, { label: 'string' }, path)];
+const option: Check = (value, path) => [...text(value, 'value', path), ...typed(value, { label: 'string' }, path), ...keys(value, path, ['label'])];
 
 const RULES: Record<string, Kind> = {
   required: 'requirement', minLength: 'number', maxLength: 'number', min: 'number', max: 'number', pattern: 'string', matchField: 'string', validator: 'string',
@@ -60,7 +79,7 @@ const RULES: Record<string, Kind> = {
 
 function validation(value: unknown, path: string): DefinitionIssue[] {
   if (value === undefined) return [];
-  return isEntry(value) ? typed(value, RULES, path) : [error('invalid-type', path, 'must be an object of validation rules')];
+  return isEntry(value) ? [...typed(value, RULES, path), ...keys(value, path, [])] : [error('invalid-type', path, 'must be an object of validation rules')];
 }
 
 function dependencies(value: unknown, path: string): DefinitionIssue[] {
@@ -76,6 +95,7 @@ const field: Check = (value, path) => [
   ...list(value.options, `${path}/options`, 'an option object', option),
   ...validation(value.validation, `${path}/validation`),
   ...dependencies(value.optionsDependsOn, `${path}/optionsDependsOn`),
+  ...keys(value, path, ['label', 'placeholder', 'helperText']),
 ];
 
 const route: Check = (value, path) => [
@@ -90,6 +110,7 @@ const step: Check = (value, path) => [
   ...conditions(value, path),
   ...list(value.routes, `${path}/routes`, 'a route object', route),
   ...['next', 'back', 'skip'].flatMap((name) => action(value[name], `${path}/${name}`)),
+  ...keys(value, path, TITLES),
 ];
 
 export function shapeIssues(input: unknown): DefinitionIssue[] {
@@ -101,6 +122,10 @@ export function shapeIssues(input: unknown): DefinitionIssue[] {
     ...list(input.steps, '/steps', 'a step object', step),
     ...action(input.submit, '/submit'),
     ...action(input.cancel, '/cancel'),
+    ...typed(input, { lang: 'string' }, ''),
+    ...strings(input.messages, '/messages', 'message templates'),
+    ...strings(input.labels, '/labels', 'label templates'),
+    ...keys(input, '', TITLES, ['messages', 'labels']),
   ];
 }
 
