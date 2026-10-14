@@ -1,7 +1,7 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
 import { getDefaultMessage } from './default-messages';
-import { BOOLEAN_TYPES, clientTypeError } from './type-checks';
+import { BOOLEAN_TYPES, clientTypeError, trimValue } from './type-checks';
 
 export type ValidatorFn = (
   value: unknown,
@@ -37,10 +37,11 @@ function patternError(value: unknown, rules: FieldValidation): string | undefine
 
 export function validateFieldValue(
   field: FormField,
-  value: unknown,
+  input: unknown,
   allValues: Record<string, unknown>,
   validators?: Record<string, ValidatorFn>,
 ): string | null {
+  const value = trimValue(field, input);
   const rules = field.validation ?? {};
   const matchMessage = rules.matchFieldMessage ?? getDefaultMessage('matchField');
   if (isEmpty(value, field)) {
