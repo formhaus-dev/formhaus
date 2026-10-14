@@ -15,11 +15,11 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       '@formhaus/core':
-        specifier: ^0.11.1
-        version: 0.11.1
+        specifier: ^0.11.2
+        version: 0.11.2
       '@formhaus/react':
-        specifier: ^0.11.1
-        version: 0.11.1(@formhaus/core@0.11.1)(react@19.3.0)
+        specifier: ^0.11.2
+        version: 0.11.2(@formhaus/core@0.11.2)(react@19.3.0)
       '@tailwindcss/vite':
         specifier: ^4.3.0
         version: 4.3.3(vite@8.3.2(@types/node@24.19.1)(jiti@2.7.0))
@@ -254,15 +254,15 @@ packages:
   '@fontsource-variable/geist@5.3.0':
     resolution: {integrity: sha512-j0m+vLQuG5XAYoHtGCVu0spvlGreR3EzpECUVzkFmI1mTVnAO38l/NEPDCFgZ177JxzYJCLSmTQibIiYPilGrA==}
 
-  '@formhaus/core@0.11.1':
-    resolution: {integrity: sha512-cFVK2Xba6CaJdYZmXvfiyYlY845BUQ08v3lg/ig5bcRBHyCbgLFwunaLoBhIFiMAGP21unXYNkIeip3u2mI17g==}
+  '@formhaus/core@0.11.2':
+    resolution: {integrity: sha512-MiDJBsVIZAdsrBKgHDTrsB0EWUPeuH0xd25MeExcLigmQPg1fdBh6ShIw+JGT0kQ13NBZjh+4oeffpqFZLLRwA==}
     engines: {node: '>=20'}
 
-  '@formhaus/react@0.11.1':
-    resolution: {integrity: sha512-CvxL+stS+uQGxqvUhqBbHQ5zm6/cclR7AkRcYbcA7DQqM5dAMwLZlC755wC9D6AKRkbDxCOY+66nFSDg56As3Q==}
+  '@formhaus/react@0.11.2':
+    resolution: {integrity: sha512-vOxC+YmWOuMPEZp0CzM+alJ+DYsiUlOMts7+BLGhQyv5trD4PPAJ58+5X1/Q5d2YHoIi5Gd3OQxaHMt99nZhiw==}
     engines: {node: '>=20'}
     peerDependencies:
-      '@formhaus/core': ^0.11.1
+      '@formhaus/core': ^0.11.2
       react: ^18.0.0 || ^19.0.0
 
   '@hono/node-server@2.1.3':
@@ -2148,11 +2148,11 @@ snapshots:
 
   '@fontsource-variable/geist@5.3.0': {}
 
-  '@formhaus/core@0.11.1': {}
+  '@formhaus/core@0.11.2': {}
 
-  '@formhaus/react@0.11.1(@formhaus/core@0.11.1)(react@19.3.0)':
+  '@formhaus/react@0.11.2(@formhaus/core@0.11.2)(react@19.3.0)':
     dependencies:
-      '@formhaus/core': 0.11.1
+      '@formhaus/core': 0.11.2
       react: 19.3.0
 
   '@hono/node-server@2.1.3(hono@4.13.13)':
