@@ -1,28 +1,9 @@
 ---
-layout: home
 title: "Formhaus · The form framework for the AI era"
 titleTemplate: false
 description: "Describe a form, share it with your audience, and collect responses. Build with AI, use the free builder, or add Formhaus to a React, Vue or any other app."
-markdownStyles: false
-footer: false
-pageClass: lp-page
 ---
 
-<script setup>
-import LandingHero from './.vitepress/components/landing/LandingHero.vue';
-import LandingResponses from './.vitepress/components/landing/LandingResponses.vue';
-import LandingApp from './.vitepress/components/landing/LandingApp.vue';
-import LandingDemo from './.vitepress/components/landing/LandingDemo.vue';
-import LandingFigma from './.vitepress/components/landing/LandingFigma.vue';
-import LandingClosing from './.vitepress/components/landing/LandingClosing.vue';
-import './.vitepress/components/landing/landing.css';
-</script>
+# Formhaus
 
-<div class="lp">
-  <LandingHero />
-  <LandingDemo :height="693" />
-  <LandingResponses />
-  <LandingApp />
-  <LandingFigma />
-  <LandingClosing />
-</div>
+Read the [guide](/guide/).

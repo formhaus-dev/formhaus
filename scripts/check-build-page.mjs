@@ -6,8 +6,10 @@ const require = createRequire(new URL('../packages/editor-react/package.json', i
 const { chromium } = require('playwright');
 
 const port = process.env.BUILD_PAGE_PORT ?? String(4300 + Math.floor(Math.random() * 600));
-const base = `http://localhost:${port}`;
-const server = spawn('pnpm', ['--dir', 'docs', 'exec', 'vitepress', 'preview', '--port', port, '--strictPort'], { stdio: 'ignore' });
+const base = process.env.SITE_BASE ?? `http://localhost:${port}`;
+const server = process.env.SITE_BASE
+  ? null
+  : spawn('pnpm', ['--dir', 'docs', 'exec', 'vitepress', 'preview', '--port', port, '--strictPort'], { stdio: 'ignore' });
 
 async function ready() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
@@ -15,7 +17,7 @@ async function ready() {
     if (ok) return;
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
-  throw new Error(`docs preview never answered on ${base}`);
+  throw new Error(`site preview never answered on ${base}`);
 }
 
 async function check() {
@@ -70,5 +72,5 @@ try {
   console.error(error instanceof Error ? error.message : error);
   process.exitCode = 1;
 } finally {
-  server.kill('SIGTERM');
+  server?.kill('SIGTERM');
 }
