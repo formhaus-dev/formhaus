@@ -1,5 +1,6 @@
 import type { FormDefinition, FormField, FormStep } from '../types';
 import { isVisible } from '../visibility';
+import { trimValue } from '../validation/type-checks';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
   const steps = definition.steps ?? [];
@@ -35,10 +36,10 @@ export function reconcileStepIndex(previous: FormStep[], next: FormStep[], index
 
 function stepValues(step: { fields: FormField[] }, values: Record<string, unknown>, previous: Record<string, unknown>) {
   const candidates = { ...previous };
-  for (const field of step.fields) candidates[field.key] = values[field.key];
+  for (const field of step.fields) candidates[field.key] = trimValue(field, values[field.key]);
   const result: Record<string, unknown> = {};
   for (const field of step.fields) {
-    if (isVisible(field, candidates) && values[field.key] !== undefined) result[field.key] = values[field.key];
+    if (isVisible(field, candidates) && values[field.key] !== undefined) result[field.key] = trimValue(field, values[field.key]);
   }
   return result;
 }
