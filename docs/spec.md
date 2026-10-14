@@ -90,11 +90,11 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | `date` | string `YYYY-MM-DD` |
 | `datetime` | string `YYYY-MM-DDTHH:mm`, without a timezone |
 
-Any other string is a **custom type**. A renderer provides its component through its `components` option. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core does not interpret `type`, except that an unchecked `checkbox` or `switch` (`false`) counts as empty for `required`.
+Any other string is a **custom type**. A renderer provides its component through its `components` option. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
 
 ### Options
 
-`options` is a static list. `optionsFrom` names an options provider passed to the renderer. Built-in renderers call the provider with all current values, and again each time a field in `optionsDependsOn` changes. The returned options replace `options`. Core does not read `options`, `optionsFrom` or `optionsDependsOn`, and does not check that a value is one of the options.
+`options` is a static list. `optionsFrom` names an options provider passed to the renderer. Built-in renderers call the provider with all current values, and again each time a field in `optionsDependsOn` changes. The returned options replace `options`. Core checks that a `select`, `radio` or `multiselect` value is one of the static `options`. It skips that check when `optionsFrom` is set, so the app validates dynamic lists itself. Core does not read `optionsDependsOn`.
 
 ## Conditions
 
@@ -219,7 +219,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` only on `submit`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` on `submit` and on `next`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 
@@ -261,6 +261,15 @@ Skip on a step with `skip` (`skip()` returns `false` on a step without it):
 3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 
 On the last step, `skip(submit)` submits the form without that step and runs the submit hooks. Built-in renderers pass their submit handler, so their Skip submits. `skip()` without a handler returns `false` there. Continue or Submit on a skipped step, or a changed value of one of its fields, includes it again. `checkDefinition()` warns about `skip` on a step with `next: false` or in a form with one step.
+
+## Trimming
+
+Core trims leading and trailing whitespace from string values of every built-in type except `password`, `number`, `select`, `radio` and `file`.
+
+- `engine.values` keep the raw text as typed.
+- `getSubmitValues()` and the submit payload hold the trimmed text.
+- Validation runs on the trimmed text, so `required` fails on a whitespace-only value.
+- `show`, `showAny`, route conditions and action `disabled` compare trimmed values.
 
 ## Auto-advance
 
