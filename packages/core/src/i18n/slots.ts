@@ -1,0 +1,77 @@
+import { getAllFields } from '../engine/engine-utils';
+import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
+import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
+import { DEFAULT_LABELS, hasRule, SLOTS, slotAddress, textNodes, type Entry, type TextNode } from './nodes';
+
+export type SlotKind = 'text' | 'rule' | 'message' | 'label';
+
+export interface Slot {
+  kind: SlotKind;
+  address: string[];
+  key?: string;
+  source?: string;
+  fallback: string;
+  params: Record<string, unknown>;
+  template: boolean;
+  apply: (text: string) => void;
+}
+
+const BOUNDS: Record<string, string> = { minLength: 'min', maxLength: 'max', min: 'min', max: 'max' };
+const FORMAT_KEYS: Partial<Record<string, MessageKey>> = { email: 'email', number: 'number', date: 'date', datetime: 'datetime' };
+
+function ruleKey(field: FormField, rule: string): MessageKey {
+  return (field.type === 'multiselect' && rule.endsWith('Length') ? rule.replace('Length', 'Items') : rule) as MessageKey;
+}
+
+function usedMessages(definition: FormDefinition): Set<string> {
+  const keys = new Set([...Object.keys(definition.messages ?? {}), ...Object.keys(definition.i18n?.messages ?? {})]);
+  for (const field of getAllFields(definition)) {
+    const rules = (field.validation ?? {}) as Entry;
+    for (const rule of SLOTS.validation) {
+      if (hasRule(rules, rule) && rules[rule] !== '' && typeof rules[rule === 'required' ? rule : `${rule}Message`] !== 'string') keys.add(ruleKey(field, rule));
+    }
+    const format = FORMAT_KEYS[field.type];
+    if (format) keys.add(format);
+  }
+  return keys;
+}
+
+function nodeSlots(definition: FormDefinition, { kind, node, address, field }: TextNode): Slot[] {
+  const keys = (node.i18n ?? {}) as Record<string, string>;
+  return SLOTS[kind].flatMap((slot): Slot[] => {
+    if (kind !== 'validation') {
+      const source = node[slot];
+      if (typeof source !== 'string') return [];
+      return [{ kind: 'text', address: slotAddress(kind, address, slot), key: keys[slot], source, fallback: source, params: {}, template: true, apply: (text) => { node[slot] = text; } }];
+    }
+    if (!hasRule(node, slot) || !field) return [];
+    const literalName = slot === 'required' ? slot : `${slot}Message`;
+    const literal = typeof node[literalName] === 'string' ? node[literalName] as string : undefined;
+    const params = BOUNDS[slot] ? { [BOUNDS[slot]]: node[slot] } : {};
+    const message = ruleKey(field, slot);
+    const fallback = literal ?? formatText(definition.messages?.[message] ?? DEFAULT_MESSAGES[message], params);
+    return [{ kind: 'rule', address: [...address, slot], key: keys[slot], source: literal, fallback, params, template: literal !== undefined || !!keys[slot], apply: (text) => { node[literalName] = text; } }];
+  });
+}
+
+function catalogSlots(definition: FormDefinition, name: 'messages' | 'labels', used: Set<string>): Slot[] {
+  const defaults: Record<string, string> = name === 'messages' ? DEFAULT_MESSAGES : DEFAULT_LABELS;
+  const keys = (definition.i18n?.[name] ?? {}) as Record<string, string>;
+  return Object.keys(defaults).map((item) => {
+    const source = (definition[name] as Record<string, string> | undefined)?.[item] ?? defaults[item];
+    return {
+      kind: name === 'messages' ? 'message' : 'label', address: [name, item], key: keys[item], source, fallback: source, params: {}, template: used.has(item),
+      apply: (text: string) => { ((definition[name] ??= {}) as Record<string, string>)[item] = text; },
+    };
+  });
+}
+
+export function definitionSlots(definition: FormDefinition): Slot[] {
+  const steps = !!definition.steps?.length;
+  const labels = new Set<LabelKey>(steps ? ['continue', 'back', 'stepOf', 'errorSummary'] : ['errorSummary']);
+  return [
+    ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
+    ...catalogSlots(definition, 'messages', usedMessages(definition)),
+    ...catalogSlots(definition, 'labels', labels),
+  ];
+}
