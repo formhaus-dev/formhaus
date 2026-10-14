@@ -32,6 +32,12 @@ describe('validate_definition', () => {
     ]);
   });
 
+  it('passes formatVersion through to core', () => {
+    expect(summary({ ...linear, formatVersion: '1.0' })).toEqual([]);
+    expect(summary({ ...linear, formatVersion: '2.0' })).toEqual(['error unsupported-format-version /formatVersion']);
+    expect(summary({ ...linear, formatVersion: 'v1' })).toEqual(['error invalid-type /formatVersion']);
+  });
+
   it('hints where a misplaced rule belongs', () => {
     const fields = [{ key: 'a', type: 'text', label: 'A', required: true }];
     const issue = validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Go' }, fields } }).issues[0];
