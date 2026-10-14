@@ -50,7 +50,8 @@ button:focus-visible, a:focus-visible { outline: 2px solid var(--vp-c-brand-1); 
 .faq-answer.is-open { grid-template-rows: 1fr; visibility: visible; }
 .faq-answer-inner { min-height: 0; overflow: hidden; }
 p { margin: 0; padding-bottom: 24px; color: var(--vp-c-text-2); }
-a { min-height: 44px; cursor: pointer; }
+a { display: inline; min-height: 0; font-weight: 600; color: var(--vp-c-brand-1); text-decoration: none; cursor: pointer; }
+a:hover { color: var(--vp-c-brand-2); }
 @media (prefers-reduced-motion: reduce) {
   .faq-answer, .lucide { transition: none; }
 }
