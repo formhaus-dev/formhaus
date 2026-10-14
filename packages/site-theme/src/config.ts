@@ -5,6 +5,7 @@ import type { Plugin } from 'vite'
 import type { DefaultTheme } from 'vitepress'
 import { fetchStarCount, formatStarCount } from './stars'
 
+export { analyticsHead } from './analytics'
 export { head, transformHead } from './seo/head'
 export { coreBudgetKB, coreVersion, mcpVersion, pageUrl, repoUrl, siteName, siteUrl } from './seo/site'
 
