@@ -10,6 +10,8 @@ import { ownerOf } from './routes.js'
 import './brand.css'
 import './docs-menu.css'
 
+export { track } from './analytics'
+
 function stayInOwnBuild({ router }: EnhanceAppContext) {
   if (typeof window === 'undefined') return
   let initial = true
