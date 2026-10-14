@@ -1,0 +1,12 @@
+{
+  "name": "@formhaus/site-theme",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts",
+    "./routes": "./src/routes.js",
+    "./sitemap": "./src/sitemap.js"
+  }
+}
