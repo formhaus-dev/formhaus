@@ -1,10 +1,11 @@
 import type { FormDefinition } from '../types';
-import { textNodes } from './nodes';
+import { textNodes } from './walk';
 import { addressKey, isEntry, leaves, lookup, placeholders } from './overlay';
 import { definitionSlots, type Slot } from './slots';
 import { describeSlot } from './template';
 
 export interface TranslationMeta {
+  prefix?: string | false;
   slots?: Record<string, { hash?: string }>;
 }
 
@@ -21,7 +22,7 @@ const dotted = (path: string[]) => path.join('.');
 
 function mismatch(slot: Slot, text: string): boolean {
   const used = placeholders(text);
-  if (slot.kind === 'rule') return used.some((name) => !(name in slot.params));
+  if (slot.kind === 'rule') return used.some((name) => !Object.prototype.hasOwnProperty.call(slot.params, name));
   return used.join() !== placeholders(slot.source ?? slot.fallback).join();
 }
 
@@ -42,7 +43,7 @@ export function translationIssues(definition: FormDefinition, overlay: unknown, 
   if (meta?.slots) {
     const baseline = meta.slots;
     const own = (address: string) => Object.prototype.hasOwnProperty.call(baseline, address);
-    result.stale = translated.filter((slot) => slot.template).map((slot) => describeSlot(slot, definition.id))
+    result.stale = translated.filter((slot) => slot.template).map((slot) => describeSlot(slot, meta.prefix ?? definition.id))
       .filter(({ address, hash }) => own(address) && baseline[address]?.hash !== undefined && baseline[address].hash !== hash)
       .map(({ address }) => address);
   }

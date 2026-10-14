@@ -1,7 +1,8 @@
 import { getAllFields } from '../engine/engine-utils';
 import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
 import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
-import { DEFAULT_LABELS, hasRule, SLOTS, slotAddress, textNodes, type Entry, type TextNode } from './nodes';
+import { DEFAULT_LABELS, hasRule, SLOTS, type Entry } from './nodes';
+import { slotAddress, textNodes, type TextNode } from './walk';
 
 export type SlotKind = 'text' | 'rule' | 'message' | 'label';
 

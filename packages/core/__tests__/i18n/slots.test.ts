@@ -65,4 +65,12 @@ describe('translationIssues', () => {
     expect(translationIssues(changed, ru).unlabeled).toEqual([]);
     expect(translationIssues(signup, 'nope').invalid).toEqual(['']);
   });
+
+  it('compares hashes with the prefix of the baseline and checks own placeholder names', () => {
+    const baseline = Object.fromEntries(textSlots(signup, { prefix: 'app.forms' }).map(({ address, hash }) => [address, { hash }]));
+    expect(translationIssues(signup, ru, { prefix: 'app.forms', slots: baseline }).stale).toEqual([]);
+    const definition = { id: 'f', title: 'F', submit: { label: 'S' }, fields: [{ key: 'age', type: 'number', label: 'Age', validation: { min: 18 } }] };
+    expect(translationIssues(definition, { fields: { age: { validation: { min: 'От {constructor}' } } } }).placeholderMismatch).toEqual(['fields.age.validation.min']);
+    expect(textSlots({ ...definition, fields: [{ ...definition.fields[0], validation: { min: 18, minMessage: 'Too young' } }] }).find(({ address }) => address.endsWith('min'))?.params).toEqual(['min']);
+  });
 });

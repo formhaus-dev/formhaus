@@ -80,4 +80,25 @@ describe('localize with a translate function', () => {
     localize(signup, { translate: bare.t, prefix: '' });
     expect(bare.asked).toContain('steps.kind.title');
   });
+
+  it('fills {name} placeholders left in a result, such as an overlay loaded into i18next', () => {
+    const raw: TranslateFn = (key, params, fallback) => ({ 'signup.labels.stepOf': 'Шаг {current} из {total}', 'signup.messages.minLength': 'Минимум {min}', 'errors.password.tooShort': 'Не менее {min}' }[key] ?? fallback);
+    const { definition, messages, labels } = localize(signup, { translate: raw });
+    expect(labelFor('stepOf', { current: 1, total: 2 }, labels)).toBe('Шаг 1 из 2');
+    expect(new FormEngine(definition, { kind: 'home', address: 'abc' }, { messages }).validate().address).toBe('Минимум 5');
+    expect(definition.steps![0].fields[1].validation?.minLengthMessage).toBe('Не менее 8');
+  });
+
+  it('keeps the source text when the translate function throws', () => {
+    const failing: TranslateFn = (key) => {
+      if (key === 'signup.title') throw new Error('Invalid linked format');
+      return undefined;
+    };
+    const { definition, messages } = localize(signup, { translate: (key, params, fallback) => (key === 'signup.email.label' ? 'Почта' : failing(key, params, fallback)) });
+    expect(definition.title).toBe('Create your account');
+    expect(definition.steps![0].fields[0].label).toBe('Почта');
+    const throwing = localize(signup, { translate: () => { throw new Error('x'); } });
+    expect(typeof throwing.messages === 'function' && throwing.messages('required', {}, signup.steps![0].fields[0])).toBe(undefined);
+    expect(messages).toBeTypeOf('function');
+  });
 });

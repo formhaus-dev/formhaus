@@ -43,8 +43,13 @@ function fromOverlay(definition: FormDefinition, overlay: Overlay): Localized {
 function fromTranslate(definition: FormDefinition, { translate, prefix = definition.id }: TranslateSource): Localized {
   const ask = (explicit: string | undefined, address: string[], params: Record<string, unknown>, fallback: string) => {
     const key = translationKey(prefix, explicit, address);
-    const text = key === undefined ? undefined : translate(key, params, fallback);
-    return typeof text === 'string' && text.trim() && text !== key ? text : undefined;
+    let text: unknown;
+    try {
+      text = key === undefined ? undefined : translate(key, params, fallback);
+    } catch {
+      return undefined;
+    }
+    return typeof text === 'string' && text.trim() && text !== key ? formatText(text, params) : undefined;
   };
   const source = { messages: { ...definition.messages }, labels: { ...definition.labels } };
   const keys = definition.i18n ?? {};

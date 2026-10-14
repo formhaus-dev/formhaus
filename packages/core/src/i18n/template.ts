@@ -26,7 +26,8 @@ export const templateSlots = (definition: FormDefinition): Slot[] => definitionS
 export function describeSlot(slot: Slot, prefix: string | false): TextSlot {
   const key = translationKey(prefix, slot.key, slot.address);
   const text = slot.source ?? slot.fallback;
-  return { address: slot.address.join('.'), ...(key !== undefined && { key }), text, params: placeholders(text), hash: textHash(key, text) };
+  const params = slot.kind === 'rule' ? Object.keys(slot.params) : placeholders(text);
+  return { address: slot.address.join('.'), ...(key !== undefined && { key }), text, params, hash: textHash(key, text) };
 }
 
 export function textSlots(definition: FormDefinition, { prefix = definition.id }: TextSlotOptions = {}): TextSlot[] {
