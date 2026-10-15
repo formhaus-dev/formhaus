@@ -9,7 +9,6 @@ const links = [
   { text: 'Cloud', href: '/cloud', match: (path: string) => path === 'cloud.md' },
   { text: 'Templates', href: '/templates/', match: (path: string) => path.startsWith('templates/') },
   { text: 'Builder', href: '/build', match: (path: string) => path === 'build.md' },
-  { text: 'Pricing', href: '/pricing', match: (path: string) => path === 'pricing.md' },
   { text: 'Docs', href: '/guide/', match: () => false },
 ];
 const items = computed(() => links.map((link) => ({ ...link, active: link.match(page.value.relativePath) })));
