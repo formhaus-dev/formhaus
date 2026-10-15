@@ -91,6 +91,10 @@ Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 - CSS class prefix: `fh-` (consistent across frameworks)
 - `FieldType` is extensible — custom types via `components` prop
 
+## Duplicate code check
+
+`pnpm check:duplicates` runs jscpd over `packages/*/src` (tests and declaration files excluded) and fails when copy-pasted code exceeds `threshold` in `.jscpd.json`, a percentage of total lines. Extract shared code instead of raising it. After removing duplication, lower `threshold` to just above the new value from the report.
+
 ## Questions?
 
 Open an issue. No question is too small.

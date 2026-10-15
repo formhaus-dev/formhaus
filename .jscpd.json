@@ -1,0 +1,22 @@
+{
+  "path": ["packages"],
+  "pattern": "packages/*/src/**/*.{ts,tsx,vue}",
+  "format": ["typescript", "tsx", "javascript", "jsx", "vue"],
+  "ignore": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/*.test.*",
+    "**/*.spec.*",
+    "**/__tests__/**",
+    "**/test/**",
+    "**/*.d.ts",
+    "**/generated/**",
+    "**/*.generated.*"
+  ],
+  "minTokens": 65,
+  "minLines": 8,
+  "threshold": 0.3,
+  "reporters": ["console"],
+  "gitignore": true,
+  "silent": false
+}
