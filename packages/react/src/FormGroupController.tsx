@@ -1,11 +1,11 @@
 import type { FieldOption, FormGroup, LabelKey } from '@formhaus/core';
-import { fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
-import { memo, useEffect, useRef, useState, type ComponentType } from 'react';
+import { fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor, optionKey } from '@formhaus/core/internal';
+import { memo, useEffect, useRef, useState } from 'react';
 import { DefaultConfirmDialog, DefaultGroup, DefaultGroupItem } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { describedBy } from './fields/fieldProps';
 import { useFieldSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
-import type { ConfirmDialogComponentProps, FormRendererProps, GroupComponentProps, GroupItemComponentProps } from './types';
+import type { FormRendererProps, GroupItemComponentProps } from './types';
 
 interface FormGroupControllerProps extends ControllerProps {
   group: FormGroup;
@@ -70,8 +70,8 @@ export const FormGroupController = memo(function FormGroupController({
   };
 
   const { components } = props;
-  const Group = (components?.group ?? DefaultGroup) as ComponentType<GroupComponentProps>;
-  const ItemComponent = (components?.groupItem ?? DefaultGroupItem) as ComponentType<GroupItemComponentProps>;
+  const Group = components?.group ?? DefaultGroup;
+  const ItemComponent = components?.groupItem ?? DefaultGroupItem;
   const entries = items.map(
     (item, index): GroupItemComponentProps => ({
       id: item.id,
@@ -90,7 +90,7 @@ export const FormGroupController = memo(function FormGroupController({
           key={field.key}
           {...props}
           field={field}
-          options={options[field.key]}
+          options={options[optionKey(group.key, field.key)]}
           disabled={disabled}
           path={`${group.key}.${index}.${field.key}`}
           item={values[index]}
@@ -100,7 +100,7 @@ export const FormGroupController = memo(function FormGroupController({
   );
 
   const asked = items.findIndex((item) => item.id === confirming);
-  const Confirm = (components?.confirmDialog ?? DefaultConfirmDialog) as ComponentType<ConfirmDialogComponentProps>;
+  const Confirm = components?.confirmDialog ?? DefaultConfirmDialog;
   return (
     <>
       <Group

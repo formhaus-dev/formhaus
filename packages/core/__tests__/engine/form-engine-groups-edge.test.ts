@@ -1,5 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { checkDefinition, FormEngine } from '../../src';
+import { validateSubmission } from '../../src/server';
 import type { FormDefinition } from '../../src/types';
 
 const definition: FormDefinition = {
@@ -82,5 +83,15 @@ describe('group edge cases', () => {
     expect(engine.values).not.toHaveProperty('guests');
     engine.setValue('company', true);
     expect(engine.values.guests).toEqual([{ name: 'x' }]);
+  });
+
+  it.each([[['bad', null, 123]], [[{}, new Date(0)]]])('rejects items that are not plain objects like the server: %j', async (items) => {
+    const onSubmit = vi.fn();
+    const engine = new FormEngine(definition, { people: items });
+    expect(engine.getSubmitValues().people).toEqual(items.map((item) => (item?.constructor === Object ? {} : item)));
+    expect(await engine.submit(onSubmit)).toBe(false);
+    expect(onSubmit).not.toHaveBeenCalled();
+    expect(engine.errors).toEqual({ people: 'Invalid value' });
+    expect(validateSubmission(definition, { people: items }).errors).toEqual(engine.errors);
   });
 });

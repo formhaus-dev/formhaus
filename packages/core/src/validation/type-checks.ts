@@ -69,7 +69,7 @@ export function normalizeValue(field: FormField, input: unknown): unknown {
 function normalizeItems(group: FormGroup, input: unknown): unknown {
   if (!Array.isArray(input) || input.length > (group.validation?.maxLength ?? MAX_GROUP_ITEMS)) return input;
   return input.map((item) => {
-    if (!entry(item)) return item;
+    if (!isPlainEntry(item)) return item;
     const result: Record<string, unknown> = {};
     for (const field of group.fields) {
       const value = hasOwn(item, field.key) ? normalizeValue(field, item[field.key]) : undefined;
@@ -120,13 +120,13 @@ function isEmpty(field: FormField, value: unknown): boolean {
   return isBlank(value) && (field.type === 'multiselect' || !Array.isArray(value));
 }
 
-const entry = (item: unknown) => Object.prototype.toString.call(item) === '[object Object]';
+export const isPlainEntry = (item: unknown) => Object.prototype.toString.call(item) === '[object Object]';
 
 function groupError(field: FormField, value: unknown, fail: Fail): string | null {
   const max = field.validation?.maxLength;
   if (!Array.isArray(value)) return fail('value');
   if (max !== undefined && value.length > max) return field.validation?.maxLengthMessage ?? fail('maxItems', { max });
-  return value.length > (max ?? MAX_GROUP_ITEMS) || !value.every(entry) ? fail('value') : null;
+  return value.length > (max ?? MAX_GROUP_ITEMS) || !value.every(isPlainEntry) ? fail('value') : null;
 }
 
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {

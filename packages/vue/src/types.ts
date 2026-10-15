@@ -4,7 +4,6 @@ import type {
   BeforeSubmitFn,
   ConfirmDialogView,
   DefinitionIssue,
-  FieldOption,
   FieldType,
   FormAction,
   FormAnalyticsEvent,
@@ -21,6 +20,7 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
+import type { OptionsProvider } from '@formhaus/core/internal';
 import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
@@ -72,7 +72,7 @@ export interface FormStepProgressProps {
   counterLabel?: string;
 }
 
-export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
+export type { OptionsProvider };
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 

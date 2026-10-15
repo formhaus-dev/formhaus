@@ -11,8 +11,12 @@ for (const pkg of ['core', 'react', 'vue']) {
   const manifest = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
   const requireFrom = createRequire(join(dir, 'package.json'));
   for (const [subpath, target] of Object.entries(manifest.exports)) {
-    if (typeof target !== 'object' || !target.default?.endsWith('.js')) continue;
+    if (typeof target !== 'object') continue;
     const id = subpath === '.' ? manifest.name : `${manifest.name}${subpath.slice(1)}`;
+    if (!target.default?.endsWith('.js')) {
+      failures.push(`${id}: missing a default .js condition`);
+      continue;
+    }
     try {
       buildSync({
         entryPoints: [join(dir, target.default)],

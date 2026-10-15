@@ -1,16 +1,10 @@
-import type { FieldOption, FormEngine, FormField } from '@formhaus/core';
+import type { FieldOption, FormEngine } from '@formhaus/core';
+import { loadOptions, type OptionSource, sameOptions } from '@formhaus/core/internal';
 import { useEffect, useRef, useState } from 'react';
 import type { OptionsProvider } from '../types';
 
-function areOptionsEqual(previous: FieldOption[] | undefined, next: FieldOption[]): boolean {
-  return (
-    previous?.length === next.length &&
-    previous.every((option, index) => option.value === next[index].value && option.label === next[index].label)
-  );
-}
-
 export function useFieldOptions(
-  fields: FormField[],
+  sources: OptionSource[],
   engine: FormEngine,
   providers?: Record<string, OptionsProvider>,
 ): Record<string, FieldOption[]> {
@@ -26,41 +20,15 @@ export function useFieldOptions(
     let active = true;
     const unsubscribers: (() => void)[] = [];
 
-    const commit = (fieldKey: string, options: FieldOption[]) => {
+    const commit = (key: string, options: FieldOption[]) => {
       if (!active) return;
-      setResolved((previous) => {
-        if (areOptionsEqual(previous[fieldKey], options)) return previous;
-        return { ...previous, [fieldKey]: options };
-      });
+      setResolved((previous) => (sameOptions(previous[key], options) ? previous : { ...previous, [key]: options }));
     };
 
-    for (const field of fields) {
-      if (!field.optionsFrom) continue;
-
-      const provider = providers[field.optionsFrom];
+    for (const [key, field] of sources) {
+      const provider = field.optionsFrom && providers[field.optionsFrom];
       if (!provider) continue;
-
-      const resolve = () => {
-        const requestVersion = (requestVersions.current.get(field.key) ?? 0) + 1;
-        requestVersions.current.set(field.key, requestVersion);
-
-        try {
-          const result = provider(engine.values);
-          if (Array.isArray(result)) {
-            commit(field.key, result);
-            return;
-          }
-
-          result
-            .then((options) => {
-              if (requestVersions.current.get(field.key) === requestVersion) {
-                commit(field.key, options);
-              }
-            })
-            .catch(() => {});
-        } catch {}
-      };
-
+      const resolve = () => loadOptions(key, provider, engine.values, requestVersions.current, commit);
       resolve();
       for (const dependency of new Set(field.optionsDependsOn ?? [])) {
         unsubscribers.push(engine.subscribeField(dependency, resolve));
@@ -71,7 +39,7 @@ export function useFieldOptions(
       active = false;
       for (const unsubscribe of unsubscribers) unsubscribe();
     };
-  }, [engine, fields, providers]);
+  }, [engine, sources, providers]);
 
   return resolved;
 }

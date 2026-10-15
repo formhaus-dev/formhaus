@@ -59,4 +59,70 @@ export function idScenarios(harness: RendererHarness, { it, expect, waitFor, scr
     expect(errorOf('имя')).toContain('Too short');
     expect(byKey('first-name').getAttribute('aria-invalid')).not.toBe('true');
   });
+
+  const unique = () => {
+    const ids = [...document.querySelectorAll('[id]')].map((element) => element.id);
+    expect(ids.filter((id, index) => ids.indexOf(id) !== index)).toEqual([]);
+  };
+
+  it('gives item fields their own ids when two keys escape to the same id', async () => {
+    harness.mount({ definition: crew, initialValues: { crew: [{}] }, errorSummary: true, onSubmit: fn() });
+    const work = input(/^Work email/);
+    const home = input(/^Home email/);
+    expect(work.id).not.toBe(home.id);
+    unique();
+    await harness.click(screen.getByRole('button', { name: 'Send' }));
+    const links = await waitFor(() => {
+      const found = [...document.querySelectorAll<HTMLAnchorElement>('.fh-error-summary__link')];
+      expect(found).toHaveLength(2);
+      return found;
+    });
+    expect(links.map((link) => link.getAttribute('href'))).toEqual([`#${work.id}`, `#${home.id}`]);
+    expect(document.getElementById(`${home.id}-error`)?.textContent).toContain('required');
+    await waitFor(() => expect(document.activeElement).toBe(work));
+    await harness.click(links[1]);
+    await waitFor(() => expect(document.activeElement).toBe(home));
+  });
+
+  it('keeps section ids apart from field ids', () => {
+    harness.mount({ definition: sectioned, onSubmit: fn() });
+    expect(screen.getByRole('group', { name: 'Contact' })).toBeDefined();
+    expect(input(/^Home email/).id).toMatch(/-contact-email$/);
+    unique();
+  });
 }
+
+const crew: FormDefinition = {
+  formatVersion: '1.1',
+  id: 'crew',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    {
+      key: 'crew',
+      type: 'group',
+      label: 'Crew',
+      fields: [
+        { key: 'contact.email', type: 'text', label: 'Work email', validation: { required: true } },
+        { key: 'contact-email', type: 'text', label: 'Home email', validation: { required: true } },
+      ],
+    },
+  ],
+};
+
+const sectioned: FormDefinition = {
+  formatVersion: '1.1',
+  id: 'sectioned',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    {
+      key: 'contact.email',
+      type: 'section',
+      title: 'Contact',
+      description: 'How to reach you',
+      fields: [{ key: 'phone', type: 'text', label: 'Phone' }],
+    },
+    { key: 'contact-email', type: 'text', label: 'Home email' },
+  ],
+};
