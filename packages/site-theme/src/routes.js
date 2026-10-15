@@ -1,5 +1,5 @@
 export const docsSections = ['guide', 'api', 'spec', 'recipes', 'compare', 'migrate', 'changelog', 'templates', 'playground', 'schema', 'figma', 'assets']
-export const docsSubtrees = ['cloud', 'og']
+export const docsSubtrees = ['og']
 export const docsFiles = ['/llms.txt', '/llms-full.txt', '/hashmap.json', '/sitemap-docs.xml']
 export const marketingFiles = ['/og/home.jpg', '/og/build.jpg', '/og/legal.jpg']
 
