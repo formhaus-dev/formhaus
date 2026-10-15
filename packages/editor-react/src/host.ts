@@ -88,6 +88,10 @@ export interface BackupSlot {
   base: () => BackupBase;
 }
 
+export interface EditorFeatures {
+  country?: boolean;
+}
+
 export interface EditorHost {
   readonly isNew: boolean;
   readonly readOnly: boolean;
@@ -105,5 +109,6 @@ export interface EditorHost {
   describeError: (error: unknown) => string;
   ago: (iso: string) => string;
   savedHint?: string;
+  features?: EditorFeatures;
   Preview: ComponentType<{ definition: FormDefinition }>;
 }
