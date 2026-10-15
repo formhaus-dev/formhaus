@@ -1,5 +1,25 @@
 # @formhaus/vue
 
+## 0.14.0
+
+### Minor Changes
+
+- `FormRenderer` fills `hidden` fields from their `source` after mount. Initial values win, `defaultValue` is the fallback, and `onFieldChange` is not called.
+- `FormhausForm` and `@formhaus/core/cloud` load and submit forms through api.formhaus.cc by default. Add it to your CSP `connect-src` if you use an allowlist; api.formhaus.dev keeps working.
+- Renders sections as a `fieldset` with a `legend` and repeatable groups with Add and Remove buttons and numbered item titles.
+- Adding an item focuses its first field. Removing one focuses the next item title, or Add when no item follows. A polite live region announces both.
+- The error summary links to item fields, and a group count error focuses its Add button.
+- New `section`, `group`, `groupItem` and `confirmDialog` entries in `components` replace the markup of sections, groups, item cards and the remove dialog. `DefaultSection`, `DefaultGroup`, `DefaultGroupItem` and `DefaultConfirmDialog` are exported.
+- Removing a group item with answers asks first in a modal dialog. Turn it off with `confirmRemove: false`.
+- New `TimeField` renders `time` fields as `<input type="time">`.
+- New `HiddenField` renders `hidden` fields as `<input type="hidden">`, without a label or a focusable control.
+- The error summary and step error counts leave out `hidden` fields. Their errors show with the form-level errors.
+
+### Patch Changes
+
+- CommonJS code can `require()` the packages on Node 20.19+ and 22.12+. Before, `require()` failed with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+- Requires `@formhaus/core` 0.14.0.
+
 ## 0.13.2
 
 ### Patch Changes
