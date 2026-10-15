@@ -67,3 +67,22 @@ it.each([
   engine.validate();
   expect(engine.errors).toEqual(errors);
 });
+
+it('keeps an answer typed into a cleared field when a cancelled skip is rejected late', async () => {
+  const engine = new FormEngine({
+    id: 'late-skip', title: 'Late skip', submit: { label: 'Send' },
+    steps: [{ id: 'note', title: 'Note', skip: { label: 'Skip' }, fields: [
+      { key: 'note', type: 'text', label: 'Note' },
+      { key: 'more', type: 'text', label: 'More', show: [{ field: 'note', eq: 'more' }] },
+    ] }],
+  }, { note: 'hello' });
+  const response = deferred<{ ok: false }>();
+  const pending = engine.skip(() => response.promise);
+  engine.cancelPendingActions();
+  engine.setValue('note', 'more');
+  engine.setErrors({ more: 'Required' });
+  response.resolve({ ok: false });
+  expect(await pending).toBe(false);
+  expect(engine.values.note).toBe('more');
+  expect(engine.errors).toEqual({ more: 'Required' });
+});
