@@ -1,4 +1,4 @@
-import { logicOf, type BuilderBlock, type BuilderForm, type BuilderQuestion } from '@formhaus/builder';
+import { logicOf, scopeOf, type BuilderBlock, type BuilderForm, type BuilderQuestion } from '@formhaus/builder';
 import { Eye } from 'lucide-react';
 import { useCallback } from 'react';
 import { useEditor } from '../store/context';
@@ -14,10 +14,11 @@ const described = new WeakMap<object, Described>();
 
 function logicText(form: BuilderForm, block: BuilderBlock): string | null {
   const conditions = [...(block.extra.show ?? []), ...(block.extra.showAny ?? [])];
-  const sources = conditions.map((condition) => sourceOf(form, condition.field));
+  const scope = scopeOf(form, block);
+  const sources = conditions.map((condition) => sourceOf(form, condition.field, scope));
   const known = described.get(block.extra);
   if (known?.sources.length === sources.length && known.sources.every((source, index) => source === sources[index])) return known.text;
-  const text = describeLogic(form, logicOf(form, block));
+  const text = describeLogic(form, logicOf(form, block), scope);
   described.set(block.extra, { sources, text });
   return text;
 }

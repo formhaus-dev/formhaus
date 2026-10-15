@@ -78,7 +78,7 @@ export function useEditorActions() {
         const form = store.getState().form;
         const item = findField(form, uid);
         const label = item?.label.trim();
-        const uses = item ? referencesTo(form, item.key).filter((user) => user !== uid).length : 0;
+        const uses = item ? referencesTo(form, uid).filter((user) => user !== uid).length : 0;
         const run = () => {
           const next = neighbour(store.getState().form, uid);
           if (!store.update((draft) => removeField(draft, uid))) return;
