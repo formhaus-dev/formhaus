@@ -1,4 +1,5 @@
 import type { FormDefinition } from '../types';
+import { valueFields } from '../visibility/nodes';
 
 export interface DraftStorage {
   getItem(key: string): string | null;
@@ -12,15 +13,14 @@ export interface DraftStore {
   clear(id: string): void;
 }
 
-const SENSITIVE = new Set(['password', 'file', 'hidden']);
+const SENSITIVE = new Set(['password', 'file']);
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 export function draftValues(definition: FormDefinition, values: Record<string, unknown>): Record<string, unknown> {
-  const fields = [...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)];
-  const blocked = new Set(fields.filter((field) => SENSITIVE.has(field.type)).map((field) => field.key));
+  const fields = valueFields([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]);
   const kept: Record<string, unknown> = {};
   for (const field of fields) {
-    if (!blocked.has(field.key) && values[field.key] !== undefined) kept[field.key] = values[field.key];
+    if (!SENSITIVE.has(field.type) && values[field.key] !== undefined) kept[field.key] = values[field.key];
   }
   return kept;
 }
