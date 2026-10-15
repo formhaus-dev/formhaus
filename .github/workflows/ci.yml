@@ -11,11 +11,16 @@ permissions:
 
 jobs:
   check:
+    name: check (${{ matrix.node }})
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [20, 22]
+        include:
+          - node: 20
+            node-version: '20.19'
+          - node: 22
+            node-version: '22.12'
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -48,6 +53,8 @@ jobs:
       - run: pnpm templates:check
 
       - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve
+
+      - run: pnpm check:require
 
       - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium
 
