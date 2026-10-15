@@ -6,6 +6,8 @@ import {
   CalendarClock,
   ChevronsUpDown,
   CircleDot,
+  Clock,
+  EyeOff,
   Hash,
   ListChecks,
   Mail,
@@ -27,7 +29,9 @@ interface TypeInfo {
 const types: TypeInfo[] = [
   ...QUESTION_TYPES,
   { type: 'datetime', label: 'Date and time', hint: 'Date with a time of day' },
+  { type: 'time', label: 'Time', hint: 'A time of day' },
   { type: 'switch', label: 'Switch', hint: 'An on or off toggle' },
+  { type: 'hidden', label: 'Hidden value', hint: 'Sent with the answers, never shown' },
 ];
 
 const icons: Record<string, LucideIcon> = {
@@ -38,19 +42,21 @@ const icons: Record<string, LucideIcon> = {
   phone: Phone,
   date: Calendar,
   datetime: CalendarClock,
+  time: Clock,
   radio: CircleDot,
   multiselect: ListChecks,
   select: ChevronsUpDown,
   checkbox: SquareCheck,
   switch: ToggleRight,
+  hidden: EyeOff,
 };
 
 export const TYPE_GROUPS: [string, string[]][] = [
   ['Text', ['text', 'textarea']],
   ['Choice', ['radio', 'multiselect', 'select']],
   ['Contact', ['email', 'phone']],
-  ['Date & number', ['number', 'date', 'datetime']],
-  ['Other', ['checkbox', 'switch']],
+  ['Date & number', ['number', 'date', 'datetime', 'time']],
+  ['Other', ['checkbox', 'switch', 'hidden']],
 ];
 
 export function typeIcon(type: FieldType): ReactNode {

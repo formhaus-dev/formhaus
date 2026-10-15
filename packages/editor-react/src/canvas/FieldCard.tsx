@@ -13,7 +13,7 @@ import { useField, useIsExpanded, useIsSelected, useIssues, useReadOnly } from '
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
 import suggestionStyles from './TypeSuggestion.module.css';
-import { HelpText, PlaceholderInput } from './FieldDetails';
+import { DefaultValueInput, HelpText, PlaceholderInput } from './FieldDetails';
 import { takesPlaceholder } from './placeholder';
 import { FieldLabel } from './FieldLabel';
 import { FieldMenu } from './FieldMenu';
@@ -61,6 +61,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
   const body = () => {
     if (selected && choice && !readOnly) return <OptionsEditor field={field} actions={actions} />;
     if (selected && !readOnly && takesPlaceholder(field)) return <PlaceholderInput field={field} actions={actions} readOnly={readOnly} />;
+    if (selected && !readOnly && field.type === 'hidden') return <DefaultValueInput field={field} actions={actions} readOnly={readOnly} />;
     return <FieldPreview field={field} />;
   };
 

@@ -84,7 +84,7 @@ The second argument of `validateSubmission()` is the values object, not the whol
 
 ## What it checks
 
-Both run the `validation` rules on the active path and skip hidden fields, hidden steps and inactive branches. Both also run the same type checks for built-in types: `email`, `date` (`YYYY-MM-DD`) and `datetime` (ISO 8601) formats, booleans for `checkbox` and `switch`, static `options` for `select`, `radio` and `multiselect`, and the 10,000 character cap on text. Both skip the `options` check on fields with `optionsFrom`, so validate dynamic lists in your app. The browser also skips `file` fields. The returned `values` hold only fields on the active path; unknown keys are dropped. `validateSubmission()` also handles what a browser cannot be trusted to send:
+Both run the `validation` rules on the active path and skip fields and steps hidden by conditions and inactive branches. Both also run the same type checks for built-in types: `email`, `date` (`YYYY-MM-DD`), `datetime` (ISO 8601) and `time` (`HH:mm`) formats, booleans for `checkbox` and `switch`, static `options` for `select`, `radio` and `multiselect`, and the 10,000 character cap on text, including `hidden` fields. Both skip the `options` check on fields with `optionsFrom`, so validate dynamic lists in your app. The browser also skips `file` fields. The returned `values` hold only fields on the active path; unknown keys are dropped. `validateSubmission()` also handles what a browser cannot be trusted to send:
 
 | Behavior | `validateSubmission()` | `FormEngine.validate()` |
 |---|---|---|

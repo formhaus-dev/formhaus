@@ -15,7 +15,9 @@ export type DefaultFieldType =
   | 'file'
   | 'date'
   | 'datetime'
-  | 'textarea';
+  | 'time'
+  | 'textarea'
+  | 'hidden';
 
 export type FieldType = DefaultFieldType | (string & {});
 

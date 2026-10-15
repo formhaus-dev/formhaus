@@ -1,6 +1,6 @@
 ---
 title: "Field types"
-description: "Field types in a Formhaus definition: text, select, autocomplete, multiselect, checkbox, radio, switch, date, file, plus custom field components."
+description: "Field types in a Formhaus definition: text, select, autocomplete, multiselect, checkbox, radio, switch, date, time, file, hidden, plus custom field components."
 ---
 
 # Field Types
@@ -268,6 +268,20 @@ function toISO(local: string): string {
 Or plug in a custom component (MUI `DateTimePicker`, react-aria `DateField`) that emits ISO directly.
 :::
 
+## Time
+
+Time picker. Uses native `<input type="time">`. Emits `HH:mm` in 24-hour time, or `HH:mm:ss` when the browser shows seconds.
+
+```json
+{
+  "key": "startsAt",
+  "type": "time",
+  "label": "Start time"
+}
+```
+
+The browser and `validateSubmission()` accept `00:00` to `23:59:59` and reject anything else, such as `24:00`, `9:30` or `9:30 PM`, with the `time` message.
+
 ## File
 
 File upload. Uses native file input. Set `accept` to restrict file types.
@@ -280,6 +294,55 @@ File upload. Uses native file input. Set `accept` to restrict file types.
   "accept": "image/*,.pdf"
 }
 ```
+
+## Hidden
+
+A value sent with the answers that the user never sees. It renders `<input type="hidden">`: no label, no helper text, nothing to focus. The value comes from `defaultValue` or the initial values.
+
+```json
+{
+  "key": "source",
+  "type": "hidden",
+  "label": "Signup source",
+  "defaultValue": "website"
+}
+```
+
+`label` is still required. Editors and error messages use it.
+
+To fill a hidden field from the page URL, read the query string and pass it as initial values:
+
+::: code-group
+```tsx [React]
+const params = new URLSearchParams(window.location.search);
+
+<FormRenderer
+  definition={definition}
+  initialValues={{ source: params.get('utm_source') ?? undefined }}
+  onSubmit={onSubmit}
+/>
+```
+
+```vue [Vue]
+<script setup lang="ts">
+const params = new URLSearchParams(window.location.search);
+const initialValues = { source: params.get('utm_source') ?? undefined };
+</script>
+
+<template>
+  <FormRenderer :definition="definition" :initial-values="initialValues" @submit="onSubmit" />
+</template>
+```
+:::
+
+A hidden field follows the same rules as any other field:
+
+- `show` and `showAny` apply. While its conditions fail, the value is cleared and left out of the submit values. When the conditions match again, the field gets its initial value or `defaultValue` back. Other field types start empty instead.
+- `validation` rules run, and `validateSubmission()` checks the value as text. A number or a list fails with the `string` message.
+- An error on a hidden field shows as a form-level error, in `engine.topLevelErrors`, because the user has nothing to fix. It never appears in the error summary, in step error marks or as a focus target. `engine.errors` and `engine.validate()` still list it under its key.
+- Built-in messages name the field, such as `Signup source: This field is required`. The `hidden` message template, `{label}: {message}`, controls the format and is translated like other [messages](/guide/translations). The key stands in for an empty label. Messages you write, such as a string `required` or `patternMessage`, stay as written.
+
+Server errors returned for a hidden field's key also show as form-level errors, as sent. `validateSubmission()` already names the field in them.
 
 ## Custom field types
 

@@ -18,7 +18,8 @@ Opens at http://localhost:5173.
 - [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to an MUI renderer.
 - [src/fields/AutocompleteField.tsx](src/fields/AutocompleteField.tsx) filters by `label`, unlike the default `<datalist>`, which filters by `value`.
 - [src/fields/SelectField.tsx](src/fields/SelectField.tsx) handles both `select` and `multiselect`.
-- [src/fields/TextField.tsx](src/fields/TextField.tsx) handles text, email, phone, number, password, date, and datetime fields with MUI's `<TextField>`.
+- [src/fields/TextField.tsx](src/fields/TextField.tsx) handles text, email, phone, number, password, date, datetime, and time fields with MUI's `<TextField>`.
+- [src/fields/HiddenField.tsx](src/fields/HiddenField.tsx) renders `hidden` fields as `<input type="hidden">`.
 - [src/definition.json](src/definition.json) is the contact form used by the example.
 
 ## Use as a starter

@@ -75,6 +75,7 @@ const ROLE_BY_TYPE: Record<string, FieldRole> = {
   textarea: 'field.textarea',
   date: 'field.date',
   datetime: 'field.date',
+  time: 'field.date',
   file: 'field.file',
   switch: 'field.switch',
   radio: 'option.radio',

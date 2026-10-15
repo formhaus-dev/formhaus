@@ -119,8 +119,10 @@ describe('editor canvas in a browser', () => {
       'Number',
       'Date',
       'Date and time',
+      'Time',
       'Checkbox',
       'Switch',
+      'Hidden value',
     ]) {
       expect(within(screen.getByRole('listbox')).getByText(name, { exact: true })).toBeVisible();
     }
@@ -131,6 +133,20 @@ describe('editor canvas in a browser', () => {
         type: 'email',
         validation: { required: true },
       });
+    });
+  });
+
+  it('turns a field into a hidden value with a default', async () => {
+    await page.viewport(1440, 1000);
+    const { store } = renderEditor();
+    await userEvent.click(fieldLabel(0));
+    await userEvent.keyboard('Source');
+    await userEvent.click(screen.getByRole('button', { name: /Field type: Short text/ }));
+    await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Hidden value/ }));
+    await userEvent.click(screen.getByRole('textbox', { name: 'Default value' }));
+    await userEvent.keyboard('newsletter');
+    await waitFor(() => {
+      expect(toDefinition(store.getState().form).fields?.[0]).toMatchObject({ key: 'source', type: 'hidden', defaultValue: 'newsletter' });
     });
   });
 

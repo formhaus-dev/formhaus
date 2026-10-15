@@ -1,6 +1,6 @@
 import type { FormDefinition, FormField } from '../types';
 import type { MessageSource, ValidatorFn } from '../validation';
-import { messageResolver, type ResolveMessage } from '../validation/default-messages';
+import { messageResolver, namedResolver, type ResolveMessage } from '../validation/default-messages';
 import { parseDefinition } from '../definition-validation';
 import { getAllFields } from '../engine/engine-utils';
 import type { EngineInternals } from '../engine/runtime-internals';
@@ -98,7 +98,7 @@ export function validateSubmission(
   const fields = getAllFields(definition);
   const resolved = activeValues(definition, fields, values);
   const messages = messageResolver(options.messages, definition.messages);
-  const invalid = typeErrors(resolved, messages);
+  const invalid = typeErrors(resolved, namedResolver(messages));
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
   applySkips(engine, options.skippedSteps);

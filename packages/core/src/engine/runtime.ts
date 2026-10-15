@@ -2,7 +2,7 @@ import type { ValidatorFn } from '../validation';
 import { messageResolver, type ResolveMessage } from '../validation/default-messages';
 import type { FormDefinition, FormField, FormStep } from '../types';
 import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-options';
-import { createValues } from './engine-utils';
+import { createValues, shownError } from './engine-utils';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineInternals, EngineState, RuntimeNotifyOptions } from './runtime-internals';
 import { createSubscriptions, type NotifyOptions } from './subscriptions';
@@ -48,12 +48,15 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.visibility = createVisibility(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
     this.state = { values, errors: {}, topLevelErrors: [], serverErrors: {}, serverFormErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };
-    this.visibility.reconcileHidden(values, this.state.errors);
+    this.visibility.reconcileHidden(values, this.state.errors, true);
   }
 
   get values(): Readonly<Partial<TValues>> { return this.state.values as Partial<TValues>; }
   get errors(): Readonly<Record<string, string>> { return this.state.errors; }
-  get topLevelErrors(): readonly string[] { return this.state.topLevelErrors; }
+  get topLevelErrors(): readonly string[] {
+    const { errors, topLevelErrors } = this.state;
+    return [...topLevelErrors, ...this.visibility.allFields.flatMap((field) => (field.type === 'hidden' && errors[field.key]) || [])];
+  }
   get currentStepIndex(): number { return this.state.currentStepIndex; }
   get fieldLoading(): Readonly<Record<string, boolean>> { return this.state.fieldLoading; }
   get stepValidating(): boolean { return this.state.stepValidating; }
@@ -90,7 +93,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   get stepErrors(): Record<string, string[]> {
     const result: Record<string, string[]> = Object.create(null);
     for (const step of this.visibleSteps) {
-      const keys = step.fields.map((field) => field.key).filter((key) => this.errors[key] !== undefined);
+      const keys = step.fields.filter((field) => shownError(this.errors, field)).map((field) => field.key);
       if (keys.length > 0) result[step.id] = keys;
     }
     return result;

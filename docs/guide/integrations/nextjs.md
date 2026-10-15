@@ -49,7 +49,7 @@ Import `@formhaus/core/style.css` in the root layout for the default field style
 
 - The client posts `{ values, skippedSteps }`. `skippedSteps` comes from the second argument of the submit handler.
 - `validateSubmission()` from `@formhaus/core/server` computes the active path from the values. Fields on hidden steps, hidden fields and skipped steps are not validated and not returned.
-- It drops unknown keys, checks value types, `options` and the `email`, `date` and `datetime` formats, then runs the definition rules.
+- It drops unknown keys, checks value types, `options` and the `email`, `date`, `datetime` and `time` formats, then runs the definition rules.
 - It returns `{ values, errors }`. A non-empty `errors` becomes a `422`.
 - When `FormRenderer` receives errors through the `errors` prop, it moves to the first step with an error and shows the messages there.
 

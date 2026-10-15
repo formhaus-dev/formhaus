@@ -1,5 +1,5 @@
 import { validateFieldValue, validateFields, validateStep } from '../validation';
-import { createValues, getChangedKeys } from './engine-utils';
+import { createValues, getChangedKeys, shownError } from './engine-utils';
 import { trimValue } from '../validation/type-checks';
 import type { EngineInternals } from './runtime-internals';
 
@@ -23,7 +23,7 @@ export function applyValidationErrors(engine: EngineInternals, errors: Record<st
 }
 
 function moveToFirstError(engine: EngineInternals, errors: Record<string, string>): boolean {
-  const targetIndex = engine.visibleSteps.findIndex((step) => step.fields.some((field) => errors[field.key] !== undefined));
+  const targetIndex = engine.visibleSteps.findIndex((step) => step.fields.some((field) => shownError(errors, field)));
   if (targetIndex < 0 || targetIndex === engine.currentStepIndex) return false;
   engine.state.currentStepIndex = targetIndex;
   return true;
@@ -125,7 +125,7 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   engine.state.stepValidating = false;
   engine.state.currentStepIndex = 0;
   engine.skipped.clear();
-  engine.visibility.reconcileHidden(engine.values, engine.errors);
+  engine.visibility.reconcileHidden(engine.values, engine.errors, true);
   const changedValues = getChangedKeys(previousValues, engine.values);
   const changedFields = new Set([
     ...changedValues,

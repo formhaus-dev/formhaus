@@ -47,6 +47,7 @@ export const capabilitiesOutput = {
   definition: z.record(z.string(), z.unknown()),
   fieldTypes: z.array(z.string()),
   customFieldTypes: z.string(),
+  fieldTypeNotes: z.record(z.string(), z.string()),
   fieldProps: z.record(z.string(), z.unknown()),
   validationRules: z.record(z.string(), z.unknown()),
   conditions: z.record(z.string(), z.unknown()),

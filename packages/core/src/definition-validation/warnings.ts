@@ -7,12 +7,11 @@ import { closest, oneOf, suggest, warning } from './issues';
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
-const STRING_TYPES = ['text', 'email', 'phone', 'password', 'textarea', 'date', 'datetime', 'select', 'radio', 'autocomplete'];
 
 function expectedType(field: FormField): string | undefined {
   if (field.type === 'number') return 'number';
   if (BOOLEAN_TYPES.includes(field.type)) return 'boolean';
-  return STRING_TYPES.includes(field.type) ? 'string' : undefined;
+  return BUILT_IN_TYPES.includes(field.type) && field.type !== 'multiselect' && field.type !== 'file' ? 'string' : undefined;
 }
 
 function valueIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {

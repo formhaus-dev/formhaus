@@ -5,12 +5,14 @@ import { CheckboxField } from './fields/CheckboxField';
 import { DateField } from './fields/DateField';
 import { DateTimeField } from './fields/DateTimeField';
 import { FileField } from './fields/FileField';
+import { HiddenField } from './fields/HiddenField';
 import { MultiselectField } from './fields/MultiselectField';
 import { RadioField } from './fields/RadioField';
 import { SelectField } from './fields/SelectField';
 import { SwitchField } from './fields/SwitchField';
 import { TextField } from './fields/TextField';
 import { TextareaField } from './fields/TextareaField';
+import { TimeField } from './fields/TimeField';
 import type { FieldComponentMap, FieldComponentProps } from './types';
 
 export const defaultFieldComponents: Record<DefaultFieldType, ComponentType<FieldComponentProps>> = {
@@ -28,7 +30,9 @@ export const defaultFieldComponents: Record<DefaultFieldType, ComponentType<Fiel
   file: FileField,
   date: DateField,
   datetime: DateTimeField,
+  time: TimeField,
   textarea: TextareaField,
+  hidden: HiddenField,
 };
 
 export function withDefaultFields(components?: FieldComponentMap): FieldComponentMap {

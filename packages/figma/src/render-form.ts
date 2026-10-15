@@ -157,7 +157,7 @@ async function appendContent(frame: FrameNode, title: string, step: RenderableSt
   const { theme } = renderer;
   append(frame, text(title, { font: theme.fonts.semibold, size, color: theme.text }, 'Title'));
   if (step.description) append(frame, text(step.description, { font: theme.fonts.regular, size: theme.bodySize, color: theme.muted }, 'Description'));
-  for (const field of step.fields) append(frame, await renderer.field(field));
+  for (const field of step.fields) if (field.type !== 'hidden') append(frame, await renderer.field(field));
   for (const section of step.sections ?? []) {
     const group = stack('VERTICAL', section.title, { itemSpacing: theme.card.gap, paddingTop: theme.card.gap });
     append(frame, group);

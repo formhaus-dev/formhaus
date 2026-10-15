@@ -18,7 +18,8 @@ Opens at http://localhost:5173.
 - [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a Vuetify renderer.
 - [src/fields/AutocompleteField.vue](src/fields/AutocompleteField.vue) filters by `label`, unlike the default `<datalist>`, which filters by `value`.
 - [src/fields/SelectField.vue](src/fields/SelectField.vue) handles both `select` and `multiselect`.
-- [src/fields/TextField.vue](src/fields/TextField.vue) handles text, email, phone, number, password, date, and datetime fields with Vuetify's `<v-text-field>`.
+- [src/fields/TextField.vue](src/fields/TextField.vue) handles text, email, phone, number, password, date, datetime, and time fields with Vuetify's `<v-text-field>`.
+- [src/fields/HiddenField.vue](src/fields/HiddenField.vue) renders `hidden` fields as `<input type="hidden">`.
 - [src/definition.json](src/definition.json) is the contact form used by the example.
 
 ## Use as a starter

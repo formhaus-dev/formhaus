@@ -72,9 +72,9 @@ watch(
 );
 
 const summaryFields = computed(() => (isMultiStep.value ? form.visibleSteps.value.flatMap((step) => step.fields) : visibleFields.value)
-  .filter((field) => errors.value[field.key] !== undefined));
+  .filter((field) => field.type !== 'hidden' && errors.value[field.key] !== undefined));
 const stepStatuses = computed(() => props.stepErrorMarks ? form.visibleSteps.value.map(({ id, title, fields }) => ({
-  id, title, errorCount: fields.filter((field) => errors.value[field.key] !== undefined).length,
+  id, title, errorCount: fields.filter((field) => field.type !== 'hidden' && errors.value[field.key] !== undefined).length,
 })) : undefined);
 
 function onFieldFocus(key: string) {

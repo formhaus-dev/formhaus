@@ -13,7 +13,7 @@ interface FormErrorSummaryProps {
 export function FormErrorSummary({ engine, formId, onSelect, labels }: FormErrorSummaryProps) {
   useFormSnapshot(engine);
   const fields = engine.isMultiStep ? engine.visibleSteps.flatMap((step) => step.fields) : engine.visibleFields;
-  const invalid = fields.filter((field) => engine.errors[field.key] !== undefined);
+  const invalid = fields.filter((field) => field.type !== 'hidden' && engine.errors[field.key] !== undefined);
   if (invalid.length === 0) return null;
 
   return (

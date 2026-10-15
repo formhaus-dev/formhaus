@@ -1,5 +1,6 @@
 import type { FieldComponentMap } from '@formhaus/react';
 import { CheckboxField } from './fields/CheckboxField';
+import { HiddenField } from './fields/HiddenField';
 import { MultiselectField } from './fields/MultiselectField';
 import { RadioField } from './fields/RadioField';
 import { SelectField } from './fields/SelectField';
@@ -14,9 +15,11 @@ export const components: FieldComponentMap = {
   password: TextField,
   date: TextField,
   datetime: TextField,
+  time: TextField,
   textarea: TextareaField,
   select: SelectField,
   multiselect: MultiselectField,
   radio: RadioField,
   checkbox: CheckboxField,
+  hidden: HiddenField,
 };

@@ -4,6 +4,8 @@ export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): st
   return [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
 }
 
+export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
+
 export function getAllFields(definition: FormDefinition): FormField[] {
   return definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : definition.fields ?? [];
 }

@@ -2,7 +2,7 @@ import type { DefaultFieldType, FieldValidation, ShowCondition } from '@formhaus
 
 export const FIELD_TYPES = [
   'text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'multiselect',
-  'checkbox', 'radio', 'switch', 'file', 'date', 'datetime', 'textarea',
+  'checkbox', 'radio', 'switch', 'file', 'date', 'datetime', 'time', 'textarea', 'hidden',
 ] as const satisfies readonly DefaultFieldType[];
 
 export const OPTION_FIELD_TYPES = ['select', 'autocomplete', 'multiselect', 'radio'] as const satisfies readonly DefaultFieldType[];

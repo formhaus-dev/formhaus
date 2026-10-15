@@ -8,6 +8,7 @@ import CheckboxFieldVue from '../../../../../examples/vue-vuetify/src/fields/Che
 import RadioFieldVue from '../../../../../examples/vue-vuetify/src/fields/RadioField.vue?raw';
 import SwitchFieldVue from '../../../../../examples/vue-vuetify/src/fields/SwitchField.vue?raw';
 import FileFieldVue from '../../../../../examples/vue-vuetify/src/fields/FileField.vue?raw';
+import HiddenFieldVue from '../../../../../examples/vue-vuetify/src/fields/HiddenField.vue?raw';
 import TextareaFieldVue from '../../../../../examples/vue-vuetify/src/fields/TextareaField.vue?raw';
 import FormActionsVue from '../../../../../examples/vue-vuetify/src/actions/FormActions.vue?raw';
 import StepProgressVue from '../../../../../examples/vue-vuetify/src/actions/StepProgress.vue?raw';
@@ -25,6 +26,7 @@ export function buildFiles(definitionJson: string) {
     'src/fields/RadioField.vue': RadioFieldVue,
     'src/fields/SwitchField.vue': SwitchFieldVue,
     'src/fields/FileField.vue': FileFieldVue,
+    'src/fields/HiddenField.vue': HiddenFieldVue,
     'src/fields/TextareaField.vue': TextareaFieldVue,
     'src/actions/FormActions.vue': FormActionsVue,
     'src/actions/StepProgress.vue': StepProgressVue,

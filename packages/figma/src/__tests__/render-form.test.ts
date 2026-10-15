@@ -1,4 +1,4 @@
-import type { FormDefinition } from '@formhaus/core';
+import type { FormDefinition, FormField } from '@formhaus/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { KitTheme } from '../kits/kit';
 import { nextFrameX, renderForm } from '../render-form';
@@ -68,6 +68,13 @@ describe('renderForm', () => {
     await renderForm(twoSteps, renderer(async () => node() as unknown as SceneNode));
     const frames = created.filter((frame) => (frame as unknown as { name: string }).name.includes('Step'));
     expect(frames.map((frame) => [frame.x, (frame as unknown as { y: number }).y])).toEqual([[0, 500], [0, 1200]]);
+  });
+
+  it('skips hidden fields', async () => {
+    stubFigma([]);
+    const field = vi.fn(async (_: FormField) => node() as unknown as SceneNode);
+    await renderForm({ ...definition, fields: [{ key: 'source', type: 'hidden', label: 'Source' }, ...definition.fields!] }, renderer(field));
+    expect(field.mock.calls.map(([rendered]) => rendered.key)).toEqual(['name']);
   });
 
   it('replaces a previous render of the same definition in place', async () => {

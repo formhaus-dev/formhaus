@@ -1,5 +1,5 @@
 import { hasOptions, placeholderFor, type BuilderQuestion } from '@formhaus/builder';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, EyeOff } from 'lucide-react';
 import { cx } from '../ui/lib/cx';
 import { targetsAfter } from '../logic/targets';
 import { useForm } from '../store/hooks';
@@ -37,6 +37,15 @@ export function FieldPreview({ field }: { field: BuilderQuestion }) {
       <div className={styles.box}>
         <span className={styles.placeholder}>{hint || 'Choose…'}</span>
         <ChevronDown aria-hidden className={styles.chevron} />
+      </div>
+    );
+  }
+  if (field.type === 'hidden') {
+    const value = field.extra.defaultValue;
+    return (
+      <div className={cx(styles.box, styles.hidden)}>
+        <span className={cx(value === undefined && styles.placeholder)}>{value === undefined ? 'No default value' : String(value)}</span>
+        <EyeOff aria-hidden className={styles.chevron} />
       </div>
     );
   }

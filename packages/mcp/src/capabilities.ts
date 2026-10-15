@@ -12,6 +12,10 @@ export const capabilities = {
   },
   fieldTypes: FIELD_TYPES,
   customFieldTypes: 'Any other string is allowed; the renderer must register a component for it.',
+  fieldTypeNotes: {
+    time: 'A 24-hour "HH:MM" or "HH:MM:SS" string.',
+    hidden: 'Renders no label or control. Its value comes from defaultValue or the initial values, is checked as text, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field.',
+  },
   fieldProps: {
     required: ['key', 'type', 'label'],
     optional: [
@@ -31,9 +35,9 @@ export const capabilities = {
       'minLength/maxLength apply to strings and arrays; min/max apply to numbers.',
       'pattern is a JavaScript regular expression string.',
       'matchField requires the value to equal another field, and fails when this field is empty and the other is not.',
-      'Built-in types are checked: email format, date and datetime shape, numbers, booleans and option values.',
+      'Built-in types are checked: email format, date, datetime and time shape, numbers, booleans and option values.',
       'validator names a custom function passed to the engine.',
-      'Hidden fields and skipped steps are not validated.',
+      'Fields hidden by conditions and skipped steps are not validated.',
     ],
   },
   conditions: {
@@ -44,7 +48,7 @@ export const capabilities = {
     appliesTo: ['field', 'step', 'route', 'action.disabled'],
     comparisons: 'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values.',
     scope: 'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
-    hiddenValues: 'Hidden fields are cleared at once and left out of submitted values.',
+    hiddenValues: 'Fields hidden by conditions are cleared at once and left out of submitted values.',
   },
   steps: {
     props: ['id', 'title', 'description', 'fields', 'show', 'showAny', 'routes', 'next', 'back', 'skip'],

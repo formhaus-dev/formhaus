@@ -3,7 +3,7 @@ import { referencedKeys, referencedSteps, referencedValues } from './references'
 
 export const FIELD_TYPES = [
   'text', 'email', 'phone', 'number', 'password', 'textarea', 'select', 'autocomplete',
-  'multiselect', 'radio', 'checkbox', 'switch', 'date', 'datetime', 'file',
+  'multiselect', 'radio', 'checkbox', 'switch', 'date', 'datetime', 'time', 'file', 'hidden',
 ] as const;
 
 const OPTION_TYPES = new Set(['select', 'autocomplete', 'multiselect', 'radio']);
