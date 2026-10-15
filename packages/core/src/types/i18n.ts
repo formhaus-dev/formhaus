@@ -31,6 +31,7 @@ export type LabelKey =
   | 'itemLabel'
   | 'itemAdded'
   | 'itemRemoved'
+  | 'removeItemNamed'
   | 'removeItemPrompt'
   | 'keepItem';
 

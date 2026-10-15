@@ -128,6 +128,9 @@
         "itemRemoved": {
           "type": "string"
         },
+        "removeItemNamed": {
+          "type": "string"
+        },
         "removeItemPrompt": {
           "type": "string"
         },

@@ -53,7 +53,7 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
   const button = (name: string) => screen.getByRole('button', { name }) as HTMLButtonElement;
   const names = () => screen.queryAllByRole('textbox', { name: /^Name/ }) as HTMLInputElement[];
   const active = () => document.activeElement;
-  const status = () => document.querySelector('.fh-group__status')?.textContent;
+  const status = () => document.querySelector('.fh-group__status')?.textContent?.trim();
 
   it('renders a section as a fieldset with a legend and hides it with its condition', async () => {
     harness.mount({ definition: event, onSubmit: () => {} });
@@ -214,5 +214,19 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
     });
     await harness.click(button('Remove Person 1'));
     await waitFor(() => expect(names().map((input) => input.value)).toEqual(['Bo']));
+  });
+
+  it('announces a second removal at the same position again', async () => {
+    harness.mount({ definition: event, initialValues: { people: [{}, {}, {}] }, onSubmit: () => {} });
+    const region = document.querySelector('.fh-group__status')!;
+    const texts: string[] = [];
+    const observer = new MutationObserver(() => texts.push(region.textContent ?? ''));
+    observer.observe(region, { childList: true, characterData: true, subtree: true });
+    await harness.click(button('Remove Person 1'));
+    await waitFor(() => expect(names()).toHaveLength(2));
+    await harness.click(button('Remove Person 1'));
+    await waitFor(() => expect(names()).toHaveLength(1));
+    await waitFor(() => expect(new Set(texts.filter((text) => text.trim() === 'Person 1 removed')).size).toBe(2));
+    observer.disconnect();
   });
 }

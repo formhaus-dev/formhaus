@@ -28,7 +28,8 @@ export const FormGroupController = memo(function FormGroupController({
   const { engine, formId } = props;
   useFieldSnapshot(engine, group.key);
   useStructureSnapshot(engine);
-  const [status, setStatus] = useState('');
+  const [announced, setAnnounced] = useState({ text: '', count: 0 });
+  const setStatus = (text: string) => setAnnounced((previous) => ({ text, count: previous.count + 1 }));
   const [confirming, setConfirming] = useState<string | null>(null);
   const focus = useRef<Focus>(null);
   const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, labels, engine.definition.labels);
@@ -88,6 +89,7 @@ export const FormGroupController = memo(function FormGroupController({
       prompt: label('removeItemPrompt', { item: title(index) }),
       keepLabel: label('keepItem'),
       removeLabel: remove,
+      removeName: label('removeItemNamed', { label: remove, item: title(index) }),
       disabled,
       children: item.fields.map((field) => (
         <FormFieldController
@@ -119,7 +121,7 @@ export const FormGroupController = memo(function FormGroupController({
       addLabel={group.addLabel ?? label('addItem')}
       removeLabel={remove}
       disabled={disabled}
-      status={status}
+      status={announced.text + (announced.count % 2 ? '\u00a0' : '')}
       ItemComponent={ItemComponent}
     />
   );

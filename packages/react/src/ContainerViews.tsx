@@ -27,6 +27,7 @@ export function DefaultGroupItem({
   prompt,
   keepLabel,
   removeLabel,
+  removeName,
   disabled,
   children,
 }: GroupItemComponentProps) {
@@ -41,7 +42,7 @@ export function DefaultGroupItem({
             id={`${titleId}-remove`}
             type="button"
             className={`${textButton} fh-group__remove`}
-            aria-label={`${removeLabel} ${title}`}
+            aria-label={removeName}
             disabled={disabled}
             onClick={requestRemove}
           >

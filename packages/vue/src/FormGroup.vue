@@ -33,6 +33,7 @@ const emit = defineEmits<{
 }>();
 
 const status = ref('');
+const announcements = ref(0);
 const confirming = ref<string | null>(null);
 const id = computed(() => fieldDomId(props.formId, props.group.key, props.engine.definition));
 const limits = computed(() => itemLimits(props.group));
@@ -70,6 +71,7 @@ function add() {
   const index = props.items.length;
   if (!props.engine.addItem(props.group.key)) return;
   status.value = label('itemAdded', { item: title(index) });
+  announcements.value++;
   void focusAfter(index, true);
 }
 
@@ -77,6 +79,7 @@ function drop(index: number) {
   confirming.value = null;
   if (!props.engine.removeItem(props.group.key, index)) return;
   status.value = label('itemRemoved', { item: title(index) });
+  announcements.value++;
   void focusAfter(index, false);
 }
 async function focusId(target: string) {
@@ -88,6 +91,7 @@ function ask(index: number) {
   if (props.confirmRemove === false || !itemHasContent(props.engine, props.group.key, index)) return drop(index);
   confirming.value = props.items[index].id;
   status.value = label('removeItemPrompt', { item: title(index) });
+  announcements.value++;
   void focusId(`${itemDomId(props.formId, props.group.key, index, undefined, props.engine.definition)}-confirm`);
 }
 
@@ -137,6 +141,7 @@ const groupProps = computed(
       prompt: label('removeItemPrompt', { item: title(index) }),
       keepLabel: label('keepItem'),
       removeLabel: remove.value,
+      removeName: label('removeItemNamed', { label: remove.value, item: title(index) }),
       disabled: props.disabled,
       fields: fieldsOf(item.id),
     })),
@@ -147,7 +152,7 @@ const groupProps = computed(
     addLabel: props.group.addLabel ?? label('addItem'),
     removeLabel: remove.value,
     disabled: props.disabled,
-    status: status.value,
+    status: status.value + (announcements.value % 2 ? '\u00a0' : ''),
     itemComponent: (props.components?.groupItem ?? DefaultGroupItem) as Component,
   }),
 );

@@ -52,6 +52,7 @@ export interface GroupItemComponentProps {
   prompt: string;
   keepLabel: string;
   removeLabel: string;
+  removeName: string;
   disabled?: boolean;
   children: ReactNode;
 }

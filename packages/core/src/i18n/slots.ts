@@ -107,7 +107,16 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
   const steps = !!definition.steps?.length;
   const labels = new Set<LabelKey>(steps ? ['continue', 'back', 'stepOf', 'errorSummary'] : ['errorSummary']);
   if (getAllFields(definition).some(isGroup))
-    for (const key of ['addItem', 'removeItem', 'itemLabel', 'itemAdded', 'itemRemoved', 'removeItemPrompt', 'keepItem'] as const)
+    for (const key of [
+      'addItem',
+      'removeItem',
+      'itemLabel',
+      'itemAdded',
+      'itemRemoved',
+      'removeItemNamed',
+      'removeItemPrompt',
+      'keepItem',
+    ] as const)
       labels.add(key);
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),

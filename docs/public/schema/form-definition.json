@@ -35,7 +35,7 @@
     },
     "labels": {
       "$ref": "#/definitions/LabelCatalog",
-      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved and removeItemPrompt ({item}), and keepItem."
+      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved and removeItemPrompt ({item}), removeItemNamed ({label}, {item}) and keepItem."
     },
     "i18n": {
       "$ref": "#/definitions/FormI18n",
@@ -198,6 +198,10 @@
           "minLength": 1
         },
         "itemRemoved": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removeItemNamed": {
           "type": "string",
           "minLength": 1
         },

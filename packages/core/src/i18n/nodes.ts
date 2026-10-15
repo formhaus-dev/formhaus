@@ -30,6 +30,7 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = Object.freeze(
   itemLabel: '{label} {index}',
   itemAdded: '{item} added',
   itemRemoved: '{item} removed',
+  removeItemNamed: '{label} {item}',
   removeItemPrompt: 'Remove {item} and its answers?',
   keepItem: 'Cancel',
 });

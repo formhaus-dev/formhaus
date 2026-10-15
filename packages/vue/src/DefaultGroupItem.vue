@@ -9,7 +9,7 @@ defineProps<GroupItemComponentProps>();
     <div class="fh-group__header">
       <span :id="titleId" tabindex="-1" class="fh-group__title">{{ title }}</span>
       <button v-if="canRemove && !confirming" :id="`${titleId}-remove`" type="button" class="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
-        :aria-label="`${removeLabel} ${title}`" :disabled="disabled" @click="requestRemove">{{ removeLabel }}</button>
+        :aria-label="removeName" :disabled="disabled" @click="requestRemove">{{ removeLabel }}</button>
       <div v-if="confirming" class="fh-group__confirm" role="group" :aria-labelledby="`${titleId}-prompt`" @keydown.esc.prevent="cancelRemove">
         <span :id="`${titleId}-prompt`" class="fh-group__prompt">{{ prompt }}</span>
         <span class="fh-group__confirm-actions">
