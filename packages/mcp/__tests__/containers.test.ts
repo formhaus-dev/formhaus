@@ -40,7 +40,7 @@ describe('sections and groups', () => {
     const definition = registration();
     Object.assign(definition.fields![2], { label: 'Billing' });
     Object.assign(definition.fields![3], { placeholder: 'x' });
-    expect(summary(definition)).toEqual(['error schema /fields/2/label', 'error schema /fields/3/placeholder']);
+    expect(summary(definition)).toEqual(['error unknown-property /fields/2/label', 'error unknown-property /fields/3/placeholder']);
   });
 
   it('warns about autoAdvance inside a group', () => {
