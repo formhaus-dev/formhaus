@@ -1,7 +1,7 @@
-export const docsSections = ['guide', 'api', 'spec', 'recipes', 'compare', 'migrate', 'changelog', 'templates', 'playground', 'legal', 'schema', 'figma', 'assets']
-export const docsSubtrees = ['cloud', 'og']
+export const docsSections = ['guide', 'api', 'spec', 'recipes', 'compare', 'migrate', 'changelog', 'templates', 'playground', 'schema', 'figma', 'assets']
+export const docsSubtrees = ['og']
 export const docsFiles = ['/llms.txt', '/llms-full.txt', '/hashmap.json', '/sitemap-docs.xml']
-export const marketingFiles = ['/og/home.jpg', '/og/build.jpg']
+export const marketingFiles = ['/og/home.jpg', '/og/build.jpg', '/og/legal.jpg']
 
 export function isDocsPath(path) {
   if (marketingFiles.includes(path)) return false
