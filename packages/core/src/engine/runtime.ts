@@ -1,7 +1,7 @@
 import type { ValidatorFn } from '../validation';
 import { messageResolver, type ResolveMessage } from '../validation/default-messages';
 import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
-import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-options';
+import type { FormEngineOptions, SubmitHandler } from './engine-options';
 import { createValues, initialState } from './engine-utils';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
@@ -23,9 +23,6 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
 
   private readonly validators: Record<string, ValidatorFn>;
   private readonly messages: ResolveMessage;
-  private get onStepValidate(): StepValidateFn | undefined {
-    return this.lifecycle.onStepValidate;
-  }
   private readonly visibility: VisibilityState;
   private readonly subscriptions = createSubscriptions();
 
@@ -78,7 +75,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   get isMultiStep(): boolean {
-    return (this.definition.steps ?? []).length > 0;
+    return !!this.definition.steps?.length;
   }
 
   get visibleSteps(): FormStep[] {
@@ -149,7 +146,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
 
   setValue(key: string, value: unknown): void {
     const path = this.visibility.parse(key);
-    if (path) setItemValue(this as never, path[0], path[1], path[2], value);
+    if (path) setItemValue(this as never, ...path, value);
     else writeValue(this as never, key, value);
   }
 
@@ -186,7 +183,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   next(): Promise<boolean> {
-    return changeStep(this as never, 'next');
+    return this.advance('next');
   }
   back(): Promise<boolean> {
     return changeStep(this as never, 'back');
@@ -214,6 +211,10 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
   reset(values?: Record<string, unknown>): void {
     resetEngine(this as never, values);
+  }
+
+  private advance(reason: 'next' | 'autoAdvance'): Promise<boolean> {
+    return changeStep(this as never, 'next', reason);
   }
 
   private get view() {

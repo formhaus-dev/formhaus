@@ -1,7 +1,7 @@
 import type { ValidatorFn } from '../validation';
 import type { ResolveMessage } from '../validation/default-messages';
 import type { FormDefinition, FormField, FormStep } from '../types';
-import type { FormEngineOptions, StepValidateFn } from './engine-options';
+import type { FormEngineOptions } from './engine-options';
 import type { NotifyOptions } from './subscriptions';
 import type { VisibilityState } from './visibility-state';
 
@@ -38,7 +38,6 @@ export interface EngineInternals {
   readonly lifecycle: FormEngineOptions;
   readonly validators: Record<string, ValidatorFn>;
   readonly messages: ResolveMessage;
-  readonly onStepValidate?: StepValidateFn;
   readonly visibility: VisibilityState;
   readonly isMultiStep: boolean;
   readonly visibleSteps: FormStep[];
@@ -47,4 +46,5 @@ export interface EngineInternals {
   readonly isFirstStep: boolean;
   readonly isLastStep: boolean;
   notify(options?: RuntimeNotifyOptions): void;
+  advance(reason: 'next' | 'autoAdvance'): Promise<boolean>;
 }
