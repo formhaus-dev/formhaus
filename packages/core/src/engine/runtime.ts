@@ -54,8 +54,9 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   get values(): Readonly<Partial<TValues>> { return this.state.values as Partial<TValues>; }
   get errors(): Readonly<Record<string, string>> { return this.state.errors; }
   get topLevelErrors(): readonly string[] {
-    const { errors, topLevelErrors } = this.state;
-    return [...topLevelErrors, ...this.visibility.allFields.flatMap((field) => (field.type === 'hidden' && errors[field.key]) || [])];
+    const { errors, topLevelErrors, values } = this.state;
+    return [...topLevelErrors, ...this.visibility.allFields.flatMap((field) => (
+      field.type === 'hidden' && errors[field.key] && (this.visibility.activeField(field.key, values) ?? field) === field && errors[field.key]) || [])];
   }
   get currentStepIndex(): number { return this.state.currentStepIndex; }
   get fieldLoading(): Readonly<Record<string, boolean>> { return this.state.fieldLoading; }

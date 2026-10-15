@@ -29,7 +29,7 @@ function usedMessages(definition: FormDefinition): Set<string> {
   for (const field of getAllFields(definition)) {
     const rules = (field.validation ?? {}) as Entry;
     for (const rule of SLOTS.validation) {
-      if (hasRule(rules, rule) && rules[rule] !== '' && typeof rules[rule === 'required' ? rule : `${rule}Message`] !== 'string') keys.add(ruleKey(field, rule));
+      if (hasRule(rules, rule) && typeof rules[rule === 'required' ? rule : `${rule}Message`] !== 'string') keys.add(ruleKey(field, rule));
     }
     for (const key of typeMessageKeys(field)) keys.add(key);
   }

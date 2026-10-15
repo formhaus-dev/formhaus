@@ -92,3 +92,22 @@ describe('translationIssues', () => {
     expect(textSlots({ ...definition, fields: [{ ...definition.fields[0], validation: { min: 18, minMessage: 'Too young' } }] }).find(({ address }) => address.endsWith('min'))?.params).toEqual(['min']);
   });
 });
+
+describe('inactive required rules', () => {
+  const definition = (required: false | '') => ({ id: 'f', title: 'F', submit: { label: 'S' }, fields: [
+    { key: 'name', type: 'text', label: 'Name', validation: { required } },
+  ] }) as FormDefinition;
+
+  it.each([false, ''] as const)('exports no slot and ignores a translation for required %j', (required) => {
+    const source = definition(required);
+    const overlay = { fields: { name: { validation: { required: 'Нужно' } } } };
+    expect(translationTemplate(source).fields).toEqual({ name: { label: 'Name' } });
+    expect(translationTemplate(source).messages).not.toHaveProperty('required');
+    expect(textSlots(source).map(({ address }) => address)).not.toContain('fields.name.validation.required');
+    expect(translationIssues(source, overlay).unknown).toEqual(['fields.name.validation.required']);
+    expect(localize(source, { overlay }).definition.fields![0].validation).toEqual({ required });
+    const translated = localize(source, { translate: () => 'Нужно' }).definition;
+    expect(translated.fields![0].validation).toEqual({ required });
+    expect(validateSubmission(translated, {}).errors).toEqual({});
+  });
+});

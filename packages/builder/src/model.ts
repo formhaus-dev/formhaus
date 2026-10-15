@@ -1,4 +1,4 @@
-import type { FieldType, FormAction, FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
 
 export const QUESTION_TYPES = [
   { type: 'text', label: 'Short text', hint: 'One line of text', icon: 'type', placeholder: 'Question' },
@@ -25,6 +25,8 @@ export interface BuilderOption {
   value: string;
   valueLocked: boolean;
   jump: string | null;
+  extra?: Partial<Omit<FieldOption, 'value' | 'label'>>;
+  shape?: string[];
 }
 
 export interface BuilderQuestion {
@@ -37,6 +39,7 @@ export interface BuilderQuestion {
   key: string;
   keyLocked: boolean;
   extra: Partial<FormField>;
+  shape?: { field: string[]; validation?: string[] };
 }
 
 export interface BuilderPage {
@@ -50,6 +53,7 @@ export interface BuilderPage {
   backLabel: string;
   extra: Partial<FormStep>;
   routes?: StepRoute[];
+  shape?: string[];
 }
 
 export type FormExtra = Partial<Omit<FormDefinition, 'id' | 'title' | 'submit' | 'fields' | 'steps'>> & { submit?: Partial<FormAction> };
@@ -63,6 +67,7 @@ export interface BuilderForm {
   blocks: BuilderBlock[];
   extra: FormExtra;
   seq: number;
+  shape?: { form: string[]; submit?: string[] };
 }
 
 export interface Group { page?: BuilderPage; questions: BuilderQuestion[] }
@@ -128,6 +133,13 @@ export function pagesAfter(form: BuilderForm): PageRef[][] {
     tail = [{ uid: block.uid, title: pageTitle(block, position) }, ...tail];
   }
   return result;
+}
+
+export function arrange<T extends object>(value: T, shape: string[] | undefined): T {
+  if (!shape) return value;
+  const known = shape.filter((key) => key in value);
+  const rest = Object.keys(value).filter((key) => !shape.includes(key));
+  return Object.fromEntries([...known, ...rest].map((key) => [key, value[key as keyof T]])) as T;
 }
 
 export const clone = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;

@@ -54,7 +54,7 @@ Opens at http://localhost:5173.
 
 ### Changesets
 
-Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR that touches a published package adds a `.changeset/*.md` file. When the maintainer is ready to release, `pnpm version` consumes those files into per-package CHANGELOGs, bumps versions and syncs `packages/mcp/server.json`; `pnpm release` builds, publishes to npm and creates git tags. Pushing an `@formhaus/mcp@*` tag publishes `server.json` to the MCP Registry.
+Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR that touches a published package adds a `.changeset/*.md` file. When the maintainer is ready to release, `pnpm version` consumes those files into per-package CHANGELOGs, bumps versions and syncs `packages/mcp/server.json`; `pnpm release` builds, publishes to npm and creates git tags. Pushing an `@formhaus/mcp@*` tag publishes `server.json` to the MCP Registry. Pushing an `@formhaus/core@*` tag opens a PR that moves the docs site and playground to that version; to do it by hand, run `node scripts/bump-docs-pins.mjs <version>` and `pnpm --dir docs install`.
 
 Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 
