@@ -1,15 +1,41 @@
-# Formhaus
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="packages/site-theme/public/brand/logo-full-dark.svg">
+    <img src="packages/site-theme/public/brand/logo-full.svg" alt="Formhaus" width="320">
+  </picture>
+</p>
 
-[![npm](https://img.shields.io/npm/v/@formhaus/core?label=core)](https://www.npmjs.com/package/@formhaus/core)
-[![npm](https://img.shields.io/npm/v/@formhaus/react?label=react)](https://www.npmjs.com/package/@formhaus/react)
-[![npm](https://img.shields.io/npm/v/@formhaus/vue?label=vue)](https://www.npmjs.com/package/@formhaus/vue)
-[![npm](https://img.shields.io/npm/v/@formhaus/mcp?label=mcp)](https://www.npmjs.com/package/@formhaus/mcp)
-[![core size](https://img.shields.io/bundlejs/size/@formhaus/core?label=core%20size)](https://bundlejs.com/?q=@formhaus/core)
-[![license](https://img.shields.io/github/license/ignsm/formhaus)](LICENSE)
+<p align="center">
+  <a href="https://github.com/ignsm/formhaus/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ignsm/formhaus/ci.yml?branch=main&label=tests" alt="Tests"></a>
+  <a href="https://www.npmjs.com/package/@formhaus/core"><img src="https://img.shields.io/npm/v/@formhaus/core?label=npm" alt="npm"></a>
+  <a href="https://bundlejs.com/?q=@formhaus/core"><img src="https://img.shields.io/bundlejs/size/@formhaus/core?label=core" alt="core size"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/ignsm/formhaus" alt="MIT license"></a>
+</p>
 
-Formhaus is a JSON form definition with a zero-dependency engine, React and Vue renderers, a Figma plugin, a JSON Schema and an MCP server for AI agents. One file describes fields, validation, conditional fields, multi-step navigation, branching routes and skippable steps.
+<p align="center"><strong>The form framework for the AI era.</strong></p>
 
-**[Example](#example) · [Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Spec](https://formhaus.dev/spec.html) · [Playground](https://formhaus.dev/playground.html)**
+<p align="center">
+  One JSON definition holds fields, validation, conditions, steps and branching.<br>
+  Render it in your React or Vue app, or publish it as a hosted form.
+</p>
+
+<p align="center"><strong>React</strong> · <strong>Vue</strong> · <strong>MCP</strong> · <strong>Figma</strong></p>
+
+<p align="center">
+  <a href="https://formhaus.dev/guide/">Documentation</a> ·
+  <a href="#quick-start">Get started</a> ·
+  <a href="https://formhaus.dev/playground">Playground</a> ·
+  <a href="https://formhaus.dev/cloud">Formhaus Cloud</a>
+</p>
+
+> [!TIP]
+> **Let your coding agent write Formhaus forms**
+>
+> ```bash
+> claude mcp add formhaus -- npx -y @formhaus/mcp
+> ```
+>
+> The MCP server writes, checks and repairs definitions locally, with no account. It works in Claude Code, Codex, Cursor and any other MCP client: [setup for each client](https://formhaus.dev/guide/mcp).
 
 Two independent ways to use it:
 
@@ -17,12 +43,6 @@ Two independent ways to use it:
 
   ```bash
   npm install @formhaus/core   # plus @formhaus/react or @formhaus/vue
-  ```
-
-  To let an agent write and check definitions locally, add the local MCP server. Its checks need no account:
-
-  ```bash
-  claude mcp add formhaus -- npx -y @formhaus/mcp
   ```
 
 - **Use [Formhaus Cloud](https://formhaus.dev/cloud).** A hosted form backend: a submission endpoint with server validation, a dashboard and webhooks, plus hosted links, embeds and a visual builder. The first form needs no account.
@@ -37,11 +57,19 @@ Two independent ways to use it:
 
 ![An agent publishes a waitlist form, the hosted form takes a response, and the agent reads it back](docs/public/media/agent-publishes-a-form.gif)
 
-## Why Formhaus
+## What you get
 
-- Claude Code, Cursor or any MCP client publishes and edits the form from a prompt and reads the submissions.
-- The form is a JSON file you keep in git. It renders natively in React or Vue, or as a hosted page and embed.
-- Each form gets a submission endpoint, a REST API and CSV export, plus webhooks once you sign in. The format and renderers are MIT licensed.
+| Feature | |
+|---|---|
+| **One definition** | Fields, validation, conditional fields, steps, branching routes, sections and repeatable groups in one JSON file you keep in git |
+| **React and Vue** | Native renderers with accessible defaults, or your own components through `components` |
+| **Validation** | Built-in rules and custom validators. `validateSubmission()` checks the same definition on the server |
+| **Agents** | The MCP server writes, validates and fixes definitions. Remote MCP publishes forms and reads responses |
+| **i18n** | Translation catalogs and keys for labels, messages and options |
+| **Accessibility** | Labels, error summary, focus management and live regions built in |
+| **Small core** | Zero dependencies, tree-shakable ESM |
+| **Figma** | The plugin renders mockups, flow maps and prototypes from the same definition |
+| **Cloud, optional** | Hosted links, embeds, a submission endpoint, CSV export and webhooks |
 
 ## What it's for
 
