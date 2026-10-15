@@ -43,7 +43,7 @@ export function createServer(): McpServer {
     {
       title: 'Apply safe fixes to a Formhaus definition',
       description:
-        'Call this when validate_definition reports issues with safe fixes, such as a misspelled property name, a missing id or key, an empty label, a duplicate key nothing refers to or a missing submit button. Applies every safe fix and returns { definition, applied, valid, issues }: the repaired definition, the fixes applied in order, and the issues left, the same as validate_definition returns for the repaired definition. Safe fixes never change what the form does beyond the repair. Unsafe fixes, such as pointing a condition at the closest existing field, stay in issues[].fixes for you to check and apply by hand. Save the returned definition, then fix the remaining errors.',
+        'Call this when validate_definition reports issues with safe fixes, such as a misspelled property name, a missing id or key, an empty label, a one-letter typo in a condition field, a duplicate key nothing refers to or a missing submit button. Applies every safe fix and returns { definition, applied, valid, issues }: the repaired definition, the fixes applied in order, and the issues left, the same as validate_definition returns for the repaired definition. Safe fixes never change what the form does beyond the repair. Unsafe fixes, such as pointing a condition at a field two edits away, stay in issues[].fixes for you to check and apply by hand. Save the returned definition, then fix the remaining errors.',
       inputSchema: { definition: definitionInput },
       outputSchema: fixOutput,
       annotations: { readOnlyHint: true },

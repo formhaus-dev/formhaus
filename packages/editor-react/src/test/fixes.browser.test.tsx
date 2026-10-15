@@ -38,7 +38,7 @@ const broken = {
   fields: [
     { key: 'email', type: 'email', label: 'Email' },
     { key: 'email', type: 'email', label: 'Work email' },
-    { key: 'note', type: 'textarea', label: 'Note', show: [{ field: 'emial', notEmpty: true }] },
+    { key: 'note', type: 'textarea', label: 'Note', show: [{ field: 'emaly', notEmpty: true }] },
   ],
 };
 

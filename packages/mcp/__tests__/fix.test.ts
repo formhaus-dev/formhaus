@@ -19,7 +19,7 @@ describe('fixes in validate_definition', () => {
     expect(issues.find(({ code }) => code === 'duplicate-key')?.fixes).toEqual([
       { title: 'Rename the key to "email_2"', safe: true, patch: [{ op: 'add', path: '/steps/1/fields/1/key', value: 'email_2' }] },
     ]);
-    expect(issues.find(({ code }) => code === 'unknown-field')?.fixes?.[0]).toMatchObject({ title: 'Use the field "name"', safe: false });
+    expect(issues.find(({ code }) => code === 'unknown-field')?.fixes?.[0]).toMatchObject({ title: 'Use the field "name"', safe: true });
   });
 
   it('leaves issues without a known repair as they are', () => {
@@ -32,12 +32,23 @@ describe('fixes in validate_definition', () => {
 });
 
 describe('fix_definition', () => {
-  it('applies the safe fixes and returns the issues left', () => {
+  it('applies the safe fixes, including an unambiguous typo', () => {
     const result = fixDefinitionTool({ definition: JSON.stringify(broken) });
-    expect(result.applied).toEqual([{ code: 'duplicate-key', path: '/steps/1/fields/1/key', title: 'Rename the key to "email_2"' }]);
-    expect((result.definition as typeof broken).steps[1].fields[1].key).toBe('email_2');
+    expect(result.applied.map(({ title }) => title)).toEqual(['Rename the key to "email_2"', 'Use the field "name"']);
+    expect((result.definition as typeof broken).steps[1].fields[1]).toMatchObject({ key: 'email_2', show: [{ field: 'name' }] });
+    expect(result).toMatchObject({ valid: true, issues: [] });
+  });
+
+  it('leaves an ambiguous reference with its unsafe fix', () => {
+    const fields = [
+      { key: 'email', type: 'email', label: 'Email' },
+      { key: 'emails', type: 'text', label: 'Emails' },
+      { key: 'note', type: 'text', label: 'Note', show: [{ field: 'emial', notEmpty: true }] },
+    ];
+    const result = fixDefinitionTool({ definition: { id: 'f', title: 'F', submit: { label: 'Go' }, fields } });
+    expect(result.applied).toEqual([]);
     expect(result.valid).toBe(false);
-    expect(result.issues.map(({ code }) => code)).toEqual(['unknown-field']);
+    expect(result.issues).toMatchObject([{ code: 'unknown-field', fixes: [{ safe: false }] }]);
   });
 
   it('returns a valid report when every issue was safe to fix', () => {
