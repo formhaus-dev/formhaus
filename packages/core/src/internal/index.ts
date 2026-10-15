@@ -9,6 +9,7 @@ export {
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
 export { fieldDomId, itemDomId } from './ids';
 export { errorDomId, errorEntries, itemHasContent, itemLimits, itemTitle, type ErrorEntry } from './items';
+export { loadOptions, optionKey, optionSources, providedOptions, sameOptions, type OptionSource } from './options';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { labelFor } from '../i18n/labels';
 import type { FormEngine } from '../engine';
