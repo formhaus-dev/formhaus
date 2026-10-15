@@ -1,4 +1,4 @@
-import { logicOf, scopeOf, type BuilderBlock, type BuilderForm, type BuilderQuestion } from '@formhaus/builder';
+import { conditionsOf, logicOf, scopeOf, type BuilderBlock, type BuilderForm, type BuilderQuestion } from '@formhaus/builder';
 import { Eye } from 'lucide-react';
 import { useCallback } from 'react';
 import { useEditor } from '../store/context';
@@ -13,7 +13,7 @@ interface Described {
 const described = new WeakMap<object, Described>();
 
 function logicText(form: BuilderForm, block: BuilderBlock): string | null {
-  const conditions = [...(block.extra.show ?? []), ...(block.extra.showAny ?? [])];
+  const conditions = conditionsOf(block.extra);
   const scope = scopeOf(form, block);
   const sources = conditions.map((condition) => sourceOf(form, condition.field, scope));
   const known = described.get(block.extra);
