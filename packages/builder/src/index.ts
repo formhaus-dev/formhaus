@@ -11,7 +11,7 @@ export {
   unique,
   words,
 } from './identifiers';
-export { dropReferences, renameReferences, type Renames } from './references';
+export { bindReferences, conditionsOf, dropReferences, referencesTo, resolver, scopeOf, type Resolver } from './references';
 export * from './conditions';
 export { serialize, toDefinition, type Serialized } from './serialize';
 export { fromDefinition, type ParseOptions } from './parse';

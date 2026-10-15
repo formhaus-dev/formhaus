@@ -63,7 +63,9 @@ export function clearTargets(form: BuilderForm, gone: Set<string>): void {
   for (const item of form.blocks) {
     if (isPage(item)) {
       if (item.next && gone.has(item.next)) item.next = null;
-      if (item.routes?.some((route) => route.to && goneIds.has(route.to))) delete item.routes;
+      const routes = item.routes?.filter((route) => !route.to || !goneIds.has(route.to));
+      if (routes?.length) item.routes = routes;
+      else delete item.routes;
       continue;
     }
     for (const option of item.options) if (option.jump && gone.has(option.jump)) option.jump = null;
@@ -75,9 +77,10 @@ export function removeBlock(form: BuilderForm, index: number): boolean {
   const block = form.blocks[index];
   const size = isPage(block) ? (pageCount(form) > 1 ? pageSpan(form, index) : 1) : span(form, index);
   const removed = form.blocks.slice(index, index + size);
-  clearTargets(form, new Set(removed.map((item) => item.uid)));
+  const gone = new Set(removed.map((item) => item.uid));
+  clearTargets(form, gone);
+  dropReferences(form, gone);
   form.blocks.splice(index, size);
-  dropReferences(form, new Set(removed.filter(isQuestion).map((item) => item.key)));
   if (form.blocks.length && !form.blocks.some(isQuestion)) form.blocks.push(newQuestion(form));
   syncIdentifiers(form);
   return true;
