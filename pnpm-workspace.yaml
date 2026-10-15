@@ -7,6 +7,7 @@ blockExoticSubdeps: true
 strictDepBuilds: true
 allowBuilds:
   esbuild: true
+  lefthook: true
 trustPolicy: no-downgrade
 trustPolicyExclude:
   - chokidar@4.0.3
