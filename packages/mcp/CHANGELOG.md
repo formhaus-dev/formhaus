@@ -1,5 +1,19 @@
 # @formhaus/mcp
 
+## 0.4.1
+
+### Patch Changes
+
+- 25d738b: - The `list_forms` description no longer mentions a monthly submission limit. Formhaus Cloud responses are unlimited on every plan.
+- 1a4874a: - Fixed `publish_form`, `list_forms`, `get_submissions`, `update_form_settings` and `get_webhook` failing the output schema check of MCP clients.
+  - Fixed `simulate_path` leaving out fields shown by the default value of a skipped step when that value has surrounding spaces.
+  - Fixed `simulate_path` returning a non-string `title` for a form without a string title.
+- Updated dependencies [a5c775e]
+- Updated dependencies [49485c8]
+- Updated dependencies [1a4874a]
+- Updated dependencies [5ea6229]
+  - @formhaus/core@0.13.1
+
 ## 0.4.0
 
 ### Minor Changes

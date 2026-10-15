@@ -1,5 +1,18 @@
 # @formhaus/core
 
+## 0.13.1
+
+### Patch Changes
+
+- a5c775e: - `setValue()`, `next()` and `back()` take 0.2 ms instead of 0.5 ms on a 50-step, 970-field form.
+- 49485c8: - Fixed a rejected final Skip overwriting answers given while it was pending.
+- 1a4874a: - Fixed a cancelled final Skip restoring old answers and server errors over a newer submission when its response arrived late.
+  - Fixed `stepErrors` for steps with ids such as `constructor` and `__proto__`. `stepErrors` is now an object without a prototype.
+  - `validateSubmission()` treats an empty array in a built-in field other than `multiselect` as a missing answer and leaves it out of the returned values.
+  - An optional field with an empty array passes `validateSubmission()`.
+  - A required field with an empty array fails `validateSubmission()` with the required message instead of a type error.
+- 5ea6229: - Fixed a rejected or cancelled final Skip keeping the step skipped and its answers cleared when an answer changed while it was pending.
+
 ## 0.13.0
 
 ### Minor Changes
