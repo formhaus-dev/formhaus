@@ -1,21 +1,12 @@
 <script setup lang="ts">
-import {
-  isGroup,
-  isSection,
-  type FormSection,
-  type FormEngineOptions,
-  type FormField,
-  type LabelKey,
-  type StepChangeContext,
-} from '@formhaus/core';
-import { applySources, errorEntries, fieldDomId, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { isSection, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
+import { applySources, errorEntries, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { computed, onMounted, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
 import DefaultSection from './DefaultSection.vue';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
-import { useFieldOptions } from './composables/useFieldOptions';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
 import { useNodeProps } from './composables/useNodeProps';
@@ -84,22 +75,6 @@ watch(
   (engine) => applySources(engine, props.initialValues),
 );
 
-const optionFields = computed(() => visibleFields.value.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])));
-const loaded = useFieldOptions(
-  optionFields,
-  () => form.engine,
-  () => props.optionsProviders,
-);
-const resolvedOptions = computed(() =>
-  Object.fromEntries(
-    optionFields.value.flatMap((field: FormField) =>
-      field.optionsFrom && props.optionsProviders?.[field.optionsFrom] && loaded.value[field.key]
-        ? [[field.key, loaded.value[field.key]]]
-        : [],
-    ),
-  ),
-);
-
 const {
   update: onFieldUpdate,
   commit: onFieldCommit,
@@ -155,18 +130,7 @@ function onCancel() {
 
 const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
 
-function sectionProps(section: FormSection) {
-  const id = fieldDomId(formId, section.key, form.engine.definition);
-  return {
-    id,
-    section,
-    title: section.title,
-    description: section.description,
-    descriptionId: section.description ? `${id}-description` : undefined,
-  };
-}
-
-const { nodeProps } = useNodeProps(form, props, formId, resolvedOptions, disabled, {
+const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, {
   update: onFieldUpdate,
   commit: onFieldCommit,
   blur: onFieldBlur,

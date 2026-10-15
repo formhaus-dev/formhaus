@@ -1,6 +1,7 @@
-import { isGroup, type FieldOption, type FormField } from '@formhaus/core';
+import { isGroup, type FormField, type FormSection } from '@formhaus/core';
 import { fieldDomId } from '@formhaus/core/internal';
-import type { Ref } from 'vue';
+import { computed, type Ref } from 'vue';
+import { useFieldOptions } from './useFieldOptions';
 import type { FormRendererProps } from '../types';
 import type { UseFormEngineReturn } from './useFormEngine';
 
@@ -11,16 +12,34 @@ interface Handlers {
   focus: (key: string) => void;
 }
 
-export function useNodeProps(
-  form: UseFormEngineReturn,
-  props: FormRendererProps,
-  formId: string,
-  options: Ref<Record<string, FieldOption[]>>,
-  disabled: Ref<boolean>,
-  on: Handlers,
-) {
-  const { values, errors, fieldLoading } = form;
+export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps, formId: string, disabled: Ref<boolean>, on: Handlers) {
+  const { values, errors, fieldLoading, visibleFields } = form;
+  const optionFields = computed(() => visibleFields.value.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])));
+  const loaded = useFieldOptions(
+    optionFields,
+    () => form.engine,
+    () => props.optionsProviders,
+  );
+  const options = computed(() =>
+    Object.fromEntries(
+      optionFields.value.flatMap((field: FormField) =>
+        field.optionsFrom && props.optionsProviders?.[field.optionsFrom] && loaded.value[field.key]
+          ? [[field.key, loaded.value[field.key]]]
+          : [],
+      ),
+    ),
+  );
   return {
+    sectionProps(section: FormSection) {
+      const id = fieldDomId(formId, section.key, form.engine.definition);
+      return {
+        id,
+        section,
+        title: section.title,
+        description: section.description,
+        descriptionId: section.description ? `${id}-description` : undefined,
+      };
+    },
     nodeProps(field: FormField) {
       if (isGroup(field)) {
         return {
