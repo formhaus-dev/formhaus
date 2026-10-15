@@ -30,6 +30,7 @@
   display: inline-grid;
   flex: none;
   place-items: center;
+  color: var(--fh-ed-warning);
 }
 
 .icon svg {
@@ -48,13 +49,6 @@
   white-space: nowrap;
 }
 
-.action {
-  flex: none;
-}
-
-.icon {
-  color: var(--fh-ed-warning);
-}
 
 .danger {
   color: var(--fh-ed-danger);

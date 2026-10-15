@@ -24,6 +24,7 @@
 
 :where([data-fh-theme="dark"] .fh-form, .fh-form[data-fh-theme="dark"]) {
   color-scheme: dark;
+
   --fh-color-text: #ececee;
   --fh-color-text-muted: #a8a8b3;
   --fh-color-border: #3a3a41;
@@ -106,6 +107,7 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:checked) { border-color: var(--fh-color-primary); background: var(--fh-color-primary-soft); }
 :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:disabled) { opacity: 0.6; }
 :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:focus-visible) { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
+
 @supports selector(:has(*)) { :is(.fh-field__radio-option, .fh-field__multiselect-option) input:focus-visible { outline: none; } }
 :is(.fh-field__radio-label, .fh-field__multiselect-label) { flex: 1 1 auto; cursor: pointer; }
 :is(.fh-field__radio-label, .fh-field__multiselect-label, .fh-field__checkbox-wrapper .fh-field__label, .fh-field__switch-wrapper .fh-field__label)::before { content: ""; position: absolute; inset: 0; border-radius: inherit; }
@@ -138,7 +140,9 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 .fh-field__checkbox:checked::after {
   content: ""; position: absolute; inset: 0;
   background: var(--fh-color-primary-text);
+
   --fh-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+
   -webkit-mask: var(--fh-check) center / 14px no-repeat;
   mask: var(--fh-check) center / 14px no-repeat;
 }
