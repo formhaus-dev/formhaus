@@ -1,4 +1,4 @@
-import { isGroup, isSection, type FormNode } from '@formhaus/core';
+import { isGroup, isSection, type FormField, type FormNode } from '@formhaus/core';
 import { fieldDomId } from '@formhaus/core/internal';
 import { memo, useMemo, type ComponentType } from 'react';
 import { DefaultSection } from './ContainerViews';
@@ -26,7 +26,10 @@ export const FormFieldsController = memo(function FormFieldsController({
   useStructureSnapshot(engine);
   useFormSnapshot(engine);
   const fields = engine.visibleFields;
-  const optionFields = useMemo(() => fields.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])), [fields]);
+  const optionFields = useMemo(
+    (): FormField[] => fields.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])),
+    [fields],
+  );
   const loaded = useFieldOptions(optionFields, engine, optionsProviders);
   const resolvedOptions = useMemo(
     () =>
