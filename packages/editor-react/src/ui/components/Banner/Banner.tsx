@@ -12,14 +12,15 @@ export type BannerProps = Omit<ComponentPropsWithRef<'div'>, 'title'> & {
   title?: ReactNode;
   action?: ReactNode;
   footer?: ReactNode;
+  centered?: boolean;
 };
 
-export function Banner({ tone = 'info', title, action, footer, className, children, ...rest }: BannerProps) {
+export function Banner({ tone = 'info', title, action, footer, centered = false, className, children, ...rest }: BannerProps) {
   const Icon = icons[tone];
   return (
     <div
       role={tone === 'danger' ? 'alert' : 'status'}
-      className={cx(styles.banner, styles[tone], footer !== undefined && styles.stacked, className)}
+      className={cx(styles.banner, styles[tone], footer !== undefined && styles.stacked, centered && styles.centered, className)}
       {...rest}
     >
       <Icon aria-hidden className={styles.icon} />

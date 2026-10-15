@@ -70,3 +70,25 @@
   gap: var(--fh-ed-space-2);
   margin-top: var(--fh-ed-space-2-5);
 }
+
+.centered {
+  flex-direction: column;
+  align-items: center;
+  gap: var(--fh-ed-space-2);
+  padding: var(--fh-ed-space-6) var(--fh-ed-space-4);
+  text-align: center;
+}
+
+.centered .body {
+  align-items: center;
+  flex: none;
+  width: 100%;
+}
+
+.centered .icon {
+  margin-top: 0;
+}
+
+.centered .footer {
+  justify-content: center;
+}

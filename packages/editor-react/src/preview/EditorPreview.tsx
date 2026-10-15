@@ -40,6 +40,7 @@ function Blocked({ onShowIssues }: { onShowIssues: () => void }) {
   return (
     <Banner
       tone="warning"
+      centered
       title="The preview can’t show this form yet"
       footer={
         <>

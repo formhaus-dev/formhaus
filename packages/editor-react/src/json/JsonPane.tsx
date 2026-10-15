@@ -45,17 +45,30 @@ export function JsonPane({ reveal = false, onRevealed }: { reveal?: boolean; onR
   const target = useMemo(() => checked ?? plainDefinition(form), [checked, form]);
   const issues = useMemo(() => (tools ? tools.suggestFixes(target) : checkDefinition(target)), [tools, target]);
   const list = useRef<HTMLUListElement>(null);
-  const showIssues = () => {
+  const showIssues = (instant = false) => {
     const node = list.current;
     if (!node) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     node.focus({ preventScroll: true });
-    node.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+    if (!instant) {
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      node.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+      return;
+    }
+    let frames = 0;
+    let last = Number.NaN;
+    const step = () => {
+      node.scrollIntoView({ block: 'start' });
+      const top = node.getBoundingClientRect().top;
+      frames += 1;
+      if (top !== last && frames < 30) requestAnimationFrame(step);
+      last = top;
+    };
+    step();
   };
   const fixable = readOnly ? null : tools;
   useEffect(() => {
-    if (!reveal) return;
-    showIssues();
+    if (!reveal || !ready || !list.current) return;
+    showIssues(true);
     onRevealed?.();
   });
   return (
@@ -64,7 +77,7 @@ export function JsonPane({ reveal = false, onRevealed }: { reveal?: boolean; onR
         <div className={styles.bar}>
           <span className={styles.summary}>
             <span role="status">
-              <Status error={error} issues={issues} onShow={showIssues} />
+              <Status error={error} issues={issues} onShow={() => showIssues()} />
             </span>
             {!error && <FixAllButton issues={issues} tools={fixable} onApply={apply} />}
           </span>
