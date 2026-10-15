@@ -17,7 +17,7 @@
   Render it in your React or Vue app, or publish it as a hosted form.
 </p>
 
-<p align="center"><strong>React</strong> · <strong>Vue</strong> · <strong>MCP</strong> · <strong>Figma</strong></p>
+<p align="center"><strong>React</strong> · <strong>Vue</strong> · <strong>MCP</strong> · <strong>Figma Plugin</strong></p>
 
 <p align="center">
   <a href="https://formhaus.dev/guide/">Documentation</a> ·
