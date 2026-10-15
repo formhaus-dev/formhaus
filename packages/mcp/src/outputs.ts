@@ -6,11 +6,41 @@ const issue = z.object({
   path: z.string().describe('JSON pointer to the node, such as /steps/0/fields/1/show/0/field.'),
   message: z.string().describe('"<path>: <what is wrong>. <how to fix>."'),
   hint: z.string().optional(),
+  fixes: z
+    .array(
+      z.object({
+        title: z.string(),
+        safe: z
+          .boolean()
+          .describe('true when applying the patch only repairs the issue and changes nothing else. fix_definition applies these.'),
+        patch: z
+          .array(z.record(z.string(), z.unknown()))
+          .describe('RFC 6902 JSON Patch operations (add, replace, remove, move) with JSON pointer paths.'),
+      }),
+    )
+    .optional()
+    .describe('Ready repairs for this issue. Apply one patch to the definition, then validate again.'),
 });
 
 export const validationOutput = {
   valid: z.boolean().describe('false when at least one issue has severity "error".'),
   issues: z.array(issue).describe('Errors first, then warnings. Fix every error at its path and validate again.'),
+};
+
+export const fixOutput = {
+  ...validationOutput,
+  definition: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe('The definition with every safe fix applied. Missing when the input is not a JSON object.'),
+  applied: z
+    .array(z.object({ code: z.string(), path: z.string(), title: z.string() }))
+    .describe('Fixes applied, in order. path is where the issue was before the fix.'),
+  issues: z
+    .array(issue)
+    .describe(
+      'Issues left after the safe fixes. Errors first, then warnings. Fix them by hand or apply one of their unsafe fixes after checking it.',
+    ),
 };
 
 const trace = z.object({

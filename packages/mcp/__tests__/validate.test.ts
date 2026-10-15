@@ -38,16 +38,18 @@ describe('validate_definition', () => {
 
   it('reports a mistyped property as an error with a suggestion', () => {
     const definition = { imd: 'contact', title: 'Contact', submit: { label: 'Send' }, fields: [{ key: 'name', type: 'text', label: '' }] };
+    const rename = { title: 'Rename "imd" to "id"', safe: true, patch: [{ op: 'move', from: '/imd', path: '/id' }] };
     expect(validateDefinitionTool({ definition })).toEqual({
       valid: false,
       issues: [
-        { code: 'missing-property', severity: 'error', path: '', message: '/: missing required property "id".' },
+        { code: 'missing-property', severity: 'error', path: '', message: '/: missing required property "id".', fixes: [rename] },
         {
           code: 'unknown-property',
           severity: 'error',
           path: '/imd',
           message: '/imd: unknown property "imd". Did you mean "id"?',
           hint: 'Did you mean "id"?',
+          fixes: [rename],
         },
         {
           code: 'empty-label',
@@ -55,6 +57,7 @@ describe('validate_definition', () => {
           path: '/fields/0/label',
           message: '/fields/0/label: the label of "name" is empty. Add a label so screen readers can name the input.',
           hint: 'Add a label so screen readers can name the input.',
+          fixes: [{ title: 'Set the label to "Name"', safe: true, patch: [{ op: 'add', path: '/fields/0/label', value: 'Name' }] }],
         },
       ],
     });
