@@ -9,6 +9,8 @@
 
 Formhaus is a JSON form definition with a zero-dependency engine, React and Vue renderers, a Figma plugin, a JSON Schema and an MCP server for AI agents. One file describes fields, validation, conditional fields, multi-step navigation, branching routes and skippable steps.
 
+**[Example](#example) · [Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Spec](https://formhaus.dev/spec.html) · [Playground](https://formhaus.dev/playground.html)**
+
 Two independent ways to use it:
 
 - **Use the library.** MIT, no account, no key. The core is framework-agnostic and runs the form in any app; React and Vue renderers are ready to use. Your submit handler sends the data wherever you want. CI tests React 18 and 19, and Vue 3.3 and 3.5.
@@ -17,29 +19,21 @@ Two independent ways to use it:
   npm install @formhaus/core   # plus @formhaus/react or @formhaus/vue
   ```
 
-  [Install](#install) · [Quick start](#quick-start) · [Guide](https://formhaus.dev/guide/) · [Playground](https://formhaus.dev/playground)
+  To let an agent write and check definitions locally, add the local MCP server. Its checks need no account:
+
+  ```bash
+  claude mcp add formhaus -- npx -y @formhaus/mcp
+  ```
 
 - **Use [Formhaus Cloud](https://formhaus.dev/cloud).** A hosted form backend: a submission endpoint with server validation, a dashboard and webhooks, plus hosted links, embeds and a visual builder. The first form needs no account.
 
-  Build in the browser at [app.formhaus.dev](https://app.formhaus.dev/login), or let your AI agent publish the form:
+  Build in the browser at [app.formhaus.dev](https://app.formhaus.dev/login), or add the remote MCP server and ask your agent: "Make me a waitlist form and give me the link."
 
   ```bash
   claude mcp add --transport http formhaus https://api.formhaus.dev/mcp
   ```
 
   [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard) · [Pricing](https://formhaus.dev/cloud#pricing)
-
-**[Start here](#start-here) · [Example](#example) · [Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Spec](https://formhaus.dev/spec.html) · [Playground](https://formhaus.dev/playground.html)**
-
-## Start here
-
-**Library.** [Install](#install) the packages and follow the [Quick start](#quick-start). To let an agent write and check definitions locally, add the local MCP server. Its checks need no account:
-
-```bash
-claude mcp add formhaus -- npx -y @formhaus/mcp
-```
-
-**Cloud.** Add the remote MCP server above, then ask: "Make me a waitlist form and give me the link." Cursor and other MCP clients use the same URL. See the [Cloud quickstart](https://formhaus.dev/cloud/quickstart).
 
 ![An agent publishes a waitlist form, the hosted form takes a response, and the agent reads it back](docs/public/media/agent-publishes-a-form.gif)
 
