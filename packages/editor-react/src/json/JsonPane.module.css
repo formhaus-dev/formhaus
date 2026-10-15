@@ -67,19 +67,13 @@
   font-variant-numeric: tabular-nums;
 }
 
-.problems {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--fh-ed-space-2);
-}
-
 .issues {
   display: flex;
   flex-direction: column;
   align-self: stretch;
   max-inline-size: var(--fh-ed-size-editor-canvas);
   margin: 0;
+  scroll-margin-top: calc(var(--fh-ed-layout-topbar) + var(--fh-ed-size-control-md) + var(--fh-ed-space-8));
   padding: 0;
   color: var(--fh-ed-fg-muted);
   font-size: var(--fh-ed-font-size-sm);
@@ -131,4 +125,32 @@
 
 .loading {
   place-self: center;
+}
+
+.summary {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--fh-ed-space-2) var(--fh-ed-space-3);
+  min-width: 0;
+}
+
+.show {
+  padding: 0;
+  border: 0;
+  border-radius: var(--fh-ed-radius-sm);
+  background: none;
+  font: inherit;
+  font-weight: var(--fh-ed-font-weight-medium);
+  color: var(--fh-ed-accent);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: var(--fh-ed-space-0-5);
+  cursor: pointer;
+  transition: text-decoration-color var(--fh-ed-duration-fast);
+}
+
+.show:hover {
+  color: var(--fh-ed-fg);
+  text-decoration-color: currentColor;
 }

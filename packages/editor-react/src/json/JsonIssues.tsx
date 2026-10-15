@@ -1,3 +1,4 @@
+import type { Ref } from 'react';
 import type { DefinitionIssue, FormDefinition } from '@formhaus/core';
 import type { DefinitionFix, FixableIssue } from '@formhaus/core/fix';
 import { ChevronDown, CircleAlert, TriangleAlert, WandSparkles } from 'lucide-react';
@@ -67,43 +68,52 @@ function FixControl({ issue, onFix }: { issue: FixableIssue; onFix: (fix: Defini
   );
 }
 
-export function JsonIssues({ issues, tools, onApply }: Props) {
+function useFixActions(tools: FixTools | null, onApply: Apply) {
   const announce = useAnnounce();
+  return {
+    fixOne: (fix: DefinitionFix) => {
+      if (tools && onApply((definition) => tools.applyFix(definition, fix.patch), targetOf(fix))) announce(`Applied: ${fix.title}`);
+    },
+    fixSafe: () => {
+      if (!tools) return;
+      let count = 0;
+      const changed = onApply((definition) => {
+        const result = tools.fixAll(definition);
+        count = result.applied.length;
+        return result.definition;
+      });
+      if (changed) announce(count === 1 ? 'Applied 1 fix' : `Applied ${String(count)} fixes`);
+    },
+  };
+}
+
+export function FixAllButton({ issues, tools, onApply }: Props) {
+  const { fixSafe } = useFixActions(tools, onApply);
   const safe = issues.filter((issue) => issue.fixes?.some((fix) => fix.safe)).length;
-  const fixOne = (fix: DefinitionFix) => {
-    if (tools && onApply((definition) => tools.applyFix(definition, fix.patch), targetOf(fix))) announce(`Applied: ${fix.title}`);
-  };
-  const fixSafe = () => {
-    if (!tools) return;
-    let count = 0;
-    const changed = onApply((definition) => {
-      const result = tools.fixAll(definition);
-      count = result.applied.length;
-      return result.definition;
-    });
-    if (changed) announce(count === 1 ? 'Applied 1 fix' : `Applied ${String(count)} fixes`);
-  };
+  if (!tools || !safe) return null;
   return (
-    <div className={styles.problems}>
-      {tools && safe > 0 && (
-        <Button className={styles.fixAll} icon={<WandSparkles aria-hidden />} onClick={fixSafe}>
-          Fix all safe issues ({safe})
-        </Button>
-      )}
-      <ul className={styles.issues} aria-label="Definition issues">
-        {issues.map((issue, index) => {
-          const Icon = issue.severity === 'error' ? CircleAlert : TriangleAlert;
-          return (
-            <li key={`${String(index)}-${issue.message}`} className={styles.issue}>
-              <span className={styles.message}>
-                <Icon aria-hidden className={cx(styles.icon, issue.severity === 'error' ? styles.errorIcon : styles.warningIcon)} />
-                {issue.message}
-              </span>
-              {tools && issue.fixes && <FixControl issue={issue} onFix={fixOne} />}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
+    <Button className={styles.fixAll} icon={<WandSparkles aria-hidden />} onClick={fixSafe}>
+      Fix all safe issues ({safe})
+    </Button>
+  );
+}
+
+export function JsonIssues({ issues, tools, onApply, listRef }: Props & { listRef?: Ref<HTMLUListElement> }) {
+  const { fixOne } = useFixActions(tools, onApply);
+  return (
+    <ul ref={listRef} className={styles.issues} aria-label="Definition issues" tabIndex={-1}>
+      {issues.map((issue, index) => {
+        const Icon = issue.severity === 'error' ? CircleAlert : TriangleAlert;
+        return (
+          <li key={`${String(index)}-${issue.message}`} className={styles.issue}>
+            <span className={styles.message}>
+              <Icon aria-hidden className={cx(styles.icon, issue.severity === 'error' ? styles.errorIcon : styles.warningIcon)} />
+              {issue.message}
+            </span>
+            {tools && issue.fixes && <FixControl issue={issue} onFix={fixOne} />}
+          </li>
+        );
+      })}
+    </ul>
   );
 }

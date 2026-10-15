@@ -1,17 +1,17 @@
 import { SCHEMA_URL } from '@formhaus/builder';
 import { checkDefinition } from '@formhaus/core';
 import { CircleAlert, CircleCheck, CircleX } from 'lucide-react';
-import { useDeferredValue, useMemo, useRef } from 'react';
+import { useDeferredValue, useEffect, useMemo, useRef } from 'react';
 import { Spinner, Text, TextLink } from '../ui';
 import { cx } from '../ui/lib/cx';
 import { useForm, useReadOnly } from '../store/hooks';
 import { useFixTools } from './fixes';
-import { JsonIssues } from './JsonIssues';
+import { FixAllButton, JsonIssues } from './JsonIssues';
 import styles from './JsonPane.module.css';
 import { plainDefinition } from './sync';
 import { useJsonSync, type JsonSyncState } from './useJsonSync';
 
-function Status({ error, issues }: { error: JsonSyncState['error']; issues: unknown[] }) {
+function Status({ error, issues, onShow }: { error: JsonSyncState['error']; issues: unknown[]; onShow: () => void }) {
   if (error) {
     return (
       <span className={cx(styles.state, styles.danger)}>
@@ -22,10 +22,10 @@ function Status({ error, issues }: { error: JsonSyncState['error']; issues: unkn
   }
   if (issues.length) {
     return (
-      <span className={cx(styles.state, styles.warning)}>
+      <button type="button" className={cx(styles.state, styles.warning, styles.show)} onClick={onShow}>
         <CircleAlert aria-hidden />
         {issues.length} {issues.length === 1 ? 'issue' : 'issues'}
-      </span>
+      </button>
     );
   }
   return (
@@ -36,7 +36,7 @@ function Status({ error, issues }: { error: JsonSyncState['error']; issues: unkn
   );
 }
 
-export function JsonPane() {
+export function JsonPane({ reveal = false, onRevealed }: { reveal?: boolean; onRevealed?: () => void }) {
   const host = useRef<HTMLDivElement>(null);
   const { error, checked, ready, apply } = useJsonSync(host);
   const readOnly = useReadOnly();
@@ -44,11 +44,30 @@ export function JsonPane() {
   const form = useDeferredValue(useForm());
   const target = useMemo(() => checked ?? plainDefinition(form), [checked, form]);
   const issues = useMemo(() => (tools ? tools.suggestFixes(target) : checkDefinition(target)), [tools, target]);
+  const list = useRef<HTMLUListElement>(null);
+  const showIssues = () => {
+    const node = list.current;
+    if (!node) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    node.focus({ preventScroll: true });
+    node.scrollIntoView({ block: 'start', behavior: reduce ? 'auto' : 'smooth' });
+  };
+  const fixable = readOnly ? null : tools;
+  useEffect(() => {
+    if (!reveal) return;
+    showIssues();
+    onRevealed?.();
+  });
   return (
     <div className={styles.pane}>
       <div className={styles.editor}>
-        <div className={styles.bar} role="status">
-          <Status error={error} issues={issues} />
+        <div className={styles.bar}>
+          <span className={styles.summary}>
+            <span role="status">
+              <Status error={error} issues={issues} onShow={showIssues} />
+            </span>
+            {!error && <FixAllButton issues={issues} tools={fixable} onApply={apply} />}
+          </span>
           <TextLink href={SCHEMA_URL} external>
             Schema
           </TextLink>
@@ -63,7 +82,7 @@ export function JsonPane() {
           Visual keeps the last valid version until the JSON parses.
         </Text>
       )}
-      {!error && issues.length > 0 && <JsonIssues issues={issues} tools={readOnly ? null : tools} onApply={apply} />}
+      {!error && issues.length > 0 && <JsonIssues issues={issues} tools={fixable} onApply={apply} listRef={list} />}
     </div>
   );
 }

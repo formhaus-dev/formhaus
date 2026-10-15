@@ -47,6 +47,14 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit', compact 
   const [mode, setMode] = useState<string>(initialMode);
   const small = useMedia(phone);
   const [help, setHelp] = useState(false);
+  const [reveal, setReveal] = useState(false);
+  const onShowIssues = useCallback(() => {
+    setMode('json');
+    setReveal(true);
+  }, []);
+  const onRevealed = useCallback(() => {
+    setReveal(false);
+  }, []);
   const onToggleJson = useCallback(() => {
     if (!compact) setMode((current) => (current === 'json' ? 'edit' : 'json'));
   }, [compact]);
@@ -84,12 +92,12 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit', compact 
       )}
       {mode === 'preview' && (
         <div className={styles.layout}>
-          <EditorPreview />
+          <EditorPreview onShowIssues={onShowIssues} />
         </div>
       )}
       {mode === 'json' && (
         <div className={styles.layout}>
-          <JsonPane />
+          <JsonPane reveal={reveal} onRevealed={onRevealed} />
         </div>
       )}
       <div hidden={mode !== 'edit'}>
