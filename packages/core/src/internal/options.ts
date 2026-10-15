@@ -1,7 +1,7 @@
 import type { FieldOption, FormField } from '../types';
 import { isGroup } from '../visibility/nodes';
 
-type Provider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
+export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
 export type OptionSource = [key: string, field: FormField];
 
@@ -15,7 +15,7 @@ export function optionSources(fields: FormField[]): OptionSource[] {
 
 export function providedOptions(
   sources: OptionSource[],
-  providers: Record<string, Provider> | undefined,
+  providers: Record<string, OptionsProvider> | undefined,
   loaded: Record<string, FieldOption[]>,
 ): Record<string, FieldOption[]> {
   return Object.fromEntries(
@@ -32,7 +32,7 @@ export function sameOptions(previous: FieldOption[] | undefined, next: FieldOpti
 
 export function loadOptions(
   key: string,
-  provider: Provider,
+  provider: OptionsProvider,
   values: Record<string, unknown>,
   versions: Map<string, number>,
   commit: (key: string, options: FieldOption[]) => void,

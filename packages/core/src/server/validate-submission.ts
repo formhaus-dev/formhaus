@@ -125,8 +125,10 @@ function rejectGroups(definition: FormDefinition, fields: FormField[], input: un
   const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? { ...(input as Record<string, unknown>) } : {};
   const rejected = new Map<string, unknown>();
   const reject = (keys: string[]) => {
-    for (const key of keys) rejected.set(key, source[key]);
-    for (const key of keys) delete source[key];
+    for (const key of keys) {
+      rejected.set(key, source[key]);
+      delete source[key];
+    }
   };
   const fits = (key: string) => fields.some((field) => field.key === key && !typeError(field, source[key], resolve));
   reject([...new Set(fields.filter(isGroup).map(({ key }) => key))].filter((key) => hasOwn(source, key) && !fits(key)));

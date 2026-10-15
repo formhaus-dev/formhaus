@@ -1,7 +1,6 @@
 import type {
   ConfirmDialogView,
   DefaultFieldType,
-  FieldOption,
   FieldType,
   FormAction,
   FormAnalyticsEvent,
@@ -15,9 +14,10 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
+import type { OptionsProvider } from '@formhaus/core/internal';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
-export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
+export type { OptionsProvider };
 
 export interface FieldComponentProps {
   id?: string;
