@@ -1,6 +1,24 @@
-import { isQuestion, OPERATOR_LABELS, takesValue, type BuilderForm, type ConditionRow, type Logic } from '@formhaus/builder';
+import {
+  isQuestion,
+  OPERATOR_LABELS,
+  takesValue,
+  type BuilderForm,
+  type BuilderQuestion,
+  type ConditionRow,
+  type Logic,
+} from '@formhaus/builder';
 
-const sourceOf = (form: BuilderForm, key: string) => form.blocks.filter(isQuestion).find((item) => item.key === key);
+const sources = new WeakMap<BuilderForm, Map<string, BuilderQuestion>>();
+
+export function sourceOf(form: BuilderForm, key: string): BuilderQuestion | undefined {
+  let byKey = sources.get(form);
+  if (!byKey) {
+    byKey = new Map();
+    for (const block of form.blocks) if (isQuestion(block) && !byKey.has(block.key)) byKey.set(block.key, block);
+    sources.set(form, byKey);
+  }
+  return byKey.get(key);
+}
 
 function valueLabel(form: BuilderForm, row: ConditionRow): string {
   const options = sourceOf(form, row.field)?.options ?? [];

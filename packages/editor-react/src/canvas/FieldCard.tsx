@@ -9,7 +9,7 @@ import settings from '../inspector/Inspector.module.css';
 import { LogicBadge } from '../logic/LogicBadge';
 import { keyHint } from '../shell/keys';
 import { useEditorStore } from '../store/context';
-import { useField, useIsExpanded, useIsSelected, useIssues, useReadOnly } from '../store/hooks';
+import { useErrors, useField, useIsExpanded, useIsSelected, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
 import suggestionStyles from './TypeSuggestion.module.css';
@@ -37,7 +37,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
   const selected = useIsSelected({ kind: 'field', uid });
   const expanded = useIsExpanded(uid);
   const readOnly = useReadOnly();
-  const issues = (useIssues().get(uid) ?? []).filter((issue) => issue.severity === 'error');
+  const issues = useErrors(uid);
   const focus = useFocusRequests();
   const issuesId = useId();
   const label = useRef<HTMLTextAreaElement>(null);
@@ -143,10 +143,10 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
         {body()}
         {issues.length > 0 && (
           <ul id={issuesId} className={styles.issues}>
-            {issues.map((issue) => (
-              <li key={issue.message} className={cx(styles.issue, styles.error)}>
+            {issues.map((message) => (
+              <li key={message} className={cx(styles.issue, styles.error)}>
                 <CircleAlert aria-hidden />
-                {issue.message}
+                {message}
               </li>
             ))}
           </ul>
