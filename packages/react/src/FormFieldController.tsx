@@ -54,7 +54,7 @@ export const FormFieldController = memo(function FormFieldController({
 
   return (
     <FieldResolver
-      id={fieldDomId(formId, field.key)}
+      id={fieldDomId(formId, field.key, engine.definition)}
       field={fieldWithOptions}
       value={engine.values[field.key]}
       error={engine.errors[field.key]}

@@ -13,13 +13,18 @@ interface Locks {
   steps: Set<string>;
 }
 
-function locksOf(definition: FormDefinition | undefined): Locks {
-  const fields = [...(definition?.fields ?? []), ...(definition?.steps ?? []).flatMap((step) => step.fields ?? [])];
-  return {
-    keys: new Set(fields.map((field) => field.key)),
-    values: new Map(fields.map((field) => [field.key, new Set((field.options ?? []).map((option) => option.value))])),
-    steps: new Set((definition?.steps ?? []).map((step) => step.id)),
-  };
+function locksOf(...definitions: (FormDefinition | undefined)[]): Locks {
+  const locks: Locks = { keys: new Set(), values: new Map(), steps: new Set() };
+  for (const definition of definitions) {
+    for (const step of definition?.steps ?? []) locks.steps.add(step.id);
+    for (const field of [...(definition?.fields ?? []), ...(definition?.steps ?? []).flatMap((step) => step.fields ?? [])]) {
+      locks.keys.add(field.key);
+      const values = locks.values.get(field.key) ?? new Set();
+      for (const option of field.options ?? []) values.add(option.value);
+      locks.values.set(field.key, values);
+    }
+  }
+  return locks;
 }
 
 function canonical(value: unknown): string {
@@ -53,7 +58,7 @@ function jumps(key: string, routes: StepRoute[], ids: Map<string, string>, optio
 function question(form: BuilderForm, field: FormField, routes: StepRoute[], ids: Map<string, string>, locks: Locks): BuilderQuestion {
   const { key, type, label, options, validation, ...extra } = field;
   const { required, ...rules } = validation ?? {};
-  if (typeof required === 'string') (rules as Record<string, unknown>).required = required;
+  if (typeof required === 'string' || required === false) (rules as Record<string, unknown>).required = required;
   const choice = hasOptions(type);
   const jump = jumps(key, routes, ids, options ?? []);
   const published = locks.values.get(key);
@@ -63,28 +68,36 @@ function question(form: BuilderForm, field: FormField, routes: StepRoute[], ids:
     label: label ?? '',
     type,
     required: !!required,
-    options: (choice ? options ?? [] : []).map((option, index): BuilderOption => ({
-      uid: uid(form),
-      label: option.label,
-      value: option.value,
-      valueLocked: !!published?.has(option.value) || !follows(option.value, optionBase(option.label, index), '-'),
-      jump: jump(option.value),
-    })),
+    options: (choice ? options ?? [] : []).map((option, index): BuilderOption => {
+      const { value, label: text, ...meta } = option;
+      return {
+        uid: uid(form),
+        label: text,
+        value,
+        valueLocked: !!published?.has(value) || !!meta.i18n || !follows(value, optionBase(text, index), '-'),
+        jump: jump(value),
+        ...(Object.keys(meta).length ? { extra: meta } : {}),
+        shape: Object.keys(option),
+      };
+    }),
     key,
-    keyLocked: locks.keys.has(key) || !follows(key, keyBase(label ?? '')),
+    keyLocked: locks.keys.has(key) || !!extra.i18n || !follows(key, keyBase(label ?? '')),
     extra: { ...extra, ...(!choice && options ? { options } : {}), ...(Object.keys(rules).length ? { validation: rules } : {}) },
+    shape: { field: Object.keys(field), ...(validation ? { validation: Object.keys(validation) } : {}) },
   };
 }
 
-const labelOnly = (action: FormStep['next']) => (typeof action === 'object' && action && Object.keys(action).length === 1 ? action.label : undefined);
+const labelOnly = (action: FormStep['next']) => (
+  typeof action === 'object' && action && Object.keys(action).length === 1 && action.label && action.label.trim() === action.label ? action.label : undefined
+);
 
 function page(form: BuilderForm, step: FormStep, index: number, locks: Locks): BuilderPage {
   const { id, title, fields: _fields, routes: _routes, next, back, ...rest } = step;
   const extra: Partial<FormStep> = { ...rest };
   if (next !== undefined && labelOnly(next) === undefined) extra.next = next;
   if (back !== undefined && labelOnly(back) === undefined) extra.back = back;
-  const result: BuilderPage = { ...newPage(form, title ?? ''), nextLabel: labelOnly(next) ?? '', backLabel: labelOnly(back) ?? '', extra, id };
-  result.idLocked = locks.steps.has(id) || !follows(id, stepBase(result, index), '-');
+  const result: BuilderPage = { ...newPage(form, title ?? ''), nextLabel: labelOnly(next) ?? '', backLabel: labelOnly(back) ?? '', extra, id, shape: Object.keys(step) };
+  result.idLocked = locks.steps.has(id) || !!step.i18n || !follows(id, stepBase(result, index), '-');
   return result;
 }
 
@@ -92,12 +105,13 @@ function head(definition: FormDefinition): Omit<BuilderForm, 'blocks'> {
   const { id, title, submit, fields: _fields, steps: _steps, ...rest } = definition;
   const { label, ...action } = (submit ?? {}) as Partial<FormAction>;
   const extra: FormExtra = { ...rest, ...(Object.keys(action).length ? { submit: action } : {}) };
-  return { id, title: title ?? '', submit: label ?? 'Submit', extra, seq: 0 };
+  const shape = { form: Object.keys(definition), ...(submit ? { submit: Object.keys(submit) } : {}) };
+  return { id, title: title ?? '', submit: label ?? 'Submit', extra, seq: 0, shape };
 }
 
 export function fromDefinition(source: FormDefinition, options: ParseOptions = {}): BuilderForm {
   const definition = clone(source);
-  const locks = locksOf(options.lockedFrom);
+  const locks = locksOf(options.lockedFrom, source.lang || source.i18n ? source : undefined);
   const form: BuilderForm = { ...head(definition), blocks: [] };
   if (!definition.steps) {
     form.blocks = (definition.fields ?? []).map((field) => question(form, field, [], new Map(), locks));

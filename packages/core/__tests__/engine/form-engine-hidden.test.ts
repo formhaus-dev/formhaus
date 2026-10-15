@@ -99,4 +99,21 @@ describe('revealed hidden fields', () => {
     engine.setValue('plan', 'pro');
     expect(engine.values.campaign).toBe('other');
   });
+
+  it('keeps an active visible field error out of the form-level errors when a hidden field on another branch shares its key', async () => {
+    const shared: FormDefinition = { id: 'ref', title: '', submit: { label: 'Send' }, steps: [
+      { id: 'start', title: 'Start', fields: [{ key: 'mode', type: 'radio', label: 'Mode', options: [{ value: 'link', label: 'Link' }, { value: 'manual', label: 'Manual' }] }],
+        routes: [{ to: 'link', show: [{ field: 'mode', eq: 'link' }] }, { to: 'manual' }] },
+      { id: 'link', title: 'Link', fields: [{ key: 'ref', type: 'hidden', label: 'Ref' }], routes: [{ to: null }] },
+      { id: 'manual', title: 'Manual', fields: [{ key: 'ref', type: 'text', label: 'Referral code', validation: { required: 'Enter the code' } }] },
+    ] };
+    const engine = new FormEngine(shared, { mode: 'manual' });
+    expect(await engine.next()).toBe(true);
+    expect(await engine.submit(async () => {})).toBe(false);
+    expect(engine.errors).toEqual({ ref: 'Enter the code' });
+    expect(engine.topLevelErrors).toEqual([]);
+    const linked = new FormEngine(shared, { mode: 'link' });
+    linked.setErrors({ ref: 'Expired link' });
+    expect(linked.topLevelErrors).toEqual(['Expired link']);
+  });
 });
