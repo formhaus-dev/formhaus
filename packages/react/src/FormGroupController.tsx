@@ -58,54 +58,60 @@ export const FormGroupController = memo(function FormGroupController({
     <fieldset ref={root} id={id} className="fh-group" aria-invalid={!!error || undefined} aria-describedby={describedBy(group, id, error)}>
       <legend className="fh-field__label">{group.label}</legend>
       {group.helperText && (
-        <p id={`${id}-helper`} className="fh-field__helper">
+        <p id={`${id}-helper`} className="fh-field__helper fh-group__helper">
           {group.helperText}
         </p>
       )}
       {error && (
-        <p id={`${id}-error`} className="fh-field__error" role="alert">
+        <p id={`${id}-error`} className="fh-field__error fh-group__error" role="alert">
           {error}
         </p>
       )}
-      {items.map((item, index) => (
-        <fieldset key={item.id} className="fh-group__item">
-          <legend id={itemDomId(formId, group.key, index)} tabIndex={-1} className="fh-group__title">
-            {title(index)}
-          </legend>
-          {item.fields.map((field) => (
-            <FormFieldController
-              key={field.key}
-              {...props}
-              field={field}
-              options={options[field.key]}
-              disabled={disabled}
-              path={`${group.key}.${index}.${field.key}`}
-              item={values[index]}
-            />
-          ))}
-          {items.length > min && (
-            <button
-              type="button"
-              className="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
-              aria-label={`${remove} ${title(index)}`}
-              disabled={disabled}
-              onClick={() => drop(index)}
-            >
-              {remove}
-            </button>
-          )}
-        </fieldset>
-      ))}
-      {items.length < max && (
-        <button
-          type="button"
-          className="fh-form-actions__button fh-form-actions__button--secondary fh-group__add"
-          disabled={disabled}
-          onClick={add}
-        >
-          {group.addLabel ?? label('addItem')}
-        </button>
-      )}
+      <div className="fh-group__body">
+        {items.map((item, index) => (
+          <div key={item.id} className="fh-group__item" role="group" aria-labelledby={itemDomId(formId, group.key, index)}>
+            <div className="fh-group__header">
+              <span id={itemDomId(formId, group.key, index)} tabIndex={-1} className="fh-group__title">
+                {title(index)}
+              </span>
+              {items.length > min && (
+                <button
+                  type="button"
+                  className="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
+                  aria-label={`${remove} ${title(index)}`}
+                  disabled={disabled}
+                  onClick={() => drop(index)}
+                >
+                  {remove}
+                </button>
+              )}
+            </div>
+            <div className="fh-group__fields">
+              {item.fields.map((field) => (
+                <FormFieldController
+                  key={field.key}
+                  {...props}
+                  field={field}
+                  options={options[field.key]}
+                  disabled={disabled}
+                  path={`${group.key}.${index}.${field.key}`}
+                  item={values[index]}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+        {items.length < max && (
+          <button
+            type="button"
+            className="fh-form-actions__button fh-form-actions__button--secondary fh-group__add"
+            disabled={disabled}
+            onClick={add}
+          >
+            {group.addLabel ?? label('addItem')}
+          </button>
+        )}
+      </div>
       <p className="fh-group__status" role="status">
         {status}
       </p>

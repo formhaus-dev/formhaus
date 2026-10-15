@@ -45,11 +45,11 @@ export const FormFieldsController = memo(function FormFieldsController({
       <fieldset key={node.key} id={id} className="fh-section" aria-describedby={node.description ? `${id}-description` : undefined}>
         <legend className="fh-section__title">{node.title}</legend>
         {node.description && (
-          <p id={`${id}-description`} className="fh-field__helper">
+          <p id={`${id}-description`} className="fh-field__helper fh-section__description">
             {node.description}
           </p>
         )}
-        {node.fields.map(render)}
+        <div className="fh-section__body">{node.fields.map(render)}</div>
       </fieldset>
     );
   };

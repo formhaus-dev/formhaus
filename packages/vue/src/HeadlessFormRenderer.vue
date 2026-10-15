@@ -196,8 +196,10 @@ async function onPrimary() {
         <fieldset v-if="node.type === 'section'" :id="fieldDomId(formId, node.key)" class="fh-section"
           :aria-describedby="'description' in node && node.description ? `${fieldDomId(formId, node.key)}-description` : undefined">
           <legend class="fh-section__title">{{ 'title' in node && node.title }}</legend>
-          <p v-if="'description' in node && node.description" :id="`${fieldDomId(formId, node.key)}-description`" class="fh-field__helper">{{ node.description }}</p>
-          <component :is="child.type === 'group' ? FormGroup : FieldResolver" v-for="child in ('fields' in node ? node.fields : [])" :key="child.key" v-bind="nodeProps(child)" />
+          <p v-if="'description' in node && node.description" :id="`${fieldDomId(formId, node.key)}-description`" class="fh-field__helper fh-section__description">{{ node.description }}</p>
+          <div class="fh-section__body">
+            <component :is="child.type === 'group' ? FormGroup : FieldResolver" v-for="child in ('fields' in node ? node.fields : [])" :key="child.key" v-bind="nodeProps(child)" />
+          </div>
         </fieldset>
         <component :is="node.type === 'group' ? FormGroup : FieldResolver" v-else v-bind="nodeProps(node as FormField)" />
       </template>

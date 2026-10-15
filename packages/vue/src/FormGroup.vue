@@ -77,16 +77,22 @@ function drop(index: number) {
 <template>
   <fieldset ref="root" :id="id" class="fh-group" v-bind="fieldAria(props.group, id, error)">
     <legend class="fh-field__label">{{ props.group.label }}</legend>
-    <p v-if="props.group.helperText" :id="`${id}-helper`" class="fh-field__helper">{{ props.group.helperText }}</p>
-    <p v-if="error" :id="`${id}-error`" class="fh-field__error" role="alert">{{ error }}</p>
-    <fieldset v-for="(item, index) in props.items" :key="item.id" class="fh-group__item">
-      <legend :id="itemDomId(props.formId, props.group.key, index)" tabindex="-1" class="fh-group__title">{{ title(index) }}</legend>
-      <FieldResolver v-for="field in item.fields" :key="field.key" v-bind="itemProps(index, field)" />
-      <button v-if="props.items.length > limits[0]" type="button" class="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
-        :aria-label="`${remove} ${title(index)}`" :disabled="props.disabled" @click="drop(index)">{{ remove }}</button>
-    </fieldset>
-    <button v-if="props.items.length < limits[1]" type="button" class="fh-form-actions__button fh-form-actions__button--secondary fh-group__add"
-      :disabled="props.disabled" @click="add">{{ props.group.addLabel ?? label('addItem') }}</button>
+    <p v-if="props.group.helperText" :id="`${id}-helper`" class="fh-field__helper fh-group__helper">{{ props.group.helperText }}</p>
+    <p v-if="error" :id="`${id}-error`" class="fh-field__error fh-group__error" role="alert">{{ error }}</p>
+    <div class="fh-group__body">
+      <div v-for="(item, index) in props.items" :key="item.id" class="fh-group__item" role="group" :aria-labelledby="itemDomId(props.formId, props.group.key, index)">
+        <div class="fh-group__header">
+          <span :id="itemDomId(props.formId, props.group.key, index)" tabindex="-1" class="fh-group__title">{{ title(index) }}</span>
+          <button v-if="props.items.length > limits[0]" type="button" class="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
+            :aria-label="`${remove} ${title(index)}`" :disabled="props.disabled" @click="drop(index)">{{ remove }}</button>
+        </div>
+        <div class="fh-group__fields">
+          <FieldResolver v-for="field in item.fields" :key="field.key" v-bind="itemProps(index, field)" />
+        </div>
+      </div>
+      <button v-if="props.items.length < limits[1]" type="button" class="fh-form-actions__button fh-form-actions__button--secondary fh-group__add"
+        :disabled="props.disabled" @click="add">{{ props.group.addLabel ?? label('addItem') }}</button>
+    </div>
     <p class="fh-group__status" role="status">{{ status }}</p>
   </fieldset>
 </template>

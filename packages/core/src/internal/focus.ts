@@ -1,3 +1,4 @@
+import type { FormDefinition } from '../types';
 import { itemDomId } from './ids';
 
 interface Searchable {
@@ -27,8 +28,7 @@ type Found = Focusable | null | undefined;
 const CONTROLS = 'input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
 
 function firstControl(root: Found): Found {
-  if (root?.matches('.fh-group'))
-    return (root.querySelector(':scope > .fh-group__add') as Found) ?? (root.querySelector(CONTROLS) as Found);
+  if (root?.matches('.fh-group')) return (root.querySelector('.fh-group__add') as Found) ?? (root.querySelector(CONTROLS) as Found);
   return root?.matches(CONTROLS) ? root : (root?.querySelector(CONTROLS) as Found);
 }
 
@@ -38,8 +38,12 @@ function reveal(target: Focusable, scrollTo: Focusable): void {
 }
 
 export function focusProblem(root: Searchable | null, notice?: Focusable | null): void {
-  const invalid = notice ?? (root?.querySelector('[aria-invalid="true"]') as Found);
-  if (invalid) reveal(notice ?? firstControl(invalid) ?? invalid, invalid);
+  if (notice) {
+    reveal(notice, notice);
+    return;
+  }
+  const invalid = root?.querySelector('[aria-invalid="true"]') as Found;
+  if (invalid) reveal(firstControl(invalid) ?? invalid, invalid);
 }
 
 export function canMoveFocus(form: FormRoot | null | undefined): boolean {
@@ -72,12 +76,15 @@ export function focusItem(
   group: string,
   index: number,
   added: boolean,
+  definition?: FormDefinition,
 ): void {
-  const item = document.getElementById(itemDomId(formId, group, index)) as (Focusable & { parentElement: Searchable | null }) | null;
-  const next = (added ? item?.parentElement?.querySelector('input, select, textarea') : item) as Found;
+  const item = document.getElementById(itemDomId(formId, group, index, undefined, definition)) as Focusable | null;
+  const next = (
+    added ? (item?.closest?.('.fh-group__item') as Searchable | null | undefined)?.querySelector('input, select, textarea') : item
+  ) as Found;
   (
     next ??
-    (root?.querySelector(':scope > .fh-group__add') as Found) ??
-    (document.getElementById(itemDomId(formId, group, index - 1)) as Found)
+    (root?.querySelector('.fh-group__add') as Found) ??
+    (document.getElementById(itemDomId(formId, group, index - 1, undefined, definition)) as Found)
   )?.focus();
 }
