@@ -134,7 +134,10 @@
         "removeItemPrompt": {
           "type": "string"
         },
-        "keepItem": {
+        "removeItemBody": {
+          "type": "string"
+        },
+        "cancel": {
           "type": "string"
         }
       },

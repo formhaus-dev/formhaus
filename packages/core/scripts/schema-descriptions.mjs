@@ -7,7 +7,7 @@ export const DESCRIPTIONS = {
   'FormDefinition.messages':
     'Validation message templates by message key. {min} and {max} are replaced. Field-level messages win over these.',
   'FormDefinition.labels':
-    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved and removeItemPrompt ({item}), removeItemNamed ({label}, {item}) and keepItem.',
+    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}) and cancel.',
   'FormDefinition.i18n':
     'Translation keys for the form texts and the messages and labels catalogs, resolved by the app translate function.',
   'FormStep.i18n': 'Translation keys for the step title and description. The literal texts stay the fallback.',

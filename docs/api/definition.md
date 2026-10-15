@@ -217,7 +217,7 @@ type MessageKey =
   | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
   | 'email' | 'number' | 'date' | 'datetime' | 'time' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value';
 type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary'
-  | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'keepItem'; // Group labels added in 0.14.0
+  | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel'; // Group labels added in 0.14.0
 
 type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"
 type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} из {total}"

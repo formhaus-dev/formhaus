@@ -513,8 +513,9 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `itemAdded` | `{item} added` | `item` |
 | `itemRemoved` | `{item} removed` | `item` |
 | `removeItemNamed` | `{label} {item}` | `label` (the Remove text), `item` |
-| `removeItemPrompt` | `Remove {item} and its answers?` | `item` |
-| `keepItem` | `Cancel` | |
+| `removeItemPrompt` | `Remove {item}?` | `item` |
+| `removeItemBody` | `This removes {item} and its answers. This cannot be undone.` | `item` |
+| `cancel` | `Cancel` | |
 
 A message for a failed rule comes from the first of:
 

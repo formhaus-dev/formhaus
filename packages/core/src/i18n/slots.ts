@@ -115,7 +115,8 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
       'itemRemoved',
       'removeItemNamed',
       'removeItemPrompt',
-      'keepItem',
+      'removeItemBody',
+      'cancel',
     ] as const)
       labels.add(key);
   return [

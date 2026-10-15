@@ -16,14 +16,21 @@ export interface GroupItemView {
   canRemove: boolean;
   remove: () => void;
   requestRemove: () => void;
-  cancelRemove: () => void;
-  confirming: boolean;
   hasContent: boolean;
-  prompt: string;
-  keepLabel: string;
   removeLabel: string;
   removeName: string;
   disabled?: boolean;
+}
+
+export interface ConfirmDialogView {
+  id: string;
+  open: boolean;
+  title: string;
+  description: string;
+  confirmLabel: string;
+  cancelLabel: string;
+  confirm: () => void;
+  cancel: () => void;
 }
 
 export interface GroupView<TItem extends GroupItemView = GroupItemView> {
