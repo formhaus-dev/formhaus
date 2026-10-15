@@ -23,6 +23,7 @@ export const BUILT_IN_TYPES = [
 ];
 
 export const MAX_STRING_LENGTH = 10000;
+export const MAX_HIDDEN_LENGTH = 2000;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_ITEMS = 1000;
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
@@ -69,7 +70,7 @@ function isOption(field: FormField, value: unknown): boolean {
 }
 
 function lengthError(field: FormField, value: string, fail: Fail): string | null {
-  const max = Math.min(MAX_STRING_LENGTH, field.validation?.maxLength ?? MAX_STRING_LENGTH);
+  const max = Math.min(MAX_STRING_LENGTH, field.validation?.maxLength ?? (field.type === 'hidden' ? MAX_HIDDEN_LENGTH : MAX_STRING_LENGTH));
   if (value.length <= max) return null;
   return field.validation?.maxLengthMessage ?? fail('maxLength', { max });
 }

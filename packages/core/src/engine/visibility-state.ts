@@ -93,6 +93,10 @@ export function createVisibility(definition: FormDefinition) {
       return fieldsByKey.get(key)?.find((field) => onPath(field, values) && visible(field, values));
     },
 
+    seed(values: Values): void {
+      seeds = { ...seeds, ...values };
+    },
+
     reconcileHidden(values: Values, errors: Record<string, string>, initial = false): Set<string> {
       if (initial) seeds = { ...values };
       path.invalidate();

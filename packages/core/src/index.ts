@@ -2,6 +2,8 @@ export type {
   DefaultFieldType,
   FieldI18n,
   FieldOption,
+  FieldSource,
+  FieldSourceName,
   FieldType,
   FieldValidation,
   FormAction,
@@ -60,5 +62,7 @@ export {
   type DefinitionIssue,
   type DefinitionIssueCode,
 } from './definition-validation';
+
+export { resolveSources, type SourceContext } from './sources';
 
 export { FormLifecycleError } from './engine/lifecycle-error';

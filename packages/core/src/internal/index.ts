@@ -22,3 +22,4 @@ export function conditionValues(engine: FormEngine): Record<string, unknown> {
 export function autoAdvance(engine: FormEngine): Promise<boolean> {
   return changeStep(engine as unknown as EngineInternals, 'next', 'autoAdvance');
 }
+export { applySources, browserSources } from './sources';

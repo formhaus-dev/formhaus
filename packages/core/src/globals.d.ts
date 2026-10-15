@@ -41,3 +41,14 @@ declare const crypto: {
 declare const process: { env: Record<string, string | undefined> };
 
 declare const __FORMHAUS_CORE_VERSION__: string;
+
+declare class URL {
+  constructor(url: string);
+  readonly origin: string;
+  readonly pathname: string;
+}
+
+declare class URLSearchParams {
+  constructor(init?: string);
+  get(name: string): string | null;
+}

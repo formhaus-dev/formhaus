@@ -297,7 +297,7 @@ File upload. Uses native file input. Set `accept` to restrict file types.
 
 ## Hidden
 
-A value sent with the answers that the user never sees. It renders `<input type="hidden">`: no label, no helper text, nothing to focus. The value comes from `defaultValue` or the initial values.
+A value sent with the answers that the user never sees. It renders `<input type="hidden">`: no label, no helper text, nothing to focus. The value comes from the initial values, a [source](#value-sources) or `defaultValue`.
 
 ```json
 {
@@ -310,35 +310,66 @@ A value sent with the answers that the user never sees. It renders `<input type=
 
 `label` is still required. Editors and error messages use it.
 
-To fill a hidden field from the page URL, read the query string and pass it as initial values:
+### Value sources
 
-::: code-group
-```tsx [React]
-const params = new URLSearchParams(window.location.search);
+`source` fills a hidden field from where the respondent came from. The React and Vue renderers read it in the browser after mount.
 
-<FormRenderer
-  definition={definition}
-  initialValues={{ source: params.get('utm_source') ?? undefined }}
-  onSubmit={onSubmit}
-/>
+```json
+{
+  "key": "utm_source",
+  "type": "hidden",
+  "label": "UTM source",
+  "source": { "query": "utm_source" }
+}
 ```
 
-```vue [Vue]
-<script setup lang="ts">
-const params = new URLSearchParams(window.location.search);
-const initialValues = { source: params.get('utm_source') ?? undefined };
-</script>
+| `source` | Value |
+|---|---|
+| `{ "query": "name" }` | The URL parameter `name`, such as `utm_campaign`, `ref`, `gclid` or `fbclid` |
+| `"referrer"` | `document.referrer`. Browsers usually send only the origin of another site |
+| `"page"` | The page URL without the query string and hash, such as `https://example.com/pricing` |
+| `"pageTitle"` | `document.title` |
+| `"language"` | `navigator.language`, such as `de-DE` |
+| `"timezone"` | The time zone name, such as `Europe/Berlin` |
+| `"device"` | `mobile`, `tablet` or `desktop`, from the pointer type and the viewport size |
+| `"country"` | A two-letter ISO country code. Formhaus Cloud fills it at submission. On your own server, write it into the values before `validateSubmission()`. In the browser it yields nothing |
 
-<template>
-  <FormRenderer :definition="definition" :initial-values="initialValues" @submit="onSubmit" />
-</template>
+For a fixed value, such as `"campaign": "black-friday"`, use `defaultValue` without `source`.
+
+The value of a hidden field comes from, in order:
+
+1. The initial values your app passes, including a restored draft. `""` and `null` count as missing.
+2. Its `source`.
+3. Its `defaultValue`.
+4. Nothing: the key is left out of the submit values. It is never sent as `""`, `"undefined"` or `"null"`.
+
+A source yields nothing when the parameter is missing or empty, there is no referrer, or the browser blocks the API. Values are trimmed, cut to `validation.maxLength` or else 2000 characters, and an empty string counts as nothing. A source that fails does not affect the other fields or the form. Filling a value does not call `onFieldChange`. The server render and the first client render use `defaultValue`, so hydration matches.
+
+Inside an iframe, `query` and `page` read the URL of the iframe, and `referrer` is usually the embedding page.
+
+Anyone can edit the URL, so treat these values as untrusted input. Do not mark tracking fields as `required` or give them `pattern` or `minLength` rules: when a visitor arrives without the parameter, or with an edited one, the rule blocks the form with an error the visitor cannot fix.
+
+Sources never include the user agent string, screen size or other values that identify a device. To collect something else, pass it in initial values.
+
+Without the built-in renderers, `resolveSources()` returns the values to pass as initial values:
+
+```ts
+import { FormEngine, resolveSources } from '@formhaus/core';
+
+const sourced = resolveSources(definition, {
+  search: location.search,
+  href: location.href,
+  referrer: document.referrer,
+});
+const engine = new FormEngine(definition, { ...sourced, ...initialValues });
 ```
-:::
+
+Context keys are `search`, `href`, `referrer`, `pageTitle`, `language`, `timezone`, `device` and `country`. A missing key yields nothing.
 
 A hidden field follows the same rules as any other field:
 
 - `show` and `showAny` apply. While its conditions fail, the value is cleared and left out of the submit values. When the conditions match again, the field gets its initial value or `defaultValue` back. Other field types start empty instead.
-- `validation` rules run, and `validateSubmission()` checks the value as text. A number or a list fails with the `string` message.
+- `validation` rules run, and `validateSubmission()` checks the value as text of up to `maxLength`, or 2000 characters without it. A number or a list fails with the `string` message.
 - An error on a hidden field shows as a form-level error, in `engine.topLevelErrors`, because the user has nothing to fix. It never appears in the error summary, in step error marks or as a focus target. `engine.errors` and `engine.validate()` still list it under its key.
 - Built-in messages name the field, such as `Signup source: This field is required`. The `hidden` message template, `{label}: {message}`, controls the format and is translated like other [messages](/guide/translations). The key stands in for an empty label. Messages you write, such as a string `required` or `patternMessage`, stay as written.
 

@@ -28,7 +28,9 @@ export type DefinitionIssueCode =
   | 'unknown-i18n-slot'
   | 'unknown-message-key'
   | 'unknown-label-key'
-  | 'i18n-unsafe-identifier';
+  | 'i18n-unsafe-identifier'
+  | 'unknown-source'
+  | 'source-not-applicable';
 
 export interface DefinitionIssue {
   code: DefinitionIssueCode;

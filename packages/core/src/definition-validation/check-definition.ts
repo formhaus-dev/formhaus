@@ -5,6 +5,7 @@ import { fieldIssues } from './fields';
 import { graphIssues } from './graph';
 import { FormDefinitionError, suggest, type DefinitionIssue } from './issues';
 import { metaIssues, shapeIssues } from './shape';
+import { sourceIssues } from './sources';
 import { structureIssues } from './structure';
 import { definitionWarnings } from './warnings';
 
@@ -27,6 +28,7 @@ function issues(input: unknown, { validators, suggest, warnings }: Checks = {}):
     ...structureIssues(context),
     ...conditionIssues(context),
     ...fieldIssues(context),
+    ...sourceIssues(context),
     ...graphIssues(context),
     ...(warnings ? warnings(context) : []),
   ];

@@ -33,6 +33,8 @@ export const DESCRIPTIONS = {
   'FormField.label': 'Label text.',
   'FormField.helperText': 'Hint text between the label and the control.',
   'FormField.defaultValue': 'Initial value. Also the value restored on reset or skip.',
+  'FormField.source':
+    'Fills a hidden field in the browser at mount: a URL parameter ({ "query": "utm_source" }), the referrer, the page URL without query and hash, the page title, the browser language, the time zone or the device class. country is filled by the server. defaultValue is the fallback and initialValues win.',
   'FormField.autoAdvance':
     'Moves to the next step when the field is committed: a built-in radio on click, Space or Enter, or a custom field calling onCommit. The last step never auto-submits.',
   'FormField.show': 'Field is visible only when all conditions match. Hidden fields are cleared, not validated and not submitted.',
