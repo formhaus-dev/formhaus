@@ -16,7 +16,7 @@ export interface RowContext {
 const TYPE_LABELS: Record<string, string> = {
   text: 'Text', email: 'Email', phone: 'Phone', number: 'Number', password: 'Password', textarea: 'Text area',
   select: 'Select', autocomplete: 'Autocomplete', multiselect: 'Multi-select', radio: 'Radio', checkbox: 'Checkbox',
-  switch: 'Switch', date: 'Date', datetime: 'Date & time', file: 'File',
+  switch: 'Switch', date: 'Date', datetime: 'Date & time', time: 'Time', file: 'File', hidden: 'Hidden',
 };
 
 export function typeSelect(value: string, onChange: (type: string) => void, className = 'type-select'): HTMLSelectElement {
