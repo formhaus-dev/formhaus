@@ -28,7 +28,7 @@ export default defineConfig({
   description: 'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
   lastUpdated: true,
   cleanUrls: true,
-  ignoreDeadLinks: [/^\/legal\//, (url) => url.startsWith('/') && ownerOf(url.split(/[?#]/)[0]) === 'marketing'],
+  ignoreDeadLinks: [(url) => url.startsWith('/') && ownerOf(url.split(/[?#]/)[0]) === 'marketing'],
   sitemap: { hostname: siteUrl, transformItems: sitemap.transformItems },
   head: [...head, ...analyticsHead('docs')],
   transformHead,
