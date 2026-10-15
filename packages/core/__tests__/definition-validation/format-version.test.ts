@@ -42,7 +42,7 @@ describe('formatVersion', () => {
   it.each([1, '', 'v1', '1.0.0', '0.9', '1.', null])('reports %j as invalid-type', (formatVersion) => {
     const definition = { formatVersion, ...base };
     expect(errors(definition)).toEqual([
-      { code: 'invalid-type', path: '/formatVersion', message: '/formatVersion: must be a version string. Use "1.0".' },
+      { code: 'invalid-type', path: '/formatVersion', message: `/formatVersion: must be a version string. Use "${FORMAT_VERSION}".` },
     ]);
     expect(validate(definition)).toBe(false);
   });

@@ -107,15 +107,33 @@ function dependencies(value: unknown, path: string): DefinitionIssue[] {
   return valid ? [] : [error('invalid-type', path, 'must be an array of field keys')];
 }
 
-const field: Check = (value, path) => [
-  ...text(value, 'key', path),
-  ...text(value, 'type', path),
-  ...typed(value, { label: 'string', placeholder: 'string', helperText: 'string' }, path),
-  ...conditions(value, path),
-  ...list(value.options, `${path}/options`, 'an option object', option),
-  ...validation(value.validation, `${path}/validation`),
-  ...dependencies(value.optionsDependsOn, `${path}/optionsDependsOn`),
-];
+const field: Check = (value, path) => {
+  const container = value.type === 'section' || value.type === 'group';
+  return [
+    ...text(value, 'key', path),
+    ...text(value, 'type', path),
+    ...typed(
+      value,
+      {
+        label: 'string',
+        placeholder: 'string',
+        helperText: 'string',
+        title: 'string',
+        description: 'string',
+        itemLabel: 'string',
+        addLabel: 'string',
+        removeLabel: 'string',
+        defaultItems: 'number',
+      },
+      path,
+    ),
+    ...(container ? list(value.fields, `${path}/fields`, 'a field object', field, true) : []),
+    ...conditions(value, path),
+    ...list(value.options, `${path}/options`, 'an option object', option),
+    ...validation(value.validation, `${path}/validation`),
+    ...dependencies(value.optionsDependsOn, `${path}/optionsDependsOn`),
+  ];
+};
 
 const route: Check = (value, path) => [
   ...(value.to === undefined
