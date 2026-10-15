@@ -8,12 +8,17 @@ export type {
   FieldType,
   FieldValidation,
   FormField,
+  FormGroup,
+  FormNode,
+  FormSection,
+  GroupValidation,
   ShowCondition,
 } from './field';
 export type { FormDefinition, FormStep, StepRoute } from './definition';
 export type {
   FieldI18n,
   FormI18n,
+  GroupI18n,
   LabelCatalog,
   LabelFn,
   LabelI18n,

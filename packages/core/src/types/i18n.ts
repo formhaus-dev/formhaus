@@ -21,7 +21,16 @@ export type MessageKey =
   | 'value'
   | 'hidden';
 
-export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary';
+export type LabelKey =
+  | 'continue'
+  | 'back'
+  | 'stepOf'
+  | 'errorSummary'
+  | 'addItem'
+  | 'removeItem'
+  | 'itemLabel'
+  | 'itemAdded'
+  | 'itemRemoved';
 
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 export type LabelCatalog = Partial<Record<LabelKey, string>>;
@@ -42,6 +51,14 @@ export interface FieldI18n {
   label?: string;
   placeholder?: string;
   helperText?: string;
+}
+
+export interface GroupI18n {
+  label?: string;
+  helperText?: string;
+  itemLabel?: string;
+  addLabel?: string;
+  removeLabel?: string;
 }
 
 export interface LabelI18n {

@@ -10,7 +10,12 @@ export type {
   FormAnalyticsEvent,
   FormDefinition,
   FormField,
+  FormGroup,
   FormI18n,
+  FormNode,
+  FormSection,
+  GroupI18n,
+  GroupValidation,
   FormStep,
   LabelCatalog,
   LabelFn,
@@ -28,6 +33,7 @@ export type {
 export {
   FormEngine,
   type FormEngineOptions,
+  type GroupItem,
   type StepValidateFn,
   type StepChangeContext,
   type BeforeStepChangeFn,
@@ -38,7 +44,7 @@ export {
   type SubmitResult,
 } from './engine';
 
-export { evaluateCondition, isActionDisabled, isVisible } from './visibility';
+export { evaluateCondition, isActionDisabled, isGroup, isSection, isVisible } from './visibility';
 
 export {
   type MessageFn,
