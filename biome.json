@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+  "vcs": {
+    "enabled": true,
+    "clientKind": "git",
+    "useIgnoreFile": true
+  },
   "files": {
     "includes": [
       "**",
@@ -40,18 +44,124 @@
         "noNonNullAssertion": "off"
       },
       "suspicious": {
-        "noConfusingVoidType": "off"
+        "noConfusingVoidType": "off",
+        "noPrototypeBuiltins": "off",
+        "noAssignInExpressions": "off",
+        "noArrayIndexKey": "off"
+      },
+      "a11y": {
+        "useSemanticElements": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off"
       }
     }
   },
-  "assist": { "enabled": false },
+  "assist": {
+    "enabled": false
+  },
   "overrides": [
     {
       "includes": ["**/*.vue", "**/*.svelte"],
       "linter": {
         "rules": {
-          "correctness": { "noUnusedVariables": "off", "noUnusedImports": "off" },
-          "style": { "useConst": "off", "useImportType": "off" }
+          "correctness": {
+            "noUnusedVariables": "off",
+            "noUnusedImports": "off"
+          },
+          "style": {
+            "useConst": "off",
+            "useImportType": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/core/src/engine/runtime.ts"],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noUnusedPrivateClassMembers": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["**/__tests__/**"],
+      "linter": {
+        "rules": {
+          "performance": {
+            "noDynamicNamespaceImportAccess": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["examples/react-shadcn/src/components/ui/**"],
+      "linter": {
+        "enabled": false
+      }
+    },
+    {
+      "includes": ["packages/editor-react/src/**"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useKeyWithClickEvents": "off",
+            "noStaticElementInteractions": "off",
+            "useFocusableInteractive": "off",
+            "noNoninteractiveTabindex": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/editor-react/src/ui/components/CommandList/CommandOptions.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useAriaPropsSupportedByRole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/react/src/fields/SwitchField.tsx"],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useAriaPropsForRole": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["packages/react/src/FormActions.tsx", "packages/vue/src/FormActions.vue"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "useOptionalChain": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["stylelint.config.mjs"],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noTemplateCurlyInString": "off"
+          }
+        }
+      }
+    },
+    {
+      "includes": ["examples/nuxt/app/pages/**"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useVueMultiWordComponentNames": "off"
+          }
         }
       }
     }

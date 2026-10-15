@@ -14,9 +14,7 @@ export function Spinner({ size, label = 'Loading', className, ...rest }: Spinner
   return (
     <span
       className={spinner({ size, className })}
-      role={labelled ? 'status' : undefined}
-      aria-label={labelled ? label : undefined}
-      aria-hidden={labelled ? undefined : true}
+      {...(labelled ? { role: 'status', 'aria-label': label } : { 'aria-hidden': true })}
       {...rest}
     />
   );

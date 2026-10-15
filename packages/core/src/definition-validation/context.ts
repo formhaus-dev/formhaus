@@ -28,14 +28,16 @@ type Owner = { show?: ShowCondition[]; showAny?: ShowCondition[] };
 
 function collect(target: ConditionEntry[], source: Owner, path: string, owner: ConditionEntry['owner'], step: number, key?: string): void {
   for (const name of ['show', 'showAny'] as const) {
-    (source[name] ?? []).forEach((condition, index) => target.push({ condition, path: `${path}/${name}/${index}`, owner, step, key }));
+    (source[name] ?? []).forEach((condition, index) => {
+      target.push({ condition, path: `${path}/${name}/${index}`, owner, step, key });
+    });
   }
 }
 
 function collectAction(target: ConditionEntry[], action: FormAction | false | undefined, path: string, step: number): void {
-  (action ? (action.disabled ?? []) : []).forEach((condition, index) =>
-    target.push({ condition, path: `${path}/disabled/${index}`, owner: 'action', step }),
-  );
+  (action ? (action.disabled ?? []) : []).forEach((condition, index) => {
+    target.push({ condition, path: `${path}/disabled/${index}`, owner: 'action', step });
+  });
 }
 
 export function createContext(
@@ -55,7 +57,9 @@ export function createContext(
   for (const entry of entries) collect(conditions, entry.field, entry.path, 'field', entry.step, entry.field.key);
   steps.forEach((step, index) => {
     collect(conditions, step, `/steps/${index}`, 'step', index);
-    (step.routes ?? []).forEach((route, position) => collect(conditions, route, `/steps/${index}/routes/${position}`, 'route', index));
+    (step.routes ?? []).forEach((route, position) => {
+      collect(conditions, route, `/steps/${index}/routes/${position}`, 'route', index);
+    });
     for (const name of ['next', 'back', 'skip'] as const) collectAction(conditions, step[name], `/steps/${index}/${name}`, index);
   });
   collectAction(conditions, definition.submit, '/submit', -1);

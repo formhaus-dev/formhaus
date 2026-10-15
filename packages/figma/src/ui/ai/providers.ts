@@ -7,12 +7,19 @@ interface Reply {
   stop?: 'cut' | 'refused';
 }
 
+interface ProviderReply {
+  content?: { type?: string; text?: string }[];
+  stop_reason?: string;
+  choices?: { finish_reason?: string; message?: { content?: string; refusal?: string } }[];
+  error?: { message?: string };
+}
+
 interface Provider {
   url: string;
   model: string;
   headers(key: string): Record<string, string>;
   body(system: string, messages: ChatMessage[]): unknown;
-  read(data: any): Reply;
+  read(data: ProviderReply | undefined): Reply;
 }
 
 export const PROVIDERS: Record<ProviderId, Provider> = {
@@ -30,8 +37,8 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
     },
     read: (data) => ({
       text: (data?.content ?? [])
-        .filter((part: any) => part?.type === 'text')
-        .map((part: any) => part.text)
+        .filter((part) => part?.type === 'text')
+        .map((part) => part.text)
         .join(''),
       stop: data?.stop_reason === 'max_tokens' ? 'cut' : data?.stop_reason === 'refusal' ? 'refused' : undefined,
     }),
@@ -56,7 +63,7 @@ const STOPPED = {
   refused: 'The model declined this request. Rephrase the description and try again.',
 };
 
-function errorText(response: Response, data: any): string {
+function errorText(response: Response, data: ProviderReply | undefined): string {
   const { status } = response;
   const detail = data?.error?.message;
   if (status === 401 || status === 403) return `Check your API key${detail ? ` (${detail})` : ''}.`;

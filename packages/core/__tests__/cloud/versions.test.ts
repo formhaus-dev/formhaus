@@ -99,7 +99,7 @@ describe('versions', () => {
 describe('controller', () => {
   function setup(...replies: ReturnType<typeof reply>[]) {
     const fetchMock = vi.fn();
-    replies.forEach((next) => fetchMock.mockResolvedValueOnce(next));
+    for (const next of replies) fetchMock.mockResolvedValueOnce(next);
     vi.stubGlobal('fetch', fetchMock);
     const states: CloudState[] = [];
     const controller = createCloudController({ id: 'abc' }, { onChange: (state) => states.push(state) });

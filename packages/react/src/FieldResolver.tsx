@@ -1,5 +1,5 @@
 import type { FormField as FormFieldType } from '@formhaus/core';
-import type { FieldComponentMap, FieldComponentProps } from './types';
+import type { FieldComponentMap } from './types';
 
 const noop = () => {};
 

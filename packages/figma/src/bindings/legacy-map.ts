@@ -68,10 +68,11 @@ export async function bindingsFromMap(map: LegacyMap): Promise<Partial<Record<Ro
   const bindings: Partial<Record<Role, Binding>> = {};
   const layers = map.textLayerNames ?? {};
   const inputText = compact({ label: layers.label, value: layers.placeholder, helper: layers.helperText });
-  const constructor = await importSet(map.formsConstructorKey);
+  const constructorSet = await importSet(map.formsConstructorKey);
   for (const [role, type] of INPUT_ROLES) {
     const variant = map.fields?.[type]?.formsConstructorVariant;
-    const node = constructor && variant ? variantWith(constructor, { Type: variant, Header: 'True', Helper_text: 'True' }, ['Type']) : null;
+    const node =
+      constructorSet && variant ? variantWith(constructorSet, { Type: variant, Header: 'True', Helper_text: 'True' }, ['Type']) : null;
     if (node) bindings[role] = { ...reference(node), text: inputText };
   }
   for (const [role, type] of CONTROL_ROLES) {

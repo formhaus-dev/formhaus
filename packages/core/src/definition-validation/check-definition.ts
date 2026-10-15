@@ -40,7 +40,7 @@ export function checkDefinition(input: unknown, options: CheckDefinitionOptions 
   return issues(input, { validators: options.validators, suggest, warnings: definitionWarnings });
 }
 
-export function parseDefinition(input: unknown, options?: CheckDefinitionOptions): FormDefinition {
+export function parseDefinition(input: unknown, _options?: CheckDefinitionOptions): FormDefinition {
   const errors = issues(input, { suggest });
   if (errors.length) throw new FormDefinitionError(errors);
   return input as FormDefinition;

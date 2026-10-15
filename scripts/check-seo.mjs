@@ -101,7 +101,7 @@ for (const page of indexable) {
   if (!page.canonical) fail(page, 'missing canonical');
   else if (page.canonical !== siteUrl + page.path) fail(page, `canonical ${page.canonical}`);
   if (!page.ogImage) fail(page, 'missing og:image');
-  else if (!page.ogImage.startsWith(siteUrl + '/') || !assetExists(page.ogImage.slice(siteUrl.length)))
+  else if (!page.ogImage.startsWith(`${siteUrl}/`) || !assetExists(page.ogImage.slice(siteUrl.length)))
     fail(page, `og:image not found: ${page.ogImage}`);
   if (!page.ogImageAlt) fail(page, 'missing og:image:alt');
   if (page.twitterCard !== 'summary_large_image') fail(page, 'missing twitter:card');
