@@ -1,5 +1,6 @@
 import type {
   ConfirmDialogView,
+  DefaultFieldType,
   FieldOption,
   FieldType,
   FormAction,
@@ -14,7 +15,7 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { ComponentType, ReactNode } from 'react';
+import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
@@ -45,16 +46,32 @@ export interface GroupComponentProps extends GroupView<GroupItemComponentProps> 
   ItemComponent: ComponentType<GroupItemComponentProps>;
 }
 
-export type FieldComponentMap = Partial<
-  Record<
-    FieldType,
-    | ComponentType<FieldComponentProps>
-    | ComponentType<SectionComponentProps>
-    | ComponentType<GroupComponentProps>
-    | ComponentType<GroupItemComponentProps>
-    | ComponentType<ConfirmDialogComponentProps>
-  >
->;
+interface NodeComponentProps {
+  section: SectionComponentProps;
+  group: GroupComponentProps;
+  groupItem: GroupItemComponentProps;
+  confirmDialog: ConfirmDialogComponentProps;
+}
+
+type AnyComponentProps = FieldComponentProps &
+  SectionComponentProps &
+  GroupComponentProps &
+  GroupItemComponentProps &
+  ConfirmDialogComponentProps;
+
+type ComponentClasses<P> = P extends unknown ? ComponentClass<P> : never;
+
+type AnyComponent =
+  | FunctionComponent<AnyComponentProps>
+  | ComponentClasses<FieldComponentProps | NodeComponentProps[keyof NodeComponentProps]>;
+
+export type FieldComponentMap = {
+  [K in FieldType | keyof NodeComponentProps]?: K extends keyof NodeComponentProps
+    ? ComponentType<NodeComponentProps[K]>
+    : K extends DefaultFieldType
+      ? ComponentType<FieldComponentProps>
+      : AnyComponent;
+};
 
 export interface FormActionsProps {
   submitAction?: FormAction;

@@ -1,12 +1,12 @@
 import { isGroup, isSection, type FormField, type FormNode } from '@formhaus/core';
 import { fieldDomId } from '@formhaus/core/internal';
-import { memo, useMemo, type ComponentType } from 'react';
+import { memo, useMemo } from 'react';
 import { DefaultSection } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { FormGroupController } from './FormGroupController';
 import { useFormSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
 import { useFieldOptions } from './hooks/useFieldOptions';
-import type { FormRendererProps, OptionsProvider, SectionComponentProps } from './types';
+import type { FormRendererProps, OptionsProvider } from './types';
 
 interface FormFieldsControllerProps extends ControllerProps {
   loading: boolean;
@@ -66,7 +66,7 @@ export const FormFieldsController = memo(function FormFieldsController({
         />
       );
     const id = fieldDomId(formId, node.key, engine.definition);
-    const Section = (props.components?.section ?? DefaultSection) as ComponentType<SectionComponentProps>;
+    const Section = props.components?.section ?? DefaultSection;
     return (
       <Section
         key={node.key}
