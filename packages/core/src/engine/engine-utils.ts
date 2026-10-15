@@ -1,4 +1,5 @@
 import type { FormDefinition, FormField } from '../types';
+import { isGroup, valueFields } from '../visibility/nodes';
 
 export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): string[] {
   return [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
@@ -7,13 +8,15 @@ export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): st
 export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
 
 export function getAllFields(definition: FormDefinition): FormField[] {
-  return definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : (definition.fields ?? []);
+  return valueFields(definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : (definition.fields ?? []));
 }
 
 export function createValues(fields: FormField[], initialValues?: Record<string, unknown>): Record<string, unknown> {
   const values: Record<string, unknown> = {};
   for (const field of fields) {
     if (field.defaultValue !== undefined) values[field.key] = field.defaultValue;
+    else if (isGroup(field) && field.defaultItems! > 0)
+      values[field.key] = Array.from({ length: field.defaultItems! }, () => createValues(field.fields));
   }
   const source = initialValues ?? {};
   for (const key of Object.keys(source)) {

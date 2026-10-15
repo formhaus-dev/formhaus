@@ -1,4 +1,4 @@
-import type { FormField } from '../types';
+import type { FormField, FormGroup } from '../types';
 import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
@@ -26,6 +26,7 @@ export const MAX_STRING_LENGTH = 10000;
 export const MAX_HIDDEN_LENGTH = 2000;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_ITEMS = 1000;
+const MAX_GROUP_ITEMS = 100;
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 const DATE = '\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])';
@@ -56,10 +57,24 @@ export function trimValue(field: FormField, value: unknown): unknown {
 
 export function normalizeValue(field: FormField, input: unknown): unknown {
   if (Array.isArray(input) && input.length === 0 && field.type !== 'multiselect' && BUILT_IN_TYPES.includes(field.type)) return undefined;
+  if (field.type === 'group') return normalizeItems(field as FormGroup, input);
   const value = trimValue(field, input);
   if (field.type !== 'number' || typeof value !== 'string' || !DECIMAL.test(value)) return value;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : value;
+}
+
+function normalizeItems(group: FormGroup, input: unknown): unknown {
+  if (!Array.isArray(input) || input.length > Math.max(group.validation?.maxLength ?? 0, MAX_GROUP_ITEMS)) return input;
+  return input.map((item) => {
+    if (!entry(item)) return item;
+    const result: Record<string, unknown> = {};
+    for (const field of group.fields) {
+      const value = Object.prototype.hasOwnProperty.call(item, field.key) ? normalizeValue(field, item[field.key]) : undefined;
+      if (value !== undefined) result[field.key] = value;
+    }
+    return result;
+  });
 }
 
 const staticOptions = (field: FormField) => (field.optionsFrom ? undefined : field.options);
@@ -103,9 +118,16 @@ function isBlank(field: FormField, value: unknown): boolean {
   return value == null || value === '' || (field.type === 'multiselect' && Array.isArray(value) && !value.length);
 }
 
+const entry = (item: unknown) => Object.prototype.toString.call(item) === '[object Object]';
+
+function groupError(field: FormField, value: unknown): boolean {
+  return !Array.isArray(value) || value.length > Math.max(field.validation?.maxLength ?? 0, MAX_GROUP_ITEMS) || !value.every(entry);
+}
+
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {
   if (isBlank(field, value)) return null;
   const fail: Fail = (key, params = {}) => resolve(key, params, field);
+  if (field.type === 'group') return groupError(field, value) ? fail('value') : null;
   if (BOOLEAN_TYPES.includes(field.type)) return typeof value === 'boolean' ? null : fail('boolean');
   if (field.type === 'number') return typeof value === 'number' && Number.isFinite(value) ? null : fail('number');
   if (field.type === 'multiselect') return multiselectError(field, value, fail);
@@ -118,6 +140,7 @@ export function typeError(field: FormField, value: unknown, resolve: ResolveMess
 }
 
 export function typeMessageKeys(field: FormField): MessageKey[] {
+  if (field.type === 'group') return ['value'];
   if (BOOLEAN_TYPES.includes(field.type)) return ['boolean'];
   if (field.type === 'number') return ['number'];
   if (field.type === 'multiselect') return ['options', 'option'];
@@ -129,6 +152,6 @@ export function typeMessageKeys(field: FormField): MessageKey[] {
 }
 
 export function clientTypeError(field: FormField, value: unknown, resolve?: ResolveMessage): string | null {
-  if (field.type === 'file' || !BUILT_IN_TYPES.includes(field.type)) return null;
+  if (field.type === 'file' || (!BUILT_IN_TYPES.includes(field.type) && field.type !== 'group')) return null;
   return typeError(field, value, resolve);
 }

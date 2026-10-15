@@ -1,5 +1,6 @@
-import type { FormDefinition, FormField, FormStep } from '../types';
+import type { FormDefinition, FormNode, FormStep } from '../types';
 import { isVisible } from '../visibility';
+import { cleanItems, isGroup, shownFields, valueFields } from '../visibility/nodes';
 import { trimValue } from '../validation/type-checks';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
@@ -43,15 +44,20 @@ export function reconcileStepIndex(previous: FormStep[], next: FormStep[], index
   return 0;
 }
 
-function addStepValues(step: { fields: FormField[] }, values: Record<string, unknown>, target: Record<string, unknown>): void {
-  const saved = step.fields.map(({ key }) => [key, Object.prototype.hasOwnProperty.call(target, key), target[key]] as const);
-  for (const field of step.fields) target[field.key] = trimValue(field, values[field.key]);
-  const shown = step.fields.filter((field) => isVisible(field, target) && values[field.key] !== undefined);
+function addStepValues(step: { fields: FormNode[] }, values: Record<string, unknown>, target: Record<string, unknown>): void {
+  const fields = valueFields(step.fields);
+  const saved = fields.map(({ key }) => [key, Object.prototype.hasOwnProperty.call(target, key), target[key]] as const);
+  for (const field of fields) target[field.key] = trimValue(field, values[field.key]);
+  const shown = shownFields(step.fields, target)
+    .filter((field) => values[field.key] !== undefined)
+    .map(
+      (field) => [field.key, isGroup(field) ? cleanItems(field, values[field.key], target) : trimValue(field, values[field.key])] as const,
+    );
   for (const [key, had, value] of saved) {
     if (had) target[key] = value;
     else delete target[key];
   }
-  for (const field of shown) target[field.key] = trimValue(field, values[field.key]);
+  for (const [key, value] of shown) target[key] = value;
 }
 
 export function createActivePath(definition: FormDefinition) {
