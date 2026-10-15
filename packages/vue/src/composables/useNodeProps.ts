@@ -1,4 +1,4 @@
-import type { FieldOption, FormField, FormGroup } from '@formhaus/core';
+import { isGroup, type FieldOption, type FormField } from '@formhaus/core';
 import { fieldDomId } from '@formhaus/core/internal';
 import type { Ref } from 'vue';
 import type { FormRendererProps } from '../types';
@@ -21,7 +21,25 @@ export function useNodeProps(
 ) {
   const { values, errors, fieldLoading } = form;
   return {
-    fieldProps(field: FormField) {
+    nodeProps(field: FormField) {
+      if (isGroup(field)) {
+        return {
+          engine: form.engine,
+          formId,
+          group: field,
+          items: form.engine.items(field.key),
+          value: values.value[field.key],
+          errors: { ...errors.value },
+          fieldLoading: { ...fieldLoading.value },
+          disabled: disabled.value,
+          components: props.components,
+          labels: props.labels,
+          options: options.value,
+          onUpdate: on.update,
+          onBlur: on.blur,
+          onFocus: on.focus,
+        };
+      }
       const resolved = options.value[field.key];
       return {
         id: fieldDomId(formId, field.key),
@@ -35,24 +53,6 @@ export function useNodeProps(
         onCommit: (value: unknown) => on.commit(field.key, value),
         onBlur: () => on.blur(field.key),
         onFocus: () => on.focus(field.key),
-      };
-    },
-    groupProps(field: FormField | FormGroup) {
-      return {
-        engine: form.engine,
-        formId,
-        group: field as FormGroup,
-        items: form.engine.items(field.key),
-        value: values.value[field.key],
-        errors: { ...errors.value },
-        fieldLoading: { ...fieldLoading.value },
-        disabled: disabled.value,
-        components: props.components,
-        labels: props.labels,
-        options: options.value,
-        onUpdate: on.update,
-        onBlur: on.blur,
-        onFocus: on.focus,
       };
     },
   };

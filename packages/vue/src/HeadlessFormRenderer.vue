@@ -132,7 +132,7 @@ function onCancel() {
 
 const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
 
-const { fieldProps, groupProps } = useNodeProps(form, props, formId, resolvedOptions, disabled, {
+const { nodeProps } = useNodeProps(form, props, formId, resolvedOptions, disabled, {
   update: onFieldUpdate,
   commit: onFieldCommit,
   blur: onFieldBlur,
@@ -197,13 +197,9 @@ async function onPrimary() {
           :aria-describedby="'description' in node && node.description ? `${fieldDomId(formId, node.key)}-description` : undefined">
           <legend class="fh-section__title">{{ 'title' in node && node.title }}</legend>
           <p v-if="'description' in node && node.description" :id="`${fieldDomId(formId, node.key)}-description`" class="fh-field__helper">{{ node.description }}</p>
-          <template v-for="child in ('fields' in node ? node.fields : [])" :key="child.key">
-            <FormGroup v-if="child.type === 'group'" v-bind="groupProps(child)" />
-            <FieldResolver v-else v-bind="fieldProps(child)" />
-          </template>
+          <component :is="child.type === 'group' ? FormGroup : FieldResolver" v-for="child in ('fields' in node ? node.fields : [])" :key="child.key" v-bind="nodeProps(child)" />
         </fieldset>
-        <FormGroup v-else-if="node.type === 'group'" v-bind="groupProps(node as FormField)" />
-        <FieldResolver v-else v-bind="fieldProps(node as FormField)" />
+        <component :is="node.type === 'group' ? FormGroup : FieldResolver" v-else v-bind="nodeProps(node as FormField)" />
       </template>
     </div>
 
