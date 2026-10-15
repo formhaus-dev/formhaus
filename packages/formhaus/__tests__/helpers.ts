@@ -8,6 +8,7 @@ export interface Sandbox {
   bin: string;
   cwd: string;
   platform: NodeJS.Platform;
+  env: NodeJS.ProcessEnv;
   path(...parts: string[]): string;
   write(relative: string, text: string): void;
   read(relative: string): string;
@@ -31,6 +32,7 @@ export function sandbox(): Sandbox {
     bin,
     cwd: home,
     platform: 'linux',
+    env: { PATH: bin, HOME: home },
     path,
     write(relative, text) {
       mkdirSync(dirname(path(relative)), { recursive: true });
@@ -47,10 +49,9 @@ export function sandbox(): Sandbox {
     run(...argv) {
       const out: string[] = [];
       const err: string[] = [];
-      const env = { PATH: bin, HOME: home };
       const code = main(
         argv,
-        { home, cwd: box.cwd, env, platform: box.platform },
+        { home, cwd: box.cwd, env: box.env, platform: box.platform },
         (line) => out.push(line),
         (line) => err.push(line),
       );

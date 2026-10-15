@@ -1,9 +1,9 @@
 import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import createFormSkill from '../../../plugins/formhaus/skills/formhaus-create-form/SKILL.md';
-import { type Agent, type Context, SERVER, SERVER_NAME, type State } from './context';
-import { step, writeIfChanged } from './files';
-import { hasJsonServer, readJsonObject } from './json-config';
+import { type Agent, type Change, type Context, SERVER, SERVER_NAME, type State } from './context';
+import { display, step, writeIfChanged } from './files';
+import { jsonServerState, readJsonObject } from './json-config';
 import { command, findOnPath } from './which';
 
 const NAME = 'Claude Code';
@@ -19,15 +19,25 @@ function hasPlugin(ctx: Context): boolean {
   return typeof plugins === 'object' && plugins !== null && PLUGIN_ID in plugins;
 }
 
-function hasServer(ctx: Context): boolean {
+function userServer(ctx: Context) {
   const file = ctx.env.CLAUDE_CONFIG_DIR ? join(ctx.env.CLAUDE_CONFIG_DIR, '.claude.json') : join(ctx.home, '.claude.json');
-  const config = readJsonObject(ctx, file);
-  const projects = config?.projects as Record<string, Record<string, unknown>> | undefined;
-  return hasJsonServer(config) || hasJsonServer(projects?.[ctx.cwd]) || hasJsonServer(readJsonObject(ctx, join(ctx.cwd, '.mcp.json')));
+  return jsonServerState(readJsonObject(ctx, file));
+}
+
+function projectWarning(ctx: Context): Change[] {
+  const file = join(ctx.cwd, '.mcp.json');
+  try {
+    if (jsonServerState(readJsonObject(ctx, file)) !== 'different') return [];
+  } catch {
+    return [];
+  }
+  return [{ agent: NAME, item: 'project MCP server', where: display(ctx, file), state: 'different' }];
 }
 
 function addServer(ctx: Context, claude: string): State {
-  if (hasPlugin(ctx) || hasServer(ctx)) return 'present';
+  if (hasPlugin(ctx)) return 'present';
+  const existing = userServer(ctx);
+  if (existing !== 'missing') return existing;
   if (ctx.dryRun) return 'added';
   const { file, args, verbatim } = command(ctx, claude, CLAUDE_ADD_ARGS);
   const result = spawnSync(file, args, { encoding: 'utf8', env: ctx.env, windowsVerbatimArguments: verbatim });
@@ -49,6 +59,7 @@ export const claudeCode: Agent = {
       step(ctx, NAME, 'formhaus-create-form skill', skill, () =>
         hasPlugin(ctx) ? 'present' : writeIfChanged(ctx, skill, createFormSkill),
       ),
+      ...projectWarning(ctx),
     ];
   },
 };

@@ -105,13 +105,6 @@ describe.skipIf(onWindows)('idempotency', () => {
     expect(box.claudeCalls()).toEqual([CLAUDE_ADD]);
   });
 
-  it('treats a project-scoped Claude Code server as configured', () => {
-    box.fakeBin('claude');
-    box.write('.claude.json', JSON.stringify({ projects: { [box.cwd]: { mcpServers: { formhaus: SERVER } } } }));
-    box.run();
-    expect(box.claudeCalls()).toEqual([]);
-  });
-
   it.each([
     ['a table', '[mcp_servers.formhaus]\ncommand = "node"\n'],
     ['a quoted table', '[mcp_servers."formhaus"]\ncommand = "node"\n'],

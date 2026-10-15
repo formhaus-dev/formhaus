@@ -19,7 +19,7 @@ Run it inside a project to also add the Cursor rule there. Requires Node 20 or l
 
 Windsurf, Gemini CLI, OpenCode, VS Code and Claude Desktop on Linux are detected and listed with manual setup steps.
 
-Existing entries are kept. Before the first change to a file, the original is saved as `<file>.bak`. Formhaus does not write through symbolic links. Running it again changes nothing. If the Formhaus Claude Code plugin is installed, Claude Code is left as is.
+Existing entries are kept. An existing `formhaus` server with another command or args is reported and left unchanged, and a project `.mcp.json` never counts as set up. Before the first change to a file, the original is saved as `<file>.bak`. Formhaus does not write through symbolic links. Running it again changes nothing. If the Formhaus Claude Code plugin is installed, Claude Code is left as is.
 
 ## Options
 

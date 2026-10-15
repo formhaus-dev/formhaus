@@ -6,7 +6,8 @@ export interface Context {
   dryRun: boolean;
 }
 
-export type State = 'added' | 'updated' | 'present' | 'failed';
+export type State = 'added' | 'updated' | 'present' | 'different' | 'failed';
+export type ServerState = 'missing' | 'present' | 'different';
 
 export interface Change {
   agent: string;
@@ -28,3 +29,12 @@ export const SERVER_NAME = 'formhaus';
 export const SERVER_PACKAGE = '@formhaus/mcp';
 export const SERVER = { command: 'npx', args: ['-y', SERVER_PACKAGE] };
 export const GUIDE_URL = 'https://formhaus.dev/guide/mcp';
+
+export function isOurServer(command: unknown, args: unknown): boolean {
+  return (
+    command === SERVER.command &&
+    Array.isArray(args) &&
+    args.length === SERVER.args.length &&
+    args.every((arg, index) => arg === SERVER.args[index])
+  );
+}

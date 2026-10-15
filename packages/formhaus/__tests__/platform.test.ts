@@ -57,11 +57,4 @@ describe.skipIf(onWindows)('platform specifics', () => {
     expect(box.run().out).toContain('Found Claude Desktop.');
     expect(box.exists('AppData/Roaming/Claude/claude_desktop_config.json')).toBe(true);
   });
-
-  it('treats a formhaus server in the project .mcp.json as configured', () => {
-    box.fakeBin('claude');
-    box.write('.mcp.json', JSON.stringify({ mcpServers: { formhaus: { command: 'npx' } } }));
-    box.run();
-    expect(box.claudeCalls()).toEqual([]);
-  });
 });

@@ -1,4 +1,4 @@
-import { type Context, SERVER, SERVER_NAME, SetupError, type State } from './context';
+import { type Context, isOurServer, SERVER, SERVER_NAME, type ServerState, SetupError, type State } from './context';
 import { display, readText, writeText } from './files';
 
 type JsonObject = Record<string, unknown>;
@@ -20,16 +20,19 @@ export function readJsonObject(ctx: Context, file: string): JsonObject | undefin
   return parsed;
 }
 
-export function hasJsonServer(config: JsonObject | undefined): boolean {
+export function jsonServerState(config: JsonObject | undefined): ServerState {
   const servers = config?.mcpServers;
-  return isObject(servers) && SERVER_NAME in servers;
+  if (!isObject(servers) || !(SERVER_NAME in servers)) return 'missing';
+  const entry = servers[SERVER_NAME];
+  return isObject(entry) && isOurServer(entry.command, entry.args) ? 'present' : 'different';
 }
 
 export function addJsonServer(ctx: Context, file: string): State {
   const config = readJsonObject(ctx, file) ?? {};
   const servers = config.mcpServers ?? {};
   if (!isObject(servers)) throw new SetupError(`"mcpServers" in ${display(ctx, file)} is not an object. The file was not changed.`);
-  if (SERVER_NAME in servers) return 'present';
+  const existing = jsonServerState({ mcpServers: servers });
+  if (existing !== 'missing') return existing;
   const next = { ...config, mcpServers: { ...servers, [SERVER_NAME]: SERVER } };
   writeText(ctx, file, `${JSON.stringify(next, null, 2)}\n`);
   return 'added';

@@ -7,6 +7,7 @@ const LABELS: Record<State, [string, string]> = {
   added: ['added', 'will add'],
   updated: ['updated', 'will update'],
   present: ['already set up', 'already set up'],
+  different: ['different server, check it', 'different server, check it'],
   failed: ['failed', 'failed'],
 };
 
@@ -52,8 +53,15 @@ export function setup(ctx: Context, print: Print): number {
   const failed = changes.some((change) => change.state === 'failed');
   const changed = changes.some((change) => change.state === 'added' || change.state === 'updated');
   print('');
+  const different = changes.some((change) => change.state === 'different');
+  if (different) {
+    print(
+      `A "${SERVER_NAME}" server with another command is configured where marked. Formhaus left it unchanged. Check that you trust it.`,
+    );
+  }
   if (failed) print('Some steps failed. Fix the errors above and run formhaus again.');
   else if (ctx.dryRun) print('Run without --dry-run to apply.');
-  else print(changed ? 'Done. Restart your agents to load the Formhaus MCP server.' : 'Everything is already set up.');
+  else if (changed) print('Done. Restart your agents to load the Formhaus MCP server.');
+  else if (!different) print('Everything is already set up.');
   return failed ? 1 : 0;
 }
