@@ -112,7 +112,7 @@ type FieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
   | 'select' | 'autocomplete' | 'multiselect'
   | 'checkbox' | 'radio' | 'switch'
-  | 'file' | 'date' | 'datetime' | 'textarea';
+  | 'file' | 'date' | 'datetime' | 'time' | 'textarea' | 'hidden';
 
 interface ShowCondition {
   field: string;                        // references another field's key
@@ -177,6 +177,8 @@ obvious validation (required, email format, etc).
 - Long text, "Description", "Notes", "Bio" → `textarea`
 - Dates, birthdays, "When" → `date`
 - Date and time together → `datetime`
+- Time of day only, "Start time", "Opening hours" → `time`
+- Tracking values the user never sees, "Source", "Campaign", "Referral code from the link" → `hidden`
 - File upload, "Attach", "Upload" → `file`
 - Toggle, "Enable/Disable", notifications → `switch`
 - Numbers, amounts, quantities → `number`

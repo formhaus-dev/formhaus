@@ -4,11 +4,11 @@ import { pathToFileURL } from 'node:url';
 
 const { checkDefinition } = await import(pathToFileURL(resolve('packages/core/dist/index.js')).href);
 
-const GUIDE = 'docs/migrate/0.11.md';
+const GUIDE = 'docs/migrate';
 const REMOVED = [/nextStepAsync\(/, /prevStepAsync\(/, /skipStepAsync\(/, /submitAsync\(/, /\.nextStep\(/, /\.prevStep\(/, /\.skipStep\(/, /validateDefinition\(/, /isStepVisible\(/, /ActionsComponent=/, /ProgressComponent=/, /onStepChange=/, /@step-change/, /:submit-handler/, /'update:value'/, /form_abandoned/, /\bdirection\b/, /as FormDefinition\b/];
 const SKIPPED = new Set(['node_modules', '.vitepress', 'migrate', 'public', 'cloud']);
 
-const guide = await readFile(GUIDE, 'utf8');
+const guide = (await Promise.all((await readdir(GUIDE)).filter((name) => name.endsWith('.md')).map((name) => readFile(join(GUIDE, name), 'utf8')))).join('\n');
 const rows = guide.split('\n').filter((line) => line.startsWith('|')).join('\n').replace(/\\\|/g, '|');
 const problems = [];
 

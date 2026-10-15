@@ -88,7 +88,7 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 
 | Type | Value written by built-in renderers |
 |---|---|
-| `text`, `email`, `phone`, `password`, `textarea`, `autocomplete` | string |
+| `text`, `email`, `phone`, `password`, `textarea`, `autocomplete`, `hidden` | string |
 | `number` | number, or `''` when the input is cleared |
 | `select`, `radio` | string, the selected option `value` |
 | `multiselect` | string[] of selected option values |
@@ -96,6 +96,9 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | `file` | a `File`, or `null` |
 | `date` | string `YYYY-MM-DD` |
 | `datetime` | string `YYYY-MM-DDTHH:mm`, without a timezone |
+| `time` | string `HH:mm`, 24-hour |
+
+A `hidden` field renders no label and no focusable control. Its value comes from `defaultValue` or the initial values. Its conditions, rules and type check work like those of any other field. While it is active, an error under its key is a form-level error: `topLevelErrors` lists it after the other form-level errors, and the error summary, step error counts and focus skip the field. `errors` and `validate()` still list it under its key. Built-in messages for it are wrapped in the `hidden` message template, which names the field by its `label`, or by its `key` when the label is empty. A message set in the definition, such as a string `required` or `patternMessage`, and a validator result stay as written. Server errors under its key are handled the same way but are not wrapped.
 
 Any other string is a **custom type**. A renderer provides its component through its `components` option. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
 
@@ -143,11 +146,11 @@ A field condition MUST reference a field of the same or an earlier step. A step 
 
 A field is visible when its own conditions pass and, in a multi-step form, its step is on the active path.
 
-Core clears the value of a field that is hidden. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a hidden field is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored.
+Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored. The one exception is a field of type `hidden`: when it becomes visible again, it gets back its value from the initial values of the constructor or the last `reset()`, or else its `defaultValue`.
 
 In a form with [routes](#routes), fields on steps that are off the active path keep their values. See [Routes](#routes).
 
-Hidden fields are not validated and not submitted.
+Fields hidden by conditions are not validated and not submitted.
 
 ## Defaults and initial values
 
@@ -155,7 +158,7 @@ When the engine is constructed or reset, values are built in this order:
 
 1. `defaultValue` of every field that has one.
 2. The initial values passed to `new FormEngine(definition, initialValues)` or `reset(values)`. They override defaults.
-3. Hidden fields are cleared.
+3. Fields hidden by conditions are cleared.
 
 Initial values for keys that do not belong to any field stay in `engine.values` but are not submitted.
 
@@ -179,7 +182,7 @@ Each rule except `required` and `validator` has a matching message property: `mi
 Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
-2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, a finite number for `number`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
+2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
 3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it.
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
@@ -204,7 +207,7 @@ Validation runs on Continue for the visible fields of the current step, and on S
 
 Step ids MUST be unique. The constructor throws on duplicates.
 
-A hidden step is left out of navigation, progress, validation and submission, and its field values are cleared.
+A step hidden by conditions is left out of navigation, progress, validation and submission, and its field values are cleared.
 
 Step `show`/`showAny` MUST reference fields of earlier steps. A step condition sees only the values of earlier steps on the path.
 
@@ -241,7 +244,7 @@ Rules enforced by the constructor:
 
 Route selection on a step:
 
-1. Routes are tried in order. A route matches when its conditions pass and its target step is visible. A route to a hidden step is passed over.
+1. Routes are tried in order. A route matches when its conditions pass and its target step is visible. A route to a step hidden by conditions is passed over.
 2. The first match wins. A route without conditions always matches, so it serves as a fallback when it is last.
 3. A matching `to: null` makes this step the last step of the path. Submit appears there. It does not submit the form.
 4. If no route matches, the path continues with the next declared step.
@@ -265,7 +268,7 @@ When a value change removes the current step from the path, core moves to the ne
 
 Skip on a step with `skip` (`skip()` returns `false` on a step without it):
 
-1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors. Hidden fields are cleared after the reset, so a default of a field that the reset values hide is removed too.
+1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors. Fields hidden by conditions are cleared after the reset, so a default of a field that the reset values hide is removed too.
 2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skip()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
 3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 
@@ -290,7 +293,7 @@ Core trims leading and trailing whitespace from string values of every built-in 
 
 - every visible field with a value other than `undefined`, on every step of the active path, or every visible field of a single-step form;
 - `null`, `''`, `false` and `[]` values included;
-- fields of skipped steps, hidden fields, fields off the active path and keys that are not field keys excluded.
+- fields of skipped steps, fields hidden by conditions, fields off the active path and keys that are not field keys excluded.
 
 Keys are field keys as written. The payload is not nested and not type-converted.
 
@@ -316,7 +319,7 @@ A plain object is one whose prototype is `Object.prototype`. A `fetch` `Response
 
 `errors` keys are field keys. A message that is not a string is ignored; an array of strings is joined with spaces. `formErrors` other than an array of strings is ignored. A rejection and `setErrors(errors)` apply a server error set the same way:
 
-1. A key of a visible field on the active path becomes the error of that field. Every other key, including the key of a hidden field or a field off the active path, becomes a form-level error. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
+1. A key of a visible field on the active path becomes the error of that field. Every other key, including the key of a field hidden by its conditions or a field off the active path, becomes a form-level error. An error on a field of type `hidden` stays under its key and is also listed in `topLevelErrors`. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
 2. The set replaces all previous field errors and form-level errors at once.
 3. In a multi-step form, the engine opens the earliest step on the active path that has a field error. The key order of `errors` does not matter. The step change hooks do not run.
 4. The built-in renderers focus the first invalid field on that step after it renders: the checked option of a group, or its first enabled control.
@@ -326,7 +329,7 @@ Field errors are kept until one of these events:
 | Event | Server field errors | Form-level errors |
 |---|---|---|
 | The field gets a different value | That field's error is removed | Kept |
-| The field is hidden, its step leaves the active path, or its step is skipped | That field's error is removed | Kept |
+| The field is hidden by conditions, its step leaves the active path, or its step is skipped | That field's error is removed | Kept |
 | `validateField(key)` finds no client error | That field's error is removed | Kept |
 | Navigation, Continue, `validate()` and `onStepValidate` errors | Kept | Kept |
 | A new submission is sent | Kept while it runs | Kept while it runs |
@@ -362,12 +365,14 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `number` | `Enter a number` | |
 | `date` | `Enter a valid date` | |
 | `datetime` | `Enter a valid date and time` | |
+| `time` | `Enter a valid time` | |
 | `option` | `Select one of the available options` | |
 | `options` | `Must be a list of available options` | |
 | `boolean` | `Must be true or false` | |
 | `string` | `Must be text` | |
 | `file` | `Must be a file reference` | |
 | `value` | `Invalid value` | |
+| `hidden` | `{label}: {message}` | `label`, `message` |
 
 `minLength` and `maxLength` on an array value use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`.
 
