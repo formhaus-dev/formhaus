@@ -1,5 +1,14 @@
 # @formhaus/react
 
+## 0.13.2
+
+### Patch Changes
+
+- 6dfb643: - Fixed two fields sharing one element id when their keys differ only in characters other than letters, digits, `_` and `-`, such as `contact.email` and `contact-email`. Labels, error messages and error summary links pointed at the first field. Ids of keys without such a collision are unchanged.
+- 5dfddfe: - Fixed a field keeping provider options after its provider was removed from `optionsProviders`. The field shows its own `options` again.
+- Updated dependencies [5752683]
+  - @formhaus/core@0.13.2
+
 ## 0.13.1
 
 ### Patch Changes
