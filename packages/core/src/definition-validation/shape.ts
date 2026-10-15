@@ -29,8 +29,13 @@ function typed(value: Entry, rules: Record<string, Kind>, path: string): Definit
   });
 }
 
+export function missing(path: string, key: string, hint?: string, create = error): DefinitionIssue {
+  return create('missing-property', path, `missing required property "${key}"`, hint);
+}
+
 function list(value: unknown, path: string, name: string, check: Check, required = false): DefinitionIssue[] {
   if (value == null && !required) return [];
+  if (value === undefined) return [missing(path.slice(0, path.lastIndexOf('/')), path.slice(path.lastIndexOf('/') + 1))];
   if (!Array.isArray(value))
     return [error('invalid-type', path, 'must be an array', required ? 'Use [] when there is nothing to list' : undefined)];
   return value.flatMap((item, index) =>
@@ -39,7 +44,8 @@ function list(value: unknown, path: string, name: string, check: Check, required
 }
 
 function text(value: Entry, key: string, path: string): DefinitionIssue[] {
-  return typeof value[key] === 'string' ? [] : [error('missing-property', `${path}/${key}`, `"${key}" must be a string`)];
+  if (value[key] === undefined) return [missing(path, key)];
+  return typeof value[key] === 'string' ? [] : [error('invalid-type', `${path}/${pointer(key)}`, `"${key}" must be a string`)];
 }
 
 const condition: Check = (value, path) =>
@@ -112,7 +118,11 @@ const field: Check = (value, path) => [
 ];
 
 const route: Check = (value, path) => [
-  ...(value.to === null || typeof value.to === 'string' ? [] : [error('missing-property', `${path}/to`, '"to" must be a step id or null')]),
+  ...(value.to === undefined
+    ? [missing(path, 'to')]
+    : value.to === null || typeof value.to === 'string'
+      ? []
+      : [error('invalid-type', `${path}/to`, '"to" must be a step id or null')]),
   ...conditions(value, path),
 ];
 
@@ -137,11 +147,15 @@ export function shapeIssues(input: unknown): DefinitionIssue[] {
   ];
 }
 
+const SUBMIT = 'Add "submit": { "label": "Submit" }';
+
 export function metaIssues(input: Entry): DefinitionIssue[] {
   return [
     ...text(input, 'id', ''),
-    ...(isEntry(input.submit)
-      ? []
-      : [error('missing-property', '/submit', 'the submit action is missing', 'Add "submit": { "label": "Submit" }')]),
+    ...(input.submit === undefined
+      ? [missing('', 'submit', SUBMIT)]
+      : isEntry(input.submit)
+        ? []
+        : [error('invalid-type', '/submit', 'must be an action object', SUBMIT)]),
   ];
 }
