@@ -12,7 +12,7 @@ const { input } = useField(props, emit);
   <FieldShell :id="props.id" :field="props.field" :error="props.error">
     <input
       v-bind="input"
-      class="fh-field__input"
+      class="fh-field__input fh-field__input--date"
       type="date"
       :value="String(props.modelValue ?? '')"
       :placeholder="props.field.placeholder"
