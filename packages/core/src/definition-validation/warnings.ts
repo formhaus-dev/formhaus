@@ -199,9 +199,7 @@ function versionWarnings({ definition, nodes }: CheckContext): DefinitionIssue[]
 export function definitionWarnings(context: CheckContext): DefinitionIssue[] {
   return [
     ...versionWarnings(context),
-    ...(typeof context.definition.title === 'string'
-      ? []
-      : [warning('missing-property', '/title', '"title" must be a string', 'Add a title for host UI and editors')]),
+    ...propertyWarnings(context),
     ...context.conditions.flatMap((entry) => conditionWarnings(context, entry)),
     ...context.entries.flatMap((entry) => fieldWarnings(context, entry)),
     ...routeWarnings(context),

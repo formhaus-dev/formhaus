@@ -3,6 +3,8 @@ import { formatIssues } from './format';
 import { error, pointer } from './issues';
 import { isEntry } from '../visibility/nodes';
 
+export { isEntry };
+
 type Entry = Record<string, unknown>;
 type Check = (value: Entry, path: string) => DefinitionIssue[];
 type Kind = 'string' | 'number' | 'boolean' | 'requirement' | 'scalar' | 'list';

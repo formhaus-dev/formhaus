@@ -151,7 +151,7 @@ describe('sections and groups in checkDefinition', () => {
         ]),
       ),
     ).toEqual([
-      'error invalid-type /fields/0/fields',
+      'error missing-property /fields/0',
       'error invalid-type /fields/1/label',
       'error invalid-type /fields/1/defaultItems',
       'error invalid-type /fields/1/fields',
