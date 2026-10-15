@@ -55,4 +55,46 @@ describe('drafts', () => {
     expect(saved).not.toContain('abc');
     expect(store.load('d', 1)).toEqual({ name: 'Ada', city: 'Oslo', people: [{ email: 'a@x.io' }, { email: 'b@x.io' }] });
   });
+
+  it('drops a key that a sensitive field uses on another branch, also inside items', () => {
+    const branches: FormDefinition = {
+      formatVersion: '1.1',
+      id: 'b',
+      title: 'B',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 'a',
+          title: 'A',
+          fields: [
+            { key: 'pin', type: 'password', label: 'PIN' },
+            { key: 'crew', type: 'group', label: 'Crew', fields: [{ key: 'code', type: 'password', label: 'Code' }] },
+          ],
+        },
+        { id: 'b', title: 'B', show: [{ field: 'pin', eq: 'x' }], fields: [{ key: 'pin2', type: 'text', label: 'Other' }] },
+      ],
+    };
+    const shared = {
+      ...branches,
+      steps: [
+        branches.steps![0],
+        {
+          ...branches.steps![1],
+          fields: [
+            { key: 'pin', type: 'text', label: 'Reused' },
+            {
+              key: 'crew',
+              type: 'group',
+              label: 'Crew',
+              fields: [
+                { key: 'code', type: 'text', label: 'Code' },
+                { key: 'name', type: 'text', label: 'Name' },
+              ],
+            },
+          ],
+        },
+      ],
+    } as FormDefinition;
+    expect(draftValues(shared, { pin: '1234', crew: [{ code: '9', name: 'Ada' }] })).toEqual({ crew: [{ name: 'Ada' }] });
+  });
 });

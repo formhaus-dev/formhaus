@@ -1,4 +1,4 @@
-import type { FormDefinition } from '../types';
+import type { FormDefinition, FormField, FormGroup } from '../types';
 import { isEntry, isGroup, valueFields } from '../visibility/nodes';
 
 export interface DraftStorage {
@@ -16,18 +16,20 @@ export interface DraftStore {
 const SENSITIVE = new Set(['password', 'file', 'hidden']);
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
-export function draftValues(definition: FormDefinition, values: Record<string, unknown>): Record<string, unknown> {
-  const fields = valueFields([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]);
+function keep(fields: FormField[], values: Record<string, unknown>): Record<string, unknown> {
+  const blocked = new Set(fields.filter((field) => SENSITIVE.has(field.type)).map((field) => field.key));
   const kept: Record<string, unknown> = {};
   for (const field of fields) {
     const value = values[field.key];
-    if (SENSITIVE.has(field.type) || value === undefined) continue;
-    kept[field.key] =
-      isGroup(field) && Array.isArray(value)
-        ? value.map((item) => (isEntry(item) ? draftValues({ ...definition, steps: [], fields: field.fields }, item) : item))
-        : value;
+    if (blocked.has(field.key) || value === undefined) continue;
+    const items = fields.filter((other) => other.key === field.key && isGroup(other)).flatMap((other) => (other as FormGroup).fields);
+    kept[field.key] = items.length && Array.isArray(value) ? value.map((item) => (isEntry(item) ? keep(items, item) : item)) : value;
   }
   return kept;
+}
+
+export function draftValues(definition: FormDefinition, values: Record<string, unknown>): Record<string, unknown> {
+  return keep(valueFields([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]), values);
 }
 
 const sessionStorageOf = () => (globalThis as { sessionStorage?: DraftStorage }).sessionStorage;
