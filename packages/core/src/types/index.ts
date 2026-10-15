@@ -3,6 +3,8 @@ export type { FormAnalyticsEvent } from './analytics';
 export type {
   DefaultFieldType,
   FieldOption,
+  FieldSource,
+  FieldSourceName,
   FieldType,
   FieldValidation,
   FormField,

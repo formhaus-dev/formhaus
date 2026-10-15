@@ -15,7 +15,7 @@ export const capabilities = {
   fieldTypeNotes: {
     time: 'A 24-hour "HH:MM" or "HH:MM:SS" string.',
     hidden:
-      'Renders no label or control. Its value comes from defaultValue or the initial values, is checked as text, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field.',
+      'Renders no label or control. Its value comes from the initial values, then its source, then defaultValue. It is checked as text up to maxLength, or 2000 characters without it, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field.',
   },
   fieldProps: {
     required: ['key', 'type', 'label'],
@@ -36,7 +36,10 @@ export const capabilities = {
       'autoAdvance',
       'layout',
       'i18n',
+      'source',
     ],
+    source:
+      'hidden only. Fills the value in the browser at mount: { "query": "utm_source" } reads a URL parameter; "referrer", "page" (URL without query and hash), "pageTitle", "language", "timezone" or "device" (mobile, tablet or desktop). "country" is filled by the server at submission, such as Formhaus Cloud; browsers leave it empty. A source that yields nothing leaves defaultValue. Values are user-controllable; do not make tracking fields required. A fixed value is defaultValue without a source.',
     optionFieldTypes: OPTION_FIELD_TYPES,
     options: 'Array of { value: string, label: string }.',
     inputMode: ['text', 'numeric', 'decimal', 'tel', 'email', 'url', 'search'],

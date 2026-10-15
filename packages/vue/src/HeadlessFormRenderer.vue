@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormEngineOptions, LabelKey, StepChangeContext } from '@formhaus/core';
-import { fieldDomId, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
-import { computed, ref, watch } from 'vue';
+import { applySources, fieldDomId, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { computed, onMounted, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
@@ -65,6 +65,12 @@ const {
   stepValidating,
   submitting,
 } = form;
+
+onMounted(() => applySources(form.engine, props.initialValues));
+watch(
+  () => form.engine,
+  (engine) => applySources(engine, props.initialValues),
+);
 
 const resolvedOptions = useFieldOptions(
   visibleFields,

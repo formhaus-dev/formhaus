@@ -55,7 +55,12 @@ interface FormField {
   rows?: number;                  // Textarea row count
   mask?: string;                  // Input mask pattern (shown as placeholder, custom components get full access)
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
+  source?: FieldSource;           // Hidden fields: where the value comes from. Added in 0.14.0
 }
+
+type FieldSource =
+  | { query: string }
+  | 'referrer' | 'page' | 'pageTitle' | 'language' | 'timezone' | 'device' | 'country';
 
 type DefaultFieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'

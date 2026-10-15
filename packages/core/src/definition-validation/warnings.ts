@@ -5,6 +5,7 @@ import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { closest, oneOf, suggest, warning } from './issues';
 import { propertyWarnings } from './properties';
+import { sourceWarnings } from './sources';
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
@@ -132,6 +133,7 @@ function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssu
         ]),
     ...optionIssues(entry),
     ...ruleWarnings(context, entry),
+    ...sourceWarnings(entry),
     ...(field.optionsDependsOn ?? []).flatMap((key, index) =>
       context.keys.has(key)
         ? []

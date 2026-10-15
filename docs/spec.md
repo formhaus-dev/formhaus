@@ -98,7 +98,22 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | `datetime` | string `YYYY-MM-DDTHH:mm`, without a timezone |
 | `time` | string `HH:mm`, 24-hour |
 
-A `hidden` field renders no label and no focusable control. Its value comes from `defaultValue` or the initial values. Its conditions, rules and type check work like those of any other field. While it is active, an error under its key is a form-level error: `topLevelErrors` lists it after the other form-level errors, and the error summary, step error counts and focus skip the field. `errors` and `validate()` still list it under its key. Built-in messages for it are wrapped in the `hidden` message template, which names the field by its `label`, or by its `key` when the label is empty. A message set in the definition, such as a string `required` or `patternMessage`, and a validator result stay as written. Server errors under its key are handled the same way but are not wrapped.
+A `hidden` field renders no label and no focusable control. Its value comes from the initial values, then its `source`, then `defaultValue`. Its value is text of at most `maxLength` characters, or 2000 without it. Its conditions, rules and type check work like those of any other field. While it is active, an error under its key is a form-level error: `topLevelErrors` lists it after the other form-level errors, and the error summary, step error counts and focus skip the field. `errors` and `validate()` still list it under its key. Built-in messages for it are wrapped in the `hidden` message template, which names the field by its `label`, or by its `key` when the label is empty. A message set in the definition, such as a string `required` or `patternMessage`, and a validator result stay as written. Server errors under its key are handled the same way but are not wrapped.
+
+A `hidden` field may have a `source`: `{ "query": name }` or one of `referrer`, `page`, `pageTitle`, `language`, `timezone`, `device` and `country`. Any other value is an `unknown-source` or `invalid-type` error. A `source` on another field type is a `source-not-applicable` warning and is ignored. Renderers resolve sources in the browser after mount, without marking a change, from this context:
+
+| Source | Value |
+|---|---|
+| `query` | The named URL parameter |
+| `referrer` | `document.referrer` |
+| `page` | Origin and path of the page URL, without query and hash |
+| `pageTitle` | `document.title` |
+| `language` | `navigator.language` |
+| `timezone` | The IANA time zone name |
+| `device` | `mobile`, `tablet` or `desktop` |
+| `country` | Supplied by the host, such as a server. Browsers supply none |
+
+A value is used when it is a string that is not empty after trimming. It is cut to the field's `maxLength`, or 2000 characters without it. Otherwise, or when reading it throws, the source yields nothing and `defaultValue` stays. A key present in the initial values with a value other than `""` or `null` is not resolved. The resolved value is also the value a `hidden` field gets back when its conditions match again. `reset()` and Skip drop resolved values, and renderers resolve again only when they mount or get a new definition.
 
 Any other string is a **custom type**. A renderer provides its component through its `components` option. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
 
@@ -146,7 +161,7 @@ A field condition MUST reference a field of the same or an earlier step. A step 
 
 A field is visible when its own conditions pass and, in a multi-step form, its step is on the active path.
 
-Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored. The one exception is a field of type `hidden`: when it becomes visible again, it gets back its value from the initial values of the constructor or the last `reset()`, or else its `defaultValue`.
+Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored. The one exception is a field of type `hidden`: when it becomes visible again, it gets back its value from the initial values of the constructor or the last `reset()`, or else its resolved source, or else its `defaultValue`.
 
 In a form with [routes](#routes), fields on steps that are off the active path keep their values. See [Routes](#routes).
 
@@ -480,7 +495,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 
 | Code | Severity | Reported for |
 |---|---|---|
-| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as an `id` that is not a string, `in` that is not an array, `max` that is not a number or a `formatVersion` that is not a version string |
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as an `id` that is not a string, `in` that is not an array, `max` that is not a number, a `source` that is not a name or a `{ "query" }` object with a parameter name, or a `formatVersion` that is not a version string |
 | `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
 | `missing-property` | error, warning | A missing `id`, `submit`, step `id` or `fields`, field `key` or `type`, option `value`, route `to` or condition `field`. A missing form or step `title`, field or option `label`, or action `label` is a warning. The path points to the object that lacks the property |
 | `unknown-property` | warning | A property the JSON Schema does not define, such as `imd` for `id`. The hint names the closest known property, or the `validation` object for a rule set on a field |
@@ -497,11 +512,13 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `duplicate-key` | error | A field key that an earlier field on a possible path already uses |
 | `invalid-range` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
+| `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt` |
+| `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |

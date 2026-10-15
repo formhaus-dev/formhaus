@@ -21,6 +21,10 @@ export type DefaultFieldType =
 
 export type FieldType = DefaultFieldType | (string & {});
 
+export type FieldSourceName = 'referrer' | 'page' | 'pageTitle' | 'language' | 'timezone' | 'device' | 'country';
+
+export type FieldSource = FieldSourceName | { query: string };
+
 export interface FieldOption {
   value: string;
   label: string;
@@ -35,6 +39,7 @@ export interface FormField {
   helperText?: string;
   autoAdvance?: boolean;
   defaultValue?: unknown;
+  source?: FieldSource;
   show?: ShowCondition[];
   showAny?: ShowCondition[];
   validation?: FieldValidation;

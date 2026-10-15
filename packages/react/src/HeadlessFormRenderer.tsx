@@ -1,5 +1,5 @@
 import type { FormEngineOptions } from '@formhaus/core';
-import { canMoveFocus, focusField, restoreFocus, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { applySources, canMoveFocus, focusField, restoreFocus, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
@@ -55,6 +55,8 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   const previousStep = useRef(engine.currentStep?.id);
   const actions = useRendererActions(engine, props);
   const handledInvalid = useRef(0);
+
+  useEffect(() => applySources(engine, initialValues), [engine]);
 
   const appliedErrors = useRef<{ engine: typeof engine; errors: Record<string, string> } | null>(null);
   useEffect(() => {
