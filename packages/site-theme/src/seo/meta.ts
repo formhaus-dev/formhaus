@@ -11,7 +11,6 @@ const routes: [string, Section, string?, string?][] = [
   ['cloud/', 'cloud', 'Cloud', '/cloud'],
   ['legal/', 'legal', 'Legal', '/legal/'],
   ['cloud.md', 'cloud'],
-  ['pricing.md', 'cloud'],
   ['api/', 'api'],
   ['spec.md', 'api'],
   ['build.md', 'build'],

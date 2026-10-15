@@ -27,7 +27,7 @@ Two independent ways to use it:
   claude mcp add --transport http formhaus https://api.formhaus.dev/mcp
   ```
 
-  [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard) · [Pricing](https://formhaus.dev/pricing)
+  [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard) · [Pricing](https://formhaus.dev/cloud#pricing)
 
 **[Start here](#start-here) · [Example](#example) · [Packages](#packages) · [Install](#install) · [Quick start](#quick-start) · [Custom components](#custom-components) · [Figma plugin](#figma-plugin) · [Docs](https://formhaus.dev) · [Spec](https://formhaus.dev/spec.html) · [Playground](https://formhaus.dev/playground.html)**
 

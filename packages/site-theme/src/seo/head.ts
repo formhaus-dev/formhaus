@@ -44,7 +44,7 @@ export function transformHead({ pageData, title, description, content }: Transfo
   ]
   if (home) tags.push(jsonLd(homeJsonLd(description)))
   else tags.push(jsonLd(breadcrumbJsonLd(breadcrumbs(relativePath, pageData.title, url))))
-  if (cloud || relativePath === 'pricing.md') tags.push(jsonLd(faqJsonLd(content)))
+  if (cloud) tags.push(jsonLd(faqJsonLd(content)))
   if (isArticle(relativePath)) {
     tags.push(jsonLd(articleJsonLd(pageData.title, description, url, pageData.lastUpdated)))
   }
