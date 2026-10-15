@@ -7,6 +7,7 @@
   "core/cloud": 2270,
   "core/internal": 9624,
   "core/i18n": 9107,
+  "core/fix": 99999,
   "react/cloud": 1450,
   "react/i18n": 280,
   "vue/cloud": 2110,
