@@ -1,5 +1,17 @@
 # @formhaus/vue
 
+## 0.13.1
+
+### Patch Changes
+
+- 1a4874a: - A change of the `errors` prop now focuses the first invalid field when focus is inside the form and not in a text field.
+- 49485c8: - Fixed the primary button missing `aria-busy` while a submission or step check is pending.
+- Updated dependencies [a5c775e]
+- Updated dependencies [49485c8]
+- Updated dependencies [1a4874a]
+- Updated dependencies [5ea6229]
+  - @formhaus/core@0.13.1
+
 ## 0.13.0
 
 ### Minor Changes
