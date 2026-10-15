@@ -11,17 +11,21 @@ function optionsEqual(previous: FieldOption[] | undefined, next: FieldOption[]):
 export function useFieldOptions(
   visibleFields: Ref<FormField[]>,
   getEngine: () => FormEngine,
-  providers?: Record<string, OptionsProvider>,
+  getProviders: () => Record<string, OptionsProvider> | undefined,
 ): Ref<Record<string, FieldOption[]>> {
   const resolved = ref<Record<string, FieldOption[]>>({});
   const requestVersions = new Map<string, number>();
-  if (!providers) return resolved;
+  let current: FormEngine | undefined;
 
   watch(
-    visibleFields,
-    (fields, _previous, onCleanup) => {
+    [visibleFields, getEngine, getProviders],
+    ([fields, engine, providers], _previous, onCleanup) => {
+      if (current !== engine) {
+        if (current) resolved.value = {};
+        current = engine;
+      }
+      if (!providers) return;
       let active = true;
-      const engine = getEngine();
       const unsubscribers: Array<() => void> = [];
 
       const commit = (fieldKey: string, options: FieldOption[]) => {
