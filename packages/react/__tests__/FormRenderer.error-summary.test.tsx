@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
+import { useLayoutEffect } from 'react';
 import { describe, expect, it } from 'vitest';
 import account from '../../../examples/react-flat-api/src/account.json';
 import { FormRenderer } from '../src/FormRenderer';
@@ -40,6 +41,27 @@ describe('error summary and step marks', () => {
     fireEvent.click(within(summary).getAllByRole('link')[1]);
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('radio', { name: 'Business' })));
     expect(links[2].getAttribute('href')).toMatch(/-postcode$/);
+  });
+
+  it('focuses the field when a summary link is clicked before the previous render settles', async () => {
+    let clicked = false;
+    const ClickOnCommit = () => {
+      useLayoutEffect(() => {
+        const link = document.querySelectorAll<HTMLElement>('.fh-error-summary__link')[2];
+        if (clicked || !link || !document.activeElement?.id.endsWith('-email')) return;
+        clicked = true;
+        queueMicrotask(() => fireEvent.click(link));
+      });
+      return null;
+    };
+    render(<FormRenderer definition={definition} initialValues={valid} onSubmit={reject} errorSummary progressComponent={ClickOnCommit} />);
+    for (const field of [/Company/, /Postcode/]) {
+      fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+      await screen.findByRole('textbox', { name: field });
+    }
+    fireEvent.click(screen.getByRole('button', { name: 'Open account' }));
+    await waitFor(() => expect(clicked).toBe(true));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Postcode/ })));
   });
 
   it('marks steps with errors and the current step', async () => {
