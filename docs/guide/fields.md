@@ -281,6 +281,14 @@ File upload. Uses native file input. Set `accept` to restrict file types.
 }
 ```
 
+## Keys and element ids
+
+Submitted values use each field's key exactly as written. A key such as `contact.email` stays one flat key and is never split into nested objects. Errors from `validateSubmission()` and the `errors` prop use the same keys.
+
+Each field control gets the element id `<form id>-<key>`, and its error message gets the same id plus `-error`. The form id is generated per renderer, so match the end of the id, such as `[id$="-email"]`. In the key part, each character other than `A-Z`, `a-z`, `0-9`, `_` and `-` becomes `-`, so `contact.email` gets `<form id>-contact-email`.
+
+When two keys in one form escape to the same id, such as `contact.email` and `contact-email`, the key that needs no escaping keeps the plain id. If both need escaping, the key that sorts first keeps it. The other key gets `-` and a short hash of the key added, such as `<form id>-contact-email-1k2j3h4`. The hash depends only on the key, so reordering fields does not change ids.
+
 ## Custom field types
 
 `FieldType` accepts any string, not just the built-in types. Use the `components` prop to provide a renderer for your custom type:

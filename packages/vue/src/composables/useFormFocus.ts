@@ -32,7 +32,7 @@ export function useFormFocus(form: UseFormEngineReturn, formRef: Ref<HTMLFormEle
     await nextTick();
     const key = focusKey;
     focusKey = null;
-    focusField(formRef.value, formId, key);
+    focusField(formRef.value, formId, key, form.engine.definition);
   }, { flush: 'post' });
 
   return {
