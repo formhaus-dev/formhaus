@@ -7,7 +7,8 @@ export {
   type CloudState,
 } from '../cloud/controller';
 export { canMoveFocus, focusField, focusProblem, restoreFocus } from './focus';
-export { fieldDomId } from './ids';
+export { fieldDomId, itemDomId } from './ids';
+export { errorDomId, errorEntries, itemLimits, itemTitle, type ErrorEntry } from './items';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { labelFor } from '../i18n/labels';
 import type { FormEngine } from '../engine';

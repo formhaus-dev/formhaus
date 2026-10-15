@@ -61,6 +61,19 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 
 .fh-field__helper { margin: -4px 0 2px; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: 1.45; }
 
+.fh-section, .fh-group, .fh-group__item { display: grid; gap: var(--fh-gap); min-width: 0; margin: 0; padding: 0; border: 0; }
+.fh-group { gap: 16px; }
+.fh-group__item { position: relative; gap: 20px; padding: 16px; border: 1px solid var(--fh-color-border); border-radius: var(--fh-radius); }
+:is(.fh-section, .fh-group, .fh-group__item) > legend { float: left; padding: 0; }
+.fh-section__title { font-size: 17px; font-weight: 600; line-height: 1.4; }
+:is(.fh-section, .fh-group) > legend + .fh-field__helper { margin-top: calc(8px - var(--fh-gap)); }
+.fh-group > legend + .fh-field__helper { margin-top: -8px; }
+.fh-group__title { color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); font-weight: 600; line-height: 32px; }
+.fh-group__title:focus-visible { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
+.fh-group__remove { position: absolute; top: 16px; right: 12px; min-height: 32px; }
+.fh-group__add { justify-self: start; }
+.fh-group__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
 .fh-field__input {
   width: 100%;
   min-height: var(--fh-control-height);
