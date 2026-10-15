@@ -1,6 +1,6 @@
 import { getChangedKeys } from './engine-utils';
 import { afterCommit } from './lifecycle-error';
-import { watchCheckedInputs } from './pending-inputs';
+import { watchCheckedInputs, watchValues } from './pending-inputs';
 import { validateStep } from '../validation';
 import { applyValidationErrors, getValidationValues } from './validation-state';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
@@ -36,7 +36,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   let outcome: boolean | undefined;
   const fieldKeys = skipCurrentStep(engine);
   const skippedValues = engine.values;
-  const edited = watchCheckedInputs(engine, { ...skippedValues });
+  const edited = watchValues(engine, skippedValues);
   const submitting = submitForm(engine, async (submitted, skipped) => {
     const result = await submit(submitted, skipped);
     const rejected = isRejection(result);
