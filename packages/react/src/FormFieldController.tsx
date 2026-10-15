@@ -1,4 +1,4 @@
-import { fieldDomId } from '@formhaus/core/internal';
+import { errorDomId, fieldDomId } from '@formhaus/core/internal';
 import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
 import { memo, useCallback, useSyncExternalStore } from 'react';
 import { FieldResolver } from './FieldResolver';
@@ -18,6 +18,8 @@ interface FormFieldControllerProps extends ControllerProps {
   field: FormFieldType;
   options?: FieldOption[];
   disabled?: boolean;
+  path?: string;
+  item?: Record<string, unknown>;
 }
 
 export const FormFieldController = memo(function FormFieldController({
@@ -27,29 +29,32 @@ export const FormFieldController = memo(function FormFieldController({
   options,
   disabled,
   components,
+  path,
+  item,
   onChange,
   onCommit,
   onBlur,
   onFocus,
 }: FormFieldControllerProps) {
-  const subscribe = useCallback((listener: () => void) => engine.subscribeField(field.key, listener), [engine, field.key]);
-  const getSnapshot = useCallback(() => engine.getFieldSnapshot(field.key), [engine, field.key]);
+  const key = path ?? field.key;
+  const subscribe = useCallback((listener: () => void) => engine.subscribeField(key, listener), [engine, key]);
+  const getSnapshot = useCallback(() => engine.getFieldSnapshot(key), [engine, key]);
 
   useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-  const handleChange = useCallback((value: unknown) => onChange(field.key, value), [field.key, onChange]);
-  const handleCommit = useCallback((value: unknown) => onCommit(field.key, value), [field.key, onCommit]);
-  const handleBlur = useCallback(() => onBlur(field.key), [field.key, onBlur]);
-  const handleFocus = useCallback(() => onFocus(field.key), [field.key, onFocus]);
-  const fieldWithOptions = options ? { ...field, options } : field;
+  const handleChange = useCallback((value: unknown) => onChange(key, value), [key, onChange]);
+  const handleCommit = useCallback((value: unknown) => onCommit(key, value), [key, onCommit]);
+  const handleBlur = useCallback(() => onBlur(key), [key, onBlur]);
+  const handleFocus = useCallback(() => onFocus(key), [key, onFocus]);
+  const fieldWithOptions = { ...field, ...(options && { options }), ...(path && { key: path, autoAdvance: undefined }) };
 
   return (
     <FieldResolver
-      id={fieldDomId(formId, field.key, engine.definition)}
+      id={path ? errorDomId(engine, formId, path) : fieldDomId(formId, key)}
       field={fieldWithOptions}
-      value={engine.values[field.key]}
-      error={engine.errors[field.key]}
-      loading={engine.fieldLoading[field.key]}
+      value={item ? item[field.key] : engine.values[key]}
+      error={engine.errors[key]}
+      loading={engine.fieldLoading[key]}
       disabled={disabled}
       components={components}
       onChange={handleChange}
