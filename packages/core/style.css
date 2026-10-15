@@ -16,6 +16,8 @@
   --fh-color-primary-text: #ffffff;
   --fh-color-primary-soft: #f5f0ff;
   --fh-color-secondary-border: #d4d4d8;
+  --fh-color-scrim: rgba(20, 20, 22, 0.32);
+  --fh-color-shadow: rgba(20, 20, 22, 0.2);
   --fh-radius: 10px;
   --fh-space-1: 4px; --fh-space-2: 6px; --fh-space-3: 8px; --fh-space-4: 10px; --fh-space-5: 12px;
   --fh-space-6: 14px; --fh-space-7: 16px; --fh-space-8: 18px; --fh-space-9: 20px; --fh-space-10: 24px;
@@ -48,6 +50,8 @@
   --fh-color-primary-text: #ffffff;
   --fh-color-primary-soft: #241a3d;
   --fh-color-secondary-border: #3a3a41;
+  --fh-color-scrim: rgba(0, 0, 0, 0.55);
+  --fh-color-shadow: rgba(0, 0, 0, 0.6);
 }
 
 @supports (color: color-mix(in srgb, red, blue)) {
@@ -85,12 +89,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-group__header { display: flex; flex-wrap: wrap; align-items: center; gap: var(--fh-space-1) var(--fh-space-3); min-height: 32px; }
 .fh-group__title { min-width: 0; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); font-weight: 600; line-height: 1.4; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
 .fh-group__title:focus-visible { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
-.fh-group :is(.fh-group__remove, .fh-group__keep) { flex: none; min-height: 32px; margin: 0 calc(-1 * var(--fh-space-4)) 0 auto; padding: 0 var(--fh-space-4); font-size: var(--fh-font-size-small); font-weight: 500; }
-.fh-group .fh-group__remove { color: var(--fh-color-error); }
-.fh-group__confirm { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--fh-space-1) var(--fh-space-3); margin-left: auto; }
-.fh-group__confirm-actions { display: flex; gap: var(--fh-space-3); margin-left: auto; }
-.fh-group__confirm .fh-group__remove { margin: 0; }
-.fh-group__prompt { text-align: right; color: var(--fh-color-text); font-size: var(--fh-font-size-small); line-height: 1.45; text-wrap: pretty; }
+.fh-group .fh-group__remove { flex: none; min-height: 32px; margin: 0 calc(-1 * var(--fh-space-4)) 0 auto; padding: 0 var(--fh-space-4); font-size: var(--fh-font-size-small); font-weight: 500; color: var(--fh-color-error); }
 .fh-group__add { display: inline-flex; align-items: center; gap: var(--fh-space-3); justify-self: start; }
 .fh-group__add::before { content: ""; width: 14px; height: 14px; background: currentColor; --fh-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M7 2v10M2 7h10' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E"); -webkit-mask: var(--fh-plus) center / 14px no-repeat; mask: var(--fh-plus) center / 14px no-repeat; }
 .fh-group__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -165,6 +164,8 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   .fh-form-actions__button--secondary:hover:not(:disabled) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
   .fh-form-actions__button--text:hover:not(:disabled) { background: var(--fh-color-bg-hover); color: var(--fh-color-text); }
   .fh-group .fh-group__remove:hover:not(:disabled) { background: var(--fh-color-error-soft); color: var(--fh-color-error-hover); }
+  .fh-dialog .fh-dialog__danger:hover { background: var(--fh-color-error-soft); }
+  .fh-dialog__close:hover { background: var(--fh-color-bg-hover); color: var(--fh-color-text); }
 }
 
 .fh-field__input[aria-invalid="true"], .fh-field__checkbox[aria-invalid="true"], .fh-field[aria-invalid="true"] :is(.fh-field__radio-option, .fh-field__multiselect-option) { border-color: var(--fh-color-error); }
@@ -181,8 +182,28 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-form-actions__button--secondary { border-color: var(--fh-color-secondary-border); background: var(--fh-color-bg); }
 .fh-form-actions__button--text { padding: 0 var(--fh-space-4); color: var(--fh-color-text-muted); font-weight: 500; }
 
+.fh-dialog { box-sizing: border-box; width: min(480px, calc(100vw - 2 * var(--fh-space-7))); max-width: none; max-height: calc(100dvh - 2 * var(--fh-space-9)); margin: auto; padding: 0; border: 1px solid var(--fh-color-border); border-radius: var(--fh-radius); background: var(--fh-color-bg); color: var(--fh-color-text); font: inherit; line-height: 1.5; box-shadow: 0 24px 64px var(--fh-color-shadow); }
+.fh-dialog[open] { display: flex; flex-direction: column; animation: fh-rise 200ms ease-out; }
+.fh-dialog::backdrop { background: var(--fh-color-scrim); animation: fh-fade 200ms ease-out; }
+.fh-dialog__header { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--fh-space-1) var(--fh-space-5); padding: var(--fh-space-7) var(--fh-space-5) var(--fh-space-7) var(--fh-space-9); }
+.fh-dialog__title { grid-column: 1; margin: 0; padding-top: var(--fh-space-1); font-size: var(--fh-font-size-heading); font-weight: 600; line-height: 1.35; text-wrap: balance; }
+.fh-dialog__description { grid-column: 1; margin: 0; color: var(--fh-color-text-muted); }
+.fh-dialog__close { grid-area: 1 / 2 / span 2; align-self: start; width: 32px; height: 32px; padding: 0; border: 0; border-radius: var(--fh-radius); background: transparent; color: var(--fh-color-text-muted); cursor: pointer; transition: background-color 140ms, color 140ms; }
+.fh-dialog__close::before { content: ""; display: block; width: 16px; height: 16px; margin: auto; background: currentColor; --fh-x: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 4l8 8M12 4l-8 8' stroke='black' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E"); -webkit-mask: var(--fh-x) center / 16px no-repeat; mask: var(--fh-x) center / 16px no-repeat; }
+.fh-dialog__close:focus-visible { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
+.fh-dialog__footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--fh-space-3); padding: var(--fh-space-5) var(--fh-space-9); border-top: 1px solid var(--fh-color-border); }
+.fh-dialog .fh-form-actions__button { min-height: 40px; padding: 0 var(--fh-space-7); font-weight: 500; }
+.fh-dialog .fh-dialog__danger { border-color: var(--fh-color-error); background: var(--fh-color-bg); color: var(--fh-color-error); }
+
+@keyframes fh-rise { from { opacity: 0; transform: translateY(var(--fh-space-3)); } }
+
+@keyframes fh-fade { from { opacity: 0; } }
+
 @media (max-width: 480px) {
   :where(.fh-form) { --fh-card-padding: var(--fh-space-7); }
+  .fh-dialog { width: 100%; max-height: calc(100dvh - var(--fh-space-10)); margin: auto 0 0; padding-bottom: env(safe-area-inset-bottom); border-width: 1px 0 0; border-radius: var(--fh-radius) var(--fh-radius) 0 0; }
+  .fh-dialog__header { padding-inline-start: var(--fh-space-7); }
+  .fh-dialog__footer { flex-direction: column-reverse; padding-inline: var(--fh-space-7); }
   .fh-group__item { padding-top: var(--fh-space-5); }
   .fh-group__add { justify-content: center; justify-self: stretch; }
   .fh-form-actions__button--primary, .fh-form-actions__secondary { flex: 1 0 100%; }
@@ -193,7 +214,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   :where(.fh-form) { --fh-font-size: 17px; --fh-font-size-small: 15px; }
   .fh-field__input { font-size: max(16px, var(--fh-font-size)); }
   :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) { padding-block: var(--fh-space-4); }
-  .fh-group :is(.fh-group__remove, .fh-group__keep) { min-height: 44px; }
+  .fh-group .fh-group__remove, .fh-dialog .fh-form-actions__button { min-height: 44px; }
 }
 
 .fh-step-progress { display: flex; flex-direction: column; gap: var(--fh-space-2); }
@@ -217,4 +238,4 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-form__notice--info { border-color: var(--fh-color-border-focus); }
 .fh-form__notice > p, .fh-form__notice > ul { margin: 0; }
 
-@media (prefers-reduced-motion: reduce) { .fh-form *, .fh-form ::after { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .fh-form *, .fh-form ::after { transition: none; } .fh-dialog, .fh-dialog::backdrop { animation: none; } }
