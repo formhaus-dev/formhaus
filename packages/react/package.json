@@ -10,15 +10,15 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "default": "./dist/index.js"
     },
     "./cloud": {
       "types": "./dist/cloud.d.ts",
-      "import": "./dist/cloud.js"
+      "default": "./dist/cloud.js"
     },
     "./i18n": {
       "types": "./dist/i18n.d.ts",
-      "import": "./dist/i18n.js"
+      "default": "./dist/i18n.js"
     }
   },
   "files": [

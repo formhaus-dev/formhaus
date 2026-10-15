@@ -13,23 +13,23 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "default": "./dist/index.js"
     },
     "./cloud": {
       "types": "./dist/cloud.d.ts",
-      "import": "./dist/cloud.js"
+      "default": "./dist/cloud.js"
     },
     "./server": {
       "types": "./dist/server.d.ts",
-      "import": "./dist/server.js"
+      "default": "./dist/server.js"
     },
     "./internal": {
       "types": "./dist/internal.d.ts",
-      "import": "./dist/internal.js"
+      "default": "./dist/internal.js"
     },
     "./i18n": {
       "types": "./dist/i18n.d.ts",
-      "import": "./dist/i18n.js"
+      "default": "./dist/i18n.js"
     },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
