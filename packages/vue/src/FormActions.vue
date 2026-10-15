@@ -92,6 +92,7 @@ function getBackLabel(): string {
       type="submit"
       class="fh-form-actions__button fh-form-actions__button--primary"
       :disabled="isPrimaryDisabled()"
+      :aria-busy="props.loading"
       @click.prevent="onPrimaryClick"
     >
       {{ getPrimaryLabel() }}
