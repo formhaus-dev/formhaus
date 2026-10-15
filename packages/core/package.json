@@ -33,7 +33,7 @@
     },
     "./fix": {
       "types": "./dist/fix.d.ts",
-      "import": "./dist/fix.js"
+      "default": "./dist/fix.js"
     },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",

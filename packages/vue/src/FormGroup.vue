@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey, LabelSource } from '@formhaus/core';
-import { errorDomId, fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
+import {
+  errorDomId,
+  fieldDomId,
+  focusItem,
+  itemDomId,
+  itemHasContent,
+  itemLimits,
+  itemTitle,
+  labelFor,
+  optionKey,
+} from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
 import DefaultGroup from './DefaultGroup.vue';
 import DefaultConfirmDialog from './DefaultConfirmDialog.vue';
@@ -46,7 +56,7 @@ const remove = computed(() => props.group.removeLabel ?? label('removeItem'));
 
 function itemProps(index: number, field: FormField) {
   const key = `${props.group.key}.${index}.${field.key}`;
-  const options = props.options[field.key];
+  const options = props.options[optionKey(props.group.key, field.key)];
   const update = (value: unknown) => emit('update', key, value);
   return {
     id: errorDomId(props.engine, props.formId, key),

@@ -121,28 +121,34 @@ function applySkips(engine: FormEngine, skippedSteps: unknown): void {
   }
 }
 
-function rejectGroups(fields: FormField[], input: unknown, resolve: ResolveMessage) {
+function rejectGroups(definition: FormDefinition, fields: FormField[], input: unknown, resolve: ResolveMessage) {
   const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? { ...(input as Record<string, unknown>) } : {};
-  const rejected = new Map<string, string>();
-  for (const group of fields.filter(isGroup)) {
-    const error = hasOwn(source, group.key) && !rejected.has(group.key) && typeError(group, source[group.key], resolve);
-    if (!error) continue;
-    rejected.set(group.key, error);
-    delete source[group.key];
-  }
-  return { source, rejected };
+  const rejected = new Map<string, unknown>();
+  const reject = (keys: string[]) => {
+    for (const key of keys) {
+      rejected.set(key, source[key]);
+      delete source[key];
+    }
+  };
+  const fits = (key: string) => fields.some((field) => field.key === key && !typeError(field, source[key], resolve));
+  reject([...new Set(fields.filter(isGroup).map(({ key }) => key))].filter((key) => hasOwn(source, key) && !fits(key)));
+  const resolved = activeValues(definition, fields, source);
+  const misfits = [...resolved.active].filter(([key, field]) => isGroup(field) && typeError(field, resolved.values[key], resolve));
+  if (misfits.length === 0) return { resolved, rejected };
+  reject(misfits.map(([key]) => key));
+  return { resolved: activeValues(definition, fields, source), rejected };
 }
 
 export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
   parseDefinition(definition);
   const fields = getAllFields(definition);
   const messages = messageResolver(options.messages, definition.messages);
-  const { source, rejected } = rejectGroups(fields, values, namedResolver(messages));
-  const resolved = activeValues(definition, fields, source);
-  const invalid = typeErrors(resolved, namedResolver(messages));
+  const resolve = namedResolver(messages);
+  const { resolved, rejected } = rejectGroups(definition, fields, values, resolve);
+  const invalid = typeErrors(resolved, resolve);
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
-  const items = itemErrors(engine, invalid, namedResolver(messages));
+  const items = itemErrors(engine, invalid, resolve);
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();
   const submitted: Record<string, unknown> = engine.getSubmitValues();
@@ -154,9 +160,10 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
     for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
   }
   const skipped = new Set([...internals(engine).skipped.values()].flat());
-  for (const [key, error] of rejected) {
-    if (!visibility.activeField(key, engine.values) || skipped.has(key)) continue;
-    errors[key] = error;
+  for (const [key, value] of rejected) {
+    const field = visibility.activeField(key, engine.values);
+    if (!field || skipped.has(key)) continue;
+    errors[key] = typeError(field, value, resolve) ?? resolve('value', {}, field);
     delete submitted[key];
     for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
   }

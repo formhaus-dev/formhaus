@@ -24,7 +24,7 @@ function link(name, from) {
 
 const files = {
   'package.json': JSON.stringify({ name: 'consumer', private: true, type: 'module' }),
-  'src/react.tsx': `import { FormRenderer, HeadlessFormRenderer, TextField } from '@formhaus/react';
+  'src/react.tsx': `import { FormRenderer, HeadlessFormRenderer, TextField, type FieldComponentMap } from '@formhaus/react';
 import { FormhausForm, CloudError } from '@formhaus/react/cloud';
 import { useLocalizedForm } from '@formhaus/react/i18n';
 import { localize, type Overlay } from '@formhaus/core/i18n';
@@ -38,6 +38,14 @@ export const views = [
   <FormhausForm id="abc" />,
 ];
 export const extras = [TextField, CloudError];
+export const components: FieldComponentMap = {
+  text: ({ value, onChange }) => <input value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} />,
+  rating: ({ value, onChange }) => <button type="button" onClick={() => onChange(Number(value) + 1)} />,
+  section: ({ title, children }) => <fieldset aria-label={title}>{children}</fieldset>,
+  group: ({ label, add }) => <button type="button" onClick={add}>{label}</button>,
+  groupItem: ({ title, children }) => <div title={title}>{children}</div>,
+  confirmDialog: ({ open, confirm }) => (open ? <button type="button" onClick={confirm} /> : null),
+};
 const overlay: Overlay = { title: 'Kontakt' };
 export const localized = localize(definition, { overlay, lang: 'de' });
 const fixes: DefinitionFix[] = suggestFixes(definition).flatMap((issue) => issue.fixes ?? []);
@@ -54,6 +62,11 @@ import { useLocalizedForm } from '@formhaus/vue/i18n';
 import type { FormDefinition } from '@formhaus/core';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
+export const components: Formhaus.FieldComponentMap = {
+  text: (props: { modelValue?: unknown }) => h('input', { value: String(props.modelValue ?? '') }),
+  rating: Formhaus.TextField,
+  section: (_props, { slots }) => h('fieldset', slots.default?.()),
+};
 export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definition }), h(FormhausForm, { id: 'abc' })] })
   .component('FormRenderer', Formhaus.FormRenderer)
   .component('TextField', Formhaus.TextField)

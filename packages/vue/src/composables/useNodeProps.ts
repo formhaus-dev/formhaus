@@ -1,5 +1,5 @@
 import { isGroup, type FormField, type FormSection } from '@formhaus/core';
-import { fieldDomId } from '@formhaus/core/internal';
+import { fieldDomId, type OptionSource, optionSources, providedOptions } from '@formhaus/core/internal';
 import { computed, shallowRef, watch, type Ref } from 'vue';
 import { useFieldOptions } from './useFieldOptions';
 import type { FormRendererProps } from '../types';
@@ -14,28 +14,20 @@ interface Handlers {
 
 export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps, formId: string, disabled: Ref<boolean>, on: Handlers) {
   const { values, errors, fieldLoading, visibleFields } = form;
-  const optionFields = shallowRef<FormField[]>([]);
+  const sources = shallowRef<OptionSource[]>([]);
   watch(
     visibleFields,
     (fields) => {
-      optionFields.value = fields.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field]));
+      sources.value = optionSources(fields);
     },
     { immediate: true },
   );
   const loaded = useFieldOptions(
-    optionFields,
+    sources,
     () => form.engine,
     () => props.optionsProviders,
   );
-  const options = computed(() =>
-    Object.fromEntries(
-      optionFields.value.flatMap((field: FormField) =>
-        field.optionsFrom && props.optionsProviders?.[field.optionsFrom] && loaded.value[field.key]
-          ? [[field.key, loaded.value[field.key]]]
-          : [],
-      ),
-    ),
-  );
+  const options = computed(() => providedOptions(sources.value, props.optionsProviders, loaded.value));
   return {
     sectionProps(section: FormSection) {
       const id = fieldDomId(formId, section.key, form.engine.definition);
