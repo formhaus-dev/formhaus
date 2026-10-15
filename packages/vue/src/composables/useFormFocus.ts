@@ -49,6 +49,9 @@ export function useFormFocus(form: UseFormEngineReturn, formRef: Ref<HTMLFormEle
 
   return {
     rememberFocus(event: FocusEvent) { focusReturn = event.target as HTMLElement; },
+    requestFocus() {
+      requested.value++;
+    },
     showField(key: string) {
       focusKey = key;
       requested.value++;

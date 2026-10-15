@@ -60,6 +60,10 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     if (!shouldApplyExternalErrors(engine, previous, props.errors)) return;
     appliedErrors.current = { engine, errors: props.errors };
     engine.setErrors(props.errors);
+    const form = formRef.current;
+    if (!form?.contains(form.ownerDocument.activeElement) || Object.keys(props.errors).length === 0) return;
+    focusPending.current = true;
+    setFocusRequest((request) => request + 1);
   }, [props.errors, engine]);
 
   useEffect(() => {

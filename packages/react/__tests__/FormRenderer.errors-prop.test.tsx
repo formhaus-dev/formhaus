@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
 import { expect, it } from 'vitest';
 import { FormRenderer } from '../src/FormRenderer';
@@ -27,4 +27,21 @@ it('shows a repeated server error after the user edits the field', async () => {
   expect(screen.queryByText('Taken')).toBeNull();
   rerender(<FormRenderer definition={definition} errors={{ name: 'Taken' }} onSubmit={() => {}} />);
   expect(await screen.findByText('Taken')).toBeDefined();
+});
+
+const pair: FormDefinition = { id: 'pair', title: '', submit: { label: 'Send' },
+  fields: [{ key: 'first', type: 'text', label: 'First' }, { key: 'second', type: 'text', label: 'Second' }] };
+
+it('focuses the invalid field when external errors arrive for the open step', async () => {
+  const { rerender } = render(<FormRenderer definition={pair} onSubmit={() => {}} />);
+  screen.getByRole('textbox', { name: /First/ }).focus();
+  rerender(<FormRenderer definition={pair} errors={{ second: 'Taken' }} onSubmit={() => {}} />);
+  await screen.findByText('Taken');
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Second/ })));
+});
+
+it('does not move focus for external errors passed on mount', async () => {
+  render(<FormRenderer definition={pair} errors={{ second: 'Taken' }} onSubmit={() => {}} />);
+  await screen.findByText('Taken');
+  expect(document.activeElement).toBe(document.body);
 });
