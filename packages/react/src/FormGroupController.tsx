@@ -1,5 +1,5 @@
 import type { FieldOption, FormGroup, LabelKey } from '@formhaus/core';
-import { fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
+import { fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor, optionKey } from '@formhaus/core/internal';
 import { memo, useEffect, useRef, useState } from 'react';
 import { DefaultConfirmDialog, DefaultGroup, DefaultGroupItem } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
@@ -90,7 +90,7 @@ export const FormGroupController = memo(function FormGroupController({
           key={field.key}
           {...props}
           field={field}
-          options={options[field.key]}
+          options={options[optionKey(group.key, field.key)]}
           disabled={disabled}
           path={`${group.key}.${index}.${field.key}`}
           item={values[index]}
