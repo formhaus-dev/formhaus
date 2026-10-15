@@ -67,7 +67,7 @@ export function createVisibility(definition: FormDefinition) {
     for (const route of step.routes ?? []) for (const key of conditionFields(route)) routeFields.add(key);
   }
 
-  const isMultiStep = () => (definition.steps ?? []).length > 0;
+  const isMultiStep = () => !!definition.steps?.length;
   const visible = (source: FormField | FormStep, values: Values) => {
     const active = path.values(values);
     const section = sectionOf.get(source as FormField);

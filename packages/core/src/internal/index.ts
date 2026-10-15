@@ -12,7 +12,6 @@ export { errorDomId, errorEntries, itemHasContent, itemLimits, itemTitle, type E
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { labelFor } from '../i18n/labels';
 import type { FormEngine } from '../engine';
-import { changeStep } from '../engine/navigation';
 import type { EngineInternals } from '../engine/runtime-internals';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
@@ -21,6 +20,6 @@ export function conditionValues(engine: FormEngine): Record<string, unknown> {
 }
 
 export function autoAdvance(engine: FormEngine): Promise<boolean> {
-  return changeStep(engine as unknown as EngineInternals, 'next', 'autoAdvance');
+  return (engine as unknown as EngineInternals).advance('autoAdvance');
 }
 export { applySources, browserSources } from './sources';
