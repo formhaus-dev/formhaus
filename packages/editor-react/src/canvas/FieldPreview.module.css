@@ -36,6 +36,7 @@
   gap: var(--fh-ed-space-2);
   margin: 0;
   padding: 0;
+  padding-inline-start: calc(var(--fh-ed-space-2-5) + var(--fh-ed-border-thin));
   list-style: none;
 }
 
