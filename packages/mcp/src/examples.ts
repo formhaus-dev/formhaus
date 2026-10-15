@@ -5,6 +5,7 @@ import conditional from '../../../examples/definitions/conditional-fields.json';
 import localized from '../../../examples/definitions/localized-form.json';
 import multiStep from '../../../examples/definitions/multi-step.json';
 import validation from '../../../examples/definitions/validation.json';
+import registration from '../../../examples/definitions/event-registration.json';
 
 export interface ExampleSummary {
   id: string;
@@ -19,6 +20,10 @@ const EXAMPLES: { definition: FormDefinition; shows: string }[] = [
   { definition: multiStep as FormDefinition, shows: 'Linear multi-step form.' },
   { definition: branching as FormDefinition, shows: 'Branching steps with routes and autoAdvance.' },
   { definition: localized as FormDefinition, shows: 'Russian form with lang, messages and labels catalogs.' },
+  {
+    definition: registration as FormDefinition,
+    shows: 'Format 1.1 form with a conditional section and a repeatable group of participants.',
+  },
 ];
 
 export function exampleDefinitionsTool(input: {

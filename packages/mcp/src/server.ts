@@ -25,15 +25,22 @@ function json(value: object) {
 export function createServer(): McpServer {
   const server = new McpServer({ name: 'formhaus', version: packageJson.version }, { instructions: SERVER_INSTRUCTIONS });
 
-  server.registerTool(
-    'validate_definition',
-    {
-      title: 'Validate a Formhaus definition',
-      description:
-        'Call this after writing or editing a definition and before simulate_path or publish_form; it checks the structure and engine rules, while simulate_path checks how a user moves through the form. Checks a Formhaus form definition against the JSON Schema and the engine. Returns { valid, issues }. Each issue has code, severity ("error" or "warning"), a JSON pointer path, message and hint. Errors make the engine reject the definition, such as a condition with zero or two operators, a condition on a later step, a duplicate key or a route to an earlier step. Warnings point to likely mistakes, such as a condition value that is not an option, a select without options or next: false without an autoAdvance radio. Fix each error at its path and call again.',
-      inputSchema: { definition: definitionInput },
-      outputSchema: validationOutput,
-      annotations: { readOnlyHint: true },
+  server.registerTool('validate_definition', {
+    title: 'Validate a Formhaus definition',
+    description: 'Call this after writing or editing a definition and before simulate_path or publish_form; it checks the structure and engine rules, while simulate_path checks how a user moves through the form. Checks a Formhaus form definition against the JSON Schema and the engine. Returns { valid, issues }. Each issue has code, severity ("error" or "warning"), a JSON pointer path, message and hint. Errors make the engine reject the definition, such as a condition with zero or two operators, a condition on a later step, a duplicate key, a route to an earlier step, a condition outside a group on a field inside it (group-scope) or a section inside a section (invalid-nesting). Warnings point to likely mistakes, such as a condition value that is not an option, a select without options or next: false without an autoAdvance radio. Fix each error at its path and call again.',
+    inputSchema: { definition: definitionInput },
+    outputSchema: validationOutput,
+    annotations: { readOnlyHint: true },
+  }, async (input) => json(validateDefinitionTool(input)));
+
+  server.registerTool('simulate_path', {
+    title: 'Simulate a path through a form',
+    description: 'Call this after validate_definition passes, to check branching, routes, skip and conditional fields by stepping through the form like a user; validate_definition checks only the structure. Runs a headless FormEngine. answers are applied as initial values; a group answer is an array of item objects, such as { "participants": [{ "name": "Ada" }] }. Then actions are pressed in order like a user would: next is refused while its disabled conditions match and on next: false steps until an autoAdvance radio is answered, skip only works on steps with a skip action and submits on the last step. Without actions it presses Next until the last step or a blocking error. Custom validators, onStepValidate and lifecycle hooks are not run. When the definition has errors, returns ok: false and the same validation issues as validate_definition. Otherwise returns the active step path (visited, skipped, visible fields, with item fields as paths such as participants.0.email), a trace of each action with errors or a reason when it did not move, validation errors for visited steps only, wouldSubmit (false while submit is disabled) and the submit payload. Pass overlay to run the form in a translated language; overlayIssues lists overlay entries that were ignored or do not match the source.',
+    inputSchema: {
+      definition: definitionInput,
+      answers: z.record(z.string(), z.unknown()).optional().describe('Field values keyed by field key, applied as initial values before the actions, such as {"email": "ann@example.com", "plan": "pro"}. select, radio and multiselect take option values, not labels. Omit to start with an empty form.'),
+      actions: z.array(z.enum(['next', 'back', 'skip'])).optional().describe('Buttons to press in order, each "next", "back" or "skip". Omit to press Next until the last step or the first blocking error.'),
+      overlay: z.record(z.string(), z.unknown()).optional().describe('Translation overlay for one language: the overlay from translation_template with its values translated. Applied before the run, so labels and errors come out in that language. Omit to run in the source language.'),
     },
     async (input) => json(validateDefinitionTool(input)),
   );
@@ -71,27 +78,12 @@ export function createServer(): McpServer {
     async (input) => json(await simulatePathTool(input)),
   );
 
-  server.registerTool(
-    'translation_template',
-    {
-      title: 'Translation template',
-      description:
-        'Call this when the form needs another language, once per language: it returns the overlay to translate, which simulate_path accepts as overlay to check the result. Returns the translation skeleton of a definition for one language: overlay is nested JSON with the source texts as values, file is the suggested name (signup.ru.json), slots lists every text with its address, translation key, {placeholders} and a source hash. Translate only the values, keep nesting, identifiers and {placeholders}, then save the overlay next to the definition. Store revision and review state separately; the template never marks anything as translated. When the app has its own keys, such as Lokalise keys, put them in "i18n" objects of the definition exactly as given instead. When the definition has errors, returns ok: false and the validation issues.',
-      inputSchema: {
-        definition: definitionInput,
-        lang: z.string().describe('Target language code, such as "ru" or "pt-BR". It names the suggested file, such as signup.ru.json.'),
-        prefix: z
-          .union([z.string(), z.literal(false)])
-          .optional()
-          .describe(
-            'Prefix of derived translation keys, such as "signup" for keys like signup.title. Defaults to the form id. Pass false to list only the explicit keys from i18n objects.',
-          ),
-      },
-      outputSchema: templateOutput,
-      annotations: { readOnlyHint: true },
-    },
-    async (input) => json(translationTemplateTool(input)),
-  );
+  server.registerTool('capabilities', {
+    title: 'Formhaus capabilities',
+    description: 'Call this first, before writing or editing a definition, for the full reference of what a definition supports; example_definitions gives whole working forms to copy instead. Lists what a Formhaus definition supports: field types, sections, repeatable groups, field props, validation rules, condition operators, step and route semantics, actions, translation (lang, messages, labels, i18n keys, overlay addresses) and adapters. To check a finished definition, call validate_definition instead. To upgrade a 0.10 project, read the formhaus://migrate/0.11 resource.',
+    outputSchema: capabilitiesOutput,
+    annotations: { readOnlyHint: true },
+  }, async () => json(capabilitiesTool()));
 
   server.registerTool(
     'capabilities',
@@ -127,16 +119,11 @@ export function createServer(): McpServer {
 
   registerCloudTools(server);
 
-  server.registerResource(
-    'capabilities',
-    CAPABILITIES_URI,
-    {
-      title: 'Formhaus capabilities',
-      description: 'Field types, validation rules, conditions and step semantics of Formhaus definitions.',
-      mimeType: 'application/json',
-    },
-    async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(capabilities, null, 2) }] }),
-  );
+  server.registerResource('capabilities', CAPABILITIES_URI, {
+    title: 'Formhaus capabilities',
+    description: 'Field types, sections, groups, validation rules, conditions and step semantics of Formhaus definitions.',
+    mimeType: 'application/json',
+  }, async (uri) => ({ contents: [{ uri: uri.href, mimeType: 'application/json', text: JSON.stringify(capabilities, null, 2) }] }));
 
   server.registerResource(
     'migrate-0.11',

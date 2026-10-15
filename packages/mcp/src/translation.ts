@@ -1,4 +1,4 @@
-import type { FieldI18n, FormDefinition, FormI18n, LabelI18n, StepI18n, ValidationI18n } from '@formhaus/core';
+import type { FieldI18n, FormDefinition, FormI18n, GroupI18n, LabelI18n, StepI18n, ValidationI18n } from '@formhaus/core';
 import {
   defaultLabels,
   defaultMessages,
@@ -55,6 +55,8 @@ export function withOverlay(input: unknown, overlay: unknown): { definition: unk
 const slots = {
   form: ['title', 'description', 'messages', 'labels'] satisfies (keyof FormI18n)[],
   step: ['title', 'description'] satisfies (keyof StepI18n)[],
+  section: ['title', 'description'] satisfies (keyof StepI18n)[],
+  group: ['label', 'helperText', 'itemLabel', 'addLabel', 'removeLabel'] satisfies (keyof GroupI18n)[],
   field: ['label', 'placeholder', 'helperText'] satisfies (keyof FieldI18n)[],
   option: ['label'] satisfies (keyof LabelI18n)[],
   action: ['label'] satisfies (keyof LabelI18n)[],
@@ -69,7 +71,7 @@ export const i18nCapabilities = {
   },
   labels: {
     defaults: defaultLabels,
-    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. Explicit next and back labels win.',
+    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. addItem and removeItem are the group button defaults, itemLabel takes {label} and {index}, itemAdded and itemRemoved take {item}. Explicit next and back labels and group texts win.',
   },
   keys: {
     slots,
@@ -89,6 +91,10 @@ export const i18nCapabilities = {
       'steps.<id>.title | description',
       'steps.<id>.next.label | back.label | skip.label',
       'steps.<id>.fields.<key>...',
+      'sections.<key>.title | description',
+      'steps.<id>.sections.<key>.title | description',
+      'fields.<group>.label | helperText | itemLabel | addLabel | removeLabel',
+      'fields.<group>.fields.<key>...',
     ],
     rule: 'A translation is a separate JSON file, such as signup.ru.json, with string leaves nested by these addresses. Missing or empty strings fall back to the source. Keep nesting, identifiers and {placeholders}. Get a skeleton from translation_template.',
   },

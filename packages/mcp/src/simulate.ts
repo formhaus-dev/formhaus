@@ -1,4 +1,4 @@
-import { isActionDisabled, isVisible, type FormEngine, type FormField, type FormStep } from '@formhaus/core';
+import { isActionDisabled, isGroup, isSection, isVisible, type FormEngine, type FormNode, type FormStep } from '@formhaus/core';
 import { conditionValues } from '@formhaus/core/internal';
 import { perform, type SimulationAction, type TraceEntry } from './simulate-actions';
 import { withOverlay } from './translation';
@@ -35,8 +35,14 @@ export interface SimulationResult {
   submitValues?: Record<string, unknown>;
 }
 
-function visibleKeys(fields: FormField[], values: Record<string, unknown>): string[] {
-  return fields.filter((field) => isVisible(field, values)).map(({ key }) => key);
+function visibleKeys(engine: FormEngine, nodes: FormNode[], values: Record<string, unknown>): string[] {
+  return nodes
+    .filter((node) => isVisible(node, values))
+    .flatMap((node): string[] => {
+      if (isSection(node)) return visibleKeys(engine, node.fields, values);
+      if (!isGroup(node)) return [node.key];
+      return [node.key, ...engine.items(node.key).flatMap(({ fields }, index) => fields.map(({ key }) => `${node.key}.${index}.${key}`))];
+    });
 }
 
 async function run(engine: FormEngine, actions: SimulationAction[] | undefined): Promise<TraceEntry[]> {
@@ -55,8 +61,11 @@ async function run(engine: FormEngine, actions: SimulationAction[] | undefined):
 
 function visitedErrors(engine: FormEngine, visited: Set<string>, errors: Record<string, string>): Record<string, string> {
   if (!engine.isMultiStep) return errors;
-  const keys = new Set(engine.visibleSteps.filter(({ id }) => visited.has(id)).flatMap(({ fields }) => fields.map(({ key }) => key)));
-  return Object.fromEntries(Object.entries(errors).filter(([key]) => keys.has(key)));
+  const fields = engine.visibleSteps
+    .filter(({ id }) => visited.has(id))
+    .flatMap(({ fields }) => fields.flatMap((node) => (isSection(node) ? node.fields : [node])));
+  const owned = (error: string) => fields.some(({ key, type }) => error === key || (type === 'group' && error.startsWith(`${key}.`)));
+  return Object.fromEntries(Object.entries(errors).filter(([error]) => owned(error)));
 }
 
 export async function simulatePathTool(input: SimulationInput): Promise<SimulationResult> {
@@ -73,7 +82,7 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
     title: step.title,
     visited: visited.has(step.id),
     skipped: engine.isStepSkipped(step.id),
-    visibleFields: visibleKeys(step.fields, values),
+    visibleFields: visibleKeys(engine, step.fields, values),
   });
   const path = engine.isMultiStep
     ? engine.visibleSteps.map(stepReport)
@@ -83,7 +92,7 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
           title: typeof definition.title === 'string' ? definition.title : '',
           visited: true,
           skipped: false,
-          visibleFields: visibleKeys(definition.fields ?? [], values),
+          visibleFields: visibleKeys(engine, definition.fields ?? [], values),
         },
       ];
   const step = engine.currentStep;

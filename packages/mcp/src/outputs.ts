@@ -28,12 +28,22 @@ export const simulationOutput = {
   validation: z.object(validationOutput),
   multiStep: z.boolean().optional(),
   path: z
-    .array(z.object({ id: z.string(), title: z.string(), visited: z.boolean(), skipped: z.boolean(), visibleFields: z.array(z.string()) }))
+    .array(
+      z.object({
+        id: z.string(),
+        title: z.string(),
+        visited: z.boolean(),
+        skipped: z.boolean(),
+        visibleFields: z
+          .array(z.string())
+          .describe('Visible field keys. Item fields of groups are listed as paths, such as participants.0.email.'),
+      }),
+    )
     .optional(),
   currentStep: z.object({ id: z.string(), title: z.string(), index: z.number() }).nullable().optional(),
   isLastStep: z.boolean().optional(),
   trace: z.array(trace).optional(),
-  errors: z.record(z.string(), z.string()).optional(),
+  errors: z.record(z.string(), z.string()).optional().describe('Errors by field key, or by item path such as participants.0.email.'),
   wouldSubmit: z.boolean().optional(),
   submitValues: z.record(z.string(), z.unknown()).optional(),
   overlayIssues: z.array(z.string()).optional().describe('Overlay entries that were ignored or do not match the source.'),
@@ -49,6 +59,9 @@ export const capabilitiesOutput = {
   definition: z.record(z.string(), z.unknown()),
   fieldTypes: z.array(z.string()),
   customFieldTypes: z.string(),
+  containerTypes: z.array(z.string()),
+  sections: z.record(z.string(), z.unknown()),
+  groups: z.record(z.string(), z.unknown()),
   fieldTypeNotes: z.record(z.string(), z.string()),
   fieldProps: z.record(z.string(), z.unknown()),
   validationRules: z.record(z.string(), z.unknown()),
