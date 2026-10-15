@@ -362,6 +362,10 @@
         "defaultValue": {
           "description": "Initial value. Also the value restored on reset or skip."
         },
+        "source": {
+          "$ref": "#/definitions/FieldSource",
+          "description": "Fills a hidden field in the browser at mount: a URL parameter ({ \"query\": \"utm_source\" }), the referrer, the page URL without query and hash, the page title, the browser language, the time zone or the device class. country is filled by the server. defaultValue is the fallback and initialValues win."
+        },
         "show": {
           "type": "array",
           "items": {
@@ -468,6 +472,38 @@
         "time",
         "textarea",
         "hidden"
+      ]
+    },
+    "FieldSource": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/FieldSourceName"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "query": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "query"
+          ],
+          "additionalProperties": false
+        }
+      ]
+    },
+    "FieldSourceName": {
+      "type": "string",
+      "enum": [
+        "referrer",
+        "page",
+        "pageTitle",
+        "language",
+        "timezone",
+        "device",
+        "country"
       ]
     },
     "FieldValidation": {

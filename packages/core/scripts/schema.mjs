@@ -37,6 +37,7 @@ export function buildSchema() {
   for (const name of I18N_DEFINITIONS) {
     for (const property of Object.values(generated.definitions[name].properties)) if (property.type === 'string') property.minLength = 1;
   }
+  generated.definitions.FieldSource.anyOf[1].properties.query.minLength = 1;
   Object.assign(generated.definitions.ShowCondition, { minProperties: 2, maxProperties: 2 });
   const { FormDefinition, ...definitions } = generated.definitions;
 
