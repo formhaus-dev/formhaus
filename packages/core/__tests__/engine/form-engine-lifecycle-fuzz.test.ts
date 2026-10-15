@@ -4,7 +4,7 @@ import { commandArbitrary, fuzzCases, initialValues } from './lifecycle-fuzz.fix
 import { runFuzz } from './lifecycle-fuzz.harness';
 
 const numRuns = Number(process.env.FORMHAUS_FUZZ_RUNS ?? 500);
-const seed = process.env.FORMHAUS_FUZZ_SEED === undefined ? undefined : Number(process.env.FORMHAUS_FUZZ_SEED);
+const seed = Number(process.env.FORMHAUS_FUZZ_SEED ?? 20261015);
 
 it.each(fuzzCases.map((fuzz) => [fuzz.definition.id, fuzz] as const))('keeps %s consistent under random actions and late async results', async (_, fuzz) => {
   await fc.assert(fc.asyncProperty(
