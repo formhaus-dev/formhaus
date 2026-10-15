@@ -60,7 +60,7 @@ function remove(root: unknown, pointer: string): unknown {
 function add(root: unknown, pointer: string, value: unknown): void {
   const [parent, token] = parentOf(root, pointer);
   if (!Array.isArray(parent)) {
-    const lead = (token === 'id' || token === 'key') && !has(parent, token);
+    const lead = (token === 'id' || token === 'key') && !has(parent, token) && !has(parent, '__proto__');
     const rest = lead ? Object.entries(parent) : [];
     for (const [name] of rest) delete parent[name];
     parent[token] = value;
@@ -83,6 +83,7 @@ export function applyFix<T>(definition: T, patch: readonly PatchOperation[]): T 
     else if (op === 'replace') replace(root, path, copy(operation.value));
     else if (op === 'remove') remove(root, path);
     else if (op === 'move') {
+      if (typeof path !== 'string' || typeof operation.from !== 'string') fail('a move needs path and from pointers');
       if (path === operation.from || path.startsWith(`${operation.from}/`)) fail(`${path} is inside ${operation.from}`);
       add(root, path, remove(root, operation.from));
     } else fail(`${JSON.stringify(op)} is not a supported operation`);

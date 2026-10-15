@@ -675,7 +675,7 @@ const { definition: repaired, applied, issues: left } = fixAll(definition);
 
 `suggestFixes(definition, issues?)` returns the issues of `checkDefinition()`, or the issues you pass, with `fixes` on the issues it can repair. Each fix is `{ title, safe, patch }`. `patch` is a list of [JSON Patch](https://www.rfc-editor.org/rfc/rfc6902) operations: `add`, `replace`, `remove` and `move`. A fix with `safe: true` repairs the issue and changes nothing else.
 
-`applyFix(definition, patch)` returns a new definition and leaves the input as is. It throws when a path does not exist or the patch has an unknown operation. `fixAll(definition)` applies safe fixes until none are left and returns the definition, the `applied` fixes and the remaining `issues`.
+`applyFix(definition, patch)` returns a new definition and leaves the input as is. It throws when a path does not exist or the patch has an unknown operation. `fixAll(definition)` applies safe fixes until none are left, up to 500 rounds, and returns the definition, the `applied` fixes and the remaining `issues`.
 
 | Code | Fix | Safe |
 |---|---|---|

@@ -68,4 +68,16 @@ describe('applyFix', () => {
   it('rejects a patch that is not an array', () => {
     expect(() => applyFix(source(), {} as unknown as PatchOperation[])).toThrow('Invalid patch: the patch must be an array of operations');
   });
+
+  it('keeps an own __proto__ key as data when adding an id', () => {
+    const input = JSON.parse('{"title":"T","__proto__":{"polluted":1}}') as Record<string, unknown>;
+    const result = applyFix(input, [{ op: 'add', path: '/id', value: 'f' }]);
+    expect(Object.getPrototypeOf(result)).toBe(Object.prototype);
+    expect(Object.hasOwn(result, '__proto__')).toBe(true);
+    expect(result.id).toBe('f');
+  });
+
+  it('rejects a move without pointers', () => {
+    expect(() => applyFix(source(), [{ op: 'move', path: 1 } as unknown as PatchOperation])).toThrow('Invalid patch');
+  });
 });
