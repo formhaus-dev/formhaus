@@ -11,14 +11,21 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'blur', 'focus']);
 
 const inputType =
-  props.field.type === 'email' ? 'email'
-  : props.field.type === 'password' ? 'password'
-  : props.field.type === 'number' ? 'number'
-  : props.field.type === 'date' ? 'date'
-  : props.field.type === 'datetime' ? 'datetime-local'
-  : props.field.type === 'time' ? 'time'
-  : props.field.type === 'phone' ? 'tel'
-  : 'text';
+  props.field.type === 'email'
+    ? 'email'
+    : props.field.type === 'password'
+      ? 'password'
+      : props.field.type === 'number'
+        ? 'number'
+        : props.field.type === 'date'
+          ? 'date'
+          : props.field.type === 'datetime'
+            ? 'datetime-local'
+            : props.field.type === 'time'
+              ? 'time'
+              : props.field.type === 'phone'
+                ? 'tel'
+                : 'text';
 </script>
 
 <template>

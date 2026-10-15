@@ -18,7 +18,10 @@ const server = process.env.SITE_BASE
 
 async function ready() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    const ok = await fetch(`${base}/build`).then((res) => res.ok, () => false);
+    const ok = await fetch(`${base}/build`).then(
+      (res) => res.ok,
+      () => false,
+    );
     if (ok) return;
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
@@ -142,16 +145,23 @@ async function explicitStart(page) {
   if (await page.getByText(/^Restore unsaved changes/).count()) throw new Error('an explicit blank start also showed the restore offer');
 }
 
-
 async function startDropsOffers(context) {
   const page = await context.newPage();
   await page.goto(`${base}/build`);
   for (const choice of ['Replace draft', 'Keep my draft']) {
     await page.evaluate(() => {
-      const definition = { id: 'mine', title: 'Mine', submit: { label: 'Send' }, fields: [{ key: 'email', type: 'email', label: 'Mine email' }] };
+      const definition = {
+        id: 'mine',
+        title: 'Mine',
+        submit: { label: 'Send' },
+        fields: [{ key: 'email', type: 'email', label: 'Mine email' }],
+      };
       localStorage.setItem('fh:build:v1', JSON.stringify({ definition, revision: 3, savedAt: new Date().toISOString() }));
       const pending = { ...definition, fields: [{ key: 'email', type: 'email', label: 'Pending email' }] };
-      localStorage.setItem('fh:build:v1:backup', JSON.stringify({ definition: pending, revision: 3, at: new Date().toISOString(), version: null, draft: null }));
+      localStorage.setItem(
+        'fh:build:v1:backup',
+        JSON.stringify({ definition: pending, revision: 3, at: new Date().toISOString(), version: null, draft: null }),
+      );
       sessionStorage.setItem('fh:build:carry', JSON.stringify({ ...definition, title: 'Carried' }));
     });
     await page.goto(`${base}/build?template=${template}`);
@@ -159,7 +169,8 @@ async function startDropsOffers(context) {
     await page.getByRole('button', { name: choice }).click();
     await page.getByRole('textbox', { name: 'Field label' }).first().waitFor();
     await page.waitForTimeout(300);
-    if (await page.getByText(/^Restore unsaved changes/).count()) throw new Error(`"${choice}" after ?template= still showed the restore offer`);
+    if (await page.getByText(/^Restore unsaved changes/).count())
+      throw new Error(`"${choice}" after ?template= still showed the restore offer`);
     const labels = await page.getByRole('textbox', { name: 'Field label' }).evaluateAll((nodes) => nodes.map((node) => node.value));
     if (labels.includes('Pending email')) throw new Error(`"${choice}" loaded the pending copy`);
   }

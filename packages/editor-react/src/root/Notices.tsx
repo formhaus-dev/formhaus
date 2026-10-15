@@ -32,32 +32,32 @@ export function Notices({ entries, dismiss }: { entries: Entry[]; dismiss: (id: 
   return (
     <div role="status" aria-live="polite">
       <ol className={styles.stack}>
-      {entries.map((entry) => (
-        <li key={entry.id} className={styles.notice} data-tone={entry.tone ?? 'neutral'}>
-          <div className={styles.text}>
-            <span className={styles.title}>{entry.title}</span>
-            {entry.description && <span className={styles.description}>{entry.description}</span>}
-          </div>
-          {entry.action && (
-            <Button
-              variant="ghost"
+        {entries.map((entry) => (
+          <li key={entry.id} className={styles.notice} data-tone={entry.tone ?? 'neutral'}>
+            <div className={styles.text}>
+              <span className={styles.title}>{entry.title}</span>
+              {entry.description && <span className={styles.description}>{entry.description}</span>}
+            </div>
+            {entry.action && (
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  entry.action?.onClick();
+                  dismiss(entry.id);
+                }}
+              >
+                {entry.action.label}
+              </Button>
+            )}
+            <IconButton
+              label="Dismiss"
+              icon={<X aria-hidden />}
               onClick={() => {
-                entry.action?.onClick();
                 dismiss(entry.id);
               }}
-            >
-              {entry.action.label}
-            </Button>
-          )}
-          <IconButton
-            label="Dismiss"
-            icon={<X aria-hidden />}
-            onClick={() => {
-              dismiss(entry.id);
-            }}
-          />
-        </li>
-      ))}
+            />
+          </li>
+        ))}
       </ol>
     </div>
   );

@@ -30,7 +30,8 @@ describe('cloud client', () => {
   });
 
   it('reuses the idempotency key for the same body and rotates it for a new one', async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi
+      .fn()
       .mockResolvedValueOnce(reply(429, { error: 'rate_limited' }))
       .mockResolvedValueOnce(reply(201, { id: 's1', values: {} }))
       .mockResolvedValue(reply(201, { id: 's2', values: {} }));

@@ -54,9 +54,7 @@
             "text": "Too short"
           },
           "maxLength": 5,
-          "maxLengthMessage": [
-            "x"
-          ],
+          "maxLengthMessage": ["x"],
           "pattern": "^a",
           "patternMessage": 5
         }

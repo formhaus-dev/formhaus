@@ -2,25 +2,64 @@ import fc from 'fast-check';
 import type { FormDefinition } from '../../src/types';
 
 export const modelDefinition: FormDefinition = {
-  id: 'model', title: '', submit: { label: 'Send' }, steps: [
-    { id: 'kind', title: '', fields: [
-      { key: 'kind', type: 'radio', label: 'Kind', validation: { required: true },
-        options: [{ value: 'business', label: 'Business' }, { value: 'personal', label: 'Personal' }] },
-      { key: 'agree', type: 'checkbox', label: 'Agree', validation: { required: true } },
-    ], routes: [{ to: 'business', show: [{ field: 'kind', eq: 'business' }] }, { to: 'personal' }] },
-    { id: 'business', title: '', fields: [
-      { key: 'company', type: 'text', label: 'Company', validation: { required: true } },
-    ], routes: [{ to: 'review' }] },
-    { id: 'personal', title: '', fields: [
-      { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
-      { key: 'confirm', type: 'text', label: 'Confirm', validation: { matchField: 'name' } },
-    ] },
-    { id: 'extra', title: '', show: [{ field: 'name', in: ['vip', 'Ada'] }], skip: { label: 'Skip' }, fields: [
-      { key: 'perk', type: 'text', label: 'Perk', show: [{ field: 'name', notIn: ['Ada'] }], validation: { required: true } },
-    ] },
-    { id: 'review', title: '', fields: [
-      { key: 'note', type: 'text', label: 'Note', showAny: [{ field: 'agree', eq: true }, { field: 'kind', in: ['business'] }] },
-    ] },
+  id: 'model',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    {
+      id: 'kind',
+      title: '',
+      fields: [
+        {
+          key: 'kind',
+          type: 'radio',
+          label: 'Kind',
+          validation: { required: true },
+          options: [
+            { value: 'business', label: 'Business' },
+            { value: 'personal', label: 'Personal' },
+          ],
+        },
+        { key: 'agree', type: 'checkbox', label: 'Agree', validation: { required: true } },
+      ],
+      routes: [{ to: 'business', show: [{ field: 'kind', eq: 'business' }] }, { to: 'personal' }],
+    },
+    {
+      id: 'business',
+      title: '',
+      fields: [{ key: 'company', type: 'text', label: 'Company', validation: { required: true } }],
+      routes: [{ to: 'review' }],
+    },
+    {
+      id: 'personal',
+      title: '',
+      fields: [
+        { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
+        { key: 'confirm', type: 'text', label: 'Confirm', validation: { matchField: 'name' } },
+      ],
+    },
+    {
+      id: 'extra',
+      title: '',
+      show: [{ field: 'name', in: ['vip', 'Ada'] }],
+      skip: { label: 'Skip' },
+      fields: [{ key: 'perk', type: 'text', label: 'Perk', show: [{ field: 'name', notIn: ['Ada'] }], validation: { required: true } }],
+    },
+    {
+      id: 'review',
+      title: '',
+      fields: [
+        {
+          key: 'note',
+          type: 'text',
+          label: 'Note',
+          showAny: [
+            { field: 'agree', eq: true },
+            { field: 'kind', in: ['business'] },
+          ],
+        },
+      ],
+    },
   ],
 };
 
@@ -40,22 +79,37 @@ export type ModelCommand =
   | { type: 'next' | 'back' | 'skip' | 'submit' | 'reset' | 'cancel' }
   | { type: 'settle'; index: number; outcome: 'allow' | 'deny' | 'fail' };
 
-const setCommand = fc.constantFrom(...Object.keys(fieldValues)).chain((key) =>
-  fc.constantFrom(...fieldValues[key]).map((value): ModelCommand => ({ type: 'set', key, value })));
+const setCommand = fc
+  .constantFrom(...Object.keys(fieldValues))
+  .chain((key) => fc.constantFrom(...fieldValues[key]).map((value): ModelCommand => ({ type: 'set', key, value })));
 
 export const commandArbitrary: fc.Arbitrary<ModelCommand> = fc.oneof(
   { arbitrary: setCommand, weight: 4 },
-  { arbitrary: fc.tuple(fc.constantFrom('server' as const, 'jump' as const, 'validateOne' as const), fc.constantFrom(...Object.keys(fieldValues)))
-    .map(([type, key]): ModelCommand => ({ type, key })), weight: 2 },
-  { arbitrary: fc.constantFrom<ModelCommand>(
-    { type: 'next' }, { type: 'back' }, { type: 'skip' }, { type: 'submit' }, { type: 'reset' },
-    { type: 'cancel' },
-  ), weight: 3 },
-  { arbitrary: fc.record({
-    type: fc.constant('settle' as const),
-    index: fc.nat({ max: 3 }),
-    outcome: fc.constantFrom('allow' as const, 'deny' as const, 'fail' as const),
-  }), weight: 3 },
+  {
+    arbitrary: fc
+      .tuple(fc.constantFrom('server' as const, 'jump' as const, 'validateOne' as const), fc.constantFrom(...Object.keys(fieldValues)))
+      .map(([type, key]): ModelCommand => ({ type, key })),
+    weight: 2,
+  },
+  {
+    arbitrary: fc.constantFrom<ModelCommand>(
+      { type: 'next' },
+      { type: 'back' },
+      { type: 'skip' },
+      { type: 'submit' },
+      { type: 'reset' },
+      { type: 'cancel' },
+    ),
+    weight: 3,
+  },
+  {
+    arbitrary: fc.record({
+      type: fc.constant('settle' as const),
+      index: fc.nat({ max: 3 }),
+      outcome: fc.constantFrom('allow' as const, 'deny' as const, 'fail' as const),
+    }),
+    weight: 3,
+  },
 );
 
 export const initialValueArbitrary = fc.record(

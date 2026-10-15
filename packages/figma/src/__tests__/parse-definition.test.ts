@@ -38,15 +38,11 @@ describe('parseAndValidate', () => {
   });
 
   it('throws when title is missing', () => {
-    expect(() => parseAndValidate(JSON.stringify({ submit: { label: 'Go' }, fields: [] }))).toThrow(
-      "'title'",
-    );
+    expect(() => parseAndValidate(JSON.stringify({ submit: { label: 'Go' }, fields: [] }))).toThrow("'title'");
   });
 
   it('throws when both fields and steps are missing', () => {
-    expect(() => parseAndValidate(JSON.stringify({ title: 'T', submit: { label: 'Go' } }))).toThrow(
-      "'fields'",
-    );
+    expect(() => parseAndValidate(JSON.stringify({ title: 'T', submit: { label: 'Go' } }))).toThrow("'fields'");
   });
 
   it('throws when submit is missing', () => {

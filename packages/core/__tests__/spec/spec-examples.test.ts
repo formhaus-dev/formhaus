@@ -44,13 +44,23 @@ describe('specification examples', () => {
 
   it('omits skipped newsletter answers from the complete example payload', async () => {
     const values = {
-      accountType: 'personal', name: 'Ada', email: 'a@b.co', confirmEmail: 'a@b.co', terms: true, subscribe: true, topics: ['events'],
+      accountType: 'personal',
+      name: 'Ada',
+      email: 'a@b.co',
+      confirmEmail: 'a@b.co',
+      terms: true,
+      subscribe: true,
+      topics: ['events'],
     };
     const engine = new FormEngine(example, values);
     let submitted: Record<string, unknown> | undefined;
     for (let step = 0; step < 3; step++) expect(await engine.next()).toBe(true);
     expect(engine.currentStep?.id).toBe('newsletter');
-    expect(await engine.skip((payload) => { submitted = payload; })).toBe(true);
+    expect(
+      await engine.skip((payload) => {
+        submitted = payload;
+      }),
+    ).toBe(true);
     expect(submitted).toMatchObject({ name: 'Ada', terms: true });
     expect(submitted).not.toHaveProperty('subscribe');
     expect(submitted).not.toHaveProperty('topics');

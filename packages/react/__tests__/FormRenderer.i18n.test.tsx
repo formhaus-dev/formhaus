@@ -49,7 +49,14 @@ describe('localized forms', () => {
   });
 
   it('takes messages and labels props without localize', async () => {
-    render(<FormRenderer definition={definition} messages={{ required: 'Pflichtfeld' }} labels={(key, params) => (key === 'stepOf' ? `${params.current}/${params.total}` : undefined)} onSubmit={() => {}} />);
+    render(
+      <FormRenderer
+        definition={definition}
+        messages={{ required: 'Pflichtfeld' }}
+        labels={(key, params) => (key === 'stepOf' ? `${params.current}/${params.total}` : undefined)}
+        onSubmit={() => {}}
+      />,
+    );
     expect(screen.getByText('1/2')).toBeTruthy();
     expect(document.querySelector('form')?.getAttribute('lang')).toBe('en');
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));

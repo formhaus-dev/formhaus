@@ -100,9 +100,7 @@ describe('FormEngine', () => {
         key: `field-${index}`,
         type: 'text' as const,
         label: `Field ${index}`,
-        ...(index < fieldCount - 1
-          ? { show: [{ field: `field-${index + 1}`, eq: 'visible' }] }
-          : {}),
+        ...(index < fieldCount - 1 ? { show: [{ field: `field-${index + 1}`, eq: 'visible' }] } : {}),
       }));
       const initialValues = Object.fromEntries(fields.map((field) => [field.key, 'visible']));
       const definition: FormDefinition = {
@@ -149,9 +147,13 @@ describe('FormEngine', () => {
           },
         ],
       };
-      const engine = new FormEngine(definition, { code: 'first' }, {
-        validators: { checkCode: validator },
-      });
+      const engine = new FormEngine(
+        definition,
+        { code: 'first' },
+        {
+          validators: { checkCode: validator },
+        },
+      );
 
       expect(engine.visibleFields).toHaveLength(1);
       expect(validator).not.toHaveBeenCalled();
@@ -168,5 +170,4 @@ describe('FormEngine', () => {
       expect(validator).toHaveBeenCalledTimes(2);
     });
   });
-
 });

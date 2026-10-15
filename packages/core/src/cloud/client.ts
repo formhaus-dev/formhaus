@@ -62,7 +62,14 @@ export function createSubmitter(options: CloudSubmitterOptions) {
   let pending: { body: string; key: string } | null = null;
 
   return async (values: Record<string, unknown>, skippedSteps: string[] = []): Promise<CloudSubmission> => {
-    const body = JSON.stringify({ ...options.extraBody?.(), values, skippedSteps, version: options.version, _fh_rt: options.renderToken, ...(options.firstRenderToken && { _fh_rt_first: options.firstRenderToken }) });
+    const body = JSON.stringify({
+      ...options.extraBody?.(),
+      values,
+      skippedSteps,
+      version: options.version,
+      _fh_rt: options.renderToken,
+      ...(options.firstRenderToken && { _fh_rt_first: options.firstRenderToken }),
+    });
     if (pending?.body !== body) pending = { body, key: randomId() };
     const response = await send(`${endpoint(options)}?${CORE}`, SUBMIT_TIMEOUT, {
       method: 'POST',
@@ -70,7 +77,7 @@ export function createSubmitter(options: CloudSubmitterOptions) {
       body,
     });
     if (!response.ok) throw await toCloudError(response);
-    const submission = await readJson(response) as CloudSubmission;
+    const submission = (await readJson(response)) as CloudSubmission;
     pending = null;
     return submission;
   };

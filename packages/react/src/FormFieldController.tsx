@@ -32,21 +32,12 @@ export const FormFieldController = memo(function FormFieldController({
   onBlur,
   onFocus,
 }: FormFieldControllerProps) {
-  const subscribe = useCallback(
-    (listener: () => void) => engine.subscribeField(field.key, listener),
-    [engine, field.key],
-  );
-  const getSnapshot = useCallback(
-    () => engine.getFieldSnapshot(field.key),
-    [engine, field.key],
-  );
+  const subscribe = useCallback((listener: () => void) => engine.subscribeField(field.key, listener), [engine, field.key]);
+  const getSnapshot = useCallback(() => engine.getFieldSnapshot(field.key), [engine, field.key]);
 
   useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 
-  const handleChange = useCallback(
-    (value: unknown) => onChange(field.key, value),
-    [field.key, onChange],
-  );
+  const handleChange = useCallback((value: unknown) => onChange(field.key, value), [field.key, onChange]);
   const handleCommit = useCallback((value: unknown) => onCommit(field.key, value), [field.key, onCommit]);
   const handleBlur = useCallback(() => onBlur(field.key), [field.key, onBlur]);
   const handleFocus = useCallback(() => onFocus(field.key), [field.key, onFocus]);

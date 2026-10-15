@@ -11,7 +11,9 @@ export function FieldLabel({ field, inputId }: FieldLabelProps) {
     <label className="fh-field__label" htmlFor={inputId}>
       {field.label}
       {field.validation?.required && (
-        <span className="fh-field__required" aria-hidden="true"> *</span>
+        <span className="fh-field__required" aria-hidden="true">
+          {' *'}
+        </span>
       )}
     </label>
   );

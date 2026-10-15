@@ -37,45 +37,68 @@ export function createProfilesBar(post: Post, show: Show) {
   function inline(content: HTMLElement, action: HTMLButtonElement): HTMLElement {
     const row = element('div', 'profile-inline');
     if (content instanceof HTMLInputElement) content.onkeydown = (event) => event.key === 'Enter' && action.click();
-    row.append(content, action, button('Cancel', 'btn btn-secondary btn-small', () => setMode('idle')));
+    row.append(
+      content,
+      action,
+      button('Cancel', 'btn btn-secondary btn-small', () => setMode('idle')),
+    );
     return row;
   }
 
   function copyRow(profile: Profile): HTMLElement {
     const input = field('Setup code', encodeProfile(profile));
     input.readOnly = true;
-    return inline(input, button('Copy', 'btn btn-primary btn-small', () => {
-      input.select();
-      const copied = document.execCommand('copy');
-      show(copied ? 'Setup code copied. Share it with a teammate.' : 'Select the code and copy it with Cmd+C.', copied ? 'success' : 'info');
-    }));
+    return inline(
+      input,
+      button('Copy', 'btn btn-primary btn-small', () => {
+        input.select();
+        const copied = document.execCommand('copy');
+        show(
+          copied ? 'Setup code copied. Share it with a teammate.' : 'Select the code and copy it with Cmd+C.',
+          copied ? 'success' : 'info',
+        );
+      }),
+    );
   }
 
   function extra(): HTMLElement | null {
     const profile = current();
     if (mode === 'save') {
-      return inline(field('Design system name', drafts.name, (value) => { drafts.name = value; }), button('Save', 'btn btn-primary btn-small', () => {
-        post({ type: 'saveProfile', name: drafts.name });
-        drafts.name = 'My design system';
-        setMode('idle');
-      }));
+      return inline(
+        field('Design system name', drafts.name, (value) => {
+          drafts.name = value;
+        }),
+        button('Save', 'btn btn-primary btn-small', () => {
+          post({ type: 'saveProfile', name: drafts.name });
+          drafts.name = 'My design system';
+          setMode('idle');
+        }),
+      );
     }
     if (mode === 'paste') {
-      return inline(field('Paste a setup code', drafts.code, (value) => { drafts.code = value; }), button('Add', 'btn btn-primary btn-small', () => {
-        try {
-          post({ type: 'importProfile', profile: decodeProfile(drafts.code) });
-          drafts.code = '';
-          setMode('idle');
-        } catch {
-          show('That setup code is not valid.', 'error');
-        }
-      }));
+      return inline(
+        field('Paste a setup code', drafts.code, (value) => {
+          drafts.code = value;
+        }),
+        button('Add', 'btn btn-primary btn-small', () => {
+          try {
+            post({ type: 'importProfile', profile: decodeProfile(drafts.code) });
+            drafts.code = '';
+            setMode('idle');
+          } catch {
+            show('That setup code is not valid.', 'error');
+          }
+        }),
+      );
     }
     if (mode === 'delete' && profile) {
-      return inline(element('span', 'hint grow', `Delete “${profile.name}” from your saved design systems?`), button('Delete', 'btn btn-secondary btn-small link-danger', () => {
-        post({ type: 'deleteProfile', id: selected });
-        setMode('idle');
-      }));
+      return inline(
+        element('span', 'hint grow', `Delete “${profile.name}” from your saved design systems?`),
+        button('Delete', 'btn btn-secondary btn-small link-danger', () => {
+          post({ type: 'deleteProfile', id: selected });
+          setMode('idle');
+        }),
+      );
     }
     return mode === 'copy' && profile ? copyRow(profile) : null;
   }
@@ -90,8 +113,14 @@ export function createProfilesBar(post: Post, show: Show) {
       select.appendChild(option);
     }
     select.value = selected;
-    select.onchange = () => { selected = select.value; setMode('idle'); };
-    row.append(select, button('Use here', 'btn btn-primary btn-small', () => post({ type: 'applyProfile', id: selected })));
+    select.onchange = () => {
+      selected = select.value;
+      setMode('idle');
+    };
+    row.append(
+      select,
+      button('Use here', 'btn btn-primary btn-small', () => post({ type: 'applyProfile', id: selected })),
+    );
     return row;
   }
 
@@ -99,7 +128,10 @@ export function createProfilesBar(post: Post, show: Show) {
     const row = element('div', className);
     const save = button(label, 'link', () => setMode('save'));
     save.disabled = !canSave;
-    row.append(save, button('Paste setup code', 'link', () => setMode('paste')));
+    row.append(
+      save,
+      button('Paste setup code', 'link', () => setMode('paste')),
+    );
     return row;
   }
 
@@ -111,7 +143,11 @@ export function createProfilesBar(post: Post, show: Show) {
     box.checked = Boolean(profile.useInNewFiles);
     box.onchange = () => post({ type: 'toggleNewFiles', id: profile.id });
     toggle.append(box, document.createTextNode('Use in new files'));
-    row.append(toggle, button('Copy setup code', 'link', () => setMode('copy')), button('Delete', 'link link-danger', () => setMode('delete')));
+    row.append(
+      toggle,
+      button('Copy setup code', 'link', () => setMode('copy')),
+      button('Delete', 'link link-danger', () => setMode('delete')),
+    );
     return row;
   }
 
@@ -119,7 +155,8 @@ export function createProfilesBar(post: Post, show: Show) {
     const head = element('div', 'profile-head');
     head.appendChild(element('div', 'section-label', 'Design system'));
     const profile = current();
-    if (!profile) head.appendChild(element('div', 'hint', 'Save these bindings to reuse them in other files, or paste a setup code from a teammate.'));
+    if (!profile)
+      head.appendChild(element('div', 'hint', 'Save these bindings to reuse them in other files, or paste a setup code from a teammate.'));
     const parts = profile
       ? [head, picker(), actions(profile), saveAndPaste('Save current as new', 'profile-actions secondary'), extra()]
       : [head, saveAndPaste('Save as design system', 'profile-actions'), extra()];
@@ -129,7 +166,8 @@ export function createProfilesBar(post: Post, show: Show) {
   function setMode(next: Mode): void {
     mode = next;
     render();
-    const target = root.querySelector<HTMLElement>('.profile-inline .input, .profile-inline .btn') ?? root.querySelector<HTMLElement>('select, .link');
+    const target =
+      root.querySelector<HTMLElement>('.profile-inline .input, .profile-inline .btn') ?? root.querySelector<HTMLElement>('select, .link');
     target?.focus();
   }
 

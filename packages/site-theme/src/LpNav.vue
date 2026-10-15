@@ -4,7 +4,11 @@ import { useData } from 'vitepress';
 defineProps<{ mobile?: boolean }>();
 const { page, frontmatter } = useData();
 const closeScreen = inject<() => void>('close-screen');
-const landing = computed(() => String(frontmatter.value.pageClass || '').split(/\s+/).includes('lp-page'));
+const landing = computed(() =>
+  String(frontmatter.value.pageClass || '')
+    .split(/\s+/)
+    .includes('lp-page'),
+);
 const links = [
   { text: 'Cloud', href: '/cloud', match: (path: string) => path === 'cloud.md' },
   { text: 'Templates', href: '/templates/', match: (path: string) => path.startsWith('templates/') },

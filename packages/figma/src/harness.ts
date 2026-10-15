@@ -8,7 +8,11 @@ import { createKitRenderer } from './renderers/kit-renderer';
 async function render(definition: FormDefinition, kit: KitId = 'material', useBindings = false, layout?: Partial<FormLayout>) {
   writeConfig({ ...readConfig(), source: useBindings ? 'custom' : 'kit', kit });
   const config = readConfig();
-  const frames = await renderForm(definition, await createKitRenderer(useBindings ? config : { ...config, bindings: {} }), normalizeLayout(layout));
+  const frames = await renderForm(
+    definition,
+    await createKitRenderer(useBindings ? config : { ...config, bindings: {} }),
+    normalizeLayout(layout),
+  );
   return frames.map((frame) => ({
     id: frame.id,
     name: frame.name,

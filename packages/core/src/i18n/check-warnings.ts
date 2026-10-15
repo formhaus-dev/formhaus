@@ -12,7 +12,8 @@ export function i18nWarnings({ definition, entries }: CheckContext): DefinitionI
   let keyed = false;
   const unknown = (block: unknown, path: string, known: string[], code: DefinitionIssueCode, what: string) => {
     for (const key of Object.keys(block ?? {})) {
-      if (!known.includes(key)) issues.push(warning(code, `${path}/${pointer(key)}`, `"${key}" is not ${what}`, known.length ? oneOf(known) : 'Remove it'));
+      if (!known.includes(key))
+        issues.push(warning(code, `${path}/${pointer(key)}`, `"${key}" is not ${what}`, known.length ? oneOf(known) : 'Remove it'));
     }
   };
   const node = (value: Node, path: string, slots: readonly string[], id?: string) => {
@@ -39,11 +40,24 @@ export function i18nWarnings({ definition, entries }: CheckContext): DefinitionI
     node(field as unknown as Node, path, SLOTS.field, 'key');
     field.options?.forEach((option, index) => node(option as unknown as Node, `${path}/options/${index}`, SLOTS.option, 'value'));
     const rules = field.validation as Node;
-    if (rules) node(rules, `${path}/validation`, SLOTS.validation.filter((rule) => hasRule(rules, rule)));
+    if (rules)
+      node(
+        rules,
+        `${path}/validation`,
+        SLOTS.validation.filter((rule) => hasRule(rules, rule)),
+      );
   }
   if (keyed) {
     for (const [path, id] of ids) {
-      if (typeof id === 'string' && /[.:]/.test(id)) issues.push(warning('i18n-unsafe-identifier', path, `${JSON.stringify(id)} contains "." or ":"`, 'Use letters, digits, "-" or "_", because translation keys and TMS imports split on these characters'));
+      if (typeof id === 'string' && /[.:]/.test(id))
+        issues.push(
+          warning(
+            'i18n-unsafe-identifier',
+            path,
+            `${JSON.stringify(id)} contains "." or ":"`,
+            'Use letters, digits, "-" or "_", because translation keys and TMS imports split on these characters',
+          ),
+        );
     }
   }
   return issues;

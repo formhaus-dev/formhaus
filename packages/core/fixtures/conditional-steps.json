@@ -11,10 +11,7 @@
           "key": "accountType",
           "type": "radio",
           "label": "What type of account?",
-          "options": [
-            { "value": "personal", "label": "Personal" },
-            { "value": "business", "label": "Business" }
-          ],
+          "options": [{ "value": "personal", "label": "Personal" }, { "value": "business", "label": "Business" }],
           "validation": { "required": true }
         },
         {

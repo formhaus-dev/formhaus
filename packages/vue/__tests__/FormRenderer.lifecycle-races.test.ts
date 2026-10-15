@@ -8,8 +8,15 @@ it.each(['replace', 'unmount'])('discards pending submission on %s', async (acti
   let resolve!: () => void;
   const submitA = vi.fn();
   const submitB = vi.fn();
-  const before = vi.fn(() => new Promise<void>((done) => { resolve = done; }));
-  const view = render(FormRenderer, { props: { definition, initialValues: { name: 'A' }, onBeforeSubmit: before, submitHandler: submitA } });
+  const before = vi.fn(
+    () =>
+      new Promise<void>((done) => {
+        resolve = done;
+      }),
+  );
+  const view = render(FormRenderer, {
+    props: { definition, initialValues: { name: 'A' }, onBeforeSubmit: before, submitHandler: submitA },
+  });
   await fireEvent.click(screen.getByText('Send'));
   await waitFor(() => expect(before).toHaveBeenCalled());
   if (action === 'replace') await view.rerender({ definition: { ...definition, id: 'B' }, submitHandler: submitB });
@@ -22,10 +29,13 @@ it.each(['replace', 'unmount'])('discards pending submission on %s', async (acti
 
 it('honors disabled submit predicates for native form submission', async () => {
   const submitHandler = vi.fn();
-  const { container } = render(FormRenderer, { props: {
-    definition: { ...definition, submit: { label: 'Send', disabled: [{ field: 'name', eq: 'blocked' }] } },
-    initialValues: { name: 'blocked' }, submitHandler,
-  } });
+  const { container } = render(FormRenderer, {
+    props: {
+      definition: { ...definition, submit: { label: 'Send', disabled: [{ field: 'name', eq: 'blocked' }] } },
+      initialValues: { name: 'blocked' },
+      submitHandler,
+    },
+  });
   await fireEvent.submit(container.querySelector('form')!);
   expect(submitHandler).not.toHaveBeenCalled();
 });

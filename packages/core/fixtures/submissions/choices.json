@@ -72,10 +72,7 @@
         "values": {
           "color": "red",
           "size": "m",
-          "tags": [
-            "a",
-            "b"
-          ],
+          "tags": ["a", "b"],
           "agree": false,
           "alerts": true
         },
@@ -85,10 +82,7 @@
         "values": {
           "color": "red",
           "size": "m",
-          "tags": [
-            "a",
-            "b"
-          ],
+          "tags": ["a", "b"],
           "agree": false,
           "alerts": true
         },
@@ -101,10 +95,7 @@
         "values": {
           "color": "green",
           "size": "xl",
-          "tags": [
-            "a",
-            "z"
-          ],
+          "tags": ["a", "z"],
           "agree": "yes",
           "alerts": 1
         },
@@ -114,10 +105,7 @@
         "values": {
           "color": "green",
           "size": "xl",
-          "tags": [
-            "a",
-            "z"
-          ],
+          "tags": ["a", "z"],
           "agree": "yes",
           "alerts": 1
         },
@@ -187,21 +175,13 @@
       "name": "rejects more multiselect items than options",
       "input": {
         "values": {
-          "tags": [
-            "a",
-            "a",
-            "b"
-          ]
+          "tags": ["a", "a", "b"]
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
-          "tags": [
-            "a",
-            "a",
-            "b"
-          ]
+          "tags": ["a", "a", "b"]
         },
         "errors": {
           "tags": "Select one of the available options"

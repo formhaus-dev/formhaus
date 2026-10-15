@@ -68,7 +68,10 @@ const HANDLERS: Record<string, (config: PluginConfig, message: BindingMessage) =
     Object.assign(config.bindings, found);
     if (count > 0) config.source = 'custom';
     if (count > 0) return { text: `Matched ${count} components on this page.`, tone: 'success' };
-    return { text: 'Nothing new to match on this page. Name components like Text field, Dropdown or Button / Primary, or bind them by hand.', tone: 'info' };
+    return {
+      text: 'Nothing new to match on this page. Name components like Text field, Dropdown or Button / Primary, or bind them by hand.',
+      tone: 'info',
+    };
   },
 };
 

@@ -26,19 +26,20 @@ function allowed(field: FormField, value: unknown): boolean {
 function fits(previous: FormField | undefined, next: FormField, value: unknown): boolean {
   if (previous && shapeOf(previous) !== shapeOf(next)) return false;
   switch (shapeOf(next)) {
-    case 'list': return Array.isArray(value);
-    case 'flag': return typeof value === 'boolean';
-    case 'number': return typeof value === 'number';
-    case 'text': return typeof value === 'string';
-    default: return previous !== undefined;
+    case 'list':
+      return Array.isArray(value);
+    case 'flag':
+      return typeof value === 'boolean';
+    case 'number':
+      return typeof value === 'number';
+    case 'text':
+      return typeof value === 'string';
+    default:
+      return previous !== undefined;
   }
 }
 
-export function carryValues(
-  values: Record<string, unknown>,
-  next: FormDefinition,
-  previous?: FormDefinition,
-): Record<string, unknown> {
+export function carryValues(values: Record<string, unknown>, next: FormDefinition, previous?: FormDefinition): Record<string, unknown> {
   const before = new Map(previous ? fieldsOf(previous).map((field) => [field.key, field]) : []);
   const kept: Record<string, unknown> = {};
   for (const field of fieldsOf(next)) {

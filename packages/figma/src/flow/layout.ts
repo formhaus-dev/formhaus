@@ -19,7 +19,12 @@ function gapAfter(ids: string[], graph: FlowGraph): number {
   return Math.max(COLUMN_GAP, ...labels.map((width) => width + LABEL_ROOM));
 }
 
-export function flowPositions(order: string[], graph: FlowGraph, sizes: Map<string, { width: number; height: number }>, origin: Point): Map<string, Point> {
+export function flowPositions(
+  order: string[],
+  graph: FlowGraph,
+  sizes: Map<string, { width: number; height: number }>,
+  origin: Point,
+): Map<string, Point> {
   const columns = new Map<number, string[]>();
   for (const id of order) {
     const depth = graph.depth.get(id) ?? 0;

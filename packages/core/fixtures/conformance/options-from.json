@@ -31,20 +31,14 @@
       "input": {
         "values": {
           "country": "fr",
-          "topics": [
-            "billing",
-            "api"
-          ]
+          "topics": ["billing", "api"]
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
           "country": "fr",
-          "topics": [
-            "billing",
-            "api"
-          ]
+          "topics": ["billing", "api"]
         },
         "errors": {}
       },

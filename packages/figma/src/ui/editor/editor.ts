@@ -80,7 +80,10 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
       const header = element('header', 'step-header');
       header.append(
         element('span', 'step-number', String(stepIndex + 1)),
-        textInput(step.title, 'Step title', 'input step-title', (value) => { step.title = value; onChange(); }),
+        textInput(step.title, 'Step title', 'input step-title', (value) => {
+          step.title = value;
+          onChange();
+        }),
         iconButton('delete', 'Delete step', () => guarded(removeStep(draft, stepIndex))),
       );
       section.appendChild(header);
@@ -93,7 +96,11 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
         rerender: () => update(),
         remove: () => guarded(removeField(draft, stepIndex, fieldIndex)),
         isOpen: (item) => open.has(item),
-        toggle: (item) => { if (open.has(item)) open.delete(item); else open.add(item); render(); },
+        toggle: (item) => {
+          if (open.has(item)) open.delete(item);
+          else open.add(item);
+          render();
+        },
       });
       movable(row, [stepIndex, fieldIndex], field, step.fields.length);
       list.appendChild(row);
@@ -105,11 +112,15 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
     }
     const add = element('label', 'add-field');
     add.append(icon('add', 14), element('span', '', 'Add field'));
-    const picker = typeSelect('', (type) => {
-      const field = addField(draft, stepIndex, type);
-      open.add(field);
-      update(field.key);
-    }, 'add-select');
+    const picker = typeSelect(
+      '',
+      (type) => {
+        const field = addField(draft, stepIndex, type);
+        open.add(field);
+        update(field.key);
+      },
+      'add-select',
+    );
     picker.setAttribute('aria-label', 'Add field of type');
     picker.prepend(Object.assign(element('option', '', 'Choose type'), { value: '', disabled: true }));
     picker.value = '';
@@ -117,7 +128,10 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
     const count = steps(draft).length;
     const onePage = layout.steps === 'page' && count > 1;
     section.append(list, add);
-    if (!onePage || stepIndex === count - 1) section.append(buttonsBlock(step, stepIndex, count, isMultiStep(draft) && !onePage, { draft, changed: onChange, rerender: () => update() }));
+    if (!onePage || stepIndex === count - 1)
+      section.append(
+        buttonsBlock(step, stepIndex, count, isMultiStep(draft) && !onePage, { draft, changed: onChange, rerender: () => update() }),
+      );
     return section;
   }
 
@@ -129,7 +143,10 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
       const option = element('button', value === layout[key] ? 'mode active' : 'mode', text);
       option.type = 'button';
       option.setAttribute('aria-pressed', String(value === layout[key]));
-      option.onclick = () => { layout = { ...layout, [key]: value }; update(); };
+      option.onclick = () => {
+        layout = { ...layout, [key]: value };
+        update();
+      };
       group.appendChild(option);
     }
     return labelled(title, group, 'head-row', 'section-label');
@@ -138,11 +155,38 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
   function render(): void {
     const head = element('div', 'form-head');
     head.append(
-      labelled('Form title', textInput(draft.title, 'Sign up', 'input title-input', (value) => { draft.title = value; onChange(); }, 'Form title'), 'head-field', 'section-label'),
-      ...(steps(draft).length > 1 ? [layoutPicker('steps', 'Steps', [['screens', 'Separate'], ['page', 'One page']])] : []),
-      layoutPicker('actions', 'Buttons', [['stacked', 'Stacked'], ['inline', 'Side by side']]),
+      labelled(
+        'Form title',
+        textInput(
+          draft.title,
+          'Sign up',
+          'input title-input',
+          (value) => {
+            draft.title = value;
+            onChange();
+          },
+          'Form title',
+        ),
+        'head-field',
+        'section-label',
+      ),
+      ...(steps(draft).length > 1
+        ? [
+            layoutPicker('steps', 'Steps', [
+              ['screens', 'Separate'],
+              ['page', 'One page'],
+            ]),
+          ]
+        : []),
+      layoutPicker('actions', 'Buttons', [
+        ['stacked', 'Stacked'],
+        ['inline', 'Side by side'],
+      ]),
     );
-    const addStepButton = addLink(isMultiStep(draft) ? 'Add step' : 'Split into steps', () => { addStep(draft); update(); });
+    const addStepButton = addLink(isMultiStep(draft) ? 'Add step' : 'Split into steps', () => {
+      addStep(draft);
+      update();
+    });
     container.replaceChildren(head, ...steps(draft).map((_, index) => stepSection(index)), addStepButton);
   }
 

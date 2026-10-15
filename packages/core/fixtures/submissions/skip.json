@@ -101,9 +101,7 @@
           "perk": "Lounge",
           "terms": true
         },
-        "skippedSteps": [
-          "extras"
-        ]
+        "skippedSteps": ["extras"]
       },
       "expected": {
         "values": {
@@ -120,9 +118,7 @@
           "tier": "basic",
           "terms": true
         },
-        "skippedSteps": [
-          "profile"
-        ]
+        "skippedSteps": ["profile"]
       },
       "expected": {
         "values": {
@@ -143,9 +139,7 @@
           "phone": "+1",
           "terms": false
         },
-        "skippedSteps": [
-          "nope"
-        ]
+        "skippedSteps": ["nope"]
       },
       "expected": {
         "values": {

@@ -7,7 +7,9 @@ function rangeIssue(rules: FieldValidation, path: string, min: 'min' | 'minLengt
   const low = rules[min];
   const high = rules[max];
   if (low === undefined || high === undefined || low <= high) return [];
-  return [error('invalid-range', `${path}/validation/${min}`, `${min} (${low}) is greater than ${max} (${high})`, `Lower ${min} or raise ${max}`)];
+  return [
+    error('invalid-range', `${path}/validation/${min}`, `${min} (${low}) is greater than ${max} (${high})`, `Lower ${min} or raise ${max}`),
+  ];
 }
 
 function patternIssue(pattern: string | undefined, path: string): DefinitionIssue[] {
@@ -16,7 +18,14 @@ function patternIssue(pattern: string | undefined, path: string): DefinitionIssu
     new RegExp(pattern);
     return [];
   } catch {
-    return [error('invalid-pattern', `${path}/validation/pattern`, `${JSON.stringify(pattern)} is not a valid regular expression`, 'Fix the pattern or escape special characters with a backslash')];
+    return [
+      error(
+        'invalid-pattern',
+        `${path}/validation/pattern`,
+        `${JSON.stringify(pattern)} is not a valid regular expression`,
+        'Fix the pattern or escape special characters with a backslash',
+      ),
+    ];
   }
 }
 
@@ -28,7 +37,11 @@ function ruleIssues(context: CheckContext, { field, path }: FieldEntry): Definit
     ...rangeIssue(rules, path, 'minLength', 'maxLength'),
     ...rangeIssue(rules, path, 'min', 'max'),
     ...patternIssue(rules.pattern, path),
-    ...(match === undefined || context.keys.has(match) ? [] : [error('unknown-field', `${path}/validation/matchField`, `"${match}" is not a field key`, context.suggest(match, context.keyList))]),
+    ...(match === undefined || context.keys.has(match)
+      ? []
+      : [
+          error('unknown-field', `${path}/validation/matchField`, `"${match}" is not a field key`, context.suggest(match, context.keyList)),
+        ]),
   ];
 }
 

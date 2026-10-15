@@ -8,8 +8,6 @@ const server = JSON.parse(await readFile(serverUrl, 'utf8'));
 
 server.name = pkg.mcpName;
 server.version = pkg.version;
-server.packages = server.packages.map((entry) =>
-  entry.identifier === pkg.name ? { ...entry, version: pkg.version } : entry,
-);
+server.packages = server.packages.map((entry) => (entry.identifier === pkg.name ? { ...entry, version: pkg.version } : entry));
 
 await writeFile(serverUrl, `${JSON.stringify(server, null, 2)}\n`);

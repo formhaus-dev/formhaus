@@ -46,11 +46,7 @@
           "key": "notifications",
           "type": "radio",
           "label": "Notification preference",
-          "options": [
-            { "value": "email", "label": "Email" },
-            { "value": "sms", "label": "SMS" },
-            { "value": "none", "label": "None" }
-          ],
+          "options": [{ "value": "email", "label": "Email" }, { "value": "sms", "label": "SMS" }, { "value": "none", "label": "None" }],
           "defaultValue": "email"
         },
         { "key": "darkMode", "type": "switch", "label": "Dark mode" }

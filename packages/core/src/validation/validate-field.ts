@@ -3,11 +3,7 @@ import { isBlank } from '../visibility';
 import { messageResolver, namedResolver, type MessageSource, type ResolveMessage } from './default-messages';
 import { BOOLEAN_TYPES, clientTypeError, trimValue } from './type-checks';
 
-export type ValidatorFn = (
-  value: unknown,
-  allValues: Record<string, unknown>,
-) => string | null;
-
+export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) => string | null;
 
 function isEmpty(value: unknown, field: FormField): boolean {
   return isBlank(value) || (value === false && BOOLEAN_TYPES.includes(field.type));
@@ -29,7 +25,7 @@ function boundError(
 function patternError(value: unknown, rules: FieldValidation, message: () => string): string | undefined {
   if (rules.pattern === undefined) return undefined;
   try {
-    return new RegExp(rules.pattern).test(String(value)) ? undefined : rules.patternMessage ?? message();
+    return new RegExp(rules.pattern).test(String(value)) ? undefined : (rules.patternMessage ?? message());
   } catch {
     return undefined;
   }
@@ -59,8 +55,11 @@ export function validateFieldValue(
   }
   const typeIssue = clientTypeError(field, value, resolve);
   if (typeIssue) return typeIssue;
-  return (sizeError(value, rules, field, resolve)
-    ?? patternError(value, rules, () => resolve('pattern', {}, field))
-    ?? (rules.matchField !== undefined && value !== allValues[rules.matchField] ? matchMessage() : undefined)
-    ?? (rules.validator ? validators?.[rules.validator]?.(value, allValues) : undefined)) || null;
+  return (
+    (sizeError(value, rules, field, resolve) ??
+      patternError(value, rules, () => resolve('pattern', {}, field)) ??
+      (rules.matchField !== undefined && value !== allValues[rules.matchField] ? matchMessage() : undefined) ??
+      (rules.validator ? validators?.[rules.validator]?.(value, allValues) : undefined)) ||
+    null
+  );
 }

@@ -57,13 +57,7 @@ describe('FormRenderer multi-step', () => {
 
   it('calls onAfterStepChange when advancing', async () => {
     const onStepChange = vi.fn();
-    render(
-      <FormRenderer
-        definition={definition}
-        onSubmit={() => {}}
-        onAfterStepChange={onStepChange}
-      />,
-    );
+    render(<FormRenderer definition={definition} onSubmit={() => {}} onAfterStepChange={onStepChange} />);
     fireEvent.change(getInput('First'), { target: { value: 'ok' } });
     fireEvent.click(screen.getByText('Continue'));
     await waitFor(() => {

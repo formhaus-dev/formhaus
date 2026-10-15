@@ -3,12 +3,28 @@ import { createSubmitter, sessionDraftStore, type PublishedForm } from '../../sr
 import { createCloudController, type CloudState } from '../../src/internal';
 import type { FormDefinition } from '../../src';
 
-const definition: FormDefinition = { id: 'c', title: 'C', submit: { label: 'Send' }, fields: [{ key: 'name', type: 'text', label: 'Name' }, { key: 'secret', type: 'password', label: 'Secret' }] };
+const definition: FormDefinition = {
+  id: 'c',
+  title: 'C',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'name', type: 'text', label: 'Name' },
+    { key: 'secret', type: 'password', label: 'Secret' },
+  ],
+};
 const form: PublishedForm = { definition, version: 5, settings: { allowAnother: true }, renderToken: 'rt_1' };
 
 function storage() {
   const items = new Map<string, string>();
-  return { getItem: (key: string) => items.get(key) ?? null, setItem: (key: string, value: string) => { items.set(key, value); }, removeItem: (key: string) => { items.delete(key); } };
+  return {
+    getItem: (key: string) => items.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      items.set(key, value);
+    },
+    removeItem: (key: string) => {
+      items.delete(key);
+    },
+  };
 }
 
 const created = () => ({ ok: true, status: 201, json: async () => ({ id: 's1', values: {} }) });
@@ -41,7 +57,12 @@ describe('cloud protocol', () => {
 
   it('sends the first render token alongside the new one after a form refresh', async () => {
     const updated = { ok: false, status: 409, headers: { get: () => null }, json: async () => ({ error: 'form_updated', version: 6 }) };
-    const refreshed = { ok: true, status: 200, headers: { get: () => null }, json: async () => ({ definition, version: 6, renderToken: 'rt_2' }) };
+    const refreshed = {
+      ok: true,
+      status: 200,
+      headers: { get: () => null },
+      json: async () => ({ definition, version: 6, renderToken: 'rt_2' }),
+    };
     const fetchMock = vi.fn().mockResolvedValueOnce(updated).mockResolvedValueOnce(refreshed).mockResolvedValue(created());
     vi.stubGlobal('fetch', fetchMock);
     const controller = createCloudController({ id: 'abc', initialForm: form, extraBody: () => ({ _fh_hp: '' }) }, { onChange: () => {} });
@@ -77,14 +98,19 @@ describe('cloud protocol', () => {
     fresh.save('abc', 4, { name: 'Ada' });
     expect(fresh.load('abc', 5)).toBeNull();
     expect(sessionDraftStore(1000, undefined).load('abc', 5)).toBeNull();
-    const blocked = sessionDraftStore(1000, () => { throw new Error('SecurityError'); });
+    const blocked = sessionDraftStore(1000, () => {
+      throw new Error('SecurityError');
+    });
     expect(() => blocked.save('abc', 5, {})).not.toThrow();
     expect(blocked.load('abc', 5)).toBeNull();
   });
 
   it('drops a redirect URL that is not http or https from an initial form', () => {
     const states: CloudState[] = [];
-    const controller = createCloudController({ id: 'abc', initialForm: { definition, settings: { redirectUrl: 'javascript:alert(1)', successMessage: 'Hi' } } }, { onChange: (state) => states.push(state) });
+    const controller = createCloudController(
+      { id: 'abc', initialForm: { definition, settings: { redirectUrl: 'javascript:alert(1)', successMessage: 'Hi' } } },
+      { onChange: (state) => states.push(state) },
+    );
     controller.start();
     expect(states.at(-1)?.settings).toEqual({ successMessage: 'Hi' });
   });

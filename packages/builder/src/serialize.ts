@@ -1,5 +1,17 @@
 import type { FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
-import { arrange, canBranch, END, groups, hasOptions, isPage, pageTitle, type BuilderForm, type BuilderPage, type BuilderQuestion, type Group } from './model';
+import {
+  arrange,
+  canBranch,
+  END,
+  groups,
+  hasOptions,
+  isPage,
+  pageTitle,
+  type BuilderForm,
+  type BuilderPage,
+  type BuilderQuestion,
+  type Group,
+} from './model';
 
 export interface Serialized {
   definition: FormDefinition;
@@ -12,7 +24,13 @@ function field(item: BuilderQuestion, path: string, paths: Map<string, string>):
   const shape = item.shape;
   const label = item.label || !shape || shape.field.includes('label') ? { label: item.label } : {};
   const result = { key: item.key, type: item.type, ...label, ...extra } as FormField;
-  const own = item.required ? (typeof required === 'string' && required ? required : true) : required === false || required === '' ? required : undefined;
+  const own = item.required
+    ? typeof required === 'string' && required
+      ? required
+      : true
+    : required === false || required === ''
+      ? required
+      : undefined;
   const merged = arrange({ ...(own !== undefined ? { required: own } : {}), ...rules }, shape?.validation);
   if (Object.keys(merged).length || shape?.validation?.length === 0) result.validation = merged;
   paths.set(path, item.uid);

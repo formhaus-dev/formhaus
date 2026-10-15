@@ -3,7 +3,18 @@ import { matchRole } from '../bindings/auto-match';
 import { componentFromSelection } from '../bindings/selection';
 import { assignSlot, describeSlots } from '../bindings/slots';
 
-const names = ['Icon button', 'Button / Secondary', 'Button / Primary', 'Text field', 'Text area', 'Date picker', 'Dropdown', 'Toggle', 'Checkbox', 'Radio'];
+const names = [
+  'Icon button',
+  'Button / Secondary',
+  'Button / Primary',
+  'Text field',
+  'Text area',
+  'Date picker',
+  'Dropdown',
+  'Toggle',
+  'Checkbox',
+  'Radio',
+];
 
 describe('matchRole', () => {
   it.each([
@@ -66,8 +77,16 @@ describe('assignSlot', () => {
 function component(properties: string[], layers: string[], remote = false) {
   const nested = { type: 'INSTANCE', parent: null as unknown };
   const node = {
-    type: 'COMPONENT', id: '1:2', key: 'abc', name: 'Size=M', remote,
-    parent: { type: 'COMPONENT_SET', name: 'Input', componentPropertyDefinitions: Object.fromEntries(properties.map((name, index) => [`${name}#${index}:0`, { type: 'TEXT' }])) },
+    type: 'COMPONENT',
+    id: '1:2',
+    key: 'abc',
+    name: 'Size=M',
+    remote,
+    parent: {
+      type: 'COMPONENT_SET',
+      name: 'Input',
+      componentPropertyDefinitions: Object.fromEntries(properties.map((name, index) => [`${name}#${index}:0`, { type: 'TEXT' }])),
+    },
     findAll: (predicate: (child: unknown) => boolean) => texts.filter(predicate),
   };
   nested.parent = node;
@@ -99,7 +118,11 @@ describe('componentFromSelection', () => {
     const instance = {
       type: 'INSTANCE',
       getMainComponentAsync: async () => main,
-      componentProperties: { Size: { type: 'VARIANT', value: 'M' }, 'Icon#1:0': { type: 'BOOLEAN', value: false }, 'Title#2:0': { type: 'TEXT', value: 'x' } },
+      componentProperties: {
+        Size: { type: 'VARIANT', value: 'M' },
+        'Icon#1:0': { type: 'BOOLEAN', value: false },
+        'Title#2:0': { type: 'TEXT', value: 'x' },
+      },
     };
     const { binding } = await componentFromSelection([instance as unknown as SceneNode]);
     expect(binding).toEqual({ source: 'library', key: 'abc', name: 'Input / Size=M', properties: { Size: 'M', 'Icon#1:0': false } });

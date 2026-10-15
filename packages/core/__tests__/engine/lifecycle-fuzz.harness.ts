@@ -22,7 +22,10 @@ interface Skip {
   skipped: Record<string, unknown>;
 }
 
-const flush = () => new Promise<void>((done) => { setImmediate(done); });
+const flush = () =>
+  new Promise<void>((done) => {
+    setImmediate(done);
+  });
 
 export interface FuzzHooks {
   stepValidate: boolean;
@@ -36,31 +39,46 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
   const log: string[] = [];
   let resets = 0;
   const steps = definition.steps ?? [];
-  const fields: FormField[] = steps.length > 0 ? steps.flatMap((step) => step.fields) : definition.fields ?? [];
+  const fields: FormField[] = steps.length > 0 ? steps.flatMap((step) => step.fields) : (definition.fields ?? []);
   const stepOf = new Map<FormField, FormStep>(steps.flatMap((step) => step.fields.map((field) => [field, step] as const)));
   const firstField = (stepId: string) => steps.find((step) => step.id === stepId)?.fields[0]?.key ?? 'ghost';
 
   let engine!: FormEngine;
   const ops = () => engine as unknown as Operations;
-  const hold = <T>(kind: Pending['kind'], answer: (outcome: Outcome) => T) => new Promise<T>((resolve, reject) => {
-    pending.push({ kind, operation: ops().latestOperation, resets, settle: (outcome) => {
-      if (outcome === 'fail') reject(new Error(`${kind} failed`));
-      else resolve(answer(outcome));
-    } });
-  });
+  const hold = <T>(kind: Pending['kind'], answer: (outcome: Outcome) => T) =>
+    new Promise<T>((resolve, reject) => {
+      pending.push({
+        kind,
+        operation: ops().latestOperation,
+        resets,
+        settle: (outcome) => {
+          if (outcome === 'fail') reject(new Error(`${kind} failed`));
+          else resolve(answer(outcome));
+        },
+      });
+    });
   engine = new FormEngine(definition, initial, {
-    onStepValidate: hooks.stepValidate ? (stepId) => hold('stepValidate', (outcome) => (outcome === 'deny' ? { [firstField(stepId)]: 'Server says no' } : null)) : undefined,
+    onStepValidate: hooks.stepValidate
+      ? (stepId) => hold('stepValidate', (outcome) => (outcome === 'deny' ? { [firstField(stepId)]: 'Server says no' } : null))
+      : undefined,
     onBeforeSubmit: hooks.beforeSubmit ? () => hold('beforeSubmit', (outcome) => outcome === 'allow') : undefined,
   });
-  const send = () => hold('submit', (outcome): SubmitResult | void => (
-    outcome === 'deny' ? { ok: false, errors: { [fields[0].key]: 'Server rejects', ghost: 'Unknown' }, formErrors: ['Nope'] } : undefined
-  ));
+  const send = () =>
+    hold('submit', (outcome): SubmitResult | void =>
+      outcome === 'deny' ? { ok: false, errors: { [fields[0].key]: 'Server rejects', ghost: 'Unknown' }, formErrors: ['Nope'] } : undefined,
+    );
 
-  const snapshot = () => JSON.stringify({
-    values: engine.values, errors: engine.errors, top: engine.topLevelErrors, step: engine.currentStep?.id ?? null,
-    index: engine.currentStepIndex, submitting: engine.submitting, stepValidating: engine.stepValidating,
-    skipped: steps.filter((step) => engine.isStepSkipped(step.id)).map((step) => step.id),
-  });
+  const snapshot = () =>
+    JSON.stringify({
+      values: engine.values,
+      errors: engine.errors,
+      top: engine.topLevelErrors,
+      step: engine.currentStep?.id ?? null,
+      index: engine.currentStepIndex,
+      submitting: engine.submitting,
+      stepValidating: engine.stepValidating,
+      skipped: steps.filter((step) => engine.isStepSkipped(step.id)).map((step) => step.id),
+    });
   const fail = (message: string): never => {
     throw new Error(`${message}\ncommands:\n  ${log.join('\n  ')}\nstate: ${snapshot()}`);
   };
@@ -94,7 +112,8 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       const step = stepOf.get(field);
       const hiddenStep = step && !isVisible(step, active);
       const hiddenField = (!step || path.includes(step)) && !isVisible(field, active);
-      if ((hiddenStep || hiddenField) && engine.values[field.key as keyof typeof engine.values] !== undefined) fail(`hidden field ${field.key} keeps a value`);
+      if ((hiddenStep || hiddenField) && engine.values[field.key as keyof typeof engine.values] !== undefined)
+        fail(`hidden field ${field.key} keeps a value`);
     }
   };
 
@@ -103,7 +122,8 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
     const stepId = engine.currentStep?.id ?? '';
     const values = { ...engine.values };
     action().catch(() => {});
-    if (skip && ops().latestOperation !== before) skips.set(ops().latestOperation, { stepId, before: values, skipped: { ...engine.values } });
+    if (skip && ops().latestOperation !== before)
+      skips.set(ops().latestOperation, { stepId, before: values, skipped: { ...engine.values } });
   };
 
   const checkRestore = (skip: Skip, values: Record<string, unknown>) => {
@@ -113,7 +133,8 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       const expected = Object.is(values[key], skip.skipped[key]) ? skip.before[key] : values[key];
       const actual = engine.values[key as keyof typeof engine.values];
       const cleared = actual === undefined && !fields.some((field) => field.key === key && shown(field));
-      if (!cleared && !Object.is(actual, expected)) fail(`restoring skip of ${skip.stepId} set ${key} to ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`);
+      if (!cleared && !Object.is(actual, expected))
+        fail(`restoring skip of ${skip.stepId} set ${key} to ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`);
     }
   };
 
@@ -127,7 +148,10 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
     if (command.type === 'submit') start(() => engine.submit(send));
     if (command.type === 'skip') start(() => engine.skip(send), true);
     if (command.type === 'cancel') engine.cancelPendingActions();
-    if (command.type === 'reset') { resets++; engine.reset(command.filled ? initial : undefined); }
+    if (command.type === 'reset') {
+      resets++;
+      engine.reset(command.filled ? initial : undefined);
+    }
     if (command.type === 'settle' && pending.length > 0) {
       const [entry] = pending.splice(command.index % pending.length, 1);
       const superseded = entry.resets !== resets || entry.operation !== ops().latestOperation;

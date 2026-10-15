@@ -16,11 +16,21 @@ export function useFormEngineStore(
     engineRef.current = new FormEngine(definition, initialValues, {
       validators: options?.validators,
       messages: options?.messages,
-      get onStepValidate() { return optionsRef.current?.onStepValidate; },
-      get onBeforeStepChange() { return optionsRef.current?.onBeforeStepChange; },
-      get onAfterStepChange() { return optionsRef.current?.onAfterStepChange; },
-      get onBeforeSubmit() { return optionsRef.current?.onBeforeSubmit; },
-      get onAfterSubmit() { return optionsRef.current?.onAfterSubmit; },
+      get onStepValidate() {
+        return optionsRef.current?.onStepValidate;
+      },
+      get onBeforeStepChange() {
+        return optionsRef.current?.onBeforeStepChange;
+      },
+      get onAfterStepChange() {
+        return optionsRef.current?.onAfterStepChange;
+      },
+      get onBeforeSubmit() {
+        return optionsRef.current?.onBeforeSubmit;
+      },
+      get onAfterSubmit() {
+        return optionsRef.current?.onAfterSubmit;
+      },
       onWarning: options?.onWarning,
     });
     definitionRef.current = definition;

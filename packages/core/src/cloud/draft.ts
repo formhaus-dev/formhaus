@@ -37,11 +37,17 @@ export function sessionDraftStore(maxAge = WEEK, storageOf: () => DraftStorage |
     }
   };
   return {
-    load: (id, version) => attempt((storage) => {
-      const draft = JSON.parse(storage.getItem(key(id)) ?? 'null') as { version?: number; savedAt: number; values: Record<string, unknown> } | null;
-      return draft && draft.version === version && Date.now() - draft.savedAt < maxAge ? draft.values : null;
-    }, null),
-    save: (id, version, values) => attempt((storage) => storage.setItem(key(id), JSON.stringify({ version, savedAt: Date.now(), values })), undefined),
+    load: (id, version) =>
+      attempt((storage) => {
+        const draft = JSON.parse(storage.getItem(key(id)) ?? 'null') as {
+          version?: number;
+          savedAt: number;
+          values: Record<string, unknown>;
+        } | null;
+        return draft && draft.version === version && Date.now() - draft.savedAt < maxAge ? draft.values : null;
+      }, null),
+    save: (id, version, values) =>
+      attempt((storage) => storage.setItem(key(id), JSON.stringify({ version, savedAt: Date.now(), values })), undefined),
     clear: (id) => attempt((storage) => storage.removeItem(key(id)), undefined),
   };
 }

@@ -4,8 +4,7 @@ import { definition } from '~~/shared/definition';
 const takenCompanies = new Set(['acme']);
 
 const serverValidators: Record<string, ValidatorFn> = {
-  companyAvailable: (value) =>
-    takenCompanies.has(String(value).trim().toLowerCase()) ? 'This company already has a workspace' : null,
+  companyAvailable: (value) => (takenCompanies.has(String(value).trim().toLowerCase()) ? 'This company already has a workspace' : null),
 };
 
 export function runServerValidators(values: Record<string, unknown>, errors: Record<string, string>) {

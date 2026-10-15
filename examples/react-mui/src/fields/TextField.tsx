@@ -1,24 +1,23 @@
 import type { FieldComponentProps } from '@formhaus/react';
 import MuiTextField from '@mui/material/TextField';
 
-export function TextField({
-  id,
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-}: FieldComponentProps) {
+export function TextField({ id, field, value, error, loading, disabled, onChange }: FieldComponentProps) {
   const inputType =
-    field.type === 'email' ? 'email'
-    : field.type === 'password' ? 'password'
-    : field.type === 'number' ? 'number'
-    : field.type === 'date' ? 'date'
-    : field.type === 'datetime' ? 'datetime-local'
-    : field.type === 'time' ? 'time'
-    : field.type === 'phone' ? 'tel'
-    : 'text';
+    field.type === 'email'
+      ? 'email'
+      : field.type === 'password'
+        ? 'password'
+        : field.type === 'number'
+          ? 'number'
+          : field.type === 'date'
+            ? 'date'
+            : field.type === 'datetime'
+              ? 'datetime-local'
+              : field.type === 'time'
+                ? 'time'
+                : field.type === 'phone'
+                  ? 'tel'
+                  : 'text';
 
   const shrinkLabel = field.type === 'date' || field.type === 'datetime' || field.type === 'time';
 

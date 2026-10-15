@@ -32,9 +32,13 @@ describe('FormEngine skip guards', () => {
     const onBeforeStepChange = vi.fn(({ reason }: { reason: string }) => reason !== 'skip');
     const engine = await filledExtras({ onBeforeStepChange });
     expect(await engine.skip()).toBe(false);
-    expect(onBeforeStepChange).toHaveBeenLastCalledWith(expect.objectContaining({
-      reason: 'skip', toStepId: 'notes', values: { name: 'Ada', phone: '555', plan: 'free' },
-    }));
+    expect(onBeforeStepChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        reason: 'skip',
+        toStepId: 'notes',
+        values: { name: 'Ada', phone: '555', plan: 'free' },
+      }),
+    );
     expect(engine.values.phone).toBe('555');
     expect(engine.isStepSkipped('extras')).toBe(false);
     expect(engine.getSubmitValues().phone).toBe('555');
@@ -42,7 +46,12 @@ describe('FormEngine skip guards', () => {
 
   it('keeps values and the step when a skip goes stale', async () => {
     let release!: () => void;
-    const onBeforeStepChange = ({ reason }: { reason: string }) => (reason === 'skip' ? new Promise<void>((resolve) => { release = resolve; }) : undefined);
+    const onBeforeStepChange = ({ reason }: { reason: string }) =>
+      reason === 'skip'
+        ? new Promise<void>((resolve) => {
+            release = resolve;
+          })
+        : undefined;
     const engine = await filledExtras({ onBeforeStepChange });
     const pending = engine.skip();
     engine.cancelPendingActions();
@@ -118,7 +127,15 @@ describe('FormEngine skip guards', () => {
   });
 
   it('keeps a committed skip submit when onAfterSubmit throws', async () => {
-    const engine = new FormEngine(endingDefinition(), { kind: 'more' }, { onAfterSubmit: () => { throw new Error('receipt'); } });
+    const engine = new FormEngine(
+      endingDefinition(),
+      { kind: 'more' },
+      {
+        onAfterSubmit: () => {
+          throw new Error('receipt');
+        },
+      },
+    );
     const submit = vi.fn();
     await expect(engine.skip(submit)).rejects.toMatchObject({ committed: true });
     expect(submit).toHaveBeenCalledWith({}, expect.any(Array));
@@ -128,7 +145,10 @@ describe('FormEngine skip guards', () => {
 
   it('does not restore over values edited during a skip submit', async () => {
     let release!: (allowed: boolean) => void;
-    const onBeforeSubmit = () => new Promise<boolean>((resolve) => { release = resolve; });
+    const onBeforeSubmit = () =>
+      new Promise<boolean>((resolve) => {
+        release = resolve;
+      });
     const engine = new FormEngine(endingDefinition(), { kind: 'more', details: 'old' }, { onBeforeSubmit });
     const pending = engine.skip(vi.fn());
     engine.setValue('details', 'new');

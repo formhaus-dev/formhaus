@@ -42,15 +42,41 @@ function nodeSlots(definition: FormDefinition, { kind, node, address, field }: T
     if (kind !== 'validation') {
       const source = node[slot];
       if (typeof source !== 'string') return [];
-      return [{ kind: 'text', address: slotAddress(kind, address, slot), key: keys[slot], source, fallback: source, params: {}, template: true, apply: (text) => { node[slot] = text; } }];
+      return [
+        {
+          kind: 'text',
+          address: slotAddress(kind, address, slot),
+          key: keys[slot],
+          source,
+          fallback: source,
+          params: {},
+          template: true,
+          apply: (text) => {
+            node[slot] = text;
+          },
+        },
+      ];
     }
     if (!hasRule(node, slot) || !field) return [];
     const literalName = slot === 'required' ? slot : `${slot}Message`;
-    const literal = typeof node[literalName] === 'string' ? node[literalName] as string : undefined;
+    const literal = typeof node[literalName] === 'string' ? (node[literalName] as string) : undefined;
     const params = BOUNDS[slot] ? { [BOUNDS[slot]]: node[slot] } : {};
     const message = ruleKey(field, slot);
     const fallback = literal ?? formatText(definition.messages?.[message] ?? DEFAULT_MESSAGES[message], params);
-    return [{ kind: 'rule', address: [...address, slot], key: keys[slot], source: literal, fallback, params, template: literal !== undefined || !!keys[slot], apply: (text) => { node[literalName] = text; } }];
+    return [
+      {
+        kind: 'rule',
+        address: [...address, slot],
+        key: keys[slot],
+        source: literal,
+        fallback,
+        params,
+        template: literal !== undefined || !!keys[slot],
+        apply: (text) => {
+          node[literalName] = text;
+        },
+      },
+    ];
   });
 }
 
@@ -60,8 +86,16 @@ function catalogSlots(definition: FormDefinition, name: 'messages' | 'labels', u
   return Object.keys(defaults).map((item) => {
     const source = (definition[name] as Record<string, string> | undefined)?.[item] ?? defaults[item];
     return {
-      kind: name === 'messages' ? 'message' : 'label', address: [name, item], key: keys[item], source, fallback: source, params: {}, template: used.has(item),
-      apply: (text: string) => { ((definition[name] ??= {}) as Record<string, string>)[item] = text; },
+      kind: name === 'messages' ? 'message' : 'label',
+      address: [name, item],
+      key: keys[item],
+      source,
+      fallback: source,
+      params: {},
+      template: used.has(item),
+      apply: (text: string) => {
+        ((definition[name] ??= {}) as Record<string, string>)[item] = text;
+      },
     };
   });
 }

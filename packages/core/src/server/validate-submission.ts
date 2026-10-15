@@ -32,7 +32,7 @@ interface ActiveValues {
 }
 
 function activeValues(definition: FormDefinition, fields: FormField[], input: unknown): ActiveValues {
-  const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? input as Record<string, unknown> : {};
+  const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? (input as Record<string, unknown>) : {};
   const visibility = createVisibility(definition);
   const keys = [...new Set(fields.map(({ key }) => key))].filter((key) => hasOwn(source, key));
   let result: ActiveValues = { values: {}, active: new Map() };
@@ -89,11 +89,7 @@ function applySkips(engine: FormEngine, skippedSteps: unknown): void {
   }
 }
 
-export function validateSubmission(
-  definition: FormDefinition,
-  values: unknown,
-  options: SubmissionOptions = {},
-): SubmissionResult {
+export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
   parseDefinition(definition);
   const fields = getAllFields(definition);
   const resolved = activeValues(definition, fields, values);

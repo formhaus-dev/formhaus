@@ -6,9 +6,7 @@ function sameErrors(previous: Record<string, string>, next: Record<string, strin
 }
 
 function holdsErrors(engine: FormEngine, errors: Record<string, string>): boolean {
-  return Object.entries(errors).every(([key, message]) => (
-    engine.errors[key] === message || engine.topLevelErrors.includes(message)
-  ));
+  return Object.entries(errors).every(([key, message]) => engine.errors[key] === message || engine.topLevelErrors.includes(message));
 }
 
 export function shouldApplyExternalErrors(

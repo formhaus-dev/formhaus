@@ -18,17 +18,18 @@ export function FormStepProgress({
         <div className="fh-step-progress__fill" style={{ width: `${percent}%` }} />
       </div>
       <div className="fh-step-progress__info">
-        <span className="fh-step-progress__counter">
-          {counterLabel ?? `Step ${current} of ${total}`}
-        </span>
+        <span className="fh-step-progress__counter">{counterLabel ?? `Step ${current} of ${total}`}</span>
       </div>
       {steps && (
         <ol className="fh-step-progress__steps">
           {steps.map((step, index) => {
             const label = step.title || `Step ${index + 1}`;
             return (
-              <li key={step.id} className={`fh-step-progress__step${step.errorCount ? ' fh-step-progress__step--invalid' : ''}`}
-                aria-current={index + 1 === current ? 'step' : undefined}>
+              <li
+                key={step.id}
+                className={`fh-step-progress__step${step.errorCount ? ' fh-step-progress__step--invalid' : ''}`}
+                aria-current={index + 1 === current ? 'step' : undefined}
+              >
                 {index + 1 === current ? <strong>{label}</strong> : label}
                 {step.errorCount > 0 && ` · ${step.errorCount} ${step.errorCount === 1 ? 'error' : 'errors'}`}
               </li>

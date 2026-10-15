@@ -1,5 +1,14 @@
 import type { FieldI18n, FormDefinition, FormI18n, LabelI18n, StepI18n, ValidationI18n } from '@formhaus/core';
-import { defaultLabels, defaultMessages, localize, textSlots, translationIssues, translationTemplate, type Overlay, type TextSlot } from '@formhaus/core/i18n';
+import {
+  defaultLabels,
+  defaultMessages,
+  localize,
+  textSlots,
+  translationIssues,
+  translationTemplate,
+  type Overlay,
+  type TextSlot,
+} from '@formhaus/core/i18n';
 import { parseDefinition } from './definition-input';
 import { inspectDefinition, type ValidationReport } from './validate';
 
@@ -16,7 +25,14 @@ export type TemplateResult =
 export function translationTemplateTool({ definition: input, lang, prefix }: TemplateInput): TemplateResult {
   const { report, definition } = inspectDefinition(input);
   if (!definition) return { ok: false, validation: report };
-  return { ok: true, validation: report, lang, file: `${definition.id}.${lang}.json`, overlay: translationTemplate(definition), slots: textSlots(definition, { prefix }) };
+  return {
+    ok: true,
+    validation: report,
+    lang,
+    file: `${definition.id}.${lang}.json`,
+    overlay: translationTemplate(definition),
+    slots: textSlots(definition, { prefix }),
+  };
 }
 
 export function withOverlay(input: unknown, overlay: unknown): { definition: unknown; issues: string[] } {
@@ -47,11 +63,33 @@ const slots = {
 
 export const i18nCapabilities = {
   lang: 'Optional BCP 47 tag of the definition texts, such as "ru". Renderers set it as the lang attribute of the form.',
-  messages: { defaults: defaultMessages, rule: 'Optional "messages" catalog of validation templates by key. {min} and {max} are replaced. minItems and maxItems apply to multiselect values. A field message (required: "text", minLengthMessage, ...) wins over the catalog.' },
-  labels: { defaults: defaultLabels, rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. Explicit next and back labels win.' },
-  keys: { slots, rule: 'An "i18n" object next to the texts maps each text to a translation key of the app, such as { "label": "signup.email.label" }. The literal text stays as the fallback and is required. Put keys exactly as given; never invent them.' },
+  messages: {
+    defaults: defaultMessages,
+    rule: 'Optional "messages" catalog of validation templates by key. {min} and {max} are replaced. minItems and maxItems apply to multiselect values. A field message (required: "text", minLengthMessage, ...) wins over the catalog.',
+  },
+  labels: {
+    defaults: defaultLabels,
+    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. Explicit next and back labels win.',
+  },
+  keys: {
+    slots,
+    rule: 'An "i18n" object next to the texts maps each text to a translation key of the app, such as { "label": "signup.email.label" }. The literal text stays as the fallback and is required. Put keys exactly as given; never invent them.',
+  },
   overlay: {
-    addresses: ['title', 'description', 'submit.label', 'cancel.label', 'messages.<key>', 'labels.<key>', 'fields.<key>.label | placeholder | helperText', 'fields.<key>.options.<value>', 'fields.<key>.validation.<rule>', 'steps.<id>.title | description', 'steps.<id>.next.label | back.label | skip.label', 'steps.<id>.fields.<key>...'],
+    addresses: [
+      'title',
+      'description',
+      'submit.label',
+      'cancel.label',
+      'messages.<key>',
+      'labels.<key>',
+      'fields.<key>.label | placeholder | helperText',
+      'fields.<key>.options.<value>',
+      'fields.<key>.validation.<rule>',
+      'steps.<id>.title | description',
+      'steps.<id>.next.label | back.label | skip.label',
+      'steps.<id>.fields.<key>...',
+    ],
     rule: 'A translation is a separate JSON file, such as signup.ru.json, with string leaves nested by these addresses. Missing or empty strings fall back to the source. Keep nesting, identifiers and {placeholders}. Get a skeleton from translation_template.',
   },
 };

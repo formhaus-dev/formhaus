@@ -11,7 +11,9 @@ export function EventLog({ events }: { events: string[] }) {
     <aside className="quiz__log" aria-label="Funnel events">
       <h2>Funnel events</h2>
       <ol>
-        {events.map((event, index) => <li key={index}>{event}</li>)}
+        {events.map((event, index) => (
+          <li key={index}>{event}</li>
+        ))}
       </ol>
     </aside>
   );

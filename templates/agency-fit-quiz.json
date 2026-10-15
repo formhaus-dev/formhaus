@@ -93,10 +93,7 @@
             "autoAdvance": true
           }
         ],
-        "routes": [
-          { "to": "resources", "show": [{ "field": "budget", "eq": "under-5k" }] },
-          { "to": "call" }
-        ]
+        "routes": [{ "to": "resources", "show": [{ "field": "budget", "eq": "under-5k" }] }, { "to": "call" }]
       },
       {
         "id": "resources",

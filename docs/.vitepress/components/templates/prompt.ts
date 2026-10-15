@@ -1,6 +1,6 @@
-const mcpUrl = 'https://api.formhaus.dev/mcp'
+const mcpUrl = 'https://api.formhaus.dev/mcp';
 
-export const templateJsonUrl = (slug: string) => `https://formhaus.dev/templates/${slug}.json`
+export const templateJsonUrl = (slug: string) => `https://formhaus.dev/templates/${slug}.json`;
 
 export function templatePrompt(title: string, slug: string): string {
   return [
@@ -14,5 +14,5 @@ export function templatePrompt(title: string, slug: string): string {
     `   Other MCP clients: add ${mcpUrl} as an HTTP MCP server.`,
     '',
     'Formhaus docs for agents: https://formhaus.dev/llms.txt',
-  ].join('\n')
+  ].join('\n');
 }

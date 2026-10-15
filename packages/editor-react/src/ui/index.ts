@@ -6,7 +6,14 @@ export { CommandList } from './components/CommandList/CommandList';
 export { type CommandItem } from './components/CommandList/useCommandList';
 export { ConfirmDialog } from './components/ConfirmDialog/ConfirmDialog';
 export { Dialog, DialogClose } from './components/Dialog/Dialog';
-export { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from './components/DropdownMenu/DropdownMenu';
+export {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from './components/DropdownMenu/DropdownMenu';
 export { Field } from './components/Field/Field';
 export { IconButton } from './components/IconButton/IconButton';
 export { InlineText } from './components/InlineText/InlineText';

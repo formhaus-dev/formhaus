@@ -39,8 +39,16 @@ export interface CloudControllerOptions extends CloudClientOptions {
 }
 
 export const initialCloudState: CloudState = {
-  definition: null, version: null, settings: {}, loadError: null, errors: {}, notice: null,
-  initialValues: null, revision: 0, attempt: 0, done: false,
+  definition: null,
+  version: null,
+  settings: {},
+  loadError: null,
+  errors: {},
+  notice: null,
+  initialValues: null,
+  revision: 0,
+  attempt: 0,
+  done: false,
 };
 
 export function cloudStateFor(form?: PublishedForm): CloudState {
@@ -116,7 +124,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         return;
       }
       fetchForm(options, controller.signal).then(
-        (form) => { if (alive()) show(form); },
+        (form) => {
+          if (alive()) show(form);
+        },
         (error: Error) => {
           if (!alive()) return;
           update({ loadError: error });
@@ -128,7 +138,8 @@ export function createCloudController(options: CloudControllerOptions, callbacks
       controller.abort();
     },
     saveDraft(values: Record<string, unknown>) {
-      if (state.definition && !state.done) options.draftStore?.save(options.id, state.version ?? undefined, draftValues(state.definition, values));
+      if (state.definition && !state.done)
+        options.draftStore?.save(options.id, state.version ?? undefined, draftValues(state.definition, values));
     },
     again() {
       update({ done: false, errors: {}, notice: null, initialValues: null, revision: state.revision + 1 });

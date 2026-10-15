@@ -36,12 +36,14 @@ export default function App() {
   const [seed, setSeed] = useState<{ run: number; values?: Record<string, unknown> }>({ run: 0 });
 
   async function onSubmit(values: Record<string, unknown>): Promise<SubmitResult> {
-    try { return await submit(values); }
-    catch (error) {
+    try {
+      return await submit(values);
+    } catch (error) {
       if (!(error instanceof TypeError)) throw error;
       return { ok: false, formErrors: ['Could not reach the server. Check your connection and try again.'] };
+    } finally {
+      setRequests(api.requests.length);
     }
-    finally { setRequests(api.requests.length); }
   }
 
   function toggle(key: ForcedRejection, on: boolean) {
@@ -76,15 +78,23 @@ export default function App() {
       </main>
       <aside className="demo__panel">
         <div className="demo__actions">
-          <button type="button" onClick={() => restart(testData)}>Fill test data</button>
-          <button type="button" onClick={() => restart()}>Clear</button>
+          <button type="button" onClick={() => restart(testData)}>
+            Fill test data
+          </button>
+          <button type="button" onClick={() => restart()}>
+            Clear
+          </button>
         </div>
         <h2>Mock API</h2>
         <p>The server rejects:</p>
         <ul>
           <li>a first name with digits</li>
-          <li><code>taken@example.com</code></li>
-          <li>emails at <code>@blocked.example</code></li>
+          <li>
+            <code>taken@example.com</code>
+          </li>
+          <li>
+            emails at <code>@blocked.example</code>
+          </li>
           <li>a company name with “test”</li>
           <li>a postcode that starts with 0</li>
         </ul>
@@ -97,7 +107,14 @@ export default function App() {
             </label>
           ))}
           <label className="demo__toggle">
-            <input type="checkbox" checked={offline} onChange={(event) => { setOffline(event.target.checked); api.setOffline(event.target.checked); }} />
+            <input
+              type="checkbox"
+              checked={offline}
+              onChange={(event) => {
+                setOffline(event.target.checked);
+                api.setOffline(event.target.checked);
+              }}
+            />
             Network down
           </label>
         </div>

@@ -28,7 +28,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   const lifecycle = { ...engine.lifecycle };
   let dispatched = false;
   const epoch = engine.validationEpoch;
-  const operation = engine.latestOperation = ++engine.operationEpoch;
+  const operation = (engine.latestOperation = ++engine.operationEpoch);
   let values = getSubmitValues(engine);
   const inputsChanged = watchCheckedInputs(engine, values);
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged();

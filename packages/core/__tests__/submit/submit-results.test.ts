@@ -64,7 +64,11 @@ describe('submit results', () => {
     const engine = atLastStep(valid, { onAfterSubmit });
     await engine.submit(() => ({ ok: false, errors: { email: 'Taken' } }));
     engine.goToStepWithField('postcode');
-    await expect(engine.submit(async () => { throw new TypeError('Failed to fetch'); })).rejects.toThrow('Failed to fetch');
+    await expect(
+      engine.submit(async () => {
+        throw new TypeError('Failed to fetch');
+      }),
+    ).rejects.toThrow('Failed to fetch');
     expect(onAfterSubmit).not.toHaveBeenCalled();
     expect(engine.errors).toEqual({ email: 'Taken' });
     expect(engine.values).toEqual(valid);
@@ -81,7 +85,9 @@ describe('submit results', () => {
   it('treats non-plain return values as a success, as before', async () => {
     const onAfterSubmit = vi.fn();
     const engine = atLastStep(valid, { onAfterSubmit });
-    class Response { ok = false; }
+    class Response {
+      ok = false;
+    }
     expect(await engine.submit((() => new Response()) as never)).toBe(true);
     expect(await engine.submit((() => 'saved') as never)).toBe(true);
     expect(onAfterSubmit).toHaveBeenCalledTimes(2);
@@ -98,7 +104,10 @@ describe('submit results', () => {
   });
 
   it('passes the skipped steps and restores a skipped step after a rejection', async () => {
-    const definition = { ...flatApi, steps: flatApi.steps!.map((step) => step.id === 'address' ? { ...step, skip: { label: 'Later' } } : step) };
+    const definition = {
+      ...flatApi,
+      steps: flatApi.steps!.map((step) => (step.id === 'address' ? { ...step, skip: { label: 'Later' } } : step)),
+    };
     const engine = new FormEngine(definition, valid);
     engine.goToStepWithField('postcode');
     const handler = vi.fn(() => ({ ok: false as const, errors: { email: 'Taken' } }));

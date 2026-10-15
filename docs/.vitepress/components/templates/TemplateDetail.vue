@@ -26,7 +26,9 @@ async function copy(kind: 'JSON' | 'Prompt') {
     if (kind === 'Prompt') track('mcp_copy', { client: 'prompt', location: 'template' });
     copied.value = kind;
     clearTimeout(timer);
-    timer = setTimeout(() => { copied.value = ''; }, 2000);
+    timer = setTimeout(() => {
+      copied.value = '';
+    }, 2000);
   } catch {
     copied.value = '';
   }

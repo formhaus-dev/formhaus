@@ -31,9 +31,7 @@ const selected = ref(fixtureNames[0]);
 
 const loader = computed(() => loaderMap[props.framework][variant.value]);
 
-const definitionJson = computed(() =>
-  JSON.stringify(fixtures[selected.value], null, 2),
-);
+const definitionJson = computed(() => JSON.stringify(fixtures[selected.value], null, 2));
 
 const files = computed(() => loader.value.buildFiles(definitionJson.value));
 

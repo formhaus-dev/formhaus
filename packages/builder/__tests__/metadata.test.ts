@@ -73,17 +73,40 @@ describe('developer metadata', () => {
     expect(result[4].validation).toEqual({ required: true });
     setRequired(form, topic.uid, true);
     setRequired(form, note.uid, true);
-    expect(fields(toDefinition(form))[0].validation).toEqual({ minLength: 1, required: 'Pick a topic', i18n: { required: 'errors.topic' } });
+    expect(fields(toDefinition(form))[0].validation).toEqual({
+      minLength: 1,
+      required: 'Pick a topic',
+      i18n: { required: 'errors.topic' },
+    });
     expect(fields(toDefinition(form))[3].validation).toEqual({ required: true });
   });
 });
 
 describe('translated identifiers', () => {
-  const plain = { id: 'f', title: 'F', submit: { label: 'Send' }, steps: [
-    { id: 'step-1', title: 'Step 1', i18n: { title: 'f.start' }, fields: [
-      { key: 'size', type: 'radio', label: 'Size', i18n: { label: 'f.size' }, options: [{ value: 'small', label: 'Small', i18n: { label: 'f.small' } }, { value: 'large', label: 'Large' }] },
-    ] },
-  ] } as FormDefinition;
+  const plain = {
+    id: 'f',
+    title: 'F',
+    submit: { label: 'Send' },
+    steps: [
+      {
+        id: 'step-1',
+        title: 'Step 1',
+        i18n: { title: 'f.start' },
+        fields: [
+          {
+            key: 'size',
+            type: 'radio',
+            label: 'Size',
+            i18n: { label: 'f.size' },
+            options: [
+              { value: 'small', label: 'Small', i18n: { label: 'f.small' } },
+              { value: 'large', label: 'Large' },
+            ],
+          },
+        ],
+      },
+    ],
+  } as FormDefinition;
 
   it('keeps keys, values and step ids that carry translation keys when labels change', () => {
     const form = fromDefinition(plain);

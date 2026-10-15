@@ -3,7 +3,12 @@ import type { FormDefinition } from '@formhaus/core';
 import { afterEach, expect, it, vi } from 'vitest';
 import { FormhausForm } from '../src/cloud';
 
-const definition: FormDefinition = { id: 'contact', title: 'Contact', submit: { label: 'Send' }, fields: [{ key: 'email', type: 'text', label: 'Email' }] };
+const definition: FormDefinition = {
+  id: 'contact',
+  title: 'Contact',
+  submit: { label: 'Send' },
+  fields: [{ key: 'email', type: 'text', label: 'Email' }],
+};
 
 afterEach(() => vi.unstubAllGlobals());
 

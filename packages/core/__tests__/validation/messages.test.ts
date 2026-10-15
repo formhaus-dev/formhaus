@@ -2,7 +2,16 @@ import { describe, expect, it } from 'vitest';
 import { FormEngine, getDefaultMessage, validateFieldValue, type FormDefinition, type FormField, type MessageFn } from '../../src';
 
 const password: FormField = { key: 'password', type: 'password', label: 'Password', validation: { required: true, minLength: 8 } };
-const topics: FormField = { key: 'topics', type: 'multiselect', label: 'Topics', options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }], validation: { minLength: 2 } };
+const topics: FormField = {
+  key: 'topics',
+  type: 'multiselect',
+  label: 'Topics',
+  options: [
+    { value: 'a', label: 'A' },
+    { value: 'b', label: 'B' },
+  ],
+  validation: { minLength: 2 },
+};
 
 describe('message catalogs', () => {
   it('formats catalog templates with the rule params', () => {
@@ -30,7 +39,10 @@ describe('message catalogs', () => {
     };
     expect(validateFieldValue(password, 'abc', {}, undefined, messages)).toBe('{min} 8');
     expect(validateFieldValue(password, '', {}, undefined, messages)).toBe('This field is required');
-    expect(calls).toEqual([['minLength', { min: 8 }, 'password'], ['required', {}, 'password']]);
+    expect(calls).toEqual([
+      ['minLength', { min: 8 }, 'password'],
+      ['required', {}, 'password'],
+    ]);
   });
 
   it('translates type checks and the length limit of text fields', () => {
@@ -53,7 +65,10 @@ describe('message catalogs', () => {
 
 describe('engine messages', () => {
   const definition: FormDefinition = {
-    id: 'signup', title: 'Sign up', submit: { label: 'Send' }, lang: 'ru',
+    id: 'signup',
+    title: 'Sign up',
+    submit: { label: 'Send' },
+    lang: 'ru',
     messages: { required: 'Обязательное поле', minLength: 'Минимум {min}' },
     fields: [password, { key: 'name', type: 'text', label: 'Name', validation: { required: true } }],
   };
@@ -71,11 +86,17 @@ describe('engine messages', () => {
 
   it('does not change forms without catalogs', () => {
     const plain = { ...definition, messages: undefined };
-    expect(new FormEngine(plain, { password: 'abc' }).validate()).toEqual({ password: 'Must be at least 8 characters', name: 'This field is required' });
+    expect(new FormEngine(plain, { password: 'abc' }).validate()).toEqual({
+      password: 'Must be at least 8 characters',
+      name: 'This field is required',
+    });
   });
 
   it('ignores catalog values that are not text', () => {
     const odd = { ...definition, messages: { required: 5, minLength: '' } } as unknown as FormDefinition;
-    expect(new FormEngine(odd, { password: 'abc' }).validate()).toEqual({ password: 'Must be at least 8 characters', name: 'This field is required' });
+    expect(new FormEngine(odd, { password: 'abc' }).validate()).toEqual({
+      password: 'Must be at least 8 characters',
+      name: 'This field is required',
+    });
   });
 });

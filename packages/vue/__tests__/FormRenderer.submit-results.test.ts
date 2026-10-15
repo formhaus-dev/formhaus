@@ -8,7 +8,14 @@ import fixture from '../../core/fixtures/conformance/flat-api-steps.json';
 import FormRenderer from '../src/FormRenderer.vue';
 
 const definition = account as FormDefinition;
-const valid = { firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com', accountType: 'personal', street: '1 Main St', postcode: '10115' };
+const valid = {
+  firstName: 'Ada',
+  lastName: 'Lovelace',
+  email: 'ada@example.com',
+  accountType: 'personal',
+  street: '1 Main St',
+  postcode: '10115',
+};
 const idle = () => waitFor(() => expect(document.querySelector('form')?.getAttribute('aria-busy')).toBe('false'));
 const field = (name: string) => screen.getByRole('textbox', { name: new RegExp(name) }) as HTMLInputElement;
 
@@ -27,13 +34,24 @@ describe('Vue FormRenderer submit results with a flat API', () => {
   it('walks three steps, maps errors from one flat response and succeeds after the fix', async () => {
     const api = createMockApi();
     const onAfterSubmit = vi.fn();
-    render(FormRenderer, { props: { definition, initialValues: { ...valid, firstName: 'Ada1', postcode: '01067' }, onSubmit: submitTo(api), onAfterSubmit } });
+    render(FormRenderer, {
+      props: { definition, initialValues: { ...valid, firstName: 'Ada1', postcode: '01067' }, onSubmit: submitTo(api), onAfterSubmit },
+    });
     await toLastStep();
     await fireEvent.click(screen.getByRole('button', { name: 'Open account' }));
 
     await screen.findByRole('heading', { name: 'About you' });
     await waitFor(() => expect(document.activeElement).toBe(field('First name')));
-    expect(api.requests).toEqual([{ first_name: 'Ada1', last_name: 'Lovelace', email: 'ada@example.com', account_type: 'personal', street: '1 Main St', postal_code: '01067' }]);
+    expect(api.requests).toEqual([
+      {
+        first_name: 'Ada1',
+        last_name: 'Lovelace',
+        email: 'ada@example.com',
+        account_type: 'personal',
+        street: '1 Main St',
+        postal_code: '01067',
+      },
+    ]);
     expect(screen.getByText('Use letters only').getAttribute('role')).toBe('alert');
     expect(field('First name').getAttribute('aria-describedby')).toContain('-error');
     expect(onAfterSubmit).not.toHaveBeenCalled();
@@ -55,7 +73,9 @@ describe('Vue FormRenderer submit results with a flat API', () => {
   });
 
   it('shows unknown keys and a hidden field error as form errors', async () => {
-    const onSubmit = vi.fn((): SubmitResult => ({ ok: false, errors: { account: 'Paused', companyName: 'Not registered' }, formErrors: ['Try again later'] }));
+    const onSubmit = vi.fn(
+      (): SubmitResult => ({ ok: false, errors: { account: 'Paused', companyName: 'Not registered' }, formErrors: ['Try again later'] }),
+    );
     render(FormRenderer, { props: { definition, initialValues: valid, onSubmit } });
     await toLastStep();
     await fireEvent.click(screen.getByRole('button', { name: 'Open account' }));
@@ -66,7 +86,13 @@ describe('Vue FormRenderer submit results with a flat API', () => {
 
   it('drops the error of a field hidden by another answer', async () => {
     const api = createMockApi();
-    render(FormRenderer, { props: { definition, initialValues: { ...valid, accountType: 'business', companyName: 'Test Ltd', postcode: '01067' }, onSubmit: submitTo(api) } });
+    render(FormRenderer, {
+      props: {
+        definition,
+        initialValues: { ...valid, accountType: 'business', companyName: 'Test Ltd', postcode: '01067' },
+        onSubmit: submitTo(api),
+      },
+    });
     await toLastStep();
     await fireEvent.click(screen.getByRole('button', { name: 'Open account' }));
     expect(await screen.findByText('This company is not in the register')).toBeDefined();
@@ -93,7 +119,12 @@ describe('Vue FormRenderer submit results with a flat API', () => {
 
   it('sends one request for a double click and ignores a response after unmount', async () => {
     let resolve!: (result: SubmitResult) => void;
-    const onSubmit = vi.fn(() => new Promise<SubmitResult>((done) => { resolve = done; }));
+    const onSubmit = vi.fn(
+      () =>
+        new Promise<SubmitResult>((done) => {
+          resolve = done;
+        }),
+    );
     const onAfterSubmit = vi.fn();
     const { unmount } = render(FormRenderer, { props: { definition, initialValues: valid, onSubmit, onAfterSubmit } });
     await toLastStep();
@@ -124,8 +155,13 @@ describe('Vue FormRenderer submit results with a flat API', () => {
   });
 
   it('submits with Enter and moves focus to the first invalid field', async () => {
-    render(FormRenderer, { props: { definition, initialValues: valid,
-      onSubmit: () => ({ ok: false, errors: { street: 'No such street', postcode: 'Unknown' } }) } });
+    render(FormRenderer, {
+      props: {
+        definition,
+        initialValues: valid,
+        onSubmit: () => ({ ok: false, errors: { street: 'No such street', postcode: 'Unknown' } }),
+      },
+    });
     await toLastStep();
     await fireEvent.submit(field('Postcode').form!);
     await waitFor(() => expect(document.activeElement).toBe(field('Street')));

@@ -29,10 +29,7 @@
             "type": "radio",
             "label": "Has the patient been seen here before?",
             "layout": "inline",
-            "options": [
-              { "value": "no", "label": "No, new patient" },
-              { "value": "yes", "label": "Yes" }
-            ],
+            "options": [{ "value": "no", "label": "No, new patient" }, { "value": "yes", "label": "Yes" }],
             "validation": { "required": true }
           },
           {

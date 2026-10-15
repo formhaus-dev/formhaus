@@ -1,8 +1,6 @@
 import { FormDefinitionError, FormEngine, type DefinitionIssue, type FormDefinition } from '@formhaus/core';
 
-export type EngineResult =
-  | { ok: true; engine: FormEngine }
-  | { ok: false; issues: DefinitionIssue[] };
+export type EngineResult = { ok: true; engine: FormEngine } | { ok: false; issues: DefinitionIssue[] };
 
 export function createEngine(definition: FormDefinition, values?: Record<string, unknown>): EngineResult {
   try {

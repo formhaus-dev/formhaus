@@ -11,7 +11,13 @@ const definition: FormDefinition = {
       id: 'about',
       title: 'About',
       fields: [
-        { key: 'source', type: 'hidden', label: 'Source', defaultValue: 'direct', validation: { pattern: '^[a-z]+$', patternMessage: 'Unknown source' } },
+        {
+          key: 'source',
+          type: 'hidden',
+          label: 'Source',
+          defaultValue: 'direct',
+          validation: { pattern: '^[a-z]+$', patternMessage: 'Unknown source' },
+        },
         { key: 'name', type: 'text', label: 'Name' },
       ],
     },
@@ -54,18 +60,28 @@ describe('hidden fields', () => {
 
 describe('hidden field messages', () => {
   const single = (field: Partial<FormField>): FormDefinition => ({
-    id: 'f', title: 'F', submit: { label: 'Send' }, fields: [{ key: 'source', type: 'hidden', label: 'Source', ...field }],
+    id: 'f',
+    title: 'F',
+    submit: { label: 'Send' },
+    fields: [{ key: 'source', type: 'hidden', label: 'Source', ...field }],
   });
 
   it('names the field in a built-in message and keeps a custom one', () => {
     expect(new FormEngine(single({ validation: { required: true } })).validate()).toEqual({ source: 'Source: This field is required' });
-    expect(new FormEngine(single({ label: '', validation: { required: true } })).validate()).toEqual({ source: 'source: This field is required' });
-    expect(new FormEngine(single({ validation: { required: 'Open the invite link' } })).validate()).toEqual({ source: 'Open the invite link' });
+    expect(new FormEngine(single({ label: '', validation: { required: true } })).validate()).toEqual({
+      source: 'source: This field is required',
+    });
+    expect(new FormEngine(single({ validation: { required: 'Open the invite link' } })).validate()).toEqual({
+      source: 'Open the invite link',
+    });
     expect(validateSubmission(single({ validation: { required: true } }), {}).errors).toEqual({ source: 'Source: This field is required' });
   });
 
   it('translates the template with the messages catalog', () => {
-    const definition = { ...single({ validation: { required: true } }), messages: { required: 'Pflichtfeld', hidden: '{message} ({label})' } };
+    const definition = {
+      ...single({ validation: { required: true } }),
+      messages: { required: 'Pflichtfeld', hidden: '{message} ({label})' },
+    };
     expect(new FormEngine(definition).validate()).toEqual({ source: 'Pflichtfeld (Source)' });
     expect(validateSubmission(definition, {}).errors).toEqual({ source: 'Pflichtfeld (Source)' });
   });
@@ -73,8 +89,19 @@ describe('hidden field messages', () => {
 
 describe('revealed hidden fields', () => {
   const definition: FormDefinition = {
-    id: 'f', title: 'F', submit: { label: 'Send' }, fields: [
-      { key: 'plan', type: 'radio', label: 'Plan', options: [{ value: 'free', label: 'Free' }, { value: 'pro', label: 'Pro' }] },
+    id: 'f',
+    title: 'F',
+    submit: { label: 'Send' },
+    fields: [
+      {
+        key: 'plan',
+        type: 'radio',
+        label: 'Plan',
+        options: [
+          { value: 'free', label: 'Free' },
+          { value: 'pro', label: 'Pro' },
+        ],
+      },
       { key: 'campaign', type: 'hidden', label: 'Campaign', defaultValue: 'spring', show: [{ field: 'plan', eq: 'pro' }] },
       { key: 'note', type: 'text', label: 'Note', defaultValue: 'hi', show: [{ field: 'plan', eq: 'pro' }] },
     ],
@@ -101,12 +128,35 @@ describe('revealed hidden fields', () => {
   });
 
   it('keeps an active visible field error out of the form-level errors when a hidden field on another branch shares its key', async () => {
-    const shared: FormDefinition = { id: 'ref', title: '', submit: { label: 'Send' }, steps: [
-      { id: 'start', title: 'Start', fields: [{ key: 'mode', type: 'radio', label: 'Mode', options: [{ value: 'link', label: 'Link' }, { value: 'manual', label: 'Manual' }] }],
-        routes: [{ to: 'link', show: [{ field: 'mode', eq: 'link' }] }, { to: 'manual' }] },
-      { id: 'link', title: 'Link', fields: [{ key: 'ref', type: 'hidden', label: 'Ref' }], routes: [{ to: null }] },
-      { id: 'manual', title: 'Manual', fields: [{ key: 'ref', type: 'text', label: 'Referral code', validation: { required: 'Enter the code' } }] },
-    ] };
+    const shared: FormDefinition = {
+      id: 'ref',
+      title: '',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 'start',
+          title: 'Start',
+          fields: [
+            {
+              key: 'mode',
+              type: 'radio',
+              label: 'Mode',
+              options: [
+                { value: 'link', label: 'Link' },
+                { value: 'manual', label: 'Manual' },
+              ],
+            },
+          ],
+          routes: [{ to: 'link', show: [{ field: 'mode', eq: 'link' }] }, { to: 'manual' }],
+        },
+        { id: 'link', title: 'Link', fields: [{ key: 'ref', type: 'hidden', label: 'Ref' }], routes: [{ to: null }] },
+        {
+          id: 'manual',
+          title: 'Manual',
+          fields: [{ key: 'ref', type: 'text', label: 'Referral code', validation: { required: 'Enter the code' } }],
+        },
+      ],
+    };
     const engine = new FormEngine(shared, { mode: 'manual' });
     expect(await engine.next()).toBe(true);
     expect(await engine.submit(async () => {})).toBe(false);

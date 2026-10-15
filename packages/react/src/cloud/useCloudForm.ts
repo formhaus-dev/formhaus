@@ -21,19 +21,23 @@ export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, 
   useEffect(() => {
     const { initialForm: form, draftStore: store } = callbacks.current;
     setState(cloudStateFor(form));
-    const current = createCloudController({ id, apiBase, initialForm: form, draftStore: store, extraBody: () => callbacks.current.extraBody() }, {
-      onChange: setState,
-      onSuccess: (submission) => callbacks.current.onSuccess?.(submission),
-      onError: (error) => callbacks.current.onError?.(error),
-    });
+    const current = createCloudController(
+      { id, apiBase, initialForm: form, draftStore: store, extraBody: () => callbacks.current.extraBody() },
+      {
+        onChange: setState,
+        onSuccess: (submission) => callbacks.current.onSuccess?.(submission),
+        onError: (error) => callbacks.current.onError?.(error),
+      },
+    );
     controller.current = current;
     current.start();
     return () => current.dispose();
   }, [id, apiBase]);
 
-  const submit = useCallback((values: Record<string, unknown>, skippedSteps?: string[]) => (
-    controller.current!.submit(values, skippedSteps)
-  ), []);
+  const submit = useCallback(
+    (values: Record<string, unknown>, skippedSteps?: string[]) => controller.current!.submit(values, skippedSteps),
+    [],
+  );
   const retry = useCallback(() => controller.current!.start(), []);
   const again = useCallback(() => controller.current!.again(), []);
   const saveDraft = useCallback((values: Record<string, unknown>) => controller.current?.saveDraft(values), []);

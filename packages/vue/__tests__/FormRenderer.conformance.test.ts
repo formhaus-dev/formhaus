@@ -14,9 +14,15 @@ const harness: RendererHarness = {
     const { rerender } = render(FormRenderer, { props });
     return { update: (next) => rerender(next) };
   },
-  async click(element) { await fireEvent.click(element); },
-  async type(element, value) { await fireEvent.update(element, value); },
-  async submit(form) { await fireEvent.submit(form); },
+  async click(element) {
+    await fireEvent.click(element);
+  },
+  async type(element, value) {
+    await fireEvent.update(element, value);
+  },
+  async submit(form) {
+    await fireEvent.submit(form);
+  },
 };
 
 const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };

@@ -7,7 +7,7 @@ export const fixtures: Record<string, object> = {
   'Basic Form': basicForm,
   'Conditional Fields': conditionalFields,
   'Multi-Step': multiStep,
-  'Validation': validation,
+  Validation: validation,
 };
 
 export const fixtureNames = Object.keys(fixtures);

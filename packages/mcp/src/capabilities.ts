@@ -14,14 +14,28 @@ export const capabilities = {
   customFieldTypes: 'Any other string is allowed; the renderer must register a component for it.',
   fieldTypeNotes: {
     time: 'A 24-hour "HH:MM" or "HH:MM:SS" string.',
-    hidden: 'Renders no label or control. Its value comes from defaultValue or the initial values, is checked as text, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field.',
+    hidden:
+      'Renders no label or control. Its value comes from defaultValue or the initial values, is checked as text, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field.',
   },
   fieldProps: {
     required: ['key', 'type', 'label'],
     optional: [
-      'placeholder', 'helperText', 'defaultValue', 'show', 'showAny', 'validation', 'options',
-      'optionsFrom', 'optionsDependsOn', 'accept', 'rows', 'mask', 'inputMode', 'autoAdvance',
-      'layout', 'i18n',
+      'placeholder',
+      'helperText',
+      'defaultValue',
+      'show',
+      'showAny',
+      'validation',
+      'options',
+      'optionsFrom',
+      'optionsDependsOn',
+      'accept',
+      'rows',
+      'mask',
+      'inputMode',
+      'autoAdvance',
+      'layout',
+      'i18n',
     ],
     optionFieldTypes: OPTION_FIELD_TYPES,
     options: 'Array of { value: string, label: string }.',
@@ -30,7 +44,8 @@ export const capabilities = {
   },
   validationRules: {
     rules: VALIDATION_RULES,
-    messages: 'Each bound rule accepts a custom message: minLengthMessage, maxLengthMessage, minMessage, maxMessage, patternMessage, matchFieldMessage. "required" accepts true or a message string.',
+    messages:
+      'Each bound rule accepts a custom message: minLengthMessage, maxLengthMessage, minMessage, maxMessage, patternMessage, matchFieldMessage. "required" accepts true or a message string.',
     semantics: [
       'minLength/maxLength apply to strings and arrays; min/max apply to numbers.',
       'pattern is a JavaScript regular expression string.',
@@ -47,7 +62,8 @@ export const capabilities = {
     showAny: 'At least one condition must match.',
     appliesTo: ['field', 'step', 'route', 'action.disabled'],
     comparisons: 'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values.',
-    scope: 'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
+    scope:
+      'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
     hiddenValues: 'Fields hidden by conditions are cleared at once and left out of submitted values.',
   },
   steps: {

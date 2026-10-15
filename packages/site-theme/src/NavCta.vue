@@ -3,7 +3,11 @@ import { computed, inject } from 'vue';
 import { useData } from 'vitepress';
 defineProps<{ mobile?: boolean }>();
 const { frontmatter } = useData();
-const landing = computed(() => String(frontmatter.value.pageClass || '').split(/\s+/).includes('lp-page'));
+const landing = computed(() =>
+  String(frontmatter.value.pageClass || '')
+    .split(/\s+/)
+    .includes('lp-page'),
+);
 const closeScreen = inject<() => void>('close-screen');
 </script>
 

@@ -63,7 +63,12 @@ function flowParent(frames: FrameNode[]): BaseNode & ChildrenMixin {
 
 function boxIn(frame: FrameNode, parent: BaseNode): Box {
   const local = frame.parent === parent;
-  return { x: local ? frame.x : frame.absoluteTransform[0][2], y: local ? frame.y : frame.absoluteTransform[1][2], width: frame.width, height: frame.height };
+  return {
+    x: local ? frame.x : frame.absoluteTransform[0][2],
+    y: local ? frame.y : frame.absoluteTransform[1][2],
+    width: frame.width,
+    height: frame.height,
+  };
 }
 
 async function edgeNodes(edges: FlowEdge[], boxes: Map<string, Box>, theme: KitTheme, nodes: SceneNode[]): Promise<void> {
@@ -71,10 +76,10 @@ async function edgeNodes(edges: FlowEdge[], boxes: Map<string, Box>, theme: KitT
   const outgoing = new Map<string, number>();
   for (const edge of edges) {
     const source = boxes.get(edge.from);
-    const target = edge.to ? boxes.get(edge.to) ?? null : null;
+    const target = edge.to ? (boxes.get(edge.to) ?? null) : null;
     if (!source || (edge.to && !target) || (!edge.to && !edge.label)) continue;
     const out = outgoing.get(edge.from) ?? 0;
-    const into = edge.to ? incoming.get(edge.to) ?? 0 : 0;
+    const into = edge.to ? (incoming.get(edge.to) ?? 0) : 0;
     outgoing.set(edge.from, out + 1);
     if (edge.to) incoming.set(edge.to, into + 1);
     const points = edgePoints(source, target, out, into);
@@ -84,7 +89,12 @@ async function edgeNodes(edges: FlowEdge[], boxes: Map<string, Box>, theme: KitT
   }
 }
 
-export async function drawFlow(definitionId: string, edges: FlowEdge[], frames: Map<string, FrameNode>, theme: KitTheme): Promise<GroupNode | null> {
+export async function drawFlow(
+  definitionId: string,
+  edges: FlowEdge[],
+  frames: Map<string, FrameNode>,
+  theme: KitTheme,
+): Promise<GroupNode | null> {
   const parent = flowParent([...frames.values()]);
   const boxes = new Map([...frames].map(([id, frame]) => [id, boxIn(frame, parent)]));
   const nodes: SceneNode[] = [];
@@ -103,7 +113,10 @@ export async function drawFlow(definitionId: string, edges: FlowEdge[], frames: 
 }
 
 export function removeFlow(definitionId: string): void {
-  for (const node of figma.currentPage.findAllWithCriteria({ types: ['GROUP'], sharedPluginData: { namespace: PLUGIN_NAMESPACE, keys: [FLOW_KEY] } })) {
+  for (const node of figma.currentPage.findAllWithCriteria({
+    types: ['GROUP'],
+    sharedPluginData: { namespace: PLUGIN_NAMESPACE, keys: [FLOW_KEY] },
+  })) {
     if (node.getSharedPluginData(PLUGIN_NAMESPACE, FLOW_KEY) === definitionId) node.remove();
   }
 }

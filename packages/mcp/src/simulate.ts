@@ -69,11 +69,23 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
   const visited = new Set([first, ...trace.map(({ to }) => to)].filter((id): id is string => typeof id === 'string'));
   const values = conditionValues(engine);
   const stepReport = (step: FormStep): StepReport => ({
-    id: step.id, title: step.title, visited: visited.has(step.id), skipped: engine.isStepSkipped(step.id), visibleFields: visibleKeys(step.fields, values),
+    id: step.id,
+    title: step.title,
+    visited: visited.has(step.id),
+    skipped: engine.isStepSkipped(step.id),
+    visibleFields: visibleKeys(step.fields, values),
   });
   const path = engine.isMultiStep
     ? engine.visibleSteps.map(stepReport)
-    : [{ id: definition.id, title: typeof definition.title === 'string' ? definition.title : '', visited: true, skipped: false, visibleFields: visibleKeys(definition.fields ?? [], values) }];
+    : [
+        {
+          id: definition.id,
+          title: typeof definition.title === 'string' ? definition.title : '',
+          visited: true,
+          skipped: false,
+          visibleFields: visibleKeys(definition.fields ?? [], values),
+        },
+      ];
   const step = engine.currentStep;
   const allErrors = engine.validate();
   const atEnd = !engine.isMultiStep || engine.isLastStep;
@@ -87,7 +99,8 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
     isLastStep: atEnd,
     trace,
     errors: visitedErrors(engine, visited, allErrors),
-    wouldSubmit: submitted || (atEnd && Object.keys(allErrors).length === 0 && !isActionDisabled(definition.submit, engine.getSubmitValues())),
+    wouldSubmit:
+      submitted || (atEnd && Object.keys(allErrors).length === 0 && !isActionDisabled(definition.submit, engine.getSubmitValues())),
     submitValues: engine.getSubmitValues(),
     ...overlayIssues,
   };

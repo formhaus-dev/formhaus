@@ -27,9 +27,10 @@ const definition: FormDefinition = {
 describe('FormRenderer dynamic options', () => {
   it('ignores an older provider response', async () => {
     const pending: PendingOptions[] = [];
-    const cities = (values: Record<string, unknown>) => new Promise<FieldOption[]>((resolve) => {
-      pending.push({ country: values.country, resolve });
-    });
+    const cities = (values: Record<string, unknown>) =>
+      new Promise<FieldOption[]>((resolve) => {
+        pending.push({ country: values.country, resolve });
+      });
     render(FormRenderer, {
       props: {
         definition,

@@ -23,13 +23,20 @@ it('accepts loose server payloads without throwing', async () => {
 it('keeps errors set during a request that then returns nothing', async () => {
   const onAfterSubmit = vi.fn();
   const engine = atLastStep({ onAfterSubmit });
-  expect(await engine.submit(async () => { engine.setErrors({ email: 'Taken' }); })).toBe(true);
+  expect(
+    await engine.submit(async () => {
+      engine.setErrors({ email: 'Taken' });
+    }),
+  ).toBe(true);
   expect(engine.errors).toEqual({ email: 'Taken' });
   expect(onAfterSubmit).toHaveBeenCalledTimes(1);
 });
 
 it('restores a skipped step when its rejection arrives after cancelPendingActions()', async () => {
-  const definition = { ...flatApi, steps: flatApi.steps!.map((step) => step.id === 'address' ? { ...step, skip: { label: 'Later' } } : step) };
+  const definition = {
+    ...flatApi,
+    steps: flatApi.steps!.map((step) => (step.id === 'address' ? { ...step, skip: { label: 'Later' } } : step)),
+  };
   const engine = new FormEngine(definition, valid);
   engine.setErrors({ postcode: 'Old' });
   const pending = engine.skip(async () => {
@@ -47,13 +54,18 @@ it.each([
   ['rejection', { ok: false, errors: { name: 'Fresh' } }, { name: 'Fresh' }],
   ['success', { ok: true }, {}],
 ] as const)('keeps a newer %s when a cancelled skip settles late', async (_, fresh, errors) => {
-  const engine = new FormEngine({
-    id: 'stale-skip', title: 'Stale skip', submit: { label: 'Send' },
-    steps: [
-      { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
-      { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
-    ],
-  }, { name: 'Ada', bio: 'Draft' });
+  const engine = new FormEngine(
+    {
+      id: 'stale-skip',
+      title: 'Stale skip',
+      submit: { label: 'Send' },
+      steps: [
+        { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+        { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
+      ],
+    },
+    { name: 'Ada', bio: 'Draft' },
+  );
   engine.setErrors({ bio: 'Old' });
   const response = deferred<{ ok: false; errors: Record<string, string> }>();
   const pending = engine.skip(() => response.promise);
@@ -69,13 +81,25 @@ it.each([
 });
 
 it('keeps an answer typed into a cleared field when a cancelled skip is rejected late', async () => {
-  const engine = new FormEngine({
-    id: 'late-skip', title: 'Late skip', submit: { label: 'Send' },
-    steps: [{ id: 'note', title: 'Note', skip: { label: 'Skip' }, fields: [
-      { key: 'note', type: 'text', label: 'Note' },
-      { key: 'more', type: 'text', label: 'More', show: [{ field: 'note', eq: 'more' }] },
-    ] }],
-  }, { note: 'hello' });
+  const engine = new FormEngine(
+    {
+      id: 'late-skip',
+      title: 'Late skip',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 'note',
+          title: 'Note',
+          skip: { label: 'Skip' },
+          fields: [
+            { key: 'note', type: 'text', label: 'Note' },
+            { key: 'more', type: 'text', label: 'More', show: [{ field: 'note', eq: 'more' }] },
+          ],
+        },
+      ],
+    },
+    { note: 'hello' },
+  );
   const response = deferred<{ ok: false }>();
   const pending = engine.skip(() => response.promise);
   engine.cancelPendingActions();
@@ -91,13 +115,18 @@ it.each([
   ['cancelled', true],
   ['current', false],
 ] as const)('restores a %s skip whose rejection arrives after an answer on another step changed', async (_, cancel) => {
-  const engine = new FormEngine({
-    id: 'other-step', title: 'Other step', submit: { label: 'Send' },
-    steps: [
-      { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
-      { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
-    ],
-  }, { name: 'Ada', bio: 'Draft' });
+  const engine = new FormEngine(
+    {
+      id: 'other-step',
+      title: 'Other step',
+      submit: { label: 'Send' },
+      steps: [
+        { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+        { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
+      ],
+    },
+    { name: 'Ada', bio: 'Draft' },
+  );
   engine.goToStepWithField('bio');
   engine.setErrors({ bio: 'Old' });
   const response = deferred<{ ok: false }>();
@@ -113,16 +142,26 @@ it.each([
 });
 
 it('restores the other answers of a skipped step edited before its late rejection', async () => {
-  const engine = new FormEngine({
-    id: 'same-step', title: 'Same step', submit: { label: 'Send' },
-    steps: [
-      { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
-      { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [
-        { key: 'bio', type: 'text', label: 'Bio' },
-        { key: 'site', type: 'text', label: 'Site' },
-      ] },
-    ],
-  }, { name: 'Ada', bio: 'Draft', site: 'ada.dev' });
+  const engine = new FormEngine(
+    {
+      id: 'same-step',
+      title: 'Same step',
+      submit: { label: 'Send' },
+      steps: [
+        { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+        {
+          id: 'details',
+          title: 'Details',
+          skip: { label: 'Skip' },
+          fields: [
+            { key: 'bio', type: 'text', label: 'Bio' },
+            { key: 'site', type: 'text', label: 'Site' },
+          ],
+        },
+      ],
+    },
+    { name: 'Ada', bio: 'Draft', site: 'ada.dev' },
+  );
   engine.goToStepWithField('bio');
   const response = deferred<{ ok: false }>();
   const pending = engine.skip(() => response.promise);

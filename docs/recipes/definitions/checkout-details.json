@@ -9,10 +9,7 @@
       "type": "radio",
       "label": "Buying as",
       "defaultValue": "personal",
-      "options": [
-        { "value": "personal", "label": "Individual" },
-        { "value": "business", "label": "Business" }
-      ]
+      "options": [{ "value": "personal", "label": "Individual" }, { "value": "business", "label": "Business" }]
     },
     {
       "key": "companyName",
@@ -31,10 +28,7 @@
       "key": "invoiceEmail",
       "type": "email",
       "label": "Invoice email",
-      "showAny": [
-        { "field": "customerType", "eq": "business" },
-        { "field": "needInvoice", "eq": true }
-      ],
+      "showAny": [{ "field": "customerType", "eq": "business" }, { "field": "needInvoice", "eq": true }],
       "validation": { "required": true }
     },
     {
@@ -42,10 +36,7 @@
       "type": "radio",
       "label": "Delivery",
       "validation": { "required": true },
-      "options": [
-        { "value": "courier", "label": "Courier" },
-        { "value": "pickup", "label": "Pickup point" }
-      ]
+      "options": [{ "value": "courier", "label": "Courier" }, { "value": "pickup", "label": "Pickup point" }]
     },
     {
       "key": "address",
@@ -61,10 +52,7 @@
       "label": "Pickup point",
       "show": [{ "field": "delivery", "eq": "pickup" }],
       "validation": { "required": true },
-      "options": [
-        { "value": "central", "label": "Central station" },
-        { "value": "north", "label": "North mall" }
-      ]
+      "options": [{ "value": "central", "label": "Central station" }, { "value": "north", "label": "North mall" }]
     }
   ]
 }

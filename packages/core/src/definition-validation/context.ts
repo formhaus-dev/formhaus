@@ -33,15 +33,21 @@ function collect(target: ConditionEntry[], source: Owner, path: string, owner: C
 }
 
 function collectAction(target: ConditionEntry[], action: FormAction | false | undefined, path: string, step: number): void {
-  (action ? action.disabled ?? [] : []).forEach((condition, index) => (
-    target.push({ condition, path: `${path}/disabled/${index}`, owner: 'action', step })
-  ));
+  (action ? (action.disabled ?? []) : []).forEach((condition, index) =>
+    target.push({ condition, path: `${path}/disabled/${index}`, owner: 'action', step }),
+  );
 }
 
-export function createContext(definition: FormDefinition, validators?: Record<string, unknown>, suggest: CheckContext['suggest'] = () => undefined): CheckContext {
+export function createContext(
+  definition: FormDefinition,
+  validators?: Record<string, unknown>,
+  suggest: CheckContext['suggest'] = () => undefined,
+): CheckContext {
   const steps = definition.steps ?? [];
   const entries: FieldEntry[] = steps.length
-    ? steps.flatMap((step, index) => step.fields.map((field, position) => ({ field, path: `/steps/${index}/fields/${position}`, step: index })))
+    ? steps.flatMap((step, index) =>
+        step.fields.map((field, position) => ({ field, path: `/steps/${index}/fields/${position}`, step: index })),
+      )
     : (definition.fields ?? []).map((field, position) => ({ field, path: `/fields/${position}`, step: -1 }));
   const keys = new Map<string, FieldEntry>();
   for (const entry of entries) if (!keys.has(entry.field.key)) keys.set(entry.field.key, entry);

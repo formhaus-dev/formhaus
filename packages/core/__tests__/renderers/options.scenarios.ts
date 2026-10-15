@@ -1,13 +1,19 @@
 import type { FormDefinition } from '../../src';
 import type { RendererHarness, TestKit } from './fixtures';
 
-const remote = (from: string): FormDefinition => ({ id: 'travel', title: '', submit: { label: 'Send' }, fields: [
-  { key: 'city', type: 'select', label: 'City', optionsFrom: from },
-] });
+const remote = (from: string): FormDefinition => ({
+  id: 'travel',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [{ key: 'city', type: 'select', label: 'City', optionsFrom: from }],
+});
 
-const fixed: FormDefinition = { id: 'travel', title: '', submit: { label: 'Send' }, fields: [
-  { key: 'city', type: 'select', label: 'City', options: [{ value: 'rome', label: 'Rome' }] },
-] };
+const fixed: FormDefinition = {
+  id: 'travel',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [{ key: 'city', type: 'select', label: 'City', options: [{ value: 'rome', label: 'Rome' }] }],
+};
 
 export function optionScenarios(harness: RendererHarness, { it, expect, waitFor, fn }: TestKit): void {
   const labels = () => [...document.querySelectorAll('option')].map((option) => option.textContent?.trim()).filter(Boolean);

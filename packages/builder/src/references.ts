@@ -66,6 +66,7 @@ export function renameReferences(form: BuilderForm, renames: Renames): void {
     }
     const validation = block.extra.validation;
     if (validation?.matchField) validation.matchField = renames.keys.get(validation.matchField) ?? validation.matchField;
-    if (block.extra.optionsDependsOn) block.extra.optionsDependsOn = block.extra.optionsDependsOn.map((key) => renames.keys.get(key) ?? key);
+    if (block.extra.optionsDependsOn)
+      block.extra.optionsDependsOn = block.extra.optionsDependsOn.map((key) => renames.keys.get(key) ?? key);
   }
 }

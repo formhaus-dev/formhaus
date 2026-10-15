@@ -37,13 +37,20 @@ export function translationIssues(definition: FormDefinition, overlay: unknown, 
     invalid: found.filter(({ value }) => typeof value !== 'string').map(({ path }) => dotted(path)),
     placeholderMismatch: translated.filter((slot) => mismatch(slot, lookup(overlay, slot.address)!)).map((slot) => dotted(slot.address)),
     unlabeled: textNodes(definition)
-      .filter(({ kind, node, address }) => kind === 'field' && !(typeof node.label === 'string' && node.label.trim()) && lookup(overlay, [...address, 'label']) === undefined)
+      .filter(
+        ({ kind, node, address }) =>
+          kind === 'field' &&
+          !(typeof node.label === 'string' && node.label.trim()) &&
+          lookup(overlay, [...address, 'label']) === undefined,
+      )
       .map(({ address }) => dotted([...address, 'label'])),
   };
   if (meta?.slots) {
     const baseline = meta.slots;
     const own = (address: string) => Object.prototype.hasOwnProperty.call(baseline, address);
-    result.stale = translated.filter((slot) => slot.template).map((slot) => describeSlot(slot, meta.prefix ?? definition.id))
+    result.stale = translated
+      .filter((slot) => slot.template)
+      .map((slot) => describeSlot(slot, meta.prefix ?? definition.id))
       .filter(({ address, hash }) => own(address) && baseline[address]?.hash !== undefined && baseline[address].hash !== hash)
       .map(({ address }) => address);
   }

@@ -102,9 +102,7 @@
           "rating": {
             "$gt": 0
           },
-          "color": [
-            1
-          ]
+          "color": [1]
         },
         "skippedSteps": []
       },
@@ -116,9 +114,7 @@
           "rating": {
             "$gt": 0
           },
-          "color": [
-            1
-          ]
+          "color": [1]
         },
         "errors": {
           "avatar": "Must be a file reference",

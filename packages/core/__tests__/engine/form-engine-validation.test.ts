@@ -14,13 +14,16 @@ describe('FormEngine validation and errors', () => {
       id: 'hidden-validation',
       title: 'Hidden',
       submit: { label: 'Submit' },
-      fields: [{ key: 'x', type: 'text', label: 'X' }, {
-        key: 'hidden',
-        type: 'text',
-        label: 'Hidden',
-        validation: { required: true },
-        show: [{ field: 'x', eq: 'y' }],
-      }],
+      fields: [
+        { key: 'x', type: 'text', label: 'X' },
+        {
+          key: 'hidden',
+          type: 'text',
+          label: 'Hidden',
+          validation: { required: true },
+          show: [{ field: 'x', eq: 'y' }],
+        },
+      ],
     };
     expect(new FormEngine(definition).validate().hidden).toBeUndefined();
   });
@@ -118,9 +121,13 @@ describe('FormEngine validation and errors', () => {
       submit: { label: 'Submit' },
       fields: [{ key: 'code', type: 'text', label: 'Code', validation: { validator: 'checkCode' } }],
     };
-    const engine = new FormEngine(definition, { code: 'bad' }, {
-      validators: { checkCode: (value) => (value === 'good' ? null : 'Invalid code') },
-    });
+    const engine = new FormEngine(
+      definition,
+      { code: 'bad' },
+      {
+        validators: { checkCode: (value) => (value === 'good' ? null : 'Invalid code') },
+      },
+    );
     expect(engine.validate().code).toBe('Invalid code');
   });
 

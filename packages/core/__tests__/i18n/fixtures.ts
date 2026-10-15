@@ -12,13 +12,44 @@ export const signup: FormDefinition = {
       id: 'kind',
       title: 'Account',
       fields: [
-        { key: 'email', type: 'email', label: 'Email', placeholder: 'you@example.com', i18n: { label: 'signup.email.label' }, validation: { required: 'Enter your email', i18n: { required: 'errors.emailRequired' } } },
-        { key: 'password', type: 'password', label: 'Password', validation: { required: true, minLength: 8, minLengthMessage: 'At least 8 characters', i18n: { minLength: 'errors.password.tooShort' } } },
-        { key: 'kind', type: 'radio', label: 'Plan', options: [{ value: 'business', label: 'Business', i18n: { label: 'plans.business' } }, { value: 'home', label: 'Home' }], validation: { required: true } },
+        {
+          key: 'email',
+          type: 'email',
+          label: 'Email',
+          placeholder: 'you@example.com',
+          i18n: { label: 'signup.email.label' },
+          validation: { required: 'Enter your email', i18n: { required: 'errors.emailRequired' } },
+        },
+        {
+          key: 'password',
+          type: 'password',
+          label: 'Password',
+          validation: {
+            required: true,
+            minLength: 8,
+            minLengthMessage: 'At least 8 characters',
+            i18n: { minLength: 'errors.password.tooShort' },
+          },
+        },
+        {
+          key: 'kind',
+          type: 'radio',
+          label: 'Plan',
+          options: [
+            { value: 'business', label: 'Business', i18n: { label: 'plans.business' } },
+            { value: 'home', label: 'Home' },
+          ],
+          validation: { required: true },
+        },
       ],
       routes: [{ to: 'business', show: [{ field: 'kind', eq: 'business' }] }, { to: 'home' }],
     },
-    { id: 'business', title: 'Company', fields: [{ key: 'address', type: 'text', label: 'Company address', validation: { required: true } }], routes: [{ to: null }] },
+    {
+      id: 'business',
+      title: 'Company',
+      fields: [{ key: 'address', type: 'text', label: 'Company address', validation: { required: true } }],
+      routes: [{ to: null }],
+    },
     { id: 'home', title: 'Home', fields: [{ key: 'address', type: 'text', label: 'Home address', validation: { minLength: 5 } }] },
   ],
 };

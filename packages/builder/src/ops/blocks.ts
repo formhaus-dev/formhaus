@@ -1,6 +1,16 @@
 import { syncIdentifiers } from '../identifiers';
 import { dropReferences } from '../references';
-import { isPage, isQuestion, newOption, newPage, newQuestion, setType, type BuilderForm, type BuilderPage, type BuilderQuestion } from '../model';
+import {
+  isPage,
+  isQuestion,
+  newOption,
+  newPage,
+  newQuestion,
+  setType,
+  type BuilderForm,
+  type BuilderPage,
+  type BuilderQuestion,
+} from '../model';
 
 export function pageSpan(form: BuilderForm, index: number): number {
   let end = index + 1;
