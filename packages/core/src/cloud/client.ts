@@ -3,7 +3,7 @@ import { networkError, readJson, toCloudError } from './error';
 import { parseForm, type PublishedForm } from './envelope';
 import { randomId } from './uuid';
 
-const DEFAULT_API_BASE = 'https://api.formhaus.dev';
+const DEFAULT_API_BASE = 'https://api.formhaus.cc';
 const CORE = `core=${__FORMHAUS_CORE_VERSION__}`;
 
 export interface CloudSubmission {
