@@ -63,7 +63,7 @@
 
 .option {
   --add-row-start: calc(var(--fh-ed-size-choice) + var(--fh-ed-space-2));
-  --add-row-icon-gap: calc(var(--add-row-start) - var(--fh-ed-size-icon-sm) - (var(--fh-ed-size-choice) - var(--fh-ed-size-icon-sm)) / 2);
+  --add-row-icon-gap: calc(var(--add-row-start) - var(--fh-ed-size-icon-sm));
 }
 
 @media (width < 640px) {
