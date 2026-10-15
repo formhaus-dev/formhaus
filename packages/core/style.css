@@ -66,42 +66,23 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 .fh-group__item { position: relative; gap: 20px; padding: 16px; border: 1px solid var(--fh-color-border); border-radius: var(--fh-radius); }
 :is(.fh-section, .fh-group, .fh-group__item) > legend { float: left; padding: 0; }
 .fh-section__title { font-size: 17px; font-weight: 600; line-height: 1.4; }
-:is(.fh-section, .fh-group) > legend + .fh-field__helper { margin-top: calc(8px - var(--fh-gap)); }
-.fh-group > legend + .fh-field__helper { margin-top: -8px; }
+.fh-section > legend + .fh-field__helper { margin-top: calc(4px - var(--fh-gap)); }
+.fh-group > legend + .fh-field__helper { margin-top: -20px; }
 .fh-group__title { color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); font-weight: 600; line-height: 32px; }
 .fh-group__title:focus-visible { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
-.fh-group__remove { position: absolute; top: 16px; right: 12px; min-height: 32px; }
+.fh-group .fh-group__remove { position: absolute; top: 16px; right: 5px; min-height: 32px; font-size: var(--fh-font-size-small); }
+.fh-group__remove::before { content: ""; position: absolute; inset: -6px; }
 .fh-group__add { justify-self: start; }
 .fh-group__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 
-.fh-field__input {
-  width: 100%;
-  min-height: var(--fh-control-height);
-  box-sizing: border-box;
-  padding: var(--fh-input-padding);
-  border: 1px solid var(--fh-color-border);
-  border-radius: var(--fh-radius);
-  background: var(--fh-color-bg);
-  color: inherit;
-  font: inherit;
-  font-size: var(--fh-font-size);
-  transition: border-color 140ms;
-}
+.fh-field__input { width: 100%; min-height: var(--fh-control-height); box-sizing: border-box; padding: var(--fh-input-padding); border: 1px solid var(--fh-color-border); border-radius: var(--fh-radius); background: var(--fh-color-bg); color: inherit; font: inherit; font-size: var(--fh-font-size); transition: border-color 140ms; }
 
 .fh-field__input::placeholder { color: var(--fh-color-text-muted); opacity: 0.8; }
 .fh-field__input:focus { outline: 2px solid var(--fh-color-border-focus); outline-offset: 1px; border-color: var(--fh-color-border-focus); }
 .fh-field__input:disabled { background: var(--fh-color-bg-disabled); cursor: not-allowed; }
 .fh-field__input--textarea { min-height: 112px; resize: vertical; }
 
-.fh-field__input--select {
-  padding-right: 44px;
-  text-overflow: ellipsis;
-  appearance: none;
-  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
-  background-position: right 21px center, right 16px center;
-  background-size: 5px 5px;
-  background-repeat: no-repeat;
-}
+.fh-field__input--select { padding-right: 44px; text-overflow: ellipsis; appearance: none; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: right 21px center, right 16px center; background-size: 5px 5px; background-repeat: no-repeat; }
 
 .fh-field__error, .fh-form__top-error { margin: 0; color: var(--fh-color-error); font-size: var(--fh-font-size-small); font-weight: 500; }
 .fh-form__top-errors, .fh-error-summary { display: flex; flex-direction: column; gap: 4px; }
@@ -129,21 +110,7 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 
 :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) .fh-field__label { font-weight: 400; line-height: 1.5; cursor: pointer; }
 
-.fh-field__radio,
-.fh-field__checkbox,
-.fh-field__switch {
-  position: relative;
-  z-index: 1;
-  flex: none;
-  width: 18px;
-  height: 18px;
-  margin: 2px 0 0;
-  border: 1.5px solid var(--fh-color-border-hover);
-  background: var(--fh-color-bg);
-  appearance: none;
-  cursor: pointer;
-  transition: background-color 140ms, border-color 140ms;
-}
+.fh-field__radio, .fh-field__checkbox, .fh-field__switch { position: relative; z-index: 1; flex: none; width: 18px; height: 18px; margin: 2px 0 0; border: 1.5px solid var(--fh-color-border-hover); background: var(--fh-color-bg); appearance: none; cursor: pointer; transition: background-color 140ms, border-color 140ms; }
 
 .fh-field__radio { border-width: 2px; border-radius: 50%; }
 .fh-field__radio:checked { border-color: var(--fh-color-primary); background: radial-gradient(circle closest-side, var(--fh-color-primary) 4px, var(--fh-color-bg) 4.5px); }
