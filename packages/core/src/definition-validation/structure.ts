@@ -22,7 +22,7 @@ function stepIssues({ definition }: CheckContext): DefinitionIssue[] {
         ),
       );
   });
-  steps.forEach((step, index) =>
+  steps.forEach((step, index) => {
     (step.routes ?? []).forEach((route, position) => {
       if (route.to === null) return;
       const target = seen.get(route.to);
@@ -31,8 +31,8 @@ function stepIssues({ definition }: CheckContext): DefinitionIssue[] {
       const problem = target === undefined ? `"${route.to}" is not a step id` : `"${route.to}" is not a later step`;
       const hint = later.length ? `${oneOf(later)}, or null to end the form here` : 'Use null to end the form here';
       issues.push(error('route-target', `/steps/${index}/routes/${position}/to`, problem, hint));
-    }),
-  );
+    });
+  });
   return issues;
 }
 

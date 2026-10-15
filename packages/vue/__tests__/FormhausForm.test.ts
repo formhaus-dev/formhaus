@@ -30,7 +30,7 @@ function stubApi(...submitReplies: ReturnType<typeof reply>[]) {
 
 function stubDefinition(loaded: FormDefinition, ...submitReplies: ReturnType<typeof reply>[]) {
   const submits = [...submitReplies];
-  const fetchMock = vi.fn(async (url: string, init?: { method?: string }) =>
+  const fetchMock = vi.fn(async (_url: string, init?: { method?: string }) =>
     init?.method === 'POST' ? submits.shift()! : reply(200, loaded),
   );
   vi.stubGlobal('fetch', fetchMock);
@@ -157,7 +157,7 @@ it('aborts the request on unmount', async () => {
   const signals: { aborted: boolean }[] = [];
   vi.stubGlobal(
     'fetch',
-    vi.fn(async (url: string, init?: { signal: { aborted: boolean } }) => {
+    vi.fn(async (_url: string, init?: { signal: { aborted: boolean } }) => {
       signals.push(init!.signal);
       return new Promise(() => {});
     }),

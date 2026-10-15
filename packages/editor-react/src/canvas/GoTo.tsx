@@ -1,4 +1,4 @@
-import { type BuilderOption } from '@formhaus/builder';
+import type { BuilderOption } from '@formhaus/builder';
 import { ArrowRight, ChevronDown } from 'lucide-react';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../ui';
 import { cx } from '../ui/lib/cx';

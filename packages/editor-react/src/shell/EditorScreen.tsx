@@ -25,7 +25,7 @@ export function EditorScreen({ host, mode, compact = false }: Props) {
   }
   if (source.status === 'loading') {
     return (
-      <div className={styles.layout} aria-busy="true" aria-label="Loading editor">
+      <div className={styles.layout} role="status" aria-busy="true" aria-label="Loading editor">
         <Stack gap="3" className={styles.notice}>
           <Skeleton height="var(--fh-ed-size-row)" />
           <Skeleton height="var(--fh-ed-size-tile)" />

@@ -21,7 +21,7 @@ function assign<T>(ref: Ref<T> | undefined, node: T | null) {
   else if (ref) ref.current = node;
 }
 
-function fit(node: HTMLTextAreaElement | null) {
+function fitHeight(node: HTMLTextAreaElement | null) {
   if (!node) return;
   node.style.height = 'auto';
   node.style.height = `${node.scrollHeight}px`;
@@ -54,7 +54,7 @@ export function InlineText({
   );
 
   useLayoutEffect(() => {
-    fit(node.current);
+    fitHeight(node.current);
   }, [value]);
 
   useLayoutEffect(() => {
@@ -64,7 +64,7 @@ export function InlineText({
     const observer = new ResizeObserver(() => {
       if (element.clientWidth === width) return;
       width = element.clientWidth;
-      fit(element);
+      fitHeight(element);
     });
     observer.observe(element);
     return () => {

@@ -28,7 +28,7 @@ function labelNode(component?: ComponentNode): TextNode | undefined {
 
 async function styleOf(node: TextNode): Promise<TextStyle | undefined> {
   const fill = Array.isArray(node.fills) ? (node.fills as Paint[]).find((paint) => paint.type === 'SOLID') : undefined;
-  if (!fill || fill.type !== 'SOLID' || typeof node.fontSize !== 'number') return undefined;
+  if (fill?.type !== 'SOLID' || typeof node.fontSize !== 'number') return undefined;
   const font = node.fontName as FontName;
   const loaded = await figma.loadFontAsync(font).then(
     () => true,
