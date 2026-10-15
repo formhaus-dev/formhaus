@@ -59,8 +59,8 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
       engine.state.values = { ...values };
       for (const key of kept) {
         delete engine.values[key];
-        delete errors[key];
-        delete serverErrors[key];
+        for (const record of [errors, serverErrors])
+          for (const errorKey of Object.keys(record)) if (engine.visibility.owner(errorKey) === key) delete record[errorKey];
         if (key in current) engine.values[key] = current[key];
       }
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
