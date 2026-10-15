@@ -16,6 +16,12 @@ interface Pending {
   settle: (outcome: Outcome) => void;
 }
 
+interface Skip {
+  stepId: string;
+  before: Record<string, unknown>;
+  skipped: Record<string, unknown>;
+}
+
 const flush = () => new Promise<void>((done) => { setImmediate(done); });
 
 export interface FuzzHooks {
@@ -26,7 +32,7 @@ export interface FuzzHooks {
 export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<string, unknown>, commands: FuzzCommand[]): Promise<void> {
   const { definition } = fuzz;
   const pending: Pending[] = [];
-  const skips = new Set<number>();
+  const skips = new Map<number, Skip>();
   const log: string[] = [];
   let resets = 0;
   const steps = definition.steps ?? [];
@@ -59,16 +65,21 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
     throw new Error(`${message}\ncommands:\n  ${log.join('\n  ')}\nstate: ${snapshot()}`);
   };
 
+  const shownField = () => {
+    const path = engine.visibleSteps;
+    const active = conditionValues(engine);
+    return (field: FormField) => {
+      const step = stepOf.get(field);
+      return isVisible(field, active) && (!step || path.includes(step));
+    };
+  };
+
   const check = () => {
     if (engine.stepValidating && engine.submitting) fail('navigation and submission pending at once');
     if (pending.length === 0 && (engine.stepValidating || engine.submitting)) fail('engine busy with nothing pending');
     const path = engine.visibleSteps;
     if (steps.length > 0 && (!engine.currentStep || !path.includes(engine.currentStep))) fail('current step is not on the active path');
-    const active = conditionValues(engine);
-    const shown = (field: FormField) => {
-      const step = stepOf.get(field);
-      return isVisible(field, active) && (!step || path.includes(step));
-    };
+    const shown = shownField();
     for (const key of Object.keys(engine.errors)) {
       const owners = fields.filter((field) => field.key === key);
       if (owners.length === 0) fail(`error for unknown field ${key}`);
@@ -78,6 +89,7 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       if (!path.some((step) => step.id === stepId)) fail(`stepErrors lists step ${stepId} off the active path`);
       if (keys.some((key) => engine.errors[key] === undefined)) fail(`stepErrors of ${stepId} lists a field without an error`);
     }
+    const active = conditionValues(engine);
     for (const field of fields) {
       const step = stepOf.get(field);
       const hiddenStep = step && !isVisible(step, active);
@@ -88,8 +100,21 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
 
   const start = (action: () => Promise<unknown>, skip = false) => {
     const before = ops().latestOperation;
+    const stepId = engine.currentStep?.id ?? '';
+    const values = { ...engine.values };
     action().catch(() => {});
-    if (skip && ops().latestOperation !== before) skips.add(ops().latestOperation);
+    if (skip && ops().latestOperation !== before) skips.set(ops().latestOperation, { stepId, before: values, skipped: { ...engine.values } });
+  };
+
+  const checkRestore = (skip: Skip, values: Record<string, unknown>) => {
+    if (engine.isStepSkipped(skip.stepId)) fail(`skip of ${skip.stepId} left a trace after its rejection`);
+    const shown = shownField();
+    for (const key of new Set([...Object.keys(skip.before), ...Object.keys(values)])) {
+      const expected = Object.is(values[key], skip.skipped[key]) ? skip.before[key] : values[key];
+      const actual = engine.values[key as keyof typeof engine.values];
+      const cleared = actual === undefined && !fields.some((field) => field.key === key && shown(field));
+      if (!cleared && !Object.is(actual, expected)) fail(`restoring skip of ${skip.stepId} set ${key} to ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`);
+    }
   };
 
   for (const command of commands) {
@@ -108,10 +133,14 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       const superseded = entry.resets !== resets || entry.operation !== ops().latestOperation;
       const cancelled = entry.operation !== ops().operationEpoch;
       const before = snapshot();
+      const values = { ...engine.values };
+      const skip = superseded ? undefined : skips.get(entry.operation);
+      const skipped = !!skip && engine.isStepSkipped(skip.stepId);
+      const rejected = command.outcome !== 'allow' || (cancelled && entry.kind === 'beforeSubmit');
       entry.settle(command.outcome);
       await flush();
-      const restoresSkip = !superseded && skips.has(entry.operation);
-      if ((superseded || (cancelled && !restoresSkip)) && snapshot() !== before) {
+      if (skip && (rejected || (skipped && !engine.isStepSkipped(skip.stepId)))) checkRestore(skip, values);
+      else if ((superseded || cancelled) && snapshot() !== before) {
         fail(`stale ${entry.kind} of operation ${entry.operation} changed the state\nbefore: ${before}`);
       }
     }

@@ -1,7 +1,7 @@
 {
-  "core": 12020,
-  "core:production": 11990,
-  "core#FormEngine:production": 10310,
+  "core": 12060,
+  "core:production": 12025,
+  "core#FormEngine:production": 10350,
   "react": 5900,
   "vue": 7760,
   "core/cloud": 2270,
