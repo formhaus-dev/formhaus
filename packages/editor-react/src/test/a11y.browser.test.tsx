@@ -1,5 +1,5 @@
 import axe from 'axe-core';
-import { cleanup, screen } from '@testing-library/react';
+import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
 import { fieldLabel, renderEditor } from './harness';
@@ -31,6 +31,10 @@ describe('editor accessibility', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Field actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: /Field settings/ }));
     await screen.findByRole('group', { name: 'Field settings' });
+    await waitFor(() => {
+      expect(screen.queryByRole('menu')).toBeNull();
+      expect(document.querySelector('[data-aria-hidden], [aria-hidden="true"][data-radix-focus-guard]')).toBeNull();
+    });
     expect(await violations()).toEqual([]);
   });
 });
