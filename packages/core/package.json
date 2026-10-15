@@ -27,9 +27,14 @@
       "types": "./dist/internal.d.ts",
       "import": "./dist/internal.js"
     },
+    "./i18n": {
+      "types": "./dist/i18n.d.ts",
+      "import": "./dist/i18n.js"
+    },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
     "./schema.json": "./schema/form-definition.schema.json",
+    "./translation.schema.json": "./schema/form-translation.schema.json",
     "./fixtures/submissions/*": "./fixtures/submissions/*",
     "./fixtures/cloud/*": "./fixtures/cloud/*"
   },

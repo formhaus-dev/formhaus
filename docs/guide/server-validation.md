@@ -113,6 +113,14 @@ const { values, errors } = validateSubmission(definition, req.body?.values, {
 
 Validators run only for fields on the active path, never on an empty value.
 
+## Messages
+
+Errors use `definition.messages`. Pass `messages` to override them, such as with the messages of a [localized](/guide/translations#server) definition:
+
+```ts
+const { errors } = validateSubmission(definition, req.body?.values, { messages: { required: 'Pflichtfeld' } });
+```
+
 ## Limits
 
 - `pattern` rules run on untrusted input. Bound the execution time of the call, or keep patterns simple.

@@ -1,4 +1,5 @@
 import type { ValidatorFn } from '../validation';
+import { messageResolver, type ResolveMessage } from '../validation/default-messages';
 import type { FormDefinition, FormField, FormStep } from '../types';
 import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-options';
 import { createValues } from './engine-utils';
@@ -29,6 +30,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly lifecycle: FormEngineOptions;
 
   private readonly validators: Record<string, ValidatorFn>;
+  private readonly messages: ResolveMessage;
   private get onStepValidate(): StepValidateFn | undefined { return this.lifecycle.onStepValidate; }
   private readonly visibility: VisibilityState;
   private readonly subscriptions = createSubscriptions();
@@ -41,6 +43,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.lifecycle = options ?? {};
     this.validators = options?.validators ?? {};
     assertDefinition(definition, this.lifecycle, this.validators);
+    this.messages = messageResolver(options?.messages, definition.messages);
     this.visibility = createVisibility(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
     this.state = { values, errors: {}, topLevelErrors: [], serverErrors: {}, serverFormErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };

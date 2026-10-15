@@ -15,6 +15,10 @@
     "./cloud": {
       "types": "./dist/cloud.d.ts",
       "import": "./dist/cloud.js"
+    },
+    "./i18n": {
+      "types": "./dist/i18n.d.ts",
+      "import": "./dist/i18n.js"
     }
   },
   "files": [
@@ -36,6 +40,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "i18next": "^26.4.2",
     "jsdom": "^29.0.2",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",

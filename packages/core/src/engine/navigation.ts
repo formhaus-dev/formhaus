@@ -11,7 +11,7 @@ import type { EngineInternals } from './runtime-internals';
 function hasStepErrors(engine: EngineInternals): boolean {
   const step = engine.currentStep;
   if (!step) return true;
-  const errors = validateStep(step, getValidationValues(engine), engine.validators);
+  const errors = validateStep(step, getValidationValues(engine), engine.validators, engine.messages);
   if (Object.keys(errors).length === 0) return false;
   const previousErrors = engine.errors;
   engine.state.errors = { ...previousErrors, ...errors };

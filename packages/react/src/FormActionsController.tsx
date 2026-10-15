@@ -1,4 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
+import { labelFor } from '@formhaus/core/internal';
 import { useCallback } from 'react';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
@@ -8,6 +9,7 @@ interface FormActionsControllerProps {
   definition: FormRendererProps['definition'];
   loading: boolean;
   ActionsComponent: FormRendererProps['actionsComponent'];
+  labels?: FormRendererProps['labels'];
   onSubmit: () => void;
   onNext: () => Promise<void>;
   onPrev: () => void;
@@ -20,6 +22,7 @@ export function FormActionsController({
   definition,
   loading,
   ActionsComponent,
+  labels,
   onSubmit,
   onNext,
   onPrev,
@@ -30,10 +33,10 @@ export function FormActionsController({
   const step = engine.currentStep;
   const isLastStep = engine.isLastStep || !engine.isMultiStep;
   const primaryLabel = engine.isMultiStep && !isLastStep
-    ? ((step?.next || undefined)?.label ?? 'Continue')
+    ? ((step?.next || undefined)?.label ?? labelFor('continue', {}, labels, definition.labels))
     : (definition.submit?.label ?? 'Submit');
   const showBack = engine.isMultiStep && !engine.isFirstStep && step?.back !== false;
-  const backLabel = (step?.back || undefined)?.label ?? 'Back';
+  const backLabel = (step?.back || undefined)?.label ?? labelFor('back', {}, labels, definition.labels);
   const handlePrimary = useCallback(async () => {
     if (engine.isMultiStep && !isLastStep) await onNext();
     else onSubmit();

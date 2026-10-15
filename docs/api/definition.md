@@ -16,12 +16,16 @@ interface FormDefinition {
   $schema?: string;      // JSON Schema URL for editor validation
   formatVersion?: string; // Definition format, such as "1.0". Added in 0.11.2
   id: string;            // Unique form identifier
+  lang?: string;         // BCP 47 tag of the texts, such as "ru". Added in 0.13.0
   title: string;         // Form title for host UI and Figma output
   description?: string;  // Text under the title, up to 1000 characters. Added in 0.10.0
   submit: FormAction;    // Submit button config
   cancel?: FormAction;   // Cancel button (optional)
   fields?: FormField[];  // Single-step form
   steps?: FormStep[];    // Multi-step form
+  messages?: MessageCatalog; // Validation message templates. Added in 0.13.0
+  labels?: LabelCatalog;     // Renderer label templates. Added in 0.13.0
+  i18n?: FormI18n;           // Translation keys. Added in 0.13.0
 }
 ```
 
@@ -91,6 +95,7 @@ interface FormAction {
   variant?: 'primary' | 'secondary' | 'text'; // Button class for back, skip and cancel
   action?: string;              // Identifier for custom actions
   disabled?: ShowCondition[];   // Conditions available to the action renderer
+  i18n?: { label?: string };    // Translation key for the label
 }
 ```
 
@@ -135,6 +140,7 @@ interface FieldValidation {
   matchField?: string;             // Must match another field's value
   matchFieldMessage?: string;
   validator?: string;              // Custom validator key
+  i18n?: ValidationI18n;           // Translation keys by rule name
 }
 ```
 
@@ -146,8 +152,30 @@ Options for select, radio, and multiselect fields.
 interface FieldOption {
   value: string;
   label: string;
+  i18n?: { label?: string };
 }
 ```
+
+## Translations
+
+Catalogs and translation keys. See [Translations](/guide/translations) and the [specification](/spec#translations).
+
+```ts
+type MessageKey =
+  | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
+  | 'email' | 'number' | 'date' | 'datetime' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value';
+type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary';
+
+type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"
+type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} из {total}"
+
+interface FormI18n { title?: string; description?: string; messages?: MessageCatalog; labels?: LabelCatalog }
+interface StepI18n { title?: string; description?: string }
+interface FieldI18n { label?: string; placeholder?: string; helperText?: string }
+interface ValidationI18n { required?: string; minLength?: string; maxLength?: string; min?: string; max?: string; pattern?: string; matchField?: string }
+```
+
+`FormStep.i18n` is a `StepI18n` and `FormField.i18n` a `FieldI18n`. Every `i18n` value is a translation key; the text next to it is the fallback.
 
 ## ValidatorFn
 
@@ -250,6 +278,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `lang`, `messages`, `labels` and `i18n` | 0.13.0 |
 | `formatVersion` on `FormDefinition` | 0.11.2 |
 | `description` on `FormDefinition` | 0.10.0 |
 | `layout` on fields | 0.10.0 |

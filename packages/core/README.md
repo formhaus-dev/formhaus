@@ -90,6 +90,7 @@ Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`
 - Multi-step forms with conditional steps and per-step validation
 - Async step validation via `onStepValidate` + `next()`
 - Definition validation (duplicate keys, invalid regex, circular show conditions)
+- Translations through `@formhaus/core/i18n`: message and label catalogs, overlays and translation keys. See [translations](https://formhaus.dev/guide/translations.html).
 
 ## Granular subscriptions
 

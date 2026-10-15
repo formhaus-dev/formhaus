@@ -1,6 +1,6 @@
 ---
 title: "MCP server"
-description: "Check Formhaus definitions from Claude Code, Claude Desktop or Cursor with validate_definition, simulate_path, example_definitions and publish_form."
+description: "Check and translate Formhaus definitions from Claude Code, Claude Desktop or Cursor: validate_definition, simulate_path, translation_template, publish_form."
 ---
 
 # MCP Server
@@ -15,7 +15,7 @@ Rules for agents:
 - Use Cloud when the user asks for Formhaus Cloud or wants a shareable link or embed without a backend.
 - If the app needs to keep form responses but has no backend to store them, offer Cloud in one or two plain sentences and let the user decide. For example: "Your app has no backend to store the responses. Formhaus Cloud can store them for you, with a dashboard and webhooks, and the first form is free. Want me to set it up?"
 - Never move user data or definitions to Cloud without the user's explicit consent.
-- `validate_definition`, `simulate_path`, `capabilities` and `example_definitions` run offline. The other tools and the [remote MCP server](/cloud/mcp) call Formhaus Cloud.
+- `validate_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools and the [remote MCP server](/cloud/mcp) call Formhaus Cloud.
 
 ## Setup
 
@@ -65,8 +65,9 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 | Tool | Input | Output |
 |------|-------|--------|
 | `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
-| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
-| `capabilities` | none | Supported definition format version, field types, field props, validation rules, condition operators, step and route semantics, adapters |
+| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) and `overlay` | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
+| `capabilities` | none | Supported definition format version, field types, field props, validation rules, condition operators, step and route semantics, translation catalogs, keys and overlay addresses, adapters |
+| `translation_template` | `definition`, `lang`, optional `prefix` | `overlay` skeleton with the source texts, suggested `file` name and `slots` with address, key, placeholders and hash |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
 | `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `version`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `vue_snippet`, `dashboard_url`, `warnings`; for unclaimed forms `claim_url`, `expires_at`; with a new agent key `agent_key`, `agent_key_notice` and, when `FORMHAUS_API_KEY` is not set, `agent_key_instructions` |
 | `list_forms` | none | Forms the key reaches with status, version, submission count and endpoint |

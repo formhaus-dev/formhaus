@@ -51,6 +51,7 @@ export default defineConfig({
           { text: 'Async Step Validation', link: '/guide/async-validation' },
           { text: 'Server-side Validation', link: '/guide/server-validation' },
           { text: 'Error Handling', link: '/guide/errors' },
+          { text: 'Translations', link: '/guide/translations' },
           { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
           { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
           { text: 'Examples', link: '/guide/examples' },

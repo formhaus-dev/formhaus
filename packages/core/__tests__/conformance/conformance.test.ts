@@ -15,7 +15,7 @@ async function browserCanSubmit(definition: FormDefinition, values: Record<strin
 
 describe('conformance corpus', () => {
   it('covers every audited case', () => {
-    expect(corpus.map(({ name }) => name).sort()).toEqual(['disabled-actions', 'flat-api-steps', 'format-version', 'impossible-dates', 'invalid-labels', 'invalid-messages', 'options-from', 'proto-keys', 'shared-key-branches', 'trimmed-conditions', 'trimmed-text', 'unsupported-format-version']);
+    expect(corpus.map(({ name }) => name).sort()).toEqual(['disabled-actions', 'flat-api-steps', 'format-version', 'impossible-dates', 'invalid-labels', 'invalid-messages', 'localized-catalog', 'localized-overlay', 'options-from', 'proto-keys', 'shared-key-branches', 'trimmed-conditions', 'trimmed-text', 'unsupported-format-version']);
   });
 
   it.each(corpus.map((fixture) => [fixture.name, fixture] as const))('%s: checkDefinition', (_, { definition, issues }) => {

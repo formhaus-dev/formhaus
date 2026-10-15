@@ -1,5 +1,5 @@
 import type { DefinitionIssue } from '../definition-validation';
-import type { ValidatorFn } from '../validation';
+import type { MessageSource, ValidatorFn } from '../validation';
 
 export type StepValidateFn = (
   stepId: string,
@@ -29,6 +29,7 @@ export interface FormEngineOptions {
   onBeforeSubmit?: BeforeSubmitFn;
   onAfterSubmit?: SubmitFn;
   validators?: Record<string, ValidatorFn>;
+  messages?: MessageSource;
   onStepValidate?: StepValidateFn;
   onWarning?: (issue: DefinitionIssue) => void;
 }

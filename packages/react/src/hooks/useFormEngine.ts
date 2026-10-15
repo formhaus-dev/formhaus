@@ -15,6 +15,7 @@ export function useFormEngineStore(
   if (engineRef.current === null || definitionRef.current !== definition) {
     engineRef.current = new FormEngine(definition, initialValues, {
       validators: options?.validators,
+      messages: options?.messages,
       get onStepValidate() { return optionsRef.current?.onStepValidate; },
       get onBeforeStepChange() { return optionsRef.current?.onBeforeStepChange; },
       get onAfterStepChange() { return optionsRef.current?.onAfterStepChange; },

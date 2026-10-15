@@ -14,6 +14,7 @@ import { FormEngine } from '@formhaus/core';
 
 const engine = new FormEngine(definition, initialValues, {
   validators,
+  messages,
   onStepValidate,
   onBeforeStepChange,
   onAfterStepChange,
@@ -23,7 +24,7 @@ const engine = new FormEngine(definition, initialValues, {
 });
 ```
 
-Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
+`messages` is a [message catalog](/spec#message-and-label-catalogs) or a function `(key, params, field) => string | undefined`. It wins over `definition.messages` and is fixed for the lifetime of the engine. Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
 ## Definition checks
 
@@ -113,6 +114,47 @@ It returns `false` only when `nextErrors` equals `previousErrors` and the engine
 ::: warning
 `@formhaus/core/internal` holds the plumbing the React and Vue renderers share: `shouldApplyExternalErrors`, `autoAdvance`, `fieldDomId`, and the Cloud form controller (`createCloudController`, `initialCloudState`, `focusProblem`). It has no semver guarantee and can change in any release. Pin the exact `@formhaus/core` version if you import it.
 :::
+
+## Translations
+
+`@formhaus/core/i18n` turns a definition and a translation into a plain definition for one language. The main entry does not include it.
+
+```ts
+import { localize, textSlots, translationIssues, translationTemplate } from '@formhaus/core/i18n';
+
+const ru = localize(definition, { overlay, lang: 'ru' });
+const de = localize(definition, { translate: (key, params, defaultText) => t(key, { ...params, defaultValue: defaultText }), prefix: false, lang: 'de' });
+const engine = new FormEngine(de.definition, {}, { messages: de.messages });
+```
+
+| Export | Returns | Description |
+|---|---|---|
+| `localize(definition, { overlay, lang? })` | `{ definition, messages, labels }` | Applies an [overlay](/spec#overlays). `messages` and `labels` are the merged catalogs |
+| `localize(definition, { translate, prefix?, lang? })` | `{ definition, messages, labels }` | Asks the [translate function](/spec#translate-function). `messages` and `labels` are functions for runtime texts |
+| `translationTemplate(definition)` | overlay | Skeleton with the source texts as values |
+| `textSlots(definition, { prefix? })` | `TextSlot[]` | `{ address, key, text, params, hash }` for every translatable text |
+| `translationIssues(definition, overlay, meta?)` | `TranslationIssues` | `missing`, `unknown`, `invalid`, `placeholderMismatch`, `unlabeled`, and `stale` when `meta.slots` has hashes from `textSlots()`; pass the same `prefix` in `meta` |
+| `checkTranslations(definition)` | `DefinitionIssue[]` | Checks `lang`, `messages`, `labels` and `i18n`. `localize()` throws on its errors |
+| `defaultMessages`, `defaultLabels` | object | English templates |
+
+`localize()` throws a `FormDefinitionError` for an invalid definition and never mutates its input. Pass `messages` and `labels` to the renderer, or spread the result:
+
+```tsx
+import { useLocalizedForm } from '@formhaus/react/i18n';
+
+const form = useLocalizedForm(definition, { overlay, lang: 'ru' }, [extraDependency]);
+<FormRenderer {...form} onSubmit={save} />
+```
+
+```ts
+import { useLocalizedForm } from '@formhaus/vue/i18n';
+
+const form = useLocalizedForm(() => definition, () => ({ overlay: overlay.value, lang: locale.value }));
+```
+
+The React hook recomputes when `definition`, `overlay`, `prefix`, `lang` or the extra dependencies change, not when `translate` changes. The Vue composable returns a computed ref and tracks reactive reads. Both return the definition unchanged without a source. A new result recreates the engine and clears the answers.
+
+Renderers take `messages` and `labels` props with the same types as the engine option, and set `lang` from the definition on the `<form>` element.
 
 ## Navigation
 

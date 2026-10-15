@@ -1,4 +1,4 @@
-import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, StepValidateFn, SubmitHandler, ValidatorFn } from '@formhaus/core';
+import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, LabelSource, StepValidateFn, SubmitHandler, ValidatorFn } from '@formhaus/core';
 import type { ComponentType } from 'react';
 
 export type OptionsProvider = (
@@ -60,6 +60,7 @@ export interface FormStepProgressProps {
   stepDescription?: string;
   headingLevel?: HeadingLevel;
   steps?: FormStepStatus[];
+  counterLabel?: string;
 }
 
 export interface FormRendererProps extends FormEngineOptions {
@@ -72,6 +73,7 @@ export interface FormRendererProps extends FormEngineOptions {
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
+  labels?: LabelSource;
   errorSummary?: boolean;
   stepErrorMarks?: boolean;
   loading?: boolean;

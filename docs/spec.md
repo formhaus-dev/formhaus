@@ -1,6 +1,6 @@
 ---
 title: "Form definition 1.0 specification"
-description: "Specification of the Formhaus form definition format 1.0: structure, fields, conditions, validation, steps, routes, skip and the submit payload."
+description: "Specification of the Formhaus form definition format 1.0: structure, fields, conditions, validation, steps, routes, skip, translations and the submit payload."
 ---
 
 # Formhaus form definition 1.0
@@ -39,6 +39,10 @@ A definition is a JSON object. The [JSON Schema](https://formhaus.dev/schema/for
 | `$schema` | string | no | Editor hint. Core ignores it. |
 | `formatVersion` | string | no | [Format version](#versioning) of the definition. |
 | `id` | string | yes | Form identifier. Renderers use it to detect a new form. |
+| `lang` | string | no | BCP 47 language tag of the texts, such as `"ru"`. Renderers set it as the `lang` attribute of the form. See [Translations](#translations). |
+| `messages` | object | no | Validation message templates by [message key](#message-and-label-catalogs). |
+| `labels` | object | no | Renderer label templates by [label key](#message-and-label-catalogs). |
+| `i18n` | object | no | [Translation keys](#translation-keys) for `title`, `description`, `messages` and `labels`. |
 | `title` | string | yes | Form title for host UI and Figma output. Renderers do not display it. |
 | `description` | string | no | Plain text shown under the title by host UI and Figma output, up to 1000 characters. Renderers do not display it. |
 | `submit` | [action](#actions) | yes | The submit action on the last step. |
@@ -72,6 +76,9 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `rows` | number | Row count for `textarea`. |
 | `mask` | string | Input mask. The built-in `text`, `email`, `phone`, `number` and `password` inputs use it as the placeholder when `placeholder` is absent. |
 | `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint, applied by the built-in `text`, `email`, `phone`, `number` and `password` inputs. |
+| `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
+
+An option MAY have `i18n: { label }`. `validation` MAY have `i18n` with keys by rule name.
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate.
 
@@ -167,7 +174,7 @@ Initial values for keys that do not belong to any field stay in `engine.values` 
 | `matchField` | string | any value | `Fields must match` |
 | `validator` | string | any value | message returned by the validator |
 
-Each rule except `required` and `validator` has a matching message property: `minLengthMessage`, `maxLengthMessage`, `minMessage`, `maxMessage`, `patternMessage`, `matchFieldMessage`. A string `required` is its own message.
+Each rule except `required` and `validator` has a matching message property: `minLengthMessage`, `maxLengthMessage`, `minMessage`, `maxMessage`, `patternMessage`, `matchFieldMessage`. A string `required` is its own message. Without one, the message comes from the [catalogs](#message-and-label-catalogs).
 
 Core evaluates one field as follows and returns the first error:
 
@@ -193,6 +200,7 @@ Validation runs on Continue for the visible fields of the current step, and on S
 | `next` | [action](#actions) or `false` | Continue action. |
 | `back` | [action](#actions) or `false` | Back action. |
 | `skip` | [action](#actions) | Skip action. See [Skip](#skip). |
+| `i18n` | object | [Translation keys](#translation-keys) for `title` and `description`. |
 
 Step ids MUST be unique. The constructor throws on duplicates.
 
@@ -210,6 +218,7 @@ An action is an object:
 | `variant` | `primary`, `secondary`, `text` | Button style. |
 | `action` | string | Identifier for custom action components. |
 | `disabled` | [condition](#conditions)[] | Disabled when all conditions match. |
+| `i18n` | object | [Translation key](#translation-keys) for `label`. |
 
 The five action slots are:
 
@@ -219,7 +228,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` on `submit` and on `next`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. In built-in renderers, Enter in a single-line input runs the primary action.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` on `submit` and on `next`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. The `continue` and `back` [labels](#message-and-label-catalogs) replace the Continue and Back defaults. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 
@@ -333,6 +342,132 @@ Writing the same value again keeps the error. While a client rule fails on a fie
 - The built-in renderers disable fields while a submission runs. When the engine is driven directly and a value changes during the request, a success still runs `onAfterSubmit` with the values that were sent. A rejection skips the errors of fields whose value changed after the request was sent.
 - The engine does not abort a request. A handler that needs to abort uses its own `AbortController`.
 
+## Translations
+
+A definition holds its texts in one language, the source language. Catalogs, translation keys and overlays change texts only. They never change fields, rules, routes or the submit payload.
+
+### Message and label catalogs
+
+`messages` replaces the built-in validation messages and `labels` the built-in renderer texts. Values are templates: `{name}` is replaced by the param of that name, and unknown placeholders stay as they are. Core skips a value that is not a non-empty string. `checkTranslations()` reports it as `invalid-type`.
+
+| Message key | Default | Params |
+|---|---|---|
+| `required` | `This field is required` | |
+| `minLength`, `maxLength` | `Must be at least {min} characters`, `Must be at most {max} characters` | `min`, `max` |
+| `minItems`, `maxItems` | `Must be at least {min} items`, `Must be at most {max} items` | `min`, `max` |
+| `min`, `max` | `Must be at least {min}`, `Must be at most {max}` | `min`, `max` |
+| `pattern` | `Invalid format` | |
+| `matchField` | `Fields must match` | |
+| `email` | `Enter a valid email` | |
+| `number` | `Enter a number` | |
+| `date` | `Enter a valid date` | |
+| `datetime` | `Enter a valid date and time` | |
+| `option` | `Select one of the available options` | |
+| `options` | `Must be a list of available options` | |
+| `boolean` | `Must be true or false` | |
+| `string` | `Must be text` | |
+| `file` | `Must be a file reference` | |
+| `value` | `Invalid value` | |
+
+`minLength` and `maxLength` on an array value use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`.
+
+| Label key | Default | Params |
+|---|---|---|
+| `continue` | `Continue` | |
+| `back` | `Back` | |
+| `stepOf` | `Step {current} of {total}` | `current`, `total` |
+| `errorSummary` | `Check these answers` | |
+
+A message for a failed rule comes from the first of:
+
+1. The field message: a string `required`, `minLengthMessage`, `maxLengthMessage`, `minMessage`, `maxMessage`, `patternMessage` or `matchFieldMessage`.
+2. The `messages` option of the engine, the renderer or `validateSubmission()`.
+3. `definition.messages`.
+4. The default.
+
+A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+
+Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
+
+### Translation keys
+
+An `i18n` object maps texts of its node to keys of the app dictionary, such as Lokalise keys:
+
+| Node | Slots |
+|---|---|
+| definition | `title`, `description`, `messages.<key>`, `labels.<key>` |
+| step | `title`, `description` |
+| field | `label`, `placeholder`, `helperText` |
+| option, action | `label` |
+| validation | `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `matchField` |
+
+The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-unbound-slot` error. A validation slot MAY bind a rule without a field message. `FormEngine` ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it and throws a `FormDefinitionError` on translation errors.
+
+```json
+{
+  "id": "signup",
+  "title": "Sign up",
+  "submit": { "label": "Create account", "i18n": { "label": "signup.submit" } },
+  "fields": [
+    {
+      "key": "email", "type": "email", "label": "Email",
+      "i18n": { "label": "signup.email.label" },
+      "validation": { "required": "Enter your email", "i18n": { "required": "errors.emailRequired" } }
+    }
+  ]
+}
+```
+
+### Addresses
+
+An address names a text slot by identifiers, never by array index:
+
+```text
+title | description
+submit.label | cancel.label
+messages.<key> | labels.<key>
+fields.<key>.label | placeholder | helperText
+fields.<key>.options.<value>
+fields.<key>.validation.<rule>
+steps.<id>.title | description
+steps.<id>.next.label | back.label | skip.label
+steps.<id>.fields.<key>.label | ...
+```
+
+Fields of a multi-step form are addressed under their step, so a key shared by two exclusive route branches has one address per branch.
+
+### Overlays
+
+An overlay is a JSON object of translated texts, nested by address. Every leaf is a string. Its JSON Schema is [`https://formhaus.dev/schema/form-translation.json`](https://formhaus.dev/schema/form-translation.json), shipped as `@formhaus/core/translation.schema.json`.
+
+```json [signup.ru.json]
+{
+  "title": "Регистрация",
+  "submit": { "label": "Создать аккаунт" },
+  "messages": { "required": "Обязательное поле", "minLength": "Минимум {min} символов" },
+  "labels": { "stepOf": "Шаг {current} из {total}" },
+  "fields": {
+    "email": { "label": "Почта", "validation": { "required": "Укажите почту" } }
+  }
+}
+```
+
+`localize(definition, { overlay })` returns a copy of the definition:
+
+- A text is replaced only by a non-empty string. Missing, empty and non-string entries keep the source text.
+- Entries without a source slot are ignored. An overlay never adds fields, options, rules or actions.
+- A validation entry applies only when its rule is set. It becomes the field message, with `{min}` and `{max}` replaced by the rule value. Field messages in the definition itself are used as written.
+- `messages` and `labels` entries are merged into the definition catalogs.
+- Only own properties are read.
+
+### Translate function
+
+`localize(definition, { translate, prefix })` calls `translate(key, params, defaultText)` for each slot. The key is the explicit `i18n` key, or `<prefix>.<address>`, where `prefix` defaults to the form id. With `prefix: false` only explicit keys are asked. A result of `undefined`, `''` or the key itself, or a thrown error, means no translation, and the source text stays. `{name}` placeholders left in a result are filled in like overlay templates.
+
+Texts, options, action labels and field messages are translated once. For a rule without a field message, a result equal to `defaultText` is not written, so the catalog still applies. Catalog messages and labels are translated when they are shown, through the `messages` and `labels` functions that `localize()` returns.
+
+`lang` is metadata. It does not select a translation and does not set `dir`.
+
 ## Definition checks
 
 `checkDefinition(definition)` never throws. It returns a list of issues. Each issue has a `code`, a `severity` (`error` or `warning`), a JSON pointer `path` to the node, a `message` of the form `<path>: <what is wrong>. <how to fix>.`, and an optional `hint` with the fix. Errors come before warnings.
@@ -341,7 +476,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 
 | Code | Severity | Reported for |
 |---|---|---|
-| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array, `max` that is not a number or a `formatVersion` that is not a version string |
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array, `max` that is not a number a `formatVersion` that is not a version string |
 | `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
 | `missing-property` | error | A missing `id`, `submit`, step `id`, field `key` or `type`, route `to` or condition `field`. A missing `title` is a warning |
 | `fields-and-steps` | error | Both `fields` and `steps` non-empty |
@@ -364,6 +499,13 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |
+| `i18n-unbound-slot` | error, from `checkTranslations()` | A translation key for a text the node does not have, such as `i18n.placeholder` without `placeholder` |
+| `unknown-i18n-slot` | warning, from `checkTranslations()` | An `i18n` key for a text the node cannot have, or for a rule that is not set |
+| `unknown-message-key` | warning, from `checkTranslations()` | A `messages` or `i18n.messages` key that is not a message key |
+| `unknown-label-key` | warning, from `checkTranslations()` | A `labels` or `i18n.labels` key that is not a label key |
+| `i18n-unsafe-identifier` | warning, from `checkTranslations()` | A form id, step id, field key or option value with `.` or `:` in a definition with translation keys |
+
+`checkTranslations(definition)` from `@formhaus/core/i18n` checks `lang`, `messages`, `labels` and `i18n`: it reports `invalid-type` for a value that is not a non-empty string and the translation codes above. `checkDefinition()` and the `FormEngine` constructor do not run it.
 
 `parseDefinition(input)` returns the input typed as a definition, or throws a `FormDefinitionError` with the errors.
 

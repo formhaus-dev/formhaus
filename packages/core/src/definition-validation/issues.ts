@@ -21,7 +21,12 @@ export type DefinitionIssueCode =
   | 'unknown-validator'
   | 'skip-unreachable'
   | 'route-fallthrough'
-  | 'unsupported-format-version';
+  | 'unsupported-format-version'
+  | 'i18n-unbound-slot'
+  | 'unknown-i18n-slot'
+  | 'unknown-message-key'
+  | 'unknown-label-key'
+  | 'i18n-unsafe-identifier';
 
 export interface DefinitionIssue {
   code: DefinitionIssueCode;

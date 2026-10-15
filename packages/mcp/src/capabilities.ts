@@ -1,10 +1,11 @@
 import { FORMAT_VERSION } from '@formhaus/core';
+import { i18nCapabilities } from './translation';
 import { ACTION_VARIANTS, CONDITION_OPERATORS, FIELD_TYPES, OPTION_FIELD_TYPES, VALIDATION_RULES } from './vocabulary';
 
 export const capabilities = {
   definition: {
     required: ['id', 'title', 'submit'],
-    optional: ['formatVersion', 'description', 'cancel', 'fields', 'steps'],
+    optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
     formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version.`,
@@ -16,7 +17,7 @@ export const capabilities = {
     optional: [
       'placeholder', 'helperText', 'defaultValue', 'show', 'showAny', 'validation', 'options',
       'optionsFrom', 'optionsDependsOn', 'accept', 'rows', 'mask', 'inputMode', 'autoAdvance',
-      'layout',
+      'layout', 'i18n',
     ],
     optionFieldTypes: OPTION_FIELD_TYPES,
     options: 'Array of { value: string, label: string }.',
@@ -72,6 +73,7 @@ export const capabilities = {
     variants: ACTION_VARIANTS,
     slots: ['submit', 'cancel', 'step.next', 'step.back', 'step.skip'],
   },
+  i18n: i18nCapabilities,
   adapters: [
     { name: '@formhaus/react', description: 'React FormRenderer and HeadlessFormRenderer.' },
     { name: '@formhaus/vue', description: 'Vue 3 FormRenderer and HeadlessFormRenderer.' },

@@ -1,6 +1,7 @@
 export { cloudStateFor, createCloudController, initialCloudState, type CloudCallbacks, type CloudControllerOptions, type CloudState } from '../cloud/controller';
 export { focusProblem } from '../cloud/focus';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
+export { labelFor } from '../i18n/labels';
 import type { FormEngine } from '../engine';
 import { changeStep } from '../engine/navigation';
 import type { EngineInternals } from '../engine/runtime-internals';

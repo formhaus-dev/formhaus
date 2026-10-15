@@ -1,0 +1,222 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://formhaus.dev/schema/form-translation.json",
+  "title": "Formhaus translation overlay",
+  "description": "Translated texts of one form in one language, keyed by step id, field key and option value. Every leaf is a string; empty strings fall back to the source text.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "submit": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "cancel": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "messages": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": "string"
+        },
+        "minLength": {
+          "type": "string"
+        },
+        "maxLength": {
+          "type": "string"
+        },
+        "minItems": {
+          "type": "string"
+        },
+        "maxItems": {
+          "type": "string"
+        },
+        "min": {
+          "type": "string"
+        },
+        "max": {
+          "type": "string"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "matchField": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "number": {
+          "type": "string"
+        },
+        "date": {
+          "type": "string"
+        },
+        "datetime": {
+          "type": "string"
+        },
+        "option": {
+          "type": "string"
+        },
+        "options": {
+          "type": "string"
+        },
+        "boolean": {
+          "type": "string"
+        },
+        "string": {
+          "type": "string"
+        },
+        "file": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "labels": {
+      "type": "object",
+      "properties": {
+        "continue": {
+          "type": "string"
+        },
+        "back": {
+          "type": "string"
+        },
+        "stepOf": {
+          "type": "string"
+        },
+        "errorSummary": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "fields": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/field"
+      }
+    },
+    "steps": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "#/definitions/step"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "definitions": {
+    "field": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "placeholder": {
+          "type": "string"
+        },
+        "helperText": {
+          "type": "string"
+        },
+        "options": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "validation": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "string"
+            },
+            "minLength": {
+              "type": "string"
+            },
+            "maxLength": {
+              "type": "string"
+            },
+            "min": {
+              "type": "string"
+            },
+            "max": {
+              "type": "string"
+            },
+            "pattern": {
+              "type": "string"
+            },
+            "matchField": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "step": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "next": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "back": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "skip": {
+          "type": "object",
+          "properties": {
+            "label": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/field"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -1,5 +1,6 @@
 export type {
   DefaultFieldType,
+  FieldI18n,
   FieldOption,
   FieldType,
   FieldValidation,
@@ -7,7 +8,17 @@ export type {
   FormAnalyticsEvent,
   FormDefinition,
   FormField,
+  FormI18n,
   FormStep,
+  LabelCatalog,
+  LabelFn,
+  LabelI18n,
+  LabelKey,
+  LabelSource,
+  MessageCatalog,
+  MessageKey,
+  StepI18n,
+  ValidationI18n,
   StepRoute,
   ShowCondition,
 } from './types';
@@ -17,6 +28,9 @@ export { FormEngine, type FormEngineOptions, type StepValidateFn, type StepChang
 export { evaluateCondition, isActionDisabled, isVisible } from './visibility';
 
 export {
+  type MessageFn,
+  type MessageParams,
+  type MessageSource,
   type ValidationRule,
   type ValidatorFn,
   getDefaultMessage,

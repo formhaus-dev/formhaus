@@ -1,5 +1,6 @@
 import type { FormDefinition, FormField } from '../types';
-import type { ValidatorFn } from '../validation';
+import type { MessageSource, ValidatorFn } from '../validation';
+import { messageResolver, type ResolveMessage } from '../validation/default-messages';
 import { parseDefinition } from '../definition-validation';
 import { getAllFields } from '../engine/engine-utils';
 import type { EngineInternals } from '../engine/runtime-internals';
@@ -11,6 +12,7 @@ import { normalizeValue, typeError } from '../validation/type-checks';
 export interface SubmissionOptions {
   skippedSteps?: string[];
   validators?: Record<string, ValidatorFn>;
+  messages?: MessageSource;
 }
 
 const BODY_MESSAGE = 'Pass the values object as the second argument, not the request body with "values" and "skippedSteps".';
@@ -49,10 +51,10 @@ function activeValues(definition: FormDefinition, fields: FormField[], input: un
   return result;
 }
 
-function typeErrors({ values, active }: ActiveValues): Map<string, string> {
+function typeErrors({ values, active }: ActiveValues, resolve: ResolveMessage): Map<string, string> {
   const errors = new Map<string, string>();
   for (const [key, field] of active) {
-    const error = typeError(field, values[key]);
+    const error = typeError(field, values[key], resolve);
     if (error) errors.set(key, error);
   }
   return errors;
@@ -92,8 +94,9 @@ export function validateSubmission(
   parseDefinition(definition);
   const fields = getAllFields(definition);
   const resolved = activeValues(definition, fields, values);
-  const invalid = typeErrors(resolved);
-  const engineOptions = { validators: ignoredValidators(fields, options.validators), onWarning: () => {} };
+  const messages = messageResolver(options.messages, definition.messages);
+  const invalid = typeErrors(resolved, messages);
+  const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();
