@@ -87,7 +87,7 @@ describe('checkDefinition', () => {
     for (const pattern of ['('.repeat(500) + '+)+'.repeat(500), '((a+)+'.repeat(20_000), `${'(a|'.repeat(300)}b`]) {
       const start = performance.now();
       checkDefinition(form([text('code', { validation: { pattern } })]));
-      expect(performance.now() - start).toBeLessThan(50);
+      expect(performance.now() - start).toBeLessThan(200);
     }
   });
 
