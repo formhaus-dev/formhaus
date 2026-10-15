@@ -14,3 +14,5 @@
 - **Breaking:** Errors of item fields use paths such as `participants.1.email` as keys in `errors` and `stepErrors`.
 - **Breaking:** custom field types named `section` or `group` are now built-in nodes.
 - Upgrade the server that runs `validateSubmission()` before the clients. Older servers pass group values through unchecked.
+- `style.css`: placeholders and checkbox and radio borders meet WCAG AA contrast, the step title and section headings use the new `--fh-font-size-title` and `--fh-font-size-heading` tokens, and group cards use `--fh-card-padding`.
+- `style.css`: helper text sits 4px under its label, and checkbox and switch helpers and errors line up with the label text.
