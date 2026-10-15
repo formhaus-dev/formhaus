@@ -12,14 +12,15 @@ export interface DraftStore {
   clear(id: string): void;
 }
 
-const SENSITIVE = new Set(['password', 'file']);
+const SENSITIVE = new Set(['password', 'file', 'hidden']);
 const WEEK = 7 * 24 * 60 * 60 * 1000;
 
 export function draftValues(definition: FormDefinition, values: Record<string, unknown>): Record<string, unknown> {
   const fields = [...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)];
+  const blocked = new Set(fields.filter((field) => SENSITIVE.has(field.type)).map((field) => field.key));
   const kept: Record<string, unknown> = {};
   for (const field of fields) {
-    if (!SENSITIVE.has(field.type) && values[field.key] !== undefined) kept[field.key] = values[field.key];
+    if (!blocked.has(field.key) && values[field.key] !== undefined) kept[field.key] = values[field.key];
   }
   return kept;
 }
