@@ -34,6 +34,7 @@ describe('editor accessibility', () => {
     await waitFor(() => {
       expect(screen.queryByRole('menu')).toBeNull();
       expect(document.querySelector('[data-aria-hidden], [aria-hidden="true"][data-radix-focus-guard]')).toBeNull();
+      expect(document.getAnimations().filter((animation) => animation.playState === 'running')).toEqual([]);
     });
     expect(await violations()).toEqual([]);
   });
