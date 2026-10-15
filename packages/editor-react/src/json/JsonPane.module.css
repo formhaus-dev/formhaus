@@ -63,10 +63,22 @@
   min-width: 0;
 }
 
+.fixAll {
+  font-variant-numeric: tabular-nums;
+}
+
+.problems {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--fh-ed-space-2);
+}
+
 .issues {
   display: flex;
   flex-direction: column;
-  gap: var(--fh-ed-space-1-5);
+  align-self: stretch;
+  max-inline-size: var(--fh-ed-size-editor-canvas);
   margin: 0;
   padding: 0;
   color: var(--fh-ed-fg-muted);
@@ -77,16 +89,44 @@
 .issue {
   display: flex;
   align-items: flex-start;
-  gap: var(--fh-ed-space-2);
-  overflow-wrap: anywhere;
+  justify-content: space-between;
+  gap: var(--fh-ed-space-3);
+  min-height: var(--fh-ed-size-control-md);
 }
 
-.issue svg {
+.message {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--fh-ed-space-2);
+  min-width: 0;
+  padding-block: var(--fh-ed-space-1-5);
+  overflow-wrap: anywhere;
+  text-wrap: pretty;
+}
+
+.icon {
   flex: none;
   width: var(--fh-ed-size-icon-sm);
   height: var(--fh-ed-size-icon-sm);
   margin-top: var(--fh-ed-space-0-5);
+}
+
+.errorIcon {
+  color: var(--fh-ed-danger);
+}
+
+.warningIcon {
   color: var(--fh-ed-warning);
+}
+
+.fix {
+  padding-inline: var(--fh-ed-space-2);
+  color: var(--fh-ed-accent);
+  font-size: var(--fh-ed-font-size-sm);
+}
+
+.fix:hover {
+  color: var(--fh-ed-accent);
 }
 
 .loading {

@@ -1,14 +1,17 @@
-import { SCHEMA_URL, toDefinition } from '@formhaus/builder';
-import { validateDefinition } from '@formhaus/core';
+import { SCHEMA_URL } from '@formhaus/builder';
+import { checkDefinition } from '@formhaus/core';
 import { CircleAlert, CircleCheck, CircleX } from 'lucide-react';
 import { useDeferredValue, useMemo, useRef } from 'react';
 import { Spinner, Text, TextLink } from '../ui';
 import { cx } from '../ui/lib/cx';
-import { useForm } from '../store/hooks';
+import { useForm, useReadOnly } from '../store/hooks';
+import { useFixTools } from './fixes';
+import { JsonIssues } from './JsonIssues';
 import styles from './JsonPane.module.css';
+import { plainDefinition } from './sync';
 import { useJsonSync, type JsonSyncState } from './useJsonSync';
 
-function Status({ error, issues }: { error: JsonSyncState['error']; issues: string[] }) {
+function Status({ error, issues }: { error: JsonSyncState['error']; issues: unknown[] }) {
   if (error) {
     return (
       <span className={cx(styles.state, styles.danger)}>
@@ -35,10 +38,12 @@ function Status({ error, issues }: { error: JsonSyncState['error']; issues: stri
 
 export function JsonPane() {
   const host = useRef<HTMLDivElement>(null);
-  const { error, problems, ready } = useJsonSync(host);
+  const { error, checked, ready, apply } = useJsonSync(host);
+  const readOnly = useReadOnly();
+  const tools = useFixTools();
   const form = useDeferredValue(useForm());
-  const current = useMemo(() => validateDefinition(toDefinition(form)), [form]);
-  const issues = problems ?? current;
+  const target = useMemo(() => checked ?? plainDefinition(form), [checked, form]);
+  const issues = useMemo(() => (tools ? tools.suggestFixes(target) : checkDefinition(target)), [tools, target]);
   return (
     <div className={styles.pane}>
       <div className={styles.editor}>
@@ -58,16 +63,7 @@ export function JsonPane() {
           Visual keeps the last valid version until the JSON parses.
         </Text>
       )}
-      {!error && issues.length > 0 && (
-        <ul className={styles.issues} aria-label="Definition issues">
-          {issues.map((issue) => (
-            <li key={issue} className={styles.issue}>
-              <CircleAlert aria-hidden />
-              {issue}
-            </li>
-          ))}
-        </ul>
-      )}
+      {!error && issues.length > 0 && <JsonIssues issues={issues} tools={readOnly ? null : tools} onApply={apply} />}
     </div>
   );
 }
