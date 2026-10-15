@@ -21,22 +21,7 @@ export function ContainerFields({ container, step, actions }: { container: Build
   const name = labelOf(container);
   return (
     <div className={styles.nested} role="group" aria-label={`Fields in ${name}`}>
-      <Sortable
-        items={fields.map((field) => ({ id: field.uid, field }))}
-        label={`Fields in ${name}`}
-        getLabel={({ field }) => labelOf(field)}
-        onMove={(id, to) => {
-          focus.request(id, 'card');
-          actions.moveTo(id, step, to);
-        }}
-        renderItem={({ field }, { handleProps }) => (
-          <>
-            <FieldCard uid={field.uid} handleProps={handleProps} actions={actions} />
-            {isContainer(field) && <ContainerFields container={field} step={step} actions={actions} />}
-            {!readOnly && field !== fields.at(-1) && <InsertGap after={field.uid} label={labelOf(field)} actions={actions} />}
-          </>
-        )}
-      />
+      <FieldList fields={fields} name={name} step={step} actions={actions} />
       {!readOnly && (
         <FieldPalette
           open={palette}
@@ -52,5 +37,38 @@ export function ContainerFields({ container, step, actions }: { container: Build
         />
       )}
     </div>
+  );
+}
+
+export function FieldList({
+  fields,
+  name,
+  step,
+  actions,
+}: {
+  fields: BuilderQuestion[];
+  name: string;
+  step: string | null;
+  actions: EditorActions;
+}) {
+  const readOnly = useReadOnly();
+  const focus = useFocusRequests();
+  return (
+    <Sortable
+      items={fields.map((field) => ({ id: field.uid, field }))}
+      label={`Fields in ${name}`}
+      getLabel={({ field }) => labelOf(field)}
+      onMove={(id, to) => {
+        focus.request(id, 'card');
+        actions.moveTo(id, step, to);
+      }}
+      renderItem={({ field }, { handleProps }) => (
+        <>
+          <FieldCard uid={field.uid} handleProps={handleProps} actions={actions} />
+          {isContainer(field) && <ContainerFields container={field} step={step} actions={actions} />}
+          {!readOnly && field !== fields.at(-1) && <InsertGap after={field.uid} label={labelOf(field)} actions={actions} />}
+        </>
+      )}
+    />
   );
 }

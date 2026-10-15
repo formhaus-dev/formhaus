@@ -29,3 +29,4 @@ export type {
   StepI18n,
   ValidationI18n,
 } from './i18n';
+export type { GroupItemView, GroupView, SectionView } from './views';

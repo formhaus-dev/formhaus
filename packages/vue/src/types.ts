@@ -7,13 +7,14 @@ import type {
   FieldType,
   FormAction,
   FormAnalyticsEvent,
-  FormField,
-  FormGroup,
-  FormSection,
   FormDefinition,
+  FormField,
+  GroupItemView,
+  GroupView,
   LabelSource,
   MessageFn,
   MessageKey,
+  SectionView,
   StepValidateFn,
   SubmitFn,
   SubmitHandler,
@@ -23,49 +24,13 @@ import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
 
-export interface SectionComponentProps {
-  id: string;
-  section: FormSection;
-  title: string;
-  description?: string;
-  descriptionId?: string;
-}
+export type SectionComponentProps = SectionView;
 
-export interface GroupItemComponentProps {
-  id: string;
-  index: number;
-  title: string;
-  titleId: string;
-  canRemove: boolean;
-  remove: () => void;
-  requestRemove: () => void;
-  cancelRemove: () => void;
-  confirming: boolean;
-  hasContent: boolean;
-  prompt: string;
-  keepLabel: string;
-  removeLabel: string;
-  removeName: string;
-  disabled?: boolean;
+export interface GroupItemComponentProps extends GroupItemView {
   fields: Component;
 }
 
-export interface GroupComponentProps {
-  id: string;
-  group: FormGroup;
-  label: string;
-  helperText?: string;
-  error?: string;
-  describedBy?: string;
-  items: GroupItemComponentProps[];
-  canAdd: boolean;
-  add: () => void;
-  remove: (id: string) => void;
-  requestRemove: (id: string) => void;
-  addLabel: string;
-  removeLabel: string;
-  disabled?: boolean;
-  status: string;
+export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
   itemComponent: Component;
 }
 
