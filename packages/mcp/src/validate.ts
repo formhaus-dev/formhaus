@@ -17,6 +17,14 @@ export interface Inspection {
   engine?: FormEngine;
 }
 
+function same(schema: Issue, core: Issue): boolean {
+  return schema.path === core.path && (schema.code !== 'missing-property' || core.message.startsWith(schema.message));
+}
+
+function titleIssue({ path, message }: Issue): boolean {
+  return path === '/title' || message === '/: missing required property "title".';
+}
+
 function finish(issues: Issue[]): ValidationReport {
   const list = ordered(issues);
   return { valid: !list.some(({ severity }) => severity === 'error'), issues: list };
@@ -27,8 +35,11 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   if (!parsed.ok) return { report: finish([issue('invalid-json', 'error', '', parsed.error.replace(/\.$/, ''))]) };
   const definition = parsed.value as unknown as FormDefinition;
   const checked = checkDefinition(definition, { validators: {} });
-  const core = fromCore(checked.some(({ severity }) => severity === 'error') ? checked : [...checked, ...checkTranslations(definition)]);
-  const schema = schemaIssues(parsed.value).filter(({ path }) => !core.some((found) => found.path === path));
+  const found = schemaIssues(parsed.value);
+  const core = fromCore(
+    checked.some(({ severity }) => severity === 'error') ? checked : [...checked, ...checkTranslations(definition)],
+  ).map((item): Issue => (found.some((schema) => same(schema, item) && !titleIssue(schema)) ? { ...item, severity: 'error' } : item));
+  const schema = found.filter((item) => !core.some((other) => same(item, other)));
   const report = finish([...schema, ...core, ...(schema.length ? [] : structureIssues(definition))]);
   if (!report.valid) return { report };
   const engine = createEngine(definition, values);

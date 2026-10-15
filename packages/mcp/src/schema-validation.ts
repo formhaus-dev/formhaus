@@ -16,19 +16,22 @@ function schemaValidator(): ValidateFunction {
   return compiled;
 }
 
-function hint(instancePath: string, extra: string | undefined): string | undefined {
-  if (!extra) return undefined;
+function hint(instancePath: string, extra: string): string {
   if (CONDITION_PATH.test(instancePath)) return `Use exactly one operator: ${CONDITION_OPERATORS.join(', ')}`;
   if (RULES.has(extra) && /\/fields\/\d+$/.test(instancePath)) return `Move "${extra}" into "validation": { "${extra}": ... }`;
   return `Remove "${extra}"`;
 }
 
 function toIssue({ instancePath, message, params }: ErrorObject): Issue {
-  const extra = 'additionalProperty' in params ? String(params.additionalProperty) : undefined;
-  const missing = 'missingProperty' in params ? String(params.missingProperty) : undefined;
-  const problem = `${message ?? 'is invalid'}${extra ? ` "${extra}"` : ''}`;
-  const path = extra || missing ? `${instancePath}/${extra ?? missing}` : instancePath;
-  return issue('schema', 'error', path, problem, hint(instancePath, extra));
+  if ('missingProperty' in params) {
+    return issue('missing-property', 'error', instancePath, `missing required property "${params.missingProperty}"`);
+  }
+  if ('additionalProperty' in params) {
+    const extra = String(params.additionalProperty);
+    const path = `${instancePath}/${extra.replace(/~/g, '~0').replace(/\//g, '~1')}`;
+    return issue('unknown-property', 'error', path, `unknown property "${extra}"`, hint(instancePath, extra));
+  }
+  return issue('schema', 'error', instancePath, message ?? 'is invalid');
 }
 
 export function schemaIssues(definition: unknown): Issue[] {
