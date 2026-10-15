@@ -1,4 +1,5 @@
 import { syncIdentifiers } from '../identifiers';
+import { bindReferences } from '../references';
 import { newOption, type BuilderForm, type BuilderOption } from '../model';
 import { moveItem } from './blocks';
 import { findField } from './locate';
@@ -30,9 +31,11 @@ export function setOptionLabel(form: BuilderForm, fieldUid: string, optionUid: s
 export function setOptionValue(form: BuilderForm, fieldUid: string, optionUid: string, value: string): void {
   const entry = option(form, fieldUid, optionUid);
   if (!entry) return;
+  const restore = bindReferences(form);
   entry.value = value;
   entry.valueLocked = true;
   syncIdentifiers(form);
+  restore();
 }
 
 export function unlockOptionValue(form: BuilderForm, fieldUid: string, optionUid: string): void {

@@ -1,4 +1,5 @@
 import { hasOptions, isPage, isQuestion, type BuilderForm } from './model';
+import { conditionsOf, resolver } from './references';
 
 export type IssueSeverity = 'error' | 'warning';
 
@@ -23,7 +24,13 @@ function duplicates<T>(items: T[], name: (item: T) => string): T[] {
 export function findIssues(form: BuilderForm): Issue[] {
   const issues: Issue[] = [];
   const questions = form.blocks.filter(isQuestion);
-  for (const item of duplicates(questions, (question) => question.key)) {
+  const { scope, target } = resolver(form);
+  const outer = new Set(questions.filter((item) => scope(item) === undefined).map((item) => item.key));
+  const clashes = new Set([
+    ...duplicates(questions, (question) => `${scope(question) ?? ''}:${question.key}`),
+    ...questions.filter((question) => scope(question) !== undefined && outer.has(question.key)),
+  ]);
+  for (const item of questions.filter((question) => clashes.has(question))) {
     issues.push({ uid: item.uid, severity: 'error', message: `Response key "${item.key}" is used by another field.` });
   }
   for (const item of questions) {
@@ -39,12 +46,12 @@ export function findIssues(form: BuilderForm): Issue[] {
   for (const page of duplicates(pages, (entry) => entry.id)) {
     issues.push({ uid: page.uid, severity: 'error', message: `Step id "${page.id}" is used by another step.` });
   }
-  const position = new Map(questions.map((item) => [item.key, form.blocks.indexOf(item)]));
   form.blocks.forEach((block, index) => {
     if (isPage(block) && !isQuestion(form.blocks[index + 1]))
       issues.push({ uid: block.uid, severity: 'error', message: 'This step has no fields.' });
-    for (const condition of [...(block.extra.show ?? []), ...(block.extra.showAny ?? [])]) {
-      const at = position.get(condition.field);
+    for (const condition of conditionsOf(block.extra)) {
+      const found = target(condition.field, scope(block));
+      const at = found && form.blocks.indexOf(found);
       if (at === undefined)
         issues.push({ uid: block.uid, severity: 'error', message: `Shown if uses "${condition.field}", which is not a field.` });
       else if (at >= index)

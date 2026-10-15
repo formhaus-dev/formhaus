@@ -119,7 +119,7 @@ describe('sections and groups in the builder', () => {
   it('removes and duplicates containers with their children', () => {
     const form = fromDefinition(definition);
     const copy = duplicateField(form, uidOf(form, 'people'))!;
-    expect(childrenOf(form, copy.uid).map((child) => child.key)).toEqual(['name2']);
+    expect(childrenOf(form, copy.uid).map((child) => child.key)).toEqual(['name']);
     expect(copy.parent).toBe(uidOf(form, 'billing'));
     expect(removeField(form, uidOf(form, 'name'))).toBe(false);
     expect(removeField(form, uidOf(form, 'billing'))).toBe(true);

@@ -1,5 +1,5 @@
 import { isPage, isQuestion, pageTitle, type BuilderForm, type BuilderOption, type BuilderPage, type BuilderQuestion } from './model';
-import { renameReferences, type Renames } from './references';
+import { bindReferences, resolver } from './references';
 
 export function words(label: string): string[] {
   return label
@@ -48,40 +48,44 @@ function claim(current: string, base: string, taken: Set<string>, join: string):
   return unique(base, taken, join);
 }
 
-function syncOptions(question: BuilderQuestion, renames: Renames): void {
+function syncOptions(question: BuilderQuestion): void {
   const taken = new Set(question.options.filter((option) => option.valueLocked).map((option) => option.value));
-  const changed = new Map<string, string>();
   question.options.forEach((option: BuilderOption, index) => {
-    if (option.valueLocked) return;
-    const next = claim(option.value, optionBase(option.label, index), taken, '-');
-    if (option.value && next !== option.value) changed.set(option.value, next);
-    option.value = next;
+    if (!option.valueLocked) option.value = claim(option.value, optionBase(option.label, index), taken, '-');
   });
-  if (changed.size) renames.values.set(question.key, changed);
+}
+
+function syncKeys(form: BuilderForm, questions: BuilderQuestion[]): void {
+  const { scope } = resolver(form);
+  const all = new Set<string>();
+  const scopes = new Map<string | undefined, Set<string>>();
+  const keysOf = (group: string | undefined) => scopes.get(group) ?? scopes.set(group, new Set()).get(group)!;
+  const take = (question: BuilderQuestion) => {
+    all.add(question.key);
+    keysOf(scope(question)).add(question.key);
+  };
+  questions.filter((item) => item.keyLocked).forEach(take);
+  for (const question of questions) {
+    if (question.keyLocked) continue;
+    const group = scope(question);
+    const taken = group === undefined ? all : new Set([...keysOf(undefined), ...keysOf(group)]);
+    question.key = claim(question.key, keyBase(question.label), taken, '');
+    take(question);
+  }
 }
 
 export function syncIdentifiers(form: BuilderForm): void {
-  const renames: Renames = { keys: new Map(), values: new Map(), steps: new Map() };
+  const restore = bindReferences(form);
   const questions = form.blocks.filter(isQuestion);
-  const keys = new Set(questions.filter((item) => item.keyLocked).map((item) => item.key));
-  for (const question of questions) {
-    if (!question.keyLocked) {
-      const next = claim(question.key, keyBase(question.label), keys, '');
-      if (question.key && next !== question.key) renames.keys.set(question.key, next);
-      question.key = next;
-    }
-    syncOptions(question, renames);
-  }
+  syncKeys(form, questions);
+  for (const question of questions) syncOptions(question);
   const pages = form.blocks.filter(isPage);
   const offset = isPage(form.blocks[0]) ? 0 : 1;
   const ids = new Set(pages.filter((page) => page.idLocked).map((page) => page.id));
   pages.forEach((page, index) => {
-    if (page.idLocked) return;
-    const next = claim(page.id, stepBase(page, index + offset), ids, '-');
-    if (page.id && next !== page.id) renames.steps.set(page.id, next);
-    page.id = next;
+    if (!page.idLocked) page.id = claim(page.id, stepBase(page, index + offset), ids, '-');
   });
-  renameReferences(form, renames);
+  restore();
 }
 
 export function lockIdentifiers(form: BuilderForm): void {

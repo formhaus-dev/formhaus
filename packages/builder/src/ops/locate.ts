@@ -39,12 +39,3 @@ export function stepFields(form: BuilderForm, stepUid: string | null): BuilderQu
   }
   return result;
 }
-
-export function referencesTo(form: BuilderForm, key: string): string[] {
-  return form.blocks
-    .filter((block) => {
-      const routes = isPage(block) ? (block.routes ?? []).flatMap((route) => [...(route.show ?? []), ...(route.showAny ?? [])]) : [];
-      return [...(block.extra.show ?? []), ...(block.extra.showAny ?? []), ...routes].some((condition) => condition.field === key);
-    })
-    .map((block) => block.uid);
-}
