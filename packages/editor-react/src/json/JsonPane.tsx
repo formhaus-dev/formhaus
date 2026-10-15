@@ -67,7 +67,7 @@ export function JsonPane({ reveal = false, onRevealed }: { reveal?: boolean; onR
   };
   const fixable = readOnly ? null : tools;
   useEffect(() => {
-    if (!reveal || !ready || !list.current) return;
+    if (!reveal || !ready) return;
     showIssues(true);
     onRevealed?.();
   });

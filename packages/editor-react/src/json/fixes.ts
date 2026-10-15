@@ -6,10 +6,16 @@ let tools: FixTools | null = null;
 let loading: Promise<FixTools> | null = null;
 
 function load(): Promise<FixTools> {
-  loading ??= import('@formhaus/core/fix').then((module) => {
-    tools = module;
-    return module;
-  });
+  loading ??= import('@formhaus/core/fix').then(
+    (module) => {
+      tools = module;
+      return module;
+    },
+    (error: unknown) => {
+      loading = null;
+      throw error;
+    },
+  );
   return loading;
 }
 
@@ -18,9 +24,12 @@ export function useFixTools(): FixTools | null {
   useEffect(() => {
     if (loaded) return;
     let alive = true;
-    void load().then((module) => {
-      if (alive) setLoaded(module);
-    });
+    load().then(
+      (module) => {
+        if (alive) setLoaded(module);
+      },
+      () => undefined,
+    );
     return () => {
       alive = false;
     };
