@@ -8,6 +8,7 @@ import CheckboxFieldTsx from '../../../../../examples/react-mui/src/fields/Check
 import RadioFieldTsx from '../../../../../examples/react-mui/src/fields/RadioField.tsx?raw';
 import SwitchFieldTsx from '../../../../../examples/react-mui/src/fields/SwitchField.tsx?raw';
 import FileFieldTsx from '../../../../../examples/react-mui/src/fields/FileField.tsx?raw';
+import HiddenFieldTsx from '../../../../../examples/react-mui/src/fields/HiddenField.tsx?raw';
 import TextareaFieldTsx from '../../../../../examples/react-mui/src/fields/TextareaField.tsx?raw';
 import FormActionsTsx from '../../../../../examples/react-mui/src/actions/FormActions.tsx?raw';
 import StepProgressTsx from '../../../../../examples/react-mui/src/actions/StepProgress.tsx?raw';
@@ -25,6 +26,7 @@ export function buildFiles(definitionJson: string) {
     '/fields/RadioField.tsx': RadioFieldTsx,
     '/fields/SwitchField.tsx': SwitchFieldTsx,
     '/fields/FileField.tsx': FileFieldTsx,
+    '/fields/HiddenField.tsx': HiddenFieldTsx,
     '/fields/TextareaField.tsx': TextareaFieldTsx,
     '/actions/FormActions.tsx': FormActionsTsx,
     '/actions/StepProgress.tsx': StepProgressTsx,

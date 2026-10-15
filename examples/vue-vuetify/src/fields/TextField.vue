@@ -16,6 +16,7 @@ const inputType =
   : props.field.type === 'number' ? 'number'
   : props.field.type === 'date' ? 'date'
   : props.field.type === 'datetime' ? 'datetime-local'
+  : props.field.type === 'time' ? 'time'
   : props.field.type === 'phone' ? 'tel'
   : 'text';
 </script>

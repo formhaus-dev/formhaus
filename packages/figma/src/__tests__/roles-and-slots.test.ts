@@ -8,7 +8,7 @@ describe('roleForField', () => {
   it.each([
     ['text', 'field.text'], ['email', 'field.text'], ['phone', 'field.text'], ['number', 'field.text'],
     ['password', 'field.text'], ['select', 'field.select'], ['autocomplete', 'field.select'],
-    ['textarea', 'field.textarea'], ['date', 'field.date'], ['datetime', 'field.date'], ['file', 'field.file'],
+    ['textarea', 'field.textarea'], ['date', 'field.date'], ['datetime', 'field.date'], ['time', 'field.date'], ['file', 'field.file'],
     ['switch', 'field.switch'], ['radio', 'option.radio'], ['multiselect', 'option.checkbox'],
     ['checkbox', 'field.checkbox'], ['custom-rating', 'field.text'],
   ])('maps %s to %s', (type, role) => {

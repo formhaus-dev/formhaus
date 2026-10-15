@@ -61,7 +61,7 @@ type DefaultFieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
   | 'select' | 'autocomplete' | 'multiselect'
   | 'checkbox' | 'radio' | 'switch'
-  | 'file' | 'date' | 'datetime' | 'textarea';
+  | 'file' | 'date' | 'datetime' | 'time' | 'textarea' | 'hidden';
 
 type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get autocomplete
 ```
@@ -163,7 +163,7 @@ Catalogs and translation keys. See [Translations](/guide/translations) and the [
 ```ts
 type MessageKey =
   | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
-  | 'email' | 'number' | 'date' | 'datetime' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value';
+  | 'email' | 'number' | 'date' | 'datetime' | 'time' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value';
 type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary';
 
 type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"

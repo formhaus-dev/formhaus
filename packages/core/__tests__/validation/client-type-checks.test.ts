@@ -10,6 +10,10 @@ describe('client type checks', () => {
     ['email', `${'a'.repeat(250)}@b.co`, 'Enter a valid email'],
     ['datetime', '2026-01-01T12:00:00.123456', 'Enter a valid date and time'],
     ['date', '01/02/2026', 'Enter a valid date'],
+    ['time', '24:00', 'Enter a valid time'],
+    ['time', '7:05', 'Enter a valid time'],
+    ['time', '07:05:60', 'Enter a valid time'],
+    ['hidden', 42, 'X: Must be text'],
     ['number', Number.NaN, 'Enter a number'],
     ['number', Infinity, 'Enter a number'],
     ['number', '5', 'Enter a number'],
@@ -25,6 +29,9 @@ describe('client type checks', () => {
     ['email', 'ada@example.com'],
     ['datetime', '2026-01-01T12:00'],
     ['date', '2026-01-01'],
+    ['time', '07:05'],
+    ['time', '23:59:59'],
+    ['hidden', 'newsletter'],
     ['number', 0],
     ['file', { name: 'cv.pdf' }],
     ['rating', { stars: 4 }],
@@ -35,7 +42,7 @@ describe('client type checks', () => {
   const scalar = (type: string, extra: Partial<FormField> = {}) => ({ id: 'f', title: 'F', submit: { label: 'Go' },
     fields: [field(type, { options: [{ value: 'a', label: 'A' }], ...extra })] });
 
-  it.each(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'radio', 'checkbox', 'switch', 'date', 'datetime', 'textarea'])('drops an empty list in an optional %s field like a missing answer', (type) => {
+  it.each(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'radio', 'checkbox', 'switch', 'date', 'datetime', 'time', 'textarea', 'hidden'])('drops an empty list in an optional %s field like a missing answer', (type) => {
     const validator = vi.fn(() => 'bad');
     expect(validateSubmission(scalar(type, { validation: { validator: 'check' } }), { x: [] }, { validators: { check: validator } })).toEqual({ values: {}, errors: {} });
     expect(new FormEngine(scalar(type), { x: [] }).validate()).toEqual({});

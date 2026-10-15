@@ -57,6 +57,7 @@ export default defineConfig({
           { text: 'Examples', link: '/guide/examples' },
           { text: 'Get an Endpoint', link: '/guide/endpoint' },
           { text: 'Migrate to 0.11', link: '/migrate/0.11' },
+          { text: 'Migrate to 0.14', link: '/migrate/0.14' },
         ]
       },
       {

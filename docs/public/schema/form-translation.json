@@ -71,6 +71,9 @@
         "datetime": {
           "type": "string"
         },
+        "time": {
+          "type": "string"
+        },
         "option": {
           "type": "string"
         },
@@ -87,6 +90,9 @@
           "type": "string"
         },
         "value": {
+          "type": "string"
+        },
+        "hidden": {
           "type": "string"
         }
       },

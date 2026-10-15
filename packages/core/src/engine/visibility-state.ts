@@ -25,6 +25,7 @@ export function createVisibility(definition: FormDefinition) {
   const fieldDependents = new Map<string, Set<FormField>>();
   const stepDependents = new Map<string, Set<FormStep>>();
   const stepOfField = new Map<FormField, FormStep>();
+  let seeds: Values = {};
   let visibilityDirty = true;
   let canGoNextDirty = true;
   const cache: VisibilityCache = { visibleSteps: [], currentStep: null, visibleFields: [], canGoNext: false };
@@ -93,29 +94,39 @@ export function createVisibility(definition: FormDefinition) {
       return fieldsByKey.get(key)?.find((field) => onPath(field, values) && visible(field, values));
     },
 
-    reconcileHidden(values: Values, errors: Record<string, string>): Set<string> {
+    reconcileHidden(values: Values, errors: Record<string, string>, initial = false): Set<string> {
+      if (initial) seeds = { ...values };
       path.invalidate();
       const queue = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
       const queued = new Set(queue);
       const cleared = new Set<string>();
       const held = (key: string) => values[key] !== undefined || errors[key] !== undefined;
-      const clear = (key: string) => {
-        delete values[key];
-        delete errors[key];
+      const mark = (key: string) => {
         path.invalidate();
         cleared.add(key);
         if (queued.has(key)) return;
         queued.add(key);
         queue.push(key);
       };
+      const clear = (key: string) => {
+        delete values[key];
+        delete errors[key];
+        mark(key);
+      };
+      const update = (field: FormField, shown: boolean) => {
+        if (!shown) {
+          if (held(field.key)) clear(field.key);
+        } else if (field.type === 'hidden' && !held(field.key) && seeds[field.key] !== undefined && visible(field, values)) {
+          values[field.key] = seeds[field.key];
+          mark(field.key);
+        }
+      };
       for (let index = 0; index < queue.length; index++) {
         const key = queue[index];
         queued.delete(key);
-        for (const field of fieldDependents.get(key) ?? []) {
-          if (onPath(field, values) && !visible(field, values) && held(field.key)) clear(field.key);
-        }
+        for (const field of fieldDependents.get(key) ?? []) if (onPath(field, values)) update(field, visible(field, values));
         for (const step of stepDependents.get(key) ?? []) {
-          if (!visible(step, values)) for (const field of step.fields) if (held(field.key)) clear(field.key);
+          for (const field of step.fields) update(field, visible(step, values));
         }
       }
       return cleared;

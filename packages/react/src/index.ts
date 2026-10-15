@@ -9,12 +9,14 @@ export { CheckboxField } from './fields/CheckboxField';
 export { DateField } from './fields/DateField';
 export { DateTimeField } from './fields/DateTimeField';
 export { FileField } from './fields/FileField';
+export { HiddenField } from './fields/HiddenField';
 export { MultiselectField } from './fields/MultiselectField';
 export { RadioField } from './fields/RadioField';
 export { SelectField } from './fields/SelectField';
 export { SwitchField } from './fields/SwitchField';
 export { TextareaField } from './fields/TextareaField';
 export { TextField } from './fields/TextField';
+export { TimeField } from './fields/TimeField';
 export { FormStepProgress } from './FormStepProgress';
 export { useFormEngine } from './hooks/useFormEngine';
 export type {

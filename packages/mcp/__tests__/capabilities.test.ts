@@ -7,6 +7,7 @@ describe('capabilities', () => {
   it('describes field types, rules, operators and routes', () => {
     const result = capabilitiesTool();
     expect(result.fieldTypes).toContain('radio');
+    expect(result.fieldTypes).toEqual(expect.arrayContaining(['time', 'hidden']));
     expect(result.validationRules.rules).toContain('matchField');
     expect(result.conditions.operators).toEqual(['eq', 'neq', 'in', 'notIn', 'notEmpty', 'gt', 'gte', 'lt', 'lte']);
     expect(result.steps.routes.join(' ')).toMatch(/to: null/);

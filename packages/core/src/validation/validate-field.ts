@@ -1,6 +1,6 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
-import { messageResolver, type MessageSource, type ResolveMessage } from './default-messages';
+import { messageResolver, namedResolver, type MessageSource, type ResolveMessage } from './default-messages';
 import { BOOLEAN_TYPES, clientTypeError, trimValue } from './type-checks';
 
 export type ValidatorFn = (
@@ -51,7 +51,7 @@ export function validateFieldValue(
 ): string | null {
   const value = trimValue(field, input);
   const rules = field.validation ?? {};
-  const resolve = messageResolver(messages);
+  const resolve = namedResolver(messageResolver(messages));
   const matchMessage = () => rules.matchFieldMessage ?? resolve('matchField', {}, field);
   if (isEmpty(value, field)) {
     if (rules.required) return typeof rules.required === 'string' ? rules.required : resolve('required', {}, field);

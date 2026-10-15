@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { describe, expect, it, vi } from 'vitest';
 import type { RendererHarness, TestKit } from '../../core/__tests__/renderers/fixtures';
+import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
@@ -21,3 +22,4 @@ const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
 describe('renderer conformance: focus', () => focusScenarios(harness, kit));
 describe('renderer conformance: flow', () => flowScenarios(harness, kit));
 describe('renderer conformance: states', () => stateScenarios(harness, kit));
+describe('renderer conformance: fields', () => fieldScenarios(harness, kit));

@@ -20,12 +20,14 @@ export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.fre
   number: 'Enter a number',
   date: 'Enter a valid date',
   datetime: 'Enter a valid date and time',
+  time: 'Enter a valid time',
   option: 'Select one of the available options',
   options: 'Must be a list of available options',
   boolean: 'Must be true or false',
   string: 'Must be text',
   file: 'Must be a file reference',
   value: 'Invalid value',
+  hidden: '{label}: {message}',
 });
 
 export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
@@ -46,6 +48,13 @@ export function resolveText<K extends string>(defaults: Record<K, string>, key: 
 
 export function messageResolver(...sources: (MessageSource | undefined)[]): ResolveMessage {
   return (key, params, field) => resolveText(DEFAULT_MESSAGES, key, params, sources, field);
+}
+
+export function namedResolver(resolve: ResolveMessage): ResolveMessage {
+  return (key, params, field) => {
+    const message = resolve(key, params, field);
+    return field.type === 'hidden' ? resolve('hidden', { label: field.label || field.key, message }, field) : message;
+  };
 }
 
 export function getDefaultMessage(rule: ValidationRule | MessageKey, params: Record<string, unknown> = {}): string {

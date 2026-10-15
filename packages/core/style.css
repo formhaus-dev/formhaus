@@ -152,7 +152,7 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 
 @media (hover: hover) and (pointer: fine) {
   .fh-field__input:hover:not(:disabled, :focus, [aria-invalid="true"]) { border-color: var(--fh-color-border-hover); }
-  :is(.fh-field__input--select, .fh-field__input--date, .fh-field__input--datetime):not(:disabled) { cursor: pointer; }
+  :is(.fh-field__input--select, .fh-field__input--date, .fh-field__input--datetime, .fh-field__input--time):not(:disabled) { cursor: pointer; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):hover:not(:has(:checked, :disabled)) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
   :is(.fh-field__checkbox-wrapper, .fh-field__radio-option, .fh-field__multiselect-option):hover :is(.fh-field__radio, .fh-field__checkbox):not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-control-hover); }
   .fh-field__switch-wrapper:hover .fh-field__switch:not(:disabled) { background-color: var(--fh-color-border-hover); }

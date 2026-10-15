@@ -12,6 +12,8 @@ export { default as SwitchField } from './fields/SwitchField.vue';
 export { default as FileField } from './fields/FileField.vue';
 export { default as DateField } from './fields/DateField.vue';
 export { default as DateTimeField } from './fields/DateTimeField.vue';
+export { default as TimeField } from './fields/TimeField.vue';
+export { default as HiddenField } from './fields/HiddenField.vue';
 export { default as AutocompleteField } from './fields/AutocompleteField.vue';
 export { default as MultiselectField } from './fields/MultiselectField.vue';
 export { useFormEngine } from './composables/useFormEngine';

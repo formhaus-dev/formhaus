@@ -2,7 +2,7 @@ import type { FormField } from '../types';
 import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
-export const BUILT_IN_TYPES = ['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'multiselect', 'checkbox', 'radio', 'switch', 'file', 'date', 'datetime', 'textarea'];
+export const BUILT_IN_TYPES = ['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'multiselect', 'checkbox', 'radio', 'switch', 'file', 'date', 'datetime', 'time', 'textarea', 'hidden'];
 
 export const MAX_STRING_LENGTH = 10000;
 const MAX_EMAIL_LENGTH = 254;
@@ -11,12 +11,15 @@ const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 const DATE = '\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])';
 const DATE_ONLY = new RegExp(`^${DATE}$`);
-const DATE_TIME = new RegExp(`^${DATE}T(?:[01]\\d|2[0-3]):[0-5]\\d(?::[0-5]\\d(?:\\.\\d{1,3})?)?(?:Z|[+-](?:[01]\\d|2[0-3]):[0-5]\\d)?$`);
-const TEXT_TYPES = new Set(['text', 'phone', 'password', 'textarea', 'autocomplete']);
+const HOURS = '(?:[01]\\d|2[0-3]):[0-5]\\d';
+const DATE_TIME = new RegExp(`^${DATE}T${HOURS}(?::[0-5]\\d(?:\\.\\d{1,3})?)?(?:Z|[+-]${HOURS})?$`);
+const TIME = new RegExp(`^${HOURS}(?::[0-5]\\d)?$`);
+const TEXT_TYPES = new Set(['text', 'phone', 'password', 'textarea', 'autocomplete', 'hidden']);
 const FORMATS = new Map<string, [RegExp, MessageKey, number]>([
   ['email', [EMAIL, 'email', MAX_EMAIL_LENGTH]],
   ['date', [DATE_ONLY, 'date', MAX_STRING_LENGTH]],
   ['datetime', [DATE_TIME, 'datetime', MAX_STRING_LENGTH]],
+  ['time', [TIME, 'time', MAX_STRING_LENGTH]],
 ]);
 
 type Fail = (key: MessageKey, params?: Record<string, unknown>) => string;
@@ -66,7 +69,7 @@ function stringError(field: FormField, value: unknown, key: MessageKey, fail: Fa
 
 function formatError(field: FormField, value: unknown, [format, key, max]: [RegExp, MessageKey, number], fail: Fail): string | null {
   if (typeof value !== 'string') return fail(key);
-  return lengthError(field, value, fail) ?? (value.length <= max && format.test(value) && (format === EMAIL || isCalendarDate(value)) ? null : fail(key));
+  return lengthError(field, value, fail) ?? (value.length <= max && format.test(value) && (format === EMAIL || format === TIME || isCalendarDate(value)) ? null : fail(key));
 }
 
 function primitiveError(field: FormField, value: unknown, fail: Fail): string | null {
@@ -99,7 +102,7 @@ export function typeMessageKeys(field: FormField): MessageKey[] {
   if (format) return [format, 'maxLength'];
   if (field.type === 'file') return ['file', 'maxLength'];
   if (field.type === 'select' || field.type === 'radio') return ['option', 'maxLength'];
-  return [TEXT_TYPES.has(field.type) ? 'string' : 'value', 'maxLength'];
+  return [TEXT_TYPES.has(field.type) ? 'string' : 'value', 'maxLength', ...(field.type === 'hidden' ? ['hidden' as const] : [])];
 }
 
 export function clientTypeError(field: FormField, value: unknown, resolve?: ResolveMessage): string | null {

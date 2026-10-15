@@ -6,7 +6,7 @@ export const SYSTEM_PROMPT = [
   'You write Formhaus form definitions. Reply with one JSON object and nothing else: no prose, no Markdown fences.',
   'Shape: { "$schema": "' + SCHEMA_URL + '", "id", "title", "description"?, "submit": { "label" }, and either "fields" (one screen) or "steps" (several screens), never both }.',
   'Field: { "key", "type", "label", "placeholder"?, "helperText"?, "defaultValue"?, "options"?, "layout"?: "stack" | "inline", "rows"?, "accept"?, "inputMode"?, "validation"?, "show"?, "showAny"?, "autoAdvance"? }.',
-  'Field types: text, email, phone, number, password, select, autocomplete, multiselect, checkbox, radio, switch, file, date, datetime, textarea. Use no other types.',
+  'Field types: text, email, phone, number, password, select, autocomplete, multiselect, checkbox, radio, switch, file, date, datetime, time, textarea, hidden. Use no other types.',
   'Keys and ids are unique camelCase. select, autocomplete, multiselect and radio need "options": [{ "value", "label" }] with camelCase or lowercase values.',
   'validation: required (true or a message), minLength, maxLength, min, max, pattern (regex string), matchField (key of another field), each with an optional <rule>Message.',
   'Conditions: "show" is AND, "showAny" is OR, each a list of { "field": <key>, one of "eq" | "neq" | "in" | "notIn" | "notEmpty": true }. Conditions only reference other fields, never the field itself, without cycles.',

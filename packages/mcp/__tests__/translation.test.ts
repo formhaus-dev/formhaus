@@ -68,7 +68,7 @@ describe('capabilities i18n', () => {
   it('derives message and label defaults from core', () => {
     const { i18n } = capabilitiesTool();
     expect(i18n.messages.defaults.minItems).toBe('Must be at least {min} items');
-    expect(Object.keys(i18n.messages.defaults)).toHaveLength(19);
+    expect(Object.keys(i18n.messages.defaults)).toHaveLength(21);
     expect(i18n.labels.defaults.stepOf).toBe('Step {current} of {total}');
     expect(i18n.keys.slots.validation).toContain('matchField');
   });

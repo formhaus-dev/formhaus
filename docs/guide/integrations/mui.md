@@ -21,7 +21,7 @@ npm install @formhaus/core @formhaus/react @mui/material @emotion/react @emotion
 
 ## Text field
 
-One renderer covers text, email, phone, number, password, date and datetime fields:
+One renderer covers text, email, phone, number, password, date, datetime and time fields:
 
 <<< @/../examples/react-mui/src/fields/TextField.tsx
 
