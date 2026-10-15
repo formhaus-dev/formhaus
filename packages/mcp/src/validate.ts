@@ -1,4 +1,5 @@
 import { checkDefinition, type FormDefinition, type FormEngine } from '@formhaus/core';
+import { fixAll, suggestFixes, type AppliedFix } from '@formhaus/core/fix';
 import { checkTranslations } from '@formhaus/core/i18n';
 import { parseDefinition } from './definition-input';
 import { createEngine } from './engine';
@@ -34,7 +35,7 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   const parsed = parseDefinition(input);
   if (!parsed.ok) return { report: finish([issue('invalid-json', 'error', '', parsed.error.replace(/\.$/, ''))]) };
   const definition = parsed.value as unknown as FormDefinition;
-  const checked = checkDefinition(definition, { validators: {} });
+  const checked = suggestFixes(definition, checkDefinition(definition, { validators: {} }));
   const found = schemaIssues(parsed.value);
   const core = fromCore(
     checked.some(({ severity }) => severity === 'error') ? checked : [...checked, ...checkTranslations(definition)],
@@ -52,4 +53,17 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
 
 export function validateDefinitionTool(input: { definition: unknown }): ValidationReport {
   return inspectDefinition(input.definition).report;
+}
+
+export interface FixReport extends ValidationReport {
+  definition?: Record<string, unknown>;
+  applied: Pick<AppliedFix, 'code' | 'path' | 'title'>[];
+}
+
+export function fixDefinitionTool(input: { definition: unknown }): FixReport {
+  const parsed = parseDefinition(input.definition);
+  if (!parsed.ok) return { ...inspectDefinition(input.definition).report, applied: [] };
+  const fixed = fixAll(parsed.value);
+  const report = inspectDefinition(fixed.definition).report;
+  return { ...report, definition: fixed.definition, applied: fixed.applied.map(({ code, path, title }) => ({ code, path, title })) };
 }

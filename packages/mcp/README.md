@@ -4,7 +4,7 @@
 
 MCP server that lets AI agents check [Formhaus](https://github.com/ignsm/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later. The checks need no account or key.
 
-`validate_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
+`validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
 
 ## Setup
 
@@ -40,7 +40,8 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 
 | Tool | Input | Output |
 |------|-------|--------|
-| `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
+| `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message`, `hint` and, when a repair is known, `fixes` (`{ title, safe, patch }` with an RFC 6902 JSON Patch) |
+| `fix_definition` | `definition` (object or JSON string) | `{ definition, applied, valid, issues }`: the definition with every safe fix applied, the fixes applied and the issues left |
 | `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) and `overlay` | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues`. Group item fields appear as paths such as `participants.0.email` |
 | `capabilities` | none | Field types, sections, repeatable groups, field props, validation rules, condition operators, step and route semantics, translation catalogs, keys and overlay addresses, adapters |
 | `translation_template` | `definition`, `lang`, optional `prefix` | `overlay` skeleton with the source texts, suggested `file` name and `slots` with address, key, placeholders and hash |

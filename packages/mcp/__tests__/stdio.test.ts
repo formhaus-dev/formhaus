@@ -23,6 +23,7 @@ describe('formhaus-mcp over stdio', () => {
     expect(tools.map(({ name }) => name).sort()).toEqual([
       'capabilities',
       'example_definitions',
+      'fix_definition',
       'get_submissions',
       'get_webhook',
       'list_forms',
@@ -49,6 +50,13 @@ describe('formhaus-mcp over stdio', () => {
   it('returns structured content from validate_definition', async () => {
     const result = await client.callTool({ name: 'validate_definition', arguments: { definition: linear } });
     expect(result.structuredContent).toEqual({ valid: true, issues: [] });
+  });
+
+  it('returns the repaired definition from fix_definition', async () => {
+    const { submit: _, ...definition } = linear;
+    const result = await client.callTool({ name: 'fix_definition', arguments: { definition } });
+    expect(result.isError).toBeFalsy();
+    expect(result.structuredContent).toMatchObject({ valid: true, definition: { submit: { label: 'Submit' } } });
   });
 
   it('calls simulate_path', async () => {

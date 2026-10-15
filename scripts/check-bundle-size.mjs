@@ -31,6 +31,7 @@ async function bundleSize(pkg, entry, only, mode) {
       '@formhaus/core/cloud',
       '@formhaus/core/internal',
       '@formhaus/core/i18n',
+      '@formhaus/core/fix',
       '@formhaus/react',
       '@formhaus/vue',
       'react',

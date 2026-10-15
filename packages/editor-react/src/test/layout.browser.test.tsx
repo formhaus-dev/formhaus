@@ -17,12 +17,13 @@ describe('editor layout details', () => {
     cleanup();
   });
 
-  it('puts the first card 24px under the toolbar', async () => {
+  it('puts the first card 24px under the toolbar controls', async () => {
     await page.viewport(1440, 1000);
     renderEditor(fromDefinition(live));
     topBar().style.position = 'static';
     const card = document.querySelector('[class*="formHeader"]');
-    expect(card && Math.round(card.getBoundingClientRect().top - topBar().getBoundingClientRect().bottom)).toBe(24);
+    const controls = screen.getByRole('radiogroup', { name: 'Editor mode' }).getBoundingClientRect();
+    expect(card && Math.round(card.getBoundingClientRect().top - controls.bottom)).toBe(24);
   });
 
   it('shows an idle Publish as a calm muted button that still explains itself', async () => {

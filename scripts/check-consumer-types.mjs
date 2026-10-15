@@ -28,6 +28,7 @@ const files = {
 import { FormhausForm, CloudError } from '@formhaus/react/cloud';
 import { useLocalizedForm } from '@formhaus/react/i18n';
 import { localize, type Overlay } from '@formhaus/core/i18n';
+import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
@@ -39,6 +40,8 @@ export const views = [
 export const extras = [TextField, CloudError];
 const overlay: Overlay = { title: 'Kontakt' };
 export const localized = localize(definition, { overlay, lang: 'de' });
+const fixes: DefinitionFix[] = suggestFixes(definition).flatMap((issue) => issue.fixes ?? []);
+export const fixed = [fixes.reduce((current, fix) => applyFix(current, fix.patch), definition), fixAll(definition).definition];
 export function Localized() {
   const form = useLocalizedForm(definition, { translate: (key, params, fallback) => fallback, prefix: false });
   return <FormRenderer {...form} onSubmit={() => {}} />;

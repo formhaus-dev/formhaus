@@ -31,6 +31,10 @@
       "types": "./dist/i18n.d.ts",
       "default": "./dist/i18n.js"
     },
+    "./fix": {
+      "types": "./dist/fix.d.ts",
+      "import": "./dist/fix.js"
+    },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
     "./schema.json": "./schema/form-definition.schema.json",

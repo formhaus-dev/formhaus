@@ -6,6 +6,7 @@ export type DefinitionIssueCode =
   | 'fields-and-steps'
   | 'duplicate-step-id'
   | 'duplicate-key'
+  | 'duplicate-option-value'
   | 'reserved-key'
   | 'route-target'
   | 'unknown-field'

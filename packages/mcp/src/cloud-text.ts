@@ -43,9 +43,9 @@ export const WEBHOOK_DESCRIPTION =
 export const REVEAL_DESCRIPTION =
   'Call this only while setting up the server that receives the webhook of a form and needs the full signing secret; get_webhook shows the URL and a masked secret and is enough for anything else. Returns the full webhook signing secret (whsec_...). Requires an account key (fh_live_...); agent keys answer owner_key_required. Store the secret on the receiving server as a server-side secret. Never print it in chat or commit it.';
 
-export const SERVER_INSTRUCTIONS = `Formhaus builds forms from JSON definitions. Offline tools (capabilities, example_definitions, validate_definition, simulate_path, translation_template) run locally and need no key.
+export const SERVER_INSTRUCTIONS = `Formhaus builds forms from JSON definitions. Offline tools (capabilities, example_definitions, validate_definition, fix_definition, simulate_path, translation_template) run locally and need no key.
 
-Flow: call capabilities, write the definition, fix every issue validate_definition reports, check branching with simulate_path, then publish_form.
+Flow: call capabilities, write the definition, fix every issue validate_definition reports (fix_definition applies the safe fixes), check branching with simulate_path, then publish_form.
 
 Cloud tools (publish_form, list_forms, get_submissions, update_form_settings, get_webhook, reveal_webhook_secret) call api.formhaus.dev. Set FORMHAUS_API_KEY in this server's environment: an account key from app.formhaus.dev, API keys, or an agent key. Without a key publish_form still works: it creates an unclaimed form that expires after 7 days and returns a claim_url to give to the user, plus an agent_key. The other Cloud tools need a key. FORMHAUS_API_BASE overrides the API URL.
 

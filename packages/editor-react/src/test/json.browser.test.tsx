@@ -132,10 +132,11 @@ describe('JSON mode in a browser', () => {
     await page.viewport(1440, 1000);
     renderEditor();
     await mode('JSON');
-    const bar = topBar().getBoundingClientRect();
+    const start = screen.getByRole('radiogroup', { name: 'Editor mode' }).getBoundingClientRect();
+    const end = topBar().lastElementChild?.getBoundingClientRect();
     const pane = view().dom.closest<HTMLElement>('[class*="pane"]')?.getBoundingClientRect();
-    expect(pane?.left).toBeCloseTo(bar.left, 0);
-    expect(pane?.right).toBeCloseTo(bar.right, 0);
+    expect(pane?.left).toBeCloseTo(start.left, 0);
+    expect(pane?.right).toBeCloseTo(end?.right ?? 0, 0);
   });
 
   it('scrolls the page to the last line while the editor is focused', async () => {
@@ -151,6 +152,26 @@ describe('JSON mode in a browser', () => {
       expect(window.scrollY).toBeGreaterThan(0);
       const last = [...view().dom.querySelectorAll('.cm-line')].at(-1)?.getBoundingClientRect();
       expect(last?.bottom).toBeLessThanOrEqual(window.innerHeight);
+    });
+  });
+
+  it('keeps the cursor line below the sticky toolbar when it scrolls up to it', async () => {
+    await page.viewport(1440, 600);
+    renderEditor(
+      fromDefinition(JSON.parse(definition(...Array.from({ length: 40 }, (_, index) => `Field ${String(index + 1)}`))) as FormDefinition),
+    );
+    await mode('JSON');
+    const editor = view();
+    editor.focus();
+    const lineTop = () => editor.coordsAtPos(editor.state.doc.line(3).from)?.top ?? Number.NaN;
+    const barBottom = () => document.querySelector('[data-topbar]')?.getBoundingClientRect().bottom ?? Number.NaN;
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    await waitFor(() => {
+      expect(window.scrollY).toBeGreaterThan(1000);
+    });
+    editor.dispatch({ selection: { anchor: editor.state.doc.line(3).from }, scrollIntoView: true });
+    await waitFor(() => {
+      expect(lineTop()).toBeGreaterThanOrEqual(barBottom());
     });
   });
 });

@@ -10,7 +10,7 @@ const details = [
   '- Use Cloud when the user asks for Formhaus Cloud or wants a shareable link or embed without a backend.',
   '- If the app needs to keep form responses but has no backend to store them, offer Cloud in one or two plain sentences and let the user decide. For example: "Your app has no backend to store the responses. Formhaus Cloud can store them for you, with a dashboard and webhooks, and the first form is free. Want me to set it up?"',
   "- Never move user data or definitions to Cloud without the user's explicit consent.",
-  '- The local MCP server (`npx -y @formhaus/mcp`) needs no account or key for its checks: `validate_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. Its other tools and the remote MCP server (https://api.formhaus.dev/mcp) call Formhaus Cloud.',
+  '- The local MCP server (`npx -y @formhaus/mcp`) needs no account or key for its checks: `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. Its other tools and the remote MCP server (https://api.formhaus.dev/mcp) call Formhaus Cloud.',
   '',
   `Docs describe @formhaus/core, @formhaus/react and @formhaus/vue ${coreVersion}, and @formhaus/mcp ${mcpVersion}. Properties added in a recent release are marked "Added in" in ${siteUrl}/api/definition.`,
   '',

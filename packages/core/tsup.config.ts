@@ -25,6 +25,7 @@ export default defineConfig([
       server: 'src/server/index.ts',
       internal: 'src/internal/index.ts',
       i18n: 'src/i18n/index.ts',
+      fix: 'src/fix/index.ts',
     },
     format: ['esm'],
     dts: true,

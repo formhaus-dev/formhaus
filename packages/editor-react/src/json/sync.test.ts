@@ -1,5 +1,5 @@
 import { fromDefinition, toDefinition } from '@formhaus/builder';
-import type { FormDefinition } from '@formhaus/core';
+import { checkDefinition, type FormDefinition } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
 import { formatDefinition, parseJson, sameDefinition } from './sync';
 
@@ -29,7 +29,7 @@ describe('parseJson', () => {
 
   it('reports definition problems without failing', () => {
     const parsed = parseJson(JSON.stringify({ ...definition, fields: [...(definition.fields ?? []), ...(definition.fields ?? [])] }), load);
-    expect('problems' in parsed && parsed.problems.length).toBeGreaterThan(0);
+    expect('definition' in parsed && checkDefinition(parsed.definition).length).toBeGreaterThan(0);
   });
 });
 

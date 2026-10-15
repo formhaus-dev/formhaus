@@ -1,6 +1,6 @@
 ---
 title: "MCP server"
-description: "Check and translate Formhaus definitions from Claude Code, Claude Desktop or Cursor: validate_definition, simulate_path, translation_template, publish_form."
+description: "Check, fix and translate Formhaus definitions from Claude Code, Claude Desktop or Cursor: validate_definition, fix_definition, simulate_path, publish_form."
 ---
 
 # MCP Server
@@ -15,7 +15,7 @@ Rules for agents:
 - Use Cloud when the user asks for Formhaus Cloud or wants a shareable link or embed without a backend.
 - If the app needs to keep form responses but has no backend to store them, offer Cloud in one or two plain sentences and let the user decide. For example: "Your app has no backend to store the responses. Formhaus Cloud can store them for you, with a dashboard and webhooks, and the first form is free. Want me to set it up?"
 - Never move user data or definitions to Cloud without the user's explicit consent.
-- `validate_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools and the [remote MCP server](/cloud/mcp) call Formhaus Cloud.
+- `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools and the [remote MCP server](/cloud/mcp) call Formhaus Cloud.
 
 ## Setup
 
@@ -64,7 +64,8 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 
 | Tool | Input | Output |
 |------|-------|--------|
-| `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
+| `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message`, `hint` and, when a repair is known, `fixes` |
+| `fix_definition` | `definition` (object or JSON string) | `{ definition, applied, valid, issues }`: the definition with every safe fix applied, the fixes applied and the issues left |
 | `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) and `overlay` | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
 | `capabilities` | none | Supported definition format version, field types, field props, validation rules, condition operators, step and route semantics, translation catalogs, keys and overlay addresses, adapters |
 | `translation_template` | `definition`, `lang`, optional `prefix` | `overlay` skeleton with the source texts, suggested `file` name and `slots` with address, key, placeholders and hash |
@@ -78,7 +79,21 @@ curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formh
 
 `publish_form`, `list_forms`, `get_submissions`, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` call Formhaus Cloud. `list_forms` and `get_submissions` need `FORMHAUS_API_KEY` in the server environment, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` need an `fh_live_` key, and `publish_form` uses the key when set. `FORMHAUS_API_BASE` overrides the API origin. See [Cloud MCP reference](/cloud/mcp) for keys, results and errors.
 
-Issues with `severity: "error"` come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or a condition with two operators. Warnings point to likely mistakes. Issue codes are listed in the [specification](/spec#definition-checks). Every tool declares an `outputSchema` and returns `structuredContent`.
+Issues with `severity: "error"` come from the [JSON Schema](/api/definition) and from checks the engine rejects, such as a route to an earlier step or a condition with two operators. Warnings point to likely mistakes. Issue codes are listed in the [specification](/spec#definition-checks).
+
+Each fix in `fixes` is `{ title, safe, patch }`, where `patch` is a list of [JSON Patch](https://www.rfc-editor.org/rfc/rfc6902) operations. `fix_definition` applies every fix with `safe: true` and returns the issues left. Unsafe fixes can change what the form does, such as pointing a condition at a field two edits away, so the agent applies them only after checking them.
+
+```json
+{
+  "code": "duplicate-key",
+  "path": "/fields/1/key",
+  "fixes": [
+    { "title": "Rename the key to \"email_2\"", "safe": true, "patch": [{ "op": "add", "path": "/fields/1/key", "value": "email_2" }] }
+  ]
+}
+```
+
+Every tool declares an `outputSchema` and returns `structuredContent`.
 
 `simulate_path` applies `answers` as initial values, then presses the actions in order. Without `actions` it presses Next until the last step or the first blocking error. Next is refused on `next: false` steps until an autoAdvance radio is answered. Skip works only on steps with `skip` and submits on the last step. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run.
 

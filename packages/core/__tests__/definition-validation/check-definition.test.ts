@@ -48,6 +48,27 @@ describe('checkDefinition', () => {
     ]);
   });
 
+  it('rejects a repeated option value', () => {
+    const plan = {
+      key: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      options: [
+        { value: 'pro', label: 'Pro' },
+        { value: 'free', label: 'Free' },
+        { value: 'pro', label: 'Team' },
+      ],
+    } as FormField;
+    expect(checkDefinition(form([plan]))).toEqual([
+      {
+        code: 'duplicate-option-value',
+        severity: 'error',
+        path: '/fields/0/options/2/value',
+        message: '/fields/0/options/2/value: "pro" is already an option value.',
+      },
+    ]);
+  });
+
   it('rejects an invalid regex pattern', () => {
     expect(codes(form([text('code', { validation: { pattern: '[invalid(' } })]))).toEqual([
       'error invalid-pattern /fields/0/validation/pattern',

@@ -3,8 +3,10 @@ import { getNonce } from 'get-nonce';
 
 export interface JsonEditorHandle {
   setDoc: (text: string) => void;
+  getDoc: () => string;
   setError: (error: { message: string; from: number } | null) => void;
   focus: () => void;
+  select: (from: number, to: number) => void;
   destroy: () => void;
 }
 
@@ -50,9 +52,15 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
     '.cm-tooltip': { border: 'var(--fh-ed-border-thin) solid var(--fh-ed-line)', backgroundColor: 'var(--fh-ed-panel)' },
   });
   let muted = false;
-  const replace = (editor: EditorView, insert: string) => {
+  const replace = (editor: EditorView, text: string) => {
+    const current = editor.state.doc.toString();
+    let start = 0;
+    while (start < current.length && start < text.length && current[start] === text[start]) start++;
+    let end = 0;
+    while (end < current.length - start && end < text.length - start && current[current.length - 1 - end] === text[text.length - 1 - end])
+      end++;
     muted = true;
-    editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert } });
+    editor.dispatch({ changes: { from: start, to: current.length - end, insert: text.slice(start, text.length - end) } });
     muted = false;
   };
   const run = (action: () => void) => () => {
@@ -76,6 +84,10 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
         view.EditorView.cspNonce.of(getNonce() ?? ''),
         state.EditorState.readOnly.of(options.readOnly),
         view.EditorView.contentAttributes.of({ 'aria-label': options.label }),
+        view.EditorView.scrollMargins.of((editor) => {
+          const bar = editor.dom.ownerDocument.querySelector('[data-topbar]');
+          return bar ? { top: Math.max(0, bar.getBoundingClientRect().bottom) + editor.defaultLineHeight } : null;
+        }),
         view.keymap.of([
           { key: 'Mod-z', run: run(options.onUndo), preventDefault: true },
           { key: 'Mod-Shift-z', run: run(options.onRedo), preventDefault: true },
@@ -94,12 +106,18 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
     setDoc: (text) => {
       if (text !== editor.state.doc.toString()) replace(editor, text);
     },
+    getDoc: () => editor.state.doc.toString(),
     setError: (error) => {
       const at = error ? Math.min(error.from, editor.state.doc.length) : 0;
       const diagnostics = error
         ? [{ from: at, to: Math.min(at + 1, editor.state.doc.length), severity: 'error' as const, message: error.message }]
         : [];
       editor.dispatch(lint.setDiagnostics(editor.state, diagnostics));
+    },
+    select: (from, to) => {
+      const end = editor.state.doc.length;
+      editor.dispatch({ selection: { anchor: Math.min(from, end), head: Math.min(to, end) }, scrollIntoView: true });
+      editor.focus();
     },
     focus: () => {
       editor.focus();
