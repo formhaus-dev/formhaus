@@ -39,7 +39,7 @@ All rules are optional. Combine them freely.
 
 `pattern` is not anchored: `[0-9]{5}` accepts `abc12345x`. Add `^` and `$` to match the whole value.
 
-`pattern` regexes run synchronously, with no time limit, in the browser and in self-hosted servers. Avoid patterns prone to catastrophic backtracking. On Formhaus Cloud, server-side validation is time-bounded.
+`pattern` regexes run synchronously, with no time limit, in the browser and in self-hosted servers. Avoid patterns prone to catastrophic backtracking; `checkDefinition()` warns about nested quantifiers such as `(a+)+` with `slow-pattern`. A value longer than 10,000 characters fails `pattern` without being matched. On Formhaus Cloud, server-side validation is time-bounded.
 
 Length, range, pattern, and matching rules have a corresponding `...Message` field. For `required`, pass the message directly: `required: "Please enter your name"`.
 

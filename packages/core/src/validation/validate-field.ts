@@ -1,7 +1,7 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
 import { messageResolver, namedResolver, type MessageSource, type ResolveMessage } from './default-messages';
-import { BOOLEAN_TYPES, clientTypeError, trimValue } from './type-checks';
+import { BOOLEAN_TYPES, clientTypeError, MAX_STRING_LENGTH, trimValue } from './type-checks';
 
 export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) => string | null;
 
@@ -25,7 +25,9 @@ function boundError(
 function patternError(value: unknown, rules: FieldValidation, message: () => string): string | undefined {
   if (rules.pattern === undefined) return undefined;
   try {
-    return new RegExp(rules.pattern).test(String(value)) ? undefined : (rules.patternMessage ?? message());
+    const pattern = new RegExp(rules.pattern);
+    const text = String(value);
+    return text.length <= MAX_STRING_LENGTH && pattern.test(text) ? undefined : (rules.patternMessage ?? message());
   } catch {
     return undefined;
   }
