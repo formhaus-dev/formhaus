@@ -41,9 +41,7 @@ jobs:
           pnpm --dir docs install --frozen-lockfile
 
       - name: Build
-        run: |
-          pnpm --filter "@formhaus/editor-react..." run build
-          pnpm --dir docs run build
+        run: pnpm --dir docs run build
 
       - name: Upload
         env:

@@ -4,6 +4,7 @@ import { transformPageData } from './templates'
 import { llms } from './llms'
 import { templateFiles } from './template-files'
 import { analyticsHead, copyHashmap, coreBudgetKB, head, ownHashmap, sharedDedupe, sharedPublic, sharedThemeConfig, siteUrl, transformHead } from '../../packages/site-theme/src/config'
+import { ownerOf } from '../../packages/site-theme/src/routes.js'
 import { sitemapCollector, writeOwnSitemap } from '../../packages/site-theme/src/sitemap.js'
 
 const shared = await sharedThemeConfig()
@@ -14,7 +15,6 @@ export default defineConfig({
     plugins: [llms, templateFiles(), sharedPublic(), ownHashmap()],
     resolve: {
       alias: {
-        '@formhaus/editor-react': fileURLToPath(new URL('../../packages/editor-react/dist', import.meta.url)),
         '@formhaus/site-theme': fileURLToPath(new URL('../../packages/site-theme/src/index.ts', import.meta.url))
       },
       dedupe: sharedDedupe
@@ -28,7 +28,7 @@ export default defineConfig({
   description: 'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
   lastUpdated: true,
   cleanUrls: true,
-  ignoreDeadLinks: [/^\/legal\//],
+  ignoreDeadLinks: [/^\/legal\//, (url) => url.startsWith('/') && ownerOf(url.split(/[?#]/)[0]) === 'marketing'],
   sitemap: { hostname: siteUrl, transformItems: sitemap.transformItems },
   head: [...head, ...analyticsHead('docs')],
   transformHead,
