@@ -681,7 +681,7 @@ const { definition: repaired, applied, issues: left } = fixAll(definition);
 |---|---|---|
 | `unknown-property` | Rename to the property in the hint, such as `imd` to `id` | yes |
 | `unknown-property` on a rule set on a field | Move the rule into `validation` | no, the rule starts to apply |
-| `missing-property` | Rename a misspelled property when there is one. Otherwise form or step `id` from the title, field `key` from the label, option `value` from its label, `submit` with the label `Submit`, step `fields` as an empty list | yes |
+| `missing-property` | Rename a misspelled property when there is one. Otherwise form or step `id` from the title (`my-form` or `step-2` without one), field `key` from the label (`field` without one), option `value` from its label, `submit` with the label `Submit`, step `fields` as an empty list | yes |
 | `missing-property` for a `label` | Field and option `label` from the key or value, action `label` from the default button text | yes, except `next` and `back` labels in a definition with `labels` or `lang`, and `cancel` |
 | `empty-label` | Field `label` from the key, such as `First name` for `firstName` | yes |
 | `duplicate-key` | Rename the later key with `_2`, `_3` | when no condition, `matchField` or `optionsDependsOn` uses the key |

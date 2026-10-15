@@ -22,6 +22,14 @@ describe('suggestFixes', () => {
     ]);
   });
 
+  it('falls back to my-form, step-N and field for missing names', () => {
+    const { id: _, title: __, ...untitled } = form([text('a')]);
+    expect(fixesAt(untitled, '', 'missing-property')[0].title).toBe('Set the id to "my-form"');
+    const steps = { id: 'f', title: 'F', submit: { label: 'Go' }, steps: [{ id: 'step-2', fields: [text('a')] }, { fields: [text('b')] }] };
+    expect(fixesAt(steps, '/steps/1', 'missing-property')[0].title).toBe('Set the id to "step-2-2"');
+    expect(fixesAt(form([{ type: 'text' }]), '/fields/0', 'missing-property')[0].title).toBe('Set the key to "field"');
+  });
+
   it('adds a unique step id from the step title', () => {
     const definition = {
       id: 'f',

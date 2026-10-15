@@ -52,7 +52,7 @@ function missing(definition: Entry, issue: DefinitionIssue, issues: readonly Def
   if (typo) return [rename(typo.path, path)];
   if (name === 'submit' && owner === '') return [fix('Add a submit button labeled "Submit"', true, set(path, { label: 'Submit' }))];
   if (name === 'id' && (owner === '' || STEP.test(owner))) {
-    const id = unique(slug(target.title, owner ? `step-${Number(last(owner)) + 1}` : 'form'), owner ? stepIds(definition) : [], '-');
+    const id = unique(slug(target.title, owner ? `step-${Number(last(owner)) + 1}` : 'my-form'), owner ? stepIds(definition) : [], '-');
     return [fix(`Set the id to ${quote(id)}`, true, set(path, id))];
   }
   if (name === 'fields' && STEP.test(owner)) return [fix('Add an empty "fields" list', true, set(path, []))];
