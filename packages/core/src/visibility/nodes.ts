@@ -1,5 +1,5 @@
 import type { FormDefinition, FormField, FormGroup, FormNode, FormSection } from '../types';
-import { trimValue } from '../validation/type-checks';
+import { isPlainEntry, trimValue } from '../validation/type-checks';
 import { isVisible } from './is-visible';
 
 type Values = Record<string, unknown>;
@@ -41,6 +41,7 @@ export function itemScope(group: FormGroup, item: unknown, values: Values): Valu
 export function cleanItems(group: FormGroup, value: unknown, values: Values): unknown {
   if (!Array.isArray(value)) return value;
   return value.map((item) => {
+    if (!isPlainEntry(item)) return item;
     const scope = itemScope(group, item, values);
     const result: Values = {};
     for (const field of group.fields) {

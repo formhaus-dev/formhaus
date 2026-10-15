@@ -1,12 +1,12 @@
-import { isGroup, isSection, type FormField, type FormNode } from '@formhaus/core';
-import { fieldDomId } from '@formhaus/core/internal';
-import { memo, useMemo, type ComponentType } from 'react';
+import { isGroup, isSection, type FormNode } from '@formhaus/core';
+import { fieldDomId, optionSources, providedOptions } from '@formhaus/core/internal';
+import { memo, useMemo } from 'react';
 import { DefaultSection } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { FormGroupController } from './FormGroupController';
 import { useFormSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
 import { useFieldOptions } from './hooks/useFieldOptions';
-import type { FormRendererProps, OptionsProvider, SectionComponentProps } from './types';
+import type { FormRendererProps, OptionsProvider } from './types';
 
 interface FormFieldsControllerProps extends ControllerProps {
   loading: boolean;
@@ -26,20 +26,9 @@ export const FormFieldsController = memo(function FormFieldsController({
   useStructureSnapshot(engine);
   useFormSnapshot(engine);
   const fields = engine.visibleFields;
-  const optionFields = useMemo(
-    (): FormField[] => fields.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])),
-    [fields],
-  );
-  const loaded = useFieldOptions(optionFields, engine, optionsProviders);
-  const resolvedOptions = useMemo(
-    () =>
-      Object.fromEntries(
-        optionFields.flatMap((field) =>
-          field.optionsFrom && optionsProviders?.[field.optionsFrom] && loaded[field.key] ? [[field.key, loaded[field.key]]] : [],
-        ),
-      ),
-    [optionFields, optionsProviders, loaded],
-  );
+  const sources = useMemo(() => optionSources(fields), [fields]);
+  const loaded = useFieldOptions(sources, engine, optionsProviders);
+  const resolvedOptions = useMemo(() => providedOptions(sources, optionsProviders, loaded), [sources, optionsProviders, loaded]);
   const disabled = loading || engine.stepValidating || engine.submitting;
 
   const render = (node: FormNode) => {
@@ -66,7 +55,7 @@ export const FormFieldsController = memo(function FormFieldsController({
         />
       );
     const id = fieldDomId(formId, node.key, engine.definition);
-    const Section = (props.components?.section ?? DefaultSection) as ComponentType<SectionComponentProps>;
+    const Section = props.components?.section ?? DefaultSection;
     return (
       <Section
         key={node.key}

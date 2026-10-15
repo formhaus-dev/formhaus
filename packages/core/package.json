@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/core",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "JSON form definition engine: validation, conditional visibility, multi-step and branching routes. Zero dependencies, works in React, Vue, Svelte or vanilla.",
   "type": "module",
   "sideEffects": [
@@ -33,7 +33,7 @@
     },
     "./fix": {
       "types": "./dist/fix.d.ts",
-      "import": "./dist/fix.js"
+      "default": "./dist/fix.js"
     },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
