@@ -61,6 +61,14 @@ interface DefinitionIssue {
 
 `path` is a JSON pointer to the node, such as `/steps/0/routes/1/show/0/field`. `message` has the form `<path>: <what is wrong>. <how to fix>.` and `hint` holds the fix part. The codes are listed in the [specification](/spec#definition-checks).
 
+`@formhaus/core/fix` repairs definitions. The main entry does not include it. See [fixes](/spec#fixes) for the list.
+
+| Function | Returns | Description |
+|---|---|---|
+| `suggestFixes(definition, issues?)` | `FixableIssue[]` | The issues with `fixes: { title, safe, patch }[]` where a repair is known. `patch` is an RFC 6902 JSON Patch |
+| `applyFix(definition, patch)` | definition | A new definition with the patch applied. Throws when a path does not exist |
+| `fixAll(definition)` | `{ definition, applied, issues }` | Applies every safe fix and returns the issues left |
+
 ## State
 
 All state properties are read-only. Change values with `setValue()` and errors with `setErrors()`.

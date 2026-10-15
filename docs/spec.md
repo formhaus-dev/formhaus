@@ -637,6 +637,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `condition-cycle` | error | Show conditions that depend on each other in a cycle |
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
+| `duplicate-option-value` | error | An option value that an earlier option of the same field already uses |
 | `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, or `defaultItems` greater than `maxLength` |
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
@@ -659,6 +660,40 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 `checkTranslations(definition)` from `@formhaus/core/i18n` checks `lang`, `messages`, `labels` and `i18n`: it reports `invalid-type` for a value that is not a non-empty string and the translation codes above. `checkDefinition()` and the `FormEngine` constructor do not run it.
 
 `parseDefinition(input)` returns the input typed as a definition, or throws a `FormDefinitionError` with the errors.
+
+### Fixes
+
+`@formhaus/core/fix` turns issues into repairs. The main entry does not include it.
+
+```ts
+import { applyFix, fixAll, suggestFixes } from '@formhaus/core/fix';
+
+const issues = suggestFixes(definition);
+const fixed = applyFix(definition, issues[0].fixes[0].patch);
+const { definition: repaired, applied, issues: left } = fixAll(definition);
+```
+
+`suggestFixes(definition, issues?)` returns the issues of `checkDefinition()`, or the issues you pass, with `fixes` on the issues it can repair. Each fix is `{ title, safe, patch }`. `patch` is a list of [JSON Patch](https://www.rfc-editor.org/rfc/rfc6902) operations: `add`, `replace`, `remove` and `move`. A fix with `safe: true` repairs the issue and changes nothing else.
+
+`applyFix(definition, patch)` returns a new definition and leaves the input as is. It throws when a path does not exist or the patch has an unknown operation. `fixAll(definition)` applies safe fixes until none are left and returns the definition, the `applied` fixes and the remaining `issues`.
+
+| Code | Fix | Safe |
+|---|---|---|
+| `unknown-property` | Rename to the property in the hint, such as `imd` to `id` | yes |
+| `unknown-property` on a rule set on a field | Move the rule into `validation` | no, the rule starts to apply |
+| `missing-property` | Rename a misspelled property when there is one. Otherwise form or step `id` from the title, field `key` from the label, option `value` from its label, `submit` with the label `Submit`, step `fields` as an empty list | yes |
+| `missing-property` for a `label` | Field and option `label` from the key or value, action `label` from the default button text | yes, except `next` and `back` labels in a definition with `labels` or `lang`, and `cancel` |
+| `empty-label` | Field `label` from the key, such as `First name` for `firstName` | yes |
+| `duplicate-key` | Rename the later key with `_2`, `_3` | when no condition, `matchField` or `optionsDependsOn` uses the key |
+| `duplicate-option-value` | Change the later value with `_2`, `_3` | when no condition and no `defaultValue` uses the value |
+| `duplicate-step-id` | Rename the later id with `-2`, `-3` | when no route targets the id |
+| `invalid-type` on `formatVersion` | Set `formatVersion` to the current version | when the major version matches, such as `1` or `"v1"` |
+| `unsupported-format-version` | Set `formatVersion` to the current version | no |
+| `unknown-field`, `route-target` | Use the closest field key or step id the reference may point to | when it is the only name within one edit (insertion, deletion, substitution or swap of adjacent letters, ignoring case) and no other name is within two edits |
+| `unknown-field-type`, `unknown-operator` | Use the closest existing name | no |
+| `invalid-range` | Swap the two bounds | no |
+
+Other codes, such as `invalid-pattern` and `condition-cycle`, have no fix.
 
 ## JSON Schema
 
