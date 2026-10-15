@@ -148,7 +148,7 @@
       }
     },
     {
-      "name": "an empty array is blank only for multiselect",
+      "name": "an empty array is blank for every type",
       "input": {
         "values": {
           "tags": [],
@@ -163,10 +163,7 @@
           "color": [],
           "agree": []
         },
-        "errors": {
-          "color": "Select one of the available options",
-          "agree": "Must be true or false"
-        }
+        "errors": {}
       }
     },
     {

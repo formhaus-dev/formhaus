@@ -209,7 +209,7 @@
       }
     },
     {
-      "name": "null is blank and an empty array is a type error",
+      "name": "null and an empty array are blank",
       "input": {
         "values": {
           "name": null,
@@ -224,7 +224,7 @@
         },
         "errors": {
           "name": "This field is required",
-          "email": "Enter a valid email"
+          "email": "This field is required"
         }
       }
     },

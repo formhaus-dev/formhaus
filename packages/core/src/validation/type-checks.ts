@@ -73,12 +73,12 @@ function primitiveError(field: FormField, value: unknown, fail: Fail): string | 
   return stringError(field, value, 'value', fail);
 }
 
-function isBlank(field: FormField, value: unknown): boolean {
-  return value == null || value === '' || (field.type === 'multiselect' && Array.isArray(value) && !value.length);
+function isBlank(value: unknown): boolean {
+  return value == null || value === '' || (Array.isArray(value) && !value.length);
 }
 
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {
-  if (isBlank(field, value)) return null;
+  if (isBlank(value)) return null;
   const fail: Fail = (key, params = {}) => resolve(key, params, field);
   if (BOOLEAN_TYPES.includes(field.type)) return typeof value === 'boolean' ? null : fail('boolean');
   if (field.type === 'number') return typeof value === 'number' && Number.isFinite(value) ? null : fail('number');

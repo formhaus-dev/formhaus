@@ -32,6 +32,16 @@ describe('client type checks', () => {
     expect(validateFieldValue(field(type), value, {})).toBeNull();
   });
 
+  it.each(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'radio', 'switch', 'date', 'datetime', 'textarea'])('treats an empty list in a %s field as empty on the server', (type) => {
+    const options = [{ value: 'a', label: 'A' }];
+    const optional = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [field(type, { options })] };
+    expect(validateSubmission(optional, { x: [] }).errors).toEqual({});
+    expect(new FormEngine(optional, { x: [] }).validate()).toEqual({});
+    const required = { ...optional, fields: [field(type, { options, validation: { required: true } })] };
+    expect(validateSubmission(required, { x: [] }).errors).toEqual({ x: 'This field is required' });
+    expect(new FormEngine(required, { x: [] }).validate()).toEqual({ x: 'This field is required' });
+  });
+
   it('checks static options but not options loaded from a provider', () => {
     const options = [{ value: 'a', label: 'A' }];
     expect(validateFieldValue(field('select', { options }), 'z', {})).toBe('Select one of the available options');
