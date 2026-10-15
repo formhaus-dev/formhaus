@@ -18,6 +18,11 @@
   padding-block: var(--fh-ed-space-2);
 }
 
+.hidden {
+  border-style: dashed;
+  color: var(--fh-ed-fg-muted);
+}
+
 .placeholder {
   color: var(--fh-ed-fg-subtle);
   overflow-wrap: anywhere;
