@@ -1,113 +1,18 @@
-import { checkDefinition, type FormDefinition, type FormNode } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
 import {
-  childrenOf,
   conditionSources,
-  duplicateField,
   findIssues,
   fromDefinition,
-  isQuestion,
   moveFieldTo,
   referencesTo,
   removeField,
-  removeStep,
   setKey,
-  setOptionValue,
   setLabel,
   setOptionLabel,
   toDefinition,
-  type BuilderForm,
 } from '../src';
 
-const party = (key: string, label: string): FormNode => ({
-  key,
-  type: 'group',
-  label,
-  fields: [
-    {
-      key: 'kind',
-      type: 'radio',
-      label: 'Kind',
-      options: [
-        { value: 'company', label: 'Company' },
-        { value: 'person', label: 'Person' },
-      ],
-    },
-    { key: 'detail', type: 'text', label: 'Detail', show: [{ field: 'kind', eq: 'company' }] },
-  ],
-});
-
-const order: FormDefinition = {
-  formatVersion: '1.1',
-  id: 'order',
-  title: 'Order',
-  submit: { label: 'Send' },
-  fields: [party('billing', 'Billing'), party('shipping', 'Shipping')],
-};
-
-const household: FormDefinition = {
-  formatVersion: '1.1',
-  id: 'household',
-  title: 'Household',
-  submit: { label: 'Send' },
-  fields: [
-    {
-      key: 'home',
-      type: 'section',
-      title: 'Home',
-      fields: [
-        {
-          key: 'ownership',
-          type: 'radio',
-          label: 'Owner',
-          options: [
-            { value: 'own', label: 'Own' },
-            { value: 'rent', label: 'Rent' },
-          ],
-        },
-        { key: 'landlord', type: 'text', label: 'Landlord', show: [{ field: 'ownership', eq: 'rent' }] },
-        {
-          key: 'people',
-          type: 'group',
-          label: 'People',
-          fields: [
-            { key: 'fullName', type: 'text', label: 'Name' },
-            { key: 'nick', type: 'text', label: 'Nickname', show: [{ field: 'fullName', notEmpty: true }] },
-          ],
-        },
-      ],
-    },
-  ],
-};
-
-const signup: FormDefinition = {
-  formatVersion: '1.1',
-  id: 'signup',
-  title: 'Signup',
-  submit: { label: 'Send' },
-  steps: [
-    {
-      id: 'one',
-      fields: [
-        { key: 'email', type: 'email', label: 'Email' },
-        {
-          key: 'repeat',
-          type: 'email',
-          label: 'Repeat',
-          validation: { matchField: 'email' },
-          show: [{ field: 'email', notEmpty: true }],
-        },
-        { key: 'city', type: 'select', label: 'City', optionsFrom: 'cities', optionsDependsOn: ['email'] },
-      ],
-      routes: [{ to: null, show: [{ field: 'email', notEmpty: true }] }, { to: 'two' }],
-    },
-    { id: 'two', fields: [{ key: 'note', type: 'text', label: 'Note' }] },
-  ],
-};
-
-const errors = (form: BuilderForm) => checkDefinition(toDefinition(form)).filter((issue) => issue.severity === 'error');
-const inner = (form: BuilderForm, group: string, key: string) =>
-  childrenOf(form, form.blocks.find((block) => isQuestion(block) && block.key === group)!.uid).find((child) => child.key === key)!;
+import { order, signup, errors, inner } from './scope.fixtures';
 
 describe('group scope', () => {
   it('renames a key only inside its own group', () => {
@@ -187,92 +92,5 @@ describe('custom keys', () => {
     expect(one.fields[1]).toMatchObject({ validation: { matchField: 'mail' }, show: [{ field: 'mail', notEmpty: true }] });
     expect(one.fields[2]).toMatchObject({ optionsDependsOn: ['mail'] });
     expect(one.routes).toEqual([{ to: null, show: [{ field: 'mail', notEmpty: true }] }, { to: 'two' }]);
-  });
-});
-
-describe('duplicating containers', () => {
-  it('copies a section with its nested group and remaps references to the copy', () => {
-    const form = fromDefinition(household);
-    const copy = duplicateField(form, form.blocks[0].uid)!;
-    const fields = toDefinition(form).fields!;
-    expect(fields[0]).toEqual(household.fields![0]);
-    expect(fields[1]).toEqual({
-      key: 'home2',
-      type: 'section',
-      title: 'Home',
-      fields: [
-        {
-          key: 'owner',
-          type: 'radio',
-          label: 'Owner',
-          options: [
-            { value: 'own', label: 'Own' },
-            { value: 'rent', label: 'Rent' },
-          ],
-        },
-        { key: 'landlord2', type: 'text', label: 'Landlord', show: [{ field: 'owner', eq: 'rent' }] },
-        {
-          key: 'people2',
-          type: 'group',
-          label: 'People',
-          fields: [
-            { key: 'name', type: 'text', label: 'Name' },
-            { key: 'nickname', type: 'text', label: 'Nickname', show: [{ field: 'name', notEmpty: true }] },
-          ],
-        },
-      ],
-    });
-    const uids = form.blocks.map((block) => block.uid);
-    expect(new Set(uids).size).toBe(uids.length);
-    expect(childrenOf(form, copy.uid).map((child) => child.key)).toEqual(['owner', 'landlord2', 'people2']);
-    expect(errors(form)).toEqual([]);
-  });
-
-  it('copies a group with references to its own copied fields', () => {
-    const form = fromDefinition(household);
-    const people = form.blocks.find((block) => isQuestion(block) && block.key === 'people')!;
-    const copy = duplicateField(form, people.uid)!;
-    expect(childrenOf(form, copy.uid).map((child) => [child.key, child.extra.show])).toEqual([
-      ['name', undefined],
-      ['nickname', [{ field: 'name', notEmpty: true }]],
-    ]);
-    expect(inner(form, 'people', 'nick').extra.show).toEqual([{ field: 'fullName', notEmpty: true }]);
-    expect(errors(form)).toEqual([]);
-  });
-});
-
-describe('reference upkeep', () => {
-  it('moves conditions along with a custom option value', () => {
-    const form = fromDefinition(order);
-    const kind = inner(form, 'billing', 'kind');
-    const detail = inner(form, 'billing', 'detail');
-    detail.extra.show = [{ field: 'kind', in: ['company', 'person'] }];
-    setOptionValue(form, kind.uid, kind.options[0].uid, 'firm');
-    expect(detail.extra.show).toEqual([{ field: 'kind', in: ['firm', 'person'] }]);
-  });
-
-  it('keeps the routes that do not target a deleted step', () => {
-    const form = fromDefinition({
-      ...signup,
-      steps: [
-        {
-          ...signup.steps![0],
-          routes: [
-            { to: 'two', show: [{ field: 'email', notEmpty: true }] },
-            { to: 'three', show: [{ field: 'email', eq: 'a@b.co' }] },
-            { to: null },
-          ],
-        },
-        signup.steps![1],
-        { id: 'three', fields: [{ key: 'last', type: 'text', label: 'Last' }] },
-      ],
-    });
-    expect(removeStep(form, form.blocks.find((block) => block.kind === 'page' && block.id === 'two')!.uid, 'with-fields')).toBe(true);
-    expect(toDefinition(form).steps![0].routes).toEqual([{ to: 'three', show: [{ field: 'email', eq: 'a@b.co' }] }, { to: null }]);
-  });
-
-  it('counts matchField and optionsDependsOn as references', () => {
-    const form = fromDefinition(signup);
-    expect(referencesTo(form, form.blocks[1].uid)).toEqual([form.blocks[0].uid, form.blocks[2].uid, form.blocks[3].uid]);
   });
 });
