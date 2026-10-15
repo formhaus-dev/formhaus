@@ -50,3 +50,18 @@ export function splitPath(group: string, key: string): [number, string] | undefi
   const match = /^(0|[1-9]\d*)\.(.+)$/.exec(rest);
   return match ? [Number(match[1]), match[2]] : undefined;
 }
+
+const ids = new WeakMap<object, string>();
+let lastId = 0;
+
+export function itemId(item: unknown, index: number): string {
+  if (!isEntry(item)) return `${index}`;
+  let id = ids.get(item);
+  if (id === undefined) ids.set(item, (id = `i${++lastId}`));
+  return id;
+}
+
+export function keepId<T extends object>(from: unknown, to: T): T {
+  ids.set(to, itemId(from, 0));
+  return to;
+}
