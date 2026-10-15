@@ -41,13 +41,13 @@ function Blocked({ onShowIssues }: { onShowIssues: () => void }) {
     <Banner
       tone="warning"
       title="The preview can’t show this form yet"
-      action={
-        <span className={styles.actions}>
+      footer={
+        <>
           <Button variant="primary" onClick={onShowIssues}>
             Show issues ({issues.length})
           </Button>
           <FixAllButton issues={issues} tools={readOnly ? null : tools} onApply={replace} />
-        </span>
+        </>
       }
     >
       Fix the issues first.

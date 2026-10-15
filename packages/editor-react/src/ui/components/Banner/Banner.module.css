@@ -55,3 +55,18 @@
   display: flex;
   gap: var(--fh-ed-space-2);
 }
+
+.stacked {
+  align-items: flex-start;
+}
+
+.stacked .icon {
+  margin-top: calc((1lh - var(--fh-ed-size-icon-md)) / 2);
+}
+
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fh-ed-space-2);
+  margin-top: var(--fh-ed-space-2-5);
+}
