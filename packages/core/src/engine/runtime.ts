@@ -27,6 +27,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly skipped = new Map<string, string[]>();
   private validationEpoch = 0;
   private operationEpoch = 0;
+  private latestOperation = 0;
   private readonly lifecycle: FormEngineOptions;
 
   private readonly validators: Record<string, ValidatorFn>;
@@ -87,7 +88,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   get stepErrors(): Record<string, string[]> {
-    const result: Record<string, string[]> = {};
+    const result: Record<string, string[]> = Object.create(null);
     for (const step of this.visibleSteps) {
       const keys = step.fields.map((field) => field.key).filter((key) => this.errors[key] !== undefined);
       if (keys.length > 0) result[step.id] = keys;

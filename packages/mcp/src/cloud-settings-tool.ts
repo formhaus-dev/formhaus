@@ -4,7 +4,7 @@ import { cloudRequest } from './cloud-client';
 import { result } from './cloud-result';
 import { REVEAL_DESCRIPTION, SETTINGS_DESCRIPTION, WEBHOOK_DESCRIPTION } from './cloud-text';
 import { isRecord } from './definition-input';
-import { cloudOutput } from './outputs';
+import { cloudOutput, revealOutput } from './outputs';
 
 export function registerSettingsTool(server: McpServer): void {
   server.registerTool('update_form_settings', {
@@ -40,7 +40,7 @@ export function registerSettingsTool(server: McpServer): void {
     title: 'Reveal the webhook signing secret',
     description: REVEAL_DESCRIPTION,
     inputSchema: { form_id: z.string().describe('The form_id returned by publish_form or list_forms.') },
-    outputSchema: { ...cloudOutput, webhook_secret: z.string().optional() },
+    outputSchema: revealOutput,
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: true },
   }, async ({ form_id }) => {
     const webhook = await cloudRequest(`/v1/forms/${encodeURIComponent(form_id)}/webhook?reveal=true`, { auth: 'required' });

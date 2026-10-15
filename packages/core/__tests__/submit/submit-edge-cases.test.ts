@@ -1,6 +1,6 @@
 import { expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src';
-import { flatApi, valid } from './flat-api.fixtures';
+import { deferred, flatApi, valid } from './flat-api.fixtures';
 
 const atLastStep = (options = {}) => {
   const engine = new FormEngine(flatApi, valid, options);
@@ -41,4 +41,29 @@ it('restores a skipped step when its rejection arrives after cancelPendingAction
   expect(engine.isStepSkipped('address')).toBe(false);
   expect(engine.values.postcode).toBe('10115');
   expect(engine.errors).toEqual({ postcode: 'Old' });
+});
+
+it.each([
+  ['rejection', { ok: false, errors: { name: 'Fresh' } }, { name: 'Fresh' }],
+  ['success', { ok: true }, {}],
+] as const)('keeps a newer %s when a cancelled skip settles late', async (_, fresh, errors) => {
+  const engine = new FormEngine({
+    id: 'stale-skip', title: 'Stale skip', submit: { label: 'Send' },
+    steps: [
+      { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+      { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
+    ],
+  }, { name: 'Ada', bio: 'Draft' });
+  engine.setErrors({ bio: 'Old' });
+  const response = deferred<{ ok: false; errors: Record<string, string> }>();
+  const pending = engine.skip(() => response.promise);
+  engine.cancelPendingActions();
+  expect(await engine.submit(() => fresh)).toBe(fresh.ok);
+  const values = { ...engine.values };
+  response.resolve({ ok: false, errors: { name: 'Stale' } });
+  expect(await pending).toBe(false);
+  expect(engine.values).toEqual(values);
+  expect(engine.errors).toEqual(errors);
+  engine.validate();
+  expect(engine.errors).toEqual(errors);
 });

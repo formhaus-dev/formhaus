@@ -83,3 +83,26 @@ it('keeps focus when a summary link points to a custom field without the id', as
   await new Promise((done) => setTimeout(done));
   expect(document.activeElement).toBe(link);
 });
+
+it('does not mark a step called constructor', async () => {
+  const reserved: FormDefinition = { id: 'reserved', title: '', submit: { label: 'Send' }, steps: [
+    { id: 'constructor', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }] },
+    { id: 'two', title: 'Two', fields: [{ key: 'b', type: 'text', label: 'B' }] },
+  ] };
+  render(<FormRenderer definition={reserved} onSubmit={() => {}} stepErrorMarks />);
+  const items = [...document.querySelectorAll('.fh-step-progress__step')];
+  expect(items.map((item) => item.textContent)).toEqual(['One', 'Two']);
+});
+
+it('focuses the field when a summary link is clicked on a single-step form', async () => {
+  const flat: FormDefinition = { id: 'flat', title: '', submit: { label: 'Send' }, fields: [
+    { key: 'first', type: 'text', label: 'First' }, { key: 'second', type: 'text', label: 'Second' },
+  ] };
+  render(<FormRenderer definition={flat} errorSummary onSubmit={() => ({ ok: false, errors: { first: 'Bad first', second: 'Bad second' } })} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+  const link = await screen.findByRole('link', { name: 'Second: Bad second' });
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /First/ })));
+  link.focus();
+  fireEvent.click(link);
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Second/ })));
+});

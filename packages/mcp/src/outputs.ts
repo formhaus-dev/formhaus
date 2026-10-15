@@ -65,9 +65,13 @@ export const templateOutput = {
   slots: z.array(z.object({ address: z.string(), key: z.string().optional(), text: z.string(), params: z.array(z.string()), hash: z.string() })).optional(),
 };
 
-export const cloudOutput = {
+const cloudFields = {
   error: z.string().optional().describe('Machine-readable error code or message when the call failed.'),
   message: z.string().optional(),
   form_id: z.string().optional(),
   notice: z.string().optional(),
 };
+
+export const cloudOutput = z.looseObject(cloudFields);
+
+export const revealOutput = z.looseObject({ ...cloudFields, webhook_secret: z.string().optional() });
