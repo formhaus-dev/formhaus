@@ -1,4 +1,5 @@
 import type { FieldValidation } from '../types';
+import { missingTarget } from './conditions';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
@@ -29,19 +30,25 @@ function patternIssue(pattern: string | undefined, path: string): DefinitionIssu
   }
 }
 
-function ruleIssues(context: CheckContext, { field, path }: FieldEntry): DefinitionIssue[] {
-  const rules = field.validation;
-  if (!rules) return [];
+function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry): DefinitionIssue[] {
+  const rules = field.validation ?? {};
   const match = rules.matchField;
+  const items = field.type === 'group' ? (field as { defaultItems?: number }).defaultItems : undefined;
   return [
     ...rangeIssue(rules, path, 'minLength', 'maxLength'),
     ...rangeIssue(rules, path, 'min', 'max'),
     ...patternIssue(rules.pattern, path),
-    ...(match === undefined || context.keys.has(match)
-      ? []
-      : [
-          error('unknown-field', `${path}/validation/matchField`, `"${match}" is not a field key`, context.suggest(match, context.keyList)),
-        ]),
+    ...(match === undefined ? [] : missingTarget(context, match, `${path}/validation/matchField`, group?.key)),
+    ...(items !== undefined && rules.maxLength !== undefined && items > rules.maxLength
+      ? [
+          error(
+            'invalid-range',
+            `${path}/defaultItems`,
+            `defaultItems (${items}) is greater than maxLength (${rules.maxLength})`,
+            'Lower defaultItems or raise maxLength',
+          ),
+        ]
+      : []),
   ];
 }
 

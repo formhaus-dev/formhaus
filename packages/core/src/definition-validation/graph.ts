@@ -1,20 +1,31 @@
-import type { CheckContext } from './context';
+import type { FormNode } from '../types';
+import { isSection, valueFields } from '../visibility/nodes';
+import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
 
-function dependencyGraph({ definition, entries, keys }: CheckContext): Map<string, string[]> {
+const nodeId = ({ field, group }: FieldEntry) => (group ? `${group.key}.${field.key}` : field.key);
+
+function dependencyGraph({ definition, entries, nodes, target }: CheckContext): Map<string, string[]> {
   const graph = new Map<string, string[]>();
-  const link = (owners: string[], dependencies: string[]) => {
-    const known = dependencies.filter((key) => keys.has(key));
+  const link = (owners: string[], source: FormNode | { show?: { field: string }[]; showAny?: { field: string }[] }, group?: string) => {
+    const known = [...(source.show ?? []), ...(source.showAny ?? [])].flatMap(({ field }) => {
+      const entry = target(field, group);
+      return entry ? [nodeId(entry)] : [];
+    });
     if (known.length) for (const owner of owners) graph.set(owner, [...(graph.get(owner) ?? []), ...known]);
   };
-  const fieldsOf = (source: { show?: { field: string }[]; showAny?: { field: string }[] }) =>
-    [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
-  for (const { field } of entries) link([field.key], fieldsOf(field));
+  for (const entry of entries) link([nodeId(entry)], entry.field, entry.group?.key);
+  for (const { node, group } of nodes)
+    if (isSection(node) && !group)
+      link(
+        node.fields.map((field) => field.key),
+        node,
+      );
   for (const step of definition.steps ?? [])
     link(
-      step.fields.map((field) => field.key),
-      fieldsOf(step),
+      valueFields(step.fields).map((field) => field.key),
+      step,
     );
   return graph;
 }
@@ -45,10 +56,11 @@ function findCycles(graph: Map<string, string[]>): string[][] {
 }
 
 function cycleIssues(context: CheckContext): DefinitionIssue[] {
+  const paths = new Map(context.entries.map((entry) => [nodeId(entry), entry.path]));
   return findCycles(dependencyGraph(context)).map((cycle) =>
     error(
       'condition-cycle',
-      context.keys.get(cycle[0])!.path,
+      paths.get(cycle[0])!,
       `show conditions form a cycle: ${cycle.join(' -> ')}`,
       'Remove one of the conditions in the cycle',
     ),
