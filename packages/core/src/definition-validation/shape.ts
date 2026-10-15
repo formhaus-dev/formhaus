@@ -5,6 +5,8 @@ import { isEntry } from '../visibility/nodes';
 
 export { isEntry };
 
+export const nestable = (path: string) => path.split('/fields/').length <= 3;
+
 type Entry = Record<string, unknown>;
 type Check = (value: Entry, path: string) => DefinitionIssue[];
 type Kind = 'string' | 'number' | 'boolean' | 'requirement' | 'scalar' | 'list';
@@ -109,7 +111,7 @@ function dependencies(value: unknown, path: string): DefinitionIssue[] {
 }
 
 const field: Check = (value, path) => {
-  const container = value.type === 'section' || value.type === 'group';
+  const container = (value.type === 'section' || value.type === 'group') && nestable(path);
   return [
     ...text(value, 'key', path),
     ...text(value, 'type', path),

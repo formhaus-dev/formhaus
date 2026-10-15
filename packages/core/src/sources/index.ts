@@ -10,8 +10,8 @@ function read({ source }: FormField, context: SourceContext): unknown {
   if (typeof source === 'object' && source !== null) {
     return typeof source.query === 'string' ? new URLSearchParams(context.search ?? '').get(source.query) : undefined;
   }
-  if (source === 'page') {
-    const url = new URL(context.href ?? '');
+  if (source === 'page' || source === 'referrer') {
+    const url = new URL((source === 'page' ? context.href : context.referrer) ?? '');
     return url.origin === 'null' ? undefined : url.origin + url.pathname;
   }
   return source !== undefined && SOURCE_NAMES.includes(source) ? context[source] : undefined;

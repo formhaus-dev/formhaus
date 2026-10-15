@@ -33,7 +33,7 @@ function finish(issues: Issue[]): ValidationReport {
 
 export function inspectDefinition(input: unknown, values?: Record<string, unknown>): Inspection {
   const parsed = parseDefinition(input);
-  if (!parsed.ok) return { report: finish([issue('invalid-json', 'error', '', parsed.error.replace(/\.$/, ''))]) };
+  if (!parsed.ok) return { report: finish([issue(parsed.code, 'error', '', parsed.error.replace(/\.$/, ''))]) };
   const definition = parsed.value as unknown as FormDefinition;
   const checked = suggestFixes(definition, checkDefinition(definition, { validators: {} }));
   const found = schemaIssues(parsed.value);

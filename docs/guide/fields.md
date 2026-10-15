@@ -326,7 +326,7 @@ A value sent with the answers that the user never sees. It renders `<input type=
 | `source` | Value |
 |---|---|
 | `{ "query": "name" }` | The URL parameter `name`, such as `utm_campaign`, `ref`, `gclid` or `fbclid` |
-| `"referrer"` | `document.referrer`. Browsers usually send only the origin of another site |
+| `"referrer"` | `document.referrer` without the query string and hash. Browsers usually send only the origin of another site |
 | `"page"` | The page URL without the query string and hash, such as `https://example.com/pricing` |
 | `"pageTitle"` | `document.title` |
 | `"language"` | `navigator.language`, such as `de-DE` |

@@ -108,7 +108,7 @@ A `hidden` field may have a `source`: `{ "query": name }` or one of `referrer`, 
 | Source | Value |
 |---|---|
 | `query` | The named URL parameter |
-| `referrer` | `document.referrer` |
+| `referrer` | Origin and path of `document.referrer`, without query and hash |
 | `page` | Origin and path of the page URL, without query and hash |
 | `pageTitle` | `document.title` |
 | `language` | `navigator.language` |
@@ -310,7 +310,7 @@ Core evaluates one field as follows and returns the first error:
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
 2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
 3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
-4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it.
+4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched.
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 6. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
@@ -642,6 +642,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
+| `slow-pattern` | warning | A `pattern` that repeats a group with a quantifier or an alternation inside, such as `(a+)+`, which can take very long to match |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number` or on a group, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
 | `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |

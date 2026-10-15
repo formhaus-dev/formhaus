@@ -75,6 +75,22 @@ describe('checkDefinition', () => {
     ]);
   });
 
+  it('warns about a pattern that repeats a group with a quantifier or alternation', () => {
+    const slow = ['^(a+)+$', '(a*)*', '(a|aa)+', '(\\w+\\s?)+', '(?:[a-z]+\\.){2,}'];
+    const fast = ['^[0-9]{5}$', '^(\\+\\d{1,3})?$', '(?=.*[A-Z])(?=.*[0-9])', '(ab)+', '[(a+)]+', '\\(a+\\)+', '(?:ab)+', '(a)+'];
+    for (const pattern of slow)
+      expect(codes(form([text('code', { validation: { pattern } })]))).toEqual(['warning slow-pattern /fields/0/validation/pattern']);
+    for (const pattern of fast) expect(codes(form([text('code', { validation: { pattern } })]))).toEqual([]);
+  });
+
+  it('checks a long adversarial pattern in linear time', () => {
+    for (const pattern of ['('.repeat(500) + '+)+'.repeat(500), '((a+)+'.repeat(20_000), `${'(a|'.repeat(300)}b`]) {
+      const start = performance.now();
+      checkDefinition(form([text('code', { validation: { pattern } })]));
+      expect(performance.now() - start).toBeLessThan(200);
+    }
+  });
+
   it('handles a deep acyclic dependency chain', () => {
     expect(checkDefinition(chain(20_000))).toEqual([]);
   });

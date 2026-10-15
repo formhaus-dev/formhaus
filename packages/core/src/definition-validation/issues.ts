@@ -19,6 +19,7 @@ export type DefinitionIssueCode =
   | 'condition-value-mismatch'
   | 'condition-cycle'
   | 'invalid-pattern'
+  | 'slow-pattern'
   | 'invalid-range'
   | 'rule-not-applicable'
   | 'missing-options'

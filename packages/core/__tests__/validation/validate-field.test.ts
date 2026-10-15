@@ -101,6 +101,15 @@ describe('validateFieldValue', () => {
       expect(validateFieldValue(field, '123', {}, {})).toBeNull();
     });
 
+    it('fails values longer than 10,000 characters without matching them', () => {
+      const field = makeField({ type: 'code', validation: { pattern: '^\\d+$' } });
+      expect(validateFieldValue(field, '1'.repeat(10_000), {}, {})).toBeNull();
+      expect(validateFieldValue(field, '1'.repeat(10_001), {}, {})).toBe('Invalid format');
+      expect(validateFieldValue({ ...field, validation: { pattern: '^\\d+$', maxLength: 5 } }, '1'.repeat(10_001), {}, {})).toBe(
+        'Must be at most 5 characters',
+      );
+    });
+
     it('handles invalid regex gracefully', () => {
       const field = makeField({ validation: { pattern: '[invalid(' } });
       expect(validateFieldValue(field, 'anything', {}, {})).toBeNull();

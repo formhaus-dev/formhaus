@@ -67,6 +67,14 @@ describe('resolveSources', () => {
     expect(resolveSources(definition, visit, { utm_source: null })).toEqual({ utm_source: 'news' });
   });
 
+  it('strips the query and hash from the referrer', () => {
+    const definition = form([hidden('referrer', 'referrer')]);
+    expect(resolveSources(definition, { referrer: 'https://shop.example/cart?token=SECRET#pay' })).toEqual({
+      referrer: 'https://shop.example/cart',
+    });
+    expect(resolveSources(definition, { referrer: 'not a url' })).toEqual({});
+  });
+
   it('never throws when a context value cannot be read', () => {
     const failing: SourceContext = {
       get language(): string {

@@ -8,17 +8,32 @@ export const definitionInput = z
 
 export type DefinitionInput = z.infer<typeof definitionInput>;
 
-export type ParsedDefinition = { ok: true; value: Record<string, unknown> } | { ok: false; error: string };
+export const MAX_DEFINITION_SIZE = 256 * 1024;
+
+export type ParsedDefinition =
+  | { ok: true; value: Record<string, unknown> }
+  | { ok: false; code: 'invalid-json' | 'too-large'; error: string };
+
+const invalid = (error: string): ParsedDefinition => ({ ok: false, code: 'invalid-json', error });
+
+function size(input: unknown): number {
+  try {
+    return typeof input === 'string' ? input.length : (JSON.stringify(input)?.length ?? 0);
+  } catch {
+    return Number.POSITIVE_INFINITY;
+  }
+}
 
 export function parseDefinition(input: unknown): ParsedDefinition {
+  if (size(input) > MAX_DEFINITION_SIZE) return { ok: false, code: 'too-large', error: 'Definition is larger than 256 KB of JSON.' };
   if (typeof input !== 'string') {
-    return isRecord(input) ? { ok: true, value: input } : { ok: false, error: 'Definition must be a JSON object.' };
+    return isRecord(input) ? { ok: true, value: input } : invalid('Definition must be a JSON object.');
   }
   try {
     const value: unknown = JSON.parse(input);
-    return isRecord(value) ? { ok: true, value } : { ok: false, error: 'Definition must be a JSON object.' };
+    return isRecord(value) ? { ok: true, value } : invalid('Definition must be a JSON object.');
   } catch (error) {
-    return { ok: false, error: `Definition is not valid JSON: ${(error as Error).message}` };
+    return invalid(`Definition is not valid JSON: ${(error as Error).message}`);
   }
 }
 
