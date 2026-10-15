@@ -1,6 +1,6 @@
 import { isGroup, type FormField, type FormSection } from '@formhaus/core';
 import { fieldDomId } from '@formhaus/core/internal';
-import { computed, type Ref } from 'vue';
+import { computed, shallowRef, watch, type Ref } from 'vue';
 import { useFieldOptions } from './useFieldOptions';
 import type { FormRendererProps } from '../types';
 import type { UseFormEngineReturn } from './useFormEngine';
@@ -14,7 +14,14 @@ interface Handlers {
 
 export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps, formId: string, disabled: Ref<boolean>, on: Handlers) {
   const { values, errors, fieldLoading, visibleFields } = form;
-  const optionFields = computed(() => visibleFields.value.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])));
+  const optionFields = shallowRef<FormField[]>([]);
+  watch(
+    visibleFields,
+    (fields) => {
+      optionFields.value = fields.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field]));
+    },
+    { immediate: true },
+  );
   const loaded = useFieldOptions(
     optionFields,
     () => form.engine,
