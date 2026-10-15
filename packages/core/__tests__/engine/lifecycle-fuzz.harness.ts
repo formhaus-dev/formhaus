@@ -1,7 +1,7 @@
 import { FormEngine, type SubmitResult } from '../../src/engine';
 import { conditionValues } from '../../src/internal';
-import type { FormField, FormStep } from '../../src/types';
-import { isVisible } from '../../src/visibility';
+import type { FormField, FormGroup, FormSection, FormStep } from '../../src/types';
+import { isGroup, isSection, isVisible } from '../../src/visibility';
 import type { FuzzCase, FuzzCommand, Outcome } from './lifecycle-fuzz.fixtures';
 
 interface Operations {
@@ -39,9 +39,18 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
   const log: string[] = [];
   let resets = 0;
   const steps = definition.steps ?? [];
-  const fields: FormField[] = steps.length > 0 ? steps.flatMap((step) => step.fields) : (definition.fields ?? []);
-  const stepOf = new Map<FormField, FormStep>(steps.flatMap((step) => step.fields.map((field) => [field, step] as const)));
+  const sectionOf = new Map<FormField, FormSection>();
+  const flatten = (nodes: FormStep['fields']): FormField[] =>
+    nodes.flatMap((node) => {
+      if (!isSection(node)) return [node];
+      for (const field of node.fields) sectionOf.set(field, node);
+      return node.fields;
+    });
+  const fields: FormField[] = steps.length > 0 ? steps.flatMap((step) => flatten(step.fields)) : flatten(definition.fields ?? []);
+  const stepOf = new Map<FormField, FormStep>(steps.flatMap((step) => flatten(step.fields).map((field) => [field, step] as const)));
+  const groups = fields.filter(isGroup) as FormGroup[];
   const firstField = (stepId: string) => steps.find((step) => step.id === stepId)?.fields[0]?.key ?? 'ghost';
+  const groupOf = (key: string) => groups.find((group) => key.startsWith(`${group.key}.`));
 
   let engine!: FormEngine;
   const ops = () => engine as unknown as Operations;
@@ -65,7 +74,17 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
   });
   const send = () =>
     hold('submit', (outcome): SubmitResult | void =>
-      outcome === 'deny' ? { ok: false, errors: { [fields[0].key]: 'Server rejects', ghost: 'Unknown' }, formErrors: ['Nope'] } : undefined,
+      outcome === 'deny'
+        ? {
+            ok: false,
+            errors: {
+              [fields[0].key]: 'Server rejects',
+              ghost: 'Unknown',
+              ...Object.fromEntries((fuzz.serverErrors ?? []).map((key) => [key, `Server ${key}`])),
+            },
+            formErrors: ['Nope'],
+          }
+        : undefined,
     );
 
   const snapshot = () =>
@@ -88,7 +107,8 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
     const active = conditionValues(engine);
     return (field: FormField) => {
       const step = stepOf.get(field);
-      return isVisible(field, active) && (!step || path.includes(step));
+      const section = sectionOf.get(field);
+      return isVisible(field, active) && (!section || isVisible(section, active)) && (!step || path.includes(step));
     };
   };
 
@@ -99,6 +119,14 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
     if (steps.length > 0 && (!engine.currentStep || !path.includes(engine.currentStep))) fail('current step is not on the active path');
     const shown = shownField();
     for (const key of Object.keys(engine.errors)) {
+      const group = groupOf(key);
+      if (group) {
+        const [index, name] = [Number(key.slice(group.key.length + 1).split('.')[0]), key.split('.').slice(2).join('.')];
+        if (!shown(group)) fail(`error for item field of hidden group ${key}`);
+        if (!engine.items(group.key)[index]?.fields.some((field) => field.key === name))
+          fail(`error for missing or hidden item field ${key}`);
+        continue;
+      }
       const owners = fields.filter((field) => field.key === key);
       if (owners.length === 0) fail(`error for unknown field ${key}`);
       if (!owners.some(shown)) fail(`error for hidden or off-path field ${key}`);
@@ -112,8 +140,23 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       const step = stepOf.get(field);
       const hiddenStep = step && !isVisible(step, active);
       const hiddenField = (!step || path.includes(step)) && !isVisible(field, active);
-      if ((hiddenStep || hiddenField) && engine.values[field.key as keyof typeof engine.values] !== undefined)
+      const section = sectionOf.get(field);
+      const hiddenSection = (!step || path.includes(step)) && section && !isVisible(section, active);
+      if ((hiddenStep || hiddenField || hiddenSection) && engine.values[field.key as keyof typeof engine.values] !== undefined)
         fail(`hidden field ${field.key} keeps a value`);
+    }
+    for (const group of groups) {
+      const items = engine.values[group.key as keyof typeof engine.values];
+      if (!Array.isArray(items) || !shown(group)) continue;
+      items.forEach((item: Record<string, unknown>, index) => {
+        const scope = { ...active, ...item };
+        for (const field of group.fields) {
+          if (item[field.key] !== undefined && !isVisible(field, scope))
+            fail(`hidden item field ${group.key}.${index}.${field.key} keeps a value`);
+        }
+      });
+      const ids = engine.items(group.key).map((item) => item.id);
+      if (new Set(ids).size !== ids.length) fail(`duplicate item ids in ${group.key}`);
     }
   };
 
@@ -152,6 +195,8 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       resets++;
       engine.reset(command.filled ? initial : undefined);
     }
+    if (command.type === 'add') engine.addItem(command.key);
+    if (command.type === 'remove') engine.removeItem(command.key, command.index);
     if (command.type === 'settle' && pending.length > 0) {
       const [entry] = pending.splice(command.index % pending.length, 1);
       const superseded = entry.resets !== resets || entry.operation !== ops().latestOperation;
