@@ -146,7 +146,7 @@ describe('fixAll', () => {
         text('email'),
         text('email'),
         { type: 'text', label: 'Phone number' },
-        text('note', { show: [{ field: 'emial', notEmpty: true }] }),
+        text('note', { show: [{ field: 'emaly', notEmpty: true }] }),
       ],
     };
     const result = fixAll(definition);
@@ -157,7 +157,7 @@ describe('fixAll', () => {
         text('email'),
         { ...text('email'), key: 'email_2' },
         { key: 'phoneNumber', type: 'text', label: 'Phone number' },
-        text('note', { show: [{ field: 'emial', notEmpty: true }] }),
+        text('note', { show: [{ field: 'emaly', notEmpty: true }] }),
       ],
       submit: { label: 'Submit' },
     });

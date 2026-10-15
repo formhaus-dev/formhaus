@@ -3,6 +3,7 @@ import { closest, type DefinitionIssue } from '../definition-validation/issues';
 import { BUILT_IN_TYPES } from '../validation/type-checks';
 import { CONDITION_OPERATORS } from '../visibility/evaluate-condition';
 import { camel, humanize, slug, unique } from './names';
+import { referenceFixes } from './references';
 import {
   at,
   child,
@@ -156,9 +157,9 @@ export function fixesFor(definition: Entry, issue: DefinitionIssue, issues: read
     case 'duplicate-step-id':
       return duplicateStep(definition, issue);
     case 'unknown-field':
-      return closestTo(definition, issue, keysOf(definition), 'field');
+      return referenceFixes(definition, issue, 'field');
     case 'route-target':
-      return closestTo(definition, issue, stepIds(definition), 'step');
+      return referenceFixes(definition, issue, 'step');
     case 'unknown-field-type':
       return closestTo(definition, issue, BUILT_IN_TYPES, 'type');
     case 'unknown-operator':

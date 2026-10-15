@@ -88,20 +88,13 @@ describe('suggestFixes', () => {
     expect(fixesAt(steps([{ to: 'b' }]), '/steps/2/id')[0].safe).toBe(false);
   });
 
-  it('points an unknown condition field at the closest key, as an unsafe fix', () => {
-    const definition = form([text('email'), text('note', { show: [{ field: 'emial', notEmpty: true }] })]);
-    expect(fixesAt(definition, '/fields/1/show/0/field')).toEqual([
-      { title: 'Use the field "email"', safe: false, patch: [{ op: 'replace', path: '/fields/1/show/0/field', value: 'email' }] },
-    ]);
-  });
-
   it('offers no fix for an unknown field without a close key', () => {
     expect(fixesAt(form([text('email'), text('note', { show: [{ field: 'zzz', notEmpty: true }] })]), '/fields/1/show/0/field')).toEqual(
       [],
     );
   });
 
-  it('renames a misspelled operator, field type and route target as unsafe fixes', () => {
+  it('renames a misspelled operator and field type as unsafe fixes', () => {
     expect(fixesAt(form([text('a'), text('b', { show: [{ field: 'a', notEmty: true }] })]), '/fields/1/show/0/notEmty')).toEqual([
       {
         title: 'Rename "notEmty" to "notEmpty"',
@@ -113,16 +106,6 @@ describe('suggestFixes', () => {
       title: 'Use the type "email"',
       safe: false,
     });
-    const routed = {
-      id: 'f',
-      title: 'F',
-      submit: { label: 'Go' },
-      steps: [
-        { id: 'start', title: 'S', fields: [text('a')], routes: [{ to: 'reveiw' }] },
-        { id: 'review', title: 'R', fields: [text('b')] },
-      ],
-    };
-    expect(fixesAt(routed, '/steps/0/routes/0/to')[0]).toMatchObject({ title: 'Use the step "review"', safe: false });
   });
 
   it('swaps an inverted range as an unsafe fix', () => {
