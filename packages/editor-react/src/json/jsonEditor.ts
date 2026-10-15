@@ -83,6 +83,10 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
         view.EditorView.cspNonce.of(getNonce() ?? ''),
         state.EditorState.readOnly.of(options.readOnly),
         view.EditorView.contentAttributes.of({ 'aria-label': options.label }),
+        view.EditorView.scrollMargins.of((editor) => {
+          const bar = editor.dom.ownerDocument.querySelector('[data-topbar]');
+          return bar ? { top: Math.max(0, bar.getBoundingClientRect().bottom) + editor.defaultLineHeight } : null;
+        }),
         view.keymap.of([
           { key: 'Mod-z', run: run(options.onUndo), preventDefault: true },
           { key: 'Mod-Shift-z', run: run(options.onRedo), preventDefault: true },

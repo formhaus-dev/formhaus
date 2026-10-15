@@ -153,4 +153,24 @@ describe('JSON mode in a browser', () => {
       expect(last?.bottom).toBeLessThanOrEqual(window.innerHeight);
     });
   });
+
+  it('keeps the cursor line below the sticky toolbar when it scrolls up to it', async () => {
+    await page.viewport(1440, 600);
+    renderEditor(
+      fromDefinition(JSON.parse(definition(...Array.from({ length: 40 }, (_, index) => `Field ${String(index + 1)}`))) as FormDefinition),
+    );
+    await mode('JSON');
+    const editor = view();
+    editor.focus();
+    const lineTop = () => editor.coordsAtPos(editor.state.doc.line(3).from)?.top ?? Number.NaN;
+    const barBottom = () => document.querySelector('[data-topbar]')?.getBoundingClientRect().bottom ?? Number.NaN;
+    window.scrollTo(0, document.documentElement.scrollHeight);
+    await waitFor(() => {
+      expect(window.scrollY).toBeGreaterThan(1000);
+    });
+    editor.dispatch({ selection: { anchor: editor.state.doc.line(3).from }, scrollIntoView: true });
+    await waitFor(() => {
+      expect(lineTop()).toBeGreaterThanOrEqual(barBottom());
+    });
+  });
 });
