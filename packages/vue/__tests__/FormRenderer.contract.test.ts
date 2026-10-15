@@ -20,8 +20,10 @@ it('awaits an @submit listener with values and skipped steps', async () => {
   await fireEvent.click(screen.getByText('Send'));
   await waitFor(() => expect(save).toHaveBeenCalledWith({ city: 'Oslo' }, ['one']));
   expect(document.querySelector('form')?.getAttribute('aria-busy')).toBe('true');
+  expect(screen.getByText('Send').getAttribute('aria-busy')).toBe('true');
   release();
   await waitFor(() => expect(document.querySelector('form')?.getAttribute('aria-busy')).toBe('false'));
+  expect(screen.getByText('Send').getAttribute('aria-busy')).toBe('false');
 });
 
 it('renders the step title at the heading level', () => {

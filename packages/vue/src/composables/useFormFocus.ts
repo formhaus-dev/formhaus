@@ -1,15 +1,6 @@
-import { fieldDomId } from '@formhaus/core/internal';
+import { canMoveFocus, focusField, restoreFocus } from '@formhaus/core/internal';
 import { nextTick, ref, watch, type Ref } from 'vue';
 import type { UseFormEngineReturn } from './useFormEngine';
-
-const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
-
-const typing = (element: Element) => (element as HTMLElement).isContentEditable
-  || (element.matches('input, select, textarea') && !['checkbox', 'radio'].includes((element as HTMLInputElement).type));
-
-function firstControl(root: Element | null | undefined) {
-  return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
-}
 
 export function useFormFocus(form: UseFormEngineReturn, formRef: Ref<HTMLFormElement | undefined>, formId: string, invalidAttempts: Ref<number>) {
   const { currentStep, stepValidating, submitting } = form;
@@ -34,27 +25,20 @@ export function useFormFocus(form: UseFormEngineReturn, formRef: Ref<HTMLFormEle
     const restore = wasBusy;
     wasBusy = false;
     if (!focusPending) {
-      const document = formRef.value?.ownerDocument;
-      if (restore && document?.activeElement === document?.body && focusReturn?.isConnected) focusReturn.focus();
+      if (restore) restoreFocus(formRef.value, focusReturn);
       return;
     }
     focusPending = false;
     await nextTick();
-    const fields = formRef.value?.querySelector('.fh-form__fields');
-    const id = focusKey && fieldDomId(formId, focusKey);
+    const key = focusKey;
     focusKey = null;
-    const chosen = id ? fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) : null;
-    if (id && !chosen) return;
-    const field = chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]');
-    const target = field?.querySelector('input:checked:not(:disabled)') ?? firstControl(field) ?? firstControl(fields);
-    ((target as HTMLElement | null | undefined) ?? formRef.value)?.focus();
+    focusField(formRef.value, formId, key);
   }, { flush: 'post' });
 
   return {
     rememberFocus(event: FocusEvent) { focusReturn = event.target as HTMLElement; },
     requestFocus() {
-      const active = formRef.value?.ownerDocument.activeElement;
-      if (active && formRef.value?.contains(active) && !typing(active)) requested.value++;
+      if (canMoveFocus(formRef.value)) requested.value++;
     },
     showField(key: string) {
       focusKey = key;
