@@ -3,7 +3,8 @@ import { readFile } from 'node:fs/promises';
 const PACKAGES = ['core', 'react', 'vue'];
 const REGISTRY = 'https://registry.npmjs.org';
 
-const parse = (version) => version.split('-')[0].split('.').map(Number);
+const SEMVER = /^(\d+)\.(\d+)\.(\d+)(?:-[0-9A-Za-z.-]+)?$/;
+const parse = (version) => version.match(SEMVER).slice(1, 4).map(Number);
 function compare(a, b) {
   const [left, right] = [parse(a), parse(b)];
   for (let index = 0; index < 3; index++) if (left[index] !== right[index]) return left[index] - right[index];
@@ -38,21 +39,23 @@ const lock = await readFile('docs/pnpm-lock.yaml', 'utf8');
 const importer = lock.slice(lock.indexOf('importers:'), lock.indexOf('\npackages:'));
 for (const [name, range] of Object.entries(docs.devDependencies ?? {})) {
   if (!packages.has(name)) continue;
-  pins.push({ where: 'docs/package.json', name, version: range.replace(/^[\^~]/, '') });
+  pins.push({ where: 'docs/package.json', name, version: range.replace(/^[\^~]/, ''), raw: range });
   const locked = importer.match(new RegExp(`'${name}':\\n\\s+specifier: [^\\n]+\\n\\s+version: ([^(\\s]+)`))?.[1];
   pins.push({ where: 'docs/pnpm-lock.yaml', name, version: locked });
 }
 
 const problems = [];
-for (const { where, name, version } of pins) {
+const stale = [];
+for (const { where, name, version, raw = version } of pins) {
   const { workspace, published } = packages.get(name);
-  if (!version) problems.push(`${where}: no version for ${name}`);
-  else if (published && compare(version, published) < 0) problems.push(`${where}: ${name} ${version} is older than ${published} on npm`);
+  if (!SEMVER.test(version ?? '')) problems.push(`${where}: ${name} has no exact version or ^/~ range (${raw})`);
   else if (compare(version, workspace) > 0) problems.push(`${where}: ${name} ${version} is newer than the workspace ${workspace}`);
+  else if (published && SEMVER.test(published) && compare(version, published) < 0) stale.push(`${where}: ${name} ${version} is older than ${published} on npm`);
 }
 
+if (stale.length) console.warn(`Warning: bump the docs and playground pins after the release:\n${stale.map((line) => `  ${line}`).join('\n')}`);
 if (problems.length) {
-  console.error(`Docs and playground pins are out of date:\n${problems.map((problem) => `  ${problem}`).join('\n')}`);
+  console.error(`Docs and playground pins are invalid:\n${problems.map((problem) => `  ${problem}`).join('\n')}`);
   process.exit(1);
 }
-console.log(`Docs and playground pins are current (${pins.length} checked).`);
+console.log(`Checked ${pins.length} docs and playground pins.`);
