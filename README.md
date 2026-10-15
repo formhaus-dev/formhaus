@@ -1,8 +1,6 @@
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="packages/site-theme/public/brand/logo-full-dark.svg">
-    <img src="packages/site-theme/public/brand/logo-full.svg" alt="Formhaus" width="320">
-  </picture>
+  <img src="packages/site-theme/public/brand/logo-full.svg#gh-light-mode-only" alt="Formhaus" width="320">
+  <img src="packages/site-theme/public/brand/logo-full-dark.svg#gh-dark-mode-only" alt="Formhaus" width="320">
 </p>
 
 <p align="center">
