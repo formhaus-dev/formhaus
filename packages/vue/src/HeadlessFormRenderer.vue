@@ -147,7 +147,7 @@ async function onPrimary() {
       <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
       <ul class="fh-error-summary__list">
         <li v-for="field in summaryFields" :key="field.key">
-          <a class="fh-error-summary__link" :href="`#${fieldDomId(formId, field.key)}`" @click.prevent="showField(field.key)">{{ field.label }}: {{ errors[field.key] }}</a>
+          <a class="fh-error-summary__link" :href="`#${fieldDomId(formId, field.key, form.engine.definition)}`" @click.prevent="showField(field.key)">{{ field.label }}: {{ errors[field.key] }}</a>
         </li>
       </ul>
     </div>
@@ -156,7 +156,7 @@ async function onPrimary() {
       <FieldResolver
         v-for="field in fieldsWithOptions"
         :key="field.key"
-        :id="fieldDomId(formId, field.key)"
+        :id="fieldDomId(formId, field.key, form.engine.definition)"
         :field="field"
         :model-value="values[field.key]"
         :error="errors[field.key]"

@@ -77,7 +77,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     focusPending.current = false;
     const key = focusKey.current;
     focusKey.current = null;
-    focusField(formRef.current, formId, key);
+    focusField(formRef.current, formId, key, engine.definition);
   }, [engine, version, actions.invalidAttempts, focusRequest]);
 
   const handleFieldFocus = useCallback((key: string) => {

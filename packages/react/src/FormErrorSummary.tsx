@@ -22,7 +22,7 @@ export function FormErrorSummary({ engine, formId, onSelect, labels }: FormError
       <ul className="fh-error-summary__list">
         {invalid.map((field) => (
           <li key={field.key}>
-            <a className="fh-error-summary__link" href={`#${fieldDomId(formId, field.key)}`}
+            <a className="fh-error-summary__link" href={`#${fieldDomId(formId, field.key, engine.definition)}`}
               onClick={(event) => { event.preventDefault(); onSelect(field.key); }}>
               {field.label}: {engine.errors[field.key]}
             </a>
