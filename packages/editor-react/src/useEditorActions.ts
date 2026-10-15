@@ -1,6 +1,7 @@
 import {
   addField,
   addOption,
+  addTrackingFields,
   addOptions,
   addStep,
   duplicateField,
@@ -68,6 +69,15 @@ export function useEditorActions() {
     };
     return {
       addField: (at: Placement, preset?: FieldPreset) => selectField(store.update((form) => addField(form, at, preset).uid)),
+      addTracking: (at: Placement) => {
+        const added = store.update((form) => addTrackingFields(form, at)) ?? [];
+        if (!added.length) {
+          notify({ title: 'Tracking fields are already in the form' });
+          return undefined;
+        }
+        announce(`${added.length} tracking fields added`);
+        return selectField(added[0]);
+      },
       duplicate: (uid: string) => {
         const copy = selectField(store.update((form) => duplicateField(form, uid)?.uid));
         if (!copy) return;

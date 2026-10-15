@@ -9,7 +9,7 @@ import type { EditorActions } from '../useEditorActions';
 import styles from './Canvas.module.css';
 import { FieldPalette } from './FieldPalette';
 import { useFocusRequests } from './focus';
-import { presetFor } from './presets';
+import { addPicked } from './presets';
 import { StepHeaderCard } from './StepHeaderCard';
 
 interface Props {
@@ -53,9 +53,8 @@ export const StepSection = memo(function StepSection({ step, page, first, last, 
             trigger={<AddRow label="Add field" inset="card" />}
             adding
             onPick={(id) => {
-              const preset = presetFor(id);
-              const uid = actions.addField({ step }, preset);
-              if (uid) focus.request(uid, preset.label ? 'card' : 'label');
+              const added = addPicked(actions, { step }, id);
+              if (added) focus.request(added.uid, added.target);
             }}
           />
           <Button
