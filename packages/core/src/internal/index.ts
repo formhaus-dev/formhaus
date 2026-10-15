@@ -6,7 +6,7 @@ export {
   type CloudControllerOptions,
   type CloudState,
 } from '../cloud/controller';
-export { canMoveFocus, focusField, focusProblem, restoreFocus } from './focus';
+export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
 export { fieldDomId, itemDomId } from './ids';
 export { errorDomId, errorEntries, itemLimits, itemTitle, type ErrorEntry } from './items';
 export { shouldApplyExternalErrors } from '../engine/external-errors';

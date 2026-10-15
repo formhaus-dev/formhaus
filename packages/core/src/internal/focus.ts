@@ -1,3 +1,5 @@
+import { itemDomId } from './ids';
+
 interface Searchable {
   querySelector(selector: string): unknown;
 }
@@ -61,4 +63,21 @@ export function focusField(form: FormRoot | null | undefined, id: string | null)
     firstControl(field) ||
     firstControl(fields);
   (target ?? form)?.focus();
+}
+
+export function focusItem(
+  document: { getElementById(id: string): unknown },
+  root: Searchable | null | undefined,
+  formId: string,
+  group: string,
+  index: number,
+  added: boolean,
+): void {
+  const item = document.getElementById(itemDomId(formId, group, index)) as (Focusable & { parentElement: Searchable | null }) | null;
+  const next = (added ? item?.parentElement?.querySelector('input, select, textarea') : item) as Found;
+  (
+    next ??
+    (root?.querySelector(':scope > .fh-group__add') as Found) ??
+    (document.getElementById(itemDomId(formId, group, index - 1)) as Found)
+  )?.focus();
 }
