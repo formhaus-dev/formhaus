@@ -12,7 +12,6 @@ the Formhaus rule in .cursor/rules. Running it again changes nothing.
 
 Options:
   --dry-run      Show the planned changes and write nothing
-  -y, --yes      Run without prompts (formhaus never prompts)
   -h, --help     Show this help
   -v, --version  Show the version`;
 
@@ -42,7 +41,6 @@ function parse(argv: string[]) {
     allowPositionals: true,
     options: {
       'dry-run': { type: 'boolean' },
-      yes: { type: 'boolean', short: 'y' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
     },

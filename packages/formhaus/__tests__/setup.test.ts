@@ -1,11 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { type Sandbox, sandbox } from './helpers';
+import { onWindows, type Sandbox, sandbox } from './helpers';
 
 const SERVER = { command: 'npx', args: ['-y', '@formhaus/mcp'] };
 const SKILL = '.claude/skills/formhaus-create-form/SKILL.md';
 const CLAUDE_ADD = 'claude mcp add --scope user formhaus -- npx -y @formhaus/mcp';
+const DESKTOP = 'Library/Application Support/Claude';
 const repoFile = (path: string) => readFileSync(join(__dirname, '../../..', path), 'utf8');
 
 let box: Sandbox;
@@ -16,7 +17,7 @@ beforeEach(() => {
 
 afterEach(() => box.cleanup());
 
-describe('detection', () => {
+describe.skipIf(onWindows)('detection', () => {
   it('reports no agents and prints manual setup on an empty machine', () => {
     const result = box.run();
     expect(result.code).toBe(0);
@@ -28,7 +29,8 @@ describe('detection', () => {
     box.fakeBin('claude');
     box.write('.codex/.keep', '');
     box.fakeBin('cursor');
-    box.write('.config/Claude/.keep', '');
+    box.write(`${DESKTOP}/.keep`, '');
+    box.platform = 'darwin';
     expect(box.run('--dry-run').out).toContain('Found Claude Code, Codex, Cursor, Claude Desktop.');
   });
 
@@ -42,19 +44,20 @@ describe('detection', () => {
   });
 });
 
-describe('setup', () => {
+describe.skipIf(onWindows)('setup', () => {
   it('configures every detected agent with the documented formats', () => {
     box.fakeBin('claude');
     box.write('.codex/.keep', '');
     box.write('.cursor/.keep', '');
-    box.write('.config/Claude/.keep', '');
+    box.write(`${DESKTOP}/.keep`, '');
+    box.platform = 'darwin';
     const result = box.run('setup');
     expect(result.code).toBe(0);
     expect(box.claudeCalls()).toEqual([CLAUDE_ADD]);
     expect(box.read(SKILL)).toBe(repoFile('plugins/formhaus/skills/formhaus-create-form/SKILL.md'));
     expect(box.read('.codex/config.toml')).toBe('[mcp_servers.formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n');
     expect(JSON.parse(box.read('.cursor/mcp.json'))).toEqual({ mcpServers: { formhaus: SERVER } });
-    expect(JSON.parse(box.read('.config/Claude/claude_desktop_config.json'))).toEqual({ mcpServers: { formhaus: SERVER } });
+    expect(JSON.parse(box.read(`${DESKTOP}/claude_desktop_config.json`))).toEqual({ mcpServers: { formhaus: SERVER } });
     expect(result.out).toContain('Done.');
   });
 
@@ -86,7 +89,7 @@ describe('setup', () => {
   });
 });
 
-describe('idempotency', () => {
+describe.skipIf(onWindows)('idempotency', () => {
   it('changes nothing on the second run', () => {
     box.fakeBin('claude');
     box.write('.codex/config.toml', 'model = "o3"\n');
@@ -122,7 +125,7 @@ describe('idempotency', () => {
   });
 });
 
-describe('merging', () => {
+describe.skipIf(onWindows)('merging', () => {
   it('keeps other JSON servers and settings and writes a backup', () => {
     box.write('.cursor/mcp.json', JSON.stringify({ theme: 'dark', mcpServers: { other: { command: 'other' } } }));
     const original = box.read('.cursor/mcp.json');
@@ -165,7 +168,7 @@ describe('merging', () => {
   });
 });
 
-describe('dry run', () => {
+describe.skipIf(onWindows)('dry run', () => {
   it('prints the plan and writes nothing', () => {
     box.fakeBin('claude');
     box.write('.codex/.keep', '');

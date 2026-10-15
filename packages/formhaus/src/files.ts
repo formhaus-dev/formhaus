@@ -1,6 +1,17 @@
-import { accessSync, constants, copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
-import { delimiter, dirname, join, sep } from 'node:path';
-import type { Change, Context, State } from './context';
+import {
+  constants,
+  copyFileSync,
+  existsSync,
+  lstatSync,
+  mkdirSync,
+  readFileSync,
+  renameSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
+import { dirname, relative, resolve, sep } from 'node:path';
+import { type Change, type Context, SetupError, type State } from './context';
 
 export function readText(file: string): string | undefined {
   return existsSync(file) ? readFileSync(file, 'utf8') : undefined;
@@ -10,39 +21,35 @@ export function isDirectory(path: string): boolean {
   return existsSync(path) && statSync(path).isDirectory();
 }
 
-export function writeText(ctx: Context, file: string, text: string): void {
+function refuseSymlink(ctx: Context, path: string): void {
+  if (lstatSync(path, { throwIfNoEntry: false })?.isSymbolicLink()) {
+    throw new SetupError(`${display(ctx, path)} is a symbolic link. Formhaus does not write through links. Edit the file by hand.`);
+  }
+}
+
+function refuseLinkedDirectories(ctx: Context, root: string, file: string): void {
+  const parts = relative(root, dirname(file)).split(sep).filter(Boolean);
+  for (let index = 1; index <= parts.length; index++) refuseSymlink(ctx, resolve(root, ...parts.slice(0, index)));
+}
+
+export function writeText(ctx: Context, file: string, text: string, root?: string): void {
+  const backup = `${file}.bak`;
+  const temporary = `${file}.tmp`;
+  if (root) refuseLinkedDirectories(ctx, root, file);
+  for (const path of [file, backup, temporary]) refuseSymlink(ctx, path);
   if (ctx.dryRun) return;
   mkdirSync(dirname(file), { recursive: true });
-  if (existsSync(file)) copyFileSync(file, `${file}.bak`);
-  writeFileSync(file, text);
+  if (existsSync(file) && !existsSync(backup)) copyFileSync(file, backup, constants.COPYFILE_EXCL);
+  rmSync(temporary, { force: true });
+  writeFileSync(temporary, text, { flag: 'wx' });
+  renameSync(temporary, file);
 }
 
-export function writeIfChanged(ctx: Context, file: string, text: string): State {
+export function writeIfChanged(ctx: Context, file: string, text: string, root?: string): State {
   const current = readText(file);
   if (current === text) return 'present';
-  writeText(ctx, file, text);
+  writeText(ctx, file, text, root);
   return current === undefined ? 'added' : 'updated';
-}
-
-export function findOnPath(ctx: Context, name: string): string | undefined {
-  const extensions = ctx.platform === 'win32' ? (ctx.env.PATHEXT ?? '.EXE;.CMD;.BAT').split(';') : [''];
-  for (const directory of (ctx.env.PATH ?? '').split(delimiter)) {
-    if (!directory) continue;
-    for (const extension of extensions) {
-      const candidate = join(directory, name + extension.toLowerCase());
-      if (isExecutable(candidate)) return candidate;
-    }
-  }
-  return undefined;
-}
-
-function isExecutable(file: string): boolean {
-  try {
-    accessSync(file, constants.X_OK);
-    return statSync(file).isFile();
-  } catch {
-    return false;
-  }
 }
 
 export function display(ctx: Context, path: string): string {

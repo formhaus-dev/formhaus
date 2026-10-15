@@ -3,18 +3,19 @@ import { join } from 'node:path';
 import cursorRule from '../../../.cursor/rules/formhaus.mdc';
 import { claudeCode } from './claude-code';
 import type { Agent, Context } from './context';
-import { findOnPath, isDirectory, step, writeIfChanged } from './files';
+import { isDirectory, step, writeIfChanged } from './files';
 import { addJsonServer } from './json-config';
 import { addTomlServer } from './toml-config';
+import { findOnPath } from './which';
 
 function codexHome(ctx: Context): string {
   return ctx.env.CODEX_HOME || join(ctx.home, '.codex');
 }
 
-function claudeDesktopDir(ctx: Context): string {
+function claudeDesktopDir(ctx: Context): string | undefined {
   if (ctx.platform === 'darwin') return join(ctx.home, 'Library', 'Application Support', 'Claude');
   if (ctx.platform === 'win32') return join(ctx.env.APPDATA || join(ctx.home, 'AppData', 'Roaming'), 'Claude');
-  return join(ctx.env.XDG_CONFIG_HOME || join(ctx.home, '.config'), 'Claude');
+  return undefined;
 }
 
 function found(ctx: Context, directory: string, bin: string): boolean {
@@ -42,16 +43,19 @@ const cursor: Agent = {
     const changes = [step(ctx, 'Cursor', 'MCP server', file, () => addJsonServer(ctx, file))];
     if (!isProject(ctx)) return changes;
     const rule = join(ctx.cwd, '.cursor', 'rules', 'formhaus.mdc');
-    changes.push(step(ctx, 'Cursor', 'formhaus rule', rule, () => writeIfChanged(ctx, rule, cursorRule)));
+    changes.push(step(ctx, 'Cursor', 'formhaus rule', rule, () => writeIfChanged(ctx, rule, cursorRule, ctx.cwd)));
     return changes;
   },
 };
 
 const claudeDesktop: Agent = {
   name: 'Claude Desktop',
-  detect: (ctx) => isDirectory(claudeDesktopDir(ctx)),
+  detect: (ctx) => {
+    const directory = claudeDesktopDir(ctx);
+    return directory !== undefined && isDirectory(directory);
+  },
   apply(ctx) {
-    const file = join(claudeDesktopDir(ctx), 'claude_desktop_config.json');
+    const file = join(claudeDesktopDir(ctx)!, 'claude_desktop_config.json');
     return [step(ctx, 'Claude Desktop', 'MCP server', file, () => addJsonServer(ctx, file))];
   },
 };
@@ -67,5 +71,6 @@ export const MANUAL_AGENTS: ManualAgent[] = [
   { name: 'Windsurf', detect: (ctx) => found(ctx, join(ctx.home, '.codeium', 'windsurf'), 'windsurf') },
   { name: 'Gemini CLI', detect: (ctx) => found(ctx, join(ctx.home, '.gemini'), 'gemini') },
   { name: 'OpenCode', detect: (ctx) => found(ctx, join(ctx.home, '.config', 'opencode'), 'opencode') },
+  { name: 'Claude Desktop', detect: (ctx) => ctx.platform === 'linux' && isDirectory(join(ctx.home, '.config', 'Claude')) },
   { name: 'VS Code', detect: (ctx) => findOnPath(ctx, 'code') !== undefined },
 ];

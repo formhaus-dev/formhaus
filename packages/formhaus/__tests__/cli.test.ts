@@ -21,10 +21,6 @@ describe('cli', () => {
     expect(box.run('-v').out).toBe(pkg.version);
   });
 
-  it('accepts --yes', () => {
-    expect(box.run('--yes').code).toBe(0);
-  });
-
   it('rejects an unknown command', () => {
     const result = box.run('install');
     expect(result.code).toBe(1);

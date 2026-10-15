@@ -15,11 +15,11 @@ Run it inside a project to also add the Cursor rule there. Requires Node 20 or l
 | Claude Code | `claude` on `PATH` | `claude mcp add --scope user formhaus -- npx -y @formhaus/mcp` and the `formhaus-create-form` skill in `~/.claude/skills` |
 | Codex | `~/.codex` or `codex` on `PATH` | `[mcp_servers.formhaus]` in `~/.codex/config.toml` |
 | Cursor | `~/.cursor` or `cursor` on `PATH` | `formhaus` in `~/.cursor/mcp.json`, and `.cursor/rules/formhaus.mdc` when run inside a project |
-| Claude Desktop | its config directory | `formhaus` in `claude_desktop_config.json` |
+| Claude Desktop | its config directory on macOS and Windows | `formhaus` in `claude_desktop_config.json` |
 
-Windsurf, Gemini CLI, OpenCode and VS Code are detected and listed with manual setup steps.
+Windsurf, Gemini CLI, OpenCode, VS Code and Claude Desktop on Linux are detected and listed with manual setup steps.
 
-Existing entries are kept. A file is backed up to `<file>.bak` before it is changed. Running it again changes nothing. If the Formhaus Claude Code plugin is installed, Claude Code is left as is.
+Existing entries are kept. Before the first change to a file, the original is saved as `<file>.bak`. Formhaus does not write through symbolic links. Running it again changes nothing. If the Formhaus Claude Code plugin is installed, Claude Code is left as is.
 
 ## Options
 
@@ -27,7 +27,6 @@ Existing entries are kept. A file is backed up to `<file>.bak` before it is chan
 npx formhaus [setup] [options]
 
   --dry-run      Show the planned changes and write nothing
-  -y, --yes      Run without prompts (formhaus never prompts)
   -h, --help     Show help
   -v, --version  Show the version
 ```

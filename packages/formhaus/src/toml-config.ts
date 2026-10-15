@@ -1,11 +1,12 @@
-import { type Context, SERVER, SERVER_NAME, type State } from './context';
-import { readText, writeText } from './files';
+import { type Context, SERVER, SERVER_NAME, SetupError, type State } from './context';
+import { display, readText, writeText } from './files';
 
 const NAME = `(?:${SERVER_NAME}|"${SERVER_NAME}"|'${SERVER_NAME}')`;
 const TABLE = new RegExp(`^\\s*\\[\\s*mcp_servers\\s*\\.\\s*${NAME}\\s*[\\].]`, 'm');
 const DOTTED_KEY = new RegExp(`^\\s*mcp_servers\\s*\\.\\s*${NAME}\\s*[.=]`, 'm');
 const SERVERS_TABLE = /^\s*\[\s*mcp_servers\s*\]\s*(?:#.*)?$/m;
 const NEXT_TABLE = /^\s*\[/m;
+const INLINE_SERVERS = /^\s*mcp_servers\s*=/m;
 const SERVER_KEY = new RegExp(`^\\s*${NAME}\\s*[.=]`, 'm');
 
 export function hasTomlServer(text: string): boolean {
@@ -27,6 +28,9 @@ export const TOML_BLOCK = [
 export function addTomlServer(ctx: Context, file: string): State {
   const text = readText(file) ?? '';
   if (hasTomlServer(text)) return 'present';
+  if (INLINE_SERVERS.test(text)) {
+    throw new SetupError(`${display(ctx, file)} sets mcp_servers inline. Add the formhaus server there by hand. The file was not changed.`);
+  }
   const separator = text.trim() === '' ? '' : text.endsWith('\n') ? '\n' : '\n\n';
   writeText(ctx, file, text.trim() === '' ? TOML_BLOCK : text + separator + TOML_BLOCK);
   return 'added';

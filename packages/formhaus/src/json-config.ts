@@ -20,8 +20,8 @@ export function readJsonObject(ctx: Context, file: string): JsonObject | undefin
   return parsed;
 }
 
-export function hasJsonServer(config: JsonObject | undefined, key = 'mcpServers'): boolean {
-  const servers = config?.[key];
+export function hasJsonServer(config: JsonObject | undefined): boolean {
+  const servers = config?.mcpServers;
   return isObject(servers) && SERVER_NAME in servers;
 }
 

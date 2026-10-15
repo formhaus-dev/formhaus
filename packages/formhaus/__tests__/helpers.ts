@@ -7,6 +7,7 @@ export interface Sandbox {
   home: string;
   bin: string;
   cwd: string;
+  platform: NodeJS.Platform;
   path(...parts: string[]): string;
   write(relative: string, text: string): void;
   read(relative: string): string;
@@ -16,6 +17,8 @@ export interface Sandbox {
   run(...argv: string[]): { code: number; out: string; err: string };
   cleanup(): void;
 }
+
+export const onWindows = process.platform === 'win32';
 
 export function sandbox(): Sandbox {
   const home = mkdtempSync(join(tmpdir(), 'formhaus-cli-'));
@@ -27,6 +30,7 @@ export function sandbox(): Sandbox {
     home,
     bin,
     cwd: home,
+    platform: 'linux',
     path,
     write(relative, text) {
       mkdirSync(dirname(path(relative)), { recursive: true });
@@ -46,7 +50,7 @@ export function sandbox(): Sandbox {
       const env = { PATH: bin, HOME: home };
       const code = main(
         argv,
-        { home, cwd: box.cwd, env, platform: 'linux' },
+        { home, cwd: box.cwd, env, platform: box.platform },
         (line) => out.push(line),
         (line) => err.push(line),
       );
