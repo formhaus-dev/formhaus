@@ -4,6 +4,7 @@ import { conditionErrors, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { closest, oneOf, suggest, warning } from './issues';
+import { propertyWarnings } from './properties';
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
@@ -174,9 +175,7 @@ function routeWarnings({ definition }: CheckContext): DefinitionIssue[] {
 
 export function definitionWarnings(context: CheckContext): DefinitionIssue[] {
   return [
-    ...(typeof context.definition.title === 'string'
-      ? []
-      : [warning('missing-property', '/title', '"title" must be a string', 'Add a title for host UI and editors')]),
+    ...propertyWarnings(context),
     ...context.conditions.flatMap((entry) => conditionWarnings(context, entry)),
     ...context.entries.flatMap((entry) => fieldWarnings(context, entry)),
     ...routeWarnings(context),

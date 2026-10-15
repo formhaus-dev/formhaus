@@ -45,7 +45,7 @@ function referenceIssues(context: CheckContext, { condition, path, owner, step, 
 export function conditionErrors(context: CheckContext, entry: ConditionEntry): DefinitionIssue[] {
   const { condition, path } = entry;
   if (typeof condition.field !== 'string')
-    return [error('missing-property', `${path}/field`, 'the condition has no "field"', 'Add the key of the field to test')];
+    return [error('missing-property', path, 'missing required property "field"', 'Add the key of the field to test')];
   return [...operatorIssues(context, condition, path), ...referenceIssues(context, entry)];
 }
 

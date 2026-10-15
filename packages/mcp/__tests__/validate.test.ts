@@ -5,6 +5,9 @@ import { branching, linear } from './fixtures';
 const summary = (definition: unknown) =>
   validateDefinitionTool({ definition }).issues.map(({ severity, code, path }) => `${severity} ${code} ${path}`);
 
+const messages = (definition: unknown) =>
+  validateDefinitionTool({ definition }).issues.map(({ severity, message }) => `${severity} ${message}`);
+
 describe('validate_definition', () => {
   it('accepts a valid definition', () => {
     expect(validateDefinitionTool({ definition: branching })).toEqual({ valid: true, issues: [] });
@@ -22,14 +25,46 @@ describe('validate_definition', () => {
   });
 
   it('reports schema and core issues with JSON pointers, without duplicates', () => {
-    expect(summary({ steps: [{ id: 's', fields: [{ key: 'a', colour: 'red' }] }] })).toEqual([
-      'error schema /id',
-      'error schema /title',
-      'error schema /submit',
-      'error schema /steps/0/title',
-      'error schema /steps/0/fields/0/label',
-      'error schema /steps/0/fields/0/colour',
-      'error missing-property /steps/0/fields/0/type',
+    expect(messages({ steps: [{ id: 's', fields: [{ key: 'a', colour: 'red' }] }] })).toEqual([
+      'error /: missing required property "id".',
+      'error /: missing required property "title".',
+      'error /: missing required property "submit".',
+      'error /steps/0: missing required property "title".',
+      'error /steps/0/fields/0: missing required property "label".',
+      'error /steps/0/fields/0/colour: unknown property "colour". Remove "colour".',
+      'error /steps/0/fields/0: missing required property "type".',
+    ]);
+  });
+
+  it('reports a mistyped property as an error with a suggestion', () => {
+    const definition = { imd: 'contact', title: 'Contact', submit: { label: 'Send' }, fields: [{ key: 'name', type: 'text', label: '' }] };
+    expect(validateDefinitionTool({ definition })).toEqual({
+      valid: false,
+      issues: [
+        { code: 'missing-property', severity: 'error', path: '', message: '/: missing required property "id".' },
+        {
+          code: 'unknown-property',
+          severity: 'error',
+          path: '/imd',
+          message: '/imd: unknown property "imd". Did you mean "id"?',
+          hint: 'Did you mean "id"?',
+        },
+        {
+          code: 'empty-label',
+          severity: 'warning',
+          path: '/fields/0/label',
+          message: '/fields/0/label: the label of "name" is empty. Add a label so screen readers can name the input.',
+          hint: 'Add a label so screen readers can name the input.',
+        },
+      ],
+    });
+  });
+
+  it('keeps properties the schema requires as errors', () => {
+    const fields = [{ key: 'a', type: 'select', options: [{ value: 'x' }] }];
+    expect(messages({ id: 'x', title: 'X', submit: { label: 'Go' }, fields })).toEqual([
+      'error /fields/0: missing required property "label". Add a label so screen readers can name the input.',
+      'error /fields/0/options/0: missing required property "label".',
     ]);
   });
 
@@ -43,7 +78,8 @@ describe('validate_definition', () => {
     const fields = [{ key: 'a', type: 'text', label: 'A', required: true }];
     const issue = validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Go' }, fields } }).issues[0];
     expect(issue).toMatchObject({
-      code: 'schema',
+      code: 'unknown-property',
+      severity: 'error',
       path: '/fields/0/required',
       hint: 'Move "required" into "validation": { "required": ... }.',
     });

@@ -1,6 +1,8 @@
 export type DefinitionIssueCode =
   | 'invalid-type'
   | 'missing-property'
+  | 'unknown-property'
+  | 'empty-label'
   | 'fields-and-steps'
   | 'duplicate-step-id'
   | 'duplicate-key'
@@ -46,13 +48,15 @@ export class FormDefinitionError extends Error {
   }
 }
 
+const sentence = (text: string) => (text.endsWith('?') ? text : `${text}.`);
+
 function create(severity: DefinitionIssue['severity']) {
   return (code: DefinitionIssueCode, path: string, problem: string, hint?: string): DefinitionIssue => ({
     code,
     severity,
     path,
-    message: `${path || '/'}: ${problem}.${hint ? ` ${hint}.` : ''}`,
-    ...(hint && { hint: `${hint}.` }),
+    message: `${path || '/'}: ${problem}.${hint ? ` ${sentence(hint)}` : ''}`,
+    ...(hint && { hint: sentence(hint) }),
   });
 }
 

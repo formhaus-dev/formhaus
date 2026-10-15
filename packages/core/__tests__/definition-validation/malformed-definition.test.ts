@@ -10,11 +10,7 @@ const malformed: [string, unknown, string][] = [
   ['fields as an object', { ...base, fields: {} }, '/fields: must be an array.'],
   ['a null field', { ...base, fields: [null] }, '/fields/0: must be a field object.'],
   ['steps as a string', { ...base, steps: 'one' }, '/steps: must be an array.'],
-  [
-    'a step without fields',
-    { ...base, steps: [{ id: 's', title: 'S' }] },
-    '/steps/0/fields: must be an array. Use [] when there is nothing to list.',
-  ],
+  ['a step without fields', { ...base, steps: [{ id: 's', title: 'S' }] }, '/steps/0: missing required property "fields".'],
   [
     'show as an object',
     { ...base, fields: [{ key: 'x', type: 'text', label: 'X', show: { field: 'y', eq: 1 } }] },
@@ -30,7 +26,30 @@ const malformed: [string, unknown, string][] = [
     { ...base, steps: [{ id: 's', title: 'S', fields: [], routes: { to: null } }] },
     '/steps/0/routes: must be an array.',
   ],
-  ['a field without a key', { ...base, fields: [{ type: 'text', label: 'X' }] }, '/fields/0/key: "key" must be a string.'],
+  ['a field without a key', { ...base, fields: [{ type: 'text', label: 'X' }] }, '/fields/0: missing required property "key".'],
+  ['a numeric field key', { ...base, fields: [{ key: 1, type: 'text', label: 'X' }] }, '/fields/0/key: "key" must be a string.'],
+  ['a field without a type', { ...base, fields: [{ key: 'x', label: 'X' }] }, '/fields/0: missing required property "type".'],
+  ['a step without an id', { ...base, steps: [{ title: 'S', fields: [] }] }, '/steps/0: missing required property "id".'],
+  [
+    'a step with null fields',
+    { ...base, steps: [{ id: 's', title: 'S', fields: null }] },
+    '/steps/0/fields: must be an array. Use [] when there is nothing to list.',
+  ],
+  [
+    'a route without to',
+    { ...base, steps: [{ id: 's', title: 'S', fields: [], routes: [{ show: [] }] }] },
+    '/steps/0/routes/0: missing required property "to".',
+  ],
+  [
+    'a numeric route target',
+    { ...base, steps: [{ id: 's', title: 'S', fields: [], routes: [{ to: 1 }] }] },
+    '/steps/0/routes/0/to: "to" must be a step id or null.',
+  ],
+  [
+    'a numeric option value',
+    { ...base, fields: [{ key: 'x', type: 'select', label: 'X', options: [{ value: 1, label: 'A' }] }] },
+    '/fields/0/options/0/value: "value" must be a string.',
+  ],
   ['submit.disabled as an object', { ...base, submit: { label: 'Go', disabled: {} } }, '/submit/disabled: must be an array.'],
   [
     'a null option',
@@ -40,7 +59,7 @@ const malformed: [string, unknown, string][] = [
   [
     'an option without value',
     { ...base, fields: [{ key: 'x', type: 'select', label: 'X', options: [{ label: 'A' }] }] },
-    '/fields/0/options/0/value: "value" must be a string.',
+    '/fields/0/options/0: missing required property "value".',
   ],
   [
     'optionsDependsOn as a string',
@@ -163,9 +182,9 @@ describe('malformed definitions', () => {
   it('reports a missing submit action, id and condition field', () => {
     const input = { title: 'A', fields: [{ key: 'x', type: 'text', label: 'X', show: [{ eq: 'y' }] }] };
     expect(checkDefinition(input).map(({ code, severity, path }) => [code, severity, path])).toEqual([
-      ['missing-property', 'error', '/id'],
-      ['missing-property', 'error', '/submit'],
-      ['missing-property', 'error', '/fields/0/show/0/field'],
+      ['missing-property', 'error', ''],
+      ['missing-property', 'error', ''],
+      ['missing-property', 'error', '/fields/0/show/0'],
     ]);
   });
 
@@ -174,8 +193,8 @@ describe('malformed definitions', () => {
       {
         code: 'missing-property',
         severity: 'warning',
-        path: '/title',
-        message: '/title: "title" must be a string. Add a title for host UI and editors.',
+        path: '',
+        message: '/: missing required property "title". Add a title for host UI and editors.',
         hint: 'Add a title for host UI and editors.',
       },
     ]);
