@@ -6,6 +6,7 @@ import { camel, humanize, slug, unique } from './names';
 import {
   at,
   child,
+  conditionValues,
   type DefinitionFix,
   type Entry,
   fix,
@@ -93,6 +94,17 @@ function duplicateKey(definition: Entry, { path }: DefinitionIssue): DefinitionF
   return [fix(`Rename the key to ${quote(next)}`, !references(definition).has(key), set(path, next))];
 }
 
+function duplicateOption(definition: Entry, { path }: DefinitionIssue): DefinitionFix[] {
+  const value = text(at(definition, path));
+  const options = parent(parent(path));
+  const field = at(definition, parent(options));
+  if (value === undefined || !isEntry(field)) return [];
+  const next = unique(value, valuesOf(at(definition, options)), '_');
+  const defaults = Array.isArray(field.defaultValue) ? field.defaultValue : [field.defaultValue];
+  const used = defaults.includes(value) || (typeof field.key === 'string' && conditionValues(definition, field.key).includes(value));
+  return [fix(`Change the value to ${quote(next)}`, !used, set(path, next))];
+}
+
 function duplicateStep(definition: Entry, { path }: DefinitionIssue): DefinitionFix[] {
   const id = text(at(definition, path));
   if (id === undefined) return [];
@@ -139,6 +151,8 @@ export function fixesFor(definition: Entry, issue: DefinitionIssue, issues: read
       return emptyLabel(definition, issue);
     case 'duplicate-key':
       return duplicateKey(definition, issue);
+    case 'duplicate-option-value':
+      return duplicateOption(definition, issue);
     case 'duplicate-step-id':
       return duplicateStep(definition, issue);
     case 'unknown-field':

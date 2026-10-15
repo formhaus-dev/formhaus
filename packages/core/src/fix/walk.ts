@@ -53,6 +53,22 @@ export function references(definition: Entry): Set<string> {
   return found;
 }
 
+export function conditionValues(definition: Entry, key: string): unknown[] {
+  const found: unknown[] = [];
+  const visit = (node: unknown, name?: string): void => {
+    if (Array.isArray(node)) {
+      for (const item of node) {
+        if ((name === 'show' || name === 'showAny' || name === 'disabled') && isEntry(item) && item.field === key) {
+          found.push(item.eq, item.neq, ...list(item.in), ...list(item.notIn));
+        }
+        visit(item);
+      }
+    } else if (isEntry(node)) for (const [child, value] of Object.entries(node)) visit(value, child);
+  };
+  visit(definition);
+  return found;
+}
+
 export const quoted = (text: string | undefined, pattern: RegExp) => (text === undefined ? undefined : pattern.exec(text)?.[1]);
 export const missingName = (issue: DefinitionIssue) => quoted(issue.message, /missing required property "([^"]+)"/);
 export const suggestedName = (issue: DefinitionIssue) => quoted(issue.hint, /^Did you mean "([^"]+)"\?$/);

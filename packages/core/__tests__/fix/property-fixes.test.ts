@@ -96,6 +96,45 @@ describe('fixes for property checks', () => {
       fields: [text('name'), { key: 'email', type: 'email', label: 'Email' }, { key: 'email_2', type: 'email', label: 'Work email' }],
     });
     expect(result.issues).toEqual([]);
+    expect(result.applied.map(({ title }) => title)).toEqual([
+      'Rename "imd" to "id"',
+      'Rename the key to "email_2"',
+      'Set the label to "Email"',
+    ]);
+  });
+});
+
+describe('fixes for repeated option values', () => {
+  const plan = (
+    extra: Definition = {},
+    options = [
+      { value: 'pro', label: 'Pro' },
+      { value: 'pro', label: 'Team' },
+    ],
+  ) => ({ key: 'plan', type: 'select', label: 'Plan', options, ...extra });
+
+  it('suffixes the later value, safe when nothing uses it', () => {
+    expect(fixesAt(form([plan()]), '/fields/0/options/1/value')).toEqual([
+      { title: 'Change the value to "pro_2"', safe: true, patch: [{ op: 'add', path: '/fields/0/options/1/value', value: 'pro_2' }] },
+    ]);
+    const taken = plan({}, [
+      { value: 'pro', label: 'A' },
+      { value: 'pro', label: 'B' },
+      { value: 'pro_2', label: 'C' },
+    ]);
+    expect(fixesAt(form([taken]), '/fields/0/options/1/value')[0].title).toBe('Change the value to "pro_3"');
+  });
+
+  it.each([
+    ['an eq condition', [plan(), text('x', { show: [{ field: 'plan', eq: 'pro' }] })]],
+    ['an in condition', [plan(), text('x', { showAny: [{ field: 'plan', in: ['free', 'pro'] }] })]],
+    ['the default value', [plan({ defaultValue: 'pro' })]],
+  ])('marks the fix unsafe when %s uses the value', (_, fields) => {
+    expect(fixesAt(form(fields), '/fields/0/options/1/value')[0].safe).toBe(false);
+  });
+
+  it('keeps the fix safe when a condition tests another value', () => {
+    expect(fixesAt(form([plan(), text('x', { show: [{ field: 'plan', eq: 'free' }] })]), '/fields/0/options/1/value')[0].safe).toBe(true);
   });
 });
 
