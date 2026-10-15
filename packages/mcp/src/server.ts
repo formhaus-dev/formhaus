@@ -57,14 +57,14 @@ export function createServer(): McpServer {
 
   server.registerTool('capabilities', {
     title: 'Formhaus capabilities',
-    description: 'Lists what a Formhaus definition supports: field types, field props, validation rules, condition operators, step and route semantics, actions, translation (lang, messages, labels, i18n keys, overlay addresses) and adapters. To upgrade a 0.10 project, read the formhaus://migrate/0.11 resource.',
+    description: 'Call this first, before writing or editing a definition. Lists what a Formhaus definition supports: field types, field props, validation rules, condition operators, step and route semantics, actions, translation (lang, messages, labels, i18n keys, overlay addresses) and adapters. To check a finished definition, call validate_definition instead. To upgrade a 0.10 project, read the formhaus://migrate/0.11 resource.',
     outputSchema: capabilitiesOutput,
     annotations: { readOnlyHint: true },
   }, async () => json(capabilitiesTool()));
 
   server.registerTool('example_definitions', {
     title: 'Example definitions',
-    description: 'Without id, lists the bundled example definitions. With id, returns that definition.',
+    description: 'Call this when you need a working starting point or a pattern to copy, such as multi-step forms, branching routes, conditions or translations. Without id, lists the bundled example definitions. With id, returns that definition. Adapt it, then check it with validate_definition.',
     inputSchema: { id: z.string().optional().describe('Example id from the list.') },
     outputSchema: examplesOutput,
     annotations: { readOnlyHint: true },
