@@ -27,8 +27,7 @@
 }
 
 .horizontal {
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-flow: row wrap;
   gap: var(--fh-ed-space-3) var(--fh-ed-space-4);
 }
 
