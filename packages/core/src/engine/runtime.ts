@@ -5,7 +5,7 @@ import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-
 import { createValues, initialState } from './engine-utils';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
-import type { EngineInternals, EngineState, RuntimeNotifyOptions } from './runtime-internals';
+import type { EngineState, RuntimeNotifyOptions } from './runtime-internals';
 import { createSubscriptions, type NotifyOptions } from './subscriptions';
 import { applyValidationErrors, errorKeys, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
 import { submitForm } from './submission';
@@ -149,25 +149,25 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
 
   setValue(key: string, value: unknown): void {
     const path = this.visibility.parse(key);
-    if (path) setItemValue(this.internals, path[0], path[1], path[2], value);
-    else writeValue(this.internals, key, value);
+    if (path) setItemValue(this as never, path[0], path[1], path[2], value);
+    else writeValue(this as never, key, value);
   }
 
   items(key: string): GroupItem[] {
-    return groupItems(this.internals, key);
+    return groupItems(this as never, key);
   }
   addItem(key: string): boolean {
-    return addItem(this.internals, key);
+    return addItem(this as never, key);
   }
   removeItem(key: string, index: number): boolean {
-    return removeItem(this.internals, key, index);
+    return removeItem(this as never, key, index);
   }
   setItemValue(key: string, index: number, field: string, value: unknown): void {
-    setItemValue(this.internals, key, index, field, value);
+    setItemValue(this as never, key, index, field, value);
   }
 
   setErrors(errors: Record<string, string>): void {
-    applyValidationErrors(this.internals, errors, true);
+    applyValidationErrors(this as never, errors, true);
   }
 
   setFieldLoading(key: string, loading: boolean): void {
@@ -186,42 +186,38 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   next(): Promise<boolean> {
-    return changeStep(this.internals, 'next');
+    return changeStep(this as never, 'next');
   }
   back(): Promise<boolean> {
-    return changeStep(this.internals, 'back');
+    return changeStep(this as never, 'back');
   }
   skip(submit?: SubmitHandler): Promise<boolean> {
-    return skipStep(this.internals, submit);
+    return skipStep(this as never, submit);
   }
   submit(handler: SubmitHandler): Promise<boolean> {
-    return submitForm(this.internals, handler);
+    return submitForm(this as never, handler);
   }
   isStepSkipped(stepId: string): boolean {
     return this.skipped.has(stepId);
   }
   validate(): Record<string, string> {
-    return validateForm(this.internals);
+    return validateForm(this as never);
   }
   validateField(key: string): string | null {
-    return validateOne(this.internals, key);
+    return validateOne(this as never, key);
   }
   getSubmitValues(): Partial<TValues> {
-    return getSubmitValues(this.internals) as Partial<TValues>;
+    return getSubmitValues(this as never) as Partial<TValues>;
   }
   goToStepWithField(key: string): void {
-    goToStepWithField(this.internals, key);
+    goToStepWithField(this as never, key);
   }
   reset(values?: Record<string, unknown>): void {
-    resetEngine(this.internals, values);
+    resetEngine(this as never, values);
   }
 
   private get view() {
     return this.visibility.state(this.state.values, this.currentStepIndex);
-  }
-
-  private get internals(): EngineInternals {
-    return this as unknown as EngineInternals;
   }
 
   private notify(options: RuntimeNotifyOptions = {}): void {

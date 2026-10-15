@@ -1,8 +1,7 @@
 import { getChangedKeys } from './engine-utils';
 import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs, watchValues } from './pending-inputs';
-import { validateStep } from '../validation';
-import { applyValidationErrors, dropServerErrors, getSubmitValues, pruneOffPathErrors } from './validation-state';
+import { applyValidationErrors, dropServerErrors, fieldsErrors, getSubmitValues, pruneOffPathErrors } from './validation-state';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
 import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
@@ -12,7 +11,7 @@ import type { EngineInternals } from './runtime-internals';
 function hasStepErrors(engine: EngineInternals): boolean {
   const step = engine.currentStep;
   if (!step) return true;
-  const errors = validateStep(step, getSubmitValues(engine), engine.validators, engine.messages);
+  const errors = fieldsErrors(engine, step.fields);
   if (Object.keys(errors).length === 0) return false;
   const previousErrors = engine.errors;
   engine.state.errors = { ...previousErrors, ...errors };

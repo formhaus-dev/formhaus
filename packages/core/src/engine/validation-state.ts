@@ -1,4 +1,4 @@
-import { validateFieldValue, validateFields, validateStep } from '../validation';
+import { validateFieldValue, validateFields } from '../validation';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
 import type { FormField, FormNode } from '../types';
 import { isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
@@ -16,10 +16,18 @@ export function errorKeys(nodes: FormNode[], errors: Record<string, string>, val
   ]);
 }
 
+export function fieldsErrors(engine: EngineInternals, nodes: FormNode[]): Record<string, string> {
+  return validateFields(nodes, getSubmitValues(engine), engine.validators, engine.messages);
+}
+
+function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
+  return validateFieldValue(field, value, values, engine.validators, engine.messages);
+}
+
 export function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {
   const values = getSubmitValues(engine);
   const scope = itemScope(group, itemsOf(values[group.key])[index], values);
-  return validateFieldValue(field, scope[field.key], scope, engine.validators, engine.messages);
+  return fieldError(engine, field, scope[field.key], scope);
 }
 
 export function applyValidationErrors(
@@ -73,9 +81,7 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string, i
     : engine.visibility.allFields.map((field) => [field.key, field]);
   for (const [path, field] of fields) {
     if (field.validation?.matchField !== key || engine.errors[path] === undefined) continue;
-    const error = item
-      ? itemError(engine, { ...item, field })
-      : validateFieldValue(field, engine.values[field.key], getSubmitValues(engine), engine.validators, engine.messages);
+    const error = item ? itemError(engine, { ...item, field }) : fieldError(engine, field, engine.values[field.key]);
     if (error) continue;
     clearError(engine, path);
     cleared.push(path);
@@ -112,12 +118,9 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   const previousErrors = engine.errors;
   const errors: Record<string, string> = {};
   if (engine.isMultiStep) {
-    for (const step of engine.visibleSteps) {
-      if (engine.skipped.has(step.id)) continue;
-      Object.assign(errors, validateStep(step, getSubmitValues(engine), engine.validators, engine.messages));
-    }
+    for (const step of engine.visibleSteps) if (!engine.skipped.has(step.id)) Object.assign(errors, fieldsErrors(engine, step.fields));
   } else {
-    Object.assign(errors, validateFields(engine.definition.fields ?? [], getSubmitValues(engine), engine.validators, engine.messages));
+    Object.assign(errors, fieldsErrors(engine, engine.definition.fields ?? []));
   }
   engine.state.errors = { ...engine.state.serverErrors, ...errors };
   const structureChanged = navigate && moveToFirstError(engine, errors);
@@ -130,9 +133,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
   const item = !field && engine.visibility.activeItem(key, engine.values);
   if (!field && !item) return null;
   const previousError = engine.errors[key];
-  const error = item
-    ? itemError(engine, item)
-    : validateFieldValue(field!, engine.values[key], getSubmitValues(engine), engine.validators, engine.messages);
+  const error = item ? itemError(engine, item) : fieldError(engine, field!, engine.values[key]);
   if (error) engine.errors[key] = error;
   else clearError(engine, key, true);
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];

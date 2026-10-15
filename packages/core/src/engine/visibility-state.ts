@@ -2,7 +2,7 @@ import { getAllFields } from './engine-utils';
 import { indexConditions } from './visibility-index';
 import { createActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
-import { validateStep } from '../validation';
+import { validateFields } from '../validation';
 import type { FormDefinition, FormField, FormGroup, FormNode, FormSection, FormStep } from '../types';
 import { isVisible } from '../visibility';
 import {
@@ -171,7 +171,7 @@ export function createVisibility(definition: FormDefinition) {
       const step = state(values, stepIndex).currentStep;
       if (!canGoNextDirty) return cache.canGoNext;
       canGoNextDirty = false;
-      const errors = step ? validateStep(step, path.values(values), validators) : {};
+      const errors = step ? validateFields(step.fields, path.values(values), validators) : {};
       return (cache.canGoNext = isMultiStep() && Object.keys(errors).length === 0);
     },
 
