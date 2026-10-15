@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import type { FormEngineOptions, LabelKey, StepChangeContext } from '@formhaus/core';
-import { applySources, fieldDomId, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { isGroup, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
+import { applySources, errorEntries, fieldDomId, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { computed, onMounted, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
+import FormGroup from './FormGroup.vue';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
 import { useFieldOptions } from './composables/useFieldOptions';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
+import { useNodeProps } from './composables/useNodeProps';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
 const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2 });
@@ -57,6 +59,7 @@ const {
   topLevelErrors,
   fieldLoading,
   visibleFields,
+  visibleNodes,
   currentStep,
   isFirstStep,
   isLastStep,
@@ -72,11 +75,8 @@ watch(
   (engine) => applySources(engine, props.initialValues),
 );
 
-const resolvedOptions = useFieldOptions(
-  visibleFields,
-  () => form.engine,
-  () => props.optionsProviders,
-);
+const optionFields = computed(() => visibleFields.value.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])));
+const resolvedOptions = useFieldOptions(optionFields, () => form.engine, () => props.optionsProviders);
 
 const {
   update: onFieldUpdate,
@@ -103,20 +103,16 @@ watch(
   { immediate: true },
 );
 
-const summaryFields = computed(() =>
-  (isMultiStep.value ? form.visibleSteps.value.flatMap((step) => step.fields) : visibleFields.value).filter(
-    (field) => field.type !== 'hidden' && errors.value[field.key] !== undefined,
-  ),
-);
-const stepStatuses = computed(() =>
-  props.stepErrorMarks
-    ? form.visibleSteps.value.map(({ id, title, fields }) => ({
-        id,
-        title,
-        errorCount: fields.filter((field) => field.type !== 'hidden' && errors.value[field.key] !== undefined).length,
-      }))
-    : undefined,
-);
+const summaryEntries = computed(() => {
+  errors.value;
+  progress.value;
+  return errorEntries(form.engine, formId, props.labels, props.definition.labels);
+});
+const stepStatuses = computed(() => {
+  if (!props.stepErrorMarks) return undefined;
+  const marks = form.engine.stepErrors;
+  return form.visibleSteps.value.map(({ id, title }) => ({ id, title, errorCount: marks[id]?.length ?? 0 }));
+});
 
 function onFieldFocus(key: string) {
   emit('analyticsEvent', { type: 'field_focused', fieldKey: key });
@@ -134,12 +130,14 @@ function onCancel() {
   emit('cancel');
 }
 
-const fieldsWithOptions = computed(() =>
-  visibleFields.value.map((field) => {
-    const resolved = field.optionsFrom && props.optionsProviders?.[field.optionsFrom] && resolvedOptions.value[field.key];
-    return resolved ? { ...field, options: resolved } : field;
-  }),
-);
+const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
+
+const { fieldProps, groupProps } = useNodeProps(form, props, formId, resolvedOptions, disabled, {
+  update: onFieldUpdate,
+  commit: onFieldCommit,
+  blur: onFieldBlur,
+  focus: onFieldFocus,
+});
 
 const effectiveIsLastStep = computed(() => isLastStep.value || !isMultiStep.value);
 
@@ -184,31 +182,29 @@ async function onPrimary() {
       :counter-label="label('stepOf', progress)"
     />
 
-    <div v-if="props.errorSummary && summaryFields.length > 0" class="fh-error-summary" role="alert">
+    <div v-if="props.errorSummary && summaryEntries.length > 0" class="fh-error-summary" role="alert">
       <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
       <ul class="fh-error-summary__list">
-        <li v-for="field in summaryFields" :key="field.key">
-          <a class="fh-error-summary__link" :href="`#${fieldDomId(formId, field.key, form.engine.definition)}`" @click.prevent="showField(field.key)">{{ field.label }}: {{ errors[field.key] }}</a>
+        <li v-for="entry in summaryEntries" :key="entry.key">
+          <a class="fh-error-summary__link" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.label }}: {{ entry.message }}</a>
         </li>
       </ul>
     </div>
 
     <div class="fh-form__fields">
-      <FieldResolver
-        v-for="field in fieldsWithOptions"
-        :key="field.key"
-        :id="fieldDomId(formId, field.key, form.engine.definition)"
-        :field="field"
-        :model-value="values[field.key]"
-        :error="errors[field.key]"
-        :loading="fieldLoading[field.key]"
-        :disabled="props.loading || stepValidating || submitting"
-        :components="props.components"
-        @update:model-value="(v) => onFieldUpdate(field.key, v)"
-        @commit="(v) => onFieldCommit(field.key, v)"
-        @blur="() => onFieldBlur(field.key)"
-        @focus="() => onFieldFocus(field.key)"
-      />
+      <template v-for="node in visibleNodes" :key="node.key">
+        <fieldset v-if="node.type === 'section'" :id="fieldDomId(formId, node.key)" class="fh-section"
+          :aria-describedby="'description' in node && node.description ? `${fieldDomId(formId, node.key)}-description` : undefined">
+          <legend class="fh-section__title">{{ 'title' in node && node.title }}</legend>
+          <p v-if="'description' in node && node.description" :id="`${fieldDomId(formId, node.key)}-description`" class="fh-field__helper">{{ node.description }}</p>
+          <template v-for="child in ('fields' in node ? node.fields : [])" :key="child.key">
+            <FormGroup v-if="child.type === 'group'" v-bind="groupProps(child)" />
+            <FieldResolver v-else v-bind="fieldProps(child)" />
+          </template>
+        </fieldset>
+        <FormGroup v-else-if="node.type === 'group'" v-bind="groupProps(node as FormField)" />
+        <FieldResolver v-else v-bind="fieldProps(node as FormField)" />
+      </template>
     </div>
 
     <div v-if="formErrors.length > 0" class="fh-form__top-errors" role="alert">
