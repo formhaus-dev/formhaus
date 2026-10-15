@@ -68,14 +68,15 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | Property | Type | Description |
 |---|---|---|
 | `values` | `Readonly<Partial<TValues>>` | Current draft values, including retained inactive branch answers in routed forms |
-| `errors` | `Readonly<Record<string, string>>` | Client and server errors attached to visible fields on the active path |
+| `errors` | `Readonly<Record<string, string>>` | Client and server errors attached to visible fields on the active path. Item fields use [paths](#groups) |
 | `topLevelErrors` | `readonly string[]` | Form-level errors: `formErrors` from a submit result and errors for unknown, hidden or off-path keys |
-| `stepErrors` | `Record<string, string[]>` | Keys of fields with errors, by step id, for steps on the active path that have errors |
+| `stepErrors` | `Record<string, string[]>` | Keys and item paths with errors, by step id, in form order, for steps on the active path that have errors |
 | `fieldLoading` | `Readonly<Record<string, boolean>>` | Per-field loading state |
 | `stepValidating` | `boolean` | Whether async navigation, including validation and before/after hooks, is running |
 | `submitting` | `boolean` | Whether submission validation, hooks or the submit handler are running |
 | `currentStepIndex` | `number` | Zero-based index in the visible step list (active path when routes are enabled) |
-| `visibleFields` | `FormField[]` | Visible fields on the current step, or all visible fields in a single-step form |
+| `visibleFields` | `FormField[]` | Visible fields on the current step, or all visible fields in a single-step form. Section fields are listed in place, groups as one entry |
+| `visibleNodes` | `FormNode[]` | Visible fields, sections and groups of the current step. A section holds only its visible fields. Added in 0.15.0 |
 | `visibleSteps` | `FormStep[]` | Visible steps on the active path; without routes, all steps whose conditions pass |
 | `currentStep` | `FormStep \| null` | Current visible step |
 | `isFirstStep` / `isLastStep` | `boolean` | Current navigation position |
@@ -87,7 +88,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 
 | Method | Returns | Description |
 |---|---|---|
-| `setValue(key, value)` | `void` | Sets a value, clears its error, and reconciles dependent visibility |
+| `setValue(key, value)` | `void` | Sets a value, clears its error, and reconciles dependent visibility. An item path such as `people.0.name` writes one item field |
 | `setErrors(errors)` | `void` | Applies a server error set: replaces existing errors and opens the earliest step with a field error. See [server errors](/spec#server-errors) |
 | `setFieldLoading(key, loading)` | `void` | Updates loading state for one field |
 | `validate()` | `Record<string, string>` | Validates visible fields on the active path and returns the client errors. Unresolved server errors stay in `errors` |
@@ -114,6 +115,29 @@ It returns `false` only when `nextErrors` equals `previousErrors` and the engine
 ::: warning
 `@formhaus/core/internal` holds the plumbing the React and Vue renderers share: `shouldApplyExternalErrors`, `autoAdvance`, `fieldDomId`, and the Cloud form controller (`createCloudController`, `initialCloudState`, `focusProblem`). It has no semver guarantee and can change in any release. Pin the exact `@formhaus/core` version if you import it.
 :::
+
+## Groups
+
+Added in 0.15.0. See [Repeatable groups](/guide/groups).
+
+| Method | Returns | Description |
+|---|---|---|
+| `items(key)` | `GroupItem[]` | `{ id, fields }` for each item of a visible group: a stable id and the visible item fields |
+| `addItem(key)` | `boolean` | Adds an item with the item field defaults. `false` at the maximum or for a hidden group |
+| `removeItem(key, index)` | `boolean` | Removes an item and moves later item errors to their new index. `false` at the minimum or out of range |
+| `setItemValue(key, index, field, value)` | `void` | Writes one item field. Same as `setValue('<key>.<index>.<field>', value)` |
+
+Item errors use the path `<group>.<index>.<field>` with a 0-based index. `setErrors()`, `validateField()` and `goToStepWithField()` accept these paths.
+
+```ts
+import { isGroup, isSection } from '@formhaus/core';
+
+for (const node of engine.visibleNodes) {
+  if (isSection(node)) drawSection(node);
+  else if (isGroup(node)) engine.items(node.key).forEach((item, index) => drawItem(node, index, item.fields));
+  else drawField(node);
+}
+```
 
 ## Translations
 

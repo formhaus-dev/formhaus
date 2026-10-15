@@ -14,14 +14,14 @@ Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never b
 ```ts
 interface FormDefinition {
   $schema?: string;      // JSON Schema URL for editor validation
-  formatVersion?: string; // Definition format, such as "1.0". Added in 0.11.2
+  formatVersion?: string; // Definition format, such as "1.1". Added in 0.11.2
   id: string;            // Unique form identifier
   lang?: string;         // BCP 47 tag of the texts, such as "ru". Added in 0.13.0
   title: string;         // Form title for host UI and Figma output
   description?: string;  // Text under the title, up to 1000 characters. Added in 0.10.0
   submit: FormAction;    // Submit button config
   cancel?: FormAction;   // Cancel button (optional)
-  fields?: FormField[];  // Single-step form
+  fields?: FormNode[];   // Single-step form
   steps?: FormStep[];    // Multi-step form
   messages?: MessageCatalog; // Validation message templates. Added in 0.13.0
   labels?: LabelCatalog;     // Renderer label templates. Added in 0.13.0
@@ -71,6 +71,53 @@ type DefaultFieldType =
 type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get autocomplete
 ```
 
+## FormSection and FormGroup
+
+Containers inside a `fields` array. Added in 0.15.0 with format 1.1. See [Sections](/guide/sections) and [Repeatable groups](/guide/groups).
+
+```ts
+type FormNode = FormField | FormSection | FormGroup;
+
+interface FormSection {
+  key: string;
+  type: 'section';
+  title: string;
+  description?: string;
+  show?: ShowCondition[];
+  showAny?: ShowCondition[];
+  fields: (FormField | FormGroup)[];
+  i18n?: StepI18n;
+}
+
+interface FormGroup {
+  key: string;                    // Key of the item array
+  type: 'group';
+  label: string;
+  helperText?: string;
+  itemLabel?: string;             // "Participant {index}", index starts at 1
+  addLabel?: string;
+  removeLabel?: string;
+  defaultItems?: number;
+  show?: ShowCondition[];
+  showAny?: ShowCondition[];
+  validation?: GroupValidation;
+  fields: FormField[];            // Fields of one item
+  i18n?: GroupI18n;
+}
+
+interface GroupValidation {
+  required?: boolean | string;    // At least one item
+  minLength?: number;             // Minimum item count
+  minLengthMessage?: string;
+  maxLength?: number;             // Maximum item count
+  maxLengthMessage?: string;
+  validator?: string;             // Receives the whole array
+  i18n?: { required?: string; minLength?: string; maxLength?: string };
+}
+```
+
+`isSection(node)` and `isGroup(node)` from `@formhaus/core` narrow a `FormNode`.
+
 ## FormStep
 
 A step in a multi-step form. Has its own fields and optional CTA overrides. Step ids must be unique; the `FormEngine` constructor throws on duplicates.
@@ -80,7 +127,7 @@ interface FormStep {
   id: string;
   title: string;
   description?: string;
-  fields: FormField[];
+  fields: FormNode[];           // Fields, sections and groups
   show?: ShowCondition[];       // Step-level visibility
   showAny?: ShowCondition[];
   routes?: StepRoute[];         // Ordered forward destinations. Added in 0.7.0
@@ -169,7 +216,8 @@ Catalogs and translation keys. See [Translations](/guide/translations) and the [
 type MessageKey =
   | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
   | 'email' | 'number' | 'date' | 'datetime' | 'time' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value';
-type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary';
+type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary'
+  | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved'; // Group labels added in 0.15.0
 
 type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"
 type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} из {total}"
@@ -177,10 +225,11 @@ type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} 
 interface FormI18n { title?: string; description?: string; messages?: MessageCatalog; labels?: LabelCatalog }
 interface StepI18n { title?: string; description?: string }
 interface FieldI18n { label?: string; placeholder?: string; helperText?: string }
+interface GroupI18n { label?: string; helperText?: string; itemLabel?: string; addLabel?: string; removeLabel?: string }
 interface ValidationI18n { required?: string; minLength?: string; maxLength?: string; min?: string; max?: string; pattern?: string; matchField?: string }
 ```
 
-`FormStep.i18n` is a `StepI18n` and `FormField.i18n` a `FieldI18n`. Every `i18n` value is a translation key; the text next to it is the fallback.
+`FormStep.i18n` and `FormSection.i18n` are a `StepI18n`, `FormField.i18n` a `FieldI18n` and `FormGroup.i18n` a `GroupI18n`. Every `i18n` value is a translation key; the text next to it is the fallback.
 
 ## ValidatorFn
 
@@ -283,6 +332,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `type: "section"` and `type: "group"` nodes, format 1.1 | 0.15.0 |
 | `lang`, `messages`, `labels` and `i18n` | 0.13.0 |
 | `formatVersion` on `FormDefinition` | 0.11.2 |
 | `description` on `FormDefinition` | 0.10.0 |
