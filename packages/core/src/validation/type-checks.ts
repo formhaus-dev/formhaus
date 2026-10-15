@@ -33,6 +33,7 @@ export function trimValue(field: FormField, value: unknown): unknown {
 }
 
 export function normalizeValue(field: FormField, input: unknown): unknown {
+  if (Array.isArray(input) && input.length === 0 && field.type !== 'multiselect' && BUILT_IN_TYPES.includes(field.type)) return undefined;
   const value = trimValue(field, input);
   if (field.type !== 'number' || typeof value !== 'string' || !DECIMAL.test(value)) return value;
   const parsed = Number(value);

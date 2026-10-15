@@ -90,6 +90,7 @@ Both run the `validation` rules on the active path and skip hidden fields, hidde
 |---|---|---|
 | Steps in `skippedSteps` dropped, only when the step has `skip` | Yes | No |
 | `number` decimal string such as `"5"` converted to a number | Yes | No. The string fails the number check |
+| `[]` in a built-in field other than `multiselect` dropped like a missing answer | Yes | No. It counts as empty and stays in the payload |
 | Named `validator` functions | Ignored unless passed in `validators` | Yes |
 
 `FormEngine.validate()` is the browser check. Do not use it on untrusted input.

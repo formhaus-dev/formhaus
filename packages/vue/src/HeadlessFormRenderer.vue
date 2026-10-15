@@ -54,21 +54,22 @@ const {
 
 const resolvedOptions = useFieldOptions(visibleFields, () => form.engine, props.optionsProviders);
 
+const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, skip: onSkip, submit: onSubmit, actionError, invalidAttempts } =
+  useRendererActions(form, props, emit);
+const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
+
+const { rememberFocus, showField, requestFocus } = useFormFocus(form, formRef, formId, invalidAttempts);
+
 watch(
   [() => props.errors, () => form.engine],
   ([newErrors, engine], [oldErrors, oldEngine]) => {
     if (!newErrors) return;
     if (!shouldApplyExternalErrors(engine, engine === oldEngine ? oldErrors : undefined, newErrors)) return;
     engine.setErrors(newErrors);
+    if (Object.keys(newErrors).length > 0) requestFocus();
   },
   { immediate: true },
 );
-
-const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, skip: onSkip, submit: onSubmit, actionError, invalidAttempts } =
-  useRendererActions(form, props, emit);
-const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
-
-const { rememberFocus, showField } = useFormFocus(form, formRef, formId, invalidAttempts);
 
 const summaryFields = computed(() => (isMultiStep.value ? form.visibleSteps.value.flatMap((step) => step.fields) : visibleFields.value)
   .filter((field) => errors.value[field.key] !== undefined));
