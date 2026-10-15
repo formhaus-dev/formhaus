@@ -32,7 +32,7 @@ A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `M
 
 ## Document structure
 
-A definition is a JSON object. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) rejects unknown properties at every level. Core ignores them.
+A definition is a JSON object. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) rejects unknown properties at every level. `checkDefinition()` reports them as `unknown-property` warnings, and the engine ignores them.
 
 | Property | Type | Required | Meaning |
 |---|---|---|---|
@@ -219,7 +219,6 @@ An action is an object:
 |---|---|---|
 | `label` | string, required | Button text. |
 | `variant` | `primary`, `secondary`, `text` | Button style. |
-| `action` | string | Identifier for custom action components. |
 | `disabled` | [condition](#conditions)[] | Disabled when all conditions match. |
 | `i18n` | object | [Translation key](#translation-keys) for `label`. |
 
@@ -481,9 +480,10 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 
 | Code | Severity | Reported for |
 |---|---|---|
-| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as `in` that is not an array, `max` that is not a number a `formatVersion` that is not a version string |
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as an `id` that is not a string, `in` that is not an array, `max` that is not a number or a `formatVersion` that is not a version string |
 | `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
-| `missing-property` | error | A missing `id`, `submit`, step `id`, field `key` or `type`, route `to` or condition `field`. A missing `title` is a warning |
+| `missing-property` | error, warning | A missing `id`, `submit`, step `id` or `fields`, field `key` or `type`, option `value`, route `to` or condition `field`. A missing form or step `title`, field or option `label`, or action `label` is a warning. The path points to the object that lacks the property |
+| `unknown-property` | warning | A property the JSON Schema does not define, such as `imd` for `id`. The hint names the closest known property, or the `validation` object for a rule set on a field |
 | `fields-and-steps` | error | Both `fields` and `steps` non-empty |
 | `duplicate-step-id` | error | Two steps with one id |
 | `reserved-key` | error | A field key that is a built-in object property name, such as `constructor` |
@@ -496,6 +496,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `duplicate-key` | error | A field key that an earlier field on a possible path already uses |
 | `invalid-range` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
+| `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
