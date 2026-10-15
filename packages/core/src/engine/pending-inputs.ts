@@ -1,3 +1,4 @@
+import { getChangedKeys } from './engine-utils';
 import type { EngineInternals } from './runtime-internals';
 
 function activePath(engine: EngineInternals): string {
@@ -10,9 +11,7 @@ export function watchCheckedInputs(engine: EngineInternals, checked: Record<stri
   return () => activePath(engine) !== path || seen.some(([key, value]) => !Object.is(engine.values[key], value));
 }
 
-export function watchValues(engine: EngineInternals, values: Record<string, unknown>): () => boolean {
-  const path = activePath(engine);
+export function watchValues(engine: EngineInternals, values: Record<string, unknown>): () => Set<string> {
   const seen = { ...values };
-  return () => activePath(engine) !== path
-    || Object.keys({ ...seen, ...engine.values }).some((key) => !Object.is(engine.values[key], seen[key]));
+  return () => getChangedKeys(seen, engine.values);
 }
