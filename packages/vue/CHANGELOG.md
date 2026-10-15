@@ -1,5 +1,13 @@
 # @formhaus/vue
 
+## 0.13.1
+
+### Patch Changes
+
+- 4457bfb: - A change of the `errors` prop now focuses the first invalid field when focus is inside the form and not in a text field.
+- Updated dependencies [4457bfb]
+  - @formhaus/core@0.13.1
+
 ## 0.13.0
 
 ### Minor Changes

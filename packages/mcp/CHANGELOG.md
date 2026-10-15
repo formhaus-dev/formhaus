@@ -1,5 +1,15 @@
 # @formhaus/mcp
 
+## 0.4.1
+
+### Patch Changes
+
+- 4457bfb: - Fixed `publish_form`, `list_forms`, `get_submissions`, `update_form_settings` and `get_webhook` failing the output schema check of MCP clients.
+  - Fixed `simulate_path` leaving out fields shown by the default value of a skipped step when that value has surrounding spaces.
+  - Fixed `simulate_path` returning a non-string `title` for a form without a string title.
+- Updated dependencies [4457bfb]
+  - @formhaus/core@0.13.1
+
 ## 0.4.0
 
 ### Minor Changes
