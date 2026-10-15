@@ -1,0 +1,10 @@
+pre-commit:
+  jobs:
+    - name: biome
+      glob: "*.{js,mjs,cjs,jsx,ts,tsx,mts,cts,json,jsonc,vue}"
+      run: pnpm exec biome check --write --no-errors-on-unmatched --files-ignore-unknown=true {staged_files}
+      stage_fixed: true
+    - name: stylelint
+      glob: "*.css"
+      run: pnpm exec stylelint --fix --allow-empty-input {staged_files}
+      stage_fixed: true

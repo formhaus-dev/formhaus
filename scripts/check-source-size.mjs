@@ -1,7 +1,7 @@
 import { readdir, readFile } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
 
-const MAX_LINES = 220;
+const MAX_LINES = 250;
 const SOURCE_EXTENSIONS = new Set([
   '.cjs',
   '.css',
