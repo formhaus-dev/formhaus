@@ -1,8 +1,9 @@
-import type { FormDefinition, FormField, FormStep } from '@formhaus/core';
+import type { FormDefinition, FormNode, FormStep } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from './config';
 import type { KitTheme } from './kits/kit';
 import { solid, stack, text } from './kits/primitives';
 import { getSteps } from './parse';
+import { append, appendNodes } from './render-nodes';
 import { appendActions, DEFAULT_LAYOUT, stepButtons, type FormLayout, type StepActions } from './render-actions';
 import { drawFlow, removeFlow } from './flow/arrows';
 import { buildGraph, type FlowGraph } from './flow/graph';
@@ -21,7 +22,7 @@ interface RenderableStep extends StepActions {
   id?: string;
   title: string;
   description?: string;
-  fields: FormField[];
+  fields: FormNode[];
   sections?: RenderableStep[];
 }
 
@@ -190,19 +191,12 @@ async function appendContent(frame: FrameNode, title: string, step: RenderableSt
   append(frame, text(title, { font: theme.fonts.semibold, size, color: theme.text }, 'Title'));
   if (step.description)
     append(frame, text(step.description, { font: theme.fonts.regular, size: theme.bodySize, color: theme.muted }, 'Description'));
-  for (const field of step.fields) if (field.type !== 'hidden') append(frame, await renderer.field(field));
+  await appendNodes(frame, step.fields, renderer);
   for (const section of step.sections ?? []) {
     const group = stack('VERTICAL', section.title, { itemSpacing: theme.card.gap, paddingTop: theme.card.gap });
     append(frame, group);
     await appendContent(group, section.title, section, renderer, theme.headingSize);
   }
-}
-
-function append(frame: FrameNode, node: SceneNode | null): void {
-  if (!node) return;
-  frame.appendChild(node);
-  if ('layoutSizingHorizontal' in node) node.layoutSizingHorizontal = 'FILL';
-  if (node.type === 'TEXT') node.textAutoResize = 'HEIGHT';
 }
 
 function createCard(name: string, definitionId: string, theme: KitTheme): FrameNode {

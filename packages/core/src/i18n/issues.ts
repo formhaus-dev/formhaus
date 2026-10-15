@@ -1,6 +1,7 @@
+import { hasOwn, isEntry } from '../visibility/nodes';
 import type { FormDefinition } from '../types';
 import { textNodes } from './walk';
-import { addressKey, isEntry, leaves, lookup, placeholders } from './overlay';
+import { addressKey, leaves, lookup, placeholders } from './overlay';
 import { definitionSlots, type Slot } from './slots';
 import { describeSlot } from './template';
 
@@ -22,7 +23,7 @@ const dotted = (path: string[]) => path.join('.');
 
 function mismatch(slot: Slot, text: string): boolean {
   const used = placeholders(text);
-  if (slot.kind === 'rule') return used.some((name) => !Object.prototype.hasOwnProperty.call(slot.params, name));
+  if (slot.kind === 'rule') return used.some((name) => !hasOwn(slot.params, name));
   return used.join() !== placeholders(slot.source ?? slot.fallback).join();
 }
 
@@ -39,7 +40,7 @@ export function translationIssues(definition: FormDefinition, overlay: unknown, 
     unlabeled: textNodes(definition)
       .filter(
         ({ kind, node, address }) =>
-          kind === 'field' &&
+          (kind === 'field' || kind === 'group') &&
           !(typeof node.label === 'string' && node.label.trim()) &&
           lookup(overlay, [...address, 'label']) === undefined,
       )
@@ -47,7 +48,7 @@ export function translationIssues(definition: FormDefinition, overlay: unknown, 
   };
   if (meta?.slots) {
     const baseline = meta.slots;
-    const own = (address: string) => Object.prototype.hasOwnProperty.call(baseline, address);
+    const own = (address: string) => hasOwn(baseline, address);
     result.stale = translated
       .filter((slot) => slot.template)
       .map((slot) => describeSlot(slot, meta.prefix ?? definition.id))

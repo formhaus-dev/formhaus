@@ -1,5 +1,5 @@
 import type { FormEngineOptions } from '@formhaus/core';
-import { applySources, canMoveFocus, focusField, restoreFocus, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { applySources, canMoveFocus, errorDomId, focusField, restoreFocus, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
@@ -88,7 +88,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     focusPending.current = false;
     const key = focusKey.current;
     focusKey.current = null;
-    focusField(formRef.current, formId, key, engine.definition);
+    focusField(formRef.current, key && errorDomId(engine, formId, key));
   }, [engine, version, actions.invalidAttempts, focusRequest]);
 
   const handleFieldFocus = useCallback(
@@ -144,6 +144,8 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
         loading={loading}
         components={components}
         optionsProviders={optionsProviders}
+        labels={props.labels}
+        confirmRemove={props.confirmRemove}
         onChange={actions.update}
         onCommit={actions.commit}
         onBlur={handleFieldBlur}

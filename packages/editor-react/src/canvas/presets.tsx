@@ -34,10 +34,12 @@ function presetItem(id: string, group: string): CommandItem {
   };
 }
 
-export const addItems: CommandItem[] = TYPE_GROUPS.flatMap(([group, members]) => {
-  const ids = group === 'Contact' ? ['preset:name', ...members, 'preset:message'] : members;
-  return ids.map((id) => presetItem(id, group));
-});
+export const addItems: CommandItem[] = [...TYPE_GROUPS, ['Layout', ['section', 'group']] as [string, string[]]].flatMap(
+  ([group, members]) => {
+    const ids = group === 'Contact' ? ['preset:name', ...members, 'preset:message'] : members;
+    return ids.map((id) => presetItem(id, group));
+  },
+);
 
 export function presetFor(id: string): FieldPreset {
   return presets[id]?.preset ?? { type: id };

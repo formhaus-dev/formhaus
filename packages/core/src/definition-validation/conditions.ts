@@ -20,15 +20,21 @@ function operatorIssues({ suggest }: CheckContext, condition: ShowCondition, pat
   return issues;
 }
 
-function referenceIssues(context: CheckContext, { condition, path, owner, step, key }: ConditionEntry): DefinitionIssue[] {
-  const target = context.keys.get(condition.field);
-  if (!target) {
-    const candidates = context.keyList.filter((candidate) => candidate !== key);
-    return [
-      error('unknown-field', `${path}/field`, `"${condition.field}" is not a field key`, context.suggest(condition.field, candidates)),
-    ];
-  }
-  if (step < 0 || owner === 'action') return [];
+export function missingTarget(context: CheckContext, name: string, path: string, group?: string, key?: string): DefinitionIssue[] {
+  if (context.target(name, group)) return [];
+  const inner = [...context.scopes].find(([, scope]) => scope.has(name));
+  if (inner)
+    return [error('group-scope', path, `"${name}" is a field inside the group "${inner[0]}"`, 'Only fields of the same group can use it')];
+  const candidates = [...(group !== undefined ? (context.scopes.get(group)?.keys() ?? []) : []), ...context.keyList].filter(
+    (candidate) => candidate !== key,
+  );
+  return [error('unknown-field', path, `"${name}" is not a field key`, context.suggest(name, candidates))];
+}
+
+function referenceIssues(context: CheckContext, { condition, path, owner, step, key, group }: ConditionEntry): DefinitionIssue[] {
+  const target = context.target(condition.field, group);
+  if (!target) return missingTarget(context, condition.field, `${path}/field`, group, key);
+  if (target.group || step < 0 || owner === 'action') return [];
   const sameStep = owner === 'step' ? 'this or a later step' : 'a later step';
   if (target.step < step || (owner !== 'step' && target.step === step)) return [];
   const allowed = owner === 'step' ? 'earlier steps' : 'this or an earlier step';

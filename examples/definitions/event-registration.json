@@ -1,0 +1,56 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "formatVersion": "1.1",
+  "id": "event-registration",
+  "title": "Event registration",
+  "submit": { "label": "Register" },
+  "fields": [
+    { "key": "company", "type": "text", "label": "Company", "validation": { "required": true } },
+    { "key": "invoice", "type": "checkbox", "label": "Send an invoice" },
+    {
+      "key": "billing",
+      "type": "section",
+      "title": "Billing address",
+      "description": "Where we send the invoice",
+      "show": [{ "field": "invoice", "eq": true }],
+      "fields": [
+        { "key": "street", "type": "text", "label": "Street", "validation": { "required": true } },
+        { "key": "city", "type": "text", "label": "City", "validation": { "required": true } },
+        { "key": "vatId", "type": "text", "label": "VAT ID" }
+      ]
+    },
+    {
+      "key": "participants",
+      "type": "group",
+      "label": "Participants",
+      "helperText": "Up to 5 people per registration",
+      "itemLabel": "Participant {index}",
+      "addLabel": "Add participant",
+      "removeLabel": "Remove",
+      "defaultItems": 1,
+      "validation": { "required": "Add at least one participant", "maxLength": 5 },
+      "fields": [
+        { "key": "name", "type": "text", "label": "Full name", "validation": { "required": true } },
+        { "key": "email", "type": "email", "label": "Email", "validation": { "required": true } },
+        {
+          "key": "diet",
+          "type": "select",
+          "label": "Diet",
+          "defaultValue": "none",
+          "options": [
+            { "value": "none", "label": "No restrictions" },
+            { "value": "vegetarian", "label": "Vegetarian" },
+            { "value": "other", "label": "Other" }
+          ]
+        },
+        {
+          "key": "dietNote",
+          "type": "text",
+          "label": "Dietary details",
+          "show": [{ "field": "diet", "eq": "other" }],
+          "validation": { "required": true }
+        }
+      ]
+    }
+  ]
+}

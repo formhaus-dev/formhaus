@@ -2,16 +2,20 @@ import type {
   AfterStepChangeFn,
   BeforeStepChangeFn,
   BeforeSubmitFn,
+  ConfirmDialogView,
   DefinitionIssue,
   FieldOption,
   FieldType,
   FormAction,
   FormAnalyticsEvent,
-  FormField,
   FormDefinition,
+  FormField,
+  GroupItemView,
+  GroupView,
   LabelSource,
   MessageFn,
   MessageKey,
+  SectionView,
   StepValidateFn,
   SubmitFn,
   SubmitHandler,
@@ -20,6 +24,18 @@ import type {
 import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
+
+export type SectionComponentProps = SectionView;
+
+export interface GroupItemComponentProps extends GroupItemView {
+  fields: Component;
+}
+
+export type ConfirmDialogComponentProps = ConfirmDialogView;
+
+export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
+  itemComponent: Component;
+}
 
 export interface FormActionsProps {
   submitAction?: FormAction;
@@ -80,6 +96,7 @@ export interface FormRendererProps {
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;
+  confirmRemove?: boolean;
   stepErrorMarks?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;

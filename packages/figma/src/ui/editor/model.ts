@@ -1,4 +1,5 @@
-import type { FieldOption, FormDefinition, FormField, FormStep } from '@formhaus/core';
+import type { FieldOption, FormDefinition, FormField, FormNode, FormStep } from '@formhaus/core';
+import { nodeKeys, nodeName } from '../../nodes';
 import { referencedKeys, referencedSteps, referencedValues } from './references';
 
 export const FIELD_TYPES = [
@@ -100,10 +101,10 @@ export function isMultiStep(draft: FormDefinition): boolean {
 }
 
 function allKeys(draft: FormDefinition): Set<string> {
-  return new Set(steps(draft).flatMap((step) => step.fields.map((field) => field.key)));
+  return new Set(steps(draft).flatMap((step) => nodeKeys(step.fields)));
 }
 
-function fieldsOf(draft: FormDefinition, stepIndex: number): FormField[] {
+function fieldsOf(draft: FormDefinition, stepIndex: number): FormNode[] {
   if (!isMultiStep(draft)) {
     draft.fields ??= [];
     return draft.fields;
@@ -148,7 +149,9 @@ export function setType(field: FormField, type: string): void {
 export function removeField(draft: FormDefinition, stepIndex: number, fieldIndex: number): string | null {
   const fields = fieldsOf(draft, stepIndex);
   const field = fields[fieldIndex];
-  if (referencedKeys(draft).has(field.key)) return `“${field.label}” is used in a condition. Remove that condition in JSON first.`;
+  const used = referencedKeys(draft);
+  if (nodeKeys([field]).some((key) => used.has(key)))
+    return `“${nodeName(field)}” is used in a condition. Remove that condition in JSON first.`;
   fields.splice(fieldIndex, 1);
   return null;
 }
@@ -175,7 +178,7 @@ export function removeStep(draft: FormDefinition, stepIndex: number): string | n
   if (!isMultiStep(draft)) return null;
   const step = draft.steps![stepIndex];
   const used = referencedKeys(draft);
-  if (referencedSteps(draft).has(step.id) || step.fields.some((field) => used.has(field.key))) {
+  if (referencedSteps(draft).has(step.id) || nodeKeys(step.fields).some((key) => used.has(key))) {
     return `“${step.title}” is used by a route or condition. Remove it in JSON first.`;
   }
   const [removed] = draft.steps!.splice(stepIndex, 1);

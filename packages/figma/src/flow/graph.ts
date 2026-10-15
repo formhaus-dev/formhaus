@@ -1,4 +1,5 @@
 import type { FormDefinition, FormField, FormStep, ShowCondition } from '@formhaus/core';
+import { flatFields } from '../nodes';
 
 export interface FlowEdge {
   from: string;
@@ -13,7 +14,7 @@ export interface FlowGraph {
 }
 
 function fieldsByKey(steps: FormStep[]): Map<string, FormField> {
-  return new Map(steps.flatMap((step) => step.fields.map((field) => [field.key, field] as const)));
+  return new Map(steps.flatMap((step) => flatFields(step.fields).map((field) => [field.key, field] as const)));
 }
 
 function valueText(field: FormField | undefined, value: unknown): string {

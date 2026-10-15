@@ -6,7 +6,7 @@ export function fieldId(props: Pick<FieldComponentProps, 'id' | 'field'>): strin
   return props.id ?? fieldDomId(undefined, props.field.key);
 }
 
-export function describedBy(field: FormField, id: string, error?: string) {
+export function describedBy(field: Pick<FormField, 'helperText'>, id: string, error?: string) {
   return [field.helperText && `${id}-helper`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
 }
 

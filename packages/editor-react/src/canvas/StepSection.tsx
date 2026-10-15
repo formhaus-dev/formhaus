@@ -1,15 +1,14 @@
 import type { BuilderPage, BuilderQuestion } from '@formhaus/builder';
 import { Rows3 } from 'lucide-react';
 import { memo, useState } from 'react';
-import { AddRow, Button, Sortable } from '../ui';
+import { AddRow, Button } from '../ui';
 import { ButtonsCard } from './ButtonsCard';
+import { FieldList } from './ContainerFields';
 import { useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Canvas.module.css';
-import { FieldCard } from './FieldCard';
 import { FieldPalette } from './FieldPalette';
 import { useFocusRequests } from './focus';
-import { InsertGap } from './InsertGap';
 import { presetFor } from './presets';
 import { StepHeaderCard } from './StepHeaderCard';
 
@@ -35,30 +34,16 @@ const sameSection = (a: Props, b: Props) =>
   a.header?.total === b.header?.total &&
   sameFields(a.fields, b.fields);
 
-export const StepSection = memo(function StepSection({ step, page, first, last, fields, header, actions }: Props) {
+export const StepSection = memo(function StepSection({ step, page, first, last, fields: all, header, actions }: Props) {
+  const fields = all.filter((field) => !field.parent);
   const readOnly = useReadOnly();
   const focus = useFocusRequests();
   const [palette, setPalette] = useState(false);
   const name = header ? `step ${String(header.position)}` : 'the form';
-  const labelOf = (field: BuilderQuestion) => field.label.trim() || 'Untitled question';
   return (
     <section className={styles.section} aria-label={header ? `Step ${String(header.position)}` : 'Fields'} data-step={step ?? 'root'}>
       {step && header && <StepHeaderCard uid={step} position={header.position} total={header.total} actions={actions} />}
-      <Sortable
-        items={fields.map((field) => ({ id: field.uid, field }))}
-        label={`Fields in ${name}`}
-        getLabel={({ field }) => labelOf(field)}
-        onMove={(id, to) => {
-          focus.request(id, 'card');
-          actions.moveTo(id, step, to);
-        }}
-        renderItem={({ field }, { handleProps }) => (
-          <>
-            <FieldCard uid={field.uid} handleProps={handleProps} actions={actions} />
-            {!readOnly && field !== fields.at(-1) && <InsertGap after={field.uid} label={labelOf(field)} actions={actions} />}
-          </>
-        )}
-      />
+      <FieldList fields={fields} name={name} step={step} actions={actions} />
       {!readOnly && (
         <div className={styles.addRow}>
           <FieldPalette

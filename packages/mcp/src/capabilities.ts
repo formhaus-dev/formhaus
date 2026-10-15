@@ -1,6 +1,14 @@
 import { FORMAT_VERSION } from '@formhaus/core';
 import { i18nCapabilities } from './translation';
-import { ACTION_VARIANTS, CONDITION_OPERATORS, FIELD_TYPES, OPTION_FIELD_TYPES, VALIDATION_RULES } from './vocabulary';
+import {
+  ACTION_VARIANTS,
+  CONDITION_OPERATORS,
+  CONTAINER_TYPES,
+  FIELD_TYPES,
+  GROUP_RULES,
+  OPTION_FIELD_TYPES,
+  VALIDATION_RULES,
+} from './vocabulary';
 
 export const capabilities = {
   definition: {
@@ -8,7 +16,31 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups, otherwise outdated-format-version is reported.`,
+  },
+  containerTypes: CONTAINER_TYPES,
+  sections: {
+    shape: '{ key, type: "section", title, description?, show?, showAny?, fields, i18n? }',
+    rules: [
+      'A section is a titled block of fields and groups inside "fields" or "step.fields". It holds no value, and its fields keep their own keys in the payload.',
+      'Its show/showAny apply to every field inside. Hidden section fields are cleared.',
+      'The key shares the namespace of field keys. Conditions cannot test a section key (unknown-field).',
+      'Sections do not nest (invalid-nesting). A section condition on its own field is a condition-cycle.',
+    ],
+  },
+  groups: {
+    shape:
+      '{ key, type: "group", label, helperText?, itemLabel?, addLabel?, removeLabel?, defaultItems?, show?, showAny?, validation?, fields, i18n? }',
+    validationRules: GROUP_RULES,
+    rules: [
+      'A repeatable group. Its value is an array of item objects keyed by the keys of its fields, such as { "participants": [{ "name": "Ada", "email": "ada@example.com" }] }.',
+      'required means at least one item; minLength and maxLength count items. Without maxLength the Add button stops at 100 items.',
+      'itemLabel is the item heading; {index} is the 1-based item number and {label} the group label.',
+      'Item keys are unique in the item and must not repeat a key outside the group (duplicate-key). No other key may start with "<group key>.".',
+      'Item conditions and matchField may use fields of the same item and fields outside the group. Conditions outside the group cannot use item fields (group-scope); they may test the group itself with notEmpty.',
+      'No sections, groups, file or hidden fields inside a group (invalid-nesting).',
+      'Errors of item fields use the 0-based path "<group>.<index>.<field>", such as participants.1.email. Count errors use the group key.',
+    ],
   },
   fieldTypes: FIELD_TYPES,
   customFieldTypes: 'Any other string is allowed; the renderer must register a component for it.',
@@ -56,6 +88,7 @@ export const capabilities = {
       'Built-in types are checked: email format, date, datetime and time shape, numbers, booleans and option values.',
       'validator names a custom function passed to the engine.',
       'Fields hidden by conditions and skipped steps are not validated.',
+      'Group items are validated one by one; their errors use paths such as participants.0.email.',
     ],
   },
   conditions: {
@@ -63,7 +96,7 @@ export const capabilities = {
     shape: '{ field, eq | neq | in | notIn | notEmpty | gt | gte | lt | lte }, exactly one operator',
     show: 'All conditions must match.',
     showAny: 'At least one condition must match.',
-    appliesTo: ['field', 'step', 'route', 'action.disabled'],
+    appliesTo: ['field', 'section', 'group', 'step', 'route', 'action.disabled'],
     comparisons: 'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values.',
     scope:
       'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',

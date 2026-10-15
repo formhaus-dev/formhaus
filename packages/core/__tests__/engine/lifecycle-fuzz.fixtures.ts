@@ -1,5 +1,6 @@
 import fc from 'fast-check';
 import type { FormDefinition } from '../../src/types';
+import { groupsCase } from './lifecycle-fuzz.groups';
 
 const wizard: FormDefinition = {
   id: 'fuzz-wizard',
@@ -86,6 +87,9 @@ export interface FuzzCase {
   definition: FormDefinition;
   valid: Record<string, unknown>;
   values: Record<string, unknown[]>;
+  initial?: Record<string, unknown[]>;
+  groups?: string[];
+  serverErrors?: string[];
 }
 
 export const fuzzCases: FuzzCase[] = [
@@ -115,6 +119,7 @@ export const fuzzCases: FuzzCase[] = [
       coupon: ['SAVE'],
     },
   },
+  groupsCase,
 ];
 
 export type Outcome = 'allow' | 'deny' | 'fail';
@@ -125,6 +130,8 @@ export type FuzzCommand =
   | { type: 'jump'; key: string }
   | { type: 'next' | 'back' | 'submit' | 'skip' | 'cancel' }
   | { type: 'reset'; filled: boolean }
+  | { type: 'add'; key: string }
+  | { type: 'remove'; key: string; index: number }
   | { type: 'settle'; index: number; outcome: Outcome };
 
 export function commandArbitrary(fuzz: FuzzCase): fc.Arbitrary<FuzzCommand> {
@@ -144,6 +151,15 @@ export function commandArbitrary(fuzz: FuzzCase): fc.Arbitrary<FuzzCommand> {
     { arbitrary: fc.constantFrom<FuzzCommand>({ type: 'next' }, { type: 'back' }, { type: 'submit' }, { type: 'skip' }), weight: 6 },
     { arbitrary: fc.constant<FuzzCommand>({ type: 'cancel' }), weight: 2 },
     { arbitrary: fc.boolean().map((filled): FuzzCommand => ({ type: 'reset', filled })), weight: 1 },
+    ...(fuzz.groups
+      ? [
+          { arbitrary: fc.constantFrom(...fuzz.groups).map((key): FuzzCommand => ({ type: 'add', key })), weight: 2 },
+          {
+            arbitrary: fc.record({ type: fc.constant('remove' as const), key: fc.constantFrom(...fuzz.groups), index: fc.nat({ max: 3 }) }),
+            weight: 2,
+          },
+        ]
+      : []),
     {
       arbitrary: fc.record({
         type: fc.constant('settle' as const),
@@ -157,6 +173,8 @@ export function commandArbitrary(fuzz: FuzzCase): fc.Arbitrary<FuzzCommand> {
 
 export function initialValues(fuzz: FuzzCase): fc.Arbitrary<Record<string, unknown>> {
   return fc
-    .record(Object.fromEntries(Object.entries(fuzz.values).map(([key, values]) => [key, fc.constantFrom(...values)])), { requiredKeys: [] })
+    .record(Object.fromEntries(Object.entries(fuzz.initial ?? fuzz.values).map(([key, values]) => [key, fc.constantFrom(...values)])), {
+      requiredKeys: [],
+    })
     .map((values) => ({ ...fuzz.valid, ...values }));
 }

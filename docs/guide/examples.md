@@ -5,7 +5,7 @@ description: "Example Formhaus JSON definitions: basic form, conditional fields,
 
 # Examples
 
-The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tree/main/examples/definitions) are returned by the MCP server's `example_definitions` tool. All of them except `branching-form.json` are also playground presets. Copy any of them into a project and pass it to `FormRenderer`.
+The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tree/main/examples/definitions) are returned by the MCP server's `example_definitions` tool. All of them except `branching-form.json` and `event-registration.json` are also playground presets. Copy any of them into a project and pass it to `FormRenderer`.
 
 ## Basic form
 
@@ -36,6 +36,12 @@ A registration form with length, pattern, range and `matchField` rules and custo
 A radio answer with `autoAdvance` picks a business or personal step, and both branches converge at review through `routes`. See the [routing guide](/guide/steps#route-between-branches).
 
 <<< @/../examples/definitions/branching-form.json
+
+## Event registration
+
+A [section](/guide/sections) for the billing address shows when an invoice is requested, and a [repeatable group](/guide/groups) collects up to five participants. Requires `@formhaus/core` 0.14.
+
+<<< @/../examples/definitions/event-registration.json
 
 ## Next steps
 

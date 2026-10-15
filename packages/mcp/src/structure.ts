@@ -1,10 +1,10 @@
-import type { FormDefinition, FormField, FormStep } from '@formhaus/core';
+import { isGroup, isSection, type FormDefinition, type FormField, type FormNode, type FormStep } from '@formhaus/core';
 import { issue, type Issue } from './issues';
-import { FIELD_TYPES } from './vocabulary';
+import { CONTAINER_TYPES, FIELD_TYPES } from './vocabulary';
 
-const KNOWN_TYPES = new Set<string>(FIELD_TYPES);
+const KNOWN_TYPES = new Set<string>([...FIELD_TYPES, ...CONTAINER_TYPES]);
 
-function fieldIssues(field: FormField, path: string): Issue[] {
+function fieldIssues(field: FormField, path: string, item: boolean): Issue[] {
   const issues: Issue[] = [];
   if (!KNOWN_TYPES.has(field.type)) {
     issues.push(
@@ -17,32 +17,43 @@ function fieldIssues(field: FormField, path: string): Issue[] {
       ),
     );
   }
-  if (field.autoAdvance && field.type !== 'radio') {
+  if (field.autoAdvance && (field.type !== 'radio' || item)) {
+    const problem = item ? 'radio fields inside a group do not advance automatically' : 'only radio fields advance automatically';
     issues.push(
       issue(
         'auto-advance-ignored',
         'warning',
         `${path}/autoAdvance`,
-        'only radio fields advance automatically',
-        'Remove autoAdvance or use a radio field',
+        problem,
+        item ? 'Remove autoAdvance' : 'Remove autoAdvance or use a radio field',
       ),
     );
   }
   return issues;
 }
 
+function nodeIssues(nodes: FormNode[], path: string, item = false): Issue[] {
+  return nodes.flatMap((node, index) => {
+    const at = `${path}/${index}`;
+    if (isSection(node)) return nodeIssues(node.fields, `${at}/fields`, item);
+    return [...fieldIssues(node, at, item), ...(isGroup(node) ? nodeIssues(node.fields, `${at}/fields`, true) : [])];
+  });
+}
+
 export function advancingRadios(step: FormStep): FormField[] {
-  return step.fields.filter((field) => field.type === 'radio' && field.autoAdvance);
+  return step.fields
+    .flatMap((node) => (isSection(node) ? node.fields : [node]))
+    .filter((field): field is FormField => field.type === 'radio' && !!(field as FormField).autoAdvance);
 }
 
 export function structureIssues(definition: FormDefinition): Issue[] {
   const fields = definition.fields ?? [];
   const steps = definition.steps ?? [];
-  const issues = fields.flatMap((field, index) => fieldIssues(field, `/fields/${index}`));
+  const issues = nodeIssues(fields, '/fields');
   if (!fields.length && !steps.length)
     issues.push(issue('empty-form', 'warning', '', 'the definition has no fields and no steps', 'Add "fields" or "steps"'));
   steps.forEach((step, index) => {
-    issues.push(...step.fields.flatMap((field, position) => fieldIssues(field, `/steps/${index}/fields/${position}`)));
+    issues.push(...nodeIssues(step.fields, `/steps/${index}/fields`));
     if (step.next === false && index < steps.length - 1 && !advancingRadios(step).length) {
       issues.push(
         issue(

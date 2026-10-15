@@ -1,4 +1,5 @@
-import type { FormDefinition, FormField } from '../types';
+import type { FormDefinition, FormField, FormNode } from '../types';
+import { isGroup, isSection } from '../visibility/nodes';
 import type { Entry, NodeKind } from './nodes';
 
 export interface TextNode {
@@ -17,15 +18,21 @@ export function textNodes(definition: FormDefinition): TextNode[] {
   const actions = (owner: Entry, path: string, address: string[], names: string[]) => {
     for (const name of names) add('action', owner[name], `${path}/${name}`, [...address, name]);
   };
-  const fields = (items: FormField[], path: string, address: string[]) =>
+  const fields = (items: FormNode[], path: string, address: string[]) =>
     items.forEach((field, index) => {
       const at = `${path}/fields/${index}`;
+      if (isSection(field)) {
+        add('section', field, at, [...address, 'sections', field.key]);
+        fields(field.fields, at, address);
+        return;
+      }
       const key = [...address, 'fields', field.key];
-      add('field', field, at, key);
-      field.options?.forEach((option, position) => {
+      add(isGroup(field) ? 'group' : 'field', field, at, key);
+      (field as FormField).options?.forEach((option, position) => {
         add('option', option, `${at}/options/${position}`, [...key, 'options', option.value]);
       });
       add('validation', field.validation, `${at}/validation`, [...key, 'validation'], field);
+      if (isGroup(field)) fields(field.fields, at, key);
     });
   add('form', definition, '', []);
   actions(definition as unknown as Entry, '', [], ['submit', 'cancel']);

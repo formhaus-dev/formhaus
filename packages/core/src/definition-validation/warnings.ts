@@ -1,6 +1,7 @@
 import type { FormField } from '../types';
+import { hasOwn } from '../visibility/nodes';
 import { BOOLEAN_TYPES, BUILT_IN_TYPES } from '../validation/type-checks';
-import { conditionErrors, OPERATORS } from './conditions';
+import { conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { closest, oneOf, suggest, warning } from './issues';
@@ -49,7 +50,7 @@ function conditionWarnings(context: CheckContext, entry: ConditionEntry): Defini
   if (conditionErrors(context, entry).length) return [];
   const operator = OPERATORS.find((key) => key in condition)!;
   return valueIssue(
-    context.keys.get(condition.field)!.field,
+    context.target(condition.field, entry.group)!.field,
     operator,
     condition[operator as keyof typeof condition],
     `${path}/${operator}`,
@@ -90,7 +91,8 @@ function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
 function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): DefinitionIssue[] {
   const rules = field.validation ?? {};
   const rule = (name: string, problem: string, hint: string) => warning('rule-not-applicable', `${path}/validation/${name}`, problem, hint);
-  const known = BUILT_IN_TYPES.includes(field.type);
+  const items = field.type === 'group';
+  const known = items || BUILT_IN_TYPES.includes(field.type);
   const numeric = field.type === 'number';
   const ranges = known && !numeric ? (['min', 'max'] as const).filter((name) => rules[name] !== undefined) : [];
   const sized =
@@ -98,13 +100,15 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
       ? (['minLength', 'maxLength'] as const).filter((name) => rules[name] !== undefined)
       : [];
   const issues = [
-    ...ranges.map((name) => rule(name, `"${name}" applies to number fields only`, `Use ${name}Length to limit text length`)),
+    ...ranges.map((name) =>
+      rule(name, `"${name}" applies to number fields only`, `Use ${name}Length to limit ${items ? 'the number of items' : 'text length'}`),
+    ),
     ...sized.map((name) =>
       rule(name, `"${name}" does not apply to ${field.type} fields`, numeric ? 'Use min and max for numbers' : `Remove ${name}`),
     ),
   ];
   const { validators } = context;
-  if (rules.validator !== undefined && validators && !Object.prototype.hasOwnProperty.call(validators, rules.validator)) {
+  if (rules.validator !== undefined && validators && !hasOwn(validators, rules.validator)) {
     issues.push(
       warning(
         'unknown-validator',
@@ -119,7 +123,10 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
 
 function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssue[] {
   const { field, path } = entry;
-  const match = BUILT_IN_TYPES.includes(field.type) ? undefined : closest(field.type, BUILT_IN_TYPES);
+  const match =
+    BUILT_IN_TYPES.includes(field.type) || field.type === 'group'
+      ? undefined
+      : closest(field.type, [...BUILT_IN_TYPES, 'group', 'section']);
   return [
     ...(match === undefined
       ? []
@@ -135,9 +142,7 @@ function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssu
     ...ruleWarnings(context, entry),
     ...sourceWarnings(entry),
     ...(field.optionsDependsOn ?? []).flatMap((key, index) =>
-      context.keys.has(key)
-        ? []
-        : [warning('unknown-field', `${path}/optionsDependsOn/${index}`, `"${key}" is not a field key`, suggest(key, context.keyList))],
+      missingTarget(context, key, `${path}/optionsDependsOn/${index}`).map((issue) => ({ ...issue, severity: 'warning' as const })),
     ),
   ];
 }
@@ -175,8 +180,25 @@ function routeWarnings({ definition }: CheckContext): DefinitionIssue[] {
   });
 }
 
+function versionWarnings({ definition, nodes }: CheckContext): DefinitionIssue[] {
+  const [major, minor = 0] = String(definition.formatVersion ?? '1.0')
+    .split('.')
+    .map(Number);
+  const container = nodes.find(({ node }) => node.type === 'section' || node.type === 'group');
+  if (!container || major !== 1 || minor >= 1) return [];
+  return [
+    warning(
+      'outdated-format-version',
+      '/formatVersion',
+      `${container.path} is a ${container.node.type}, which needs format 1.1`,
+      'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
+    ),
+  ];
+}
+
 export function definitionWarnings(context: CheckContext): DefinitionIssue[] {
   return [
+    ...versionWarnings(context),
     ...propertyWarnings(context),
     ...context.conditions.flatMap((entry) => conditionWarnings(context, entry)),
     ...context.entries.flatMap((entry) => fieldWarnings(context, entry)),

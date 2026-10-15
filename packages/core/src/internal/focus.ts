@@ -1,5 +1,5 @@
 import type { FormDefinition } from '../types';
-import { fieldDomId } from './ids';
+import { itemDomId } from './ids';
 
 interface Searchable {
   querySelector(selector: string): unknown;
@@ -28,6 +28,7 @@ type Found = Focusable | null | undefined;
 const CONTROLS = 'input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
 
 function firstControl(root: Found): Found {
+  if (root?.matches('.fh-group')) return (root.querySelector('.fh-group__add') as Found) ?? (root.querySelector(CONTROLS) as Found);
   return root?.matches(CONTROLS) ? root : (root?.querySelector(CONTROLS) as Found);
 }
 
@@ -52,12 +53,34 @@ export function restoreFocus(form: FormRoot | null | undefined, target: (Focusab
   if (document && document.activeElement === document.body && target?.isConnected) target.focus();
 }
 
-export function focusField(form: FormRoot | null | undefined, formId: string, key: string | null, definition?: FormDefinition): void {
+export function focusField(form: FormRoot | null | undefined, id: string | null): void {
   const fields = form?.querySelector('.fh-form__fields') as Found;
-  const id = key && fieldDomId(formId, key, definition);
   const chosen = id ? (fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) as Found) : null;
   if (id && !chosen) return;
-  const field = (chosen?.closest?.('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) as Found;
-  const target = (field?.querySelector('input:checked:not(:disabled)') as Found) ?? firstControl(field) ?? firstControl(fields);
+  const field = (chosen?.closest?.('.fh-field, .fh-group') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) as Found;
+  const target =
+    (!field?.matches('.fh-group') && (field?.querySelector('input:checked:not(:disabled)') as Found)) ||
+    firstControl(field) ||
+    firstControl(fields);
   (target ?? form)?.focus();
+}
+
+export function focusItem(
+  document: { getElementById(id: string): unknown },
+  root: Searchable | null | undefined,
+  formId: string,
+  group: string,
+  index: number,
+  added: boolean,
+  definition?: FormDefinition,
+): void {
+  const item = document.getElementById(itemDomId(formId, group, index, undefined, definition)) as Focusable | null;
+  const next = (
+    added ? (item?.closest?.('.fh-group__item') as Searchable | null | undefined)?.querySelector('input, select, textarea') : item
+  ) as Found;
+  (
+    next ??
+    (root?.querySelector('.fh-group__add') as Found) ??
+    (document.getElementById(itemDomId(formId, group, index - 1, undefined, definition)) as Found)
+  )?.focus();
 }

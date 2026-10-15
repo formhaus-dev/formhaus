@@ -1,5 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
-import { fieldDomId, labelFor } from '@formhaus/core/internal';
+import { errorEntries, labelFor } from '@formhaus/core/internal';
 import type { FormRendererProps } from './types';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 
@@ -12,25 +12,24 @@ interface FormErrorSummaryProps {
 
 export function FormErrorSummary({ engine, formId, onSelect, labels }: FormErrorSummaryProps) {
   useFormSnapshot(engine);
-  const fields = engine.isMultiStep ? engine.visibleSteps.flatMap((step) => step.fields) : engine.visibleFields;
-  const invalid = fields.filter((field) => field.type !== 'hidden' && engine.errors[field.key] !== undefined);
-  if (invalid.length === 0) return null;
+  const entries = errorEntries(engine, formId, labels, engine.definition.labels);
+  if (entries.length === 0) return null;
 
   return (
     <div className="fh-error-summary" role="alert">
       <strong className="fh-error-summary__title">{labelFor('errorSummary', {}, labels, engine.definition.labels)}</strong>
       <ul className="fh-error-summary__list">
-        {invalid.map((field) => (
-          <li key={field.key}>
+        {entries.map(({ key, id, label, message }) => (
+          <li key={key}>
             <a
               className="fh-error-summary__link"
-              href={`#${fieldDomId(formId, field.key, engine.definition)}`}
+              href={`#${id}`}
               onClick={(event) => {
                 event.preventDefault();
-                onSelect(field.key);
+                onSelect(key);
               }}
             >
-              {field.label}: {engine.errors[field.key]}
+              {label}: {message}
             </a>
           </li>
         ))}

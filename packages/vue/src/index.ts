@@ -2,6 +2,10 @@ export { default as FormRenderer } from './FormRenderer.vue';
 export { default as HeadlessFormRenderer } from './HeadlessFormRenderer.vue';
 export { default as FormhausField } from './FormhausField.vue';
 export { default as FormActions } from './FormActions.vue';
+export { default as DefaultConfirmDialog } from './DefaultConfirmDialog.vue';
+export { default as DefaultGroup } from './DefaultGroup.vue';
+export { default as DefaultGroupItem } from './DefaultGroupItem.vue';
+export { default as DefaultSection } from './DefaultSection.vue';
 export { default as FormStepProgress } from './FormStepProgress.vue';
 export { default as TextField } from './fields/TextField.vue';
 export { default as TextareaField } from './fields/TextareaField.vue';
@@ -28,6 +32,10 @@ export type {
   FormActionsProps,
   FormStepProgressProps,
   FormStepStatus,
+  ConfirmDialogComponentProps,
+  GroupComponentProps,
+  GroupItemComponentProps,
+  SectionComponentProps,
   HeadingLevel,
   OptionsProvider,
 } from './types';

@@ -1,10 +1,10 @@
 import type { FieldType, FormField } from '@formhaus/core';
 import { syncIdentifiers, unique } from '../identifiers';
-import { clone, isQuestion, newQuestion, setType, uid, type BuilderForm, type BuilderQuestion } from '../model';
-import { canRemove, moveBlock, removeBlock } from './blocks';
+import { clone, isContainer, isPage, isQuestion, newQuestion, setType, span, uid, type BuilderForm, type BuilderQuestion } from '../model';
+import { canRemove, removeBlock } from './blocks';
 import { findField, blockIndex, stepEnd, stepFields } from './locate';
 
-export type Placement = { after: string } | { step: string | null; index?: number };
+export type Placement = { after: string } | { inside: string } | { step: string | null; index?: number };
 
 export interface FieldPreset {
   type?: FieldType;
@@ -15,15 +15,31 @@ export interface FieldPreset {
 }
 
 function position(form: BuilderForm, at: Placement): number {
-  if ('after' in at) {
-    const index = blockIndex(form, at.after);
-    return index < 0 ? form.blocks.length : index + 1;
+  if ('after' in at || 'inside' in at) {
+    const index = blockIndex(form, 'after' in at ? at.after : at.inside);
+    return index < 0 ? form.blocks.length : index + span(form, index);
   }
   const end = stepEnd(form, at.step);
   if (at.index === undefined) return end;
-  const count = stepFields(form, at.step).length;
-  return end - count + Math.max(0, Math.min(at.index, count));
+  const units = stepFields(form, at.step).filter((item) => !item.parent);
+  const unit = units[Math.max(0, at.index)];
+  return unit ? blockIndex(form, unit.uid) : end;
 }
+
+function parentAt(form: BuilderForm, at: Placement, type: string): string | undefined {
+  let owner = findField(form, ('inside' in at ? at.inside : 'after' in at ? findField(form, at.after)?.parent : undefined) ?? '');
+  while (owner && (type === 'section' || (type === 'group' && owner.type === 'group'))) owner = findField(form, owner.parent ?? '');
+  return owner?.uid;
+}
+
+function ancestorIn(form: BuilderForm, uid: string, parent: string | undefined): BuilderQuestion | undefined {
+  let item = findField(form, uid);
+  while (item && item.parent !== parent) item = findField(form, item.parent ?? '');
+  return item;
+}
+
+export const childrenOf = (form: BuilderForm, container: string) =>
+  form.blocks.filter((block): block is BuilderQuestion => isQuestion(block) && block.parent === container);
 
 export function addField(form: BuilderForm, at: Placement, preset: FieldPreset = {}): BuilderQuestion {
   const question = newQuestion(form, preset.type ?? 'text');
@@ -34,7 +50,18 @@ export function addField(form: BuilderForm, at: Placement, preset: FieldPreset =
     question.key = unique(preset.key, new Set(form.blocks.filter(isQuestion).map((item) => item.key)));
     question.keyLocked = true;
   }
-  form.blocks.splice(position(form, at), 0, question);
+  const parent = parentAt(form, at, question.type);
+  let index = position(form, at);
+  if (parent) question.parent = parent;
+  const anchor = 'inside' in at ? at.inside : 'after' in at ? at.after : undefined;
+  const unit = anchor && anchor !== parent ? ancestorIn(form, anchor, parent) : undefined;
+  if (unit) index = Math.max(index, blockIndex(form, unit.uid) + span(form, blockIndex(form, unit.uid)));
+  form.blocks.splice(index, 0, question);
+  if (isContainer(question)) {
+    const child = newQuestion(form);
+    child.parent = question.uid;
+    form.blocks.splice(index + 1, 0, child);
+  }
   syncIdentifiers(form);
   return question;
 }
@@ -81,18 +108,22 @@ export function setFieldProp<K extends keyof FormField>(form: BuilderForm, uid: 
 }
 
 export function duplicateField(form: BuilderForm, source: string): BuilderQuestion | undefined {
+  const index = blockIndex(form, source);
   const item = findField(form, source);
   if (!item) return undefined;
-  const copy: BuilderQuestion = {
-    ...clone(item),
+  const copy = (entry: BuilderQuestion, parent?: string): BuilderQuestion => ({
+    ...clone(entry),
     uid: uid(form),
     key: '',
     keyLocked: false,
-    options: item.options.map((option) => ({ ...option, uid: uid(form), valueLocked: false })),
-  };
-  form.blocks.splice(blockIndex(form, source) + 1, 0, copy);
+    options: entry.options.map((option) => ({ ...option, uid: uid(form), valueLocked: false })),
+    ...(parent && { parent }),
+  });
+  const top = copy(item, item.parent);
+  const children = childrenOf(form, source).map((child) => copy(child, top.uid));
+  form.blocks.splice(index + span(form, index), 0, top, ...children);
   syncIdentifiers(form);
-  return copy;
+  return top;
 }
 
 export function removeField(form: BuilderForm, uid: string): boolean {
@@ -103,16 +134,68 @@ export function removeField(form: BuilderForm, uid: string): boolean {
 
 export const canRemoveField = (form: BuilderForm, uid: string) => canRemove(form, blockIndex(form, uid));
 
+function unitStart(form: BuilderForm, index: number): number {
+  const item = form.blocks[index];
+  const top = isQuestion(item) ? ancestorIn(form, item.uid, undefined) : undefined;
+  return top ? blockIndex(form, top.uid) : index;
+}
+
 export function moveField(form: BuilderForm, uid: string, delta: -1 | 1): boolean {
   const index = blockIndex(form, uid);
-  return index >= 0 && moveBlock(form, index, delta);
+  const item = form.blocks[index];
+  if (!isQuestion(item)) return false;
+  const size = span(form, index);
+  const units = form.blocks.splice(index, size);
+  const restore = () => {
+    form.blocks.splice(index, 0, ...units);
+    return false;
+  };
+  let at: number;
+  if (item.parent) {
+    let neighbor = delta < 0 ? index - 1 : index;
+    while (
+      delta < 0 &&
+      neighbor > 0 &&
+      (form.blocks[neighbor] as BuilderQuestion).parent !== item.parent &&
+      (form.blocks[neighbor] as BuilderQuestion).uid !== item.parent
+    )
+      neighbor--;
+    if ((form.blocks[neighbor] as BuilderQuestion | undefined)?.parent !== item.parent) return restore();
+    at = delta < 0 ? neighbor : index + span(form, index);
+  } else if (delta < 0) {
+    if (index === 0 || (index === 1 && isPage(form.blocks[0]))) return restore();
+    at = isPage(form.blocks[index - 1]) ? index - 1 : unitStart(form, index - 1);
+  } else {
+    if (index >= form.blocks.length) return restore();
+    at = index + (isPage(form.blocks[index]) ? 1 : span(form, index));
+  }
+  form.blocks.splice(at, 0, ...units);
+  syncIdentifiers(form);
+  return true;
 }
 
 export function moveFieldTo(form: BuilderForm, uid: string, step: string | null, index: number): boolean {
   const from = blockIndex(form, uid);
-  if (from < 0 || !isQuestion(form.blocks[from])) return false;
-  const [item] = form.blocks.splice(from, 1);
-  form.blocks.splice(position(form, { step, index }), 0, item);
+  const item = form.blocks[from];
+  if (!isQuestion(item)) return false;
+  const units = form.blocks.splice(from, span(form, from));
+  if (item.parent && stepOfIndex(form, blockIndex(form, item.parent)) === step) {
+    const siblings = childrenOf(form, item.parent);
+    const target = siblings[Math.max(0, index)];
+    const owner = blockIndex(form, item.parent);
+    form.blocks.splice(target ? blockIndex(form, target.uid) : owner + span(form, owner), 0, ...units);
+  } else {
+    delete item.parent;
+    form.blocks.splice(position(form, { step, index }), 0, ...units);
+  }
   syncIdentifiers(form);
   return true;
+}
+
+function stepOfIndex(form: BuilderForm, index: number): string | null {
+  for (let at = index; at >= 0; at--) {
+    const block = form.blocks[at];
+    if (isPage(block)) return block.uid;
+  }
+  return null;
 }

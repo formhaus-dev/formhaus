@@ -58,7 +58,9 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
   };
   const suggestion = field.type === 'text' && !readOnly ? inferType(field.label) : undefined;
   const choice = hasOptions(field.type);
+  const container = field.type === 'section' || field.type === 'group';
   const body = () => {
+    if (container) return null;
     if (selected && choice && !readOnly) return <OptionsEditor field={field} actions={actions} />;
     if (selected && !readOnly && takesPlaceholder(field)) return <PlaceholderInput field={field} actions={actions} readOnly={readOnly} />;
     if (selected && !readOnly && field.type === 'hidden') return <DefaultValueInput field={field} actions={actions} readOnly={readOnly} />;
@@ -71,7 +73,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
       className={cx(styles.card, selected && styles.selected, issues.length > 0 && styles.invalid)}
       tabIndex={selected ? 0 : -1}
       role="group"
-      aria-label={`${field.label.trim() || 'Untitled question'} field`}
+      aria-label={`${field.label.trim() || 'Untitled question'} ${container ? typeLabel(field.type).toLowerCase() : 'field'}`}
       aria-describedby={issues.length ? issuesId : undefined}
       onClick={select}
       onKeyDown={(event) => {
@@ -91,9 +93,11 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
               onAddBelow={addBelow}
               onCardKey={onCardKey}
             />
-            <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />
+            {field.type !== 'section' && (
+              <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />
+            )}
           </div>
-          <TypeChip field={field} actions={actions} disabled={readOnly} />
+          <TypeChip field={field} actions={actions} disabled={readOnly || container} />
           {!readOnly && (
             <>
               <IconButton

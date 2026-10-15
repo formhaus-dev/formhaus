@@ -1,8 +1,7 @@
 import { getChangedKeys } from './engine-utils';
 import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs, watchValues } from './pending-inputs';
-import { validateStep } from '../validation';
-import { applyValidationErrors, dropServerErrors, getValidationValues, pruneOffPathErrors } from './validation-state';
+import { applyValidationErrors, dropServerErrors, fieldsErrors, getSubmitValues, pruneOffPathErrors } from './validation-state';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
 import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
@@ -12,7 +11,7 @@ import type { EngineInternals } from './runtime-internals';
 function hasStepErrors(engine: EngineInternals): boolean {
   const step = engine.currentStep;
   if (!step) return true;
-  const errors = validateStep(step, getValidationValues(engine), engine.validators, engine.messages);
+  const errors = fieldsErrors(engine, step.fields);
   if (Object.keys(errors).length === 0) return false;
   const previousErrors = engine.errors;
   engine.state.errors = { ...previousErrors, ...errors };
@@ -59,8 +58,8 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
       engine.state.values = { ...values };
       for (const key of kept) {
         delete engine.values[key];
-        delete errors[key];
-        delete serverErrors[key];
+        for (const record of [errors, serverErrors])
+          for (const errorKey of Object.keys(record)) if (engine.visibility.owner(errorKey) === key) delete record[errorKey];
         if (key in current) engine.values[key] = current[key];
       }
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
@@ -94,7 +93,7 @@ export async function changeStep(
   const toIndex = fromIndex + (direction === 'next' ? 1 : -1);
   const target = skipping ? skipTarget(engine) : engine.visibleSteps[toIndex];
   if (!target) return false;
-  const context: StepChangeContext = { fromStepId: step.id, toStepId: target.id, reason, values: { ...getValidationValues(engine) } };
+  const context: StepChangeContext = { fromStepId: step.id, toStepId: target.id, reason, values: { ...getSubmitValues(engine) } };
   const epoch = engine.validationEpoch;
   const operation = (engine.latestOperation = ++engine.operationEpoch);
   const inputsChanged = watchCheckedInputs(engine, context.values);

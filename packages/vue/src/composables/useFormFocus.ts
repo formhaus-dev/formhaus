@@ -1,4 +1,4 @@
-import { canMoveFocus, focusField, restoreFocus } from '@formhaus/core/internal';
+import { canMoveFocus, errorDomId, focusField, restoreFocus } from '@formhaus/core/internal';
 import { nextTick, ref, watch, type Ref } from 'vue';
 import type { UseFormEngineReturn } from './useFormEngine';
 
@@ -40,7 +40,7 @@ export function useFormFocus(
       await nextTick();
       const key = focusKey;
       focusKey = null;
-      focusField(formRef.value, formId, key, form.engine.definition);
+      focusField(formRef.value, key && errorDomId(form.engine, formId, key));
     },
     { flush: 'post' },
   );

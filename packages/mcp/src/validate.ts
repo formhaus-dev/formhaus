@@ -39,7 +39,10 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   const core = fromCore(
     checked.some(({ severity }) => severity === 'error') ? checked : [...checked, ...checkTranslations(definition)],
   ).map((item): Issue => (found.some((schema) => same(schema, item) && !titleIssue(schema)) ? { ...item, severity: 'error' } : item));
-  const schema = found.filter((item) => !core.some((other) => same(item, other)));
+  const nested = core.filter(({ code }) => code === 'invalid-nesting').map(({ path }) => path.replace(/\/type$/, ''));
+  const schema = found.filter(
+    (item) => !core.some((other) => same(item, other)) && !nested.some((node) => item.path === node || item.path.startsWith(`${node}/`)),
+  );
   const report = finish([...schema, ...core, ...(schema.length ? [] : structureIssues(definition))]);
   if (!report.valid) return { report };
   const engine = createEngine(definition, values);

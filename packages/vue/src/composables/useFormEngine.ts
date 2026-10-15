@@ -1,5 +1,5 @@
-import { FormEngine, type FormEngineOptions, type FormField, type FormDefinition, type FormStep } from '@formhaus/core';
-import { type ComputedRef, type Ref, computed, onScopeDispose, ref, watch } from 'vue';
+import { FormEngine, type FormEngineOptions, type FormField, type FormNode, type FormDefinition, type FormStep } from '@formhaus/core';
+import { type ComputedRef, computed, onScopeDispose, ref, shallowRef, watch } from 'vue';
 
 export interface UseFormEngineReturn {
   engine: FormEngine;
@@ -8,6 +8,7 @@ export interface UseFormEngineReturn {
   topLevelErrors: ComputedRef<readonly string[]>;
   fieldLoading: ComputedRef<Readonly<Record<string, boolean>>>;
   visibleFields: ComputedRef<FormField[]>;
+  visibleNodes: ComputedRef<FormNode[]>;
   visibleSteps: ComputedRef<FormStep[]>;
   currentStep: ComputedRef<FormStep | null>;
   isFirstStep: ComputedRef<boolean>;
@@ -32,7 +33,7 @@ export function useFormEngine(
     version.value++;
   });
 
-  const engineRef = ref(engine) as Ref<FormEngine>;
+  const engineRef = shallowRef(engine);
 
   watch(getDefinition, () => {
     engine.cancelPendingActions();
@@ -73,6 +74,10 @@ export function useFormEngine(
     visibleFields: computed(() => {
       version.value;
       return engineRef.value.visibleFields;
+    }),
+    visibleNodes: computed(() => {
+      version.value;
+      return engineRef.value.visibleNodes;
     }),
     visibleSteps: computed(() => {
       version.value;

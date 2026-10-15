@@ -64,7 +64,7 @@ describe('createAutosave', () => {
     release();
     await vi.advanceTimersByTimeAsync(0);
     expect(adapter.save).toHaveBeenCalledTimes(2);
-    expect(vi.mocked(adapter.save).mock.calls[1]?.[0].fields?.[0]?.label).toBe('AB');
+    expect((vi.mocked(adapter.save).mock.calls[1]?.[0].fields?.[0] as { label?: string } | undefined)?.label).toBe('AB');
   });
 
   it('stops on conflict and reloads the remote draft on request', async () => {

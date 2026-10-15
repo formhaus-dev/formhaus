@@ -58,6 +58,8 @@ export default defineConfig({
           { text: 'Getting Started', link: '/guide/' },
           { text: 'Field Types', link: '/guide/fields' },
           { text: 'Conditional Fields', link: '/guide/conditions' },
+          { text: 'Sections', link: '/guide/sections' },
+          { text: 'Repeatable Groups', link: '/guide/groups' },
           { text: 'Validation', link: '/guide/validation' },
           { text: 'Multi-Step Forms', link: '/guide/steps' },
           { text: 'Async Step Validation', link: '/guide/async-validation' },

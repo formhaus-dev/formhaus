@@ -10,3 +10,4 @@ export type {
   SubmitResult,
 } from './engine-options';
 export { FormEngine } from './runtime';
+export type { GroupItem } from './groups';

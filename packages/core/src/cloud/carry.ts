@@ -1,4 +1,5 @@
 import type { FormDefinition, FormField } from '../types';
+import { splitPath, valueFields } from '../visibility/nodes';
 import { ANSWER_AGAIN } from './failures';
 
 const SHAPES: Record<string, string> = {
@@ -7,10 +8,11 @@ const SHAPES: Record<string, string> = {
   switch: 'flag',
   number: 'number',
   file: 'file',
+  group: 'list',
 };
 
 function fieldsOf(definition: FormDefinition): FormField[] {
-  return [...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)];
+  return valueFields([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]);
 }
 
 function shapeOf(field: FormField): string {
@@ -51,11 +53,11 @@ export function carryValues(values: Record<string, unknown>, next: FormDefinitio
 }
 
 export function splitErrors(definition: FormDefinition, errors: Record<string, string>) {
-  const known = new Set(fieldsOf(definition).map((field) => field.key));
+  const known = fieldsOf(definition);
   const fields: Record<string, string> = {};
   const other = new Set<string>();
   for (const [key, message] of Object.entries(errors)) {
-    if (known.has(key)) fields[key] = message;
+    if (known.some((field) => field.key === key || (field.type === 'group' && splitPath(field.key, key)))) fields[key] = message;
     else other.add(message);
   }
   return { fields, other: [...other] };

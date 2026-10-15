@@ -16,7 +16,8 @@ function applyRejection(engine: EngineInternals, result: Rejection, sent: Record
   const source = typeof result.errors === 'object' && result.errors ? result.errors : {};
   for (const [key, value] of Object.entries(source)) {
     const message: unknown = Array.isArray(value) ? value.join(' ') : value;
-    if (typeof message === 'string' && Object.is(engine.values[key], sent[key])) errors[key] = message;
+    if (typeof message === 'string' && Object.is(engine.values[engine.visibility.owner(key)], sent[engine.visibility.owner(key)]))
+      errors[key] = message;
   }
   const formErrors = Array.isArray(result.formErrors) ? result.formErrors.filter((message) => typeof message === 'string') : [];
   applyValidationErrors(engine, errors, true, formErrors);

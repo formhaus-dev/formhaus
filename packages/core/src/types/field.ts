@@ -1,4 +1,4 @@
-import type { FieldI18n, LabelI18n, ValidationI18n } from './i18n';
+import type { FieldI18n, GroupI18n, LabelI18n, StepI18n, ValidationI18n } from './i18n';
 
 export type DefaultFieldType =
   | 'text'
@@ -53,6 +53,45 @@ export interface FormField {
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
   i18n?: FieldI18n;
 }
+
+export interface GroupValidation {
+  required?: boolean | string;
+  minLength?: number;
+  minLengthMessage?: string;
+  maxLength?: number;
+  maxLengthMessage?: string;
+  validator?: string;
+  i18n?: Pick<ValidationI18n, 'required' | 'minLength' | 'maxLength'>;
+}
+
+export interface FormGroup {
+  key: string;
+  type: 'group';
+  label: string;
+  helperText?: string;
+  itemLabel?: string;
+  addLabel?: string;
+  removeLabel?: string;
+  defaultItems?: number;
+  show?: ShowCondition[];
+  showAny?: ShowCondition[];
+  validation?: GroupValidation;
+  fields: FormField[];
+  i18n?: GroupI18n;
+}
+
+export interface FormSection {
+  key: string;
+  type: 'section';
+  title: string;
+  description?: string;
+  show?: ShowCondition[];
+  showAny?: ShowCondition[];
+  fields: (FormField | FormGroup)[];
+  i18n?: StepI18n;
+}
+
+export type FormNode = FormField | FormSection | FormGroup;
 
 export interface ShowCondition {
   field: string;

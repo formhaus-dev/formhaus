@@ -1,5 +1,6 @@
 import { isVisible, type FormDefinition, type FormStep } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from '../config';
+import { flatFields } from '../nodes';
 import { ACTION_KEY, type ButtonAction } from '../render-actions';
 
 const TRANSITION: Transition = { type: 'DISSOLVE', easing: { type: 'EASE_OUT' }, duration: 0.2 };
@@ -21,7 +22,7 @@ export function optionTargets(steps: FormStep[], index: number): Map<string, Map
     (step.routes ?? []).flatMap((route) => [...(route.show ?? []), ...(route.showAny ?? [])].map((condition) => condition.field)),
   );
   const result = new Map<string, Map<string, string | null>>();
-  for (const field of step.fields) {
+  for (const field of flatFields(step.fields)) {
     if (field.type !== 'radio' || !(routed.has(field.key) || field.autoAdvance) || !field.options?.length) continue;
     result.set(field.key, new Map(field.options.map((option) => [option.value, routeTarget(steps, index, { [field.key]: option.value })])));
   }

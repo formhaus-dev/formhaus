@@ -1,4 +1,4 @@
-import type { FormDefinition } from '@formhaus/core';
+import type { FormDefinition, FormField } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
 import {
   addField,
@@ -56,7 +56,7 @@ describe('editing fields', () => {
   });
 
   it('keeps other validation rules when toggling required', () => {
-    const field = form().fields![0];
+    const field = form().fields![0] as FormField;
     setRequired(field, false);
     expect(field.validation).toEqual({ pattern: '@' });
     setRequired(field, true);
@@ -64,7 +64,7 @@ describe('editing fields', () => {
   });
 
   it('drops options when switching to a type without them', () => {
-    const field = form().fields![1];
+    const field = form().fields![1] as FormField;
     setType(field, 'text');
     expect(field.options).toBeUndefined();
     setType(field, 'select');
@@ -73,7 +73,7 @@ describe('editing fields', () => {
 
   it('keeps option values that conditions refer to', () => {
     const draft = form();
-    const plan = draft.fields![1];
+    const plan = draft.fields![1] as FormField;
     addOption(plan);
     const added = plan.options![1];
     renameOption(draft, plan, added, 'Team');
@@ -101,7 +101,7 @@ describe('references', () => {
     renameField(draft, terms, 'Accept terms');
     expect(terms.key).toBe('terms');
     expect(removeField(draft, 0, 2)).toContain('Accept terms');
-    const plan = draft.fields![1];
+    const plan = draft.fields![1] as FormField;
     plan.defaultValue = ['pro'];
     renameOption(draft, plan, plan.options![0], 'Professional');
     expect(plan.options![0].value).toBe('pro');
@@ -142,5 +142,22 @@ describe('steps', () => {
     const draft = form();
     moveField(draft, [0, 0], [0, 2]);
     expect(draft.fields!.map((field) => field.key)).toEqual(['plan', 'email']);
+  });
+
+  it('keeps keys of sections and group items apart and protects referenced containers', () => {
+    const draft: FormDefinition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Go' },
+      fields: [
+        { key: 'billing', type: 'section', title: 'Billing', fields: [{ key: 'newField', type: 'text', label: 'Street' }] },
+        { key: 'people', type: 'group', label: 'People', fields: [{ key: 'newField2', type: 'text', label: 'Name' }] },
+        { key: 'note', type: 'text', label: 'Note', show: [{ field: 'people', notEmpty: true }] },
+      ],
+    };
+    expect(addField(draft, 0, 'text').key).toBe('newField3');
+    expect(removeField(draft, 0, 1)).toContain('People');
+    expect(removeField(draft, 0, 0)).toBeNull();
+    expect(steps(draft)[0].fields.map((node) => node.key)).toEqual(['people', 'note', 'newField3']);
   });
 });

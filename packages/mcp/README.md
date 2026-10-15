@@ -41,8 +41,8 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 | Tool | Input | Output |
 |------|-------|--------|
 | `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
-| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) and `overlay` | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
-| `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, translation catalogs, keys and overlay addresses, adapters |
+| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) and `overlay` | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues`. Group item fields appear as paths such as `participants.0.email` |
+| `capabilities` | none | Field types, sections, repeatable groups, field props, validation rules, condition operators, step and route semantics, translation catalogs, keys and overlay addresses, adapters |
 | `translation_template` | `definition`, `lang`, optional `prefix` | `overlay` skeleton with the source texts, suggested `file` name and `slots` with address, key, placeholders and hash |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
 | `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `dashboard_url`, `warnings` |
@@ -54,7 +54,7 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 
 `publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call Formhaus Cloud at `https://api.formhaus.dev`. The last three need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set. An account key (`fh_live_...`) reaches every form and all four tools. An agent key (`fh_agent_...`, returned once by the first keyless `publish_form`) reaches only the forms it created, and `update_form_settings` needs an account key. The server reads `FORMHAUS_API_KEY` from its own environment, not from the project `.env`. Add it to the `env` of the formhaus server in your MCP client config (for example `.mcp.json` with `${FORMHAUS_API_KEY}` and the value in your shell or a gitignored `.env` your client loads), then restart the server. `FORMHAUS_API_BASE` overrides the API URL. The server also sends short usage instructions to the client on connect.
 
-`simulate_path` applies `answers` as initial values, then presses the actions in order, or Next until the last step or the first blocking error. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run. The capabilities are also available as the `formhaus://capabilities` resource.
+`simulate_path` applies `answers` as initial values, with group answers as arrays of item objects, then presses the actions in order, or Next until the last step or the first blocking error. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run. The capabilities are also available as the `formhaus://capabilities` resource.
 
 The tool handlers are exported for use without MCP:
 

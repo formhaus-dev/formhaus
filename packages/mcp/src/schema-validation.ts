@@ -38,5 +38,8 @@ export function schemaIssues(definition: unknown): Issue[] {
   const validate = schemaValidator();
   if (validate(definition)) return [];
   const seen = new Set<string>();
-  return (validate.errors ?? []).map(toIssue).filter(({ message }) => !seen.has(message) && seen.add(message));
+  return (validate.errors ?? [])
+    .filter(({ keyword }) => keyword !== 'if')
+    .map(toIssue)
+    .filter(({ message }) => !seen.has(message) && seen.add(message));
 }

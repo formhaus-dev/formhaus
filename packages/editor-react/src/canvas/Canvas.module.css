@@ -120,3 +120,20 @@
     padding: var(--fh-ed-space-4);
   }
 }
+
+.nested {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-3);
+  margin-top: var(--fh-ed-space-3);
+  margin-left: var(--fh-ed-space-6);
+  padding-left: var(--fh-ed-space-4);
+  border-left: var(--fh-ed-border-focus) solid var(--fh-ed-line);
+}
+
+@container (max-width: 480px) {
+  .nested {
+    margin-left: var(--fh-ed-space-2);
+    padding-left: var(--fh-ed-space-3);
+  }
+}

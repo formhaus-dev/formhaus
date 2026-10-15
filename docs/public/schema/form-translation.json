@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://formhaus.dev/schema/form-translation.json",
   "title": "Formhaus translation overlay",
-  "description": "Translated texts of one form in one language, keyed by step id, field key and option value. Every leaf is a string; empty strings fall back to the source text.",
+  "description": "Translated texts of one form in one language, keyed by step id, section key, field key and option value. Every leaf is a string; empty strings fall back to the source text.",
   "type": "object",
   "properties": {
     "title": {
@@ -112,9 +112,51 @@
         },
         "errorSummary": {
           "type": "string"
+        },
+        "addItem": {
+          "type": "string"
+        },
+        "removeItem": {
+          "type": "string"
+        },
+        "itemLabel": {
+          "type": "string"
+        },
+        "itemAdded": {
+          "type": "string"
+        },
+        "itemRemoved": {
+          "type": "string"
+        },
+        "removeItemNamed": {
+          "type": "string"
+        },
+        "removeItemPrompt": {
+          "type": "string"
+        },
+        "removeItemBody": {
+          "type": "string"
+        },
+        "cancel": {
+          "type": "string"
         }
       },
       "additionalProperties": false
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
     },
     "fields": {
       "type": "object",
@@ -141,6 +183,15 @@
           "type": "string"
         },
         "helperText": {
+          "type": "string"
+        },
+        "itemLabel": {
+          "type": "string"
+        },
+        "addLabel": {
+          "type": "string"
+        },
+        "removeLabel": {
           "type": "string"
         },
         "options": {
@@ -175,6 +226,12 @@
             }
           },
           "additionalProperties": false
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/field"
+          }
         }
       },
       "additionalProperties": false
@@ -214,6 +271,21 @@
             }
           },
           "additionalProperties": false
+        },
+        "sections": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          }
         },
         "fields": {
           "type": "object",

@@ -49,6 +49,19 @@ Hover states apply only on devices with a mouse or trackpad, and transitions tur
 | `--fh-color-bg-hover` | Option, secondary and text button backgrounds |
 | `--fh-color-primary-hover` | Primary button background and checked switch track |
 
+Spacing and sizes come from these variables:
+
+| Variable | Default | Used for |
+|---|---|---|
+| `--fh-space-1` … `--fh-space-10` | 4, 6, 8, 10, 12, 14, 16, 18, 20, 24px | Every margin, padding and gap in the stylesheet |
+| `--fh-gap` | 28px | Space between fields, also inside sections and group cards |
+| `--fh-card-padding` | 24px (16px up to 480px wide) | Side and bottom padding of group item cards |
+| `--fh-input-padding` | `--fh-space-4` `--fh-space-6` | Padding inside inputs |
+| `--fh-control-height`, `--fh-radius` | 46px, 10px | Input and button height, corner radius |
+| `--fh-font-size`, `--fh-font-size-small` | 15px, 13px (17px, 15px on touch screens) | Labels and inputs; helpers, errors and item titles |
+| `--fh-font-size-heading`, `--fh-font-size-title` | font size + 2px, + 5px | Section headings; step titles |
+| `--fh-color-error-soft`, `--fh-color-error-hover` | derived from `--fh-color-error` | Hover of the group item Remove button |
+
 The stylesheet is light by default. For dark colors add `data-fh-theme="dark"` to the form or any ancestor:
 
 ```html
