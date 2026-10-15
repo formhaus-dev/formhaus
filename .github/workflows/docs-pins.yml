@@ -1,0 +1,94 @@
+name: Docs pins
+
+on:
+  push:
+    tags: ['@formhaus/core@*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Published @formhaus/core version
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: docs-pins
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    env:
+      TAG: ${{ github.ref_name }}
+      INPUT_VERSION: ${{ inputs.version }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: main
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - name: Read version
+        run: |
+          version="${INPUT_VERSION:-${TAG#@formhaus/core@}}"
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Skipping $version: not a stable release"
+            exit 0
+          fi
+          echo "VERSION=$version" >> "$GITHUB_ENV"
+
+      - name: Wait for npm
+        if: env.VERSION
+        run: |
+          for attempt in $(seq 1 30); do
+            ready=true
+            for name in core react vue; do
+              npm view "@formhaus/$name@$VERSION" version >/dev/null 2>&1 || ready=false
+            done
+            if $ready; then exit 0; fi
+            sleep 20
+          done
+          echo "@formhaus/core, react and vue $VERSION are not all on npm" >&2
+          exit 1
+
+      - name: Bump pins
+        if: env.VERSION
+        run: |
+          node scripts/bump-docs-pins.mjs "$VERSION"
+          pnpm --dir docs install --lockfile-only --no-frozen-lockfile
+
+      - name: Open pull request
+        if: env.VERSION
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then
+            echo "Pins already on $VERSION"
+            exit 0
+          fi
+          branch="docs/pins-$VERSION"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -am "docs: pin the playground and docs site to $VERSION"
+          git push --force origin "$branch"
+          if [ -n "$(gh pr list --head "$branch" --state open --json number --jq '.[].number')" ]; then exit 0; fi
+          if ! gh pr create --base main --head "$branch" --title "docs: pin the playground and docs site to $VERSION" \
+            --body "Bumps the docs playground and docs site pins to the published $VERSION. Opened by the Docs pins workflow. Close and reopen the PR to start CI, because pull requests opened with GITHUB_TOKEN do not trigger workflows."; then
+            url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/compare/main...$branch?expand=1"
+            echo "Open the docs pins pull request by hand: $url" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Could not open the pull request. Open it by hand: $url"
+            exit 1
+          fi
