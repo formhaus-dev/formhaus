@@ -1,5 +1,5 @@
 import { FormEngine, type FormEngineOptions, type FormField, type FormNode, type FormDefinition, type FormStep } from '@formhaus/core';
-import { type ComputedRef, type Ref, computed, onScopeDispose, ref, watch } from 'vue';
+import { type ComputedRef, computed, onScopeDispose, ref, shallowRef, watch } from 'vue';
 
 export interface UseFormEngineReturn {
   engine: FormEngine;
@@ -33,7 +33,7 @@ export function useFormEngine(
     version.value++;
   });
 
-  const engineRef = ref(engine) as Ref<FormEngine>;
+  const engineRef = shallowRef(engine);
 
   watch(getDefinition, () => {
     engine.cancelPendingActions();
