@@ -22,6 +22,9 @@ function engineKey(engine: object): number {
 
 const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
 
+const typing = (element: Element) => (element as HTMLElement).isContentEditable
+  || (element.matches('input, select, textarea') && !['checkbox', 'radio'].includes((element as HTMLInputElement).type));
+
 function firstControl(root: Element | null | undefined) {
   return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
 }
@@ -60,8 +63,8 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     if (!shouldApplyExternalErrors(engine, previous, props.errors)) return;
     appliedErrors.current = { engine, errors: props.errors };
     engine.setErrors(props.errors);
-    const form = formRef.current;
-    if (!form?.contains(form.ownerDocument.activeElement) || Object.keys(props.errors).length === 0) return;
+    const active = formRef.current?.ownerDocument.activeElement;
+    if (!active || !formRef.current?.contains(active) || typing(active) || Object.keys(props.errors).length === 0) return;
     focusPending.current = true;
     setFocusRequest((request) => request + 1);
   }, [props.errors, engine]);

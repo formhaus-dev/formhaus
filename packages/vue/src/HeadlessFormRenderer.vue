@@ -66,8 +66,7 @@ watch(
     if (!newErrors) return;
     if (!shouldApplyExternalErrors(engine, engine === oldEngine ? oldErrors : undefined, newErrors)) return;
     engine.setErrors(newErrors);
-    const element = formRef.value;
-    if (element?.contains(element.ownerDocument.activeElement) && Object.keys(newErrors).length > 0) requestFocus();
+    if (Object.keys(newErrors).length > 0) requestFocus();
   },
   { immediate: true },
 );

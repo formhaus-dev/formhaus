@@ -32,12 +32,22 @@ it('shows a repeated server error after the user edits the field', async () => {
 const pair: FormDefinition = { id: 'pair', title: '', submit: { label: 'Send' },
   fields: [{ key: 'first', type: 'text', label: 'First' }, { key: 'second', type: 'text', label: 'Second' }] };
 
-it('focuses the invalid field when external errors arrive for the open step', async () => {
+it('focuses the invalid field when external errors arrive while a button has focus', async () => {
   const { rerender } = render(<FormRenderer definition={pair} onSubmit={() => {}} />);
-  screen.getByRole('textbox', { name: /First/ }).focus();
+  screen.getByRole('button', { name: 'Send' }).focus();
   rerender(<FormRenderer definition={pair} errors={{ second: 'Taken' }} onSubmit={() => {}} />);
   await screen.findByText('Taken');
   await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Second/ })));
+});
+
+it('keeps focus in a text field when external errors arrive for another field', async () => {
+  const { rerender } = render(<FormRenderer definition={pair} onSubmit={() => {}} />);
+  const first = screen.getByRole('textbox', { name: /First/ });
+  first.focus();
+  rerender(<FormRenderer definition={pair} errors={{ second: 'Taken' }} onSubmit={() => {}} />);
+  await screen.findByText('Taken');
+  await new Promise((done) => setTimeout(done));
+  expect(document.activeElement).toBe(first);
 });
 
 it('does not move focus for external errors passed on mount', async () => {
