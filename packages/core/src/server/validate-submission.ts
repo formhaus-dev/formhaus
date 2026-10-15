@@ -1,4 +1,4 @@
-import type { FormDefinition, FormField } from '../types';
+import type { FormDefinition, FormField, FormNode } from '../types';
 import type { MessageSource, ValidatorFn } from '../validation';
 import { messageResolver, namedResolver, type ResolveMessage } from '../validation/default-messages';
 import { parseDefinition } from '../definition-validation';
@@ -8,6 +8,7 @@ import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { normalizeValue, typeError } from '../validation/type-checks';
+import { isEntry, isGroup, isSection, itemPath } from '../visibility/nodes';
 
 export interface SubmissionOptions {
   skippedSteps?: string[];
@@ -23,6 +24,8 @@ export interface SubmissionResult {
 }
 
 const allow: ValidatorFn = () => null;
+
+const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 
 const hasOwn = (source: object, key: string) => Object.prototype.hasOwnProperty.call(source, key);
 
@@ -63,15 +66,41 @@ function typeErrors({ values, active }: ActiveValues, resolve: ResolveMessage): 
   return errors;
 }
 
+function itemErrors(engine: FormEngine, invalid: Map<string, string>, resolve: ResolveMessage): Map<string, string> {
+  const errors = new Map<string, string>();
+  for (const group of internals(engine).visibility.groups) {
+    if (invalid.has(group.key)) continue;
+    engine.items(group.key).forEach(({ fields }, index) => {
+      const item = (engine.values[group.key] as unknown[])[index];
+      if (!isEntry(item)) return;
+      for (const field of fields) {
+        const error = typeError(field, item[field.key], resolve);
+        if (!error) continue;
+        errors.set(itemPath(group.key, index, field.key), error);
+        engine.setItemValue(group.key, index, field.key, undefined);
+      }
+    });
+  }
+  return errors;
+}
+
 function withoutRules(definition: FormDefinition, invalid: Map<string, string>): FormDefinition {
-  const strip = (fields: FormField[]) => fields.map((field) => (invalid.has(field.key) ? { ...field, validation: undefined } : field));
+  const strip = (fields: FormNode[]): FormNode[] =>
+    fields.map((field) =>
+      isSection(field)
+        ? { ...field, fields: strip(field.fields) as FormField[] }
+        : invalid.has(field.key)
+          ? { ...field, validation: undefined }
+          : field,
+    );
   const steps = definition.steps?.map((step) => ({ ...step, fields: strip(step.fields) }));
   return { ...definition, ...(definition.fields && { fields: strip(definition.fields) }), ...(steps && { steps }) };
 }
 
 function ignoredValidators(fields: FormField[], given: Record<string, ValidatorFn> = {}): Record<string, ValidatorFn> {
   const validators: Record<string, ValidatorFn> = {};
-  for (const { validation } of fields) if (validation?.validator) validators[validation.validator] = allow;
+  for (const { validation } of fields.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])))
+    if (validation?.validator) validators[validation.validator] = allow;
   return { ...validators, ...given };
 }
 
@@ -97,10 +126,19 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   const invalid = typeErrors(resolved, namedResolver(messages));
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
+  const items = itemErrors(engine, invalid, namedResolver(messages));
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();
-  const submitted = engine.getSubmitValues();
-  for (const [key, error] of invalid) if (hasOwn(submitted, key)) errors[key] = error;
+  const submitted: Record<string, unknown> = engine.getSubmitValues();
+  const { visibility } = internals(engine);
+  for (const [key, error] of invalid) {
+    if (!hasOwn(submitted, key)) continue;
+    errors[key] = error;
+    submitted[key] = resolved.values[key];
+    for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
+  }
+  for (const [key, error] of items)
+    if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;
   if (isBody(fields, values)) errors.values = BODY_MESSAGE;
   return { values: submitted, errors };
 }
