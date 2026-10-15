@@ -1,5 +1,19 @@
 # @formhaus/react
 
+## 0.13.1
+
+### Patch Changes
+
+- 1a4874a: - Fixed error summary links not focusing the field on single-step forms.
+  - Fixed `stepErrorMarks` showing an error on a step with the id `constructor`.
+  - A change of the `errors` prop now focuses the first invalid field when focus is inside the form and not in a text field.
+- fc1078f: - Fixed an error summary link to a field on another step sometimes leaving focus on the page body.
+- Updated dependencies [a5c775e]
+- Updated dependencies [49485c8]
+- Updated dependencies [1a4874a]
+- Updated dependencies [5ea6229]
+  - @formhaus/core@0.13.1
+
 ## 0.13.0
 
 ### Minor Changes
