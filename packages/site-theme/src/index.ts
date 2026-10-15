@@ -10,6 +10,8 @@ import { ownerOf } from './routes.js'
 import './brand.css'
 import './docs-menu.css'
 
+import { startAnalytics } from './analytics'
+
 export { track } from './analytics'
 
 function stayInOwnBuild({ router }: EnhanceAppContext) {
@@ -38,6 +40,7 @@ export function createTheme(enhance?: (context: EnhanceAppContext) => void): The
       }),
     enhanceApp(context) {
       stayInOwnBuild(context)
+      startAnalytics()
       enhance?.(context)
     },
   }

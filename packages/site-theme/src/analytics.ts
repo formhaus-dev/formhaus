@@ -6,11 +6,19 @@ declare global {
   interface Window {
     umami?: { track: (name: string, data?: EventData) => unknown }
   }
+  interface Navigator {
+    globalPrivacyControl?: boolean
+  }
 }
 
 export const umamiWebsiteId = 'abeb3361-e26b-4aaf-a25c-ef868c82f9b6'
 
 const respectGpc = 'window.fhBeforeSend=function(t,p){return navigator.globalPrivacyControl===true?false:p}'
+const appHost = 'app.formhaus.dev'
+const signupPaths = ['/login', '/forms/new']
+const sourceKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'ref']
+
+let landing: Record<string, string> | null = null
 
 export function analyticsHead(build: 'site' | 'docs'): HeadConfig[] {
   return [
@@ -31,4 +39,57 @@ export function track(name: string, data?: EventData) {
   try {
     window.umami?.track(name, data)
   } catch {}
+}
+
+export function trackingAllowed(nav: Pick<Navigator, 'doNotTrack' | 'globalPrivacyControl'>): boolean {
+  return nav.doNotTrack !== '1' && nav.globalPrivacyControl !== true
+}
+
+export function landingSource(href: string, referrer: string): Record<string, string> {
+  const params = new URL(href).searchParams
+  const source: Record<string, string> = {}
+  for (const key of sourceKeys) {
+    const value = params.get(key)
+    if (value) source[key] = value
+  }
+  if (!source.ref && referrer) {
+    const host = new URL(referrer).hostname
+    if (host && host !== 'formhaus.dev' && !host.endsWith('.formhaus.dev')) source.ref = host
+  }
+  return source
+}
+
+export function withSource(href: string, source: Record<string, string>, from?: string): string | null {
+  const url = new URL(href)
+  if (url.hostname !== appHost || !signupPaths.includes(url.pathname)) return null
+  for (const [key, value] of Object.entries(source)) {
+    if (!url.searchParams.has(key)) url.searchParams.set(key, value)
+  }
+  if (from && !url.searchParams.has('from')) url.searchParams.set('from', from)
+  return url.toString()
+}
+
+export function codeLanguage(button: Element): string {
+  const block = button.parentElement?.className ?? ''
+  return /(?:^|\s)language-([\w-]+)/.exec(block)?.[1] ?? 'text'
+}
+
+function onClick(event: MouseEvent) {
+  const target = event.target instanceof Element ? event.target : null
+  const copy = target?.closest('div[class*="language-"] > button.copy')
+  if (copy) track('docs_code_copy', { lang: codeLanguage(copy) })
+  const link = target?.closest<HTMLAnchorElement>('a[href]')
+  if (!link || !landing || !trackingAllowed(navigator)) return
+  const decorated = withSource(link.href, landing, link.dataset.umamiEventLocation)
+  if (decorated) link.href = decorated
+}
+
+export function startAnalytics() {
+  if (typeof window === 'undefined' || landing) return
+  try {
+    landing = landingSource(window.location.href, document.referrer)
+  } catch {
+    landing = {}
+  }
+  document.addEventListener('click', onClick, true)
 }

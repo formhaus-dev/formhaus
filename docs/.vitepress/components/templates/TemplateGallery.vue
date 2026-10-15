@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
 import { withBase } from 'vitepress';
+import { track } from '@formhaus/site-theme';
 import index from '../../../../templates/index.json';
 import LucideIcon from '../landing/LucideIcon.vue';
 import { categories, categoryLabel, counts, type TemplateEntry } from './catalog';
@@ -25,6 +26,7 @@ onMounted(() => {
 
 function choose(id: string) {
   active.value = id;
+  track('template_filter', { category: id });
   const url = new URL(location.href);
   if (id === 'all') url.searchParams.delete('category');
   else url.searchParams.set('category', id);

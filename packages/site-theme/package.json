@@ -8,5 +8,11 @@
     "./config": "./src/config.ts",
     "./routes": "./src/routes.js",
     "./sitemap": "./src/sitemap.js"
+  },
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^4.1.3"
   }
 }
