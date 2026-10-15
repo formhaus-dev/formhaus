@@ -1,5 +1,16 @@
 # @formhaus/core
 
+## 0.14.1
+
+### Patch Changes
+
+- Fixed `require('@formhaus/core/fix')` failing with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+- Fixed group items that are not plain objects, such as `null` or a string in the initial values, passing client validation and reaching `onSubmit` as `{}`.
+- A group with such items fails with `Invalid value` in the browser, as in `validateSubmission()`.
+- Fixed `validateSubmission()` checking a value against a group on an inactive branch when another branch reuses the key.
+- Fixed fields in one group item getting the same DOM id when their keys differ only in punctuation, such as `contact.email` and `contact-email`. The second error summary link focused the first field.
+- Fixed a section and a field getting the same DOM id when their keys differ only in punctuation.
+
 ## 0.14.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @formhaus/react
 
+## 0.14.1
+
+### Patch Changes
+
+- Fixed a field inside a group showing the options that `optionsProviders` loaded for a field with the same key in another group, even when the field lists its own options.
+- Fixed `FieldComponentMap` entries such as `text: ({ value, onChange }) => …` failing strict type checks with implicit `any` props.
+- `FieldComponentMap` types the props of `section`, `group`, `groupItem` and `confirmDialog` entries.
+- Fixed fields in one group item getting the same DOM id when their keys differ only in punctuation, such as `contact.email` and `contact-email`. The second error summary link focused the first field.
+- Fixed a section and a field getting the same DOM id when their keys differ only in punctuation.
+- Requires `@formhaus/core` 0.14.1.
+
 ## 0.14.0
 
 ### Minor Changes
