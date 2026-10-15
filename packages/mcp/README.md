@@ -1,5 +1,7 @@
 # @formhaus/mcp
 
+[![ignsm/formhaus MCP server](https://glama.ai/mcp/servers/ignsm/formhaus/badges/score.svg)](https://glama.ai/mcp/servers/ignsm/formhaus)
+
 MCP server that lets AI agents check [Formhaus](https://github.com/ignsm/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later. The checks need no account or key.
 
 `validate_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
@@ -50,7 +52,7 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 | `get_webhook` | `form_id` | `url` and the masked `secret` |
 | `reveal_webhook_secret` | `form_id` | `form_id` and the full `webhook_secret`. Marked as a non-read-only, sensitive tool. Whether the client asks first depends on its permission settings |
 
-`publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call Formhaus Cloud at `https://api.formhaus.dev`. The last three need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set. An account key (`fh_live_...`) reaches every form and all four tools. An agent key (`fh_agent_...`, returned once by the first keyless `publish_form`) reaches only the forms it created, and `update_form_settings` needs an account key. The server reads `FORMHAUS_API_KEY` from its own environment, not from the project `.env`. Add it to the `env` of the formhaus server in your MCP client config (for example `.mcp.json` with `${FORMHAUS_API_KEY}` and the value in your shell or a gitignored `.env` your client loads), then restart the server.
+`publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call Formhaus Cloud at `https://api.formhaus.dev`. The last three need `FORMHAUS_API_KEY` in the server environment, and `publish_form` uses it when set. An account key (`fh_live_...`) reaches every form and all four tools. An agent key (`fh_agent_...`, returned once by the first keyless `publish_form`) reaches only the forms it created, and `update_form_settings` needs an account key. The server reads `FORMHAUS_API_KEY` from its own environment, not from the project `.env`. Add it to the `env` of the formhaus server in your MCP client config (for example `.mcp.json` with `${FORMHAUS_API_KEY}` and the value in your shell or a gitignored `.env` your client loads), then restart the server. `FORMHAUS_API_BASE` overrides the API URL. The server also sends short usage instructions to the client on connect.
 
 `simulate_path` applies `answers` as initial values, then presses the actions in order, or Next until the last step or the first blocking error. `errors` covers visited steps only. Custom validators, `onStepValidate` and lifecycle hooks are not run. The capabilities are also available as the `formhaus://capabilities` resource.
 
