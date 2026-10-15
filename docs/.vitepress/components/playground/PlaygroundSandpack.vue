@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { Sandpack } from 'sandpack-vue3';
+import { track } from '@formhaus/site-theme';
 import PlaygroundDefinitionPanel from './PlaygroundDefinitionPanel.vue';
 import { fixtures, fixtureNames } from './fixtures';
 import * as reactMui from './loaders/react-mui';
@@ -43,18 +44,35 @@ const customSetup = computed(() => {
 });
 
 const variantConfig = computed(() => variants[props.framework]);
+
+function chooseVariant(next: Variant) {
+  variant.value = next;
+  track('playground_action', { action: 'library_toggle', framework: props.framework, variant: next });
+}
+
+function chooseFixture(name: string) {
+  selected.value = name;
+  track('playground_action', { action: 'fixture', framework: props.framework, fixture: name });
+}
+
+function watchSandbox(event: MouseEvent) {
+  const target = event.target instanceof Element ? event.target : null;
+  if (target?.closest('[title="Open in CodeSandbox"]')) {
+    track('playground_action', { action: 'open_codesandbox', framework: props.framework });
+  }
+}
 </script>
 
 <template>
-  <div>
+  <div @click.capture="watchSandbox">
     <div v-if="variantConfig" class="fh-variant-toggle">
       <button
         :class="['fh-variant-btn', { active: variant === 'library' }]"
-        @click="variant = 'library'"
+        @click="chooseVariant('library')"
       >{{ variantConfig.library }}</button>
       <button
         :class="['fh-variant-btn', { active: variant === 'no-library' }]"
-        @click="variant = 'no-library'"
+        @click="chooseVariant('no-library')"
       >{{ variantConfig.noLibrary }}</button>
     </div>
     <div class="fh-playground-tabs">
@@ -62,7 +80,7 @@ const variantConfig = computed(() => variants[props.framework]);
         v-for="name in fixtureNames"
         :key="name"
         :class="['fh-playground-tab', { active: selected === name }]"
-        @click="selected = name"
+        @click="chooseFixture(name)"
       >{{ name }}</button>
     </div>
     <Sandpack

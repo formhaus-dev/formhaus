@@ -252,7 +252,11 @@ importers:
         specifier: ^4.1.3
         version: 4.1.3(@types/node@20.19.43)(@vitest/browser-playwright@4.1.3)(jsdom@29.0.2)(vite@6.4.2(@types/node@20.19.43))
 
-  packages/site-theme: {}
+  packages/site-theme:
+    devDependencies:
+      vitest:
+        specifier: ^4.1.3
+        version: 4.1.3(@types/node@20.19.43)(@vitest/browser-playwright@4.1.3)(jsdom@29.0.2)(vite@6.4.2(@types/node@20.19.43))
 
   packages/vue:
     devDependencies:
