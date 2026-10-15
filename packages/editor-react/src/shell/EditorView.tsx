@@ -1,5 +1,5 @@
 import { Braces, Eye, PenLine, type LucideIcon } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import { Banner, SegmentedControl } from '../ui';
 import { JsonPane } from '../json/JsonPane';
 import { EditorPreview } from '../preview/EditorPreview';
@@ -12,6 +12,7 @@ import { EditorTopBar } from './EditorTopBar';
 import { ShortcutsDialog } from './ShortcutsDialog';
 import { RestoreOffer } from './RestoreOffer';
 import { useEditorKeys } from './useEditorKeys';
+import { useTabScroll } from './useTabScroll';
 import { Workspace } from './Workspace';
 
 export type EditorMode = 'edit' | 'json' | 'preview';
@@ -44,28 +45,38 @@ interface Props {
 
 export function EditorView({ handle, stale, mode: initialMode = 'edit', compact = false }: Props) {
   const { published } = handle;
-  const [mode, setMode] = useState<string>(initialMode);
+  const [mode, setShownMode] = useState<string>(initialMode);
+  const top = useRef<HTMLDivElement>(null);
+  const remember = useTabScroll(mode, top);
+  const setMode = useCallback(
+    (next: string | ((current: string) => string), restore = true) => {
+      remember(restore);
+      setShownMode(next);
+    },
+    [remember],
+  );
   const small = useMedia(phone);
   const [help, setHelp] = useState(false);
   const [reveal, setReveal] = useState(false);
   const onShowIssues = useCallback(() => {
-    setMode('json');
+    setMode('json', false);
     setReveal(true);
-  }, []);
+  }, [setMode]);
   const onRevealed = useCallback(() => {
     setReveal(false);
   }, []);
   const onToggleJson = useCallback(() => {
     if (!compact) setMode((current) => (current === 'json' ? 'edit' : 'json'));
-  }, [compact]);
+  }, [compact, setMode]);
   const onHelp = useCallback(() => {
     setHelp(true);
   }, []);
   useEditorKeys({ onToggleJson, onHelp });
-  const modes = <SegmentedControl label="Editor mode" options={modeOptions(small)} value={mode} onValueChange={setMode} />;
+  const modes = <SegmentedControl label="Editor mode" options={modeOptions(small)} value={mode} onValueChange={(next) => setMode(next)} />;
   const publish = <PublishAction published={published} compact={small} />;
   return (
     <EditorShell handle={handle}>
+      <div ref={top} />
       {!compact && (
         <EditorTopBar
           compact={small}
