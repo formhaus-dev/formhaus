@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { validateDefinitionTool } from '../src/validate';
+import { fixDefinitionTool, validateDefinitionTool } from '../src/validate';
 import { branching, linear } from './fixtures';
 
 const summary = (definition: unknown) =>
@@ -22,6 +22,17 @@ describe('validate_definition', () => {
     expect(report.valid).toBe(false);
     expect(report.issues[0]).toMatchObject({ code: 'invalid-json', severity: 'error', path: '' });
     expect(report.issues[0].message).toMatch(/^\/: Definition is not valid JSON/);
+  });
+
+  it('rejects a definition larger than 256 KB', () => {
+    const large = { ...linear, description: 'a'.repeat(256 * 1024) };
+    for (const definition of [large, JSON.stringify(large)]) {
+      expect(validateDefinitionTool({ definition })).toEqual({
+        valid: false,
+        issues: [{ code: 'too-large', severity: 'error', path: '', message: '/: Definition is larger than 256 KB of JSON.' }],
+      });
+    }
+    expect(fixDefinitionTool({ definition: large })).toMatchObject({ valid: false, applied: [], issues: [{ code: 'too-large' }] });
   });
 
   it('reports schema and core issues with JSON pointers, without duplicates', () => {
