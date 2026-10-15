@@ -79,19 +79,38 @@ describe('definition fixes in the JSON tab', () => {
     expect(await screen.findByRole('button', { name: 'Fix all safe issues (4)' }, { timeout: 5000 })).toBeTruthy();
   });
 
-  it('keeps the cursor where it was when a fix changes another line', async () => {
+  it('keeps the cursor where it was and selects nothing after Fix all', async () => {
     await page.viewport(1440, 1000);
     renderEditor();
     await openJson();
     paste(founder);
     const editor = view();
-    const anchor = jsonText().indexOf('"Work email"');
-    editor.dispatch({ selection: { anchor } });
-    await userEvent.click(await screen.findByRole('button', { name: 'Fix: Set the label to "Email"' }, { timeout: 5000 }));
+    editor.dispatch({ selection: { anchor: jsonText().indexOf('"Work email"') } });
+    await userEvent.click(await screen.findByRole('button', { name: 'Fix all safe issues (4)' }, { timeout: 5000 }));
     await waitFor(() => {
       expect(jsonText()).toContain('"label": "Email"');
     });
-    expect(view().state.selection.main.anchor).toBe(jsonText().indexOf('"Work email"'));
+    const { main } = view().state.selection;
+    expect(main.empty).toBe(true);
+    expect(main.anchor).toBe(jsonText().indexOf('"Work email"'));
+  });
+
+  it.each([
+    ['Fix: Set the label to "Email"', 'Email'],
+    ['Fix: Rename "imd" to "id"', 'id'],
+    ['Fix: Rename the key to "email_2"', 'email_2'],
+  ])('selects the value a fix wrote after %s', async (name, selected) => {
+    await page.viewport(1440, 1000);
+    renderEditor();
+    await openJson();
+    paste(founder);
+    const buttons = await screen.findAllByRole('button', { name }, { timeout: 5000 });
+    await userEvent.click(buttons[0] as HTMLElement);
+    await waitFor(() => {
+      const { main } = view().state.selection;
+      expect(view().state.sliceDoc(main.from, main.to)).toBe(selected);
+    });
+    expect(view().hasFocus).toBe(true);
   });
 
   it('applies one fix to the JSON and the visual model as one undo step', async () => {

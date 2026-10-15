@@ -6,6 +6,7 @@ export interface JsonEditorHandle {
   getDoc: () => string;
   setError: (error: { message: string; from: number } | null) => void;
   focus: () => void;
+  select: (from: number, to: number) => void;
   destroy: () => void;
 }
 
@@ -112,6 +113,11 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
         ? [{ from: at, to: Math.min(at + 1, editor.state.doc.length), severity: 'error' as const, message: error.message }]
         : [];
       editor.dispatch(lint.setDiagnostics(editor.state, diagnostics));
+    },
+    select: (from, to) => {
+      const end = editor.state.doc.length;
+      editor.dispatch({ selection: { anchor: Math.min(from, end), head: Math.min(to, end) }, scrollIntoView: true });
+      editor.focus();
     },
     focus: () => {
       editor.focus();

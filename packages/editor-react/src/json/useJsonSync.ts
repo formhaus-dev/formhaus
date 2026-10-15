@@ -5,7 +5,7 @@ import { useEditorHandle } from '../store/context';
 import { useForm, useReadOnly } from '../store/hooks';
 import { loader } from '../store/initial';
 import { mountJsonEditor, type JsonEditorHandle } from './jsonEditor';
-import { formatDefinition, parseJson, plainDefinition, sameDefinition, type JsonError } from './sync';
+import { formatDefinition, locate, parseJson, plainDefinition, sameDefinition, type JsonError } from './sync';
 
 export const JSON_DELAY = 400;
 
@@ -65,7 +65,7 @@ export function useJsonSync(host: RefObject<HTMLDivElement | null>) {
         window.clearTimeout(timer.current);
         timer.current = window.setTimeout(flush, JSON_DELAY);
       },
-      apply: (change: (definition: FormDefinition) => FormDefinition) => {
+      apply: (change: (definition: FormDefinition) => FormDefinition, target?: { pointer: string; part: 'value' | 'key' }) => {
         flush();
         const text = editor.current?.getDoc();
         const parsed = text === undefined ? null : parseJson(text, load);
@@ -78,6 +78,9 @@ export function useJsonSync(host: RefObject<HTMLDivElement | null>) {
         }
         if (sameDefinition(form, store.getState().form)) return false;
         store.replace(form);
+        show(store.getState().form);
+        const range = target ? locate(plainDefinition(store.getState().form), target.pointer, target.part) : null;
+        if (range) editor.current?.select(range.from, range.to);
         return true;
       },
       undo: () => {

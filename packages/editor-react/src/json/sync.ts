@@ -47,3 +47,35 @@ export function parseJson(text: string, load: (definition: FormDefinition) => Bu
     return failure(text, reason(error), 0);
   }
 }
+
+const MARK = '\u0000fh-mark\u0000';
+
+const tokensOf = (pointer: string) =>
+  pointer
+    .slice(1)
+    .split('/')
+    .map((token) => token.replace(/~1/g, '/').replace(/~0/g, '~'));
+
+export function locate(definition: FormDefinition, pointer: string, part: 'value' | 'key'): { from: number; to: number } | null {
+  const copy: unknown = JSON.parse(JSON.stringify(definition));
+  const tokens = tokensOf(pointer);
+  const name = tokens.pop();
+  let node = copy as Record<string, unknown>;
+  for (const token of tokens) {
+    if (typeof node[token] !== 'object' || node[token] === null) return null;
+    node = node[token] as Record<string, unknown>;
+  }
+  if (name === undefined || !Object.prototype.hasOwnProperty.call(node, name)) return null;
+  const original = node[name];
+  if (part === 'value') node[name] = MARK;
+  else {
+    const entries = Object.entries(node);
+    for (const [key] of entries) delete node[key];
+    for (const [key, value] of entries) node[key === name ? MARK : key] = value;
+  }
+  const at = JSON.stringify(copy, null, 2).indexOf(JSON.stringify(MARK));
+  if (at < 0) return null;
+  const text = part === 'value' ? JSON.stringify(original) : JSON.stringify(name);
+  const quoted = text.startsWith('"');
+  return { from: at + (quoted ? 1 : 0), to: at + text.length - (quoted ? 1 : 0) };
+}

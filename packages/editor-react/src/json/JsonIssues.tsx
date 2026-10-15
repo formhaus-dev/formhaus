@@ -6,7 +6,17 @@ import { cx } from '../ui/lib/cx';
 import type { FixTools } from './fixes';
 import styles from './JsonPane.module.css';
 
-type Apply = (change: (definition: FormDefinition) => FormDefinition) => boolean;
+type Target = { pointer: string; part: 'value' | 'key' };
+type Apply = (change: (definition: FormDefinition) => FormDefinition, target?: Target) => boolean;
+
+function targetOf(fix: DefinitionFix): Target | undefined {
+  const last = fix.patch.at(-1);
+  if (!last) return undefined;
+  if (last.op === 'move') return { pointer: last.path, part: 'key' };
+  if ((last.op === 'add' || last.op === 'replace') && ['string', 'number'].includes(typeof last.value))
+    return { pointer: last.path, part: 'value' };
+  return undefined;
+}
 
 interface Props {
   issues: (DefinitionIssue & FixableIssue)[];
@@ -61,7 +71,7 @@ export function JsonIssues({ issues, tools, onApply }: Props) {
   const announce = useAnnounce();
   const safe = issues.filter((issue) => issue.fixes?.some((fix) => fix.safe)).length;
   const fixOne = (fix: DefinitionFix) => {
-    if (tools && onApply((definition) => tools.applyFix(definition, fix.patch))) announce(`Applied: ${fix.title}`);
+    if (tools && onApply((definition) => tools.applyFix(definition, fix.patch), targetOf(fix))) announce(`Applied: ${fix.title}`);
   };
   const fixSafe = () => {
     if (!tools) return;
