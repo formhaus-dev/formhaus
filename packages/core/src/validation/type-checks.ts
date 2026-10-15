@@ -1,5 +1,6 @@
 import type { FormField, FormGroup } from '../types';
 import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
+import { hasOwn } from '../visibility/nodes';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
 export const BUILT_IN_TYPES = [
@@ -70,7 +71,7 @@ function normalizeItems(group: FormGroup, input: unknown): unknown {
     if (!entry(item)) return item;
     const result: Record<string, unknown> = {};
     for (const field of group.fields) {
-      const value = Object.prototype.hasOwnProperty.call(item, field.key) ? normalizeValue(field, item[field.key]) : undefined;
+      const value = hasOwn(item, field.key) ? normalizeValue(field, item[field.key]) : undefined;
       if (value !== undefined) result[field.key] = value;
     }
     return result;

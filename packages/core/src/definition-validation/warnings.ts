@@ -1,4 +1,5 @@
 import type { FormField } from '../types';
+import { hasOwn } from '../visibility/nodes';
 import { BOOLEAN_TYPES, BUILT_IN_TYPES } from '../validation/type-checks';
 import { conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
@@ -107,7 +108,7 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
     ),
   ];
   const { validators } = context;
-  if (rules.validator !== undefined && validators && !Object.prototype.hasOwnProperty.call(validators, rules.validator)) {
+  if (rules.validator !== undefined && validators && !hasOwn(validators, rules.validator)) {
     issues.push(
       warning(
         'unknown-validator',

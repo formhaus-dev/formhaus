@@ -8,7 +8,7 @@ import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { normalizeValue, typeError } from '../validation/type-checks';
-import { isEntry, isGroup, isSection, itemPath } from '../visibility/nodes';
+import { hasOwn, isEntry, isGroup, isSection, itemPath } from '../visibility/nodes';
 
 export interface SubmissionOptions {
   skippedSteps?: string[];
@@ -26,8 +26,6 @@ export interface SubmissionResult {
 const allow: ValidatorFn = () => null;
 
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
-
-const hasOwn = (source: object, key: string) => Object.prototype.hasOwnProperty.call(source, key);
 
 interface ActiveValues {
   values: Record<string, unknown>;

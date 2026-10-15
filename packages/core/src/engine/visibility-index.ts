@@ -1,5 +1,5 @@
 import type { FormField, FormStep, ShowCondition } from '../types';
-import { conditionFields } from './engine-utils';
+import { conditionFields } from '../visibility/nodes';
 
 type Conditional = { show?: ShowCondition[]; showAny?: ShowCondition[] };
 

@@ -1,4 +1,4 @@
-import type { FormField, FormGroup, FormNode, FormSection } from '../types';
+import type { FormDefinition, FormField, FormGroup, FormNode, FormSection } from '../types';
 import { trimValue } from '../validation/type-checks';
 import { isVisible } from './is-visible';
 
@@ -6,11 +6,21 @@ type Values = Record<string, unknown>;
 
 export const isEntry = (value: unknown): value is Values => typeof value === 'object' && value !== null && !Array.isArray(value);
 
+export const hasOwn = (value: object, key: PropertyKey): boolean => Object.prototype.hasOwnProperty.call(value, key);
+
 export const isSection = (node: { type?: unknown }): node is FormSection => node.type === 'section';
 export const isGroup = (node: { type?: unknown }): node is FormGroup => node.type === 'group';
 
 export function valueFields(nodes: FormNode[]): FormField[] {
   return nodes.flatMap((node) => (isSection(node) ? node.fields : [node]));
+}
+
+export function topNodes(definition: FormDefinition): FormNode[] {
+  return definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : (definition.fields ?? []);
+}
+
+export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): string[] {
+  return [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
 }
 
 export function shownFields(nodes: FormNode[], values: Values): FormField[] {

@@ -1,4 +1,4 @@
-import { conditionFields, getAllFields } from './engine-utils';
+import { getAllFields } from './engine-utils';
 import { indexConditions } from './visibility-index';
 import { createActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
@@ -6,6 +6,7 @@ import { validateStep } from '../validation';
 import type { FormDefinition, FormField, FormGroup, FormNode, FormSection, FormStep } from '../types';
 import { isVisible } from '../visibility';
 import {
+  conditionFields,
   isEntry,
   isGroup,
   isSection,
@@ -15,6 +16,7 @@ import {
   itemScope,
   shownFields,
   splitPath,
+  topNodes,
   valueFields,
 } from '../visibility/nodes';
 
@@ -51,8 +53,7 @@ export function createVisibility(definition: FormDefinition) {
   let canGoNextDirty = true;
   const cache: VisibilityCache = { visibleSteps: [], currentStep: null, visibleFields: [], visibleNodes: [], canGoNext: false };
 
-  const nodes = definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : (definition.fields ?? []);
-  for (const node of nodes) if (isSection(node)) for (const field of node.fields) sectionOf.set(field, node);
+  for (const node of topNodes(definition)) if (isSection(node)) for (const field of node.fields) sectionOf.set(field, node);
   for (const field of allFields) {
     fieldsByKey.set(field.key, [...(fieldsByKey.get(field.key) ?? []), field]);
     indexConditions(field, fieldDependents);

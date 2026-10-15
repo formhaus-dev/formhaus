@@ -1,12 +1,11 @@
 import type { DefinitionIssue } from './issues';
 import { formatIssues } from './format';
 import { error, pointer } from './issues';
+import { isEntry } from '../visibility/nodes';
 
 type Entry = Record<string, unknown>;
 type Check = (value: Entry, path: string) => DefinitionIssue[];
 type Kind = 'string' | 'number' | 'boolean' | 'requirement' | 'scalar' | 'list';
-
-export const isEntry = (value: unknown): value is Entry => typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const KINDS: Record<Kind, [(value: unknown) => boolean, string]> = {
   string: [(value) => typeof value === 'string', 'a string'],

@@ -1,5 +1,5 @@
 import type { FormNode } from '../types';
-import { isSection, valueFields } from '../visibility/nodes';
+import { conditionFields, isSection, valueFields } from '../visibility/nodes';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
@@ -9,7 +9,7 @@ const nodeId = ({ field, group }: FieldEntry) => (group ? `${group.key}.${field.
 function dependencyGraph({ definition, entries, nodes, target }: CheckContext): Map<string, string[]> {
   const graph = new Map<string, string[]>();
   const link = (owners: string[], source: FormNode | { show?: { field: string }[]; showAny?: { field: string }[] }, group?: string) => {
-    const known = [...(source.show ?? []), ...(source.showAny ?? [])].flatMap(({ field }) => {
+    const known = conditionFields(source).flatMap((field) => {
       const entry = target(field, group);
       return entry ? [nodeId(entry)] : [];
     });

@@ -3,7 +3,7 @@ import { error, pointer, type DefinitionIssue } from '../definition-validation/i
 import type { FormDefinition } from '../types';
 import { i18nWarnings } from './check-warnings';
 import { SLOTS, type NodeKind } from './nodes';
-import { isEntry } from './overlay';
+import { isEntry } from '../visibility/nodes';
 import { textNodes } from './walk';
 
 const TEXTS: Record<NodeKind, readonly string[]> = { ...SLOTS, validation: [] };

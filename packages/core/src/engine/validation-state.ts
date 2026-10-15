@@ -18,7 +18,7 @@ export function errorKeys(nodes: FormNode[], errors: Record<string, string>, val
 }
 
 export function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {
-  const values = getValidationValues(engine);
+  const values = getSubmitValues(engine);
   const scope = itemScope(group, itemsOf(values[group.key])[index], values);
   return validateFieldValue(field, scope[field.key], scope, engine.validators, engine.messages);
 }
@@ -76,7 +76,7 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string, i
     if (field.validation?.matchField !== key || engine.errors[path] === undefined) continue;
     const error = item
       ? itemError(engine, { ...item, field })
-      : validateFieldValue(field, engine.values[field.key], getValidationValues(engine), engine.validators, engine.messages);
+      : validateFieldValue(field, engine.values[field.key], getSubmitValues(engine), engine.validators, engine.messages);
     if (error) continue;
     clearError(engine, path);
     cleared.push(path);
@@ -104,10 +104,6 @@ export function pruneOffPathErrors(engine: EngineInternals): string[] {
   return pruned;
 }
 
-export function getValidationValues(engine: EngineInternals): Record<string, unknown> {
-  return getSubmitValues(engine);
-}
-
 function withoutSkipped(engine: EngineInternals, values: Record<string, unknown>): Record<string, unknown> {
   for (const key of [...engine.skipped.values()].flat()) delete values[key];
   return values;
@@ -119,10 +115,10 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   if (engine.isMultiStep) {
     for (const step of engine.visibleSteps) {
       if (engine.skipped.has(step.id)) continue;
-      Object.assign(errors, validateStep(step, getValidationValues(engine), engine.validators, engine.messages));
+      Object.assign(errors, validateStep(step, getSubmitValues(engine), engine.validators, engine.messages));
     }
   } else {
-    Object.assign(errors, validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators, engine.messages));
+    Object.assign(errors, validateFields(engine.definition.fields ?? [], getSubmitValues(engine), engine.validators, engine.messages));
   }
   engine.state.errors = { ...engine.state.serverErrors, ...errors };
   const structureChanged = navigate && moveToFirstError(engine, errors);
@@ -137,7 +133,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
   const previousError = engine.errors[key];
   const error = item
     ? itemError(engine, item)
-    : validateFieldValue(field!, engine.values[key], getValidationValues(engine), engine.validators, engine.messages);
+    : validateFieldValue(field!, engine.values[key], getSubmitValues(engine), engine.validators, engine.messages);
   if (error) engine.errors[key] = error;
   else clearError(engine, key, true);
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];

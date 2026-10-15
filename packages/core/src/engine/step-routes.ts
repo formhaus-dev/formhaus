@@ -1,6 +1,6 @@
 import type { FormDefinition, FormNode, FormStep } from '../types';
 import { isVisible } from '../visibility';
-import { cleanItems, isGroup, shownFields, valueFields } from '../visibility/nodes';
+import { cleanItems, hasOwn, isGroup, shownFields, valueFields } from '../visibility/nodes';
 import { trimValue } from '../validation/type-checks';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
@@ -46,7 +46,7 @@ export function reconcileStepIndex(previous: FormStep[], next: FormStep[], index
 
 function addStepValues(step: { fields: FormNode[] }, values: Record<string, unknown>, target: Record<string, unknown>): void {
   const fields = valueFields(step.fields);
-  const saved = fields.map(({ key }) => [key, Object.prototype.hasOwnProperty.call(target, key), target[key]] as const);
+  const saved = fields.map(({ key }) => [key, hasOwn(target, key), target[key]] as const);
   for (const field of fields) target[field.key] = trimValue(field, values[field.key]);
   const shown = shownFields(step.fields, target)
     .filter((field) => values[field.key] !== undefined)

@@ -1,14 +1,10 @@
 import type { FormDefinition, FormField } from '../types';
-import { isGroup, valueFields } from '../visibility/nodes';
-
-export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): string[] {
-  return [...(source.show ?? []), ...(source.showAny ?? [])].map((condition) => condition.field);
-}
+import { isGroup, topNodes, valueFields } from '../visibility/nodes';
 
 export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
 
 export function getAllFields(definition: FormDefinition): FormField[] {
-  return valueFields(definition.steps?.length ? definition.steps.flatMap((step) => step.fields) : (definition.fields ?? []));
+  return valueFields(topNodes(definition));
 }
 
 export function createValues(fields: FormField[], initialValues?: Record<string, unknown>): Record<string, unknown> {
