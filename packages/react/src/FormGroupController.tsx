@@ -1,10 +1,11 @@
 import type { FieldOption, FormEngine, FormGroup, LabelKey } from '@formhaus/core';
 import { fieldDomId, focusItem, itemDomId, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useEffect, useRef, useState, type ComponentType } from 'react';
+import { DefaultGroup, DefaultGroupItem } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { describedBy } from './fields/fieldProps';
 import { useFieldSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
-import type { FormRendererProps } from './types';
+import type { FormRendererProps, GroupComponentProps, GroupItemComponentProps } from './types';
 
 interface FormGroupControllerProps extends ControllerProps {
   group: FormGroup;
@@ -27,7 +28,6 @@ export const FormGroupController = memo(function FormGroupController({
   useStructureSnapshot(engine);
   const [status, setStatus] = useState('');
   const focus = useRef<Focus>(null);
-  const root = useRef<HTMLFieldSetElement>(null);
   const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, labels, engine.definition.labels);
   const items = engine.items(group.key);
   const values = (engine.values[group.key] ?? []) as Record<string, unknown>[];
@@ -40,7 +40,7 @@ export const FormGroupController = memo(function FormGroupController({
   useEffect(() => {
     const target = focus.current;
     focus.current = null;
-    if (target) focusItem(document, root.current, formId, group.key, target.index, target.added);
+    if (target) focusItem(document, document.getElementById(id), formId, group.key, target.index, target.added);
   });
 
   const add = () => {
@@ -54,67 +54,50 @@ export const FormGroupController = memo(function FormGroupController({
     setStatus(label('itemRemoved', { item: title(index) }));
   };
 
+  const { components } = props;
+  const Group = (components?.group ?? DefaultGroup) as ComponentType<GroupComponentProps>;
+  const ItemComponent = (components?.groupItem ?? DefaultGroupItem) as ComponentType<GroupItemComponentProps>;
+  const entries = items.map(
+    (item, index): GroupItemComponentProps => ({
+      id: item.id,
+      index,
+      title: title(index),
+      titleId: itemDomId(formId, group.key, index),
+      canRemove: items.length > min,
+      remove: () => drop(index),
+      removeLabel: remove,
+      disabled,
+      children: item.fields.map((field) => (
+        <FormFieldController
+          key={field.key}
+          {...props}
+          field={field}
+          options={options[field.key]}
+          disabled={disabled}
+          path={`${group.key}.${index}.${field.key}`}
+          item={values[index]}
+        />
+      )),
+    }),
+  );
+
   return (
-    <fieldset ref={root} id={id} className="fh-group" aria-invalid={!!error || undefined} aria-describedby={describedBy(group, id, error)}>
-      <legend className="fh-field__label">{group.label}</legend>
-      {group.helperText && (
-        <p id={`${id}-helper`} className="fh-field__helper fh-group__helper">
-          {group.helperText}
-        </p>
-      )}
-      {error && (
-        <p id={`${id}-error`} className="fh-field__error fh-group__error" role="alert">
-          {error}
-        </p>
-      )}
-      <div className="fh-group__body">
-        {items.map((item, index) => (
-          <div key={item.id} className="fh-group__item" role="group" aria-labelledby={itemDomId(formId, group.key, index)}>
-            <div className="fh-group__header">
-              <span id={itemDomId(formId, group.key, index)} tabIndex={-1} className="fh-group__title">
-                {title(index)}
-              </span>
-              {items.length > min && (
-                <button
-                  type="button"
-                  className="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
-                  aria-label={`${remove} ${title(index)}`}
-                  disabled={disabled}
-                  onClick={() => drop(index)}
-                >
-                  {remove}
-                </button>
-              )}
-            </div>
-            <div className="fh-group__fields">
-              {item.fields.map((field) => (
-                <FormFieldController
-                  key={field.key}
-                  {...props}
-                  field={field}
-                  options={options[field.key]}
-                  disabled={disabled}
-                  path={`${group.key}.${index}.${field.key}`}
-                  item={values[index]}
-                />
-              ))}
-            </div>
-          </div>
-        ))}
-        {items.length < max && (
-          <button
-            type="button"
-            className="fh-form-actions__button fh-form-actions__button--secondary fh-group__add"
-            disabled={disabled}
-            onClick={add}
-          >
-            {group.addLabel ?? label('addItem')}
-          </button>
-        )}
-      </div>
-      <p className="fh-group__status" role="status">
-        {status}
-      </p>
-    </fieldset>
+    <Group
+      id={id}
+      group={group}
+      label={group.label}
+      helperText={group.helperText}
+      error={error}
+      describedBy={describedBy(group, id, error)}
+      items={entries}
+      canAdd={items.length < max}
+      add={add}
+      remove={(key) => drop(items.findIndex((item) => item.id === key))}
+      addLabel={group.addLabel ?? label('addItem')}
+      removeLabel={remove}
+      disabled={disabled}
+      status={status}
+      ItemComponent={ItemComponent}
+    />
   );
 });

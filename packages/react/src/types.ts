@@ -1,6 +1,8 @@
 import type {
   FieldOption,
   FieldType,
+  FormGroup,
+  FormSection,
   FormAction,
   FormAnalyticsEvent,
   FormDefinition,
@@ -10,7 +12,7 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
@@ -27,7 +29,54 @@ export interface FieldComponentProps {
   onFocus?: () => void;
 }
 
-export type FieldComponentMap = Partial<Record<FieldType, ComponentType<FieldComponentProps>>>;
+export interface SectionComponentProps {
+  id: string;
+  section: FormSection;
+  title: string;
+  description?: string;
+  descriptionId?: string;
+  children: ReactNode;
+}
+
+export interface GroupItemComponentProps {
+  id: string;
+  index: number;
+  title: string;
+  titleId: string;
+  canRemove: boolean;
+  remove: () => void;
+  removeLabel: string;
+  disabled?: boolean;
+  children: ReactNode;
+}
+
+export interface GroupComponentProps {
+  id: string;
+  group: FormGroup;
+  label: string;
+  helperText?: string;
+  error?: string;
+  describedBy?: string;
+  items: GroupItemComponentProps[];
+  canAdd: boolean;
+  add: () => void;
+  remove: (id: string) => void;
+  addLabel: string;
+  removeLabel: string;
+  disabled?: boolean;
+  status: string;
+  ItemComponent: ComponentType<GroupItemComponentProps>;
+}
+
+export type FieldComponentMap = Partial<
+  Record<
+    FieldType,
+    | ComponentType<FieldComponentProps>
+    | ComponentType<SectionComponentProps>
+    | ComponentType<GroupComponentProps>
+    | ComponentType<GroupItemComponentProps>
+  >
+>;
 
 export interface FormActionsProps {
   submitAction?: FormAction;

@@ -8,6 +8,8 @@ import type {
   FormAction,
   FormAnalyticsEvent,
   FormField,
+  FormGroup,
+  FormSection,
   FormDefinition,
   LabelSource,
   MessageFn,
@@ -20,6 +22,44 @@ import type {
 import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
+
+export interface SectionComponentProps {
+  id: string;
+  section: FormSection;
+  title: string;
+  description?: string;
+  descriptionId?: string;
+}
+
+export interface GroupItemComponentProps {
+  id: string;
+  index: number;
+  title: string;
+  titleId: string;
+  canRemove: boolean;
+  remove: () => void;
+  removeLabel: string;
+  disabled?: boolean;
+  fields: Component;
+}
+
+export interface GroupComponentProps {
+  id: string;
+  group: FormGroup;
+  label: string;
+  helperText?: string;
+  error?: string;
+  describedBy?: string;
+  items: GroupItemComponentProps[];
+  canAdd: boolean;
+  add: () => void;
+  remove: (id: string) => void;
+  addLabel: string;
+  removeLabel: string;
+  disabled?: boolean;
+  status: string;
+  itemComponent: Component;
+}
 
 export interface FormActionsProps {
   submitAction?: FormAction;

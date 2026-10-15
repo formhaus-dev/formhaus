@@ -10,6 +10,34 @@ import { optionScenarios } from '../../core/__tests__/renderers/options.scenario
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
+import type { GroupComponentProps, SectionComponentProps } from '../src/types';
+
+const containers = {
+  section: ({ title, children }: SectionComponentProps) => (
+    <div>
+      <h3>{title}</h3>
+      {children}
+    </div>
+  ),
+  group: ({ label, items, canAdd, add }: GroupComponentProps) => (
+    <div>
+      <span>
+        {label}: {items.length}
+      </span>
+      {items.map((item) => (
+        <div key={item.id}>
+          <button type="button" onClick={item.remove}>
+            Drop {item.title}
+          </button>
+          {item.children}
+        </div>
+      ))}
+      <button type="button" disabled={!canAdd} onClick={add}>
+        More
+      </button>
+    </div>
+  ),
+};
 
 const harness: RendererHarness = {
   mount(props) {
@@ -31,6 +59,7 @@ const harness: RendererHarness = {
   async submit(form) {
     fireEvent.submit(form);
   },
+  containers,
 };
 
 const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
@@ -43,3 +72,5 @@ describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
+describe('renderer conformance: ids', () => idScenarios(harness, kit));
+describe('renderer conformance: options', () => optionScenarios(harness, kit));

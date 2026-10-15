@@ -1,5 +1,6 @@
 import type { FormField as FormFieldType } from '@formhaus/core';
-import type { FieldComponentMap } from './types';
+import type { ComponentType } from 'react';
+import type { FieldComponentMap, FieldComponentProps } from './types';
 
 const noop = () => {};
 
@@ -30,7 +31,7 @@ export function FieldResolver({
   onBlur,
   onFocus,
 }: FieldResolverProps) {
-  const Component = components?.[field.type];
+  const Component = components?.[field.type] as ComponentType<FieldComponentProps> | undefined;
 
   if (!Component) {
     return <div>Unsupported field type: {field.type}</div>;

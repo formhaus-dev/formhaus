@@ -143,4 +143,43 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
     await screen.findByText('Taken');
     await waitFor(() => expect(active()).toBe(names()[1]));
   });
+
+  it('renders sections and groups through custom components', async () => {
+    const onSubmit = fn();
+    harness.mount({ definition: event, components: harness.containers, initialValues: { company: true }, onSubmit });
+    expect(screen.getByRole('heading', { name: 'Billing' })).toBeDefined();
+    expect(document.querySelector('.fh-group')).toBeNull();
+    expect(screen.getByText('People: 1')).toBeDefined();
+    await harness.click(button('More'));
+    await screen.findByText('People: 2');
+    expect(screen.getAllByRole('textbox', { name: /^Name/ })).toHaveLength(2);
+    expect(button('More').disabled).toBe(true);
+    await harness.click(button('Drop Person 1'));
+    await screen.findByText('People: 1');
+    await harness.type(names()[0], 'Ada');
+    await harness.click(button('Send'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ company: true, people: [{ name: 'Ada' }] }, []));
+  });
+
+  it('keeps focus and the same input while typing in sections and group items', async () => {
+    harness.mount({ definition: event, initialValues: { company: true }, onSubmit: () => {} });
+    const typeInto = async (find: () => HTMLInputElement, text: string) => {
+      const input = find();
+      input.focus();
+      for (let end = 1; end <= text.length; end++) {
+        await harness.type(input, text.slice(0, end));
+        await waitFor(() => expect(find().value).toBe(text.slice(0, end)));
+        expect(find()).toBe(input);
+        expect(active()).toBe(input);
+      }
+    };
+    await typeInto(() => screen.getByRole('textbox', { name: 'Street' }) as HTMLInputElement, 'Main');
+    await typeInto(() => names()[0], 'Ada');
+    await harness.click(button('Add person'));
+    await waitFor(() => expect(names()).toHaveLength(2));
+    await typeInto(() => names()[1], 'Bo');
+    await harness.click(button('Remove Person 1'));
+    await waitFor(() => expect(names()).toHaveLength(1));
+    await typeInto(() => names()[0], 'Bob');
+  });
 }

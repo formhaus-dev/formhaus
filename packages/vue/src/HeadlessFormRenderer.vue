@@ -1,9 +1,18 @@
 <script setup lang="ts">
-import { isGroup, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
+import {
+  isGroup,
+  isSection,
+  type FormSection,
+  type FormEngineOptions,
+  type FormField,
+  type LabelKey,
+  type StepChangeContext,
+} from '@formhaus/core';
 import { applySources, errorEntries, fieldDomId, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { computed, onMounted, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
+import DefaultSection from './DefaultSection.vue';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
 import { useFieldOptions } from './composables/useFieldOptions';
@@ -110,6 +119,7 @@ const summaryEntries = computed(() => {
 });
 const stepStatuses = computed(() => {
   if (!props.stepErrorMarks) return undefined;
+  progress.value;
   const marks = form.engine.stepErrors;
   return form.visibleSteps.value.map(({ id, title }) => ({ id, title, errorCount: marks[id]?.length ?? 0 }));
 });
@@ -131,6 +141,17 @@ function onCancel() {
 }
 
 const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
+
+function sectionProps(section: FormSection) {
+  const id = fieldDomId(formId, section.key);
+  return {
+    id,
+    section,
+    title: section.title,
+    description: section.description,
+    descriptionId: section.description ? `${id}-description` : undefined,
+  };
+}
 
 const { nodeProps } = useNodeProps(form, props, formId, resolvedOptions, disabled, {
   update: onFieldUpdate,
@@ -193,14 +214,9 @@ async function onPrimary() {
 
     <div class="fh-form__fields">
       <template v-for="node in visibleNodes" :key="node.key">
-        <fieldset v-if="node.type === 'section'" :id="fieldDomId(formId, node.key)" class="fh-section"
-          :aria-describedby="'description' in node && node.description ? `${fieldDomId(formId, node.key)}-description` : undefined">
-          <legend class="fh-section__title">{{ 'title' in node && node.title }}</legend>
-          <p v-if="'description' in node && node.description" :id="`${fieldDomId(formId, node.key)}-description`" class="fh-field__helper fh-section__description">{{ node.description }}</p>
-          <div class="fh-section__body">
-            <component :is="child.type === 'group' ? FormGroup : FieldResolver" v-for="child in ('fields' in node ? node.fields : [])" :key="child.key" v-bind="nodeProps(child)" />
-          </div>
-        </fieldset>
+        <component :is="props.components?.section ?? DefaultSection" v-if="isSection(node)" v-bind="sectionProps(node)">
+          <component :is="child.type === 'group' ? FormGroup : FieldResolver" v-for="child in node.fields" :key="child.key" v-bind="nodeProps(child)" />
+        </component>
         <component :is="node.type === 'group' ? FormGroup : FieldResolver" v-else v-bind="nodeProps(node as FormField)" />
       </template>
     </div>

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey, LabelSource } from '@formhaus/core';
 import { errorDomId, fieldDomId, focusItem, itemDomId, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
-import { computed, nextTick, ref } from 'vue';
+import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
+import DefaultGroup from './DefaultGroup.vue';
+import DefaultGroupItem from './DefaultGroupItem.vue';
 import FieldResolver from './FieldResolver.vue';
 import { fieldAria } from './fields/useField';
-import type { FieldComponentMap } from './types';
+import type { FieldComponentMap, GroupComponentProps } from './types';
 
 const props = defineProps<{
   engine: FormEngine;
@@ -26,7 +28,6 @@ const emit = defineEmits<{
   (e: 'focus', key: string): void;
 }>();
 
-const root = ref<HTMLFieldSetElement>();
 const status = ref('');
 const id = computed(() => fieldDomId(props.formId, props.group.key));
 const limits = computed(() => itemLimits(props.group));
@@ -57,7 +58,7 @@ function itemProps(index: number, field: FormField) {
 
 async function focusAfter(index: number, added: boolean) {
   await nextTick();
-  focusItem(document, root.value, props.formId, props.group.key, index, added);
+  focusItem(document, document.getElementById(id.value), props.formId, props.group.key, index, added);
 }
 
 function add() {
@@ -72,27 +73,56 @@ function drop(index: number) {
   status.value = label('itemRemoved', { item: title(index) });
   void focusAfter(index, false);
 }
+const fieldComponents = new Map<string, Component>();
+
+function fieldsOf(itemId: string): Component {
+  let component = fieldComponents.get(itemId);
+  if (!component) {
+    component = defineComponent({
+      name: 'GroupItemFields',
+      setup: () => () => {
+        const index = props.items.findIndex((item) => item.id === itemId);
+        return index < 0
+          ? null
+          : props.items[index].fields.map((field) => h(FieldResolver, { key: field.key, ...itemProps(index, field) }));
+      },
+    });
+    fieldComponents.set(itemId, component);
+  }
+  return component;
+}
+
+const groupProps = computed(
+  (): GroupComponentProps => ({
+    id: id.value,
+    group: props.group,
+    label: props.group.label,
+    helperText: props.group.helperText,
+    error: error.value,
+    describedBy: fieldAria(props.group, id.value, error.value)['aria-describedby'],
+    items: props.items.map((item, index) => ({
+      id: item.id,
+      index,
+      title: title(index),
+      titleId: itemDomId(props.formId, props.group.key, index),
+      canRemove: props.items.length > limits.value[0],
+      remove: () => drop(index),
+      removeLabel: remove.value,
+      disabled: props.disabled,
+      fields: fieldsOf(item.id),
+    })),
+    canAdd: props.items.length < limits.value[1],
+    add,
+    remove: (key) => drop(props.items.findIndex((item) => item.id === key)),
+    addLabel: props.group.addLabel ?? label('addItem'),
+    removeLabel: remove.value,
+    disabled: props.disabled,
+    status: status.value,
+    itemComponent: (props.components?.groupItem ?? DefaultGroupItem) as Component,
+  }),
+);
 </script>
 
 <template>
-  <fieldset ref="root" :id="id" class="fh-group" v-bind="fieldAria(props.group, id, error)">
-    <legend class="fh-field__label">{{ props.group.label }}</legend>
-    <p v-if="props.group.helperText" :id="`${id}-helper`" class="fh-field__helper fh-group__helper">{{ props.group.helperText }}</p>
-    <p v-if="error" :id="`${id}-error`" class="fh-field__error fh-group__error" role="alert">{{ error }}</p>
-    <div class="fh-group__body">
-      <div v-for="(item, index) in props.items" :key="item.id" class="fh-group__item" role="group" :aria-labelledby="itemDomId(props.formId, props.group.key, index)">
-        <div class="fh-group__header">
-          <span :id="itemDomId(props.formId, props.group.key, index)" tabindex="-1" class="fh-group__title">{{ title(index) }}</span>
-          <button v-if="props.items.length > limits[0]" type="button" class="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
-            :aria-label="`${remove} ${title(index)}`" :disabled="props.disabled" @click="drop(index)">{{ remove }}</button>
-        </div>
-        <div class="fh-group__fields">
-          <FieldResolver v-for="field in item.fields" :key="field.key" v-bind="itemProps(index, field)" />
-        </div>
-      </div>
-      <button v-if="props.items.length < limits[1]" type="button" class="fh-form-actions__button fh-form-actions__button--secondary fh-group__add"
-        :disabled="props.disabled" @click="add">{{ props.group.addLabel ?? label('addItem') }}</button>
-    </div>
-    <p class="fh-group__status" role="status">{{ status }}</p>
-  </fieldset>
+  <component :is="props.components?.group ?? DefaultGroup" v-bind="groupProps" />
 </template>

@@ -9,7 +9,33 @@ import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
 import { optionScenarios } from '../../core/__tests__/renderers/options.scenarios';
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
+import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
+import type { GroupItemComponentProps } from '../src/types';
+
+const containers = {
+  section: defineComponent({
+    props: { title: String },
+    setup:
+      (props, { slots }) =>
+      () =>
+        h('div', [h('h3', props.title), slots.default?.()]),
+  }),
+  group: defineComponent({
+    props: { label: String, items: Array as PropType<GroupItemComponentProps[]>, canAdd: Boolean, add: Function as PropType<() => void> },
+    setup: (props) => () =>
+      h('div', [
+        h('span', `${props.label}: ${props.items!.length}`),
+        ...props.items!.map((item) =>
+          h('div', { key: item.id }, [
+            h('button', { type: 'button', onClick: item.remove }, `Drop ${item.title}`),
+            h(item.fields as Component),
+          ]),
+        ),
+        h('button', { type: 'button', disabled: !props.canAdd, onClick: props.add }, 'More'),
+      ]),
+  }),
+};
 
 const harness: RendererHarness = {
   mount(props) {
@@ -25,6 +51,7 @@ const harness: RendererHarness = {
   async submit(form) {
     await fireEvent.submit(form);
   },
+  containers,
 };
 
 const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
@@ -37,3 +64,5 @@ describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
+describe('renderer conformance: ids', () => idScenarios(harness, kit));
+describe('renderer conformance: options', () => optionScenarios(harness, kit));

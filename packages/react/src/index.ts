@@ -1,6 +1,7 @@
 export { FormRenderer } from './FormRenderer';
 export { HeadlessFormRenderer } from './HeadlessFormRenderer';
 export { FormActions } from './FormActions';
+export { DefaultGroup, DefaultGroupItem, DefaultSection } from './ContainerViews';
 export { FormhausField } from './FormhausField';
 export type { FieldResolverProps as FormhausFieldProps } from './FieldResolver';
 export { defaultFieldComponents } from './defaultFieldComponents';
@@ -26,6 +27,9 @@ export type {
   FormActionsProps,
   FormStepProgressProps,
   FormStepStatus,
+  GroupComponentProps,
+  GroupItemComponentProps,
+  SectionComponentProps,
   HeadingLevel,
   OptionsProvider,
 } from './types';

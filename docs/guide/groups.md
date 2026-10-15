@@ -100,17 +100,22 @@ engine.items('participants');
 
 ## Rendering and focus
 
-React and Vue render a group as a fieldset with one fieldset per item:
+React and Vue render a group as a fieldset with one labelled card per item:
 
 ```html
 <fieldset class="fh-group" id="…-participants">
   <legend class="fh-field__label">Participants</legend>
-  <fieldset class="fh-group__item">
-    <legend class="fh-group__title" tabindex="-1">Participant 1</legend>
-    <!-- item fields -->
-    <button class="fh-group__remove" aria-label="Remove Participant 1">Remove</button>
-  </fieldset>
-  <button class="fh-group__add">Add participant</button>
+  <p class="fh-field__helper fh-group__helper">Up to 5 people per registration</p>
+  <div class="fh-group__body">
+    <div class="fh-group__item" role="group" aria-labelledby="…-participants--0">
+      <div class="fh-group__header">
+        <span class="fh-group__title" id="…-participants--0" tabindex="-1">Participant 1</span>
+        <button class="fh-group__remove" aria-label="Remove Participant 1">Remove</button>
+      </div>
+      <div class="fh-group__fields"><!-- item fields --></div>
+    </div>
+    <button class="fh-group__add">Add participant</button>
+  </div>
   <p class="fh-group__status" role="status">Participant 2 added</p>
 </fieldset>
 ```
@@ -121,7 +126,71 @@ React and Vue render a group as a fieldset with one fieldset per item:
 - After a failed Submit, focus goes to the first invalid field. A count error focuses Add.
 - Error summary links point at item fields and read `Email (Participant 2): Enter a valid email`.
 
-The Add and Remove buttons reuse the action button classes, so theme tokens apply. Item cards use `.fh-group__item`.
+The Add and Remove buttons reuse the action button classes, so theme tokens apply. Item cards use `.fh-group__item` and `--fh-card-padding`. The stylesheet is optional, see [Optional baseline styles](/guide/#optional-baseline-styles).
+
+## Custom markup
+
+Pass `group` and `groupItem` in `components` to own the markup. Field components inside items still come from the same map.
+
+```tsx
+import type { GroupComponentProps } from '@formhaus/react';
+
+function Participants({ label, items, canAdd, add }: GroupComponentProps) {
+  return (
+    <section>
+      <h3>{label}</h3>
+      {items.map((item) => (
+        <article key={item.id} aria-labelledby={item.titleId}>
+          <h4 id={item.titleId} tabIndex={-1}>{item.title}</h4>
+          {item.children}
+          {item.canRemove && <button type="button" onClick={item.remove}>{item.removeLabel}</button>}
+        </article>
+      ))}
+      {canAdd && <button type="button" onClick={add}>Add</button>}
+    </section>
+  );
+}
+
+<FormRenderer definition={definition} components={{ group: Participants }} onSubmit={send} />;
+```
+
+| Prop | Meaning |
+|---|---|
+| `id`, `group`, `label`, `helperText`, `error`, `describedBy` | Group texts and ids |
+| `items` | `{ id, index, title, titleId, canRemove, remove, removeLabel, disabled }` per item. React adds `children` with the item fields. Vue adds `fields`, a component that renders them |
+| `canAdd`, `add`, `remove(id)` | Item operations within `minLength` and `maxLength` |
+| `addLabel`, `removeLabel`, `status`, `disabled` | Button texts, the live announcement and the busy state |
+| `ItemComponent` (React), `itemComponent` (Vue) | The resolved `groupItem` component |
+
+Give the item title the `titleId` id and `tabindex="-1"`, and the Add button the `fh-group__add` class, so focus moves after Add and Remove. `DefaultGroup` and `DefaultGroupItem` are exported for wrapping.
+
+In Vue, render the item fields with `<component :is="item.fields" />`.
+
+## Without a renderer
+
+`FormEngine` alone is enough for Svelte, vanilla JS or any other UI:
+
+```ts
+import { FormEngine } from '@formhaus/core';
+
+const engine = new FormEngine(definition);
+engine.subscribe(render);
+
+function render() {
+  for (const [index, item] of engine.items('participants').entries()) {
+    for (const field of item.fields) {
+      const path = `participants.${index}.${field.key}`;
+      draw(path, field, engine.errors[path]);
+    }
+  }
+}
+
+engine.addItem('participants');
+engine.setValue('participants.0.email', 'ada@example.com');
+engine.removeItem('participants', 0);
+```
+
+`items()` returns a stable `id` for keyed lists and the visible fields of each item. Errors use the same paths.
 
 ## Server validation
 

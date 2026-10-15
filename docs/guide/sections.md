@@ -65,12 +65,32 @@ React and Vue render a section as a fieldset:
 ```html
 <fieldset class="fh-section" id="…-billing" aria-describedby="…-billing-description">
   <legend class="fh-section__title">Billing address</legend>
-  <p id="…-billing-description" class="fh-field__helper">Where we send invoices</p>
-  <!-- fields -->
+  <p id="…-billing-description" class="fh-field__helper fh-section__description">Where we send invoices</p>
+  <div class="fh-section__body"><!-- fields --></div>
 </fieldset>
 ```
 
 Style it with `.fh-section` and `.fh-section__title`. A headless renderer reads `engine.visibleNodes`: a visible section arrives with only its visible fields. `engine.visibleFields` stays flat and lists the section fields in place.
+
+## Custom markup
+
+Pass `section` in `components` to own the markup:
+
+```tsx
+import type { SectionComponentProps } from '@formhaus/react';
+
+const Section = ({ title, description, children }: SectionComponentProps) => (
+  <section>
+    <h3>{title}</h3>
+    {description && <p>{description}</p>}
+    {children}
+  </section>
+);
+
+<FormRenderer definition={definition} components={{ section: Section }} onSubmit={send} />;
+```
+
+It receives `id`, `section`, `title`, `description` and `descriptionId`, and the visible fields as `children` (React) or the default slot (Vue). `DefaultSection` is exported for wrapping.
 
 ## Translations
 
