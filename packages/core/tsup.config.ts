@@ -3,8 +3,14 @@ import { defineConfig } from 'tsup';
 
 const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
 
+const INTERNAL_PROPS =
+  /^(validationEpoch|operationEpoch|latestOperation|lifecycle|subscriptions|visibility|reconcileHidden|markChanged|allFields|conditionValues|activeField|activeItem|itemFields|getCanGoNext|findStepIndex|affectsStructure|serverErrors|serverFormErrors|skipped|view|keyList|scopes)$/;
+
 const shared = {
   define: { __FORMHAUS_CORE_VERSION__: JSON.stringify(version) },
+  esbuildOptions(options: { mangleProps?: RegExp }) {
+    options.mangleProps = INTERNAL_PROPS;
+  },
   treeshake: true,
   minify: true,
   sourcemap: true,
