@@ -47,7 +47,7 @@ it('re-renders the updated form, keeps compatible values and announces it', asyn
   expect((screen.getByLabelText('Bug') as HTMLInputElement).checked).toBe(false);
   expect(screen.queryByText('Must be a list')).toBeNull();
   expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body)).version).toBe(1);
-  expect(fetchMock.mock.calls[2][0]).toMatch(/^https:\/\/api\.formhaus\.dev\/f\/abc\/form\?core=.*&v=2$/);
+  expect(fetchMock.mock.calls[2][0]).toMatch(/^https:\/\/api\.formhaus\.cc\/f\/abc\/form\?core=.*&v=2$/);
   expect(onError).toHaveBeenCalledWith(expect.objectContaining({ code: 'form_updated' }));
   await waitFor(() => expect(document.activeElement?.className).toContain('fh-form__notice'));
   expect(screen.getAllByText('Please answer again.')).toHaveLength(1);

@@ -35,4 +35,6 @@ Create a waitlist form with an email field and publish it.
 
 `https://api.formhaus.dev/f/{form_id}` accepts the same requests.
 
+`FormhausForm` and `@formhaus/core/cloud` call `https://api.formhaus.cc` by default. If your site sets a Content-Security-Policy `connect-src` allowlist, add `https://api.formhaus.cc`. Pass `apiBase` to use another origin.
+
 Props, status codes, `Idempotency-Key` and validation rules are in [Collecting submissions](/cloud/submissions).

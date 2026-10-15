@@ -21,7 +21,7 @@ describe('cloud protocol', () => {
     vi.stubGlobal('fetch', fetchMock);
     await createSubmitter({ id: 'abc', version: 5, renderToken: 'rt_1', extraBody: () => ({ _fh_hp: '' }) })({ name: 'Ada' }, []);
     const [url, init] = fetchMock.mock.calls[0];
-    expect(url).toBe(`https://api.formhaus.dev/f/abc?core=${__FORMHAUS_CORE_VERSION__}`);
+    expect(url).toBe(`https://api.formhaus.cc/f/abc?core=${__FORMHAUS_CORE_VERSION__}`);
     expect(JSON.parse(init.body)).toEqual({ _fh_hp: '', values: { name: 'Ada' }, skippedSteps: [], version: 5, _fh_rt: 'rt_1' });
   });
 
