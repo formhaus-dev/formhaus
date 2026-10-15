@@ -111,3 +111,25 @@ it.each([
   expect(engine.getSubmitValues()).toEqual({ name: 'Grace', bio: 'Draft' });
   expect(engine.errors).toEqual(cancel ? { bio: 'Old' } : {});
 });
+
+it('restores the other answers of a skipped step edited before its late rejection', async () => {
+  const engine = new FormEngine({
+    id: 'same-step', title: 'Same step', submit: { label: 'Send' },
+    steps: [
+      { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+      { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [
+        { key: 'bio', type: 'text', label: 'Bio' },
+        { key: 'site', type: 'text', label: 'Site' },
+      ] },
+    ],
+  }, { name: 'Ada', bio: 'Draft', site: 'ada.dev' });
+  engine.goToStepWithField('bio');
+  const response = deferred<{ ok: false }>();
+  const pending = engine.skip(() => response.promise);
+  engine.cancelPendingActions();
+  engine.setValue('bio', 'New');
+  response.resolve({ ok: false });
+  expect(await pending).toBe(false);
+  expect(engine.isStepSkipped('details')).toBe(false);
+  expect(engine.values).toEqual({ name: 'Ada', bio: 'New', site: 'ada.dev' });
+});

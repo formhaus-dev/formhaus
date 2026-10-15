@@ -48,15 +48,16 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   try {
     return await submitting;
   } finally {
-    if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues && engine.skipped.has(step.id)) {
+    if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues) {
       const steps = engine.visibleSteps;
       const kept = edited();
+      const current = engine.values;
       engine.state.values = { ...values };
       for (const key of kept) {
         delete engine.values[key];
         delete errors[key];
         delete serverErrors[key];
-        if (key in skippedValues) engine.values[key] = skippedValues[key];
+        if (key in current) engine.values[key] = current[key];
       }
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
       engine.state.errors = { ...(outcome ? {} : errors), ...engine.errors };
@@ -65,7 +66,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
       engine.visibility.markChanged(true, true);
       engine.state.currentStepIndex = reconcileStepIndex(steps, engine.visibleSteps, engine.currentStepIndex);
       pruneOffPathErrors(engine);
-      engine.notify({ fieldKeys: Object.keys({ ...values, ...skippedValues, ...errors }), structureChanged: true, valuesChanged: true });
+      engine.notify({ fieldKeys: Object.keys({ ...values, ...current, ...errors }), structureChanged: true, valuesChanged: true });
     }
   }
 }
