@@ -50,9 +50,9 @@ function collect(
   group?: string,
 ): void {
   for (const name of owner === 'action' ? (['disabled'] as const) : (['show', 'showAny'] as const)) {
-    ((source || {}) as Record<typeof name, ShowCondition[] | undefined>)[name]?.forEach((condition, index) =>
-      target.push({ condition, path: `${path}/${name}/${index}`, owner, step, key, group }),
-    );
+    ((source || {}) as Record<typeof name, ShowCondition[] | undefined>)[name]?.forEach((condition, index) => {
+      target.push({ condition, path: `${path}/${name}/${index}`, owner, step, key, group });
+    });
   }
 }
 
@@ -69,8 +69,11 @@ export function createContext(
       nodes.push({ node, path: at, step, group, parent });
       if (isSection(node) || isGroup(node)) visit(node.fields, `${at}/fields`, step, node, isGroup(node) ? node : group);
     });
-  if (steps.length) steps.forEach((step, index) => visit(step.fields, `/steps/${index}/fields`, index));
-  else visit(definition.fields ?? [], '/fields', -1);
+  if (steps.length) {
+    steps.forEach((step, index) => {
+      visit(step.fields, `/steps/${index}/fields`, index);
+    });
+  } else visit(definition.fields ?? [], '/fields', -1);
   const entries: FieldEntry[] = nodes.flatMap(({ node, path, step, group }) =>
     isSection(node) ? [] : [{ field: node, path, step, group }],
   );
@@ -85,7 +88,9 @@ export function createContext(
   for (const { node, path, step, group } of nodes) collect(conditions, node, path, 'field', step, node.key, group?.key);
   steps.forEach((step, index) => {
     collect(conditions, step, `/steps/${index}`, 'step', index);
-    (step.routes ?? []).forEach((route, position) => collect(conditions, route, `/steps/${index}/routes/${position}`, 'route', index));
+    (step.routes ?? []).forEach((route, position) => {
+      collect(conditions, route, `/steps/${index}/routes/${position}`, 'route', index);
+    });
     for (const name of ['next', 'back', 'skip'] as const) collect(conditions, step[name], `/steps/${index}/${name}`, 'action', index);
   });
   collect(conditions, definition.submit, '/submit', 'action', -1);

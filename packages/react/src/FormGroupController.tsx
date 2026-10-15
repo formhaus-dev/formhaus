@@ -1,4 +1,4 @@
-import type { FieldOption, FormEngine, FormGroup, LabelKey } from '@formhaus/core';
+import type { FieldOption, FormGroup, LabelKey } from '@formhaus/core';
 import { fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
 import { memo, useEffect, useRef, useState, type ComponentType } from 'react';
 import { DefaultGroup, DefaultGroupItem } from './ContainerViews';

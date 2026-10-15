@@ -1,4 +1,4 @@
-import type { FormDefinition, FormField, FormNode, FormStep } from '@formhaus/core';
+import type { FormDefinition, FormNode, FormStep } from '@formhaus/core';
 import { PLUGIN_NAMESPACE } from './config';
 import type { KitTheme } from './kits/kit';
 import { solid, stack, text } from './kits/primitives';

@@ -93,9 +93,9 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string, i
         !group.fields.some((field) => field.validation?.matchField === key)
       )
         continue;
-      itemsOf(engine.values[group.key]).forEach((_, index) =>
-        cleared.push(...clearResolvedMatchErrors(engine, key, { group, index, field: group.fields[0] })),
-      );
+      itemsOf(engine.values[group.key]).forEach((_, index) => {
+        cleared.push(...clearResolvedMatchErrors(engine, key, { group, index, field: group.fields[0] }));
+      });
     }
   }
   return cleared;

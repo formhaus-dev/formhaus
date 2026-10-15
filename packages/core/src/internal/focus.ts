@@ -38,12 +38,8 @@ function reveal(target: Focusable, scrollTo: Focusable): void {
 }
 
 export function focusProblem(root: Searchable | null, notice?: Focusable | null): void {
-  if (notice) {
-    reveal(notice, notice);
-    return;
-  }
-  const invalid = root?.querySelector('[aria-invalid="true"]') as Found;
-  if (invalid) reveal(firstControl(invalid) ?? invalid, invalid);
+  const invalid = notice ?? (root?.querySelector('[aria-invalid="true"]') as Found);
+  if (invalid) reveal(notice ?? firstControl(invalid) ?? invalid, invalid);
 }
 
 export function canMoveFocus(form: FormRoot | null | undefined): boolean {

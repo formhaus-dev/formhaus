@@ -6,7 +6,7 @@ import { createValues, initialState } from './engine-utils';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineState, RuntimeNotifyOptions } from './runtime-internals';
-import { createSubscriptions, type NotifyOptions } from './subscriptions';
+import { createSubscriptions } from './subscriptions';
 import { applyValidationErrors, errorKeys, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
 import { submitForm } from './submission';
 import { assertDefinition } from './warnings';

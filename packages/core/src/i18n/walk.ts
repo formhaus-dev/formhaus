@@ -28,9 +28,9 @@ export function textNodes(definition: FormDefinition): TextNode[] {
       }
       const key = [...address, 'fields', field.key];
       add(isGroup(field) ? 'group' : 'field', field, at, key);
-      (field as FormField).options?.forEach((option, position) =>
-        add('option', option, `${at}/options/${position}`, [...key, 'options', option.value]),
-      );
+      (field as FormField).options?.forEach((option, position) => {
+        add('option', option, `${at}/options/${position}`, [...key, 'options', option.value]);
+      });
       add('validation', field.validation, `${at}/validation`, [...key, 'validation'], field);
       if (isGroup(field)) fields(field.fields, at, key);
     });
