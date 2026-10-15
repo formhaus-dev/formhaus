@@ -1,5 +1,26 @@
 # @formhaus/mcp
 
+## 0.5.0
+
+### Minor Changes
+
+- `validate_definition` returns `fixes` on issues it can repair, each with a JSON Patch.
+- New `fix_definition` tool applies every safe fix and returns the repaired definition and the issues left.
+- `capabilities` describes the `source` property of `hidden` fields.
+- `capabilities` describes sections and repeatable groups, their translation slots and the new `addItem`, `removeItem`, `itemLabel`, `itemAdded` and `itemRemoved` labels, and reports format 1.1.
+- `validate_definition` reports the new `group-scope`, `invalid-nesting` and `outdated-format-version` issues, and warns about `autoAdvance` on a radio inside a group.
+- `simulate_path` accepts group answers as arrays of item objects and lists item fields and their errors by path, such as `participants.0.email`.
+- New `event-registration` example with a conditional section and a group of participants.
+- `capabilities` lists the `time` and `hidden` field types and describes their values.
+
+### Patch Changes
+
+- Tools that take a definition reject one larger than 256 KB of JSON with a `too-large` error.
+- `validate_definition` reports unknown properties as `unknown-property` errors with a suggested property name, and missing properties as `missing-property` errors on the object that lacks them, instead of the `schema` code.
+- The server sends usage instructions to the client on connect: the recommended tool order and the `FORMHAUS_API_KEY` and `FORMHAUS_API_BASE` environment variables.
+- Tool descriptions say when to call each tool.
+- Requires `@formhaus/core` 0.14.0.
+
 ## 0.4.2
 
 ### Patch Changes
