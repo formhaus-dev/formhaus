@@ -1,5 +1,6 @@
 import type { FormAction, FormDefinition, FormField, FormGroup, FormNode, ShowCondition } from '../types';
 import { isGroup, isSection } from '../visibility/nodes';
+import { nestable } from './shape';
 
 export interface FieldEntry {
   field: FormField;
@@ -67,7 +68,7 @@ export function createContext(
     items.forEach((node, position) => {
       const at = `${path}/${position}`;
       nodes.push({ node, path: at, step, group, parent });
-      if (isSection(node) || isGroup(node)) visit(node.fields, `${at}/fields`, step, node, isGroup(node) ? node : group);
+      if ((isSection(node) || isGroup(node)) && nestable(at)) visit(node.fields, `${at}/fields`, step, node, isGroup(node) ? node : group);
     });
   if (steps.length) {
     steps.forEach((step, index) => {

@@ -3,6 +3,8 @@ import { resolve } from 'node:path';
 import Ajv from 'ajv';
 import { describe, expect, it } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine } from '../../src';
+import { suggestFixes } from '../../src/fix';
+import { validateSubmission } from '../../src/server';
 import type { FormDefinition, FormField, FormGroup, FormNode, FormSection } from '../../src/types';
 
 const schema = JSON.parse(readFileSync(resolve(__dirname, '../../schema/form-definition.schema.json'), 'utf8'));
@@ -189,5 +191,30 @@ describe('sections and groups in checkDefinition', () => {
     expect(validate(form([group('g', [text('a')], { defaultItems: 1.5 })]))).toBe(false);
     expect(validate(form([group('g', [text('a')], { validation: { pattern: 'x' } as never })]))).toBe(false);
     expect(validate(form([text('a', { fields: [] } as never)]))).toBe(false);
+  });
+});
+
+describe('deeply nested definitions', () => {
+  const nested = (type: 'section' | 'group', depth: number): FormDefinition => {
+    const fields: unknown[] = [];
+    let level = fields;
+    for (let index = 0; index < depth; index++) {
+      const children: unknown[] = [];
+      level.push({ key: `n${index}`, type, ...(type === 'group' ? { label: 'N' } : { title: 'N' }), fields: children });
+      level = children;
+    }
+    return form(fields as FormNode[]);
+  };
+
+  it('reports invalid nesting at depth 5000 instead of overflowing the stack', () => {
+    for (const type of ['section', 'group'] as const) {
+      const definition = nested(type, 5000);
+      expect(checkDefinition(definition).map(({ code, path }) => `${code} ${path}`)).toEqual([
+        `invalid-nesting /fields/0/fields/0/type`,
+        `invalid-nesting /fields/0/fields/0/fields/0/type`,
+      ]);
+      expect(suggestFixes(definition)).toHaveLength(2);
+      expect(() => validateSubmission(definition, {})).toThrow(FormDefinitionError);
+    }
   });
 });
