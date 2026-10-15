@@ -76,7 +76,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `submitting` | `boolean` | Whether submission validation, hooks or the submit handler are running |
 | `currentStepIndex` | `number` | Zero-based index in the visible step list (active path when routes are enabled) |
 | `visibleFields` | `FormField[]` | Visible fields on the current step, or all visible fields in a single-step form. Section fields are listed in place, groups as one entry |
-| `visibleNodes` | `FormNode[]` | Visible fields, sections and groups of the current step. A section holds only its visible fields. Added in 0.15.0 |
+| `visibleNodes` | `FormNode[]` | Visible fields, sections and groups of the current step. A section holds only its visible fields. Added in 0.14.0 |
 | `visibleSteps` | `FormStep[]` | Visible steps on the active path; without routes, all steps whose conditions pass |
 | `currentStep` | `FormStep \| null` | Current visible step |
 | `isFirstStep` / `isLastStep` | `boolean` | Current navigation position |
@@ -118,7 +118,7 @@ It returns `false` only when `nextErrors` equals `previousErrors` and the engine
 
 ## Groups
 
-Added in 0.15.0. See [Repeatable groups](/guide/groups).
+Added in 0.14.0. See [Repeatable groups](/guide/groups).
 
 | Method | Returns | Description |
 |---|---|---|

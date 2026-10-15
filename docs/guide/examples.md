@@ -39,7 +39,7 @@ A radio answer with `autoAdvance` picks a business or personal step, and both br
 
 ## Event registration
 
-A [section](/guide/sections) for the billing address shows when an invoice is requested, and a [repeatable group](/guide/groups) collects up to five participants. Requires `@formhaus/core` 0.15.
+A [section](/guide/sections) for the billing address shows when an invoice is requested, and a [repeatable group](/guide/groups) collects up to five participants. Requires `@formhaus/core` 0.14.
 
 <<< @/../examples/definitions/event-registration.json
 

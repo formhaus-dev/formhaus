@@ -5,7 +5,7 @@ description: "Group related fields under a title with shared show conditions. Fi
 
 # Sections
 
-A section puts fields under a title and shows or hides them together. Requires `@formhaus/core` 0.15 and `"formatVersion": "1.1"`.
+A section puts fields under a title and shows or hides them together. Requires `@formhaus/core` 0.14 and `"formatVersion": "1.1"`.
 
 ```json
 {

@@ -73,7 +73,7 @@ type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get
 
 ## FormSection and FormGroup
 
-Containers inside a `fields` array. Added in 0.15.0 with format 1.1. See [Sections](/guide/sections) and [Repeatable groups](/guide/groups).
+Containers inside a `fields` array. Added in 0.14.0 with format 1.1. See [Sections](/guide/sections) and [Repeatable groups](/guide/groups).
 
 ```ts
 type FormNode = FormField | FormSection | FormGroup;
@@ -217,7 +217,7 @@ type MessageKey =
   | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
   | 'email' | 'number' | 'date' | 'datetime' | 'time' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value';
 type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary'
-  | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemPrompt' | 'keepItem'; // Group labels added in 0.15.0
+  | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'keepItem'; // Group labels added in 0.14.0
 
 type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"
 type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} из {total}"
@@ -332,7 +332,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
-| `type: "section"` and `type: "group"` nodes, format 1.1 | 0.15.0 |
+| `type: "section"` and `type: "group"` nodes, format 1.1 | 0.14.0 |
 | `lang`, `messages`, `labels` and `i18n` | 0.13.0 |
 | `formatVersion` on `FormDefinition` | 0.11.2 |
 | `description` on `FormDefinition` | 0.10.0 |
