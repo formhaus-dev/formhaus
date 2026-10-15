@@ -68,7 +68,6 @@ export function createVisibility(definition: FormDefinition) {
     state,
 
     markChanged(structureChanged: boolean, valuesChanged: boolean): void {
-      if (structureChanged || valuesChanged) path.invalidate();
       if (structureChanged) visibilityDirty = true;
       if (structureChanged || valuesChanged) canGoNextDirty = true;
     },

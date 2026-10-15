@@ -1,6 +1,6 @@
 import type { BuilderPage, BuilderQuestion } from '@formhaus/builder';
 import { Rows3 } from 'lucide-react';
-import { useState } from 'react';
+import { memo, useState } from 'react';
 import { AddRow, Button, Sortable } from '../ui';
 import { ButtonsCard } from './ButtonsCard';
 import { useReadOnly } from '../store/hooks';
@@ -23,7 +23,19 @@ interface Props {
   actions: EditorActions;
 }
 
-export function StepSection({ step, page, first, last, fields, header, actions }: Props) {
+const sameFields = (a: BuilderQuestion[], b: BuilderQuestion[]) => a.length === b.length && a.every((field, index) => field === b[index]);
+
+const sameSection = (a: Props, b: Props) =>
+  a.step === b.step &&
+  a.page === b.page &&
+  a.first === b.first &&
+  a.last === b.last &&
+  a.actions === b.actions &&
+  a.header?.position === b.header?.position &&
+  a.header?.total === b.header?.total &&
+  sameFields(a.fields, b.fields);
+
+export const StepSection = memo(function StepSection({ step, page, first, last, fields, header, actions }: Props) {
   const readOnly = useReadOnly();
   const focus = useFocusRequests();
   const [palette, setPalette] = useState(false);
@@ -75,4 +87,4 @@ export function StepSection({ step, page, first, last, fields, header, actions }
       <ButtonsCard step={page} first={first} last={last} actions={actions} />
     </section>
   );
-}
+}, sameSection);

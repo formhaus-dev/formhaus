@@ -21,5 +21,14 @@ function canonical(value: unknown): string {
 }
 
 export const definitionKey = (definition: FormDefinition) => canonical(definition);
-export const formKey = (form: BuilderForm) => canonical(toDefinition(form));
+const formKeys = new WeakMap<BuilderForm, string>();
+
+export function formKey(form: BuilderForm): string {
+  const known = formKeys.get(form);
+  if (known !== undefined) return known;
+  const key = canonical(toDefinition(form));
+  formKeys.set(form, key);
+  return key;
+}
+
 export const baselineOf = (published: Published | null) => (published ? formKey(loader(published)(published.definition)) : null);

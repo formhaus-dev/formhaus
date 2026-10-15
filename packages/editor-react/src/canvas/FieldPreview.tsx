@@ -1,21 +1,29 @@
-import { hasOptions, placeholderFor, type BuilderQuestion } from '@formhaus/builder';
+import { hasOptions, placeholderFor, type BuilderForm, type BuilderQuestion } from '@formhaus/builder';
 import { ChevronDown, EyeOff } from 'lucide-react';
+import { useCallback } from 'react';
 import { cx } from '../ui/lib/cx';
 import { targetsAfter } from '../logic/targets';
-import { useForm } from '../store/hooks';
+import { useEditor } from '../store/context';
 import styles from './FieldPreview.module.css';
+
+function jumpLabels(form: BuilderForm, field: BuilderQuestion): string {
+  if (!field.options.some((option) => option.jump)) return '[]';
+  const targets = targetsAfter(form, field.uid);
+  return JSON.stringify(
+    field.options.map((option) => (option.jump ? targets.find((item) => item.value === option.jump)?.label : undefined) ?? null),
+  );
+}
 
 function Choices({ field }: { field: BuilderQuestion }) {
   const square = field.type === 'multiselect';
-  const targets = targetsAfter(useForm(), field.uid);
-  const jump = (target: string | null) => (target ? targets.find((item) => item.value === target)?.label : undefined);
+  const labels = JSON.parse(useEditor(useCallback((state) => jumpLabels(state.form, field), [field]))) as (string | null)[];
   return (
     <ul className={cx(styles.choices, field.extra.layout === 'inline' && styles.inline)}>
       {field.options.map((option, index) => (
         <li key={option.uid} className={styles.choice}>
           <span className={cx(styles.glyph, square && styles.square)} aria-hidden />
           <span className={cx(!option.label.trim() && styles.placeholder)}>{option.label.trim() || `Option ${String(index + 1)}`}</span>
-          {jump(option.jump) && <span className={styles.jump}>→ {jump(option.jump)}</span>}
+          {labels[index] && <span className={styles.jump}>→ {labels[index]}</span>}
         </li>
       ))}
     </ul>
