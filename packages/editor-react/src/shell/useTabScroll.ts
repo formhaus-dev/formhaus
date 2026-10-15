@@ -1,11 +1,17 @@
 import { type RefObject, useCallback, useLayoutEffect, useRef } from 'react';
 
 function restore(target: number) {
+  const root = document.documentElement.style;
+  root.setProperty('overflow-anchor', 'none');
   let frames = 0;
   const step = () => {
     window.scrollTo(0, target);
     frames += 1;
     if (Math.abs(window.scrollY - target) > 1 && frames < 60) requestAnimationFrame(step);
+    else
+      window.setTimeout(() => {
+        root.removeProperty('overflow-anchor');
+      }, 1000);
   };
   step();
 }
