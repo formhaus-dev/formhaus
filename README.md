@@ -25,6 +25,8 @@
   <a href="https://formhaus.dev/cloud">Formhaus Cloud</a>
 </p>
 
+<br>
+
 **Add Formhaus to your coding agent**
 
 ```bash
