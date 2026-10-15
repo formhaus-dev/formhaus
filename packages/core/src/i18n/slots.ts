@@ -1,6 +1,7 @@
 import { getAllFields } from '../engine/engine-utils';
 import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
 import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
+import { typeMessageKeys } from '../validation/type-checks';
 import { DEFAULT_LABELS, hasRule, SLOTS, type Entry } from './nodes';
 import { slotAddress, textNodes, type TextNode } from './walk';
 
@@ -18,7 +19,6 @@ export interface Slot {
 }
 
 const BOUNDS: Record<string, string> = { minLength: 'min', maxLength: 'max', min: 'min', max: 'max' };
-const FORMAT_KEYS: Partial<Record<string, MessageKey>> = { email: 'email', number: 'number', date: 'date', datetime: 'datetime' };
 
 function ruleKey(field: FormField, rule: string): MessageKey {
   return (field.type === 'multiselect' && rule.endsWith('Length') ? rule.replace('Length', 'Items') : rule) as MessageKey;
@@ -31,8 +31,7 @@ function usedMessages(definition: FormDefinition): Set<string> {
     for (const rule of SLOTS.validation) {
       if (hasRule(rules, rule) && rules[rule] !== '' && typeof rules[rule === 'required' ? rule : `${rule}Message`] !== 'string') keys.add(ruleKey(field, rule));
     }
-    const format = FORMAT_KEYS[field.type];
-    if (format) keys.add(format);
+    for (const key of typeMessageKeys(field)) keys.add(key);
   }
   return keys;
 }

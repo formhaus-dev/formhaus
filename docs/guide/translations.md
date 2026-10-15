@@ -96,7 +96,7 @@ const form = useLocalizedForm(definition, () => ({
 </template>
 ```
 
-`te` keeps vue-i18n from returning the key for a missing message. vue-i18n placeholders are `{min}`. Write `@` as `{'@'}` in vue-i18n messages; a message that fails to compile falls back to the source text.
+`te` keeps vue-i18n from returning the key for a missing message. Set `fallbackLocale: false` in `createI18n()`, otherwise `te` also finds the key in the fallback locale and a missing text shows in that language instead of the source text. vue-i18n placeholders are `{min}`. Write `@` as `{'@'}` in vue-i18n messages; a message that fails to compile falls back to the source text.
 
 ## Overlays
 
@@ -137,7 +137,7 @@ async function loadOverlay(lang: string): Promise<Overlay | undefined> {
 }
 ```
 
-Missing or empty strings keep the source text, so an incomplete translation still works. The same file loads into i18next with `i18n.addResourceBundle('ru', 'forms', { signup: overlay })`, and derived keys then resolve through `t`.
+Missing or empty strings keep the source text, so an incomplete translation still works. A field message in the definition, such as `required: "Enter your email"`, wins over `messages` of the overlay; translate it at the field address. The same file loads into i18next with `i18n.addResourceBundle('ru', 'forms', { signup: overlay })`, and derived keys then resolve through `t`.
 
 Check a translation before you ship it:
 
@@ -182,3 +182,4 @@ The MCP tool `translation_template` returns the overlay skeleton and the slot li
 - Options from `optionsFrom` and messages from custom validators are not translated here; translate them in the provider or the validator.
 - Templates have no plural forms. A translate function can choose the plural itself.
 - `lang` does not set `dir` or right-to-left layout.
+- `localize()` and `useLocalizedForm()` throw on the errors of `checkTranslations()`, such as an `i18n` key for a text the definition does not have. The same definition renders without translations.

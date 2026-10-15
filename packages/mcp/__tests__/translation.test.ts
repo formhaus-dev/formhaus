@@ -22,7 +22,7 @@ describe('translation_template', () => {
         name: { title: 'Name', fields: { name: { label: 'Name' } } },
         email: { title: 'Email', fields: { email: { label: 'Email' } } },
       },
-      messages: { required: 'This field is required', email: 'Enter a valid email' },
+      messages: { required: 'This field is required', maxLength: 'Must be at most {max} characters', email: 'Enter a valid email', string: 'Must be text' },
       labels: { continue: 'Continue', back: 'Back', stepOf: 'Step {current} of {total}', errorSummary: 'Check these answers' },
     });
     expect(result.slots.find(({ address }) => address === 'steps.name.fields.name.label')).toMatchObject({ key: 'signup.name', text: 'Name' });
@@ -49,6 +49,13 @@ describe('simulate_path with an overlay', () => {
     const result = await simulatePathTool({ definition: linear, answers: {}, overlay });
     expect(result.errors).toEqual({ name: 'Обязательное поле' });
     expect(result.currentStep?.title).toBe('Имя');
+  });
+
+  it('lists overlay entries it ignored', async () => {
+    const overlay = { title: 5, steps: { ghost: { title: 'Призрак' } } };
+    const result = await simulatePathTool({ definition: linear, answers: {}, overlay });
+    expect(result.ok).toBe(true);
+    expect(result.overlayIssues).toEqual(['unknown address steps.ghost.title was ignored', 'title is not text and was ignored']);
   });
 
   it('ignores an overlay for an invalid definition and reports the issues', async () => {

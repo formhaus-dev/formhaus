@@ -90,6 +90,17 @@ export function typeError(field: FormField, value: unknown, resolve: ResolveMess
   return TEXT_TYPES.has(field.type) ? stringError(field, value, 'string', fail) : primitiveError(field, value, fail);
 }
 
+export function typeMessageKeys(field: FormField): MessageKey[] {
+  if (BOOLEAN_TYPES.includes(field.type)) return ['boolean'];
+  if (field.type === 'number') return ['number'];
+  if (field.type === 'multiselect') return ['options', 'option'];
+  const format = FORMATS.get(field.type)?.[1];
+  if (format) return [format, 'maxLength'];
+  if (field.type === 'file') return ['file', 'maxLength'];
+  if (field.type === 'select' || field.type === 'radio') return ['option', 'maxLength'];
+  return [TEXT_TYPES.has(field.type) ? 'string' : 'value', 'maxLength'];
+}
+
 export function clientTypeError(field: FormField, value: unknown, resolve?: ResolveMessage): string | null {
   if (field.type === 'file' || !BUILT_IN_TYPES.includes(field.type)) return null;
   return typeError(field, value, resolve);

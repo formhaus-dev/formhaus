@@ -35,4 +35,10 @@ describe('formhaus-mcp over stdio', () => {
     const [content] = result.content as { type: string; text: string }[];
     expect(JSON.parse(content.text)).toMatchObject({ ok: true, wouldSubmit: true });
   });
+
+  it('returns capabilities that match the output schema', async () => {
+    const result = await client.callTool({ name: 'capabilities', arguments: {} });
+    expect(result.isError).toBeFalsy();
+    expect(result.structuredContent).toMatchObject({ customFieldTypes: expect.any(String), adapters: expect.any(Array) });
+  });
 });

@@ -6,7 +6,7 @@ export type MessageFn = (key: MessageKey, params: MessageParams, field: FormFiel
 export type MessageSource = MessageCatalog | MessageFn;
 export type ResolveMessage = (key: MessageKey, params: MessageParams, field: FormField) => string;
 
-export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = {
+export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.freeze({
   required: 'This field is required',
   minLength: 'Must be at least {min} characters',
   maxLength: 'Must be at most {max} characters',
@@ -26,7 +26,7 @@ export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = {
   string: 'Must be text',
   file: 'Must be a file reference',
   value: 'Invalid value',
-};
+});
 
 export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
 
@@ -49,7 +49,7 @@ export function messageResolver(...sources: (MessageSource | undefined)[]): Reso
 }
 
 export function getDefaultMessage(rule: ValidationRule | MessageKey, params: Record<string, unknown> = {}): string {
-  const template = DEFAULT_MESSAGES[rule] ?? DEFAULT_MESSAGES.value;
+  const template = Object.prototype.hasOwnProperty.call(DEFAULT_MESSAGES, rule) ? DEFAULT_MESSAGES[rule] : DEFAULT_MESSAGES.value;
   const custom = params.unit !== undefined && (rule === 'minLength' || rule === 'maxLength');
   return formatText(custom ? template.replace('characters', '{unit}') : template, params);
 }

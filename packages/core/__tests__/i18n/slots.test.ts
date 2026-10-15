@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { localize, textSlots, translationIssues, translationTemplate } from '../../src/i18n';
+import { validateSubmission } from '../../src/server';
+import type { FormDefinition } from '../../src/types';
 import { ru, signup } from './fixtures';
 
 describe('textSlots and translationTemplate', () => {
@@ -13,7 +15,7 @@ describe('textSlots and translationTemplate', () => {
     expect(byAddress['messages.minLength']).toMatchObject({ key: 'signup.messages.minLength', text: 'Must be at least {min} characters', params: ['min'] });
     expect(byAddress['labels.stepOf']).toMatchObject({ params: ['current', 'total'] });
     expect(byAddress['steps.home.fields.address.validation.minLength']).toBeUndefined();
-    expect(byAddress['messages.option']).toBeUndefined();
+    expect(byAddress['messages.boolean']).toBeUndefined();
     expect(slots.every(({ hash }) => /^[0-9a-f]{8}$/.test(hash))).toBe(true);
     expect(textSlots(signup, { prefix: false }).find(({ address }) => address === 'description')).toBeUndefined();
     expect(textSlots(signup, { prefix: false }).find(({ address }) => address === 'steps.kind.title')).not.toHaveProperty('key');
@@ -24,9 +26,25 @@ describe('textSlots and translationTemplate', () => {
     expect(template.steps).toMatchObject({ business: { fields: { address: { label: 'Company address' } } } });
     const { messages, labels, ...localized } = localize(signup, { overlay: template }).definition;
     expect(localized).toEqual(signup);
-    expect(messages).toEqual({ required: 'This field is required', minLength: 'Must be at least {min} characters', email: 'Enter a valid email' });
+    expect(messages).toEqual({ required: 'This field is required', minLength: 'Must be at least {min} characters', maxLength: 'Must be at most {max} characters', email: 'Enter a valid email', option: 'Select one of the available options', string: 'Must be text' });
     expect(labels).toEqual({ continue: 'Continue', back: 'Back', stepOf: 'Step {current} of {total}', errorSummary: 'Check these answers' });
     expect(translationIssues(signup, template)).toEqual({ missing: [], unknown: [], invalid: [], placeholderMismatch: [], unlabeled: [] });
+  });
+
+  it('asks for the messages of wrong-type answers so server errors are translated too', () => {
+    const definition = { id: 'types', title: 'Types', submit: { label: 'Send' }, fields: [
+      { key: 'plan', type: 'select', label: 'Plan', options: [{ value: 'a', label: 'A' }] },
+      { key: 'tags', type: 'multiselect', label: 'Tags', options: [{ value: 'a', label: 'A' }] },
+      { key: 'agree', type: 'checkbox', label: 'Agree' },
+      { key: 'name', type: 'text', label: 'Name' },
+    ] } as FormDefinition;
+    const template = translationTemplate(definition);
+    expect(Object.keys(template.messages ?? {}).sort()).toEqual(['boolean', 'maxLength', 'option', 'options', 'string']);
+    const overlay = { ...template, messages: Object.fromEntries(Object.keys(template.messages ?? {}).map((key) => [key, `ru:${key}`])) };
+    expect(translationIssues(definition, overlay).missing).toEqual([]);
+    const { definition: localized, messages } = localize(definition, { overlay });
+    const { errors } = validateSubmission(localized, { plan: 'x', tags: 'a', agree: 'yes', name: 5 }, { messages });
+    expect(errors).toEqual({ plan: 'ru:option', tags: 'ru:options', agree: 'ru:boolean', name: 'ru:string' });
   });
 });
 

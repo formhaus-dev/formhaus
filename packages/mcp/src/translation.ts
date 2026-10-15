@@ -1,5 +1,5 @@
 import type { FieldI18n, FormDefinition, FormI18n, LabelI18n, StepI18n, ValidationI18n } from '@formhaus/core';
-import { defaultLabels, defaultMessages, localize, textSlots, translationTemplate, type Overlay, type TextSlot } from '@formhaus/core/i18n';
+import { defaultLabels, defaultMessages, localize, textSlots, translationIssues, translationTemplate, type Overlay, type TextSlot } from '@formhaus/core/i18n';
 import { parseDefinition } from './definition-input';
 import { inspectDefinition, type ValidationReport } from './validate';
 
@@ -19,13 +19,20 @@ export function translationTemplateTool({ definition: input, lang, prefix }: Tem
   return { ok: true, validation: report, lang, file: `${definition.id}.${lang}.json`, overlay: translationTemplate(definition), slots: textSlots(definition, { prefix }) };
 }
 
-export function withOverlay(input: unknown, overlay: unknown): unknown {
+export function withOverlay(input: unknown, overlay: unknown): { definition: unknown; issues: string[] } {
   const parsed = parseDefinition(input);
-  if (!overlay || !parsed.ok) return input;
+  if (!overlay || !parsed.ok) return { definition: input, issues: [] };
+  const definition = parsed.value as unknown as FormDefinition;
   try {
-    return localize(parsed.value as unknown as FormDefinition, { overlay: overlay as Overlay }).definition;
-  } catch {
-    return input;
+    const { unknown, invalid, placeholderMismatch } = translationIssues(definition, overlay);
+    const issues = [
+      ...unknown.map((address) => `unknown address ${address} was ignored`),
+      ...invalid.map((address) => `${address || 'overlay'} is not text and was ignored`),
+      ...placeholderMismatch.map((address) => `${address} has different {placeholders} than the source`),
+    ];
+    return { definition: localize(definition, { overlay: overlay as Overlay }).definition, issues };
+  } catch (error) {
+    return { definition: input, issues: [`overlay was not applied: ${error instanceof Error ? error.message : String(error)}`] };
   }
 }
 

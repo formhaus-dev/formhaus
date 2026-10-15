@@ -34,6 +34,7 @@ export const simulationOutput = {
   errors: z.record(z.string(), z.string()).optional(),
   wouldSubmit: z.boolean().optional(),
   submitValues: z.record(z.string(), z.unknown()).optional(),
+  overlayIssues: z.array(z.string()).optional().describe('Overlay entries that were ignored or do not match the source.'),
 };
 
 export const examplesOutput = {
@@ -45,9 +46,14 @@ export const examplesOutput = {
 export const capabilitiesOutput = {
   definition: z.record(z.string(), z.unknown()),
   fieldTypes: z.array(z.string()),
+  customFieldTypes: z.string(),
+  fieldProps: z.record(z.string(), z.unknown()),
+  validationRules: z.record(z.string(), z.unknown()),
   conditions: z.record(z.string(), z.unknown()),
   steps: z.record(z.string(), z.unknown()),
+  actions: z.record(z.string(), z.unknown()),
   i18n: z.record(z.string(), z.unknown()).optional(),
+  adapters: z.array(z.object({ name: z.string(), description: z.string() })),
 };
 
 export const templateOutput = {
