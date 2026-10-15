@@ -7,10 +7,10 @@ import { registerCloudTools } from './cloud-tools';
 import { definitionInput } from './definition-input';
 import { exampleDefinitionsTool } from './examples';
 import { simulatePathTool } from './simulate';
-import { capabilitiesOutput, examplesOutput, simulationOutput, templateOutput, validationOutput } from './outputs';
+import { capabilitiesOutput, examplesOutput, fixOutput, simulationOutput, templateOutput, validationOutput } from './outputs';
 import { translationTemplateTool } from './translation';
 import migration from '../../../docs/migrate/0.11.md';
-import { validateDefinitionTool } from './validate';
+import { fixDefinitionTool, validateDefinitionTool } from './validate';
 
 const CAPABILITIES_URI = 'formhaus://capabilities';
 const MIGRATION_URI = 'formhaus://migrate/0.11';
@@ -30,12 +30,25 @@ export function createServer(): McpServer {
     {
       title: 'Validate a Formhaus definition',
       description:
-        'Call this after writing or editing a definition and before simulate_path or publish_form; it checks the structure and engine rules, while simulate_path checks how a user moves through the form. Checks a Formhaus form definition against the JSON Schema and the engine. Returns { valid, issues }. Each issue has code, severity ("error" or "warning"), a JSON pointer path, message and hint. Errors make the engine reject the definition, such as a condition with zero or two operators, a condition on a later step, a duplicate key, a route to an earlier step, a condition outside a group on a field inside it (group-scope) or a section inside a section (invalid-nesting). Warnings point to likely mistakes, such as a condition value that is not an option, a select without options or next: false without an autoAdvance radio. Fix each error at its path and call again.',
+        'Call this after writing or editing a definition and before simulate_path or publish_form; it checks the structure and engine rules, while simulate_path checks how a user moves through the form. Checks a Formhaus form definition against the JSON Schema and the engine. Returns { valid, issues }. Each issue has code, severity ("error" or "warning"), a JSON pointer path, message, hint and, when a repair is known, fixes: a list of { title, safe, patch } where patch is an RFC 6902 JSON Patch. Errors make the engine reject the definition, such as a condition with zero or two operators, a condition on a later step, a duplicate key, a route to an earlier step, a condition outside a group on a field inside it (group-scope) or a section inside a section (invalid-nesting). Warnings point to likely mistakes, such as a condition value that is not an option, a select without options or next: false without an autoAdvance radio. Fix each error at its path, or apply one of its fixes, and call again. To apply every safe fix at once, call fix_definition.',
       inputSchema: { definition: definitionInput },
       outputSchema: validationOutput,
       annotations: { readOnlyHint: true },
     },
     async (input) => json(validateDefinitionTool(input)),
+  );
+
+  server.registerTool(
+    'fix_definition',
+    {
+      title: 'Apply safe fixes to a Formhaus definition',
+      description:
+        'Call this when validate_definition reports issues with safe fixes, such as a misspelled property name, a missing id or key, an empty label, a duplicate key nothing refers to or a missing submit button. Applies every safe fix and returns { definition, applied, valid, issues }: the repaired definition, the fixes applied in order, and the issues left, the same as validate_definition returns for the repaired definition. Safe fixes never change what the form does beyond the repair. Unsafe fixes, such as pointing a condition at the closest existing field, stay in issues[].fixes for you to check and apply by hand. Save the returned definition, then fix the remaining errors.',
+      inputSchema: { definition: definitionInput },
+      outputSchema: fixOutput,
+      annotations: { readOnlyHint: true },
+    },
+    async (input) => json(fixDefinitionTool(input)),
   );
 
   server.registerTool(
