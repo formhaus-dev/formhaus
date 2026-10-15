@@ -1,4 +1,5 @@
-import type { FormDefinition, FormField } from '@formhaus/core';
+import { isGroup, isSection, type FormDefinition, type FormField } from '@formhaus/core';
+import { nodeName } from '../../nodes';
 import { element, iconButton } from '../dom';
 import { icon } from '../icons';
 import { DEFAULT_LAYOUT, type FormLayout } from '../../render-actions';
@@ -90,6 +91,15 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
     }
     const list = element('div', 'field-list');
     step.fields.forEach((field, fieldIndex) => {
+      if (isSection(field) || isGroup(field)) {
+        const row = element('div', 'field-row field-row--container');
+        row.append(
+          element('span', 'field-container-name', `${isSection(field) ? 'Section' : 'Group'}: ${nodeName(field)} (edit in JSON)`),
+          iconButton('delete', `Delete ${nodeName(field)}`, () => guarded(removeField(draft, stepIndex, fieldIndex))),
+        );
+        list.appendChild(row);
+        return;
+      }
       const row = fieldRow(field, {
         draft,
         changed: onChange,
