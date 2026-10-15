@@ -1,5 +1,22 @@
 # @formhaus/react
 
+## 0.13.0
+
+### Minor Changes
+
+- fe4a968: - New `messages` prop for validation messages, an object of templates or a function.
+  - New `labels` prop for the Continue and Back buttons, the step counter and the error summary title, an object of templates or a function.
+  - The `<form>` element gets `lang` from the definition.
+  - Custom progress components receive the step counter text as `counterLabel`.
+  - New `@formhaus/react/i18n` entry with `useLocalizedForm()`, which returns the props of a form in one language.
+  - `useLocalizedForm()` recreates the form when the language changes, which clears entered values.
+  - Requires `@formhaus/core` 0.13.
+
+### Patch Changes
+
+- Updated dependencies [fe4a968]
+  - @formhaus/core@0.13.0
+
 ## 0.12.0
 
 ### Minor Changes

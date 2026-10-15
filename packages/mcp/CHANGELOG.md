@@ -1,5 +1,21 @@
 # @formhaus/mcp
 
+## 0.4.0
+
+### Minor Changes
+
+- fe4a968: - New `translation_template` tool returns the translation file skeleton and the list of translatable texts of a definition.
+  - `simulate_path` takes an `overlay` and reports errors in its language. `overlayIssues` lists overlay entries it ignored.
+  - `capabilities` lists message and label keys with their English defaults, `i18n` slots and translation file addresses.
+  - `validate_definition` checks `lang`, `messages`, `labels` and `i18n` with the translation checks of core.
+  - New `feedback-ru` example, a Russian form with message and label catalogs.
+  - Fixed `capabilities` failing the output schema check of MCP clients.
+
+### Patch Changes
+
+- Updated dependencies [fe4a968]
+  - @formhaus/core@0.13.0
+
 ## 0.3.4
 
 ### Patch Changes
