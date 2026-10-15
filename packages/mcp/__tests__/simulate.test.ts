@@ -138,4 +138,24 @@ describe('simulate_path', () => {
     expect(blank.path?.[0].visibleFields).toEqual(['a']);
     expect(blank.wouldSubmit).toBe(true);
   });
+
+  it('lists fields shown by a skipped step default with surrounding spaces', async () => {
+    const definition = {
+      id: 'f', title: 'F', submit: { label: 'Send' },
+      steps: [
+        { id: 'a', title: 'A', skip: { label: 'Skip' }, fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: ' yes ' }] },
+        { id: 'b', title: 'B', fields: [{ key: 'details', type: 'text', label: 'Details', show: [{ field: 'name', eq: 'yes' }] }] },
+      ],
+    };
+    const result = await simulatePathTool({ definition, actions: ['skip'] });
+    expect(result.currentStep?.id).toBe('b');
+    expect(result.path?.[1].visibleFields).toEqual(['details']);
+  });
+
+  it.each([undefined, 42, { en: 'Hi' }])('reports a string title when the form title is %j', async (title) => {
+    const fields = [{ key: 'a', type: 'text', label: 'A' }];
+    const result = await simulatePathTool({ definition: { id: 'f', title, submit: { label: 'Send' }, fields } });
+    expect(result.validation.issues.map(({ severity }) => severity)).toEqual(['warning']);
+    expect(result.path?.[0].title).toBe('');
+  });
 });

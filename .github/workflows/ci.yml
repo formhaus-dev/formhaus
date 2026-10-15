@@ -42,6 +42,7 @@ jobs:
       - run: pnpm check:source-size
       - run: pnpm check:builder-isolation
       - run: pnpm check:migration
+      - run: pnpm check:docs-versions
       - run: pnpm templates:check
 
       - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve

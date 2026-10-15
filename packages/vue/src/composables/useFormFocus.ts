@@ -4,6 +4,9 @@ import type { UseFormEngineReturn } from './useFormEngine';
 
 const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
 
+const typing = (element: Element) => (element as HTMLElement).isContentEditable
+  || (element.matches('input, select, textarea') && !['checkbox', 'radio'].includes((element as HTMLInputElement).type));
+
 function firstControl(root: Element | null | undefined) {
   return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
 }
@@ -49,6 +52,10 @@ export function useFormFocus(form: UseFormEngineReturn, formRef: Ref<HTMLFormEle
 
   return {
     rememberFocus(event: FocusEvent) { focusReturn = event.target as HTMLElement; },
+    requestFocus() {
+      const active = formRef.value?.ownerDocument.activeElement;
+      if (active && formRef.value?.contains(active) && !typing(active)) requested.value++;
+    },
     showField(key: string) {
       focusKey = key;
       requested.value++;

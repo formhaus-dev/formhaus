@@ -37,16 +37,17 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   const fieldKeys = skipCurrentStep(engine);
   const skippedValues = engine.values;
   const edited = watchCheckedInputs(engine, { ...skippedValues });
+  const submitting = submitForm(engine, async (submitted, skipped) => {
+    const result = await submit(submitted, skipped);
+    const rejected = isRejection(result);
+    if (!rejected || operation === engine.operationEpoch) outcome = rejected;
+    return result;
+  }, true);
+  const operation = engine.latestOperation;
   try {
-    return await submitForm(engine, async (submitted, skipped) => {
-      const operation = engine.operationEpoch;
-      const result = await submit(submitted, skipped);
-      const rejected = isRejection(result);
-      if (!rejected || operation === engine.operationEpoch) outcome = rejected;
-      return result;
-    }, true);
+    return await submitting;
   } finally {
-    if (outcome !== false && engine.values === skippedValues && !edited()) {
+    if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues && !edited()) {
       engine.state.values = values;
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
       engine.state.errors = { ...(outcome ? {} : errors), ...engine.errors };
@@ -73,7 +74,7 @@ export async function changeStep(engine: EngineInternals, direction: 'next' | 'b
   if (!target) return false;
   const context: StepChangeContext = { fromStepId: step.id, toStepId: target.id, reason, values: { ...getValidationValues(engine) } };
   const epoch = engine.validationEpoch;
-  const operation = ++engine.operationEpoch;
+  const operation = engine.latestOperation = ++engine.operationEpoch;
   const inputsChanged = watchCheckedInputs(engine, context.values);
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch
     || engine.currentStep?.id !== step.id || inputsChanged();
