@@ -1,4 +1,5 @@
 import { isActionDisabled, isVisible, type FormEngine, type FormField, type FormStep } from '@formhaus/core';
+import { conditionValues } from '@formhaus/core/internal';
 import { perform, type SimulationAction, type TraceEntry } from './simulate-actions';
 import { withOverlay } from './translation';
 import { inspectDefinition, type ValidationReport } from './validate';
@@ -34,12 +35,6 @@ export interface SimulationResult {
   submitValues?: Record<string, unknown>;
 }
 
-function pathValues(engine: FormEngine): Record<string, unknown> {
-  const keys = new Set(engine.visibleSteps.flatMap((step) => step.fields.map(({ key }) => key)));
-  const values = Object.fromEntries(Object.entries(engine.values).filter(([key]) => keys.has(key)));
-  return { ...values, ...engine.getSubmitValues() };
-}
-
 function visibleKeys(fields: FormField[], values: Record<string, unknown>): string[] {
   return fields.filter((field) => isVisible(field, values)).map(({ key }) => key);
 }
@@ -72,13 +67,13 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
   const first = engine.currentStep?.id;
   const trace = await run(engine, input.actions);
   const visited = new Set([first, ...trace.map(({ to }) => to)].filter((id): id is string => typeof id === 'string'));
-  const values = pathValues(engine);
+  const values = conditionValues(engine);
   const stepReport = (step: FormStep): StepReport => ({
     id: step.id, title: step.title, visited: visited.has(step.id), skipped: engine.isStepSkipped(step.id), visibleFields: visibleKeys(step.fields, values),
   });
   const path = engine.isMultiStep
     ? engine.visibleSteps.map(stepReport)
-    : [{ id: definition.id, title: definition.title, visited: true, skipped: false, visibleFields: visibleKeys(definition.fields ?? [], values) }];
+    : [{ id: definition.id, title: typeof definition.title === 'string' ? definition.title : '', visited: true, skipped: false, visibleFields: visibleKeys(definition.fields ?? [], values) }];
   const step = engine.currentStep;
   const allErrors = engine.validate();
   const atEnd = !engine.isMultiStep || engine.isLastStep;

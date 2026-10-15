@@ -1,1 +1,1 @@
-export const FORMHAUS_VERSION = '0.11.2';
+export const FORMHAUS_VERSION = '0.13.0';

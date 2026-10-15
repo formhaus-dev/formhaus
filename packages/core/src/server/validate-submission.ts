@@ -38,7 +38,10 @@ function activeValues(definition: FormDefinition, fields: FormField[], input: un
   let result: ActiveValues = { values: {}, active: new Map() };
   for (let round = 0; round <= fields.length; round++) {
     const values: Record<string, unknown> = {};
-    for (const key of keys) values[key] = normalizeValue(result.active.get(key) ?? fields.find((field) => field.key === key)!, source[key]);
+    for (const key of keys) {
+      const value = normalizeValue(result.active.get(key) ?? fields.find((field) => field.key === key)!, source[key]);
+      if (value !== undefined) values[key] = value;
+    }
     const active = new Map<string, FormField>();
     for (const key of keys) {
       const field = visibility.activeField(key, values);

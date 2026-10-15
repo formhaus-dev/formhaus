@@ -1,6 +1,6 @@
 import type { FormEngineOptions } from '@formhaus/core';
 import { fieldDomId, shouldApplyExternalErrors } from '@formhaus/core/internal';
-import { useCallback, useEffect, useId, useRef } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
@@ -22,6 +22,9 @@ function engineKey(engine: object): number {
 
 const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
 
+const typing = (element: Element) => (element as HTMLElement).isContentEditable
+  || (element.matches('input, select, textarea') && !['checkbox', 'radio'].includes((element as HTMLInputElement).type));
+
 function firstControl(root: Element | null | undefined) {
   return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
 }
@@ -34,6 +37,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   const focusPending = useRef(false);
   const focusKey = useRef<string | null>(null);
   const focusReturn = useRef<HTMLElement | null>(null);
+  const [focusRequest, setFocusRequest] = useState(0);
   const wasBusy = useRef(false);
   const engineOptions: FormEngineOptions = {
     ...props,
@@ -59,6 +63,10 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     if (!shouldApplyExternalErrors(engine, previous, props.errors)) return;
     appliedErrors.current = { engine, errors: props.errors };
     engine.setErrors(props.errors);
+    const active = formRef.current?.ownerDocument.activeElement;
+    if (!active || !formRef.current?.contains(active) || typing(active) || Object.keys(props.errors).length === 0) return;
+    focusPending.current = true;
+    setFocusRequest((request) => request + 1);
   }, [props.errors, engine]);
 
   useEffect(() => {
@@ -85,7 +93,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     const field = chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]');
     const target = field?.querySelector('input:checked:not(:disabled)') ?? firstControl(field) ?? firstControl(fields);
     ((target as HTMLElement | null | undefined) ?? formRef.current)?.focus();
-  }, [engine, version, actions.invalidAttempts]);
+  }, [engine, version, actions.invalidAttempts, focusRequest]);
 
   const handleFieldFocus = useCallback((key: string) => {
     onAnalyticsEvent?.({ type: 'field_focused', fieldKey: key });
@@ -98,6 +106,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   const showField = useCallback((key: string) => {
     focusKey.current = key;
     focusPending.current = true;
+    setFocusRequest((request) => request + 1);
     engine.goToStepWithField(key);
   }, [engine]);
 
