@@ -27,6 +27,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly skipped = new Map<string, string[]>();
   private validationEpoch = 0;
   private operationEpoch = 0;
+  private latestOperation = 0;
   private readonly lifecycle: FormEngineOptions;
 
   private readonly validators: Record<string, ValidatorFn>;
