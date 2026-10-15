@@ -87,7 +87,7 @@ export async function changeStep(
   if (validating) includeCurrentStep(engine);
   if (validating && hasStepErrors(engine)) return false;
   const lifecycle = { ...engine.lifecycle };
-  const validate = engine.onStepValidate;
+  const validate = lifecycle.onStepValidate;
   let committed = false;
   const fromIndex = engine.currentStepIndex;
   const toIndex = fromIndex + (direction === 'next' ? 1 : -1);
