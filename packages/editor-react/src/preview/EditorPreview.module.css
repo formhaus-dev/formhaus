@@ -14,3 +14,9 @@
 .mobile {
   max-width: var(--fh-ed-size-device-mobile);
 }
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--fh-ed-space-2);
+}
