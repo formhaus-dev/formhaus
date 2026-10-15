@@ -20,9 +20,15 @@ const harness: RendererHarness = {
       },
     };
   },
-  async click(element) { fireEvent.click(element); },
-  async type(element, value) { fireEvent.change(element, { target: { value } }); },
-  async submit(form) { fireEvent.submit(form); },
+  async click(element) {
+    fireEvent.click(element);
+  },
+  async type(element, value) {
+    fireEvent.change(element, { target: { value } });
+  },
+  async submit(form) {
+    fireEvent.submit(form);
+  },
 };
 
 const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };

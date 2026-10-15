@@ -68,7 +68,8 @@ export function fromCondition(condition: ShowCondition, type: FieldType | undefi
   const operators = Object.keys(condition).filter((key) => key !== 'field');
   if (operators.length !== 1 || !type) return undefined;
   const { field } = condition;
-  if (typeof condition.eq === 'boolean') return toggles(type) ? { field, operator: condition.eq ? 'checked' : 'unchecked', value: '' } : undefined;
+  if (typeof condition.eq === 'boolean')
+    return toggles(type) ? { field, operator: condition.eq ? 'checked' : 'unchecked', value: '' } : undefined;
   if (condition.notEmpty === true) return { field, operator: 'notEmpty', value: '' };
   if (condition.eq !== undefined) return { field, operator: 'eq', value: String(condition.eq) };
   if (condition.neq !== undefined && typeof condition.neq !== 'boolean') return { field, operator: 'neq', value: String(condition.neq) };

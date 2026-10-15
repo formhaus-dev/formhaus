@@ -2,34 +2,15 @@ import { readdir, readFile } from 'node:fs/promises';
 import { extname, join, relative } from 'node:path';
 
 const MAX_LINES = 250;
-const SOURCE_EXTENSIONS = new Set([
-  '.cjs',
-  '.css',
-  '.html',
-  '.js',
-  '.jsx',
-  '.mjs',
-  '.ts',
-  '.tsx',
-  '.vue',
-]);
-const IGNORED_DIRECTORIES = new Set([
-  '.agents',
-  '.claude',
-  '.git',
-  '.next',
-  '.nuxt',
-  '.output',
-  'dist',
-  'node_modules',
-]);
+const SOURCE_EXTENSIONS = new Set(['.cjs', '.css', '.html', '.js', '.jsx', '.mjs', '.ts', '.tsx', '.vue']);
+const IGNORED_DIRECTORIES = new Set(['.agents', '.claude', '.git', '.next', '.nuxt', '.output', 'dist', 'node_modules']);
 
 async function collectSourceFiles(directory) {
   const files = [];
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     if (entry.isDirectory() && IGNORED_DIRECTORIES.has(entry.name)) continue;
     const path = join(directory, entry.name);
-    if (entry.isDirectory()) files.push(...await collectSourceFiles(path));
+    if (entry.isDirectory()) files.push(...(await collectSourceFiles(path)));
     else if (SOURCE_EXTENSIONS.has(extname(entry.name))) files.push(path);
   }
   return files;

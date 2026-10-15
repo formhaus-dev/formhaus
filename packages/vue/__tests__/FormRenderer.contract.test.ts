@@ -5,14 +5,24 @@ import { expect, it, vi } from 'vitest';
 import * as entry from '../src';
 import FormRenderer from '../src/FormRenderer.vue';
 
-const definition: FormDefinition = { id: 'contract', title: '', submit: { label: 'Send' }, steps: [
-  { id: 'one', title: 'First step', fields: [{ key: 'name', type: 'text', label: 'Name' }], skip: { label: 'Skip' } },
-  { id: 'two', title: 'Second', fields: [{ key: 'city', type: 'text', label: 'City' }] },
-] };
+const definition: FormDefinition = {
+  id: 'contract',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    { id: 'one', title: 'First step', fields: [{ key: 'name', type: 'text', label: 'Name' }], skip: { label: 'Skip' } },
+    { id: 'two', title: 'Second', fields: [{ key: 'city', type: 'text', label: 'City' }] },
+  ],
+};
 
 it('awaits an @submit listener with values and skipped steps', async () => {
   let release!: () => void;
-  const save = vi.fn(() => new Promise<void>((done) => { release = done; }));
+  const save = vi.fn(
+    () =>
+      new Promise<void>((done) => {
+        release = done;
+      }),
+  );
   const Host = defineComponent({ setup: () => () => h(FormRenderer, { definition, onSubmit: save }) });
   render(Host);
   await fireEvent.click(screen.getByText('Skip'));
@@ -35,14 +45,34 @@ it('renders the step title at the heading level', () => {
 
 it('supports v-model on FormhausField and exports every built-in field', async () => {
   const value = ref<unknown>('');
-  render(defineComponent({ setup: () => () => h(entry.FormhausField, {
-    field: { key: 'name', type: 'text', label: 'Name' },
-    modelValue: value.value,
-    'onUpdate:modelValue': (next: unknown) => { value.value = next; },
-  }) }));
+  render(
+    defineComponent({
+      setup: () => () =>
+        h(entry.FormhausField, {
+          field: { key: 'name', type: 'text', label: 'Name' },
+          modelValue: value.value,
+          'onUpdate:modelValue': (next: unknown) => {
+            value.value = next;
+          },
+        }),
+    }),
+  );
   await fireEvent.update(screen.getByLabelText('Name'), 'Ada');
   expect(value.value).toBe('Ada');
-  for (const name of ['TextField', 'TextareaField', 'SelectField', 'AutocompleteField', 'MultiselectField', 'CheckboxField', 'RadioField', 'SwitchField', 'FileField', 'DateField', 'DateTimeField', 'defaultFieldComponents']) {
+  for (const name of [
+    'TextField',
+    'TextareaField',
+    'SelectField',
+    'AutocompleteField',
+    'MultiselectField',
+    'CheckboxField',
+    'RadioField',
+    'SwitchField',
+    'FileField',
+    'DateField',
+    'DateTimeField',
+    'defaultFieldComponents',
+  ]) {
     expect(entry[name as keyof typeof entry]).toBeDefined();
   }
 });

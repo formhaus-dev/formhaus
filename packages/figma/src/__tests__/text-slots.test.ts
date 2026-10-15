@@ -4,7 +4,15 @@ import { applySlots } from '../text-slots';
 const font = { family: 'Brand Sans', style: 'Regular' };
 
 function layer(name: string) {
-  return { type: 'TEXT', name, visible: true, characters: name, fontName: font, parent: null as unknown, getRangeAllFontNames: () => [font] };
+  return {
+    type: 'TEXT',
+    name,
+    visible: true,
+    characters: name,
+    fontName: font,
+    parent: null as unknown,
+    getRangeAllFontNames: () => [font],
+  };
 }
 
 function instance(properties: Record<string, { type: string }>, layers: ReturnType<typeof layer>[]) {
@@ -42,7 +50,9 @@ describe('applySlots', () => {
   it('switches layers to Inter when their font is unavailable', async () => {
     vi.stubGlobal('figma', {
       mixed: Symbol('mixed'),
-      loadFontAsync: vi.fn((requested: FontName) => (requested.family === 'Inter' ? Promise.resolve() : Promise.reject(new Error('missing')))),
+      loadFontAsync: vi.fn((requested: FontName) =>
+        requested.family === 'Inter' ? Promise.resolve() : Promise.reject(new Error('missing')),
+      ),
     });
     const header = layer('Header');
     await applySlots(instance({}, [header]) as unknown as InstanceNode, { label: 'Name' });

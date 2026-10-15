@@ -17,13 +17,14 @@ export function textNodes(definition: FormDefinition): TextNode[] {
   const actions = (owner: Entry, path: string, address: string[], names: string[]) => {
     for (const name of names) add('action', owner[name], `${path}/${name}`, [...address, name]);
   };
-  const fields = (items: FormField[], path: string, address: string[]) => items.forEach((field, index) => {
-    const at = `${path}/fields/${index}`;
-    const key = [...address, 'fields', field.key];
-    add('field', field, at, key);
-    field.options?.forEach((option, position) => add('option', option, `${at}/options/${position}`, [...key, 'options', option.value]));
-    add('validation', field.validation, `${at}/validation`, [...key, 'validation'], field);
-  });
+  const fields = (items: FormField[], path: string, address: string[]) =>
+    items.forEach((field, index) => {
+      const at = `${path}/fields/${index}`;
+      const key = [...address, 'fields', field.key];
+      add('field', field, at, key);
+      field.options?.forEach((option, position) => add('option', option, `${at}/options/${position}`, [...key, 'options', option.value]));
+      add('validation', field.validation, `${at}/validation`, [...key, 'validation'], field);
+    });
   add('form', definition, '', []);
   actions(definition as unknown as Entry, '', [], ['submit', 'cancel']);
   const steps = definition.steps ?? [];

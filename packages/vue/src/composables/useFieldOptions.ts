@@ -3,9 +3,10 @@ import { type Ref, ref, watch } from 'vue';
 import type { OptionsProvider } from '../types';
 
 function optionsEqual(previous: FieldOption[] | undefined, next: FieldOption[]): boolean {
-  return previous?.length === next.length && previous.every((option, index) => (
-    option.value === next[index].value && option.label === next[index].label
-  ));
+  return (
+    previous?.length === next.length &&
+    previous.every((option, index) => option.value === next[index].value && option.label === next[index].label)
+  );
 }
 
 export function useFieldOptions(
@@ -36,13 +37,7 @@ export function useFieldOptions(
       for (const field of fields) {
         const provider = field.optionsFrom && providers[field.optionsFrom];
         if (!provider) continue;
-        const resolve = () => resolveOptions(
-          field.key,
-          provider,
-          engine,
-          requestVersions,
-          commit,
-        );
+        const resolve = () => resolveOptions(field.key, provider, engine, requestVersions, commit);
         resolve();
         for (const dependency of new Set(field.optionsDependsOn ?? [])) {
           unsubscribers.push(engine.subscribeField(dependency, resolve));
@@ -75,8 +70,10 @@ function resolveOptions(
       commit(fieldKey, result);
       return;
     }
-    result.then((options) => {
-      if (requestVersions.get(fieldKey) === version) commit(fieldKey, options);
-    }).catch(() => {});
+    result
+      .then((options) => {
+        if (requestVersions.get(fieldKey) === version) commit(fieldKey, options);
+      })
+      .catch(() => {});
   } catch {}
 }

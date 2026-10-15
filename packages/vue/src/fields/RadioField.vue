@@ -23,7 +23,10 @@ function onClick(event: MouseEvent, value: string) {
 }
 function onKeyUp(event: KeyboardEvent, value: string) {
   arrowSelection = false;
-  if (props.field.autoAdvance && event.key === ' ') { event.preventDefault(); emit('commit', value); }
+  if (props.field.autoAdvance && event.key === ' ') {
+    event.preventDefault();
+    emit('commit', value);
+  }
 }
 </script>
 

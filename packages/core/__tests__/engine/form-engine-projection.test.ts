@@ -3,9 +3,13 @@ import { checkDefinition, FormEngine, type FormDefinition, type FormField, type 
 
 const text = (key: string, extra: Partial<FormField> = {}): FormField => ({ key, type: 'text', label: key, ...extra });
 const form = (steps: FormStep[]): FormDefinition => ({ id: 'p', title: 'P', submit: { label: 'Send' }, steps });
-const choice = (key: string, values: string[], extra: Partial<FormField> = {}): FormField => (
-  { key, type: 'radio', label: key, options: values.map((value) => ({ value, label: value })), ...extra }
-);
+const choice = (key: string, values: string[], extra: Partial<FormField> = {}): FormField => ({
+  key,
+  type: 'radio',
+  label: key,
+  options: values.map((value) => ({ value, label: value })),
+  ...extra,
+});
 
 describe('active projection', () => {
   it('keeps the payload when an unrelated route is added', async () => {
@@ -22,7 +26,12 @@ describe('active projection', () => {
   });
 
   it('clears a value written to a hidden field at once, without routes', () => {
-    const definition: FormDefinition = { id: 's', title: 'S', submit: { label: 'Send' }, fields: [choice('a', ['yes', 'no']), text('b', { show: [{ field: 'a', eq: 'yes' }] })] };
+    const definition: FormDefinition = {
+      id: 's',
+      title: 'S',
+      submit: { label: 'Send' },
+      fields: [choice('a', ['yes', 'no']), text('b', { show: [{ field: 'a', eq: 'yes' }] })],
+    };
     const engine = new FormEngine(definition, { a: 'no' });
     engine.setValue('b', 'hidden write');
     expect(engine.values).toEqual({ a: 'no' });
@@ -36,22 +45,36 @@ describe('active projection', () => {
   });
 
   it('clears the values of a step hidden by its condition', () => {
-    const engine = new FormEngine(form([
-      { id: 'one', title: 'One', fields: [choice('kind', ['biz', 'me'])] },
-      { id: 'biz', title: 'Biz', show: [{ field: 'kind', eq: 'biz' }], fields: [text('company')] },
-    ]), { kind: 'biz', company: 'Acme' });
+    const engine = new FormEngine(
+      form([
+        { id: 'one', title: 'One', fields: [choice('kind', ['biz', 'me'])] },
+        { id: 'biz', title: 'Biz', show: [{ field: 'kind', eq: 'biz' }], fields: [text('company')] },
+      ]),
+      { kind: 'biz', company: 'Acme' },
+    );
     engine.setValue('kind', 'me');
     expect(engine.values).toEqual({ kind: 'me' });
   });
 });
 
 describe('duplicate keys', () => {
-  const branches = (): FormDefinition => form([
-    { id: 'kind', title: 'Kind', fields: [choice('kind', ['biz', 'me'])], routes: [{ to: 'biz', show: [{ field: 'kind', eq: 'biz' }] }, { to: 'me' }] },
-    { id: 'biz', title: 'Biz', fields: [text('name', { label: 'Company', validation: { required: 'Company name' } })], routes: [{ to: 'end' }] },
-    { id: 'me', title: 'Me', fields: [text('name', { label: 'Your name', validation: { minLength: 3 } })] },
-    { id: 'end', title: 'End', fields: [text('note')] },
-  ]);
+  const branches = (): FormDefinition =>
+    form([
+      {
+        id: 'kind',
+        title: 'Kind',
+        fields: [choice('kind', ['biz', 'me'])],
+        routes: [{ to: 'biz', show: [{ field: 'kind', eq: 'biz' }] }, { to: 'me' }],
+      },
+      {
+        id: 'biz',
+        title: 'Biz',
+        fields: [text('name', { label: 'Company', validation: { required: 'Company name' } })],
+        routes: [{ to: 'end' }],
+      },
+      { id: 'me', title: 'Me', fields: [text('name', { label: 'Your name', validation: { minLength: 3 } })] },
+      { id: 'end', title: 'End', fields: [text('note')] },
+    ]);
 
   it('allows the same key on route branches that never meet', () => {
     expect(checkDefinition(branches())).toEqual([]);

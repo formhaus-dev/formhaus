@@ -17,10 +17,20 @@ export const branching = {
       id: 'kind',
       title: 'Kind',
       next: false,
-      fields: [{
-        key: 'kind', type: 'radio', label: 'Kind', autoAdvance: true, validation: { required: true },
-        options: [{ value: 'business', label: 'Business' }, { value: 'personal', label: 'Personal' }, { value: 'none', label: 'None' }],
-      }],
+      fields: [
+        {
+          key: 'kind',
+          type: 'radio',
+          label: 'Kind',
+          autoAdvance: true,
+          validation: { required: true },
+          options: [
+            { value: 'business', label: 'Business' },
+            { value: 'personal', label: 'Personal' },
+            { value: 'none', label: 'None' },
+          ],
+        },
+      ],
       routes: [
         { to: 'business', show: [{ field: 'kind', eq: 'business' }] },
         { to: null, show: [{ field: 'kind', eq: 'none' }] },
@@ -36,7 +46,12 @@ export const branching = {
       ],
       routes: [{ to: 'review' }],
     },
-    { id: 'personal', title: 'Personal', fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }], routes: [{ to: 'review' }] },
+    {
+      id: 'personal',
+      title: 'Personal',
+      fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }],
+      routes: [{ to: 'review' }],
+    },
     {
       id: 'review',
       title: 'Review',
@@ -51,7 +66,12 @@ export const skippable = {
   title: 'Profile',
   submit: { label: 'Save' },
   steps: [
-    { id: 'about', title: 'About', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'textarea', label: 'Bio', validation: { required: true } }] },
+    {
+      id: 'about',
+      title: 'About',
+      skip: { label: 'Skip' },
+      fields: [{ key: 'bio', type: 'textarea', label: 'Bio', validation: { required: true } }],
+    },
     { id: 'contact', title: 'Contact', fields: [{ key: 'phone', type: 'phone', label: 'Phone' }] },
   ],
 };

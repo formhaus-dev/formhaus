@@ -38,12 +38,16 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   skipCurrentStep(engine);
   const skippedValues = engine.values;
   const edited = watchValues(engine, skippedValues);
-  const submitting = submitForm(engine, async (submitted, skipped) => {
-    const result = await submit(submitted, skipped);
-    const rejected = isRejection(result);
-    if (!rejected || operation === engine.operationEpoch) outcome = rejected;
-    return result;
-  }, true);
+  const submitting = submitForm(
+    engine,
+    async (submitted, skipped) => {
+      const result = await submit(submitted, skipped);
+      const rejected = isRejection(result);
+      if (!rejected || operation === engine.operationEpoch) outcome = rejected;
+      return result;
+    },
+    true,
+  );
   const operation = engine.latestOperation;
   try {
     return await submitting;
@@ -71,7 +75,11 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   }
 }
 
-export async function changeStep(engine: EngineInternals, direction: 'next' | 'back', reason: StepChangeContext['reason'] = direction): Promise<boolean> {
+export async function changeStep(
+  engine: EngineInternals,
+  direction: 'next' | 'back',
+  reason: StepChangeContext['reason'] = direction,
+): Promise<boolean> {
   const skipping = reason === 'skip';
   if (!engine.isMultiStep || engine.stepValidating || engine.submitting) return false;
   if (!skipping && (direction === 'next' ? engine.isLastStep : engine.isFirstStep)) return false;
@@ -88,10 +96,10 @@ export async function changeStep(engine: EngineInternals, direction: 'next' | 'b
   if (!target) return false;
   const context: StepChangeContext = { fromStepId: step.id, toStepId: target.id, reason, values: { ...getValidationValues(engine) } };
   const epoch = engine.validationEpoch;
-  const operation = engine.latestOperation = ++engine.operationEpoch;
+  const operation = (engine.latestOperation = ++engine.operationEpoch);
   const inputsChanged = watchCheckedInputs(engine, context.values);
-  const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch
-    || engine.currentStep?.id !== step.id || inputsChanged();
+  const stale = () =>
+    epoch !== engine.validationEpoch || operation !== engine.operationEpoch || engine.currentStep?.id !== step.id || inputsChanged();
   engine.state.stepValidating = true;
   engine.notify();
   try {
@@ -128,11 +136,7 @@ export async function changeStep(engine: EngineInternals, direction: 'next' | 'b
 
 export function goToStepWithField(engine: EngineInternals, fieldKey: string): void {
   if (!engine.isMultiStep) return;
-  const targetIndex = engine.visibility.findStepIndex(
-    fieldKey,
-    engine.values,
-    engine.currentStepIndex,
-  );
+  const targetIndex = engine.visibility.findStepIndex(fieldKey, engine.values, engine.currentStepIndex);
   if (targetIndex === engine.currentStepIndex) engine.notify();
   else if (targetIndex !== null) moveTo(engine, targetIndex);
 }

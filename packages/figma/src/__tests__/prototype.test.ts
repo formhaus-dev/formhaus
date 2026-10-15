@@ -3,8 +3,26 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { optionTargets, routeTarget, wirePrototype } from '../flow/prototype';
 
 const steps: FormStep[] = [
-  { id: 'kind', title: 'Kind', fields: [{ key: 'kind', type: 'radio', label: 'Kind', options: [{ value: 'business', label: 'Business' }, { value: 'personal', label: 'Personal' }, { value: 'done', label: 'Nothing' }] }],
-    routes: [{ to: 'business', show: [{ field: 'kind', eq: 'business' }] }, { to: null, show: [{ field: 'kind', eq: 'done' }] }] },
+  {
+    id: 'kind',
+    title: 'Kind',
+    fields: [
+      {
+        key: 'kind',
+        type: 'radio',
+        label: 'Kind',
+        options: [
+          { value: 'business', label: 'Business' },
+          { value: 'personal', label: 'Personal' },
+          { value: 'done', label: 'Nothing' },
+        ],
+      },
+    ],
+    routes: [
+      { to: 'business', show: [{ field: 'kind', eq: 'business' }] },
+      { to: null, show: [{ field: 'kind', eq: 'done' }] },
+    ],
+  },
   { id: 'personal', title: 'Personal', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
   { id: 'business', title: 'Business', fields: [{ key: 'company', type: 'text', label: 'Company' }], routes: [{ to: 'kind' }] },
 ];
@@ -21,18 +39,40 @@ describe('prototype targets', () => {
   });
 
   it('maps each option of a routed radio to its destination', () => {
-    expect([...optionTargets(steps, 0).get('kind')!]).toEqual([['business', 'business'], ['personal', 'personal'], ['done', null]]);
+    expect([...optionTargets(steps, 0).get('kind')!]).toEqual([
+      ['business', 'business'],
+      ['personal', 'personal'],
+      ['done', null],
+    ]);
     expect(optionTargets(steps, 1).size).toBe(0);
   });
 
   it('skips steps hidden for the given answers and wires auto-advancing radios', () => {
     const gated: FormStep[] = [
-      { id: 'intro', title: 'Intro', fields: [{ key: 'extras', type: 'radio', label: 'Extras?', autoAdvance: true, options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }] }] },
+      {
+        id: 'intro',
+        title: 'Intro',
+        fields: [
+          {
+            key: 'extras',
+            type: 'radio',
+            label: 'Extras?',
+            autoAdvance: true,
+            options: [
+              { value: 'yes', label: 'Yes' },
+              { value: 'no', label: 'No' },
+            ],
+          },
+        ],
+      },
       { id: 'extras', title: 'Extras', fields: [], show: [{ field: 'extras', eq: 'yes' }] },
       { id: 'review', title: 'Review', fields: [] },
     ];
     expect(routeTarget(gated, 0, {})).toBe('review');
-    expect([...optionTargets(gated, 0).get('extras')!]).toEqual([['yes', 'extras'], ['no', 'review']]);
+    expect([...optionTargets(gated, 0).get('extras')!]).toEqual([
+      ['yes', 'extras'],
+      ['no', 'review'],
+    ]);
   });
 });
 
@@ -56,7 +96,14 @@ describe('wirePrototype', () => {
     const destination = (mock: ReturnType<typeof vi.fn>) => mock.mock.calls[mock.mock.calls.length - 1][0][0]?.actions[0];
     expect(destination(buttons[0].setReactionsAsync).destinationId).toBe('frame-personal');
     expect(destination(buttons[1].setReactionsAsync).type).toBe('BACK');
-    expect(options.map((option) => destination(option.setReactionsAsync)?.destinationId)).toEqual(['frame-business', 'frame-personal', undefined]);
-    expect(page.flowStartingPoints).toEqual([{ nodeId: 'old', name: 'Kind' }, { nodeId: 'frame-kind', name: 'Kind' }]);
+    expect(options.map((option) => destination(option.setReactionsAsync)?.destinationId)).toEqual([
+      'frame-business',
+      'frame-personal',
+      undefined,
+    ]);
+    expect(page.flowStartingPoints).toEqual([
+      { nodeId: 'old', name: 'Kind' },
+      { nodeId: 'frame-kind', name: 'Kind' },
+    ]);
   });
 });

@@ -17,10 +17,7 @@
       "key": "plan",
       "type": "select",
       "label": "Plan",
-      "options": [
-        { "value": "solo", "label": "Solo" },
-        { "value": "team", "label": "Team" }
-      ],
+      "options": [{ "value": "solo", "label": "Solo" }, { "value": "team", "label": "Team" }],
       "validation": { "required": true }
     },
     {

@@ -24,9 +24,11 @@ const inputType = computed(() => {
 });
 
 const draft = ref('');
-const text = computed(() => (
-  props.field.type === 'number' && draft.value && Object.is(Number(draft.value), props.modelValue) ? draft.value : String(props.modelValue ?? '')
-));
+const text = computed(() =>
+  props.field.type === 'number' && draft.value && Object.is(Number(draft.value), props.modelValue)
+    ? draft.value
+    : String(props.modelValue ?? ''),
+);
 
 function onInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;

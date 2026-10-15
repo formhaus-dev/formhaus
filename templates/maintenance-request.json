@@ -83,10 +83,7 @@
             "key": "entry",
             "type": "radio",
             "label": "Can maintenance enter if you’re not home?",
-            "options": [
-              { "value": "yes", "label": "Yes, with notice" },
-              { "value": "home-only", "label": "Only when I’m home" }
-            ],
+            "options": [{ "value": "yes", "label": "Yes, with notice" }, { "value": "home-only", "label": "Only when I’m home" }],
             "validation": { "required": true }
           },
           {

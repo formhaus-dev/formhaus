@@ -13,7 +13,10 @@ const server = process.env.SITE_BASE
 
 async function ready() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    const ok = await fetch(`${base}/build`).then((res) => res.ok, () => false);
+    const ok = await fetch(`${base}/build`).then(
+      (res) => res.ok,
+      () => false,
+    );
     if (ok) return;
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
@@ -50,7 +53,9 @@ async function check() {
       sent = route.request().postDataJSON();
       return route.fulfill({ status: 201, json: { url: 'https://app.formhaus.dev/start/abc', expires_at: new Date().toISOString() } });
     });
-    await page.route('https://app.formhaus.dev/start/abc', (route) => route.fulfill({ status: 200, contentType: 'text/html', body: 'start' }));
+    await page.route('https://app.formhaus.dev/start/abc', (route) =>
+      route.fulfill({ status: 200, contentType: 'text/html', body: 'start' }),
+    );
     await page.getByRole('button', { name: 'Launch for free' }).click();
     await page.waitForURL('https://app.formhaus.dev/start/abc');
     if (sent?.fields?.[0]?.label !== 'Work email') throw new Error('Launch for free did not send the current definition');

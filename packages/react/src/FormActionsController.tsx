@@ -32,9 +32,10 @@ export function FormActionsController({
   useFormSnapshot(engine);
   const step = engine.currentStep;
   const isLastStep = engine.isLastStep || !engine.isMultiStep;
-  const primaryLabel = engine.isMultiStep && !isLastStep
-    ? ((step?.next || undefined)?.label ?? labelFor('continue', {}, labels, definition.labels))
-    : (definition.submit?.label ?? 'Submit');
+  const primaryLabel =
+    engine.isMultiStep && !isLastStep
+      ? ((step?.next || undefined)?.label ?? labelFor('continue', {}, labels, definition.labels))
+      : (definition.submit?.label ?? 'Submit');
   const showBack = engine.isMultiStep && !engine.isFirstStep && step?.back !== false;
   const backLabel = (step?.back || undefined)?.label ?? labelFor('back', {}, labels, definition.labels);
   const handlePrimary = useCallback(async () => {

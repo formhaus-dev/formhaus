@@ -7,7 +7,9 @@ function activePath(engine: EngineInternals): string {
 
 export function watchCheckedInputs(engine: EngineInternals, checked: Record<string, unknown>): () => boolean {
   const path = activePath(engine);
-  const seen = Object.keys(checked).filter((key) => checked[key] !== undefined).map((key) => [key, engine.values[key]] as const);
+  const seen = Object.keys(checked)
+    .filter((key) => checked[key] !== undefined)
+    .map((key) => [key, engine.values[key]] as const);
   return () => activePath(engine) !== path || seen.some(([key, value]) => !Object.is(engine.values[key], value));
 }
 

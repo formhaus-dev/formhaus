@@ -51,8 +51,8 @@ export async function readJson(response: CloudResponse): Promise<unknown> {
 export async function toCloudError(response: CloudResponse): Promise<CloudError> {
   const body: unknown = await response.json().catch(() => null);
   if (!isRecord(body)) return new CloudError(response.status, 'unknown');
-  const errors = isRecord(body.errors) ? body.errors as Record<string, string> : undefined;
+  const errors = isRecord(body.errors) ? (body.errors as Record<string, string>) : undefined;
   const version = typeof body.version === 'number' && Number.isInteger(body.version) ? body.version : undefined;
-  const code = typeof body.error === 'string' ? LEGACY_CODES.get(body.error) ?? body.error : 'unknown';
+  const code = typeof body.error === 'string' ? (LEGACY_CODES.get(body.error) ?? body.error) : 'unknown';
   return new CloudError(response.status, code, errors, version);
 }

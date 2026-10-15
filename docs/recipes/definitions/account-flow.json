@@ -16,16 +16,10 @@
           "autoAdvance": true,
           "helperText": "Click or press Space/Enter to continue.",
           "validation": { "required": true },
-          "options": [
-            { "value": "business", "label": "Business" },
-            { "value": "personal", "label": "Personal" }
-          ]
+          "options": [{ "value": "business", "label": "Business" }, { "value": "personal", "label": "Personal" }]
         }
       ],
-      "routes": [
-        { "to": "business", "show": [{ "field": "kind", "eq": "business" }] },
-        { "to": "personal" }
-      ]
+      "routes": [{ "to": "business", "show": [{ "field": "kind", "eq": "business" }] }, { "to": "personal" }]
     },
     {
       "id": "business",

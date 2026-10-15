@@ -16,7 +16,9 @@ const NEUTRAL = {
 };
 
 function toHex(value: number): string {
-  return Math.round(value * 255).toString(16).padStart(2, '0');
+  return Math.round(value * 255)
+    .toString(16)
+    .padStart(2, '0');
 }
 
 function labelNode(component?: ComponentNode): TextNode | undefined {
@@ -28,7 +30,10 @@ async function styleOf(node: TextNode): Promise<TextStyle | undefined> {
   const fill = Array.isArray(node.fills) ? (node.fills as Paint[]).find((paint) => paint.type === 'SOLID') : undefined;
   if (!fill || fill.type !== 'SOLID' || typeof node.fontSize !== 'number') return undefined;
   const font = node.fontName as FontName;
-  const loaded = await figma.loadFontAsync(font).then(() => true, () => false);
+  const loaded = await figma.loadFontAsync(font).then(
+    () => true,
+    () => false,
+  );
   if (!loaded) return undefined;
   return { font, size: node.fontSize, color: `#${toHex(fill.color.r)}${toHex(fill.color.g)}${toHex(fill.color.b)}` };
 }
@@ -47,7 +52,13 @@ function solidHex(node: SceneNode): string | undefined {
 }
 
 function accent(primary: ComponentNode): string | undefined {
-  return solidHex(primary) ?? primary.findAll((node) => node.type !== 'TEXT').map(solidHex).find(Boolean);
+  return (
+    solidHex(primary) ??
+    primary
+      .findAll((node) => node.type !== 'TEXT')
+      .map(solidHex)
+      .find(Boolean)
+  );
 }
 
 export async function textButtonStyle(primary: ComponentNode, fallback: TextStyle): Promise<TextStyle> {

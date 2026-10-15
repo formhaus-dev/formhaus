@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { addField, addOptions, createForm, moveOption, removeOption, setFieldType, setOptionValue, setOptionLabel, toDefinition } from '../src';
+import {
+  addField,
+  addOptions,
+  createForm,
+  moveOption,
+  removeOption,
+  setFieldType,
+  setOptionValue,
+  setOptionLabel,
+  toDefinition,
+} from '../src';
 
 function choice() {
   const form = createForm();
@@ -42,6 +52,9 @@ describe('option ops', () => {
     const { form, item } = choice();
     setOptionValue(form, item.uid, item.options[0].uid, 's');
     setOptionLabel(form, item.uid, item.options[0].uid, 'Tiny');
-    expect(toDefinition(form).fields?.[0].options).toEqual([{ value: 's', label: 'Tiny' }, { value: 'large', label: 'Large' }]);
+    expect(toDefinition(form).fields?.[0].options).toEqual([
+      { value: 's', label: 'Tiny' },
+      { value: 'large', label: 'Large' },
+    ]);
   });
 });

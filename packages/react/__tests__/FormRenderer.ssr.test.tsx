@@ -50,9 +50,7 @@ describe('FormRenderer SSR', () => {
   });
 
   it('respects initialValues during server render', () => {
-    const html = renderToString(
-      <FormRenderer definition={definition} initialValues={{ name: 'Ada' }} onSubmit={() => {}} />,
-    );
+    const html = renderToString(<FormRenderer definition={definition} initialValues={{ name: 'Ada' }} onSubmit={() => {}} />);
     expect(html).toContain('value="Ada"');
   });
 });

@@ -4,9 +4,7 @@ import type { FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { useState } from 'react';
 
-type SubmitResponse =
-  | { values: Record<string, unknown> }
-  | { errors: Record<string, string> };
+type SubmitResponse = { values: Record<string, unknown> } | { errors: Record<string, string> };
 
 export function SignupForm({ definition }: { definition: FormDefinition }) {
   const [errors, setErrors] = useState<Record<string, string>>();

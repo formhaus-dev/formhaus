@@ -4,10 +4,15 @@ import { useState } from 'react';
 import { expect, it } from 'vitest';
 import * as entry from '../src';
 
-const definition: FormDefinition = { id: 'contract', title: '', submit: { label: 'Send' }, steps: [
-  { id: 'one', title: 'First step', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
-  { id: 'two', title: 'Second', fields: [] },
-] };
+const definition: FormDefinition = {
+  id: 'contract',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    { id: 'one', title: 'First step', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+    { id: 'two', title: 'Second', fields: [] },
+  ],
+};
 
 it('renders the step title at the heading level', () => {
   render(<entry.FormRenderer definition={definition} onSubmit={() => {}} headingLevel={4} />);
@@ -24,7 +29,20 @@ it('exports FormhausField and every built-in field', () => {
   render(<Host />);
   fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Ada' } });
   expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('Ada');
-  for (const name of ['TextField', 'TextareaField', 'SelectField', 'AutocompleteField', 'MultiselectField', 'CheckboxField', 'RadioField', 'SwitchField', 'FileField', 'DateField', 'DateTimeField', 'defaultFieldComponents']) {
+  for (const name of [
+    'TextField',
+    'TextareaField',
+    'SelectField',
+    'AutocompleteField',
+    'MultiselectField',
+    'CheckboxField',
+    'RadioField',
+    'SwitchField',
+    'FileField',
+    'DateField',
+    'DateTimeField',
+    'defaultFieldComponents',
+  ]) {
     expect(entry[name as keyof typeof entry]).toBeDefined();
   }
 });

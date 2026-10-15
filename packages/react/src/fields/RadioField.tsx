@@ -23,7 +23,9 @@ export function RadioField(props: FieldComponentProps) {
               name={field.key}
               value={opt.value}
               checked={String(value) === String(opt.value)}
-              onChange={() => { if (!commit || arrowSelection.current) onChange(opt.value); }}
+              onChange={() => {
+                if (!commit || arrowSelection.current) onChange(opt.value);
+              }}
               onKeyDown={(event) => {
                 arrowSelection.current = event.key.startsWith('Arrow');
                 if (commit && event.key === ' ') event.preventDefault();
@@ -34,9 +36,14 @@ export function RadioField(props: FieldComponentProps) {
               }}
               onKeyUp={(event) => {
                 arrowSelection.current = false;
-                if (commit && event.key === ' ') { event.preventDefault(); commit(opt.value); }
+                if (commit && event.key === ' ') {
+                  event.preventDefault();
+                  commit(opt.value);
+                }
               }}
-              onPointerDown={() => { arrowSelection.current = false; }}
+              onPointerDown={() => {
+                arrowSelection.current = false;
+              }}
               onClick={(event) => {
                 if (!commit || arrowSelection.current) return;
                 if (event.detail > 1) event.preventDefault();

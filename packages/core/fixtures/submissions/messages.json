@@ -80,11 +80,7 @@
           "name": "А",
           "email": "",
           "age": 16,
-          "topics": [
-            "news",
-            "events",
-            "jobs"
-          ]
+          "topics": ["news", "events", "jobs"]
         },
         "skippedSteps": []
       },
@@ -93,11 +89,7 @@
           "name": "А",
           "email": "",
           "age": 16,
-          "topics": [
-            "news",
-            "events",
-            "jobs"
-          ]
+          "topics": ["news", "events", "jobs"]
         },
         "errors": {
           "name": "Минимум 2 символов",
@@ -133,9 +125,7 @@
           "name": "Аня",
           "email": "anya@example.com",
           "age": 30,
-          "topics": [
-            "news"
-          ]
+          "topics": ["news"]
         },
         "skippedSteps": []
       },
@@ -144,9 +134,7 @@
           "name": "Аня",
           "email": "anya@example.com",
           "age": 30,
-          "topics": [
-            "news"
-          ]
+          "topics": ["news"]
         },
         "errors": {}
       }

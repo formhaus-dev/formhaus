@@ -19,12 +19,29 @@ export interface LegacyMap {
 
 const STORAGE_KEY = 'formhaus-component-map';
 const MIGRATED_KEY = 'mapMigrated';
-const INPUT_ROLES: [Role, string][] = [['field.text', 'text'], ['field.select', 'select'], ['field.textarea', 'textarea']];
-const CONTROL_ROLES: [Role, string][] = [['field.checkbox', 'checkbox'], ['option.checkbox', 'checkbox'], ['option.radio', 'radio'], ['field.switch', 'switch']];
-const BUTTON_ROLES: [Role, string][] = [['button.primary', 'Primary'], ['button.secondary', 'Secondary']];
+const INPUT_ROLES: [Role, string][] = [
+  ['field.text', 'text'],
+  ['field.select', 'select'],
+  ['field.textarea', 'textarea'],
+];
+const CONTROL_ROLES: [Role, string][] = [
+  ['field.checkbox', 'checkbox'],
+  ['option.checkbox', 'checkbox'],
+  ['option.radio', 'radio'],
+  ['field.switch', 'switch'],
+];
+const BUTTON_ROLES: [Role, string][] = [
+  ['button.primary', 'Primary'],
+  ['button.secondary', 'Secondary'],
+];
 
 function variantProps(name: string): Record<string, string> {
-  return Object.fromEntries(name.split(',').map((part) => part.split('=').map((item) => item.trim())).filter((pair) => pair.length === 2));
+  return Object.fromEntries(
+    name
+      .split(',')
+      .map((part) => part.split('=').map((item) => item.trim()))
+      .filter((pair) => pair.length === 2),
+  );
 }
 
 export function variantWith(set: ComponentSetNode, wanted: Record<string, string>, required: string[]): ComponentNode | null {

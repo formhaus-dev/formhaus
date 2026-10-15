@@ -21,13 +21,18 @@ describe('AI prompt', () => {
   });
 
   it('lists the errors to repair', () => {
-    expect(repairMessage(['First', 'Second']).content).toBe('That definition has problems:\n- First\n- Second\nReturn the corrected JSON object only.');
+    expect(repairMessage(['First', 'Second']).content).toBe(
+      'That definition has problems:\n- First\n- Second\nReturn the corrected JSON object only.',
+    );
   });
 });
 
 describe('firstJsonObject', () => {
   it('reads an object wrapped in prose and fences', () => {
-    expect(firstJsonObject('Here you go:\n```json\n{"id":"a","nested":{"b":[1,2]}}\n```\nDone {not json}')).toEqual({ id: 'a', nested: { b: [1, 2] } });
+    expect(firstJsonObject('Here you go:\n```json\n{"id":"a","nested":{"b":[1,2]}}\n```\nDone {not json}')).toEqual({
+      id: 'a',
+      nested: { b: [1, 2] },
+    });
   });
 
   it('ignores braces and escaped quotes inside strings', () => {

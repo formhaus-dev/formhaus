@@ -1,15 +1,7 @@
 import type { FieldComponentProps } from '@formhaus/react';
 import MuiTextField from '@mui/material/TextField';
 
-export function TextareaField({
-  id,
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-}: FieldComponentProps) {
+export function TextareaField({ id, field, value, error, loading, disabled, onChange }: FieldComponentProps) {
   return (
     <MuiTextField
       id={id}

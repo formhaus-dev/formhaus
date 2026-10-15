@@ -110,23 +110,17 @@ describe('validateFieldValue', () => {
   describe('matchField', () => {
     it('returns error when fields differ', () => {
       const field = makeField({ key: 'confirmEmail', validation: { matchField: 'email' } });
-      expect(
-        validateFieldValue(field, 'a@b.com', { email: 'x@y.com', confirmEmail: 'a@b.com' }, {}),
-      ).toBe('Fields must match');
+      expect(validateFieldValue(field, 'a@b.com', { email: 'x@y.com', confirmEmail: 'a@b.com' }, {})).toBe('Fields must match');
     });
 
     it('passes when fields match', () => {
       const field = makeField({ key: 'confirmEmail', validation: { matchField: 'email' } });
-      expect(
-        validateFieldValue(field, 'a@b.com', { email: 'a@b.com', confirmEmail: 'a@b.com' }, {}),
-      ).toBeNull();
+      expect(validateFieldValue(field, 'a@b.com', { email: 'a@b.com', confirmEmail: 'a@b.com' }, {})).toBeNull();
     });
 
     it('returns error when target field does not exist', () => {
       const field = makeField({ key: 'confirmEmail', validation: { matchField: 'email' } });
-      expect(validateFieldValue(field, 'a@b.com', { confirmEmail: 'a@b.com' }, {})).toBe(
-        'Fields must match',
-      );
+      expect(validateFieldValue(field, 'a@b.com', { confirmEmail: 'a@b.com' }, {})).toBe('Fields must match');
     });
   });
 

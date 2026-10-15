@@ -102,5 +102,6 @@ export function carryToBuild(definition: FormDefinition, storage: Storage | null
   } catch {
     return;
   }
-  if (!sameDefinition(current.definition, definition)) writeBackup(backupKey(LOCAL_KEY), { definition, revision: current.revision, at, version: null, draft: null }, storage);
+  if (!sameDefinition(current.definition, definition))
+    writeBackup(backupKey(LOCAL_KEY), { definition, revision: current.revision, at, version: null, draft: null }, storage);
 }

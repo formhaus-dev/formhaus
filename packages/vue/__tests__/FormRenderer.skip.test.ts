@@ -59,7 +59,9 @@ describe('FormRenderer skip and button roles', () => {
   });
 
   it('hides skip on steps with next: false', () => {
-    const steps = definition.steps!.map((step) => (step.id === 'name' ? { ...step, skip: { label: 'Later' }, next: false as const } : step));
+    const steps = definition.steps!.map((step) =>
+      step.id === 'name' ? { ...step, skip: { label: 'Later' }, next: false as const } : step,
+    );
     render(FormRenderer, { props: { definition: { ...definition, steps } } });
     expect(screen.queryByRole('button', { name: 'Later' })).toBeNull();
   });
@@ -75,10 +77,16 @@ describe('FormRenderer skip and button roles', () => {
   });
 
   it('respects explicit variants and skip props', async () => {
-    const { emitted, rerender } = render(FormActions, { props: {
-      isFirstStep: false, isLastStep: false, isMultiStep: true, showBack: true,
-      backAction: { label: 'Back', variant: 'text' }, skipAction: { label: 'Later', variant: 'secondary' },
-    } });
+    const { emitted, rerender } = render(FormActions, {
+      props: {
+        isFirstStep: false,
+        isLastStep: false,
+        isMultiStep: true,
+        showBack: true,
+        backAction: { label: 'Back', variant: 'text' },
+        skipAction: { label: 'Later', variant: 'secondary' },
+      },
+    });
     expect(button('Back').className).toContain('fh-form-actions__button--text');
     expect(button('Later').className).toContain('fh-form-actions__button--secondary');
     await fireEvent.click(button('Later'));

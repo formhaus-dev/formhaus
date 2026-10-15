@@ -16,7 +16,10 @@ const server = process.env.LANDING_NAV_BASE
 
 async function ready() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    const ok = await fetch(`${base}/cloud`).then((res) => res.ok, () => false);
+    const ok = await fetch(`${base}/cloud`).then(
+      (res) => res.ok,
+      () => false,
+    );
     if (ok) return;
     await new Promise((resolve) => setTimeout(resolve, 200));
   }
@@ -56,7 +59,9 @@ function compare(reference, items, where, problems) {
     const item = items[index];
     if (item.name !== ref.name) problems.push(`${where}: item ${index} is "${item.name}", expected "${ref.name}"`);
     if (Math.abs(item.x - ref.x) > tolerance || Math.abs(item.width - ref.width) > tolerance) {
-      problems.push(`${where}: "${item.name}" at x=${item.x.toFixed(1)} w=${item.width.toFixed(1)}, expected x=${ref.x.toFixed(1)} w=${ref.width.toFixed(1)}`);
+      problems.push(
+        `${where}: "${item.name}" at x=${item.x.toFixed(1)} w=${item.width.toFixed(1)}, expected x=${ref.x.toFixed(1)} w=${ref.width.toFixed(1)}`,
+      );
     }
   });
 }
@@ -90,7 +95,8 @@ try {
           await page.waitForTimeout(300);
           const screen = await page.evaluate(measureScreen);
           if (!screenReference) screenReference = screen.join(' | ');
-          else if (screen.join(' | ') !== screenReference) problems.push(`${where}: open menu shows "${screen.join(' | ')}", expected "${screenReference}"`);
+          else if (screen.join(' | ') !== screenReference)
+            problems.push(`${where}: open menu shows "${screen.join(' | ')}", expected "${screenReference}"`);
           await burger.click();
         }
       }

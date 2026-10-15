@@ -3,13 +3,22 @@ import type { FormDefinition } from '@formhaus/core';
 import { afterEach, expect, it, vi } from 'vitest';
 import FormhausForm from '../src/cloud/FormhausForm.vue';
 
-const definition: FormDefinition = { id: 'contact', title: 'Contact', submit: { label: 'Send' },
-  fields: [{ key: 'email', type: 'text', label: 'Email', validation: { required: true } }] };
+const definition: FormDefinition = {
+  id: 'contact',
+  title: 'Contact',
+  submit: { label: 'Send' },
+  fields: [{ key: 'email', type: 'text', label: 'Email', validation: { required: true } }],
+};
 
-const wizard: FormDefinition = { id: 'wizard', title: 'Wizard', submit: { label: 'Send' }, steps: [
-  { id: 'one', title: 'One', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
-  { id: 'two', title: 'Two', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
-] };
+const wizard: FormDefinition = {
+  id: 'wizard',
+  title: 'Wizard',
+  submit: { label: 'Send' },
+  steps: [
+    { id: 'one', title: 'One', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+    { id: 'two', title: 'Two', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
+  ],
+};
 
 function reply(status: number, body: unknown) {
   return { ok: status < 400, status, json: async () => body };
@@ -21,15 +30,18 @@ function stubApi(...submitReplies: ReturnType<typeof reply>[]) {
 
 function stubDefinition(loaded: FormDefinition, ...submitReplies: ReturnType<typeof reply>[]) {
   const submits = [...submitReplies];
-  const fetchMock = vi.fn(async (url: string, init?: { method?: string }) => (
-    init?.method === 'POST' ? submits.shift()! : reply(200, loaded)
-  ));
+  const fetchMock = vi.fn(async (url: string, init?: { method?: string }) =>
+    init?.method === 'POST' ? submits.shift()! : reply(200, loaded),
+  );
   vi.stubGlobal('fetch', fetchMock);
   return fetchMock;
 }
 
 function posts(fetchMock: ReturnType<typeof stubApi>) {
-  return fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST') as unknown as [string, { headers: Record<string, string>; body: string }][];
+  return fetchMock.mock.calls.filter(([, init]) => init?.method === 'POST') as unknown as [
+    string,
+    { headers: Record<string, string>; body: string },
+  ][];
 }
 
 async function fillAndSend(value: string) {
@@ -47,7 +59,10 @@ it('renders the fetched definition', async () => {
 });
 
 it('shows an error when the definition cannot be loaded', async () => {
-  vi.stubGlobal('fetch', vi.fn(async () => reply(410, { error: 'form_closed' })));
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => reply(410, { error: 'form_closed' })),
+  );
   const onError = vi.fn();
   render(FormhausForm, { props: { id: 'abc', onError } });
   expect((await screen.findByRole('alert')).textContent).toBe('This form has expired.');
@@ -55,7 +70,10 @@ it('shows an error when the definition cannot be loaded', async () => {
 });
 
 it('shows a paused form without a retry', async () => {
-  vi.stubGlobal('fetch', vi.fn(async () => reply(409, { error: 'Form paused' })));
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async () => reply(409, { error: 'Form paused' })),
+  );
   render(FormhausForm, { props: { id: 'abc' } });
   expect((await screen.findByRole('alert')).textContent).toBe('This form is paused.');
   expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
@@ -119,10 +137,13 @@ it('does not report an optional empty step that was visited as skipped', async (
 
 it('loads the new definition when the id changes and ignores the old response', async () => {
   let resolveFirst: (value: ReturnType<typeof reply>) => void = () => {};
-  const fetchMock = vi.fn(async (url: string) => (
-    url.includes('/f/one/') ? new Promise<ReturnType<typeof reply>>((resolve) => { resolveFirst = resolve; })
-      : reply(200, { ...definition, fields: [{ key: 'other', type: 'text', label: 'Other' }] })
-  ));
+  const fetchMock = vi.fn(async (url: string) =>
+    url.includes('/f/one/')
+      ? new Promise<ReturnType<typeof reply>>((resolve) => {
+          resolveFirst = resolve;
+        })
+      : reply(200, { ...definition, fields: [{ key: 'other', type: 'text', label: 'Other' }] }),
+  );
   vi.stubGlobal('fetch', fetchMock);
   const { rerender } = render(FormhausForm, { props: { id: 'one' } });
   await rerender({ id: 'two' });
@@ -134,10 +155,13 @@ it('loads the new definition when the id changes and ignores the old response', 
 
 it('aborts the request on unmount', async () => {
   const signals: { aborted: boolean }[] = [];
-  vi.stubGlobal('fetch', vi.fn(async (url: string, init?: { signal: { aborted: boolean } }) => {
-    signals.push(init!.signal);
-    return new Promise(() => {});
-  }));
+  vi.stubGlobal(
+    'fetch',
+    vi.fn(async (url: string, init?: { signal: { aborted: boolean } }) => {
+      signals.push(init!.signal);
+      return new Promise(() => {});
+    }),
+  );
   const { unmount } = render(FormhausForm, { props: { id: 'abc' } });
   await waitFor(() => expect(signals).toHaveLength(1));
   unmount();

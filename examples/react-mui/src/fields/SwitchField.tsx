@@ -3,26 +3,11 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Switch from '@mui/material/Switch';
 
-export function SwitchField({
-  id,
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-}: FieldComponentProps) {
+export function SwitchField({ id, field, value, error, loading, disabled, onChange }: FieldComponentProps) {
   return (
     <div style={{ marginTop: 8, marginBottom: 4 }}>
       <FormControlLabel
-        control={
-          <Switch
-            id={id}
-            checked={!!value}
-            onChange={(e) => onChange(e.target.checked)}
-            disabled={disabled || loading}
-          />
-        }
+        control={<Switch id={id} checked={!!value} onChange={(e) => onChange(e.target.checked)} disabled={disabled || loading} />}
         label={field.label}
       />
       {error && <FormHelperText error>{error}</FormHelperText>}

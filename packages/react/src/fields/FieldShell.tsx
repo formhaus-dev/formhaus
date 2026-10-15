@@ -16,7 +16,11 @@ export function FieldShell({ id, field, error, variant, children }: FieldShellPr
   const inline = variant && !group;
   const Root = group ? 'fieldset' : 'div';
   const container = `fh-field__${variant}-${group ? 'group' : 'wrapper'}`;
-  const helper = field.helperText && <p id={`${id}-helper`} className="fh-field__helper">{field.helperText}</p>;
+  const helper = field.helperText && (
+    <p id={`${id}-helper`} className="fh-field__helper">
+      {field.helperText}
+    </p>
+  );
 
   return (
     <Root
@@ -36,9 +40,15 @@ export function FieldShell({ id, field, error, variant, children }: FieldShellPr
             </label>
           )}
         </div>
-      ) : children}
+      ) : (
+        children
+      )}
       {inline && helper}
-      {error && <p id={`${id}-error`} className="fh-field__error" role="alert">{error}</p>}
+      {error && (
+        <p id={`${id}-error`} className="fh-field__error" role="alert">
+          {error}
+        </p>
+      )}
     </Root>
   );
 }

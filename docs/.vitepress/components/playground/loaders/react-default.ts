@@ -27,6 +27,6 @@ export const editorHeight = 480;
 export const deps: Record<string, string> = {
   '@formhaus/core': FORMHAUS_VERSION,
   '@formhaus/react': FORMHAUS_VERSION,
-  'react': '18.3.1',
+  react: '18.3.1',
   'react-dom': '18.3.1',
 };

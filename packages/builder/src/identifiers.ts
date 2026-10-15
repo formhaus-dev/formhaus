@@ -2,8 +2,15 @@ import { isPage, isQuestion, pageTitle, type BuilderForm, type BuilderOption, ty
 import { renameReferences, type Renames } from './references';
 
 export function words(label: string): string[] {
-  return label.toLowerCase().normalize('NFKD').replace(/\p{M}/gu, '').replace(/['’]/g, '')
-    .replace(/[^a-z0-9]+/g, ' ').trim().split(' ').filter(Boolean);
+  return label
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim()
+    .split(' ')
+    .filter(Boolean);
 }
 
 export function unique(base: string, taken: Set<string>, join = ''): string {
@@ -14,7 +21,10 @@ export function unique(base: string, taken: Set<string>, join = ''): string {
 }
 
 export function keyBase(label: string): string {
-  const base = words(label).map((word, index) => (index ? word[0].toUpperCase() + word.slice(1) : word)).join('') || 'question';
+  const base =
+    words(label)
+      .map((word, index) => (index ? word[0].toUpperCase() + word.slice(1) : word))
+      .join('') || 'question';
   return /^\d/.test(base) ? `q${base}` : base;
 }
 

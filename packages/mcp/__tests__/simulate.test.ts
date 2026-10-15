@@ -71,7 +71,11 @@ describe('simulate_path', () => {
   });
 
   it('submits when the last step is skipped', async () => {
-    const result = await simulatePathTool({ definition: branching, answers: { kind: 'personal', name: 'Ada', notes: 'x' }, actions: ['next', 'next', 'skip'] });
+    const result = await simulatePathTool({
+      definition: branching,
+      answers: { kind: 'personal', name: 'Ada', notes: 'x' },
+      actions: ['next', 'next', 'skip'],
+    });
     expect(result.trace?.[2]).toEqual({ action: 'skip', from: 'review', to: 'review', moved: false, submitted: true });
     expect(result.wouldSubmit).toBe(true);
     expect(result.submitValues).toEqual({ kind: 'personal', name: 'Ada' });
@@ -94,7 +98,13 @@ describe('simulate_path', () => {
   it('treats next on a next: false last step as the end of the path', async () => {
     const definition = { ...linear, steps: [linear.steps[0], { ...linear.steps[1], next: false }] };
     const result = await simulatePathTool({ definition, answers: { name: 'Ada', email: 'a@b.co' }, actions: ['next', 'next'] });
-    expect(result.trace?.[1]).toEqual({ action: 'next', from: 'email', to: 'email', moved: false, reason: 'No next step on the active path.' });
+    expect(result.trace?.[1]).toEqual({
+      action: 'next',
+      from: 'email',
+      to: 'email',
+      moved: false,
+      reason: 'No next step on the active path.',
+    });
     expect(result.wouldSubmit).toBe(true);
   });
 
@@ -117,7 +127,12 @@ describe('simulate_path', () => {
   });
 
   it('handles single-page forms', async () => {
-    const definition = { id: 'f', title: 'F', submit: { label: 'Send' }, fields: [{ key: 'a', type: 'text', label: 'A', validation: { required: true } }] };
+    const definition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Send' },
+      fields: [{ key: 'a', type: 'text', label: 'A', validation: { required: true } }],
+    };
     const result = await simulatePathTool({ definition, answers: {} });
     expect(result.multiStep).toBe(false);
     expect(result.errors).toEqual({ a: 'This field is required' });
@@ -126,7 +141,9 @@ describe('simulate_path', () => {
 
   it('evaluates conditions on trimmed text', async () => {
     const definition = {
-      id: 'f', title: 'F', submit: { label: 'Send' },
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Send' },
       fields: [
         { key: 'a', type: 'text', label: 'A' },
         { key: 'b', type: 'text', label: 'B', show: [{ field: 'a', eq: 'yes' }] },
@@ -141,7 +158,9 @@ describe('simulate_path', () => {
 
   it('lists fields shown by a skipped step default with surrounding spaces', async () => {
     const definition = {
-      id: 'f', title: 'F', submit: { label: 'Send' },
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Send' },
       steps: [
         { id: 'a', title: 'A', skip: { label: 'Skip' }, fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: ' yes ' }] },
         { id: 'b', title: 'B', fields: [{ key: 'details', type: 'text', label: 'Details', show: [{ field: 'name', eq: 'yes' }] }] },

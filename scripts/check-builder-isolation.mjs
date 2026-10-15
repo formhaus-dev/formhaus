@@ -5,14 +5,18 @@ const PRIVATE = { '@formhaus/builder': 'builder', '@formhaus/editor-react': 'edi
 const PUBLISHED = ['core', 'react', 'vue', 'mcp'];
 const DEPENDENCY_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies', 'bundleDependencies'];
 const SCANNED = new Set(['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts', '.tsx', '.vue', '.map']);
-const pattern = new RegExp(Object.entries(PRIVATE).flatMap(([name, dir]) => [name, `packages/${dir}`]).join('|'));
+const pattern = new RegExp(
+  Object.entries(PRIVATE)
+    .flatMap(([name, dir]) => [name, `packages/${dir}`])
+    .join('|'),
+);
 
 async function files(directory) {
   const entries = await readdir(directory, { withFileTypes: true }).catch(() => []);
   const result = [];
   for (const entry of entries) {
     const path = join(directory, entry.name);
-    if (entry.isDirectory() && entry.name !== 'node_modules') result.push(...await files(path));
+    if (entry.isDirectory() && entry.name !== 'node_modules') result.push(...(await files(path)));
     else if (SCANNED.has(entry.name.slice(entry.name.lastIndexOf('.')))) result.push(path);
   }
   return result;
@@ -38,7 +42,7 @@ for (const name of PUBLISHED) {
       if (manifest[field] && pkg in manifest[field]) problems.push(`packages/${name}/package.json lists ${pkg} in ${field}`);
     }
   }
-  for (const file of [...await files(join('packages', name, 'src')), ...await files(join('packages', name, 'dist'))]) {
+  for (const file of [...(await files(join('packages', name, 'src'))), ...(await files(join('packages', name, 'dist')))]) {
     if (pattern.test(await readFile(file, 'utf8'))) problems.push(`${file} references a private package`);
   }
 }

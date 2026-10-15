@@ -34,9 +34,12 @@ export function text(characters: string, style: TextStyle, name: string): TextNo
   return node;
 }
 
-type StackProps = Partial<Pick<FrameNode,
-  'itemSpacing' | 'paddingLeft' | 'paddingRight' | 'paddingTop' | 'paddingBottom' |
-  'primaryAxisAlignItems' | 'counterAxisAlignItems'>>;
+type StackProps = Partial<
+  Pick<
+    FrameNode,
+    'itemSpacing' | 'paddingLeft' | 'paddingRight' | 'paddingTop' | 'paddingBottom' | 'primaryAxisAlignItems' | 'counterAxisAlignItems'
+  >
+>;
 
 export function stack(direction: 'HORIZONTAL' | 'VERTICAL', name: string, props: StackProps = {}): FrameNode {
   const frame = figma.createFrame();

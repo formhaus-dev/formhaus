@@ -3,8 +3,27 @@ const definition = {
   title: 'Layout check',
   submit: { label: 'Send' },
   steps: [
-    { id: 'about', title: 'About you', description: 'A few details', fields: [{ key: 'name', type: 'text', label: 'Full name', validation: { required: true } }] },
-    { id: 'more', title: 'More', fields: [{ key: 'note', type: 'radio', label: 'Note', options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] }] },
+    {
+      id: 'about',
+      title: 'About you',
+      description: 'A few details',
+      fields: [{ key: 'name', type: 'text', label: 'Full name', validation: { required: true } }],
+    },
+    {
+      id: 'more',
+      title: 'More',
+      fields: [
+        {
+          key: 'note',
+          type: 'radio',
+          label: 'Note',
+          options: [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+          ],
+        },
+      ],
+    },
   ],
 };
 
@@ -40,7 +59,10 @@ async function cursors(page, name) {
   const card = page.locator('[data-card]:has(textarea[aria-label="Field label"])').first();
   await card.hover({ position: { x: 3, y: 3 } });
   const handles = await page.evaluate(() =>
-    [...document.querySelectorAll('button[aria-label^="Reorder"]')].map((node) => [node.getAttribute('aria-label'), getComputedStyle(node).cursor]),
+    [...document.querySelectorAll('button[aria-label^="Reorder"]')].map((node) => [
+      node.getAttribute('aria-label'),
+      getComputedStyle(node).cursor,
+    ]),
   );
   const off = handles.filter(([, cursor]) => cursor !== 'grab');
   if (handles.length < 3 || off.length) throw new Error(`${name}: drag handles without a grab cursor: ${JSON.stringify(handles)}`);
@@ -67,8 +89,14 @@ export async function layout(page, base, name) {
   await page.mouse.move(0, 0);
   const found = await measure(page);
   const [left, right] = found.line;
-  const off = [...found.lefts.filter(([, value]) => Math.abs(value - left) > 0.5), ...found.rights.filter(([, value]) => Math.abs(value - right) > 0.5)];
-  if (off.length) throw new Error(`${name}: step headers or button inputs leave the card content line ${JSON.stringify(found.line)}: ${JSON.stringify(off)}`);
+  const off = [
+    ...found.lefts.filter(([, value]) => Math.abs(value - left) > 0.5),
+    ...found.rights.filter(([, value]) => Math.abs(value - right) > 0.5),
+  ];
+  if (off.length)
+    throw new Error(
+      `${name}: step headers or button inputs leave the card content line ${JSON.stringify(found.line)}: ${JSON.stringify(off)}`,
+    );
   if (!found.lone) throw new Error(`${name}: no Buttons card with a single input to check`);
   await cursors(page, name);
   await page.getByRole('button', { name: 'Add step' }).last().click();
@@ -80,7 +108,11 @@ export async function layout(page, base, name) {
   });
 }
 
-const labels = ['Email', 'Как вы узнали о нашем вебинаре и что хотите получить от участия?', 'Please tell us how you heard about this webinar, what you expect to learn from it and which topics matter most to your team right now'];
+const labels = [
+  'Email',
+  'Как вы узнали о нашем вебинаре и что хотите получить от участия?',
+  'Please tell us how you heard about this webinar, what you expect to learn from it and which topics matter most to your team right now',
+];
 
 const centres = (page) =>
   page.locator('[data-card]:has(textarea[aria-label="Field label"])').evaluateAll((cards) =>
@@ -88,10 +120,19 @@ const centres = (page) =>
       const text = card.querySelector('textarea[aria-label="Field label"]');
       const line = text.getBoundingClientRect().top + parseFloat(getComputedStyle(text).lineHeight) / 2;
       const controls = [
-        ...card.querySelectorAll(':scope > div > div > div > [class*="requiredTag"], button[aria-label^="Field type"], button[aria-label="Field settings"], button[aria-label="Field actions"], :scope > button[aria-label^="Reorder"]'),
+        ...card.querySelectorAll(
+          ':scope > div > div > div > [class*="requiredTag"], button[aria-label^="Field type"], button[aria-label="Field settings"], button[aria-label="Field actions"], :scope > button[aria-label^="Reorder"]',
+        ),
       ];
-      const wrapped = (node) => node.matches('[class*="requiredTag"]') && node.getBoundingClientRect().top >= text.getBoundingClientRect().top + parseFloat(getComputedStyle(text).lineHeight);
-      return controls.filter((node) => !wrapped(node) && node.getBoundingClientRect().width > 0).map((node) => [node.getAttribute('aria-label') ?? node.textContent, node.getBoundingClientRect().top + node.getBoundingClientRect().height / 2 - line]);
+      const wrapped = (node) =>
+        node.matches('[class*="requiredTag"]') &&
+        node.getBoundingClientRect().top >= text.getBoundingClientRect().top + parseFloat(getComputedStyle(text).lineHeight);
+      return controls
+        .filter((node) => !wrapped(node) && node.getBoundingClientRect().width > 0)
+        .map((node) => [
+          node.getAttribute('aria-label') ?? node.textContent,
+          node.getBoundingClientRect().top + node.getBoundingClientRect().height / 2 - line,
+        ]);
     }),
   );
 
@@ -100,16 +141,29 @@ export async function firstLine(page, base, name) {
   await page.getByRole('textbox', { name: 'Field label' }).first().waitFor();
   await page.evaluate((list) => {
     const fields = list.map((label, at) => ({ key: `k${String(at)}`, type: 'text', label, validation: { required: at === 1 } }));
-    localStorage.setItem('fh:build:v1', JSON.stringify({ definition: { id: 'lines', title: 'Lines', submit: { label: 'Send' }, fields }, revision: 1, savedAt: new Date().toISOString() }));
+    localStorage.setItem(
+      'fh:build:v1',
+      JSON.stringify({
+        definition: { id: 'lines', title: 'Lines', submit: { label: 'Send' }, fields },
+        revision: 1,
+        savedAt: new Date().toISOString(),
+      }),
+    );
   }, labels);
   await page.reload();
   await page.getByRole('textbox', { name: 'Field label' }).first().waitFor();
   for (const state of ['at rest', 'selected']) {
-    if (state === 'selected') await page.locator('[data-card]:has(textarea[aria-label="Field label"])').last().click({ position: { x: 3, y: 3 } });
+    if (state === 'selected')
+      await page
+        .locator('[data-card]:has(textarea[aria-label="Field label"])')
+        .last()
+        .click({ position: { x: 3, y: 3 } });
     await page.mouse.move(0, 0);
     await page.waitForTimeout(200);
     const found = await centres(page);
-    const off = found.flatMap((list, card) => list.filter(([, delta]) => Math.abs(delta) > 1).map(([control, delta]) => [card + 1, control, delta]));
+    const off = found.flatMap((list, card) =>
+      list.filter(([, delta]) => Math.abs(delta) > 1).map(([control, delta]) => [card + 1, control, delta]),
+    );
     if (off.length) throw new Error(`${name} ${state}: row one controls leave the label's first line: ${JSON.stringify(off)}`);
   }
   await page.goto(`${base}/`);

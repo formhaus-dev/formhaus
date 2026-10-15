@@ -29,10 +29,7 @@
             "key": "attending",
             "type": "radio",
             "label": "Will you be there?",
-            "options": [
-              { "value": "yes", "label": "Yes, I’ll be there" },
-              { "value": "no", "label": "Sorry, I can’t make it" }
-            ],
+            "options": [{ "value": "yes", "label": "Yes, I’ll be there" }, { "value": "no", "label": "Sorry, I can’t make it" }],
             "validation": { "required": true }
           }
         ]

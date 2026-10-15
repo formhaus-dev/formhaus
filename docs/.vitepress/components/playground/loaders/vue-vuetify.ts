@@ -42,6 +42,6 @@ export const entry = '/src/main.ts';
 export const deps: Record<string, string> = {
   '@formhaus/core': FORMHAUS_VERSION,
   '@formhaus/vue': FORMHAUS_VERSION,
-  'vuetify': '3.7.0',
+  vuetify: '3.7.0',
   '@mdi/font': '7.4.47',
 };

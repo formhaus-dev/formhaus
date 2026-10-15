@@ -82,14 +82,24 @@ describe('FormEngine step skip', () => {
     const onBeforeStepChange = vi.fn();
     const engine = await onExtras({ onBeforeStepChange });
     await engine.skip();
-    expect(onBeforeStepChange).toHaveBeenLastCalledWith(expect.objectContaining({
-      fromStepId: 'extras', toStepId: 'notes', reason: 'skip',
-    }));
+    expect(onBeforeStepChange).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        fromStepId: 'extras',
+        toStepId: 'notes',
+        reason: 'skip',
+      }),
+    );
   });
 
   it('drops a stale skip when inputs change during the guard', async () => {
     let release!: () => void;
-    const onBeforeStepChange = vi.fn(({ reason }) => reason === 'skip' ? new Promise<void>((resolve) => { release = resolve; }) : undefined);
+    const onBeforeStepChange = vi.fn(({ reason }) =>
+      reason === 'skip'
+        ? new Promise<void>((resolve) => {
+            release = resolve;
+          })
+        : undefined,
+    );
     const engine = await onExtras({ onBeforeStepChange });
     const pending = engine.skip();
     expect(engine.stepValidating).toBe(true);
@@ -109,10 +119,19 @@ describe('FormEngine step skip', () => {
   it('warns about skip on a single-step form and with next: false', () => {
     const step = { title: 'Step', skip: { label: 'Skip' }, fields: [] };
     const paths = (definition: unknown) => checkDefinition(definition).map(({ code, path }) => `${code} ${path}`);
-    expect(paths({ id: 'one', title: 'One', submit: { label: 'Submit' }, steps: [{ ...step, id: 'only' }] }))
-      .toEqual(['skip-unreachable /steps/0/skip']);
-    expect(paths({
-      id: 'two', title: 'Two', submit: { label: 'Submit' }, steps: [{ ...step, id: 'a', next: false }, { ...step, id: 'b' }],
-    })).toEqual(['skip-unreachable /steps/0/skip']);
+    expect(paths({ id: 'one', title: 'One', submit: { label: 'Submit' }, steps: [{ ...step, id: 'only' }] })).toEqual([
+      'skip-unreachable /steps/0/skip',
+    ]);
+    expect(
+      paths({
+        id: 'two',
+        title: 'Two',
+        submit: { label: 'Submit' },
+        steps: [
+          { ...step, id: 'a', next: false },
+          { ...step, id: 'b' },
+        ],
+      }),
+    ).toEqual(['skip-unreachable /steps/0/skip']);
   });
 });

@@ -10,7 +10,10 @@ function empty(): HTMLElement[] {
   const glyph = element('span', 'tray-icon');
   glyph.appendChild(icon('pointer', 20));
   const text = element('div', 'tray-text');
-  text.append(element('div', 'tray-title', 'Select a component on the canvas'), element('div', 'tray-sub', 'Then drag it onto a card, or click the card.'));
+  text.append(
+    element('div', 'tray-title', 'Select a component on the canvas'),
+    element('div', 'tray-sub', 'Then drag it onto a card, or click the card.'),
+  );
   return [glyph, text];
 }
 

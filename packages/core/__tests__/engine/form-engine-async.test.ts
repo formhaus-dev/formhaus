@@ -63,9 +63,10 @@ describe('FormEngine async step validation', () => {
 
   it('rejects concurrent calls while validating', async () => {
     let resolve!: () => void;
-    const onStepValidate: StepValidateFn = () => new Promise((done) => {
-      resolve = () => done(null);
-    });
+    const onStepValidate: StepValidateFn = () =>
+      new Promise((done) => {
+        resolve = () => done(null);
+      });
     const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
     const first = engine.next();
     await expect(engine.next()).resolves.toBe(false);
@@ -86,11 +87,7 @@ describe('FormEngine async step validation', () => {
   it('discards a result after the current step changes', async () => {
     const resolvers: Array<(value: null) => void> = [];
     const onStepValidate: StepValidateFn = () => new Promise((done) => resolvers.push(done));
-    const engine = new FormEngine(
-      multiStepDefinition,
-      { name: 'John', accountType: 'business' },
-      { onStepValidate },
-    );
+    const engine = new FormEngine(multiStepDefinition, { name: 'John', accountType: 'business' }, { onStepValidate });
     const first = engine.next();
     resolvers[0](null);
     await first;
@@ -103,9 +100,10 @@ describe('FormEngine async step validation', () => {
 
   it('discards a result after the form is reset', async () => {
     let resolve!: (value: null) => void;
-    const onStepValidate: StepValidateFn = () => new Promise((done) => {
-      resolve = done;
-    });
+    const onStepValidate: StepValidateFn = () =>
+      new Promise((done) => {
+        resolve = done;
+      });
     const engine = new FormEngine(multiStepDefinition, { name: 'John' }, { onStepValidate });
     const pending = engine.next();
 

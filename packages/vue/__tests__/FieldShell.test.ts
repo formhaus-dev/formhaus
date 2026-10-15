@@ -15,7 +15,12 @@ describe('FieldShell', () => {
     const root = container.firstElementChild!;
 
     expect(root.className).toBe('fh-field');
-    expect([...root.children].map((el) => el.className)).toEqual(['fh-field__label', 'fh-field__helper', 'fh-field__input', 'fh-field__error']);
+    expect([...root.children].map((el) => el.className)).toEqual([
+      'fh-field__label',
+      'fh-field__helper',
+      'fh-field__input',
+      'fh-field__error',
+    ]);
     expect(root.querySelector('label')!.getAttribute('for')).toBe('fh-name');
     expect(root.querySelector('input')!.getAttribute('aria-describedby')).toBe('fh-name-helper fh-name-error');
     expect(root.querySelector('.fh-field__helper')!.id).toBe('fh-name-helper');
@@ -46,7 +51,12 @@ describe('FieldShell', () => {
     expect(root.className).toBe('fh-field fh-field--radio');
     expect(root.getAttribute('aria-invalid')).toBe('true');
     expect(root.getAttribute('aria-describedby')).toBe('fh-plan-helper fh-plan-error');
-    expect([...root.children].map((el) => el.className)).toEqual(['fh-field__label', 'fh-field__helper', 'fh-field__radio-group', 'fh-field__error']);
+    expect([...root.children].map((el) => el.className)).toEqual([
+      'fh-field__label',
+      'fh-field__helper',
+      'fh-field__radio-group',
+      'fh-field__error',
+    ]);
     expect(root.querySelector('legend')!.textContent!.trim()).toBe('Plan');
     expect(root.querySelector('input')!.hasAttribute('aria-describedby')).toBe(false);
   });
@@ -57,6 +67,8 @@ describe('FieldShell', () => {
     const inline = render(MultiselectField, { props: { field: { ...field, type: 'multiselect', layout: 'inline' }, value: [] } });
 
     expect(stacked.container.querySelector('.fh-field__radio-group')!.className).toBe('fh-field__radio-group');
-    expect(inline.container.querySelector('.fh-field__multiselect-group')!.className).toBe('fh-field__multiselect-group fh-field__multiselect-group--inline');
+    expect(inline.container.querySelector('.fh-field__multiselect-group')!.className).toBe(
+      'fh-field__multiselect-group fh-field__multiselect-group--inline',
+    );
   });
 });

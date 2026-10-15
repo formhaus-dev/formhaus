@@ -63,7 +63,10 @@ describe('server error clearing', () => {
   });
 
   it('drops the error of a field that a later answer hides', async () => {
-    const engine = await rejected({ companyName: 'Not registered', postcode: 'Unknown' }, { ...valid, accountType: 'business', companyName: 'Engines' });
+    const engine = await rejected(
+      { companyName: 'Not registered', postcode: 'Unknown' },
+      { ...valid, accountType: 'business', companyName: 'Engines' },
+    );
     expect(engine.currentStep?.id).toBe('account');
     engine.setValue('accountType', 'personal');
     expect(engine.errors).toEqual({ postcode: 'Unknown' });
@@ -81,10 +84,26 @@ describe('server error clearing', () => {
 
 describe('server errors and routes', () => {
   const routed: FormDefinition = {
-    id: 'routed', title: '', submit: { label: 'Send' },
+    id: 'routed',
+    title: '',
+    submit: { label: 'Send' },
     steps: [
-      { id: 'start', title: 'Start', fields: [{ key: 'plan', type: 'radio', label: 'Plan', options: [{ value: 'free', label: 'Free' }, { value: 'paid', label: 'Paid' }] }],
-        routes: [{ show: [{ field: 'plan', eq: 'free' }], to: 'done' }] },
+      {
+        id: 'start',
+        title: 'Start',
+        fields: [
+          {
+            key: 'plan',
+            type: 'radio',
+            label: 'Plan',
+            options: [
+              { value: 'free', label: 'Free' },
+              { value: 'paid', label: 'Paid' },
+            ],
+          },
+        ],
+        routes: [{ show: [{ field: 'plan', eq: 'free' }], to: 'done' }],
+      },
       { id: 'billing', title: 'Billing', fields: [{ key: 'card', type: 'text', label: 'Card' }] },
       { id: 'done', title: 'Done', fields: [{ key: 'note', type: 'text', label: 'Note' }] },
     ],
@@ -106,10 +125,15 @@ describe('server errors and routes', () => {
 });
 
 it('reports step errors for step ids that shadow object properties', () => {
-  const engine = new FormEngine({ id: 'reserved', title: 'Reserved', submit: { label: 'Send' }, steps: [
-    { id: 'constructor', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }] },
-    { id: '__proto__', title: 'Two', fields: [{ key: 'b', type: 'text', label: 'B' }] },
-  ] });
+  const engine = new FormEngine({
+    id: 'reserved',
+    title: 'Reserved',
+    submit: { label: 'Send' },
+    steps: [
+      { id: 'constructor', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }] },
+      { id: '__proto__', title: 'Two', fields: [{ key: 'b', type: 'text', label: 'B' }] },
+    ],
+  });
   engine.setErrors({ b: 'Bad' });
   expect(engine.stepErrors.constructor).toBeUndefined();
   expect(Object.keys(engine.stepErrors)).toEqual(['__proto__']);

@@ -3,12 +3,17 @@ import type { FormDefinition } from '@formhaus/core';
 import { expect, it } from 'vitest';
 import FormRenderer from '../src/FormRenderer.vue';
 
-const definition: FormDefinition = { id: 'blur', title: '', submit: { label: 'Send' }, fields: [
-  { key: 'agree', type: 'checkbox', label: 'Agree' },
-  { key: 'alerts', type: 'switch', label: 'Alerts' },
-  { key: 'plan', type: 'select', label: 'Plan', options: [{ value: 'a', label: 'A' }] },
-  { key: 'resume', type: 'file', label: 'Resume' },
-] };
+const definition: FormDefinition = {
+  id: 'blur',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'agree', type: 'checkbox', label: 'Agree' },
+    { key: 'alerts', type: 'switch', label: 'Alerts' },
+    { key: 'plan', type: 'select', label: 'Plan', options: [{ value: 'a', label: 'A' }] },
+    { key: 'resume', type: 'file', label: 'Resume' },
+  ],
+};
 
 it.each(['agree', 'alerts', 'plan', 'resume'])('reports field_blurred for %s', async (key) => {
   const { container, emitted } = render(FormRenderer, { props: { definition } });

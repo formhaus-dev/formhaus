@@ -1,10 +1,7 @@
 import type { DefinitionIssue } from '../definition-validation';
 import type { MessageSource, ValidatorFn } from '../validation';
 
-export type StepValidateFn = (
-  stepId: string,
-  values: Record<string, unknown>,
-) => Promise<Record<string, string> | null | void>;
+export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
 
 export interface StepChangeContext {
   fromStepId: string;
@@ -18,10 +15,7 @@ export type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<v
 export type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>;
 export type SubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>;
 export type SubmitResult = { ok: true } | { ok: false; errors?: Record<string, string>; formErrors?: string[] };
-export type SubmitHandler = (
-  values: Record<string, unknown>,
-  skippedSteps: string[],
-) => void | SubmitResult | Promise<void | SubmitResult>;
+export type SubmitHandler = (values: Record<string, unknown>, skippedSteps: string[]) => void | SubmitResult | Promise<void | SubmitResult>;
 
 export interface FormEngineOptions {
   onBeforeStepChange?: BeforeStepChangeFn;

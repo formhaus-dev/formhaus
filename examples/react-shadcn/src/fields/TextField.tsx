@@ -22,7 +22,9 @@ export function TextField({ id, field, value, error, loading, disabled, onChange
         placeholder={field.placeholder}
         aria-invalid={!!error}
         disabled={disabled || loading}
-        onChange={(event) => onChange(field.type === 'number' && event.target.value !== '' ? Number(event.target.value) : event.target.value)}
+        onChange={(event) =>
+          onChange(field.type === 'number' && event.target.value !== '' ? Number(event.target.value) : event.target.value)
+        }
         onBlur={onBlur}
       />
     </FieldShell>

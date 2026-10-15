@@ -21,7 +21,9 @@ const EXAMPLES: { definition: FormDefinition; shows: string }[] = [
   { definition: localized as FormDefinition, shows: 'Russian form with lang, messages and labels catalogs.' },
 ];
 
-export function exampleDefinitionsTool(input: { id?: string }): { examples: ExampleSummary[] } | { definition: FormDefinition } | { error: string } {
+export function exampleDefinitionsTool(input: {
+  id?: string;
+}): { examples: ExampleSummary[] } | { definition: FormDefinition } | { error: string } {
   if (input.id === undefined) {
     return { examples: EXAMPLES.map(({ definition, shows }) => ({ id: definition.id, title: definition.title, shows })) };
   }

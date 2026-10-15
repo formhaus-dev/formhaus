@@ -8,7 +8,13 @@ const png = new Uint8Array([1, 2, 3]);
 
 function component(id: string, name: string) {
   return {
-    id, name, type: 'COMPONENT', key: `key-${id}`, remote: false, removed: false, parent: { type: 'PAGE' },
+    id,
+    name,
+    type: 'COMPONENT',
+    key: `key-${id}`,
+    remote: false,
+    removed: false,
+    parent: { type: 'PAGE' },
     exportAsync: vi.fn().mockResolvedValue(png),
     findAll: () => [],
     componentPropertyDefinitions: {},
@@ -30,7 +36,12 @@ describe('bindingRows', () => {
     config.bindings['field.text'] = { source: 'local', id: '1:1', name: 'Text field' };
     config.kitNodes.material = { 'field.switch': '9:9' };
     const rows = await bindingRows(config);
-    expect(rows.find((row) => row.role === 'field.textarea')).toEqual({ role: 'field.textarea', via: 'field.text', name: 'Text field', thumbnail: png });
+    expect(rows.find((row) => row.role === 'field.textarea')).toEqual({
+      role: 'field.textarea',
+      via: 'field.text',
+      name: 'Text field',
+      thumbnail: png,
+    });
     expect(rows.find((row) => row.role === 'field.switch')).toEqual({ role: 'field.switch', thumbnail: png });
     expect(rows.find((row) => row.role === 'option.radio')).toEqual({ role: 'option.radio', thumbnail: undefined });
   });

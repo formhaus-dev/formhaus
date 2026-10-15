@@ -44,9 +44,7 @@
       {
         "id": "one",
         "title": 5,
-        "description": [
-          "x"
-        ],
+        "description": ["x"],
         "next": {
           "label": {
             "text": "Go"

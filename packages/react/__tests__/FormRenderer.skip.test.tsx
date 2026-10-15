@@ -58,8 +58,14 @@ describe('FormRenderer skip and button roles', () => {
   it('reports field errors when a skip submit fails validation', async () => {
     let failing = false;
     const onAnalyticsEvent = vi.fn();
-    render(<FormRenderer definition={definition} validators={{ flaky: () => (failing ? 'Bad name' : null) }}
-      onSubmit={() => {}} onAnalyticsEvent={onAnalyticsEvent} />);
+    render(
+      <FormRenderer
+        definition={definition}
+        validators={{ flaky: () => (failing ? 'Bad name' : null) }}
+        onSubmit={() => {}}
+        onAnalyticsEvent={onAnalyticsEvent}
+      />,
+    );
     fireEvent.change(screen.getByRole('textbox', { name: /Name/ }), { target: { value: 'Ada' } });
     await next();
     fireEvent.click(button('Not now'));
@@ -70,7 +76,9 @@ describe('FormRenderer skip and button roles', () => {
   });
 
   it('hides skip on steps with next: false', () => {
-    const steps = definition.steps!.map((step) => (step.id === 'name' ? { ...step, skip: { label: 'Later' }, next: false as const } : step));
+    const steps = definition.steps!.map((step) =>
+      step.id === 'name' ? { ...step, skip: { label: 'Later' }, next: false as const } : step,
+    );
     render(<FormRenderer definition={{ ...definition, steps }} onSubmit={() => {}} />);
     expect(screen.queryByRole('button', { name: 'Later' })).toBeNull();
   });
@@ -78,9 +86,16 @@ describe('FormRenderer skip and button roles', () => {
   it('respects explicit variants and skip props', () => {
     render(
       <FormActions
-        isFirstStep={false} isLastStep={false} isMultiStep
-        backAction={{ label: 'Back', variant: 'text' }} skipAction={{ label: 'Later', variant: 'secondary' }}
-        onSubmit={() => {}} onNext={() => {}} onPrev={() => {}} onCancel={() => {}} onSkip={() => {}}
+        isFirstStep={false}
+        isLastStep={false}
+        isMultiStep
+        backAction={{ label: 'Back', variant: 'text' }}
+        skipAction={{ label: 'Later', variant: 'secondary' }}
+        onSubmit={() => {}}
+        onNext={() => {}}
+        onPrev={() => {}}
+        onCancel={() => {}}
+        onSkip={() => {}}
       />,
     );
     expect(button('Back').className).toContain('fh-form-actions__button--text');
@@ -88,8 +103,16 @@ describe('FormRenderer skip and button roles', () => {
   });
 
   it('hides skip when showSkip is false', () => {
-    const props = { isFirstStep: true, isLastStep: false, isMultiStep: true, skipAction: { label: 'Later' },
-      onSubmit: () => {}, onNext: () => {}, onPrev: () => {}, onCancel: () => {} };
+    const props = {
+      isFirstStep: true,
+      isLastStep: false,
+      isMultiStep: true,
+      skipAction: { label: 'Later' },
+      onSubmit: () => {},
+      onNext: () => {},
+      onPrev: () => {},
+      onCancel: () => {},
+    };
     const { rerender } = render(<FormActions {...props} />);
     expect(button('Later')).toBeDefined();
     rerender(<FormActions {...props} onSkip={() => {}} showSkip={false} />);

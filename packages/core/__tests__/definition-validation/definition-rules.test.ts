@@ -2,31 +2,50 @@ import { describe, expect, it } from 'vitest';
 import { checkDefinition } from '../../src';
 import type { FormDefinition, FormField, FormStep } from '../../src/types';
 
-const form = (fields: FormField[], extra: Partial<FormDefinition> = {}): FormDefinition => ({ id: 'f', title: 'F', submit: { label: 'Submit' }, fields, ...extra });
+const form = (fields: FormField[], extra: Partial<FormDefinition> = {}): FormDefinition => ({
+  id: 'f',
+  title: 'F',
+  submit: { label: 'Submit' },
+  fields,
+  ...extra,
+});
 const steps = (list: FormStep[]): FormDefinition => ({ id: 'f', title: 'F', submit: { label: 'Submit' }, steps: list });
 const field = (key: string, extra: Partial<FormField> = {}): FormField => ({ key, type: 'text', label: key, ...extra });
-const options = [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }];
+const options = [
+  { value: 'a', label: 'A' },
+  { value: 'b', label: 'B' },
+];
 const codes = (definition: unknown) => checkDefinition(definition).map(({ code, severity, path }) => `${severity} ${code} ${path}`);
 
 describe('condition rules', () => {
   it('rejects a condition without an operator or with two', () => {
     expect(codes(form([field('a'), field('b', { show: [{ field: 'a' }] })]))).toEqual(['error condition-operator-count /fields/1/show/0']);
-    expect(codes(form([field('a'), field('b', { show: [{ field: 'a', eq: 'x', notEmpty: true }] })]))).toEqual(['error condition-operator-count /fields/1/show/0']);
+    expect(codes(form([field('a'), field('b', { show: [{ field: 'a', eq: 'x', notEmpty: true }] })]))).toEqual([
+      'error condition-operator-count /fields/1/show/0',
+    ]);
   });
 
   it('rejects an unknown operator and suggests a known one', () => {
     const issues = checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', equals: 'x' } as never] })]));
-    expect(issues.map((issue) => issue.message)).toEqual(['/fields/1/show/0/equals: "equals" is not a condition operator. Use one of: "eq", "neq", "in", "notIn", "notEmpty", "gt", "gte", "lt", "lte".']);
+    expect(issues.map((issue) => issue.message)).toEqual([
+      '/fields/1/show/0/equals: "equals" is not a condition operator. Use one of: "eq", "neq", "in", "notIn", "notEmpty", "gt", "gte", "lt", "lte".',
+    ]);
     expect(checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', eg: 'x' } as never] })]))[0].hint).toBe('Use "eq".');
   });
 
   it('says that a negated condition on a list field always matches', () => {
-    const issues = checkDefinition(form([field('tags', { type: 'multiselect', options }), field('b', { show: [{ field: 'tags', neq: 'a' }] })]));
-    expect(issues[0].message).toBe('/fields/1/show/0/neq: "tags" holds a list of values, so "neq" always matches it. Use notEmpty, or a select or radio field.');
+    const issues = checkDefinition(
+      form([field('tags', { type: 'multiselect', options }), field('b', { show: [{ field: 'tags', neq: 'a' }] })]),
+    );
+    expect(issues[0].message).toBe(
+      '/fields/1/show/0/neq: "tags" holds a list of values, so "neq" always matches it. Use notEmpty, or a select or radio field.',
+    );
   });
 
   it('escapes the operator key in the path and does not suggest the owner key', () => {
-    const issues = checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', 'x/y~z': 1 } as never] }), field('c', { show: [{ field: 'zzz', eq: 'q' }] })]));
+    const issues = checkDefinition(
+      form([field('a'), field('b', { show: [{ field: 'a', 'x/y~z': 1 } as never] }), field('c', { show: [{ field: 'zzz', eq: 'q' }] })]),
+    );
     expect(issues.map((issue) => issue.path)).toEqual(['/fields/1/show/0/x~1y~0z', '/fields/2/show/0/field']);
     expect(issues[1].hint).toBe('Use one of: "a", "b".');
   });
@@ -37,7 +56,9 @@ describe('condition rules', () => {
   });
 
   it('checks conditions on actions', () => {
-    expect(codes(form([field('a')], { submit: { label: 'Go', disabled: [{ field: 'nope', eq: 'x' }] } }))).toEqual(['error unknown-field /submit/disabled/0/field']);
+    expect(codes(form([field('a')], { submit: { label: 'Go', disabled: [{ field: 'nope', eq: 'x' }] } }))).toEqual([
+      'error unknown-field /submit/disabled/0/field',
+    ]);
   });
 
   it('warns when a condition value can never match the field', () => {
@@ -46,15 +67,17 @@ describe('condition rules', () => {
       field('count', { type: 'number' }),
       field('agree', { type: 'checkbox' }),
       field('tags', { type: 'multiselect', options }),
-      field('x', { showAny: [
-        { field: 'choice', eq: 1 },
-        { field: 'choice', in: ['a', 'c'] },
-        { field: 'count', eq: '5' },
-        { field: 'agree', eq: 'true' },
-        { field: 'tags', in: ['a'] },
-        { field: 'tags', notEmpty: true },
-        { field: 'choice', neq: 'b' },
-      ] }),
+      field('x', {
+        showAny: [
+          { field: 'choice', eq: 1 },
+          { field: 'choice', in: ['a', 'c'] },
+          { field: 'count', eq: '5' },
+          { field: 'agree', eq: 'true' },
+          { field: 'tags', in: ['a'] },
+          { field: 'tags', notEmpty: true },
+          { field: 'choice', neq: 'b' },
+        ],
+      }),
     ];
     expect(codes(form(fields))).toEqual([
       'warning condition-value-mismatch /fields/4/showAny/0/eq',
@@ -67,7 +90,15 @@ describe('condition rules', () => {
 
   it('reports a route typo as an unknown field and a later field as a forward reference', () => {
     const definition = steps([
-      { id: 'a', title: 'A', fields: [field('kind')], routes: [{ to: 'c', show: [{ field: 'knd', eq: 'x' }] }, { to: 'c', show: [{ field: 'later', eq: 'x' }] }] },
+      {
+        id: 'a',
+        title: 'A',
+        fields: [field('kind')],
+        routes: [
+          { to: 'c', show: [{ field: 'knd', eq: 'x' }] },
+          { to: 'c', show: [{ field: 'later', eq: 'x' }] },
+        ],
+      },
       { id: 'b', title: 'B', fields: [field('later')] },
       { id: 'c', title: 'C', fields: [] },
     ]);
@@ -86,35 +117,51 @@ describe('field rules', () => {
   });
 
   it('warns about a choice field without options', () => {
-    expect(codes(form([field('a', { type: 'select' }), field('b', { type: 'radio', optionsFrom: 'cities' })]))).toEqual(['warning missing-options /fields/0/options']);
+    expect(codes(form([field('a', { type: 'select' }), field('b', { type: 'radio', optionsFrom: 'cities' })]))).toEqual([
+      'warning missing-options /fields/0/options',
+    ]);
   });
 
   it('warns about a default value that is not an option', () => {
-    expect(codes(form([field('a', { type: 'select', options, defaultValue: 'c' }), field('b', { type: 'multiselect', options, defaultValue: ['a', 'z'] })]))).toEqual([
-      'warning default-not-in-options /fields/0/defaultValue',
-      'warning default-not-in-options /fields/1/defaultValue',
-    ]);
+    expect(
+      codes(
+        form([
+          field('a', { type: 'select', options, defaultValue: 'c' }),
+          field('b', { type: 'multiselect', options, defaultValue: ['a', 'z'] }),
+        ]),
+      ),
+    ).toEqual(['warning default-not-in-options /fields/0/defaultValue', 'warning default-not-in-options /fields/1/defaultValue']);
   });
 
   it('rejects impossible ranges', () => {
-    expect(codes(form([field('a', { validation: { minLength: 5, maxLength: 3 } }), field('b', { type: 'number', validation: { min: 9, max: 1 } })]))).toEqual([
-      'error invalid-range /fields/0/validation/minLength',
-      'error invalid-range /fields/1/validation/min',
-    ]);
+    expect(
+      codes(
+        form([field('a', { validation: { minLength: 5, maxLength: 3 } }), field('b', { type: 'number', validation: { min: 9, max: 1 } })]),
+      ),
+    ).toEqual(['error invalid-range /fields/0/validation/minLength', 'error invalid-range /fields/1/validation/min']);
   });
 
   it('warns about rules that do not apply to the field type', () => {
-    expect(codes(form([field('a', { validation: { min: 1 } }), field('b', { type: 'number', validation: { maxLength: 3 } }), field('c', { type: 'slider', validation: { min: 1 } })]))).toEqual([
-      'warning rule-not-applicable /fields/0/validation/min',
-      'warning rule-not-applicable /fields/1/validation/maxLength',
-    ]);
+    expect(
+      codes(
+        form([
+          field('a', { validation: { min: 1 } }),
+          field('b', { type: 'number', validation: { maxLength: 3 } }),
+          field('c', { type: 'slider', validation: { min: 1 } }),
+        ]),
+      ),
+    ).toEqual(['warning rule-not-applicable /fields/0/validation/min', 'warning rule-not-applicable /fields/1/validation/maxLength']);
   });
 
   it('rejects matchField and warns about optionsDependsOn on unknown keys', () => {
-    expect(codes(form([field('a', { validation: { matchField: 'nope' } }), field('b', { type: 'select', optionsFrom: 'x', optionsDependsOn: ['a', 'zzz'] })]))).toEqual([
-      'error unknown-field /fields/0/validation/matchField',
-      'warning unknown-field /fields/1/optionsDependsOn/1',
-    ]);
+    expect(
+      codes(
+        form([
+          field('a', { validation: { matchField: 'nope' } }),
+          field('b', { type: 'select', optionsFrom: 'x', optionsDependsOn: ['a', 'zzz'] }),
+        ]),
+      ),
+    ).toEqual(['error unknown-field /fields/0/validation/matchField', 'warning unknown-field /fields/1/optionsDependsOn/1']);
   });
 
   it('checks validator names only when validators are given', () => {
@@ -127,8 +174,22 @@ describe('field rules', () => {
 
 describe('comparison rules', () => {
   it('accepts comparisons on numbers and numeric radio options', () => {
-    const score = field('score', { type: 'radio', options: [{ value: '0', label: '0' }, { value: '10', label: '10' }] });
-    expect(checkDefinition(form([score, field('why', { show: [{ field: 'score', lte: 6 }] }), field('count', { type: 'number', show: [{ field: 'score', gt: 1 }] })]))).toEqual([]);
+    const score = field('score', {
+      type: 'radio',
+      options: [
+        { value: '0', label: '0' },
+        { value: '10', label: '10' },
+      ],
+    });
+    expect(
+      checkDefinition(
+        form([
+          score,
+          field('why', { show: [{ field: 'score', lte: 6 }] }),
+          field('count', { type: 'number', show: [{ field: 'score', gt: 1 }] }),
+        ]),
+      ),
+    ).toEqual([]);
   });
 
   it('rejects a non-number operand', () => {

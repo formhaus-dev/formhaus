@@ -11,7 +11,8 @@ const validate = new Ajv({ allErrors: true }).compile(readJson(TRANSLATION_SCHEM
 describe('translation overlay JSON Schema', () => {
   it('is up to date', () => {
     const expected = buildTranslationSchema();
-    for (const output of TRANSLATION_SCHEMA_OUTPUTS) expect(readJson(output), `${output} is stale, run pnpm --filter @formhaus/core schema`).toEqual(expected);
+    for (const output of TRANSLATION_SCHEMA_OUTPUTS)
+      expect(readJson(output), `${output} is stale, run pnpm --filter @formhaus/core schema`).toEqual(expected);
   }, 60_000);
 
   it('accepts overlays and generated templates', () => {

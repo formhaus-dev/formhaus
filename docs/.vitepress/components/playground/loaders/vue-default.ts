@@ -2,7 +2,9 @@ import { FORMHAUS_VERSION } from './versions';
 
 export function buildFiles(definitionJson: string) {
   return {
-    'src/App.vue': `<` + `script setup>
+    'src/App.vue':
+      `<` +
+      `script setup>
 import { FormRenderer } from "@formhaus/vue";
 
 const definition = ${definitionJson};
@@ -10,7 +12,8 @@ const definition = ${definitionJson};
 function onSubmit(values) {
   console.log("Submitted:", values);
 }
-</` + `script>
+</` +
+      `script>
 
 <template>
   <div style="max-width: 480px; margin: 24px auto; font-family: sans-serif">

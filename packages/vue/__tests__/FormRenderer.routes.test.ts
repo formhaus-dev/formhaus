@@ -13,10 +13,15 @@ const definition = rawDefinition as FormDefinition;
 it.each([FormRenderer, HeadlessFormRenderer])('runs routed activation, validation and hooks', async (Renderer) => {
   const submitHandler = vi.fn();
   const change = vi.fn();
-  render(Renderer, { props: {
-    definition, components: { radio: RadioField, text: TextField }, actionsComponent: FormActions,
-    submitHandler, onAfterStepChange: change,
-  } });
+  render(Renderer, {
+    props: {
+      definition,
+      components: { radio: RadioField, text: TextField },
+      actionsComponent: FormActions,
+      submitHandler,
+      onAfterStepChange: change,
+    },
+  });
   await fireEvent.click(screen.getByLabelText('Business'));
   const company = await screen.findByRole('textbox', { name: /Company/ });
   await waitFor(() => expect((company as HTMLInputElement).disabled).toBe(false));

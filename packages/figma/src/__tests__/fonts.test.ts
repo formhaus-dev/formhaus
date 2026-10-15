@@ -12,7 +12,12 @@ describe('resolveFonts', () => {
   beforeEach(() => vi.unstubAllGlobals());
 
   it('uses the first available preferred family with matching styles', async () => {
-    stubFonts([['SF Pro', 'Regular'], ['SF Pro', 'Medium'], ['SF Pro', 'Semibold'], ['Inter', 'Regular']]);
+    stubFonts([
+      ['SF Pro', 'Regular'],
+      ['SF Pro', 'Medium'],
+      ['SF Pro', 'Semibold'],
+      ['Inter', 'Regular'],
+    ]);
     expect(await resolveFonts(['SF Pro Display', 'SF Pro'])).toEqual({
       regular: { family: 'SF Pro', style: 'Regular' },
       medium: { family: 'SF Pro', style: 'Medium' },
@@ -21,7 +26,10 @@ describe('resolveFonts', () => {
   });
 
   it('falls back to Inter and its Semi Bold spelling', async () => {
-    stubFonts([['Inter', 'Regular'], ['Inter', 'Semi Bold']]);
+    stubFonts([
+      ['Inter', 'Regular'],
+      ['Inter', 'Semi Bold'],
+    ]);
     expect(await resolveFonts(['Roboto'])).toEqual({
       regular: { family: 'Inter', style: 'Regular' },
       medium: { family: 'Inter', style: 'Semi Bold' },

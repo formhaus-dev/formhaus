@@ -34,9 +34,11 @@ export async function listProfiles(): Promise<Profile[]> {
 let queue: Promise<void> = Promise.resolve();
 
 export function updateProfiles(change: (profiles: Profile[]) => Profile[]): Promise<void> {
-  queue = queue.catch(() => undefined).then(async () => {
-    await figma.clientStorage.setAsync(STORAGE_KEY, change(await listProfiles()));
-  });
+  queue = queue
+    .catch(() => undefined)
+    .then(async () => {
+      await figma.clientStorage.setAsync(STORAGE_KEY, change(await listProfiles()));
+    });
   return queue;
 }
 
@@ -49,7 +51,9 @@ function shortString(value: unknown): value is string {
 
 function cleanRecord<T>(value: unknown, accept: (item: unknown) => item is T): Record<string, T> | undefined {
   if (!value || typeof value !== 'object') return undefined;
-  const entries = Object.entries(value).filter(([key, item]) => key.length <= MAX_TEXT && accept(item)).slice(0, MAX_ENTRIES);
+  const entries = Object.entries(value)
+    .filter(([key, item]) => key.length <= MAX_TEXT && accept(item))
+    .slice(0, MAX_ENTRIES);
   return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 }
 
@@ -68,9 +72,9 @@ function cleanBinding(value: unknown, keepIds: boolean): Binding | null {
 }
 
 function keyed(bindings: ProfileBindings, keepIds: boolean): ProfileBindings {
-  const entries = ROLES
-    .map((role) => [role, cleanBinding(bindings[role], keepIds)] as const)
-    .filter((entry): entry is readonly [Role, Binding] => Boolean(entry[1]));
+  const entries = ROLES.map((role) => [role, cleanBinding(bindings[role], keepIds)] as const).filter(
+    (entry): entry is readonly [Role, Binding] => Boolean(entry[1]),
+  );
   return Object.fromEntries(entries) as ProfileBindings;
 }
 
@@ -86,7 +90,13 @@ export async function saveProfile(name: string, bindings: ProfileBindings, useIn
   const kept = keyed(bindings, true);
   if (Object.keys(kept).length === 0) throw new Error('Bind at least one component before saving a design system.');
   const profiles = await listProfiles();
-  const profile: Profile = { id: newId(), name: name.trim().slice(0, 80) || 'Design system', bindings: kept, origin: documentId(), useInNewFiles: useInNewFiles ?? profiles.length === 0 };
+  const profile: Profile = {
+    id: newId(),
+    name: name.trim().slice(0, 80) || 'Design system',
+    bindings: kept,
+    origin: documentId(),
+    useInNewFiles: useInNewFiles ?? profiles.length === 0,
+  };
   await updateProfiles((list) => [...list.map((item) => (profile.useInNewFiles ? { ...item, useInNewFiles: false } : item)), profile]);
   return profile;
 }

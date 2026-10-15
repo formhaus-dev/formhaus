@@ -4,7 +4,10 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
   const active = () => document.activeElement;
   const textbox = (name: string) => screen.getByRole('textbox', { name: new RegExp(name) });
   const button = (name: string) => screen.getByRole('button', { name });
-  const settle = () => new Promise((done) => { setTimeout(done); });
+  const settle = () =>
+    new Promise((done) => {
+      setTimeout(done);
+    });
 
   async function toLastStep() {
     await harness.click(button('Continue'));
@@ -21,7 +24,11 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
   });
 
   it('opens the step with the first server error and focuses its field', async () => {
-    harness.mount({ definition: wizard, initialValues: filled, onSubmit: () => ({ ok: false, errors: { city: 'Unknown', name: 'Taken' } }) });
+    harness.mount({
+      definition: wizard,
+      initialValues: filled,
+      onSubmit: () => ({ ok: false, errors: { city: 'Unknown', name: 'Taken' } }),
+    });
     await toLastStep();
     await harness.click(button('Send'));
     await screen.findByRole('heading', { name: 'One' });
@@ -29,7 +36,11 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
   });
 
   it('focuses the field of a summary link on a single-step form', async () => {
-    harness.mount({ definition: flat, errorSummary: true, onSubmit: () => ({ ok: false, errors: { first: 'Bad first', second: 'Bad second' } }) });
+    harness.mount({
+      definition: flat,
+      errorSummary: true,
+      onSubmit: () => ({ ok: false, errors: { first: 'Bad first', second: 'Bad second' } }),
+    });
     await harness.click(button('Send'));
     const link = await screen.findByRole('link', { name: 'Second: Bad second' });
     await waitFor(() => expect(active()).toBe(textbox('First')));
@@ -39,8 +50,12 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
   });
 
   it('opens the step of a summary link and focuses the field', async () => {
-    harness.mount({ definition: wizard, initialValues: filled, errorSummary: true,
-      onSubmit: () => ({ ok: false, errors: { name: 'Taken', city: 'Unknown' } }) });
+    harness.mount({
+      definition: wizard,
+      initialValues: filled,
+      errorSummary: true,
+      onSubmit: () => ({ ok: false, errors: { name: 'Taken', city: 'Unknown' } }),
+    });
     await toLastStep();
     await harness.click(button('Send'));
     const link = await screen.findByRole('link', { name: 'City: Unknown' });

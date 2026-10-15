@@ -20,22 +20,27 @@ export function renderCoverage(rows: BindingRow[], kitName: string): void {
   for (const row of rows) counts[coverageOf(row)] += 1;
   const title = byId('coverageTitle');
   const all = counts.yours === rows.length;
-  title.replaceChildren(element('strong', '', all ? `All ${rows.length}` : `${counts.yours} of ${rows.length}`), document.createTextNode(' elements bound'));
+  title.replaceChildren(
+    element('strong', '', all ? `All ${rows.length}` : `${counts.yours} of ${rows.length}`),
+    document.createTextNode(' elements bound'),
+  );
   const bar = byId('coverageBar');
-  bar.replaceChildren(...(Object.keys(counts) as Coverage[])
-    .filter((state) => counts[state] > 0)
-    .map((state) => {
-      const segment = element('span', `segment cov-${state}`);
-      segment.style.flexGrow = String(counts[state]);
-      return segment;
-    }));
+  bar.replaceChildren(
+    ...(Object.keys(counts) as Coverage[])
+      .filter((state) => counts[state] > 0)
+      .map((state) => {
+        const segment = element('span', `segment cov-${state}`);
+        segment.style.flexGrow = String(counts[state]);
+        return segment;
+      }),
+  );
   const labels: Record<Coverage, string> = {
     yours: `${counts.yours} bound`,
     reused: `${counts.reused} use a substitute`,
     kit: `${counts.kit} from ${kitName}`,
     missing: `${counts.missing} missing`,
   };
-  byId('coverageLegend').replaceChildren(...(Object.keys(counts) as Coverage[])
-    .filter((state) => counts[state] > 0)
-    .map((state) => legendItem(state, labels[state])));
+  byId('coverageLegend').replaceChildren(
+    ...(Object.keys(counts) as Coverage[]).filter((state) => counts[state] > 0).map((state) => legendItem(state, labels[state])),
+  );
 }

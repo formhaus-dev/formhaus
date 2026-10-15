@@ -3,7 +3,12 @@ import { createValues, getChangedKeys, shownError } from './engine-utils';
 import { trimValue } from '../validation/type-checks';
 import type { EngineInternals } from './runtime-internals';
 
-export function applyValidationErrors(engine: EngineInternals, errors: Record<string, string>, server = false, formErrors: string[] = []): void {
+export function applyValidationErrors(
+  engine: EngineInternals,
+  errors: Record<string, string>,
+  server = false,
+  formErrors: string[] = [],
+): void {
   const { state } = engine;
   const previousErrors = engine.errors;
   const bound: Record<string, string> = {};
@@ -77,10 +82,7 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
       Object.assign(errors, validateStep(step, getValidationValues(engine), engine.validators, engine.messages));
     }
   } else {
-    Object.assign(
-      errors,
-      validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators, engine.messages),
-    );
+    Object.assign(errors, validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators, engine.messages));
   }
   engine.state.errors = { ...engine.state.serverErrors, ...errors };
   const structureChanged = navigate && moveToFirstError(engine, errors);
@@ -127,11 +129,7 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   engine.skipped.clear();
   engine.visibility.reconcileHidden(engine.values, engine.errors, true);
   const changedValues = getChangedKeys(previousValues, engine.values);
-  const changedFields = new Set([
-    ...changedValues,
-    ...getChangedKeys(previousErrors, engine.errors),
-    ...loadingFields,
-  ]);
+  const changedFields = new Set([...changedValues, ...getChangedKeys(previousErrors, engine.errors), ...loadingFields]);
   engine.notify({
     fieldKeys: changedFields,
     structureChanged: true,

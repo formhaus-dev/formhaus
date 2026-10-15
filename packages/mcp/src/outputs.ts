@@ -27,7 +27,9 @@ export const simulationOutput = {
   ok: z.boolean(),
   validation: z.object(validationOutput),
   multiStep: z.boolean().optional(),
-  path: z.array(z.object({ id: z.string(), title: z.string(), visited: z.boolean(), skipped: z.boolean(), visibleFields: z.array(z.string()) })).optional(),
+  path: z
+    .array(z.object({ id: z.string(), title: z.string(), visited: z.boolean(), skipped: z.boolean(), visibleFields: z.array(z.string()) }))
+    .optional(),
   currentStep: z.object({ id: z.string(), title: z.string(), index: z.number() }).nullable().optional(),
   isLastStep: z.boolean().optional(),
   trace: z.array(trace).optional(),
@@ -62,8 +64,13 @@ export const templateOutput = {
   validation: z.object(validationOutput),
   lang: z.string().optional(),
   file: z.string().optional().describe('Suggested file name, such as signup.ru.json.'),
-  overlay: z.record(z.string(), z.unknown()).optional().describe('Translation skeleton with the source texts as values. Replace the values, keep the nesting.'),
-  slots: z.array(z.object({ address: z.string(), key: z.string().optional(), text: z.string(), params: z.array(z.string()), hash: z.string() })).optional(),
+  overlay: z
+    .record(z.string(), z.unknown())
+    .optional()
+    .describe('Translation skeleton with the source texts as values. Replace the values, keep the nesting.'),
+  slots: z
+    .array(z.object({ address: z.string(), key: z.string().optional(), text: z.string(), params: z.array(z.string()), hash: z.string() }))
+    .optional(),
 };
 
 const cloudFields = {

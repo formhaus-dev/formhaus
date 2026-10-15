@@ -5,14 +5,25 @@ import { i18nWarnings } from './check-warnings';
 import { isEntry } from './overlay';
 import { textNodes } from './walk';
 
-const TEXTS = { form: ['title', 'description'], step: ['title', 'description'], field: ['label', 'placeholder', 'helperText'], option: ['label'], action: ['label'], validation: [] };
+const TEXTS = {
+  form: ['title', 'description'],
+  step: ['title', 'description'],
+  field: ['label', 'placeholder', 'helperText'],
+  option: ['label'],
+  action: ['label'],
+  validation: [],
+};
 
 function strings(value: unknown, path: string, what: string, nested: string[] = []): DefinitionIssue[] {
   if (value === undefined) return [];
   if (!isEntry(value)) return [error('invalid-type', path, `must be an object of ${what}`)];
-  return Object.entries(value).flatMap(([key, item]) => (nested.includes(key)
-    ? strings(item, `${path}/${key}`, what)
-    : typeof item === 'string' && item.trim() ? [] : [error('invalid-type', `${path}/${pointer(key)}`, 'must be a non-empty string')]));
+  return Object.entries(value).flatMap(([key, item]) =>
+    nested.includes(key)
+      ? strings(item, `${path}/${key}`, what)
+      : typeof item === 'string' && item.trim()
+        ? []
+        : [error('invalid-type', `${path}/${pointer(key)}`, 'must be a non-empty string')],
+  );
 }
 
 function translationErrors(definition: FormDefinition): DefinitionIssue[] {
@@ -26,7 +37,14 @@ function translationErrors(definition: FormDefinition): DefinitionIssue[] {
       const unbound = isEntry(block) ? TEXTS[kind].filter((slot) => block[slot] !== undefined && typeof node[slot] !== 'string') : [];
       return [
         ...strings(block, `${path}/i18n`, 'translation keys', kind === 'form' ? ['messages', 'labels'] : []),
-        ...unbound.map((slot) => error('i18n-unbound-slot', `${path}/i18n/${slot}`, `"${slot}" has a translation key but no source text`, `Add "${slot}" as the fallback text`)),
+        ...unbound.map((slot) =>
+          error(
+            'i18n-unbound-slot',
+            `${path}/i18n/${slot}`,
+            `"${slot}" has a translation key but no source text`,
+            `Add "${slot}" as the fallback text`,
+          ),
+        ),
       ];
     }),
   ];

@@ -9,7 +9,9 @@ for (const [name, budget] of Object.entries(BUDGETS)) {
   const [target, mode = 'development'] = name.split(':');
   const [module, only] = target.split('#');
   const [pkg, entry = 'index'] = module.split('/');
-  const size = entry.endsWith('.css') ? gzipSync(readFileSync(`packages/${pkg}/${entry}`), { level: 9 }).length : await bundleSize(pkg, entry, only, mode);
+  const size = entry.endsWith('.css')
+    ? gzipSync(readFileSync(`packages/${pkg}/${entry}`), { level: 9 }).length
+    : await bundleSize(pkg, entry, only, mode);
   console.log(`@formhaus/${name}: ${size} B gzipped (budget ${budget} B)`);
   if (size > budget) violations.push(`@formhaus/${name} is ${size - budget} B over budget`);
 }
@@ -24,7 +26,17 @@ async function bundleSize(pkg, entry, only, mode) {
     write: false,
     logLevel: 'error',
     define: { 'process.env.NODE_ENV': JSON.stringify(mode) },
-    external: ['@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/core/i18n', '@formhaus/react', '@formhaus/vue', 'react', 'react/jsx-runtime', 'vue'],
+    external: [
+      '@formhaus/core',
+      '@formhaus/core/cloud',
+      '@formhaus/core/internal',
+      '@formhaus/core/i18n',
+      '@formhaus/react',
+      '@formhaus/vue',
+      'react',
+      'react/jsx-runtime',
+      'vue',
+    ],
   });
   return gzipSync(result.outputFiles[0].contents, { level: 9 }).length;
 }

@@ -80,10 +80,7 @@
             "type": "radio",
             "label": "Have you given this talk before?",
             "layout": "inline",
-            "options": [
-              { "value": "no", "label": "No, it’s new" },
-              { "value": "yes", "label": "Yes" }
-            ],
+            "options": [{ "value": "no", "label": "No, it’s new" }, { "value": "yes", "label": "Yes" }],
             "validation": { "required": true }
           },
           {
@@ -106,11 +103,7 @@
             "type": "radio",
             "label": "Will you need help with travel costs?",
             "layout": "inline",
-            "options": [
-              { "value": "yes", "label": "Yes" },
-              { "value": "no", "label": "No" },
-              { "value": "maybe", "label": "Maybe" }
-            ],
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }, { "value": "maybe", "label": "Maybe" }],
             "validation": { "required": true }
           }
         ]

@@ -18,7 +18,9 @@ const emit = defineEmits<{
 }>();
 
 function isPrimaryDisabled(): boolean {
-  return !!props.loading || isActionDisabled(props.isMultiStep && !props.isLastStep ? props.nextAction : props.submitAction, props.values ?? {});
+  return (
+    !!props.loading || isActionDisabled(props.isMultiStep && !props.isLastStep ? props.nextAction : props.submitAction, props.values ?? {})
+  );
 }
 
 function getButtonClass(action: FormAction | false | undefined, variant: NonNullable<FormAction['variant']>): string {

@@ -2,7 +2,25 @@ import type { FormField } from '../types';
 import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
-export const BUILT_IN_TYPES = ['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'multiselect', 'checkbox', 'radio', 'switch', 'file', 'date', 'datetime', 'time', 'textarea', 'hidden'];
+export const BUILT_IN_TYPES = [
+  'text',
+  'email',
+  'phone',
+  'number',
+  'password',
+  'select',
+  'autocomplete',
+  'multiselect',
+  'checkbox',
+  'radio',
+  'switch',
+  'file',
+  'date',
+  'datetime',
+  'time',
+  'textarea',
+  'hidden',
+];
 
 export const MAX_STRING_LENGTH = 10000;
 const MAX_EMAIL_LENGTH = 254;
@@ -69,7 +87,10 @@ function stringError(field: FormField, value: unknown, key: MessageKey, fail: Fa
 
 function formatError(field: FormField, value: unknown, [format, key, max]: [RegExp, MessageKey, number], fail: Fail): string | null {
   if (typeof value !== 'string') return fail(key);
-  return lengthError(field, value, fail) ?? (value.length <= max && format.test(value) && (format === EMAIL || format === TIME || isCalendarDate(value)) ? null : fail(key));
+  return (
+    lengthError(field, value, fail) ??
+    (value.length <= max && format.test(value) && (format === EMAIL || format === TIME || isCalendarDate(value)) ? null : fail(key))
+  );
 }
 
 function primitiveError(field: FormField, value: unknown, fail: Fail): string | null {
@@ -90,7 +111,8 @@ export function typeError(field: FormField, value: unknown, resolve: ResolveMess
   if (field.type === 'file') return stringError(field, value, 'file', fail);
   const format = FORMATS.get(field.type);
   if (format) return formatError(field, value, format, fail);
-  if (field.type === 'select' || field.type === 'radio') return stringError(field, value, 'option', fail) ?? (isOption(field, value) ? null : fail('option'));
+  if (field.type === 'select' || field.type === 'radio')
+    return stringError(field, value, 'option', fail) ?? (isOption(field, value) ? null : fail('option'));
   return TEXT_TYPES.has(field.type) ? stringError(field, value, 'string', fail) : primitiveError(field, value, fail);
 }
 

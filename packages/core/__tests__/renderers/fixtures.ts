@@ -43,23 +43,49 @@ export interface TestKit {
   };
 }
 
-export const flat: FormDefinition = { id: 'flat', title: '', submit: { label: 'Send' }, fields: [
-  { key: 'first', type: 'text', label: 'First' },
-  { key: 'second', type: 'text', label: 'Second' },
-] };
+export const flat: FormDefinition = {
+  id: 'flat',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'first', type: 'text', label: 'First' },
+    { key: 'second', type: 'text', label: 'Second' },
+  ],
+};
 
-export const wizard: FormDefinition = { id: 'wizard', title: '', submit: { label: 'Send' }, steps: [
-  { id: 'one', title: 'One', fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }] },
-  { id: 'two', title: 'Two', skip: { label: 'Skip' }, fields: [
-    { key: 'plan', type: 'radio', label: 'Plan', autoAdvance: true, options: [{ value: 'a', label: 'Plan A' }, { value: 'b', label: 'Plan B' }] },
-  ] },
-  { id: 'three', title: 'Three', fields: [{ key: 'city', type: 'text', label: 'City' }] },
-] };
+export const wizard: FormDefinition = {
+  id: 'wizard',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    { id: 'one', title: 'One', fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }] },
+    {
+      id: 'two',
+      title: 'Two',
+      skip: { label: 'Skip' },
+      fields: [
+        {
+          key: 'plan',
+          type: 'radio',
+          label: 'Plan',
+          autoAdvance: true,
+          options: [
+            { value: 'a', label: 'Plan A' },
+            { value: 'b', label: 'Plan B' },
+          ],
+        },
+      ],
+    },
+    { id: 'three', title: 'Three', fields: [{ key: 'city', type: 'text', label: 'City' }] },
+  ],
+};
 
 export const filled = { name: 'Ada', plan: 'a', city: 'Oslo' };
 
 export function deferred<T>() {
   let resolve!: (value: T) => void;
-  const promise = new Promise<T>((done) => { resolve = done; });
+  const promise = new Promise<T>((done) => {
+    resolve = done;
+  });
   return { promise, resolve };
 }

@@ -51,9 +51,7 @@
         "show": [
           {
             "field": "country",
-            "in": [
-              "us"
-            ]
+            "in": ["us"]
           }
         ],
         "validation": {
@@ -67,10 +65,7 @@
         "show": [
           {
             "field": "country",
-            "notIn": [
-              "us",
-              "jp"
-            ]
+            "notIn": ["us", "jp"]
           }
         ],
         "validation": {

@@ -6,7 +6,15 @@ import account from '../../../examples/react-flat-api/src/account.json';
 import FormRenderer from '../src/FormRenderer.vue';
 
 const definition = account as FormDefinition;
-const valid = { firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com', accountType: 'business', companyName: 'Engines', street: '1 Main St', postcode: '10115' };
+const valid = {
+  firstName: 'Ada',
+  lastName: 'Lovelace',
+  email: 'ada@example.com',
+  accountType: 'business',
+  companyName: 'Engines',
+  street: '1 Main St',
+  postcode: '10115',
+};
 const reject = () => ({ ok: false as const, errors: { postcode: 'Unknown postcode', accountType: 'Not available', email: 'Taken' } });
 
 async function submitFromLastStep() {
@@ -57,13 +65,21 @@ describe('Vue error summary and step marks', () => {
 
   it('passes step status to a custom progress component', async () => {
     let seen: unknown;
-    const progressComponent = defineComponent({ props: ['steps'], setup: (props) => () => { seen = props.steps; return null; } });
+    const progressComponent = defineComponent({
+      props: ['steps'],
+      setup: (props) => () => {
+        seen = props.steps;
+        return null;
+      },
+    });
     render(FormRenderer, { props: { definition, initialValues: valid, onSubmit: reject, stepErrorMarks: true, progressComponent } });
     await fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    await waitFor(() => expect(seen).toEqual([
-      { id: 'about', title: 'About you', errorCount: 0 },
-      { id: 'account', title: 'Account', errorCount: 0 },
-      { id: 'address', title: 'Address', errorCount: 0 },
-    ]));
+    await waitFor(() =>
+      expect(seen).toEqual([
+        { id: 'about', title: 'About you', errorCount: 0 },
+        { id: 'account', title: 'Account', errorCount: 0 },
+        { id: 'address', title: 'Address', errorCount: 0 },
+      ]),
+    );
   });
 });

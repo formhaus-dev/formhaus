@@ -56,8 +56,8 @@ export function createVisibility(definition: FormDefinition) {
       cache.visibleFields = (definition.fields ?? []).filter((field) => visible(field, values));
       return cache;
     }
-    const steps = cache.visibleSteps = path.steps(values);
-    const current = cache.currentStep = steps[stepIndex] ?? steps[steps.length - 1] ?? null;
+    const steps = (cache.visibleSteps = path.steps(values));
+    const current = (cache.currentStep = steps[stepIndex] ?? steps[steps.length - 1] ?? null);
     cache.visibleFields = current ? current.fields.filter((field) => visible(field, values)) : [];
     return cache;
   }
@@ -77,7 +77,7 @@ export function createVisibility(definition: FormDefinition) {
       if (!canGoNextDirty) return cache.canGoNext;
       canGoNextDirty = false;
       const errors = step ? validateStep(step, path.values(values), validators) : {};
-      return cache.canGoNext = isMultiStep() && Object.keys(errors).length === 0;
+      return (cache.canGoNext = isMultiStep() && Object.keys(errors).length === 0);
     },
 
     findStepIndex(fieldKey: string, values: Values, stepIndex: number): number | null {

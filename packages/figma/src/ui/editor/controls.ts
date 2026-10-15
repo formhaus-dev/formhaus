@@ -1,6 +1,12 @@
 import { element } from '../dom';
 
-export function textInput(value: string, placeholder: string, className: string, onInput: (value: string) => void, label = placeholder): HTMLInputElement {
+export function textInput(
+  value: string,
+  placeholder: string,
+  className: string,
+  onInput: (value: string) => void,
+  label = placeholder,
+): HTMLInputElement {
   const node = element('input', className);
   node.value = value;
   node.placeholder = placeholder;

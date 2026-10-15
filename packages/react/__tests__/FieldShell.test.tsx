@@ -16,7 +16,12 @@ describe('FieldShell', () => {
     const root = container.firstElementChild!;
 
     expect(root.className).toBe('fh-field');
-    expect([...root.children].map((el) => el.className)).toEqual(['fh-field__label', 'fh-field__helper', 'fh-field__input', 'fh-field__error']);
+    expect([...root.children].map((el) => el.className)).toEqual([
+      'fh-field__label',
+      'fh-field__helper',
+      'fh-field__input',
+      'fh-field__error',
+    ]);
     expect(root.querySelector('label')!.getAttribute('for')).toBe('fh-name');
     expect(root.querySelector('.fh-field__required')).not.toBeNull();
     expect(root.querySelector('input')!.getAttribute('aria-describedby')).toBe('fh-name-helper fh-name-error');
@@ -46,7 +51,12 @@ describe('FieldShell', () => {
     expect(root.className).toBe('fh-field fh-field--radio');
     expect(root.getAttribute('aria-invalid')).toBe('true');
     expect(root.getAttribute('aria-describedby')).toBe('fh-plan-helper fh-plan-error');
-    expect([...root.children].map((el) => el.className || el.tagName)).toEqual(['fh-field__label', 'fh-field__helper', 'fh-field__radio-group', 'fh-field__error']);
+    expect([...root.children].map((el) => el.className || el.tagName)).toEqual([
+      'fh-field__label',
+      'fh-field__helper',
+      'fh-field__radio-group',
+      'fh-field__error',
+    ]);
     expect(root.querySelector('legend')!.textContent).toBe('Plan');
     expect(root.querySelector('input')!.hasAttribute('aria-describedby')).toBe(false);
   });
@@ -54,9 +64,13 @@ describe('FieldShell', () => {
   it('stacks options unless the field asks for the inline layout', () => {
     const field: FormField = { key: 'plan', type: 'radio', label: 'Plan', options };
     const stacked = render(<RadioField field={field} value="" onChange={noop} onBlur={noop} />);
-    const inline = render(<MultiselectField field={{ ...field, type: 'multiselect', layout: 'inline' }} value={[]} onChange={noop} onBlur={noop} />);
+    const inline = render(
+      <MultiselectField field={{ ...field, type: 'multiselect', layout: 'inline' }} value={[]} onChange={noop} onBlur={noop} />,
+    );
 
     expect(stacked.container.querySelector('.fh-field__radio-group')!.className).toBe('fh-field__radio-group');
-    expect(inline.container.querySelector('.fh-field__multiselect-group')!.className).toBe('fh-field__multiselect-group fh-field__multiselect-group--inline');
+    expect(inline.container.querySelector('.fh-field__multiselect-group')!.className).toBe(
+      'fh-field__multiselect-group fh-field__multiselect-group--inline',
+    );
   });
 });

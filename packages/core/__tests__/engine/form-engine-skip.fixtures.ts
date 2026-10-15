@@ -18,7 +18,12 @@ export function skipDefinition(): FormDefinition {
           { key: 'promo', type: 'text', label: 'Promo', show: [{ field: 'plan', eq: 'pro' }] },
         ],
       },
-      { id: 'notes', title: 'Notes', skip: { label: 'Skip' }, fields: [{ key: 'notes', type: 'text', label: 'Notes', validation: { required: true } }] },
+      {
+        id: 'notes',
+        title: 'Notes',
+        skip: { label: 'Skip' },
+        fields: [{ key: 'notes', type: 'text', label: 'Notes', validation: { required: true } }],
+      },
     ],
   };
 }

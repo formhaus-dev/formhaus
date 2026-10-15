@@ -6,11 +6,30 @@ import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
-const HIDDEN = { position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0 0 0 0)', clipPath: 'inset(50%)' } as const;
+const HIDDEN = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+} as const;
 
 function handled() {}
 
-export function FormhausForm({ id, apiBase, initialForm, draftStore, onSuccess, onError, fallback, success, initialValues, onFieldChange, ...rendererProps }: FormhausFormProps) {
+export function FormhausForm({
+  id,
+  apiBase,
+  initialForm,
+  draftStore,
+  onSuccess,
+  onError,
+  fallback,
+  success,
+  initialValues,
+  onFieldChange,
+  ...rendererProps
+}: FormhausFormProps) {
   const trap = useRef<HTMLInputElement>(null);
   const extraBody = useCallback(() => ({ _fh_hp: trap.current?.value ?? '' }), []);
   const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, onSuccess, onError });
@@ -32,21 +51,40 @@ export function FormhausForm({ id, apiBase, initialForm, draftStore, onSuccess, 
     if (cloud.done && redirectUrl && !success) window.location.assign(redirectUrl);
   }, [cloud.done, redirectUrl, success]);
 
-  if (cloud.loadError) return (
-    <>
-      <p role="alert" className="fh-form__error">{cloud.loadError.message}</p>
-      {cloud.loadError instanceof CloudError && cloud.loadError.retryable && (
-        <button type="button" className="fh-form-actions__button fh-form-actions__button--secondary" onClick={cloud.retry}>Try again</button>
-      )}
-    </>
-  );
-  if (!cloud.definition) return <div className="fh-form" aria-busy="true">{fallback}</div>;
-  if (cloud.done) return (
-    <>
-      {success ?? <p role="status" className="fh-form__success">{successMessage ?? 'Thank you. Your response was submitted.'}</p>}
-      {allowAnother && <button type="button" className="fh-form-actions__button fh-form-actions__button--secondary" onClick={cloud.again}>Submit another response</button>}
-    </>
-  );
+  if (cloud.loadError)
+    return (
+      <>
+        <p role="alert" className="fh-form__error">
+          {cloud.loadError.message}
+        </p>
+        {cloud.loadError instanceof CloudError && cloud.loadError.retryable && (
+          <button type="button" className="fh-form-actions__button fh-form-actions__button--secondary" onClick={cloud.retry}>
+            Try again
+          </button>
+        )}
+      </>
+    );
+  if (!cloud.definition)
+    return (
+      <div className="fh-form" aria-busy="true">
+        {fallback}
+      </div>
+    );
+  if (cloud.done)
+    return (
+      <>
+        {success ?? (
+          <p role="status" className="fh-form__success">
+            {successMessage ?? 'Thank you. Your response was submitted.'}
+          </p>
+        )}
+        {allowAnother && (
+          <button type="button" className="fh-form-actions__button fh-form-actions__button--secondary" onClick={cloud.again}>
+            Submit another response
+          </button>
+        )}
+      </>
+    );
   return (
     <div ref={root} className="fh-cloud">
       <input ref={trap} name="_fh_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={HIDDEN} defaultValue="" />
@@ -59,7 +97,10 @@ export function FormhausForm({ id, apiBase, initialForm, draftStore, onSuccess, 
         errors={cloud.errors}
         onSubmit={cloud.submit}
         onError={handled}
-        onFieldChange={(key, value, values) => { cloud.saveDraft(values); onFieldChange?.(key, value, values); }}
+        onFieldChange={(key, value, values) => {
+          cloud.saveDraft(values);
+          onFieldChange?.(key, value, values);
+        }}
       />
     </div>
   );

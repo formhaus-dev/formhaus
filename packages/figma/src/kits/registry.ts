@@ -39,7 +39,10 @@ export async function loadKit(id: KitId): Promise<LoadedKit> {
       section.appendChild(node);
       components.set(role, node);
     }
-    arrange(section, section.children.filter((node): node is KitNode => isCurrent(node, kit)));
+    arrange(
+      section,
+      section.children.filter((node): node is KitNode => isCurrent(node, kit)),
+    );
     config.kitNodes[id] = Object.fromEntries([...components].map(([role, node]) => [role, node.id]));
     writeConfig(config);
   }
@@ -53,11 +56,12 @@ function isCurrent(node: BaseNode | null, kit: Kit): node is KitNode {
 }
 
 function findSection(kit: Kit): SectionNode | undefined {
-  return figma.currentPage.children.find((node): node is SectionNode => (
-    node.type === 'SECTION' &&
-    node.getSharedPluginData(PLUGIN_NAMESPACE, 'kit') === kit.id &&
-    node.getSharedPluginData(PLUGIN_NAMESPACE, 'kitVersion') === String(kit.version)
-  ));
+  return figma.currentPage.children.find(
+    (node): node is SectionNode =>
+      node.type === 'SECTION' &&
+      node.getSharedPluginData(PLUGIN_NAMESPACE, 'kit') === kit.id &&
+      node.getSharedPluginData(PLUGIN_NAMESPACE, 'kitVersion') === String(kit.version),
+  );
 }
 
 function createSection(kit: Kit): SectionNode {
@@ -66,9 +70,10 @@ function createSection(kit: Kit): SectionNode {
   section.setSharedPluginData(PLUGIN_NAMESPACE, 'kit', kit.id);
   section.setSharedPluginData(PLUGIN_NAMESPACE, 'kitVersion', String(kit.version));
   const page = figma.currentPage;
-  const bottom = page.children.reduce((edge, node) => (
-    node === section ? edge : Math.max(edge, node.y + ('height' in node ? node.height : 0))
-  ), 0);
+  const bottom = page.children.reduce(
+    (edge, node) => (node === section ? edge : Math.max(edge, node.y + ('height' in node ? node.height : 0))),
+    0,
+  );
   section.x = 0;
   section.y = bottom + 200;
   return section;

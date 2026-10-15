@@ -41,11 +41,14 @@ export function findIssues(form: BuilderForm): Issue[] {
   }
   const position = new Map(questions.map((item) => [item.key, form.blocks.indexOf(item)]));
   form.blocks.forEach((block, index) => {
-    if (isPage(block) && !isQuestion(form.blocks[index + 1])) issues.push({ uid: block.uid, severity: 'error', message: 'This step has no fields.' });
+    if (isPage(block) && !isQuestion(form.blocks[index + 1]))
+      issues.push({ uid: block.uid, severity: 'error', message: 'This step has no fields.' });
     for (const condition of [...(block.extra.show ?? []), ...(block.extra.showAny ?? [])]) {
       const at = position.get(condition.field);
-      if (at === undefined) issues.push({ uid: block.uid, severity: 'error', message: `Shown if uses "${condition.field}", which is not a field.` });
-      else if (at >= index) issues.push({ uid: block.uid, severity: 'warning', message: `Shown if uses "${condition.field}", which comes later.` });
+      if (at === undefined)
+        issues.push({ uid: block.uid, severity: 'error', message: `Shown if uses "${condition.field}", which is not a field.` });
+      else if (at >= index)
+        issues.push({ uid: block.uid, severity: 'warning', message: `Shown if uses "${condition.field}", which comes later.` });
     }
   });
   return issues;

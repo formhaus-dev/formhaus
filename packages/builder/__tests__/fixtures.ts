@@ -13,11 +13,12 @@ export const recipes: [string, FormDefinition][] = readdirSync(resolve(root, 'do
   .filter((name) => name.endsWith('.json'))
   .map((name) => [name, read(resolve(root, 'docs/recipes/definitions', name))]);
 
-const definitionFiles = (dir: string): string[] => readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-  const path = resolve(dir, entry.name);
-  if (entry.isDirectory()) return entry.name === 'node_modules' ? [] : definitionFiles(path);
-  return entry.name.endsWith('.json') ? [path] : [];
-});
+const definitionFiles = (dir: string): string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
+    const path = resolve(dir, entry.name);
+    if (entry.isDirectory()) return entry.name === 'node_modules' ? [] : definitionFiles(path);
+    return entry.name.endsWith('.json') ? [path] : [];
+  });
 
 export const examples: [string, FormDefinition][] = definitionFiles(resolve(root, 'examples'))
   .map((path): [string, unknown] => [path.slice(root.length + 1), read(path)])
@@ -29,7 +30,11 @@ export const examples: [string, FormDefinition][] = definitionFiles(resolve(root
 export function normalize(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(normalize);
   if (!value || typeof value !== 'object') return value;
-  return Object.fromEntries(Object.keys(value).sort().map((key) => [key, normalize((value as Record<string, unknown>)[key])]));
+  return Object.fromEntries(
+    Object.keys(value)
+      .sort()
+      .map((key) => [key, normalize((value as Record<string, unknown>)[key])]),
+  );
 }
 
 export const template = (name: string) => templates.find(([file]) => file === name)![1];

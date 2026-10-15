@@ -9,10 +9,20 @@ describe('textSlots and translationTemplate', () => {
     const slots = textSlots(signup);
     const byAddress = Object.fromEntries(slots.map((slot) => [slot.address, slot]));
     expect(byAddress.title).toMatchObject({ key: 'signup.title', text: 'Create your account', params: [] });
-    expect(byAddress['steps.kind.fields.email.placeholder']).toMatchObject({ key: 'signup.steps.kind.fields.email.placeholder', text: 'you@example.com' });
+    expect(byAddress['steps.kind.fields.email.placeholder']).toMatchObject({
+      key: 'signup.steps.kind.fields.email.placeholder',
+      text: 'you@example.com',
+    });
     expect(byAddress['steps.kind.fields.kind.options.business']).toMatchObject({ key: 'plans.business', text: 'Business' });
-    expect(byAddress['steps.kind.fields.password.validation.minLength']).toMatchObject({ key: 'errors.password.tooShort', text: 'At least 8 characters' });
-    expect(byAddress['messages.minLength']).toMatchObject({ key: 'signup.messages.minLength', text: 'Must be at least {min} characters', params: ['min'] });
+    expect(byAddress['steps.kind.fields.password.validation.minLength']).toMatchObject({
+      key: 'errors.password.tooShort',
+      text: 'At least 8 characters',
+    });
+    expect(byAddress['messages.minLength']).toMatchObject({
+      key: 'signup.messages.minLength',
+      text: 'Must be at least {min} characters',
+      params: ['min'],
+    });
     expect(byAddress['labels.stepOf']).toMatchObject({ params: ['current', 'total'] });
     expect(byAddress['steps.home.fields.address.validation.minLength']).toBeUndefined();
     expect(byAddress['messages.boolean']).toBeUndefined();
@@ -26,18 +36,35 @@ describe('textSlots and translationTemplate', () => {
     expect(template.steps).toMatchObject({ business: { fields: { address: { label: 'Company address' } } } });
     const { messages, labels, ...localized } = localize(signup, { overlay: template }).definition;
     expect(localized).toEqual(signup);
-    expect(messages).toEqual({ required: 'This field is required', minLength: 'Must be at least {min} characters', maxLength: 'Must be at most {max} characters', email: 'Enter a valid email', option: 'Select one of the available options', string: 'Must be text' });
-    expect(labels).toEqual({ continue: 'Continue', back: 'Back', stepOf: 'Step {current} of {total}', errorSummary: 'Check these answers' });
+    expect(messages).toEqual({
+      required: 'This field is required',
+      minLength: 'Must be at least {min} characters',
+      maxLength: 'Must be at most {max} characters',
+      email: 'Enter a valid email',
+      option: 'Select one of the available options',
+      string: 'Must be text',
+    });
+    expect(labels).toEqual({
+      continue: 'Continue',
+      back: 'Back',
+      stepOf: 'Step {current} of {total}',
+      errorSummary: 'Check these answers',
+    });
     expect(translationIssues(signup, template)).toEqual({ missing: [], unknown: [], invalid: [], placeholderMismatch: [], unlabeled: [] });
   });
 
   it('asks for the messages of wrong-type answers so server errors are translated too', () => {
-    const definition = { id: 'types', title: 'Types', submit: { label: 'Send' }, fields: [
-      { key: 'plan', type: 'select', label: 'Plan', options: [{ value: 'a', label: 'A' }] },
-      { key: 'tags', type: 'multiselect', label: 'Tags', options: [{ value: 'a', label: 'A' }] },
-      { key: 'agree', type: 'checkbox', label: 'Agree' },
-      { key: 'name', type: 'text', label: 'Name' },
-    ] } as FormDefinition;
+    const definition = {
+      id: 'types',
+      title: 'Types',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'plan', type: 'select', label: 'Plan', options: [{ value: 'a', label: 'A' }] },
+        { key: 'tags', type: 'multiselect', label: 'Tags', options: [{ value: 'a', label: 'A' }] },
+        { key: 'agree', type: 'checkbox', label: 'Agree' },
+        { key: 'name', type: 'text', label: 'Name' },
+      ],
+    } as FormDefinition;
     const template = translationTemplate(definition);
     expect(Object.keys(template.messages ?? {}).sort()).toEqual(['boolean', 'maxLength', 'option', 'options', 'string']);
     const overlay = { ...template, messages: Object.fromEntries(Object.keys(template.messages ?? {}).map((key) => [key, `ru:${key}`])) };
@@ -68,7 +95,12 @@ describe('translationIssues', () => {
 
   it('accepts params of the rule in field messages', () => {
     const overlay = { fields: { age: { validation: { min: 'От {min}', max: 'До {limit}' } } } };
-    const definition = { id: 'f', title: 'F', submit: { label: 'S' }, fields: [{ key: 'age', type: 'number', label: 'Age', validation: { min: 18, max: 99 } }] };
+    const definition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'S' },
+      fields: [{ key: 'age', type: 'number', label: 'Age', validation: { min: 18, max: 99 } }],
+    };
     expect(translationIssues(definition, overlay).placeholderMismatch).toEqual(['fields.age.validation.max']);
   });
 
@@ -87,16 +119,31 @@ describe('translationIssues', () => {
   it('compares hashes with the prefix of the baseline and checks own placeholder names', () => {
     const baseline = Object.fromEntries(textSlots(signup, { prefix: 'app.forms' }).map(({ address, hash }) => [address, { hash }]));
     expect(translationIssues(signup, ru, { prefix: 'app.forms', slots: baseline }).stale).toEqual([]);
-    const definition = { id: 'f', title: 'F', submit: { label: 'S' }, fields: [{ key: 'age', type: 'number', label: 'Age', validation: { min: 18 } }] };
-    expect(translationIssues(definition, { fields: { age: { validation: { min: 'От {constructor}' } } } }).placeholderMismatch).toEqual(['fields.age.validation.min']);
-    expect(textSlots({ ...definition, fields: [{ ...definition.fields[0], validation: { min: 18, minMessage: 'Too young' } }] }).find(({ address }) => address.endsWith('min'))?.params).toEqual(['min']);
+    const definition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'S' },
+      fields: [{ key: 'age', type: 'number', label: 'Age', validation: { min: 18 } }],
+    };
+    expect(translationIssues(definition, { fields: { age: { validation: { min: 'От {constructor}' } } } }).placeholderMismatch).toEqual([
+      'fields.age.validation.min',
+    ]);
+    expect(
+      textSlots({ ...definition, fields: [{ ...definition.fields[0], validation: { min: 18, minMessage: 'Too young' } }] }).find(
+        ({ address }) => address.endsWith('min'),
+      )?.params,
+    ).toEqual(['min']);
   });
 });
 
 describe('inactive required rules', () => {
-  const definition = (required: false | '') => ({ id: 'f', title: 'F', submit: { label: 'S' }, fields: [
-    { key: 'name', type: 'text', label: 'Name', validation: { required } },
-  ] }) as FormDefinition;
+  const definition = (required: false | '') =>
+    ({
+      id: 'f',
+      title: 'F',
+      submit: { label: 'S' },
+      fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required } }],
+    }) as FormDefinition;
 
   it.each([false, ''] as const)('exports no slot and ignores a translation for required %j', (required) => {
     const source = definition(required);

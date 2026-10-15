@@ -29,17 +29,23 @@ export function createFormPanel(post: Post, show: Show, openComponents: () => vo
   let dirty = false;
   let pending: { definition: FormDefinition; layout?: FormLayout } | null = null;
 
-  const editor = createEditor(editorRoot, () => {
-    dirty = true;
-    refresh();
-  }, (text) => show(output, text, 'error'));
+  const editor = createEditor(
+    editorRoot,
+    () => {
+      dirty = true;
+      refresh();
+    },
+    (text) => show(output, text, 'error'),
+  );
 
   function refresh(): void {
     const draft = editor.get();
     const editing = canvasId !== null && draft.id === canvasId;
     status.textContent = pending
       ? `“${pending.definition.title || 'Untitled'}” selected · unsaved edits here`
-      : editing ? `Editing “${draft.title || 'Untitled'}” from the canvas` : 'New form';
+      : editing
+        ? `Editing “${draft.title || 'Untitled'}” from the canvas`
+        : 'New form';
     status.classList.toggle('is-editing', editing && !pending);
     openPending.hidden = !pending;
     button.textContent = editing ? 'Update form' : 'Generate form';

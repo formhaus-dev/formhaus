@@ -1,16 +1,39 @@
 import type { FormDefinition } from '../../src';
 import type { RendererHarness, TestKit } from './fixtures';
 
-const booking: FormDefinition = { id: 'booking', title: '', submit: { label: 'Send' }, fields: [
-  { key: 'source', type: 'hidden', label: 'Source', defaultValue: 'direct', validation: { pattern: '^[a-z]+$', patternMessage: 'Open the form from the invite link' } },
-  { key: 'campaign', type: 'hidden', label: 'Campaign' },
-  { key: 'startsAt', type: 'time', label: 'Start time' },
-] };
+const booking: FormDefinition = {
+  id: 'booking',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    {
+      key: 'source',
+      type: 'hidden',
+      label: 'Source',
+      defaultValue: 'direct',
+      validation: { pattern: '^[a-z]+$', patternMessage: 'Open the form from the invite link' },
+    },
+    { key: 'campaign', type: 'hidden', label: 'Campaign' },
+    { key: 'startsAt', type: 'time', label: 'Start time' },
+  ],
+};
 
-const wizard: FormDefinition = { id: 'hidden-steps', title: '', submit: { label: 'Send' }, steps: [
-  { id: 'one', title: 'One', fields: [{ key: 'source', type: 'hidden', label: 'Source' }, { key: 'name', type: 'text', label: 'Name' }] },
-  { id: 'two', title: 'Two', fields: [{ key: 'city', type: 'text', label: 'City' }] },
-] };
+const wizard: FormDefinition = {
+  id: 'hidden-steps',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    {
+      id: 'one',
+      title: 'One',
+      fields: [
+        { key: 'source', type: 'hidden', label: 'Source' },
+        { key: 'name', type: 'text', label: 'Name' },
+      ],
+    },
+    { id: 'two', title: 'Two', fields: [{ key: 'city', type: 'text', label: 'City' }] },
+  ],
+};
 
 export function fieldScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
   const button = (name: string) => screen.getByRole('button', { name }) as HTMLButtonElement;
@@ -55,14 +78,22 @@ export function fieldScenarios(harness: RendererHarness, { it, expect, waitFor, 
   });
 
   it('names a required hidden field in its form-level error', async () => {
-    const required: FormDefinition = { ...booking, fields: [{ key: 'ref', type: 'hidden', label: 'Referral code', validation: { required: true } }] };
+    const required: FormDefinition = {
+      ...booking,
+      fields: [{ key: 'ref', type: 'hidden', label: 'Referral code', validation: { required: true } }],
+    };
     harness.mount({ definition: required, onSubmit: fn() });
     await harness.click(button('Send'));
     await waitFor(() => expect(topErrors()).toBe('Referral code: This field is required'));
   });
 
   it('keeps the step and the step marks when the server rejects a hidden value', async () => {
-    harness.mount({ definition: wizard, initialValues: { name: 'Ada' }, stepErrorMarks: true, onSubmit: () => ({ ok: false, errors: { source: 'Expired link' } }) });
+    harness.mount({
+      definition: wizard,
+      initialValues: { name: 'Ada' },
+      stepErrorMarks: true,
+      onSubmit: () => ({ ok: false, errors: { source: 'Expired link' } }),
+    });
     await harness.click(button('Continue'));
     await screen.findByRole('heading', { name: 'Two' });
     await harness.click(button('Send'));

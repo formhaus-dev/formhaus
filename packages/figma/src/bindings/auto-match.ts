@@ -28,8 +28,16 @@ const RULES: Record<Role, Rule> = {
   'field.switch': { match: /\bswitch\b|\btoggle\b/i },
   'option.radio': { match: /\bradio\b/i },
   'option.checkbox': { match: /check ?box/i },
-  'button.primary': { match: /\bbutton\b|\bbtn\b/i, exclude: /icon|radio|toggle|fab|split|\btext\b|\blink\b|tertiary|ghost|plain/i, prefer: /primary|filled|main|default/i },
-  'button.secondary': { match: /\bbutton\b|\bbtn\b/i, exclude: /icon|radio|toggle|fab|split|\btext\b|\blink\b|tertiary|ghost|plain/i, prefer: SECONDARY },
+  'button.primary': {
+    match: /\bbutton\b|\bbtn\b/i,
+    exclude: /icon|radio|toggle|fab|split|\btext\b|\blink\b|tertiary|ghost|plain/i,
+    prefer: /primary|filled|main|default/i,
+  },
+  'button.secondary': {
+    match: /\bbutton\b|\bbtn\b/i,
+    exclude: /icon|radio|toggle|fab|split|\btext\b|\blink\b|tertiary|ghost|plain/i,
+    prefer: SECONDARY,
+  },
   'button.text': { match: /\bbutton\b|\bbtn\b|\blink\b/i, exclude: /icon|radio|toggle|fab|split/i, prefer: TEXT_BUTTON },
 };
 
@@ -46,11 +54,14 @@ export function matchRole(role: Role, names: string[]): number {
 }
 
 function candidates(page: PageNode): Candidate[] {
-  return page.findAllWithCriteria({ types: ['COMPONENT_SET', 'COMPONENT'] })
+  return page
+    .findAllWithCriteria({ types: ['COMPONENT_SET', 'COMPONENT'] })
     .filter((node) => node.parent?.type !== 'COMPONENT_SET' && !node.getSharedPluginData(PLUGIN_NAMESPACE, 'kitVersion'))
     .flatMap((node) => [
       { name: node.name, component: asComponent(node) },
-      ...(node.type === 'COMPONENT_SET' ? node.children.map((variant) => ({ name: `${node.name} / ${variant.name}`, component: variant as ComponentNode })) : []),
+      ...(node.type === 'COMPONENT_SET'
+        ? node.children.map((variant) => ({ name: `${node.name} / ${variant.name}`, component: variant as ComponentNode }))
+        : []),
     ]);
 }
 

@@ -153,5 +153,4 @@ describe('FormEngine - Multi-Step', () => {
       expect(engine.values.company).toBeUndefined();
     });
   });
-
 });

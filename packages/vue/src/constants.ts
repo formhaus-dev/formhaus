@@ -35,9 +35,7 @@ export const defaultFieldComponents: Record<DefaultFieldType, Component> = {
   hidden: HiddenField,
 };
 
-export function withDefaultFields(
-  components?: FieldComponentMap,
-): FieldComponentMap {
+export function withDefaultFields(components?: FieldComponentMap): FieldComponentMap {
   const merged: FieldComponentMap = { ...defaultFieldComponents };
   for (const [type, component] of Object.entries(components ?? {})) {
     if (component) merged[type] = component;

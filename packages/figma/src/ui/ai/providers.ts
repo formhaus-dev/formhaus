@@ -29,7 +29,10 @@ export const PROVIDERS: Record<ProviderId, Provider> = {
       return { model: this.model, max_tokens: 8192, system, messages };
     },
     read: (data) => ({
-      text: (data?.content ?? []).filter((part: any) => part?.type === 'text').map((part: any) => part.text).join(''),
+      text: (data?.content ?? [])
+        .filter((part: any) => part?.type === 'text')
+        .map((part: any) => part.text)
+        .join(''),
       stop: data?.stop_reason === 'max_tokens' ? 'cut' : data?.stop_reason === 'refusal' ? 'refused' : undefined,
     }),
   },
@@ -65,11 +68,22 @@ function errorText(response: Response, data: any): string {
   return detail ? `The provider returned an error: ${detail}` : `The provider returned HTTP ${status}.`;
 }
 
-export async function complete(id: ProviderId, key: string, system: string, messages: ChatMessage[], signal?: AbortSignal): Promise<string> {
+export async function complete(
+  id: ProviderId,
+  key: string,
+  system: string,
+  messages: ChatMessage[],
+  signal?: AbortSignal,
+): Promise<string> {
   const provider = PROVIDERS[id];
   let response: Response;
   try {
-    response = await fetch(provider.url, { method: 'POST', headers: provider.headers(key), body: JSON.stringify(provider.body(system, messages)), signal });
+    response = await fetch(provider.url, {
+      method: 'POST',
+      headers: provider.headers(key),
+      body: JSON.stringify(provider.body(system, messages)),
+      signal,
+    });
   } catch (error) {
     if (signal?.aborted) throw error;
     throw new Error('Could not reach the provider. Check your connection.');

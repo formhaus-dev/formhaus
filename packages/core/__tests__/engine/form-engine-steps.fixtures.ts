@@ -10,7 +10,15 @@ export const multiStepDefinition: FormDefinition = {
       title: 'Personal Info',
       fields: [
         { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
-        { key: 'accountType', type: 'radio', label: 'Account', options: [{ value: 'personal', label: 'Personal' }, { value: 'business', label: 'Business' }] },
+        {
+          key: 'accountType',
+          type: 'radio',
+          label: 'Account',
+          options: [
+            { value: 'personal', label: 'Personal' },
+            { value: 'business', label: 'Business' },
+          ],
+        },
       ],
     },
     {
@@ -22,12 +30,14 @@ export const multiStepDefinition: FormDefinition = {
     {
       id: 'payment',
       title: 'Payment',
-      fields: [{
-        key: 'method',
-        type: 'select',
-        label: 'Method',
-        options: [{ value: 'bank', label: 'Bank' }],
-      }],
+      fields: [
+        {
+          key: 'method',
+          type: 'select',
+          label: 'Method',
+          options: [{ value: 'bank', label: 'Bank' }],
+        },
+      ],
     },
   ],
 };

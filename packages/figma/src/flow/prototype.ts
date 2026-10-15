@@ -7,15 +7,19 @@ const FORWARD: ButtonAction[] = ['next', 'skip'];
 
 export function routeTarget(steps: FormStep[], index: number, values: Record<string, unknown>): string | null {
   const visibleAfter = (target: number) => target > index && isVisible(steps[target], values);
-  const route = steps[index].routes?.find((candidate) => isVisible(candidate, values)
-    && (candidate.to === null || visibleAfter(steps.findIndex((other) => other.id === candidate.to))));
+  const route = steps[index].routes?.find(
+    (candidate) =>
+      isVisible(candidate, values) && (candidate.to === null || visibleAfter(steps.findIndex((other) => other.id === candidate.to))),
+  );
   if (route) return route.to;
   return steps.find((_, target) => visibleAfter(target))?.id ?? null;
 }
 
 export function optionTargets(steps: FormStep[], index: number): Map<string, Map<string, string | null>> {
   const step = steps[index];
-  const routed = new Set((step.routes ?? []).flatMap((route) => [...(route.show ?? []), ...(route.showAny ?? [])].map((condition) => condition.field)));
+  const routed = new Set(
+    (step.routes ?? []).flatMap((route) => [...(route.show ?? []), ...(route.showAny ?? [])].map((condition) => condition.field)),
+  );
   const result = new Map<string, Map<string, string | null>>();
   for (const field of step.fields) {
     if (field.type !== 'radio' || !(routed.has(field.key) || field.autoAdvance) || !field.options?.length) continue;
@@ -29,19 +33,23 @@ function click(actions: Action[]): Reaction {
 }
 
 function navigate(target: FrameNode | undefined): Reaction[] {
-  return target ? [click([{ type: 'NODE', destinationId: target.id, navigation: 'NAVIGATE', transition: TRANSITION, resetScrollPosition: true }])] : [];
+  return target
+    ? [click([{ type: 'NODE', destinationId: target.id, navigation: 'NAVIGATE', transition: TRANSITION, resetScrollPosition: true }])]
+    : [];
 }
 
 async function wireStep(steps: FormStep[], index: number, frame: FrameNode, frames: Map<string, FrameNode>): Promise<void> {
   const forward = navigate(frames.get(routeTarget(steps, index, {}) ?? ''));
   for (const node of frame.findAll((child) => Boolean(child.getSharedPluginData(PLUGIN_NAMESPACE, ACTION_KEY)))) {
     const action = node.getSharedPluginData(PLUGIN_NAMESPACE, ACTION_KEY) as ButtonAction;
-    if ('setReactionsAsync' in node) await node.setReactionsAsync(FORWARD.includes(action) ? forward : action === 'back' ? [click([{ type: 'BACK' }])] : []);
+    if ('setReactionsAsync' in node)
+      await node.setReactionsAsync(FORWARD.includes(action) ? forward : action === 'back' ? [click([{ type: 'BACK' }])] : []);
   }
   for (const [key, targets] of optionTargets(steps, index)) {
     const group = frame.findChild((child) => child.name === key);
     const options = group && 'findAll' in group ? group.findAll((child) => child.type === 'INSTANCE' && targets.has(child.name)) : [];
-    for (const option of options) if (option.type === 'INSTANCE') await option.setReactionsAsync(navigate(frames.get(targets.get(option.name) ?? '')));
+    for (const option of options)
+      if (option.type === 'INSTANCE') await option.setReactionsAsync(navigate(frames.get(targets.get(option.name) ?? '')));
   }
 }
 
@@ -54,6 +62,8 @@ export async function wirePrototype(definition: FormDefinition, source: FormStep
 }
 
 export async function livePoints(exclude: Set<string>): Promise<{ nodeId: string; name: string }[]> {
-  const points = await Promise.all(figma.currentPage.flowStartingPoints.map(async (point) => ({ point, node: await figma.getNodeByIdAsync(point.nodeId) })));
+  const points = await Promise.all(
+    figma.currentPage.flowStartingPoints.map(async (point) => ({ point, node: await figma.getNodeByIdAsync(point.nodeId) })),
+  );
   return points.filter(({ point, node }) => node && !node.removed && !exclude.has(point.nodeId)).map(({ point }) => point);
 }

@@ -6,7 +6,15 @@ import account from '../../../examples/react-flat-api/src/account.json';
 import { FormRenderer } from '../src/FormRenderer';
 
 const definition = account as FormDefinition;
-const valid = { firstName: 'Ada', lastName: 'Lovelace', email: 'ada@example.com', accountType: 'business', companyName: 'Engines', street: '1 Main St', postcode: '10115' };
+const valid = {
+  firstName: 'Ada',
+  lastName: 'Lovelace',
+  email: 'ada@example.com',
+  accountType: 'business',
+  companyName: 'Engines',
+  street: '1 Main St',
+  postcode: '10115',
+};
 const reject = () => ({ ok: false as const, errors: { postcode: 'Unknown postcode', accountType: 'Not available', email: 'Taken' } });
 
 async function submitFromLastStep() {
@@ -78,26 +86,53 @@ describe('error summary and step marks', () => {
 
   it('passes step status to a custom progress component', async () => {
     let seen: unknown;
-    render(<FormRenderer definition={definition} initialValues={valid} onSubmit={reject} stepErrorMarks
-      progressComponent={({ steps }) => { seen = steps; return null; }} />);
+    render(
+      <FormRenderer
+        definition={definition}
+        initialValues={valid}
+        onSubmit={reject}
+        stepErrorMarks
+        progressComponent={({ steps }) => {
+          seen = steps;
+          return null;
+        }}
+      />,
+    );
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
-    await waitFor(() => expect(seen).toEqual([
-      { id: 'about', title: 'About you', errorCount: 0 },
-      { id: 'account', title: 'Account', errorCount: 0 },
-      { id: 'address', title: 'Address', errorCount: 0 },
-    ]));
+    await waitFor(() =>
+      expect(seen).toEqual([
+        { id: 'about', title: 'About you', errorCount: 0 },
+        { id: 'account', title: 'Account', errorCount: 0 },
+        { id: 'address', title: 'Address', errorCount: 0 },
+      ]),
+    );
   });
 });
 
 it('keeps focus when a summary link points to a custom field without the id', async () => {
   const Plain = ({ field, value, onChange }: { field: { label: string }; value: unknown; onChange: (value: unknown) => void }) => (
-    <label>{field.label}<input aria-invalid="true" value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} /></label>
+    <label>
+      {field.label}
+      <input aria-invalid="true" value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} />
+    </label>
   );
-  const plain: FormDefinition = { id: 'plain', title: '', submit: { label: 'Send' }, fields: [
-    { key: 'a', type: 'text', label: 'A' }, { key: 'b', type: 'text', label: 'B' },
-  ] };
-  render(<FormRenderer definition={plain} components={{ text: Plain }} errorSummary
-    onSubmit={() => ({ ok: false, errors: { a: 'bad a', b: 'bad b' } })} />);
+  const plain: FormDefinition = {
+    id: 'plain',
+    title: '',
+    submit: { label: 'Send' },
+    fields: [
+      { key: 'a', type: 'text', label: 'A' },
+      { key: 'b', type: 'text', label: 'B' },
+    ],
+  };
+  render(
+    <FormRenderer
+      definition={plain}
+      components={{ text: Plain }}
+      errorSummary
+      onSubmit={() => ({ ok: false, errors: { a: 'bad a', b: 'bad b' } })}
+    />,
+  );
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   const link = await screen.findByRole('link', { name: 'B: bad b' });
   link.focus();
@@ -107,20 +142,33 @@ it('keeps focus when a summary link points to a custom field without the id', as
 });
 
 it('does not mark a step called constructor', async () => {
-  const reserved: FormDefinition = { id: 'reserved', title: '', submit: { label: 'Send' }, steps: [
-    { id: 'constructor', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }] },
-    { id: 'two', title: 'Two', fields: [{ key: 'b', type: 'text', label: 'B' }] },
-  ] };
+  const reserved: FormDefinition = {
+    id: 'reserved',
+    title: '',
+    submit: { label: 'Send' },
+    steps: [
+      { id: 'constructor', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }] },
+      { id: 'two', title: 'Two', fields: [{ key: 'b', type: 'text', label: 'B' }] },
+    ],
+  };
   render(<FormRenderer definition={reserved} onSubmit={() => {}} stepErrorMarks />);
   const items = [...document.querySelectorAll('.fh-step-progress__step')];
   expect(items.map((item) => item.textContent)).toEqual(['One', 'Two']);
 });
 
 it('focuses the field when a summary link is clicked on a single-step form', async () => {
-  const flat: FormDefinition = { id: 'flat', title: '', submit: { label: 'Send' }, fields: [
-    { key: 'first', type: 'text', label: 'First' }, { key: 'second', type: 'text', label: 'Second' },
-  ] };
-  render(<FormRenderer definition={flat} errorSummary onSubmit={() => ({ ok: false, errors: { first: 'Bad first', second: 'Bad second' } })} />);
+  const flat: FormDefinition = {
+    id: 'flat',
+    title: '',
+    submit: { label: 'Send' },
+    fields: [
+      { key: 'first', type: 'text', label: 'First' },
+      { key: 'second', type: 'text', label: 'Second' },
+    ],
+  };
+  render(
+    <FormRenderer definition={flat} errorSummary onSubmit={() => ({ ok: false, errors: { first: 'Bad first', second: 'Bad second' } })} />,
+  );
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   const link = await screen.findByRole('link', { name: 'Second: Bad second' });
   await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /First/ })));

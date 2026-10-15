@@ -13,10 +13,7 @@
           "type": "radio",
           "label": "Service",
           "validation": { "required": true },
-          "options": [
-            { "value": "design", "label": "Design" },
-            { "value": "development", "label": "Development" }
-          ]
+          "options": [{ "value": "design", "label": "Design" }, { "value": "development", "label": "Development" }]
         }
       ],
       "routes": [
@@ -42,11 +39,7 @@
           "type": "select",
           "label": "Platform",
           "validation": { "required": true },
-          "options": [
-            { "value": "web", "label": "Web" },
-            { "value": "ios", "label": "iOS" },
-            { "value": "android", "label": "Android" }
-          ]
+          "options": [{ "value": "web", "label": "Web" }, { "value": "ios", "label": "iOS" }, { "value": "android", "label": "Android" }]
         },
         { "key": "repoUrl", "type": "text", "label": "Existing repository URL" }
       ],

@@ -23,7 +23,8 @@ const fixtures: SubmissionFixture[] = readdirSync(fixturesDir)
   .filter((file) => file.endsWith('.json'))
   .map((file) => JSON.parse(readFileSync(join(fixturesDir, file), 'utf8')));
 const cases = fixtures.flatMap(({ name, definition, cases }) =>
-  cases.map((testCase) => [`${name}: ${testCase.name}`, definition, testCase] as const));
+  cases.map((testCase) => [`${name}: ${testCase.name}`, definition, testCase] as const),
+);
 const skipFixture = fixtures.find(({ name }) => name === 'skip')!;
 
 describe('validateSubmission fixtures', () => {
@@ -42,7 +43,9 @@ describe('validateSubmission', () => {
 
   it('accepts loaded values for optionsFrom fields that also list static options', () => {
     const definition: FormDefinition = {
-      id: 'remote', title: 'Remote', submit: { label: 'Send' },
+      id: 'remote',
+      title: 'Remote',
+      submit: { label: 'Send' },
       fields: [
         { key: 'city', type: 'select', label: 'City', optionsFrom: 'cities', options: [] },
         { key: 'tags', type: 'multiselect', label: 'Tags', optionsFrom: 'tags', options: [] },

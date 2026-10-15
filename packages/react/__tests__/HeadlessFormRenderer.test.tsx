@@ -18,8 +18,12 @@ function CustomText({ field, value, onChange }: FieldComponentProps) {
 function CustomActions({ primaryLabel, onPrimary, onCancel }: FormActionsProps) {
   return (
     <div>
-      <button type="button" onClick={onPrimary}>{primaryLabel}</button>
-      <button type="button" onClick={onCancel}>Custom cancel</button>
+      <button type="button" onClick={onPrimary}>
+        {primaryLabel}
+      </button>
+      <button type="button" onClick={onCancel}>
+        Custom cancel
+      </button>
     </div>
   );
 }
@@ -52,11 +56,7 @@ const steps: FormDefinition = {
 describe('HeadlessFormRenderer', () => {
   it('renders mapped custom fields', () => {
     const { container } = render(
-      <HeadlessFormRenderer
-        definition={definition}
-        components={{ text: CustomText, email: CustomText }}
-        onSubmit={() => {}}
-      />,
+      <HeadlessFormRenderer definition={definition} components={{ text: CustomText, email: CustomText }} onSubmit={() => {}} />,
     );
     expect(screen.getByTestId('custom-name')).toBeDefined();
     expect(screen.getByTestId('custom-email')).toBeDefined();
@@ -64,18 +64,14 @@ describe('HeadlessFormRenderer', () => {
   });
 
   it('renders the unsupported fallback for an unmapped type', () => {
-    const { container } = render(
-      <HeadlessFormRenderer definition={definition} components={{ text: CustomText }} onSubmit={() => {}} />,
-    );
+    const { container } = render(<HeadlessFormRenderer definition={definition} components={{ text: CustomText }} onSubmit={() => {}} />);
     expect(screen.getByText('Unsupported field type: email')).toBeDefined();
     expect(container.querySelectorAll('input')).toHaveLength(1);
     expect(container.querySelector('.fh-field__input')).toBeNull();
   });
 
   it('renders no actions or progress when none are passed', () => {
-    const { container } = render(
-      <HeadlessFormRenderer definition={steps} components={{ text: CustomText }} onSubmit={() => {}} />,
-    );
+    const { container } = render(<HeadlessFormRenderer definition={steps} components={{ text: CustomText }} onSubmit={() => {}} />);
     expect(container.querySelector('button')).toBeNull();
     expect(container.querySelector('.fh-step-progress')).toBeNull();
   });
@@ -102,9 +98,7 @@ describe('HeadlessFormRenderer', () => {
 
 describe('FormRenderer built-in fallbacks', () => {
   it('falls back to native fields, actions and progress', () => {
-    const { container } = render(
-      <FormRenderer definition={steps} components={{ text: undefined }} onSubmit={() => {}} />,
-    );
+    const { container } = render(<FormRenderer definition={steps} components={{ text: undefined }} onSubmit={() => {}} />);
     expect(container.querySelector('.fh-field__input')).not.toBeNull();
     expect(container.querySelector('.fh-step-progress')).not.toBeNull();
     expect(screen.getByRole('button', { name: 'Continue' })).toBeDefined();

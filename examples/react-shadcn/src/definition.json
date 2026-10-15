@@ -18,16 +18,10 @@
           "type": "radio",
           "label": "Plan",
           "validation": { "required": true },
-          "options": [
-            { "value": "personal", "label": "Personal" },
-            { "value": "team", "label": "Team" }
-          ]
+          "options": [{ "value": "personal", "label": "Personal" }, { "value": "team", "label": "Team" }]
         }
       ],
-      "routes": [
-        { "to": "team", "show": [{ "field": "plan", "eq": "team" }] },
-        { "to": "profile" }
-      ]
+      "routes": [{ "to": "team", "show": [{ "field": "plan", "eq": "team" }] }, { "to": "profile" }]
     },
     {
       "id": "team",

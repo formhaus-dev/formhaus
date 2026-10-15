@@ -24,21 +24,19 @@ describe('TextField', () => {
     expect(emitted()['update:modelValue']).toEqual([['']]);
   });
 
-  it.each([
-    [['1', '1.0', '1.05']],
-    [['2', '2.5', '2.50']],
-    [['-0', '-0.5']],
-    [['1.05', '1.0', '1.05']],
-  ])('keeps typed number text %j', async (steps) => {
-    render(ControlledNumber);
-    const input = screen.getByRole('spinbutton', { name: 'Age' }) as HTMLInputElement;
+  it.each([[['1', '1.0', '1.05']], [['2', '2.5', '2.50']], [['-0', '-0.5']], [['1.05', '1.0', '1.05']]])(
+    'keeps typed number text %j',
+    async (steps) => {
+      render(ControlledNumber);
+      const input = screen.getByRole('spinbutton', { name: 'Age' }) as HTMLInputElement;
 
-    const shown: string[] = [];
-    for (const step of steps) {
-      await fireEvent.update(input, step);
-      shown.push(input.value);
-    }
+      const shown: string[] = [];
+      for (const step of steps) {
+        await fireEvent.update(input, step);
+        shown.push(input.value);
+      }
 
-    expect(shown).toEqual(steps);
-  });
+      expect(shown).toEqual(steps);
+    },
+  );
 });

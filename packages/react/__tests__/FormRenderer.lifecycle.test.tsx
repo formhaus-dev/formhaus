@@ -4,16 +4,33 @@ import { describe, expect, it, vi } from 'vitest';
 import { FormRenderer } from '../src/FormRenderer';
 
 const definition: FormDefinition = {
-  id: 'auto', title: 'Auto', submit: { label: 'Send' }, steps: [
-    { id: 'choice', title: 'Choose', next: false, fields: [
-      { key: 'choice', type: 'radio', label: 'Choice', autoAdvance: true,
-        helperText: 'Click an option or press Space to continue. Arrow keys only select.',
-        options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] },
-    ] },
-    { id: 'confirm', title: 'Confirm', fields: [
-      { key: 'confirm', type: 'radio', label: 'Confirm', autoAdvance: true,
-        options: [{ value: 'yes', label: 'Yes' }] },
-    ] },
+  id: 'auto',
+  title: 'Auto',
+  submit: { label: 'Send' },
+  steps: [
+    {
+      id: 'choice',
+      title: 'Choose',
+      next: false,
+      fields: [
+        {
+          key: 'choice',
+          type: 'radio',
+          label: 'Choice',
+          autoAdvance: true,
+          helperText: 'Click an option or press Space to continue. Arrow keys only select.',
+          options: [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'confirm',
+      title: 'Confirm',
+      fields: [{ key: 'confirm', type: 'radio', label: 'Confirm', autoAdvance: true, options: [{ value: 'yes', label: 'Yes' }] }],
+    },
   ],
 };
 
@@ -53,13 +70,20 @@ describe('auto advance and lifecycle', () => {
     let allow = false;
     const before = vi.fn(() => allow);
     const onError = vi.fn();
-    const { rerender } = render(<FormRenderer definition={definition} onSubmit={() => {}}
-      onBeforeStepChange={before} onError={onError} />);
+    const { rerender } = render(<FormRenderer definition={definition} onSubmit={() => {}} onBeforeStepChange={before} onError={onError} />);
     fireEvent.click(screen.getByLabelText('A'));
     await waitFor(() => expect(before).toHaveBeenCalledTimes(1));
     expect(screen.queryByLabelText('Yes')).toBeNull();
-    rerender(<FormRenderer definition={definition} onSubmit={() => {}} onError={onError}
-      onBeforeStepChange={() => { throw new Error('Offline'); }} />);
+    rerender(
+      <FormRenderer
+        definition={definition}
+        onSubmit={() => {}}
+        onError={onError}
+        onBeforeStepChange={() => {
+          throw new Error('Offline');
+        }}
+      />,
+    );
     fireEvent.click(screen.getByLabelText('A'));
     await waitFor(() => expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'Offline' })));
     allow = true;
@@ -70,10 +94,14 @@ describe('auto advance and lifecycle', () => {
 
   it('awaits submission before afterSubmit and blocks rapid duplicate submits', async () => {
     let resolve!: () => void;
-    const onSubmit = vi.fn(() => new Promise<void>((done) => { resolve = done; }));
+    const onSubmit = vi.fn(
+      () =>
+        new Promise<void>((done) => {
+          resolve = done;
+        }),
+    );
     const after = vi.fn();
-    render(<FormRenderer definition={{ id: 'single', title: '', submit: { label: 'Send' } }}
-      onSubmit={onSubmit} onAfterSubmit={after} />);
+    render(<FormRenderer definition={{ id: 'single', title: '', submit: { label: 'Send' } }} onSubmit={onSubmit} onAfterSubmit={after} />);
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     expect(onSubmit).toHaveBeenCalledTimes(1);
@@ -93,8 +121,17 @@ it('commits an already selected radio on Space without relying on a native chang
 
 it('restores focus for retry after an async guard cancels', async () => {
   let cancel!: (allowed: boolean) => void;
-  render(<FormRenderer definition={definition} onSubmit={() => {}}
-    onBeforeStepChange={() => new Promise<boolean>((done) => { cancel = done; })} />);
+  render(
+    <FormRenderer
+      definition={definition}
+      onSubmit={() => {}}
+      onBeforeStepChange={() =>
+        new Promise<boolean>((done) => {
+          cancel = done;
+        })
+      }
+    />,
+  );
   const a = screen.getByLabelText('A');
   a.focus();
   fireEvent.click(a);
@@ -112,8 +149,12 @@ it('prevents held Enter from implicitly submitting the final radio', () => {
 });
 
 it('does not pull focus back into the form on unrelated updates', async () => {
-  const single: FormDefinition = { id: 'focus', title: '', submit: { label: 'Send' },
-    fields: [{ key: 'name', type: 'text', label: 'Name' }] };
+  const single: FormDefinition = {
+    id: 'focus',
+    title: '',
+    submit: { label: 'Send' },
+    fields: [{ key: 'name', type: 'text', label: 'Name' }],
+  };
   const { rerender } = render(<FormRenderer definition={single} onSubmit={() => {}} />);
   const input = screen.getByLabelText('Name');
   input.focus();

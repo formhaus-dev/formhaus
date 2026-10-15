@@ -28,7 +28,7 @@ type Found = Focusable | null | undefined;
 const CONTROLS = 'input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
 
 function firstControl(root: Found): Found {
-  return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS) as Found;
+  return root?.matches(CONTROLS) ? root : (root?.querySelector(CONTROLS) as Found);
 }
 
 function reveal(target: Focusable, scrollTo: Focusable): void {
@@ -56,7 +56,7 @@ export function restoreFocus(form: FormRoot | null | undefined, target: (Focusab
 export function focusField(form: FormRoot | null | undefined, formId: string, key: string | null, definition?: FormDefinition): void {
   const fields = form?.querySelector('.fh-form__fields') as Found;
   const id = key && fieldDomId(formId, key, definition);
-  const chosen = id ? fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) as Found : null;
+  const chosen = id ? (fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) as Found) : null;
   if (id && !chosen) return;
   const field = (chosen?.closest?.('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) as Found;
   const target = (field?.querySelector('input:checked:not(:disabled)') as Found) ?? firstControl(field) ?? firstControl(fields);

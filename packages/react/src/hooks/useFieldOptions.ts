@@ -3,9 +3,10 @@ import { useEffect, useRef, useState } from 'react';
 import type { OptionsProvider } from '../types';
 
 function areOptionsEqual(previous: FieldOption[] | undefined, next: FieldOption[]): boolean {
-  return previous?.length === next.length && previous.every((option, index) => (
-    option.value === next[index].value && option.label === next[index].label
-  ));
+  return (
+    previous?.length === next.length &&
+    previous.every((option, index) => option.value === next[index].value && option.label === next[index].label)
+  );
 }
 
 export function useFieldOptions(
@@ -18,9 +19,7 @@ export function useFieldOptions(
 
   useEffect(() => {
     if (!providers) {
-      setResolved((previous) => (
-        Object.keys(previous).length > 0 ? {} : previous
-      ));
+      setResolved((previous) => (Object.keys(previous).length > 0 ? {} : previous));
       return;
     }
 

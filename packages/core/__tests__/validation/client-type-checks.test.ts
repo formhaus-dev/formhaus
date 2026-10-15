@@ -22,7 +22,8 @@ describe('client type checks', () => {
   ])('rejects %s %j like the server', (type, value, message) => {
     expect(validateFieldValue(field(type), value, {})).toBe(message);
     const definition = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [field(type)] };
-    if (typeof value !== 'number' || Number.isFinite(value)) expect(validateSubmission(definition, { x: value }).errors.x ?? message).toBe(message);
+    if (typeof value !== 'number' || Number.isFinite(value))
+      expect(validateSubmission(definition, { x: value }).errors.x ?? message).toBe(message);
   });
 
   it.each([
@@ -39,12 +40,34 @@ describe('client type checks', () => {
     expect(validateFieldValue(field(type), value, {})).toBeNull();
   });
 
-  const scalar = (type: string, extra: Partial<FormField> = {}) => ({ id: 'f', title: 'F', submit: { label: 'Go' },
-    fields: [field(type, { options: [{ value: 'a', label: 'A' }], ...extra })] });
+  const scalar = (type: string, extra: Partial<FormField> = {}) => ({
+    id: 'f',
+    title: 'F',
+    submit: { label: 'Go' },
+    fields: [field(type, { options: [{ value: 'a', label: 'A' }], ...extra })],
+  });
 
-  it.each(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'radio', 'checkbox', 'switch', 'date', 'datetime', 'time', 'textarea', 'hidden'])('drops an empty list in an optional %s field like a missing answer', (type) => {
+  it.each([
+    'text',
+    'email',
+    'phone',
+    'number',
+    'password',
+    'select',
+    'autocomplete',
+    'radio',
+    'checkbox',
+    'switch',
+    'date',
+    'datetime',
+    'time',
+    'textarea',
+    'hidden',
+  ])('drops an empty list in an optional %s field like a missing answer', (type) => {
     const validator = vi.fn(() => 'bad');
-    expect(validateSubmission(scalar(type, { validation: { validator: 'check' } }), { x: [] }, { validators: { check: validator } })).toEqual({ values: {}, errors: {} });
+    expect(
+      validateSubmission(scalar(type, { validation: { validator: 'check' } }), { x: [] }, { validators: { check: validator } }),
+    ).toEqual({ values: {}, errors: {} });
     expect(new FormEngine(scalar(type), { x: [] }).validate()).toEqual({});
     expect(validator).not.toHaveBeenCalled();
   });
@@ -68,10 +91,15 @@ describe('client type checks', () => {
   });
 
   it('does not let an empty list match a condition on the server', () => {
-    const definition = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [
-      field('text', { key: 'a' }),
-      field('text', { key: 'b', show: [{ field: 'a', notEmpty: true }], validation: { required: true } }),
-    ] };
+    const definition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Go' },
+      fields: [
+        field('text', { key: 'a' }),
+        field('text', { key: 'b', show: [{ field: 'a', notEmpty: true }], validation: { required: true } }),
+      ],
+    };
     expect(validateSubmission(definition, { a: [], b: 'x' })).toEqual({ values: {}, errors: {} });
   });
 
@@ -96,17 +124,30 @@ describe('client type checks', () => {
   });
 
   it('blocks Continue on an invalid email in the engine', async () => {
-    const engine = new FormEngine({ id: 'f', title: 'F', submit: { label: 'Go' }, steps: [
-      { id: 'a', title: 'A', fields: [field('email', { key: 'email' })] },
-      { id: 'b', title: 'B', fields: [] },
-    ] }, { email: 'user@localhost' });
+    const engine = new FormEngine(
+      {
+        id: 'f',
+        title: 'F',
+        submit: { label: 'Go' },
+        steps: [
+          { id: 'a', title: 'A', fields: [field('email', { key: 'email' })] },
+          { id: 'b', title: 'B', fields: [] },
+        ],
+      },
+      { email: 'user@localhost' },
+    );
     expect(await engine.next()).toBe(false);
     expect(engine.errors.email).toBe('Enter a valid email');
   });
 });
 
 describe('validateSubmission options', () => {
-  const definition = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [field('text', { key: 'card', validation: { validator: 'luhn' } })] };
+  const definition = {
+    id: 'f',
+    title: 'F',
+    submit: { label: 'Go' },
+    fields: [field('text', { key: 'card', validation: { validator: 'luhn' } })],
+  };
 
   it('runs validators passed in options', () => {
     const luhn = (value: unknown) => (value === '4242' ? null : 'Invalid card');
@@ -116,6 +157,8 @@ describe('validateSubmission options', () => {
 
   it('reports a request body passed instead of the values', () => {
     const result = validateSubmission(definition, { values: { card: '4242' }, skippedSteps: [] });
-    expect(result.errors.values).toBe('Pass the values object as the second argument, not the request body with "values" and "skippedSteps".');
+    expect(result.errors.values).toBe(
+      'Pass the values object as the second argument, not the request body with "values" and "skippedSteps".',
+    );
   });
 });

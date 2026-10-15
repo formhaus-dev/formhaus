@@ -10,10 +10,16 @@ export function apiKey(): string | undefined {
   return process.env.FORMHAUS_API_KEY?.trim() || undefined;
 }
 
-export async function cloudRequest(path: string, init: { method?: string; body?: unknown; auth: 'required' | 'optional' }): Promise<CloudResult> {
+export async function cloudRequest(
+  path: string,
+  init: { method?: string; body?: unknown; auth: 'required' | 'optional' },
+): Promise<CloudResult> {
   const key = apiKey();
   if (init.auth === 'required' && !key) {
-    return { ok: false, body: { error: 'FORMHAUS_API_KEY is not set. Create an API key in the Formhaus dashboard and set it in the MCP server environment.' } };
+    return {
+      ok: false,
+      body: { error: 'FORMHAUS_API_KEY is not set. Create an API key in the Formhaus dashboard and set it in the MCP server environment.' },
+    };
   }
   const base = (process.env.FORMHAUS_API_BASE || DEFAULT_API_BASE).replace(/\/+$/, '');
   try {

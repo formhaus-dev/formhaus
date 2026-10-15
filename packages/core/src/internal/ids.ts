@@ -15,8 +15,9 @@ function idsOf(definition: FormDefinition): Map<string, string> {
   if (ids) return ids;
   ids = new Map();
   const taken = new Set<string>();
-  const keys = [...new Set(getAllFields(definition).map((field) => field.key))]
-    .sort((a, b) => +(clean(b) === b) - +(clean(a) === a) || (a < b ? -1 : 1));
+  const keys = [...new Set(getAllFields(definition).map((field) => field.key))].sort(
+    (a, b) => +(clean(b) === b) - +(clean(a) === a) || (a < b ? -1 : 1),
+  );
   for (const key of keys) {
     let id = clean(key);
     for (let seed = key; taken.has(id); seed = id) id = `${clean(key)}-${hash(seed)}`;

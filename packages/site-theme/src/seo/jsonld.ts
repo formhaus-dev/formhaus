@@ -1,6 +1,6 @@
-import { authorUrl, coreVersion, repoUrl, siteName, siteUrl } from './site'
+import { authorUrl, coreVersion, repoUrl, siteName, siteUrl } from './site';
 
-const author = { '@type': 'Person', name: 'Ignat', url: authorUrl }
+const author = { '@type': 'Person', name: 'Ignat', url: authorUrl };
 
 const keywords = [
   'form definition',
@@ -13,16 +13,16 @@ const keywords = [
   'Vue forms',
   'Figma plugin',
   'JSON Schema',
-]
+];
 
 const plans = [
   { name: 'Free', price: '0' },
   { name: 'Pro', price: '19' },
   { name: 'Team', price: '49' },
-]
+];
 
 export function homeJsonLd(description: string) {
-  const organization = { '@id': `${siteUrl}/#organization` }
+  const organization = { '@id': `${siteUrl}/#organization` };
   return {
     '@context': 'https://schema.org',
     '@graph': [
@@ -70,9 +70,11 @@ export function homeJsonLd(description: string) {
           price,
           priceCurrency: 'USD',
           url: `${siteUrl}/cloud/plans`,
-          ...(price === '0' ? {} : {
-            priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: 'USD', unitText: 'MONTH' },
-          }),
+          ...(price === '0'
+            ? {}
+            : {
+                priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: 'USD', unitText: 'MONTH' },
+              }),
         })),
         sameAs: [
           repoUrl,
@@ -83,7 +85,7 @@ export function homeJsonLd(description: string) {
         ],
       },
     ],
-  }
+  };
 }
 
 export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
@@ -91,7 +93,7 @@ export function breadcrumbJsonLd(items: { name: string; url: string }[]) {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: items.map(({ name, url }, index) => ({ '@type': 'ListItem', position: index + 1, name, item: url })),
-  }
+  };
 }
 
 export function articleJsonLd(headline: string, description: string, url: string, lastUpdated?: number) {
@@ -104,7 +106,7 @@ export function articleJsonLd(headline: string, description: string, url: string
     ...(lastUpdated ? { dateModified: new Date(lastUpdated).toISOString() } : {}),
     author,
     isPartOf: { '@type': 'WebSite', name: siteName, url: `${siteUrl}/` },
-  }
+  };
 }
 
 function plainText(html: string): string {
@@ -115,13 +117,13 @@ function plainText(html: string): string {
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&')
-    .trim()
+    .trim();
 }
 
 export function faqJsonLd(html: string) {
-  const start = html.indexOf('id="faq"')
-  const faq = start < 0 ? '' : html.slice(start).split('</section>')[0]
-  const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*(?:<div\b[^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/g)]
+  const start = html.indexOf('id="faq"');
+  const faq = start < 0 ? '' : html.slice(start).split('</section>')[0];
+  const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*(?:<div\b[^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/g)];
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -130,5 +132,5 @@ export function faqJsonLd(html: string) {
       name: plainText(question.replace(/<a class="header-anchor"[\s\S]*?<\/a>/, '')),
       acceptedAnswer: { '@type': 'Answer', text: plainText(answer) },
     })),
-  }
+  };
 }

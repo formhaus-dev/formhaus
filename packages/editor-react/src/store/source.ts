@@ -3,7 +3,9 @@ import type { EditorHost, Published } from '../host';
 import { initialEditor, type InitialEditor } from './initial';
 
 export type EditorSource =
-  { status: 'loading' } | { status: 'error'; error: unknown } | { status: 'ready'; initial: InitialEditor; published: Published | null };
+  | { status: 'loading' }
+  | { status: 'error'; error: unknown }
+  | { status: 'ready'; initial: InitialEditor; published: Published | null };
 
 export function useEditorSource(host: EditorHost): EditorSource {
   const [source, setSource] = useState<EditorSource>({ status: 'loading' });

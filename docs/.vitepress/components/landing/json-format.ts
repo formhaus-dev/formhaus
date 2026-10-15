@@ -29,21 +29,27 @@ export function formatJson(value: unknown): string {
 }
 
 export type TokenKind = 'key' | 'string' | 'literal' | 'punct';
-export interface Token { kind: TokenKind; text: string }
+export interface Token {
+  kind: TokenKind;
+  text: string;
+}
 
 const TOKEN = /("(?:[^"\\]|\\.)*")(\s*:)?|(-?\d+(?:\.\d+)?|true|false|null)|([^"\d\-tfn]+|.)/g;
 
 export function tokenize(source: string): Token[][] {
-  return source.replace(/\n$/, '').split('\n').map((line) => {
-    const tokens: Token[] = [];
-    for (const match of line.matchAll(TOKEN)) {
-      if (match[1] && match[2]) tokens.push({ kind: 'key', text: match[1] }, { kind: 'punct', text: match[2] });
-      else if (match[1]) tokens.push({ kind: 'string', text: match[1] });
-      else if (match[3]) tokens.push({ kind: 'literal', text: match[3] });
-      else tokens.push({ kind: 'punct', text: match[0] });
-    }
-    return tokens;
-  });
+  return source
+    .replace(/\n$/, '')
+    .split('\n')
+    .map((line) => {
+      const tokens: Token[] = [];
+      for (const match of line.matchAll(TOKEN)) {
+        if (match[1] && match[2]) tokens.push({ kind: 'key', text: match[1] }, { kind: 'punct', text: match[2] });
+        else if (match[1]) tokens.push({ kind: 'string', text: match[1] });
+        else if (match[3]) tokens.push({ kind: 'literal', text: match[3] });
+        else tokens.push({ kind: 'punct', text: match[0] });
+      }
+      return tokens;
+    });
 }
 
 export function parseJson(text: string): { value: unknown } | { error: string } {

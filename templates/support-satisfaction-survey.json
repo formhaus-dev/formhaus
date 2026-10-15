@@ -13,11 +13,7 @@
         "type": "radio",
         "label": "Was your issue resolved?",
         "layout": "inline",
-        "options": [
-          { "value": "yes", "label": "Yes" },
-          { "value": "partly", "label": "Partly" },
-          { "value": "no", "label": "No" }
-        ],
+        "options": [{ "value": "yes", "label": "Yes" }, { "value": "partly", "label": "Partly" }, { "value": "no", "label": "No" }],
         "validation": { "required": true }
       },
       {
@@ -56,10 +52,7 @@
         "type": "textarea",
         "label": "What could we have done better?",
         "rows": 3,
-        "showAny": [
-          { "field": "csat", "in": ["1", "2", "3"] },
-          { "field": "resolved", "in": ["partly", "no"] }
-        ]
+        "showAny": [{ "field": "csat", "in": ["1", "2", "3"] }, { "field": "resolved", "in": ["partly", "no"] }]
       }
     ]
   }

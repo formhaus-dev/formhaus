@@ -6,11 +6,23 @@ const field = (type: string, options?: { value: string; label: string }[]) => ({
 
 describe('roleForField', () => {
   it.each([
-    ['text', 'field.text'], ['email', 'field.text'], ['phone', 'field.text'], ['number', 'field.text'],
-    ['password', 'field.text'], ['select', 'field.select'], ['autocomplete', 'field.select'],
-    ['textarea', 'field.textarea'], ['date', 'field.date'], ['datetime', 'field.date'], ['time', 'field.date'], ['file', 'field.file'],
-    ['switch', 'field.switch'], ['radio', 'option.radio'], ['multiselect', 'option.checkbox'],
-    ['checkbox', 'field.checkbox'], ['custom-rating', 'field.text'],
+    ['text', 'field.text'],
+    ['email', 'field.text'],
+    ['phone', 'field.text'],
+    ['number', 'field.text'],
+    ['password', 'field.text'],
+    ['select', 'field.select'],
+    ['autocomplete', 'field.select'],
+    ['textarea', 'field.textarea'],
+    ['date', 'field.date'],
+    ['datetime', 'field.date'],
+    ['time', 'field.date'],
+    ['file', 'field.file'],
+    ['switch', 'field.switch'],
+    ['radio', 'option.radio'],
+    ['multiselect', 'option.checkbox'],
+    ['checkbox', 'field.checkbox'],
+    ['custom-rating', 'field.text'],
   ])('maps %s to %s', (type, role) => {
     expect(roleForField(field(type))).toBe(role);
   });
@@ -27,8 +39,15 @@ describe('roleForField', () => {
 
 describe('slotForName', () => {
   it.each([
-    ['Label', 'label'], ['Header', 'label'], ['Title', 'label'], ['Value', 'value'], ['Placeholder', 'value'],
-    ['Input text', 'value'], ['Helper', 'helper'], ['Helper text', 'helper'], ['Supporting text', 'helper'],
+    ['Label', 'label'],
+    ['Header', 'label'],
+    ['Title', 'label'],
+    ['Value', 'value'],
+    ['Placeholder', 'value'],
+    ['Input text', 'value'],
+    ['Helper', 'helper'],
+    ['Helper text', 'helper'],
+    ['Supporting text', 'helper'],
     ['Icon', undefined],
   ])('detects %s as %s', (name, slot) => {
     expect(slotForName(name)).toBe(slot);

@@ -13,17 +13,32 @@ export const definition: FormDefinition = {
       i18n: { title: 'signup.steps.account' },
       fields: [
         { key: 'email', type: 'email', label: 'Email', i18n: { label: 'signup.email.label' }, validation: { required: true } },
-        { key: 'password', type: 'password', label: 'Password', i18n: { label: 'signup.password.label' }, validation: { required: true, minLength: 8 } },
+        {
+          key: 'password',
+          type: 'password',
+          label: 'Password',
+          i18n: { label: 'signup.password.label' },
+          validation: { required: true, minLength: 8 },
+        },
       ],
     },
     {
       id: 'plan',
       title: 'Plan',
       i18n: { title: 'signup.steps.plan' },
-      fields: [{
-        key: 'plan', type: 'radio', label: 'Plan', i18n: { label: 'signup.plan.label' }, validation: { required: true },
-        options: [{ value: 'free', label: 'Free', i18n: { label: 'plans.free' } }, { value: 'pro', label: 'Pro' }],
-      }],
+      fields: [
+        {
+          key: 'plan',
+          type: 'radio',
+          label: 'Plan',
+          i18n: { label: 'signup.plan.label' },
+          validation: { required: true },
+          options: [
+            { value: 'free', label: 'Free', i18n: { label: 'plans.free' } },
+            { value: 'pro', label: 'Pro' },
+          ],
+        },
+      ],
     },
   ],
 };
@@ -48,7 +63,10 @@ export const overlay = {
   messages: { required: 'Обязательное поле', minLength: 'Минимум {min} символов' },
   labels: { continue: 'Далее', back: 'Назад', stepOf: 'Шаг {current} из {total}' },
   steps: {
-    account: { title: 'Аккаунт', fields: { email: { label: 'Почта' }, password: { label: 'Пароль', validation: { minLength: 'Пароль: от {min} символов' } } } },
+    account: {
+      title: 'Аккаунт',
+      fields: { email: { label: 'Почта' }, password: { label: 'Пароль', validation: { minLength: 'Пароль: от {min} символов' } } },
+    },
     plan: { fields: { plan: { label: 'Тариф', options: { free: 'Бесплатный' } } } },
   },
 };

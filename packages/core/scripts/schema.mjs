@@ -51,7 +51,11 @@ export function buildSchema() {
 }
 
 const text = { type: 'string' };
-const texts = (names) => ({ type: 'object', properties: Object.fromEntries(names.map((name) => [name, text])), additionalProperties: false });
+const texts = (names) => ({
+  type: 'object',
+  properties: Object.fromEntries(names.map((name) => [name, text])),
+  additionalProperties: false,
+});
 
 export function buildTranslationSchema(definitionSchema = buildSchema()) {
   const names = (name) => Object.keys(definitionSchema.definitions[name].properties);
@@ -75,7 +79,8 @@ export function buildTranslationSchema(definitionSchema = buildSchema()) {
     $schema: definitionSchema.$schema,
     $id: 'https://formhaus.dev/schema/form-translation.json',
     title: 'Formhaus translation overlay',
-    description: 'Translated texts of one form in one language, keyed by step id, field key and option value. Every leaf is a string; empty strings fall back to the source text.',
+    description:
+      'Translated texts of one form in one language, keyed by step id, field key and option value. Every leaf is a string; empty strings fall back to the source text.',
     ...overlay,
     definitions: { field, step },
   };
@@ -87,7 +92,10 @@ export function serializeSchema(schema) {
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const schema = buildSchema();
-  const outputs = [[SCHEMA_OUTPUTS, schema], [TRANSLATION_SCHEMA_OUTPUTS, buildTranslationSchema(schema)]];
+  const outputs = [
+    [SCHEMA_OUTPUTS, schema],
+    [TRANSLATION_SCHEMA_OUTPUTS, buildTranslationSchema(schema)],
+  ];
   for (const [paths, value] of outputs) {
     for (const output of paths) {
       await mkdir(dirname(output), { recursive: true });

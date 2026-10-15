@@ -36,7 +36,13 @@ interface Position {
   isMultiStep: boolean;
 }
 
-function planned(role: ButtonAction, action: FormAction | false | undefined, fallback: string, kind: ButtonKind, show: boolean): PlannedButton | null {
+function planned(
+  role: ButtonAction,
+  action: FormAction | false | undefined,
+  fallback: string,
+  kind: ButtonKind,
+  show: boolean,
+): PlannedButton | null {
   if (!show || action === false) return null;
   return { label: action?.label || fallback, kind: action?.variant ?? kind, action: role };
 }
@@ -68,7 +74,13 @@ async function renderRow(name: string, buttons: PlannedButton[], renderer: FormR
   return row;
 }
 
-export async function appendActions(frame: FrameNode, buttons: PlannedButton[], renderer: FormRenderer, layout: FormLayout, append: Append): Promise<void> {
+export async function appendActions(
+  frame: FrameNode,
+  buttons: PlannedButton[],
+  renderer: FormRenderer,
+  layout: FormLayout,
+  append: Append,
+): Promise<void> {
   if (buttons.length === 0) return;
   const actions = stack('VERTICAL', 'Actions', { itemSpacing: renderer.theme.actionsGap });
   append(frame, actions);
@@ -76,9 +88,14 @@ export async function appendActions(frame: FrameNode, buttons: PlannedButton[], 
     for (const button of buttons) append(actions, await renderButton(button, renderer));
     return;
   }
-  const filled = buttons.filter((button) => button.kind !== 'text').sort((left, right) => (left.kind === 'primary' ? 1 : 0) - (right.kind === 'primary' ? 1 : 0));
+  const filled = buttons
+    .filter((button) => button.kind !== 'text')
+    .sort((left, right) => (left.kind === 'primary' ? 1 : 0) - (right.kind === 'primary' ? 1 : 0));
   const links = buttons.filter((button) => button.kind === 'text');
-  for (const [name, group] of [['Buttons', filled], ['Links', links]] as const) {
+  for (const [name, group] of [
+    ['Buttons', filled],
+    ['Links', links],
+  ] as const) {
     if (group.length === 0) continue;
     const row = await renderRow(name, group, renderer);
     append(actions, row);

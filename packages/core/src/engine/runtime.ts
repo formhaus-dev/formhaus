@@ -32,7 +32,9 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
 
   private readonly validators: Record<string, ValidatorFn>;
   private readonly messages: ResolveMessage;
-  private get onStepValidate(): StepValidateFn | undefined { return this.lifecycle.onStepValidate; }
+  private get onStepValidate(): StepValidateFn | undefined {
+    return this.lifecycle.onStepValidate;
+  }
   private readonly visibility: VisibilityState;
   private readonly subscriptions = createSubscriptions();
 
@@ -47,21 +49,52 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.messages = messageResolver(options?.messages, definition.messages);
     this.visibility = createVisibility(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
-    this.state = { values, errors: {}, topLevelErrors: [], serverErrors: {}, serverFormErrors: [], currentStepIndex: 0, fieldLoading: {}, stepValidating: false, submitting: false };
+    this.state = {
+      values,
+      errors: {},
+      topLevelErrors: [],
+      serverErrors: {},
+      serverFormErrors: [],
+      currentStepIndex: 0,
+      fieldLoading: {},
+      stepValidating: false,
+      submitting: false,
+    };
     this.visibility.reconcileHidden(values, this.state.errors, true);
   }
 
-  get values(): Readonly<Partial<TValues>> { return this.state.values as Partial<TValues>; }
-  get errors(): Readonly<Record<string, string>> { return this.state.errors; }
+  get values(): Readonly<Partial<TValues>> {
+    return this.state.values as Partial<TValues>;
+  }
+  get errors(): Readonly<Record<string, string>> {
+    return this.state.errors;
+  }
   get topLevelErrors(): readonly string[] {
     const { errors, topLevelErrors, values } = this.state;
-    return [...topLevelErrors, ...this.visibility.allFields.flatMap((field) => (
-      field.type === 'hidden' && errors[field.key] && (this.visibility.activeField(field.key, values) ?? field) === field && errors[field.key]) || [])];
+    return [
+      ...topLevelErrors,
+      ...this.visibility.allFields.flatMap(
+        (field) =>
+          (field.type === 'hidden' &&
+            errors[field.key] &&
+            (this.visibility.activeField(field.key, values) ?? field) === field &&
+            errors[field.key]) ||
+          [],
+      ),
+    ];
   }
-  get currentStepIndex(): number { return this.state.currentStepIndex; }
-  get fieldLoading(): Readonly<Record<string, boolean>> { return this.state.fieldLoading; }
-  get stepValidating(): boolean { return this.state.stepValidating; }
-  get submitting(): boolean { return this.state.submitting; }
+  get currentStepIndex(): number {
+    return this.state.currentStepIndex;
+  }
+  get fieldLoading(): Readonly<Record<string, boolean>> {
+    return this.state.fieldLoading;
+  }
+  get stepValidating(): boolean {
+    return this.state.stepValidating;
+  }
+  get submitting(): boolean {
+    return this.state.submitting;
+  }
 
   get isMultiStep(): boolean {
     return (this.definition.steps ?? []).length > 0;
@@ -171,16 +204,36 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.notify();
   }
 
-  next(): Promise<boolean> { return changeStep(this.internals, 'next'); }
-  back(): Promise<boolean> { return changeStep(this.internals, 'back'); }
-  skip(submit?: SubmitHandler): Promise<boolean> { return skipStep(this.internals, submit); }
-  submit(handler: SubmitHandler): Promise<boolean> { return submitForm(this.internals, handler); }
-  isStepSkipped(stepId: string): boolean { return this.skipped.has(stepId); }
-  validate(): Record<string, string> { return validateForm(this.internals); }
-  validateField(key: string): string | null { return validateOne(this.internals, key); }
-  getSubmitValues(): Partial<TValues> { return getSubmitValues(this.internals) as Partial<TValues>; }
-  goToStepWithField(key: string): void { goToStepWithField(this.internals, key); }
-  reset(values?: Record<string, unknown>): void { resetEngine(this.internals, values); }
+  next(): Promise<boolean> {
+    return changeStep(this.internals, 'next');
+  }
+  back(): Promise<boolean> {
+    return changeStep(this.internals, 'back');
+  }
+  skip(submit?: SubmitHandler): Promise<boolean> {
+    return skipStep(this.internals, submit);
+  }
+  submit(handler: SubmitHandler): Promise<boolean> {
+    return submitForm(this.internals, handler);
+  }
+  isStepSkipped(stepId: string): boolean {
+    return this.skipped.has(stepId);
+  }
+  validate(): Record<string, string> {
+    return validateForm(this.internals);
+  }
+  validateField(key: string): string | null {
+    return validateOne(this.internals, key);
+  }
+  getSubmitValues(): Partial<TValues> {
+    return getSubmitValues(this.internals) as Partial<TValues>;
+  }
+  goToStepWithField(key: string): void {
+    goToStepWithField(this.internals, key);
+  }
+  reset(values?: Record<string, unknown>): void {
+    resetEngine(this.internals, values);
+  }
 
   private get view() {
     return this.visibility.state(this.state.values, this.currentStepIndex);

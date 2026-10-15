@@ -1,14 +1,24 @@
 import type { FormDefinition } from '../../src';
 import type { RendererHarness, TestKit } from './fixtures';
 
-const contacts: FormDefinition = { id: 'contacts', title: '', submit: { label: 'Send' }, fields: [
-  { key: 'contact.email', type: 'text', label: 'Work email', validation: { required: true } },
-  { key: 'contact-email', type: 'text', label: 'Home email' },
-  { key: 'name', type: 'text', label: 'Name' },
-] };
+const contacts: FormDefinition = {
+  id: 'contacts',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'contact.email', type: 'text', label: 'Work email', validation: { required: true } },
+    { key: 'contact-email', type: 'text', label: 'Home email' },
+    { key: 'name', type: 'text', label: 'Name' },
+  ],
+};
 
 const KEYS = ['contact.email', 'first-name', 'last_name', 'field2', 'camelCase', 'имя', 'Größe'];
-const unusual: FormDefinition = { id: 'keys', title: '', submit: { label: 'Send' }, fields: KEYS.map((key) => ({ key, type: 'text', label: `Label ${key}` })) };
+const unusual: FormDefinition = {
+  id: 'keys',
+  title: '',
+  submit: { label: 'Send' },
+  fields: KEYS.map((key) => ({ key, type: 'text', label: `Label ${key}` })),
+};
 
 export function idScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
   const input = (name: RegExp) => screen.getByRole('textbox', { name }) as HTMLInputElement;
@@ -43,7 +53,7 @@ export function idScenarios(harness: RendererHarness, { it, expect, waitFor, scr
   });
 
   it('shows a server error next to the field with the same key', async () => {
-    harness.mount({ definition: unusual, errors: { 'contact.email': 'Already registered', 'имя': 'Too short' }, onSubmit: fn() });
+    harness.mount({ definition: unusual, errors: { 'contact.email': 'Already registered', имя: 'Too short' }, onSubmit: fn() });
     await waitFor(() => expect(byKey('contact.email').getAttribute('aria-invalid')).toBe('true'));
     expect(errorOf('contact.email')).toContain('Already registered');
     expect(errorOf('имя')).toContain('Too short');

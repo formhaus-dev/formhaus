@@ -5,7 +5,12 @@ import { validateSubmission } from '../../src/server';
 
 const KEYS = ['contact.email', 'first-name', 'last_name', 'field2', 'camelCase', 'имя', 'Größe', 'a.b.c'] as const;
 
-const definition: FormDefinition = { id: 'keys', title: 'Keys', submit: { label: 'Send' }, fields: KEYS.map((key) => ({ key, type: 'text', label: `Label ${key}`, validation: { required: true } })) };
+const definition: FormDefinition = {
+  id: 'keys',
+  title: 'Keys',
+  submit: { label: 'Send' },
+  fields: KEYS.map((key) => ({ key, type: 'text', label: `Label ${key}`, validation: { required: true } })),
+};
 const answers = Object.fromEntries(KEYS.map((key) => [key, `value of ${key}`]));
 
 describe('submitted keys', () => {
@@ -13,7 +18,11 @@ describe('submitted keys', () => {
     const engine = new FormEngine(definition, answers);
     expect(Object.keys(engine.getSubmitValues())).toEqual([...KEYS]);
     let submitted: Record<string, unknown> | undefined;
-    expect(await engine.submit(async (values) => { submitted = values; })).toBe(true);
+    expect(
+      await engine.submit(async (values) => {
+        submitted = values;
+      }),
+    ).toBe(true);
     expect(submitted).toEqual(answers);
     expect(submitted).not.toHaveProperty('contact');
     expect(submitted).not.toHaveProperty('a');
@@ -32,8 +41,8 @@ describe('submitted keys', () => {
 
   it('maps server errors back onto the field with the same key', () => {
     const engine = new FormEngine(definition, answers);
-    engine.setErrors({ 'contact.email': 'Already registered', 'имя': 'Too short' });
-    expect(engine.errors).toEqual({ 'contact.email': 'Already registered', 'имя': 'Too short' });
+    engine.setErrors({ 'contact.email': 'Already registered', имя: 'Too short' });
+    expect(engine.errors).toEqual({ 'contact.email': 'Already registered', имя: 'Too short' });
     expect(engine.topLevelErrors).toEqual([]);
   });
 

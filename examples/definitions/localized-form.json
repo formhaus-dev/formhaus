@@ -31,11 +31,11 @@
       "title": "Сообщение",
       "fields": [
         {
-          "key": "topic", "type": "radio", "label": "Тема", "validation": { "required": "Выберите тему" },
-          "options": [
-            { "value": "bug", "label": "Ошибка" },
-            { "value": "idea", "label": "Идея" }
-          ]
+          "key": "topic",
+          "type": "radio",
+          "label": "Тема",
+          "validation": { "required": "Выберите тему" },
+          "options": [{ "value": "bug", "label": "Ошибка" }, { "value": "idea", "label": "Идея" }]
         },
         { "key": "text", "type": "textarea", "label": "Текст", "validation": { "required": true, "maxLength": 2000 } }
       ]

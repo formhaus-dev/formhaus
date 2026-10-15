@@ -9,8 +9,6 @@ describe('server.json', () => {
   it('matches package.json', () => {
     expect(server.name).toBe(pkg.mcpName);
     expect(server.version).toBe(pkg.version);
-    expect(server.packages).toEqual([
-      expect.objectContaining({ registryType: 'npm', identifier: pkg.name, version: pkg.version }),
-    ]);
+    expect(server.packages).toEqual([expect.objectContaining({ registryType: 'npm', identifier: pkg.name, version: pkg.version })]);
   });
 });

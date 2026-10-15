@@ -24,27 +24,19 @@ describe('evaluateCondition', () => {
   });
 
   it('in: returns true when value is in list', () => {
-    expect(evaluateCondition({ field: 'country', in: ['MX', 'US', 'CA'] }, { country: 'US' })).toBe(
-      true,
-    );
+    expect(evaluateCondition({ field: 'country', in: ['MX', 'US', 'CA'] }, { country: 'US' })).toBe(true);
   });
 
   it('in: returns false when value is not in list', () => {
-    expect(evaluateCondition({ field: 'country', in: ['MX', 'US'] }, { country: 'BR' })).toBe(
-      false,
-    );
+    expect(evaluateCondition({ field: 'country', in: ['MX', 'US'] }, { country: 'BR' })).toBe(false);
   });
 
   it('notIn: returns true when value is not in list', () => {
-    expect(evaluateCondition({ field: 'country', notIn: ['MX', 'US'] }, { country: 'BR' })).toBe(
-      true,
-    );
+    expect(evaluateCondition({ field: 'country', notIn: ['MX', 'US'] }, { country: 'BR' })).toBe(true);
   });
 
   it('notIn: returns false when value is in list', () => {
-    expect(evaluateCondition({ field: 'country', notIn: ['MX', 'US'] }, { country: 'MX' })).toBe(
-      false,
-    );
+    expect(evaluateCondition({ field: 'country', notIn: ['MX', 'US'] }, { country: 'MX' })).toBe(false);
   });
 
   it('notEmpty: returns true for non-empty string', () => {

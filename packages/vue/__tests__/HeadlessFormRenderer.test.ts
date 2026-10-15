@@ -12,11 +12,12 @@ const CustomText = defineComponent({
   },
   emits: ['update:modelValue', 'blur', 'focus'],
   setup(props, { emit }) {
-    return () => h('input', {
-      'data-testid': `custom-${props.field.key}`,
-      value: props.modelValue ?? '',
-      onInput: (e: Event) => emit('update:modelValue', (e.target as HTMLInputElement).value),
-    });
+    return () =>
+      h('input', {
+        'data-testid': `custom-${props.field.key}`,
+        value: props.modelValue ?? '',
+        onInput: (e: Event) => emit('update:modelValue', (e.target as HTMLInputElement).value),
+      });
   },
 });
 
@@ -25,10 +26,11 @@ const CustomActions = defineComponent({
   props: { primaryLabel: String },
   emits: ['primary', 'cancel'],
   setup(props, { emit }) {
-    return () => h('div', [
-      h('button', { type: 'button', onClick: () => emit('primary') }, props.primaryLabel),
-      h('button', { type: 'button', onClick: () => emit('cancel') }, 'Custom cancel'),
-    ]);
+    return () =>
+      h('div', [
+        h('button', { type: 'button', onClick: () => emit('primary') }, props.primaryLabel),
+        h('button', { type: 'button', onClick: () => emit('cancel') }, 'Custom cancel'),
+      ]);
   },
 });
 

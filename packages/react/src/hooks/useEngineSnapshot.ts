@@ -8,10 +8,7 @@ export function useFormSnapshot(engine: FormEngine): number {
 }
 
 export function useStructureSnapshot(engine: FormEngine): number {
-  const subscribe = useCallback(
-    (listener: () => void) => engine.subscribeStructure(listener),
-    [engine],
-  );
+  const subscribe = useCallback((listener: () => void) => engine.subscribeStructure(listener), [engine]);
   const getSnapshot = useCallback(() => engine.getStructureSnapshot(), [engine]);
   return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 }

@@ -2,20 +2,10 @@ import type { FieldComponentProps } from '@formhaus/react';
 import MuiTextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 
-export function SelectField({
-  id,
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-}: FieldComponentProps) {
+export function SelectField({ id, field, value, error, loading, disabled, onChange }: FieldComponentProps) {
   const options = field.options ?? [];
   const isMulti = field.type === 'multiselect';
-  const selectValue = isMulti
-    ? Array.isArray(value) ? value : []
-    : (value as string) ?? '';
+  const selectValue = isMulti ? (Array.isArray(value) ? value : []) : ((value as string) ?? '');
 
   return (
     <MuiTextField
@@ -33,11 +23,7 @@ export function SelectField({
         select: { multiple: isMulti },
       }}
     >
-      {!isMulti && (
-        <MenuItem value="">
-          {field.placeholder || 'Select...'}
-        </MenuItem>
-      )}
+      {!isMulti && <MenuItem value="">{field.placeholder || 'Select...'}</MenuItem>}
       {options.map((opt) => (
         <MenuItem key={opt.value} value={opt.value}>
           {opt.label}

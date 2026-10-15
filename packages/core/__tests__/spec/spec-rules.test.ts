@@ -7,7 +7,9 @@ const toggle = text('show', { type: 'checkbox' });
 
 describe('visibility rules', () => {
   it('starts a re-shown field empty without restoring its defaultValue', () => {
-    const engine = new FormEngine(single([toggle, text('detail', { defaultValue: 'preset', show: [{ field: 'show', eq: true }] })]), { show: true });
+    const engine = new FormEngine(single([toggle, text('detail', { defaultValue: 'preset', show: [{ field: 'show', eq: true }] })]), {
+      show: true,
+    });
     expect(engine.values.detail).toBe('preset');
     engine.setValue('show', false);
     engine.setValue('show', true);
@@ -15,7 +17,10 @@ describe('visibility rules', () => {
   });
 
   it('removes the error of a field when it becomes hidden', () => {
-    const engine = new FormEngine(single([toggle, text('detail', { show: [{ field: 'show', eq: true }], validation: { required: true } })]), { show: true });
+    const engine = new FormEngine(
+      single([toggle, text('detail', { show: [{ field: 'show', eq: true }], validation: { required: true } })]),
+      { show: true },
+    );
     engine.validate();
     expect(engine.errors.detail).toBe('This field is required');
     engine.setValue('show', false);
@@ -25,7 +30,13 @@ describe('visibility rules', () => {
 
 describe('payload rules', () => {
   it('keeps null, empty string, false and empty arrays without conversion', () => {
-    const fields = [text('a'), text('b'), text('c', { type: 'checkbox' }), text('d', { type: 'multiselect', options: [{ value: 'x', label: 'X' }] }), text('e', { type: 'number' })];
+    const fields = [
+      text('a'),
+      text('b'),
+      text('c', { type: 'checkbox' }),
+      text('d', { type: 'multiselect', options: [{ value: 'x', label: 'X' }] }),
+      text('e', { type: 'number' }),
+    ];
     const engine = new FormEngine(single(fields), { a: null, b: '', c: false, d: [], e: 0 });
     expect(engine.getSubmitValues()).toEqual({ a: null, b: '', c: false, d: [], e: 0 });
   });
@@ -71,11 +82,16 @@ describe('condition edges', () => {
 });
 
 describe('steps', () => {
-  const steps: FormDefinition = { id: 'm', title: 'M', submit: { label: 'Go' }, steps: [
-    { id: 'one', title: 'One', fields: [text('a')] },
-    { id: 'two', title: 'Two', skip: { label: 'Skip' }, fields: [text('b', { defaultValue: 'd' })] },
-    { id: 'three', title: 'Three', fields: [] },
-  ] };
+  const steps: FormDefinition = {
+    id: 'm',
+    title: 'M',
+    submit: { label: 'Go' },
+    steps: [
+      { id: 'one', title: 'One', fields: [text('a')] },
+      { id: 'two', title: 'Two', skip: { label: 'Skip' }, fields: [text('b', { defaultValue: 'd' })] },
+      { id: 'three', title: 'Three', fields: [] },
+    ],
+  };
 
   it('passes reason skip to onAfterStepChange', async () => {
     const after = vi.fn();

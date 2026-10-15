@@ -114,10 +114,7 @@
             "type": "radio",
             "label": "Do you want public credit once it’s fixed?",
             "layout": "inline",
-            "options": [
-              { "value": "yes", "label": "Yes" },
-              { "value": "no", "label": "No, keep me anonymous" }
-            ],
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No, keep me anonymous" }],
             "validation": { "required": true }
           },
           {

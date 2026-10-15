@@ -46,8 +46,13 @@ export function createMockApi({ latency = 0 }: MockApiOptions = {}) {
   let offline = false;
   return {
     requests,
-    setOffline(value: boolean) { offline = value; },
-    reject(key: ForcedRejection, value: boolean) { if (value) forced.add(key); else forced.delete(key); },
+    setOffline(value: boolean) {
+      offline = value;
+    },
+    reject(key: ForcedRejection, value: boolean) {
+      if (value) forced.add(key);
+      else forced.delete(key);
+    },
     async createAccount(request: AccountRequest): Promise<ApiResponse> {
       await wait(latency);
       if (offline) throw new TypeError('Failed to fetch');

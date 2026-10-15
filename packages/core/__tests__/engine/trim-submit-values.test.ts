@@ -26,7 +26,9 @@ describe('whitespace trimming', () => {
   it('passes trimmed values to the submit handler', async () => {
     let received: unknown;
     const engine = new FormEngine(definition, values);
-    await engine.submit((submitted) => { received = submitted; });
+    await engine.submit((submitted) => {
+      received = submitted;
+    });
     expect(received).toEqual(trimmed);
   });
 

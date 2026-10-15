@@ -38,10 +38,7 @@
             "type": "radio",
             "label": "How will you attend?",
             "layout": "inline",
-            "options": [
-              { "value": "in-person", "label": "In person" },
-              { "value": "online", "label": "Online" }
-            ],
+            "options": [{ "value": "in-person", "label": "In person" }, { "value": "online", "label": "Online" }],
             "validation": { "required": true }
           },
           {

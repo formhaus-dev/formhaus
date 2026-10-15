@@ -6,8 +6,7 @@ type Entry = Record<string, unknown>;
 type Check = (value: Entry, path: string) => DefinitionIssue[];
 type Kind = 'string' | 'number' | 'boolean' | 'requirement' | 'scalar' | 'list';
 
-export const isEntry = (value: unknown): value is Entry =>
-  typeof value === 'object' && value !== null && !Array.isArray(value);
+export const isEntry = (value: unknown): value is Entry => typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const KINDS: Record<Kind, [(value: unknown) => boolean, string]> = {
   string: [(value) => typeof value === 'string', 'a string'],
@@ -15,29 +14,51 @@ const KINDS: Record<Kind, [(value: unknown) => boolean, string]> = {
   boolean: [(value) => typeof value === 'boolean', 'true or false'],
   requirement: [(value) => ['boolean', 'string'].includes(typeof value), 'true, false or a message string'],
   scalar: [(value) => ['string', 'number', 'boolean'].includes(typeof value), 'a string, number or boolean'],
-  list: [(value) => Array.isArray(value) && value.every((item) => ['string', 'number'].includes(typeof item)), 'an array of strings or numbers'],
+  list: [
+    (value) => Array.isArray(value) && value.every((item) => ['string', 'number'].includes(typeof item)),
+    'an array of strings or numbers',
+  ],
 };
 
 function typed(value: Entry, rules: Record<string, Kind>, path: string): DefinitionIssue[] {
   return Object.entries(rules).flatMap(([key, kind]) => {
     const [valid, name] = KINDS[kind];
-    return value[key] === undefined || valid(value[key]) ? [] : [error('invalid-type', `${path}/${pointer(key)}`, `"${key}" must be ${name}`)];
+    return value[key] === undefined || valid(value[key])
+      ? []
+      : [error('invalid-type', `${path}/${pointer(key)}`, `"${key}" must be ${name}`)];
   });
 }
 
 function list(value: unknown, path: string, name: string, check: Check, required = false): DefinitionIssue[] {
   if (value == null && !required) return [];
-  if (!Array.isArray(value)) return [error('invalid-type', path, 'must be an array', required ? 'Use [] when there is nothing to list' : undefined)];
-  return value.flatMap((item, index) => (
-    isEntry(item) ? check(item, `${path}/${index}`) : [error('invalid-type', `${path}/${index}`, `must be ${name}`)]
-  ));
+  if (!Array.isArray(value))
+    return [error('invalid-type', path, 'must be an array', required ? 'Use [] when there is nothing to list' : undefined)];
+  return value.flatMap((item, index) =>
+    isEntry(item) ? check(item, `${path}/${index}`) : [error('invalid-type', `${path}/${index}`, `must be ${name}`)],
+  );
 }
 
 function text(value: Entry, key: string, path: string): DefinitionIssue[] {
   return typeof value[key] === 'string' ? [] : [error('missing-property', `${path}/${key}`, `"${key}" must be a string`)];
 }
 
-const condition: Check = (value, path) => typed(value, { field: 'string', eq: 'scalar', neq: 'scalar', in: 'list', notIn: 'list', notEmpty: 'boolean', gt: 'number', gte: 'number', lt: 'number', lte: 'number' }, path);
+const condition: Check = (value, path) =>
+  typed(
+    value,
+    {
+      field: 'string',
+      eq: 'scalar',
+      neq: 'scalar',
+      in: 'list',
+      notIn: 'list',
+      notEmpty: 'boolean',
+      gt: 'number',
+      gte: 'number',
+      lt: 'number',
+      lte: 'number',
+    },
+    path,
+  );
 
 function conditions(value: Entry, path: string): DefinitionIssue[] {
   return [
@@ -54,8 +75,20 @@ function action(value: unknown, path: string): DefinitionIssue[] {
 const option: Check = (value, path) => [...text(value, 'value', path), ...typed(value, { label: 'string' }, path)];
 
 const RULES: Record<string, Kind> = {
-  required: 'requirement', minLength: 'number', maxLength: 'number', min: 'number', max: 'number', pattern: 'string', matchField: 'string', validator: 'string',
-  minLengthMessage: 'string', maxLengthMessage: 'string', minMessage: 'string', maxMessage: 'string', patternMessage: 'string', matchFieldMessage: 'string',
+  required: 'requirement',
+  minLength: 'number',
+  maxLength: 'number',
+  min: 'number',
+  max: 'number',
+  pattern: 'string',
+  matchField: 'string',
+  validator: 'string',
+  minLengthMessage: 'string',
+  maxLengthMessage: 'string',
+  minMessage: 'string',
+  maxMessage: 'string',
+  patternMessage: 'string',
+  matchFieldMessage: 'string',
 };
 
 function validation(value: unknown, path: string): DefinitionIssue[] {
@@ -107,6 +140,8 @@ export function shapeIssues(input: unknown): DefinitionIssue[] {
 export function metaIssues(input: Entry): DefinitionIssue[] {
   return [
     ...text(input, 'id', ''),
-    ...(isEntry(input.submit) ? [] : [error('missing-property', '/submit', 'the submit action is missing', 'Add "submit": { "label": "Submit" }')]),
+    ...(isEntry(input.submit)
+      ? []
+      : [error('missing-property', '/submit', 'the submit action is missing', 'Add "submit": { "label": "Submit" }')]),
   ];
 }

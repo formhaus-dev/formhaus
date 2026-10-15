@@ -43,5 +43,8 @@ export function branchShortcut(value: string): string | undefined {
 }
 
 export function splitLines(text: string): string[] {
-  return text.split(/\r?\n/).map((line) => line.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, '').trim()).filter(Boolean);
+  return text
+    .split(/\r?\n/)
+    .map((line) => line.replace(/^\s*(?:[-*•]|\d+[.)])\s+/, '').trim())
+    .filter(Boolean);
 }

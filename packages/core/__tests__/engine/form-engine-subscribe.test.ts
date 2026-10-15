@@ -175,5 +175,4 @@ describe('FormEngine - Subscribe/getSnapshot', () => {
     expect(listenerA).toHaveBeenCalledTimes(2);
     expect(listenerB).not.toHaveBeenCalled();
   });
-
 });

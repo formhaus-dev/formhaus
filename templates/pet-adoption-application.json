@@ -17,11 +17,7 @@
             "type": "radio",
             "label": "What are you looking to adopt?",
             "layout": "inline",
-            "options": [
-              { "value": "dog", "label": "Dog" },
-              { "value": "cat", "label": "Cat" },
-              { "value": "other", "label": "Other" }
-            ],
+            "options": [{ "value": "dog", "label": "Dog" }, { "value": "cat", "label": "Cat" }, { "value": "other", "label": "Other" }],
             "validation": { "required": true }
           },
           {
@@ -69,11 +65,7 @@
             "label": "Does your landlord allow pets?",
             "layout": "inline",
             "show": [{ "field": "ownership", "eq": "rent" }],
-            "options": [
-              { "value": "yes", "label": "Yes" },
-              { "value": "no", "label": "No" },
-              { "value": "not-sure", "label": "Not sure" }
-            ],
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }, { "value": "not-sure", "label": "Not sure" }],
             "validation": { "required": true }
           },
           {
@@ -89,15 +81,8 @@
             "type": "radio",
             "label": "Is your yard fenced?",
             "layout": "inline",
-            "show": [
-              { "field": "species", "eq": "dog" },
-              { "field": "homeType", "eq": "house-yard" }
-            ],
-            "options": [
-              { "value": "yes", "label": "Yes" },
-              { "value": "partly", "label": "Partly" },
-              { "value": "no", "label": "No" }
-            ],
+            "show": [{ "field": "species", "eq": "dog" }, { "field": "homeType", "eq": "house-yard" }],
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "partly", "label": "Partly" }, { "value": "no", "label": "No" }],
             "validation": { "required": true }
           },
           {

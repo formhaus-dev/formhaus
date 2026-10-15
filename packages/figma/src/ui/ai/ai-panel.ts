@@ -81,12 +81,18 @@ export function createAiPanel(post: Post, host: AiHost) {
       return say('Add your API key first.', 'error');
     }
     if (key !== keys[provider()]) post({ type: 'saveAiKey', provider: provider(), key });
-    const current = target === 'edit' ? host.draft() ?? undefined : undefined;
+    const current = target === 'edit' ? (host.draft() ?? undefined) : undefined;
     const controller = new AbortController();
     setRunning(controller);
     say('');
     try {
-      const { definition, warnings } = await generateDefinition({ provider: provider(), key, description, current, signal: controller.signal });
+      const { definition, warnings } = await generateDefinition({
+        provider: provider(),
+        key,
+        description,
+        current,
+        signal: controller.signal,
+      });
       panel.hidden = true;
       host.apply(definition, ['Review the form, then generate it.', ...warnings].join(' '));
     } catch (error) {

@@ -2,8 +2,23 @@ import type { FieldOption, FormDefinition, FormField, FormStep } from '@formhaus
 import { referencedKeys, referencedSteps, referencedValues } from './references';
 
 export const FIELD_TYPES = [
-  'text', 'email', 'phone', 'number', 'password', 'textarea', 'select', 'autocomplete',
-  'multiselect', 'radio', 'checkbox', 'switch', 'date', 'datetime', 'time', 'file', 'hidden',
+  'text',
+  'email',
+  'phone',
+  'number',
+  'password',
+  'textarea',
+  'select',
+  'autocomplete',
+  'multiselect',
+  'radio',
+  'checkbox',
+  'switch',
+  'date',
+  'datetime',
+  'time',
+  'file',
+  'hidden',
 ] as const;
 
 const OPTION_TYPES = new Set(['select', 'autocomplete', 'multiselect', 'radio']);
@@ -13,17 +28,58 @@ export function hasOptions(field: FormField): boolean {
 }
 
 const CYRILLIC: Record<string, string> = {
-  а: 'a', б: 'b', в: 'v', г: 'g', д: 'd', е: 'e', ё: 'e', ж: 'zh', з: 'z', и: 'i', й: 'y', к: 'k', л: 'l', м: 'm', н: 'n', о: 'o', п: 'p',
-  р: 'r', с: 's', т: 't', у: 'u', ф: 'f', х: 'h', ц: 'ts', ч: 'ch', ш: 'sh', щ: 'sch', ъ: '', ы: 'y', ь: '', э: 'e', ю: 'yu', я: 'ya',
+  а: 'a',
+  б: 'b',
+  в: 'v',
+  г: 'g',
+  д: 'd',
+  е: 'e',
+  ё: 'e',
+  ж: 'zh',
+  з: 'z',
+  и: 'i',
+  й: 'y',
+  к: 'k',
+  л: 'l',
+  м: 'm',
+  н: 'n',
+  о: 'o',
+  п: 'p',
+  р: 'r',
+  с: 's',
+  т: 't',
+  у: 'u',
+  ф: 'f',
+  х: 'h',
+  ц: 'ts',
+  ч: 'ch',
+  ш: 'sh',
+  щ: 'sch',
+  ъ: '',
+  ы: 'y',
+  ь: '',
+  э: 'e',
+  ю: 'yu',
+  я: 'ya',
 };
 
 function latin(label: string): string {
-  return [...label.toLowerCase()].map((char) => CYRILLIC[char] ?? char).join('').normalize('NFKD').replace(/\p{M}/gu, '');
+  return [...label.toLowerCase()]
+    .map((char) => CYRILLIC[char] ?? char)
+    .join('')
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '');
 }
 
 export function keyFromLabel(label: string, taken: Set<string>): string {
-  const words = latin(label).replace(/[^a-z0-9\s]/g, ' ').trim().split(/\s+/).filter(Boolean);
-  const base = words.map((word, index) => (index === 0 ? word.toLowerCase() : word[0].toUpperCase() + word.slice(1).toLowerCase())).join('') || 'field';
+  const words = latin(label)
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+  const base =
+    words.map((word, index) => (index === 0 ? word.toLowerCase() : word[0].toUpperCase() + word.slice(1).toLowerCase())).join('') ||
+    'field';
   const safe = /^\d/.test(base) ? `field${base}` : base;
   let key = safe;
   for (let index = 2; taken.has(key); index++) key = `${safe}${index}`;
@@ -58,7 +114,11 @@ function fieldsOf(draft: FormDefinition, stepIndex: number): FormField[] {
 export function addField(draft: FormDefinition, stepIndex: number, type: string): FormField {
   const label = 'New field';
   const field: FormField = { key: keyFromLabel(label, allKeys(draft)), type, label };
-  if (OPTION_TYPES.has(type)) field.options = [{ value: 'option1', label: 'Option 1' }, { value: 'option2', label: 'Option 2' }];
+  if (OPTION_TYPES.has(type))
+    field.options = [
+      { value: 'option1', label: 'Option 1' },
+      { value: 'option2', label: 'Option 2' },
+    ];
   fieldsOf(draft, stepIndex).push(field);
   return field;
 }

@@ -6,7 +6,14 @@ import FormRenderer from '../src/FormRenderer.vue';
 import { type LocalizeSource, useLocalizedForm } from '../src/i18n';
 import { definition, overlay, resources } from './i18n.fixtures';
 
-const i18n = createI18n({ legacy: false, locale: 'ru', fallbackLocale: 'en', fallbackWarn: false, missingWarn: false, messages: { ru: resources, en: {} } });
+const i18n = createI18n({
+  legacy: false,
+  locale: 'ru',
+  fallbackLocale: 'en',
+  fallbackWarn: false,
+  missingWarn: false,
+  messages: { ru: resources, en: {} },
+});
 const { t, te, locale } = i18n.global;
 const translate = (key: string, params: Record<string, unknown>, fallback: string) => (te(key) ? t(key, params) : fallback);
 
@@ -59,7 +66,14 @@ describe('Vue localized forms', () => {
   });
 
   it('takes messages and labels props without localize', async () => {
-    render(FormRenderer, { props: { definition, messages: { required: 'Pflichtfeld' }, labels: (key: string, params: Record<string, unknown>) => (key === 'stepOf' ? `${params.current}/${params.total}` : undefined), onSubmit: () => {} } });
+    render(FormRenderer, {
+      props: {
+        definition,
+        messages: { required: 'Pflichtfeld' },
+        labels: (key: string, params: Record<string, unknown>) => (key === 'stepOf' ? `${params.current}/${params.total}` : undefined),
+        onSubmit: () => {},
+      },
+    });
     expect(screen.getByText('1/2')).toBeTruthy();
     await fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(await screen.findAllByText('Pflichtfeld')).toHaveLength(2);

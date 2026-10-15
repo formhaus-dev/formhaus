@@ -38,7 +38,8 @@ export function createComponentsPanel(post: Post, show: (text: string, tone?: 'e
   function render(): void {
     renderCoverage(rows, kitName);
     renderCards(list, rows, kitName, handlers);
-    const open = openRole && document.getElementById('sheet')?.classList.contains('is-open') ? rows.find((row) => row.role === openRole) : null;
+    const open =
+      openRole && document.getElementById('sheet')?.classList.contains('is-open') ? rows.find((row) => row.role === openRole) : null;
     if (open?.candidates?.length) openSheet(open, changeSlot);
     else if (openRole) {
       closeSheet();
@@ -51,7 +52,11 @@ export function createComponentsPanel(post: Post, show: (text: string, tone?: 'e
     setRows(next: BindingRow[], profiles: Profile[] = [], focusProfile?: string) {
       rows = next;
       render();
-      profilesBar.update(profiles, rows.some((row) => coverageOf(row) === 'yours'), focusProfile);
+      profilesBar.update(
+        profiles,
+        rows.some((row) => coverageOf(row) === 'yours'),
+        focusProfile,
+      );
     },
     setSelection(next: SelectionPreview | null) {
       selection = next;

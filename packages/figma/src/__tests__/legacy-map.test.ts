@@ -6,13 +6,25 @@ function variant(name: string, key: string) {
 }
 
 const sets: Record<string, { children: ReturnType<typeof variant>[] }> = {
-  fc: { children: [
-    variant('Type=Input, Header=False, Helper_text=False', 'input-bare'),
-    variant('Type=Input, Header=True, Helper_text=True', 'input-full'),
-    variant('Type=Select, Header=True, Helper_text=True', 'select-full'),
-  ] },
-  sel: { children: [variant('Type=Checkbox, State=Static, Checked=False', 'checkbox'), variant('Type=Radio, State=Static, Checked=False', 'radio')] },
-  btn: { children: [variant('Type=Primary,Left_Icon=False,Right_Icon=False,Color=Brand,State=Static', 'primary'), variant('Type=Secondary, Color=Gray', 'secondary')] },
+  fc: {
+    children: [
+      variant('Type=Input, Header=False, Helper_text=False', 'input-bare'),
+      variant('Type=Input, Header=True, Helper_text=True', 'input-full'),
+      variant('Type=Select, Header=True, Helper_text=True', 'select-full'),
+    ],
+  },
+  sel: {
+    children: [
+      variant('Type=Checkbox, State=Static, Checked=False', 'checkbox'),
+      variant('Type=Radio, State=Static, Checked=False', 'radio'),
+    ],
+  },
+  btn: {
+    children: [
+      variant('Type=Primary,Left_Icon=False,Right_Icon=False,Color=Brand,State=Static', 'primary'),
+      variant('Type=Secondary, Color=Gray', 'secondary'),
+    ],
+  },
 };
 
 const map: LegacyMap = {
@@ -45,8 +57,12 @@ beforeEach(() => {
     },
     clientStorage: {
       getAsync: async (key: string) => (key === 'formhaus-component-map' ? stored : saved[key]),
-      setAsync: async (key: string, value: unknown) => { saved[key] = value; },
-      deleteAsync: async (key: string) => { if (key === 'formhaus-component-map') stored = undefined; },
+      setAsync: async (key: string, value: unknown) => {
+        saved[key] = value;
+      },
+      deleteAsync: async (key: string) => {
+        if (key === 'formhaus-component-map') stored = undefined;
+      },
     },
     root: {
       getSharedPluginData: (_: string, key: string) => data.get(key) ?? '',
@@ -58,7 +74,11 @@ beforeEach(() => {
 describe('bindingsFromMap', () => {
   it('binds the full variants with the old text layer names and skips missing parts', async () => {
     const bindings = await bindingsFromMap(map);
-    expect(bindings['field.text']).toMatchObject({ source: 'library', key: 'input-full', text: { label: 'Header', value: 'Placeholder', helper: 'Helper text' } });
+    expect(bindings['field.text']).toMatchObject({
+      source: 'library',
+      key: 'input-full',
+      text: { label: 'Header', value: 'Placeholder', helper: 'Helper text' },
+    });
     expect(bindings['field.select']?.key).toBe('select-full');
     expect(bindings['field.textarea']).toBeUndefined();
     expect(bindings['field.checkbox']?.key).toBe('checkbox');

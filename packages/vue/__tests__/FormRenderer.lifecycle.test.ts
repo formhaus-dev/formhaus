@@ -4,15 +4,32 @@ import { describe, expect, it, vi } from 'vitest';
 import FormRenderer from '../src/FormRenderer.vue';
 
 const definition: FormDefinition = {
-  id: 'auto', title: '', submit: { label: 'Send' }, steps: [
-    { id: 'choice', title: 'Choose', next: false, fields: [
-      { key: 'choice', type: 'radio', label: 'Choice', autoAdvance: true,
-        options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] },
-    ] },
-    { id: 'confirm', title: 'Confirm', fields: [
-      { key: 'confirm', type: 'radio', label: 'Confirm', autoAdvance: true,
-        options: [{ value: 'yes', label: 'Yes' }] },
-    ] },
+  id: 'auto',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    {
+      id: 'choice',
+      title: 'Choose',
+      next: false,
+      fields: [
+        {
+          key: 'choice',
+          type: 'radio',
+          label: 'Choice',
+          autoAdvance: true,
+          options: [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'confirm',
+      title: 'Confirm',
+      fields: [{ key: 'confirm', type: 'radio', label: 'Confirm', autoAdvance: true, options: [{ value: 'yes', label: 'Yes' }] }],
+    },
   ],
 };
 
@@ -52,7 +69,11 @@ describe('auto advance lifecycle', () => {
     await fireEvent.click(screen.getByLabelText('A'));
     await waitFor(() => expect(before).toHaveBeenCalledTimes(1));
     expect(screen.queryByLabelText('Yes')).toBeNull();
-    await rerender({ onBeforeStepChange: () => { throw new Error('Offline'); } });
+    await rerender({
+      onBeforeStepChange: () => {
+        throw new Error('Offline');
+      },
+    });
     await fireEvent.click(screen.getByLabelText('A'));
     await waitFor(() => expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'Offline' })));
     await rerender({ onBeforeStepChange: () => true });
@@ -62,11 +83,20 @@ describe('auto advance lifecycle', () => {
 
   it('awaits onSubmit and ignores duplicate submissions', async () => {
     let resolve!: () => void;
-    const submitHandler = vi.fn(() => new Promise<void>((done) => { resolve = done; }));
+    const submitHandler = vi.fn(
+      () =>
+        new Promise<void>((done) => {
+          resolve = done;
+        }),
+    );
     const after = vi.fn();
-    render(FormRenderer, { props: {
-      definition: { id: 'single', title: '', submit: { label: 'Send' } }, onSubmit: submitHandler, onAfterSubmit: after,
-    } });
+    render(FormRenderer, {
+      props: {
+        definition: { id: 'single', title: '', submit: { label: 'Send' } },
+        onSubmit: submitHandler,
+        onAfterSubmit: after,
+      },
+    });
     await fireEvent.click(screen.getByText('Send'));
     await fireEvent.click(screen.getByText('Send'));
     expect(submitHandler).toHaveBeenCalledTimes(1);
@@ -87,9 +117,15 @@ it('commits an already selected radio on Space without relying on a native chang
 
 it('restores focus for retry after an async guard cancels', async () => {
   let cancel!: (allowed: boolean) => void;
-  render(FormRenderer, { props: { definition,
-    onBeforeStepChange: () => new Promise<boolean>((done) => { cancel = done; }),
-  } });
+  render(FormRenderer, {
+    props: {
+      definition,
+      onBeforeStepChange: () =>
+        new Promise<boolean>((done) => {
+          cancel = done;
+        }),
+    },
+  });
   const a = screen.getByLabelText('A');
   a.focus();
   await fireEvent.click(a);
@@ -107,8 +143,12 @@ it('prevents held Enter from implicitly submitting the final radio', async () =>
 });
 
 it('does not pull focus back into the form on unrelated updates', async () => {
-  const single: FormDefinition = { id: 'focus', title: '', submit: { label: 'Send' },
-    fields: [{ key: 'name', type: 'text', label: 'Name' }] };
+  const single: FormDefinition = {
+    id: 'focus',
+    title: '',
+    submit: { label: 'Send' },
+    fields: [{ key: 'name', type: 'text', label: 'Name' }],
+  };
   const { rerender } = render(FormRenderer, { props: { definition: single } });
   const input = screen.getByLabelText('Name');
   input.focus();

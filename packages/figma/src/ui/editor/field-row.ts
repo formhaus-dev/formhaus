@@ -14,9 +14,23 @@ export interface RowContext {
 }
 
 const TYPE_LABELS: Record<string, string> = {
-  text: 'Text', email: 'Email', phone: 'Phone', number: 'Number', password: 'Password', textarea: 'Text area',
-  select: 'Select', autocomplete: 'Autocomplete', multiselect: 'Multi-select', radio: 'Radio', checkbox: 'Checkbox',
-  switch: 'Switch', date: 'Date', datetime: 'Date & time', time: 'Time', file: 'File', hidden: 'Hidden',
+  text: 'Text',
+  email: 'Email',
+  phone: 'Phone',
+  number: 'Number',
+  password: 'Password',
+  textarea: 'Text area',
+  select: 'Select',
+  autocomplete: 'Autocomplete',
+  multiselect: 'Multi-select',
+  radio: 'Radio',
+  checkbox: 'Checkbox',
+  switch: 'Switch',
+  date: 'Date',
+  datetime: 'Date & time',
+  time: 'Time',
+  file: 'File',
+  hidden: 'Hidden',
 };
 
 export function typeSelect(value: string, onChange: (type: string) => void, className = 'type-select'): HTMLSelectElement {
@@ -66,21 +80,33 @@ function options(field: FormField, context: RowContext): HTMLElement {
 
 function details(field: FormField, context: RowContext): HTMLElement {
   const node = element('div', 'field-details');
-  const key = textInput(field.key, 'key', 'input mono', (value) => {
-    field.key = value.trim();
-    context.changed();
-  }, 'Field key');
+  const key = textInput(
+    field.key,
+    'key',
+    'input mono',
+    (value) => {
+      field.key = value.trim();
+      context.changed();
+    },
+    'Field key',
+  );
   node.append(
-    detail('Placeholder', textInput(field.placeholder ?? '', 'Shown inside the empty field', 'input', (value) => {
-      if (value) field.placeholder = value;
-      else delete field.placeholder;
-      context.changed();
-    })),
-    detail('Helper text', textInput(field.helperText ?? '', 'Shown under the field', 'input', (value) => {
-      if (value) field.helperText = value;
-      else delete field.helperText;
-      context.changed();
-    })),
+    detail(
+      'Placeholder',
+      textInput(field.placeholder ?? '', 'Shown inside the empty field', 'input', (value) => {
+        if (value) field.placeholder = value;
+        else delete field.placeholder;
+        context.changed();
+      }),
+    ),
+    detail(
+      'Helper text',
+      textInput(field.helperText ?? '', 'Shown under the field', 'input', (value) => {
+        if (value) field.helperText = value;
+        else delete field.helperText;
+        context.changed();
+      }),
+    ),
     detail('Key', key),
   );
   if (hasOptions(field)) node.appendChild(options(field, context));
@@ -112,7 +138,12 @@ export function fieldRow(field: FormField, context: RowContext): HTMLElement {
     setRequired(field, !field.validation?.required);
     context.rerender();
   };
-  const more = iconButton('chevron', context.isOpen(field) ? 'Hide details' : 'Show details', () => context.toggle(field), 'icon-btn more-btn');
+  const more = iconButton(
+    'chevron',
+    context.isOpen(field) ? 'Hide details' : 'Show details',
+    () => context.toggle(field),
+    'icon-btn more-btn',
+  );
   main.append(
     handle,
     typeSelect(field.type, (type) => {

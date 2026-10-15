@@ -6,7 +6,11 @@ import { layoutSteps } from '../render-form';
 const definition = { id: 'signup', title: 'Sign up', submit: { label: 'Go' }, fields: [] };
 
 function frame(data: Record<string, string>) {
-  return { type: 'FRAME', parent: { type: 'SECTION', parent: { type: 'PAGE' } }, getSharedPluginData: (_: string, key: string) => data[key] ?? '' };
+  return {
+    type: 'FRAME',
+    parent: { type: 'SECTION', parent: { type: 'PAGE' } },
+    getSharedPluginData: (_: string, key: string) => data[key] ?? '',
+  };
 }
 
 describe('selectedForm', () => {
@@ -30,9 +34,14 @@ describe('selectedForm', () => {
   });
 
   it('folds steps into one page only for multi-step forms', () => {
-    const steps = [{ id: 'a', title: 'A', fields: [] }, { id: 'b', title: 'B', fields: [] }];
+    const steps = [
+      { id: 'a', title: 'A', fields: [] },
+      { id: 'b', title: 'B', fields: [] },
+    ];
     const form = { ...definition, description: 'Intro', steps };
-    expect(layoutSteps(form, { actions: 'stacked', steps: 'page' })).toEqual([{ title: 'Sign up', description: 'Intro', fields: [], sections: steps }]);
+    expect(layoutSteps(form, { actions: 'stacked', steps: 'page' })).toEqual([
+      { title: 'Sign up', description: 'Intro', fields: [], sections: steps },
+    ]);
     expect(layoutSteps(form, { actions: 'stacked', steps: 'screens' })).toEqual(steps);
     expect(layoutSteps({ ...definition, steps: [steps[0]] }, { actions: 'stacked', steps: 'page' })).toEqual([steps[0]]);
   });

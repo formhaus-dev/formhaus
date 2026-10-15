@@ -37,18 +37,20 @@ async function unboundRow(config: PluginConfig, role: Role): Promise<BindingRow>
 }
 
 export async function bindingRows(config: PluginConfig): Promise<BindingRow[]> {
-  return Promise.all(ROLES.map(async (role): Promise<BindingRow> => {
-    const binding = config.bindings[role];
-    if (!binding) return unboundRow(config, role);
-    const component = await componentForBinding(binding);
-    if (!component) return { role, name: binding.name, missing: true };
-    const stale = missingProperties(component, binding);
-    return {
-      role,
-      name: binding.name ?? component.name,
-      thumbnail: await thumbnail(component),
-      staleProperties: stale.length > 0 ? stale : undefined,
-      ...describeSlots(component, binding),
-    };
-  }));
+  return Promise.all(
+    ROLES.map(async (role): Promise<BindingRow> => {
+      const binding = config.bindings[role];
+      if (!binding) return unboundRow(config, role);
+      const component = await componentForBinding(binding);
+      if (!component) return { role, name: binding.name, missing: true };
+      const stale = missingProperties(component, binding);
+      return {
+        role,
+        name: binding.name ?? component.name,
+        thumbnail: await thumbnail(component),
+        staleProperties: stale.length > 0 ? stale : undefined,
+        ...describeSlots(component, binding),
+      };
+    }),
+  );
 }

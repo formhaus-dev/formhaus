@@ -46,18 +46,43 @@ describe('localize with an overlay', () => {
   });
 
   it('never enables a rule, creates nodes or mutates the source', () => {
-    const source: FormDefinition = { id: 'f', title: 'F', submit: { label: 'S' }, fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: false } }] };
+    const source: FormDefinition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'S' },
+      fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: false } }],
+    };
     const before = JSON.stringify(source);
-    const overlay = { fields: { name: { validation: { required: 'Нужно', pattern: 'Формат' }, helperText: 'Подсказка' }, ghost: { label: 'Призрак' } } };
+    const overlay = {
+      fields: { name: { validation: { required: 'Нужно', pattern: 'Формат' }, helperText: 'Подсказка' }, ghost: { label: 'Призрак' } },
+    };
     const result = localize(source, { overlay });
     expect(result.definition.fields).toEqual([{ key: 'name', type: 'text', label: 'Name', validation: { required: false } }]);
     expect(JSON.stringify(source)).toBe(before);
   });
 
   it('reads own properties only', () => {
-    const source: FormDefinition = { id: 'f', title: 'F', submit: { label: 'S' }, fields: [{ key: 'pick', type: 'select', label: 'Pick', options: [{ value: 'constructor', label: 'C' }, { value: '__proto__', label: 'P' }] }] };
+    const source: FormDefinition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'S' },
+      fields: [
+        {
+          key: 'pick',
+          type: 'select',
+          label: 'Pick',
+          options: [
+            { value: 'constructor', label: 'C' },
+            { value: '__proto__', label: 'P' },
+          ],
+        },
+      ],
+    };
     const overlay = JSON.parse('{"fields":{"pick":{"options":{"__proto__":"П"}}}}');
-    expect(localize(source, { overlay }).definition.fields![0].options).toEqual([{ value: 'constructor', label: 'C' }, { value: '__proto__', label: 'П' }]);
+    expect(localize(source, { overlay }).definition.fields![0].options).toEqual([
+      { value: 'constructor', label: 'C' },
+      { value: '__proto__', label: 'П' },
+    ]);
     expect(localize(source, { overlay: {} }).definition.fields![0].options![0].label).toBe('C');
   });
 });

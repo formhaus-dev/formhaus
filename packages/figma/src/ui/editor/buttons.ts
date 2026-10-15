@@ -35,26 +35,126 @@ export function buttonsBlock(step: FormStep, index: number, count: number, multi
   block.appendChild(element('div', 'section-label', 'Buttons'));
   const last = index === count - 1;
   if (last) {
-    block.appendChild(row('Submit', textInput(draft.submit.label, 'Submit', 'input', (value) => { draft.submit = { ...draft.submit, label: value }; changed(); }, 'Submit button')));
+    block.appendChild(
+      row(
+        'Submit',
+        textInput(
+          draft.submit.label,
+          'Submit',
+          'input',
+          (value) => {
+            draft.submit = { ...draft.submit, label: value };
+            changed();
+          },
+          'Submit button',
+        ),
+      ),
+    );
   } else if (step.next === false) {
-    block.appendChild(addLink('Continue button (moves on automatically now)', () => { setNextVisible(step, true); rerender(); }));
+    block.appendChild(
+      addLink('Continue button (moves on automatically now)', () => {
+        setNextVisible(step, true);
+        rerender();
+      }),
+    );
   } else {
-    block.appendChild(row('Continue', textInput(label(step.next), 'Continue', 'input', (value) => { setNextLabel(step, value); changed(); }, 'Continue button'), () => { setNextVisible(step, false); rerender(); }));
+    block.appendChild(
+      row(
+        'Continue',
+        textInput(
+          label(step.next),
+          'Continue',
+          'input',
+          (value) => {
+            setNextLabel(step, value);
+            changed();
+          },
+          'Continue button',
+        ),
+        () => {
+          setNextVisible(step, false);
+          rerender();
+        },
+      ),
+    );
   }
   if (multiStep && index > 0) {
-    block.appendChild(step.back === false
-      ? addLink('Back button', () => { setBackVisible(step, true); rerender(); })
-      : row('Back', textInput(label(step.back), 'Back', 'input', (value) => { setBackLabel(step, value); changed(); }, 'Back button'), () => { setBackVisible(step, false); rerender(); }));
+    block.appendChild(
+      step.back === false
+        ? addLink('Back button', () => {
+            setBackVisible(step, true);
+            rerender();
+          })
+        : row(
+            'Back',
+            textInput(
+              label(step.back),
+              'Back',
+              'input',
+              (value) => {
+                setBackLabel(step, value);
+                changed();
+              },
+              'Back button',
+            ),
+            () => {
+              setBackVisible(step, false);
+              rerender();
+            },
+          ),
+    );
   }
   if (multiStep) {
-    block.appendChild(step.skip
-      ? row('Skip', textInput(step.skip.label, 'Skip', 'input', (value) => { setSkip(step, value); changed(); }, 'Skip button'), () => { setSkip(step, null); rerender(); })
-      : addLink('Skip button', () => { setSkip(step, 'Skip'); rerender(); }));
+    block.appendChild(
+      step.skip
+        ? row(
+            'Skip',
+            textInput(
+              step.skip.label,
+              'Skip',
+              'input',
+              (value) => {
+                setSkip(step, value);
+                changed();
+              },
+              'Skip button',
+            ),
+            () => {
+              setSkip(step, null);
+              rerender();
+            },
+          )
+        : addLink('Skip button', () => {
+            setSkip(step, 'Skip');
+            rerender();
+          }),
+    );
   }
   if (index === 0 || !multiStep) {
-    block.appendChild(draft.cancel
-      ? row('Cancel', textInput(draft.cancel.label, 'Cancel', 'input', (value) => { setCancel(draft, value); changed(); }, 'Cancel button'), () => { setCancel(draft, null); rerender(); })
-      : addLink('Cancel button', () => { setCancel(draft, 'Cancel'); rerender(); }));
+    block.appendChild(
+      draft.cancel
+        ? row(
+            'Cancel',
+            textInput(
+              draft.cancel.label,
+              'Cancel',
+              'input',
+              (value) => {
+                setCancel(draft, value);
+                changed();
+              },
+              'Cancel button',
+            ),
+            () => {
+              setCancel(draft, null);
+              rerender();
+            },
+          )
+        : addLink('Cancel button', () => {
+            setCancel(draft, 'Cancel');
+            rerender();
+          }),
+    );
   }
   return block;
 }

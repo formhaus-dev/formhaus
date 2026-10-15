@@ -1,5 +1,4 @@
-const escape = (text) =>
-  String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
+const escape = (text) => String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 const styles = (font) => `
 @font-face { font-family: Inter; font-weight: 100 900; src: url(${font}) format('woff2'); }
@@ -27,13 +26,13 @@ h1 { margin: 0; font-size: 68px; line-height: 1.06; font-weight: 700; letter-spa
 .dots { display: flex; gap: 6px; }
 .dots i { width: 10px; height: 10px; border-radius: 50%; background: #d4d4d8; }
 .address { flex: 1; text-align: center; margin-right: 48px; font-size: 15px; color: #52525b; }
-`
+`;
 
 export function card({ font, eyebrow, title, subtitle, meta, form, address }) {
-  const bar = address ? `<div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="address">${escape(address)}</span></div>` : ''
-  const visual = form
-    ? `<div class="panel${form.clip ? ' panel--clip' : ''}">${bar}<img src="${form.src}" alt=""></div>`
-    : ''
+  const bar = address
+    ? `<div class="bar"><span class="dots"><i></i><i></i><i></i></span><span class="address">${escape(address)}</span></div>`
+    : '';
+  const visual = form ? `<div class="panel${form.clip ? ' panel--clip' : ''}">${bar}<img src="${form.src}" alt=""></div>` : '';
   return `<!doctype html><html><head><meta charset="utf-8"><style>${styles(font)}</style></head><body>
 <div class="card${visual ? ' card--visual' : ''}">
   <img class="logo" src="/brand/logo-full.svg" alt="">
@@ -45,5 +44,5 @@ export function card({ font, eyebrow, title, subtitle, meta, form, address }) {
   </div>
   <div class="url">formhaus.dev</div>
   ${visual}
-</div></body></html>`
+</div></body></html>`;
 }

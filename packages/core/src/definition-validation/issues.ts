@@ -69,7 +69,10 @@ export function isError(issue: DefinitionIssue): boolean {
 
 export function oneOf(values: string[]): string {
   if (values.length === 1) return `Use ${JSON.stringify(values[0])}`;
-  const shown = values.slice(0, 10).map((value) => JSON.stringify(value)).join(', ');
+  const shown = values
+    .slice(0, 10)
+    .map((value) => JSON.stringify(value))
+    .join(', ');
   return values.length > 10 ? `Use one of: ${shown}, ...` : `Use one of: ${shown}`;
 }
 

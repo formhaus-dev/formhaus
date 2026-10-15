@@ -10,7 +10,9 @@ function useDocument(): void {
   vi.stubGlobal('figma', {
     clientStorage: {
       getAsync: async (key: string) => storage[key],
-      setAsync: async (key: string, value: unknown) => { storage[key] = value; },
+      setAsync: async (key: string, value: unknown) => {
+        storage[key] = value;
+      },
     },
     root: {
       getSharedPluginData: (_: string, key: string) => data.get(key) ?? '',
@@ -48,7 +50,10 @@ describe('profiles', () => {
   it('marks only one profile for new files', async () => {
     await saveProfile('First', bindings);
     await saveProfile('Second', bindings, true);
-    expect((await listProfiles()).map((item) => [item.name, item.useInNewFiles])).toEqual([['First', false], ['Second', true]]);
+    expect((await listProfiles()).map((item) => [item.name, item.useInNewFiles])).toEqual([
+      ['First', false],
+      ['Second', true],
+    ]);
   });
 
   it('applies the new-file profile only to files without a config', async () => {
@@ -60,7 +65,11 @@ describe('profiles', () => {
   });
 
   it('accepts only setup codes with keyed components', () => {
-    expect(importedProfile({ name: 'Team DS', bindings })?.bindings['field.text']).toEqual({ source: 'library', key: 'text-key', name: 'Text field' });
+    expect(importedProfile({ name: 'Team DS', bindings })?.bindings['field.text']).toEqual({
+      source: 'library',
+      key: 'text-key',
+      name: 'Text field',
+    });
     expect(importedProfile({ name: 'Empty', bindings: { 'field.date': bindings['field.date'] } })).toBeNull();
     expect(importedProfile('nonsense')).toBeNull();
   });
@@ -69,12 +78,22 @@ describe('profiles', () => {
     const profile = importedProfile({
       name: 'x'.repeat(500),
       bindings: {
-        'field.text': { source: 'local', id: '1:1', key: 'k', name: 'Text', extra: 'drop', properties: { Size: 'M', Huge: 'y'.repeat(5000) }, text: { label: 'Label' } },
+        'field.text': {
+          source: 'local',
+          id: '1:1',
+          key: 'k',
+          name: 'Text',
+          extra: 'drop',
+          properties: { Size: 'M', Huge: 'y'.repeat(5000) },
+          text: { label: 'Label' },
+        },
         'button.primary': { key: { evil: true } },
       },
     });
     expect(profile?.name).toHaveLength(80);
-    expect(profile?.bindings).toEqual({ 'field.text': { source: 'library', key: 'k', name: 'Text', properties: { Size: 'M' }, text: { label: 'Label' } } });
+    expect(profile?.bindings).toEqual({
+      'field.text': { source: 'library', key: 'k', name: 'Text', properties: { Size: 'M' }, text: { label: 'Label' } },
+    });
   });
 
   it('applies concurrent profile updates in order', async () => {

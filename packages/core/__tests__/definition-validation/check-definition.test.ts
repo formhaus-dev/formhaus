@@ -7,9 +7,18 @@ const text = (key: string, extra: Partial<FormField> = {}): FormField => ({ key,
 const codes = (definition: unknown) => checkDefinition(definition).map(({ code, severity, path }) => `${severity} ${code} ${path}`);
 
 function chain(length: number, closeCycle = false): FormDefinition {
-  return form(Array.from({ length }, (_, index) => text(`field-${index}`, index < length - 1
-    ? { show: [{ field: `field-${index + 1}`, notEmpty: true }] }
-    : closeCycle ? { show: [{ field: 'field-0', notEmpty: true }] } : {})));
+  return form(
+    Array.from({ length }, (_, index) =>
+      text(
+        `field-${index}`,
+        index < length - 1
+          ? { show: [{ field: `field-${index + 1}`, notEmpty: true }] }
+          : closeCycle
+            ? { show: [{ field: 'field-0', notEmpty: true }] }
+            : {},
+      ),
+    ),
+  );
 }
 
 describe('checkDefinition', () => {
@@ -19,23 +28,30 @@ describe('checkDefinition', () => {
 
   it('rejects duplicate keys on one path with the path of the first declaration', () => {
     const definition: FormDefinition = {
-      id: 'dup', title: 'Dup', submit: { label: 'Submit' },
+      id: 'dup',
+      title: 'Dup',
+      submit: { label: 'Submit' },
       steps: [
         { id: 's1', title: 'S1', fields: [text('name')] },
         { id: 's2', title: 'S2', fields: [text('name')] },
       ],
     };
-    expect(checkDefinition(definition)).toEqual([{
-      code: 'duplicate-key',
-      severity: 'error',
-      path: '/steps/1/fields/0/key',
-      message: '/steps/1/fields/0/key: key "name" is already used by /steps/0/fields/0 on the same path. Rename one of the fields, or move them to route branches that never meet.',
-      hint: 'Rename one of the fields, or move them to route branches that never meet.',
-    }]);
+    expect(checkDefinition(definition)).toEqual([
+      {
+        code: 'duplicate-key',
+        severity: 'error',
+        path: '/steps/1/fields/0/key',
+        message:
+          '/steps/1/fields/0/key: key "name" is already used by /steps/0/fields/0 on the same path. Rename one of the fields, or move them to route branches that never meet.',
+        hint: 'Rename one of the fields, or move them to route branches that never meet.',
+      },
+    ]);
   });
 
   it('rejects an invalid regex pattern', () => {
-    expect(codes(form([text('code', { validation: { pattern: '[invalid(' } })]))).toEqual(['error invalid-pattern /fields/0/validation/pattern']);
+    expect(codes(form([text('code', { validation: { pattern: '[invalid(' } })]))).toEqual([
+      'error invalid-pattern /fields/0/validation/pattern',
+    ]);
   });
 
   it('handles a deep acyclic dependency chain', () => {
@@ -51,7 +67,9 @@ describe('checkDefinition', () => {
 
   it('detects cycles that pass through step visibility', () => {
     const definition: FormDefinition = {
-      id: 'step-cycle', title: 'Step cycle', submit: { label: 'Submit' },
+      id: 'step-cycle',
+      title: 'Step cycle',
+      submit: { label: 'Submit' },
       steps: [
         { id: 'main', title: 'Main', fields: [text('trigger', { show: [{ field: 'detail', notEmpty: true }] })] },
         { id: 'details', title: 'Details', show: [{ field: 'trigger', notEmpty: true }], fields: [text('detail')] },
@@ -74,9 +92,6 @@ describe('checkDefinition', () => {
 
   it('lists errors before warnings', () => {
     const definition = form([text('a', { type: 'txt' }), text('b', { validation: { pattern: '(' } })]);
-    expect(codes(definition)).toEqual([
-      'error invalid-pattern /fields/1/validation/pattern',
-      'warning unknown-field-type /fields/0/type',
-    ]);
+    expect(codes(definition)).toEqual(['error invalid-pattern /fields/1/validation/pattern', 'warning unknown-field-type /fields/0/type']);
   });
 });
