@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { checkDefinition } from '../../src';
 import { fieldDomId, itemDomId } from '../../src/internal';
 import type { FormDefinition, FormField } from '../../src/types';
 
@@ -71,5 +72,39 @@ describe('fieldDomId', () => {
     expect(items[2]).toBe('form-crew--1--a-b');
     expect(new Set(items).size).toBe(3);
     expect(itemDomId('form', 'crew', 1, 'contact.email')).toBe('form-crew--1--contact-email');
+  });
+
+  describe('keeps item ids apart from keys that look like item ids', () => {
+    const crew = (key: string, children: string[]): FormField => ({
+      key,
+      type: 'group',
+      label: key,
+      fields: children.map((child) => ({ key: child, type: 'text', label: child })),
+    });
+    const nodes = (fields: FormField[]): FormDefinition => {
+      const definition: FormDefinition = { formatVersion: '1.1', id: 'f', title: '', submit: { label: 'Send' }, fields };
+      expect(checkDefinition(definition)).toEqual([]);
+      return definition;
+    };
+
+    it('a top-level key against an item field', () => {
+      const definition = nodes([{ key: 'crew--0--contact-email', type: 'text', label: 'A' }, crew('crew', ['contact-email'])]);
+      expect(fieldDomId('f', 'crew--0--contact-email', definition)).toBe('f-crew--0--contact-email');
+      expect(itemDomId('f', 'crew', 0, 'contact-email', definition)).not.toBe('f-crew--0--contact-email');
+      expect(itemDomId('f', 'crew', 0, undefined, definition)).not.toMatch(/^f-crew--0--contact-email/);
+    });
+
+    it('two groups whose item ids meet', () => {
+      const definition = nodes([crew('crew--0', ['contact-email']), crew('crew', ['0--contact-email'])]);
+      const first = itemDomId('f', 'crew--0', 0, 'contact-email', definition);
+      expect(first).toBe('f-crew--0--0--contact-email');
+      expect(itemDomId('f', 'crew', 0, '0--contact-email', definition)).not.toBe(first);
+    });
+
+    it('keeps the plain ids of groups without such keys', () => {
+      const definition = nodes([{ key: 'crew-0', type: 'text', label: 'A' }, crew('crew', ['name']), crew('crews', ['name'])]);
+      expect(itemDomId('f', 'crew', 0, 'name', definition)).toBe('f-crew--0--name');
+      expect(itemDomId('f', 'crews', 0, 'name', definition)).toBe('f-crews--0--name');
+    });
   });
 });
