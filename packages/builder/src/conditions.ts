@@ -1,6 +1,7 @@
 import type { FieldType, ShowCondition } from '@formhaus/core';
 import { hasOptions, isQuestion, type BuilderBlock, type BuilderForm, type BuilderQuestion } from './model';
 import { blockIndex } from './ops/locate';
+import { resolver, scopeOf } from './references';
 
 export type Operator = 'eq' | 'neq' | 'in' | 'notIn' | 'notEmpty' | 'checked' | 'unchecked';
 export type ConditionMode = 'always' | 'all' | 'any';
@@ -78,38 +79,44 @@ export function fromCondition(condition: ShowCondition, type: FieldType | undefi
   return undefined;
 }
 
-const questionByKey = (form: BuilderForm, key: string) => form.blocks.filter(isQuestion).find((item) => item.key === key);
+const questionByKey = (form: BuilderForm, key: string, scope?: string) => resolver(form).target(key, scope);
 
 export interface ConditionHolder {
   show?: ShowCondition[];
   showAny?: ShowCondition[];
 }
 
-export function readLogic(form: BuilderForm, holder: ConditionHolder): Logic {
+export function readLogic(form: BuilderForm, holder: ConditionHolder, scope?: string): Logic {
   const all = holder.show ?? [];
   const any = holder.showAny ?? [];
   if (!all.length && !any.length) return { mode: 'always', rows: [], editable: true };
   const source = all.length && any.length ? null : all.length ? all : any;
-  const rows = (source ?? []).map((condition) => fromCondition(condition, questionByKey(form, condition.field)?.type));
+  const rows = (source ?? []).map((condition) => fromCondition(condition, questionByKey(form, condition.field, scope)?.type));
   const editable = !!source && rows.every((row) => row !== undefined);
   return { mode: any.length && !all.length ? 'any' : 'all', rows: editable ? (rows as ConditionRow[]) : [], editable };
 }
 
-export function writeLogic(form: BuilderForm, holder: ConditionHolder, mode: ConditionMode, rows: ConditionRow[]): void {
+export function writeLogic(form: BuilderForm, holder: ConditionHolder, mode: ConditionMode, rows: ConditionRow[], scope?: string): void {
   delete holder.show;
   delete holder.showAny;
   if (mode === 'always' || !rows.length) return;
-  holder[mode === 'any' ? 'showAny' : 'show'] = rows.map((row) => toCondition(row, questionByKey(form, row.field)?.type ?? 'text'));
+  holder[mode === 'any' ? 'showAny' : 'show'] = rows.map((row) => toCondition(row, questionByKey(form, row.field, scope)?.type ?? 'text'));
 }
 
-export const logicOf = (form: BuilderForm, block: BuilderBlock) => readLogic(form, block.extra);
+export const logicOf = (form: BuilderForm, block: BuilderBlock) => readLogic(form, block.extra, scopeOf(form, block));
 
 export function setLogic(form: BuilderForm, uid: string, mode: ConditionMode, rows: ConditionRow[]): void {
   const block = form.blocks.find((item) => item.uid === uid);
-  if (block) writeLogic(form, block.extra, mode, rows);
+  if (block) writeLogic(form, block.extra, mode, rows, scopeOf(form, block));
 }
 
 export function conditionSources(form: BuilderForm, uid: string): BuilderQuestion[] {
   const index = blockIndex(form, uid);
-  return form.blocks.slice(0, Math.max(index, 0)).filter(isQuestion);
+  if (index < 0) return [];
+  const { scope } = resolver(form);
+  const own = scope(form.blocks[index]);
+  return form.blocks
+    .slice(0, index)
+    .filter(isQuestion)
+    .filter((item) => [undefined, own].includes(scope(item)));
 }

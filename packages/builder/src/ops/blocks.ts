@@ -75,9 +75,10 @@ export function removeBlock(form: BuilderForm, index: number): boolean {
   const block = form.blocks[index];
   const size = isPage(block) ? (pageCount(form) > 1 ? pageSpan(form, index) : 1) : span(form, index);
   const removed = form.blocks.slice(index, index + size);
-  clearTargets(form, new Set(removed.map((item) => item.uid)));
+  const gone = new Set(removed.map((item) => item.uid));
+  clearTargets(form, gone);
+  dropReferences(form, gone);
   form.blocks.splice(index, size);
-  dropReferences(form, new Set(removed.filter(isQuestion).map((item) => item.key)));
   if (form.blocks.length && !form.blocks.some(isQuestion)) form.blocks.push(newQuestion(form));
   syncIdentifiers(form);
   return true;

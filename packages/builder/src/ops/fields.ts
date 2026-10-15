@@ -1,6 +1,7 @@
 import type { FieldType, FormField } from '@formhaus/core';
 import { syncIdentifiers, unique } from '../identifiers';
 import { clone, isContainer, isPage, isQuestion, newQuestion, setType, span, uid, type BuilderForm, type BuilderQuestion } from '../model';
+import { bindReferences, dropReferences, scopeOf } from '../references';
 import { canRemove, removeBlock } from './blocks';
 import { findField, blockIndex, stepEnd, stepFields } from './locate';
 
@@ -109,21 +110,25 @@ export function setFieldProp<K extends keyof FormField>(form: BuilderForm, uid: 
 
 export function duplicateField(form: BuilderForm, source: string): BuilderQuestion | undefined {
   const index = blockIndex(form, source);
-  const item = findField(form, source);
-  if (!item) return undefined;
-  const copy = (entry: BuilderQuestion, parent?: string): BuilderQuestion => ({
-    ...clone(entry),
-    uid: uid(form),
-    key: '',
-    keyLocked: false,
-    options: entry.options.map((option) => ({ ...option, uid: uid(form), valueLocked: false })),
-    ...(parent && { parent }),
-  });
-  const top = copy(item, item.parent);
-  const children = childrenOf(form, source).map((child) => copy(child, top.uid));
-  form.blocks.splice(index + span(form, index), 0, top, ...children);
+  if (!findField(form, source)) return undefined;
+  const originals = form.blocks.slice(index, index + span(form, index)) as BuilderQuestion[];
+  const copies = new Map(
+    originals.map((entry): [string, BuilderQuestion] => [
+      entry.uid,
+      {
+        ...clone(entry),
+        uid: uid(form),
+        keyLocked: false,
+        options: entry.options.map((option) => ({ ...option, uid: uid(form), valueLocked: false })),
+      },
+    ]),
+  );
+  for (const copy of copies.values()) if (copy.parent) copy.parent = copies.get(copy.parent)?.uid ?? copy.parent;
+  form.blocks.splice(index + originals.length, 0, ...copies.values());
+  const restore = bindReferences(form, [...copies.values()], (target) => copies.get(target.uid) ?? target);
   syncIdentifiers(form);
-  return top;
+  restore();
+  return copies.get(source);
 }
 
 export function removeField(form: BuilderForm, uid: string): boolean {
@@ -178,8 +183,12 @@ export function moveFieldTo(form: BuilderForm, uid: string, step: string | null,
   const from = blockIndex(form, uid);
   const item = form.blocks[from];
   if (!isQuestion(item)) return false;
+  const restore = bindReferences(form);
+  const stays = !!item.parent && stepOfIndex(form, blockIndex(form, item.parent)) === step;
+  const group = scopeOf(form, item);
+  if (!stays && group) dropReferences(form, new Set(childrenOf(form, group).map((child) => child.uid)), [item]);
   const units = form.blocks.splice(from, span(form, from));
-  if (item.parent && stepOfIndex(form, blockIndex(form, item.parent)) === step) {
+  if (stays && item.parent) {
     const siblings = childrenOf(form, item.parent);
     const target = siblings[Math.max(0, index)];
     const owner = blockIndex(form, item.parent);
@@ -189,6 +198,7 @@ export function moveFieldTo(form: BuilderForm, uid: string, step: string | null,
     form.blocks.splice(position(form, { step, index }), 0, ...units);
   }
   syncIdentifiers(form);
+  restore();
   return true;
 }
 

@@ -69,7 +69,7 @@ describe('field ops', () => {
 
   it('lists the blocks that reference a key', () => {
     const form = fromDefinition(template('agency-fit-quiz.json'));
-    const users = referencesTo(form, 'need');
+    const users = referencesTo(form, form.blocks.find((block) => block.kind === 'question' && block.key === 'need')!.uid);
     expect(users.length).toBe(1);
   });
 });
