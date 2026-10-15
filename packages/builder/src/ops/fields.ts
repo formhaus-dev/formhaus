@@ -89,9 +89,11 @@ export function setFieldType(form: BuilderForm, uid: string, type: FieldType): v
 export function setKey(form: BuilderForm, uid: string, key: string): void {
   const item = findField(form, uid);
   if (!item) return;
+  const restore = bindReferences(form);
   item.key = key;
   item.keyLocked = true;
   syncIdentifiers(form);
+  restore();
 }
 
 export function unlockKey(form: BuilderForm, uid: string): void {

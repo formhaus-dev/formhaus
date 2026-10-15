@@ -17,10 +17,11 @@ describe('describeLogic', () => {
   it('names the source field of the same group', () => {
     const form = fromDefinition({
       id: 'order',
+      title: 'Order',
       submit: { label: 'Send' },
       fields: [party('billing', 'Company'), party('shipping', 'Firm')],
     });
     const [, second] = form.blocks.filter((block) => isQuestion(block) && block.key === 'detail');
-    expect(describeLogic(form, logicOf(form, second), scopeOf(form, second))).toBe('Shown if Kind is Firm');
+    expect(describeLogic(form, logicOf(form, second!), scopeOf(form, second))).toBe('Shown if Kind is Firm');
   });
 });

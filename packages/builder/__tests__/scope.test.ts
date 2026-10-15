@@ -10,6 +10,7 @@ import {
   moveFieldTo,
   referencesTo,
   removeField,
+  setKey,
   setLabel,
   setOptionLabel,
   toDefinition,
@@ -139,6 +140,49 @@ describe('group scope', () => {
     expect(detail.extra.show).toBeUndefined();
     expect(inner(form, 'billing', 'detail').extra.show).toEqual([{ field: 'kind', eq: 'company' }]);
     expect(errors(form)).toEqual([]);
+  });
+});
+
+describe('custom keys', () => {
+  it('moves references to a new key only inside the same group', () => {
+    const form = fromDefinition(order);
+    setKey(form, inner(form, 'billing', 'kind').uid, 'category');
+    expect(inner(form, 'billing', 'detail').extra.show).toEqual([{ field: 'category', eq: 'company' }]);
+    expect(inner(form, 'shipping', 'kind').key).toBe('kind');
+    expect(inner(form, 'shipping', 'detail').extra.show).toEqual([{ field: 'kind', eq: 'company' }]);
+    expect(errors(form)).toEqual([]);
+  });
+
+  it('moves conditions, matchField, optionsDependsOn and routes to a new key', () => {
+    const form = fromDefinition({
+      formatVersion: '1.1',
+      id: 'signup',
+      title: 'Signup',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 'one',
+          fields: [
+            { key: 'email', type: 'email', label: 'Email' },
+            {
+              key: 'repeat',
+              type: 'email',
+              label: 'Repeat',
+              validation: { matchField: 'email' },
+              show: [{ field: 'email', notEmpty: true }],
+            },
+            { key: 'city', type: 'select', label: 'City', optionsFrom: 'cities', optionsDependsOn: ['email'] },
+          ],
+          routes: [{ to: null, show: [{ field: 'email', notEmpty: true }] }, { to: 'two' }],
+        },
+        { id: 'two', fields: [{ key: 'note', type: 'text', label: 'Note' }] },
+      ],
+    });
+    setKey(form, form.blocks[1].uid, 'mail');
+    const [one] = toDefinition(form).steps!;
+    expect(one.fields[1]).toMatchObject({ validation: { matchField: 'mail' }, show: [{ field: 'mail', notEmpty: true }] });
+    expect(one.fields[2]).toMatchObject({ optionsDependsOn: ['mail'] });
+    expect(one.routes).toEqual([{ to: null, show: [{ field: 'mail', notEmpty: true }] }, { to: 'two' }]);
   });
 });
 
