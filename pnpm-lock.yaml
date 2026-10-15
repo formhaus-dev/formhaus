@@ -206,6 +206,21 @@ importers:
         specifier: ^4.1.3
         version: 4.1.3(@types/node@20.19.43)(@vitest/browser-playwright@4.1.3)(jsdom@29.0.2)(vite@6.4.2(@types/node@20.19.43))
 
+  packages/formhaus:
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.43
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(@microsoft/api-extractor@7.58.2(@types/node@20.19.43))(postcss@8.5.29)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.7.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.1.3
+        version: 4.1.3(@types/node@20.19.43)(@vitest/browser-playwright@4.1.3)(jsdom@29.0.2)(vite@6.4.2(@types/node@20.19.43))
+
   packages/mcp:
     dependencies:
       '@formhaus/core':
