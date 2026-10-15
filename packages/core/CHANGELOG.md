@@ -1,5 +1,57 @@
 # @formhaus/core
 
+## 0.14.0
+
+### Minor Changes
+
+- New `@formhaus/core/fix` entry with `suggestFixes()`, `applyFix()` and `fixAll()`. The main entry does not include it.
+- `suggestFixes()` attaches `fixes` to definition issues it can repair. Each fix is `{ title, safe, patch }` with an RFC 6902 JSON Patch.
+- `applyFix()` returns a new definition and throws on a patch path that does not exist.
+- `fixAll()` applies every safe fix and returns the definition, the applied fixes and the issues left.
+- **Breaking:** `checkDefinition()` and `FormEngine` reject a field whose options repeat a value, with the new `duplicate-option-value` error.
+- New `source` on `hidden` fields: a URL parameter (`{ "query": "utm_source" }`), `referrer`, `page`, `pageTitle`, `language`, `timezone`, `device` or `country`.
+- New `resolveSources(definition, context)` returns the values of sourced hidden fields for a page context.
+- `checkDefinition()` reports an unknown source as `unknown-source`, a malformed one as `invalid-type`, and a `source` on another field type as the `source-not-applicable` warning.
+- `hidden` values without `maxLength` are capped at 2000 characters in the browser and in `validateSubmission()`.
+- `FormhausForm` and `@formhaus/core/cloud` load and submit forms through api.formhaus.cc by default. Add it to your CSP `connect-src` if you use an allowlist; api.formhaus.dev keeps working.
+- Definition format 1.1 adds `section` nodes: a titled block of fields with shared `show`/`showAny`. Fields inside keep their top-level keys in the payload.
+- Definition format 1.1 adds `group` nodes: repeatable items submitted as an array of objects, with `required`, `minLength` and `maxLength` counting items.
+- New `FormEngine` methods `items()`, `addItem()`, `removeItem()` and `setItemValue()`, and the `visibleNodes` getter.
+- `setValue()`, `validateField()`, `setErrors()` and submit results accept item paths such as `participants.1.email`.
+- `validateSubmission()` checks every group item, drops unknown item keys and reports item errors by path.
+- `checkDefinition()` reports `group-scope` and `invalid-nesting`, and warns with `outdated-format-version` about sections or groups without `formatVersion` 1.1.
+- New label keys `addItem`, `removeItem`, `itemLabel`, `itemAdded`, `itemRemoved`, `removeItemNamed`, `removeItemPrompt`, `removeItemBody` and `cancel`, and translation addresses for sections, groups and item fields.
+- New `isSection()` and `isGroup()` helpers and `FormSection`, `FormGroup`, `FormNode`, `GroupValidation`, `GroupI18n` and `GroupItem` types.
+- **Breaking:** `FormStep.fields` and `FormDefinition.fields` are typed `FormNode[]`. Code that walks them must handle sections and groups.
+- **Breaking:** Errors of item fields use paths such as `participants.1.email` as keys in `errors` and `stepErrors`.
+- **Breaking:** custom field types named `section` or `group` are now built-in nodes.
+- Upgrade the server that runs `validateSubmission()` before the clients. Older servers pass group values through unchecked.
+- Visible changes in `style.css`:
+  - Step titles are 20px (were 18px). Step titles and section headings follow the new `--fh-font-size-title` and `--fh-font-size-heading` variables.
+  - Placeholders and checkbox and radio borders are darker and meet WCAG AA contrast.
+  - Helper text sits 4px under its label. Helpers and errors of checkboxes and switches line up with the label text instead of the box.
+  - Headings, helpers and errors wrap more evenly.
+  - Every margin, padding and gap comes from the new `--fh-space-1` to `--fh-space-10` variables, and group cards use `--fh-card-padding`.
+- New `time` field type. The browser and `validateSubmission()` accept 24-hour `HH:mm` or `HH:mm:ss` and reject other values with the new `time` message, `Enter a valid time`.
+- New `hidden` field type. Its value comes from `defaultValue` or the initial values, and `validateSubmission()` checks it as text.
+- An error on a `hidden` field is a form-level error. `topLevelErrors` lists it, `stepErrors` leaves it out and a failed submit does not move to its step.
+- Built-in messages on a `hidden` field name the field through the new `hidden` message template, `{label}: {message}`. Custom messages stay as written.
+- Server errors for the key of a `hidden` field are form-level errors too.
+- A `hidden` field that its conditions show again gets its initial value or `defaultValue` back. Other field types still start empty.
+- `time` and `hidden` are new keys in `messages` catalogs and in the translation JSON Schema.
+- **Breaking:** `time` is a built-in type. A custom `time` type now fails values that are not 24-hour `HH:mm` or `HH:mm:ss`.
+- **Breaking:** `hidden` is a built-in type. A custom `hidden` type now fails values that are not text, and its errors move to `topLevelErrors`.
+
+### Patch Changes
+
+- `checkDefinition()` warns about a `pattern` with nested quantifiers, such as `(a+)+`, with the new `slow-pattern` code.
+- A value longer than 10,000 characters fails `pattern` without being matched.
+- A missing required property is reported as `missing-property` with the path of the object that lacks it, such as `/: missing required property "id".` A present value of the wrong type is reported as `invalid-type`.
+- `checkDefinition()` warns about unknown properties with the new `unknown-property` code and names the closest known property, such as `Did you mean "id"?`. The engine still ignores unknown properties.
+- `checkDefinition()` warns about a missing step `title`, field or option `label`, or action `label`, and about an empty `label` on a visible field with the new `empty-label` code.
+- Fixed saved drafts of hosted forms keeping a password when another branch uses the same key for a text field.
+- CommonJS code can `require()` the packages on Node 20.19+ and 22.12+. Before, `require()` failed with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+
 ## 0.13.2
 
 ### Patch Changes
