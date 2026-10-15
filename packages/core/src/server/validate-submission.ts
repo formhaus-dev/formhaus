@@ -7,8 +7,9 @@ import type { EngineInternals } from '../engine/runtime-internals';
 import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
+import { writeValue } from '../engine/write-value';
 import { normalizeValue, typeError } from '../validation/type-checks';
-import { hasOwn, isEntry, isGroup, isSection, itemPath } from '../visibility/nodes';
+import { hasOwn, isEntry, isGroup, isSection, itemPath, itemsOf, keepId } from '../visibility/nodes';
 
 export interface SubmissionOptions {
   skippedSteps?: string[];
@@ -68,16 +69,20 @@ function itemErrors(engine: FormEngine, invalid: Map<string, string>, resolve: R
   const errors = new Map<string, string>();
   for (const group of internals(engine).visibility.groups) {
     if (invalid.has(group.key)) continue;
-    engine.items(group.key).forEach(({ fields }, index) => {
-      const item = (engine.values[group.key] as unknown[])[index];
-      if (!isEntry(item)) return;
-      for (const field of fields) {
+    const shown = engine.items(group.key);
+    const items = itemsOf(engine.values[group.key]);
+    const next = items.map((item, index) => {
+      if (!isEntry(item)) return item;
+      const cleared: Record<string, undefined> = {};
+      for (const field of shown[index]?.fields ?? []) {
         const error = typeError(field, item[field.key], resolve);
         if (!error) continue;
         errors.set(itemPath(group.key, index, field.key), error);
-        engine.setItemValue(group.key, index, field.key, undefined);
+        cleared[field.key] = undefined;
       }
+      return Object.keys(cleared).length ? keepId(item, { ...item, ...cleared }) : item;
     });
+    if (next.some((item, index) => item !== items[index])) writeValue(internals(engine), group.key, next, false);
   }
   return errors;
 }

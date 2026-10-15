@@ -33,6 +33,17 @@ describe('validateSubmission with oversized or invalid groups', () => {
     }
   });
 
+  it('checks 100 items of 50 invalid cells in linear time', () => {
+    const fields = Array.from({ length: 50 }, (_, index) => ({ key: `t${index}`, type: 'text' as const, label: 'T' }));
+    const definition: FormDefinition = { ...group(), fields: [{ key: 'people', type: 'group', label: 'People', fields }] };
+    const items = Array.from({ length: 100 }, () => Object.fromEntries(fields.map(({ key }) => [key, {}])));
+    let result = validateSubmission(definition, { people: items });
+    expect(timed(() => (result = validateSubmission(definition, { people: items })))).toBeLessThan(200);
+    expect(Object.keys(result.errors)).toHaveLength(5000);
+    expect(result.errors['people.99.t49']).toBe('Must be text');
+    expect(result.values).toEqual({ people: Array.from({ length: 100 }, () => ({})) });
+  });
+
   it('reports the client message for too many items', () => {
     const definition = group({ maxLength: 3 });
     const items = Array.from({ length: 101 }, () => ({ name: 'A' }));
