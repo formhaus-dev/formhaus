@@ -14,7 +14,8 @@ export const SLOTS: Record<NodeKind, readonly string[]> = {
 export type Entry = Record<string, unknown>;
 
 export function hasRule(node: Entry, slot: string): boolean {
-  return node[slot] !== undefined && node[slot] !== false;
+  const value = node[slot];
+  return slot === 'required' ? !!value : value !== undefined && value !== false && value !== '';
 }
 
 export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = Object.freeze({
