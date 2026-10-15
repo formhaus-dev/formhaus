@@ -108,7 +108,7 @@ A `hidden` field may have a `source`: `{ "query": name }` or one of `referrer`, 
 | Source | Value |
 |---|---|
 | `query` | The named URL parameter |
-| `referrer` | `document.referrer` |
+| `referrer` | Origin and path of `document.referrer`, without query and hash |
 | `page` | Origin and path of the page URL, without query and hash |
 | `pageTitle` | `document.title` |
 | `language` | `navigator.language` |
