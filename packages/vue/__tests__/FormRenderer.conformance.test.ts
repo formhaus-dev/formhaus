@@ -70,5 +70,3 @@ describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
 describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
-describe('renderer conformance: ids', () => idScenarios(harness, kit));
-describe('renderer conformance: options', () => optionScenarios(harness, kit));
