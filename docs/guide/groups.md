@@ -5,7 +5,7 @@ description: "Let people add and remove items, such as participants or addresses
 
 # Repeatable groups
 
-A group repeats a set of fields, and people add or remove items. Requires `@formhaus/core` 0.15 and `"formatVersion": "1.1"`.
+A group repeats a set of fields, and people add or remove items. Requires `@formhaus/core` 0.14 and `"formatVersion": "1.1"`.
 
 ```json
 {
@@ -53,7 +53,7 @@ A hidden item field is left out of its item. Text values are trimmed per item, a
 | `itemLabel` | string | Item heading. `{index}` is the item number from 1, `{label}` the group label. Default `{label} {index}`. |
 | `addLabel`, `removeLabel` | string | Button texts. Default `Add` and `Remove`. |
 | `defaultItems` | integer | Number of items the group starts with. |
-| `show`, `showAny` | condition[] | Group visibility. A hidden group is cleared. |
+| `show`, `showAny` | condition[] | Group visibility. A hidden group is cleared, and when it shows again it starts with `defaultItems` new items. |
 | `validation` | object | `required`, `minLength`, `maxLength`, their messages and `validator`. |
 | `fields` | field[] | Fields of one item. |
 
@@ -201,8 +201,8 @@ engine.removeItem('participants', 0);
 - Unknown item keys are dropped.
 - Every visible item field gets its type check and rules. Errors come back by path.
 
-Upgrade the server before the clients. Core 0.14 and older treat a group as a custom field and pass its value through without checks.
+Upgrade the server before the clients. Core 0.13 and older treat a group as a custom field and pass its value through without checks.
 
 ## Translations
 
-Group texts live at `fields.participants.label`, `itemLabel`, `addLabel`, `removeLabel` and `helperText`. Item fields live at `fields.participants.fields.email.label`. A translated `itemLabel` must keep `{index}`. The label catalog adds `addItem`, `removeItem`, `itemLabel`, `itemAdded`, `itemRemoved`, `removeItemPrompt` and `keepItem`. See [Translations](/guide/translations).
+Group texts live at `fields.participants.label`, `itemLabel`, `addLabel`, `removeLabel` and `helperText`. Item fields live at `fields.participants.fields.email.label`. A translated `itemLabel` must keep `{index}`. The label catalog adds `addItem`, `removeItem`, `itemLabel`, `itemAdded`, `itemRemoved`, `removeItemNamed`, `removeItemPrompt` and `keepItem`. See [Translations](/guide/translations).

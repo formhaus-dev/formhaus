@@ -1,4 +1,4 @@
-import { getAllFields } from './engine-utils';
+import { createValues, getAllFields } from './engine-utils';
 import { indexConditions } from './visibility-index';
 import { createActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
@@ -214,6 +214,9 @@ export function createVisibility(definition: FormDefinition) {
           if (held(field.key)) clear(field.key);
         } else if (field.type === 'hidden' && !held(field.key) && seeds[field.key] !== undefined && visible(field, values)) {
           values[field.key] = seeds[field.key];
+          mark(field.key);
+        } else if (isGroup(field) && field.defaultItems! > 0 && !held(field.key) && visible(field, values)) {
+          values[field.key] = createValues([field])[field.key];
           mark(field.key);
         }
       };

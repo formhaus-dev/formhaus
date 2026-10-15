@@ -19,7 +19,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.1**. `@formhaus/core` 0.15 and later implement it. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.14, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.1**. `@formhaus/core` 0.14 and later implement it. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
@@ -27,7 +27,7 @@ This document describes **Formhaus form definition 1.1**. `@formhaus/core` 0.15 
 
 A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.1"`. Without it, core reads the definition as 1.1. A minor version newer than 1.1 is also read as 1.1. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
-A definition with sections or groups SHOULD declare `"formatVersion": "1.1"`. Core 0.14 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
+A definition with sections or groups SHOULD declare `"formatVersion": "1.1"`. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
 ```json
 { "formatVersion": "1.1", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
@@ -214,9 +214,9 @@ Rules:
 
 A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`.
 
-An item field hidden by its conditions is removed from its item, and its error is removed. A hidden group is cleared like a field. A group that becomes visible again starts without items.
+An item field hidden by its conditions is removed from its item, and its error is removed. A hidden group is cleared like a field. A group that becomes visible again starts with `defaultItems` new items, like a `hidden` field gets back its value.
 
-`validateSubmission()` rejects a group value that is not an array of plain objects, or that has more than `maxLength` items and more than 100, with the `value` message. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
+`validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength`, with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
 
 ### Error paths
 
@@ -512,6 +512,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `itemLabel` | `{label} {index}` | `label`, `index` |
 | `itemAdded` | `{item} added` | `item` |
 | `itemRemoved` | `{item} removed` | `item` |
+| `removeItemNamed` | `{label} {item}` | `label` (the Remove text), `item` |
 | `removeItemPrompt` | `Remove {item} and its answers?` | `item` |
 | `keepItem` | `Cancel` | |
 

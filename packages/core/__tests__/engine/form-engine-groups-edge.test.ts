@@ -61,4 +61,26 @@ describe('group edge cases', () => {
     (scoped.fields![2] as { fields: { optionsDependsOn?: string[] }[] }).fields[0].optionsDependsOn = ['note'];
     expect(checkDefinition(scoped).map(({ code, severity }) => `${severity} ${code}`)).toEqual(['warning group-scope']);
   });
+
+  it('starts a group shown again with its defaultItems', () => {
+    const shown: FormDefinition = {
+      ...definition,
+      fields: [
+        definition.fields![0],
+        {
+          key: 'guests',
+          type: 'group',
+          label: 'Guests',
+          defaultItems: 1,
+          show: [{ field: 'company', eq: true }],
+          fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'x' }],
+        },
+      ],
+    };
+    const engine = new FormEngine(shown, { company: true, guests: [{ name: 'Ada' }, { name: 'Bo' }] });
+    engine.setValue('company', false);
+    expect(engine.values).not.toHaveProperty('guests');
+    engine.setValue('company', true);
+    expect(engine.values.guests).toEqual([{ name: 'x' }]);
+  });
 });
