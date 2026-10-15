@@ -58,7 +58,7 @@ await new Promise((done) => server.listen(0, '127.0.0.1', done))
 const origin = `http://127.0.0.1:${server.address().port}`
 const font = `/assets/${readdirSync(join(dist, 'assets')).find((name) => /^inter-roman-latin\.[^.]+\.woff2$/.test(name))}`
 
-const home = { slug: 'contact-form', address: 'f.formhaus.dev/k3Fq9xT2bW' }
+const home = { slug: 'contact-form', address: 'formhaus.cc/k3Fq9xT2bW' }
 
 const jobs = [
   ...Object.entries(sections).map(([name, section]) => ({ name, ...section, ...(name === 'home' ? home : {}) })),

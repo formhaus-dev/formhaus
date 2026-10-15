@@ -60,6 +60,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   }, [props.errors, engine]);
 
   useEffect(() => {
+    if (version !== engine.getSnapshot()) return;
     if (previousStep.current !== engine.currentStep?.id || handledInvalid.current !== actions.invalidAttempts) focusPending.current = true;
     previousStep.current = engine.currentStep?.id;
     handledInvalid.current = actions.invalidAttempts;
