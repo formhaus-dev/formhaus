@@ -1,6 +1,5 @@
 import { validateFieldValue, validateFields, validateStep } from '../validation';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
-import { trimValue } from '../validation/type-checks';
 import type { FormField, FormNode } from '../types';
 import { isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
 import type { EngineInternals } from './runtime-internals';
@@ -142,12 +141,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
 }
 
 export function getSubmitValues(engine: EngineInternals): Record<string, unknown> {
-  const values = { ...engine.visibility.conditionValues(engine.values) };
-  for (const key of Object.keys(values)) {
-    const field = engine.visibility.activeField(key, engine.values);
-    if (field) values[key] = trimValue(field, values[key]);
-  }
-  return withoutSkipped(engine, values);
+  return withoutSkipped(engine, { ...engine.visibility.conditionValues(engine.values) });
 }
 
 export function resetEngine(engine: EngineInternals, values?: Record<string, unknown>): void {
