@@ -1,5 +1,5 @@
 import { hasOptions, isPage, isQuestion, type BuilderForm } from './model';
-import { resolver } from './references';
+import { conditionsOf, resolver } from './references';
 
 export type IssueSeverity = 'error' | 'warning';
 
@@ -49,7 +49,7 @@ export function findIssues(form: BuilderForm): Issue[] {
   form.blocks.forEach((block, index) => {
     if (isPage(block) && !isQuestion(form.blocks[index + 1]))
       issues.push({ uid: block.uid, severity: 'error', message: 'This step has no fields.' });
-    for (const condition of [...(block.extra.show ?? []), ...(block.extra.showAny ?? [])]) {
+    for (const condition of conditionsOf(block.extra)) {
       const found = target(condition.field, scope(block));
       const at = found && form.blocks.indexOf(found);
       if (at === undefined)

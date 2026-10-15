@@ -63,7 +63,9 @@ export function clearTargets(form: BuilderForm, gone: Set<string>): void {
   for (const item of form.blocks) {
     if (isPage(item)) {
       if (item.next && gone.has(item.next)) item.next = null;
-      if (item.routes?.some((route) => route.to && goneIds.has(route.to))) delete item.routes;
+      const routes = item.routes?.filter((route) => !route.to || !goneIds.has(route.to));
+      if (routes?.length) item.routes = routes;
+      else delete item.routes;
       continue;
     }
     for (const option of item.options) if (option.jump && gone.has(option.jump)) option.jump = null;

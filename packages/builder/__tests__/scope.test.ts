@@ -10,7 +10,9 @@ import {
   moveFieldTo,
   referencesTo,
   removeField,
+  removeStep,
   setKey,
+  setOptionValue,
   setLabel,
   setOptionLabel,
   toDefinition,
@@ -75,6 +77,31 @@ const household: FormDefinition = {
         },
       ],
     },
+  ],
+};
+
+const signup: FormDefinition = {
+  formatVersion: '1.1',
+  id: 'signup',
+  title: 'Signup',
+  submit: { label: 'Send' },
+  steps: [
+    {
+      id: 'one',
+      fields: [
+        { key: 'email', type: 'email', label: 'Email' },
+        {
+          key: 'repeat',
+          type: 'email',
+          label: 'Repeat',
+          validation: { matchField: 'email' },
+          show: [{ field: 'email', notEmpty: true }],
+        },
+        { key: 'city', type: 'select', label: 'City', optionsFrom: 'cities', optionsDependsOn: ['email'] },
+      ],
+      routes: [{ to: null, show: [{ field: 'email', notEmpty: true }] }, { to: 'two' }],
+    },
+    { id: 'two', fields: [{ key: 'note', type: 'text', label: 'Note' }] },
   ],
 };
 
@@ -154,30 +181,7 @@ describe('custom keys', () => {
   });
 
   it('moves conditions, matchField, optionsDependsOn and routes to a new key', () => {
-    const form = fromDefinition({
-      formatVersion: '1.1',
-      id: 'signup',
-      title: 'Signup',
-      submit: { label: 'Send' },
-      steps: [
-        {
-          id: 'one',
-          fields: [
-            { key: 'email', type: 'email', label: 'Email' },
-            {
-              key: 'repeat',
-              type: 'email',
-              label: 'Repeat',
-              validation: { matchField: 'email' },
-              show: [{ field: 'email', notEmpty: true }],
-            },
-            { key: 'city', type: 'select', label: 'City', optionsFrom: 'cities', optionsDependsOn: ['email'] },
-          ],
-          routes: [{ to: null, show: [{ field: 'email', notEmpty: true }] }, { to: 'two' }],
-        },
-        { id: 'two', fields: [{ key: 'note', type: 'text', label: 'Note' }] },
-      ],
-    });
+    const form = fromDefinition(signup);
     setKey(form, form.blocks[1].uid, 'mail');
     const [one] = toDefinition(form).steps!;
     expect(one.fields[1]).toMatchObject({ validation: { matchField: 'mail' }, show: [{ field: 'mail', notEmpty: true }] });
@@ -234,5 +238,41 @@ describe('duplicating containers', () => {
     ]);
     expect(inner(form, 'people', 'nick').extra.show).toEqual([{ field: 'fullName', notEmpty: true }]);
     expect(errors(form)).toEqual([]);
+  });
+});
+
+describe('reference upkeep', () => {
+  it('moves conditions along with a custom option value', () => {
+    const form = fromDefinition(order);
+    const kind = inner(form, 'billing', 'kind');
+    const detail = inner(form, 'billing', 'detail');
+    detail.extra.show = [{ field: 'kind', in: ['company', 'person'] }];
+    setOptionValue(form, kind.uid, kind.options[0].uid, 'firm');
+    expect(detail.extra.show).toEqual([{ field: 'kind', in: ['firm', 'person'] }]);
+  });
+
+  it('keeps the routes that do not target a deleted step', () => {
+    const form = fromDefinition({
+      ...signup,
+      steps: [
+        {
+          ...signup.steps![0],
+          routes: [
+            { to: 'two', show: [{ field: 'email', notEmpty: true }] },
+            { to: 'three', show: [{ field: 'email', eq: 'a@b.co' }] },
+            { to: null },
+          ],
+        },
+        signup.steps![1],
+        { id: 'three', fields: [{ key: 'last', type: 'text', label: 'Last' }] },
+      ],
+    });
+    expect(removeStep(form, form.blocks.find((block) => block.kind === 'page' && block.id === 'two')!.uid, 'with-fields')).toBe(true);
+    expect(toDefinition(form).steps![0].routes).toEqual([{ to: 'three', show: [{ field: 'email', eq: 'a@b.co' }] }, { to: null }]);
+  });
+
+  it('counts matchField and optionsDependsOn as references', () => {
+    const form = fromDefinition(signup);
+    expect(referencesTo(form, form.blocks[1].uid)).toEqual([form.blocks[0].uid, form.blocks[2].uid, form.blocks[3].uid]);
   });
 });
