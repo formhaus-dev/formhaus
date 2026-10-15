@@ -1,4 +1,5 @@
-import type { FormField, FormDefinition } from '@formhaus/core';
+import type { FormDefinition, FormNode } from '@formhaus/core';
+import { flatFields } from './nodes';
 
 export function parseAndValidate(json: string): FormDefinition {
   let parsed: Record<string, unknown>;
@@ -20,11 +21,11 @@ export function parseAndValidate(json: string): FormDefinition {
 }
 
 export function countFields(definition: FormDefinition): number {
-  if (definition.fields) return definition.fields.length;
-  return (definition.steps || []).reduce((sum, s) => sum + s.fields.length, 0);
+  if (definition.fields) return flatFields(definition.fields).length;
+  return (definition.steps || []).reduce((sum, s) => sum + flatFields(s.fields).length, 0);
 }
 
-export function getSteps(definition: FormDefinition): { title: string; description?: string; fields: FormField[] }[] {
+export function getSteps(definition: FormDefinition): { title: string; description?: string; fields: FormNode[] }[] {
   if (definition.steps && definition.steps.length > 0) {
     return definition.steps;
   }

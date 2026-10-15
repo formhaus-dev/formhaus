@@ -9,7 +9,7 @@
     },
     "formatVersion": {
       "type": "string",
-      "description": "Format version of the definition, such as \"1.0\". Core rejects a newer major version.",
+      "description": "Format version of the definition, such as \"1.1\". Core rejects a newer major version. Sections and groups need \"1.1\".",
       "pattern": "^[1-9]\\d*(\\.\\d+)?$"
     },
     "id": {
@@ -35,7 +35,7 @@
     },
     "labels": {
       "$ref": "#/definitions/LabelCatalog",
-      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}) and errorSummary."
+      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}) and cancel."
     },
     "i18n": {
       "$ref": "#/definitions/FormI18n",
@@ -52,7 +52,7 @@
     "fields": {
       "type": "array",
       "items": {
-        "$ref": "#/definitions/FormField"
+        "$ref": "#/definitions/FormNode"
       },
       "description": "Fields of a single-step form."
     },
@@ -178,6 +178,42 @@
           "minLength": 1
         },
         "errorSummary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "addItem": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removeItem": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itemLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itemAdded": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itemRemoved": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removeItemNamed": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removeItemPrompt": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removeItemBody": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cancel": {
           "type": "string",
           "minLength": 1
         }
@@ -315,6 +351,39 @@
         }
       },
       "additionalProperties": false
+    },
+    "FormNode": {
+      "if": {
+        "properties": {
+          "type": {
+            "const": "section"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "then": {
+        "$ref": "#/definitions/FormSection"
+      },
+      "else": {
+        "if": {
+          "properties": {
+            "type": {
+              "const": "group"
+            }
+          },
+          "required": [
+            "type"
+          ]
+        },
+        "then": {
+          "$ref": "#/definitions/FormGroup"
+        },
+        "else": {
+          "$ref": "#/definitions/FormField"
+        }
+      }
     },
     "FormField": {
       "type": "object",
@@ -634,6 +703,266 @@
       },
       "additionalProperties": false
     },
+    "FormSection": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Section identifier for translations, DOM ids and editors. Unique among field keys. Conditions cannot test it.",
+          "not": {
+            "enum": [
+              "__defineGetter__",
+              "__defineSetter__",
+              "__lookupGetter__",
+              "__lookupSetter__",
+              "__proto__",
+              "constructor",
+              "hasOwnProperty",
+              "isPrototypeOf",
+              "propertyIsEnumerable",
+              "prototype",
+              "toLocaleString",
+              "toString",
+              "valueOf"
+            ]
+          }
+        },
+        "type": {
+          "type": "string",
+          "const": "section"
+        },
+        "title": {
+          "type": "string",
+          "description": "Section heading."
+        },
+        "description": {
+          "type": "string",
+          "description": "Text below the section heading."
+        },
+        "show": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Section and its fields are visible only when all conditions match. Hidden fields are cleared."
+        },
+        "showAny": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Section is visible when any condition matches."
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "if": {
+              "properties": {
+                "type": {
+                  "const": "group"
+                }
+              },
+              "required": [
+                "type"
+              ]
+            },
+            "then": {
+              "$ref": "#/definitions/FormGroup"
+            },
+            "else": {
+              "$ref": "#/definitions/FormField"
+            }
+          },
+          "description": "Fields and groups of the section. Sections do not nest."
+        },
+        "i18n": {
+          "$ref": "#/definitions/StepI18n",
+          "description": "Translation keys for the section title and description."
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "title",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "description": "A titled block of fields with shared show conditions. Its fields keep their own keys in the submitted values."
+    },
+    "FormGroup": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string",
+          "description": "Key of the item array in the submitted values. No other field key may start with this key and a dot.",
+          "not": {
+            "enum": [
+              "__defineGetter__",
+              "__defineSetter__",
+              "__lookupGetter__",
+              "__lookupSetter__",
+              "__proto__",
+              "constructor",
+              "hasOwnProperty",
+              "isPrototypeOf",
+              "propertyIsEnumerable",
+              "prototype",
+              "toLocaleString",
+              "toString",
+              "valueOf"
+            ]
+          }
+        },
+        "type": {
+          "type": "string",
+          "const": "group"
+        },
+        "label": {
+          "type": "string",
+          "description": "Group heading."
+        },
+        "helperText": {
+          "type": "string",
+          "description": "Hint text below the group heading."
+        },
+        "itemLabel": {
+          "type": "string",
+          "description": "Item heading. {index} is the 1-based item number, {label} the group label."
+        },
+        "addLabel": {
+          "type": "string",
+          "description": "Text of the button that adds an item."
+        },
+        "removeLabel": {
+          "type": "string",
+          "description": "Text of the button that removes an item."
+        },
+        "defaultItems": {
+          "type": "integer",
+          "description": "Number of empty items the group starts with.",
+          "minimum": 0
+        },
+        "show": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Group is visible only when all conditions match. A hidden group is cleared."
+        },
+        "showAny": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ShowCondition"
+          },
+          "description": "Group is visible when any condition matches."
+        },
+        "validation": {
+          "$ref": "#/definitions/GroupValidation",
+          "description": "Item count rules. required means at least one item; minLength and maxLength count items."
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/FormField"
+          },
+          "description": "Fields of one item. Their keys are unique in the item and do not repeat a key outside the group. Their conditions can test fields of the same item and fields outside the group."
+        },
+        "i18n": {
+          "$ref": "#/definitions/GroupI18n",
+          "description": "Translation keys for the group texts."
+        }
+      },
+      "required": [
+        "key",
+        "type",
+        "label",
+        "fields"
+      ],
+      "additionalProperties": false,
+      "description": "A repeatable group. Its value is an array of item objects keyed by the keys of its fields."
+    },
+    "GroupValidation": {
+      "type": "object",
+      "properties": {
+        "required": {
+          "type": [
+            "boolean",
+            "string"
+          ]
+        },
+        "minLength": {
+          "type": "number"
+        },
+        "minLengthMessage": {
+          "type": "string"
+        },
+        "maxLength": {
+          "type": "number"
+        },
+        "maxLengthMessage": {
+          "type": "string"
+        },
+        "validator": {
+          "type": "string"
+        },
+        "i18n": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "string"
+            },
+            "minLength": {
+              "type": "string"
+            },
+            "maxLength": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
+    "GroupI18n": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "helperText": {
+          "type": "string",
+          "minLength": 1
+        },
+        "itemLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "addLabel": {
+          "type": "string",
+          "minLength": 1
+        },
+        "removeLabel": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "StepI18n": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
     "FormStep": {
       "type": "object",
       "properties": {
@@ -657,7 +986,7 @@
         "fields": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/FormField"
+            "$ref": "#/definitions/FormNode"
           }
         },
         "show": {
@@ -744,20 +1073,6 @@
       ],
       "additionalProperties": false,
       "description": "A forward destination for a step."
-    },
-    "StepI18n": {
-      "type": "object",
-      "properties": {
-        "title": {
-          "type": "string",
-          "minLength": 1
-        },
-        "description": {
-          "type": "string",
-          "minLength": 1
-        }
-      },
-      "additionalProperties": false
     }
   }
 }

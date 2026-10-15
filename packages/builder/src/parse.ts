@@ -1,4 +1,4 @@
-import type { FormAction, FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
+import type { FormAction, FormDefinition, FormField, FormNode, FormStep, StepRoute } from '@formhaus/core';
 import { follows, keyBase, optionBase, stepBase } from './identifiers';
 import {
   clone,
@@ -25,11 +25,14 @@ interface Locks {
   steps: Set<string>;
 }
 
+const deep = (nodes: FormNode[]): FormField[] =>
+  nodes.flatMap((node) => [node as FormField, ...('fields' in node && Array.isArray(node.fields) ? deep(node.fields) : [])]);
+
 function locksOf(...definitions: (FormDefinition | undefined)[]): Locks {
   const locks: Locks = { keys: new Set(), values: new Map(), steps: new Set() };
   for (const definition of definitions) {
     for (const step of definition?.steps ?? []) locks.steps.add(step.id);
-    for (const field of [...(definition?.fields ?? []), ...(definition?.steps ?? []).flatMap((step) => step.fields ?? [])]) {
+    for (const field of deep([...(definition?.fields ?? []), ...(definition?.steps ?? []).flatMap((step) => step.fields ?? [])])) {
       locks.keys.add(field.key);
       const values = locks.values.get(field.key) ?? new Set();
       for (const option of field.options ?? []) values.add(option.value);
@@ -102,6 +105,29 @@ function question(form: BuilderForm, field: FormField, routes: StepRoute[], ids:
   };
 }
 
+function questions(
+  form: BuilderForm,
+  node: FormNode,
+  routes: StepRoute[],
+  ids: Map<string, string>,
+  locks: Locks,
+  parent?: string,
+): BuilderQuestion[] {
+  if (node.type !== 'section' && node.type !== 'group')
+    return [{ ...question(form, node as FormField, routes, ids, locks), ...(parent && { parent }) }];
+  const { fields, title, ...rest } = node as FormNode & { title?: string; fields: FormNode[] };
+  const base = question(form, { ...rest, label: title ?? (rest as FormField).label } as FormField, [], ids, locks);
+  const container = {
+    ...base,
+    shape: { ...base.shape, field: Object.keys(node).map((key) => (key === 'title' ? 'label' : key)) },
+    ...(parent && { parent }),
+  };
+  return [
+    container,
+    ...(Array.isArray(fields) ? fields : []).flatMap((child) => questions(form, child, routes, ids, locks, container.uid)),
+  ];
+}
+
 const labelOnly = (action: FormStep['next']) =>
   typeof action === 'object' && action && Object.keys(action).length === 1 && action.label && action.label.trim() === action.label
     ? action.label
@@ -137,19 +163,19 @@ export function fromDefinition(source: FormDefinition, options: ParseOptions = {
   const locks = locksOf(options.lockedFrom, source.lang || source.i18n ? source : undefined);
   const form: BuilderForm = { ...head(definition), blocks: [] };
   if (!definition.steps) {
-    form.blocks = (definition.fields ?? []).map((field) => question(form, field, [], new Map(), locks));
+    form.blocks = (definition.fields ?? []).flatMap((field) => questions(form, field, [], new Map(), locks));
     return form;
   }
   const steps = definition.steps;
   const pages = steps.map((step, index) => page(form, step, index, locks));
   const ids = new Map(steps.map((step, index) => [step.id, pages[index].uid]));
   form.blocks = steps.flatMap((step, index): BuilderBlock[] => {
-    const questions = (step.fields ?? []).map((field) => question(form, field, step.routes ?? [], ids, locks));
+    const items = (step.fields ?? []).flatMap((field) => questions(form, field, step.routes ?? [], ids, locks));
     const fallback = fallbackOf(step.routes);
     const to = fallback && target(fallback.to, ids);
-    const claimed = questions.some((item) => item.options.some((option) => option.jump === to));
+    const claimed = items.some((item) => item.options.some((option) => option.jump === to));
     if (fallback && fallback.to !== steps[index + 1]?.id && !claimed) pages[index].next = to ?? null;
-    return [pages[index], ...questions];
+    return [pages[index], ...items];
   });
   const generated = toDefinition(form).steps ?? [];
   steps.forEach((step, index) => {

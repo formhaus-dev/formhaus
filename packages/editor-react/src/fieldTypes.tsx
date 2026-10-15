@@ -9,6 +9,8 @@ import {
   Clock,
   EyeOff,
   Hash,
+  PanelTop,
+  Repeat2,
   ListChecks,
   Mail,
   Phone,
@@ -32,6 +34,8 @@ const types: TypeInfo[] = [
   { type: 'time', label: 'Time', hint: 'A time of day' },
   { type: 'switch', label: 'Switch', hint: 'An on or off toggle' },
   { type: 'hidden', label: 'Hidden value', hint: 'Sent with the answers, never shown' },
+  { type: 'section', label: 'Section', hint: 'A titled block of fields' },
+  { type: 'group', label: 'Repeatable group', hint: 'Fields people can add again and again' },
 ];
 
 const icons: Record<string, LucideIcon> = {
@@ -49,6 +53,8 @@ const icons: Record<string, LucideIcon> = {
   checkbox: SquareCheck,
   switch: ToggleRight,
   hidden: EyeOff,
+  section: PanelTop,
+  group: Repeat2,
 };
 
 export const TYPE_GROUPS: [string, string[]][] = [

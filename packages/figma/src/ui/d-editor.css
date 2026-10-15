@@ -54,6 +54,7 @@
 }
 .field-row.is-open { border-color: var(--border-strong); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
 .field-row.is-dragging { opacity: 0.4; }
+.field-row--container { display: flex; align-items: center; justify-content: space-between; color: var(--text-2); }
 .field-row.drop-before::before, .field-row.drop-after::after {
   background: var(--brand);
   border-radius: 2px;

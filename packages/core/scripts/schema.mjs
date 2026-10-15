@@ -18,7 +18,19 @@ export const TRANSLATION_SCHEMA_OUTPUTS = [
   resolve(packageRoot, '../../docs/public/schema/form-translation.json'),
 ];
 
-const I18N_DEFINITIONS = ['MessageCatalog', 'LabelCatalog', 'FormI18n', 'StepI18n', 'FieldI18n', 'LabelI18n', 'ValidationI18n'];
+const I18N_DEFINITIONS = [
+  'MessageCatalog',
+  'LabelCatalog',
+  'FormI18n',
+  'StepI18n',
+  'FieldI18n',
+  'GroupI18n',
+  'LabelI18n',
+  'ValidationI18n',
+];
+
+const byType = (type, then, otherwise) => ({ if: { properties: { type: { const: type } }, required: ['type'] }, then, else: otherwise });
+const ref = (name) => ({ $ref: `#/definitions/${name}` });
 
 export function buildSchema() {
   const generated = createGenerator({
@@ -31,7 +43,11 @@ export function buildSchema() {
   }).createSchema('FormDefinition');
 
   applyDescriptions(generated.definitions);
-  generated.definitions.FormField.properties.key.not = { enum: [...Object.getOwnPropertyNames(Object.prototype), 'prototype'].sort() };
+  const reserved = { enum: [...Object.getOwnPropertyNames(Object.prototype), 'prototype'].sort() };
+  for (const name of ['FormField', 'FormSection', 'FormGroup']) generated.definitions[name].properties.key.not = reserved;
+  generated.definitions.FormNode = byType('section', ref('FormSection'), byType('group', ref('FormGroup'), ref('FormField')));
+  generated.definitions.FormSection.properties.fields.items = byType('group', ref('FormGroup'), ref('FormField'));
+  Object.assign(generated.definitions.FormGroup.properties.defaultItems, { type: 'integer', minimum: 0 });
   generated.definitions.FormDefinition.properties.description.maxLength = 1000;
   generated.definitions.FormDefinition.properties.formatVersion.pattern = '^[1-9]\\d*(\\.\\d+)?$';
   for (const name of I18N_DEFINITIONS) {
@@ -61,18 +77,21 @@ const texts = (names) => ({
 export function buildTranslationSchema(definitionSchema = buildSchema()) {
   const names = (name) => Object.keys(definitionSchema.definitions[name].properties);
   const action = texts(['label']);
-  const field = texts(['label', 'placeholder', 'helperText']);
+  const field = texts(['label', 'placeholder', 'helperText', 'itemLabel', 'addLabel', 'removeLabel']);
+  const fields = { type: 'object', additionalProperties: { $ref: '#/definitions/field' } };
+  const sections = { type: 'object', additionalProperties: texts(['title', 'description']) };
   field.properties.options = { type: 'object', additionalProperties: text };
   field.properties.validation = texts(names('ValidationI18n'));
-  const fields = { type: 'object', additionalProperties: { $ref: '#/definitions/field' } };
+  field.properties.fields = fields;
   const step = texts(['title', 'description']);
-  Object.assign(step.properties, { next: action, back: action, skip: action, fields });
+  Object.assign(step.properties, { next: action, back: action, skip: action, sections, fields });
   const overlay = texts(['title', 'description']);
   Object.assign(overlay.properties, {
     submit: action,
     cancel: action,
     messages: texts(names('MessageCatalog')),
     labels: texts(names('LabelCatalog')),
+    sections,
     fields,
     steps: { type: 'object', additionalProperties: { $ref: '#/definitions/step' } },
   });
@@ -81,7 +100,7 @@ export function buildTranslationSchema(definitionSchema = buildSchema()) {
     $id: 'https://formhaus.dev/schema/form-translation.json',
     title: 'Formhaus translation overlay',
     description:
-      'Translated texts of one form in one language, keyed by step id, field key and option value. Every leaf is a string; empty strings fall back to the source text.',
+      'Translated texts of one form in one language, keyed by step id, section key, field key and option value. Every leaf is a string; empty strings fall back to the source text.',
     ...overlay,
     definitions: { field, step },
   };

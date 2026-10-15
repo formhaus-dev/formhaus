@@ -8,6 +8,8 @@ export const PROPERTIES = {
   step: 'id title description fields show showAny routes next back skip i18n',
   field:
     'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout optionsFrom optionsDependsOn accept rows mask inputMode i18n',
+  section: 'key type title description show showAny fields i18n',
+  group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
   option: 'value label i18n',
   action: 'label variant disabled i18n',
   route: 'to show showAny',
@@ -46,7 +48,7 @@ function fieldWarnings({ field, path }: FieldEntry): DefinitionIssue[] {
   return [
     ...required(field, path, 'label', visible ? LABEL_HINT : undefined),
     ...(empty ? [warning('empty-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
-    ...unknown(field, path, PROPERTIES.field, misplaced),
+    ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, misplaced),
     ...(field.options ?? []).flatMap((option, index) => [
       ...required(option, `${path}/options/${index}`, 'label'),
       ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
@@ -55,7 +57,7 @@ function fieldWarnings({ field, path }: FieldEntry): DefinitionIssue[] {
   ];
 }
 
-export function propertyWarnings({ definition, entries }: CheckContext): DefinitionIssue[] {
+export function propertyWarnings({ definition, entries, nodes }: CheckContext): DefinitionIssue[] {
   const { title } = definition as { title?: unknown };
   return [
     ...required(definition, '', 'title', 'Add a title for host UI and editors'),
@@ -72,6 +74,9 @@ export function propertyWarnings({ definition, entries }: CheckContext): Definit
         ...(['next', 'back', 'skip'] as const).flatMap((name) => action(step[name], `${path}/${name}`)),
       ];
     }),
+    ...nodes.flatMap(({ node, path }) =>
+      node.type === 'section' ? [...required(node, path, 'title'), ...unknown(node, path, PROPERTIES.section)] : [],
+    ),
     ...entries.flatMap(fieldWarnings),
   ];
 }

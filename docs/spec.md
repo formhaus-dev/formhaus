@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.0 specification"
-description: "Specification of the Formhaus form definition format 1.0: structure, fields, conditions, validation, steps, routes, skip, translations and the submit payload."
+title: "Form definition 1.1 specification"
+description: "Formhaus form definition format 1.1: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
 ---
 
-# Formhaus form definition 1.0
+# Formhaus form definition 1.1
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -14,20 +14,23 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 - **Core** means `FormEngine` from `@formhaus/core`.
 - **Renderer** means a UI layer that draws a definition: `@formhaus/react`, `@formhaus/vue`, the Figma plugin, or a custom renderer built on core.
 - **Value** means an entry in `engine.values`, keyed by field `key`.
+- **Node** means an entry of a `fields` array: a [field](#fields), a [section](#sections) or a [group](#groups).
 - **Empty** (blank) means `undefined`, `null`, `''` or `[]`. `notEmpty` matches any value that is not blank, so `false` and `0` count as values. For `required`, an unchecked `checkbox` or `switch` (`false`) is also empty.
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.0**. `@formhaus/core` 0.11 and every later 1.x release implement it.
+This document describes **Formhaus form definition 1.1**. `@formhaus/core` 0.14 and later implement it. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.0"`. Without it, core reads the definition as 1.0. A minor version newer than 1.0 is also read as 1.0. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.1"`. Without it, core reads the definition as 1.1. A minor version newer than 1.1 is also read as 1.1. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+
+A definition with sections or groups SHOULD declare `"formatVersion": "1.1"`. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
 ```json
-{ "formatVersion": "1.0", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
+{ "formatVersion": "1.1", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
 ```
 
 ## Document structure
@@ -47,7 +50,7 @@ A definition is a JSON object. The [JSON Schema](https://formhaus.dev/schema/for
 | `description` | string | no | Plain text shown under the title by host UI and Figma output, up to 1000 characters. Renderers do not display it. |
 | `submit` | [action](#actions) | yes | The submit action on the last step. |
 | `cancel` | [action](#actions) | no | A cancel action. Renderers show it on every step. |
-| `fields` | [field](#fields)[] | no | Fields of a single-step form. |
+| `fields` | [node](#conventions)[] | no | Fields, sections and groups of a single-step form. |
 | `steps` | [step](#steps)[] | no | Steps of a multi-step form. |
 
 A form is **multi-step** when `steps` is a non-empty array. Otherwise it is single-step and uses `fields`. A definition with neither is a valid empty form.
@@ -80,7 +83,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 
 An option MAY have `i18n: { label }`. `validation` MAY have `i18n` with keys by rule name.
 
-Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate.
+Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate. Section keys share this namespace.
 
 ### Field types
 
@@ -121,6 +124,114 @@ Any other string is a **custom type**. A renderer provides its component through
 
 `options` is a static list. `optionsFrom` names an options provider passed to the renderer. Built-in renderers call the provider with all current values, and again each time a field in `optionsDependsOn` changes. The returned options replace `options`. Core checks that a `select`, `radio` or `multiselect` value is one of the static `options`. It skips that check when `optionsFrom` is set, so the app validates dynamic lists itself. Core does not read `optionsDependsOn`.
 
+## Sections
+
+A section is a node with `type: "section"`. It groups fields under a title and shares its conditions with them.
+
+```json
+{
+  "formatVersion": "1.1",
+  "id": "order",
+  "title": "Order",
+  "submit": { "label": "Order" },
+  "fields": [
+    { "key": "invoice", "type": "checkbox", "label": "I need an invoice" },
+    {
+      "key": "billing", "type": "section", "title": "Billing address", "description": "Where we send invoices",
+      "show": [{ "field": "invoice", "eq": true }],
+      "fields": [
+        { "key": "street", "type": "text", "label": "Street", "validation": { "required": true } },
+        { "key": "city", "type": "text", "label": "City" }
+      ]
+    }
+  ]
+}
+```
+
+| Property | Type | Meaning |
+|---|---|---|
+| `key` | string, required | Section identifier for translations, DOM ids and editors. Unique among field and section keys. |
+| `type` | `"section"`, required | |
+| `title` | string, required | Section heading. |
+| `description` | string | Text below the heading. |
+| `show`, `showAny` | [condition](#conditions)[] | Section visibility. |
+| `fields` | (field or group)[], required | Fields and groups of the section. |
+| `i18n` | object | [Translation keys](#translation-keys) for `title` and `description`. |
+
+A section holds no value. A condition that names a section key is an `unknown-field` error. A section MAY appear in `step.fields` and in single-step `fields`, and never spans steps. A section MUST NOT contain another section.
+
+A field inside a section is visible when the conditions of the section and its own conditions pass. Section conditions follow the rules of field conditions. A section condition on a field inside the same section is a `condition-cycle` error. When a section is hidden, its fields and groups are cleared like fields hidden by their own conditions.
+
+Fields inside a section keep their keys. The [submit payload](#submit-payload) does not change when a field moves into or out of a section.
+
+## Groups
+
+A group is a node with `type: "group"`. Its value is an array of items. Each item is an object keyed by the keys of the group `fields`.
+
+```json
+{
+  "formatVersion": "1.1",
+  "id": "registration",
+  "title": "Registration",
+  "submit": { "label": "Register" },
+  "fields": [
+    {
+      "key": "participants", "type": "group", "label": "Participants",
+      "itemLabel": "Participant {index}", "addLabel": "Add participant", "removeLabel": "Remove",
+      "defaultItems": 1,
+      "validation": { "required": true, "maxLength": 5 },
+      "fields": [
+        { "key": "name", "type": "text", "label": "Name", "validation": { "required": true } },
+        { "key": "email", "type": "email", "label": "Email", "validation": { "required": true } },
+        { "key": "diet", "type": "select", "label": "Diet", "options": [{ "value": "none", "label": "None" }, { "value": "other", "label": "Other" }] },
+        { "key": "dietNote", "type": "text", "label": "Details", "show": [{ "field": "diet", "eq": "other" }] }
+      ]
+    }
+  ]
+}
+```
+
+| Property | Type | Meaning |
+|---|---|---|
+| `key` | string, required | Key of the item array. Unique like a field key. |
+| `type` | `"group"`, required | |
+| `label` | string, required | Group heading. |
+| `helperText` | string | Text below the heading. |
+| `itemLabel` | string | Item heading. `{index}` is the item number, starting at 1. `{label}` is the group label. Default: the `itemLabel` [label](#message-and-label-catalogs). |
+| `addLabel`, `removeLabel` | string | Texts of the Add and Remove buttons. Defaults: the `addItem` and `removeItem` labels. |
+| `defaultItems` | integer | Number of items the group starts with. |
+| `show`, `showAny` | [condition](#conditions)[] | Group visibility. |
+| `validation` | `required`, `minLength`, `maxLength`, their messages, `validator` | Item count rules. |
+| `fields` | [field](#fields)[], required | Fields of one item. |
+| `i18n` | object | [Translation keys](#translation-keys) for `label`, `helperText`, `itemLabel`, `addLabel` and `removeLabel`. |
+
+Rules:
+
+- A group MAY appear in `step.fields`, in single-step `fields` and in a section. A group MUST NOT contain a section, another group, or a `file` or `hidden` field. The constructor throws on them (`invalid-nesting`).
+- Item keys MUST be unique inside the group and MUST NOT repeat a field or section key outside it. No other key MAY start with the group key followed by `.`, because [error paths](#error-paths) use that form. The constructor throws on these (`duplicate-key`). Two groups MAY use the same item keys.
+- A condition or `matchField` of an item field MAY use the other fields of the same item, evaluated per item, and fields outside the group under the rules of field conditions. A condition, `matchField` or `optionsDependsOn` outside the group MUST NOT use item fields (`group-scope`). It MAY test the group itself, such as with `notEmpty`.
+- `required: true` means at least one item. `minLength` and `maxLength` count items and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
+
+A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`.
+
+An item field hidden by its conditions is removed from its item, and its error is removed. A hidden group is cleared like a field. A group that becomes visible again starts with `defaultItems` new items, like a `hidden` field gets back its value.
+
+`validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength`, with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
+
+### Error paths
+
+Editing an item field keeps the error under the group key; adding, removing or replacing items clears it. Errors of item fields use the path `<group>.<index>.<field>`, with a 0-based index, such as `participants.1.email`. Count rules and the group `validator` use the group key. `errors`, `stepErrors`, `validate()`, `setErrors()` and [server errors](#server-errors) use these paths. When an item is removed, the errors of later items move to their new index.
+
+### Engine operations
+
+| Method | Meaning |
+|---|---|
+| `addItem(key)` | Adds an item. Returns `false` at the maximum or when the group is not visible. |
+| `removeItem(key, index)` | Removes an item. Returns `false` at the minimum or for an index out of range. |
+| `setItemValue(key, index, field, value)` | Writes one item field. `setValue('<group>.<index>.<field>', value)` does the same. |
+| `setValue(key, items)` | Replaces the whole array. |
+| `items(key)` | The items of a visible group: a stable `id` for rendering and the visible item fields. |
+
 ## Conditions
 
 A condition tests the value of one field:
@@ -159,13 +270,13 @@ Every condition sees the **active projection**: the values of visible fields on 
 
 A field condition MUST reference a field of the same or an earlier step. A step condition MUST reference a field of an earlier step. The constructor throws on a condition that references a later step or a key that is not a field key. Values for keys that are not field keys, such as extra initial values, are never in the projection.
 
-A field is visible when its own conditions pass and, in a multi-step form, its step is on the active path.
+A field is visible when its own conditions pass, the conditions of its section pass and, in a multi-step form, its step is on the active path. An item field is visible when its group is visible and its conditions pass against the active projection plus the values of its own item.
 
 Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored. The one exception is a field of type `hidden`: when it becomes visible again, it gets back its value from the initial values of the constructor or the last `reset()`, or else its resolved source, or else its `defaultValue`.
 
 In a form with [routes](#routes), fields on steps that are off the active path keep their values. See [Routes](#routes).
 
-Fields hidden by conditions are not validated and not submitted.
+Fields hidden by conditions are not validated and not submitted. For groups, see [Groups](#groups).
 
 ## Defaults and initial values
 
@@ -203,7 +314,7 @@ Core evaluates one field as follows and returns the first error:
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 6. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
-Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
+Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. A group runs its count rules first, then the rules of the visible fields of every item, with the values of the same item in place of `matchField` and validator values. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
 
 ## Steps
 
@@ -212,7 +323,7 @@ Validation runs on Continue for the visible fields of the current step, and on S
 | `id` | string, required | Step identifier. |
 | `title` | string, required | Step heading. |
 | `description` | string | Text below the heading. |
-| `fields` | [field](#fields)[], required | Fields of the step. |
+| `fields` | [node](#conventions)[], required | Fields, sections and groups of the step. |
 | `show`, `showAny` | [condition](#conditions)[] | Step visibility. |
 | `routes` | [route](#routes)[] | Ordered forward destinations. |
 | `next` | [action](#actions) or `false` | Continue action. |
@@ -309,7 +420,7 @@ Core trims leading and trailing whitespace from string values of every built-in 
 - `null`, `''`, `false` and `[]` values included;
 - fields of skipped steps, fields hidden by conditions, fields off the active path and keys that are not field keys excluded.
 
-Keys are field keys as written. The payload is not nested and not type-converted.
+Keys are field keys as written. The payload is not nested and not type-converted. Section fields are top-level keys. A group value is an array of item objects: each holds the visible item fields with a value other than `undefined`, trimmed like top-level values, and no other keys.
 
 ## Submit results
 
@@ -331,9 +442,9 @@ A plain object is one whose prototype is `Object.prototype`. A `fetch` `Response
 
 ### Server errors
 
-`errors` keys are field keys. A message that is not a string is ignored; an array of strings is joined with spaces. `formErrors` other than an array of strings is ignored. A rejection and `setErrors(errors)` apply a server error set the same way:
+`errors` keys are field keys or [item paths](#error-paths). An item path refers to the items as they were sent; errors of a group whose value changed during the request are dropped. A message that is not a string is ignored; an array of strings is joined with spaces. `formErrors` other than an array of strings is ignored. A rejection and `setErrors(errors)` apply a server error set the same way:
 
-1. A key of a visible field on the active path becomes the error of that field. Every other key, including the key of a field hidden by its conditions or a field off the active path, becomes a form-level error. An error on a field of type `hidden` stays under its key and is also listed in `topLevelErrors`. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
+1. A key of a visible field on the active path, or the path of a visible item field of an existing item, becomes the error of that field. Every other key, including the key of a field hidden by its conditions or a field off the active path, becomes a form-level error. An error on a field of type `hidden` stays under its key and is also listed in `topLevelErrors`. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
 2. The set replaces all previous field errors and form-level errors at once.
 3. In a multi-step form, the engine opens the earliest step on the active path that has a field error. The key order of `errors` does not matter. The step change hooks do not run.
 4. The built-in renderers focus the first invalid field on that step after it renders: the checked option of a group, or its first enabled control.
@@ -388,7 +499,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `value` | `Invalid value` | |
 | `hidden` | `{label}: {message}` | `label`, `message` |
 
-`minLength` and `maxLength` on an array value use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`.
+`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`.
 
 | Label key | Default | Params |
 |---|---|---|
@@ -396,6 +507,15 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `back` | `Back` | |
 | `stepOf` | `Step {current} of {total}` | `current`, `total` |
 | `errorSummary` | `Check these answers` | |
+| `addItem` | `Add` | |
+| `removeItem` | `Remove` | |
+| `itemLabel` | `{label} {index}` | `label`, `index` |
+| `itemAdded` | `{item} added` | `item` |
+| `itemRemoved` | `{item} removed` | `item` |
+| `removeItemNamed` | `{label} {item}` | `label` (the Remove text), `item` |
+| `removeItemPrompt` | `Remove {item}?` | `item` |
+| `removeItemBody` | `This removes {item} and its answers. This cannot be undone.` | `item` |
+| `cancel` | `Cancel` | |
 
 A message for a failed rule comes from the first of:
 
@@ -415,8 +535,9 @@ An `i18n` object maps texts of its node to keys of the app dictionary, such as L
 | Node | Slots |
 |---|---|
 | definition | `title`, `description`, `messages.<key>`, `labels.<key>` |
-| step | `title`, `description` |
+| step, section | `title`, `description` |
 | field | `label`, `placeholder`, `helperText` |
+| group | `label`, `helperText`, `itemLabel`, `addLabel`, `removeLabel` |
 | option, action | `label` |
 | validation | `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `matchField` |
 
@@ -451,9 +572,13 @@ fields.<key>.validation.<rule>
 steps.<id>.title | description
 steps.<id>.next.label | back.label | skip.label
 steps.<id>.fields.<key>.label | ...
+sections.<key>.title | description
+steps.<id>.sections.<key>.title | description
+fields.<group>.label | helperText | itemLabel | addLabel | removeLabel
+fields.<group>.fields.<key>.label | ...
 ```
 
-Fields of a multi-step form are addressed under their step, so a key shared by two exclusive route branches has one address per branch.
+Fields of a multi-step form are addressed under their step, so a key shared by two exclusive route branches has one address per branch. Fields of a section keep the address they have outside it. Item fields are addressed under their group. `{index}` in an `itemLabel` is a placeholder, so a translation MUST keep it.
 
 ### Overlays
 
@@ -495,7 +620,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 
 | Code | Severity | Reported for |
 |---|---|---|
-| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as an `id` that is not a string, `in` that is not an array, `max` that is not a number, a `source` that is not a name or a `{ "query" }` object with a parameter name, or a `formatVersion` that is not a version string |
+| `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, the `fields` of a section or a group, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as an `id` that is not a string, `in` that is not an array, `max` that is not a number, a `source` that is not a name or a `{ "query" }` object with a parameter name, or a `formatVersion` that is not a version string |
 | `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
 | `missing-property` | error, warning | A missing `id`, `submit`, step `id` or `fields`, field `key` or `type`, option `value`, route `to` or condition `field`. A missing form or step `title`, field or option `label`, or action `label` is a warning. The path points to the object that lacks the property |
 | `unknown-property` | warning | A property the JSON Schema does not define, such as `imd` for `id`. The hint names the closest known property, or the `validation` object for a rule set on a field |
@@ -503,18 +628,21 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `duplicate-step-id` | error | Two steps with one id |
 | `reserved-key` | error | A field key that is a built-in object property name, such as `constructor` |
 | `route-target` | error | A route target that is not a later declared step id or `null` |
-| `unknown-field` | error, warning for `optionsDependsOn` | A condition, `matchField` or `optionsDependsOn` key that is not a field key |
+| `unknown-field` | error, warning for `optionsDependsOn` | A condition, `matchField` or `optionsDependsOn` key that is not a field key, including a section key |
+| `group-scope` | error | A condition or `matchField` outside a group that uses a field inside it, or an item field that uses a field of another group |
+| `invalid-nesting` | error | A section inside a section or a group, or a group, `file` or `hidden` field inside a group |
 | `forward-reference` | error | A field or route condition on a later step, or a step condition on the same or a later step |
 | `condition-operator-count` | error | A condition with no operator or with several |
 | `unknown-operator` | error | A condition key that is not an operator |
 | `condition-cycle` | error | Show conditions that depend on each other in a cycle |
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
-| `duplicate-key` | error | A field key that an earlier field on a possible path already uses |
-| `invalid-range` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
+| `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
+| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, or `defaultItems` greater than `maxLength` |
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
-| `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
+| `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number` or on a group, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt` |

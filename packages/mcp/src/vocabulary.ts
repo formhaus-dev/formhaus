@@ -1,4 +1,4 @@
-import type { DefaultFieldType, FieldValidation, ShowCondition } from '@formhaus/core';
+import type { DefaultFieldType, FieldValidation, GroupValidation, ShowCondition } from '@formhaus/core';
 
 export const FIELD_TYPES = [
   'text',
@@ -46,3 +46,7 @@ export const VALIDATION_RULES = [
 ] as const satisfies readonly (keyof FieldValidation)[];
 
 export const ACTION_VARIANTS = ['primary', 'secondary', 'text'] as const;
+
+export const CONTAINER_TYPES = ['section', 'group'] as const;
+
+export const GROUP_RULES = ['required', 'minLength', 'maxLength', 'validator'] as const satisfies readonly (keyof GroupValidation)[];

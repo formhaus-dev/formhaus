@@ -1,11 +1,12 @@
 import type { FormStep } from '../types';
+import { valueFields } from '../visibility/nodes';
 import { createValues } from './engine-utils';
 import type { EngineInternals } from './runtime-internals';
 import { activeSteps } from './step-routes';
 import { dropServerErrors, pruneOffPathErrors } from './validation-state';
 
 function resetValues(engine: EngineInternals): Record<string, unknown> {
-  const fields = engine.currentStep?.fields ?? [];
+  const fields = valueFields(engine.currentStep?.fields ?? []);
   const values = { ...engine.values };
   for (const { key } of fields) delete values[key];
   return Object.assign(values, createValues(fields));
@@ -17,15 +18,16 @@ export function skipTarget(engine: EngineInternals): FormStep | undefined {
 
 export function skipCurrentStep(engine: EngineInternals): string[] {
   const step = engine.currentStep!;
-  const fieldKeys = step.fields.map(({ key }) => key);
+  const fieldKeys = valueFields(step.fields).map(({ key }) => key);
   engine.state.values = resetValues(engine);
-  for (const key of fieldKeys) delete engine.errors[key];
+  const owned = Object.keys(engine.errors).filter((key) => fieldKeys.includes(engine.visibility.owner(key)));
+  for (const key of owned) delete engine.errors[key];
   dropServerErrors(engine, fieldKeys);
   engine.skipped.set(step.id, fieldKeys);
   dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
   engine.visibility.markChanged(true, true);
   const pruned = pruneOffPathErrors(engine);
-  engine.notify({ fieldKeys: [...fieldKeys, ...pruned], structureChanged: true, valuesChanged: true });
+  engine.notify({ fieldKeys: [...fieldKeys, ...owned, ...pruned], structureChanged: true, valuesChanged: true });
   return fieldKeys;
 }
 

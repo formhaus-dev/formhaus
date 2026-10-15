@@ -55,6 +55,7 @@ export interface BuilderQuestion {
   key: string;
   keyLocked: boolean;
   extra: Partial<FormField>;
+  parent?: string;
   shape?: { field: string[]; validation?: string[] };
 }
 
@@ -99,11 +100,16 @@ export const SCHEMA_URL = 'https://formhaus.dev/schema/form-definition.json';
 export const uid = (form: { seq: number }) => `b${(form.seq += 1)}`;
 export const isPage = (block: BuilderBlock | undefined): block is BuilderPage => block?.kind === 'page';
 export const isQuestion = (block: BuilderBlock | undefined): block is BuilderQuestion => block?.kind === 'question';
+export const isContainer = (block: BuilderBlock | undefined): block is BuilderQuestion =>
+  isQuestion(block) && (block.type === 'section' || block.type === 'group');
+export const CONTAINER_LABELS: Record<string, string> = { section: 'Section', group: 'Repeatable group' };
 export const hasOptions = (type: FieldType) => type === 'radio' || type === 'multiselect' || type === 'select';
 export const canBranch = (type: FieldType) => type === 'radio' || type === 'select';
-export const placeholderFor = (type: FieldType) => QUESTION_TYPES.find((item) => item.type === type)?.placeholder ?? 'Question';
+export const placeholderFor = (type: FieldType) =>
+  QUESTION_TYPES.find((item) => item.type === type)?.placeholder ??
+  (type === 'section' ? 'Section title' : type === 'group' ? 'Group name' : 'Question');
 export const typeLabel = (type: FieldType) =>
-  QUESTION_TYPES.find((item) => item.type === type)?.label ?? type.charAt(0).toUpperCase() + type.slice(1);
+  QUESTION_TYPES.find((item) => item.type === type)?.label ?? CONTAINER_LABELS[type] ?? type.charAt(0).toUpperCase() + type.slice(1);
 export const pageTitle = (page: BuilderPage | undefined, position: number) => page?.title.trim() || `Step ${position + 1}`;
 
 export function newPage(form: BuilderForm, title = ''): BuilderPage {
@@ -146,6 +152,17 @@ export function groups(form: BuilderForm): Group[] {
     else (result[result.length - 1] ?? (result[0] = { questions: [] })).questions.push(block);
   }
   return result;
+}
+
+export function span(form: BuilderForm, index: number): number {
+  const block = form.blocks[index];
+  let end = index + 1;
+  const owners = new Set([block?.uid]);
+  if (isContainer(block)) {
+    for (let next = form.blocks[end]; isQuestion(next) && next.parent && owners.has(next.parent); next = form.blocks[++end])
+      owners.add(next.uid);
+  }
+  return end - index;
 }
 
 export interface PageRef {

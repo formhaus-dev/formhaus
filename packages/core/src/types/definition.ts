@@ -1,5 +1,5 @@
 import type { FormAction } from './action';
-import type { FormField, ShowCondition } from './field';
+import type { FormNode, ShowCondition } from './field';
 import type { FormI18n, LabelCatalog, MessageCatalog, StepI18n } from './i18n';
 
 export interface FormDefinition {
@@ -14,7 +14,7 @@ export interface FormDefinition {
   i18n?: FormI18n;
   submit: FormAction;
   cancel?: FormAction;
-  fields?: FormField[];
+  fields?: FormNode[];
   steps?: FormStep[];
 }
 
@@ -29,7 +29,7 @@ export interface FormStep {
   id: string;
   title: string;
   description?: string;
-  fields: FormField[];
+  fields: FormNode[];
   show?: ShowCondition[];
   showAny?: ShowCondition[];
   next?: FormAction | false;

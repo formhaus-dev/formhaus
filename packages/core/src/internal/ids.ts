@@ -31,3 +31,7 @@ function idsOf(definition: FormDefinition): Map<string, string> {
 export function fieldDomId(formId: string | undefined, key: string, definition?: FormDefinition): string {
   return `${formId ? clean(formId) : 'fh'}-${(definition && idsOf(definition).get(key)) ?? clean(key)}`;
 }
+
+export function itemDomId(formId: string | undefined, group: string, index: number, field?: string, definition?: FormDefinition): string {
+  return `${fieldDomId(formId, group, definition)}--${index}${field === undefined ? '' : `--${clean(field)}`}`;
+}

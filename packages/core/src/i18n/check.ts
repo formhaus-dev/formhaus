@@ -2,17 +2,11 @@ import { createContext } from '../definition-validation/context';
 import { error, pointer, type DefinitionIssue } from '../definition-validation/issues';
 import type { FormDefinition } from '../types';
 import { i18nWarnings } from './check-warnings';
-import { isEntry } from './overlay';
+import { SLOTS, type NodeKind } from './nodes';
+import { isEntry } from '../visibility/nodes';
 import { textNodes } from './walk';
 
-const TEXTS = {
-  form: ['title', 'description'],
-  step: ['title', 'description'],
-  field: ['label', 'placeholder', 'helperText'],
-  option: ['label'],
-  action: ['label'],
-  validation: [],
-};
+const TEXTS: Record<NodeKind, readonly string[]> = { ...SLOTS, validation: [] };
 
 function strings(value: unknown, path: string, what: string, nested: string[] = []): DefinitionIssue[] {
   if (value === undefined) return [];

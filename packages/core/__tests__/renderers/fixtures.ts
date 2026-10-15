@@ -14,6 +14,8 @@ export interface ScenarioProps {
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, values: Record<string, unknown>) => void;
+  components?: Record<string, unknown>;
+  confirmRemove?: boolean;
   optionsProviders?: Record<string, (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>>;
 }
 
@@ -26,6 +28,7 @@ export interface RendererHarness {
   click(element: Element): Promise<void>;
   type(element: Element, value: string): Promise<void>;
   submit(form: HTMLFormElement): Promise<void>;
+  containers?: Record<string, unknown>;
 }
 
 type Query = (role: string, options?: { name?: string | RegExp }) => HTMLElement;
@@ -40,6 +43,8 @@ export interface TestKit {
     queryByRole: (...args: Parameters<Query>) => HTMLElement | null;
     findByRole: (...args: Parameters<Query>) => Promise<HTMLElement>;
     findByText(text: string): Promise<HTMLElement>;
+    getAllByRole: (...args: Parameters<Query>) => HTMLElement[];
+    queryAllByRole: (...args: Parameters<Query>) => HTMLElement[];
   };
 }
 

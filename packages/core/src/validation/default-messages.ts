@@ -1,4 +1,5 @@
 import type { FormField, MessageCatalog, MessageKey } from '../types';
+import { hasOwn } from '../visibility/nodes';
 
 export type { MessageCatalog, MessageKey };
 export type MessageParams = Record<string, unknown>;
@@ -33,9 +34,7 @@ export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.fre
 export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
 
 export function formatText(template: string, params: Record<string, unknown>): string {
-  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
-    Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : match,
-  );
+  return template.replace(/\{(\w+)\}/g, (match, name: string) => (hasOwn(params, name) ? String(params[name]) : match));
 }
 
 type TextSource<K extends string> =
@@ -68,7 +67,7 @@ export function namedResolver(resolve: ResolveMessage): ResolveMessage {
 }
 
 export function getDefaultMessage(rule: ValidationRule | MessageKey, params: Record<string, unknown> = {}): string {
-  const template = Object.prototype.hasOwnProperty.call(DEFAULT_MESSAGES, rule) ? DEFAULT_MESSAGES[rule] : DEFAULT_MESSAGES.value;
+  const template = hasOwn(DEFAULT_MESSAGES, rule) ? DEFAULT_MESSAGES[rule] : DEFAULT_MESSAGES.value;
   const custom = params.unit !== undefined && (rule === 'minLength' || rule === 'maxLength');
   return formatText(custom ? template.replace('characters', '{unit}') : template, params);
 }

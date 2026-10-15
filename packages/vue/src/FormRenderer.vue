@@ -6,7 +6,7 @@ import HeadlessFormRenderer from './HeadlessFormRenderer.vue';
 import { withDefaultFields } from './constants';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false });
+const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true });
 
 const emit = defineEmits<FormRendererEmits>();
 

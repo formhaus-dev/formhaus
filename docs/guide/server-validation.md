@@ -95,6 +95,8 @@ Both run the `validation` rules on the active path and skip fields and steps hid
 
 `FormEngine.validate()` is the browser check. Do not use it on untrusted input.
 
+For a [repeatable group](/guide/groups), a value with more items than `maxLength` fails with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength`, fails with the `value` message. Both are rejected before any item is checked, and the value is left out of `values`. It drops unknown item keys and checks every visible item field. Item errors use paths such as `participants.1.email`, and `values` holds the cleaned arrays. Upgrade the server before the clients: core 0.13 and older pass a group value through without checks.
+
 ## Custom validators
 
 `validateSubmission()` ignores `validation.validator` unless you pass the function in `validators`:

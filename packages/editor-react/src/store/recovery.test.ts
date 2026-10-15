@@ -58,7 +58,7 @@ function type(store: EditorStore, label: string) {
   }, `${uid}:label`);
 }
 
-const label = (key: string) => readBackup(key)?.definition.fields?.[0]?.label;
+const label = (key: string) => (readBackup(key)?.definition.fields?.[0] as { label?: string } | undefined)?.label;
 const stored = (title: string, revision = 0, base: BackupBase = { version: 1, draft: 'd1' }) => {
   writeBackup('backup', { definition: { ...toDefinition(blankForm()), title }, revision, at: new Date().toISOString(), ...base });
 };

@@ -1,25 +1,16 @@
 import type { ValidatorFn } from '../validation';
 import { messageResolver, type ResolveMessage } from '../validation/default-messages';
-import type { FormDefinition, FormField, FormStep } from '../types';
+import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
 import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-options';
-import { createValues, shownError } from './engine-utils';
+import { createValues, initialState } from './engine-utils';
+import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
-import type { EngineInternals, EngineState, RuntimeNotifyOptions } from './runtime-internals';
+import type { EngineState, RuntimeNotifyOptions } from './runtime-internals';
 import { createSubscriptions } from './subscriptions';
-import {
-  applyValidationErrors,
-  getSubmitValues,
-  resetEngine,
-  validateForm,
-  validateOne,
-  clearError,
-  clearResolvedMatchErrors,
-  dropServerErrors,
-  pruneOffPathErrors,
-} from './validation-state';
+import { applyValidationErrors, errorKeys, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
 import { submitForm } from './submission';
-import { reconcileStepIndex } from './step-routes';
 import { assertDefinition } from './warnings';
+import { writeValue } from './write-value';
 import { createVisibility, type VisibilityState } from './visibility-state';
 
 export class FormEngine<TValues extends object = Record<string, unknown>> {
@@ -49,17 +40,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.messages = messageResolver(options?.messages, definition.messages);
     this.visibility = createVisibility(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
-    this.state = {
-      values,
-      errors: {},
-      topLevelErrors: [],
-      serverErrors: {},
-      serverFormErrors: [],
-      currentStepIndex: 0,
-      fieldLoading: {},
-      stepValidating: false,
-      submitting: false,
-    };
+    this.state = initialState(values);
     this.visibility.reconcileHidden(values, this.state.errors, true);
   }
 
@@ -112,6 +93,10 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return this.view.visibleFields;
   }
 
+  get visibleNodes(): FormNode[] {
+    return this.view.visibleNodes;
+  }
+
   get isFirstStep(): boolean {
     return this.currentStepIndex === 0;
   }
@@ -127,7 +112,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   get stepErrors(): Record<string, string[]> {
     const result: Record<string, string[]> = Object.create(null);
     for (const step of this.visibleSteps) {
-      const keys = step.fields.filter((field) => shownError(this.errors, field)).map((field) => field.key);
+      const keys = errorKeys(step.fields, this.errors, this.state.values);
       if (keys.length > 0) result[step.id] = keys;
     }
     return result;
@@ -163,30 +148,26 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   setValue(key: string, value: unknown): void {
-    const { values, errors } = this.state;
-    const previousSteps = this.isMultiStep ? this.visibleSteps : null;
-    const valueChanged = !Object.is(values[key], value);
-    const previousError = errors[key];
-    values[key] = value;
-    clearError(this.internals, key, valueChanged);
-    for (const [stepId, keys] of this.skipped) if (valueChanged && keys.includes(key)) this.skipped.delete(stepId);
-    const clearedFields = this.visibility.reconcileHidden(values, errors);
-    dropServerErrors(this.internals, clearedFields);
-    const revalidated = clearResolvedMatchErrors(this.internals, key);
-    const changedFields = new Set([...clearedFields, ...revalidated]);
-    if (valueChanged || previousError !== errors[key]) changedFields.add(key);
-    const valuesChanged = valueChanged || clearedFields.size > 0;
-    const structureChanged = valuesChanged && this.visibility.affectsStructure(key, clearedFields);
-    if (previousSteps && structureChanged) {
-      this.visibility.markChanged(true, true);
-      this.state.currentStepIndex = reconcileStepIndex(previousSteps, this.visibleSteps, this.currentStepIndex);
-      for (const pruned of pruneOffPathErrors(this.internals)) changedFields.add(pruned);
-    }
-    this.notify({ fieldKeys: changedFields, structureChanged, valuesChanged });
+    const path = this.visibility.parse(key);
+    if (path) setItemValue(this as never, path[0], path[1], path[2], value);
+    else writeValue(this as never, key, value);
+  }
+
+  items(key: string): GroupItem[] {
+    return groupItems(this as never, key);
+  }
+  addItem(key: string): boolean {
+    return addItem(this as never, key);
+  }
+  removeItem(key: string, index: number): boolean {
+    return removeItem(this as never, key, index);
+  }
+  setItemValue(key: string, index: number, field: string, value: unknown): void {
+    setItemValue(this as never, key, index, field, value);
   }
 
   setErrors(errors: Record<string, string>): void {
-    applyValidationErrors(this.internals, errors, true);
+    applyValidationErrors(this as never, errors, true);
   }
 
   setFieldLoading(key: string, loading: boolean): void {
@@ -205,42 +186,38 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   next(): Promise<boolean> {
-    return changeStep(this.internals, 'next');
+    return changeStep(this as never, 'next');
   }
   back(): Promise<boolean> {
-    return changeStep(this.internals, 'back');
+    return changeStep(this as never, 'back');
   }
   skip(submit?: SubmitHandler): Promise<boolean> {
-    return skipStep(this.internals, submit);
+    return skipStep(this as never, submit);
   }
   submit(handler: SubmitHandler): Promise<boolean> {
-    return submitForm(this.internals, handler);
+    return submitForm(this as never, handler);
   }
   isStepSkipped(stepId: string): boolean {
     return this.skipped.has(stepId);
   }
   validate(): Record<string, string> {
-    return validateForm(this.internals);
+    return validateForm(this as never);
   }
   validateField(key: string): string | null {
-    return validateOne(this.internals, key);
+    return validateOne(this as never, key);
   }
   getSubmitValues(): Partial<TValues> {
-    return getSubmitValues(this.internals) as Partial<TValues>;
+    return getSubmitValues(this as never) as Partial<TValues>;
   }
   goToStepWithField(key: string): void {
-    goToStepWithField(this.internals, key);
+    goToStepWithField(this as never, key);
   }
   reset(values?: Record<string, unknown>): void {
-    resetEngine(this.internals, values);
+    resetEngine(this as never, values);
   }
 
   private get view() {
     return this.visibility.state(this.state.values, this.currentStepIndex);
-  }
-
-  private get internals(): EngineInternals {
-    return this as unknown as EngineInternals;
   }
 
   private notify(options: RuntimeNotifyOptions = {}): void {

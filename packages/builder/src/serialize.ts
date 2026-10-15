@@ -1,10 +1,11 @@
-import type { FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
+import type { FormDefinition, FormField, FormNode, FormStep, StepRoute } from '@formhaus/core';
 import {
   arrange,
   canBranch,
   END,
   groups,
   hasOptions,
+  isContainer,
   isPage,
   pageTitle,
   type BuilderForm,
@@ -43,7 +44,25 @@ function field(item: BuilderQuestion, path: string, paths: Map<string, string>):
   return arrange(result, shape?.field);
 }
 
-function routesFor(parts: Group[], ids: string[], fields: FormField[][]): StepRoute[][] {
+function nodes(items: BuilderQuestion[], base: string, paths: Map<string, string>, parent?: string): FormNode[] {
+  const owners = new Set(items.filter(isContainer).map((item) => item.uid));
+  const own = items.filter((item) => (parent ? item.parent === parent : !item.parent || !owners.has(item.parent)));
+  return own.map((item, index) => {
+    const path = `${base}.${index}`;
+    const node = field(item, path, paths) as FormField & { title?: string; fields?: FormNode[] };
+    if (!isContainer(item)) return node;
+    node.fields = nodes(items, `${path}.fields`, paths, item.uid);
+    const order = item.shape?.field;
+    if (item.type !== 'section') return arrange(node, order);
+    const { label, validation: _validation, ...section } = node;
+    return arrange(
+      { ...section, title: label },
+      order?.map((key) => (key === 'label' ? 'title' : key)),
+    ) as FormNode;
+  });
+}
+
+function routesFor(parts: Group[], ids: string[]): StepRoute[][] {
   const routes: StepRoute[][] = parts.map(() => []);
   parts.forEach((part, index) => {
     const resolve = (uid: string | null): { to: string | null } | undefined => {
@@ -51,13 +70,14 @@ function routesFor(parts: Group[], ids: string[], fields: FormField[][]): StepRo
       const at = parts.findIndex((other, position) => position > index && other.page?.uid === uid);
       return at >= 0 ? { to: ids[at] } : undefined;
     };
-    const branching = part.questions.filter((item) => canBranch(item.type) && item.options.some((option) => resolve(option.jump)));
+    const grouped = new Set(part.questions.filter((item) => item.type === 'group').map((item) => item.uid));
+    const branching = part.questions.filter(
+      (item) => canBranch(item.type) && !grouped.has(item.parent ?? '') && item.options.some((option) => resolve(option.jump)),
+    );
     for (const item of branching) {
-      const key = fields[index][part.questions.indexOf(item)].key;
-      item.options.forEach((option, at) => {
+      item.options.forEach((option) => {
         const target = resolve(option.jump);
-        const value = fields[index][part.questions.indexOf(item)].options![at].value;
-        if (target) routes[index].push({ to: target.to, show: [{ field: key, eq: value }] });
+        if (target) routes[index].push({ to: target.to, show: [{ field: item.key, eq: option.value }] });
       });
     }
     const covered = branching.length === 1 && branching[0].options.every((option) => resolve(option.jump));
@@ -92,12 +112,12 @@ export function serialize(form: BuilderForm): Serialized {
   const paths = new Map<string, string>();
   const parts = groups(form);
   if (!form.blocks.some(isPage)) {
-    const fields = (parts[0]?.questions ?? []).map((item, index) => field(item, `fields.${index}`, paths));
+    const fields = nodes(parts[0]?.questions ?? [], 'fields', paths);
     return { definition: arrange({ ...head(form), fields }, form.shape?.form) as FormDefinition, paths };
   }
   const ids = parts.map((part, index) => part.page?.id || `step-${index + 1}`);
-  const fields = parts.map((part, step) => part.questions.map((item, index) => field(item, `steps.${step}.fields.${index}`, paths)));
-  const routes = routesFor(parts, ids, fields);
+  const fields = parts.map((part, step) => nodes(part.questions, `steps.${step}.fields`, paths));
+  const routes = routesFor(parts, ids);
   const steps = parts.map((part, index): FormStep => {
     if (part.page) paths.set(`steps.${index}`, part.page.uid);
     const next = part.page?.nextLabel.trim();

@@ -1,4 +1,5 @@
-import type { FormAction, FormDefinition, FormField, ShowCondition } from '@formhaus/core';
+import { isSection, type FormAction, type FormDefinition, type FormField, type ShowCondition } from '@formhaus/core';
+import { deepFields } from '../../nodes';
 
 interface Conditional {
   show?: ShowCondition[];
@@ -6,11 +7,16 @@ interface Conditional {
 }
 
 function allFields(draft: FormDefinition): FormField[] {
-  return [...(draft.fields ?? []), ...(draft.steps ?? []).flatMap((step) => step.fields)];
+  return deepFields([...(draft.fields ?? []), ...(draft.steps ?? []).flatMap((step) => step.fields)]);
 }
 
 function conditions(draft: FormDefinition): ShowCondition[] {
-  const owners: Conditional[] = [...allFields(draft), ...(draft.steps ?? []), ...(draft.steps ?? []).flatMap((step) => step.routes ?? [])];
+  const owners: Conditional[] = [
+    ...allFields(draft),
+    ...[...(draft.fields ?? []), ...(draft.steps ?? []).flatMap((step) => step.fields)].filter(isSection),
+    ...(draft.steps ?? []),
+    ...(draft.steps ?? []).flatMap((step) => step.routes ?? []),
+  ];
   const actions = [draft.submit, draft.cancel, ...(draft.steps ?? []).flatMap((step) => [step.next, step.back])].filter(
     (action): action is FormAction => Boolean(action),
   );

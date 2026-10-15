@@ -3,12 +3,12 @@ import type { FormField } from '@formhaus/core';
 import { computed } from 'vue';
 import type { FieldEmits, FormFieldProps } from '../types';
 
-export function fieldIds(field: FormField, id?: string) {
+export function fieldIds(field: Pick<FormField, 'key'>, id?: string) {
   const inputId = id ?? fieldDomId(undefined, field.key);
   return { inputId, helperId: `${inputId}-helper`, errorId: `${inputId}-error` };
 }
 
-export function fieldAria(field: FormField, id: string | undefined, error?: string) {
+export function fieldAria(field: Pick<FormField, 'key' | 'helperText'>, id: string | undefined, error?: string) {
   const { helperId, errorId } = fieldIds(field, id);
   const ids = [field.helperText && helperId, error && errorId].filter(Boolean);
   return {

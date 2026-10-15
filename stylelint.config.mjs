@@ -56,10 +56,4 @@ export default {
     'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
     'scale-unlimited/declaration-strict-value': tokenRule([...sizeProperties, ...colorProperties]),
   },
-  overrides: [
-    {
-      files: ['packages/core/style.css'],
-      rules: { 'scale-unlimited/declaration-strict-value': tokenRule(colorProperties) },
-    },
-  ],
 };

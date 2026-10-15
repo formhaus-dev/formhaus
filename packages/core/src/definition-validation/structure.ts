@@ -1,4 +1,5 @@
-import type { CheckContext, FieldEntry } from './context';
+import { isGroup, isSection } from '../visibility/nodes';
+import type { CheckContext, NodeEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { error, oneOf } from './issues';
 import { reachableSteps } from './paths';
@@ -36,27 +37,49 @@ function stepIssues({ definition }: CheckContext): DefinitionIssue[] {
   return issues;
 }
 
-function keyIssues({ definition, entries }: CheckContext): DefinitionIssue[] {
+function keyIssues({ definition, nodes }: CheckContext): DefinitionIssue[] {
   const issues: DefinitionIssue[] = [];
   const reachable = reachableSteps(definition.steps ?? []);
-  const exclusive = (a: FieldEntry, b: FieldEntry) => a.step !== b.step && !reachable[a.step]?.has(b.step);
-  entries.forEach((entry, index) => {
-    const { field, path } = entry;
-    const clash = entries.slice(0, index).find((other) => other.field.key === field.key && !exclusive(other, entry));
-    if (RESERVED.has(field.key)) {
-      issues.push(error('reserved-key', `${path}/key`, `"${field.key}" is a built-in object property name`, 'Rename the field key'));
+  const exclusive = (a: NodeEntry, b: NodeEntry) => a.step !== b.step && !reachable[a.step]?.has(b.step);
+  const outer = nodes.filter((entry) => !entry.group);
+  const groups = outer.filter((entry) => isGroup(entry.node));
+  nodes.forEach((entry, index) => {
+    const {
+      node: { key },
+      path,
+      group,
+    } = entry;
+    const clash = group
+      ? (nodes.slice(0, index).find((other) => other.group === group && other.node.key === key) ??
+        outer.find((other) => other.node.key === key))
+      : outer.slice(0, outer.indexOf(entry)).find((other) => other.node.key === key && !exclusive(other, entry));
+    const prefix = !group && groups.find((other) => key.startsWith(`${other.node.key}.`));
+    if (RESERVED.has(key)) {
+      issues.push(error('reserved-key', `${path}/key`, `"${key}" is a built-in object property name`, 'Rename the field key'));
     } else if (clash) {
       issues.push(
         error(
           'duplicate-key',
           `${path}/key`,
-          `key "${field.key}" is already used by ${clash.path} on the same path`,
-          'Rename one of the fields, or move them to route branches that never meet',
+          `key "${key}" is already used by ${clash.path}${group ? '' : ' on the same path'}`,
+          group ? 'Rename the field' : 'Rename one of the fields, or move them to route branches that never meet',
         ),
+      );
+    } else if (prefix) {
+      issues.push(
+        error('duplicate-key', `${path}/key`, `key "${key}" starts with the group key "${prefix.node.key}."`, 'Rename the field'),
       );
     }
   });
   return issues;
+}
+
+function nestingIssues({ nodes }: CheckContext): DefinitionIssue[] {
+  return nodes.flatMap(({ node, path, group, parent }) =>
+    (isSection(node) && parent) || (group && ['group', 'file', 'hidden'].includes(node.type))
+      ? [error('invalid-nesting', `${path}/type`, `a ${node.type} cannot be inside a ${parent!.type}`, 'Move it to the fields of the step')]
+      : [],
+  );
 }
 
 export function structureIssues(context: CheckContext): DefinitionIssue[] {
@@ -75,5 +98,6 @@ export function structureIssues(context: CheckContext): DefinitionIssue[] {
       : []),
     ...stepIssues(context),
     ...keyIssues(context),
+    ...nestingIssues(context),
   ];
 }

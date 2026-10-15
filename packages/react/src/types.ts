@@ -1,16 +1,20 @@
 import type {
+  ConfirmDialogView,
   FieldOption,
   FieldType,
   FormAction,
   FormAnalyticsEvent,
   FormDefinition,
   FormEngineOptions,
+  GroupItemView,
+  GroupView,
   LabelSource,
+  SectionView,
   StepValidateFn,
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { ComponentType } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
@@ -27,7 +31,30 @@ export interface FieldComponentProps {
   onFocus?: () => void;
 }
 
-export type FieldComponentMap = Partial<Record<FieldType, ComponentType<FieldComponentProps>>>;
+export interface SectionComponentProps extends SectionView {
+  children: ReactNode;
+}
+
+export interface GroupItemComponentProps extends GroupItemView {
+  children: ReactNode;
+}
+
+export type ConfirmDialogComponentProps = ConfirmDialogView;
+
+export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
+  ItemComponent: ComponentType<GroupItemComponentProps>;
+}
+
+export type FieldComponentMap = Partial<
+  Record<
+    FieldType,
+    | ComponentType<FieldComponentProps>
+    | ComponentType<SectionComponentProps>
+    | ComponentType<GroupComponentProps>
+    | ComponentType<GroupItemComponentProps>
+    | ComponentType<ConfirmDialogComponentProps>
+  >
+>;
 
 export interface FormActionsProps {
   submitAction?: FormAction;
@@ -84,6 +111,7 @@ export interface FormRendererProps extends FormEngineOptions {
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;
+  confirmRemove?: boolean;
   stepErrorMarks?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;

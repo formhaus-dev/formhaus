@@ -1,6 +1,7 @@
 export {
   FormEngine,
   type FormEngineOptions,
+  type GroupItem,
   type StepValidateFn,
   type StepChangeContext,
   type BeforeStepChangeFn,
