@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { RendererHarness, ScenarioProps, TestKit } from '../../core/__tests__/renderers/fixtures';
+import { containerScenarios } from '../../core/__tests__/renderers/containers.scenarios';
 import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
@@ -41,3 +42,4 @@ describe('renderer conformance: fields', () => fieldScenarios(harness, kit));
 describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
+describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));

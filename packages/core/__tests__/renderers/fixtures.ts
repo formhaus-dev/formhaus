@@ -40,6 +40,8 @@ export interface TestKit {
     queryByRole: (...args: Parameters<Query>) => HTMLElement | null;
     findByRole: (...args: Parameters<Query>) => Promise<HTMLElement>;
     findByText(text: string): Promise<HTMLElement>;
+    getAllByRole: (...args: Parameters<Query>) => HTMLElement[];
+    queryAllByRole: (...args: Parameters<Query>) => HTMLElement[];
   };
 }
 
