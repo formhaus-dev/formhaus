@@ -1,7 +1,10 @@
 .root {
+  --option-inset: calc(var(--fh-ed-space-2-5) + var(--fh-ed-border-thin));
+
   display: flex;
   flex-direction: column;
   gap: var(--fh-ed-space-1);
+  padding-inline-start: var(--option-inset);
 }
 
 .list {
@@ -14,8 +17,8 @@
   align-items: center;
   gap: var(--fh-ed-space-2);
   min-height: var(--fh-ed-size-control-md);
-  margin-inline: calc(var(--fh-ed-space-2) * -1);
-  padding-inline: var(--fh-ed-space-2);
+  margin-inline: calc(var(--option-inset) * -1) 0;
+  padding-inline: var(--option-inset) 0;
   border-radius: var(--fh-ed-radius-md);
 }
 
@@ -45,7 +48,7 @@
 .grip {
   position: absolute;
   inset-block: 0;
-  left: calc(var(--fh-ed-space-2) * -1);
+  left: calc(var(--option-inset) - var(--fh-ed-space-4));
   display: grid;
   place-items: center;
   width: var(--fh-ed-space-3);
