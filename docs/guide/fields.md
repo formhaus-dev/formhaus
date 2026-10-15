@@ -533,7 +533,7 @@ Field keys are flat strings. `key: "name"` maps to `values.name` in the submit o
 
 This is intentional. Most forms don't need nested data, and flat keys keep the engine simple. If your backend expects nested objects, reshape the values in your `onSubmit` handler.
 
-Repeatable field groups (arrays of items) are not supported yet.
+For arrays of items, use a [repeatable group](/guide/groups). Its item fields use paths such as `participants.1.email`.
 
 ## Next steps
 
