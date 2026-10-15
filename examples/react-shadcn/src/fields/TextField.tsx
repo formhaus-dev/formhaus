@@ -9,6 +9,7 @@ const inputTypes: Record<string, string> = {
   phone: 'tel',
   date: 'date',
   datetime: 'datetime-local',
+  time: 'time',
 };
 
 export function TextField({ id, field, value, error, loading, disabled, onChange, onBlur }: FieldComponentProps) {

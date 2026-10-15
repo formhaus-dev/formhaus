@@ -16,10 +16,11 @@ export function TextField({
     : field.type === 'number' ? 'number'
     : field.type === 'date' ? 'date'
     : field.type === 'datetime' ? 'datetime-local'
+    : field.type === 'time' ? 'time'
     : field.type === 'phone' ? 'tel'
     : 'text';
 
-  const shrinkLabel = field.type === 'date' || field.type === 'datetime';
+  const shrinkLabel = field.type === 'date' || field.type === 'datetime' || field.type === 'time';
 
   return (
     <MuiTextField
