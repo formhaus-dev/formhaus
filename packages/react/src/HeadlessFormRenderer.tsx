@@ -1,5 +1,5 @@
 import type { FormEngineOptions } from '@formhaus/core';
-import { fieldDomId, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { canMoveFocus, focusField, restoreFocus, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
@@ -18,15 +18,6 @@ function engineKey(engine: object): number {
   let key = engineKeys.get(engine);
   if (key === undefined) engineKeys.set(engine, key = nextKey++);
   return key;
-}
-
-const CONTROLS = 'input:not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
-
-const typing = (element: Element) => (element as HTMLElement).isContentEditable
-  || (element.matches('input, select, textarea') && !['checkbox', 'radio'].includes((element as HTMLInputElement).type));
-
-function firstControl(root: Element | null | undefined) {
-  return root?.matches(CONTROLS) ? root : root?.querySelector(CONTROLS);
 }
 
 export function HeadlessFormRenderer(props: FormRendererProps) {
@@ -63,8 +54,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     if (!shouldApplyExternalErrors(engine, previous, props.errors)) return;
     appliedErrors.current = { engine, errors: props.errors };
     engine.setErrors(props.errors);
-    const active = formRef.current?.ownerDocument.activeElement;
-    if (!active || !formRef.current?.contains(active) || typing(active) || Object.keys(props.errors).length === 0) return;
+    if (Object.keys(props.errors).length === 0 || !canMoveFocus(formRef.current)) return;
     focusPending.current = true;
     setFocusRequest((request) => request + 1);
   }, [props.errors, engine]);
@@ -80,19 +70,13 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
     const restore = wasBusy.current;
     wasBusy.current = false;
     if (!focusPending.current) {
-      const document = formRef.current?.ownerDocument;
-      if (restore && document?.activeElement === document?.body && focusReturn.current?.isConnected) focusReturn.current.focus();
+      if (restore) restoreFocus(formRef.current, focusReturn.current);
       return;
     }
     focusPending.current = false;
-    const fields = formRef.current?.querySelector('.fh-form__fields');
-    const id = focusKey.current && fieldDomId(formId, focusKey.current);
+    const key = focusKey.current;
     focusKey.current = null;
-    const chosen = id ? fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) : null;
-    if (id && !chosen) return;
-    const field = chosen?.closest('.fh-field') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]');
-    const target = field?.querySelector('input:checked:not(:disabled)') ?? firstControl(field) ?? firstControl(fields);
-    ((target as HTMLElement | null | undefined) ?? formRef.current)?.focus();
+    focusField(formRef.current, formId, key);
   }, [engine, version, actions.invalidAttempts, focusRequest]);
 
   const handleFieldFocus = useCallback((key: string) => {
