@@ -55,7 +55,7 @@ function findCycles(graph: Map<string, string[]>): string[][] {
   return cycles;
 }
 
-function cycleIssues(context: CheckContext): DefinitionIssue[] {
+export function graphIssues(context: CheckContext): DefinitionIssue[] {
   const paths = new Map(context.entries.map((entry) => [nodeId(entry), entry.path]));
   return findCycles(dependencyGraph(context)).map((cycle) =>
     error(
@@ -65,8 +65,4 @@ function cycleIssues(context: CheckContext): DefinitionIssue[] {
       'Remove one of the conditions in the cycle',
     ),
   );
-}
-
-export function graphIssues(context: CheckContext): DefinitionIssue[] {
-  return cycleIssues(context);
 }

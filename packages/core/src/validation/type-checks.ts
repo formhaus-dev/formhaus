@@ -1,6 +1,7 @@
 import type { FormField, FormGroup } from '../types';
 import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
 import { hasOwn } from '../visibility/nodes';
+import { isBlank } from '../visibility/evaluate-condition';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
 export const BUILT_IN_TYPES = [
@@ -115,8 +116,8 @@ function primitiveError(field: FormField, value: unknown, fail: Fail): string | 
   return stringError(field, value, 'value', fail);
 }
 
-function isBlank(field: FormField, value: unknown): boolean {
-  return value == null || value === '' || (field.type === 'multiselect' && Array.isArray(value) && !value.length);
+function isEmpty(field: FormField, value: unknown): boolean {
+  return isBlank(value) && (field.type === 'multiselect' || !Array.isArray(value));
 }
 
 const entry = (item: unknown) => Object.prototype.toString.call(item) === '[object Object]';
@@ -126,7 +127,7 @@ function groupError(field: FormField, value: unknown): boolean {
 }
 
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {
-  if (isBlank(field, value)) return null;
+  if (isEmpty(field, value)) return null;
   const fail: Fail = (key, params = {}) => resolve(key, params, field);
   if (field.type === 'group') return groupError(field, value) ? fail('value') : null;
   if (BOOLEAN_TYPES.includes(field.type)) return typeof value === 'boolean' ? null : fail('boolean');

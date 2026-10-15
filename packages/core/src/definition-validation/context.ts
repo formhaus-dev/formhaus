@@ -42,24 +42,18 @@ type Owner = { show?: ShowCondition[]; showAny?: ShowCondition[] };
 
 function collect(
   target: ConditionEntry[],
-  source: Owner,
+  source: Owner | FormAction | false | undefined,
   path: string,
   owner: ConditionEntry['owner'],
   step: number,
   key?: string,
   group?: string,
 ): void {
-  for (const name of ['show', 'showAny'] as const) {
-    (source[name] ?? []).forEach((condition, index) => {
-      target.push({ condition, path: `${path}/${name}/${index}`, owner, step, key, group });
-    });
+  for (const name of owner === 'action' ? (['disabled'] as const) : (['show', 'showAny'] as const)) {
+    ((source || {}) as Record<typeof name, ShowCondition[] | undefined>)[name]?.forEach((condition, index) =>
+      target.push({ condition, path: `${path}/${name}/${index}`, owner, step, key, group }),
+    );
   }
-}
-
-function collectAction(target: ConditionEntry[], action: FormAction | false | undefined, path: string, step: number): void {
-  (action ? (action.disabled ?? []) : []).forEach((condition, index) => {
-    target.push({ condition, path: `${path}/disabled/${index}`, owner: 'action', step });
-  });
 }
 
 export function createContext(
@@ -91,13 +85,11 @@ export function createContext(
   for (const { node, path, step, group } of nodes) collect(conditions, node, path, 'field', step, node.key, group?.key);
   steps.forEach((step, index) => {
     collect(conditions, step, `/steps/${index}`, 'step', index);
-    (step.routes ?? []).forEach((route, position) => {
-      collect(conditions, route, `/steps/${index}/routes/${position}`, 'route', index);
-    });
-    for (const name of ['next', 'back', 'skip'] as const) collectAction(conditions, step[name], `/steps/${index}/${name}`, index);
+    (step.routes ?? []).forEach((route, position) => collect(conditions, route, `/steps/${index}/routes/${position}`, 'route', index));
+    for (const name of ['next', 'back', 'skip'] as const) collect(conditions, step[name], `/steps/${index}/${name}`, 'action', index);
   });
-  collectAction(conditions, definition.submit, '/submit', -1);
-  collectAction(conditions, definition.cancel, '/cancel', -1);
+  collect(conditions, definition.submit, '/submit', 'action', -1);
+  collect(conditions, definition.cancel, '/cancel', 'action', -1);
   return {
     definition,
     nodes,

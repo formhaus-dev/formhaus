@@ -11,21 +11,22 @@ function toNumber(value: unknown): number | undefined {
   return typeof number === 'number' && Number.isFinite(number) ? number : undefined;
 }
 
-function compare(value: unknown, operand: number, test: (value: number, operand: number) => boolean): boolean {
-  const number = toNumber(value);
-  return number !== undefined && test(number, operand);
-}
+type Operands = Required<Omit<ShowCondition, 'field'>>;
+
+const TESTS: { [K in keyof Operands]: (value: unknown, operand: Operands[K]) => boolean } = {
+  eq: (value, operand) => value === operand,
+  neq: (value, operand) => value !== operand,
+  in: (value, operand) => operand.includes(value as string | number),
+  notIn: (value, operand) => !operand.includes(value as string | number),
+  notEmpty: (value, operand) => !operand || !isBlank(value),
+  gt: (value, operand) => toNumber(value)! > operand,
+  gte: (value, operand) => toNumber(value)! >= operand,
+  lt: (value, operand) => toNumber(value)! < operand,
+  lte: (value, operand) => toNumber(value)! <= operand,
+};
 
 export function evaluateCondition(condition: ShowCondition, values: Record<string, unknown>): boolean {
   const value = values[condition.field];
-  if (condition.eq !== undefined) return value === condition.eq;
-  if (condition.neq !== undefined) return value !== condition.neq;
-  if (condition.in !== undefined) return condition.in.includes(value as string | number);
-  if (condition.notIn !== undefined) return !condition.notIn.includes(value as string | number);
-  if (condition.notEmpty !== undefined) return !condition.notEmpty || !isBlank(value);
-  if (condition.gt !== undefined) return compare(value, condition.gt, (a, b) => a > b);
-  if (condition.gte !== undefined) return compare(value, condition.gte, (a, b) => a >= b);
-  if (condition.lt !== undefined) return compare(value, condition.lt, (a, b) => a < b);
-  if (condition.lte !== undefined) return compare(value, condition.lte, (a, b) => a <= b);
-  return false;
+  const operator = CONDITION_OPERATORS.find((name) => condition[name] !== undefined);
+  return !!operator && (TESTS[operator] as (value: unknown, operand: unknown) => boolean)(value, condition[operator]);
 }
