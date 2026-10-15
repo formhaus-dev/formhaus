@@ -30,7 +30,9 @@ export type LabelKey =
   | 'removeItem'
   | 'itemLabel'
   | 'itemAdded'
-  | 'itemRemoved';
+  | 'itemRemoved'
+  | 'removeItemPrompt'
+  | 'keepItem';
 
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 export type LabelCatalog = Partial<Record<LabelKey, string>>;

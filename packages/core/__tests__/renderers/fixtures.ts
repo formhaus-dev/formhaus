@@ -1,5 +1,5 @@
 import type { expect, it, vi } from 'vitest';
-import type { FormAnalyticsEvent, FormDefinition, LabelSource, StepValidateFn, SubmitHandler } from '../../src';
+import type { FieldOption, FormAnalyticsEvent, FormDefinition, LabelSource, StepValidateFn, SubmitHandler } from '../../src';
 
 export interface ScenarioProps {
   definition: FormDefinition;
@@ -15,6 +15,8 @@ export interface ScenarioProps {
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, values: Record<string, unknown>) => void;
   components?: Record<string, unknown>;
+  confirmRemove?: boolean;
+  optionsProviders?: Record<string, (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>>;
 }
 
 export interface Mounted {

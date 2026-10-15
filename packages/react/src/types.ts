@@ -45,6 +45,12 @@ export interface GroupItemComponentProps {
   titleId: string;
   canRemove: boolean;
   remove: () => void;
+  requestRemove: () => void;
+  cancelRemove: () => void;
+  confirming: boolean;
+  hasContent: boolean;
+  prompt: string;
+  keepLabel: string;
   removeLabel: string;
   disabled?: boolean;
   children: ReactNode;
@@ -61,6 +67,7 @@ export interface GroupComponentProps {
   canAdd: boolean;
   add: () => void;
   remove: (id: string) => void;
+  requestRemove: (id: string) => void;
   addLabel: string;
   removeLabel: string;
   disabled?: boolean;
@@ -133,6 +140,7 @@ export interface FormRendererProps extends FormEngineOptions {
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;
+  confirmRemove?: boolean;
   stepErrorMarks?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;

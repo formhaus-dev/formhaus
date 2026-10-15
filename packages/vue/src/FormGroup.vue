@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey, LabelSource } from '@formhaus/core';
-import { errorDomId, fieldDomId, focusItem, itemDomId, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
+import { errorDomId, fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
 import DefaultGroup from './DefaultGroup.vue';
 import DefaultGroupItem from './DefaultGroupItem.vue';
@@ -8,19 +8,23 @@ import FieldResolver from './FieldResolver.vue';
 import { fieldAria } from './fields/useField';
 import type { FieldComponentMap, GroupComponentProps } from './types';
 
-const props = defineProps<{
-  engine: FormEngine;
-  formId: string;
-  group: FormGroup;
-  items: GroupItem[];
-  value: unknown;
-  errors: Readonly<Record<string, string>>;
-  fieldLoading: Readonly<Record<string, boolean>>;
-  disabled?: boolean;
-  components?: FieldComponentMap;
-  labels?: LabelSource;
-  options: Record<string, FieldOption[]>;
-}>();
+const props = withDefaults(
+  defineProps<{
+    engine: FormEngine;
+    formId: string;
+    group: FormGroup;
+    items: GroupItem[];
+    value: unknown;
+    errors: Readonly<Record<string, string>>;
+    fieldLoading: Readonly<Record<string, boolean>>;
+    disabled?: boolean;
+    components?: FieldComponentMap;
+    labels?: LabelSource;
+    options: Record<string, FieldOption[]>;
+    confirmRemove?: boolean;
+  }>(),
+  { confirmRemove: true },
+);
 
 const emit = defineEmits<{
   (e: 'update', key: string, value: unknown): void;
@@ -29,7 +33,8 @@ const emit = defineEmits<{
 }>();
 
 const status = ref('');
-const id = computed(() => fieldDomId(props.formId, props.group.key));
+const confirming = ref<string | null>(null);
+const id = computed(() => fieldDomId(props.formId, props.group.key, props.engine.definition));
 const limits = computed(() => itemLimits(props.group));
 const error = computed(() => props.errors[props.group.key]);
 const values = computed(() => (Array.isArray(props.value) ? props.value : []) as Record<string, unknown>[]);
@@ -58,7 +63,7 @@ function itemProps(index: number, field: FormField) {
 
 async function focusAfter(index: number, added: boolean) {
   await nextTick();
-  focusItem(document, document.getElementById(id.value), props.formId, props.group.key, index, added);
+  focusItem(document, document.getElementById(id.value), props.formId, props.group.key, index, added, props.engine.definition);
 }
 
 function add() {
@@ -69,10 +74,28 @@ function add() {
 }
 
 function drop(index: number) {
+  confirming.value = null;
   if (!props.engine.removeItem(props.group.key, index)) return;
   status.value = label('itemRemoved', { item: title(index) });
   void focusAfter(index, false);
 }
+async function focusId(target: string) {
+  await nextTick();
+  document.getElementById(target)?.focus();
+}
+
+function ask(index: number) {
+  if (props.confirmRemove === false || !itemHasContent(props.engine, props.group.key, index)) return drop(index);
+  confirming.value = props.items[index].id;
+  status.value = label('removeItemPrompt', { item: title(index) });
+  void focusId(`${itemDomId(props.formId, props.group.key, index, undefined, props.engine.definition)}-confirm`);
+}
+
+function keep(index: number) {
+  confirming.value = null;
+  void focusId(`${itemDomId(props.formId, props.group.key, index, undefined, props.engine.definition)}-remove`);
+}
+
 const fieldComponents = new Map<string, Component>();
 
 function fieldsOf(itemId: string): Component {
@@ -104,9 +127,15 @@ const groupProps = computed(
       id: item.id,
       index,
       title: title(index),
-      titleId: itemDomId(props.formId, props.group.key, index),
+      titleId: itemDomId(props.formId, props.group.key, index, undefined, props.engine.definition),
       canRemove: props.items.length > limits.value[0],
       remove: () => drop(index),
+      requestRemove: () => ask(index),
+      cancelRemove: () => keep(index),
+      confirming: confirming.value === item.id,
+      hasContent: itemHasContent(props.engine, props.group.key, index),
+      prompt: label('removeItemPrompt', { item: title(index) }),
+      keepLabel: label('keepItem'),
       removeLabel: remove.value,
       disabled: props.disabled,
       fields: fieldsOf(item.id),
@@ -114,6 +143,7 @@ const groupProps = computed(
     canAdd: props.items.length < limits.value[1],
     add,
     remove: (key) => drop(props.items.findIndex((item) => item.id === key)),
+    requestRemove: (key) => ask(props.items.findIndex((item) => item.id === key)),
     addLabel: props.group.addLabel ?? label('addItem'),
     removeLabel: remove.value,
     disabled: props.disabled,

@@ -86,7 +86,12 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
 .fh-group__header { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; min-height: 32px; }
 .fh-group__title { min-width: 0; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); font-weight: 600; line-height: 1.4; letter-spacing: 0.01em; font-variant-numeric: tabular-nums; }
 .fh-group__title:focus-visible { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
-.fh-group .fh-group__remove { flex: none; min-height: 32px; margin: 0 -10px 0 auto; padding: 0 10px; color: var(--fh-color-error); font-size: var(--fh-font-size-small); font-weight: 500; }
+.fh-group :is(.fh-group__remove, .fh-group__keep) { flex: none; min-height: 32px; margin: 0 -10px 0 auto; padding: 0 10px; font-size: var(--fh-font-size-small); font-weight: 500; }
+.fh-group .fh-group__remove { color: var(--fh-color-error); }
+.fh-group__confirm { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 4px 8px; margin-left: auto; }
+.fh-group__confirm-actions { display: flex; gap: 8px; margin-left: auto; }
+.fh-group__confirm .fh-group__remove { margin: 0; }
+.fh-group__prompt { text-align: right; color: var(--fh-color-text); font-size: var(--fh-font-size-small); line-height: 1.45; text-wrap: pretty; }
 .fh-group__add { display: inline-flex; align-items: center; gap: 8px; justify-self: start; }
 .fh-group__add::before { content: ""; width: 14px; height: 14px; background: currentColor; --fh-plus: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14'%3E%3Cpath d='M7 2v10M2 7h10' stroke='black' stroke-width='1.75' stroke-linecap='round'/%3E%3C/svg%3E"); -webkit-mask: var(--fh-plus) center / 14px no-repeat; mask: var(--fh-plus) center / 14px no-repeat; }
 .fh-group__status { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
@@ -163,21 +168,13 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
   .fh-group .fh-group__remove:hover:not(:disabled) { background: var(--fh-color-error-soft); color: var(--fh-color-error-hover); }
 }
 
-.fh-field__input[aria-invalid="true"],
-.fh-field__checkbox[aria-invalid="true"],
-.fh-field[aria-invalid="true"] :is(.fh-field__radio-option, .fh-field__multiselect-option) {
-  border-color: var(--fh-color-error);
-}
+.fh-field__input[aria-invalid="true"], .fh-field__checkbox[aria-invalid="true"], .fh-field[aria-invalid="true"] :is(.fh-field__radio-option, .fh-field__multiselect-option) { border-color: var(--fh-color-error); }
 
 .fh-form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 4px; }
 .fh-form-actions__secondary { display: flex; gap: 8px; margin-right: auto; }
 .fh-form-actions__secondary:empty { display: none; }
 
-.fh-form-actions__button {
-  min-height: var(--fh-control-height); padding: 0 20px; border: 1px solid transparent; border-radius: var(--fh-radius);
-  background: transparent; color: inherit; font: inherit; font-size: var(--fh-font-size); font-weight: 600; line-height: 1.2; cursor: pointer;
-  transition: background-color 140ms, border-color 140ms, color 140ms;
-}
+.fh-form-actions__button { min-height: var(--fh-control-height); padding: 0 20px; border: 1px solid transparent; border-radius: var(--fh-radius); background: transparent; color: inherit; font: inherit; font-size: var(--fh-font-size); font-weight: 600; line-height: 1.2; cursor: pointer; transition: background-color 140ms, border-color 140ms, color 140ms; }
 
 .fh-form-actions__button:focus-visible { outline: 2px solid var(--fh-color-border-focus); outline-offset: 2px; }
 .fh-form-actions__button:disabled { opacity: 0.5; cursor: not-allowed; }
@@ -197,7 +194,7 @@ legend.fh-field__label { padding: 0; margin-bottom: 8px; }
   :where(.fh-form) { --fh-font-size: 17px; --fh-font-size-small: 15px; }
   .fh-field__input { font-size: max(16px, var(--fh-font-size)); }
   :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) { padding-block: 10px; }
-  .fh-group .fh-group__remove { min-height: 44px; }
+  .fh-group :is(.fh-group__remove, .fh-group__keep) { min-height: 44px; }
 }
 
 .fh-step-progress { display: flex; flex-direction: column; gap: 6px; }

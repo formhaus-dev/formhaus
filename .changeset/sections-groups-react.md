@@ -6,3 +6,4 @@
 - Adding an item focuses its first field. Removing one focuses the next item title, or Add when no item follows. A polite live region announces both.
 - The error summary links to item fields, and a group count error focuses its Add button.
 - New `section`, `group` and `groupItem` entries in `components` replace the markup of sections, groups and item cards. `DefaultSection`, `DefaultGroup` and `DefaultGroupItem` are exported.
+- Removing a group item with answers asks first inside the item header. Turn it off with `confirmRemove: false`.

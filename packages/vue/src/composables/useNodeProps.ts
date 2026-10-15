@@ -34,6 +34,7 @@ export function useNodeProps(
           disabled: disabled.value,
           components: props.components,
           labels: props.labels,
+          confirmRemove: props.confirmRemove,
           options: options.value,
           onUpdate: on.update,
           onBlur: on.blur,
@@ -42,7 +43,7 @@ export function useNodeProps(
       }
       const resolved = options.value[field.key];
       return {
-        id: fieldDomId(formId, field.key),
+        id: fieldDomId(formId, field.key, form.engine.definition),
         field: resolved ? { ...field, options: resolved } : field,
         modelValue: values.value[field.key],
         error: errors.value[field.key],

@@ -121,6 +121,7 @@ React and Vue render a group as a fieldset with one labelled card per item:
 ```
 
 - Add focuses the first field of the new item.
+- Remove on an item with answers asks first, inside the item header: `Remove Participant 2 and its answers?` with Remove and Cancel. Focus moves to the inline Remove. Escape or Cancel closes it and returns focus to the item's Remove button. Empty items, or items that hold only their defaults, go at once. Turn it off with `confirmRemove={false}` (React) or `:confirm-remove="false"` (Vue).
 - Remove focuses the heading of the next item, or Add when no item follows.
 - A polite status region announces `{item} added` and `{item} removed`.
 - After a failed Submit, focus goes to the first invalid field. A count error focuses Add.
@@ -157,8 +158,8 @@ function Participants({ label, items, canAdd, add }: GroupComponentProps) {
 | Prop | Meaning |
 |---|---|
 | `id`, `group`, `label`, `helperText`, `error`, `describedBy` | Group texts and ids |
-| `items` | `{ id, index, title, titleId, canRemove, remove, removeLabel, disabled }` per item. React adds `children` with the item fields. Vue adds `fields`, a component that renders them |
-| `canAdd`, `add`, `remove(id)` | Item operations within `minLength` and `maxLength` |
+| `items` | `{ id, index, title, titleId, canRemove, remove, requestRemove, cancelRemove, confirming, hasContent, prompt, keepLabel, removeLabel, disabled }` per item. React adds `children` with the item fields. Vue adds `fields`, a component that renders them |
+| `canAdd`, `add`, `remove(id)`, `requestRemove(id)` | Item operations within `minLength` and `maxLength`. `requestRemove` asks first when the item has answers |
 | `addLabel`, `removeLabel`, `status`, `disabled` | Button texts, the live announcement and the busy state |
 | `ItemComponent` (React), `itemComponent` (Vue) | The resolved `groupItem` component |
 
@@ -204,4 +205,4 @@ Upgrade the server before the clients. Core 0.14 and older treat a group as a cu
 
 ## Translations
 
-Group texts live at `fields.participants.label`, `itemLabel`, `addLabel`, `removeLabel` and `helperText`. Item fields live at `fields.participants.fields.email.label`. A translated `itemLabel` must keep `{index}`. The label catalog adds `addItem`, `removeItem`, `itemLabel`, `itemAdded` and `itemRemoved`. See [Translations](/guide/translations).
+Group texts live at `fields.participants.label`, `itemLabel`, `addLabel`, `removeLabel` and `helperText`. Item fields live at `fields.participants.fields.email.label`. A translated `itemLabel` must keep `{index}`. The label catalog adds `addItem`, `removeItem`, `itemLabel`, `itemAdded`, `itemRemoved`, `removeItemPrompt` and `keepItem`. See [Translations](/guide/translations).

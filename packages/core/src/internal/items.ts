@@ -4,6 +4,8 @@ import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
 import { labelFor } from '../i18n/labels';
 import type { FormGroup, LabelSource } from '../types';
+import { isBlank } from '../visibility/evaluate-condition';
+import { isEntry, itemsOf } from '../visibility/nodes';
 import { formatText } from '../validation/default-messages';
 import { fieldDomId, itemDomId } from './ids';
 
@@ -18,7 +20,7 @@ export function itemTitle(group: FormGroup, index: number, ...labels: (LabelSour
 
 export function errorDomId(engine: FormEngine, formId: string, key: string): string {
   const path = visibility(engine).parse(key);
-  return path ? itemDomId(formId, ...path) : fieldDomId(formId, key);
+  return path ? itemDomId(formId, ...path, engine.definition) : fieldDomId(formId, key, engine.definition);
 }
 
 export interface ErrorEntry {
@@ -37,5 +39,15 @@ export function errorEntries(engine: FormEngine, formId: string, ...labels: (Lab
     if (!field) return [];
     const label = item ? `${field.label} (${itemTitle(item.group, item.index, ...labels)})` : field.label;
     return [{ key, id: errorDomId(engine, formId, key), label, message: errors[key] }];
+  });
+}
+
+export function itemHasContent(engine: FormEngine, key: string, index: number): boolean {
+  const group = visibility(engine).groups.find((candidate) => candidate.key === key);
+  const item = itemsOf(engine.values[key as never])[index];
+  if (!group || !isEntry(item)) return false;
+  return group.fields.some(({ key: name, defaultValue }) => {
+    const value = typeof item[name] === 'string' ? (item[name] as string).trim() : item[name];
+    return !isBlank(value) && value !== false && JSON.stringify(value) !== JSON.stringify(defaultValue);
   });
 }

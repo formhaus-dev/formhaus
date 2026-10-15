@@ -21,7 +21,7 @@ import { useFormEngine } from './composables/useFormEngine';
 import { useNodeProps } from './composables/useNodeProps';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2 });
+const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2, confirmRemove: true });
 
 const emit = defineEmits<FormRendererEmits>();
 
@@ -85,7 +85,20 @@ watch(
 );
 
 const optionFields = computed(() => visibleFields.value.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])));
-const resolvedOptions = useFieldOptions(optionFields, () => form.engine, () => props.optionsProviders);
+const loaded = useFieldOptions(
+  optionFields,
+  () => form.engine,
+  () => props.optionsProviders,
+);
+const resolvedOptions = computed(() =>
+  Object.fromEntries(
+    optionFields.value.flatMap((field: FormField) =>
+      field.optionsFrom && props.optionsProviders?.[field.optionsFrom] && loaded.value[field.key]
+        ? [[field.key, loaded.value[field.key]]]
+        : [],
+    ),
+  ),
+);
 
 const {
   update: onFieldUpdate,
@@ -143,7 +156,7 @@ function onCancel() {
 const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
 
 function sectionProps(section: FormSection) {
-  const id = fieldDomId(formId, section.key);
+  const id = fieldDomId(formId, section.key, form.engine.definition);
   return {
     id,
     section,

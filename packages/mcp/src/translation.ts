@@ -71,7 +71,7 @@ export const i18nCapabilities = {
   },
   labels: {
     defaults: defaultLabels,
-    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. addItem and removeItem are the group button defaults, itemLabel takes {label} and {index}, itemAdded and itemRemoved take {item}. Explicit next and back labels and group texts win.',
+    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. addItem and removeItem are the group button defaults, itemLabel takes {label} and {index}, itemAdded, itemRemoved and removeItemPrompt take {item}, keepItem cancels a removal. Explicit next and back labels and group texts win.',
   },
   keys: {
     slots,

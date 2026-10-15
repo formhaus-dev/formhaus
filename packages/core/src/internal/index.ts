@@ -8,7 +8,7 @@ export {
 } from '../cloud/controller';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
 export { fieldDomId, itemDomId } from './ids';
-export { errorDomId, errorEntries, itemLimits, itemTitle, type ErrorEntry } from './items';
+export { errorDomId, errorEntries, itemHasContent, itemLimits, itemTitle, type ErrorEntry } from './items';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { labelFor } from '../i18n/labels';
 import type { FormEngine } from '../engine';

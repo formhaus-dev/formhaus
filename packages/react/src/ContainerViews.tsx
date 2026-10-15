@@ -14,23 +14,70 @@ export function DefaultSection({ id, title, description, descriptionId, children
   );
 }
 
-export function DefaultGroupItem({ title, titleId, canRemove, remove, removeLabel, disabled, children }: GroupItemComponentProps) {
+const textButton = 'fh-form-actions__button fh-form-actions__button--text';
+
+export function DefaultGroupItem({
+  title,
+  titleId,
+  canRemove,
+  remove,
+  requestRemove,
+  cancelRemove,
+  confirming,
+  prompt,
+  keepLabel,
+  removeLabel,
+  disabled,
+  children,
+}: GroupItemComponentProps) {
   return (
     <div className="fh-group__item" role="group" aria-labelledby={titleId}>
       <div className="fh-group__header">
         <span id={titleId} tabIndex={-1} className="fh-group__title">
           {title}
         </span>
-        {canRemove && (
+        {canRemove && !confirming && (
           <button
+            id={`${titleId}-remove`}
             type="button"
-            className="fh-form-actions__button fh-form-actions__button--text fh-group__remove"
+            className={`${textButton} fh-group__remove`}
             aria-label={`${removeLabel} ${title}`}
             disabled={disabled}
-            onClick={remove}
+            onClick={requestRemove}
           >
             {removeLabel}
           </button>
+        )}
+        {confirming && (
+          <div
+            className="fh-group__confirm"
+            role="group"
+            aria-labelledby={`${titleId}-prompt`}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault();
+                cancelRemove();
+              }
+            }}
+          >
+            <span id={`${titleId}-prompt`} className="fh-group__prompt">
+              {prompt}
+            </span>
+            <span className="fh-group__confirm-actions">
+              <button
+                id={`${titleId}-confirm`}
+                type="button"
+                className={`${textButton} fh-group__remove`}
+                disabled={disabled}
+                onClick={remove}
+              >
+                {removeLabel}
+              </button>
+              <button type="button" className={`${textButton} fh-group__keep`} onClick={cancelRemove}>
+                {keepLabel}
+              </button>
+            </span>
+          </div>
         )}
       </div>
       <div className="fh-group__fields">{children}</div>

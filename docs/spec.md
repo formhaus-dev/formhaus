@@ -512,6 +512,8 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `itemLabel` | `{label} {index}` | `label`, `index` |
 | `itemAdded` | `{item} added` | `item` |
 | `itemRemoved` | `{item} removed` | `item` |
+| `removeItemPrompt` | `Remove {item} and its answers?` | `item` |
+| `keepItem` | `Cancel` | |
 
 A message for a failed rule comes from the first of:
 

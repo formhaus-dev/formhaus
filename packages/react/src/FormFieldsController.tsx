@@ -12,12 +12,14 @@ interface FormFieldsControllerProps extends ControllerProps {
   loading: boolean;
   optionsProviders?: Record<string, OptionsProvider>;
   labels?: FormRendererProps['labels'];
+  confirmRemove?: boolean;
 }
 
 export const FormFieldsController = memo(function FormFieldsController({
   loading,
   optionsProviders,
   labels,
+  confirmRemove,
   ...props
 }: FormFieldsControllerProps) {
   const { engine, formId } = props;
@@ -25,12 +27,31 @@ export const FormFieldsController = memo(function FormFieldsController({
   useFormSnapshot(engine);
   const fields = engine.visibleFields;
   const optionFields = useMemo(() => fields.flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field])), [fields]);
-  const resolvedOptions = useFieldOptions(optionFields, engine, optionsProviders);
+  const loaded = useFieldOptions(optionFields, engine, optionsProviders);
+  const resolvedOptions = useMemo(
+    () =>
+      Object.fromEntries(
+        optionFields.flatMap((field) =>
+          field.optionsFrom && optionsProviders?.[field.optionsFrom] && loaded[field.key] ? [[field.key, loaded[field.key]]] : [],
+        ),
+      ),
+    [optionFields, optionsProviders, loaded],
+  );
   const disabled = loading || engine.stepValidating || engine.submitting;
 
   const render = (node: FormNode) => {
     if (isGroup(node))
-      return <FormGroupController key={node.key} {...props} group={node} disabled={disabled} options={resolvedOptions} labels={labels} />;
+      return (
+        <FormGroupController
+          key={node.key}
+          {...props}
+          group={node}
+          disabled={disabled}
+          options={resolvedOptions}
+          labels={labels}
+          confirmRemove={confirmRemove}
+        />
+      );
     if (!isSection(node))
       return (
         <FormFieldController
@@ -41,7 +62,7 @@ export const FormFieldsController = memo(function FormFieldsController({
           disabled={disabled}
         />
       );
-    const id = fieldDomId(formId, node.key);
+    const id = fieldDomId(formId, node.key, engine.definition);
     const Section = (props.components?.section ?? DefaultSection) as ComponentType<SectionComponentProps>;
     return (
       <Section

@@ -127,6 +127,12 @@
         },
         "itemRemoved": {
           "type": "string"
+        },
+        "removeItemPrompt": {
+          "type": "string"
+        },
+        "keepItem": {
+          "type": "string"
         }
       },
       "additionalProperties": false
