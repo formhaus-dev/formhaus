@@ -116,11 +116,24 @@ function applySkips(engine: FormEngine, skippedSteps: unknown): void {
   }
 }
 
+function rejectGroups(fields: FormField[], input: unknown, resolve: ResolveMessage) {
+  const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? { ...(input as Record<string, unknown>) } : {};
+  const rejected = new Map<string, string>();
+  for (const group of fields.filter(isGroup)) {
+    const error = hasOwn(source, group.key) && !rejected.has(group.key) && typeError(group, source[group.key], resolve);
+    if (!error) continue;
+    rejected.set(group.key, error);
+    delete source[group.key];
+  }
+  return { source, rejected };
+}
+
 export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
   parseDefinition(definition);
   const fields = getAllFields(definition);
-  const resolved = activeValues(definition, fields, values);
   const messages = messageResolver(options.messages, definition.messages);
+  const { source, rejected } = rejectGroups(fields, values, namedResolver(messages));
+  const resolved = activeValues(definition, fields, source);
   const invalid = typeErrors(resolved, namedResolver(messages));
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
@@ -133,6 +146,13 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
     if (!hasOwn(submitted, key)) continue;
     errors[key] = error;
     submitted[key] = resolved.values[key];
+    for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
+  }
+  const skipped = new Set([...internals(engine).skipped.values()].flat());
+  for (const [key, error] of rejected) {
+    if (!visibility.activeField(key, engine.values) || skipped.has(key)) continue;
+    errors[key] = error;
+    delete submitted[key];
     for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
   }
   for (const [key, error] of items)

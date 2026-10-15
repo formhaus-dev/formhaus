@@ -67,7 +67,7 @@ export function normalizeValue(field: FormField, input: unknown): unknown {
 }
 
 function normalizeItems(group: FormGroup, input: unknown): unknown {
-  if (!Array.isArray(input) || input.length > Math.max(group.validation?.maxLength ?? 0, MAX_GROUP_ITEMS)) return input;
+  if (!Array.isArray(input) || input.length > (group.validation?.maxLength ?? MAX_GROUP_ITEMS)) return input;
   return input.map((item) => {
     if (!entry(item)) return item;
     const result: Record<string, unknown> = {};
@@ -122,14 +122,17 @@ function isEmpty(field: FormField, value: unknown): boolean {
 
 const entry = (item: unknown) => Object.prototype.toString.call(item) === '[object Object]';
 
-function groupError(field: FormField, value: unknown): boolean {
-  return !Array.isArray(value) || value.length > Math.max(field.validation?.maxLength ?? 0, MAX_GROUP_ITEMS) || !value.every(entry);
+function groupError(field: FormField, value: unknown, fail: Fail): string | null {
+  const max = field.validation?.maxLength;
+  if (!Array.isArray(value)) return fail('value');
+  if (max !== undefined && value.length > max) return field.validation?.maxLengthMessage ?? fail('maxItems', { max });
+  return value.length > (max ?? MAX_GROUP_ITEMS) || !value.every(entry) ? fail('value') : null;
 }
 
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {
   if (isEmpty(field, value)) return null;
   const fail: Fail = (key, params = {}) => resolve(key, params, field);
-  if (field.type === 'group') return groupError(field, value) ? fail('value') : null;
+  if (field.type === 'group') return groupError(field, value, fail);
   if (BOOLEAN_TYPES.includes(field.type)) return typeof value === 'boolean' ? null : fail('boolean');
   if (field.type === 'number') return typeof value === 'number' && Number.isFinite(value) ? null : fail('number');
   if (field.type === 'multiselect') return multiselectError(field, value, fail);
