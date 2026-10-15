@@ -6,6 +6,7 @@ import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
 import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
 import { optionScenarios } from '../../core/__tests__/renderers/options.scenarios';
+import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
 
@@ -39,3 +40,4 @@ describe('renderer conformance: states', () => stateScenarios(harness, kit));
 describe('renderer conformance: fields', () => fieldScenarios(harness, kit));
 describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
+describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
