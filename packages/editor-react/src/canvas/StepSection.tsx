@@ -1,8 +1,9 @@
-import type { BuilderPage, BuilderQuestion } from '@formhaus/builder';
+import { isContainer, type BuilderPage, type BuilderQuestion } from '@formhaus/builder';
 import { Rows3 } from 'lucide-react';
 import { memo, useState } from 'react';
 import { AddRow, Button, Sortable } from '../ui';
 import { ButtonsCard } from './ButtonsCard';
+import { ContainerFields } from './ContainerFields';
 import { useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Canvas.module.css';
@@ -35,7 +36,8 @@ const sameSection = (a: Props, b: Props) =>
   a.header?.total === b.header?.total &&
   sameFields(a.fields, b.fields);
 
-export const StepSection = memo(function StepSection({ step, page, first, last, fields, header, actions }: Props) {
+export const StepSection = memo(function StepSection({ step, page, first, last, fields: all, header, actions }: Props) {
+  const fields = all.filter((field) => !field.parent);
   const readOnly = useReadOnly();
   const focus = useFocusRequests();
   const [palette, setPalette] = useState(false);
@@ -55,6 +57,7 @@ export const StepSection = memo(function StepSection({ step, page, first, last, 
         renderItem={({ field }, { handleProps }) => (
           <>
             <FieldCard uid={field.uid} handleProps={handleProps} actions={actions} />
+            {isContainer(field) && <ContainerFields container={field} step={step} actions={actions} />}
             {!readOnly && field !== fields.at(-1) && <InsertGap after={field.uid} label={labelOf(field)} actions={actions} />}
           </>
         )}

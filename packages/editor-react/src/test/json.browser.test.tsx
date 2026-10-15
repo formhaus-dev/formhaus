@@ -83,7 +83,7 @@ describe('JSON mode in a browser', () => {
       expect(screen.getByText(/^Line 4:/)).toBeInTheDocument();
     });
     expect(jsonText()).toBe(broken);
-    expect(toDefinition(store.getState().form).fields?.[0]?.label).toBe('Keep me');
+    expect((toDefinition(store.getState().form).fields?.[0] as { label?: string } | undefined)?.label).toBe('Keep me');
     await mode('Visual');
     expect(labels()).toEqual(['Keep me']);
   });
@@ -96,7 +96,7 @@ describe('JSON mode in a browser', () => {
     await mode('JSON');
     paste(definition('Pasted'));
     await waitFor(() => {
-      expect(toDefinition(store.getState().form).fields?.[0]?.label).toBe('Pasted');
+      expect((toDefinition(store.getState().form).fields?.[0] as { label?: string } | undefined)?.label).toBe('Pasted');
     });
     view().focus();
     const mod = /Mac/.test(navigator.platform) ? 'Meta' : 'Control';

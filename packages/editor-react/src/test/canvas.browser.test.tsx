@@ -39,7 +39,7 @@ describe('editor canvas in a browser', () => {
     await userEvent.keyboard('Pro');
     await userEvent.click(screen.getByRole('button', { name: 'Field settings' }));
     await userEvent.click(within(await screen.findByRole('group', { name: 'Field settings' })).getByRole('switch', { name: 'Required' }));
-    const field = toDefinition(store.getState().form).fields?.[0];
+    const field = toDefinition(store.getState().form).fields?.[0] as { options?: { value: string }[] } | undefined;
     expect(field).toMatchObject({ key: 'plan', type: 'radio', validation: { required: true } });
     expect(field?.options?.map((option) => option.value)).toEqual(['free', 'pro', 'option-3']);
   });
