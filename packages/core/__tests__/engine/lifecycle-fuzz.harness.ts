@@ -16,6 +16,12 @@ interface Pending {
   settle: (outcome: Outcome) => void;
 }
 
+interface Skip {
+  stepId: string;
+  before: Record<string, unknown>;
+  skipped: Record<string, unknown>;
+}
+
 const flush = () => new Promise<void>((done) => { setImmediate(done); });
 
 export interface FuzzHooks {
@@ -26,7 +32,7 @@ export interface FuzzHooks {
 export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<string, unknown>, commands: FuzzCommand[]): Promise<void> {
   const { definition } = fuzz;
   const pending: Pending[] = [];
-  const skips = new Set<number>();
+  const skips = new Map<number, Skip>();
   const log: string[] = [];
   let resets = 0;
   const steps = definition.steps ?? [];
@@ -88,8 +94,19 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
 
   const start = (action: () => Promise<unknown>, skip = false) => {
     const before = ops().latestOperation;
+    const stepId = engine.currentStep?.id ?? '';
+    const values = { ...engine.values };
     action().catch(() => {});
-    if (skip && ops().latestOperation !== before) skips.add(ops().latestOperation);
+    if (skip && ops().latestOperation !== before) skips.set(ops().latestOperation, { stepId, before: values, skipped: { ...engine.values } });
+  };
+
+  const checkRestore = (skip: Skip, values: Record<string, unknown>) => {
+    if (engine.isStepSkipped(skip.stepId)) fail(`skip of ${skip.stepId} left a trace after its rejection`);
+    for (const key of new Set([...Object.keys(skip.before), ...Object.keys(values)])) {
+      const expected = Object.is(values[key], skip.skipped[key]) ? skip.before[key] : values[key];
+      const actual = engine.values[key as keyof typeof engine.values];
+      if (actual !== undefined && !Object.is(actual, expected)) fail(`restoring skip of ${skip.stepId} set ${key} to ${JSON.stringify(actual)}, expected ${JSON.stringify(expected)}`);
+    }
   };
 
   for (const command of commands) {
@@ -108,10 +125,14 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       const superseded = entry.resets !== resets || entry.operation !== ops().latestOperation;
       const cancelled = entry.operation !== ops().operationEpoch;
       const before = snapshot();
+      const values = { ...engine.values };
+      const skip = superseded ? undefined : skips.get(entry.operation);
+      const skipped = !!skip && engine.isStepSkipped(skip.stepId);
+      const rejected = command.outcome !== 'allow' || (cancelled && entry.kind === 'beforeSubmit');
       entry.settle(command.outcome);
       await flush();
-      const restoresSkip = !superseded && skips.has(entry.operation);
-      if ((superseded || (cancelled && !restoresSkip)) && snapshot() !== before) {
+      if (skip && skipped && (rejected || !engine.isStepSkipped(skip.stepId))) checkRestore(skip, values);
+      else if ((superseded || cancelled) && snapshot() !== before) {
         fail(`stale ${entry.kind} of operation ${entry.operation} changed the state\nbefore: ${before}`);
       }
     }
