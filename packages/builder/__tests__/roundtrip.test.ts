@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { fromDefinition, isPage, isQuestion, syncIdentifiers, toDefinition } from '../src';
-import { normalize, recipes, templates } from './fixtures';
+import { examples, normalize, recipes, templates } from './fixtures';
 
 describe('round trip', () => {
   it('covers every template', () => {
@@ -9,6 +9,14 @@ describe('round trip', () => {
 
   it.each([...templates, ...recipes])('%s survives fromDefinition and toDefinition', (_name, definition) => {
     expect(normalize(toDefinition(fromDefinition(definition)))).toEqual(normalize(definition));
+  });
+
+  it('covers the example definitions', () => {
+    expect(examples.length).toBeGreaterThanOrEqual(14);
+  });
+
+  it.each([...templates, ...recipes, ...examples])('%s exports byte for byte when nothing is edited', (_name, definition) => {
+    expect(JSON.stringify(toDefinition(fromDefinition(definition)), null, 2)).toBe(JSON.stringify(definition, null, 2));
   });
 
   it.each([...templates, ...recipes])('%s keeps every identifier after a sync', (_name, definition) => {

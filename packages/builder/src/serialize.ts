@@ -1,5 +1,5 @@
 import type { FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
-import { canBranch, END, groups, hasOptions, isPage, pageTitle, type BuilderForm, type BuilderQuestion, type Group } from './model';
+import { arrange, canBranch, END, groups, hasOptions, isPage, pageTitle, type BuilderForm, type BuilderPage, type BuilderQuestion, type Group } from './model';
 
 export interface Serialized {
   definition: FormDefinition;
@@ -9,17 +9,20 @@ export interface Serialized {
 function field(item: BuilderQuestion, path: string, paths: Map<string, string>): FormField {
   const { validation, ...extra } = item.extra;
   const { required, ...rules } = validation ?? {};
-  const result: FormField = { key: item.key, type: item.type, label: item.label, ...extra };
-  const merged = { ...(item.required ? { required: typeof required === 'string' ? required : true } : {}), ...rules };
-  if (Object.keys(merged).length) result.validation = merged;
+  const shape = item.shape;
+  const label = item.label || !shape || shape.field.includes('label') ? { label: item.label } : {};
+  const result = { key: item.key, type: item.type, ...label, ...extra } as FormField;
+  const own = item.required ? (typeof required === 'string' && required ? required : true) : required === false || required === '' ? required : undefined;
+  const merged = arrange({ ...(own !== undefined ? { required: own } : {}), ...rules }, shape?.validation);
+  if (Object.keys(merged).length || shape?.validation?.length === 0) result.validation = merged;
   paths.set(path, item.uid);
-  if (hasOptions(item.type) && (item.options.length || !item.extra.optionsFrom)) {
+  if (hasOptions(item.type) && (item.options.length || !item.extra.optionsFrom || shape?.field.includes('options'))) {
     result.options = item.options.map((option, index) => {
       paths.set(`${path}.options.${index}`, option.uid);
-      return { value: option.value, label: option.label };
+      return arrange({ value: option.value, label: option.label, ...option.extra }, option.shape);
     });
   }
-  return result;
+  return arrange(result, shape?.field);
 }
 
 function routesFor(parts: Group[], ids: string[], fields: FormField[][]): StepRoute[][] {
@@ -50,13 +53,21 @@ function routesFor(parts: Group[], ids: string[], fields: FormField[][]): StepRo
 
 function head(form: BuilderForm) {
   const { $schema, submit, ...extra } = form.extra;
+  const shape = form.shape;
+  const label = form.submit !== 'Submit' || !shape || shape.submit?.includes('label') ? { label: form.submit } : {};
+  const action = arrange({ ...submit, ...label }, shape?.submit);
   return {
     ...($schema ? { $schema } : {}),
     id: form.id,
-    title: form.title,
+    ...(form.title || !shape || shape.form.includes('title') ? { title: form.title } : {}),
     ...extra,
-    submit: { ...submit, label: form.submit },
+    ...(Object.keys(action).length || !shape || shape.form.includes('submit') ? { submit: action } : {}),
   };
+}
+
+function stepTitle(page: BuilderPage | undefined, index: number): { title?: string } {
+  if (page?.title.trim()) return { title: page.title };
+  return page?.shape && !page.shape.includes('title') ? {} : { title: pageTitle(page, index) };
 }
 
 export function serialize(form: BuilderForm): Serialized {
@@ -64,7 +75,7 @@ export function serialize(form: BuilderForm): Serialized {
   const parts = groups(form);
   if (!form.blocks.some(isPage)) {
     const fields = (parts[0]?.questions ?? []).map((item, index) => field(item, `fields.${index}`, paths));
-    return { definition: { ...head(form), fields } as FormDefinition, paths };
+    return { definition: arrange({ ...head(form), fields }, form.shape?.form) as FormDefinition, paths };
   }
   const ids = parts.map((part, index) => part.page?.id || `step-${index + 1}`);
   const fields = parts.map((part, step) => part.questions.map((item, index) => field(item, `steps.${step}.fields.${index}`, paths)));
@@ -73,19 +84,19 @@ export function serialize(form: BuilderForm): Serialized {
     if (part.page) paths.set(`steps.${index}`, part.page.uid);
     const next = part.page?.nextLabel.trim();
     const back = part.page?.backLabel.trim();
-    const step: FormStep = {
+    const step = {
       id: ids[index],
-      title: pageTitle(part.page, index),
+      ...stepTitle(part.page, index),
       ...part.page?.extra,
       ...(next ? { next: { label: next } } : {}),
       ...(back ? { back: { label: back } } : {}),
       fields: fields[index],
-    };
+    } as FormStep;
     const own = part.page?.routes ?? routes[index];
-    if (own.length) step.routes = own;
-    return step;
+    if (own.length || part.page?.routes) step.routes = own;
+    return arrange(step, part.page?.shape);
   });
-  return { definition: { ...head(form), steps } as FormDefinition, paths };
+  return { definition: arrange({ ...head(form), steps }, form.shape?.form) as FormDefinition, paths };
 }
 
 export const toDefinition = (form: BuilderForm): FormDefinition => serialize(form).definition;
