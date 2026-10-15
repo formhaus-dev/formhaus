@@ -86,3 +86,28 @@ it('keeps an answer typed into a cleared field when a cancelled skip is rejected
   expect(engine.values.note).toBe('more');
   expect(engine.errors).toEqual({ more: 'Required' });
 });
+
+it.each([
+  ['cancelled', true],
+  ['current', false],
+] as const)('restores a %s skip whose rejection arrives after an answer on another step changed', async (_, cancel) => {
+  const engine = new FormEngine({
+    id: 'other-step', title: 'Other step', submit: { label: 'Send' },
+    steps: [
+      { id: 'profile', title: 'Profile', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+      { id: 'details', title: 'Details', skip: { label: 'Skip' }, fields: [{ key: 'bio', type: 'text', label: 'Bio' }] },
+    ],
+  }, { name: 'Ada', bio: 'Draft' });
+  engine.goToStepWithField('bio');
+  engine.setErrors({ bio: 'Old' });
+  const response = deferred<{ ok: false }>();
+  const pending = engine.skip(() => response.promise);
+  if (cancel) engine.cancelPendingActions();
+  engine.setValue('name', 'Grace');
+  response.resolve({ ok: false });
+  expect(await pending).toBe(false);
+  expect(engine.isStepSkipped('details')).toBe(false);
+  expect(engine.values).toEqual({ name: 'Grace', bio: 'Draft' });
+  expect(engine.getSubmitValues()).toEqual({ name: 'Grace', bio: 'Draft' });
+  expect(engine.errors).toEqual(cancel ? { bio: 'Old' } : {});
+});

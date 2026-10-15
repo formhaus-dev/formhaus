@@ -2,8 +2,9 @@ import { getChangedKeys } from './engine-utils';
 import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs, watchValues } from './pending-inputs';
 import { validateStep } from '../validation';
-import { applyValidationErrors, getValidationValues } from './validation-state';
+import { applyValidationErrors, dropServerErrors, getValidationValues, pruneOffPathErrors } from './validation-state';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
+import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
 import type { StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
@@ -34,7 +35,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   const errors = { ...engine.errors };
   const serverErrors = { ...engine.state.serverErrors };
   let outcome: boolean | undefined;
-  const fieldKeys = skipCurrentStep(engine);
+  skipCurrentStep(engine);
   const skippedValues = engine.values;
   const edited = watchValues(engine, skippedValues);
   const submitting = submitForm(engine, async (submitted, skipped) => {
@@ -47,12 +48,24 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   try {
     return await submitting;
   } finally {
-    if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues && !edited()) {
-      engine.state.values = values;
+    if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues && engine.skipped.has(step.id)) {
+      const steps = engine.visibleSteps;
+      const kept = edited();
+      engine.state.values = { ...values };
+      for (const key of kept) {
+        delete engine.values[key];
+        delete errors[key];
+        delete serverErrors[key];
+        if (key in skippedValues) engine.values[key] = skippedValues[key];
+      }
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
       engine.state.errors = { ...(outcome ? {} : errors), ...engine.errors };
       engine.skipped.delete(step.id);
-      engine.notify({ fieldKeys, structureChanged: true, valuesChanged: true });
+      dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
+      engine.visibility.markChanged(true, true);
+      engine.state.currentStepIndex = reconcileStepIndex(steps, engine.visibleSteps, engine.currentStepIndex);
+      pruneOffPathErrors(engine);
+      engine.notify({ fieldKeys: Object.keys({ ...values, ...skippedValues, ...errors }), structureChanged: true, valuesChanged: true });
     }
   }
 }
