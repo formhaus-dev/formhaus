@@ -1,11 +1,11 @@
 import type { FieldOption, FormGroup, LabelKey } from '@formhaus/core';
 import { fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
 import { memo, useEffect, useRef, useState, type ComponentType } from 'react';
-import { DefaultGroup, DefaultGroupItem } from './ContainerViews';
+import { DefaultConfirmDialog, DefaultGroup, DefaultGroupItem } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { describedBy } from './fields/fieldProps';
 import { useFieldSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
-import type { FormRendererProps, GroupComponentProps, GroupItemComponentProps } from './types';
+import type { ConfirmDialogComponentProps, FormRendererProps, GroupComponentProps, GroupItemComponentProps } from './types';
 
 interface FormGroupControllerProps extends ControllerProps {
   group: FormGroup;
@@ -63,8 +63,6 @@ export const FormGroupController = memo(function FormGroupController({
   const ask = (index: number) => {
     if (!confirmRemove || !itemHasContent(engine, group.key, index)) return drop(index);
     setConfirming(items[index].id);
-    focus.current = { id: `${itemDomId(formId, group.key, index, undefined, engine.definition)}-confirm` };
-    setStatus(label('removeItemPrompt', { item: title(index) }));
   };
   const keep = (index: number) => {
     setConfirming(null);
@@ -83,11 +81,7 @@ export const FormGroupController = memo(function FormGroupController({
       canRemove: items.length > min,
       remove: () => drop(index),
       requestRemove: () => ask(index),
-      confirming: confirming === item.id,
       hasContent: itemHasContent(engine, group.key, index),
-      cancelRemove: () => keep(index),
-      prompt: label('removeItemPrompt', { item: title(index) }),
-      keepLabel: label('keepItem'),
       removeLabel: remove,
       removeName: label('removeItemNamed', { label: remove, item: title(index) }),
       disabled,
@@ -105,24 +99,40 @@ export const FormGroupController = memo(function FormGroupController({
     }),
   );
 
+  const asked = items.findIndex((item) => item.id === confirming);
+  const Confirm = (components?.confirmDialog ?? DefaultConfirmDialog) as ComponentType<ConfirmDialogComponentProps>;
   return (
-    <Group
-      id={id}
-      group={group}
-      label={group.label}
-      helperText={group.helperText}
-      error={error}
-      describedBy={describedBy(group, id, error)}
-      items={entries}
-      canAdd={items.length < max}
-      add={add}
-      remove={(key) => drop(items.findIndex((item) => item.id === key))}
-      requestRemove={(key) => ask(items.findIndex((item) => item.id === key))}
-      addLabel={group.addLabel ?? label('addItem')}
-      removeLabel={remove}
-      disabled={disabled}
-      status={announced.text + (announced.count % 2 ? '\u00a0' : '')}
-      ItemComponent={ItemComponent}
-    />
+    <>
+      <Group
+        id={id}
+        group={group}
+        label={group.label}
+        helperText={group.helperText}
+        error={error}
+        describedBy={describedBy(group, id, error)}
+        items={entries}
+        canAdd={items.length < max}
+        add={add}
+        remove={(key) => drop(items.findIndex((item) => item.id === key))}
+        requestRemove={(key) => ask(items.findIndex((item) => item.id === key))}
+        addLabel={group.addLabel ?? label('addItem')}
+        removeLabel={remove}
+        disabled={disabled}
+        status={announced.text + (announced.count % 2 ? '\u00a0' : '')}
+        ItemComponent={ItemComponent}
+      />
+      {asked >= 0 && (
+        <Confirm
+          id={`${id}-confirm`}
+          open
+          title={label('removeItemPrompt', { item: title(asked) })}
+          description={label('removeItemBody', { item: title(asked) })}
+          confirmLabel={label('removeItemNamed', { label: remove, item: title(asked) })}
+          cancelLabel={label('cancel')}
+          confirm={() => drop(asked)}
+          cancel={() => keep(asked)}
+        />
+      )}
+    </>
   );
 });

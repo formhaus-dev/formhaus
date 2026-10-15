@@ -3,10 +3,11 @@ import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey
 import { errorDomId, fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
 import DefaultGroup from './DefaultGroup.vue';
+import DefaultConfirmDialog from './DefaultConfirmDialog.vue';
 import DefaultGroupItem from './DefaultGroupItem.vue';
 import FieldResolver from './FieldResolver.vue';
 import { fieldAria } from './fields/useField';
-import type { FieldComponentMap, GroupComponentProps } from './types';
+import type { ConfirmDialogComponentProps, FieldComponentMap, GroupComponentProps } from './types';
 
 const props = withDefaults(
   defineProps<{
@@ -90,9 +91,6 @@ async function focusId(target: string) {
 function ask(index: number) {
   if (props.confirmRemove === false || !itemHasContent(props.engine, props.group.key, index)) return drop(index);
   confirming.value = props.items[index].id;
-  status.value = label('removeItemPrompt', { item: title(index) });
-  announcements.value++;
-  void focusId(`${itemDomId(props.formId, props.group.key, index, undefined, props.engine.definition)}-confirm`);
 }
 
 function keep(index: number) {
@@ -135,11 +133,7 @@ const groupProps = computed(
       canRemove: props.items.length > limits.value[0],
       remove: () => drop(index),
       requestRemove: () => ask(index),
-      cancelRemove: () => keep(index),
-      confirming: confirming.value === item.id,
       hasContent: itemHasContent(props.engine, props.group.key, index),
-      prompt: label('removeItemPrompt', { item: title(index) }),
-      keepLabel: label('keepItem'),
       removeLabel: remove.value,
       removeName: label('removeItemNamed', { label: remove.value, item: title(index) }),
       disabled: props.disabled,
@@ -156,8 +150,24 @@ const groupProps = computed(
     itemComponent: (props.components?.groupItem ?? DefaultGroupItem) as Component,
   }),
 );
+
+const dialogProps = computed((): ConfirmDialogComponentProps | null => {
+  const index = props.items.findIndex((item) => item.id === confirming.value);
+  if (index < 0) return null;
+  return {
+    id: `${id.value}-confirm`,
+    open: true,
+    title: label('removeItemPrompt', { item: title(index) }),
+    description: label('removeItemBody', { item: title(index) }),
+    confirmLabel: label('removeItemNamed', { label: remove.value, item: title(index) }),
+    cancelLabel: label('cancel'),
+    confirm: () => drop(index),
+    cancel: () => keep(index),
+  };
+});
 </script>
 
 <template>
   <component :is="props.components?.group ?? DefaultGroup" v-bind="groupProps" />
+  <component :is="props.components?.confirmDialog ?? DefaultConfirmDialog" v-if="dialogProps" v-bind="dialogProps" />
 </template>

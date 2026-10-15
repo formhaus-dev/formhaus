@@ -1,7 +1,7 @@
 import type { FormDefinition } from '../../src';
 import type { RendererHarness, TestKit } from './fixtures';
 
-const event: FormDefinition = {
+export const event: FormDefinition = {
   formatVersion: '1.1',
   id: 'event',
   title: '',
@@ -49,6 +49,13 @@ const team: FormDefinition = {
   ],
 };
 
+export const dialog = () => document.querySelector('dialog');
+
+export async function inDialog(screen: TestKit['screen'], text: string): Promise<HTMLButtonElement> {
+  const element = await screen.findByRole('dialog');
+  return [...element.querySelectorAll('button')].find((item) => item.textContent?.trim() === text) as HTMLButtonElement;
+}
+
 export function containerScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
   const button = (name: string) => screen.getByRole('button', { name }) as HTMLButtonElement;
   const names = () => screen.queryAllByRole('textbox', { name: /^Name/ }) as HTMLInputElement[];
@@ -82,8 +89,9 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
   it('removes an item, moves focus to the next item and announces it', async () => {
     harness.mount({ definition: event, initialValues: { people: [{ name: 'Ada' }, { name: 'Bo' }] }, onSubmit: () => {} });
     await harness.click(button('Remove Person 1'));
-    await harness.click(await screen.findByRole('button', { name: 'Remove' }));
+    await harness.click(await inDialog(screen, 'Remove Person 1'));
     await waitFor(() => expect(names().map((input) => input.value)).toEqual(['Bo']));
+    expect(dialog()).toBeNull();
     await waitFor(() => expect(active()?.textContent).toBe('Person 1'));
     expect(status()).toBe('Person 1 removed');
   });
@@ -91,7 +99,7 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
   it('moves focus to Add after the last item is removed', async () => {
     harness.mount({ definition: team, initialValues: { crew: [{ name: 'A' }, { name: 'B' }, { name: 'C' }] }, onSubmit: () => {} });
     await harness.click(button('Remove Crew 3'));
-    await harness.click(await screen.findByRole('button', { name: 'Remove' }));
+    await harness.click(await inDialog(screen, 'Remove Crew 3'));
     await waitFor(() => expect(active()).toBe(button('Add')));
   });
 
@@ -181,39 +189,9 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
     await waitFor(() => expect(names()).toHaveLength(2));
     await typeInto(() => names()[1], 'Bo');
     await harness.click(button('Remove Person 1'));
-    await harness.click(await screen.findByRole('button', { name: 'Remove' }));
+    await harness.click(await inDialog(screen, 'Remove Person 1'));
     await waitFor(() => expect(names()).toHaveLength(1));
     await typeInto(() => names()[0], 'Bob');
-  });
-
-  it('asks before removing a filled item and keeps it on Escape or Cancel', async () => {
-    harness.mount({ definition: event, initialValues: { people: [{ name: 'Ada' }, {}] }, onSubmit: () => {} });
-    await harness.click(button('Remove Person 1'));
-    const prompt = await waitFor(() => document.querySelector('.fh-group__prompt')!);
-    expect(prompt.textContent).toBe('Remove Person 1 and its answers?');
-    await waitFor(() => expect(active()).toBe(button('Remove')));
-    expect(status()).toBe('Remove Person 1 and its answers?');
-    active()!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
-    await waitFor(() => expect(prompt.isConnected).toBe(false));
-    await waitFor(() => expect(active()).toBe(button('Remove Person 1')));
-    await harness.click(button('Remove Person 1'));
-    await harness.click(await screen.findByRole('button', { name: 'Cancel' }));
-    await waitFor(() => expect(active()).toBe(button('Remove Person 1')));
-    expect(names().map((input) => input.value)).toEqual(['Ada', '']);
-    await harness.click(button('Remove Person 2'));
-    await waitFor(() => expect(names().map((input) => input.value)).toEqual(['Ada']));
-    expect(screen.queryByText(/and its answers/)).toBeNull();
-  });
-
-  it('removes filled items at once when confirmRemove is false', async () => {
-    harness.mount({
-      definition: event,
-      confirmRemove: false,
-      initialValues: { people: [{ name: 'Ada' }, { name: 'Bo' }] },
-      onSubmit: () => {},
-    });
-    await harness.click(button('Remove Person 1'));
-    await waitFor(() => expect(names().map((input) => input.value)).toEqual(['Bo']));
   });
 
   it('announces a second removal at the same position again', async () => {

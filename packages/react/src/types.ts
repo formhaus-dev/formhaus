@@ -1,4 +1,5 @@
 import type {
+  ConfirmDialogView,
   FieldOption,
   FieldType,
   FormAction,
@@ -38,6 +39,8 @@ export interface GroupItemComponentProps extends GroupItemView {
   children: ReactNode;
 }
 
+export type ConfirmDialogComponentProps = ConfirmDialogView;
+
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
   ItemComponent: ComponentType<GroupItemComponentProps>;
 }
@@ -49,6 +52,7 @@ export type FieldComponentMap = Partial<
     | ComponentType<SectionComponentProps>
     | ComponentType<GroupComponentProps>
     | ComponentType<GroupItemComponentProps>
+    | ComponentType<ConfirmDialogComponentProps>
   >
 >;
 

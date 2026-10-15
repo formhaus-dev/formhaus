@@ -2,6 +2,7 @@ import type {
   AfterStepChangeFn,
   BeforeStepChangeFn,
   BeforeSubmitFn,
+  ConfirmDialogView,
   DefinitionIssue,
   FieldOption,
   FieldType,
@@ -29,6 +30,8 @@ export type SectionComponentProps = SectionView;
 export interface GroupItemComponentProps extends GroupItemView {
   fields: Component;
 }
+
+export type ConfirmDialogComponentProps = ConfirmDialogView;
 
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
   itemComponent: Component;

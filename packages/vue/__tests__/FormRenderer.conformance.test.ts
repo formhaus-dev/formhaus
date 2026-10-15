@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { describe, expect, it, vi } from 'vitest';
 import type { RendererHarness, TestKit } from '../../core/__tests__/renderers/fixtures';
 import { containerScenarios } from '../../core/__tests__/renderers/containers.scenarios';
+import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
 import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
@@ -35,6 +36,10 @@ const containers = {
         h('button', { type: 'button', disabled: !props.canAdd, onClick: props.add }, 'More'),
       ]),
   }),
+  confirmDialog: defineComponent({
+    props: { title: String, confirm: Function as PropType<() => void> },
+    setup: (props) => () => h('div', [h('p', props.title), h('button', { type: 'button', onClick: props.confirm }, 'Yes')]),
+  }),
 };
 
 const harness: RendererHarness = {
@@ -64,5 +69,6 @@ describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
+describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
 describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));

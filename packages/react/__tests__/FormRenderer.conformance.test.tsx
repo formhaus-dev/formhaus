@@ -2,6 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { RendererHarness, ScenarioProps, TestKit } from '../../core/__tests__/renderers/fixtures';
 import { containerScenarios } from '../../core/__tests__/renderers/containers.scenarios';
+import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
 import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
@@ -10,7 +11,7 @@ import { optionScenarios } from '../../core/__tests__/renderers/options.scenario
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
-import type { GroupComponentProps, SectionComponentProps } from '../src/types';
+import type { ConfirmDialogComponentProps, GroupComponentProps, SectionComponentProps } from '../src/types';
 
 const containers = {
   section: ({ title, children }: SectionComponentProps) => (
@@ -34,6 +35,14 @@ const containers = {
       ))}
       <button type="button" disabled={!canAdd} onClick={add}>
         More
+      </button>
+    </div>
+  ),
+  confirmDialog: ({ title, confirm }: ConfirmDialogComponentProps) => (
+    <div>
+      <p>{title}</p>
+      <button type="button" onClick={confirm}>
+        Yes
       </button>
     </div>
   ),
@@ -72,5 +81,6 @@ describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
+describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
 describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
