@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { FormEngine, validateFieldValue, type FormField } from '../../src';
 import { validateSubmission } from '../../src/server';
 
@@ -32,14 +32,44 @@ describe('client type checks', () => {
     expect(validateFieldValue(field(type), value, {})).toBeNull();
   });
 
-  it.each(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'radio', 'switch', 'date', 'datetime', 'textarea'])('treats an empty list in a %s field as empty on the server', (type) => {
-    const options = [{ value: 'a', label: 'A' }];
-    const optional = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [field(type, { options })] };
-    expect(validateSubmission(optional, { x: [] }).errors).toEqual({});
-    expect(new FormEngine(optional, { x: [] }).validate()).toEqual({});
-    const required = { ...optional, fields: [field(type, { options, validation: { required: true } })] };
+  const scalar = (type: string, extra: Partial<FormField> = {}) => ({ id: 'f', title: 'F', submit: { label: 'Go' },
+    fields: [field(type, { options: [{ value: 'a', label: 'A' }], ...extra })] });
+
+  it.each(['text', 'email', 'phone', 'number', 'password', 'select', 'autocomplete', 'radio', 'checkbox', 'switch', 'date', 'datetime', 'textarea'])('drops an empty list in an optional %s field like a missing answer', (type) => {
+    const validator = vi.fn(() => 'bad');
+    expect(validateSubmission(scalar(type, { validation: { validator: 'check' } }), { x: [] }, { validators: { check: validator } })).toEqual({ values: {}, errors: {} });
+    expect(new FormEngine(scalar(type), { x: [] }).validate()).toEqual({});
+    expect(validator).not.toHaveBeenCalled();
+  });
+
+  it.each(['text', 'select', 'number', 'checkbox'])('fails an empty list in a required %s field as required', (type) => {
+    const required = scalar(type, { validation: { required: true } });
     expect(validateSubmission(required, { x: [] }).errors).toEqual({ x: 'This field is required' });
     expect(new FormEngine(required, { x: [] }).validate()).toEqual({ x: 'This field is required' });
+  });
+
+  it.each([
+    ['text', 'Must be text'],
+    ['select', 'Select one of the available options'],
+    ['number', 'Enter a number'],
+    ['checkbox', 'Must be true or false'],
+  ])('rejects non-empty lists and objects in a %s field', (type, message) => {
+    for (const value of [['a'], [[]], {}]) {
+      expect(validateSubmission(scalar(type), { x: value }).errors).toEqual({ x: message });
+      expect(new FormEngine(scalar(type), { x: value }).validate()).toEqual({ x: message });
+    }
+  });
+
+  it('does not let an empty list match a condition on the server', () => {
+    const definition = { id: 'f', title: 'F', submit: { label: 'Go' }, fields: [
+      field('text', { key: 'a' }),
+      field('text', { key: 'b', show: [{ field: 'a', notEmpty: true }], validation: { required: true } }),
+    ] };
+    expect(validateSubmission(definition, { a: [], b: 'x' })).toEqual({ values: {}, errors: {} });
+  });
+
+  it('keeps an empty list in a multiselect', () => {
+    expect(validateSubmission(scalar('multiselect'), { x: [] })).toEqual({ values: { x: [] }, errors: {} });
   });
 
   it('checks static options but not options loaded from a provider', () => {

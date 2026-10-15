@@ -148,7 +148,7 @@
       }
     },
     {
-      "name": "an empty array is blank for every type",
+      "name": "an empty array is a missing answer except in multiselect",
       "input": {
         "values": {
           "tags": [],
@@ -159,9 +159,7 @@
       },
       "expected": {
         "values": {
-          "tags": [],
-          "color": [],
-          "agree": []
+          "tags": []
         },
         "errors": {}
       }

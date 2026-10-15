@@ -219,8 +219,7 @@
       },
       "expected": {
         "values": {
-          "name": null,
-          "email": []
+          "name": null
         },
         "errors": {
           "name": "This field is required",

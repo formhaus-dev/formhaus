@@ -33,6 +33,7 @@ export function trimValue(field: FormField, value: unknown): unknown {
 }
 
 export function normalizeValue(field: FormField, input: unknown): unknown {
+  if (Array.isArray(input) && input.length === 0 && field.type !== 'multiselect' && BUILT_IN_TYPES.includes(field.type)) return undefined;
   const value = trimValue(field, input);
   if (field.type !== 'number' || typeof value !== 'string' || !DECIMAL.test(value)) return value;
   const parsed = Number(value);
@@ -73,12 +74,12 @@ function primitiveError(field: FormField, value: unknown, fail: Fail): string | 
   return stringError(field, value, 'value', fail);
 }
 
-function isBlank(value: unknown): boolean {
-  return value == null || value === '' || (Array.isArray(value) && !value.length);
+function isBlank(field: FormField, value: unknown): boolean {
+  return value == null || value === '' || (field.type === 'multiselect' && Array.isArray(value) && !value.length);
 }
 
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {
-  if (isBlank(value)) return null;
+  if (isBlank(field, value)) return null;
   const fail: Fail = (key, params = {}) => resolve(key, params, field);
   if (BOOLEAN_TYPES.includes(field.type)) return typeof value === 'boolean' ? null : fail('boolean');
   if (field.type === 'number') return typeof value === 'number' && Number.isFinite(value) ? null : fail('number');
