@@ -52,7 +52,7 @@ export default {
     'media-feature-range-notation': null,
     'color-hex-length': 'long',
     'value-keyword-case': ['lower', { camelCaseSvgKeywords: true, ignoreProperties: ['/^--/', 'font-family'] }],
-    'property-no-vendor-prefix': [true, { ignoreProperties: ['mask'] }],
+    'property-no-vendor-prefix': [true, { ignoreProperties: ['-webkit-mask'] }],
     'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
     'scale-unlimited/declaration-strict-value': tokenRule([...sizeProperties, ...colorProperties]),
   },

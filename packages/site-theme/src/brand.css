@@ -7,6 +7,32 @@
   --vp-c-brand-2: #6a24ff;
   --vp-c-brand-3: #5502fb;
   --vp-c-brand-soft: rgba(85, 2, 251, 0.1);
+  --fh-c-card-shadow: rgba(0, 0, 0, 0.04);
+  --fh-site-space-1: 4px;
+  --fh-site-space-1-5: 6px;
+  --fh-site-space-2: 8px;
+  --fh-site-space-2-5: 10px;
+  --fh-site-space-3: 12px;
+  --fh-site-space-4: 16px;
+  --fh-site-space-5: 20px;
+  --fh-site-space-5-5: 22px;
+  --fh-site-space-6: 24px;
+  --fh-site-space-7: 28px;
+  --fh-site-space-8: 32px;
+  --fh-site-space-10: 40px;
+  --fh-site-space-12: 48px;
+  --fh-site-space-16: 64px;
+  --fh-site-space-24: 96px;
+  --fh-site-font-size-xs: 13px;
+  --fh-site-font-size-sm: 14px;
+  --fh-site-font-size-md: 15px;
+  --fh-site-font-size-base: 16px;
+  --fh-site-font-size-lg: 17px;
+  --fh-site-font-size-xl: 18px;
+  --fh-site-font-size-2xl: 19px;
+  --fh-site-font-size-3xl: 20px;
+  --fh-site-font-size-display-sm: 32px;
+  --fh-site-font-size-display: 40px;
 }
 
 .dark {
@@ -46,16 +72,16 @@
 
 @media (max-width: 767px) {
   .Layout.lp-page .VPNavBar .wrapper {
-    padding: 0 0 0 16px;
+    padding: 0 0 0 var(--fh-site-space-4);
   }
 
   .Layout.lp-page .VPDoc {
-    padding-inline: 16px;
+    padding-inline: var(--fh-site-space-4);
   }
 }
 
 @media (max-width: 639px) {
   .Layout.lp-page .vp-doc div[class*='language-'] {
-    margin-inline: -16px;
+    margin-inline: calc(-1 * var(--fh-site-space-4));
   }
 }
