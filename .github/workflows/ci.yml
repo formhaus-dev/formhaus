@@ -46,6 +46,7 @@ jobs:
 
       - run: pnpm check:types
       - run: pnpm check:bundle-size
+      - run: pnpm check:duplicates
       - run: pnpm check:source-size
       - run: pnpm check:builder-isolation
       - run: pnpm check:migration
