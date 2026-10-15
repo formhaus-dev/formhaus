@@ -27,8 +27,8 @@ Create a waitlist form with an email field and publish it.
 
 | Way | Snippet |
 |---|---|
-| Hosted link | `https://f.formhaus.dev/{form_id}` |
-| Embed | `<script src="https://f.formhaus.dev/embed.js" data-form="{form_id}" async></script>` |
+| Hosted link | `https://formhaus.cc/{form_id}` |
+| Embed | `<script src="https://formhaus.cc/embed.js" data-form="{form_id}" async></script>` |
 | React | `import { FormhausForm } from '@formhaus/react/cloud'` and `<FormhausForm id="{form_id}" />` |
 | Vue | `import { FormhausForm } from '@formhaus/vue/cloud'` and `<FormhausForm id="{form_id}" />` |
 | POST JSON | `POST https://api.formhaus.dev/f/{form_id}` with `{ "values": {...}, "skippedSteps": [] }` |
