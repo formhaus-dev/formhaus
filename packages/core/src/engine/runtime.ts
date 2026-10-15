@@ -5,7 +5,7 @@ import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-
 import { createValues, shownError } from './engine-utils';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineInternals, EngineState, RuntimeNotifyOptions } from './runtime-internals';
-import { createSubscriptions, type NotifyOptions } from './subscriptions';
+import { createSubscriptions } from './subscriptions';
 import {
   applyValidationErrors,
   getSubmitValues,

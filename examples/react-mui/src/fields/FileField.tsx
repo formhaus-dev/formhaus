@@ -10,7 +10,9 @@ export function FileField({ id, field, error, loading, disabled, onChange }: Fie
 
   return (
     <div style={{ marginTop: 16, marginBottom: 8 }}>
-      <label style={{ display: 'block', marginBottom: 4, fontSize: 14, color: 'rgba(0,0,0,0.6)' }}>{field.label}</label>
+      <label htmlFor={id} style={{ display: 'block', marginBottom: 4, fontSize: 14, color: 'rgba(0,0,0,0.6)' }}>
+        {field.label}
+      </label>
       <Button variant="outlined" component="label" disabled={disabled || loading}>
         Choose file
         <input id={id} type="file" accept={field.accept} hidden onChange={handleChange} />

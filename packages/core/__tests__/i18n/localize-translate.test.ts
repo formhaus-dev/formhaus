@@ -85,7 +85,7 @@ describe('localize with a translate function', () => {
   });
 
   it('fills {name} placeholders left in a result, such as an overlay loaded into i18next', () => {
-    const raw: TranslateFn = (key, params, fallback) =>
+    const raw: TranslateFn = (key, _params, fallback) =>
       ({
         'signup.labels.stepOf': 'Шаг {current} из {total}',
         'signup.messages.minLength': 'Минимум {min}',

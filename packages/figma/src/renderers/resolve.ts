@@ -45,9 +45,7 @@ export function instantiate(component: ComponentNode, binding?: Binding): Instan
   for (const [key, value] of Object.entries(binding?.properties ?? {})) {
     try {
       instance.setProperties({ [key]: value });
-    } catch {
-      continue;
-    }
+    } catch {}
   }
   return instance;
 }

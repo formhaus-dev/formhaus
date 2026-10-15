@@ -9,7 +9,6 @@ import type {
   FormAnalyticsEvent,
   FormField,
   FormDefinition,
-  FormEngineOptions,
   LabelSource,
   MessageFn,
   MessageKey,
@@ -88,8 +87,6 @@ export interface FormRendererProps {
   progressComponent?: Component;
   optionsProviders?: Record<string, OptionsProvider>;
 }
-
-type EngineOptionKeys = Pick<FormRendererProps, keyof FormEngineOptions>;
 
 export interface FormRendererEmits {
   (e: 'cancel'): void;

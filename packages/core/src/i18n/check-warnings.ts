@@ -38,7 +38,9 @@ export function i18nWarnings({ definition, entries }: CheckContext): DefinitionI
   });
   for (const { field, path } of entries) {
     node(field as unknown as Node, path, SLOTS.field, 'key');
-    field.options?.forEach((option, index) => node(option as unknown as Node, `${path}/options/${index}`, SLOTS.option, 'value'));
+    field.options?.forEach((option, index) => {
+      node(option as unknown as Node, `${path}/options/${index}`, SLOTS.option, 'value');
+    });
     const rules = field.validation as Node;
     if (rules)
       node(

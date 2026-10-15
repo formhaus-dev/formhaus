@@ -3,7 +3,7 @@ export { Banner } from './components/Banner/Banner';
 export { Button } from './components/Button/Button';
 export { Checkbox } from './components/Checkbox/Checkbox';
 export { CommandList } from './components/CommandList/CommandList';
-export { type CommandItem } from './components/CommandList/useCommandList';
+export type { CommandItem } from './components/CommandList/useCommandList';
 export { ConfirmDialog } from './components/ConfirmDialog/ConfirmDialog';
 export { Dialog, DialogClose } from './components/Dialog/Dialog';
 export {
