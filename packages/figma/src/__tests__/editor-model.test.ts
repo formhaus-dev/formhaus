@@ -1,11 +1,24 @@
 import type { FormDefinition } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
 import {
-  addField, addOption, addStep, keyFromLabel, moveField, removeField, removeStep, renameField, renameOption, setRequired, setType, steps,
+  addField,
+  addOption,
+  addStep,
+  keyFromLabel,
+  moveField,
+  removeField,
+  removeStep,
+  renameField,
+  renameOption,
+  setRequired,
+  setType,
+  steps,
 } from '../ui/editor/model';
 
 const form = (): FormDefinition => ({
-  id: 'f', title: 'Sign up', submit: { label: 'Go' },
+  id: 'f',
+  title: 'Sign up',
+  submit: { label: 'Go' },
   fields: [
     { key: 'email', type: 'email', label: 'Email', validation: { required: true, pattern: '@' } },
     { key: 'plan', type: 'radio', label: 'Plan', options: [{ value: 'pro', label: 'Pro' }] },
@@ -113,7 +126,10 @@ describe('steps', () => {
     const draft = form();
     addStep(draft);
     expect(draft.fields).toBeUndefined();
-    expect(steps(draft).map((step) => [step.id, step.fields.length])).toEqual([['step-1', 2], ['step-2', 0]]);
+    expect(steps(draft).map((step) => [step.id, step.fields.length])).toEqual([
+      ['step-1', 2],
+      ['step-2', 0],
+    ]);
     moveField(draft, [0, 0], [1, 0]);
     expect(steps(draft)[1].fields[0].key).toBe('email');
     removeStep(draft, 0);

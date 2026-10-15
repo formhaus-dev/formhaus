@@ -9,7 +9,12 @@ import { readBackup, writeBackup } from '../store/backup';
 import { confirmLeave, hasUnsavedChanges } from '../store/leave';
 
 const Preview = () => null;
-const definition: FormDefinition = { id: 'contact', title: 'Contact', submit: { label: 'Send' }, fields: [{ key: 'email', type: 'email', label: 'Email' }] };
+const definition: FormDefinition = {
+  id: 'contact',
+  title: 'Contact',
+  submit: { label: 'Send' },
+  fields: [{ key: 'email', type: 'email', label: 'Email' }],
+};
 const carried: FormDefinition = { ...definition, fields: [{ key: 'email', type: 'email', label: 'Work email' }] };
 
 function failingStorage(): Storage {

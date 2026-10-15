@@ -3,7 +3,12 @@ import type { FormDefinition } from '@formhaus/core';
 import { afterEach, expect, it, vi } from 'vitest';
 import { FormhausForm } from '../src/cloud';
 
-const definition: FormDefinition = { id: 'contact', title: 'Contact', submit: { label: 'Send' }, fields: [{ key: 'email', type: 'text', label: 'Email' }] };
+const definition: FormDefinition = {
+  id: 'contact',
+  title: 'Contact',
+  submit: { label: 'Send' },
+  fields: [{ key: 'email', type: 'text', label: 'Email' }],
+};
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -41,7 +46,9 @@ it('keeps its own success handling when success is passed', async () => {
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 201, json: async () => ({ id: 's1', values: {} }) }));
   const assign = vi.fn();
   vi.stubGlobal('location', { ...window.location, assign });
-  render(<FormhausForm id="abc" initialForm={{ definition, settings: { redirectUrl: 'https://example.com/thanks' } }} success={<p>Mine</p>} />);
+  render(
+    <FormhausForm id="abc" initialForm={{ definition, settings: { redirectUrl: 'https://example.com/thanks' } }} success={<p>Mine</p>} />,
+  );
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   expect(await screen.findByText('Mine')).toBeDefined();
   expect(assign).not.toHaveBeenCalled();

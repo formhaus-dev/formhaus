@@ -1,7 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import {
-  addField, addStep, createForm, duplicateField, fromDefinition, isPage, moveField, moveFieldTo, moveStep,
-  referencesTo, removeField, removeStep, splitAt, stepFields, stepNumber, toDefinition, type BuilderForm,
+  addField,
+  addStep,
+  createForm,
+  duplicateField,
+  fromDefinition,
+  isPage,
+  moveField,
+  moveFieldTo,
+  moveStep,
+  referencesTo,
+  removeField,
+  removeStep,
+  splitAt,
+  stepFields,
+  stepNumber,
+  toDefinition,
+  type BuilderForm,
 } from '../src';
 import { template } from './fixtures';
 

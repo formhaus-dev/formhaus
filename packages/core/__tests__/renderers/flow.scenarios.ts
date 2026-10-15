@@ -7,7 +7,12 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
   const marks = () => [...document.querySelectorAll('.fh-step-progress__step')];
 
   it('marks steps with errors and the current step', async () => {
-    harness.mount({ definition: wizard, initialValues: filled, stepErrorMarks: true, onSubmit: () => ({ ok: false, errors: { name: 'Taken', plan: 'Sold out' } }) });
+    harness.mount({
+      definition: wizard,
+      initialValues: filled,
+      stepErrorMarks: true,
+      onSubmit: () => ({ ok: false, errors: { name: 'Taken', plan: 'Sold out' } }),
+    });
     await harness.click(button('Continue'));
     await harness.click(await screen.findByRole('button', { name: 'Continue' }));
     await screen.findByRole('heading', { name: 'Three' });
@@ -45,9 +50,9 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Three' });
     await harness.click(button('Send'));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ name: 'Ada', city: 'Oslo' }, ['two']));
-    expect(onAnalyticsEvent.mock.calls.map(([event]) => (event as FormAnalyticsEvent).type).filter((type) => !type.startsWith('field_'))).toEqual([
-      'step_completed', 'step_viewed', 'step_skipped', 'step_viewed', 'step_skipped', 'step_viewed', 'form_submitted',
-    ]);
+    expect(
+      onAnalyticsEvent.mock.calls.map(([event]) => (event as FormAnalyticsEvent).type).filter((type) => !type.startsWith('field_')),
+    ).toEqual(['step_completed', 'step_viewed', 'step_skipped', 'step_viewed', 'step_skipped', 'step_viewed', 'form_submitted']);
   });
 
   it('shows the busy state while a submission is pending', async () => {
@@ -58,7 +63,11 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Three' });
     await harness.click(button('Send'));
     await waitFor(() => expect(form().getAttribute('aria-busy')).toBe('true'));
-    expect([button('Send').disabled, button('Back').disabled, (screen.getByRole('textbox', { name: /City/ }) as HTMLInputElement).disabled]).toEqual([true, true, true]);
+    expect([
+      button('Send').disabled,
+      button('Back').disabled,
+      (screen.getByRole('textbox', { name: /City/ }) as HTMLInputElement).disabled,
+    ]).toEqual([true, true, true]);
     expect(button('Send').getAttribute('aria-busy')).toBe('true');
     response.resolve({ ok: false, errors: { city: 'Unknown' } });
     await screen.findByText('Unknown');
@@ -95,7 +104,13 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
   it('reports analytics events with their details', async () => {
     const onAnalyticsEvent = fn();
     const onFieldChange = fn();
-    harness.mount({ definition: wizard, initialValues: { plan: 'a', city: 'Oslo' }, onSubmit: () => ({ ok: false, errors: { city: 'Unknown' } }), onAnalyticsEvent, onFieldChange });
+    harness.mount({
+      definition: wizard,
+      initialValues: { plan: 'a', city: 'Oslo' },
+      onSubmit: () => ({ ok: false, errors: { city: 'Unknown' } }),
+      onAnalyticsEvent,
+      onFieldChange,
+    });
     await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
     expect(onFieldChange).toHaveBeenCalledWith('name', 'Ada', expect.objectContaining({ name: 'Ada' }));
     await harness.click(button('Continue'));
@@ -103,10 +118,17 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Three' });
     await harness.click(button('Send'));
     await screen.findByText('Unknown');
-    expect(onAnalyticsEvent.mock.calls.map(([event]) => event).filter((event) => !['field_focused', 'field_blurred'].includes((event as FormAnalyticsEvent).type))).toEqual([
-      { type: 'step_completed', stepId: 'one' }, { type: 'step_viewed', stepId: 'two', stepIndex: 1 },
-      { type: 'step_completed', stepId: 'two' }, { type: 'step_viewed', stepId: 'three', stepIndex: 2 },
-      { type: 'form_submitted', fieldCount: 3 }, { type: 'field_error', fieldKey: 'city', error: 'Unknown' },
+    expect(
+      onAnalyticsEvent.mock.calls
+        .map(([event]) => event)
+        .filter((event) => !['field_focused', 'field_blurred'].includes((event as FormAnalyticsEvent).type)),
+    ).toEqual([
+      { type: 'step_completed', stepId: 'one' },
+      { type: 'step_viewed', stepId: 'two', stepIndex: 1 },
+      { type: 'step_completed', stepId: 'two' },
+      { type: 'step_viewed', stepId: 'three', stepIndex: 2 },
+      { type: 'form_submitted', fieldCount: 3 },
+      { type: 'field_error', fieldKey: 'city', error: 'Unknown' },
     ]);
   });
 

@@ -58,5 +58,8 @@ export async function perform(engine: FormEngine, action: SimulationAction): Pro
   const errors = action === 'back' ? {} : { ...engine.errors };
   if (Object.keys(errors).length > 0) return { ...entry, errors };
   const atEdge = action === 'back' ? engine.isFirstStep : engine.isLastStep;
-  return { ...entry, reason: atEdge ? `No ${action === 'back' ? 'previous' : 'next'} step on the active path.` : 'Navigation did not change the step.' };
+  return {
+    ...entry,
+    reason: atEdge ? `No ${action === 'back' ? 'previous' : 'next'} step on the active path.` : 'Navigation did not change the step.',
+  };
 }

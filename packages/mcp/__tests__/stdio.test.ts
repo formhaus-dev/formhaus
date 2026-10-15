@@ -20,7 +20,19 @@ describe('formhaus-mcp over stdio', () => {
 
   it('lists tools and resources', async () => {
     const { tools } = await client.listTools();
-    expect(tools.map(({ name }) => name).sort()).toEqual(['capabilities', 'example_definitions', 'get_submissions', 'get_webhook', 'list_forms', 'publish_form', 'reveal_webhook_secret', 'simulate_path', 'translation_template', 'update_form_settings', 'validate_definition']);
+    expect(tools.map(({ name }) => name).sort()).toEqual([
+      'capabilities',
+      'example_definitions',
+      'get_submissions',
+      'get_webhook',
+      'list_forms',
+      'publish_form',
+      'reveal_webhook_secret',
+      'simulate_path',
+      'translation_template',
+      'update_form_settings',
+      'validate_definition',
+    ]);
     const { resources } = await client.listResources();
     expect(resources.map(({ uri }) => uri)).toEqual(['formhaus://capabilities', 'formhaus://migrate/0.11']);
     const { contents } = await client.readResource({ uri: 'formhaus://migrate/0.11' });
@@ -40,7 +52,10 @@ describe('formhaus-mcp over stdio', () => {
   });
 
   it('calls simulate_path', async () => {
-    const result = await client.callTool({ name: 'simulate_path', arguments: { definition: linear, answers: { name: 'Ada', email: 'a@b.co' } } });
+    const result = await client.callTool({
+      name: 'simulate_path',
+      arguments: { definition: linear, answers: { name: 'Ada', email: 'a@b.co' } },
+    });
     const [content] = result.content as { type: string; text: string }[];
     expect(JSON.parse(content.text)).toMatchObject({ ok: true, wouldSubmit: true });
   });

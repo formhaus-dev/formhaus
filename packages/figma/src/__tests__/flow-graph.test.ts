@@ -5,12 +5,36 @@ import { flowPositions, labelWidth } from '../flow/layout';
 import { matchFrames } from '../render-form';
 
 const quiz: FormDefinition = {
-  id: 'quiz', title: 'Quiz', submit: { label: 'Done' },
+  id: 'quiz',
+  title: 'Quiz',
+  submit: { label: 'Done' },
   steps: [
-    { id: 'goal', title: 'Goal', fields: [{ key: 'goal', type: 'radio', label: 'What do you need?', options: [{ value: 'leads', label: 'Collect leads' }, { value: 'survey', label: 'Run surveys' }] }],
-      routes: [{ to: 'leads', show: [{ field: 'goal', eq: 'leads' }] }, { to: 'survey', show: [{ field: 'goal', eq: 'survey' }] }] },
+    {
+      id: 'goal',
+      title: 'Goal',
+      fields: [
+        {
+          key: 'goal',
+          type: 'radio',
+          label: 'What do you need?',
+          options: [
+            { value: 'leads', label: 'Collect leads' },
+            { value: 'survey', label: 'Run surveys' },
+          ],
+        },
+      ],
+      routes: [
+        { to: 'leads', show: [{ field: 'goal', eq: 'leads' }] },
+        { to: 'survey', show: [{ field: 'goal', eq: 'survey' }] },
+      ],
+    },
     { id: 'leads', title: 'Leads', fields: [{ key: 'volume', type: 'number', label: 'Leads a month' }], routes: [{ to: 'contact' }] },
-    { id: 'survey', title: 'Survey', fields: [{ key: 'size', type: 'number', label: 'Respondents' }], routes: [{ to: null, show: [{ field: 'size', notEmpty: true }] }] },
+    {
+      id: 'survey',
+      title: 'Survey',
+      fields: [{ key: 'size', type: 'number', label: 'Respondents' }],
+      routes: [{ to: null, show: [{ field: 'size', notEmpty: true }] }],
+    },
     { id: 'contact', title: 'Contact', fields: [{ key: 'email', type: 'email', label: 'Email' }] },
   ],
 };
@@ -30,21 +54,47 @@ describe('buildGraph', () => {
   });
 
   it('places each step one column after its deepest predecessor', () => {
-    expect([...buildGraph(quiz).depth]).toEqual([['goal', 0], ['leads', 1], ['survey', 1], ['contact', 2]]);
+    expect([...buildGraph(quiz).depth]).toEqual([
+      ['goal', 0],
+      ['leads', 1],
+      ['survey', 1],
+      ['contact', 2],
+    ]);
   });
 
   it('keeps linear forms in a single chain without branching', () => {
-    const linear = buildGraph({ id: 'l', title: 'L', submit: { label: 'Go' }, steps: [{ id: 'a', title: 'A', fields: [] }, { id: 'b', title: 'B', fields: [] }] });
+    const linear = buildGraph({
+      id: 'l',
+      title: 'L',
+      submit: { label: 'Go' },
+      steps: [
+        { id: 'a', title: 'A', fields: [] },
+        { id: 'b', title: 'B', fields: [] },
+      ],
+    });
     expect(linear.branching).toBe(false);
-    expect([...linear.depth]).toEqual([['a', 0], ['b', 1]]);
+    expect([...linear.depth]).toEqual([
+      ['a', 0],
+      ['b', 1],
+    ]);
   });
 
   it('skips routes core never takes', () => {
-    const graph = buildGraph({ id: 'r', title: 'R', submit: { label: 'Go' }, steps: [
-      { id: 'a', title: 'A', fields: [], routes: [{ to: 'a' }, { to: 'c', show: [{ field: 'x' }] }, { to: 'b', show: [{ field: 'x', eq: 1 }] }] },
-      { id: 'b', title: 'B', fields: [] },
-      { id: 'c', title: 'C', fields: [] },
-    ] });
+    const graph = buildGraph({
+      id: 'r',
+      title: 'R',
+      submit: { label: 'Go' },
+      steps: [
+        {
+          id: 'a',
+          title: 'A',
+          fields: [],
+          routes: [{ to: 'a' }, { to: 'c', show: [{ field: 'x' }] }, { to: 'b', show: [{ field: 'x', eq: 1 }] }],
+        },
+        { id: 'b', title: 'B', fields: [] },
+        { id: 'c', title: 'C', fields: [] },
+      ],
+    });
     expect(graph.edges.filter((edge) => edge.from === 'a')).toEqual([{ from: 'a', to: 'c', label: '' }]);
   });
 

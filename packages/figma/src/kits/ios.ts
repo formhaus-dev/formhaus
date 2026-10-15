@@ -21,7 +21,11 @@ const C = {
 
 function caption(root: ComponentNode, fonts: KitFonts, characters: string, name: string): { row: FrameNode; node: TextNode } {
   const row = stack('HORIZONTAL', name, { paddingLeft: 16, paddingRight: 16 });
-  const node = text(characters, { font: fonts.regular, size: 13, color: C.secondary, opacity: 0.6 }, name === 'Header' ? 'Label' : 'Helper');
+  const node = text(
+    characters,
+    { font: fonts.regular, size: 13, color: C.secondary, opacity: 0.6 },
+    name === 'Header' ? 'Label' : 'Helper',
+  );
   row.appendChild(node);
   root.appendChild(row);
   fill(row);
@@ -89,7 +93,17 @@ function toggle(): FrameNode {
   thumb.y = 2;
   thumb.cornerRadius = 12;
   thumb.fills = solid(C.cell);
-  thumb.effects = [{ type: 'DROP_SHADOW', color: { r: 0, g: 0, b: 0, a: 0.12 }, offset: { x: 0, y: 2 }, radius: 6, spread: 0, visible: true, blendMode: 'NORMAL' }];
+  thumb.effects = [
+    {
+      type: 'DROP_SHADOW',
+      color: { r: 0, g: 0, b: 0, a: 0.12 },
+      offset: { x: 0, y: 2 },
+      radius: 6,
+      spread: 0,
+      visible: true,
+      blendMode: 'NORMAL',
+    },
+  ];
   track.appendChild(thumb);
   return track;
 }
@@ -98,7 +112,9 @@ function controlCell(fonts: KitFonts, trailing: (() => SceneNode) | null, standa
   return (root: ComponentNode) => {
     fixedWidth(root, WIDTH, 44);
     root.itemSpacing = 6;
-    const row = standalone ? cell('Container') : stack('HORIZONTAL', 'Row', { paddingLeft: 16, paddingRight: 16, itemSpacing: 12, counterAxisAlignItems: 'CENTER' });
+    const row = standalone
+      ? cell('Container')
+      : stack('HORIZONTAL', 'Row', { paddingLeft: 16, paddingRight: 16, itemSpacing: 12, counterAxisAlignItems: 'CENTER' });
     const label = text('Label', { font: fonts.regular, size: 17, color: C.label }, 'Label');
     row.appendChild(label);
     if (trailing) row.appendChild(trailing());
@@ -129,7 +145,11 @@ function button(fonts: KitFonts, kind: ButtonKind) {
   return (root: ComponentNode) => {
     root.cornerRadius = 26;
     root.fills = kind === 'primary' ? solid(C.blue) : kind === 'secondary' ? solid(C.gray, 0.16) : [];
-    const label = text('Button', { font: kind === 'text' ? fonts.regular : fonts.semibold, size: 17, color: kind === 'primary' ? C.cell : C.blue }, 'Label');
+    const label = text(
+      'Button',
+      { font: kind === 'text' ? fonts.regular : fonts.semibold, size: 17, color: kind === 'primary' ? C.cell : C.blue },
+      'Label',
+    );
     buttonShell(root, label, WIDTH, 52);
   };
 }

@@ -24,11 +24,17 @@ describe('step buttons in Figma', () => {
 
   it('hides false actions and honours an explicit variant', () => {
     expect(stepButtons(definition(), { next: false, back: false }, at(false, false))).toEqual([]);
-    expect(stepButtons(definition(), { back: { label: 'Back', variant: 'text' } }, at(false, false))[1]).toEqual({ label: 'Back', kind: 'text', action: 'back' });
+    expect(stepButtons(definition(), { back: { label: 'Back', variant: 'text' } }, at(false, false))[1]).toEqual({
+      label: 'Back',
+      kind: 'text',
+      action: 'back',
+    });
   });
 
   it('ignores skip on a single-step form', () => {
-    expect(stepButtons(definition(), { skip: { label: 'Skip' } }, { isFirst: true, isLast: true, isMultiStep: false })).toEqual([{ label: 'Finish', kind: 'primary', action: 'submit' }]);
+    expect(stepButtons(definition(), { skip: { label: 'Skip' } }, { isFirst: true, isLast: true, isMultiStep: false })).toEqual([
+      { label: 'Finish', kind: 'primary', action: 'submit' },
+    ]);
   });
 });
 

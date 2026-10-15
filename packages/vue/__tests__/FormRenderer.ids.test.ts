@@ -4,11 +4,24 @@ import { defineComponent, h } from 'vue';
 import { expect, it } from 'vitest';
 import FormRenderer from '../src/FormRenderer.vue';
 
-const definition: FormDefinition = { id: 'ids', title: '', submit: { label: 'Send' }, fields: [
-  { key: 'email', type: 'email', label: 'Email', helperText: 'Work email' },
-  { key: 'address.city name', type: 'text', label: 'City' },
-  { key: 'plan', type: 'radio', label: 'Plan', options: [{ value: 'a b', label: 'A' }, { value: 'c', label: 'C' }] },
-] };
+const definition: FormDefinition = {
+  id: 'ids',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'email', type: 'email', label: 'Email', helperText: 'Work email' },
+    { key: 'address.city name', type: 'text', label: 'City' },
+    {
+      key: 'plan',
+      type: 'radio',
+      label: 'Plan',
+      options: [
+        { value: 'a b', label: 'A' },
+        { value: 'c', label: 'C' },
+      ],
+    },
+  ],
+};
 
 it('gives every form its own field ids and keeps the key as name', () => {
   render(defineComponent({ setup: () => () => [h(FormRenderer, { definition }), h(FormRenderer, { definition })] }));

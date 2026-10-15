@@ -4,10 +4,18 @@ import { multiStepDefinition } from './form-engine-steps.fixtures';
 
 it.each(['step', 'submit'])('discards rejected stale %s guards', async (action) => {
   let reject!: (error: Error) => void;
-  const wait = () => new Promise<void>((_resolve, fail) => { reject = fail; });
-  const engine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
-    onBeforeStepChange: wait, onBeforeSubmit: wait,
-  });
+  const wait = () =>
+    new Promise<void>((_resolve, fail) => {
+      reject = fail;
+    });
+  const engine = new FormEngine(
+    multiStepDefinition,
+    { name: 'Ada' },
+    {
+      onBeforeStepChange: wait,
+      onBeforeSubmit: wait,
+    },
+  );
   const pending = action === 'step' ? engine.next() : engine.submit(() => {});
   engine.cancelPendingActions();
   reject(new Error('Old failure'));
@@ -19,10 +27,21 @@ it.each(['step', 'submit'])('discards rejected stale %s guards', async (action) 
 it('uses the original callbacks for an already dispatched submission', async () => {
   let resolve!: () => void;
   const calls: string[] = [];
-  const options = { onAfterSubmit: () => { calls.push('A'); } };
+  const options = {
+    onAfterSubmit: () => {
+      calls.push('A');
+    },
+  };
   const engine = new FormEngine(multiStepDefinition, { name: 'Ada' }, options);
-  const pending = engine.submit(() => new Promise<void>((done) => { resolve = done; }));
-  options.onAfterSubmit = () => { calls.push('B'); };
+  const pending = engine.submit(
+    () =>
+      new Promise<void>((done) => {
+        resolve = done;
+      }),
+  );
+  options.onAfterSubmit = () => {
+    calls.push('B');
+  };
   resolve();
   expect(await pending).toBe(true);
   expect(calls).toEqual(['A']);
@@ -32,7 +51,9 @@ it('locks submission before notifying validation subscribers', async () => {
   let calls = 0;
   let attempted = false;
   const engine = new FormEngine(multiStepDefinition, { name: 'Ada' });
-  const send = () => { calls++; };
+  const send = () => {
+    calls++;
+  };
   engine.subscribe(() => {
     if (attempted) return;
     attempted = true;
@@ -44,21 +65,39 @@ it('locks submission before notifying validation subscribers', async () => {
 
 it('keeps values written by before-hooks in the action', async () => {
   let submitted: Record<string, unknown> | undefined;
-  const engine: FormEngine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
-    onBeforeStepChange: async () => { engine.setValue('company', 'lead-1'); },
-    onBeforeSubmit: async () => { engine.setValue('method', 'bank'); },
-  });
+  const engine: FormEngine = new FormEngine(
+    multiStepDefinition,
+    { name: 'Ada' },
+    {
+      onBeforeStepChange: async () => {
+        engine.setValue('company', 'lead-1');
+      },
+      onBeforeSubmit: async () => {
+        engine.setValue('method', 'bank');
+      },
+    },
+  );
   expect(await engine.next()).toBe(true);
   expect(engine.currentStep?.id).toBe('payment');
-  expect(await engine.submit((values) => { submitted = values; })).toBe(true);
+  expect(
+    await engine.submit((values) => {
+      submitted = values;
+    }),
+  ).toBe(true);
   expect(submitted).toMatchObject({ name: 'Ada', method: 'bank' });
 });
 
 it('discards a submission when a checked value changes during its before-hook', async () => {
   const send = vi.fn();
-  const engine: FormEngine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
-    onBeforeSubmit: () => { engine.setValue('name', 'Grace'); },
-  });
+  const engine: FormEngine = new FormEngine(
+    multiStepDefinition,
+    { name: 'Ada' },
+    {
+      onBeforeSubmit: () => {
+        engine.setValue('name', 'Grace');
+      },
+    },
+  );
   expect(await engine.submit(send)).toBe(false);
   expect(send).not.toHaveBeenCalled();
 });
@@ -66,9 +105,15 @@ it('discards a submission when a checked value changes during its before-hook', 
 it('does not dispatch when a listener resets the form during final validation', async () => {
   const send = vi.fn();
   let armed = false;
-  const engine: FormEngine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
-    onBeforeSubmit: () => { armed = true; },
-  });
+  const engine: FormEngine = new FormEngine(
+    multiStepDefinition,
+    { name: 'Ada' },
+    {
+      onBeforeSubmit: () => {
+        armed = true;
+      },
+    },
+  );
   engine.subscribe(() => {
     if (!armed) return;
     armed = false;
@@ -80,9 +125,16 @@ it('does not dispatch when a listener resets the form during final validation', 
 
 it('does not let a pending server check approve a different answer', async () => {
   let approve!: () => void;
-  const engine = new FormEngine(multiStepDefinition, { name: 'allowed' }, {
-    onStepValidate: () => new Promise<void>((done) => { approve = done; }),
-  });
+  const engine = new FormEngine(
+    multiStepDefinition,
+    { name: 'allowed' },
+    {
+      onStepValidate: () =>
+        new Promise<void>((done) => {
+          approve = done;
+        }),
+    },
+  );
   const pending = engine.next();
   engine.setValue('name', 'blocked');
   approve();
@@ -93,9 +145,16 @@ it('does not let a pending server check approve a different answer', async () =>
 it('discards a pending submission when the active path changes', async () => {
   let allow!: () => void;
   const send = vi.fn();
-  const engine = new FormEngine(multiStepDefinition, { name: 'Ada' }, {
-    onBeforeSubmit: () => new Promise<void>((done) => { allow = done; }),
-  });
+  const engine = new FormEngine(
+    multiStepDefinition,
+    { name: 'Ada' },
+    {
+      onBeforeSubmit: () =>
+        new Promise<void>((done) => {
+          allow = done;
+        }),
+    },
+  );
   const pending = engine.submit(send);
   engine.setValue('accountType', 'business');
   allow();

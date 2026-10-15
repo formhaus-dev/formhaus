@@ -1,6 +1,25 @@
 export type MessageKey =
-  | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
-  | 'email' | 'number' | 'date' | 'datetime' | 'time' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value' | 'hidden';
+  | 'required'
+  | 'minLength'
+  | 'maxLength'
+  | 'minItems'
+  | 'maxItems'
+  | 'min'
+  | 'max'
+  | 'pattern'
+  | 'matchField'
+  | 'email'
+  | 'number'
+  | 'date'
+  | 'datetime'
+  | 'time'
+  | 'option'
+  | 'options'
+  | 'boolean'
+  | 'string'
+  | 'file'
+  | 'value'
+  | 'hidden';
 
 export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary';
 

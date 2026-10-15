@@ -45,6 +45,6 @@ export const deps: Record<string, string> = {
   '@mui/material': '6.4.0',
   '@emotion/react': '11.14.0',
   '@emotion/styled': '11.14.0',
-  'react': '18.3.1',
+  react: '18.3.1',
   'react-dom': '18.3.1',
 };

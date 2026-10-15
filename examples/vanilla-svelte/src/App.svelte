@@ -1,56 +1,56 @@
 <script>
-  import { FormEngine } from "@formhaus/core";
-  import definition from "./definition.json";
+import { FormEngine } from '@formhaus/core';
+import definition from './definition.json';
 
-  const STEP_SEPARATOR = ' \u2014 ';
+const STEP_SEPARATOR = ' \u2014 ';
 
-  const engine = new FormEngine(definition);
+const engine = new FormEngine(definition);
 
-  let fields = engine.visibleFields.slice();
-  let values = Object.assign({}, engine.values);
-  let errors = Object.assign({}, engine.errors);
-  let topLevelErrors = engine.topLevelErrors.slice();
-  let isMultiStep = engine.isMultiStep;
-  let currentStep = engine.currentStep;
-  let isFirstStep = engine.isFirstStep;
-  let isLastStep = engine.isLastStep;
+let fields = engine.visibleFields.slice();
+let values = Object.assign({}, engine.values);
+let errors = Object.assign({}, engine.errors);
+let topLevelErrors = engine.topLevelErrors.slice();
+let isMultiStep = engine.isMultiStep;
+let currentStep = engine.currentStep;
+let isFirstStep = engine.isFirstStep;
+let isLastStep = engine.isLastStep;
 
-  function sync() {
-    fields = engine.visibleFields.slice();
-    values = Object.assign({}, engine.values);
-    errors = Object.assign({}, engine.errors);
-    topLevelErrors = engine.topLevelErrors.slice();
-    isMultiStep = engine.isMultiStep;
-    currentStep = engine.currentStep;
-    isFirstStep = engine.isFirstStep;
-    isLastStep = engine.isLastStep;
+function sync() {
+  fields = engine.visibleFields.slice();
+  values = Object.assign({}, engine.values);
+  errors = Object.assign({}, engine.errors);
+  topLevelErrors = engine.topLevelErrors.slice();
+  isMultiStep = engine.isMultiStep;
+  currentStep = engine.currentStep;
+  isFirstStep = engine.isFirstStep;
+  isLastStep = engine.isLastStep;
+}
+
+engine.subscribe(() => sync());
+
+function handleFieldChange(key, value) {
+  engine.setValue(key, value);
+  sync();
+}
+
+async function handleNext() {
+  await engine.next();
+  sync();
+}
+
+async function handleBack() {
+  await engine.back();
+  sync();
+}
+
+async function handleSubmit() {
+  if (isMultiStep && !isLastStep) {
+    await handleNext();
+    return;
   }
-
-  engine.subscribe(() => sync());
-
-  function handleFieldChange(key, value) {
-    engine.setValue(key, value);
-    sync();
-  }
-
-  async function handleNext() {
-    await engine.next();
-    sync();
-  }
-
-  async function handleBack() {
-    await engine.back();
-    sync();
-  }
-
-  async function handleSubmit() {
-    if (isMultiStep && !isLastStep) {
-      await handleNext();
-      return;
-    }
-    await engine.submit((submitted) => console.log("Submitted:", submitted));
-    sync();
-  }
+  await engine.submit((submitted) => console.log('Submitted:', submitted));
+  sync();
+}
 </script>
 
 <div style="max-width: 480px; margin: 24px auto; font-family: sans-serif">

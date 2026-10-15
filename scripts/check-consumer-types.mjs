@@ -64,8 +64,15 @@ const resolutions = { bundler: 'ESNext', node16: 'Node16' };
 for (const [resolution, module] of Object.entries(resolutions)) {
   files[`tsconfig.${resolution}.json`] = JSON.stringify({
     compilerOptions: {
-      target: 'ES2022', module, moduleResolution: resolution, strict: true, skipLibCheck: false,
-      noEmit: true, jsx: 'react-jsx', lib: ['ES2022', 'DOM'], types: [],
+      target: 'ES2022',
+      module,
+      moduleResolution: resolution,
+      strict: true,
+      skipLibCheck: false,
+      noEmit: true,
+      jsx: 'react-jsx',
+      lib: ['ES2022', 'DOM'],
+      types: [],
     },
     include: ['src'],
   });

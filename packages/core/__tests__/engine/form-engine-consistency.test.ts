@@ -4,17 +4,27 @@ import { validateFieldValue } from '../../src/validation';
 import type { FormDefinition } from '../../src/types';
 
 const passwordSteps: FormDefinition = {
-  id: 'passwords', title: '', submit: { label: 'Save' }, steps: [
-    { id: 's1', title: '', fields: [
-      { key: 'password', type: 'password', label: 'Password' },
-      { key: 'confirm', type: 'password', label: 'Confirm', validation: { matchField: 'password' } },
-    ] },
+  id: 'passwords',
+  title: '',
+  submit: { label: 'Save' },
+  steps: [
+    {
+      id: 's1',
+      title: '',
+      fields: [
+        { key: 'password', type: 'password', label: 'Password' },
+        { key: 'confirm', type: 'password', label: 'Confirm', validation: { matchField: 'password' } },
+      ],
+    },
     { id: 's2', title: '', fields: [] },
   ],
 };
 
 const countrySteps: FormDefinition = {
-  id: 'country', title: '', submit: { label: 'Save' }, steps: [
+  id: 'country',
+  title: '',
+  submit: { label: 'Save' },
+  steps: [
     { id: 'A', title: '', fields: [{ key: 'country', type: 'text', label: 'Country' }] },
     { id: 'B', title: '', show: [{ field: 'country', eq: 'US' }], fields: [{ key: 'state', type: 'text', label: 'State' }] },
     { id: 'C', title: '', fields: [{ key: 'email', type: 'email', label: 'Email' }] },

@@ -3,11 +3,21 @@ import type { FormDefinition } from '@formhaus/core';
 import { describe, expect, it, vi } from 'vitest';
 import FormRenderer from '../src/FormRenderer.vue';
 
-const steps: FormDefinition = { id: 'spec', title: '', submit: { label: 'Finish', disabled: [{ field: 'agree', eq: false }] }, steps: [
-  { id: 'one', title: 'One', next: { label: 'Onward' }, fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }] },
-  { id: 'two', title: 'Two', back: false, fields: [{ key: 'city', type: 'text', label: 'City' }] },
-  { id: 'three', title: 'Three', next: false, fields: [{ key: 'agree', type: 'checkbox', label: 'Agree', defaultValue: false }] },
-] };
+const steps: FormDefinition = {
+  id: 'spec',
+  title: '',
+  submit: { label: 'Finish', disabled: [{ field: 'agree', eq: false }] },
+  steps: [
+    {
+      id: 'one',
+      title: 'One',
+      next: { label: 'Onward' },
+      fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }],
+    },
+    { id: 'two', title: 'Two', back: false, fields: [{ key: 'city', type: 'text', label: 'City' }] },
+    { id: 'three', title: 'Three', next: false, fields: [{ key: 'agree', type: 'checkbox', label: 'Agree', defaultValue: false }] },
+  ],
+};
 
 describe('renderer spec rules', () => {
   it('hides Back on the first step and with back: false, uses next.label, and keeps Submit with next: false', async () => {
@@ -25,7 +35,12 @@ describe('renderer spec rules', () => {
   });
 
   it('never disables Submit for an empty disabled list and does not validate on blur', async () => {
-    const definition: FormDefinition = { id: 'one', title: '', submit: { label: 'Send', disabled: [] }, fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }] };
+    const definition: FormDefinition = {
+      id: 'one',
+      title: '',
+      submit: { label: 'Send', disabled: [] },
+      fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }],
+    };
     render(FormRenderer, { props: { definition } });
     expect((screen.getByRole('button', { name: 'Send' }) as HTMLButtonElement).disabled).toBe(false);
     await fireEvent.blur(screen.getByLabelText(/Name/));
@@ -34,14 +49,27 @@ describe('renderer spec rules', () => {
 
   it('writes File or null, string[], boolean and number values, and renders rows, accept, mask and inputMode', async () => {
     const onSubmit = vi.fn();
-    const definition: FormDefinition = { id: 'shapes', title: '', submit: { label: 'Send' }, fields: [
-      { key: 'cv', type: 'file', label: 'CV', accept: '.pdf' },
-      { key: 'tags', type: 'multiselect', label: 'Tags', options: [{ value: 'a', label: 'A' }, { value: 'b', label: 'B' }] },
-      { key: 'ok', type: 'switch', label: 'OK' },
-      { key: 'age', type: 'number', label: 'Age' },
-      { key: 'bio', type: 'textarea', label: 'Bio', rows: 7 },
-      { key: 'phone', type: 'phone', label: 'Phone', mask: '+1 (___) ___-____', inputMode: 'tel' },
-    ] };
+    const definition: FormDefinition = {
+      id: 'shapes',
+      title: '',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'cv', type: 'file', label: 'CV', accept: '.pdf' },
+        {
+          key: 'tags',
+          type: 'multiselect',
+          label: 'Tags',
+          options: [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+          ],
+        },
+        { key: 'ok', type: 'switch', label: 'OK' },
+        { key: 'age', type: 'number', label: 'Age' },
+        { key: 'bio', type: 'textarea', label: 'Bio', rows: 7 },
+        { key: 'phone', type: 'phone', label: 'Phone', mask: '+1 (___) ___-____', inputMode: 'tel' },
+      ],
+    };
     render(FormRenderer, { props: { definition, onSubmit } });
     const file = new File(['x'], 'cv.pdf');
     const input = screen.getByLabelText('CV') as HTMLInputElement;

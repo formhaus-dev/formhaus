@@ -27,7 +27,9 @@ export function liveBinding(binding: Binding | undefined, names: string[]): Bind
 
 export function slotNames(root: InstanceNode | ComponentNode): string[] {
   const definitions = root.type === 'INSTANCE' ? root.componentProperties : propertyOwner(root).componentPropertyDefinitions;
-  const properties = Object.entries(definitions).filter(([, item]) => item.type === 'TEXT').map(([key]) => key.split('#')[0]);
+  const properties = Object.entries(definitions)
+    .filter(([, item]) => item.type === 'TEXT')
+    .map(([key]) => key.split('#')[0]);
   return [...new Set([...properties, ...ownTextLayers(root).map((node) => node.name)])];
 }
 
@@ -39,8 +41,9 @@ export async function applySlots(instance: InstanceNode, values: SlotValues, bou
   for (const slot of SLOT_ORDER) {
     if (filled.has(slot) || values[slot] === undefined) continue;
     const explicit = binding?.text?.[slot];
-    const layer = ownTextLayers(instance).find((node) => slotForName(node.name, binding) === slot)
-      ?? (explicit ? (instance.findOne((node) => node.type === 'TEXT' && node.name === explicit) as TextNode | null) : null);
+    const layer =
+      ownTextLayers(instance).find((node) => slotForName(node.name, binding) === slot) ??
+      (explicit ? (instance.findOne((node) => node.type === 'TEXT' && node.name === explicit) as TextNode | null) : null);
     if (!layer) continue;
     if (values[slot]) layer.characters = values[slot]!;
     else if (slot === 'helper') layer.visible = false;
@@ -78,9 +81,12 @@ const FALLBACK_FONT: FontName = { family: 'Inter', style: 'Regular' };
 async function loadFonts(instance: InstanceNode): Promise<void> {
   const nodesByFont = new Map<string, { font: FontName; nodes: TextNode[] }>();
   for (const node of instance.findAllWithCriteria({ types: ['TEXT'] })) {
-    const used = node.characters.length > 0
-      ? node.getRangeAllFontNames(0, node.characters.length)
-      : node.fontName === figma.mixed ? [] : [node.fontName];
+    const used =
+      node.characters.length > 0
+        ? node.getRangeAllFontNames(0, node.characters.length)
+        : node.fontName === figma.mixed
+          ? []
+          : [node.fontName];
     for (const font of used) {
       const key = `${font.family}/${font.style}`;
       const entry = nodesByFont.get(key) ?? { font, nodes: [] };
@@ -88,14 +94,16 @@ async function loadFonts(instance: InstanceNode): Promise<void> {
       nodesByFont.set(key, entry);
     }
   }
-  const missing = await Promise.all([...nodesByFont.values()].map(async (entry) => {
-    try {
-      await figma.loadFontAsync(entry.font);
-      return [];
-    } catch {
-      return entry.nodes;
-    }
-  }));
+  const missing = await Promise.all(
+    [...nodesByFont.values()].map(async (entry) => {
+      try {
+        await figma.loadFontAsync(entry.font);
+        return [];
+      } catch {
+        return entry.nodes;
+      }
+    }),
+  );
   const fallbackNodes = missing.flat();
   if (fallbackNodes.length === 0) return;
   await figma.loadFontAsync(FALLBACK_FONT);

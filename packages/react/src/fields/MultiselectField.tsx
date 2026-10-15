@@ -8,9 +8,7 @@ export function MultiselectField(props: FieldComponentProps) {
   const selected = Array.isArray(value) ? (value as (string | number)[]) : [];
 
   function handleToggle(optValue: string) {
-    const next = selected.includes(optValue)
-      ? selected.filter((v) => v !== optValue)
-      : [...selected, optValue];
+    const next = selected.includes(optValue) ? selected.filter((v) => v !== optValue) : [...selected, optValue];
     onChange(next);
   }
 

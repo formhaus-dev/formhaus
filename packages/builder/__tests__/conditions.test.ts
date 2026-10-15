@@ -1,7 +1,22 @@
 import { describe, expect, it } from 'vitest';
 import {
-  addField, addStep, createForm, END, findIssues, fromDefinition, logicOf, operatorsFor, removeField, routesOf, setLogic,
-  setRoutes, stepTargetsAfter, toCondition, toDefinition, fromCondition, conditionSources,
+  addField,
+  addStep,
+  createForm,
+  END,
+  findIssues,
+  fromDefinition,
+  logicOf,
+  operatorsFor,
+  removeField,
+  routesOf,
+  setLogic,
+  setRoutes,
+  stepTargetsAfter,
+  toCondition,
+  toDefinition,
+  fromCondition,
+  conditionSources,
 } from '../src';
 
 function plans() {
@@ -62,7 +77,10 @@ describe('logic', () => {
 
   it('drops conditions on a deleted field and flags later fields', () => {
     const { form, plan, seats, company } = plans();
-    setLogic(form, company.uid, 'all', [{ field: 'plan', operator: 'eq', value: 'pro' }, { field: 'seats', operator: 'notEmpty', value: '' }]);
+    setLogic(form, company.uid, 'all', [
+      { field: 'plan', operator: 'eq', value: 'pro' },
+      { field: 'seats', operator: 'notEmpty', value: '' },
+    ]);
     removeField(form, plan.uid);
     expect(toDefinition(form).fields?.[2].show).toEqual([{ field: 'seats', notEmpty: true }]);
     setLogic(form, seats.uid, 'all', [{ field: 'company', operator: 'notEmpty', value: '' }]);

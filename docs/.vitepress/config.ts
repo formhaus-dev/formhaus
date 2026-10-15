@@ -1,31 +1,43 @@
-import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vitepress'
-import { transformPageData } from './templates'
-import { llms } from './llms'
-import { templateFiles } from './template-files'
-import { analyticsHead, copyHashmap, coreBudgetKB, head, ownHashmap, sharedDedupe, sharedPublic, sharedThemeConfig, siteUrl, transformHead } from '../../packages/site-theme/src/config'
-import { ownerOf } from '../../packages/site-theme/src/routes.js'
-import { sitemapCollector, writeOwnSitemap } from '../../packages/site-theme/src/sitemap.js'
+import { fileURLToPath } from 'node:url';
+import { defineConfig } from 'vitepress';
+import { transformPageData } from './templates';
+import { llms } from './llms';
+import { templateFiles } from './template-files';
+import {
+  analyticsHead,
+  copyHashmap,
+  coreBudgetKB,
+  head,
+  ownHashmap,
+  sharedDedupe,
+  sharedPublic,
+  sharedThemeConfig,
+  siteUrl,
+  transformHead,
+} from '../../packages/site-theme/src/config';
+import { ownerOf } from '../../packages/site-theme/src/routes.js';
+import { sitemapCollector, writeOwnSitemap } from '../../packages/site-theme/src/sitemap.js';
 
-const shared = await sharedThemeConfig()
-const sitemap = sitemapCollector()
+const shared = await sharedThemeConfig();
+const sitemap = sitemapCollector();
 
 export default defineConfig({
   vite: {
     plugins: [llms, templateFiles(), sharedPublic(), ownHashmap()],
     resolve: {
       alias: {
-        '@formhaus/site-theme': fileURLToPath(new URL('../../packages/site-theme/src/index.ts', import.meta.url))
+        '@formhaus/site-theme': fileURLToPath(new URL('../../packages/site-theme/src/index.ts', import.meta.url)),
       },
-      dedupe: sharedDedupe
+      dedupe: sharedDedupe,
     },
     server: {
-      fs: { allow: ['..'] }
-    }
+      fs: { allow: ['..'] },
+    },
   },
   title: 'Formhaus',
   titleTemplate: ':title · Formhaus',
-  description: 'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
+  description:
+    'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
   lastUpdated: true,
   cleanUrls: true,
   ignoreDeadLinks: [(url) => url.startsWith('/') && ownerOf(url.split(/[?#]/)[0]) === 'marketing'],
@@ -34,8 +46,8 @@ export default defineConfig({
   transformHead,
   transformPageData,
   buildEnd: (config) => {
-    copyHashmap(config)
-    writeOwnSitemap(config.outDir, 'docs', sitemap.items())
+    copyHashmap(config);
+    writeOwnSitemap(config.outDir, 'docs', sitemap.items());
   },
   themeConfig: {
     ...shared,
@@ -58,13 +70,11 @@ export default defineConfig({
           { text: 'Get an Endpoint', link: '/guide/endpoint' },
           { text: 'Migrate to 0.11', link: '/migrate/0.11' },
           { text: 'Migrate to 0.14', link: '/migrate/0.14' },
-        ]
+        ],
       },
       {
         text: 'Cloud',
-        items: [
-          { text: 'Formhaus Cloud', link: '/cloud' },
-        ]
+        items: [{ text: 'Formhaus Cloud', link: '/cloud' }],
       },
       {
         text: 'Recipes',
@@ -78,7 +88,7 @@ export default defineConfig({
           { text: 'Svelte 5', link: '/recipes/svelte' },
           { text: 'Figma to React', link: '/recipes/figma-to-react' },
           { text: 'AI agents', link: '/recipes/ai-agents' },
-        ]
+        ],
       },
       {
         text: 'Compare',
@@ -88,7 +98,7 @@ export default defineConfig({
           { text: 'vs TanStack Form', link: '/compare/tanstack-form' },
           { text: 'vs react-jsonschema-form', link: '/compare/react-jsonschema-form' },
           { text: 'vs SurveyJS', link: '/compare/surveyjs' },
-        ]
+        ],
       },
       {
         text: 'Integrations',
@@ -98,54 +108,46 @@ export default defineConfig({
           { text: 'shadcn/ui', link: '/guide/integrations/shadcn' },
           { text: 'Material UI', link: '/guide/integrations/mui' },
           { text: 'Vuetify', link: '/guide/integrations/vuetify' },
-        ]
+        ],
       },
       {
         text: 'API Reference',
         items: [
           { text: 'Definition', link: '/api/definition' },
           { text: 'FormEngine', link: '/api/form-engine' },
-        ]
+        ],
       },
       {
         text: 'Specification',
-        items: [
-          { text: 'Form definition 1.0', link: '/spec' },
-        ]
+        items: [{ text: 'Form definition 1.0', link: '/spec' }],
       },
       {
         text: 'Figma Plugin',
-        items: [
-          { text: 'Plugin Guide', link: '/guide/figma' },
-        ]
+        items: [{ text: 'Plugin Guide', link: '/guide/figma' }],
       },
       {
         text: 'Claude Skills',
         items: [
           { text: '/formhaus:formhaus-figma-connect', link: '/guide/formhaus-figma-connect' },
           { text: '/formhaus:formhaus-create-form', link: '/guide/formhaus-create-form' },
-        ]
+        ],
       },
       {
         text: 'MCP Server',
-        items: [
-          { text: 'Setup and Tools', link: '/guide/mcp' },
-        ]
+        items: [{ text: 'Setup and Tools', link: '/guide/mcp' }],
       },
       {
         text: 'Interactive',
         items: [
           { text: 'Builder', link: '/build' },
-      { text: 'Playground', link: '/playground' },
-        ]
+          { text: 'Playground', link: '/playground' },
+        ],
       },
       {
         text: 'Meta',
-        items: [
-          { text: 'Changelog', link: '/changelog' },
-        ]
-      }
+        items: [{ text: 'Changelog', link: '/changelog' }],
+      },
     ],
-    ...{ coreBudgetKB }
-  }
-})
+    ...{ coreBudgetKB },
+  },
+});

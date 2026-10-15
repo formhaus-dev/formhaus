@@ -11,12 +11,14 @@ function createStepDefinition(id: string, required = false): FormDefinition {
       {
         id: 'first',
         title: 'First',
-        fields: [{
-          key: 'a',
-          type: 'text',
-          label: 'A',
-          ...(required ? { validation: { required: true } } : {}),
-        }],
+        fields: [
+          {
+            key: 'a',
+            type: 'text',
+            label: 'A',
+            ...(required ? { validation: { required: true } } : {}),
+          },
+        ],
       },
       { id: 'second', title: 'Second', fields: [{ key: 'b', type: 'text', label: 'B' }] },
     ],
@@ -72,9 +74,13 @@ describe('FormEngine structure subscriptions', () => {
   });
 
   it('publishes async validation errors without a structure update', async () => {
-    const engine = new FormEngine(createStepDefinition('async-step-errors'), { a: 'value' }, {
-      onStepValidate: async () => ({ a: 'Server error' }),
-    });
+    const engine = new FormEngine(
+      createStepDefinition('async-step-errors'),
+      { a: 'value' },
+      {
+        onStepValidate: async () => ({ a: 'Server error' }),
+      },
+    );
     const fieldListener = vi.fn();
     const structureListener = vi.fn();
     engine.subscribeField('a', fieldListener);
@@ -85,11 +91,15 @@ describe('FormEngine structure subscriptions', () => {
   });
 
   it('does not publish field or structure revisions after rejection', async () => {
-    const engine = new FormEngine(createStepDefinition('async-step-rejection'), { a: 'value' }, {
-      onStepValidate: async () => {
-        throw new Error('Network error');
+    const engine = new FormEngine(
+      createStepDefinition('async-step-rejection'),
+      { a: 'value' },
+      {
+        onStepValidate: async () => {
+          throw new Error('Network error');
+        },
       },
-    });
+    );
     const fieldListener = vi.fn();
     const structureListener = vi.fn();
     engine.subscribeField('a', fieldListener);

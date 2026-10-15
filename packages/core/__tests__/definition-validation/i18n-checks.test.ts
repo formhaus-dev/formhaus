@@ -7,7 +7,15 @@ const base = () => ({
   id: 'signup',
   title: 'Sign up',
   submit: { label: 'Send' },
-  fields: [{ key: 'email', type: 'email', label: 'Email', options: undefined as unknown, validation: { required: true } as Record<string, unknown> }],
+  fields: [
+    {
+      key: 'email',
+      type: 'email',
+      label: 'Email',
+      options: undefined as unknown,
+      validation: { required: true } as Record<string, unknown>,
+    },
+  ],
 });
 
 const codes = (definition: unknown) => checkTranslations(definition as never).map(({ code, severity, path }) => ({ code, severity, path }));
@@ -21,11 +29,17 @@ describe('i18n definition checks', () => {
       labels: { stepOf: '{current}/{total}' },
       i18n: { title: 'signup.title', messages: { required: 'errors.required' }, labels: { continue: 'common:next' } },
       submit: { label: 'Send', i18n: { label: 'signup.submit' } },
-      fields: [{
-        key: 'plan', type: 'radio', label: 'Plan', placeholder: 'Pick', i18n: { label: 'plan.label', placeholder: 'plan.placeholder' },
-        options: [{ value: 'free', label: 'Free', i18n: { label: 'plans.free' } }],
-        validation: { required: true, i18n: { required: 'errors.plan' } },
-      }],
+      fields: [
+        {
+          key: 'plan',
+          type: 'radio',
+          label: 'Plan',
+          placeholder: 'Pick',
+          i18n: { label: 'plan.label', placeholder: 'plan.placeholder' },
+          options: [{ value: 'free', label: 'Free', i18n: { label: 'plans.free' } }],
+          validation: { required: true, i18n: { required: 'errors.plan' } },
+        },
+      ],
     };
     expect(codes(definition)).toEqual([]);
     expect(checkDefinition(definition)).toEqual([]);
@@ -55,7 +69,11 @@ describe('i18n definition checks', () => {
   });
 
   it('rejects a key without its source text and leaves the engine and the server alone', () => {
-    const definition = { ...base(), i18n: { description: 'signup.description' }, fields: [{ key: 'email', type: 'email', label: 'Email', i18n: { helperText: 'email.help' } }] };
+    const definition = {
+      ...base(),
+      i18n: { description: 'signup.description' },
+      fields: [{ key: 'email', type: 'email', label: 'Email', i18n: { helperText: 'email.help' } }],
+    };
     expect(codes(definition)).toEqual([
       { code: 'i18n-unbound-slot', severity: 'error', path: '/i18n/description' },
       { code: 'i18n-unbound-slot', severity: 'error', path: '/fields/0/i18n/helperText' },
@@ -70,7 +88,9 @@ describe('i18n definition checks', () => {
       ...base(),
       messages: { requried: 'x' },
       i18n: { subtitle: 'x', labels: { next: 'common.next' } },
-      fields: [{ key: 'email', type: 'email', label: 'Email', i18n: { hint: 'x' }, validation: { required: true, i18n: { minLength: 'x' } } }],
+      fields: [
+        { key: 'email', type: 'email', label: 'Email', i18n: { hint: 'x' }, validation: { required: true, i18n: { minLength: 'x' } } },
+      ],
     };
     expect(codes(definition)).toEqual([
       { code: 'unknown-message-key', severity: 'warning', path: '/messages/requried' },

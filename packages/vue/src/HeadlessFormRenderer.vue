@@ -19,11 +19,21 @@ const formRef = ref<HTMLFormElement>();
 const engineOptions: FormEngineOptions = {
   validators: props.validators,
   onWarning: props.onWarning,
-  get messages() { return props.messages; },
-  get onStepValidate() { return props.onStepValidate; },
-  get onBeforeStepChange() { return props.onBeforeStepChange; },
-  get onBeforeSubmit() { return props.onBeforeSubmit; },
-  get onAfterSubmit() { return props.onAfterSubmit; },
+  get messages() {
+    return props.messages;
+  },
+  get onStepValidate() {
+    return props.onStepValidate;
+  },
+  get onBeforeStepChange() {
+    return props.onBeforeStepChange;
+  },
+  get onBeforeSubmit() {
+    return props.onBeforeSubmit;
+  },
+  get onAfterSubmit() {
+    return props.onAfterSubmit;
+  },
   get onAfterStepChange() {
     const after = props.onAfterStepChange;
     return async (context: StepChangeContext) => {
@@ -36,7 +46,11 @@ const engineOptions: FormEngineOptions = {
   },
 };
 
-const form = useFormEngine(() => props.definition, () => props.initialValues, engineOptions);
+const form = useFormEngine(
+  () => props.definition,
+  () => props.initialValues,
+  engineOptions,
+);
 const {
   values,
   errors,
@@ -52,10 +66,22 @@ const {
   submitting,
 } = form;
 
-const resolvedOptions = useFieldOptions(visibleFields, () => form.engine, () => props.optionsProviders);
+const resolvedOptions = useFieldOptions(
+  visibleFields,
+  () => form.engine,
+  () => props.optionsProviders,
+);
 
-const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, skip: onSkip, submit: onSubmit, actionError, invalidAttempts } =
-  useRendererActions(form, props, emit);
+const {
+  update: onFieldUpdate,
+  commit: onFieldCommit,
+  next: onNext,
+  prev: onPrev,
+  skip: onSkip,
+  submit: onSubmit,
+  actionError,
+  invalidAttempts,
+} = useRendererActions(form, props, emit);
 const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
 
 const { rememberFocus, showField, requestFocus } = useFormFocus(form, formRef, formId, invalidAttempts);
@@ -71,11 +97,20 @@ watch(
   { immediate: true },
 );
 
-const summaryFields = computed(() => (isMultiStep.value ? form.visibleSteps.value.flatMap((step) => step.fields) : visibleFields.value)
-  .filter((field) => field.type !== 'hidden' && errors.value[field.key] !== undefined));
-const stepStatuses = computed(() => props.stepErrorMarks ? form.visibleSteps.value.map(({ id, title, fields }) => ({
-  id, title, errorCount: fields.filter((field) => field.type !== 'hidden' && errors.value[field.key] !== undefined).length,
-})) : undefined);
+const summaryFields = computed(() =>
+  (isMultiStep.value ? form.visibleSteps.value.flatMap((step) => step.fields) : visibleFields.value).filter(
+    (field) => field.type !== 'hidden' && errors.value[field.key] !== undefined,
+  ),
+);
+const stepStatuses = computed(() =>
+  props.stepErrorMarks
+    ? form.visibleSteps.value.map(({ id, title, fields }) => ({
+        id,
+        title,
+        errorCount: fields.filter((field) => field.type !== 'hidden' && errors.value[field.key] !== undefined).length,
+      }))
+    : undefined,
+);
 
 function onFieldFocus(key: string) {
   emit('analyticsEvent', { type: 'field_focused', fieldKey: key });

@@ -6,7 +6,14 @@ const build = vi.fn();
 vi.mock('../fonts', () => ({ resolveFonts: vi.fn().mockResolvedValue({}) }));
 vi.mock('../kits/ios', () => ({ iosKit: {} }));
 vi.mock('../kits/material', () => ({
-  materialKit: { id: 'material', name: 'Material 3', version: 2, fontFamilies: [], theme: () => ({}), build: (...args: unknown[]) => build(...args) },
+  materialKit: {
+    id: 'material',
+    name: 'Material 3',
+    version: 2,
+    fontFamilies: [],
+    theme: () => ({}),
+    build: (...args: unknown[]) => build(...args),
+  },
 }));
 
 const { loadKit } = await import('../kits/registry');
@@ -40,7 +47,14 @@ const nodes = new Map<string, FakeNode>();
 
 function fakeNode(type: string): FakeNode {
   const node: FakeNode = {
-    id: `${++nextId}:0`, type, removed: false, parent: null, x: 0, y: 0, width: 100, height: 50,
+    id: `${++nextId}:0`,
+    type,
+    removed: false,
+    parent: null,
+    x: 0,
+    y: 0,
+    width: 100,
+    height: 50,
     children: [],
     ...pluginData(),
     appendChild(child) {

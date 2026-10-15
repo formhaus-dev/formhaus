@@ -8,7 +8,9 @@ beforeEach(() => {
   vi.stubGlobal('figma', {
     clientStorage: {
       getAsync: async (key: string) => storage[key],
-      setAsync: async (key: string, value: unknown) => { storage[key] = structuredClone(value); },
+      setAsync: async (key: string, value: unknown) => {
+        storage[key] = structuredClone(value);
+      },
     },
   });
 });

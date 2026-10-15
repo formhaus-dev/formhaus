@@ -57,9 +57,7 @@ export interface FormStepProgressProps {
   counterLabel?: string;
 }
 
-export type OptionsProvider = (
-  values: Record<string, unknown>,
-) => FieldOption[] | Promise<FieldOption[]>;
+export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 

@@ -3,8 +3,12 @@ import type { FormDefinition } from '@formhaus/core';
 import { expect, it } from 'vitest';
 import { FormRenderer } from '../src/FormRenderer';
 
-const definition: FormDefinition = { id: 'errors', title: '', submit: { label: 'Send' },
-  fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }] };
+const definition: FormDefinition = {
+  id: 'errors',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }],
+};
 
 it('keeps validation errors when the parent re-renders with equal external errors', async () => {
   const { rerender } = render(<FormRenderer definition={definition} errors={{}} onSubmit={() => {}} />);
@@ -29,8 +33,15 @@ it('shows a repeated server error after the user edits the field', async () => {
   expect(await screen.findByText('Taken')).toBeDefined();
 });
 
-const pair: FormDefinition = { id: 'pair', title: '', submit: { label: 'Send' },
-  fields: [{ key: 'first', type: 'text', label: 'First' }, { key: 'second', type: 'text', label: 'Second' }] };
+const pair: FormDefinition = {
+  id: 'pair',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'first', type: 'text', label: 'First' },
+    { key: 'second', type: 'text', label: 'Second' },
+  ],
+};
 
 it('focuses the invalid field when external errors arrive while a button has focus', async () => {
   const { rerender } = render(<FormRenderer definition={pair} onSubmit={() => {}} />);

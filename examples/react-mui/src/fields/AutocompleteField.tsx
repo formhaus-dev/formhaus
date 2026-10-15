@@ -7,17 +7,7 @@ interface Option {
   label: string;
 }
 
-export function AutocompleteField({
-  id,
-  field,
-  value,
-  error,
-  loading,
-  disabled,
-  onChange,
-  onBlur,
-  onFocus,
-}: FieldComponentProps) {
+export function AutocompleteField({ id, field, value, error, loading, disabled, onChange, onBlur, onFocus }: FieldComponentProps) {
   const options = (field.options ?? []) as Option[];
   const selected = options.find((o) => o.value === value) ?? null;
 

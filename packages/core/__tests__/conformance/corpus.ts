@@ -28,4 +28,6 @@ export const valid = corpus.filter(({ issues }) => !issues.length);
 
 const runtime = ({ definition, overlay }: ConformanceFixture) => (overlay ? localize(definition, { overlay }).definition : definition);
 
-export const cases = valid.flatMap((fixture) => fixture.cases.map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const));
+export const cases = valid.flatMap((fixture) =>
+  fixture.cases.map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const),
+);

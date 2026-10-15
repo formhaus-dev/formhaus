@@ -10,11 +10,13 @@
       "type": "select",
       "label": "How often",
       "defaultValue": "weekly",
-      "options": [
-        { "value": "weekly", "label": "Weekly" },
-        { "value": "monthly", "label": "Monthly" }
-      ]
+      "options": [{ "value": "weekly", "label": "Weekly" }, { "value": "monthly", "label": "Monthly" }]
     },
-    { "key": "consent", "type": "checkbox", "label": "I agree to receive emails", "validation": { "required": "Please confirm to subscribe" } }
+    {
+      "key": "consent",
+      "type": "checkbox",
+      "label": "I agree to receive emails",
+      "validation": { "required": "Please confirm to subscribe" }
+    }
   ]
 }

@@ -15,13 +15,22 @@ function reply(status: number, body: unknown) {
 }
 
 function notJson() {
-  return { ok: true, status: 200, json: async () => { throw new SyntaxError('Unexpected token <'); } };
+  return {
+    ok: true,
+    status: 200,
+    json: async () => {
+      throw new SyntaxError('Unexpected token <');
+    },
+  };
 }
 
 function stalled() {
-  return vi.fn((_url: string, init: { signal: AbortSignal }) => new Promise((_resolve, reject) => {
-    init.signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')));
-  }));
+  return vi.fn(
+    (_url: string, init: { signal: AbortSignal }) =>
+      new Promise((_resolve, reject) => {
+        init.signal.addEventListener('abort', () => reject(new DOMException('aborted', 'AbortError')));
+      }),
+  );
 }
 
 afterEach(() => {
@@ -34,7 +43,10 @@ describe('cloud failures', () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(reply(409, { error: 'Form paused' })));
 
     await expect(fetchDefinition({ id: 'abc' })).rejects.toMatchObject({
-      status: 409, code: 'paused', message: 'This form is paused.', action: null,
+      status: 409,
+      code: 'paused',
+      message: 'This form is paused.',
+      action: null,
     });
   });
 
@@ -53,11 +65,17 @@ describe('cloud failures', () => {
   });
 
   it('wraps a response that is not JSON and keeps the idempotency key', async () => {
-    const fetchMock = vi.fn().mockResolvedValueOnce(notJson()).mockResolvedValueOnce(notJson())
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(notJson())
+      .mockResolvedValueOnce(notJson())
       .mockResolvedValue(reply(201, { id: 's1', values: {} }));
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(fetchDefinition({ id: 'abc' })).rejects.toMatchObject({ code: 'invalid_response', message: 'Something went wrong. Try again.' });
+    await expect(fetchDefinition({ id: 'abc' })).rejects.toMatchObject({
+      code: 'invalid_response',
+      message: 'Something went wrong. Try again.',
+    });
     const submit = createSubmitter({ id: 'abc' });
     await expect(submit({ name: 'Ada' })).rejects.toBeInstanceOf(CloudError);
     await submit({ name: 'Ada' });

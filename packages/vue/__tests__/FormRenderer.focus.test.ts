@@ -21,10 +21,14 @@ const steps: FormDefinition = {
   title: 'Steps',
   submit: { label: 'Send' },
   steps: [
-    { id: 's1', title: 'One', fields: [
-      { key: 'a', type: 'text', label: 'A' },
-      { key: 'x', type: 'text', label: 'X', validation: { validator: 'neededForY' } },
-    ] },
+    {
+      id: 's1',
+      title: 'One',
+      fields: [
+        { key: 'a', type: 'text', label: 'A' },
+        { key: 'x', type: 'text', label: 'X', validation: { validator: 'neededForY' } },
+      ],
+    },
     { id: 's2', title: 'Two', fields: [{ key: 'y', type: 'text', label: 'Y' }] },
   ],
 };
@@ -57,10 +61,20 @@ describe('FormRenderer focus and keyboard', () => {
   });
 
   it('focuses the first invalid field after a failed Continue', async () => {
-    const required: FormDefinition = { ...steps, steps: [
-      { id: 's1', title: 'One', fields: [{ key: 'a', type: 'text', label: 'A' }, { key: 'b', type: 'text', label: 'B', validation: { required: true } }] },
-      steps.steps![1],
-    ] };
+    const required: FormDefinition = {
+      ...steps,
+      steps: [
+        {
+          id: 's1',
+          title: 'One',
+          fields: [
+            { key: 'a', type: 'text', label: 'A' },
+            { key: 'b', type: 'text', label: 'B', validation: { required: true } },
+          ],
+        },
+        steps.steps![1],
+      ],
+    };
     render(FormRenderer, { props: { definition: required } });
     await fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
 

@@ -1,9 +1,18 @@
-import type { FieldOption, FieldType, FormAction, FormAnalyticsEvent, FormDefinition, FormEngineOptions, LabelSource, StepValidateFn, SubmitHandler, ValidatorFn } from '@formhaus/core';
+import type {
+  FieldOption,
+  FieldType,
+  FormAction,
+  FormAnalyticsEvent,
+  FormDefinition,
+  FormEngineOptions,
+  LabelSource,
+  StepValidateFn,
+  SubmitHandler,
+  ValidatorFn,
+} from '@formhaus/core';
 import type { ComponentType } from 'react';
 
-export type OptionsProvider = (
-  values: Record<string, unknown>,
-) => FieldOption[] | Promise<FieldOption[]>;
+export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
 export interface FieldComponentProps {
   id?: string;

@@ -17,7 +17,8 @@ const dictionary: Record<string, string> = {
   'signup.labels.stepOf': 'Шаг {{current}} из {{total}}',
 };
 
-const interpolate = (text: string, params: Record<string, unknown>) => text.replace(/\{\{(\w+)\}\}/g, (_, name: string) => String(params[name]));
+const interpolate = (text: string, params: Record<string, unknown>) =>
+  text.replace(/\{\{(\w+)\}\}/g, (_, name: string) => String(params[name]));
 
 function i18next(): { t: TranslateFn; asked: string[] } {
   const asked: string[] = [];
@@ -47,7 +48,9 @@ describe('localize with a translate function', () => {
   it('never writes a fallback over a rule that has no literal', () => {
     const { t } = i18next();
     const { definition } = localize(signup, { translate: t });
-    expect(definition.steps![0].fields[1].validation).toEqual(signup.steps![0].fields[1].validation && { ...signup.steps![0].fields[1].validation, minLengthMessage: 'Не менее 8 символов' });
+    expect(definition.steps![0].fields[1].validation).toEqual(
+      signup.steps![0].fields[1].validation && { ...signup.steps![0].fields[1].validation, minLengthMessage: 'Не менее 8 символов' },
+    );
     expect(definition.steps![2].fields[0].validation).toEqual({ minLength: 5 });
   });
 
@@ -82,7 +85,12 @@ describe('localize with a translate function', () => {
   });
 
   it('fills {name} placeholders left in a result, such as an overlay loaded into i18next', () => {
-    const raw: TranslateFn = (key, params, fallback) => ({ 'signup.labels.stepOf': 'Шаг {current} из {total}', 'signup.messages.minLength': 'Минимум {min}', 'errors.password.tooShort': 'Не менее {min}' }[key] ?? fallback);
+    const raw: TranslateFn = (key, params, fallback) =>
+      ({
+        'signup.labels.stepOf': 'Шаг {current} из {total}',
+        'signup.messages.minLength': 'Минимум {min}',
+        'errors.password.tooShort': 'Не менее {min}',
+      })[key] ?? fallback;
     const { definition, messages, labels } = localize(signup, { translate: raw });
     expect(labelFor('stepOf', { current: 1, total: 2 }, labels)).toBe('Шаг 1 из 2');
     expect(new FormEngine(definition, { kind: 'home', address: 'abc' }, { messages }).validate().address).toBe('Минимум 5');
@@ -94,10 +102,16 @@ describe('localize with a translate function', () => {
       if (key === 'signup.title') throw new Error('Invalid linked format');
       return undefined;
     };
-    const { definition, messages } = localize(signup, { translate: (key, params, fallback) => (key === 'signup.email.label' ? 'Почта' : failing(key, params, fallback)) });
+    const { definition, messages } = localize(signup, {
+      translate: (key, params, fallback) => (key === 'signup.email.label' ? 'Почта' : failing(key, params, fallback)),
+    });
     expect(definition.title).toBe('Create your account');
     expect(definition.steps![0].fields[0].label).toBe('Почта');
-    const throwing = localize(signup, { translate: () => { throw new Error('x'); } });
+    const throwing = localize(signup, {
+      translate: () => {
+        throw new Error('x');
+      },
+    });
     expect(typeof throwing.messages === 'function' && throwing.messages('required', {}, signup.steps![0].fields[0])).toBe(undefined);
     expect(messages).toBeTypeOf('function');
   });

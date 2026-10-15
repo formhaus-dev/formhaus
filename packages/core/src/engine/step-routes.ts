@@ -12,15 +12,19 @@ function walkPath(definition: FormDefinition, values: Record<string, unknown>) {
   const result: FormStep[] = [];
   const available: Record<string, unknown> = {};
   if (!steps.length) addStepValues({ fields: definition.fields ?? [] }, values, available);
-  for (let index = 0; index < steps.length;) {
+  for (let index = 0; index < steps.length; ) {
     const step = steps[index];
-    if (!isVisible(step, available)) { index++; continue; }
+    if (!isVisible(step, available)) {
+      index++;
+      continue;
+    }
     result.push(step);
     addStepValues(step, values, available);
-    const route = step.routes?.find((route) => (
-      isVisible(route, available) && (route.to === null || ((indexes.get(route.to) ?? -1) > index
-        && isVisible(steps[indexes.get(route.to)!], available)))
-    ));
+    const route = step.routes?.find(
+      (route) =>
+        isVisible(route, available) &&
+        (route.to === null || ((indexes.get(route.to) ?? -1) > index && isVisible(steps[indexes.get(route.to)!], available))),
+    );
     if (route?.to === null) break;
     index = route ? indexes.get(route.to)! : index + 1;
   }
@@ -60,8 +64,16 @@ export function createActivePath(definition: FormDefinition) {
     ({ steps, values: active } = walkPath(definition, values));
   };
   return {
-    invalidate(): void { source = null; },
-    steps(values: Record<string, unknown>): FormStep[] { refresh(values); return steps; },
-    values(values: Record<string, unknown>): Record<string, unknown> { refresh(values); return active; },
+    invalidate(): void {
+      source = null;
+    },
+    steps(values: Record<string, unknown>): FormStep[] {
+      refresh(values);
+      return steps;
+    },
+    values(values: Record<string, unknown>): Record<string, unknown> {
+      refresh(values);
+      return active;
+    },
   };
 }

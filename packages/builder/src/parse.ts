@@ -1,6 +1,18 @@
 import type { FormAction, FormDefinition, FormField, FormStep, StepRoute } from '@formhaus/core';
 import { follows, keyBase, optionBase, stepBase } from './identifiers';
-import { clone, END, hasOptions, newPage, uid, type BuilderBlock, type BuilderForm, type BuilderOption, type BuilderPage, type BuilderQuestion, type FormExtra } from './model';
+import {
+  clone,
+  END,
+  hasOptions,
+  newPage,
+  uid,
+  type BuilderBlock,
+  type BuilderForm,
+  type BuilderOption,
+  type BuilderPage,
+  type BuilderQuestion,
+  type FormExtra,
+} from './model';
 import { toDefinition } from './serialize';
 
 export interface ParseOptions {
@@ -30,7 +42,9 @@ function locksOf(...definitions: (FormDefinition | undefined)[]): Locks {
 function canonical(value: unknown): string {
   if (Array.isArray(value)) return `[${value.map(canonical).join(',')}]`;
   if (value && typeof value === 'object') {
-    const entries = Object.entries(value).filter(([, item]) => item !== undefined).sort(([a], [b]) => a.localeCompare(b));
+    const entries = Object.entries(value)
+      .filter(([, item]) => item !== undefined)
+      .sort(([a], [b]) => a.localeCompare(b));
     return `{${entries.map(([key, item]) => `${JSON.stringify(key)}:${canonical(item)}`).join(',')}}`;
   }
   return JSON.stringify(value) ?? 'undefined';
@@ -40,11 +54,12 @@ const fallbackOf = (routes: StepRoute[] | undefined) => routes?.find((item) => !
 
 function target(to: string | null | undefined, ids: Map<string, string>): string | null {
   if (to === null) return END;
-  return to ? ids.get(to) ?? null : null;
+  return to ? (ids.get(to) ?? null) : null;
 }
 
 function jumps(key: string, routes: StepRoute[], ids: Map<string, string>, options: { value: string }[]) {
-  const match = (value: string) => routes.find((item) => item.show?.length === 1 && item.show[0].field === key && item.show[0].eq === value);
+  const match = (value: string) =>
+    routes.find((item) => item.show?.length === 1 && item.show[0].field === key && item.show[0].eq === value);
   const fallback = fallbackOf(routes);
   const open = options.filter((option) => !match(option.value));
   const branching = routes.some((item) => item.show?.[0]?.field === key);
@@ -68,7 +83,7 @@ function question(form: BuilderForm, field: FormField, routes: StepRoute[], ids:
     label: label ?? '',
     type,
     required: !!required,
-    options: (choice ? options ?? [] : []).map((option, index): BuilderOption => {
+    options: (choice ? (options ?? []) : []).map((option, index): BuilderOption => {
       const { value, label: text, ...meta } = option;
       return {
         uid: uid(form),
@@ -87,16 +102,24 @@ function question(form: BuilderForm, field: FormField, routes: StepRoute[], ids:
   };
 }
 
-const labelOnly = (action: FormStep['next']) => (
-  typeof action === 'object' && action && Object.keys(action).length === 1 && action.label && action.label.trim() === action.label ? action.label : undefined
-);
+const labelOnly = (action: FormStep['next']) =>
+  typeof action === 'object' && action && Object.keys(action).length === 1 && action.label && action.label.trim() === action.label
+    ? action.label
+    : undefined;
 
 function page(form: BuilderForm, step: FormStep, index: number, locks: Locks): BuilderPage {
   const { id, title, fields: _fields, routes: _routes, next, back, ...rest } = step;
   const extra: Partial<FormStep> = { ...rest };
   if (next !== undefined && labelOnly(next) === undefined) extra.next = next;
   if (back !== undefined && labelOnly(back) === undefined) extra.back = back;
-  const result: BuilderPage = { ...newPage(form, title ?? ''), nextLabel: labelOnly(next) ?? '', backLabel: labelOnly(back) ?? '', extra, id, shape: Object.keys(step) };
+  const result: BuilderPage = {
+    ...newPage(form, title ?? ''),
+    nextLabel: labelOnly(next) ?? '',
+    backLabel: labelOnly(back) ?? '',
+    extra,
+    id,
+    shape: Object.keys(step),
+  };
   result.idLocked = locks.steps.has(id) || !!step.i18n || !follows(id, stepBase(result, index), '-');
   return result;
 }

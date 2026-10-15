@@ -50,10 +50,12 @@ for (const { where, name, version, raw = version } of pins) {
   const { workspace, published } = packages.get(name);
   if (!SEMVER.test(version ?? '')) problems.push(`${where}: ${name} has no exact version or ^/~ range (${raw})`);
   else if (compare(version, workspace) > 0) problems.push(`${where}: ${name} ${version} is newer than the workspace ${workspace}`);
-  else if (published && SEMVER.test(published) && compare(version, published) < 0) stale.push(`${where}: ${name} ${version} is older than ${published} on npm`);
+  else if (published && SEMVER.test(published) && compare(version, published) < 0)
+    stale.push(`${where}: ${name} ${version} is older than ${published} on npm`);
 }
 
-if (stale.length) console.warn(`Warning: bump the docs and playground pins after the release:\n${stale.map((line) => `  ${line}`).join('\n')}`);
+if (stale.length)
+  console.warn(`Warning: bump the docs and playground pins after the release:\n${stale.map((line) => `  ${line}`).join('\n')}`);
 if (problems.length) {
   console.error(`Docs and playground pins are invalid:\n${problems.map((problem) => `  ${problem}`).join('\n')}`);
   process.exit(1);

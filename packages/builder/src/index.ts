@@ -1,5 +1,16 @@
 export * from './model';
-export { follows, keyBase, keyFromLabel, lockIdentifiers, optionBase, slugBase, stepBase, syncIdentifiers, unique, words } from './identifiers';
+export {
+  follows,
+  keyBase,
+  keyFromLabel,
+  lockIdentifiers,
+  optionBase,
+  slugBase,
+  stepBase,
+  syncIdentifiers,
+  unique,
+  words,
+} from './identifiers';
 export { dropReferences, renameReferences, type Renames } from './references';
 export * from './conditions';
 export { serialize, toDefinition, type Serialized } from './serialize';

@@ -8,14 +8,12 @@ import { runModel } from './model.harness';
 const numRuns = Number(process.env.FORMHAUS_MODEL_RUNS ?? 2000);
 
 it('keeps engine invariants under random interleavings of edits, navigation and hooks', async () => {
-  await fc.assert(fc.asyncProperty(
-    initialValueArbitrary,
-    fc.array(commandArbitrary, { minLength: 5, maxLength: 60, size: 'max' }),
-    (initialValues, commands) => runModel(
-      { FormEngine, validateFieldValue, validateStep },
-      modelDefinition,
-      initialValues,
-      commands,
+  await fc.assert(
+    fc.asyncProperty(
+      initialValueArbitrary,
+      fc.array(commandArbitrary, { minLength: 5, maxLength: 60, size: 'max' }),
+      (initialValues, commands) => runModel({ FormEngine, validateFieldValue, validateStep }, modelDefinition, initialValues, commands),
     ),
-  ), { numRuns });
+    { numRuns },
+  );
 }, 120_000);

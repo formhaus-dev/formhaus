@@ -32,7 +32,11 @@ export function describeCondition(condition: ShowCondition, fields: Map<string, 
 }
 
 export function describeConditions(owner: { show?: ShowCondition[]; showAny?: ShowCondition[] }, fields: Map<string, FormField>): string {
-  const describe = (conditions: ShowCondition[] = [], joiner: string) => conditions.map((condition) => describeCondition(condition, fields)).filter(Boolean).join(joiner);
+  const describe = (conditions: ShowCondition[] = [], joiner: string) =>
+    conditions
+      .map((condition) => describeCondition(condition, fields))
+      .filter(Boolean)
+      .join(joiner);
   const all = describe(owner.show, ' and ');
   const anyConditions = owner.showAny ?? [];
   const any = anyConditions.every((condition) => describeCondition(condition, fields)) ? describe(anyConditions, ' or ') : '';

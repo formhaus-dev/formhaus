@@ -8,17 +8,23 @@ const conditions: [string, ShowCondition, (value: string) => boolean][] = [
   ['notEmpty', { field: 'answer', notEmpty: true }, (value) => value !== ''],
 ];
 const inputs = ['yes', ' yes ', '   '];
-const matrix = conditions.flatMap(([name, condition, expected]) => inputs.map((input) => [name, JSON.stringify(input), condition, input, expected(input.trim())] as const));
+const matrix = conditions.flatMap(([name, condition, expected]) =>
+  inputs.map((input) => [name, JSON.stringify(input), condition, input, expected(input.trim())] as const),
+);
 
 const answer = (type: FieldType = 'text') => ({ key: 'answer', type, label: 'Answer' });
 
 const showForm = (condition: ShowCondition, type?: FieldType): FormDefinition => ({
-  id: 'show', title: 'Show', submit: { label: 'Send' },
+  id: 'show',
+  title: 'Show',
+  submit: { label: 'Send' },
   fields: [answer(type), { key: 'target', type: 'text', label: 'Target', show: [condition] }],
 });
 
 const routeForm = (condition: ShowCondition): FormDefinition => ({
-  id: 'routes', title: 'Routes', submit: { label: 'Send' },
+  id: 'routes',
+  title: 'Routes',
+  submit: { label: 'Send' },
   steps: [
     { id: 'start', title: 'Start', fields: [answer()], routes: [{ to: 'matched', show: [condition] }, { to: 'other' }] },
     { id: 'other', title: 'Other', fields: [{ key: 'other', type: 'text', label: 'Other' }], routes: [{ to: null }] },
@@ -27,7 +33,10 @@ const routeForm = (condition: ShowCondition): FormDefinition => ({
 });
 
 const disabledForm = (condition: ShowCondition): FormDefinition => ({
-  id: 'disabled', title: 'Disabled', submit: { label: 'Send', disabled: [condition] }, fields: [answer()],
+  id: 'disabled',
+  title: 'Disabled',
+  submit: { label: 'Send', disabled: [condition] },
+  fields: [answer()],
 });
 
 describe('conditions on trimmed text', () => {

@@ -33,12 +33,22 @@ export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.fre
 export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
 
 export function formatText(template: string, params: Record<string, unknown>): string {
-  return template.replace(/\{(\w+)\}/g, (match, name: string) => (Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : match));
+  return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+    Object.prototype.hasOwnProperty.call(params, name) ? String(params[name]) : match,
+  );
 }
 
-type TextSource<K extends string> = Partial<Record<K, string>> | ((key: K, params: MessageParams, ...context: never[]) => string | undefined);
+type TextSource<K extends string> =
+  | Partial<Record<K, string>>
+  | ((key: K, params: MessageParams, ...context: never[]) => string | undefined);
 
-export function resolveText<K extends string>(defaults: Record<K, string>, key: K, params: MessageParams, sources: (TextSource<K> | undefined)[], ...context: unknown[]): string {
+export function resolveText<K extends string>(
+  defaults: Record<K, string>,
+  key: K,
+  params: MessageParams,
+  sources: (TextSource<K> | undefined)[],
+  ...context: unknown[]
+): string {
   for (const source of sources) {
     const text = typeof source === 'function' ? (source as (...args: unknown[]) => unknown)(key, params, ...context) : source?.[key];
     if (text && typeof text === 'string') return typeof source === 'function' ? text : formatText(text, params);

@@ -52,7 +52,10 @@ function Samples() {
             <DropdownMenuItem icon={<Copy aria-hidden />}>Duplicate field</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <Notices entries={[{ id: 1, title: 'Field deleted', action: { label: 'Undo', onClick: () => undefined } }]} dismiss={() => undefined} />
+        <Notices
+          entries={[{ id: 1, title: 'Field deleted', action: { label: 'Undo', onClick: () => undefined } }]}
+          dismiss={() => undefined}
+        />
       </TooltipProvider>
     </div>
   );

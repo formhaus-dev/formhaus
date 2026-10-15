@@ -54,10 +54,7 @@
             "type": "radio",
             "label": "Billing",
             "layout": "inline",
-            "options": [
-              { "value": "monthly", "label": "Monthly" },
-              { "value": "annual", "label": "Annual" }
-            ],
+            "options": [{ "value": "monthly", "label": "Monthly" }, { "value": "annual", "label": "Annual" }],
             "validation": { "required": true }
           },
           {

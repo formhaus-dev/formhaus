@@ -58,18 +58,20 @@ export function FormActions({
           </button>
         )}
       </div>
-      {showPrimary && <button
-        type="submit"
-        className="fh-form-actions__button fh-form-actions__button--primary"
-        disabled={primaryDisabled}
-        aria-busy={loading}
-        onClick={(event) => {
-          event.preventDefault();
-          handlePrimary();
-        }}
-      >
-        {primaryLabel}
-      </button>}
+      {showPrimary && (
+        <button
+          type="submit"
+          className="fh-form-actions__button fh-form-actions__button--primary"
+          disabled={primaryDisabled}
+          aria-busy={loading}
+          onClick={(event) => {
+            event.preventDefault();
+            handlePrimary();
+          }}
+        >
+          {primaryLabel}
+        </button>
+      )}
     </div>
   );
 }

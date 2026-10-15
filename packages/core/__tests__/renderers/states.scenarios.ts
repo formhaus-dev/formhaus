@@ -14,7 +14,12 @@ export function stateScenarios(harness: RendererHarness, { it, expect, waitFor, 
   });
 
   it('shows the message of a failing submit handler', async () => {
-    harness.mount({ definition: flat, onSubmit: () => { throw new Error('Offline'); } });
+    harness.mount({
+      definition: flat,
+      onSubmit: () => {
+        throw new Error('Offline');
+      },
+    });
     await harness.click(button('Send'));
     await screen.findByText('Offline');
     expect(document.querySelector('form')?.getAttribute('aria-busy')).toBe('false');
@@ -76,9 +81,12 @@ export function stateScenarios(harness: RendererHarness, { it, expect, waitFor, 
 
   it('uses step and submit action settings', async () => {
     const onCancel = fn();
-    const custom = { ...wizard, cancel: { label: 'Cancel' }, submit: { label: 'Send', disabled: [{ field: 'city', eq: 'Nowhere' }] }, steps: wizard.steps!.map((step) => (
-      step.id === 'two' ? { ...step, next: { label: 'Pick later' }, back: false as const } : step
-    )) };
+    const custom = {
+      ...wizard,
+      cancel: { label: 'Cancel' },
+      submit: { label: 'Send', disabled: [{ field: 'city', eq: 'Nowhere' }] },
+      steps: wizard.steps!.map((step) => (step.id === 'two' ? { ...step, next: { label: 'Pick later' }, back: false as const } : step)),
+    };
     harness.mount({ definition: custom, initialValues: filled, onSubmit: () => {}, onCancel });
     await harness.click(button('Continue'));
     await harness.click(await screen.findByRole('button', { name: 'Pick later' }));

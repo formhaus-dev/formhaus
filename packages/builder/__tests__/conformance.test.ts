@@ -11,7 +11,10 @@ const corpus: { name: string; issues: unknown[]; definition: FormDefinition }[] 
   .map((file) => JSON.parse(readFileSync(join(dir, file), 'utf8')));
 
 describe('conformance corpus round trip', () => {
-  it.each(corpus.filter(({ issues }) => !issues.length).map(({ name, definition }) => [name, definition] as const))('%s', (_, definition) => {
-    expect(normalize(toDefinition(fromDefinition(definition)))).toEqual(normalize(definition));
-  });
+  it.each(corpus.filter(({ issues }) => !issues.length).map(({ name, definition }) => [name, definition] as const))(
+    '%s',
+    (_, definition) => {
+      expect(normalize(toDefinition(fromDefinition(definition)))).toEqual(normalize(definition));
+    },
+  );
 });

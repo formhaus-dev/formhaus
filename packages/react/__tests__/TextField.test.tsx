@@ -35,14 +35,7 @@ function typeSequence(input: HTMLElement, steps: string[]) {
 describe('TextField', () => {
   it('keeps an empty number input empty', () => {
     const onChange = vi.fn();
-    render(
-      <TextField
-        field={field}
-        value={42}
-        onChange={onChange}
-        onBlur={() => {}}
-      />,
-    );
+    render(<TextField field={field} value={42} onChange={onChange} onBlur={() => {}} />);
 
     fireEvent.change(screen.getByRole('spinbutton', { name: 'Age' }), {
       target: { value: '' },
@@ -89,12 +82,7 @@ describe('TextField', () => {
 
   it('passes inputMode to the input', () => {
     render(
-      <TextField
-        field={{ key: 'site', type: 'text', label: 'Site', inputMode: 'url' }}
-        value=""
-        onChange={() => {}}
-        onBlur={() => {}}
-      />,
+      <TextField field={{ key: 'site', type: 'text', label: 'Site', inputMode: 'url' }} value="" onChange={() => {}} onBlur={() => {}} />,
     );
 
     expect(screen.getByRole('textbox', { name: 'Site' }).getAttribute('inputmode')).toBe('url');

@@ -61,11 +61,7 @@
         "type": "radio",
         "label": "Would you consider coming back?",
         "layout": "inline",
-        "options": [
-          { "value": "yes", "label": "Yes" },
-          { "value": "maybe", "label": "Maybe" },
-          { "value": "no", "label": "No" }
-        ],
+        "options": [{ "value": "yes", "label": "Yes" }, { "value": "maybe", "label": "Maybe" }, { "value": "no", "label": "No" }],
         "validation": { "required": true }
       },
       {

@@ -33,7 +33,9 @@ export default function App() {
         {booked ? (
           <section className="quiz__card">
             <h1>You're all set</h1>
-            <p>We'll send the {plan.name} plan to {String(answers.email)}.</p>
+            <p>
+              We'll send the {plan.name} plan to {String(answers.email)}.
+            </p>
           </section>
         ) : (
           <>

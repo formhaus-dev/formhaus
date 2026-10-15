@@ -65,21 +65,27 @@ export async function createKitRenderer(config: PluginConfig): Promise<KitRender
       const role = roleForField(field);
       if (isOptionRole(role)) return optionGroup(field, role, theme, instance);
       const filled = field.defaultValue !== undefined && field.defaultValue !== '';
-      const node = await instance(role, {
-        label: labelText(field),
-        value: filled ? String(field.defaultValue) : field.placeholder || ' ',
-        helper: field.helperText ?? '',
-      }, filled ? 'Filled' : 'Empty');
+      const node = await instance(
+        role,
+        {
+          label: labelText(field),
+          value: filled ? String(field.defaultValue) : field.placeholder || ' ',
+          helper: field.helperText ?? '',
+        },
+        filled ? 'Filled' : 'Empty',
+      );
       node.name = field.key;
       return node;
     },
     async sample(role) {
-      const node = (role === 'button.text' && await synthesized(ROLE_LABELS[role])) || await instance(role, { label: ROLE_LABELS[role], value: ' ', helper: '' }, 'Empty');
+      const node =
+        (role === 'button.text' && (await synthesized(ROLE_LABELS[role]))) ||
+        (await instance(role, { label: ROLE_LABELS[role], value: ' ', helper: '' }, 'Empty'));
       node.name = ROLE_LABELS[role];
       return node;
     },
     async button(label, kind) {
-      const node = (kind === 'text' && await synthesized(label)) || await instance(`button.${kind}`, { label });
+      const node = (kind === 'text' && (await synthesized(label))) || (await instance(`button.${kind}`, { label }));
       node.name = label;
       return node;
     },

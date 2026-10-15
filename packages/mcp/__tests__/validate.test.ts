@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from 'vitest';
 import { validateDefinitionTool } from '../src/validate';
 import { branching, linear } from './fixtures';
 
-const summary = (definition: unknown) => validateDefinitionTool({ definition }).issues.map(({ severity, code, path }) => `${severity} ${code} ${path}`);
+const summary = (definition: unknown) =>
+  validateDefinitionTool({ definition }).issues.map(({ severity, code, path }) => `${severity} ${code} ${path}`);
 
 describe('validate_definition', () => {
   it('accepts a valid definition', () => {
@@ -41,25 +42,38 @@ describe('validate_definition', () => {
   it('hints where a misplaced rule belongs', () => {
     const fields = [{ key: 'a', type: 'text', label: 'A', required: true }];
     const issue = validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Go' }, fields } }).issues[0];
-    expect(issue).toMatchObject({ code: 'schema', path: '/fields/0/required', hint: 'Move "required" into "validation": { "required": ... }.' });
+    expect(issue).toMatchObject({
+      code: 'schema',
+      path: '/fields/0/required',
+      hint: 'Move "required" into "validation": { "required": ... }.',
+    });
   });
 
   it('suggests an operator for an unknown condition key', () => {
-    const fields = [{ key: 'a', type: 'text', label: 'A' }, { key: 'b', type: 'text', label: 'B', show: [{ field: 'a', equals: 'x' }] }];
+    const fields = [
+      { key: 'a', type: 'text', label: 'A' },
+      { key: 'b', type: 'text', label: 'B', show: [{ field: 'a', equals: 'x' }] },
+    ];
     const issues = validateDefinitionTool({ definition: { id: 'x', title: 'X', submit: { label: 'Go' }, fields } }).issues;
     expect(issues.map(({ code, path }) => `${code} ${path}`)).toEqual(['unknown-operator /fields/1/show/0/equals']);
     expect(issues[0].hint).toMatch(/^Use one of: "eq", "neq"/);
   });
 
   it('reports duplicate step ids and route errors from the engine', () => {
-    expect(summary({ ...linear, steps: [linear.steps[0], { ...linear.steps[1], id: 'name' }] })).toEqual(['error duplicate-step-id /steps/1/id']);
-    expect(summary({ ...linear, steps: [{ ...linear.steps[0], routes: [{ to: 'missing' }] }, linear.steps[1]] })).toEqual(['error route-target /steps/0/routes/0/to']);
+    expect(summary({ ...linear, steps: [linear.steps[0], { ...linear.steps[1], id: 'name' }] })).toEqual([
+      'error duplicate-step-id /steps/1/id',
+    ]);
+    expect(summary({ ...linear, steps: [{ ...linear.steps[0], routes: [{ to: 'missing' }] }, linear.steps[1]] })).toEqual([
+      'error route-target /steps/0/routes/0/to',
+    ]);
   });
 
   it('returns unknown validator names as warnings without logging', () => {
     const warn = vi.spyOn(console, 'warn');
     const fields = [{ key: 'a', type: 'text', label: 'A', validation: { validator: 'vat' } }];
-    expect(summary({ id: 'x', title: 'X', submit: { label: 'Send' }, fields })).toEqual(['warning unknown-validator /fields/0/validation/validator']);
+    expect(summary({ id: 'x', title: 'X', submit: { label: 'Send' }, fields })).toEqual([
+      'warning unknown-validator /fields/0/validation/validator',
+    ]);
     expect(warn).not.toHaveBeenCalled();
     warn.mockRestore();
   });
@@ -75,7 +89,10 @@ describe('validate_definition', () => {
   });
 
   it('returns core warnings for likely mistakes', () => {
-    const fields = [{ key: 'a', type: 'text', label: 'A', validation: { min: 1 } }, { key: 'c', type: 'select', label: 'C' }];
+    const fields = [
+      { key: 'a', type: 'text', label: 'A', validation: { min: 1 } },
+      { key: 'c', type: 'select', label: 'C' },
+    ];
     expect(summary({ id: 'x', title: 'X', submit: { label: 'Send' }, fields })).toEqual([
       'warning rule-not-applicable /fields/0/validation/min',
       'warning missing-options /fields/1/options',

@@ -3,13 +3,7 @@ import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import Typography from '@mui/material/Typography';
 
-export function StepProgress({
-  current,
-  total,
-  stepTitle,
-  stepDescription,
-  headingLevel = 2,
-}: FormStepProgressProps) {
+export function StepProgress({ current, total, stepTitle, stepDescription, headingLevel = 2 }: FormStepProgressProps) {
   const percent = (current / total) * 100;
 
   return (

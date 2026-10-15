@@ -15,18 +15,39 @@ async function browserCanSubmit(definition: FormDefinition, values: Record<strin
 
 describe('conformance corpus', () => {
   it('covers every audited case', () => {
-    expect(corpus.map(({ name }) => name).sort()).toEqual(['disabled-actions', 'flat-api-steps', 'format-version', 'impossible-dates', 'invalid-labels', 'invalid-messages', 'localized-catalog', 'localized-overlay', 'options-from', 'proto-keys', 'shared-key-branches', 'times-and-hidden', 'trimmed-conditions', 'trimmed-text', 'unsupported-format-version']);
+    expect(corpus.map(({ name }) => name).sort()).toEqual([
+      'disabled-actions',
+      'flat-api-steps',
+      'format-version',
+      'impossible-dates',
+      'invalid-labels',
+      'invalid-messages',
+      'localized-catalog',
+      'localized-overlay',
+      'options-from',
+      'proto-keys',
+      'shared-key-branches',
+      'times-and-hidden',
+      'trimmed-conditions',
+      'trimmed-text',
+      'unsupported-format-version',
+    ]);
   });
 
   it.each(corpus.map((fixture) => [fixture.name, fixture] as const))('%s: checkDefinition', (_, { definition, issues }) => {
-    const errors = checkDefinition(definition).filter(({ severity }) => severity === 'error').map(({ code, path }) => ({ code, path }));
+    const errors = checkDefinition(definition)
+      .filter(({ severity }) => severity === 'error')
+      .map(({ code, path }) => ({ code, path }));
     expect(errors.sort(byPath)).toEqual([...issues].sort(byPath));
   });
 
-  it.each(corpus.filter(({ issues }) => issues.length).map((fixture) => [fixture.name, fixture] as const))('%s: rejected by the engine and the server', (_, { definition }) => {
-    expect(() => new FormEngine(definition)).toThrow(FormDefinitionError);
-    expect(() => validateSubmission(definition, {})).toThrow(FormDefinitionError);
-  });
+  it.each(corpus.filter(({ issues }) => issues.length).map((fixture) => [fixture.name, fixture] as const))(
+    '%s: rejected by the engine and the server',
+    (_, { definition }) => {
+      expect(() => new FormEngine(definition)).toThrow(FormDefinitionError);
+      expect(() => validateSubmission(definition, {})).toThrow(FormDefinitionError);
+    },
+  );
 
   it.each(cases)('%s: server', (_, definition, { input, expected }) => {
     const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps });

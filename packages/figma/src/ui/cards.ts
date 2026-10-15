@@ -114,7 +114,11 @@ function section(title: string, note: string, children: HTMLElement[]): HTMLElem
 function setupSection(rows: BindingRow[], kitName: string, handlers: CardHandlers): HTMLElement | null {
   if (rows.length === 0) return null;
   return section('Needs setup', `${rows.length} left`, [
-    element('p', 'hint', `These still render with ${kitName}. Select your component on the canvas and click a card, or drag the bar above onto it.`),
+    element(
+      'p',
+      'hint',
+      `These still render with ${kitName}. Select your component on the canvas and click a card, or drag the bar above onto it.`,
+    ),
     grid(rows, kitName, handlers),
   ]);
 }
@@ -141,7 +145,11 @@ export function renderCards(container: HTMLElement, rows: BindingRow[], kitName:
   store.release();
   const by = (...states: Coverage[]) => rows.filter((row) => states.includes(coverageOf(row)));
   const done = by('yours').length === rows.length ? element('div', 'all-covered', 'Every element has its own component.') : null;
-  const parts = [done, setupSection(by('kit', 'missing'), kitName, handlers), substituteSection(by('reused'), kitName, handlers), boundSection(by('yours'), kitName, handlers)];
+  const parts = [
+    done,
+    setupSection(by('kit', 'missing'), kitName, handlers),
+    substituteSection(by('reused'), kitName, handlers),
+    boundSection(by('yours'), kitName, handlers),
+  ];
   container.replaceChildren(...parts.filter((node): node is HTMLElement => Boolean(node)));
 }
-

@@ -13,10 +13,7 @@
           "type": "radio",
           "label": "Who is it for?",
           "validation": { "required": true },
-          "options": [
-            { "value": "my-team", "label": "My team" },
-            { "value": "just-me", "label": "Just me" }
-          ]
+          "options": [{ "value": "my-team", "label": "My team" }, { "value": "just-me", "label": "Just me" }]
         }
       ],
       "routes": [
@@ -43,11 +40,7 @@
           "type": "radio",
           "label": "Team size",
           "validation": { "required": true },
-          "options": [
-            { "value": "2-10", "label": "2–10" },
-            { "value": "11-50", "label": "11–50" },
-            { "value": "51", "label": "51+" }
-          ]
+          "options": [{ "value": "2-10", "label": "2–10" }, { "value": "11-50", "label": "11–50" }, { "value": "51", "label": "51+" }]
         }
       ],
       "routes": [{ "to": "invite" }]

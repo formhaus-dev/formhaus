@@ -14,7 +14,14 @@ const emit = defineEmits<{
 }>();
 const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
-const hidden = { position: 'absolute', width: '1px', height: '1px', overflow: 'hidden', clip: 'rect(0 0 0 0)', clipPath: 'inset(50%)' } as const;
+const hidden = {
+  position: 'absolute',
+  width: '1px',
+  height: '1px',
+  overflow: 'hidden',
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+} as const;
 const slots = useSlots();
 
 const { state, submit, retry, again, saveDraft } = useCloudForm({
@@ -40,14 +47,23 @@ function act(action: Exclude<CloudAction, null>) {
 }
 
 let frame = 0;
-watch(() => state.value.attempt, () => {
-  cancelAnimationFrame(frame);
-  frame = requestAnimationFrame(() => focusProblem(root.value, root.value?.querySelector<HTMLDivElement>(':scope > .fh-form__notice') ?? null));
-}, { flush: 'post' });
+watch(
+  () => state.value.attempt,
+  () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() =>
+      focusProblem(root.value, root.value?.querySelector<HTMLDivElement>(':scope > .fh-form__notice') ?? null),
+    );
+  },
+  { flush: 'post' },
+);
 onBeforeUnmount(() => cancelAnimationFrame(frame));
-watch(() => state.value.done, (done) => {
-  if (done && state.value.settings.redirectUrl && !slots.success) window.location.assign(state.value.settings.redirectUrl);
-});
+watch(
+  () => state.value.done,
+  (done) => {
+    if (done && state.value.settings.redirectUrl && !slots.success) window.location.assign(state.value.settings.redirectUrl);
+  },
+);
 
 function onFieldChange(key: string, value: unknown, values: Record<string, unknown>) {
   saveDraft(values);

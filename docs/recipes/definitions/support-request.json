@@ -32,7 +32,13 @@
       "id": "details",
       "title": "Details",
       "fields": [
-        { "key": "message", "type": "textarea", "label": "Describe the problem", "rows": 5, "validation": { "required": true, "minLength": 20 } }
+        {
+          "key": "message",
+          "type": "textarea",
+          "label": "Describe the problem",
+          "rows": 5,
+          "validation": { "required": true, "minLength": 20 }
+        }
       ]
     },
     {
@@ -40,16 +46,12 @@
       "title": "Screenshot",
       "show": [{ "field": "topic", "eq": "bug" }],
       "skip": { "label": "No screenshot" },
-      "fields": [
-        { "key": "screenshot", "type": "file", "label": "Screenshot", "accept": "image/*", "validation": { "required": true } }
-      ]
+      "fields": [{ "key": "screenshot", "type": "file", "label": "Screenshot", "accept": "image/*", "validation": { "required": true } }]
     },
     {
       "id": "contact",
       "title": "How do we reach you?",
-      "fields": [
-        { "key": "email", "type": "email", "label": "Email", "validation": { "required": true } }
-      ]
+      "fields": [{ "key": "email", "type": "email", "label": "Email", "validation": { "required": true } }]
     }
   ]
 }

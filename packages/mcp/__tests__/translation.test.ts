@@ -7,7 +7,10 @@ import { linear } from './fixtures';
 const keyed = {
   ...linear,
   i18n: { messages: { required: 'errors.required' } },
-  steps: linear.steps.map((step) => ({ ...step, fields: step.fields.map((field) => ({ ...field, i18n: { label: `signup.${field.key}` } })) })),
+  steps: linear.steps.map((step) => ({
+    ...step,
+    fields: step.fields.map((field) => ({ ...field, i18n: { label: `signup.${field.key}` } })),
+  })),
 };
 
 describe('translation_template', () => {
@@ -22,10 +25,18 @@ describe('translation_template', () => {
         name: { title: 'Name', fields: { name: { label: 'Name' } } },
         email: { title: 'Email', fields: { email: { label: 'Email' } } },
       },
-      messages: { required: 'This field is required', maxLength: 'Must be at most {max} characters', email: 'Enter a valid email', string: 'Must be text' },
+      messages: {
+        required: 'This field is required',
+        maxLength: 'Must be at most {max} characters',
+        email: 'Enter a valid email',
+        string: 'Must be text',
+      },
       labels: { continue: 'Continue', back: 'Back', stepOf: 'Step {current} of {total}', errorSummary: 'Check these answers' },
     });
-    expect(result.slots.find(({ address }) => address === 'steps.name.fields.name.label')).toMatchObject({ key: 'signup.name', text: 'Name' });
+    expect(result.slots.find(({ address }) => address === 'steps.name.fields.name.label')).toMatchObject({
+      key: 'signup.name',
+      text: 'Name',
+    });
     expect(result.slots.find(({ address }) => address === 'messages.required')).toMatchObject({ key: 'errors.required' });
     expect(result.slots.find(({ address }) => address === 'steps.name.title')).toMatchObject({ key: 'signup.steps.name.title' });
   });

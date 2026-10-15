@@ -19,13 +19,22 @@ export function useCloudForm(options: CloudFormOptions) {
   function boot() {
     controller?.dispose();
     state.value = cloudStateFor(options.initialForm());
-    controller = createCloudController({
-      id: options.id(), apiBase: options.apiBase(), initialForm: options.initialForm(), draftStore: options.draftStore(), extraBody: options.extraBody,
-    }, {
-      onChange: (next) => { state.value = next; },
-      onSuccess: options.onSuccess,
-      onError: (error) => options.onError()?.(error),
-    });
+    controller = createCloudController(
+      {
+        id: options.id(),
+        apiBase: options.apiBase(),
+        initialForm: options.initialForm(),
+        draftStore: options.draftStore(),
+        extraBody: options.extraBody,
+      },
+      {
+        onChange: (next) => {
+          state.value = next;
+        },
+        onSuccess: options.onSuccess,
+        onError: (error) => options.onError()?.(error),
+      },
+    );
     controller.start();
   }
 

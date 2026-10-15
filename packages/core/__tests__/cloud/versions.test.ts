@@ -6,10 +6,15 @@ import { fetchForm } from '../../src/cloud/client';
 import { failureFor } from '../../src/cloud/failures';
 import type { FormDefinition } from '../../src';
 
-const options = [{ value: 'bug', label: 'Bug' }, { value: 'idea', label: 'Idea' }];
+const options = [
+  { value: 'bug', label: 'Bug' },
+  { value: 'idea', label: 'Idea' },
+];
 
 const v1: FormDefinition = {
-  id: 'feedback', title: 'Feedback', submit: { label: 'Send' },
+  id: 'feedback',
+  title: 'Feedback',
+  submit: { label: 'Send' },
   fields: [
     { key: 'name', type: 'text', label: 'Name' },
     { key: 'topic', type: 'radio', label: 'Topic', options },
@@ -28,7 +33,12 @@ const v2: FormDefinition = {
 };
 
 function reply(status: number, body: unknown, version?: number) {
-  return { ok: status < 400, status, json: async () => body, headers: { get: (name: string) => (name === 'Formhaus-Version' && version ? String(version) : null) } };
+  return {
+    ok: status < 400,
+    status,
+    json: async () => body,
+    headers: { get: (name: string) => (name === 'Formhaus-Version' && version ? String(version) : null) },
+  };
 }
 
 afterEach(() => vi.unstubAllGlobals());
@@ -68,7 +78,10 @@ describe('versions', () => {
   });
 
   it('sends the version and wraps network failures', async () => {
-    const fetchMock = vi.fn().mockRejectedValueOnce(new TypeError('Failed to fetch')).mockResolvedValue(reply(201, { id: 's', values: {} }));
+    const fetchMock = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError('Failed to fetch'))
+      .mockResolvedValue(reply(201, { id: 's', values: {} }));
     vi.stubGlobal('fetch', fetchMock);
     const submit = createSubmitter({ id: 'abc', version: 3 });
     await expect(submit({ name: 'Ada' }, [])).rejects.toMatchObject({ status: 0, code: 'network', retryable: true });
@@ -104,7 +117,11 @@ describe('controller', () => {
     await expect(controller.submit({ name: 'Ada', topic: 'bug' })).rejects.toMatchObject({ code: 'form_updated' });
     expect(JSON.parse(fetchMock.mock.calls[1][1].body).version).toBe(1);
     expect(last()).toMatchObject({
-      definition: v2, version: 2, revision: 1, initialValues: { name: 'Ada' }, errors: { name: 'Too long', topic: 'Please answer again.' },
+      definition: v2,
+      version: 2,
+      revision: 1,
+      initialValues: { name: 'Ada' },
+      errors: { name: 'Too long', topic: 'Please answer again.' },
       notice: { tone: 'info', message: 'This form was updated. Please review your answers and submit again.' },
     });
   });

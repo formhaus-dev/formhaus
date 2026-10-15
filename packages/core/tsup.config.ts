@@ -13,7 +13,13 @@ const shared = {
 export default defineConfig([
   {
     ...shared,
-    entry: { index: 'src/index.ts', cloud: 'src/cloud/index.ts', server: 'src/server/index.ts', internal: 'src/internal/index.ts', i18n: 'src/i18n/index.ts' },
+    entry: {
+      index: 'src/index.ts',
+      cloud: 'src/cloud/index.ts',
+      server: 'src/server/index.ts',
+      internal: 'src/internal/index.ts',
+      i18n: 'src/i18n/index.ts',
+    },
     format: ['esm'],
     dts: true,
     clean: true,

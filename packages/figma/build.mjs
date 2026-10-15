@@ -23,9 +23,7 @@ async function buildUi() {
     build({ bundle: true, entryPoints: [join(uiRoot, 'main.ts')], format: 'iife', target: 'es2017', write: false }),
   ]);
   const code = script.outputFiles[0].text;
-  const html = template
-    .replace('/* FORMHAUS_STYLES */', styles)
-    .replace('/* FORMHAUS_SCRIPT */', code);
+  const html = template.replace('/* FORMHAUS_STYLES */', styles).replace('/* FORMHAUS_SCRIPT */', code);
   await mkdir(dist, { recursive: true });
   await writeFile(join(dist, 'ui.html'), html);
 }

@@ -11,13 +11,7 @@ interface FormProgressControllerProps {
   labels?: FormRendererProps['labels'];
 }
 
-export function FormProgressController({
-  engine,
-  ProgressComponent,
-  headingLevel,
-  marks,
-  labels,
-}: FormProgressControllerProps) {
+export function FormProgressController({ engine, ProgressComponent, headingLevel, marks, labels }: FormProgressControllerProps) {
   useFormSnapshot(engine);
   if (!engine.isMultiStep || !ProgressComponent) return null;
   const errors = marks ? engine.stepErrors : {};

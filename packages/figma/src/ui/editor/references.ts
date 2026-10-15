@@ -10,13 +10,10 @@ function allFields(draft: FormDefinition): FormField[] {
 }
 
 function conditions(draft: FormDefinition): ShowCondition[] {
-  const owners: Conditional[] = [
-    ...allFields(draft),
-    ...(draft.steps ?? []),
-    ...(draft.steps ?? []).flatMap((step) => step.routes ?? []),
-  ];
-  const actions = [draft.submit, draft.cancel, ...(draft.steps ?? []).flatMap((step) => [step.next, step.back])]
-    .filter((action): action is FormAction => Boolean(action));
+  const owners: Conditional[] = [...allFields(draft), ...(draft.steps ?? []), ...(draft.steps ?? []).flatMap((step) => step.routes ?? [])];
+  const actions = [draft.submit, draft.cancel, ...(draft.steps ?? []).flatMap((step) => [step.next, step.back])].filter(
+    (action): action is FormAction => Boolean(action),
+  );
   return [
     ...owners.flatMap((owner) => [...(owner.show ?? []), ...(owner.showAny ?? [])]),
     ...actions.flatMap((action) => action.disabled ?? []),
@@ -46,5 +43,10 @@ export function referencedValues(draft: FormDefinition, key: string): Set<string
 }
 
 export function referencedSteps(draft: FormDefinition): Set<string> {
-  return new Set((draft.steps ?? []).flatMap((step) => step.routes ?? []).map((route) => route.to).filter((to): to is string => Boolean(to)));
+  return new Set(
+    (draft.steps ?? [])
+      .flatMap((step) => step.routes ?? [])
+      .map((route) => route.to)
+      .filter((to): to is string => Boolean(to)),
+  );
 }
