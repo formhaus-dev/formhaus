@@ -7,6 +7,8 @@ import type { FormDefinition, FormField, FormStep, ShowCondition } from '../../s
 
 type Values = Record<string, unknown>;
 
+const numRuns = Number(process.env.FORMHAUS_FUZZ_RUNS ?? 3000);
+
 function stepValues(step: { fields: FormField[] }, values: Values, previous: Values): Values {
   const candidates = { ...previous };
   for (const field of step.fields) candidates[field.key] = trimValue(field, values[field.key]);
@@ -87,7 +89,7 @@ describe('active path', () => {
       const expected = referencePath(definition, values);
       expect(path.steps(values).map((step) => step.id)).toEqual(expected.steps);
       expect(Object.entries(path.values(values))).toEqual(expected.values);
-    }), { numRuns: 3000 });
+    }), { numRuns });
   });
 
   it('keeps an earlier answer when a later field with the same key is hidden', () => {
