@@ -3,15 +3,20 @@ import { isVisible } from '../visibility';
 import { trimValue } from '../validation/type-checks';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
+  return walkPath(definition, values).steps;
+}
+
+function walkPath(definition: FormDefinition, values: Record<string, unknown>) {
   const steps = definition.steps ?? [];
   const indexes = new Map(steps.map((step, index) => [step.id, index]));
   const result: FormStep[] = [];
   const available: Record<string, unknown> = {};
+  if (!steps.length) addStepValues({ fields: definition.fields ?? [] }, values, available);
   for (let index = 0; index < steps.length;) {
     const step = steps[index];
     if (!isVisible(step, available)) { index++; continue; }
     result.push(step);
-    Object.assign(available, stepValues(step, values, available));
+    addStepValues(step, values, available);
     const route = step.routes?.find((route) => (
       isVisible(route, available) && (route.to === null || ((indexes.get(route.to) ?? -1) > index
         && isVisible(steps[indexes.get(route.to)!], available)))
@@ -19,7 +24,7 @@ export function activeSteps(definition: FormDefinition, values: Record<string, u
     if (route?.to === null) break;
     index = route ? indexes.get(route.to)! : index + 1;
   }
-  return result;
+  return { steps: result, values: available };
 }
 
 export function reconcileStepIndex(previous: FormStep[], next: FormStep[], index: number): number {
@@ -34,14 +39,15 @@ export function reconcileStepIndex(previous: FormStep[], next: FormStep[], index
   return 0;
 }
 
-function stepValues(step: { fields: FormField[] }, values: Record<string, unknown>, previous: Record<string, unknown>) {
-  const candidates = { ...previous };
-  for (const field of step.fields) candidates[field.key] = trimValue(field, values[field.key]);
-  const result: Record<string, unknown> = {};
-  for (const field of step.fields) {
-    if (isVisible(field, candidates) && values[field.key] !== undefined) result[field.key] = trimValue(field, values[field.key]);
+function addStepValues(step: { fields: FormField[] }, values: Record<string, unknown>, target: Record<string, unknown>): void {
+  const saved = step.fields.map(({ key }) => [key, Object.prototype.hasOwnProperty.call(target, key), target[key]] as const);
+  for (const field of step.fields) target[field.key] = trimValue(field, values[field.key]);
+  const shown = step.fields.filter((field) => isVisible(field, target) && values[field.key] !== undefined);
+  for (const [key, had, value] of saved) {
+    if (had) target[key] = value;
+    else delete target[key];
   }
-  return result;
+  for (const field of shown) target[field.key] = trimValue(field, values[field.key]);
 }
 
 export function createActivePath(definition: FormDefinition) {
@@ -51,11 +57,7 @@ export function createActivePath(definition: FormDefinition) {
   const refresh = (values: Record<string, unknown>) => {
     if (source === values) return;
     source = values;
-    steps = activeSteps(definition, values);
-    const result: Record<string, unknown> = {};
-    const groups = definition.steps?.length ? steps : [{ fields: definition.fields ?? [] }];
-    for (const step of groups) Object.assign(result, stepValues(step, values, result));
-    active = result;
+    ({ steps, values: active } = walkPath(definition, values));
   };
   return {
     invalidate(): void { source = null; },
