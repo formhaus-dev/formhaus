@@ -132,10 +132,11 @@ describe('JSON mode in a browser', () => {
     await page.viewport(1440, 1000);
     renderEditor();
     await mode('JSON');
-    const bar = topBar().getBoundingClientRect();
+    const start = screen.getByRole('radiogroup', { name: 'Editor mode' }).getBoundingClientRect();
+    const end = topBar().lastElementChild?.getBoundingClientRect();
     const pane = view().dom.closest<HTMLElement>('[class*="pane"]')?.getBoundingClientRect();
-    expect(pane?.left).toBeCloseTo(bar.left, 0);
-    expect(pane?.right).toBeCloseTo(bar.right, 0);
+    expect(pane?.left).toBeCloseTo(start.left, 0);
+    expect(pane?.right).toBeCloseTo(end?.right ?? 0, 0);
   });
 
   it('scrolls the page to the last line while the editor is focused', async () => {

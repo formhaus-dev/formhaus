@@ -1,3 +1,4 @@
+import { fromDefinition } from '@formhaus/builder';
 import { cleanup, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
@@ -37,8 +38,46 @@ describe.each([
     const bar = box(document.querySelector('[data-topbar]'));
     const group = box(screen.getByRole('radiogroup', { name: 'Editor mode' }));
     const shell = box(document.querySelector('[data-topbar]')?.parentElement ?? null);
-    expect(group.left).toBe(bar.left);
-    expect(bar.left).toBeGreaterThan(shell.left);
-    expect(shell.right - bar.right).toBe(bar.left - shell.left);
+    const content = box(document.querySelector('[data-topbar]')?.nextElementSibling ?? null);
+    expect(bar.left).toBe(shell.left);
+    expect(bar.right).toBe(shell.right);
+    expect(group.left).toBe(content.left);
+    expect(group.top - bar.top).toBeGreaterThan(0);
+  });
+});
+
+describe.each([0, 64])('the stuck toolbar under a %ipx host header', (header) => {
+  afterEach(() => {
+    cleanup();
+    document.documentElement.style.removeProperty('--fh-ed-layout-topbar');
+    document.querySelector('[data-fake-header]')?.remove();
+  });
+
+  it('sticks below the header with a border and without moving the content', async () => {
+    await page.viewport(1440, 700);
+    document.documentElement.style.setProperty('--fh-ed-layout-topbar', `${String(header)}px`);
+    const fake = Object.assign(document.createElement('div'), {
+      style: `position:fixed;top:0;left:0;right:0;height:${String(header)}px;z-index:1000`,
+    });
+    fake.dataset.fakeHeader = '';
+    document.body.prepend(fake);
+    const fields = Array.from({ length: 30 }, (_, index) => ({
+      key: `f${String(index)}`,
+      type: 'text' as const,
+      label: `Field ${String(index)}`,
+    }));
+    renderEditor(fromDefinition({ id: 'long', title: 'Long', submit: { label: 'Send' }, fields }));
+    const bar = () => document.querySelector<HTMLElement>('[data-topbar]');
+    const content = () => box(bar()?.nextElementSibling ?? null).top + window.scrollY;
+    window.scrollTo(0, 0);
+    const before = content();
+    expect(bar()?.hasAttribute('data-stuck')).toBe(false);
+    window.scrollTo(0, 400);
+    await waitFor(() => {
+      expect(bar()?.hasAttribute('data-stuck')).toBe(true);
+    });
+    expect(content()).toBe(before);
+    expect(Math.round(box(bar()).top)).toBe(header);
+    expect(getComputedStyle(bar() as HTMLElement).borderBottomColor).not.toBe('rgba(0, 0, 0, 0)');
   });
 });
