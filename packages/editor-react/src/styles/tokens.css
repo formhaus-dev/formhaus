@@ -35,9 +35,10 @@
   --fh-ed-font-tracking-tight: -0.01em;
   --fh-ed-font-weight-medium: 500;
   --fh-ed-font-weight-semibold: 600;
+  --fh-ed-layout-gutter: 16px;
   --fh-ed-layout-sidebar: 300px;
   --fh-ed-layout-target-gap: 0px;
-  --fh-ed-layout-topbar: 56px;
+  --fh-ed-layout-topbar: 0px;
   --fh-ed-line: light-dark(#e7e7e4, #2a2a30);
   --fh-ed-line-strong: light-dark(#d6d6d2, #3a3a42);
   --fh-ed-opacity-disabled: 0.45;
