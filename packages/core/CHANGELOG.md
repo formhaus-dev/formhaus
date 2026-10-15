@@ -1,5 +1,11 @@
 # @formhaus/core
 
+## 0.13.2
+
+### Patch Changes
+
+- 5752683: - Fixed `translationTemplate()` and `textSlots()` listing a `validation.required: ""` rule as translatable. A translation for it made the field required. `translationIssues()` now reports it as unknown.
+
 ## 0.13.1
 
 ### Patch Changes

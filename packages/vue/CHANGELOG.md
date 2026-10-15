@@ -1,5 +1,14 @@
 # @formhaus/vue
 
+## 0.13.2
+
+### Patch Changes
+
+- 6dfb643: - Fixed two fields sharing one element id when their keys differ only in characters other than letters, digits, `_` and `-`, such as `contact.email` and `contact-email`. Labels, error messages and error summary links pointed at the first field. Ids of keys without such a collision are unchanged.
+- 5dfddfe: - Fixed the renderer keeping the first `optionsProviders` and showing options resolved for the previous definition after `definition` or `optionsProviders` was replaced.
+- Updated dependencies [5752683]
+  - @formhaus/core@0.13.2
+
 ## 0.13.1
 
 ### Patch Changes
