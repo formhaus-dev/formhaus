@@ -2,7 +2,7 @@ import type { ValidatorFn } from '../validation';
 import { messageResolver, type ResolveMessage } from '../validation/default-messages';
 import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
 import type { FormEngineOptions, StepValidateFn, SubmitHandler } from './engine-options';
-import { createValues } from './engine-utils';
+import { createValues, initialState } from './engine-utils';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineInternals, EngineState, RuntimeNotifyOptions } from './runtime-internals';
@@ -40,17 +40,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.messages = messageResolver(options?.messages, definition.messages);
     this.visibility = createVisibility(definition);
     const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
-    this.state = {
-      values,
-      errors: {},
-      topLevelErrors: [],
-      serverErrors: {},
-      serverFormErrors: [],
-      currentStepIndex: 0,
-      fieldLoading: {},
-      stepValidating: false,
-      submitting: false,
-    };
+    this.state = initialState(values);
     this.visibility.reconcileHidden(values, this.state.errors, true);
   }
 

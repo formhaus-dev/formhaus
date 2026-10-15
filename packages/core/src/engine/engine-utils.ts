@@ -1,4 +1,5 @@
 import type { FormDefinition, FormField } from '../types';
+import type { EngineState } from './runtime-internals';
 import { isGroup, topNodes, valueFields } from '../visibility/nodes';
 
 export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
@@ -6,6 +7,18 @@ export const shownError = (errors: Record<string, string>, field: FormField) => 
 export function getAllFields(definition: FormDefinition): FormField[] {
   return valueFields(topNodes(definition));
 }
+
+export const initialState = (values: Record<string, unknown>): EngineState => ({
+  values,
+  errors: {},
+  topLevelErrors: [],
+  serverErrors: {},
+  serverFormErrors: [],
+  currentStepIndex: 0,
+  fieldLoading: {},
+  stepValidating: false,
+  submitting: false,
+});
 
 export function createValues(fields: FormField[], initialValues?: Record<string, unknown>): Record<string, unknown> {
   const values: Record<string, unknown> = {};
