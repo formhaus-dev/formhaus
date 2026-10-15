@@ -102,15 +102,15 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   }, [engine]);
 
   return (
-    <form ref={formRef} onFocusCapture={(event) => { focusReturn.current = event.target; }} className="fh-form" tabIndex={-1} aria-busy={engine.stepValidating || engine.submitting || loading}
+    <form ref={formRef} lang={definition.lang} onFocusCapture={(event) => { focusReturn.current = event.target; }} className="fh-form" tabIndex={-1} aria-busy={engine.stepValidating || engine.submitting || loading}
       onSubmit={(event) => { event.preventDefault(); void (engine.isLastStep ? actions.submit() : actions.next()); }}>
-      <FormProgressController engine={engine} ProgressComponent={progressComponent} headingLevel={headingLevel} marks={props.stepErrorMarks} />
-      {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} />}
+      <FormProgressController engine={engine} ProgressComponent={progressComponent} headingLevel={headingLevel} marks={props.stepErrorMarks} labels={props.labels} />
+      {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
       <FormFieldsController key={engineKey(engine)} engine={engine} formId={formId} loading={loading} components={components}
         optionsProviders={optionsProviders} onChange={actions.update} onCommit={actions.commit}
         onBlur={handleFieldBlur} onFocus={handleFieldFocus} />
       <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
-      <FormActionsController engine={engine} definition={definition} loading={loading}
+      <FormActionsController engine={engine} definition={definition} loading={loading} labels={props.labels}
         ActionsComponent={actionsComponent} onSubmit={actions.submit} onNext={actions.next}
         onPrev={actions.prev} onSkip={actions.skip} onCancel={handleCancel} />
     </form>

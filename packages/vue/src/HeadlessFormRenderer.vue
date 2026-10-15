@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { FormEngineOptions, StepChangeContext } from '@formhaus/core';
-import { shouldApplyExternalErrors } from '@formhaus/core/internal';
+import type { FormEngineOptions, LabelKey, StepChangeContext } from '@formhaus/core';
+import { fieldDomId, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { computed, ref, watch } from 'vue';
-import { fieldDomId } from '@formhaus/core/internal';
 import FieldResolver from './FieldResolver.vue';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
@@ -20,6 +19,7 @@ const formRef = ref<HTMLFormElement>();
 const engineOptions: FormEngineOptions = {
   validators: props.validators,
   onWarning: props.onWarning,
+  get messages() { return props.messages; },
   get onStepValidate() { return props.onStepValidate; },
   get onBeforeStepChange() { return props.onBeforeStepChange; },
   get onBeforeSubmit() { return props.onBeforeSubmit; },
@@ -101,9 +101,11 @@ const fieldsWithOptions = computed(() =>
 
 const effectiveIsLastStep = computed(() => isLastStep.value || !isMultiStep.value);
 
+const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.definition.labels);
+
 const primaryLabel = computed(() => {
   if (isMultiStep.value && !effectiveIsLastStep.value) {
-    return typeof currentStep.value?.next === 'object' ? currentStep.value.next.label ?? 'Continue' : 'Continue';
+    return (typeof currentStep.value?.next === 'object' ? currentStep.value.next.label : undefined) ?? label('continue');
   }
   return props.definition.submit?.label ?? 'Submit';
 });
@@ -114,7 +116,7 @@ const showBack = computed(() => {
 
 const backLabel = computed(() => {
   const back = currentStep.value?.back;
-  return (typeof back === 'object' ? back?.label : undefined) ?? 'Back';
+  return (typeof back === 'object' ? back?.label : undefined) ?? label('back');
 });
 
 async function onPrimary() {
@@ -127,7 +129,7 @@ async function onPrimary() {
 </script>
 
 <template>
-  <form ref="formRef" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="props.loading || stepValidating || submitting" @submit.prevent="onPrimary">
+  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="props.loading || stepValidating || submitting" @submit.prevent="onPrimary">
     <component
       :is="props.progressComponent"
       v-if="isMultiStep && props.progressComponent"
@@ -137,10 +139,11 @@ async function onPrimary() {
       :step-description="currentStep?.description"
       :heading-level="props.headingLevel"
       :steps="stepStatuses"
+      :counter-label="label('stepOf', progress)"
     />
 
     <div v-if="props.errorSummary && summaryFields.length > 0" class="fh-error-summary" role="alert">
-      <strong class="fh-error-summary__title">Check these answers</strong>
+      <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
       <ul class="fh-error-summary__list">
         <li v-for="field in summaryFields" :key="field.key">
           <a class="fh-error-summary__link" :href="`#${fieldDomId(formId, field.key)}`" @click.prevent="showField(field.key)">{{ field.label }}: {{ errors[field.key] }}</a>

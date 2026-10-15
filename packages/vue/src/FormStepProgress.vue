@@ -13,7 +13,7 @@ const props = withDefaults(defineProps<FormStepProgressProps>(), { headingLevel:
       />
     </div>
     <div class="fh-step-progress__info">
-      <span class="fh-step-progress__counter">Step {{ props.current }} of {{ props.total }}</span>
+      <span class="fh-step-progress__counter">{{ props.counterLabel ?? `Step ${props.current} of ${props.total}` }}</span>
     </div>
     <ol v-if="props.steps" class="fh-step-progress__steps">
       <li v-for="(step, index) in props.steps" :key="step.id" :class="['fh-step-progress__step', { 'fh-step-progress__step--invalid': step.errorCount }]"

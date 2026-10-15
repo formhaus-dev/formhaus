@@ -15,6 +15,10 @@
     "./cloud": {
       "types": "./dist/cloud.d.ts",
       "import": "./dist/cloud.js"
+    },
+    "./i18n": {
+      "types": "./dist/i18n.d.ts",
+      "import": "./dist/i18n.js"
     }
   },
   "files": [
@@ -38,7 +42,8 @@
     "vite": "^6.2.2",
     "vite-plugin-dts": "^4.5.4",
     "vitest": "^4.1.3",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "vue-i18n": "^11.4.13"
   },
   "license": "MIT",
   "homepage": "https://formhaus.dev",

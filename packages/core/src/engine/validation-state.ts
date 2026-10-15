@@ -44,7 +44,7 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string): 
   const cleared: string[] = [];
   for (const field of engine.visibility.allFields) {
     if (field.validation?.matchField !== key || engine.errors[field.key] === undefined) continue;
-    if (validateFieldValue(field, engine.values[field.key], getValidationValues(engine), engine.validators)) continue;
+    if (validateFieldValue(field, engine.values[field.key], getValidationValues(engine), engine.validators, engine.messages)) continue;
     clearError(engine, field.key);
     cleared.push(field.key);
   }
@@ -74,12 +74,12 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   if (engine.isMultiStep) {
     for (const step of engine.visibleSteps) {
       if (engine.skipped.has(step.id)) continue;
-      Object.assign(errors, validateStep(step, getValidationValues(engine), engine.validators));
+      Object.assign(errors, validateStep(step, getValidationValues(engine), engine.validators, engine.messages));
     }
   } else {
     Object.assign(
       errors,
-      validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators),
+      validateFields(engine.definition.fields ?? [], getValidationValues(engine), engine.validators, engine.messages),
     );
   }
   engine.state.errors = { ...engine.state.serverErrors, ...errors };
@@ -92,7 +92,7 @@ export function validateOne(engine: EngineInternals, key: string): string | null
   const field = engine.visibility.activeField(key, engine.values);
   if (!field) return null;
   const previousError = engine.errors[key];
-  const error = validateFieldValue(field, engine.values[key], getValidationValues(engine), engine.validators);
+  const error = validateFieldValue(field, engine.values[key], getValidationValues(engine), engine.validators, engine.messages);
   if (error) engine.errors[key] = error;
   else clearError(engine, key, true);
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];

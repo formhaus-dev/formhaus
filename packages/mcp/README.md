@@ -2,7 +2,7 @@
 
 MCP server that lets AI agents check [Formhaus](https://github.com/ignsm/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later. The checks need no account or key.
 
-`validate_definition`, `simulate_path`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
+`validate_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
 
 ## Setup
 
@@ -39,8 +39,9 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 | Tool | Input | Output |
 |------|-------|--------|
 | `validate_definition` | `definition` (object or JSON string) | `{ valid, issues }`. Each issue has `code`, `severity`, a JSON pointer `path`, `message` and `hint` |
-| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
-| `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, adapters |
+| `simulate_path` | `definition`, `answers`, optional `actions` (`next`, `back`, `skip`) and `overlay` | Active step path with visible fields, action trace, `validation` (`{ valid, issues }`), field `errors`, `wouldSubmit`, `submitValues` |
+| `capabilities` | none | Field types, field props, validation rules, condition operators, step and route semantics, translation catalogs, keys and overlay addresses, adapters |
+| `translation_template` | `definition`, `lang`, optional `prefix` | `overlay` skeleton with the source texts, suggested `file` name and `slots` with address, key, placeholders and hash |
 | `example_definitions` | optional `id` | List of bundled examples, or one definition |
 | `publish_form` | `definition`, optional `form_id`, `email`, `success_message`, `redirect_url` | `form_id`, `endpoint`, `hosted_url`, `embed_snippet`, `react_snippet`, `dashboard_url`, `warnings` |
 | `list_forms` | none | Forms the API key reaches with status, version, submission count and endpoint |

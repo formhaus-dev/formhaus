@@ -116,6 +116,10 @@ const loadCities: OptionsProvider = async (values) => {
 
 The provider receives all current values. If requests overlap, only the latest result is used.
 
+## Translations
+
+`useLocalizedForm()` from `@formhaus/vue/i18n` returns the props of a form in one language, from an overlay file or a translate function. The `messages` and `labels` props replace the built-in validation messages and button texts. See [translations](https://formhaus.dev/guide/translations.html).
+
 ## Optional baseline styles
 
 By default the Vue adapter renders unstyled HTML. For a sensible starting look (padding, focus states, error colour, button styles) import the shared stylesheet from `@formhaus/core`:

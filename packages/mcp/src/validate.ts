@@ -1,4 +1,5 @@
 import { checkDefinition, type FormDefinition, type FormEngine } from '@formhaus/core';
+import { checkTranslations } from '@formhaus/core/i18n';
 import { parseDefinition } from './definition-input';
 import { createEngine } from './engine';
 import { fromCore, issue, ordered, type Issue } from './issues';
@@ -25,7 +26,8 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   const parsed = parseDefinition(input);
   if (!parsed.ok) return { report: finish([issue('invalid-json', 'error', '', parsed.error.replace(/\.$/, ''))]) };
   const definition = parsed.value as unknown as FormDefinition;
-  const core = fromCore(checkDefinition(definition, { validators: {} }));
+  const checked = checkDefinition(definition, { validators: {} });
+  const core = fromCore(checked.some(({ severity }) => severity === 'error') ? checked : [...checked, ...checkTranslations(definition)]);
   const schema = schemaIssues(parsed.value).filter(({ path }) => !core.some((found) => found.path === path));
   const report = finish([...schema, ...core, ...(schema.length ? [] : structureIssues(definition))]);
   if (!report.valid) return { report };

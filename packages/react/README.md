@@ -107,6 +107,10 @@ The provider receives all current values. If requests overlap, only the latest r
 
 `FormRenderer` is SSR-safe. It works with Next.js static and dynamic prerender, plus React's `renderToString`, with no `next/dynamic` wrapper required.
 
+## Translations
+
+`useLocalizedForm()` from `@formhaus/react/i18n` returns the props of a form in one language, from an overlay file or a translate function. The `messages` and `labels` props replace the built-in validation messages and button texts. See [translations](https://formhaus.dev/guide/translations.html).
+
 ## Optional baseline styles
 
 By default the React adapter renders unstyled HTML. For a sensible starting look (padding, focus states, error colour, button styles) import the shared stylesheet:

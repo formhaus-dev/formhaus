@@ -1,5 +1,6 @@
 import { isActionDisabled, isVisible, type FormEngine, type FormField, type FormStep } from '@formhaus/core';
 import { perform, type SimulationAction, type TraceEntry } from './simulate-actions';
+import { withOverlay } from './translation';
 import { inspectDefinition, type ValidationReport } from './validate';
 
 export type { SimulationAction, TraceEntry } from './simulate-actions';
@@ -8,6 +9,7 @@ export interface SimulationInput {
   definition: unknown;
   answers?: Record<string, unknown>;
   actions?: SimulationAction[];
+  overlay?: unknown;
 }
 
 export interface StepReport {
@@ -27,6 +29,7 @@ export interface SimulationResult {
   isLastStep?: boolean;
   trace?: TraceEntry[];
   errors?: Record<string, string>;
+  overlayIssues?: string[];
   wouldSubmit?: boolean;
   submitValues?: Record<string, unknown>;
 }
@@ -62,8 +65,10 @@ function visitedErrors(engine: FormEngine, visited: Set<string>, errors: Record<
 }
 
 export async function simulatePathTool(input: SimulationInput): Promise<SimulationResult> {
-  const { report, definition, engine } = inspectDefinition(input.definition, input.answers);
-  if (!definition || !engine) return { ok: false, validation: report };
+  const localized = input.overlay ? withOverlay(input.definition, input.overlay) : { definition: input.definition, issues: [] };
+  const overlayIssues = localized.issues.length ? { overlayIssues: localized.issues } : {};
+  const { report, definition, engine } = inspectDefinition(localized.definition, input.answers);
+  if (!definition || !engine) return { ok: false, validation: report, ...overlayIssues };
   const first = engine.currentStep?.id;
   const trace = await run(engine, input.actions);
   const visited = new Set([first, ...trace.map(({ to }) => to)].filter((id): id is string => typeof id === 'string'));
@@ -89,5 +94,6 @@ export async function simulatePathTool(input: SimulationInput): Promise<Simulati
     errors: visitedErrors(engine, visited, allErrors),
     wouldSubmit: submitted || (atEnd && Object.keys(allErrors).length === 0 && !isActionDisabled(definition.submit, engine.getSubmitValues())),
     submitValues: engine.getSubmitValues(),
+    ...overlayIssues,
   };
 }

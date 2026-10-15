@@ -23,6 +23,12 @@ export default defineConfig([
   },
   {
     ...shared,
+    entry: { i18n: 'src/i18n/index.ts' },
+    onSuccess: () => useClient('dist/i18n.js'),
+    external: ['react', '@formhaus/core', '@formhaus/core/i18n'],
+  },
+  {
+    ...shared,
     entry: { cloud: 'src/cloud/index.ts' },
     onSuccess: () => useClient('dist/cloud.js'),
     external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/react'],
