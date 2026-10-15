@@ -1,6 +1,5 @@
 <p align="center">
-  <img src="packages/site-theme/public/brand/logo-full.svg#gh-light-mode-only" alt="Formhaus" width="320">
-  <img src="packages/site-theme/public/brand/logo-full-dark.svg#gh-dark-mode-only" alt="Formhaus" width="320">
+  <img src=".github/assets/logo.svg" alt="Formhaus" width="360">
 </p>
 
 <p align="center">
@@ -26,14 +25,13 @@
   <a href="https://formhaus.dev/cloud">Formhaus Cloud</a>
 </p>
 
-> [!TIP]
-> **Let your coding agent write Formhaus forms**
->
-> ```bash
-> claude mcp add formhaus -- npx -y @formhaus/mcp
-> ```
->
-> The MCP server writes, checks and repairs definitions locally, with no account. It works in Claude Code, Codex, Cursor and any other MCP client: [setup for each client](https://formhaus.dev/guide/mcp).
+<p align="center"><strong>Add Formhaus to your coding agent</strong></p>
+
+```bash
+claude mcp add formhaus -- npx -y @formhaus/mcp
+```
+
+<p align="center"><sub>Writes, checks and repairs definitions locally, with no account. Works in Claude Code, Codex, Cursor and any MCP client · <a href="https://formhaus.dev/guide/mcp">Setup for each client</a></sub></p>
 
 Two independent ways to use it:
 
