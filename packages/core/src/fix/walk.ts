@@ -25,9 +25,12 @@ export const parent = (path: string) => path.slice(0, path.lastIndexOf('/'));
 export const last = (path: string) => parsePointer(path).pop() ?? '';
 export const child = (path: string, key: string) => `${path}/${key.replace(/~/g, '~0').replace(/\//g, '~1')}`;
 
+function flatten(items: unknown): Entry[] {
+  return list(items).flatMap((item) => (isEntry(item) ? [item, ...flatten(item.fields)] : []));
+}
+
 function fields(definition: Entry): Entry[] {
-  const steps = list(definition.steps).flatMap((step) => list(isEntry(step) ? step.fields : undefined));
-  return [...list(definition.fields), ...steps].filter(isEntry);
+  return [...flatten(definition.fields), ...list(definition.steps).flatMap((step) => flatten(isEntry(step) ? step.fields : undefined))];
 }
 
 export const keysOf = (definition: Entry) => strings(fields(definition).map((field) => field.key));

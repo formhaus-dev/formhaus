@@ -59,6 +59,14 @@ describe('fixes for unknown references', () => {
     expect(fixesAt(backwards, '/steps/1/routes/0/to')).toEqual([]);
   });
 
+  it('looks into sections and keeps group items manual', () => {
+    const section = { key: 'billing', type: 'section', title: 'Billing', fields: [text('street'), note('stret')] };
+    expect(fixesAt(form([section], { formatVersion: '1.1' }), '/fields/0/fields/1/show/0/field')[0]).toMatchObject({ safe: true });
+    const group = { key: 'people', type: 'group', label: 'People', fields: [text('plan'), note('plna')] };
+    const [fix] = fixesAt(form([group], { formatVersion: '1.1' }), '/fields/0/fields/1/show/0/field');
+    expect(fix).toMatchObject({ title: 'Use the field "plan"', safe: false });
+  });
+
   it('lets fixAll repair an unambiguous typo', () => {
     expect(fixAll(form([text('email'), note('emial')])).definition).toEqual(form([text('email'), note('email')]));
   });

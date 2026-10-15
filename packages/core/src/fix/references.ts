@@ -1,5 +1,5 @@
 import { closest, type DefinitionIssue } from '../definition-validation/issues';
-import { at, type DefinitionFix, type Entry, fix, isEntry, list, quote, text } from './walk';
+import { at, type DefinitionFix, type Entry, fix, isEntry, keysOf, list, quote, text } from './walk';
 
 export function typoDistance(a: string, b: string): number {
   const x = a.toLowerCase();
@@ -21,17 +21,29 @@ interface Key {
 }
 
 function keysByStep(definition: Entry): Key[] {
-  const keys = (fields: unknown, step: number) =>
-    list(fields).flatMap((field) => (isEntry(field) && typeof field.key === 'string' ? [{ key: field.key, step }] : []));
+  const keys = (fields: unknown, step: number): Key[] =>
+    list(fields).flatMap((field) => {
+      if (!isEntry(field) || field.type === 'group') return [];
+      const own = field.type !== 'section' && typeof field.key === 'string' ? [{ key: field.key, step }] : [];
+      return [...own, ...keys(field.fields, step)];
+    });
   return [
     ...keys(definition.fields, -1),
     ...list(definition.steps).flatMap((step, index) => keys(isEntry(step) ? step.fields : undefined, index)),
   ];
 }
 
+function grouped(definition: Entry, path: string): boolean {
+  const parts = path.split('/');
+  return parts.some(
+    (_, index) =>
+      parts[index - 1] === 'fields' && (at(definition, parts.slice(0, index + 1).join('/')) as Entry | undefined)?.type === 'group',
+  );
+}
+
 function fieldScope(definition: Entry, path: string): string[] {
   const keys = keysByStep(definition);
-  const own = /^(\/steps\/\d+)?\/fields\/\d+/.exec(path)?.[0];
+  const own = /^(.*\/fields\/\d+)\/(show|showAny|validation|optionsDependsOn)\//.exec(path)?.[1];
   const self = own ? text((at(definition, own) as Entry | undefined)?.key) : undefined;
   const others = keys.filter(({ key }) => key !== self);
   const step = Number(/^\/steps\/(\d+)/.exec(path)?.[1] ?? -1);
@@ -55,10 +67,13 @@ function repair(value: string, all: string[], scope: string[]): { match?: string
 export function referenceFixes(definition: Entry, issue: DefinitionIssue, kind: 'field' | 'step'): DefinitionFix[] {
   const value = text(at(definition, issue.path));
   if (value === undefined) return [];
-  const all = kind === 'field' ? keysByStep(definition).map(({ key }) => key) : stepStrings(definition);
+  const all = kind === 'field' ? keysOf(definition) : stepStrings(definition);
   const scope = kind === 'field' ? fieldScope(definition, issue.path) : stepScope(definition, issue.path);
-  const { match, safe } = repair(value, all, scope);
-  return match === undefined ? [] : [fix(`Use the ${kind} ${quote(match)}`, safe, { op: 'replace', path: issue.path, value: match })];
+  const loose = kind === 'field' && grouped(definition, issue.path);
+  const { match, safe } = repair(value, all, loose ? all : scope);
+  return match === undefined
+    ? []
+    : [fix(`Use the ${kind} ${quote(match)}`, safe && !loose, { op: 'replace', path: issue.path, value: match })];
 }
 
 const stepStrings = (definition: Entry) =>
