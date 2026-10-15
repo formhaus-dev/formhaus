@@ -7,4 +7,5 @@
 - The `<form>` element gets `lang` from the definition.
 - Custom progress components receive the step counter text as `counterLabel`.
 - New `@formhaus/vue/i18n` entry with `useLocalizedForm()`, a computed ref with the props of a form in one language.
+- `useLocalizedForm()` recreates the form when the language changes, which clears entered values.
 - Requires `@formhaus/core` 0.13.

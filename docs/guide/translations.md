@@ -127,8 +127,14 @@ export function Signup({ lang, overlay }: { lang: string; overlay?: Overlay }) {
   const form = useLocalizedForm(definition, overlay && { overlay, lang });
   return <FormRenderer {...form} onSubmit={save} />;
 }
+```
 
-const overlay = lang === 'en' ? undefined : (await import(`./signup.${lang}.json`)).default;
+Load the overlay for a language before rendering:
+
+```ts
+async function loadOverlay(lang: string): Promise<Overlay | undefined> {
+  return lang === 'en' ? undefined : (await import(`./signup.${lang}.json`)).default;
+}
 ```
 
 Missing or empty strings keep the source text, so an incomplete translation still works. The same file loads into i18next with `i18n.addResourceBundle('ru', 'forms', { signup: overlay })`, and derived keys then resolve through `t`.

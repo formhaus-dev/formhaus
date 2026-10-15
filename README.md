@@ -55,6 +55,7 @@ claude mcp add formhaus -- npx -y @formhaus/mcp
 - [Rendering a form from JSON with your own components](https://formhaus.dev/guide/fields.html#override-default-components).
 - [Designing the form in Figma](https://formhaus.dev/guide/figma.html) from the same file.
 - Generating and checking definitions with AI agents: [Claude Code skills](https://formhaus.dev/guide/formhaus-create-form.html), the [MCP server](https://formhaus.dev/guide/mcp.html) (`claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus`), the [JSON Schema](https://formhaus.dev/api/definition.html#json-schema) and the [format specification](https://formhaus.dev/spec.html).
+- [Translated forms](https://formhaus.dev/guide/translations.html) with your own catalogs, or with i18next, vue-i18n and Lokalise keys.
 - A [headless engine](https://formhaus.dev/api/form-engine.html) for Svelte or vanilla JS.
 
 ## Example
