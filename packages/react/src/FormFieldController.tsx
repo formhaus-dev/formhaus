@@ -1,6 +1,7 @@
 import { errorDomId, fieldDomId } from '@formhaus/core/internal';
 import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
-import { memo, useCallback, useSyncExternalStore } from 'react';
+import { memo, useCallback } from 'react';
+import { useFieldSnapshot } from './hooks/useEngineSnapshot';
 import { FieldResolver } from './FieldResolver';
 import type { FieldComponentMap } from './types';
 
@@ -37,10 +38,7 @@ export const FormFieldController = memo(function FormFieldController({
   onFocus,
 }: FormFieldControllerProps) {
   const key = path ?? field.key;
-  const subscribe = useCallback((listener: () => void) => engine.subscribeField(key, listener), [engine, key]);
-  const getSnapshot = useCallback(() => engine.getFieldSnapshot(key), [engine, key]);
-
-  useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  useFieldSnapshot(engine, key);
 
   const handleChange = useCallback((value: unknown) => onChange(key, value), [key, onChange]);
   const handleCommit = useCallback((value: unknown) => onCommit(key, value), [key, onCommit]);
@@ -50,7 +48,7 @@ export const FormFieldController = memo(function FormFieldController({
 
   return (
     <FieldResolver
-      id={path ? errorDomId(engine, formId, path) : fieldDomId(formId, key)}
+      id={path ? errorDomId(engine, formId, path) : fieldDomId(formId, key, engine.definition)}
       field={fieldWithOptions}
       value={item ? item[field.key] : engine.values[key]}
       error={engine.errors[key]}

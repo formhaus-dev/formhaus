@@ -1,8 +1,9 @@
 import type { FieldOption, FormEngine, FormGroup, LabelKey } from '@formhaus/core';
-import { fieldDomId, itemDomId, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
-import { memo, useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { fieldDomId, focusItem, itemDomId, itemLimits, itemTitle, labelFor } from '@formhaus/core/internal';
+import { memo, useEffect, useRef, useState } from 'react';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
-import { useStructureSnapshot } from './hooks/useEngineSnapshot';
+import { describedBy } from './fields/fieldProps';
+import { useFieldSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
 interface FormGroupControllerProps extends ControllerProps {
@@ -22,9 +23,7 @@ export const FormGroupController = memo(function FormGroupController({
   ...props
 }: FormGroupControllerProps) {
   const { engine, formId } = props;
-  const subscribe = useCallback((listener: () => void) => engine.subscribeField(group.key, listener), [engine, group.key]);
-  const getSnapshot = useCallback(() => engine.getFieldSnapshot(group.key), [engine, group.key]);
-  useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  useFieldSnapshot(engine, group.key);
   useStructureSnapshot(engine);
   const [status, setStatus] = useState('');
   const focus = useRef<Focus>(null);
@@ -41,14 +40,7 @@ export const FormGroupController = memo(function FormGroupController({
   useEffect(() => {
     const target = focus.current;
     focus.current = null;
-    if (!target) return;
-    const item = document.getElementById(itemDomId(formId, group.key, target.index));
-    const next = target.added ? item?.parentElement?.querySelector<HTMLElement>('input, select, textarea') : item;
-    (
-      next ??
-      root.current?.querySelector<HTMLElement>(':scope > .fh-group__add') ??
-      document.getElementById(itemDomId(formId, group.key, target.index - 1))
-    )?.focus();
+    if (target) focusItem(document, root.current, formId, group.key, target.index, target.added);
   });
 
   const add = () => {
@@ -63,13 +55,7 @@ export const FormGroupController = memo(function FormGroupController({
   };
 
   return (
-    <fieldset
-      ref={root}
-      id={id}
-      className="fh-group"
-      aria-invalid={!!error || undefined}
-      aria-describedby={[group.helperText && `${id}-helper`, error && `${id}-error`].filter(Boolean).join(' ') || undefined}
-    >
+    <fieldset ref={root} id={id} className="fh-group" aria-invalid={!!error || undefined} aria-describedby={describedBy(group, id, error)}>
       <legend className="fh-field__label">{group.label}</legend>
       {group.helperText && (
         <p id={`${id}-helper`} className="fh-field__helper">
