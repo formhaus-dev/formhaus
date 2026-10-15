@@ -2,7 +2,7 @@ import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const PRIVATE = { '@formhaus/builder': 'builder', '@formhaus/editor-react': 'editor-react' };
-const PUBLISHED = ['core', 'react', 'vue', 'mcp'];
+const PUBLISHED = ['core', 'react', 'vue', 'mcp', 'formhaus'];
 const DEPENDENCY_FIELDS = ['dependencies', 'devDependencies', 'peerDependencies', 'optionalDependencies', 'bundleDependencies'];
 const SCANNED = new Set(['.js', '.mjs', '.cjs', '.ts', '.mts', '.cts', '.tsx', '.vue', '.map']);
 const pattern = new RegExp(

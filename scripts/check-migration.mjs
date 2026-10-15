@@ -61,7 +61,7 @@ async function markdown(directory) {
 for (const file of [
   ...(await markdown('docs')),
   'README.md',
-  ...['core', 'react', 'vue', 'mcp'].map((name) => `packages/${name}/README.md`),
+  ...['core', 'react', 'vue', 'mcp', 'formhaus'].map((name) => `packages/${name}/README.md`),
 ]) {
   const source = await readFile(file, 'utf8');
   for (const removed of REMOVED) if (removed.test(source)) problems.push(`${file} uses the removed API ${removed.source}`);
