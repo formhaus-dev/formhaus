@@ -7,6 +7,7 @@ import {
   newPage,
   newQuestion,
   setType,
+  span,
   type BuilderForm,
   type BuilderPage,
   type BuilderQuestion,
@@ -50,8 +51,11 @@ export function convertToPage(form: BuilderForm, index: number): BuilderPage {
 }
 
 export function canRemove(form: BuilderForm, index: number): boolean {
-  if (isPage(form.blocks[index])) return true;
-  return form.blocks.filter(isQuestion).length > 1;
+  const block = form.blocks[index];
+  if (isPage(block)) return true;
+  const siblings = isQuestion(block) && block.parent ? form.blocks.filter((item) => isQuestion(item) && item.parent === block.parent) : [];
+  if (siblings.length === 1) return false;
+  return form.blocks.filter(isQuestion).length > span(form, index);
 }
 
 export function clearTargets(form: BuilderForm, gone: Set<string>): void {
@@ -69,10 +73,10 @@ export function clearTargets(form: BuilderForm, gone: Set<string>): void {
 export function removeBlock(form: BuilderForm, index: number): boolean {
   if (!canRemove(form, index)) return false;
   const block = form.blocks[index];
-  const span = isPage(block) && pageCount(form) > 1 ? pageSpan(form, index) : 1;
-  const removed = form.blocks.slice(index, index + span);
+  const size = isPage(block) ? (pageCount(form) > 1 ? pageSpan(form, index) : 1) : span(form, index);
+  const removed = form.blocks.slice(index, index + size);
   clearTargets(form, new Set(removed.map((item) => item.uid)));
-  form.blocks.splice(index, span);
+  form.blocks.splice(index, size);
   dropReferences(form, new Set(removed.filter(isQuestion).map((item) => item.key)));
   if (form.blocks.length && !form.blocks.some(isQuestion)) form.blocks.push(newQuestion(form));
   syncIdentifiers(form);
