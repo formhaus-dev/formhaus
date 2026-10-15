@@ -52,7 +52,7 @@ const {
   submitting,
 } = form;
 
-const resolvedOptions = useFieldOptions(visibleFields, () => form.engine, props.optionsProviders);
+const resolvedOptions = useFieldOptions(visibleFields, () => form.engine, () => props.optionsProviders);
 
 const { update: onFieldUpdate, commit: onFieldCommit, next: onNext, prev: onPrev, skip: onSkip, submit: onSubmit, actionError, invalidAttempts } =
   useRendererActions(form, props, emit);
@@ -95,7 +95,7 @@ function onCancel() {
 
 const fieldsWithOptions = computed(() =>
   visibleFields.value.map((field) => {
-    const resolved = resolvedOptions.value[field.key];
+    const resolved = field.optionsFrom && props.optionsProviders?.[field.optionsFrom] && resolvedOptions.value[field.key];
     return resolved ? { ...field, options: resolved } : field;
   }),
 );
