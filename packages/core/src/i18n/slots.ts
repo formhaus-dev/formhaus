@@ -1,4 +1,5 @@
 import { getAllFields } from '../engine/engine-utils';
+import { isGroup } from '../visibility/nodes';
 import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
 import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
 import { typeMessageKeys } from '../validation/type-checks';
@@ -21,12 +22,14 @@ export interface Slot {
 const BOUNDS: Record<string, string> = { minLength: 'min', maxLength: 'max', min: 'min', max: 'max' };
 
 function ruleKey(field: FormField, rule: string): MessageKey {
-  return (field.type === 'multiselect' && rule.endsWith('Length') ? rule.replace('Length', 'Items') : rule) as MessageKey;
+  return (
+    (field.type === 'multiselect' || field.type === 'group') && rule.endsWith('Length') ? rule.replace('Length', 'Items') : rule
+  ) as MessageKey;
 }
 
 function usedMessages(definition: FormDefinition): Set<string> {
   const keys = new Set([...Object.keys(definition.messages ?? {}), ...Object.keys(definition.i18n?.messages ?? {})]);
-  for (const field of getAllFields(definition)) {
+  for (const field of getAllFields(definition).flatMap((field) => (isGroup(field) ? [field, ...field.fields] : [field]))) {
     const rules = (field.validation ?? {}) as Entry;
     for (const rule of SLOTS.validation) {
       if (hasRule(rules, rule) && typeof rules[rule === 'required' ? rule : `${rule}Message`] !== 'string') keys.add(ruleKey(field, rule));
@@ -103,6 +106,8 @@ function catalogSlots(definition: FormDefinition, name: 'messages' | 'labels', u
 export function definitionSlots(definition: FormDefinition): Slot[] {
   const steps = !!definition.steps?.length;
   const labels = new Set<LabelKey>(steps ? ['continue', 'back', 'stepOf', 'errorSummary'] : ['errorSummary']);
+  if (getAllFields(definition).some(isGroup))
+    for (const key of ['addItem', 'removeItem', 'itemLabel', 'itemAdded', 'itemRemoved'] as const) labels.add(key);
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),

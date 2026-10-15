@@ -6,7 +6,7 @@ import { oneOf, pointer, warning } from '../definition-validation/issues';
 
 type Node = Record<string, unknown> | undefined | false;
 
-export function i18nWarnings({ definition, entries }: CheckContext): DefinitionIssue[] {
+export function i18nWarnings({ definition, entries, nodes }: CheckContext): DefinitionIssue[] {
   const issues: DefinitionIssue[] = [];
   const ids: [string, unknown][] = [];
   let keyed = false;
@@ -37,10 +37,8 @@ export function i18nWarnings({ definition, entries }: CheckContext): DefinitionI
     for (const name of ['next', 'back', 'skip'] as const) node(step[name] as unknown as Node, `/steps/${index}/${name}`, SLOTS.action);
   });
   for (const { field, path } of entries) {
-    node(field as unknown as Node, path, SLOTS.field, 'key');
-    field.options?.forEach((option, index) => {
-      node(option as unknown as Node, `${path}/options/${index}`, SLOTS.option, 'value');
-    });
+    node(field as unknown as Node, path, field.type === 'group' ? SLOTS.group : SLOTS.field, 'key');
+    field.options?.forEach((option, index) => node(option as unknown as Node, `${path}/options/${index}`, SLOTS.option, 'value'));
     const rules = field.validation as Node;
     if (rules)
       node(
@@ -49,6 +47,7 @@ export function i18nWarnings({ definition, entries }: CheckContext): DefinitionI
         SLOTS.validation.filter((rule) => hasRule(rules, rule)),
       );
   }
+  for (const entry of nodes) if (entry.node.type === 'section') node(entry.node as unknown as Node, entry.path, SLOTS.section, 'key');
   if (keyed) {
     for (const [path, id] of ids) {
       if (typeof id === 'string' && /[.:]/.test(id))
