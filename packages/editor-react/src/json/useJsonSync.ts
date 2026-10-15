@@ -1,10 +1,11 @@
 import type { BuilderForm } from '@formhaus/builder';
+import type { FormDefinition } from '@formhaus/core';
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { useEditorHandle } from '../store/context';
 import { useForm, useReadOnly } from '../store/hooks';
 import { loader } from '../store/initial';
 import { mountJsonEditor, type JsonEditorHandle } from './jsonEditor';
-import { formatDefinition, parseJson, sameDefinition, type JsonError } from './sync';
+import { formatDefinition, parseJson, plainDefinition, sameDefinition, type JsonError } from './sync';
 
 export const JSON_DELAY = 400;
 
@@ -16,7 +17,7 @@ export function useJsonSync(host: RefObject<HTMLDivElement | null>) {
   const readOnly = useReadOnly();
   const load = useMemo(() => loader(published), [published]);
   const [error, setError] = useState<JsonError | null>(null);
-  const [problems, setProblems] = useState<string[] | null>(null);
+  const [checked, setChecked] = useState<FormDefinition | null>(null);
   const [ready, setReady] = useState(false);
   const editor = useRef<JsonEditorHandle | null>(null);
   const shown = useRef<BuilderForm | null>(null);
@@ -39,7 +40,7 @@ export function useJsonSync(host: RefObject<HTMLDivElement | null>) {
         return;
       }
       report(null);
-      setProblems(parsed.problems);
+      setChecked(parsed.definition);
       const current = store.getState().form;
       if (sameDefinition(parsed.form, current)) {
         shown.current = current;
@@ -54,7 +55,7 @@ export function useJsonSync(host: RefObject<HTMLDivElement | null>) {
       shown.current = next;
       editor.current?.setDoc(formatDefinition(next));
       report(null);
-      setProblems(null);
+      setChecked(null);
     };
     return {
       flush,
@@ -63,6 +64,21 @@ export function useJsonSync(host: RefObject<HTMLDivElement | null>) {
         pending.current = text;
         window.clearTimeout(timer.current);
         timer.current = window.setTimeout(flush, JSON_DELAY);
+      },
+      apply: (change: (definition: FormDefinition) => FormDefinition) => {
+        flush();
+        const text = editor.current?.getDoc();
+        const parsed = text === undefined ? null : parseJson(text, load);
+        const source = parsed && 'definition' in parsed ? parsed.definition : plainDefinition(store.getState().form);
+        let form: BuilderForm;
+        try {
+          form = load(change(source));
+        } catch {
+          return false;
+        }
+        if (sameDefinition(form, store.getState().form)) return false;
+        store.replace(form);
+        return true;
       },
       undo: () => {
         flush();
@@ -110,5 +126,5 @@ export function useJsonSync(host: RefObject<HTMLDivElement | null>) {
     if (form !== shown.current) sync.show(form);
   }, [form, sync]);
 
-  return { error, problems, ready };
+  return { error, checked, ready, apply: sync.apply };
 }

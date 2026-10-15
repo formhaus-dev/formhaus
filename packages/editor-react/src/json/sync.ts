@@ -1,5 +1,5 @@
 import { toDefinition, type BuilderForm } from '@formhaus/builder';
-import { validateDefinition, type FormDefinition } from '@formhaus/core';
+import type { FormDefinition } from '@formhaus/core';
 
 export interface JsonError {
   message: string;
@@ -7,9 +7,11 @@ export interface JsonError {
   line: number;
 }
 
-export type ParsedJson = { form: BuilderForm; problems: string[] } | { error: JsonError };
+export type ParsedJson = { form: BuilderForm; definition: FormDefinition } | { error: JsonError };
 
 export const formatDefinition = (form: BuilderForm) => JSON.stringify(toDefinition(form), null, 2);
+
+export const plainDefinition = (form: BuilderForm): FormDefinition => JSON.parse(JSON.stringify(toDefinition(form)));
 
 export const sameDefinition = (a: BuilderForm, b: BuilderForm) => JSON.stringify(toDefinition(a)) === JSON.stringify(toDefinition(b));
 
@@ -40,7 +42,7 @@ export function parseJson(text: string, load: (definition: FormDefinition) => Bu
   if (!value || typeof value !== 'object' || Array.isArray(value)) return failure(text, 'The definition must be a JSON object', 0);
   const definition = value as FormDefinition;
   try {
-    return { form: load(definition), problems: validateDefinition(definition) };
+    return { form: load(definition), definition };
   } catch (error) {
     return failure(text, reason(error), 0);
   }

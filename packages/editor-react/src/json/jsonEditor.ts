@@ -3,6 +3,7 @@ import { getNonce } from 'get-nonce';
 
 export interface JsonEditorHandle {
   setDoc: (text: string) => void;
+  getDoc: () => string;
   setError: (error: { message: string; from: number } | null) => void;
   focus: () => void;
   destroy: () => void;
@@ -50,9 +51,15 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
     '.cm-tooltip': { border: 'var(--fh-ed-border-thin) solid var(--fh-ed-line)', backgroundColor: 'var(--fh-ed-panel)' },
   });
   let muted = false;
-  const replace = (editor: EditorView, insert: string) => {
+  const replace = (editor: EditorView, text: string) => {
+    const current = editor.state.doc.toString();
+    let start = 0;
+    while (start < current.length && start < text.length && current[start] === text[start]) start++;
+    let end = 0;
+    while (end < current.length - start && end < text.length - start && current[current.length - 1 - end] === text[text.length - 1 - end])
+      end++;
     muted = true;
-    editor.dispatch({ changes: { from: 0, to: editor.state.doc.length, insert } });
+    editor.dispatch({ changes: { from: start, to: current.length - end, insert: text.slice(start, text.length - end) } });
     muted = false;
   };
   const run = (action: () => void) => () => {
@@ -94,6 +101,7 @@ export async function mountJsonEditor(parent: HTMLElement, options: JsonEditorOp
     setDoc: (text) => {
       if (text !== editor.state.doc.toString()) replace(editor, text);
     },
+    getDoc: () => editor.state.doc.toString(),
     setError: (error) => {
       const at = error ? Math.min(error.from, editor.state.doc.length) : 0;
       const diagnostics = error
