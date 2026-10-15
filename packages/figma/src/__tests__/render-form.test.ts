@@ -1,9 +1,8 @@
 import type { FormDefinition, FormField } from '@formhaus/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { KitTheme } from '../kits/kit';
 import { nextFrameX, renderForm } from '../render-form';
 import { itemTitle } from '../render-nodes';
-import type { FormRenderer } from '../renderers/types';
+import { node, renderer, stubFigma, theme } from './render-fixtures';
 
 const definition: FormDefinition = {
   id: 'existing-form',
@@ -11,61 +10,6 @@ const definition: FormDefinition = {
   submit: { label: 'Submit' },
   fields: [{ key: 'name', type: 'text', label: 'Name' }],
 };
-
-const font = { family: 'Inter', style: 'Regular' };
-const theme: KitTheme = {
-  fonts: { regular: font, medium: font, semibold: font },
-  text: '#000000',
-  muted: '#666666',
-  card: { fill: '#FFFFFF', radius: 12, padding: 24, gap: 16, width: 400 },
-  actionsGap: 8,
-  optionGroup: { gap: 0 },
-  titleSize: 24,
-  headingSize: 20,
-  bodySize: 16,
-  captionSize: 12,
-};
-
-function node(extra: Record<string, unknown> = {}) {
-  return {
-    name: '',
-    x: 0,
-    width: 400,
-    height: 100,
-    fills: [] as unknown[],
-    children: [] as unknown[],
-    resize: vi.fn(),
-    setSharedPluginData: vi.fn(),
-    appendChild: vi.fn(),
-    findAll: () => [],
-    findChild: () => null,
-    ...extra,
-  };
-}
-
-function stubFigma(children: unknown[]) {
-  const created: { x: number }[] = [];
-  vi.stubGlobal('figma', {
-    getNodeByIdAsync: async () => null,
-    currentPage: {
-      children,
-      flowStartingPoints: [],
-      findAllWithCriteria: ({ types }: { types: string[] }) =>
-        (children as { type: string }[]).filter((child) => types.includes(child.type)),
-    },
-    createText: () => node({ type: 'TEXT' }),
-    createFrame: () => {
-      const frame = node({ type: 'FRAME' });
-      created.push(frame);
-      return frame;
-    },
-  });
-  return created;
-}
-
-function renderer(field: FormRenderer['field']): FormRenderer {
-  return { theme, field, button: async () => null };
-}
 
 describe('renderForm', () => {
   beforeEach(() => {
