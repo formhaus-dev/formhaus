@@ -88,7 +88,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   get stepErrors(): Record<string, string[]> {
-    const result: Record<string, string[]> = {};
+    const result: Record<string, string[]> = Object.create(null);
     for (const step of this.visibleSteps) {
       const keys = step.fields.map((field) => field.key).filter((key) => this.errors[key] !== undefined);
       if (keys.length > 0) result[step.id] = keys;
