@@ -27,6 +27,13 @@ describe('formhaus-mcp over stdio', () => {
     expect('text' in contents[0] && contents[0].text).toContain('# Migrate to 0.11');
   });
 
+  it('sends server instructions on initialize', () => {
+    const instructions = client.getInstructions();
+    expect(instructions).toContain('validate_definition');
+    expect(instructions).toContain('FORMHAUS_API_KEY');
+    expect(instructions).toContain('FORMHAUS_API_BASE');
+  });
+
   it('returns structured content from validate_definition', async () => {
     const result = await client.callTool({ name: 'validate_definition', arguments: { definition: linear } });
     expect(result.structuredContent).toEqual({ valid: true, issues: [] });

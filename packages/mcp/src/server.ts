@@ -2,6 +2,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import packageJson from '../package.json';
 import { capabilities, capabilitiesTool } from './capabilities';
+import { SERVER_INSTRUCTIONS } from './cloud-text';
 import { registerCloudTools } from './cloud-tools';
 import { definitionInput } from './definition-input';
 import { exampleDefinitionsTool } from './examples';
@@ -19,7 +20,7 @@ function json(value: object) {
 }
 
 export function createServer(): McpServer {
-  const server = new McpServer({ name: 'formhaus', version: packageJson.version });
+  const server = new McpServer({ name: 'formhaus', version: packageJson.version }, { instructions: SERVER_INSTRUCTIONS });
 
   server.registerTool('validate_definition', {
     title: 'Validate a Formhaus definition',
