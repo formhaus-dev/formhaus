@@ -25,13 +25,13 @@
   <a href="https://formhaus.dev/cloud">Formhaus Cloud</a>
 </p>
 
-<p align="center"><strong>Add Formhaus to your coding agent</strong></p>
+**Add Formhaus to your coding agent**
 
 ```bash
 claude mcp add formhaus -- npx -y @formhaus/mcp
 ```
 
-<p align="center"><sub>Writes, checks and repairs definitions locally, with no account. Works in Claude Code, Codex, Cursor and any MCP client · <a href="https://formhaus.dev/guide/mcp">Setup for each client</a></sub></p>
+<sub>Writes, checks and repairs definitions locally, with no account. Works in Claude Code, Codex, Cursor and any MCP client · <a href="https://formhaus.dev/guide/mcp">Setup for each client</a></sub>
 
 Two independent ways to use it:
 
