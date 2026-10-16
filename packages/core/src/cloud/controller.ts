@@ -38,7 +38,7 @@ export interface CloudControllerOptions extends CloudClientOptions {
   draftStore?: DraftStore;
 }
 
-const initialCloudState: CloudState = {
+export const initialCloudState: CloudState = {
   definition: null,
   version: null,
   settings: {},

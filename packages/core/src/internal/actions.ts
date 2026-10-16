@@ -1,9 +1,9 @@
 import type { FormEngine } from '../engine';
 import { labelFor } from '../i18n/labels';
 import type { LabelSource } from '../types';
-import type { FormActionsView } from '../types/views';
+import type { FormActionsState } from '../types/views';
 
-export function actionsView(engine: FormEngine, labels?: LabelSource): FormActionsView {
+export function actionsView(engine: FormEngine, labels?: LabelSource): FormActionsState {
   const { definition, isMultiStep, isFirstStep } = engine;
   const step = engine.currentStep;
   const isLastStep = engine.isLastStep || !isMultiStep;

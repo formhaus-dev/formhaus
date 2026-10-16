@@ -52,7 +52,7 @@ export interface GroupView<TItem extends GroupItemView = GroupItemView> {
   status: string;
 }
 
-export interface FormActionsView {
+export interface FormActionsState {
   submitAction?: FormAction;
   nextAction?: FormAction | false;
   backAction?: FormAction | false;
@@ -61,13 +61,18 @@ export interface FormActionsView {
   isFirstStep: boolean;
   isLastStep: boolean;
   isMultiStep: boolean;
+  primaryLabel: string;
+  showPrimary: boolean;
+  showBack: boolean;
+  backLabel: string;
+  showSkip: boolean;
+}
+
+type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'showBack' | 'backLabel' | 'showSkip';
+
+export interface FormActionsView extends Omit<FormActionsState, DerivedActionProps>, Partial<Pick<FormActionsState, DerivedActionProps>> {
   loading?: boolean;
   values?: Record<string, unknown>;
-  primaryLabel?: string;
-  showPrimary?: boolean;
-  showBack?: boolean;
-  backLabel?: string;
-  showSkip?: boolean;
   skipLabel?: string;
 }
 
