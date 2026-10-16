@@ -1,5 +1,5 @@
 ---
-title: "Derived form values: fill a field from another field"
+title: "Derived values: fill a form field from another"
 description: "Set a Formhaus field from app code, such as a due date 14 days after the issue date, and stop once the user edits it. React and Vue renderer handle."
 ---
 
