@@ -185,12 +185,29 @@ describe.skipIf(onWindows)('Codex quoted tables', () => {
 
   it.each([
     ['an escaped parent key', '["mcp\\u005fservers".formhaus]\ncommand = "other"\n'],
+    ['an escaped server table', '[mcp_servers."form\\u0068aus"]\ncommand = "other"\n'],
+    ['an escaped server key', '[mcp_servers]\n"form\\u0068aus" = { command = "other" }\n'],
+    ['an escaped dotted server key', '[mcp_servers]\n"form\\u0068aus".command = "other"\n'],
+    ['an escaped dotted parent key', '"mcp\\u005fservers".formhaus.command = "x"\n'],
     ['an array of tables', '[[mcp_servers.formhaus]]\ncommand = "other"\n'],
   ])('refuses %s', (_, toml) => {
     box.write('.codex/config.toml', toml);
     const result = box.run();
     expect(result.code).toBe(1);
-    expect(result.out).toContain('Formhaus cannot read');
+    expect(result.out).toContain('has a key Formhaus cannot read safely');
     expect(box.read('.codex/config.toml')).toBe(toml);
+  });
+
+  it.each([
+    ['a Windows path in a value', 'notify = ["C:\\\\notify.py"]\n'],
+    ['a Windows path in a project table', '[projects."C:\\\\Users\\\\me\\\\repo"]\ntrust_level = "trusted"\n'],
+    ['a multi-line array', 'args = [\n  "C:\\\\x",\n  ["C:\\\\y", 1],\n  "a\\\\b" ,\n]\n'],
+    ['a multi-line string', 'text = """\n"form\\u0068aus" = 1\n[mcp_servers."\\u0066"]\n"""\n'],
+    ['a Windows path in another server', '[mcp_servers.other]\ncommand = "C:\\\\tools\\\\x.exe"\n'],
+    ['an escaped key outside mcp_servers', '[projects]\n"C:\\\\repo".trust_level = "trusted"\n'],
+  ])('adds the server next to %s', (_, toml) => {
+    box.write('.codex/config.toml', toml);
+    expect(box.run().code).toBe(0);
+    expect(box.read('.codex/config.toml')).toBe(`${toml}\n[mcp_servers.formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n`);
   });
 });
