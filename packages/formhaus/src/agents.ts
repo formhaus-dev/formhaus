@@ -1,9 +1,8 @@
-import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 import cursorRule from '../../../.cursor/rules/formhaus.mdc';
 import { claudeCode } from './claude-code';
 import type { Agent, Context } from './context';
-import { isDirectory, step, writeIfChanged } from './files';
+import { display, findProjectRoot, isDirectory, step, writeAsset } from './files';
 import { addJsonServer } from './json-config';
 import { addTomlServer } from './toml-config';
 import { findOnPath } from './which';
@@ -22,9 +21,7 @@ function found(ctx: Context, directory: string, bin: string): boolean {
   return isDirectory(directory) || findOnPath(ctx, bin) !== undefined;
 }
 
-function isProject(ctx: Context): boolean {
-  return ctx.cwd !== ctx.home && existsSync(join(ctx.cwd, 'package.json'));
-}
+const SHIPPED_RULES = ['1bb79502ba88f1d38bef0bb3f34ede713f94487643496eae94ca6be7d2c8a32c'];
 
 const codex: Agent = {
   name: 'Codex',
@@ -41,9 +38,13 @@ const cursor: Agent = {
   apply(ctx) {
     const file = join(ctx.home, '.cursor', 'mcp.json');
     const changes = [step(ctx, 'Cursor', 'MCP server', file, () => addJsonServer(ctx, file))];
-    if (!isProject(ctx)) return changes;
-    const rule = join(ctx.cwd, '.cursor', 'rules', 'formhaus.mdc');
-    changes.push(step(ctx, 'Cursor', 'formhaus rule', rule, () => writeIfChanged(ctx, rule, cursorRule, ctx.cwd)));
+    const root = findProjectRoot(ctx);
+    if (root === undefined) {
+      const note = 'Run npx formhaus inside a project to add the Cursor rule.';
+      return [...changes, { agent: 'Cursor', item: 'formhaus rule', where: display(ctx, ctx.cwd), state: 'skipped', note }];
+    }
+    const rule = join(root, '.cursor', 'rules', 'formhaus.mdc');
+    changes.push(step(ctx, 'Cursor', 'formhaus rule', rule, () => writeAsset(ctx, rule, cursorRule, SHIPPED_RULES, root)));
     return changes;
   },
 };
