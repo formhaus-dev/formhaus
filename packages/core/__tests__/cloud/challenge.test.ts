@@ -97,13 +97,16 @@ describe('challenge frame', () => {
     expect(fake.frames).toHaveLength(1);
   });
 
-  it('treats a Turnstile script that does not load as unavailable', async () => {
-    const fake = page();
-    const token = createChallengeFrame(challenge, 'abc', () => fake.host).token();
-    await ready(fake);
-    fake.reply({ error: 'turnstile did not load' });
-    await expect(token).resolves.toBeUndefined();
-  });
+  it.each([{ error: 'turnstile did not load' }, { error: 'bot check failed', code: 'unavailable' }])(
+    'treats %o as unavailable',
+    async (fields) => {
+      const fake = page();
+      const token = createChallengeFrame(challenge, 'abc', () => fake.host).token();
+      await ready(fake);
+      fake.reply(fields);
+      await expect(token).resolves.toBeUndefined();
+    },
+  );
 
   it('waits for the user once the check asks for interaction, up to the timeout', async () => {
     vi.useFakeTimers();

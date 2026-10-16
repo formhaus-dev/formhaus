@@ -6,7 +6,18 @@ const QUIET = 10_000;
 const HIDDEN = 'position:fixed;top:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0';
 const LOCAL = /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost)$/;
 
-type Reply = { type?: unknown; formId?: unknown; id?: unknown; height?: unknown; token?: unknown; error?: unknown } | null | undefined;
+type Reply =
+  | {
+      type?: unknown;
+      formId?: unknown;
+      id?: unknown;
+      height?: unknown;
+      token?: unknown;
+      error?: unknown;
+      code?: unknown;
+    }
+  | null
+  | undefined;
 
 interface ChallengeEvent {
   origin: string;
@@ -142,7 +153,7 @@ export function createChallengeFrame(
             return resolve(reply.token);
           }
           spent = true;
-          if (reply === undefined || /load/.test(String(reply?.error))) {
+          if (reply === undefined || reply?.code === 'unavailable' || /load/.test(String(reply?.error))) {
             unavailable = true;
             return resolve(undefined);
           }
