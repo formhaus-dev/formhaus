@@ -176,7 +176,6 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
       <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
       <FormActionsController
         engine={engine}
-        definition={definition}
         loading={loading}
         labels={props.labels}
         ActionsComponent={actionsComponent}

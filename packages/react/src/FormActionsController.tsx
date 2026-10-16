@@ -1,12 +1,11 @@
 import type { FormEngine } from '@formhaus/core';
-import { labelFor } from '@formhaus/core/internal';
+import { actionsView } from '@formhaus/core/internal';
 import { useCallback, useMemo } from 'react';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
 interface FormActionsControllerProps {
   engine: FormEngine;
-  definition: FormRendererProps['definition'];
   loading: boolean;
   ActionsComponent: FormRendererProps['actionsComponent'];
   labels?: FormRendererProps['labels'];
@@ -19,7 +18,6 @@ interface FormActionsControllerProps {
 
 export function FormActionsController({
   engine,
-  definition,
   loading,
   ActionsComponent,
   labels,
@@ -31,31 +29,17 @@ export function FormActionsController({
 }: FormActionsControllerProps) {
   const version = useFormSnapshot(engine);
   const values = useMemo(() => engine.getSubmitValues(), [engine, version]);
-  const step = engine.currentStep;
-  const isLastStep = engine.isLastStep || !engine.isMultiStep;
-  const primaryLabel =
-    engine.isMultiStep && !isLastStep
-      ? ((step?.next || undefined)?.label ?? labelFor('continue', {}, labels, definition.labels))
-      : (definition.submit?.label ?? 'Submit');
-  const showBack = engine.isMultiStep && !engine.isFirstStep && step?.back !== false;
-  const backLabel = (step?.back || undefined)?.label ?? labelFor('back', {}, labels, definition.labels);
+  const view = actionsView(engine, labels);
   const handlePrimary = useCallback(async () => {
-    if (engine.isMultiStep && !isLastStep) await onNext();
-    else onSubmit();
-  }, [engine, isLastStep, onNext, onSubmit]);
+    if (view.isLastStep) onSubmit();
+    else await onNext();
+  }, [engine, view.isLastStep, onNext, onSubmit]);
 
   if (!ActionsComponent) return null;
 
   return (
     <ActionsComponent
-      submitAction={definition.submit}
-      nextAction={step?.next}
-      backAction={step?.back}
-      cancelAction={definition.cancel}
-      skipAction={step?.skip}
-      isFirstStep={engine.isFirstStep}
-      isLastStep={isLastStep}
-      isMultiStep={engine.isMultiStep}
+      {...view}
       loading={loading || engine.stepValidating || engine.submitting}
       values={values}
       onSubmit={onSubmit}
@@ -63,11 +47,6 @@ export function FormActionsController({
       onPrev={onPrev}
       onCancel={onCancel}
       onSkip={onSkip}
-      primaryLabel={primaryLabel}
-      showPrimary={isLastStep || step?.next !== false}
-      showBack={showBack}
-      backLabel={backLabel}
-      showSkip={!!step?.skip && step.next !== false}
       onPrimary={handlePrimary}
     />
   );

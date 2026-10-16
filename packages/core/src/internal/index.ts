@@ -14,6 +14,7 @@ export { errorDomId, errorEntries, itemHasContent, itemLimits, itemTitle, type E
 export { loadOptions, optionKey, optionSources, providedOptions, sameOptions, type OptionSource, type OptionsProvider } from './options';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { labelFor } from '../i18n/labels';
+export { actionsView } from './actions';
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
 
