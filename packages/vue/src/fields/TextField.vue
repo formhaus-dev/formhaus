@@ -33,7 +33,7 @@ const text = computed(() =>
 function onInput(event: Event) {
   const value = (event.target as HTMLInputElement).value;
   draft.value = value;
-  emit('update:modelValue', props.field.type === 'number' && value !== '' ? Number(value) : value);
+  emit('update:modelValue', props.field.type !== 'number' ? value : value === '' ? null : Number(value));
 }
 </script>
 

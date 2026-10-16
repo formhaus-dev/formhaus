@@ -1,4 +1,5 @@
-import { validateFieldValue, validateFields } from '../validation';
+import { validateFieldValue } from '../validation';
+import { validateShown } from '../validation/validate-step';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
 import type { FormField, FormNode } from '../types';
 import { isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
@@ -17,7 +18,8 @@ export function errorKeys(nodes: FormNode[], errors: Record<string, string>, val
 }
 
 export function fieldsErrors(engine: EngineInternals, nodes: FormNode[]): Record<string, string> {
-  return validateFields(nodes, getSubmitValues(engine), engine.validators, engine.messages);
+  const scope = engine.visibility.conditionValues(engine.values);
+  return validateShown(nodes, getSubmitValues(engine), scope, engine.validators, engine.messages);
 }
 
 function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
@@ -151,7 +153,7 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   const loadingFields = Object.keys(engine.fieldLoading);
   engine.validationEpoch++;
   engine.operationEpoch++;
-  Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values)));
+  Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values, engine.visibility.activeField)));
   engine.skipped.clear();
   engine.visibility.reconcileHidden(engine.values, engine.errors, true);
   const changedValues = getChangedKeys(previousValues, engine.values);

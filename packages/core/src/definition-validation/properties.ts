@@ -7,7 +7,7 @@ export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
   step: 'id title description fields show showAny routes next back skip i18n',
   field:
-    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout optionsFrom optionsDependsOn accept rows mask inputMode i18n',
+    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout optionsFrom optionsDependsOn accept rows mask inputMode props i18n',
   section: 'key type title description show showAny fields i18n',
   group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
   option: 'value label i18n',
@@ -35,8 +35,23 @@ function required(value: object, path: string, key: string, hint?: string): Defi
   return (value as Record<string, unknown>)[key] === undefined ? [missing(path, key, hint, warning)] : [];
 }
 
-function action(value: unknown, path: string): DefinitionIssue[] {
-  return isEntry(value) ? [...required(value, path, 'label'), ...unknown(value, path, PROPERTIES.action)] : [];
+function action(value: unknown, path: string, disables = true): DefinitionIssue[] {
+  if (!isEntry(value)) return [];
+  const ignored = !disables && value.disabled !== undefined;
+  return [
+    ...required(value, path, 'label'),
+    ...unknown(value, path, PROPERTIES.action),
+    ...(ignored
+      ? [
+          warning(
+            'disabled-not-applicable',
+            `${path}/disabled`,
+            'the built-in renderers ignore "disabled" on this button',
+            'Remove "disabled"',
+          ),
+        ]
+      : []),
+  ];
 }
 
 const misplaced = (key: string) =>
@@ -64,14 +79,14 @@ export function propertyWarnings({ definition, entries, nodes }: CheckContext): 
     ...(title === undefined || typeof title === 'string' ? [] : [warning('invalid-type', '/title', '"title" must be a string')]),
     ...unknown(definition, '', PROPERTIES.form),
     ...action(definition.submit, '/submit'),
-    ...action(definition.cancel, '/cancel'),
+    ...action(definition.cancel, '/cancel', false),
     ...(definition.steps ?? []).flatMap((step, index) => {
       const path = `/steps/${index}`;
       return [
         ...required(step, path, 'title'),
         ...unknown(step, path, PROPERTIES.step),
         ...(step.routes ?? []).flatMap((route, position) => unknown(route, `${path}/routes/${position}`, PROPERTIES.route)),
-        ...(['next', 'back', 'skip'] as const).flatMap((name) => action(step[name], `${path}/${name}`)),
+        ...(['next', 'back', 'skip'] as const).flatMap((name) => action(step[name], `${path}/${name}`, name === 'next')),
       ];
     }),
     ...nodes.flatMap(({ node, path }) =>

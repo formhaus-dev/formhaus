@@ -16,12 +16,12 @@ const ControlledNumber = defineComponent(() => {
 });
 
 describe('TextField', () => {
-  it('keeps an empty number input empty', async () => {
+  it('writes null when a number input is cleared', async () => {
     const { emitted } = render(TextField, { props: { field, modelValue: 42 } });
 
     await fireEvent.update(screen.getByRole('spinbutton', { name: 'Age' }), '');
 
-    expect(emitted()['update:modelValue']).toEqual([['']]);
+    expect(emitted()['update:modelValue']).toEqual([[null]]);
   });
 
   it.each([[['1', '1.0', '1.05']], [['2', '2.5', '2.50']], [['-0', '-0.5']], [['1.05', '1.0', '1.05']]])(

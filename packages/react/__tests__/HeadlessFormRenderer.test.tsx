@@ -54,6 +54,13 @@ const steps: FormDefinition = {
 };
 
 describe('HeadlessFormRenderer', () => {
+  it('passes field.props to a custom field type', () => {
+    const Rating = ({ field }: FieldComponentProps) => <p data-testid="rating">{JSON.stringify(field.props)}</p>;
+    const rated: FormDefinition = { ...definition, fields: [{ key: 'score', type: 'x-rating', label: 'Score', props: { stars: 5 } }] };
+    render(<HeadlessFormRenderer definition={rated} components={{ 'x-rating': Rating }} onSubmit={() => {}} />);
+    expect(screen.getByTestId('rating').textContent).toBe('{"stars":5}');
+  });
+
   it('renders mapped custom fields', () => {
     const { container } = render(
       <HeadlessFormRenderer definition={definition} components={{ text: CustomText, email: CustomText }} onSubmit={() => {}} />,

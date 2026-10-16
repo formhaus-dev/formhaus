@@ -34,9 +34,10 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   const errors = { ...engine.errors };
   const serverErrors = { ...engine.state.serverErrors };
   let outcome: boolean | undefined;
-  skipCurrentStep(engine);
+  const restore = skipCurrentStep(engine);
   const skippedValues = engine.values;
   const edited = watchValues(engine, skippedValues);
+  const written = engine.visibility.watchWrites();
   const submitting = submitForm(
     engine,
     async (submitted, skipped) => {
@@ -51,9 +52,10 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   try {
     return await submitting;
   } finally {
+    const writes = written();
     if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues) {
       const steps = engine.visibleSteps;
-      const kept = edited();
+      const kept = new Set([...edited(), ...writes]);
       const current = engine.values;
       engine.state.values = { ...values };
       for (const key of kept) {
@@ -62,9 +64,14 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
           for (const errorKey of Object.keys(record)) if (engine.visibility.owner(errorKey) === key) delete record[errorKey];
         if (key in current) engine.values[key] = current[key];
       }
+      const reverted = getChangedKeys(current, engine.values);
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
-      engine.state.errors = { ...(outcome ? {} : errors), ...engine.errors };
+      else dropServerErrors(engine, reverted);
+      const fresh = { ...engine.errors };
+      for (const key in fresh) if (reverted.has(engine.visibility.owner(key))) delete fresh[key];
+      engine.state.errors = { ...(outcome ? {} : errors), ...fresh };
       engine.skipped.delete(step.id);
+      restore(writes);
       dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
       engine.visibility.markChanged(true, true);
       engine.state.currentStepIndex = reconcileStepIndex(steps, engine.visibleSteps, engine.currentStepIndex);

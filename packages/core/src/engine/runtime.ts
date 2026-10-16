@@ -36,7 +36,11 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     assertDefinition(definition, this.lifecycle, this.validators);
     this.messages = messageResolver(options?.messages, definition.messages);
     this.visibility = createVisibility(definition);
-    const values = createValues(this.visibility.allFields, initialValues as Record<string, unknown> | undefined);
+    const values = createValues(
+      this.visibility.allFields,
+      initialValues as Record<string, unknown> | undefined,
+      this.visibility.activeField,
+    );
     this.state = initialState(values);
     this.visibility.reconcileHidden(values, this.state.errors, true);
   }

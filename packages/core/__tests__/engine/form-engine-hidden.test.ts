@@ -111,11 +111,21 @@ describe('revealed hidden fields', () => {
     const engine = new FormEngine(definition);
     expect(engine.values).toEqual({});
     engine.setValue('plan', 'pro');
-    expect(engine.getSubmitValues()).toEqual({ plan: 'pro', campaign: 'spring' });
+    expect(engine.getSubmitValues()).toEqual({ plan: 'pro', campaign: 'spring', note: 'hi' });
     engine.setValue('plan', 'free');
     expect(engine.values).toEqual({ plan: 'free' });
     engine.setValue('plan', 'pro');
-    expect(engine.values).toEqual({ plan: 'pro', campaign: 'spring' });
+    expect(engine.values).toEqual({ plan: 'pro', campaign: 'spring', note: 'hi' });
+  });
+
+  it('gives an edited field its last value when its conditions match again, unlike a hidden field', () => {
+    const engine = new FormEngine(definition);
+    engine.setValue('plan', 'pro');
+    engine.setValue('note', '');
+    engine.setValue('campaign', 'summer');
+    engine.setValue('plan', 'free');
+    engine.setValue('plan', 'pro');
+    expect(engine.values).toEqual({ plan: 'pro', campaign: 'spring', note: '' });
   });
 
   it('prefers the initial value and follows reset', () => {
