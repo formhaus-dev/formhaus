@@ -217,13 +217,15 @@ export function createVisibility(definition: FormDefinition) {
         for (const errorKey of Object.keys(errors)) if (owner(errorKey) === key) delete errors[errorKey];
         mark(key);
       };
-      const update = (field: FormField, shown: boolean, checked = true) => {
+      const update = (field: FormField, shown: boolean) => {
         const { key } = field;
+        const active = activeField(key, values);
+        if (active && active !== field) return;
         if (!shown) {
           if (held(key)) clear(key);
           return;
         }
-        if (held(key) || !(checked || visible(field, values))) return;
+        if (held(key) || !active) return;
         const value = starts.startValue(field);
         if (value === undefined) return;
         values[key] = value;
@@ -235,7 +237,7 @@ export function createVisibility(definition: FormDefinition) {
         queued.delete(key);
         for (const field of fieldDependents.get(key) ?? []) if (onPath(field, values)) update(field, visible(field, values));
         for (const step of stepDependents.get(key) ?? []) {
-          for (const field of valueFields(step.fields)) update(field, visible(step, values), false);
+          for (const field of valueFields(step.fields)) update(field, visible(step, values));
         }
       }
       if (groups.length) reconcileItems(values, errors, cleared);

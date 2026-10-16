@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FormEngine } from '../../src/engine';
+import { validateSubmission } from '../../src/server';
 import type { FormDefinition, FormField } from '../../src/types';
 
 describe('defaults of item fields and of steps reached through restored routes', () => {
@@ -117,5 +118,44 @@ describe('defaults of a key declared on two routes', () => {
     expect(new FormEngine(branches(n), { route: 'a' }).getSubmitValues()).toEqual({ route: 'a', n: 1 });
     expect(new FormEngine(branches(n), { route: 'b' }).getSubmitValues()).toEqual({ route: 'b', n: 2 });
     expect(new FormEngine(branches(group), { route: 'a' }).getSubmitValues()).toEqual({ route: 'a', g: [{ n: 1 }] });
+  });
+});
+
+describe('a key on two exclusive steps that controls a route', () => {
+  const exclusive: FormDefinition = {
+    id: 'exclusive',
+    title: 'Exclusive',
+    submit: { label: 'Send' },
+    steps: [
+      {
+        id: 'start',
+        title: 'Start',
+        fields: [{ key: 'flag', type: 'checkbox', label: 'Flag', defaultValue: true }],
+        routes: [{ to: 'b', show: [{ field: 'flag', eq: false }] }],
+      },
+      {
+        id: 'a',
+        title: 'A',
+        show: [{ field: 'flag', eq: true }],
+        fields: [{ key: 'x', type: 'text', label: 'X', defaultValue: 'saved' }],
+        routes: [{ to: null, show: [{ field: 'x', eq: 'saved' }] }, { to: null }],
+      },
+      { id: 'b', title: 'B', show: [{ field: 'flag', eq: false }], fields: [{ key: 'x', type: 'text', label: 'X' }] },
+    ],
+  };
+
+  it('keeps the value of the active step when the other step is hidden', () => {
+    const engine = new FormEngine(exclusive);
+    expect(engine.values).toEqual({ flag: true, x: 'saved' });
+    engine.setValue('flag', false);
+    engine.setValue('x', 'typed');
+    engine.setValue('flag', true);
+    expect(engine.values).toEqual({ flag: true, x: 'typed' });
+    expect(new FormEngine(exclusive, { flag: false }).values).toEqual({ flag: false });
+  });
+
+  it('validates a submission without looping', () => {
+    expect(validateSubmission(exclusive, { flag: true, x: 'saved' })).toEqual({ values: { flag: true, x: 'saved' }, errors: {} });
+    expect(validateSubmission(exclusive, { flag: false })).toEqual({ values: { flag: false }, errors: {} });
   });
 });
