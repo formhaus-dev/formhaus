@@ -75,12 +75,14 @@ watch(
   (engine) => applySources(engine, props.initialValues),
 );
 
-const warned = new Set<string>();
-watch(
-  [() => props.definition, () => props.components],
-  ([definition, components]) => warnMissingComponents(definition, components, warned, props.onWarning),
-  { immediate: true },
-);
+if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
+  const warned = new Set<string>();
+  watch(
+    [() => props.definition, () => props.components],
+    ([definition, components]) => warnMissingComponents(definition, components, warned, props.onWarning),
+    { immediate: true },
+  );
+}
 
 const {
   update: onFieldUpdate,

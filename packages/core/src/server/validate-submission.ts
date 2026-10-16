@@ -95,6 +95,11 @@ function loadSubmitted(engine: FormEngine, values: Record<string, unknown>): voi
   visibility.loadPayload();
 }
 
+function setError(visibility: EngineInternals['visibility'], errors: Record<string, string>, key: string, error: string): void {
+  errors[key] = error;
+  for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
+}
+
 function dropUnchecked(engine: FormEngine, submitted: Record<string, unknown>, errors: Record<string, string>, resolve: ResolveMessage) {
   const { visibility } = internals(engine);
   for (const key of Object.keys(submitted)) {
@@ -102,9 +107,8 @@ function dropUnchecked(engine: FormEngine, submitted: Record<string, unknown>, e
     if (!field || errors[key]) continue;
     const error = typeError(field, submitted[key], resolve);
     if (error) {
-      errors[key] = error;
+      setError(visibility, errors, key, error);
       delete submitted[key];
-      for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
       continue;
     }
     if (!isGroup(field)) continue;
@@ -197,17 +201,15 @@ function check(definition: FormDefinition, fields: FormField[], values: unknown,
   const { visibility } = internals(engine);
   for (const [key, error] of invalid) {
     if (!hasOwn(submitted, key)) continue;
-    errors[key] = error;
+    setError(visibility, errors, key, error);
     submitted[key] = resolved.values[key];
-    for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
   }
   const skipped = [...internals(engine).skipped.values()].flat();
   for (const [key, value] of rejected) {
     const field = visibility.activeField(key, engine.values);
     if (!field || skipped.includes(key)) continue;
-    errors[key] = typeError(field, value, resolve) ?? resolve('value', {}, field);
+    setError(visibility, errors, key, typeError(field, value, resolve) ?? resolve('value', {}, field));
     delete submitted[key];
-    for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
   }
   for (const [key, error] of items)
     if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;
