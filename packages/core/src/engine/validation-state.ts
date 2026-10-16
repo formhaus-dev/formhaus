@@ -153,7 +153,7 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   const loadingFields = Object.keys(engine.fieldLoading);
   engine.validationEpoch++;
   engine.operationEpoch++;
-  Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values)));
+  Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values, engine.visibility.activeField)));
   engine.skipped.clear();
   engine.visibility.reconcileHidden(engine.values, engine.errors, true);
   const changedValues = getChangedKeys(previousValues, engine.values);
