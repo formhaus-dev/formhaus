@@ -164,6 +164,17 @@ describe('FormEngine skip guards', () => {
     expect(engine.errors.kind).toBe('Taken');
   });
 
+  it('drops server errors about skip defaults when a rejected skip restores other values', async () => {
+    const engine = new FormEngine(endingDefinition(), { kind: 'more' });
+    const result = { ok: false, errors: { kind: 'Bad' }, formErrors: [] };
+    expect(await engine.skip(() => Promise.resolve(result))).toBe(false);
+    expect(engine.values.kind).toBe('more');
+    expect(engine.errors).toEqual({});
+    engine.setValue('kind', 'done');
+    expect(await engine.skip(() => Promise.resolve(result))).toBe(false);
+    expect(engine.errors).toEqual({ kind: 'Bad' });
+  });
+
   it('skips forward from the last step when the reset values add a step', async () => {
     const sync = new FormEngine(endingDefinition(false, ''), { kind: 'done' });
     const async = new FormEngine(endingDefinition(false, ''), { kind: 'done' });

@@ -64,8 +64,12 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
           for (const errorKey of Object.keys(record)) if (engine.visibility.owner(errorKey) === key) delete record[errorKey];
         if (key in current) engine.values[key] = current[key];
       }
+      const reverted = getChangedKeys(current, engine.values);
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
-      engine.state.errors = { ...(outcome ? {} : errors), ...engine.errors };
+      else dropServerErrors(engine, reverted);
+      const fresh = { ...engine.errors };
+      for (const key in fresh) if (reverted.has(engine.visibility.owner(key))) delete fresh[key];
+      engine.state.errors = { ...(outcome ? {} : errors), ...fresh };
       engine.skipped.delete(step.id);
       restore(writes);
       dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
