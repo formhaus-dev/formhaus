@@ -1,0 +1,45 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "formatVersion": "1.2",
+  "id": "shipping-heading",
+  "title": "Checkout",
+  "submit": { "label": "Continue" },
+  "fields": [
+    {
+      "key": "shipping",
+      "type": "section",
+      "title": "Shipping",
+      "fields": [
+        {
+          "key": "delivery",
+          "type": "radio",
+          "label": "Delivery",
+          "defaultValue": "courier",
+          "options": [{ "value": "courier", "label": "Courier" }, { "value": "pickup", "label": "Pickup point" }]
+        },
+        { "key": "recipient", "type": "text", "label": "Recipient", "validation": { "required": true } },
+        {
+          "key": "addressHeading",
+          "type": "x-subheading",
+          "label": "Address",
+          "props": { "level": 4 },
+          "show": [{ "field": "delivery", "eq": "courier" }]
+        },
+        {
+          "key": "street",
+          "type": "text",
+          "label": "Street",
+          "show": [{ "field": "delivery", "eq": "courier" }],
+          "validation": { "required": true }
+        },
+        {
+          "key": "city",
+          "type": "text",
+          "label": "City",
+          "show": [{ "field": "delivery", "eq": "courier" }],
+          "validation": { "required": true }
+        }
+      ]
+    }
+  ]
+}
