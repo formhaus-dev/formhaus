@@ -38,13 +38,6 @@ export function setOptionValue(form: BuilderForm, fieldUid: string, optionUid: s
   restore();
 }
 
-export function unlockOptionValue(form: BuilderForm, fieldUid: string, optionUid: string): void {
-  const entry = option(form, fieldUid, optionUid);
-  if (!entry) return;
-  entry.valueLocked = false;
-  syncIdentifiers(form);
-}
-
 export function removeOption(form: BuilderForm, fieldUid: string, optionUid: string): boolean {
   const item = findField(form, fieldUid);
   if (!item || item.options.length < 2) return false;
