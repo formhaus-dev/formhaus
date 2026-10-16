@@ -47,7 +47,7 @@ export const capabilities = {
   fieldTypeNotes: {
     time: 'A 24-hour "HH:MM" or "HH:MM:SS" string.',
     hidden:
-      'Renders no label or control. Its value comes from the initial values, then its source, then defaultValue. It is checked as text up to maxLength, or 2000 characters without it, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field.',
+      'Renders no label or control, so the label is optional. Its value comes from the initial values, then its source, then defaultValue. It is checked as text up to maxLength, or 2000 characters without it, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field by its label, or by its key without one.',
   },
   fieldProps: {
     required: ['key', 'type', 'label'],

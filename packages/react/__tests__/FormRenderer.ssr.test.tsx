@@ -61,7 +61,7 @@ describe('FormRenderer SSR', () => {
       submit: { label: 'Send' },
       fields: [
         { key: 'utm_source', type: 'hidden', label: 'Source', source: { query: 'utm_source' }, defaultValue: 'direct' },
-        { key: 'device', type: 'hidden', label: 'Device', source: 'device' },
+        { key: 'device', type: 'hidden', source: 'device' },
       ],
     };
     const location = Object.getOwnPropertyDescriptor(window, 'location')!;
@@ -75,6 +75,7 @@ describe('FormRenderer SSR', () => {
       const html = renderToString(<FormRenderer definition={sourced} onSubmit={() => {}} />);
       expect(html).toContain('value="direct"');
       expect(html).toContain('name="device" value=""');
+      expect(html).not.toContain('undefined');
     } finally {
       Object.defineProperty(window, 'location', location);
     }
