@@ -184,7 +184,7 @@ async function onPrimary() {
 </script>
 
 <template>
-  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="props.loading || stepValidating || submitting" @submit.prevent="onPrimary">
+  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" @submit.prevent="onPrimary">
     <component
       :is="props.progressComponent"
       v-if="isMultiStep && props.progressComponent"
@@ -232,7 +232,7 @@ async function onPrimary() {
       :is-first-step="isFirstStep"
       :is-last-step="effectiveIsLastStep"
       :is-multi-step="isMultiStep"
-      :loading="props.loading || stepValidating || submitting"
+      :loading="disabled"
       :values="form.engine.getSubmitValues()"
       :primary-label="primaryLabel"
       :show-primary="effectiveIsLastStep || currentStep?.next !== false"
