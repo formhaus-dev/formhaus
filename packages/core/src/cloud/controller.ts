@@ -166,13 +166,16 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     },
     async submit(values: Record<string, unknown>, skippedSteps?: string[]) {
       if (state.notice) update({ notice: null });
+      const check = challenge();
       try {
-        const submission = await submitter(values, skippedSteps, await challenge()?.token());
+        const submission = await submitter(values, skippedSteps, await check?.token());
+        check?.spend();
         if (!alive()) return;
         options.draftStore?.clear(options.id);
         update({ done: true });
         callbacks.onSuccess?.(submission);
       } catch (error) {
+        if ((error as CloudError).code === 'verification_failed') check?.spend();
         if (!alive()) throw error;
         await fail(error, values);
         callbacks.onError?.(error);
