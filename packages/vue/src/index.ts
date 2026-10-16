@@ -26,6 +26,7 @@ export { defaultFieldComponents } from './constants';
 export type {
   FormRendererProps,
   FormRendererEmits,
+  FormRendererHandle,
   FieldComponentMap,
   FieldResolverProps as FormhausFieldProps,
   FormFieldProps,

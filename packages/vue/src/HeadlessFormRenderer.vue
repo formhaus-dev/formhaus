@@ -10,7 +10,7 @@ import { useFormId } from './composables/useFormId';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
 import { useNodeProps } from './composables/useNodeProps';
-import type { FormRendererEmits, FormRendererProps } from './types';
+import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
 
 const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2, confirmRemove: true });
 
@@ -145,6 +145,12 @@ const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, 
   blur: onFieldBlur,
   focus: onFieldFocus,
 });
+
+const handle: FormRendererHandle = {
+  setValue: (key, value) => form.engine.setValue(key, value),
+  getValues: () => ({ ...form.engine.values }),
+};
+defineExpose(handle);
 
 const effectiveIsLastStep = computed(() => isLastStep.value || !isMultiStep.value);
 
