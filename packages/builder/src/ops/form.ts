@@ -1,4 +1,3 @@
-import type { FormAction } from '@formhaus/core';
 import type { BuilderForm, FormExtra } from '../model';
 
 export function setFormTitle(form: BuilderForm, title: string): void {
@@ -16,16 +15,4 @@ export function setFormProp<K extends Exclude<keyof FormExtra, 'submit'>>(
 ): void {
   if (value === undefined || value === '') delete form.extra[prop];
   else form.extra[prop] = value;
-}
-
-export function setSubmitProp<K extends Exclude<keyof FormAction, 'label'>>(
-  form: BuilderForm,
-  prop: K,
-  value: FormAction[K] | undefined,
-): void {
-  const submit = { ...form.extra.submit };
-  if (value === undefined) delete submit[prop];
-  else submit[prop] = value;
-  if (Object.keys(submit).length) form.extra.submit = submit;
-  else delete form.extra.submit;
 }

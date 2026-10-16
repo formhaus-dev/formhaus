@@ -15,7 +15,7 @@ function device(browser: Browser): string {
   return browser.matchMedia('(min-width: 600px) and (min-height: 600px)').matches ? 'tablet' : 'mobile';
 }
 
-export function browserSources(): SourceContext {
+function browserSources(): SourceContext {
   const browser = globalThis as unknown as Browser;
   const { location, document, navigator } = browser;
   return {

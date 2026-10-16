@@ -118,6 +118,52 @@ describe('HeadlessFormRenderer', () => {
     expect(screen.getByTestId('custom-progress').textContent).toBe('2/2');
     expect(onAfterStepChange).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'two', reason: 'next' }));
   });
+
+  it('passes kebab-case attrs to an actions component without props', () => {
+    let attrs: Record<string, unknown> = {};
+    const PlainActions = defineComponent({
+      inheritAttrs: false,
+      setup: (_, context) => () => {
+        attrs = { ...context.attrs };
+        return h('div');
+      },
+    });
+    render(HeadlessFormRenderer, { props: { definition: steps, components: { text: CustomText }, actionsComponent: PlainActions } });
+    expect(
+      Object.keys(attrs)
+        .filter((key) => !key.startsWith('on'))
+        .sort(),
+    ).toEqual([
+      'back-action',
+      'back-label',
+      'cancel-action',
+      'is-first-step',
+      'is-last-step',
+      'is-multi-step',
+      'loading',
+      'next-action',
+      'primary-label',
+      'show-back',
+      'show-primary',
+      'show-skip',
+      'skip-action',
+      'submit-action',
+      'values',
+    ]);
+    expect(attrs).toMatchObject({
+      'is-first-step': true,
+      'is-last-step': false,
+      'is-multi-step': true,
+      'primary-label': 'Continue',
+      'show-primary': true,
+      'show-back': false,
+      'back-label': 'Back',
+      'show-skip': false,
+      'submit-action': { label: 'Send' },
+      loading: false,
+      values: {},
+    });
+  });
 });
 
 describe('FormRenderer built-in fallbacks', () => {

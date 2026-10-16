@@ -1,17 +1,6 @@
 import { syncIdentifiers } from '../identifiers';
 import { dropReferences } from '../references';
-import {
-  isPage,
-  isQuestion,
-  newOption,
-  newPage,
-  newQuestion,
-  setType,
-  span,
-  type BuilderForm,
-  type BuilderPage,
-  type BuilderQuestion,
-} from '../model';
+import { isPage, isQuestion, newQuestion, span, type BuilderForm, type BuilderPage } from '../model';
 
 export function pageSpan(form: BuilderForm, index: number): number {
   let end = index + 1;
@@ -21,33 +10,6 @@ export function pageSpan(form: BuilderForm, index: number): number {
 
 export function pageCount(form: BuilderForm): number {
   return form.blocks.filter(isPage).length;
-}
-
-export function insertQuestion(form: BuilderForm, at: number): BuilderQuestion {
-  const question = newQuestion(form);
-  form.blocks.splice(at, 0, question);
-  syncIdentifiers(form);
-  return question;
-}
-
-export function insertPage(form: BuilderForm, at: number, titles: [string, string] = ['Step 1', 'Step 2']): BuilderPage {
-  const flat = !isPage(form.blocks[0]);
-  const page = newPage(form, flat ? titles[1] : '');
-  if (at > 0 && flat) {
-    form.blocks.unshift(newPage(form, titles[0]));
-    at += 1;
-  }
-  form.blocks.splice(at, 0, page);
-  syncIdentifiers(form);
-  return page;
-}
-
-export function convertToPage(form: BuilderForm, index: number): BuilderPage {
-  const page = newPage(form);
-  form.blocks.splice(index, 1, page);
-  if (index > 0 && !isPage(form.blocks[0])) form.blocks.unshift(newPage(form));
-  syncIdentifiers(form);
-  return page;
 }
 
 export function canRemove(form: BuilderForm, index: number): boolean {
@@ -131,33 +93,4 @@ export function moveItem<T>(list: T[], from: number, at: number): boolean {
   const [item] = list.splice(from, 1);
   list.splice(at > from ? at - 1 : at, 0, item);
   return true;
-}
-
-export function outdent(form: BuilderForm, index: number, position: number): BuilderQuestion | undefined {
-  const block = form.blocks[index];
-  if (!isQuestion(block)) return undefined;
-  const [option] = block.options.splice(position, 1);
-  if (!option) return undefined;
-  if (!block.options.length) block.type = 'text';
-  const question = newQuestion(form);
-  question.label = option.label;
-  form.blocks.splice(index + 1, 0, question);
-  syncIdentifiers(form);
-  return question;
-}
-
-export function startOptions(form: BuilderForm, index: number, type: 'radio' | 'multiselect'): BuilderQuestion | undefined {
-  const block = form.blocks[index];
-  const prev = form.blocks[index - 1];
-  if (!isQuestion(block)) return undefined;
-  if (isQuestion(prev)) {
-    form.blocks.splice(index, 1);
-    prev.options.push(newOption(form));
-    prev.type = type;
-    syncIdentifiers(form);
-    return prev;
-  }
-  setType(form, block, type);
-  syncIdentifiers(form);
-  return block;
 }

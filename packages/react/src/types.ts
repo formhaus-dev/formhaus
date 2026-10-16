@@ -2,7 +2,6 @@ import type {
   ConfirmDialogView,
   DefaultFieldType,
   FieldType,
-  FormAction,
   FormAnalyticsEvent,
   FormDefinition,
   FormEngineOptions,
@@ -16,6 +15,7 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
+import type { FormActionsView } from '@formhaus/core/internal';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
 export type { FormRendererHandle, OptionsProvider };
@@ -74,23 +74,7 @@ export type FieldComponentMap = {
       : AnyComponent;
 };
 
-export interface FormActionsProps {
-  submitAction?: FormAction;
-  nextAction?: FormAction | false;
-  backAction?: FormAction | false;
-  cancelAction?: FormAction;
-  skipAction?: FormAction;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-  isMultiStep: boolean;
-  loading?: boolean;
-  values?: Record<string, unknown>;
-  primaryLabel?: string;
-  showPrimary?: boolean;
-  showBack?: boolean;
-  backLabel?: string;
-  showSkip?: boolean;
-  skipLabel?: string;
+export interface FormActionsProps extends FormActionsView {
   onSubmit: () => void;
   onNext: () => void;
   onPrev: () => void;

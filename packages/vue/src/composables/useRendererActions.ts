@@ -34,20 +34,21 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
       return !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, engine.getSubmitValues()) && engine.next();
     });
   const prev = () => run(() => form.engine.back());
+  const busy = () => props.loading || form.engine.stepValidating || form.engine.submitting;
   function update(key: string, value: unknown) {
-    if (props.loading || form.engine.stepValidating || form.engine.submitting) return;
+    if (busy()) return;
     form.engine.setValue(key, value);
     emit('fieldChange', key, value, form.engine.values);
   }
   function changeItems(key: string, apply: () => boolean) {
     const engine = form.engine;
-    if (props.loading || engine.stepValidating || engine.submitting || !apply()) return false;
+    if (busy() || !apply()) return false;
     emit('fieldChange', key, engine.values[key], engine.values);
     return true;
   }
   function commit(key: string, value: unknown) {
+    if (busy()) return;
     const engine = form.engine;
-    if (props.loading || engine.stepValidating || engine.submitting) return;
     const step = engine.currentStep;
     const field = engine.visibleFields.find((field) => field.key === key);
     if (!field) return;

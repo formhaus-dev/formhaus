@@ -60,69 +60,30 @@ export function useFormEngine(
     unsubscribe();
   });
 
+  const read = <K extends keyof FormEngine>(key: K) =>
+    computed(() => {
+      version.value;
+      return engineRef.value[key];
+    });
+
   return {
     get engine() {
       return engineRef.value;
     },
-    values: computed(() => {
-      version.value;
-      return engineRef.value.values;
-    }),
-    errors: computed(() => {
-      version.value;
-      return engineRef.value.errors;
-    }),
-    topLevelErrors: computed(() => {
-      version.value;
-      return engineRef.value.topLevelErrors;
-    }),
-    fieldLoading: computed(() => {
-      version.value;
-      return engineRef.value.fieldLoading;
-    }),
-    visibleFields: computed(() => {
-      version.value;
-      return engineRef.value.visibleFields;
-    }),
-    visibleNodes: computed(() => {
-      version.value;
-      return engineRef.value.visibleNodes;
-    }),
-    visibleSteps: computed(() => {
-      version.value;
-      return engineRef.value.visibleSteps;
-    }),
-    currentStep: computed(() => {
-      version.value;
-      return engineRef.value.currentStep;
-    }),
-    isFirstStep: computed(() => {
-      version.value;
-      return engineRef.value.isFirstStep;
-    }),
-    isLastStep: computed(() => {
-      version.value;
-      return engineRef.value.isLastStep;
-    }),
-    canGoNext: computed(() => {
-      version.value;
-      return engineRef.value.canGoNext;
-    }),
-    progress: computed(() => {
-      version.value;
-      return engineRef.value.progress;
-    }),
-    isMultiStep: computed(() => {
-      version.value;
-      return engineRef.value.isMultiStep;
-    }),
-    submitting: computed(() => {
-      version.value;
-      return engineRef.value.submitting;
-    }),
-    stepValidating: computed(() => {
-      version.value;
-      return engineRef.value.stepValidating;
-    }),
+    values: read('values'),
+    errors: read('errors'),
+    topLevelErrors: read('topLevelErrors'),
+    fieldLoading: read('fieldLoading'),
+    visibleFields: read('visibleFields'),
+    visibleNodes: read('visibleNodes'),
+    visibleSteps: read('visibleSteps'),
+    currentStep: read('currentStep'),
+    isFirstStep: read('isFirstStep'),
+    isLastStep: read('isLastStep'),
+    canGoNext: read('canGoNext'),
+    progress: read('progress'),
+    isMultiStep: read('isMultiStep'),
+    submitting: read('submitting'),
+    stepValidating: read('stepValidating'),
   };
 }

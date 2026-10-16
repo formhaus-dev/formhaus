@@ -1,8 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
 export const phone = '(width < 640px)';
-export const finePointer = '(pointer: fine)';
-
 export function useMedia(query: string): boolean {
   const subscribe = useCallback(
     (listener: () => void) => {

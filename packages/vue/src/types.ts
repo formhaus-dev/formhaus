@@ -5,7 +5,6 @@ import type {
   ConfirmDialogView,
   DefinitionIssue,
   FieldType,
-  FormAction,
   FormAnalyticsEvent,
   FormDefinition,
   FormField,
@@ -22,6 +21,7 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
+import type { FormActionsView } from '@formhaus/core/internal';
 import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
@@ -38,24 +38,7 @@ export interface GroupComponentProps extends GroupView<GroupItemComponentProps> 
   itemComponent: Component;
 }
 
-export interface FormActionsProps {
-  submitAction?: FormAction;
-  nextAction?: FormAction | false;
-  backAction?: FormAction | false;
-  cancelAction?: FormAction;
-  skipAction?: FormAction;
-  isFirstStep: boolean;
-  isLastStep: boolean;
-  isMultiStep: boolean;
-  loading?: boolean;
-  values?: Record<string, unknown>;
-  primaryLabel?: string;
-  showPrimary?: boolean;
-  showBack?: boolean;
-  backLabel?: string;
-  showSkip?: boolean;
-  skipLabel?: string;
-}
+export interface FormActionsProps extends FormActionsView {}
 
 export interface FormStepStatus {
   id: string;
@@ -129,8 +112,4 @@ export interface FieldEmits {
   (e: 'update:modelValue', value: unknown): void;
   (e: 'blur'): void;
   (e: 'focus'): void;
-}
-
-export interface CommitFieldEmits extends FieldEmits {
-  (e: 'commit', value: unknown): void;
 }

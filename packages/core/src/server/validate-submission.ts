@@ -34,7 +34,7 @@ interface ActiveValues {
 }
 
 function activeValues(definition: FormDefinition, fields: FormField[], input: unknown): ActiveValues {
-  const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? (input as Record<string, unknown>) : {};
+  const source = isEntry(input) ? input : {};
   const visibility = createVisibility(definition);
   const first = new Map([...fields].reverse().map((field) => [field.key, field]));
   const keys = [...new Set(fields.map(({ key }) => key))].filter((key) => hasOwn(source, key));
@@ -166,7 +166,7 @@ function applySkips(engine: FormEngine, skippedSteps: unknown): void {
 }
 
 function rejectGroups(definition: FormDefinition, fields: FormField[], input: unknown, resolve: ResolveMessage) {
-  const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? { ...(input as Record<string, unknown>) } : {};
+  const source = isEntry(input) ? { ...input } : {};
   const rejected = new Map<string, unknown>();
   const reject = (keys: string[]) => {
     for (const key of keys) {
@@ -235,7 +235,7 @@ function withSkipped(source: Record<string, unknown>, { engine, skipped }: Prepa
 export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
   parseDefinition(definition);
   const fields = getAllFields(definition);
-  const source = values !== null && typeof values === 'object' && !Array.isArray(values) ? (values as Record<string, unknown>) : {};
+  const source = isEntry(values) ? values : {};
   let prepared = prepare(definition, fields, source, options);
   for (let round = 0; round < (definition.steps?.length ?? 0) && prepared.skipped.length; round++) {
     const next = prepare(definition, fields, withSkipped(source, prepared), options);

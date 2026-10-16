@@ -11,7 +11,6 @@ import {
   type DefinitionFix,
   type Entry,
   fix,
-  isEntry,
   keysOf,
   last,
   missingName,
@@ -24,6 +23,7 @@ import {
   text,
   valuesOf,
 } from './walk';
+import { isEntry } from '../visibility/nodes';
 
 const STEP = /^\/steps\/\d+$/;
 const FIELD = /\/fields\/\d+$/;

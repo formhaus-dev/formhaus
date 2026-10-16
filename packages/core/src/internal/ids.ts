@@ -1,14 +1,9 @@
 import type { FormDefinition } from '../types';
 import { isGroup, isSection, topNodes } from '../visibility/nodes';
+import { fnv1a } from './hash';
 
 const clean = (value: string) => value.replace(/[^\w-]/g, '-');
 const cache = new WeakMap<FormDefinition, Map<string, Map<string, string>>>();
-
-function hash(text: string): string {
-  let value = 0x811c9dc5;
-  for (const char of text) value = Math.imul(value ^ char.codePointAt(0)!, 0x01000193) >>> 0;
-  return value.toString(36);
-}
 
 function assign(names: Set<string>, groups = new Set<string>()): Map<string, string> {
   const ids = new Map<string, string>();
@@ -20,7 +15,7 @@ function assign(names: Set<string>, groups = new Set<string>()): Map<string, str
   const prefixes = (id: string) => [...taken].some((other) => other.startsWith(`${id}--`));
   for (const key of keys) {
     let id = clean(key);
-    for (let seed = key; taken.has(id) || (groups.has(key) && prefixes(id)); seed = id) id = `${clean(key)}-${hash(seed)}`;
+    for (let seed = key; taken.has(id) || (groups.has(key) && prefixes(id)); seed = id) id = `${clean(key)}-${fnv1a(seed).toString(36)}`;
     taken.add(id);
     ids.set(key, id);
   }

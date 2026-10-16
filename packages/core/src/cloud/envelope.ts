@@ -1,5 +1,5 @@
 import type { FormDefinition } from '../types';
-import { CloudError } from './error';
+import { CloudError, isRecord } from './error';
 
 export interface CloudSettings {
   successMessage?: string;
@@ -15,10 +15,6 @@ export interface PublishedForm {
 }
 
 const VERSION_HEADERS = ['Formhaus-Form-Version', 'Formhaus-Version'];
-
-function isRecord(value: unknown): value is Record<string, unknown> {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
-}
 
 function toVersion(value: unknown): number | undefined {
   const version = Number(value);
