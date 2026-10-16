@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@3.1.4/schema.json",
   "changelog": "./changelog.cjs",
   "commit": false,
-  "fixed": [["@formhaus/core", "@formhaus/react", "@formhaus/vue"]],
+  "fixed": [["@formhaus/core", "@formhaus/react", "@formhaus/vue", "formhaus"]],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
