@@ -8,7 +8,7 @@ function developmentIssues(definition: FormDefinition, validators: Record<string
   try {
     if (process.env.NODE_ENV !== 'production') return checkDefinition(definition, { validators });
   } catch (error) {
-    if (!(error instanceof ReferenceError)) throw error;
+    if (!(error instanceof ReferenceError || error instanceof TypeError)) throw error;
   }
   return undefined;
 }

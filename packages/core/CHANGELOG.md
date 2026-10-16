@@ -18,6 +18,7 @@
 - New `definition-reset` and `missing-component` issue codes for the React and Vue development warnings.
 - `OptionsProvider` is exported from `@formhaus/core`.
 - Fixed `validateSubmission()` skipping the rules of, or dropping, a field shown by the defaults of a skipped step.
+- Fixed `FormEngine` throwing when a `process` shim has no `env`.
 
 ### Patch Changes
 
