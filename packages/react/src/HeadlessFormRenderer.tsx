@@ -71,7 +71,14 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
   ]);
   const handledInvalid = useRef(0);
 
-  useEffect(() => applySources(engine, initialValues), [engine]);
+  const onValuesChange = useRef(props.onValuesChange);
+  onValuesChange.current = props.onValuesChange;
+  useEffect(() => {
+    applySources(engine, initialValues);
+    const emit = () => onValuesChange.current?.(engine.getValuesSnapshot());
+    emit();
+    return engine.subscribeValues(emit);
+  }, [engine]);
 
   const [warned] = useState(() => new Set<string>());
   useEffect(() => {
