@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { isDevelopment } from '@formhaus/core/internal';
 import { type Component, computed } from 'vue';
 import type { CommitFieldEmits, FieldResolverProps } from './types';
 
@@ -24,6 +25,6 @@ const fieldComponent = computed<Component | null>(() => props.components?.[props
     @focus="emit('focus')"
   />
   <div v-else class="fh-field--unsupported">
-    Unsupported field type: {{ props.field.type }}
+    Unsupported field type{{ isDevelopment() ? `: ${props.field.type}` : '' }}
   </div>
 </template>

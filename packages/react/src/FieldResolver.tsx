@@ -1,4 +1,5 @@
 import type { FormField as FormFieldType } from '@formhaus/core';
+import { isDevelopment } from '@formhaus/core/internal';
 import type { ComponentType } from 'react';
 import type { FieldComponentMap, FieldComponentProps } from './types';
 
@@ -34,7 +35,7 @@ export function FieldResolver({
   const Component = components?.[field.type] as ComponentType<FieldComponentProps> | undefined;
 
   if (!Component) {
-    return <div>Unsupported field type: {field.type}</div>;
+    return <div className="fh-field--unsupported">Unsupported field type{isDevelopment() && `: ${field.type}`}</div>;
   }
 
   return (

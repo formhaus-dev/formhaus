@@ -216,7 +216,7 @@ import { HeadlessFormRenderer } from '@formhaus/react'
 
 `HeadlessFormRenderer` has no fallbacks:
 
-- A field type with no mapped component renders an "Unsupported field type" placeholder.
+- A field type with no mapped component renders an "Unsupported field type" placeholder. In development the renderer also warns with `missing-component`.
 - Without an actions component, the form renders no buttons.
 - Without a progress component, a multi-step form renders no progress bar.
 

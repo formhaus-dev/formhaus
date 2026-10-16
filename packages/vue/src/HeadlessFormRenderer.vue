@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isSection, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
-import { applySources, errorEntries, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { applySources, errorEntries, labelFor, shouldApplyExternalErrors, warnMissingComponents } from '@formhaus/core/internal';
 import { computed, onMounted, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
@@ -73,6 +73,13 @@ onMounted(() => applySources(form.engine, props.initialValues));
 watch(
   () => form.engine,
   (engine) => applySources(engine, props.initialValues),
+);
+
+const warned = new Set<string>();
+watch(
+  [() => props.definition, () => props.components],
+  ([definition, components]) => warnMissingComponents(definition, components, warned, props.onWarning),
+  { immediate: true },
 );
 
 const {

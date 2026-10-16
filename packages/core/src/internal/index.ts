@@ -8,6 +8,7 @@ export {
 } from '../cloud/controller';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
 export { warnDefinitionReset } from './definition-reset';
+export { isDevelopment, warnMissingComponents } from './missing-components';
 export { fieldDomId, itemDomId } from './ids';
 export { errorDomId, errorEntries, itemHasContent, itemLimits, itemTitle, type ErrorEntry } from './items';
 export { loadOptions, optionKey, optionSources, providedOptions, sameOptions, type OptionSource, type OptionsProvider } from './options';

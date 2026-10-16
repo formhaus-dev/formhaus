@@ -419,7 +419,7 @@ In the definition:
 }
 ```
 
-If no component is registered for a type, the form shows "Unsupported field type."
+If no component is registered for a type, the form shows an "Unsupported field type" placeholder. In development the placeholder names the type, and the renderer warns once per type with the code `missing-component` and lists the registered types. The warning goes to `onWarning` when you pass it, or else to the console.
 
 Put the settings of a custom type in `props`. Core ignores them, and the component reads them from `field.props`:
 
