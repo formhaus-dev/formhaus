@@ -72,6 +72,42 @@
     }
   },
   {
+    "name": "403 verification failed",
+    "request": "submit",
+    "response": {
+      "status": 403,
+      "body": {
+        "error": "verification_failed",
+        "message": "The bot check did not pass or expired. Run the check again and submit with the new token."
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 403,
+        "code": "verification_failed",
+        "action": "retry"
+      }
+    }
+  },
+  {
+    "name": "403 verification required",
+    "request": "submit",
+    "response": {
+      "status": 403,
+      "body": {
+        "error": "verification_required",
+        "message": "This form only accepts submissions that pass a bot check."
+      }
+    },
+    "expect": {
+      "error": {
+        "status": 403,
+        "code": "verification_required",
+        "action": "reload"
+      }
+    }
+  },
+  {
     "name": "404 not found",
     "request": "submit",
     "response": {
@@ -365,6 +401,113 @@
           "allowAnother": true
         },
         "renderToken": "rt_abc"
+      }
+    }
+  },
+  {
+    "name": "load envelope with a bot check",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "body": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 3,
+        "settings": {},
+        "renderToken": "rt_abc",
+        "challenge": {
+          "provider": "turnstile",
+          "siteKey": "0x4AAA",
+          "url": "https://formhaus.cc/challenge?form=abc"
+        }
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 3,
+        "settings": {},
+        "renderToken": "rt_abc",
+        "challenge": {
+          "provider": "turnstile",
+          "siteKey": "0x4AAA",
+          "url": "https://formhaus.cc/challenge?form=abc"
+        }
+      }
+    }
+  },
+  {
+    "name": "load envelope with a non-http bot check url",
+    "request": "load",
+    "response": {
+      "status": 200,
+      "body": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 3,
+        "settings": {},
+        "challenge": {
+          "provider": "turnstile",
+          "siteKey": "0x4AAA",
+          "url": "javascript:alert(1)"
+        }
+      }
+    },
+    "expect": {
+      "form": {
+        "definition": {
+          "id": "contact",
+          "title": "Contact",
+          "submit": {
+            "label": "Send"
+          },
+          "fields": [
+            {
+              "key": "email",
+              "type": "email",
+              "label": "Email"
+            }
+          ]
+        },
+        "version": 3,
+        "settings": {}
       }
     }
   },
