@@ -1,6 +1,6 @@
 import { act, fireEvent, render, screen } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
-import { createRef } from 'react';
+import { createRef, StrictMode } from 'react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FormRenderer, type FormRendererHandle, HeadlessFormRenderer } from '../src';
@@ -47,6 +47,35 @@ describe('onValuesChange', () => {
     act(() => handle.current!.setValue('name', 'Grace'));
     expect(onValuesChange.mock.calls).toEqual([[{ name: 'Ada' }], [{ name: 'Grace' }]]);
     expect(onFieldChange).toHaveBeenCalledOnce();
+  });
+
+  it('fires once on mount in StrictMode', () => {
+    const onValuesChange = vi.fn();
+    render(
+      <StrictMode>
+        <FormRenderer definition={definition} initialValues={{ name: 'Ada' }} onSubmit={() => {}} onValuesChange={onValuesChange} />
+      </StrictMode>,
+    );
+    expect(onValuesChange.mock.calls).toEqual([[{ name: 'Ada' }]]);
+  });
+
+  it('fires once per snapshot when the callback writes a value', () => {
+    const handle = createRef<FormRendererHandle>();
+    const seen: unknown[] = [];
+    render(
+      <FormRenderer
+        ref={handle}
+        definition={definition}
+        onSubmit={() => {}}
+        onValuesChange={(values) => {
+          seen.push(values);
+          if (values.name === 'Ada') handle.current!.setValue('name', 'Grace');
+        }}
+      />,
+    );
+    act(() => handle.current!.setValue('name', 'Ada'));
+    expect(seen).toEqual([{}, { name: 'Ada' }, { name: 'Grace' }]);
+    expect(new Set(seen).size).toBe(3);
   });
 
   it('fires when a new definition recreates the form', () => {

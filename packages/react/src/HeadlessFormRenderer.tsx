@@ -73,9 +73,13 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
 
   const onValuesChange = useRef(props.onValuesChange);
   onValuesChange.current = props.onValuesChange;
+  const emitted = useRef<object | null>(null);
   useEffect(() => {
     applySources(engine, initialValues);
-    const emit = () => onValuesChange.current?.(engine.getValuesSnapshot());
+    const emit = () => {
+      const values = onValuesChange.current && engine.getValuesSnapshot();
+      if (values && values !== emitted.current) onValuesChange.current!((emitted.current = values));
+    };
     emit();
     return engine.subscribeValues(emit);
   }, [engine]);

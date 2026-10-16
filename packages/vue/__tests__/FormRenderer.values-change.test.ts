@@ -51,6 +51,19 @@ describe('valuesChange', () => {
     expect(onFieldChange).toHaveBeenCalledOnce();
   });
 
+  it('fires once per snapshot when the listener writes a value', () => {
+    const handle = ref<FormRendererHandle>();
+    const seen: unknown[] = [];
+    const onValuesChange = (values: Readonly<Record<string, unknown>>) => {
+      seen.push(values);
+      if (values.name === 'Ada') handle.value!.setValue('name', 'Grace');
+    };
+    render(defineComponent({ setup: () => () => h(HeadlessFormRenderer, { ref: handle, definition, onValuesChange }) }));
+    handle.value!.setValue('name', 'Ada');
+    expect(seen).toEqual([{}, { name: 'Ada' }, { name: 'Grace' }]);
+    expect(new Set(seen).size).toBe(3);
+  });
+
   it('fires when a new definition recreates the form', async () => {
     const onValuesChange = vi.fn();
     const { rerender } = render(HeadlessFormRenderer, { props: { definition, onValuesChange } });

@@ -77,10 +77,13 @@ const {
 } = form;
 
 let stopValues = () => {};
+let emitted: object;
 const watchValues = (engine: typeof form.engine) => {
   stopValues();
   applySources(engine, props.initialValues);
-  const changed = () => emit('valuesChange', values.value);
+  const changed = () => {
+    if (values.value !== emitted) emit('valuesChange', (emitted = values.value));
+  };
   changed();
   stopValues = engine.subscribeValues(changed);
 };
