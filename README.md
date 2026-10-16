@@ -30,10 +30,10 @@
 **Add Formhaus to your coding agent**
 
 ```bash
-claude mcp add formhaus -- npx -y @formhaus/mcp
+npx formhaus
 ```
 
-<sub>Writes, checks and repairs definitions locally, with no account. Works in Claude Code, Codex, Cursor and any MCP client · <a href="https://formhaus.dev/guide/mcp">Setup for each client</a></sub>
+<sub>Adds the Formhaus MCP server to Claude Code, Codex, Cursor and Claude Desktop. Writes, checks and repairs definitions locally, with no account · <a href="https://formhaus.dev/guide/mcp">Setup for each client</a></sub>
 
 Two independent ways to use it:
 

@@ -19,6 +19,14 @@ Rules for agents:
 
 ## Setup
 
+### One command
+
+```bash
+npx formhaus
+```
+
+Adds the server to every supported agent it finds on your machine: Claude Code, Codex, Cursor and Claude Desktop. In Claude Code it also installs the [`formhaus-create-form`](/guide/formhaus-create-form) skill, and inside a project it adds the Cursor rule. Existing entries are kept, and `--dry-run` shows the changes without writing. For Windsurf, Gemini CLI, OpenCode and VS Code it prints the manual steps.
+
 ### Claude Code plugin
 
 The Formhaus plugin bundles this server with the [`/formhaus:formhaus-create-form`](/guide/formhaus-create-form) and [`/formhaus:formhaus-figma-connect`](/guide/formhaus-figma-connect) skills:
