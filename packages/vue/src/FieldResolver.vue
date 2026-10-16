@@ -8,7 +8,7 @@ const emit = defineEmits(formFieldEmits);
 
 let development = false;
 try {
-  development = process.env.NODE_ENV !== 'production';
+  if (process.env.NODE_ENV !== 'production') development = true;
 } catch {}
 const fieldComponent = computed<Component | null>(() => props.components?.[props.field.type] ?? null);
 </script>

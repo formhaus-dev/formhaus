@@ -13,6 +13,7 @@ export type {
   FormGroup,
   FormI18n,
   FormNode,
+  FormRendererHandle,
   FormSection,
   SectionView,
   GroupI18n,

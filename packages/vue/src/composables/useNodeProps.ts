@@ -55,7 +55,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
           labels: props.labels,
           confirmRemove: props.confirmRemove,
           options: options.value,
-          change: on.changeItems,
+          onItemsChange: on.changeItems,
           onUpdate: on.update,
           onBlur: on.blur,
           onFocus: on.focus,

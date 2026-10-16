@@ -6,6 +6,7 @@ import type {
   FormAnalyticsEvent,
   FormDefinition,
   FormEngineOptions,
+  FormRendererHandle,
   GroupItemView,
   GroupView,
   LabelSource,
@@ -17,7 +18,7 @@ import type {
 } from '@formhaus/core';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
-export type { OptionsProvider };
+export type { FormRendererHandle, OptionsProvider };
 
 export interface FieldComponentProps {
   id?: string;
@@ -137,9 +138,4 @@ export interface FormRendererProps extends FormEngineOptions {
   progressComponent?: ComponentType<FormStepProgressProps>;
   headingLevel?: HeadingLevel;
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
-}
-
-export interface FormRendererHandle {
-  setValue(key: string, value: unknown): void;
-  getValues(): Record<string, unknown>;
 }

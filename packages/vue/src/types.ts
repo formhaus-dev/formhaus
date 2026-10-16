@@ -9,6 +9,7 @@ import type {
   FormAnalyticsEvent,
   FormDefinition,
   FormField,
+  FormRendererHandle,
   GroupItemView,
   GroupView,
   LabelSource,
@@ -72,7 +73,7 @@ export interface FormStepProgressProps {
   counterLabel?: string;
 }
 
-export type { OptionsProvider };
+export type { FormRendererHandle, OptionsProvider };
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -132,9 +133,4 @@ export interface FieldEmits {
 
 export interface CommitFieldEmits extends FieldEmits {
   (e: 'commit', value: unknown): void;
-}
-
-export interface FormRendererHandle {
-  setValue(key: string, value: unknown): void;
-  getValues(): Record<string, unknown>;
 }

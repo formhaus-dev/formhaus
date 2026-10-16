@@ -119,6 +119,27 @@ describe('defaults of a key declared on two routes', () => {
     expect(new FormEngine(branches(n), { route: 'b' }).getSubmitValues()).toEqual({ route: 'b', n: 2 });
     expect(new FormEngine(branches(group), { route: 'a' }).getSubmitValues()).toEqual({ route: 'a', g: [{ n: 1 }] });
   });
+
+  it('takes the default of the active route when another route reuses a field object', () => {
+    const shared = n('a');
+    const [pick] = branches(n).steps!;
+    const definition: FormDefinition = {
+      ...branches(n),
+      steps: [
+        {
+          ...pick,
+          routes: [
+            { to: 'b', show: [{ field: 'route', eq: 'b' }] },
+            { to: 'c', show: [{ field: 'route', eq: 'c' }] },
+          ],
+        },
+        { id: 'a', title: 'A', fields: [shared], routes: [{ to: null }] },
+        { id: 'b', title: 'B', fields: [n('b')], routes: [{ to: null }] },
+        { id: 'c', title: 'C', fields: [shared] },
+      ],
+    };
+    expect(new FormEngine(definition, { route: 'b' }).getSubmitValues()).toEqual({ route: 'b', n: 2 });
+  });
 });
 
 describe('a key on two exclusive steps that controls a route', () => {
