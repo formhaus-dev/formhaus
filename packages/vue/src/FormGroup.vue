@@ -33,7 +33,7 @@ const props = withDefaults(
     labels?: LabelSource;
     options: Record<string, FieldOption[]>;
     confirmRemove?: boolean;
-    change: (key: string, apply: () => boolean) => boolean;
+    onItemsChange: (key: string, apply: () => boolean) => boolean;
   }>(),
   { confirmRemove: true },
 );
@@ -81,7 +81,7 @@ async function focusAfter(index: number, added: boolean) {
 
 function add() {
   const index = props.items.length;
-  if (!props.change(props.group.key, () => props.engine.addItem(props.group.key))) return;
+  if (!props.onItemsChange(props.group.key, () => props.engine.addItem(props.group.key))) return;
   status.value = label('itemAdded', { item: title(index) });
   announcements.value++;
   void focusAfter(index, true);
@@ -89,7 +89,7 @@ function add() {
 
 function drop(index: number) {
   confirming.value = null;
-  if (!props.change(props.group.key, () => props.engine.removeItem(props.group.key, index))) return;
+  if (!props.onItemsChange(props.group.key, () => props.engine.removeItem(props.group.key, index))) return;
   status.value = label('itemRemoved', { item: title(index) });
   announcements.value++;
   void focusAfter(index, false);

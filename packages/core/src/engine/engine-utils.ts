@@ -26,6 +26,12 @@ export function createValues(
   initialValues?: Record<string, unknown>,
   pick: (key: string, values: Record<string, unknown>) => FormField | undefined = () => undefined,
 ): Record<string, unknown> {
+  const byKey = new Map<string, FormField[]>();
+  for (const field of fields) {
+    const same = byKey.get(field.key);
+    if (same) same.push(field);
+    else byKey.set(field.key, [field]);
+  }
   const values: Record<string, unknown> = {};
   const fill = (field: FormField) => {
     delete values[field.key];
@@ -34,16 +40,23 @@ export function createValues(
       values[field.key] = Array.from({ length: field.defaultItems! }, () => createValues(field.fields));
   };
   const source = initialValues ?? {};
-  for (const field of fields) fill(field);
+  for (const field of fields) {
+    const same = byKey.get(field.key)!;
+    if (same[same.length - 1] === field) fill(field);
+  }
   for (const key of Object.keys(source)) {
     if (key !== '__proto__') values[key] = source[key];
   }
   for (const { key } of fields) {
-    const same = fields.filter((field) => field.key === key);
-    const field = (same.length > 1 && pick(key, { ...values })) || same[0];
+    const same = byKey.get(key)!;
+    const shared = same.length > 1;
+    const field = (shared && pick(key, { ...values })) || same[0];
     const items = values[key];
-    if (!hasOwn(source, key)) fill(field);
-    else if (isGroup(field) && items === source[key] && Array.isArray(items))
+    if (!hasOwn(source, key)) {
+      delete values[key];
+      if (shared) fill(field);
+      else if (items !== undefined) values[key] = items;
+    } else if (isGroup(field) && items === source[key] && Array.isArray(items))
       values[key] = items.map((item) => (isPlainEntry(item) ? keepId(item, createValues(field.fields, item)) : item));
   }
   return values;

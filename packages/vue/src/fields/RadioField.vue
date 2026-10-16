@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { formFieldEmits } from '../props';
-import { formFieldProps } from '../props';
+import { formFieldEmits, formFieldProps } from '../props';
 import FieldShell from './FieldShell.vue';
 import { useField } from './useField';
 
