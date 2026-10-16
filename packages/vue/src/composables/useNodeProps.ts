@@ -53,7 +53,10 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
   );
   const options = computed(() => providedOptions(sources.value, props.optionsProviders, loaded.value));
   const groups = new Map<string, GroupMemo>();
+  let owner = form.engine;
   const groupState = (key: string): GroupMemo => {
+    if (owner !== form.engine) groups.clear();
+    owner = form.engine;
     const previous = groups.get(key);
     const items = form.engine.items(key);
     const next = {
