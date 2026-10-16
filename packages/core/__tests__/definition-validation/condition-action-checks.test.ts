@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkDefinition } from '../../src';
+import { checkDefinition, FormEngine } from '../../src';
 import type { FormDefinition, FormField } from '../../src/types';
 
 const form = (fields: FormField[], extra: Partial<FormDefinition> = {}): FormDefinition => ({
@@ -54,5 +54,11 @@ describe('condition, action and props checks', () => {
 
   it('accepts props on a field', () => {
     expect(codes(form([field('a', { type: 'x-rating', props: { stars: 5, palette: { on: 'gold' } } })]))).toEqual([]);
+  });
+
+  it.each([null, [], 42, 'stars', new Date(0)])('rejects props %j that is not an object', (props) => {
+    const definition = form([field('a', { type: 'x-rating', props: props as never })]);
+    expect(codes(definition)).toEqual(['error invalid-type /fields/0/props']);
+    expect(() => new FormEngine(definition)).toThrow('/fields/0/props: must be an object');
   });
 });
