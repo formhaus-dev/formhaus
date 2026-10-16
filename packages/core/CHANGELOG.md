@@ -16,6 +16,7 @@
 - New `condition-always-true` warning for `notEmpty: false` in a condition, which matches every value.
 - New `disabled-not-applicable` warning for `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore.
 - New `definition-reset` and `missing-component` issue codes for the React and Vue development warnings.
+- A `hidden` field no longer needs a `label`. Its type is `HiddenFormField`.
 - `OptionsProvider` is exported from `@formhaus/core`.
 - Fixed `validateSubmission()` skipping the rules of, or dropping, a field shown by the defaults of a skipped step.
 - Fixed `FormEngine` throwing when a `process` shim has no `env`.

@@ -1,7 +1,7 @@
 import { isGroup, isSection, type FormField, type FormNode } from '@formhaus/core';
 
 export function flatFields(nodes: FormNode[] = []): FormField[] {
-  return nodes.flatMap((node) => (isSection(node) ? node.fields : [node]));
+  return nodes.flatMap((node) => (isSection(node) ? node.fields : [node])) as FormField[];
 }
 
 export function deepFields(nodes: FormNode[] = []): FormField[] {
@@ -13,5 +13,5 @@ export function nodeKeys(nodes: FormNode[] = []): string[] {
 }
 
 export function nodeName(node: FormNode): string {
-  return isSection(node) ? node.title : node.label;
+  return isSection(node) ? node.title : (node.label ?? node.key);
 }

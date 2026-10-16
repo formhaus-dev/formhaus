@@ -61,7 +61,7 @@ function fieldWarnings({ field, path }: FieldEntry): DefinitionIssue[] {
   const visible = field.type !== 'hidden';
   const empty = visible && typeof field.label === 'string' && !field.label.trim();
   return [
-    ...required(field, path, 'label', visible ? LABEL_HINT : undefined),
+    ...(visible ? required(field, path, 'label', LABEL_HINT) : []),
     ...(empty ? [warning('empty-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
     ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, misplaced),
     ...(field.options ?? []).flatMap((option, index) => [

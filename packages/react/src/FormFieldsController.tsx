@@ -1,4 +1,4 @@
-import { isGroup, isSection, type FormNode } from '@formhaus/core';
+import { isGroup, isSection, type FormField, type FormNode } from '@formhaus/core';
 import { fieldDomId, optionSources, providedOptions } from '@formhaus/core/internal';
 import { memo, useMemo } from 'react';
 import { DefaultSection } from './ContainerViews';
@@ -52,7 +52,7 @@ export const FormFieldsController = memo(function FormFieldsController({
         <FormFieldController
           key={node.key}
           {...props}
-          field={node}
+          field={node as FormField}
           options={resolvedOptions[node.key] ?? node.options}
           disabled={disabled}
         />

@@ -27,7 +27,7 @@ export function indexDefinition(definition: FormDefinition) {
   const stepOfField = new Map<FormField, FormStep>();
   const sectionOf = new Map<FormField, FormSection>();
 
-  for (const node of topNodes(definition)) if (isSection(node)) for (const field of node.fields) sectionOf.set(field, node);
+  for (const node of topNodes(definition)) if (isSection(node)) for (const field of node.fields) sectionOf.set(field as FormField, node);
   for (const field of allFields) {
     const same = fieldsByKey.get(field.key);
     if (same) same.push(field);

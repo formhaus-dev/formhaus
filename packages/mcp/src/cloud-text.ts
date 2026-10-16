@@ -10,7 +10,7 @@ ${EXAMPLE_DEFINITION}
 
 Rules:
 - Top level needs id, title and submit {"label": "..."}.
-- Each field needs key, type and label. Use "fields" for one step, or "steps" (each with id, title and fields) for several, never both.
+- Each field needs key, type and label; a hidden field needs no label. Use "fields" for one step, or "steps" (each with id, title and fields) for several, never both.
 - Types: text, email, phone, number, textarea, select, multiselect, radio, checkbox, switch, date, datetime. password, file, autocomplete, optionsFrom and custom types are refused.
 - select, multiselect and radio need "options": [{"value": "a", "label": "A"}].
 - "validation": {"required": true, "minLength": 2, "maxLength": 200, "min": 0, "max": 10, "pattern": "^[a-z]+$"}.

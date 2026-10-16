@@ -55,6 +55,8 @@ export interface FormField {
   i18n?: FieldI18n;
 }
 
+export type HiddenFormField = Omit<FormField, 'type' | 'label'> & { type: 'hidden'; label?: string };
+
 export interface GroupValidation {
   required?: boolean | string;
   minLength?: number;
@@ -88,11 +90,11 @@ export interface FormSection {
   description?: string;
   show?: ShowCondition[];
   showAny?: ShowCondition[];
-  fields: (FormField | FormGroup)[];
+  fields: (FormField | HiddenFormField | FormGroup)[];
   i18n?: StepI18n;
 }
 
-export type FormNode = FormField | FormSection | FormGroup;
+export type FormNode = FormField | HiddenFormField | FormSection | FormGroup;
 
 export interface ShowCondition {
   field: string;

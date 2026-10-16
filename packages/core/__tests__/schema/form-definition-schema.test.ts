@@ -79,6 +79,16 @@ describe('form definition JSON Schema', () => {
     expect(validate(definition)).toBe(true);
   });
 
+  it('requires a label on every field type except hidden', () => {
+    const definition = validDefinition();
+    definition.steps[0].fields = [{ key: 'utm', type: 'hidden' } as (typeof definition.steps)[0]['fields'][0]];
+    expect(validate(definition)).toBe(true);
+    Object.assign(definition.steps[0].fields[0], { type: 'text' });
+    expect(validate(definition)).toBe(false);
+    definition.steps[0].fields = [{ key: 'group', type: 'group', fields: [] } as unknown as (typeof definition.steps)[0]['fields'][0]];
+    expect(validate(definition)).toBe(false);
+  });
+
   it('rejects a non-string field type', () => {
     const definition = validDefinition();
     Object.assign(definition.steps[0].fields[0], { type: 42 });

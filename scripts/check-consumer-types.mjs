@@ -32,7 +32,7 @@ import { localize, type Overlay } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
 
-const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
+const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }, { key: 'utm', type: 'hidden' }], submit: { label: 'Send' } };
 export const handle = createRef<FormRendererHandle>();
 export const views = [
   <FormRenderer definition={definition} onSubmit={async () => {}} />,
@@ -42,7 +42,7 @@ export const views = [
 ];
 export const extras = [TextField, CloudError];
 export const components: FieldComponentMap = {
-  text: ({ value, onChange }) => <input value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} />,
+  text: ({ field, value, onChange }) => <input aria-label={field.label.trim()} value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} />,
   rating: ({ value, onChange }) => <button type="button" onClick={() => onChange(Number(value) + 1)} />,
   section: ({ title, children }) => <fieldset aria-label={title}>{children}</fieldset>,
   group: ({ label, add }) => <button type="button" onClick={add}>{label}</button>,

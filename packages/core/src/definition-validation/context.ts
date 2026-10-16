@@ -76,7 +76,7 @@ export function createContext(
     });
   } else visit(definition.fields ?? [], '/fields', -1);
   const entries: FieldEntry[] = nodes.flatMap(({ node, path, step, group }) =>
-    isSection(node) ? [] : [{ field: node, path, step, group }],
+    isSection(node) ? [] : [{ field: node as FormField, path, step, group }],
   );
   const keys = new Map<string, FieldEntry>();
   const scopes = new Map<string, Map<string, FieldEntry>>();

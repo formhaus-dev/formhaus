@@ -71,6 +71,9 @@ describe('hidden field messages', () => {
     expect(new FormEngine(single({ label: '', validation: { required: true } })).validate()).toEqual({
       source: 'source: This field is required',
     });
+    const unlabeled: FormDefinition = { ...single({}), fields: [{ key: 'source', type: 'hidden', validation: { required: true } }] };
+    expect(new FormEngine(unlabeled).validate()).toEqual({ source: 'source: This field is required' });
+    expect(validateSubmission(unlabeled, {}).errors).toEqual({ source: 'source: This field is required' });
     expect(new FormEngine(single({ validation: { required: 'Open the invite link' } })).validate()).toEqual({
       source: 'Open the invite link',
     });

@@ -100,7 +100,7 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
         list.appendChild(row);
         return;
       }
-      const row = fieldRow(field, {
+      const row = fieldRow(field as FormField, {
         draft,
         changed: onChange,
         rerender: () => update(),
@@ -112,7 +112,7 @@ export function createEditor(container: HTMLElement, onChange: () => void, notif
           render();
         },
       });
-      movable(row, [stepIndex, fieldIndex], field, step.fields.length);
+      movable(row, [stepIndex, fieldIndex], field as FormField, step.fields.length);
       list.appendChild(row);
     });
     if (step.fields.length === 0 && isMultiStep(draft)) {

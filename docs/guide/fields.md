@@ -308,7 +308,7 @@ A value sent with the answers that the user never sees. It renders `<input type=
 }
 ```
 
-`label` is still required. Editors and error messages use it.
+`label` is optional. Editors and error messages use it, and fall back to the key without one.
 
 ### Value sources
 

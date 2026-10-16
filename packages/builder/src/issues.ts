@@ -36,7 +36,8 @@ export function findIssues(form: BuilderForm): Issue[] {
   for (const item of questions) {
     if (!item.key.trim()) issues.push({ uid: item.uid, severity: 'error', message: 'Response key is empty.' });
     else if (reserved(item.key)) issues.push({ uid: item.uid, severity: 'error', message: `Response key "${item.key}" is reserved.` });
-    if (!item.label.trim()) issues.push({ uid: item.uid, severity: 'warning', message: 'This field has no label.' });
+    if (item.type !== 'hidden' && !item.label.trim())
+      issues.push({ uid: item.uid, severity: 'warning', message: 'This field has no label.' });
     if (!hasOptions(item.type)) continue;
     for (const option of duplicates(item.options, (entry) => entry.value)) {
       issues.push({ uid: option.uid, severity: 'error', message: `Option value "${option.value}" is used twice.` });

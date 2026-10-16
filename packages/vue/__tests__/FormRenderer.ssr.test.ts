@@ -10,7 +10,7 @@ const sourced: FormDefinition = {
   submit: { label: 'Send' },
   fields: [
     { key: 'utm_source', type: 'hidden', label: 'Source', source: { query: 'utm_source' }, defaultValue: 'direct' },
-    { key: 'device', type: 'hidden', label: 'Device', source: 'device' },
+    { key: 'device', type: 'hidden', source: 'device' },
   ],
 };
 
@@ -27,6 +27,7 @@ describe('FormRenderer SSR', () => {
       const html = await renderToString(createSSRApp({ render: () => h(FormRenderer, { definition: sourced, onSubmit: () => {} }) }));
       expect(html).toContain('value="direct"');
       expect(html).toContain('name="device"');
+      expect(html).not.toContain('undefined');
     } finally {
       Object.defineProperty(window, 'location', location);
     }

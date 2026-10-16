@@ -1,4 +1,4 @@
-import { isGroup, isSection, type FormGroup, type FormNode } from '@formhaus/core';
+import { isGroup, isSection, type FormField, type FormGroup, type FormNode } from '@formhaus/core';
 import { solid, stack, text } from './kits/primitives';
 import type { FormRenderer } from './renderers/types';
 
@@ -18,7 +18,7 @@ export async function appendNodes(frame: FrameNode, nodes: FormNode[], renderer:
     } else if (isGroup(node)) {
       append(frame, await renderGroup(node, renderer));
     } else if (node.type !== 'hidden') {
-      append(frame, await renderer.field(node));
+      append(frame, await renderer.field(node as FormField));
     }
   }
 }

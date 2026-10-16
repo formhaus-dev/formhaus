@@ -32,7 +32,7 @@ export const DESCRIPTIONS = {
   'FormStep.showAny': 'Step is visible when any condition matches.',
   'FormField.key': 'Key of the field value in the submitted values. Unique within the form.',
   'FormField.type': 'Field type. A built-in type or a custom type rendered through the renderer components prop.',
-  'FormField.label': 'Label text.',
+  'FormField.label': 'Label text. Required for every type except hidden.',
   'FormField.helperText': 'Hint text between the label and the control.',
   'FormField.defaultValue':
     'Initial value. Also the value restored on reset or skip, and the start value of a field shown with no last value.',

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { fromDefinition, isPage, isQuestion, syncIdentifiers, toDefinition } from '../src';
+import type { FormDefinition } from '@formhaus/core';
+import { findIssues, fromDefinition, isPage, isQuestion, syncIdentifiers, toDefinition } from '../src';
 import { examples, normalize, recipes, templates } from './fixtures';
 
 describe('round trip', () => {
@@ -34,6 +35,13 @@ describe('round trip', () => {
         for (const option of block.options) expect(option.valueLocked).toBe(true);
       }
     }
+  });
+
+  it('keeps a hidden field without a label', () => {
+    const definition = { id: 'f', title: 'F', submit: { label: 'Send' }, fields: [{ key: 'utm', type: 'hidden' }] } as FormDefinition;
+    const form = fromDefinition(definition);
+    expect(findIssues(form)).toEqual([]);
+    expect(JSON.stringify(toDefinition(form))).toBe(JSON.stringify(definition));
   });
 
   it('keeps formatVersion', () => {
