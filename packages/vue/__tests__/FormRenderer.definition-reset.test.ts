@@ -27,7 +27,7 @@ describe('definition changes', () => {
     await rerender({ definition: structuredClone(definition) });
     expect(warn.mock.calls).toEqual([
       [
-        '[formhaus] FormRenderer got a new definition object with the same content and reset the form. Keep the definition in a constant or a computed.',
+        '[formhaus] The form got a new definition object with the same content and was reset. Keep the definition in a constant or a computed.',
       ],
     ]);
   });

@@ -28,7 +28,7 @@ describe('definition changes', () => {
     rerender(<FormRenderer definition={structuredClone(definition)} initialValues={{ name: 'Ada' }} onSubmit={() => {}} />);
     expect(warn.mock.calls).toEqual([
       [
-        '[formhaus] FormRenderer got a new definition object with the same content and reset the form. Keep the definition in a constant or useMemo.',
+        '[formhaus] The form got a new definition object with the same content and was reset. Keep the definition in a constant or useMemo.',
       ],
     ]);
   });

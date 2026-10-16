@@ -11,7 +11,7 @@ export function warnDefinitionReset(
   try {
     if (process.env.NODE_ENV !== 'production' && JSON.stringify(previous) === JSON.stringify(next)) {
       const hint = `Keep the definition in ${keep}.`;
-      const message = `FormRenderer got a new definition object with the same content and reset the form. ${hint}`;
+      const message = `The form got a new definition object with the same content and was reset. ${hint}`;
       issue = { code: 'definition-reset', severity: 'warning', path: '', message, hint };
     }
   } catch {}
