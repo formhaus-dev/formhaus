@@ -447,7 +447,9 @@ With the built-in renderers, a visible field on the active path has these payloa
 | `checkbox` or `switch` unchecked by the user | `false` |
 | `file` cleared by the user | `null` |
 
-Fields hidden by conditions, on a skipped step or off the active path are absent. `""` and `null` mean that the user cleared the field; an absent key means that the field was not answered or is not shown. An edit flow can rely on this to tell "clear the stored value" from "keep it". Both count as empty for `required`, and `notEmpty` does not match them.
+Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. A field cleared and then hidden and shown again is absent, and an untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
+
+Reopening a draft through `initialValues` starts edit tracking over, so a field the draft omits can get its `defaultValue` back.
 
 A `file` value in the browser is a `File`, or `null` after clearing. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference.
 
