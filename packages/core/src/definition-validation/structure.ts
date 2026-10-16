@@ -43,16 +43,32 @@ function keyIssues({ definition, nodes }: CheckContext): DefinitionIssue[] {
   const exclusive = (a: NodeEntry, b: NodeEntry) => a.step !== b.step && !reachable[a.step]?.has(b.step);
   const outer = nodes.filter((entry) => !entry.group);
   const groups = outer.filter((entry) => isGroup(entry.node));
-  nodes.forEach((entry, index) => {
+  const firstOuter = new Map<string, NodeEntry>();
+  for (const entry of outer) if (!firstOuter.has(entry.node.key)) firstOuter.set(entry.node.key, entry);
+  const earlierOuter = new Map<string, NodeEntry[]>();
+  const earlierInner = new Map<unknown, Map<string, NodeEntry>>();
+  const earlier = (entry: NodeEntry): NodeEntry | undefined => {
+    const { key } = entry.node;
+    if (entry.group) {
+      const seen = earlierInner.get(entry.group) ?? new Map<string, NodeEntry>();
+      earlierInner.set(entry.group, seen);
+      const clash = seen.get(key) ?? firstOuter.get(key);
+      if (!seen.has(key)) seen.set(key, entry);
+      return clash;
+    }
+    const seen = earlierOuter.get(key) ?? [];
+    const clash = seen.find((other) => !exclusive(other, entry));
+    earlierOuter.set(key, seen);
+    seen.push(entry);
+    return clash;
+  };
+  nodes.forEach((entry) => {
     const {
       node: { key },
       path,
       group,
     } = entry;
-    const clash = group
-      ? (nodes.slice(0, index).find((other) => other.group === group && other.node.key === key) ??
-        outer.find((other) => other.node.key === key))
-      : outer.slice(0, outer.indexOf(entry)).find((other) => other.node.key === key && !exclusive(other, entry));
+    const clash = earlier(entry);
     const prefix = !group && groups.find((other) => key.startsWith(`${other.node.key}.`));
     if (RESERVED.has(key)) {
       issues.push(error('reserved-key', `${path}/key`, `"${key}" is a built-in object property name`, 'Rename the field key'));
