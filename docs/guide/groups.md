@@ -40,7 +40,7 @@ The submitted value is an array of objects:
 { "participants": [{ "name": "Ada", "email": "ada@example.com", "diet": "none" }] }
 ```
 
-A hidden item field is left out of its item. Text values are trimmed per item, and unknown item keys are never submitted.
+Each item holds the `defaultValue` of its fields, also an item from the initial values that leaves a field out. A hidden item field is left out of its item. Text values are trimmed per item, and unknown item keys are never submitted.
 
 ## Properties
 

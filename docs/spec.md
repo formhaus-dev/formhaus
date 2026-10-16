@@ -217,9 +217,9 @@ Rules:
 - A condition or `matchField` of an item field MAY use the other fields of the same item, evaluated per item, and fields outside the group under the rules of field conditions. A condition, `matchField` or `optionsDependsOn` outside the group MUST NOT use item fields (`group-scope`). It MAY test the group itself, such as with `notEmpty`.
 - `required: true` means at least one item. `minLength` and `maxLength` count items, not characters, and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
 
-A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`.
+A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`.
 
-An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back the value its item started with, unless that item field was edited. An item starts with the values of the initial values or of the last `reset()`, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Edits are tracked per item, so removing an item does not move them to another item.
+An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back the value its item started with, unless that item field was edited. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Edits are tracked per item, so removing an item does not move them to another item.
 
 A hidden group is cleared like a field. A group that becomes visible again gets back its initial items when it was not edited. Adding, removing or writing an item counts as an edit of the group. An edited group starts again with `defaultItems` new items.
 
@@ -447,7 +447,7 @@ With the built-in renderers, a visible field on the active path has these payloa
 | `checkbox` or `switch` unchecked by the user | `false` |
 | `file` cleared by the user | `null` |
 
-Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. A field cleared and then hidden and shown again is absent, and an untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
+Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. A field cleared and then hidden and shown again is absent, and an untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `validateSubmission()` reads an absent key as absent too: it applies no `defaultValue`, `defaultItems` or item field default to it. `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
 
 Reopening a draft through `initialValues` starts edit tracking over, so a field the draft omits can get its `defaultValue` back.
 
