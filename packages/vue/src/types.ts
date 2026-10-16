@@ -14,13 +14,13 @@ import type {
   LabelSource,
   MessageFn,
   MessageKey,
+  OptionsProvider,
   SectionView,
   StepValidateFn,
   SubmitFn,
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { OptionsProvider } from '@formhaus/core/internal';
 import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
