@@ -59,6 +59,20 @@ describe('validateSubmission', () => {
     expect(result.values).toEqual({ tier: 'basic' });
     expect(Object.keys(result.errors)).toEqual(['name', 'phone', 'terms']);
   });
+
+  it('treats a null number as blank', () => {
+    const definition = (required: boolean): FormDefinition => ({
+      id: 'blank',
+      title: '',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'age', type: 'number', label: 'Age', validation: { required } },
+        { key: 'more', type: 'text', label: 'More', show: [{ field: 'age', notEmpty: true }] },
+      ],
+    });
+    expect(validateSubmission(definition(false), { age: null, more: 'x' })).toEqual({ values: { age: null }, errors: {} });
+    expect(validateSubmission(definition(true), { age: null }).errors).toEqual({ age: 'This field is required' });
+  });
 });
 
 describe.skipIf(!existsSync(iifePath) && !process.env.CI)('server IIFE build', () => {

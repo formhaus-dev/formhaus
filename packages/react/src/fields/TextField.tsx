@@ -11,7 +11,7 @@ export function TextField(props: FieldComponentProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setDraft(v);
-    onChange(isNumber && v !== '' ? Number(v) : v);
+    onChange(isNumber ? (v === '' ? null : Number(v)) : v);
   };
 
   const text = isNumber && draft && Object.is(Number(draft), value) ? draft : String(value ?? '');
