@@ -84,6 +84,7 @@ watch(
 
 const {
   update: onFieldUpdate,
+  changeItems: onItemsChange,
   commit: onFieldCommit,
   next: onNext,
   prev: onPrev,
@@ -140,6 +141,7 @@ const disabled = computed(() => props.loading || stepValidating.value || submitt
 const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, {
   update: onFieldUpdate,
   commit: onFieldCommit,
+  changeItems: onItemsChange,
   blur: onFieldBlur,
   focus: onFieldFocus,
 });

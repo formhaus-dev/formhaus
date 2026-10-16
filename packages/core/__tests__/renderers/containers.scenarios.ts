@@ -103,6 +103,26 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
     await waitFor(() => expect(active()).toBe(button('Add')));
   });
 
+  it('reports Add and Remove through onFieldChange with the new items', async () => {
+    const calls: unknown[][] = [];
+    const onFieldChange = (...call: unknown[]) => calls.push(JSON.parse(JSON.stringify(call)));
+    harness.mount({
+      definition: team,
+      initialValues: { crew: [{ name: 'A' }, { name: 'B' }] },
+      confirmRemove: false,
+      onFieldChange,
+      onSubmit: () => {},
+    });
+    await harness.click(button('Add'));
+    await waitFor(() => expect(names()).toHaveLength(3));
+    await harness.click(button('Remove Crew 1'));
+    await waitFor(() => expect(names()).toHaveLength(2));
+    expect(calls).toEqual([
+      ['crew', [{ name: 'A' }, { name: 'B' }, {}], { crew: [{ name: 'A' }, { name: 'B' }, {}] }],
+      ['crew', [{ name: 'B' }, {}], { crew: [{ name: 'B' }, {}] }],
+    ]);
+  });
+
   it('keeps radio groups of items apart and shows item fields by item conditions', async () => {
     harness.mount({ definition: event, initialValues: { people: [{ name: 'A' }, { name: 'B' }] }, onSubmit: () => {} });
     const radios = screen.getAllByRole('radio', { name: 'Plan B' }) as HTMLInputElement[];

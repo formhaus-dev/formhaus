@@ -124,6 +124,7 @@ React and Vue render a group as a fieldset with one labelled card per item:
 - Remove on an item with answers opens a modal dialog first: `Remove Participant 2?`, a short warning, then Cancel and `Remove Participant 2`. Focus starts on Cancel. Escape, Cancel, the close button or a click on the backdrop closes it and returns focus to the item's Remove button. Empty items, or items that hold only their defaults, go at once. Turn it off with `confirmRemove={false}` (React) or `:confirm-remove="false"` (Vue).
 - Remove focuses the heading of the next item, or Add when no item follows.
 - A polite status region announces `{item} added` and `{item} removed`.
+- Add and Remove call `onFieldChange` (React) or emit `fieldChange` (Vue) with the group key, the new items and all values.
 - After a failed Submit, focus goes to the first invalid field. A count error focuses Add.
 - Error summary links point at item fields and read `Email (Participant 2): Enter a valid email`.
 

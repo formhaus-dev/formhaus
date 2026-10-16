@@ -158,6 +158,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
         labels={props.labels}
         confirmRemove={props.confirmRemove}
         onChange={actions.update}
+        onItemsChange={actions.changeItems}
         onCommit={actions.commit}
         onBlur={handleFieldBlur}
         onFocus={handleFieldFocus}

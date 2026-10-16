@@ -187,3 +187,19 @@ it('restores a saved draft into an initial form after a remount', async () => {
   render(FormhausForm, { props });
   await waitFor(() => expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('ada@example.test'));
 });
+
+it('saves a draft after an item is removed', async () => {
+  vi.stubGlobal('fetch', vi.fn());
+  const save = vi.fn();
+  const team: FormDefinition = {
+    formatVersion: '1.1',
+    id: 'team',
+    title: 'Team',
+    submit: { label: 'Send' },
+    fields: [{ key: 'crew', type: 'group', label: 'Crew', fields: [{ key: 'name', type: 'text', label: 'Name' }] }],
+  };
+  const draftStore = { load: () => ({ crew: [{ name: 'Ada' }, { name: 'Bo' }] }), save, clear: () => {} };
+  render(FormhausForm, { props: { id: 'abc', initialForm: { version: 2, definition: team }, draftStore, confirmRemove: false } });
+  await fireEvent.click(await screen.findByRole('button', { name: 'Remove Crew 1' }));
+  await waitFor(() => expect(save).toHaveBeenLastCalledWith('abc', 2, { crew: [{ name: 'Bo' }] }));
+});

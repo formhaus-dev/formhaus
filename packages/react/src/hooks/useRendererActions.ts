@@ -38,6 +38,14 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
     },
     [engine, loading, onFieldChange],
   );
+  const changeItems = useCallback(
+    (key: string, apply: () => boolean) => {
+      if (loading || engine.stepValidating || engine.submitting || !apply()) return false;
+      onFieldChange?.(key, engine.values[key], engine.values);
+      return true;
+    },
+    [engine, loading, onFieldChange],
+  );
   const commit = useCallback(
     (key: string, value: unknown) => {
       if (loading || engine.stepValidating || engine.submitting) return;
@@ -85,5 +93,5 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
     [run, engine, send, report, onAnalyticsEvent],
   );
   const actionError = failure?.engine === engine ? failure.message : null;
-  return { next, prev, skip, update, commit, submit, actionError, invalidAttempts };
+  return { next, prev, skip, update, changeItems, commit, submit, actionError, invalidAttempts };
 }
