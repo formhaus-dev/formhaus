@@ -26,6 +26,7 @@ export type DefinitionIssueCode =
   | 'default-not-in-options'
   | 'unknown-field-type'
   | 'custom-type-name'
+  | 'definition-reset'
   | 'unknown-validator'
   | 'skip-unreachable'
   | 'route-fallthrough'
