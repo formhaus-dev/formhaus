@@ -151,6 +151,7 @@ export default defineConfig({
         text: 'Meta',
         items: [
           { text: 'Stable API', link: '/guide/stability' },
+          { text: 'Bundle size', link: '/guide/bundle-size' },
           { text: 'Changelog', link: '/changelog' },
         ],
       },
