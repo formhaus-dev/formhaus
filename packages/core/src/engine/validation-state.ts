@@ -122,10 +122,16 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   const previousErrors = engine.errors;
   const errors: Record<string, string> = {};
   if (engine.isMultiStep) {
-    const values = getSubmitValues(engine);
+    let version = -1;
+    let values: Record<string, unknown> = {};
     for (const step of engine.visibleSteps)
-      if (!engine.skipped.has(step.id))
+      if (!engine.skipped.has(step.id)) {
+        if (version !== engine.getSnapshot()) {
+          version = engine.getSnapshot();
+          values = getSubmitValues(engine);
+        }
         Object.assign(errors, fieldsErrors(engine, step.fields, customRules(step.fields) ? { ...values } : values));
+      }
   } else {
     Object.assign(errors, fieldsErrors(engine, engine.definition.fields ?? []));
   }
