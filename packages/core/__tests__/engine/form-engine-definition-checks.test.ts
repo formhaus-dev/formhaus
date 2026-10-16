@@ -94,10 +94,17 @@ describe('definition checks', () => {
     expect(warn).not.toHaveBeenCalled();
   });
 
+  it('sends a custom type name warning to onWarning and still renders the field', () => {
+    const onWarning = vi.fn();
+    const engine = new FormEngine(form([{ id: 'a', title: '', fields: [text('x', { type: 'rating' })] }]), { x: 4 }, { onWarning });
+    expect(onWarning.mock.calls.map(([issue]) => issue.code)).toEqual(['custom-type-name']);
+    expect(engine.validate()).toEqual({});
+  });
+
   it('does not log warnings in production', () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
     vi.stubEnv('NODE_ENV', 'production');
-    new FormEngine(form([{ id: 'a', title: '', fields: [text('x', { type: 'txt' })] }]));
+    new FormEngine(form([{ id: 'a', title: '', fields: [text('x', { type: 'txt' }), text('y', { type: 'rating' })] }]));
     vi.unstubAllEnvs();
     expect(warn).not.toHaveBeenCalled();
   });
