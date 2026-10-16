@@ -138,7 +138,8 @@ export function newQuestion(form: BuilderForm, type: FieldType = 'text'): Builde
 
 export function setType(form: BuilderForm, question: BuilderQuestion, type: FieldType): void {
   question.type = type;
-  if (type !== 'hidden') delete question.extra.source;
+  if (type === 'hidden') question.required = false;
+  else delete question.extra.source;
   if (hasOptions(type) && !question.options.length) question.options.push(newOption(form), newOption(form));
 }
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { addField, addTrackingFields, createForm, setFieldType, toDefinition } from '../src';
+import { addField, addTrackingFields, createForm, fromDefinition, setFieldType, toDefinition } from '../src';
 
 describe('tracking fields', () => {
   it('adds hidden UTM and referrer fields after the placement', () => {
@@ -62,5 +62,18 @@ describe('tracking fields', () => {
     const field = addField(form, { step: null }, { label: 'Ref', type: 'hidden', extra: { source: { query: 'ref' } } });
     setFieldType(form, field.uid, 'text');
     expect(toDefinition(form).fields![0]).not.toHaveProperty('source');
+  });
+
+  it('drops required when a field becomes hidden', () => {
+    const form = createForm('signup', 'Signup');
+    const field = addField(form, { step: null }, { label: 'Ref', required: true });
+    setFieldType(form, field.uid, 'hidden');
+    expect(field.required).toBe(false);
+    expect(toDefinition(form).fields![0]).toEqual({ key: 'ref', type: 'hidden', label: 'Ref' });
+  });
+
+  it('keeps required on an imported hidden field', () => {
+    const fields = [{ key: 'ref', type: 'hidden' as const, label: 'Ref', source: 'referrer' as const, validation: { required: true } }];
+    expect(toDefinition(fromDefinition({ id: 'signup', title: 'Signup', fields })).fields).toEqual(fields);
   });
 });

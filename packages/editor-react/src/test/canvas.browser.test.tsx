@@ -141,15 +141,18 @@ describe('editor canvas in a browser', () => {
     const { store } = renderEditor();
     await userEvent.click(fieldLabel(0));
     await userEvent.keyboard('Source');
+    await userEvent.click(screen.getByRole('button', { name: 'Optional, click to make required' }));
     await userEvent.click(screen.getByRole('button', { name: /Field type: Short text/ }));
     await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Hidden value/ }));
     expect(screen.queryByRole('textbox', { name: 'Help text' })).toBeNull();
-    expect(screen.queryByRole('button', { name: /click to make required/ })).toBeNull();
+    expect(screen.queryByRole('button', { name: /click to make (required|optional)/ })).toBeNull();
     await userEvent.click(screen.getByRole('textbox', { name: 'Value' }));
     await userEvent.keyboard('newsletter');
     await waitFor(() => {
       expect(toDefinition(store.getState().form).fields?.[0]).toMatchObject({ key: 'source', type: 'hidden', defaultValue: 'newsletter' });
     });
+    expect(toDefinition(store.getState().form).fields?.[0]).not.toHaveProperty('validation');
+    expect(screen.queryByText('Required')).toBeNull();
   });
 
   it('fills a hidden value from a URL parameter with a fallback', async () => {
