@@ -1,5 +1,5 @@
 ---
-"formhaus": minor
+"formhaus": patch
 ---
 
 - New `npx formhaus` adds the Formhaus MCP server to Claude Code, Codex, Cursor and Claude Desktop.
