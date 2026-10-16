@@ -1,5 +1,6 @@
 import type { FormEngine } from '@formhaus/core';
 import { labelFor } from '@formhaus/core/internal';
+import { useMemo } from 'react';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
@@ -12,9 +13,12 @@ interface FormProgressControllerProps {
 }
 
 export function FormProgressController({ engine, ProgressComponent, headingLevel, marks, labels }: FormProgressControllerProps) {
-  useFormSnapshot(engine);
+  const version = useFormSnapshot(engine);
+  const errors = useMemo(
+    () => (marks && ProgressComponent && engine.isMultiStep ? engine.stepErrors : {}),
+    [engine, version, marks, ProgressComponent],
+  );
   if (!engine.isMultiStep || !ProgressComponent) return null;
-  const errors = marks ? engine.stepErrors : {};
   const { current, total } = engine.progress;
 
   return (

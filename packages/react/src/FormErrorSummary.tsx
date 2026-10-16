@@ -1,5 +1,6 @@
 import type { FormEngine } from '@formhaus/core';
 import { errorEntries, labelFor } from '@formhaus/core/internal';
+import { useMemo } from 'react';
 import type { FormRendererProps } from './types';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 
@@ -11,8 +12,8 @@ interface FormErrorSummaryProps {
 }
 
 export function FormErrorSummary({ engine, formId, onSelect, labels }: FormErrorSummaryProps) {
-  useFormSnapshot(engine);
-  const entries = errorEntries(engine, formId, labels, engine.definition.labels);
+  const version = useFormSnapshot(engine);
+  const entries = useMemo(() => errorEntries(engine, formId, labels, engine.definition.labels), [engine, version, formId, labels]);
   if (entries.length === 0) return null;
 
   return (
