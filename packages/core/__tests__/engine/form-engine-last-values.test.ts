@@ -32,6 +32,16 @@ const crew: FormDefinition = {
   ],
 };
 
+const finalSkip: FormDefinition = {
+  id: 'final-skip',
+  title: 'Final skip',
+  submit: { label: 'Send' },
+  steps: [
+    { id: 'start', title: 'Start', fields: [{ key: 'on', type: 'checkbox', label: 'On' }] },
+    { id: 'extra', title: 'Extra', skip: { label: 'Later' }, fields: [{ ...code, show: [{ field: 'on', eq: true }] }] },
+  ],
+};
+
 const toggle = (engine: FormEngine, key = 'on') => {
   engine.setValue(key, false);
   engine.setValue(key, true);
@@ -127,6 +137,20 @@ describe('last values of fields shown again', () => {
     engine.setValue('crew.0.count', undefined);
     engine.setValue('crew.0.kind', 'x');
     expect(engine.values.crew).toEqual([{ kind: 'x' }]);
+  });
+
+  it('keeps a write made to a hidden field while a rejected Skip was pending', async () => {
+    const engine = new FormEngine(finalSkip, { on: true });
+    await engine.next();
+    engine.setValue('code', 'B2');
+    engine.setValue('on', false);
+    let reject = () => {};
+    const skipping = engine.skip(() => new Promise((resolve) => (reject = () => resolve({ ok: false }))));
+    engine.setValue('code', undefined);
+    reject();
+    expect(await skipping).toBe(false);
+    engine.setValue('on', true);
+    expect(engine.values).toEqual({ on: true });
   });
 
   it('forgets a removed item', () => {

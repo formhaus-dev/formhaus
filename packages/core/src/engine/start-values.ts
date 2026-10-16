@@ -1,16 +1,21 @@
 import type { FormField, FormGroup } from '../types';
-import { hasOwn, isEntry, itemId, itemsOf } from '../visibility/nodes';
+import { hasOwn, isEntry, itemKey, itemsOf } from '../visibility/nodes';
 
 type Values = Record<string, unknown>;
 
 export function createStartValues(groups: FormGroup[]) {
   let seeds: Values = {};
   let remembering = true;
+  let writes: Set<string> | undefined;
   const memory = new Map<string, unknown>();
-  const itemSeeds = new Map<string, Values>();
-  const itemMemory = new Map<string, Values>();
+  let itemSeeds = new WeakMap<object, Values>();
+  let itemMemory = new WeakMap<object, Values>();
+  const forgetItems = () => {
+    itemSeeds = new WeakMap();
+    itemMemory = new WeakMap();
+  };
   const seedItems = (value: unknown) => {
-    for (const item of itemsOf(value)) if (isEntry(item)) itemSeeds.set(itemId(item, 0), item);
+    for (const item of itemsOf(value)) if (isEntry(item)) itemSeeds.set(itemKey(item), item);
   };
 
   return {
@@ -23,44 +28,54 @@ export function createStartValues(groups: FormGroup[]) {
     resetStarts(values: Values): void {
       seeds = { ...values };
       memory.clear();
-      itemMemory.clear();
-      itemSeeds.clear();
+      forgetItems();
       for (const group of groups) seedItems(values[group.key]);
     },
 
     loadPayload(): void {
       remembering = false;
-      itemSeeds.clear();
-      itemMemory.clear();
+      forgetItems();
       for (const key of Object.keys(seeds)) memory.set(key, undefined);
     },
 
     remember(key: string, value: unknown): void {
-      if (remembering) memory.set(key, value);
+      if (!remembering) return;
+      memory.set(key, value);
+      writes?.add(key);
+    },
+
+    watchWrites(): () => Set<string> {
+      const seen = new Set<string>();
+      writes = seen;
+      return () => {
+        if (writes === seen) writes = undefined;
+        return seen;
+      };
     },
 
     rememberItem(item: unknown, key: string, value: unknown): void {
       if (!remembering || !isEntry(item)) return;
-      const id = itemId(item, 0);
+      const id = itemKey(item);
       itemMemory.set(id, { ...itemMemory.get(id), [key]: value });
     },
 
     dropItem(item: unknown): void {
       if (!isEntry(item)) return;
-      itemSeeds.delete(itemId(item, 0));
-      itemMemory.delete(itemId(item, 0));
+      itemSeeds.delete(itemKey(item));
+      itemMemory.delete(itemKey(item));
     },
 
-    reseed(keys: string[], values: Values): () => void {
+    reseed(keys: string[], values: Values): (kept: Set<string>) => void {
       const previous = keys.map((key) => [key, seeds[key], memory.has(key), memory.get(key)] as const);
       for (const key of keys) {
         memory.delete(key);
         seeds[key] = values[key];
         seedItems(values[key]);
       }
-      return () => {
+      return (kept) => {
         for (const [key, seed, remembered, value] of previous) {
           seeds[key] = seed;
+          if (kept.has(key)) continue;
           if (remembered) memory.set(key, value);
           else memory.delete(key);
         }
@@ -75,8 +90,8 @@ export function createStartValues(groups: FormGroup[]) {
 
     itemStartValue(item: unknown, key: string): unknown {
       if (!isEntry(item)) return undefined;
-      const remembered = itemMemory.get(itemId(item, 0));
-      return remembered && hasOwn(remembered, key) ? remembered[key] : itemSeeds.get(itemId(item, 0))?.[key];
+      const remembered = itemMemory.get(itemKey(item));
+      return remembered && hasOwn(remembered, key) ? remembered[key] : itemSeeds.get(itemKey(item))?.[key];
     },
   };
 }

@@ -37,6 +37,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   const restore = skipCurrentStep(engine);
   const skippedValues = engine.values;
   const edited = watchValues(engine, skippedValues);
+  const written = engine.visibility.watchWrites();
   const submitting = submitForm(
     engine,
     async (submitted, skipped) => {
@@ -51,6 +52,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   try {
     return await submitting;
   } finally {
+    const writes = written();
     if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues) {
       const steps = engine.visibleSteps;
       const kept = edited();
@@ -65,7 +67,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
       engine.state.errors = { ...(outcome ? {} : errors), ...engine.errors };
       engine.skipped.delete(step.id);
-      restore();
+      restore(writes);
       dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
       engine.visibility.markChanged(true, true);
       engine.state.currentStepIndex = reconcileStepIndex(steps, engine.visibleSteps, engine.currentStepIndex);

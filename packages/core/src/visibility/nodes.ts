@@ -62,17 +62,21 @@ export function splitPath(group: string, key: string): [number, string] | undefi
   return match ? [Number(match[1]), match[2]] : undefined;
 }
 
-const ids = new WeakMap<object, string>();
+type ItemKey = { id: string };
+const keys = new WeakMap<object, ItemKey>();
 let lastId = 0;
 
+export function itemKey(item: Values): ItemKey {
+  let key = keys.get(item);
+  if (key === undefined) keys.set(item, (key = { id: `i${++lastId}` }));
+  return key;
+}
+
 export function itemId(item: unknown, index: number): string {
-  if (!isEntry(item)) return `${index}`;
-  let id = ids.get(item);
-  if (id === undefined) ids.set(item, (id = `i${++lastId}`));
-  return id;
+  return isEntry(item) ? itemKey(item).id : `${index}`;
 }
 
 export function keepId<T extends object>(from: unknown, to: T): T {
-  ids.set(to, itemId(from, 0));
+  keys.set(to, isEntry(from) ? itemKey(from) : { id: '0' });
   return to;
 }
