@@ -3,6 +3,7 @@ import { conditionValues } from '../../src/internal';
 import type { FormField, FormGroup, FormSection, FormStep } from '../../src/types';
 import { isGroup, isSection, isVisible } from '../../src/visibility';
 import type { FuzzCase, FuzzCommand, Outcome } from './lifecycle-fuzz.fixtures';
+import { startModel } from './lifecycle-fuzz.starts';
 
 interface Operations {
   latestOperation: number;
@@ -51,6 +52,8 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
   const groups = fields.filter(isGroup) as FormGroup[];
   const firstField = (stepId: string) => steps.find((step) => step.id === stepId)?.fields[0]?.key ?? 'ghost';
   const groupOf = (key: string) => groups.find((group) => key.startsWith(`${group.key}.`));
+
+  const starts = startModel(fields, initial);
 
   let engine!: FormEngine;
   const ops = () => engine as unknown as Operations;
@@ -144,6 +147,8 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       const hiddenSection = (!step || path.includes(step)) && section && !isVisible(section, active);
       if ((hiddenStep || hiddenField || hiddenSection) && engine.values[field.key as keyof typeof engine.values] !== undefined)
         fail(`hidden field ${field.key} keeps a value`);
+      const lost = shown(field) && starts.lost(field, step, engine.values[field.key as never], engine.errors[field.key]);
+      if (lost) fail(lost);
     }
     for (const group of groups) {
       const items = engine.values[group.key as keyof typeof engine.values];
@@ -183,7 +188,10 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
 
   for (const command of commands) {
     log.push(JSON.stringify(command));
+    const owner = groupOf(command.type === 'set' ? command.key : '')?.key ?? (command.type === 'set' ? command.key : '');
+    const previous = engine.values[owner as keyof typeof engine.values];
     if (command.type === 'set') engine.setValue(command.key, command.value);
+    if (command.type === 'skip') starts.skip();
     if (command.type === 'setErrors') engine.setErrors(Object.fromEntries(command.keys.map((key) => [key, `External ${key}`])));
     if (command.type === 'jump') engine.goToStepWithField(command.key);
     if (command.type === 'next') start(() => engine.next());
@@ -194,9 +202,15 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
     if (command.type === 'reset') {
       resets++;
       engine.reset(command.filled ? initial : undefined);
+      starts.reset(command.filled ? initial : undefined);
     }
-    if (command.type === 'add') engine.addItem(command.key);
-    if (command.type === 'remove') engine.removeItem(command.key, command.index);
+    if (command.type === 'add' && engine.addItem(command.key)) starts.edit(command.key);
+    if (command.type === 'remove' && engine.removeItem(command.key, command.index)) starts.edit(command.key);
+    if (
+      command.type === 'set' &&
+      (owner === command.key ? !Object.is(previous, command.value) : previous !== engine.values[owner as never])
+    )
+      starts.edit(owner);
     if (command.type === 'settle' && pending.length > 0) {
       const [entry] = pending.splice(command.index % pending.length, 1);
       const superseded = entry.resets !== resets || entry.operation !== ops().latestOperation;
