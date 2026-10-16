@@ -239,8 +239,20 @@ For renderers, the granular subscriptions avoid updating unrelated fields:
 | `getFieldSnapshot(key)` | Returns that field's revision number |
 | `subscribeStructure(listener)` | Runs the listener when visible fields, visible steps, or navigation changes |
 | `getStructureSnapshot()` | Returns the structure revision number |
+| `subscribeValues(listener)` | Runs the listener once per value-changing operation. Added in 0.16.0 |
+| `getValuesSnapshot()` | Returns a frozen shallow copy of `values`, the same object until the next value change. Added in 0.16.0 |
 
-Each `subscribe` method returns an unsubscribe function. Snapshot methods return stable numbers until the corresponding state changes, so they can be passed to external-store APIs such as React's `useSyncExternalStore`.
+Each `subscribe` method returns an unsubscribe function. Snapshot methods return stable values until the corresponding state changes, so they can be passed to external-store APIs such as React's `useSyncExternalStore`:
+
+```ts
+const values = useSyncExternalStore(
+  (listener) => engine.subscribeValues(listener),
+  () => engine.getValuesSnapshot(),
+  () => engine.getValuesSnapshot(),
+);
+```
+
+`subscribeValues` runs for `setValue`, group item changes, values cleared or restored by conditions, `reset`, and step skip and its rollback. It may run when the values end up unchanged: a write to a hidden field, a reset to equal content, a skip. It does not run for errors, loading, navigation or a value equal to the current one. Listeners run synchronously, after the general `subscribe` listeners.
 
 ## Navigation and submission lifecycle
 

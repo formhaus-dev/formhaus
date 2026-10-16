@@ -5,10 +5,6 @@ import type { FormEngineOptions } from './engine-options';
 import type { NotifyOptions } from './subscriptions';
 import type { VisibilityState } from './visibility-state';
 
-export interface RuntimeNotifyOptions extends NotifyOptions {
-  valuesChanged?: boolean;
-}
-
 export interface EngineState {
   values: Record<string, unknown>;
   errors: Record<string, string>;
@@ -45,7 +41,7 @@ export interface EngineInternals {
   readonly visibleFields: FormField[];
   readonly isFirstStep: boolean;
   readonly isLastStep: boolean;
-  notify(options?: RuntimeNotifyOptions): void;
+  notify(options?: NotifyOptions): void;
   getSnapshot(): number;
   advance(reason: 'next' | 'autoAdvance'): Promise<boolean>;
 }
