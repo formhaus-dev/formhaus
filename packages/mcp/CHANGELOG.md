@@ -6,6 +6,7 @@
 
 - `capabilities` describes the `props` field property and reports format 1.2.
 - `capabilities` states that a field shown again gets back its last value, or else its initial value or `defaultValue`.
+- `capabilities` and `validate_definition` accept a `hidden` field without a `label`.
 - `simulate_path` gives the item fields of answered group items their `defaultValue`.
 
 ### Patch Changes

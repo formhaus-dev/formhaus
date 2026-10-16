@@ -65,7 +65,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 |---|---|---|
 | `key` | string, required | Key of the value. Keys are flat: `"address.city"` stays one key. |
 | `type` | string, required | [Field type](#field-types). |
-| `label` | string, required | Label text. |
+| `label` | string, required except for `hidden` | Label text. |
 | `placeholder` | string | Placeholder text. |
 | `helperText` | string | Hint text between the label and the control. |
 | `defaultValue` | any | Initial value. See [Defaults](#defaults-and-initial-values). |

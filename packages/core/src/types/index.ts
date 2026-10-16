@@ -12,6 +12,7 @@ export type {
   FormNode,
   FormSection,
   GroupValidation,
+  HiddenFormField,
   ShowCondition,
 } from './field';
 export type { FormDefinition, FormStep, StepRoute } from './definition';

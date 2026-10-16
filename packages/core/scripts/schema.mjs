@@ -42,9 +42,13 @@ export function buildSchema() {
     jsDoc: 'none',
   }).createSchema('FormDefinition');
 
+  delete generated.definitions.HiddenFormField;
   applyDescriptions(generated.definitions);
   const reserved = { enum: [...Object.getOwnPropertyNames(Object.prototype), 'prototype'].sort() };
   for (const name of ['FormField', 'FormSection', 'FormGroup']) generated.definitions[name].properties.key.not = reserved;
+  const field = generated.definitions.FormField;
+  field.required = field.required.filter((name) => name !== 'label');
+  Object.assign(field, { if: { properties: { type: { const: 'hidden' } }, required: ['type'] }, else: { required: ['label'] } });
   generated.definitions.FormNode = byType('section', ref('FormSection'), byType('group', ref('FormGroup'), ref('FormField')));
   generated.definitions.FormSection.properties.fields.items = byType('group', ref('FormGroup'), ref('FormField'));
   Object.assign(generated.definitions.FormGroup.properties.defaultItems, { type: 'integer', minimum: 0 });

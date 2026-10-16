@@ -10,6 +10,7 @@ export type {
   FormAnalyticsEvent,
   FormDefinition,
   FormField,
+  HiddenFormField,
   FormGroup,
   FormI18n,
   FormNode,

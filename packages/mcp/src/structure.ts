@@ -4,7 +4,7 @@ import { CONTAINER_TYPES, FIELD_TYPES } from './vocabulary';
 
 const KNOWN_TYPES = new Set<string>([...FIELD_TYPES, ...CONTAINER_TYPES]);
 
-function fieldIssues(field: FormField, path: string, item: boolean): Issue[] {
+function fieldIssues(field: Pick<FormField, 'type' | 'autoAdvance'>, path: string, item: boolean): Issue[] {
   const issues: Issue[] = [];
   if (!KNOWN_TYPES.has(field.type)) {
     issues.push(

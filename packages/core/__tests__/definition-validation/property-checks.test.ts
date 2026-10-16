@@ -100,6 +100,10 @@ describe('property checks', () => {
     expect(checkDefinition({ ...base, 'a/b': 1 })[0].path).toBe('/a~1b');
   });
 
+  it('accepts a hidden field without a label', () => {
+    expect(summary({ ...base, fields: [{ key: 'utm', type: 'hidden' }] })).toEqual([]);
+  });
+
   it('warns about missing labels and titles the schema requires', () => {
     const input = {
       id: 'a',
@@ -120,7 +124,6 @@ describe('property checks', () => {
       'warning missing-property /steps/0: missing required property "title".',
       'warning missing-property /steps/0/fields/0: missing required property "label". Add a label so screen readers can name the input.',
       'warning missing-property /steps/0/fields/0/options/0: missing required property "label".',
-      'warning missing-property /steps/0/fields/1: missing required property "label".',
     ]);
   });
 

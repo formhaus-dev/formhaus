@@ -125,7 +125,7 @@ export function addField(draft: FormDefinition, stepIndex: number, type: string)
 }
 
 export function renameField(draft: FormDefinition, field: FormField, label: string): void {
-  const autoKey = field.key === keyFromLabel(field.label, new Set());
+  const autoKey = field.key === keyFromLabel(field.label ?? '', new Set());
   field.label = label;
   if (!autoKey || referencedKeys(draft).has(field.key)) return;
   const taken = allKeys(draft);

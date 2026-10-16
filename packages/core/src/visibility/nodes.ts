@@ -12,7 +12,7 @@ export const isSection = (node: { type?: unknown }): node is FormSection => node
 export const isGroup = (node: { type?: unknown }): node is FormGroup => node.type === 'group';
 
 export function valueFields(nodes: FormNode[]): FormField[] {
-  return nodes.flatMap((node) => (isSection(node) ? node.fields : [node]));
+  return nodes.flatMap((node) => (isSection(node) ? node.fields : [node])) as FormField[];
 }
 
 export function topNodes(definition: FormDefinition): FormNode[] {
@@ -26,7 +26,7 @@ export function conditionFields(source: Pick<FormField, 'show' | 'showAny'>): st
 export function shownFields(nodes: FormNode[], values: Values): FormField[] {
   return nodes.flatMap((node) =>
     !isVisible(node, values) ? [] : isSection(node) ? node.fields.filter((field) => isVisible(field, values)) : [node],
-  );
+  ) as FormField[];
 }
 
 export const itemsOf = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);

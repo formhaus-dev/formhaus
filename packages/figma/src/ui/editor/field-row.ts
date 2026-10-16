@@ -120,9 +120,9 @@ export function fieldRow(field: FormField, context: RowContext): HTMLElement {
   const handle = element('button', 'drag-handle');
   handle.type = 'button';
   handle.title = 'Drag to reorder, or use the arrow keys';
-  handle.setAttribute('aria-label', `Move ${field.label}`);
+  handle.setAttribute('aria-label', `Move ${field.label || field.key}`);
   handle.appendChild(icon('drag'));
-  const label = textInput(field.label, 'Field label', 'input label-input', (value) => {
+  const label = textInput(field.label ?? '', 'Field label', 'input label-input', (value) => {
     const before = field.key;
     renameField(context.draft, field, value);
     const keyInput = row.querySelector<HTMLInputElement>('.field-details .mono');
@@ -132,7 +132,7 @@ export function fieldRow(field: FormField, context: RowContext): HTMLElement {
   });
   const required = element('button', field.validation?.required ? 'chip is-on' : 'chip', 'Required');
   required.type = 'button';
-  required.setAttribute('aria-label', `${field.label} is required`);
+  required.setAttribute('aria-label', `${field.label || field.key} is required`);
   required.setAttribute('aria-pressed', String(Boolean(field.validation?.required)));
   required.onclick = () => {
     setRequired(field, !field.validation?.required);
