@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { GroupItemComponentProps } from './types';
+import { groupItemComponentProps } from './props';
 
-defineProps<GroupItemComponentProps>();
+defineProps(groupItemComponentProps);
 </script>
 
 <template>

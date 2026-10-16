@@ -178,7 +178,7 @@ Add focuses the first field inside the new item wrapper, or its title when the i
 
 The `confirmDialog` entry replaces the remove dialog. It renders while a removal waits for an answer and gets `id`, `open`, `title`, `description`, `confirmLabel`, `cancelLabel`, `confirm()` and `cancel()`. `DefaultConfirmDialog` is a native `<dialog>` opened with `showModal()`.
 
-In Vue, render the item fields with `<component :is="item.fields" />`.
+In Vue, render the item fields with `<component :is="item.fields" />`, and declare props with `defineProps(groupComponentProps)` and `defineProps(groupItemComponentProps)`. See [Runtime props in Vue](/guide/custom-components#runtime-props-in-vue).
 
 ## Without a renderer
 

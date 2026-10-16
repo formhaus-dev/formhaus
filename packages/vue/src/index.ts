@@ -23,6 +23,17 @@ export { default as MultiselectField } from './fields/MultiselectField.vue';
 export { useFormEngine } from './composables/useFormEngine';
 export type { UseFormEngineReturn } from './composables/useFormEngine';
 export { defaultFieldComponents } from './constants';
+export {
+  confirmDialogComponentProps,
+  formActionsEmits,
+  formActionsProps,
+  formFieldEmits,
+  formFieldProps,
+  formStepProgressProps,
+  groupComponentProps,
+  groupItemComponentProps,
+  sectionComponentProps,
+} from './props';
 export type {
   FormRendererProps,
   FormRendererEmits,

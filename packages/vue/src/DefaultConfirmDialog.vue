@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
-import type { ConfirmDialogComponentProps } from './types';
+import { confirmDialogComponentProps } from './props';
 
-const props = defineProps<ConfirmDialogComponentProps>();
+const props = defineProps(confirmDialogComponentProps);
 const dialog = ref<HTMLDialogElement>();
 
 function sync() {

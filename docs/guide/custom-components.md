@@ -58,14 +58,10 @@ In React, call `onPrimary` for the primary action, `onPrev` for back and `onSkip
 
 ```vue
 <script setup lang="ts">
-import type { FormActionsProps } from '@formhaus/vue'
+import { formActionsEmits, formActionsProps } from '@formhaus/vue'
 
-defineProps<FormActionsProps>()
-const emit = defineEmits<{
-  (e: 'primary'): void
-  (e: 'prev'): void
-  (e: 'cancel'): void
-}>()
+defineProps(formActionsProps)
+const emit = defineEmits(formActionsEmits)
 </script>
 
 <template>
@@ -245,6 +241,30 @@ import type { FormActionsProps, FormStepProgressProps } from '@formhaus/vue'
 // React
 import type { FormActionsProps, FormStepProgressProps } from '@formhaus/react'
 ```
+
+## Runtime props in Vue
+
+The Vue SFC compiler turns `defineProps<T>()` into runtime prop declarations, and for that it must resolve `T`. It often cannot resolve a type imported from a package, and fails or declares a prop with the wrong runtime type. `@formhaus/vue` exports runtime declarations for every custom component. Pass them to `defineProps` and `defineEmits`; the props stay fully typed.
+
+```vue
+<script setup lang="ts">
+import { groupItemComponentProps } from '@formhaus/vue'
+
+const props = defineProps(groupItemComponentProps)
+</script>
+```
+
+| Component | Props | Emits |
+|---|---|---|
+| Field | `formFieldProps` | `formFieldEmits` |
+| Actions | `formActionsProps` | `formActionsEmits` |
+| Step progress | `formStepProgressProps` | |
+| Section | `sectionComponentProps` | |
+| Group | `groupComponentProps` | |
+| Group item | `groupItemComponentProps` | |
+| Remove dialog | `confirmDialogComponentProps` | |
+
+Each declares every prop of the matching interface, such as `FormFieldProps` for `formFieldProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2`.
 
 ## Analytics events
 
