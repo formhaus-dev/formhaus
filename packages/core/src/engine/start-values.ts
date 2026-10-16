@@ -3,7 +3,7 @@ import { hasOwn, isEntry, itemKey, itemsOf } from '../visibility/nodes';
 
 type Values = Record<string, unknown>;
 
-export function createStartValues(groups: FormGroup[], changed: () => void = () => {}) {
+export function createStartValues(groups: FormGroup[], changed: () => void) {
   let seeds: Values = {};
   let remembering = true;
   let writes: Set<string> | undefined;

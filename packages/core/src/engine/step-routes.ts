@@ -3,7 +3,7 @@ import { isVisible } from '../visibility';
 import { cleanItems, hasOwn, isGroup, shownFields, valueFields } from '../visibility/nodes';
 import { trimValue } from '../validation/type-checks';
 import { createPathPatch } from './path-patch';
-import { type DefinitionIndex, indexDefinition } from './visibility-index';
+import type { DefinitionIndex } from './visibility-index';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
   return walkPath(definition, values).steps;
@@ -62,18 +62,16 @@ function addStepValues(step: { fields: FormNode[] }, values: Record<string, unkn
   for (const [key, value] of shown) target[key] = value;
 }
 
-export function createActivePath(definition: FormDefinition, index: DefinitionIndex = indexDefinition(definition)) {
+export function createActivePath(definition: FormDefinition, index: DefinitionIndex) {
   const changes = createPathPatch(index);
   let source: Record<string, unknown> | null = null;
   let steps: FormStep[] = [];
-  let members: Set<FormStep> | undefined;
   let active: Record<string, unknown> = {};
   let ordered = true;
   const refresh = (values: Record<string, unknown>) => {
     if (source === values) return;
     source = values;
     ({ steps, values: active } = walkPath(definition, values));
-    members = undefined;
     ordered = true;
   };
   const reorder = () => {
@@ -106,8 +104,7 @@ export function createActivePath(definition: FormDefinition, index: DefinitionIn
     },
     has(values: Record<string, unknown>, step: FormStep): boolean {
       refresh(values);
-      members ??= new Set(steps);
-      return members.has(step);
+      return steps.includes(step);
     },
     scope(values: Record<string, unknown>): Record<string, unknown> {
       refresh(values);
