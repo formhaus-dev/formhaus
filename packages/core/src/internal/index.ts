@@ -1,7 +1,6 @@
 export {
   cloudStateFor,
   createCloudController,
-  initialCloudState,
   type CloudCallbacks,
   type CloudControllerOptions,
   type CloudState,
@@ -26,5 +25,5 @@ export function conditionValues(engine: FormEngine): Record<string, unknown> {
 export function autoAdvance(engine: FormEngine): Promise<boolean> {
   return (engine as unknown as EngineInternals).advance('autoAdvance');
 }
-export { applySources, browserSources } from './sources';
+export { applySources } from './sources';
 export type { FormActionsView } from '../types/views';

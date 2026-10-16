@@ -16,7 +16,7 @@ export function validateStep(
 export const customRules = (nodes: FormNode[]) =>
   valueFields(nodes).some((field) => [field, ...(isGroup(field) ? field.fields : [])].some((rule) => rule.validation?.validator));
 
-export function validateItems(
+function validateItems(
   group: FormGroup,
   values: Record<string, unknown>,
   validators?: Record<string, ValidatorFn>,

@@ -113,7 +113,3 @@ export interface FieldEmits {
   (e: 'blur'): void;
   (e: 'focus'): void;
 }
-
-export interface CommitFieldEmits extends FieldEmits {
-  (e: 'commit', value: unknown): void;
-}
