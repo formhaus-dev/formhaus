@@ -5,12 +5,11 @@ import type { FormDefinition } from '../types';
 import type { FormEngineOptions } from './engine-options';
 
 function developmentIssues(definition: FormDefinition, validators: Record<string, unknown>): DefinitionIssue[] | undefined {
+  let check: (() => DefinitionIssue[]) | undefined;
   try {
-    if (process.env.NODE_ENV !== 'production') return checkDefinition(definition, { validators });
-  } catch (error) {
-    if (!(error instanceof ReferenceError || error instanceof TypeError)) throw error;
-  }
-  return undefined;
+    if (process.env.NODE_ENV !== 'production') check = () => checkDefinition(definition, { validators });
+  } catch {}
+  return check?.();
 }
 
 export function assertDefinition(definition: FormDefinition, options: FormEngineOptions, validators: Record<string, unknown>): void {

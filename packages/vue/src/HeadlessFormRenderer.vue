@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isSection, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
 import { applySources, errorEntries, labelFor, shouldApplyExternalErrors, warnMissingComponents } from '@formhaus/core/internal';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
 import DefaultSection from './DefaultSection.vue';
@@ -75,11 +75,14 @@ watch(
   (engine) => applySources(engine, props.initialValues),
 );
 
-const warned = new Set<string>();
-const warnMissing = () => warnMissingComponents(props.definition, props.components, warned, props.onWarning);
+let watchMissing: (() => void) | undefined;
 try {
-  if (process.env.NODE_ENV !== 'production') watch([() => props.definition, () => props.components], warnMissing, { immediate: true });
+  if (process.env.NODE_ENV !== 'production') {
+    const warned = new Set<string>();
+    watchMissing = () => watchEffect(() => warnMissingComponents(props.definition, props.components, warned, props.onWarning));
+  }
 } catch {}
+watchMissing?.();
 
 const {
   update: onFieldUpdate,

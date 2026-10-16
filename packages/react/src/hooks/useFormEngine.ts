@@ -15,10 +15,12 @@ export function useFormEngineStore(
   const warnedRef = useRef(false);
 
   if (engineRef.current === null || definitionRef.current !== definition) {
+    let warn: (() => boolean) | undefined;
     try {
       if (engineRef.current !== null && !warnedRef.current && process.env.NODE_ENV !== 'production')
-        warnedRef.current = warnDefinitionReset(definitionRef.current, definition, 'a constant or useMemo', options?.onWarning);
+        warn = () => warnDefinitionReset(definitionRef.current, definition, 'a constant or useMemo', options?.onWarning);
     } catch {}
+    if (warn) warnedRef.current = warn();
     engineRef.current = new FormEngine(definition, initialValues, {
       validators: options?.validators,
       messages: options?.messages,
