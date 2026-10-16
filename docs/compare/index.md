@@ -1,6 +1,6 @@
 ---
 title: "Compare form libraries"
-description: "How Formhaus compares with react-hook-form, TanStack Form, react-jsonschema-form and SurveyJS, with sources, bundle sizes and migration examples."
+description: "How Formhaus compares with react-hook-form, react-jsonschema-form and SurveyJS, with sources, bundle sizes and migration examples."
 ---
 
 # Compare Formhaus
@@ -10,7 +10,6 @@ Formhaus fits forms that are data: one JSON definition with steps, branching rou
 | Library | Definition | Pick it when | Comparison |
 |---|---|---|---|
 | react-hook-form | React code | A React form written and maintained by developers | [Formhaus vs react-hook-form](/compare/react-hook-form) |
-| TanStack Form | TypeScript code | Typed form state in React, Vue, Angular, Solid, Svelte or Lit | [Formhaus vs TanStack Form](/compare/tanstack-form) |
 | react-jsonschema-form | JSON Schema + uiSchema | The data model is already a JSON Schema | [Formhaus vs react-jsonschema-form](/compare/react-jsonschema-form) |
 | SurveyJS | SurveyJS JSON | Surveys with scoring, matrices and a drag-and-drop builder for non-developers | [Formhaus vs SurveyJS](/compare/surveyjs) |
 

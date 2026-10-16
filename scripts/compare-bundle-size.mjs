@@ -7,12 +7,7 @@ import { build } from 'esbuild';
 
 const VERSIONS = {
   'react-hook-form': '7.90.0',
-  formik: '2.4.9',
-  '@tanstack/react-form': '1.33.5',
   '@formkit/vue': '2.1.2',
-  '@jsonforms/core': '3.8.0',
-  '@jsonforms/react': '3.8.0',
-  '@jsonforms/vanilla-renderers': '3.8.0',
   '@rjsf/core': '6.11.0',
   '@rjsf/utils': '6.11.0',
   '@rjsf/validator-ajv8': '6.11.0',
@@ -25,15 +20,7 @@ const VUE = ['vue'];
 
 const LIBRARIES = [
   { name: 'react-hook-form', external: REACT, entry: `export { useForm } from 'react-hook-form';` },
-  { name: 'formik', external: REACT, entry: `export { Formik, Form, Field, ErrorMessage } from 'formik';` },
-  { name: '@tanstack/react-form', external: REACT, entry: `export { useForm } from '@tanstack/react-form';` },
   { name: '@formkit/vue', external: VUE, entry: `export { plugin, defaultConfig, FormKit } from '@formkit/vue';` },
-  {
-    name: '@jsonforms/react + vanilla-renderers',
-    external: REACT,
-    entry: `export { JsonForms } from '@jsonforms/react';
-export { vanillaCells, vanillaRenderers } from '@jsonforms/vanilla-renderers';`,
-  },
   {
     name: '@rjsf/core + validator-ajv8',
     external: REACT,

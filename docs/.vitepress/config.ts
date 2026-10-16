@@ -99,7 +99,6 @@ export default defineConfig({
         items: [
           { text: 'Overview', link: '/compare/' },
           { text: 'vs react-hook-form', link: '/compare/react-hook-form' },
-          { text: 'vs TanStack Form', link: '/compare/tanstack-form' },
           { text: 'vs react-jsonschema-form', link: '/compare/react-jsonschema-form' },
           { text: 'vs SurveyJS', link: '/compare/surveyjs' },
         ],
