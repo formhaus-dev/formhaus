@@ -3,7 +3,7 @@ import { hasOwn, isEntry, itemKey, itemsOf } from '../visibility/nodes';
 
 type Values = Record<string, unknown>;
 
-export function createStartValues(groups: FormGroup[]) {
+export function createStartValues(groups: FormGroup[], changed: () => void = () => {}) {
   let seeds: Values = {};
   let remembering = true;
   let writes: Set<string> | undefined;
@@ -22,6 +22,7 @@ export function createStartValues(groups: FormGroup[]) {
     seedItems,
 
     seed(values: Values): void {
+      changed();
       seeds = { ...seeds, ...values };
     },
 
@@ -33,6 +34,7 @@ export function createStartValues(groups: FormGroup[]) {
     },
 
     loadPayload(): void {
+      changed();
       remembering = false;
       forgetItems();
       for (const key of Object.keys(seeds)) memory.set(key, undefined);
@@ -66,6 +68,7 @@ export function createStartValues(groups: FormGroup[]) {
     },
 
     reseed(keys: string[], values: Values): (kept: Set<string>) => void {
+      changed();
       const previous = keys.map((key) => [key, seeds[key], memory.has(key), memory.get(key)] as const);
       for (const key of keys) {
         memory.delete(key);
@@ -73,6 +76,7 @@ export function createStartValues(groups: FormGroup[]) {
         seedItems(values[key]);
       }
       return (kept) => {
+        changed();
         for (const [key, seed, remembered, value] of previous) {
           seeds[key] = seed;
           if (kept.has(key)) continue;

@@ -1,6 +1,7 @@
 import { createStartValues } from './start-values';
 import { indexDefinition } from './visibility-index';
 import { createActivePath } from './step-routes';
+import { createHiddenQueue } from './hidden-queue';
 import type { ValidatorFn } from '../validation';
 import { validateFields } from '../validation';
 import type { FormDefinition, FormField, FormGroup, FormNode, FormStep } from '../types';
@@ -41,7 +42,7 @@ export function createVisibility(definition: FormDefinition) {
   const { allFields, fieldsByKey, routeFields, fieldDependents, stepDependents, stepOfField, sectionOf } = index;
   const path = createActivePath(definition, index);
   const groups = allFields.filter(isGroup);
-  const starts = createStartValues(groups);
+  const starts = createStartValues(groups, () => hidden.unsettle());
   let visibilityDirty = true;
   let canGoNextDirty = true;
   const cache: VisibilityCache = { visibleSteps: [], currentStep: null, visibleFields: [], visibleNodes: [], canGoNext: false };
@@ -140,6 +141,18 @@ export function createVisibility(definition: FormDefinition) {
     if (replaced) path.invalidate();
   }
 
+  const hidden = createHiddenQueue(index, {
+    path,
+    starts,
+    activeField,
+    onPath,
+    visible,
+    owner,
+    settle: (values, errors, cleared) => {
+      if (groups.length) reconcileItems(values, errors, cleared);
+    },
+  });
+
   return {
     ...starts,
     allFields,
@@ -177,53 +190,7 @@ export function createVisibility(definition: FormDefinition) {
 
     reconcileHidden(values: Values, errors: Record<string, string>, initial = false, written?: string): Set<string> {
       if (initial) starts.resetStarts(values);
-      if (written === undefined || !path.patch(values, written)) path.invalidate();
-      const dependents = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
-      const queue = [...dependents];
-      const queued = new Set(queue);
-      const cleared = new Set<string>();
-      const held = (key: string) => values[key] !== undefined || errors[key] !== undefined;
-      const mark = (key: string) => {
-        if (!path.patch(values, key)) path.invalidate();
-        cleared.add(key);
-        for (const next of routeFields.has(key) ? [...dependents, key] : [key]) {
-          if (queued.has(next)) continue;
-          queued.add(next);
-          queue.push(next);
-        }
-      };
-      const clear = (key: string) => {
-        starts.remember(key, values[key]);
-        delete values[key];
-        delete errors[key];
-        for (const errorKey of Object.keys(errors)) if (owner(errorKey) === key) delete errors[errorKey];
-        mark(key);
-      };
-      const update = (field: FormField, shown: boolean) => {
-        const { key } = field;
-        const active = activeField(key, values);
-        if (active && active !== field) return;
-        if (!shown) {
-          if (held(key)) clear(key);
-          return;
-        }
-        if (held(key) || !active) return;
-        const value = starts.startValue(field);
-        if (value === undefined) return;
-        values[key] = value;
-        starts.seedItems(value);
-        mark(key);
-      };
-      for (let index = 0; index < queue.length; index++) {
-        const key = queue[index];
-        queued.delete(key);
-        for (const field of fieldDependents.get(key) ?? []) if (onPath(field, values)) update(field, visible(field, values));
-        for (const step of stepDependents.get(key) ?? []) {
-          for (const field of valueFields(step.fields)) update(field, visible(step, values));
-        }
-      }
-      if (groups.length) reconcileItems(values, errors, cleared);
-      return cleared;
+      return hidden.reconcile(values, errors, initial, written);
     },
   };
 }
