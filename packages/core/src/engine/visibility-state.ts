@@ -138,7 +138,10 @@ export function createVisibility(definition: FormDefinition) {
           }
           if (!hidden.length && !Object.keys(restored).length) break;
           result = keepId(entry, { ...entry, ...restored });
-          for (const { key } of hidden) delete (result as Values)[key];
+          for (const { key } of hidden) {
+            starts.rememberItem(item, key, entry[key]);
+            delete (result as Values)[key];
+          }
           for (const key of [...hidden.map(({ key }) => key), ...Object.keys(restored)]) cleared.add(itemPath(group.key, index, key));
         }
         return result;
@@ -208,6 +211,7 @@ export function createVisibility(definition: FormDefinition) {
         }
       };
       const clear = (key: string) => {
+        starts.remember(key, values[key]);
         delete values[key];
         delete errors[key];
         for (const errorKey of Object.keys(errors)) if (owner(errorKey) === key) delete errors[errorKey];

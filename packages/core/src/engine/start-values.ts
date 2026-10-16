@@ -6,10 +6,10 @@ type Values = Record<string, unknown>;
 
 export function createStartValues(groups: FormGroup[]) {
   let seeds: Values = {};
-  const edits = new Set<string>();
-  const itemEdits = new Set<string>();
+  let remembering = true;
+  const memory = new Map<string, unknown>();
   const itemSeeds = new Map<string, Values>();
-  const itemEdit = (item: unknown, key: string) => `${itemId(item, 0)}.${key}`;
+  const itemMemory = new Map<string, Values>();
   const seedItems = (value: unknown) => {
     for (const item of itemsOf(value)) if (isEntry(item)) itemSeeds.set(itemId(item, 0), item);
   };
@@ -23,48 +23,63 @@ export function createStartValues(groups: FormGroup[]) {
 
     resetStarts(values: Values): void {
       seeds = { ...values };
-      edits.clear();
-      itemEdits.clear();
+      memory.clear();
+      itemMemory.clear();
       itemSeeds.clear();
       for (const group of groups) seedItems(values[group.key]);
     },
 
-    markEdited(key: string): void {
-      edits.add(key);
+    loadPayload(): void {
+      remembering = false;
+      itemSeeds.clear();
+      itemMemory.clear();
+      for (const key of Object.keys(seeds)) memory.set(key, undefined);
+    },
+
+    remember(key: string, value: unknown): void {
+      if (remembering) memory.set(key, value);
+    },
+
+    rememberItem(item: unknown, key: string, value: unknown): void {
+      if (!remembering || !isEntry(item)) return;
+      const id = itemId(item, 0);
+      itemMemory.set(id, { ...itemMemory.get(id), [key]: value });
     },
 
     dropItem(item: unknown): void {
-      if (isEntry(item)) itemSeeds.delete(itemId(item, 0));
-    },
-
-    markItemEdited(item: unknown, key: string): void {
-      itemEdits.add(itemEdit(item, key));
+      if (!isEntry(item)) return;
+      itemSeeds.delete(itemId(item, 0));
+      itemMemory.delete(itemId(item, 0));
     },
 
     reseed(keys: string[], values: Values): () => void {
-      const previous = keys.map((key) => [key, seeds[key], edits.has(key)] as const);
+      const previous = keys.map((key) => [key, seeds[key], memory.has(key), memory.get(key)] as const);
       for (const key of keys) {
-        edits.delete(key);
+        memory.delete(key);
         seeds[key] = values[key];
         seedItems(values[key]);
       }
       return () => {
-        for (const [key, seed, edited] of previous) {
+        for (const [key, seed, remembered, value] of previous) {
           seeds[key] = seed;
-          if (edited) edits.add(key);
+          if (remembered) memory.set(key, value);
+          else memory.delete(key);
         }
       };
     },
 
     startValue(field: FormField): unknown {
       const { key } = field;
-      if ((field.type === 'hidden' || !edits.has(key)) && seeds[key] !== undefined) return seeds[key];
+      const remembered = field.type !== 'hidden' && memory.has(key);
+      const value = remembered ? memory.get(key) : seeds[key];
+      if (value !== undefined) return value;
       return isGroup(field) && field.defaultItems! > 0 && hasOwn(seeds, key) ? createValues([field])[key] : undefined;
     },
 
     itemStartValue(item: unknown, key: string): unknown {
-      const seed = isEntry(item) ? itemSeeds.get(itemId(item, 0)) : undefined;
-      return itemEdits.has(itemEdit(item, key)) ? undefined : seed?.[key];
+      if (!isEntry(item)) return undefined;
+      const remembered = itemMemory.get(itemId(item, 0));
+      return remembered && hasOwn(remembered, key) ? remembered[key] : itemSeeds.get(itemId(item, 0))?.[key];
     },
   };
 }

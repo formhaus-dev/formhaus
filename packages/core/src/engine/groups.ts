@@ -83,7 +83,7 @@ export function setItemValue(engine: EngineInternals, key: string, index: number
   const previousError = engine.errors[path];
   let next = items;
   if (changed) {
-    engine.visibility.markItemEdited(current, fieldKey);
+    engine.visibility.rememberItem(current, fieldKey, value);
     const updated = keepId(current, { ...item, [fieldKey]: value });
     next = items.map((entry, position) => (position === index ? updated : entry));
   }

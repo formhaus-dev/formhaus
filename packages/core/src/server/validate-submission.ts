@@ -78,7 +78,6 @@ function itemErrors(engine: FormEngine, invalid: Map<string, string>, resolve: R
         const error = typeError(field, item[field.key], resolve);
         if (!error) continue;
         errors.set(itemPath(group.key, index, field.key), error);
-        internals(engine).visibility.markItemEdited(item, field.key);
         cleared[field.key] = undefined;
       }
       return Object.keys(cleared).length ? keepId(item, { ...item, ...cleared }) : item;
@@ -93,9 +92,7 @@ function loadSubmitted(engine: FormEngine, values: Record<string, unknown>): voi
   state.values = { ...values };
   visibility.reconcileHidden(state.values, state.errors, true);
   visibility.markChanged(true, true);
-  for (const key of Object.keys(values)) visibility.markEdited(key);
-  for (const group of visibility.groups)
-    for (const item of itemsOf(values[group.key])) for (const { key } of group.fields) visibility.markItemEdited(item, key);
+  visibility.loadPayload();
 }
 
 function dropUnchecked(engine: FormEngine, submitted: Record<string, unknown>, errors: Record<string, string>, resolve: ResolveMessage) {
