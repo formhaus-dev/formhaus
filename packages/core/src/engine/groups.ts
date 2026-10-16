@@ -35,7 +35,9 @@ export function addItem(engine: EngineInternals, key: string): boolean {
   const group = activeGroup(engine, key);
   const items = itemsOf(engine.values[key]);
   if (!group || items.length >= itemLimits(group)[1]) return false;
-  writeValue(engine, key, [...items, createValues(group.fields)]);
+  const item = createValues(group.fields);
+  engine.visibility.seedItems([item]);
+  writeValue(engine, key, [...items, item]);
   return true;
 }
 
@@ -80,6 +82,7 @@ export function setItemValue(engine: EngineInternals, key: string, index: number
   const previousError = engine.errors[path];
   let next = items;
   if (changed) {
+    engine.visibility.markItemEdited(current, fieldKey);
     const updated = keepId(current, { ...item, [fieldKey]: value });
     next = items.map((entry, position) => (position === index ? updated : entry));
   }

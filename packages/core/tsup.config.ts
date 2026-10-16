@@ -4,7 +4,7 @@ import { defineConfig } from 'tsup';
 const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
 
 const INTERNAL_PROPS =
-  /^(validationEpoch|operationEpoch|latestOperation|lifecycle|subscriptions|visibility|reconcileHidden|markChanged|allFields|conditionValues|activeField|activeItem|itemFields|getCanGoNext|findStepIndex|affectsStructure|serverErrors|serverFormErrors|skipped|view|keyList|scopes|notify|advance)$/;
+  /^(validationEpoch|operationEpoch|latestOperation|lifecycle|subscriptions|visibility|reconcileHidden|markChanged|allFields|conditionValues|activeField|activeItem|itemFields|getCanGoNext|findStepIndex|affectsStructure|serverErrors|serverFormErrors|skipped|seedItems|resetStarts|markEdited|markItemEdited|reseed|startValue|itemStartValue|view|keyList|scopes|notify|advance)$/;
 
 const shared = {
   define: { __FORMHAUS_CORE_VERSION__: JSON.stringify(version) },
