@@ -1,5 +1,15 @@
 # @formhaus/vue
 
+## 0.16.0
+
+### Minor Changes
+
+- New `valuesChange` event fires on mount and on every value change.
+- The renderer handle exposes a reactive `values`.
+- Fixed `useFormEngine().values` not updating dependent computeds.
+- `useFormEngine().values` is a frozen copy of the values. Mutating it throws in strict mode.
+- Requires `@formhaus/core` 0.16.0.
+
 ## 0.15.0
 
 ### Minor Changes
