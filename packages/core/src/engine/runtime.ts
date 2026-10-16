@@ -5,8 +5,8 @@ import type { FormEngineOptions, SubmitHandler } from './engine-options';
 import { createValues, initialState } from './engine-utils';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
-import type { EngineState, RuntimeNotifyOptions } from './runtime-internals';
-import { createSubscriptions } from './subscriptions';
+import type { EngineState } from './runtime-internals';
+import { createSubscriptions, type NotifyOptions } from './subscriptions';
 import { applyValidationErrors, errorKeys, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
 import { submitForm } from './submission';
 import { assertDefinition } from './warnings';
@@ -25,6 +25,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly messages: ResolveMessage;
   private readonly visibility: VisibilityState;
   private readonly subscriptions = createSubscriptions();
+  private snapshot?: Readonly<Partial<TValues>>;
 
   constructor(
     readonly definition: FormDefinition,
@@ -133,6 +134,14 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return this.subscriptions.getSnapshot();
   }
 
+  subscribeValues(listener: () => void): () => void {
+    return this.subscriptions.subscribeValues(listener);
+  }
+
+  getValuesSnapshot(): Readonly<Partial<TValues>> {
+    return (this.snapshot ??= Object.freeze({ ...this.state.values }) as Partial<TValues>);
+  }
+
   subscribeField(key: string, listener: () => void): () => void {
     return this.subscriptions.subscribeField(key, listener);
   }
@@ -226,7 +235,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return this.visibility.state(this.state.values, this.currentStepIndex);
   }
 
-  private notify(options: RuntimeNotifyOptions = {}): void {
+  private notify(options: NotifyOptions = {}): void {
+    if (options.valuesChanged) this.snapshot = undefined;
     this.visibility.markChanged(!!options.structureChanged, !!options.valuesChanged);
     this.subscriptions.notify(options);
   }
