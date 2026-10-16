@@ -38,6 +38,25 @@ describe('tracking fields', () => {
     expect(addTrackingFields(form, { step: null })).toEqual([]);
   });
 
+  it('adds the fields after a group instead of inside it', () => {
+    const form = createForm('signup', 'Signup');
+    const people = addField(form, { step: null }, { label: 'People', type: 'group' });
+    const name = addField(form, { inside: people.uid }, { label: 'Name' });
+    addTrackingFields(form, { after: name.uid });
+    addTrackingFields(form, { inside: people.uid });
+    const fields = toDefinition(form).fields!;
+    expect(fields.map((field) => field.key)).toEqual([
+      'people',
+      'utm_source',
+      'utm_medium',
+      'utm_campaign',
+      'utm_term',
+      'utm_content',
+      'referrer',
+    ]);
+    expect(fields[0].fields!.map((field) => field.key)).toEqual(['question', 'name']);
+  });
+
   it('drops the source when a hidden field becomes another type', () => {
     const form = createForm('signup', 'Signup');
     const field = addField(form, { step: null }, { label: 'Ref', type: 'hidden', extra: { source: { query: 'ref' } } });
