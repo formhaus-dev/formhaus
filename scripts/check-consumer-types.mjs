@@ -71,7 +71,14 @@ export const same: [
   Same<Props<typeof Formhaus.confirmDialogComponentProps>, Formhaus.ConfirmDialogComponentProps>,
   Same<Props<typeof Formhaus.formActionsProps>, Formhaus.FormActionsProps>,
   Same<Props<typeof Formhaus.formStepProgressProps>, Formhaus.FormStepProgressProps>,
-] = [true, true, true, true, true, true, true];
+  Same<keyof Props<typeof Formhaus.formFieldProps>, keyof Formhaus.FormFieldProps>,
+  Same<keyof Props<typeof Formhaus.sectionComponentProps>, keyof Formhaus.SectionComponentProps>,
+  Same<keyof Props<typeof Formhaus.groupComponentProps>, keyof Formhaus.GroupComponentProps>,
+  Same<keyof Props<typeof Formhaus.groupItemComponentProps>, keyof Formhaus.GroupItemComponentProps>,
+  Same<keyof Props<typeof Formhaus.confirmDialogComponentProps>, keyof Formhaus.ConfirmDialogComponentProps>,
+  Same<keyof Props<typeof Formhaus.formActionsProps>, keyof Formhaus.FormActionsProps>,
+  Same<keyof Props<typeof Formhaus.formStepProgressProps>, keyof Formhaus.FormStepProgressProps>,
+] = [true, true, true, true, true, true, true, true, true, true, true, true, true, true];
 export const TypedField = defineComponent({
   props: Formhaus.formFieldProps,
   emits: Formhaus.formFieldEmits,
