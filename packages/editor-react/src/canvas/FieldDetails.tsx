@@ -50,20 +50,3 @@ export function PlaceholderInput({ field, actions, readOnly }: Props) {
     />
   );
 }
-
-export function DefaultValueInput({ field, actions, readOnly }: Props) {
-  return (
-    <input
-      className={cx(preview.box, preview.editable)}
-      aria-label="Default value"
-      value={typeof field.extra.defaultValue === 'string' ? field.extra.defaultValue : ''}
-      placeholder="Default value (optional)"
-      readOnly={readOnly}
-      onChange={(event) => {
-        actions.edit((form) => {
-          setFieldProp(form, field.uid, 'defaultValue', event.target.value);
-        }, `${field.uid}:defaultValue`);
-      }}
-    />
-  );
-}

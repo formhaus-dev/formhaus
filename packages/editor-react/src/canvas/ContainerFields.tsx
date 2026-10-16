@@ -8,7 +8,7 @@ import { FieldCard } from './FieldCard';
 import { FieldPalette } from './FieldPalette';
 import { useFocusRequests } from './focus';
 import { InsertGap } from './InsertGap';
-import { presetFor } from './presets';
+import { addPicked } from './presets';
 
 const labelOf = (field: BuilderQuestion) => field.label.trim() || 'Untitled question';
 
@@ -30,9 +30,8 @@ export function ContainerFields({ container, step, actions }: { container: Build
           trigger={<AddRow label={`Add field to ${name}`} inset="card" />}
           adding
           onPick={(id) => {
-            const preset = presetFor(id);
-            const uid = actions.addField({ inside: container.uid }, preset);
-            if (uid) focus.request(uid, preset.label ? 'card' : 'label');
+            const added = addPicked(actions, { inside: container.uid }, id);
+            if (added) focus.request(added.uid, added.target);
           }}
         />
       )}

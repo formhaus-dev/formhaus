@@ -1,6 +1,6 @@
 import type { FormDefinition } from '@formhaus/core';
 import type { ComponentType } from 'react';
-import type { EditorHost, Notice, SavedDraft } from '../host';
+import type { EditorFeatures, EditorHost, Notice, SavedDraft } from '../host';
 import { formatAgo } from '../ui/lib/format';
 
 export interface HostOptions {
@@ -10,6 +10,7 @@ export interface HostOptions {
   onChange?: (definition: FormDefinition) => void;
   definition?: FormDefinition;
   savedHint?: string;
+  features?: EditorFeatures;
 }
 
 export const savedDraft = (definition: FormDefinition, revision: number): SavedDraft => ({
@@ -20,7 +21,13 @@ export const savedDraft = (definition: FormDefinition, revision: number): SavedD
   savedBy: '',
 });
 
-export function baseHost({ Preview, notify = () => undefined, onTitle, savedHint }: Omit<HostOptions, 'onChange' | 'definition'>) {
+export function baseHost({
+  Preview,
+  notify = () => undefined,
+  onTitle,
+  savedHint,
+  features,
+}: Omit<HostOptions, 'onChange' | 'definition'>) {
   return {
     isNew: true,
     readOnly: false,
@@ -30,5 +37,6 @@ export function baseHost({ Preview, notify = () => undefined, onTitle, savedHint
     Preview,
     ...(onTitle ? { onTitle } : {}),
     ...(savedHint ? { savedHint } : {}),
+    ...(features ? { features } : {}),
   } satisfies Partial<EditorHost>;
 }

@@ -13,7 +13,8 @@ import { useErrors, useField, useIsExpanded, useIsSelected, useReadOnly } from '
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
 import suggestionStyles from './TypeSuggestion.module.css';
-import { DefaultValueInput, HelpText, PlaceholderInput } from './FieldDetails';
+import { HelpText, PlaceholderInput } from './FieldDetails';
+import { HiddenValue } from './HiddenValue';
 import { takesPlaceholder } from './placeholder';
 import { FieldLabel } from './FieldLabel';
 import { FieldMenu } from './FieldMenu';
@@ -63,7 +64,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
     if (container) return null;
     if (selected && choice && !readOnly) return <OptionsEditor field={field} actions={actions} />;
     if (selected && !readOnly && takesPlaceholder(field)) return <PlaceholderInput field={field} actions={actions} readOnly={readOnly} />;
-    if (selected && !readOnly && field.type === 'hidden') return <DefaultValueInput field={field} actions={actions} readOnly={readOnly} />;
+    if (selected && !readOnly && field.type === 'hidden') return <HiddenValue field={field} actions={actions} />;
     return <FieldPreview field={field} />;
   };
 
@@ -93,7 +94,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
               onAddBelow={addBelow}
               onCardKey={onCardKey}
             />
-            {field.type !== 'section' && (
+            {field.type !== 'section' && (field.type !== 'hidden' || field.required) && (
               <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />
             )}
           </div>
@@ -137,7 +138,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
             Switch to {typeLabel(suggestion)}
           </button>
         )}
-        <HelpText field={field} actions={actions} readOnly={readOnly} selected={selected} />
+        {field.type !== 'hidden' && <HelpText field={field} actions={actions} readOnly={readOnly} selected={selected} />}
         <LogicBadge
           block={field}
           onOpen={() => {

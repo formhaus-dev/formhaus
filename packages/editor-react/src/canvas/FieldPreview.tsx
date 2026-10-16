@@ -5,6 +5,7 @@ import { cx } from '../ui/lib/cx';
 import { targetsAfter } from '../logic/targets';
 import { useEditor } from '../store/context';
 import styles from './FieldPreview.module.css';
+import { describeHidden } from './hiddenSources';
 
 function jumpLabels(form: BuilderForm, field: BuilderQuestion): string {
   if (!field.options.some((option) => option.jump)) return '[]';
@@ -49,10 +50,10 @@ export function FieldPreview({ field }: { field: BuilderQuestion }) {
     );
   }
   if (field.type === 'hidden') {
-    const value = field.extra.defaultValue;
+    const { text, empty } = describeHidden(field);
     return (
       <div className={cx(styles.box, styles.hidden)}>
-        <span className={cx(value === undefined && styles.placeholder)}>{value === undefined ? 'No default value' : String(value)}</span>
+        <span className={cx(empty && styles.placeholder)}>{text}</span>
         <EyeOff aria-hidden className={styles.chevron} />
       </div>
     );
