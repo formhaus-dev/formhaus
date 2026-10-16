@@ -167,3 +167,23 @@ it('aborts the request on unmount', async () => {
   unmount();
   expect(signals[0].aborted).toBe(true);
 });
+
+it('restores a saved draft into an initial form after a remount', async () => {
+  vi.stubGlobal('fetch', vi.fn());
+  let saved: Record<string, unknown> | null = null;
+  const draftStore = {
+    load: () => saved,
+    save: (_id: string, _version: number | undefined, values: Record<string, unknown>) => {
+      saved = values;
+    },
+    clear: () => {
+      saved = null;
+    },
+  };
+  const props = { id: 'abc', initialForm: { version: 2, definition }, draftStore };
+  const first = render(<FormhausForm {...props} />);
+  fireEvent.change(screen.getByRole('textbox'), { target: { value: 'ada@example.test' } });
+  first.unmount();
+  render(<FormhausForm {...props} />);
+  await waitFor(() => expect((screen.getByRole('textbox') as HTMLInputElement).value).toBe('ada@example.test'));
+});
