@@ -4,6 +4,7 @@ import { createActivePath } from './step-routes';
 import { createHiddenQueue } from './hidden-queue';
 import type { ValidatorFn } from '../validation';
 import { validateFields } from '../validation';
+import { customRules } from '../validation/validate-step';
 import type { FormDefinition, FormField, FormGroup, FormNode, FormStep } from '../types';
 import { isVisible } from '../visibility';
 import { isEntry, isGroup, isSection, itemPath, keepId, itemsOf, itemView, shownFields, splitPath, valueFields } from '../visibility/nodes';
@@ -32,6 +33,7 @@ export function createVisibility(definition: FormDefinition) {
   const path = createActivePath(definition, index);
   const groups = allFields.filter(isGroup);
   const starts = createStartValues(groups, () => hidden.unsettle());
+  const customSteps = new Set(definition.steps?.filter((step) => customRules(step.fields)));
   let visibilityDirty = true;
   let canGoNextDirty = true;
   const cache: VisibilityCache = { visibleSteps: [], currentStep: null, visibleFields: [], visibleNodes: [], canGoNext: false };
@@ -163,6 +165,7 @@ export function createVisibility(definition: FormDefinition) {
       const step = state(values, stepIndex).currentStep;
       if (!canGoNextDirty) return cache.canGoNext;
       canGoNextDirty = false;
+      if (customSteps.has(step!)) hidden.unsettle();
       const errors = step ? validateFields(step.fields, path.values(values), validators) : {};
       return (cache.canGoNext = isMultiStep() && Object.keys(errors).length === 0);
     },

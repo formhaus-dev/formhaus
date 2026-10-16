@@ -48,7 +48,7 @@ export function createHiddenQueue(
     },
 
     reconcile(values: Values, errors: Record<string, string>, initial: boolean, written?: string): Set<string> {
-      if (written === undefined || !path.patch(values, written)) path.invalidate();
+      if (!settled || written === undefined || !path.patch(values, written)) path.invalidate();
       const held = (key: string) => values[key] !== undefined || errors[key] !== undefined;
       const fields = !initial && written !== undefined && settled && [...waiting].every(held) ? downstream(written) : undefined;
       const keys = fields ? [...new Set([...fields].flatMap(sources))].sort((a, b) => position.get(a)! - position.get(b)!) : order;
