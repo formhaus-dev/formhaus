@@ -85,7 +85,7 @@ function onFieldChange(key: string, value: unknown) {
 - `onFieldChange` fires for user edits only. `setValue` from the handle does not fire it, so the derived write never marks the due date as edited.
 - The first edit of `dueDate` sets `dueDateEdited`, and later issue dates leave the due date alone.
 - `setValue` runs the same visibility and validation updates as typing. A value for a field hidden by its conditions is cleared at once.
-- `getValues()` returns a copy of the current values.
+- `getValues()` returns a shallow copy of the current values. Group items are the live arrays, so change them with `setValue`.
 - The handle works the same on `HeadlessFormRenderer`.
 - To restore derived values with a draft, save `dueDateEdited` next to the draft.
 
