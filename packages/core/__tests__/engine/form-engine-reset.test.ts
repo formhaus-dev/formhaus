@@ -54,21 +54,29 @@ describe('FormEngine subscriptions, reset and loading', () => {
     expect(engine.values.name).toBe('new');
   });
 
-  it('clears values for fields hidden by the reset values', () => {
+  it('clears values for fields hidden by the reset values until they are shown', () => {
     const engine = new FormEngine(conditionalDefinition);
-    engine.reset({ country: 'MX', routing: 'STALE' });
+    engine.reset({ country: 'MX', routing: 'KEPT' });
     expect(engine.values.routing).toBeUndefined();
 
     engine.setValue('country', 'US');
-    expect(engine.values.routing).toBeUndefined();
+    expect(engine.values.routing).toBe('KEPT');
   });
 
-  it('clears values for fields hidden by the initial values', () => {
-    const engine = new FormEngine(conditionalDefinition, { country: 'MX', routing: 'STALE' });
+  it('clears values for fields hidden by the initial values until they are shown', () => {
+    const engine = new FormEngine(conditionalDefinition, { country: 'MX', routing: 'KEPT' });
     expect(engine.values.routing).toBeUndefined();
 
     engine.setValue('country', 'US');
-    expect(engine.values.routing).toBeUndefined();
+    expect(engine.values.routing).toBe('KEPT');
+  });
+
+  it('forgets edits on reset', () => {
+    const engine = new FormEngine(conditionalDefinition, { country: 'US', routing: 'KEPT' });
+    engine.setValue('routing', 'mine');
+    engine.reset({ country: 'MX', routing: 'KEPT' });
+    engine.setValue('country', 'US');
+    expect(engine.values.routing).toBe('KEPT');
   });
 
   it('clears values in steps hidden by the reset values', () => {
