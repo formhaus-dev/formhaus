@@ -1,6 +1,7 @@
-import { readFileSync, symlinkSync } from 'node:fs';
-import { join } from 'node:path';
+import { readdirSync, readFileSync, symlinkSync } from 'node:fs';
+import { dirname, join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { findProjectRoot } from '../src/files';
 import { onWindows, type Sandbox, sandbox } from './helpers';
 
 const SKILL = '.claude/skills/formhaus-create-form/SKILL.md';
@@ -49,7 +50,7 @@ describe.skipIf(onWindows)('edited assets', () => {
     expect(result.out).toMatch(/replaced\s+\S+ \(backup: /);
     expect(box.read(file)).toBe(shipped);
     expect(box.read(`${file}.bak`)).toBe('first edit');
-    expect(box.exists(`${file}.bak.tmp`)).toBe(false);
+    expect(readdirSync(box.path(dirname(file))).filter((name) => name.endsWith('.tmp'))).toEqual([]);
     box.write(file, 'second edit');
     box.run('--force');
     expect(box.read(`${file}.bak`)).toBe('second edit');
@@ -130,6 +131,20 @@ describe.skipIf(onWindows)('project root', () => {
     box.cwd = box.path('notes');
     expect(box.run().out).toMatch(/skipped, not in a project\s+~\/notes\n/);
     expect(box.exists('.cursor/rules')).toBe(false);
+  });
+
+  it('never treats a filesystem root as a project', () => {
+    box.write('package.json', '{}');
+    box.write('work/tmp/.keep', '');
+    const ctx = { home: box.path('alice'), cwd: box.path('work/tmp'), env: {}, platform: box.platform, dryRun: false, force: false };
+    expect(findProjectRoot(ctx, (directory) => directory === box.home)).toBeUndefined();
+    expect(findProjectRoot(ctx)).toBe(box.home);
+  });
+
+  it('stops at the filesystem root', () => {
+    const ctx = { home: box.home, cwd: '/', env: {}, platform: box.platform, dryRun: false, force: false };
+    expect(findProjectRoot(ctx, () => false)).toBeUndefined();
+    expect(findProjectRoot(ctx)).toBeUndefined();
   });
 
   it('refuses a linked directory between the root and the rule', () => {

@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import {
   chmodSync,
   constants,
@@ -13,7 +13,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, join, parse, relative, resolve, sep } from 'node:path';
 import { type Change, type Context, SetupError, type State } from './context';
 
 export function readText(file: string): string | undefined {
@@ -43,26 +43,38 @@ function refuseLinkedDirectories(ctx: Context, root: string, file: string): void
 
 function refuseLinks(ctx: Context, file: string, project?: string): void {
   if (project !== undefined) refuseLinkedDirectories(ctx, project, file);
-  for (const path of [file, `${file}.bak`, `${file}.tmp`, `${file}.bak.tmp`]) refuseSymlink(ctx, path);
+  for (const path of [file, `${file}.bak`]) refuseSymlink(ctx, path);
+}
+
+function temporaryPath(file: string): string {
+  return `${file}.${randomBytes(8).toString('hex')}.tmp`;
+}
+
+function replaceWith(temporary: string, file: string, create: () => void): void {
+  try {
+    create();
+    renameSync(temporary, file);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== 'EEXIST') rmSync(temporary, { force: true });
+    throw error;
+  }
 }
 
 export function writeText(ctx: Context, file: string, text: string, project?: string, replaceBackup = false): void {
   const backup = `${file}.bak`;
-  const temporary = `${file}.tmp`;
-  const backupTemporary = `${backup}.tmp`;
   refuseLinks(ctx, file, project);
   if (ctx.dryRun) return;
   mkdirSync(dirname(file), { recursive: true });
   if (existsSync(file) && replaceBackup) {
-    rmSync(backupTemporary, { force: true });
-    copyFileSync(file, backupTemporary, constants.COPYFILE_EXCL);
-    renameSync(backupTemporary, backup);
+    const backupTemporary = temporaryPath(backup);
+    replaceWith(backupTemporary, backup, () => copyFileSync(file, backupTemporary, constants.COPYFILE_EXCL));
   } else if (existsSync(file) && !existsSync(backup)) copyFileSync(file, backup, constants.COPYFILE_EXCL);
   const mode = statSync(file, { throwIfNoEntry: false })?.mode;
-  rmSync(temporary, { force: true });
-  writeFileSync(temporary, text, { flag: 'wx', mode: mode === undefined ? undefined : mode & 0o600 });
-  if (mode !== undefined) chmodSync(temporary, mode & 0o7777);
-  renameSync(temporary, file);
+  const temporary = temporaryPath(file);
+  replaceWith(temporary, file, () => {
+    writeFileSync(temporary, text, { flag: 'wx', mode: mode === undefined ? undefined : mode & 0o600 });
+    if (mode !== undefined) chmodSync(temporary, mode & 0o7777);
+  });
 }
 
 export function sha256(text: string): string {
@@ -95,9 +107,13 @@ function isProjectRoot(directory: string): boolean {
   return existsSync(join(directory, '.git')) || existsSync(join(directory, 'package.json')) || isDirectory(join(directory, '.cursor'));
 }
 
-export function findProjectRoot(ctx: Context): string | undefined {
+function isFilesystemRoot(directory: string): boolean {
+  return parse(directory).root === directory;
+}
+
+export function findProjectRoot(ctx: Context, isRoot: (directory: string) => boolean = isFilesystemRoot): string | undefined {
   let directory = resolve(ctx.cwd);
-  while (!sameDirectory(directory, ctx.home)) {
+  while (!sameDirectory(directory, ctx.home) && !isRoot(directory)) {
     if (isProjectRoot(directory)) return directory;
     const parent = dirname(directory);
     if (parent === directory) return undefined;
