@@ -207,7 +207,7 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
     if (command.type === 'add' && engine.addItem(command.key)) starts.set(command.key, engine.values[command.key as never]);
     if (command.type === 'remove' && engine.removeItem(command.key, command.index))
       starts.set(command.key, engine.values[command.key as never]);
-    if (command.type === 'set' && owner === command.key && !Object.is(previous, command.value)) starts.set(owner, command.value);
+    if (command.type === 'set' && owner === command.key) starts.set(owner, command.value);
     if (command.type === 'set' && owner !== command.key && previous !== engine.values[owner as never])
       starts.set(owner, engine.values[owner as never]);
     if (command.type === 'settle' && pending.length > 0) {

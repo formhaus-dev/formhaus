@@ -1,5 +1,4 @@
 import type { FormField, FormStep } from '../../src/types';
-import { isGroup } from '../../src/visibility';
 
 export function startModel(fields: FormField[], initial: Record<string, unknown>) {
   const last = new Map<string, unknown>();
@@ -29,8 +28,7 @@ export function startModel(fields: FormField[], initial: Record<string, unknown>
       else hidden.add(key);
       if (shown && remembered) last.set(key, value);
       if (!shown || (skipped && step?.skip) || !unique || error !== undefined) return undefined;
-      const restorable = expected !== undefined || (remembered && isGroup(field) && field.defaultItems! > 0);
-      if (value === undefined && restorable) return `shown field ${key} lost its ${remembered ? 'last value' : 'start value'}`;
+      if (value === undefined && expected !== undefined) return `shown field ${key} lost its ${remembered ? 'last value' : 'start value'}`;
       if (returned && value !== undefined && typeof expected !== 'object' && !Object.is(value, expected))
         return `shown field ${key} came back as ${JSON.stringify(value)} instead of ${JSON.stringify(expected)}`;
       return undefined;
