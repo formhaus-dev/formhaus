@@ -119,7 +119,7 @@ function Subheading({ field }: FieldComponentProps) {
 ```
 
 - A custom type name needs `-` or `:`. Without one, `checkDefinition()` warns with `custom-type-name`.
-- The field never gets a value, so it is not in the submitted values. `validateSubmission()` treats it as any custom field and keeps a value a client sends under its key.
+- The field never gets a value, so it is not in the submitted values. `validateSubmission()` treats it as any custom field and keeps a value a client sends under its key. Drop that key on the server before you store the submission.
 - Leave out `required`. A required subheading always fails with `This field is required`.
 - The heading does not wrap the fields below it. Each field needs its own `show`, as `street` and `city` do here.
 
