@@ -75,14 +75,11 @@ watch(
   (engine) => applySources(engine, props.initialValues),
 );
 
-if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
-  const warned = new Set<string>();
-  watch(
-    [() => props.definition, () => props.components],
-    ([definition, components]) => warnMissingComponents(definition, components, warned, props.onWarning),
-    { immediate: true },
-  );
-}
+const warned = new Set<string>();
+const warnMissing = () => warnMissingComponents(props.definition, props.components, warned, props.onWarning);
+try {
+  if (process.env.NODE_ENV !== 'production') watch([() => props.definition, () => props.components], warnMissing, { immediate: true });
+} catch {}
 
 const {
   update: onFieldUpdate,

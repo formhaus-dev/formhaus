@@ -39,8 +39,10 @@ export function useFormEngine(
   let warned = false;
 
   watch(getDefinition, (next, previous) => {
-    if (!warned && typeof process !== 'undefined' && process.env.NODE_ENV !== 'production')
-      warned = warnDefinitionReset(previous, next, 'a constant or a computed', options?.onWarning);
+    try {
+      if (!warned && process.env.NODE_ENV !== 'production')
+        warned = warnDefinitionReset(previous, next, 'a constant or a computed', options?.onWarning);
+    } catch {}
     engine.cancelPendingActions();
     unsubscribe();
     engine = new FormEngine(getDefinition(), getValues(), options);
