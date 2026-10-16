@@ -84,7 +84,7 @@ describe('group edge cases', () => {
     expect(engine.values.guests).toEqual([{ name: 'Ada' }, { name: 'Bo' }]);
   });
 
-  it('starts an edited group shown again with its defaultItems', () => {
+  it('gives an edited group shown again its last items', () => {
     const shown: FormDefinition = {
       ...definition,
       fields: [
@@ -104,7 +104,7 @@ describe('group edge cases', () => {
     engine.setValue('company', false);
     expect(engine.values).not.toHaveProperty('guests');
     engine.setValue('company', true);
-    expect(engine.values.guests).toEqual([{ name: 'x' }]);
+    expect(engine.values.guests).toEqual([{ name: 'Ada' }, { name: 'Cy' }]);
   });
 
   it.each([[['bad', null, 123]], [[{}, new Date(0)]]])('rejects items that are not plain objects like the server: %j', async (items) => {

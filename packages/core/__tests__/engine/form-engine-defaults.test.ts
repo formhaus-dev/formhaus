@@ -123,30 +123,22 @@ describe('defaults of fields that start hidden or are shown again', () => {
     expect(engine.values.partySize).toBe(1);
   });
 
-  it('starts an edited field empty when it is shown again', () => {
+  it('gives a field shown again its last value', () => {
     const engine = new FormEngine(rsvp, { attending: 'yes' });
     engine.setValue('partySize', 3);
     engine.setValue('attending', 'no');
+    expect(engine.getSubmitValues()).toEqual({ attending: 'no' });
     engine.setValue('attending', 'yes');
-    expect(engine.values).not.toHaveProperty('partySize');
-  });
-
-  it('counts an edit back to the default as an edit', () => {
-    const engine = new FormEngine(rsvp, { attending: 'yes' });
-    engine.setValue('partySize', 3);
-    engine.setValue('partySize', 1);
-    engine.setValue('attending', 'no');
-    engine.setValue('attending', 'yes');
-    expect(engine.values).not.toHaveProperty('partySize');
+    expect(engine.values.partySize).toBe(3);
   });
 
   it('keeps an unchecked checkbox unchecked', () => {
     const engine = new FormEngine(toggled({ key: 'terms', type: 'checkbox', label: 'Terms', defaultValue: true }), { on: true });
     engine.setValue('terms', false);
     engine.setValue('on', false);
-    engine.setValue('on', true);
     expect(engine.values).not.toHaveProperty('terms');
-    expect(engine.getSubmitValues()).toEqual({ on: true });
+    engine.setValue('on', true);
+    expect(engine.getSubmitValues()).toEqual({ on: true, terms: false });
   });
 
   it('gives back an initial value of a field hidden at load', () => {
@@ -182,15 +174,16 @@ describe('defaults of fields that start hidden or are shown again', () => {
     expect(engine.values.crew).toEqual([{ kind: 'x', count: 1 }]);
   });
 
-  it('starts an edited item field empty when its item condition matches again', () => {
+  it('gives an item field its last value when its item condition matches again', () => {
     const engine = new FormEngine(crew, { crew: [{ kind: 'x', count: 2 }] });
     engine.setValue('crew.0.count', 5);
     engine.setValue('crew.0.kind', 'y');
+    expect(engine.values.crew).toEqual([{ kind: 'y' }]);
     engine.setValue('crew.0.kind', 'x');
-    expect(engine.values.crew).toEqual([{ kind: 'x' }]);
+    expect(engine.values.crew).toEqual([{ kind: 'x', count: 5 }]);
   });
 
-  it('tracks item edits by item, not by position', () => {
+  it('remembers item values by item, not by position', () => {
     const engine = new FormEngine(crew, {
       crew: [
         { kind: 'x', count: 2 },
@@ -204,7 +197,7 @@ describe('defaults of fields that start hidden or are shown again', () => {
     expect(engine.values.crew).toEqual([{ kind: 'x', count: 3 }]);
   });
 
-  it('resets a skipped step to its defaults and forgets its edits', async () => {
+  it('resets a skipped step to its defaults and forgets its last values', async () => {
     const engine = new FormEngine(skippable(false), { plan: 'pro', seats: 5 });
     await engine.next();
     engine.setValue('seats', 7);
@@ -215,7 +208,7 @@ describe('defaults of fields that start hidden or are shown again', () => {
     expect(engine.values.seats).toBe(1);
   });
 
-  it('restores edits and seeds when a final-step Skip is rejected', async () => {
+  it('restores last values when a final-step Skip is rejected', async () => {
     const engine = new FormEngine(skippable(true), { plan: 'pro', seats: 5 });
     await engine.next();
     engine.setValue('seats', 7);
@@ -223,7 +216,7 @@ describe('defaults of fields that start hidden or are shown again', () => {
     expect(engine.values.seats).toBe(7);
     engine.setValue('plan', 'free');
     engine.setValue('plan', 'pro');
-    expect(engine.values).not.toHaveProperty('seats');
+    expect(engine.values.seats).toBe(7);
   });
 
   it('restores the draft value after a rejected final-step Skip of an untouched step', async () => {

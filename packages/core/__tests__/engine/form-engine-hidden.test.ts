@@ -118,14 +118,14 @@ describe('revealed hidden fields', () => {
     expect(engine.values).toEqual({ plan: 'pro', campaign: 'spring', note: 'hi' });
   });
 
-  it('starts an edited field empty when its conditions match again, unlike a hidden field', () => {
+  it('gives an edited field its last value when its conditions match again, unlike a hidden field', () => {
     const engine = new FormEngine(definition);
     engine.setValue('plan', 'pro');
     engine.setValue('note', '');
     engine.setValue('campaign', 'summer');
     engine.setValue('plan', 'free');
     engine.setValue('plan', 'pro');
-    expect(engine.values).toEqual({ plan: 'pro', campaign: 'spring' });
+    expect(engine.values).toEqual({ plan: 'pro', campaign: 'spring', note: '' });
   });
 
   it('prefers the initial value and follows reset', () => {

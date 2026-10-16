@@ -147,7 +147,7 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       const hiddenSection = (!step || path.includes(step)) && section && !isVisible(section, active);
       if ((hiddenStep || hiddenField || hiddenSection) && engine.values[field.key as keyof typeof engine.values] !== undefined)
         fail(`hidden field ${field.key} keeps a value`);
-      const lost = shown(field) && starts.lost(field, step, engine.values[field.key as never], engine.errors[field.key]);
+      const lost = starts.lost(field, step, shown(field), engine.values[field.key as never], engine.errors[field.key]);
       if (lost) fail(lost);
     }
     for (const group of groups) {
@@ -204,13 +204,12 @@ export async function runFuzz(fuzz: FuzzCase, hooks: FuzzHooks, initial: Record<
       engine.reset(command.filled ? initial : undefined);
       starts.reset(command.filled ? initial : undefined);
     }
-    if (command.type === 'add' && engine.addItem(command.key)) starts.edit(command.key);
-    if (command.type === 'remove' && engine.removeItem(command.key, command.index)) starts.edit(command.key);
-    if (
-      command.type === 'set' &&
-      (owner === command.key ? !Object.is(previous, command.value) : previous !== engine.values[owner as never])
-    )
-      starts.edit(owner);
+    if (command.type === 'add' && engine.addItem(command.key)) starts.set(command.key, engine.values[command.key as never]);
+    if (command.type === 'remove' && engine.removeItem(command.key, command.index))
+      starts.set(command.key, engine.values[command.key as never]);
+    if (command.type === 'set' && owner === command.key && !Object.is(previous, command.value)) starts.set(owner, command.value);
+    if (command.type === 'set' && owner !== command.key && previous !== engine.values[owner as never])
+      starts.set(owner, engine.values[owner as never]);
     if (command.type === 'settle' && pending.length > 0) {
       const [entry] = pending.splice(command.index % pending.length, 1);
       const superseded = entry.resets !== resets || entry.operation !== ops().latestOperation;

@@ -16,14 +16,14 @@ describe('visibility rules', () => {
     expect(engine.values.detail).toBe('preset');
   });
 
-  it('starts an edited re-shown field empty', () => {
+  it('gives an edited re-shown field its last value', () => {
     const engine = new FormEngine(single([toggle, text('detail', { defaultValue: 'preset', show: [{ field: 'show', eq: true }] })]), {
       show: true,
     });
     engine.setValue('detail', 'mine');
     engine.setValue('show', false);
     engine.setValue('show', true);
-    expect(engine.values.detail).toBeUndefined();
+    expect(engine.values.detail).toBe('mine');
   });
 
   it('removes the error of a field when it becomes hidden', () => {
