@@ -1,4 +1,5 @@
-import { validateFieldValue, validateFields } from '../validation';
+import { validateFieldValue } from '../validation';
+import { validateShown } from '../validation/validate-step';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
 import type { FormField, FormNode } from '../types';
 import { isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
@@ -17,7 +18,8 @@ export function errorKeys(nodes: FormNode[], errors: Record<string, string>, val
 }
 
 export function fieldsErrors(engine: EngineInternals, nodes: FormNode[]): Record<string, string> {
-  return validateFields(nodes, getSubmitValues(engine), engine.validators, engine.messages);
+  const scope = engine.visibility.conditionValues(engine.values);
+  return validateShown(nodes, getSubmitValues(engine), scope, engine.validators, engine.messages);
 }
 
 function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
