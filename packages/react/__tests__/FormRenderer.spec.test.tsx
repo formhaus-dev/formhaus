@@ -19,6 +19,48 @@ const steps: FormDefinition = {
   ],
 };
 
+const rsvp: FormDefinition = {
+  id: 'rsvp',
+  title: '',
+  submit: { label: 'Send RSVP' },
+  steps: [
+    {
+      id: 'reply',
+      title: 'Reply',
+      fields: [
+        {
+          key: 'attending',
+          type: 'radio',
+          label: 'Coming?',
+          options: [
+            { value: 'yes', label: 'Yes' },
+            { value: 'no', label: 'No' },
+          ],
+          validation: { required: true },
+        },
+      ],
+    },
+    {
+      id: 'details',
+      title: 'Details',
+      show: [{ field: 'attending', eq: 'yes' }],
+      fields: [{ key: 'partySize', type: 'number', label: 'Party size', defaultValue: 1, validation: { required: true } }],
+    },
+  ],
+};
+
+const blanks: FormDefinition = {
+  id: 'blanks',
+  title: '',
+  submit: { label: 'Save' },
+  fields: [
+    { key: 'name', type: 'text', label: 'Name' },
+    { key: 'age', type: 'number', label: 'Age' },
+    { key: 'ok', type: 'checkbox', label: 'OK' },
+    { key: 'untouched', type: 'text', label: 'Untouched' },
+  ],
+};
+
 describe('renderer spec rules', () => {
   it('hides Back on the first step and with back: false, uses next.label, and keeps Submit with next: false', async () => {
     render(<FormRenderer definition={steps} initialValues={{ name: 'Ada' }} onSubmit={() => {}} />);
@@ -82,5 +124,27 @@ describe('renderer spec rules', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     expect(onSubmit.mock.calls[0][0]).toEqual({ cv: file, tags: ['b'], ok: true, age: 42 });
+  });
+
+  it('shows the default of a field on a step that starts hidden', async () => {
+    const onSubmit = vi.fn();
+    render(<FormRenderer definition={rsvp} onSubmit={onSubmit} />);
+    fireEvent.click(screen.getByLabelText('Yes'));
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(((await screen.findByRole('spinbutton', { name: /Party size/ })) as HTMLInputElement).value).toBe('1');
+    fireEvent.click(screen.getByRole('button', { name: 'Send RSVP' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toEqual({ attending: 'yes', partySize: 1 });
+  });
+
+  it('submits cleared text as an empty string, a cleared number as null and an unchecked box as false', async () => {
+    const onSubmit = vi.fn();
+    render(<FormRenderer definition={blanks} initialValues={{ name: 'Ada', age: 3, ok: true }} onSubmit={onSubmit} />);
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: '' } });
+    fireEvent.change(screen.getByLabelText('Age'), { target: { value: '' } });
+    fireEvent.click(screen.getByLabelText('OK'));
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toEqual({ name: '', age: null, ok: false });
   });
 });
