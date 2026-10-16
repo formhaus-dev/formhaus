@@ -53,7 +53,7 @@ export const TOML_BLOCK = [
   '',
 ].join('\n');
 
-export function addTomlServer(ctx: Context, file: string, root: string): State {
+export function addTomlServer(ctx: Context, file: string): State {
   const text = readText(file) ?? '';
   const existing = tomlServerState(text);
   if (existing !== 'missing') return existing;
@@ -66,6 +66,6 @@ export function addTomlServer(ctx: Context, file: string, root: string): State {
     );
   }
   const separator = text.trim() === '' ? '' : text.endsWith('\n') ? '\n' : '\n\n';
-  writeText(ctx, file, text.trim() === '' ? TOML_BLOCK : text + separator + TOML_BLOCK, root);
+  writeText(ctx, file, text.trim() === '' ? TOML_BLOCK : text + separator + TOML_BLOCK);
   return 'added';
 }

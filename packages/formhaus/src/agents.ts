@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import cursorRule from '../../../.cursor/rules/formhaus.mdc';
 import { claudeCode } from './claude-code';
 import type { Agent, Context } from './context';
-import { configRoot, isDirectory, step, writeIfChanged } from './files';
+import { isDirectory, step, writeIfChanged } from './files';
 import { addJsonServer } from './json-config';
 import { addTomlServer } from './toml-config';
 import { findOnPath } from './which';
@@ -31,7 +31,7 @@ const codex: Agent = {
   detect: (ctx) => found(ctx, codexHome(ctx), 'codex'),
   apply(ctx) {
     const file = join(codexHome(ctx), 'config.toml');
-    return [step(ctx, 'Codex', 'MCP server', file, () => addTomlServer(ctx, file, configRoot(ctx, codexHome(ctx))))];
+    return [step(ctx, 'Codex', 'MCP server', file, () => addTomlServer(ctx, file))];
   },
 };
 
@@ -40,7 +40,7 @@ const cursor: Agent = {
   detect: (ctx) => found(ctx, join(ctx.home, '.cursor'), 'cursor'),
   apply(ctx) {
     const file = join(ctx.home, '.cursor', 'mcp.json');
-    const changes = [step(ctx, 'Cursor', 'MCP server', file, () => addJsonServer(ctx, file, ctx.home))];
+    const changes = [step(ctx, 'Cursor', 'MCP server', file, () => addJsonServer(ctx, file))];
     if (!isProject(ctx)) return changes;
     const rule = join(ctx.cwd, '.cursor', 'rules', 'formhaus.mdc');
     changes.push(step(ctx, 'Cursor', 'formhaus rule', rule, () => writeIfChanged(ctx, rule, cursorRule, ctx.cwd)));
@@ -57,7 +57,7 @@ const claudeDesktop: Agent = {
   apply(ctx) {
     const directory = claudeDesktopDir(ctx)!;
     const file = join(directory, 'claude_desktop_config.json');
-    return [step(ctx, 'Claude Desktop', 'MCP server', file, () => addJsonServer(ctx, file, configRoot(ctx, directory)))];
+    return [step(ctx, 'Claude Desktop', 'MCP server', file, () => addJsonServer(ctx, file))];
   },
 };
 

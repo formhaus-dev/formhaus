@@ -33,20 +33,16 @@ function isInside(parent: string, path: string): boolean {
   return between !== '' && !between.startsWith('..') && !isAbsolute(between);
 }
 
-export function configRoot(ctx: Context, base: string): string {
-  return isInside(ctx.home, base) ? ctx.home : base;
-}
-
 function refuseLinkedDirectories(ctx: Context, root: string, file: string): void {
   if (!isInside(root, file)) throw new SetupError(`${display(ctx, file)} is outside ${display(ctx, root)}. Edit the file by hand.`);
   const parts = relative(root, dirname(file)).split(sep).filter(Boolean);
   for (let index = 1; index <= parts.length; index++) refuseSymlink(ctx, resolve(root, ...parts.slice(0, index)));
 }
 
-export function writeText(ctx: Context, file: string, text: string, root: string): void {
+export function writeText(ctx: Context, file: string, text: string, project?: string): void {
   const backup = `${file}.bak`;
   const temporary = `${file}.tmp`;
-  refuseLinkedDirectories(ctx, root, file);
+  if (project !== undefined) refuseLinkedDirectories(ctx, project, file);
   for (const path of [file, backup, temporary]) refuseSymlink(ctx, path);
   if (ctx.dryRun) return;
   mkdirSync(dirname(file), { recursive: true });
@@ -58,10 +54,10 @@ export function writeText(ctx: Context, file: string, text: string, root: string
   renameSync(temporary, file);
 }
 
-export function writeIfChanged(ctx: Context, file: string, text: string, root: string): State {
+export function writeIfChanged(ctx: Context, file: string, text: string, project?: string): State {
   const current = readText(file);
   if (current === text) return 'present';
-  writeText(ctx, file, text, root);
+  writeText(ctx, file, text, project);
   return current === undefined ? 'added' : 'updated';
 }
 
@@ -71,10 +67,10 @@ export function display(ctx: Context, path: string): string {
 
 export function step(ctx: Context, agent: string, item: string, where: string, apply: () => State): Change {
   const target = display(ctx, where);
-  const existed = existsSync(where);
+  const firstBackup = existsSync(where) && !existsSync(`${where}.bak`);
   try {
     const state = apply();
-    const backedUp = existed && !ctx.dryRun && (state === 'added' || state === 'updated');
+    const backedUp = firstBackup && !ctx.dryRun && (state === 'added' || state === 'updated');
     return { agent, item, where: backedUp ? `${target} (backup: ${target}.bak)` : target, state };
   } catch (error) {
     return { agent, item, where: target, state: 'failed', error: error instanceof Error ? error.message : String(error) };

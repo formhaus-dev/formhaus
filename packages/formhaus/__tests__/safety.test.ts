@@ -51,23 +51,38 @@ describe.skipIf(onWindows)('symbolic links', () => {
     expect(box.exists('elsewhere/formhaus.mdc')).toBe(false);
   });
 
-  it('refuses a linked Claude Code skill directory', () => {
+  it('refuses a linked .cursor directory inside the project', () => {
+    box.write('elsewhere/.keep', '');
+    symlinkSync(box.path('elsewhere'), box.path('app/.cursor'));
+    box.cwd = box.path('app');
+    expect(box.run().out).toContain('is a symbolic link');
+    expect(box.exists('elsewhere/rules/formhaus.mdc')).toBe(false);
+  });
+
+  it('writes through a linked Claude Code skill directory', () => {
     box.fakeBin('claude');
     box.write('elsewhere/.keep', '');
     box.write('.claude/skills/.keep', '');
     symlinkSync(box.path('elsewhere'), box.path('.claude/skills/formhaus-create-form'));
-    expect(box.run().out).toContain('~/.claude/skills/formhaus-create-form is a symbolic link');
-    expect(box.exists('elsewhere/SKILL.md')).toBe(false);
+    expect(box.run().code).toBe(0);
+    expect(box.read('elsewhere/SKILL.md')).toContain('formhaus');
   });
 
-  it('refuses a linked Cursor config directory', () => {
+  it('writes through a linked Cursor config directory', () => {
     box.cleanup();
     box = sandbox();
     box.write('elsewhere/mcp.json', '{}');
     symlinkSync(box.path('elsewhere'), box.path('.cursor'));
-    expect(box.run().out).toContain('~/.cursor is a symbolic link');
-    expect(box.read('elsewhere/mcp.json')).toBe('{}');
-    expect(box.exists('elsewhere/mcp.json.bak')).toBe(false);
+    expect(box.run().code).toBe(0);
+    expect(JSON.parse(box.read('elsewhere/mcp.json')).mcpServers.formhaus).toBeDefined();
+    expect(box.read('elsewhere/mcp.json.bak')).toBe('{}');
+  });
+
+  it('writes through a linked Codex config directory', () => {
+    box.write('elsewhere/config.toml', 'model = "x"\n');
+    symlinkSync(box.path('elsewhere'), box.path('.codex'));
+    expect(box.run().code).toBe(0);
+    expect(box.read('elsewhere/config.toml')).toContain('[mcp_servers.formhaus]');
   });
 
   it('allows a linked home directory', () => {
@@ -101,6 +116,15 @@ describe.skipIf(onWindows)('backups', () => {
     box.run();
     expect(box.read('.cursor/mcp.json.bak')).toBe('{"theme":"dark"}');
     expect(box.exists('.cursor/mcp.json.tmp')).toBe(false);
+  });
+
+  it('mentions the backup only when this run created it', () => {
+    box.write('.cursor/mcp.json', '{"theme":"dark"}');
+    expect(box.run().out).toContain('(backup: ~/.cursor/mcp.json.bak)');
+    box.write('.cursor/mcp.json', '{"theme":"light"}');
+    const later = box.run().out;
+    expect(later).toContain('~/.cursor/mcp.json');
+    expect(later).not.toContain('backup');
   });
 });
 

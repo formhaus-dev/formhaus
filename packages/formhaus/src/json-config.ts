@@ -27,13 +27,13 @@ export function jsonServerState(config: JsonObject | undefined): ServerState {
   return isObject(entry) && isOurServer(entry.command, entry.args) ? 'present' : 'different';
 }
 
-export function addJsonServer(ctx: Context, file: string, root: string): State {
+export function addJsonServer(ctx: Context, file: string): State {
   const config = readJsonObject(ctx, file) ?? {};
   const servers = config.mcpServers ?? {};
   if (!isObject(servers)) throw new SetupError(`"mcpServers" in ${display(ctx, file)} is not an object. The file was not changed.`);
   const existing = jsonServerState({ mcpServers: servers });
   if (existing !== 'missing') return existing;
   const next = { ...config, mcpServers: { ...servers, [SERVER_NAME]: SERVER } };
-  writeText(ctx, file, `${JSON.stringify(next, null, 2)}\n`, root);
+  writeText(ctx, file, `${JSON.stringify(next, null, 2)}\n`);
   return 'added';
 }
