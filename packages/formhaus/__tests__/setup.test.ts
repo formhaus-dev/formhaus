@@ -71,13 +71,31 @@ describe.skipIf(onWindows)('setup', () => {
     expect(box.read('app/.cursor/rules/formhaus.mdc')).toBe(repoFile('.cursor/rules/formhaus.mdc'));
   });
 
-  it('skips the Claude Code skill and server when the Formhaus plugin is installed', () => {
+  const installPlugin = (installs: unknown[], enabled?: boolean) => {
+    box.write('.claude/plugins/installed_plugins.json', JSON.stringify({ version: 2, plugins: { 'formhaus@formhaus': installs } }));
+    if (enabled !== undefined) box.write('.claude/settings.json', JSON.stringify({ enabledPlugins: { 'formhaus@formhaus': enabled } }));
+  };
+
+  it('skips the Claude Code skill and server when the Formhaus plugin is installed and enabled', () => {
     box.fakeBin('claude');
-    box.write('.claude/plugins/installed_plugins.json', JSON.stringify({ version: 2, plugins: { 'formhaus@formhaus': [] } }));
+    installPlugin([{ scope: 'user', version: '0.1.0' }], true);
     const { out } = box.run();
     expect(box.claudeCalls()).toEqual([]);
     expect(box.exists(SKILL)).toBe(false);
     expect(out).toContain('already set up');
+  });
+
+  it.each([
+    ['disabled', [{ scope: 'user' }], false],
+    ['missing from enabledPlugins', [{ scope: 'user' }], undefined],
+    ['registered without installations', [], true],
+    ['installed only for a project', [{ scope: 'project', projectPath: '/elsewhere' }], true],
+  ])('sets up Claude Code when the Formhaus plugin is %s', (_, installs, enabled) => {
+    box.fakeBin('claude');
+    installPlugin(installs, enabled);
+    box.run();
+    expect(box.claudeCalls()).toEqual([CLAUDE_ADD]);
+    expect(box.exists(SKILL)).toBe(true);
   });
 
   it('fails with the claude output when claude mcp add fails', () => {

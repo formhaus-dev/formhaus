@@ -7,16 +7,36 @@ import { jsonServerState, readJsonObject } from './json-config';
 import { command, findOnPath } from './which';
 
 const NAME = 'Claude Code';
-const PLUGIN_ID = 'formhaus@formhaus';
+const PLUGIN_PREFIX = `${SERVER_NAME}@`;
 export const CLAUDE_ADD_ARGS = ['mcp', 'add', '--scope', 'user', SERVER_NAME, '--', SERVER.command, ...SERVER.args];
 
 function configDir(ctx: Context): string {
   return ctx.env.CLAUDE_CONFIG_DIR || join(ctx.home, '.claude');
 }
 
+function enabledPlugins(ctx: Context): Record<string, unknown> {
+  try {
+    const enabled = readJsonObject(ctx, join(configDir(ctx), 'settings.json'))?.enabledPlugins;
+    return typeof enabled === 'object' && enabled !== null ? (enabled as Record<string, unknown>) : {};
+  } catch {
+    return {};
+  }
+}
+
+function installedForUser(installs: unknown): boolean {
+  return (
+    Array.isArray(installs) &&
+    installs.some((install) => typeof install === 'object' && install !== null && (install.scope ?? 'user') === 'user')
+  );
+}
+
 function hasPlugin(ctx: Context): boolean {
   const plugins = readJsonObject(ctx, join(configDir(ctx), 'plugins', 'installed_plugins.json'))?.plugins;
-  return typeof plugins === 'object' && plugins !== null && PLUGIN_ID in plugins;
+  if (typeof plugins !== 'object' || plugins === null) return false;
+  const enabled = enabledPlugins(ctx);
+  return Object.entries(plugins).some(
+    ([id, installs]) => id.startsWith(PLUGIN_PREFIX) && installedForUser(installs) && enabled[id] === true,
+  );
 }
 
 function userServer(ctx: Context) {
