@@ -83,7 +83,7 @@ import { DefaultSection, FormRenderer, type SectionComponentProps } from '@formh
 function Section(props: SectionComponentProps) {
   if (!props.section.key.endsWith('More')) return <DefaultSection {...props} />;
   return (
-    <div id={props.id} role="group" aria-label={props.title} aria-describedby={props.descriptionId} className="subsection">
+    <div id={props.id} role="group" aria-label={props.title} aria-describedby={props.description ? props.descriptionId : undefined} className="subsection">
       {props.description && <p id={props.descriptionId}>{props.description}</p>}
       {props.children}
     </div>
