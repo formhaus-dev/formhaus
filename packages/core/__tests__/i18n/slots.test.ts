@@ -113,6 +113,8 @@ describe('translationIssues', () => {
     expect(issues.stale).toEqual(['title', 'steps.business.fields.address.label']);
     expect(translationIssues(changed, {}).unlabeled).toEqual(['steps.business.fields.address.label']);
     expect(translationIssues(changed, ru).unlabeled).toEqual([]);
+    changed.steps[1].fields.push({ key: 'utm', type: 'hidden' });
+    expect(translationIssues(changed, {}).unlabeled).toEqual(['steps.business.fields.address.label']);
     expect(translationIssues(signup, 'nope').invalid).toEqual(['']);
   });
 

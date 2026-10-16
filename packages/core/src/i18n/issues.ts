@@ -41,6 +41,7 @@ export function translationIssues(definition: FormDefinition, overlay: unknown, 
       .filter(
         ({ kind, node, address }) =>
           (kind === 'field' || kind === 'group') &&
+          node.type !== 'hidden' &&
           !(typeof node.label === 'string' && node.label.trim()) &&
           lookup(overlay, [...address, 'label']) === undefined,
       )
