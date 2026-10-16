@@ -36,7 +36,7 @@ export function createPathPatch({ fieldsByKey, fieldDependents, routeFields, ste
   };
 
   return (key: string, values: Values, active: Values, steps: FormStep[]): PathChange[] | undefined => {
-    if (!plans.has(key)) plans.set(key, plan(key));
+    if (fieldsByKey.has(key) && !plans.has(key)) plans.set(key, plan(key));
     const fields = plans.get(key);
     if (!fields) return undefined;
     const step = stepOfField.get(fields[0]);
