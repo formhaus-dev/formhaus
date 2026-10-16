@@ -1,6 +1,13 @@
 <script setup lang="ts">
 import { isSection, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
-import { applySources, errorEntries, labelFor, shouldApplyExternalErrors, warnMissingComponents } from '@formhaus/core/internal';
+import {
+  actionsView,
+  applySources,
+  errorEntries,
+  labelFor,
+  shouldApplyExternalErrors,
+  warnMissingComponents,
+} from '@formhaus/core/internal';
 import { computed, onMounted, ref, watch, watchEffect } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
@@ -154,37 +161,25 @@ const handle: FormRendererHandle = {
 };
 defineExpose(handle);
 
-const effectiveIsLastStep = computed(() => isLastStep.value || !isMultiStep.value);
-
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.definition.labels);
 
-const primaryLabel = computed(() => {
-  if (isMultiStep.value && !effectiveIsLastStep.value) {
-    return (typeof currentStep.value?.next === 'object' ? currentStep.value.next.label : undefined) ?? label('continue');
-  }
-  return props.definition.submit?.label ?? 'Submit';
-});
-
-const showBack = computed(() => {
-  return isMultiStep.value && !isFirstStep.value && currentStep.value?.back !== false;
-});
-
-const backLabel = computed(() => {
-  const back = currentStep.value?.back;
-  return (typeof back === 'object' ? back?.label : undefined) ?? label('back');
+const actions = computed(() => {
+  void [currentStep.value, isFirstStep.value, isLastStep.value, isMultiStep.value];
+  const view = actionsView(form.engine, props.labels);
+  return Object.fromEntries(Object.entries(view).map(([key, value]) => [key.replace(/[A-Z]/g, '-$&').toLowerCase(), value]));
 });
 
 async function onPrimary() {
-  if (isMultiStep.value && !effectiveIsLastStep.value) {
-    await onNext();
-  } else {
+  if (isLastStep.value || !isMultiStep.value) {
     onSubmit();
+  } else {
+    await onNext();
   }
 }
 </script>
 
 <template>
-  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="props.loading || stepValidating || submitting" @submit.prevent="onPrimary">
+  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" @submit.prevent="onPrimary">
     <component
       :is="props.progressComponent"
       v-if="isMultiStep && props.progressComponent"
@@ -224,21 +219,9 @@ async function onPrimary() {
     <component
       :is="props.actionsComponent"
       v-if="props.actionsComponent"
-      :submit-action="props.definition.submit"
-      :next-action="currentStep?.next"
-      :back-action="currentStep?.back"
-      :cancel-action="props.definition.cancel"
-      :skip-action="currentStep?.skip"
-      :is-first-step="isFirstStep"
-      :is-last-step="effectiveIsLastStep"
-      :is-multi-step="isMultiStep"
-      :loading="props.loading || stepValidating || submitting"
+      v-bind="actions"
+      :loading="disabled"
       :values="form.engine.getSubmitValues()"
-      :primary-label="primaryLabel"
-      :show-primary="effectiveIsLastStep || currentStep?.next !== false"
-      :show-back="showBack"
-      :back-label="backLabel"
-      :show-skip="!!currentStep?.skip && currentStep.next !== false"
       @submit="onSubmit"
       @next="onNext"
       @prev="onPrev"

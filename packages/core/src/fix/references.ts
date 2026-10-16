@@ -1,5 +1,6 @@
 import { closest, type DefinitionIssue } from '../definition-validation/issues';
-import { at, type DefinitionFix, type Entry, fix, isEntry, keysOf, list, quote, text } from './walk';
+import { isEntry, itemsOf } from '../visibility/nodes';
+import { at, type DefinitionFix, type Entry, fix, keysOf, quote, text } from './walk';
 
 export function typoDistance(a: string, b: string): number {
   const x = a.toLowerCase();
@@ -22,14 +23,14 @@ interface Key {
 
 function keysByStep(definition: Entry): Key[] {
   const keys = (fields: unknown, step: number): Key[] =>
-    list(fields).flatMap((field) => {
+    itemsOf(fields).flatMap((field) => {
       if (!isEntry(field) || field.type === 'group') return [];
       const own = field.type !== 'section' && typeof field.key === 'string' ? [{ key: field.key, step }] : [];
       return [...own, ...keys(field.fields, step)];
     });
   return [
     ...keys(definition.fields, -1),
-    ...list(definition.steps).flatMap((step, index) => keys(isEntry(step) ? step.fields : undefined, index)),
+    ...itemsOf(definition.steps).flatMap((step, index) => keys(isEntry(step) ? step.fields : undefined, index)),
   ];
 }
 
@@ -54,7 +55,9 @@ function fieldScope(definition: Entry, path: string): string[] {
 
 function stepScope(definition: Entry, path: string): string[] {
   const from = Number(/^\/steps\/(\d+)/.exec(path)?.[1] ?? -1);
-  return list(definition.steps).flatMap((step, index) => (index > from && isEntry(step) && typeof step.id === 'string' ? [step.id] : []));
+  return itemsOf(definition.steps).flatMap((step, index) =>
+    index > from && isEntry(step) && typeof step.id === 'string' ? [step.id] : [],
+  );
 }
 
 function repair(value: string, all: string[], scope: string[]): { match?: string; safe: boolean } {
@@ -77,4 +80,4 @@ export function referenceFixes(definition: Entry, issue: DefinitionIssue, kind: 
 }
 
 const stepStrings = (definition: Entry) =>
-  list(definition.steps).flatMap((step) => (isEntry(step) && typeof step.id === 'string' ? [step.id] : []));
+  itemsOf(definition.steps).flatMap((step) => (isEntry(step) && typeof step.id === 'string' ? [step.id] : []));

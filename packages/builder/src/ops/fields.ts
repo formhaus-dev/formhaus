@@ -2,7 +2,7 @@ import type { FieldType, FormField } from '@formhaus/core';
 import { syncIdentifiers, unique } from '../identifiers';
 import { clone, isContainer, isPage, isQuestion, newQuestion, setType, span, uid, type BuilderForm, type BuilderQuestion } from '../model';
 import { bindReferences, dropReferences, scopeOf } from '../references';
-import { canRemove, removeBlock } from './blocks';
+import { removeBlock } from './blocks';
 import { findField, blockIndex, stepEnd, stepFields } from './locate';
 
 export type Placement = { after: string } | { inside: string } | { step: string | null; index?: number };
@@ -138,8 +138,6 @@ export function removeField(form: BuilderForm, uid: string): boolean {
   if (index < 0 || !isQuestion(form.blocks[index])) return false;
   return removeBlock(form, index);
 }
-
-export const canRemoveField = (form: BuilderForm, uid: string) => canRemove(form, blockIndex(form, uid));
 
 function unitStart(form: BuilderForm, index: number): number {
   const item = form.blocks[index];

@@ -74,5 +74,3 @@ export function DropdownMenuLabel({ children }: { children: ReactNode }) {
 export function DropdownMenuSeparator() {
   return <Menu.Separator className={styles.separator} />;
 }
-
-export const DropdownMenuGroup = Menu.Group;

@@ -2,7 +2,8 @@ import { checkDefinition } from '../definition-validation/check-definition';
 import type { DefinitionIssue } from '../definition-validation/issues';
 import { applyFix } from './patch';
 import { fixesFor } from './rules';
-import { type DefinitionFix, isEntry } from './walk';
+import { isEntry } from '../visibility/nodes';
+import type { DefinitionFix } from './walk';
 
 export type { DefinitionFix } from './walk';
 

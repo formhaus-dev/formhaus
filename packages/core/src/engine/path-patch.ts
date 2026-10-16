@@ -6,7 +6,7 @@ import type { DefinitionIndex } from './visibility-index';
 
 type Values = Record<string, unknown>;
 
-export type PathChange = readonly [key: string, shown: boolean, value: unknown];
+type PathChange = readonly [key: string, shown: boolean, value: unknown];
 
 export function createPathPatch({
   fieldsByKey,
