@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { formFieldEmits } from '../props';
-import type { FormFieldProps } from '../types';
+import { formFieldProps } from '../props';
 import FieldShell from './FieldShell.vue';
 import { useField } from './useField';
 
-const props = defineProps<FormFieldProps>();
+const props = defineProps(formFieldProps);
 const emit = defineEmits(formFieldEmits);
 const { inputId, control } = useField(props, emit);
 

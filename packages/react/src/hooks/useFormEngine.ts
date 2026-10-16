@@ -15,7 +15,7 @@ export function useFormEngineStore(
   const warnedRef = useRef(false);
 
   if (engineRef.current === null || definitionRef.current !== definition) {
-    if (engineRef.current !== null && !warnedRef.current) {
+    if (engineRef.current !== null && !warnedRef.current && typeof process !== 'undefined' && process.env.NODE_ENV !== 'production') {
       warnedRef.current = warnDefinitionReset(definitionRef.current, definition, 'a constant or useMemo', options?.onWarning);
     }
     engineRef.current = new FormEngine(definition, initialValues, {

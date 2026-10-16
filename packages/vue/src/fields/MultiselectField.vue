@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { FieldEmits, FormFieldProps } from '../types';
+import { formFieldProps } from '../props';
+import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
 import { useField } from './useField';
 
-const props = defineProps<FormFieldProps>();
+const props = defineProps(formFieldProps);
 const emit = defineEmits<FieldEmits>();
 const { inputId, control } = useField(props, emit);
 const selected = computed(() => (Array.isArray(props.modelValue) ? (props.modelValue as (string | number)[]) : []));

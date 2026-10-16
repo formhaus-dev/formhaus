@@ -15,7 +15,6 @@ const definition: FormDefinition = {
 
 afterEach(() => {
   vi.restoreAllMocks();
-  vi.unstubAllEnvs();
 });
 
 describe('warnMissingComponents', () => {
@@ -49,12 +48,5 @@ describe('warnMissingComponents', () => {
         '[formhaus] No component is registered for the field type "text", so it renders a placeholder. Registered types: none. Add a component for "text" to components.',
       ],
     ]);
-  });
-
-  it('stays silent in production', () => {
-    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    vi.stubEnv('NODE_ENV', 'production');
-    warnMissingComponents(definition, undefined, new Set(), undefined);
-    expect(warn).not.toHaveBeenCalled();
   });
 });

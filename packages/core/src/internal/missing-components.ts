@@ -5,21 +5,12 @@ import { isGroup } from '../visibility/nodes';
 
 const NODE_COMPONENTS = ['section', 'group', 'groupItem', 'confirmDialog'];
 
-export function isDevelopment(): boolean {
-  try {
-    return process.env.NODE_ENV !== 'production';
-  } catch {
-    return false;
-  }
-}
-
 export function warnMissingComponents(
   definition: FormDefinition,
   components: object | undefined,
   warned: Set<string>,
   onWarning?: (issue: DefinitionIssue) => void,
 ): void {
-  if (!isDevelopment()) return;
   const registered = Object.entries(components ?? {})
     .filter(([key, component]) => component && !NODE_COMPONENTS.includes(key))
     .map(([key]) => key);
