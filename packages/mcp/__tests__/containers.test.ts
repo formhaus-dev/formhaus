@@ -15,9 +15,8 @@ const summary = (definition: unknown) =>
   validateDefinitionTool({ definition }).issues.map(({ severity, code, path }) => `${severity} ${code} ${path}`);
 
 describe('sections and groups', () => {
-  it('lists sections, groups and format 1.1 in capabilities', () => {
+  it('lists sections and groups in capabilities', () => {
     const result = capabilitiesTool();
-    expect(result.definition.formatVersion).toBe('1.1');
     expect(result.containerTypes).toEqual(['section', 'group']);
     expect(result.groups.rules.join(' ')).toMatch(/group-scope/);
     expect(result.i18n.keys.slots.group).toContain('itemLabel');
@@ -97,7 +96,7 @@ describe('sections and groups', () => {
       answers: { company: 'Acme', participants: [{ name: ' Ada ', email: 'ada@example.com', dietNote: 'x', extra: 1 }] },
     });
     expect(result.wouldSubmit).toBe(true);
-    expect(result.submitValues).toEqual({ company: 'Acme', participants: [{ name: 'Ada', email: 'ada@example.com' }] });
+    expect(result.submitValues).toEqual({ company: 'Acme', participants: [{ name: 'Ada', email: 'ada@example.com', diet: 'none' }] });
   });
 
   it('builds a translation template with section and group addresses', () => {

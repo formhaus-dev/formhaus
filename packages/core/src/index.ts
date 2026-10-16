@@ -73,6 +73,8 @@ export {
   type DefinitionIssueCode,
 } from './definition-validation';
 
+export type { OptionsProvider } from './internal/options';
+
 export { resolveSources, type SourceContext } from './sources';
 
 export { FormLifecycleError } from './engine/lifecycle-error';

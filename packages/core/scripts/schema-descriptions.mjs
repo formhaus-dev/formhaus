@@ -1,7 +1,7 @@
 export const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.1". Core rejects a newer major version. Sections and groups need "1.1".',
+    'Format version of the definition, such as "1.2". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
@@ -34,7 +34,9 @@ export const DESCRIPTIONS = {
   'FormField.type': 'Field type. A built-in type or a custom type rendered through the renderer components prop.',
   'FormField.label': 'Label text.',
   'FormField.helperText': 'Hint text between the label and the control.',
-  'FormField.defaultValue': 'Initial value. Also the value restored on reset or skip.',
+  'FormField.defaultValue':
+    'Initial value. Also the value restored on reset or skip, and the start value of a field shown with no last value.',
+  'FormField.props': 'Settings of a custom field type. Core ignores them; renderers pass them to the custom component as field.props.',
   'FormField.source':
     'Fills a hidden field in the browser at mount: a URL parameter ({ "query": "utm_source" }), the referrer, the page URL without query and hash, the page title, the browser language, the time zone or the device class. country is filled by the server. defaultValue is the fallback and initialValues win.',
   'FormField.autoAdvance':

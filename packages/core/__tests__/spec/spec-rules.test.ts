@@ -6,14 +6,24 @@ const single = (fields: FormField[]): FormDefinition => ({ id: 's', title: 'S', 
 const toggle = text('show', { type: 'checkbox' });
 
 describe('visibility rules', () => {
-  it('starts a re-shown field empty without restoring its defaultValue', () => {
+  it('gives an untouched re-shown field its defaultValue back', () => {
     const engine = new FormEngine(single([toggle, text('detail', { defaultValue: 'preset', show: [{ field: 'show', eq: true }] })]), {
       show: true,
     });
     expect(engine.values.detail).toBe('preset');
     engine.setValue('show', false);
     engine.setValue('show', true);
-    expect(engine.values.detail).toBeUndefined();
+    expect(engine.values.detail).toBe('preset');
+  });
+
+  it('gives an edited re-shown field its last value', () => {
+    const engine = new FormEngine(single([toggle, text('detail', { defaultValue: 'preset', show: [{ field: 'show', eq: true }] })]), {
+      show: true,
+    });
+    engine.setValue('detail', 'mine');
+    engine.setValue('show', false);
+    engine.setValue('show', true);
+    expect(engine.values.detail).toBe('mine');
   });
 
   it('removes the error of a field when it becomes hidden', () => {

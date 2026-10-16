@@ -56,8 +56,73 @@ describe('validateSubmission', () => {
 
   it('treats non-object values and skippedSteps as empty', () => {
     const result = validateSubmission(skipFixture.definition, null, { skippedSteps: 'extras' as never });
-    expect(result.values).toEqual({ tier: 'basic' });
+    expect(result.values).toEqual({});
     expect(Object.keys(result.errors)).toEqual(['name', 'phone', 'terms']);
+  });
+
+  it('treats a null number as blank', () => {
+    const definition = (required: boolean): FormDefinition => ({
+      id: 'blank',
+      title: '',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'age', type: 'number', label: 'Age', validation: { required } },
+        { key: 'more', type: 'text', label: 'More', show: [{ field: 'age', notEmpty: true }] },
+      ],
+    });
+    expect(validateSubmission(definition(false), { age: null, more: 'x' })).toEqual({ values: { age: null }, errors: {} });
+    expect(validateSubmission(definition(true), { age: null }).errors).toEqual({ age: 'This field is required' });
+  });
+});
+
+describe('validateSubmission with values shown by a skipped step', () => {
+  const definition: FormDefinition = {
+    id: 'restore',
+    title: 'Restore',
+    submit: { label: 'Send' },
+    steps: [
+      { id: 's1', title: 'One', skip: { label: 'Skip' }, fields: [{ key: 'a', type: 'text', label: 'A' }] },
+      {
+        id: 's2',
+        title: 'Two',
+        fields: [
+          { key: 'c', type: 'x-rating', label: 'C', show: [{ field: 'a', neq: 'x' }] },
+          { key: 'f', type: 'file', label: 'F', show: [{ field: 'a', neq: 'x' }] },
+          {
+            key: 'g',
+            type: 'group',
+            label: 'G',
+            fields: [{ key: 'r', type: 'x-rating', label: 'R', show: [{ field: 'a', neq: 'x' }] }],
+          },
+        ],
+      },
+    ],
+  };
+  const skip = { skippedSteps: ['s1'] };
+
+  it('checks submitted top-level values against the reset values of the skipped step', () => {
+    const result = validateSubmission(definition, { a: 'x', c: { evil: 1 }, f: { not: 'a string' } }, skip);
+    expect(result.errors).toEqual({ c: 'Invalid value', f: 'Must be a file reference' });
+  });
+
+  it('checks submitted item values against the reset values of the skipped step', () => {
+    expect(validateSubmission(definition, { a: 'x', g: [{ r: { evil: 2 } }] }, skip).errors).toEqual({ 'g.0.r': 'Invalid value' });
+  });
+
+  it('rejects an oversized custom type string', () => {
+    const long = 'z'.repeat(20000);
+    for (const a of ['x', 'y'])
+      expect(validateSubmission(definition, { a, c: long, g: [{ r: long }] }, skip).errors).toEqual({
+        c: 'Must be at most 10000 characters',
+        'g.0.r': 'Must be at most 10000 characters',
+      });
+  });
+
+  it('keeps a legitimate submission', () => {
+    const values = { a: 'y', c: 4, f: 'file-1', g: [{ r: 3 }] };
+    expect(validateSubmission(definition, values)).toEqual({ values, errors: {} });
+    const { a: _, ...rest } = values;
+    expect(validateSubmission(definition, values, skip)).toEqual({ values: rest, errors: {} });
   });
 });
 

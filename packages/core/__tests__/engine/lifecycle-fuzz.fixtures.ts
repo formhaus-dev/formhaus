@@ -101,7 +101,7 @@ export const fuzzCases: FuzzCase[] = [
       agree: [true, false, false],
       reason: ['because', 'because', ''],
       company: ['Acme', 'Other', 'Other', ''],
-      vat: ['EU2', ''],
+      vat: ['EU2', '', undefined],
       name: ['Ada', 'vip', 'Bob', 'Bob', ''],
       nick: ['A'],
       perk: ['gold', 'gold', ''],

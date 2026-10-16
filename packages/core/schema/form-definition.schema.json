@@ -9,7 +9,7 @@
     },
     "formatVersion": {
       "type": "string",
-      "description": "Format version of the definition, such as \"1.1\". Core rejects a newer major version. Sections and groups need \"1.1\".",
+      "description": "Format version of the definition, such as \"1.2\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2.",
       "pattern": "^[1-9]\\d*(\\.\\d+)?$"
     },
     "id": {
@@ -429,7 +429,7 @@
           "description": "Moves to the next step when the field is committed: a built-in radio on click, Space or Enter, or a custom field calling onCommit. The last step never auto-submits."
         },
         "defaultValue": {
-          "description": "Initial value. Also the value restored on reset or skip."
+          "description": "Initial value. Also the value restored on reset or skip, and the start value of a field shown with no last value."
         },
         "source": {
           "$ref": "#/definitions/FieldSource",
@@ -498,6 +498,11 @@
             "url",
             "search"
           ]
+        },
+        "props": {
+          "type": "object",
+          "additionalProperties": {},
+          "description": "Settings of a custom field type. Core ignores them; renderers pass them to the custom component as field.props."
         },
         "i18n": {
           "$ref": "#/definitions/FieldI18n",

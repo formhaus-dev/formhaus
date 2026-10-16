@@ -25,7 +25,7 @@ Types `text`, `email`, `phone`, `number`, `password` all render a text input. Th
 }
 ```
 
-`number` renders `<input type="number">` and stores a number, or `''` when the input is empty.
+`number` renders `<input type="number">` and stores a number, or `null` when the user clears the input.
 
 The `email` type checks the format in the browser and in `validateSubmission()` from `@formhaus/core/server`. A `pattern` as above adds a stricter rule.
 
@@ -368,7 +368,7 @@ Context keys are `search`, `href`, `referrer`, `pageTitle`, `language`, `timezon
 
 A hidden field follows the same rules as any other field:
 
-- `show` and `showAny` apply. While its conditions fail, the value is cleared and left out of the submit values. When the conditions match again, the field gets its initial value or `defaultValue` back. Other field types start empty instead.
+- `show` and `showAny` apply. While its conditions fail, the value is cleared and left out of the submit values. When the conditions match again, the field gets its initial value or `defaultValue` back, even after an edit. Other field types get back their last value.
 - `validation` rules run, and `validateSubmission()` checks the value as text of up to `maxLength`, or 2000 characters without it. A number or a list fails with the `string` message.
 - An error on a hidden field shows as a form-level error, in `engine.topLevelErrors`, because the user has nothing to fix. It never appears in the error summary, in step error marks or as a focus target. `engine.errors` and `engine.validate()` still list it under its key.
 - Built-in messages name the field, such as `Signup source: This field is required`. The `hidden` message template, `{label}: {message}`, controls the format and is translated like other [messages](/guide/translations). The key stands in for an empty label. Messages you write, such as a string `required` or `patternMessage`, stay as written.
@@ -420,6 +420,17 @@ In the definition:
 ```
 
 If no component is registered for a type, the form shows "Unsupported field type."
+
+Put the settings of a custom type in `props`. Core ignores them, and the component reads them from `field.props`:
+
+```json
+{
+  "key": "brandColor",
+  "type": "color-picker",
+  "label": "Brand color",
+  "props": { "swatches": ["#111111", "#f5f5f5"], "allowAlpha": false }
+}
+```
 
 ## Override default components
 

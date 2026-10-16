@@ -74,7 +74,7 @@ describe('sections', () => {
     engine.setValue('street', ' Main ');
     const submit = vi.fn();
     expect(await engine.submit(submit)).toBe(true);
-    expect(submit.mock.calls[0][0]).toEqual({ company: true, street: 'Main', people: [{ name: 'Ada' }] });
+    expect(submit.mock.calls[0][0]).toEqual({ company: true, street: 'Main', people: [{ name: 'Ada', diet: 'none' }] });
   });
 });
 
@@ -152,7 +152,7 @@ describe('groups', () => {
     const engine = new FormEngine(single, { company: true, street: 'S', people: [{ name: 'A', vat: 'NL1' }] });
     expect(engine.items('people')[0].fields.map((field) => field.key)).toContain('vat');
     engine.setValue('company', false);
-    expect(engine.values.people).toEqual([{ name: 'A' }]);
+    expect(engine.values.people).toEqual([{ name: 'A', diet: 'none' }]);
     expect(engine.items('people')[0].fields.map((field) => field.key)).not.toContain('vat');
   });
 

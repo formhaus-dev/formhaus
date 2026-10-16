@@ -19,6 +19,58 @@ const steps: FormDefinition = {
   ],
 };
 
+const rsvp: FormDefinition = {
+  id: 'rsvp',
+  title: '',
+  submit: { label: 'Send RSVP' },
+  steps: [
+    {
+      id: 'reply',
+      title: 'Reply',
+      fields: [
+        {
+          key: 'attending',
+          type: 'radio',
+          label: 'Coming?',
+          options: [
+            { value: 'yes', label: 'Yes' },
+            { value: 'no', label: 'No' },
+          ],
+          validation: { required: true },
+        },
+      ],
+    },
+    {
+      id: 'details',
+      title: 'Details',
+      show: [{ field: 'attending', eq: 'yes' }],
+      fields: [{ key: 'partySize', type: 'number', label: 'Party size', defaultValue: 1, validation: { required: true } }],
+    },
+  ],
+};
+
+const blanks: FormDefinition = {
+  id: 'blanks',
+  title: '',
+  submit: { label: 'Save' },
+  fields: [
+    { key: 'name', type: 'text', label: 'Name' },
+    { key: 'age', type: 'number', label: 'Age' },
+    { key: 'ok', type: 'checkbox', label: 'OK' },
+    { key: 'untouched', type: 'text', label: 'Untouched' },
+  ],
+};
+
+const toggled: FormDefinition = {
+  id: 'toggled',
+  title: '',
+  submit: { label: 'Save' },
+  fields: [
+    { key: 'more', type: 'checkbox', label: 'More' },
+    { key: 'note', type: 'text', label: 'Note', defaultValue: 'none', show: [{ field: 'more', eq: true }] },
+  ],
+};
+
 describe('renderer spec rules', () => {
   it('hides Back on the first step and with back: false, uses next.label, and keeps Submit with next: false', async () => {
     render(FormRenderer, { props: { definition: steps, initialValues: { name: 'Ada' } } });
@@ -85,5 +137,40 @@ describe('renderer spec rules', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     expect(onSubmit.mock.calls[0][0]).toEqual({ cv: file, tags: ['b'], ok: true, age: 42 });
+  });
+
+  it('shows the default of a field on a step that starts hidden', async () => {
+    const onSubmit = vi.fn();
+    render(FormRenderer, { props: { definition: rsvp, onSubmit } });
+    await fireEvent.click(screen.getByLabelText('Yes'));
+    await fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
+    expect(((await screen.findByRole('spinbutton', { name: /Party size/ })) as HTMLInputElement).value).toBe('1');
+    await fireEvent.click(screen.getByRole('button', { name: 'Send RSVP' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toEqual({ attending: 'yes', partySize: 1 });
+  });
+
+  it('submits cleared text as an empty string, a cleared number as null and an unchecked box as false', async () => {
+    const onSubmit = vi.fn();
+    render(FormRenderer, { props: { definition: blanks, initialValues: { name: 'Ada', age: 3, ok: true }, onSubmit } });
+    await fireEvent.update(screen.getByLabelText('Name'), '');
+    await fireEvent.update(screen.getByLabelText('Age'), '');
+    await fireEvent.click(screen.getByLabelText('OK'));
+    await fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toEqual({ name: '', age: null, ok: false });
+  });
+
+  it('gives a field shown again the value typed before it was hidden', async () => {
+    const onSubmit = vi.fn();
+    render(FormRenderer, { props: { definition: toggled, initialValues: { more: true }, onSubmit } });
+    await fireEvent.update(screen.getByLabelText('Note'), 'hi');
+    await fireEvent.click(screen.getByLabelText('More'));
+    expect(screen.queryByLabelText('Note')).toBeNull();
+    await fireEvent.click(screen.getByLabelText('More'));
+    expect((screen.getByLabelText('Note') as HTMLInputElement).value).toBe('hi');
+    await fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toEqual({ more: true, note: 'hi' });
   });
 });

@@ -1,4 +1,5 @@
-import { createValues, getAllFields } from './engine-utils';
+import { getAllFields } from './engine-utils';
+import { createStartValues } from './start-values';
 import { indexConditions } from './visibility-index';
 import { createActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
@@ -48,7 +49,7 @@ export function createVisibility(definition: FormDefinition) {
   const stepOfField = new Map<FormField, FormStep>();
   const sectionOf = new Map<FormField, FormSection>();
   const groups = allFields.filter(isGroup);
-  let seeds: Values = {};
+  const starts = createStartValues(groups);
   let visibilityDirty = true;
   let canGoNextDirty = true;
   const cache: VisibilityCache = { visibleSteps: [], currentStep: null, visibleFields: [], visibleNodes: [], canGoNext: false };
@@ -130,12 +131,18 @@ export function createVisibility(definition: FormDefinition) {
           const entry: Values = result;
           const shown = itemFields(group, entry, values);
           const hidden = group.fields.filter((field) => !shown.includes(field) && entry[field.key] !== undefined);
-          if (!hidden.length) break;
-          result = keepId(entry, { ...entry });
-          for (const { key } of hidden) {
-            delete (result as Values)[key];
-            cleared.add(itemPath(group.key, index, key));
+          const restored: Values = {};
+          for (const { key } of shown) {
+            const value = entry[key] === undefined ? starts.itemStartValue(item, key) : undefined;
+            if (value !== undefined) restored[key] = value;
           }
+          if (!hidden.length && !Object.keys(restored).length) break;
+          result = keepId(entry, { ...entry, ...restored });
+          for (const { key } of hidden) {
+            starts.rememberItem(item, key, entry[key]);
+            delete (result as Values)[key];
+          }
+          for (const key of [...hidden.map(({ key }) => key), ...Object.keys(restored)]) cleared.add(itemPath(group.key, index, key));
         }
         return result;
       });
@@ -152,6 +159,7 @@ export function createVisibility(definition: FormDefinition) {
   }
 
   return {
+    ...starts,
     allFields,
     groups,
     conditionValues: path.values,
@@ -185,40 +193,44 @@ export function createVisibility(definition: FormDefinition) {
       return routeFields.has(key) || fieldDependents.has(key) || stepDependents.has(key) || clearedFields.size > 0;
     },
 
-    seed(values: Values): void {
-      seeds = { ...seeds, ...values };
-    },
-
     reconcileHidden(values: Values, errors: Record<string, string>, initial = false): Set<string> {
-      if (initial) seeds = { ...values };
+      if (initial) starts.resetStarts(values);
       path.invalidate();
-      const queue = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
+      const dependents = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
+      const queue = [...dependents];
       const queued = new Set(queue);
       const cleared = new Set<string>();
       const held = (key: string) => values[key] !== undefined || errors[key] !== undefined;
       const mark = (key: string) => {
         path.invalidate();
         cleared.add(key);
-        if (queued.has(key)) return;
-        queued.add(key);
-        queue.push(key);
+        for (const next of routeFields.has(key) ? [...dependents, key] : [key]) {
+          if (queued.has(next)) continue;
+          queued.add(next);
+          queue.push(next);
+        }
       };
       const clear = (key: string) => {
+        starts.remember(key, values[key]);
         delete values[key];
         delete errors[key];
         for (const errorKey of Object.keys(errors)) if (owner(errorKey) === key) delete errors[errorKey];
         mark(key);
       };
       const update = (field: FormField, shown: boolean) => {
+        const { key } = field;
+        const active = activeField(key, values);
+        if (active && active !== field) return;
         if (!shown) {
-          if (held(field.key)) clear(field.key);
-        } else if (field.type === 'hidden' && !held(field.key) && seeds[field.key] !== undefined && visible(field, values)) {
-          values[field.key] = seeds[field.key];
-          mark(field.key);
-        } else if (isGroup(field) && field.defaultItems! > 0 && !held(field.key) && visible(field, values)) {
-          values[field.key] = createValues([field])[field.key];
-          mark(field.key);
+          if (held(key)) clear(key);
+          return;
         }
+        if (held(key) || !active) return;
+        const value = starts.startValue(field);
+        if (value === undefined) return;
+        values[key] = value;
+        starts.seedItems(value);
+        mark(key);
       };
       for (let index = 0; index < queue.length; index++) {
         const key = queue[index];

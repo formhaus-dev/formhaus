@@ -16,10 +16,11 @@ export function skipTarget(engine: EngineInternals): FormStep | undefined {
   return activeSteps(engine.definition, resetValues(engine))[engine.currentStepIndex + 1];
 }
 
-export function skipCurrentStep(engine: EngineInternals): string[] {
+export function skipCurrentStep(engine: EngineInternals): (kept: Set<string>) => void {
   const step = engine.currentStep!;
   const fieldKeys = valueFields(step.fields).map(({ key }) => key);
   engine.state.values = resetValues(engine);
+  const restore = engine.visibility.reseed(fieldKeys, engine.values);
   const owned = Object.keys(engine.errors).filter((key) => fieldKeys.includes(engine.visibility.owner(key)));
   for (const key of owned) delete engine.errors[key];
   dropServerErrors(engine, fieldKeys);
@@ -28,7 +29,7 @@ export function skipCurrentStep(engine: EngineInternals): string[] {
   engine.visibility.markChanged(true, true);
   const pruned = pruneOffPathErrors(engine);
   engine.notify({ fieldKeys: [...fieldKeys, ...owned, ...pruned], structureChanged: true, valuesChanged: true });
-  return fieldKeys;
+  return restore;
 }
 
 export function includeCurrentStep(engine: EngineInternals): void {
@@ -36,7 +37,7 @@ export function includeCurrentStep(engine: EngineInternals): void {
   if (step) engine.skipped.delete(step.id);
 }
 
-export function skipStepAt(engine: EngineInternals, index: number): string[] {
+export function skipStepAt(engine: EngineInternals, index: number): (kept: Set<string>) => void {
   engine.state.currentStepIndex = index;
   engine.notify({ structureChanged: true });
   return skipCurrentStep(engine);

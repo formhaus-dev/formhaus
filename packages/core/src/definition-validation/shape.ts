@@ -2,6 +2,7 @@ import type { DefinitionIssue } from './issues';
 import { formatIssues } from './format';
 import { error, pointer } from './issues';
 import { isEntry } from '../visibility/nodes';
+import { isPlainEntry } from '../validation/type-checks';
 
 export { isEntry };
 
@@ -105,6 +106,10 @@ function validation(value: unknown, path: string): DefinitionIssue[] {
   return isEntry(value) ? typed(value, RULES, path) : [error('invalid-type', path, 'must be an object of validation rules')];
 }
 
+function props(value: unknown, path: string): DefinitionIssue[] {
+  return value === undefined || isPlainEntry(value) ? [] : [error('invalid-type', path, 'must be an object')];
+}
+
 function dependencies(value: unknown, path: string): DefinitionIssue[] {
   const valid = value === undefined || (Array.isArray(value) && value.every((key) => typeof key === 'string'));
   return valid ? [] : [error('invalid-type', path, 'must be an array of field keys')];
@@ -135,6 +140,7 @@ const field: Check = (value, path) => {
     ...list(value.options, `${path}/options`, 'an option object', option),
     ...validation(value.validation, `${path}/validation`),
     ...dependencies(value.optionsDependsOn, `${path}/optionsDependsOn`),
+    ...props(value.props, `${path}/props`),
   ];
 };
 

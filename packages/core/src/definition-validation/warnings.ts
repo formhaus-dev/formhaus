@@ -19,7 +19,10 @@ function expectedType(field: FormField): string | undefined {
 
 function valueIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {
   const mismatch = (problem: string, hint: string) => [warning('condition-value-mismatch', path, problem, hint)];
-  if (operator === 'notEmpty') return [];
+  if (operator === 'notEmpty')
+    return operand
+      ? []
+      : [warning('condition-always-true', path, '"notEmpty": false matches every value', 'Use "notEmpty": true, or remove the condition')];
   if (COMPARISONS.includes(operator)) {
     if (target.type !== 'multiselect' && !BOOLEAN_TYPES.includes(target.type)) return [];
     return mismatch(

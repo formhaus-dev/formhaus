@@ -9,12 +9,12 @@ import type {
   GroupItemView,
   GroupView,
   LabelSource,
+  OptionsProvider,
   SectionView,
   StepValidateFn,
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { OptionsProvider } from '@formhaus/core/internal';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
 export type { OptionsProvider };

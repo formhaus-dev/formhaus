@@ -33,7 +33,7 @@ function typeSequence(input: HTMLElement, steps: string[]) {
 }
 
 describe('TextField', () => {
-  it('keeps an empty number input empty', () => {
+  it('writes null when a number input is cleared', () => {
     const onChange = vi.fn();
     render(<TextField field={field} value={42} onChange={onChange} onBlur={() => {}} />);
 
@@ -41,7 +41,7 @@ describe('TextField', () => {
       target: { value: '' },
     });
 
-    expect(onChange).toHaveBeenCalledWith('');
+    expect(onChange).toHaveBeenCalledWith(null);
   });
 
   it.each([

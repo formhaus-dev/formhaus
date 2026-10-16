@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.1 specification"
-description: "Formhaus form definition format 1.1: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
+title: "Form definition 1.2 specification"
+description: "Formhaus form definition format 1.2: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
 ---
 
-# Formhaus form definition 1.1
+# Formhaus form definition 1.2
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,18 +19,20 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.1**. `@formhaus/core` 0.14 and later implement it. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.2**. `@formhaus/core` 0.15 and later implement it. Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.1"`. Without it, core reads the definition as 1.1. A minor version newer than 1.1 is also read as 1.1. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.2"`. Without it, core reads the definition as 1.2. A minor version newer than 1.2 is also read as 1.2. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
-A definition with sections or groups SHOULD declare `"formatVersion": "1.1"`. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
+A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
+
+A definition with `props` MAY declare `"formatVersion": "1.2"`. Core 0.14 reports `props` as `unknown-property` and ignores it; its renderers still pass it to custom components.
 
 ```json
-{ "formatVersion": "1.1", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
+{ "formatVersion": "1.2", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
 ```
 
 ## Document structure
@@ -79,6 +81,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `rows` | number | Row count for `textarea`. |
 | `mask` | string | Input mask. The built-in `text`, `email`, `phone`, `number` and `password` inputs use it as the placeholder when `placeholder` is absent. |
 | `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint, applied by the built-in `text`, `email`, `phone`, `number` and `password` inputs. |
+| `props` | object | Settings of a [custom type](#field-types). Core ignores it. Renderers pass it unchanged as `field.props`. Added in 1.2. |
 | `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
 
 An option MAY have `i18n: { label }`. `validation` MAY have `i18n` with keys by rule name.
@@ -92,7 +95,7 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | Type | Value written by built-in renderers |
 |---|---|
 | `text`, `email`, `phone`, `password`, `textarea`, `autocomplete`, `hidden` | string |
-| `number` | number, or `''` when the input is cleared |
+| `number` | number, or `null` when the input is cleared |
 | `select`, `radio` | string, the selected option `value` |
 | `multiselect` | string[] of selected option values |
 | `checkbox`, `switch` | boolean |
@@ -118,7 +121,7 @@ A `hidden` field may have a `source`: `{ "query": name }` or one of `referrer`, 
 
 A value is used when it is a string that is not empty after trimming. It is cut to the field's `maxLength`, or 2000 characters without it. Otherwise, or when reading it throws, the source yields nothing and `defaultValue` stays. A key present in the initial values with a value other than `""` or `null` is not resolved. The resolved value is also the value a `hidden` field gets back when its conditions match again. `reset()` and Skip drop resolved values, and renderers resolve again only when they mount or get a new definition.
 
-Any other string is a **custom type**. A renderer provides its component through its `components` option. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
+Any other string is a **custom type**. A renderer provides its component through its `components` option and passes it the whole field, so the component reads its settings from `field.props`. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
 
 Built-in type names are single lowercase words without separators. A type name with `-` or `:`, such as `x-rating`, `acme-rating` or `acme:rating`, is reserved for custom types and never becomes a built-in type. A custom type without `-` or `:` can collide with a built-in type added in a later minor version, which then applies its type checks to the field.
 
@@ -212,11 +215,13 @@ Rules:
 - A group MAY appear in `step.fields`, in single-step `fields` and in a section. A group MUST NOT contain a section, another group, or a `file` or `hidden` field. The constructor throws on them (`invalid-nesting`).
 - Item keys MUST be unique inside the group and MUST NOT repeat a field or section key outside it. No other key MAY start with the group key followed by `.`, because [error paths](#error-paths) use that form. The constructor throws on these (`duplicate-key`). Two groups MAY use the same item keys.
 - A condition or `matchField` of an item field MAY use the other fields of the same item, evaluated per item, and fields outside the group under the rules of field conditions. A condition, `matchField` or `optionsDependsOn` outside the group MUST NOT use item fields (`group-scope`). It MAY test the group itself, such as with `notEmpty`.
-- `required: true` means at least one item. `minLength` and `maxLength` count items and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
+- `required: true` means at least one item. `minLength` and `maxLength` count items, not characters, and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
 
-A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`.
+A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`.
 
-An item field hidden by its conditions is removed from its item, and its error is removed. A hidden group is cleared like a field. A group that becomes visible again starts with `defaultItems` new items, like a `hidden` field gets back its value.
+An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed, and removing an item forgets its own.
+
+A hidden group is cleared like a field. A group that becomes visible again gets back its last items, with the same item ids, or else its [start value](#visibility).
 
 `validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength`, with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
 
@@ -251,7 +256,7 @@ A condition tests the value of one field:
 | `lt` | number | the numeric value `<` `lt` |
 | `lte` | number | the numeric value `<=` `lte` |
 
-A condition MUST use exactly one operator. The constructor throws on a condition with no operator, with several operators, or with a key that is not an operator. At runtime, a condition without a known operator never matches. `notEmpty: false` always matches.
+A condition MUST use exactly one operator. The constructor throws on a condition with no operator, with several operators, or with a key that is not an operator. At runtime, a condition without a known operator never matches. `notEmpty: false` always matches; `checkDefinition()` warns about it with `condition-always-true`.
 
 Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
 
@@ -274,7 +279,15 @@ A field condition MUST reference a field of the same or an earlier step. A step 
 
 A field is visible when its own conditions pass, the conditions of its section pass and, in a multi-step form, its step is on the active path. An item field is visible when its group is visible and its conditions pass against the active projection plus the values of its own item.
 
-Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared. A field that becomes visible again starts empty; its `defaultValue` is not restored. The one exception is a field of type `hidden`: when it becomes visible again, it gets back its value from the initial values of the constructor or the last `reset()`, or else its resolved source, or else its `defaultValue`.
+Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared.
+
+A field that becomes visible and holds no value gets back its **last value**: the value it held when it was hidden, or the last value written to it while hidden. `''`, `null`, `false` and `undefined` are last values too, so an unchecked preselected checkbox comes back unchecked and a cleared field comes back cleared.
+
+A field without a last value gets its **start value**: its value in the initial values of the constructor or the last `reset()`, or else its `defaultValue`. This covers a field that starts hidden, such as a field on a step shown by an earlier answer. A restored value can show or hide other fields, which are then updated in the same way.
+
+Last values live in the engine. `reset()` forgets them, and Skip forgets those of the step it resets. A new engine, such as one that reopens a draft through `initialValues`, starts without them.
+
+A field of type `hidden` always gets back its start value, never its last value. Its start value also includes its resolved source, after the initial values and before `defaultValue`.
 
 In a form with [routes](#routes), fields on steps that are off the active path keep their values. See [Routes](#routes).
 
@@ -286,7 +299,9 @@ When the engine is constructed or reset, values are built in this order:
 
 1. `defaultValue` of every field that has one.
 2. The initial values passed to `new FormEngine(definition, initialValues)` or `reset(values)`. They override defaults.
-3. Fields hidden by conditions are cleared.
+3. Fields hidden by conditions are cleared. They keep the result of steps 1 and 2 as their start value and get it back when they are shown. See [Visibility](#visibility).
+
+An initial value of `null` or `''` is a start value too, so the field does not fall back to `defaultValue`.
 
 Initial values for keys that do not belong to any field stay in `engine.values` but are not submitted.
 
@@ -297,8 +312,8 @@ Initial values for keys that do not belong to any field stay in `engine.values` 
 | Rule | Type | Applies to | Default message |
 |---|---|---|---|
 | `required` | boolean or string | any value | `This field is required` |
-| `minLength` | number | string length, array length | `Must be at least N characters` (`items` for arrays) |
-| `maxLength` | number | string length, array length | `Must be at most N characters` (`items` for arrays) |
+| `minLength` | number | string length; item count of a `multiselect` or a group | `Must be at least N characters` (`items` for arrays) |
+| `maxLength` | number | string length; item count of a `multiselect` or a group | `Must be at most N characters` (`items` for arrays) |
 | `min` | number | number values | `Must be at least N` |
 | `max` | number | number values | `Must be at most N` |
 | `pattern` | string | `String(value)` | `Invalid format` |
@@ -358,7 +373,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` on `submit` and on `next`, against `getSubmitValues()`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. The `continue` and `back` [labels](#message-and-label-catalogs) replace the Continue and Back defaults. In built-in renderers, Enter in a single-line input runs the primary action.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` on `submit` and on `next`, against `getSubmitValues()`. They ignore `disabled` on `back`, `skip` and `cancel`, and `checkDefinition()` warns about it with `disabled-not-applicable`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. The `continue` and `back` [labels](#message-and-label-catalogs) replace the Continue and Back defaults. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 
@@ -395,7 +410,7 @@ When a value change removes the current step from the path, core moves to the ne
 
 Skip on a step with `skip` (`skip()` returns `false` on a step without it):
 
-1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors. Fields hidden by conditions are cleared after the reset, so a default of a field that the reset values hide is removed too.
+1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors. Fields hidden by conditions are cleared after the reset, so a default of a field that the reset values hide is removed too. The `defaultValue` becomes the field's start value and its last value is forgotten (see [Visibility](#visibility)). When the submit of a final-step Skip is rejected, the values, start values and last values of the step come back.
 2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skip()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
 3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 
@@ -423,6 +438,22 @@ Core trims leading and trailing whitespace from string values of every built-in 
 - fields of skipped steps, fields hidden by conditions, fields off the active path and keys that are not field keys excluded.
 
 Keys are field keys as written. The payload is not nested and not type-converted. Section fields are top-level keys. A group value is an array of item objects: each holds the visible item fields with a value other than `undefined`, trimmed like top-level values, and no other keys.
+
+With the built-in renderers, a visible field on the active path has these payload values:
+
+| Field state | Payload |
+|---|---|
+| Untouched | its [start value](#visibility), or key absent without one |
+| Text cleared by the user | `""` |
+| `number` cleared by the user | `null` |
+| `checkbox` or `switch` unchecked by the user | `false` |
+| `file` cleared by the user | `null` |
+
+Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. An untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `validateSubmission()` reads an absent key as absent too: it applies no `defaultValue`, `defaultItems` or item field default to it, and it keeps no last values, so it restores nothing that the payload does not hold. It resets the fields of each step in `skippedSteps` like Skip does, ignores the values sent for them and evaluates conditions against the reset values. `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
+
+Reopening a draft through `initialValues` starts without last values, so a hidden field the draft omits gets its `defaultValue` when it is shown.
+
+A `file` value in the browser is a `File`, or `null` after clearing. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference.
 
 ## Submit results
 
@@ -646,6 +677,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `slow-pattern` | warning | A `pattern` that repeats a group with a quantifier or an alternation inside, such as `(a+)+`, which can take very long to match |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number` or on a group, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
+| `condition-always-true` | warning | `notEmpty: false`, which matches every value |
+| `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
 | `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |

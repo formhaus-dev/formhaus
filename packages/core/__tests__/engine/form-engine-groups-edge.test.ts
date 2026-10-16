@@ -63,7 +63,7 @@ describe('group edge cases', () => {
     expect(checkDefinition(scoped).map(({ code, severity }) => `${severity} ${code}`)).toEqual(['warning group-scope']);
   });
 
-  it('starts a group shown again with its defaultItems', () => {
+  it('gives an untouched group shown again its initial items', () => {
     const shown: FormDefinition = {
       ...definition,
       fields: [
@@ -80,9 +80,31 @@ describe('group edge cases', () => {
     };
     const engine = new FormEngine(shown, { company: true, guests: [{ name: 'Ada' }, { name: 'Bo' }] });
     engine.setValue('company', false);
+    engine.setValue('company', true);
+    expect(engine.values.guests).toEqual([{ name: 'Ada' }, { name: 'Bo' }]);
+  });
+
+  it('gives an edited group shown again its last items', () => {
+    const shown: FormDefinition = {
+      ...definition,
+      fields: [
+        definition.fields![0],
+        {
+          key: 'guests',
+          type: 'group',
+          label: 'Guests',
+          defaultItems: 1,
+          show: [{ field: 'company', eq: true }],
+          fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'x' }],
+        },
+      ],
+    };
+    const engine = new FormEngine(shown, { company: true, guests: [{ name: 'Ada' }, { name: 'Bo' }] });
+    engine.setValue('guests.1.name', 'Cy');
+    engine.setValue('company', false);
     expect(engine.values).not.toHaveProperty('guests');
     engine.setValue('company', true);
-    expect(engine.values.guests).toEqual([{ name: 'x' }]);
+    expect(engine.values.guests).toEqual([{ name: 'Ada' }, { name: 'Cy' }]);
   });
 
   it.each([[['bad', null, 123]], [[{}, new Date(0)]]])('rejects items that are not plain objects like the server: %j', async (items) => {
