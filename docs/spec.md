@@ -120,6 +120,8 @@ A value is used when it is a string that is not empty after trimming. It is cut 
 
 Any other string is a **custom type**. A renderer provides its component through its `components` option. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
 
+Built-in type names are single lowercase words without separators. A type name with `-` or `:`, such as `x-rating`, `acme-rating` or `acme:rating`, is reserved for custom types and never becomes a built-in type. A custom type without `-` or `:` can collide with a built-in type added in a later minor version, which then applies its type checks to the field.
+
 ### Options
 
 `options` is a static list. `optionsFrom` names an options provider passed to the renderer. Built-in renderers call the provider with all current values, and again each time a field in `optionsDependsOn` changes. The returned options replace `options`. Core checks that a `select`, `radio` or `multiselect` value is one of the static `options`. It skips that check when `optionsFrom` is set, so the app validates dynamic lists itself. Core does not read `optionsDependsOn`.
@@ -648,6 +650,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt` |
+| `custom-type-name` | warning | A custom field type without `-` or `:`, such as `rating`. Not reported when `unknown-field-type` is |
+| `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |

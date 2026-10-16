@@ -15,6 +15,20 @@ Each editable row is its own form. One field, one validation cycle, one submit h
 ```tsx [React]
 import { FormRenderer } from '@formhaus/react';
 
+const definition = {
+  id: 'display-name',
+  title: 'Display name',
+  fields: [
+    {
+      key: 'name',
+      type: 'text',
+      label: 'Display name',
+      validation: { required: true, minLength: 2 },
+    },
+  ],
+  submit: { label: 'Save' },
+};
+
 function DisplayNameRow({ user, onSave, onError }) {
   async function handleSubmit(values) {
     await onSave({ name: values.name });
@@ -22,19 +36,7 @@ function DisplayNameRow({ user, onSave, onError }) {
 
   return (
     <FormRenderer
-      definition={{
-        id: 'display-name',
-        title: 'Display name',
-        fields: [
-          {
-            key: 'name',
-            type: 'text',
-            label: 'Display name',
-            validation: { required: true, minLength: 2 },
-          },
-        ],
-        submit: { label: 'Save' },
-      }}
+      definition={definition}
       initialValues={{ name: user.name }}
       onSubmit={handleSubmit}
       onError={onError}
