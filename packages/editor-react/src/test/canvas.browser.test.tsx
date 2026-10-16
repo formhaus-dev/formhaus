@@ -143,11 +143,77 @@ describe('editor canvas in a browser', () => {
     await userEvent.keyboard('Source');
     await userEvent.click(screen.getByRole('button', { name: /Field type: Short text/ }));
     await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Hidden value/ }));
-    await userEvent.click(screen.getByRole('textbox', { name: 'Default value' }));
+    expect(screen.queryByRole('textbox', { name: 'Help text' })).toBeNull();
+    expect(screen.queryByRole('button', { name: /click to make required/ })).toBeNull();
+    await userEvent.click(screen.getByRole('textbox', { name: 'Value' }));
     await userEvent.keyboard('newsletter');
     await waitFor(() => {
       expect(toDefinition(store.getState().form).fields?.[0]).toMatchObject({ key: 'source', type: 'hidden', defaultValue: 'newsletter' });
     });
+  });
+
+  it('fills a hidden value from a URL parameter with a fallback', async () => {
+    await page.viewport(1440, 1000);
+    const { store } = renderEditor();
+    await userEvent.click(fieldLabel(0));
+    await userEvent.keyboard('Campaign');
+    await userEvent.click(screen.getByRole('button', { name: /Field type: Short text/ }));
+    await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Hidden value/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Value from: Fixed value. Change' }));
+    const sources = within(await screen.findByRole('listbox'));
+    expect(sources.queryByRole('option', { name: /Country/ })).toBeNull();
+    await userEvent.click(sources.getByRole('option', { name: /URL parameter/ }));
+    const param = screen.getByRole('textbox', { name: 'URL parameter name' });
+    expect(param).toHaveValue('campaign');
+    await userEvent.clear(param);
+    await userEvent.type(param, 'utm_campaign');
+    await userEvent.click(screen.getByRole('textbox', { name: 'Fallback value' }));
+    await userEvent.keyboard('none');
+    await waitFor(() => {
+      expect(toDefinition(store.getState().form).fields?.[0]).toMatchObject({
+        key: 'campaign',
+        type: 'hidden',
+        source: { query: 'utm_campaign' },
+        defaultValue: 'none',
+      });
+    });
+    await userEvent.click(screen.getByRole('button', { name: 'Value from: URL parameter. Change' }));
+    await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Referrer/ }));
+    await waitFor(() => {
+      expect(toDefinition(store.getState().form).fields?.[0]).toMatchObject({ source: 'referrer', defaultValue: 'none' });
+    });
+  });
+
+  it('offers the country source when the host has it', async () => {
+    await page.viewport(1440, 1000);
+    const { store } = renderEditor(undefined, { host: { features: { country: true } } });
+    await userEvent.click(fieldLabel(0));
+    await userEvent.keyboard('Country');
+    await userEvent.click(screen.getByRole('button', { name: /Field type: Short text/ }));
+    await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Hidden value/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Value from: Fixed value. Change' }));
+    await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Country/ }));
+    await waitFor(() => {
+      expect(toDefinition(store.getState().form).fields?.[0]).toMatchObject({ key: 'country', source: 'country' });
+    });
+  });
+
+  it('adds tracking fields once', async () => {
+    await page.viewport(1440, 1000);
+    const { store } = renderEditor();
+    const addTracking = async () => {
+      await userEvent.click(screen.getByRole('button', { name: 'Add field' }));
+      await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Tracking fields/ }));
+    };
+    await addTracking();
+    await waitFor(() => {
+      expect(toDefinition(store.getState().form).fields?.map((field) => field.key)).toEqual(
+        expect.arrayContaining(['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'referrer']),
+      );
+    });
+    await addTracking();
+    await screen.findByText('Tracking fields are already in the form');
+    expect(store.getState().form.blocks.filter((block) => block.kind === 'question' && block.type === 'hidden')).toHaveLength(6);
   });
 
   it('is view only for viewers', async () => {
