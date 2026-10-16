@@ -57,6 +57,7 @@ export function removeItem(engine: EngineInternals, key: string, index: number):
   const items = itemsOf(engine.values[key]);
   if (!group || !within(index, items) || items.length <= itemLimits(group)[0]) return false;
   const previous = { ...engine.errors };
+  engine.visibility.dropItem(items[index]);
   shift(engine.state.errors, key, index);
   shift(engine.state.serverErrors, key, index);
   shift(engine.state.fieldLoading as unknown as Record<string, string>, key, index);

@@ -33,6 +33,10 @@ export function createStartValues(groups: FormGroup[]) {
       edits.add(key);
     },
 
+    dropItem(item: unknown): void {
+      if (isEntry(item)) itemSeeds.delete(itemId(item, 0));
+    },
+
     markItemEdited(item: unknown, key: string): void {
       itemEdits.add(itemEdit(item, key));
     },

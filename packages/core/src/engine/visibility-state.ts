@@ -131,12 +131,15 @@ export function createVisibility(definition: FormDefinition) {
           const entry: Values = result;
           const shown = itemFields(group, entry, values);
           const hidden = group.fields.filter((field) => !shown.includes(field) && entry[field.key] !== undefined);
-          const restored = shown.filter(({ key }) => entry[key] === undefined && starts.itemStartValue(item, key) !== undefined);
-          if (!hidden.length && !restored.length) break;
-          result = keepId(entry, { ...entry });
+          const restored: Values = {};
+          for (const { key } of shown) {
+            const value = entry[key] === undefined ? starts.itemStartValue(item, key) : undefined;
+            if (value !== undefined) restored[key] = value;
+          }
+          if (!hidden.length && !Object.keys(restored).length) break;
+          result = keepId(entry, { ...entry, ...restored });
           for (const { key } of hidden) delete (result as Values)[key];
-          for (const { key } of restored) (result as Values)[key] = starts.itemStartValue(item, key);
-          for (const { key } of [...hidden, ...restored]) cleared.add(itemPath(group.key, index, key));
+          for (const key of [...hidden.map(({ key }) => key), ...Object.keys(restored)]) cleared.add(itemPath(group.key, index, key));
         }
         return result;
       });
@@ -207,13 +210,13 @@ export function createVisibility(definition: FormDefinition) {
         for (const errorKey of Object.keys(errors)) if (owner(errorKey) === key) delete errors[errorKey];
         mark(key);
       };
-      const update = (field: FormField, shown: boolean) => {
+      const update = (field: FormField, shown: boolean, checked = true) => {
         const { key } = field;
         if (!shown) {
           if (held(key)) clear(key);
           return;
         }
-        if (held(key) || !visible(field, values)) return;
+        if (held(key) || !(checked || visible(field, values))) return;
         const value = starts.startValue(field);
         if (value === undefined) return;
         values[key] = value;
@@ -225,7 +228,7 @@ export function createVisibility(definition: FormDefinition) {
         queued.delete(key);
         for (const field of fieldDependents.get(key) ?? []) if (onPath(field, values)) update(field, visible(field, values));
         for (const step of stepDependents.get(key) ?? []) {
-          for (const field of valueFields(step.fields)) update(field, visible(step, values));
+          for (const field of valueFields(step.fields)) update(field, visible(step, values), false);
         }
       }
       if (groups.length) reconcileItems(values, errors, cleared);
