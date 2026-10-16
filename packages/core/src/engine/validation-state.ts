@@ -17,10 +17,13 @@ export function errorKeys(nodes: FormNode[], errors: Record<string, string>, val
   ]);
 }
 
-export function fieldsErrors(engine: EngineInternals, nodes: FormNode[]): Record<string, string> {
+export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values = getSubmitValues(engine)): Record<string, string> {
   const scope = engine.visibility.conditionValues(engine.values);
-  return validateShown(nodes, getSubmitValues(engine), scope, engine.validators, engine.messages);
+  return validateShown(nodes, values, scope, engine.validators, engine.messages);
 }
+
+const customRules = (nodes: FormNode[]) =>
+  valueFields(nodes).some((field) => [field, ...(isGroup(field) ? field.fields : [])].some((rule) => rule.validation?.validator));
 
 function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
   return validateFieldValue(field, value, values, engine.validators, engine.messages);
@@ -120,7 +123,10 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   const previousErrors = engine.errors;
   const errors: Record<string, string> = {};
   if (engine.isMultiStep) {
-    for (const step of engine.visibleSteps) if (!engine.skipped.has(step.id)) Object.assign(errors, fieldsErrors(engine, step.fields));
+    const values = getSubmitValues(engine);
+    for (const step of engine.visibleSteps)
+      if (!engine.skipped.has(step.id))
+        Object.assign(errors, fieldsErrors(engine, step.fields, customRules(step.fields) ? { ...values } : values));
   } else {
     Object.assign(errors, fieldsErrors(engine, engine.definition.fields ?? []));
   }
