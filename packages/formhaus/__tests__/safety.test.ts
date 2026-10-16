@@ -138,21 +138,33 @@ describe.skipIf(onWindows)('permissions', () => {
   });
 });
 
-describe.skipIf(onWindows)('Codex inline servers', () => {
+const OUR_TOML = '[mcp_servers.formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n';
+
+function expectUnchanged(toml: string) {
+  expect(box.read('.codex/config.toml')).toBe(toml);
+  expect(box.exists('.codex/config.toml.bak')).toBe(false);
+}
+
+describe.skipIf(onWindows)('Codex refusals', () => {
   it.each([
-    ['an inline mcp_servers table', 'mcp_servers = { other = { command = "x" } }\n'],
-    ['an inline table with spaces', '  mcp_servers   = {}\n'],
-  ])('aborts on %s without changing the file', (_, toml) => {
+    ['an unclosed table header', '[mcp_servers\ncommand = "x"\n', 'is not valid TOML'],
+    ['an unterminated string', 'model = "o3\n', 'is not valid TOML'],
+    ['a duplicate key', 'model = "a"\nmodel = "b"\n', 'is not valid TOML'],
+    ['a scalar mcp_servers', 'mcp_servers = 1\n', 'has an mcp_servers value that is not a table'],
+    ['an array of mcp_servers tables', '[[mcp_servers]]\ncommand = "x"\n', 'has an mcp_servers value that is not a table'],
+    ['an inline mcp_servers table', 'mcp_servers = { other = { command = "x" } }\n', 'cannot extend'],
+    ['an empty inline table with spaces', '  mcp_servers   = {}\n', 'cannot extend'],
+  ])('refuses %s without changing the file', (_, toml, reason) => {
     box.write('.codex/config.toml', toml);
     const result = box.run();
     expect(result.code).toBe(1);
-    expect(result.out).toContain('sets mcp_servers inline. Add the formhaus server there by hand');
-    expect(box.read('.codex/config.toml')).toBe(toml);
-    expect(box.exists('.codex/config.toml.bak')).toBe(false);
+    expect(result.out).toContain(reason);
+    expect(result.out).toContain('Add the formhaus server by hand. The file was not changed.');
+    expectUnchanged(toml);
   });
 });
 
-describe.skipIf(onWindows)('Codex quoted tables', () => {
+describe.skipIf(onWindows)('Codex existing servers', () => {
   it.each([
     ['a quoted parent key', '["mcp_servers".formhaus]\ncommand = "other"\n'],
     ['single quotes on both keys', '[\'mcp_servers\'."formhaus"]\ncommand = "other"\n'],
@@ -160,54 +172,67 @@ describe.skipIf(onWindows)('Codex quoted tables', () => {
     ['a quoted parent with a sub-table', '["mcp_servers".formhaus.env]\nKEY = "x"\n'],
     ['a quoted servers table', '["mcp_servers"]\nformhaus = { command = "other" }\n'],
     ['a quoted dotted key', '"mcp_servers".formhaus.command = "other"\n'],
-  ])('leaves a different server under %s unchanged', (_, toml) => {
-    box.write('.codex/config.toml', toml);
-    const result = box.run();
-    expect(result.out).toContain('different server, check it');
-    expect(box.read('.codex/config.toml')).toBe(toml);
-  });
-
-  it('recognizes our server under a quoted parent key', () => {
-    const toml = '["mcp_servers".formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n';
-    box.write('.codex/config.toml', toml);
-    box.run();
-    expect(box.read('.codex/config.toml')).toBe(toml);
-    expect(box.exists('.codex/config.toml.bak')).toBe(false);
-  });
-
-  it('adds the server next to other quoted servers', () => {
-    box.write('.codex/config.toml', '["mcp_servers".other]\ncommand = "x"\n');
-    box.run();
-    expect(box.read('.codex/config.toml')).toBe(
-      '["mcp_servers".other]\ncommand = "x"\n\n[mcp_servers.formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n',
-    );
-  });
-
-  it.each([
     ['an escaped parent key', '["mcp\\u005fservers".formhaus]\ncommand = "other"\n'],
     ['an escaped server table', '[mcp_servers."form\\u0068aus"]\ncommand = "other"\n'],
     ['an escaped server key', '[mcp_servers]\n"form\\u0068aus" = { command = "other" }\n'],
     ['an escaped dotted server key', '[mcp_servers]\n"form\\u0068aus".command = "other"\n'],
     ['an escaped dotted parent key', '"mcp\\u005fservers".formhaus.command = "x"\n'],
     ['an array of tables', '[[mcp_servers.formhaus]]\ncommand = "other"\n'],
-  ])('refuses %s', (_, toml) => {
+    [
+      'a quoted table after a string ending in quotes',
+      'args = ["-c", """echo "hello""""] # prints "hello"\n[mcp_servers."formhaus"]\ncommand = "sh"\n',
+    ],
+  ])('leaves a different server under %s unchanged', (_, toml) => {
     box.write('.codex/config.toml', toml);
     const result = box.run();
-    expect(result.code).toBe(1);
-    expect(result.out).toContain('has a key Formhaus cannot read safely');
-    expect(box.read('.codex/config.toml')).toBe(toml);
+    expect(result.out).toContain('different server, check it');
+    expectUnchanged(toml);
   });
 
   it.each([
+    ['a quoted parent key', '["mcp_servers".formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n'],
+    ['an escaped server table', '[mcp_servers."form\\u0068aus"]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n'],
+    ['an inline server', 'mcp_servers = { formhaus = { command = "npx", args = ["-y", "@formhaus/mcp"] } }\n'],
+    [
+      'a string ending in quotes before it',
+      `args = ["-c", """echo "hello""""] # prints "hello"\n${OUR_TOML.replace('formhaus', '"formhaus"')}`,
+    ],
+    ['CRLF line endings', OUR_TOML.replaceAll('\n', '\r\n')],
+    ['a byte order mark', `\uFEFF${OUR_TOML}`],
+  ])('recognizes our server under %s', (_, toml) => {
+    box.write('.codex/config.toml', toml);
+    const result = box.run();
+    expect(result.code).toBe(0);
+    expect(result.out).toMatch(/already set up/);
+    expectUnchanged(toml);
+  });
+});
+
+describe.skipIf(onWindows)('Codex appends', () => {
+  it.each([
+    ['other quoted servers', '["mcp_servers".other]\ncommand = "x"\n'],
+    ['dotted server keys', 'mcp_servers.other.command = "x"\n'],
     ['a Windows path in a value', 'notify = ["C:\\\\notify.py"]\n'],
     ['a Windows path in a project table', '[projects."C:\\\\Users\\\\me\\\\repo"]\ntrust_level = "trusted"\n'],
     ['a multi-line array', 'args = [\n  "C:\\\\x",\n  ["C:\\\\y", 1],\n  "a\\\\b" ,\n]\n'],
     ['a multi-line string', 'text = """\n"form\\u0068aus" = 1\n[mcp_servers."\\u0066"]\n"""\n'],
+    ['a literal string holding our table', `notes = '''\n${OUR_TOML}'''\n`],
     ['a Windows path in another server', '[mcp_servers.other]\ncommand = "C:\\\\tools\\\\x.exe"\n'],
     ['an escaped key outside mcp_servers', '[projects]\n"C:\\\\repo".trust_level = "trusted"\n'],
+    ['a byte order mark', '\uFEFFmodel = "o3"\n'],
   ])('adds the server next to %s', (_, toml) => {
     box.write('.codex/config.toml', toml);
     expect(box.run().code).toBe(0);
-    expect(box.read('.codex/config.toml')).toBe(`${toml}\n[mcp_servers.formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n`);
+    expect(box.read('.codex/config.toml')).toBe(`${toml}\n${OUR_TOML}`);
+    expect(box.read('.codex/config.toml.bak')).toBe(toml);
+  });
+
+  it.each([
+    ['a trailing newline', 'model = "o3"\r\n', '\r\n'],
+    ['no trailing newline', 'model = "o3"\r\n[projects]\r\nx = 1', '\r\n\r\n'],
+  ])('keeps CRLF line endings with %s', (_, toml, separator) => {
+    box.write('.codex/config.toml', toml);
+    expect(box.run().code).toBe(0);
+    expect(box.read('.codex/config.toml')).toBe(toml + separator + OUR_TOML.replaceAll('\n', '\r\n'));
   });
 });
