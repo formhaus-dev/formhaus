@@ -88,6 +88,43 @@ function itemErrors(engine: FormEngine, invalid: Map<string, string>, resolve: R
   return errors;
 }
 
+function markSubmitted(engine: FormEngine, values: Record<string, unknown>): void {
+  const { visibility } = internals(engine);
+  for (const key of Object.keys(values)) visibility.markEdited(key);
+  for (const group of visibility.groups)
+    for (const item of itemsOf(values[group.key])) for (const { key } of group.fields) visibility.markItemEdited(item, key);
+}
+
+function dropUnchecked(engine: FormEngine, submitted: Record<string, unknown>, errors: Record<string, string>, resolve: ResolveMessage) {
+  const { visibility } = internals(engine);
+  for (const key of Object.keys(submitted)) {
+    const field = visibility.activeField(key, engine.values);
+    if (!field || errors[key]) continue;
+    const error = typeError(field, submitted[key], resolve);
+    if (error) {
+      errors[key] = error;
+      delete submitted[key];
+      for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
+      continue;
+    }
+    if (!isGroup(field)) continue;
+    const items = itemsOf(submitted[key]);
+    const next = items.map((item, index) => {
+      if (!isEntry(item)) return item;
+      const bad = visibility.itemFields(field, item, engine.values).filter((itemField) => {
+        const itemError = typeError(itemField, item[itemField.key], resolve);
+        if (itemError) errors[itemPath(key, index, itemField.key)] = itemError;
+        return itemError;
+      });
+      if (!bad.length) return item;
+      const entry = { ...item };
+      for (const { key: itemKey } of bad) delete entry[itemKey];
+      return entry;
+    });
+    if (next.some((item, index) => item !== items[index])) submitted[key] = next;
+  }
+}
+
 function withoutRules(definition: FormDefinition, invalid: Map<string, string>): FormDefinition {
   const strip = (fields: FormNode[]): FormNode[] =>
     fields.map((field) =>
@@ -149,6 +186,7 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   const invalid = typeErrors(resolved, resolve);
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
+  markSubmitted(engine, resolved.values);
   const items = itemErrors(engine, invalid, resolve);
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();
@@ -170,6 +208,7 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   }
   for (const [key, error] of items)
     if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;
+  dropUnchecked(engine, submitted, errors, resolve);
   if (isBody(fields, values)) errors.values = BODY_MESSAGE;
   return { values: submitted, errors };
 }

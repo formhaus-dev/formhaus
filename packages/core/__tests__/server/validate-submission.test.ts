@@ -75,6 +75,57 @@ describe('validateSubmission', () => {
   });
 });
 
+describe('validateSubmission with values hidden until a step is skipped', () => {
+  const definition: FormDefinition = {
+    id: 'restore',
+    title: 'Restore',
+    submit: { label: 'Send' },
+    steps: [
+      { id: 's1', title: 'One', skip: { label: 'Skip' }, fields: [{ key: 'a', type: 'text', label: 'A' }] },
+      {
+        id: 's2',
+        title: 'Two',
+        fields: [
+          { key: 'c', type: 'x-rating', label: 'C', show: [{ field: 'a', neq: 'x' }] },
+          { key: 'f', type: 'file', label: 'F', show: [{ field: 'a', neq: 'x' }] },
+          {
+            key: 'g',
+            type: 'group',
+            label: 'G',
+            fields: [{ key: 'r', type: 'x-rating', label: 'R', show: [{ field: 'a', neq: 'x' }] }],
+          },
+        ],
+      },
+    ],
+  };
+  const skip = { skippedSteps: ['s1'] };
+
+  it('does not restore submitted top-level values', () => {
+    const result = validateSubmission(definition, { a: 'x', c: { evil: 1 }, f: { not: 'a string' } }, skip);
+    expect(result).toEqual({ values: {}, errors: {} });
+  });
+
+  it('does not restore submitted item values', () => {
+    expect(validateSubmission(definition, { a: 'x', g: [{ r: { evil: 2 } }] }, skip)).toEqual({ values: { g: [{}] }, errors: {} });
+  });
+
+  it('does not restore an oversized custom type string', () => {
+    const long = 'z'.repeat(20000);
+    expect(validateSubmission(definition, { a: 'x', c: long, g: [{ r: long }] }, skip)).toEqual({ values: { g: [{}] }, errors: {} });
+    expect(validateSubmission(definition, { a: 'y', c: long, g: [{ r: long }] }, skip).errors).toEqual({
+      c: 'Must be at most 10000 characters',
+      'g.0.r': 'Must be at most 10000 characters',
+    });
+  });
+
+  it('keeps a legitimate submission', () => {
+    const values = { a: 'y', c: 4, f: 'file-1', g: [{ r: 3 }] };
+    expect(validateSubmission(definition, values)).toEqual({ values, errors: {} });
+    const { a: _, ...rest } = values;
+    expect(validateSubmission(definition, values, skip)).toEqual({ values: rest, errors: {} });
+  });
+});
+
 describe.skipIf(!existsSync(iifePath) && !process.env.CI)('server IIFE build', () => {
   it('runs every fixture without a console global', () => {
     const context: { Formhaus?: { validateSubmission: typeof validateSubmission } } = {};
