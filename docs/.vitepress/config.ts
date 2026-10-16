@@ -147,7 +147,10 @@ export default defineConfig({
       },
       {
         text: 'Meta',
-        items: [{ text: 'Changelog', link: '/changelog' }],
+        items: [
+          { text: 'Stable API', link: '/guide/stability' },
+          { text: 'Changelog', link: '/changelog' },
+        ],
       },
     ],
     ...{ coreBudgetKB },
