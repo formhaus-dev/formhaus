@@ -172,7 +172,7 @@ In development, the renderer warns when it gets a new definition object with the
 
 To change a value after the form mounts, put a ref on the renderer. `FormRenderer` and `HeadlessFormRenderer` expose `setValue(key, value)` and `getValues()`, typed as `FormRendererHandle`. `setValue` does not call `onFieldChange` (React) or emit `fieldChange` (Vue).
 
-`onValuesChange` (React) and `valuesChange` (Vue) fire on mount and on every value change, with a frozen copy of the values. In Vue, the handle also has a reactive `values`. See [Derived values](/recipes/derived-values).
+`onValuesChange` (React) and `valuesChange` (Vue) fire on mount and on every value-changing operation, with a frozen copy of the values. In Vue, the handle also has a reactive `values`. See [Derived values](/recipes/derived-values).
 
 ## How it works
 

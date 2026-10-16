@@ -44,12 +44,16 @@ describe('FormEngine value subscriptions', () => {
     const listener = watch(engine);
     engine.addItem('lines');
     engine.setItemValue('lines', 0, 'qty', 2);
-    engine.setValue('lines[0].qty', 3);
+    engine.setValue('lines.0.qty', 3);
+    expect(engine.getValuesSnapshot().lines).toEqual([expect.objectContaining({ qty: 3 })]);
+    engine.setValue('lines.0.qty', 3);
+    expect(listener).toHaveBeenCalledTimes(3);
     engine.removeItem('lines', 0);
     expect(listener).toHaveBeenCalledTimes(4);
+    expect(Object.keys(engine.values)).toEqual(['lines']);
   });
 
-  it('notifies on reset only when values differ', () => {
+  it('skips a reset to equal primitive values', () => {
     const engine = new FormEngine(definition, { country: 'US' });
     const listener = watch(engine);
     engine.reset({ country: 'US' });

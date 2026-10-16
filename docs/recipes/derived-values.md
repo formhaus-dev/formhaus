@@ -102,8 +102,8 @@ function onFieldChange(key: string, value: unknown) {
 
 ## How it works
 
-- `onValuesChange` and `valuesChange` fire once on mount with the initial values, then once for every change: user edits, `setValue` from the handle, adding or removing group items, values cleared or restored by conditions, and `reset`. A change that clears several hidden fields fires once. Errors, loading and step navigation do not fire them, and neither does writing a value equal to the current one.
-- Skipping a step fires them, and so does undoing that skip when the submit fails, even if the values end up the same.
+- `onValuesChange` and `valuesChange` fire once on mount with the initial values, then once for every value-changing operation: user edits, `setValue` from the handle, adding or removing group items, values cleared or restored by conditions, and `reset`. A change that clears several hidden fields fires once. Errors, loading and step navigation do not fire them, and neither does writing a value equal to the current one.
+- They may fire when the values end up unchanged: a write to a hidden field, a `reset` to equal content, a skipped step and undoing that skip when the submit fails.
 - They fire again when a new `definition` creates a new form. They never fire during server rendering.
 - The payload is a frozen shallow copy of the values. Group items are shared with the form, so treat them as read-only and change them with `setValue`.
 - In Vue, the handle's `values` is reactive: read it in a `computed` or a template. `useFormEngine().values` is reactive the same way.
