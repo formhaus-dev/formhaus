@@ -42,5 +42,9 @@ export function indexDefinition(definition: FormDefinition) {
     indexConditions(step, stepDependents);
     for (const route of step.routes ?? []) for (const key of conditionFields(route)) routeFields.add(key);
   }
-  return { allFields, fieldsByKey, routeFields, fieldDependents, stepDependents, stepOfField, sectionOf };
+  const conditionSources = (field: FormField) =>
+    [field, sectionOf.get(field), stepOfField.get(field), ...(isGroup(field) ? field.fields : [])].flatMap((source) =>
+      source ? conditionFields(source) : [],
+    );
+  return { allFields, fieldsByKey, routeFields, fieldDependents, stepDependents, stepOfField, sectionOf, conditionSources };
 }

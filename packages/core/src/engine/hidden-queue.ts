@@ -1,5 +1,5 @@
 import type { FormField, FormStep } from '../types';
-import { conditionFields, isGroup, valueFields } from '../visibility/nodes';
+import { isGroup, valueFields } from '../visibility/nodes';
 import type { createStartValues } from './start-values';
 import type { createActivePath } from './step-routes';
 import type { DefinitionIndex } from './visibility-index';
@@ -17,16 +17,11 @@ interface HiddenView {
 }
 
 export function createHiddenQueue(
-  { allFields, fieldsByKey, fieldDependents, routeFields, stepDependents, stepOfField, sectionOf }: DefinitionIndex,
+  { allFields, fieldsByKey, fieldDependents, routeFields, stepDependents, conditionSources: sources }: DefinitionIndex,
   { path, starts, activeField, onPath, visible, owner, settle }: HiddenView,
 ) {
   const order = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
   const position = new Map(order.map((key, index) => [key, index]));
-  const sources = (field: FormField) =>
-    [field, sectionOf.get(field), stepOfField.get(field), ...(isGroup(field) ? field.fields : [])].flatMap((source) =>
-      source ? conditionFields(source) : [],
-    );
-  const duplicates = new Set([...fieldsByKey.keys()].filter((key) => fieldsByKey.get(key)!.length > 1));
   const groupKeys = new Set(allFields.filter(isGroup).map(({ key }) => key));
   const waiting = new Set<string>();
   let settled = false;
@@ -77,7 +72,7 @@ export function createHiddenQueue(
           waiting.delete(key);
           if (values[key] === undefined && errors[key] !== undefined) waiting.add(key);
         }
-        const shared = duplicates.has(key);
+        const shared = fieldsByKey.get(key)!.length > 1;
         const active = shared && activeField(key, values);
         if (active && active !== field) return false;
         if (!shown) {

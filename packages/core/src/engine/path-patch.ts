@@ -1,6 +1,6 @@
 import type { FormField, FormStep } from '../types';
 import { isVisible } from '../visibility';
-import { conditionFields, isGroup } from '../visibility/nodes';
+import { isGroup } from '../visibility/nodes';
 import { trimValue } from '../validation/type-checks';
 import type { DefinitionIndex } from './visibility-index';
 
@@ -8,13 +8,20 @@ type Values = Record<string, unknown>;
 
 export type PathChange = readonly [key: string, shown: boolean, value: unknown];
 
-export function createPathPatch({ fieldsByKey, fieldDependents, routeFields, stepDependents, stepOfField, sectionOf }: DefinitionIndex) {
+export function createPathPatch({
+  fieldsByKey,
+  fieldDependents,
+  routeFields,
+  stepDependents,
+  stepOfField,
+  sectionOf,
+  conditionSources: sources,
+}: DefinitionIndex) {
   const plans = new Map<string, FormField[] | null>();
   const only = (key: string) => {
     const fields = fieldsByKey.get(key);
     return fields?.length === 1 ? fields[0] : undefined;
   };
-  const sources = (field: FormField) => [field, sectionOf.get(field)].flatMap((source) => (source ? conditionFields(source) : []));
   const local = (field: FormField, step: FormStep | undefined) =>
     only(field.key) === field &&
     !isGroup(field) &&
