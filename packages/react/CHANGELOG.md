@@ -1,5 +1,12 @@
 # @formhaus/react
 
+## 0.14.2
+
+### Patch Changes
+
+- Fixed `FormhausForm` with `initialForm` showing empty fields instead of the saved draft.
+- Requires `@formhaus/core` 0.14.2.
+
 ## 0.14.1
 
 ### Patch Changes
