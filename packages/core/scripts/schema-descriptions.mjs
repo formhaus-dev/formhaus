@@ -35,7 +35,7 @@ export const DESCRIPTIONS = {
   'FormField.label': 'Label text.',
   'FormField.helperText': 'Hint text between the label and the control.',
   'FormField.defaultValue':
-    'Initial value. Also the value restored on reset or skip, and when the field is shown again and the user has not edited it.',
+    'Initial value. Also the value restored on reset or skip, and the start value of a field shown with no last value.',
   'FormField.props': 'Settings of a custom field type. Core ignores them; renderers pass them to the custom component as field.props.',
   'FormField.source':
     'Fills a hidden field in the browser at mount: a URL parameter ({ "query": "utm_source" }), the referrer, the page URL without query and hash, the page title, the browser language, the time zone or the device class. country is filled by the server. defaultValue is the fallback and initialValues win.',

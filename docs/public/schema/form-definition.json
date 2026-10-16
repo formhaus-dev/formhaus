@@ -429,7 +429,7 @@
           "description": "Moves to the next step when the field is committed: a built-in radio on click, Space or Enter, or a custom field calling onCommit. The last step never auto-submits."
         },
         "defaultValue": {
-          "description": "Initial value. Also the value restored on reset or skip, and when the field is shown again and the user has not edited it."
+          "description": "Initial value. Also the value restored on reset or skip, and the start value of a field shown with no last value."
         },
         "source": {
           "$ref": "#/definitions/FieldSource",
