@@ -6,8 +6,11 @@ export type Print = (line: string) => void;
 const LABELS: Record<State, [string, string]> = {
   added: ['added', 'will add'],
   updated: ['updated', 'will update'],
+  replaced: ['replaced', 'will replace'],
   present: ['already set up', 'already set up'],
+  kept: ['has your edits, left unchanged', 'has your edits, will leave unchanged'],
   different: ['different server, check it', 'different server, check it'],
+  skipped: ['skipped, not in a project', 'skipped, not in a project'],
   failed: ['failed', 'failed'],
 };
 
@@ -23,7 +26,7 @@ function printChanges(ctx: Context, changes: Change[], print: Print): void {
   for (const change of changes) {
     const row = [change.agent.padEnd(agentWidth), change.item.padEnd(itemWidth), label(ctx, change.state).padEnd(stateWidth), change.where];
     print(`  ${row.join('  ')}`);
-    if (change.error) print(`    ${change.error}`);
+    if (change.note) print(`    ${change.note}`);
   }
 }
 
@@ -51,7 +54,7 @@ export function setup(ctx: Context, print: Print): number {
     printManual(manual, print);
   }
   const failed = changes.some((change) => change.state === 'failed');
-  const changed = changes.some((change) => change.state === 'added' || change.state === 'updated');
+  const changed = changes.some((change) => change.state === 'added' || change.state === 'updated' || change.state === 'replaced');
   print('');
   const different = changes.some((change) => change.state === 'different');
   if (different) {
