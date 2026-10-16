@@ -53,7 +53,7 @@ Each item holds the `defaultValue` of its fields, also an item from the initial 
 | `itemLabel` | string | Item heading. `{index}` is the item number from 1, `{label}` the group label. Default `{label} {index}`. |
 | `addLabel`, `removeLabel` | string | Button texts. Default `Add` and `Remove`. |
 | `defaultItems` | integer | Number of items the group starts with. |
-| `show`, `showAny` | condition[] | Group visibility. A hidden group is cleared. When it shows again, it gets its initial items back, or `defaultItems` new items after an edit. |
+| `show`, `showAny` | condition[] | Group visibility. A hidden group is cleared. When it shows again, it gets its last items back, or else its initial items. |
 | `validation` | object | `required`, `minLength`, `maxLength`, their messages and `validator`. |
 | `fields` | field[] | Fields of one item. |
 

@@ -42,7 +42,7 @@ interface FormField {
   label: string;                  // Label text
   placeholder?: string;           // Placeholder text
   helperText?: string;            // Hint text between the label and the control
-  defaultValue?: unknown;         // Start value, restored when the field is shown again unedited
+  defaultValue?: unknown;         // Start value, used when the field is shown with no last value
   autoAdvance?: boolean;          // Advance on explicit field activation. Added in 0.7.0
   show?: ShowCondition[];         // AND conditions for visibility
   showAny?: ShowCondition[];      // OR conditions for visibility

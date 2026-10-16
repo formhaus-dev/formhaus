@@ -123,7 +123,7 @@ Show a field when country is US AND method is credit or debit:
 
 Hidden field values are removed during engine construction, after `reset()`, and whenever a dependency changes. Hidden values are not submitted.
 
-When a hidden field shows again, it gets back its `defaultValue` or initial value, unless the user edited it. An edited field comes back empty, so a value the user cleared stays cleared. See [Visibility](/spec#visibility).
+When a hidden field shows again, it gets back its last value. A value the user cleared stays cleared. A field that never had a value, such as one that starts hidden, gets its initial value or `defaultValue`. Last values live in the engine, so a draft reopened through `initialValues` starts without them. See [Visibility](/spec#visibility).
 
 If field A hides field B, and field B controls field C, the engine checks C next. It continues until no more fields or steps become hidden, with no fixed depth limit.
 

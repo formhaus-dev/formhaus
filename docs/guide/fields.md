@@ -368,7 +368,7 @@ Context keys are `search`, `href`, `referrer`, `pageTitle`, `language`, `timezon
 
 A hidden field follows the same rules as any other field:
 
-- `show` and `showAny` apply. While its conditions fail, the value is cleared and left out of the submit values. When the conditions match again, the field gets its initial value or `defaultValue` back, even after an edit. Other field types get it back only when the user has not edited them.
+- `show` and `showAny` apply. While its conditions fail, the value is cleared and left out of the submit values. When the conditions match again, the field gets its initial value or `defaultValue` back, even after an edit. Other field types get back their last value.
 - `validation` rules run, and `validateSubmission()` checks the value as text of up to `maxLength`, or 2000 characters without it. A number or a list fails with the `string` message.
 - An error on a hidden field shows as a form-level error, in `engine.topLevelErrors`, because the user has nothing to fix. It never appears in the error summary, in step error marks or as a focus target. `engine.errors` and `engine.validate()` still list it under its key.
 - Built-in messages name the field, such as `Signup source: This field is required`. The `hidden` message template, `{label}: {message}`, controls the format and is translated like other [messages](/guide/translations). The key stands in for an empty label. Messages you write, such as a string `required` or `patternMessage`, stay as written.

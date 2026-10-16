@@ -219,9 +219,9 @@ Rules:
 
 A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`.
 
-An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back the value its item started with, unless that item field was edited. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Edits are tracked per item, so removing an item does not move them to another item.
+An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed, and removing an item forgets its own.
 
-A hidden group is cleared like a field. A group that becomes visible again gets back its initial items when it was not edited. Adding, removing or writing an item counts as an edit of the group. An edited group starts again with `defaultItems` new items.
+A hidden group is cleared like a field. A group that becomes visible again gets back its last items, with the same item ids, or else its [start value](#visibility). A group whose last value is `undefined` starts again with `defaultItems` new items.
 
 `validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength`, with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
 
@@ -281,11 +281,13 @@ A field is visible when its own conditions pass, the conditions of its section p
 
 Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared.
 
-A field that becomes visible and holds no value gets back its **start value**: its value in the initial values of the constructor or the last `reset()`, or else its `defaultValue`. This covers a field that starts hidden, such as a field on a step shown by an earlier answer. A restored value can show or hide other fields, which are then updated in the same way.
+A field that becomes visible and holds no value gets back its **last value**: the value it held when it was hidden, or the last value written to it while hidden. `''`, `null`, `false` and `undefined` are last values too, so an unchecked preselected checkbox comes back unchecked and a cleared field comes back cleared.
 
-A field that was **edited** comes back empty instead, so a value the user cleared, such as an unchecked preselected checkbox, is never restored. Any `setValue()` that changes the value of a key counts as an edit of that key, including a change back to the start value and a `setValue()` from the app, such as a prefill after a fetch. Pass a prefill as initial values or through `reset(values)` to make it the start value. Edits are forgotten on `reset()`, and Skip forgets the edits of the step it resets.
+A field without a last value gets its **start value**: its value in the initial values of the constructor or the last `reset()`, or else its `defaultValue`. This covers a field that starts hidden, such as a field on a step shown by an earlier answer. A restored value can show or hide other fields, which are then updated in the same way.
 
-A field of type `hidden` always gets back its start value, edited or not. Its start value also includes its resolved source, after the initial values and before `defaultValue`.
+Last values live in the engine. `reset()` forgets them, and Skip forgets those of the step it resets. A new engine, such as one that reopens a draft through `initialValues`, starts without them.
+
+A field of type `hidden` always gets back its start value, never its last value. Its start value also includes its resolved source, after the initial values and before `defaultValue`.
 
 In a form with [routes](#routes), fields on steps that are off the active path keep their values. See [Routes](#routes).
 
@@ -408,7 +410,7 @@ When a value change removes the current step from the path, core moves to the ne
 
 Skip on a step with `skip` (`skip()` returns `false` on a step without it):
 
-1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors. Fields hidden by conditions are cleared after the reset, so a default of a field that the reset values hide is removed too. The `defaultValue` becomes the field's start value and its edits are forgotten (see [Visibility](#visibility)). When the submit of a final-step Skip is rejected, the values, start values and edits of the step come back.
+1. Resets the step's fields to their `defaultValue`, or removes them when there is none, and removes their errors. Fields hidden by conditions are cleared after the reset, so a default of a field that the reset values hide is removed too. The `defaultValue` becomes the field's start value and its last value is forgotten (see [Visibility](#visibility)). When the submit of a final-step Skip is rejected, the values, start values and last values of the step come back.
 2. Marks the step as skipped and moves to the next step of the path computed from the reset values. Skip does not run field validation or `onStepValidate`. `skip()` runs `onBeforeStepChange` and `onAfterStepChange` with `reason: 'skip'`; `false` from the before-hook cancels the skip and changes nothing.
 3. A skipped step is excluded from submit validation. Its fields are excluded from the payload and from the values that validation and lifecycle hooks receive.
 
@@ -447,9 +449,9 @@ With the built-in renderers, a visible field on the active path has these payloa
 | `checkbox` or `switch` unchecked by the user | `false` |
 | `file` cleared by the user | `null` |
 
-Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. A field cleared and then hidden and shown again is absent, and an untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `validateSubmission()` reads an absent key as absent too: it applies no `defaultValue`, `defaultItems` or item field default to it. It resets the fields of each step in `skippedSteps` like Skip does, ignores the values sent for them and evaluates conditions against the reset values. `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
+Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. An untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `validateSubmission()` reads an absent key as absent too: it applies no `defaultValue`, `defaultItems` or item field default to it, and it keeps no last values, so it restores nothing that the payload does not hold. It resets the fields of each step in `skippedSteps` like Skip does, ignores the values sent for them and evaluates conditions against the reset values. `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
 
-Reopening a draft through `initialValues` starts edit tracking over, so a field the draft omits can get its `defaultValue` back.
+Reopening a draft through `initialValues` starts without last values, so a hidden field the draft omits gets its `defaultValue` when it is shown.
 
 A `file` value in the browser is a `File`, or `null` after clearing. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference.
 
