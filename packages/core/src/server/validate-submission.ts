@@ -88,8 +88,11 @@ function itemErrors(engine: FormEngine, invalid: Map<string, string>, resolve: R
   return errors;
 }
 
-function markSubmitted(engine: FormEngine, values: Record<string, unknown>): void {
-  const { visibility } = internals(engine);
+function loadSubmitted(engine: FormEngine, values: Record<string, unknown>): void {
+  const { state, visibility } = internals(engine);
+  state.values = { ...values };
+  visibility.reconcileHidden(state.values, state.errors, true);
+  visibility.markChanged(true, true);
   for (const key of Object.keys(values)) visibility.markEdited(key);
   for (const group of visibility.groups)
     for (const item of itemsOf(values[group.key])) for (const { key } of group.fields) visibility.markItemEdited(item, key);
@@ -186,7 +189,7 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   const invalid = typeErrors(resolved, resolve);
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
-  markSubmitted(engine, resolved.values);
+  loadSubmitted(engine, resolved.values);
   const items = itemErrors(engine, invalid, resolve);
   applySkips(engine, options.skippedSteps);
   const errors = engine.validate();

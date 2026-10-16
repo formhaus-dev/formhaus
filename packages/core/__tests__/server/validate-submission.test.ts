@@ -56,7 +56,7 @@ describe('validateSubmission', () => {
 
   it('treats non-object values and skippedSteps as empty', () => {
     const result = validateSubmission(skipFixture.definition, null, { skippedSteps: 'extras' as never });
-    expect(result.values).toEqual({ tier: 'basic' });
+    expect(result.values).toEqual({});
     expect(Object.keys(result.errors)).toEqual(['name', 'phone', 'terms']);
   });
 
@@ -134,5 +134,64 @@ describe.skipIf(!existsSync(iifePath) && !process.env.CI)('server IIFE build', (
       const result = context.Formhaus!.validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps });
       expect(JSON.parse(JSON.stringify(result)), name).toEqual(expected);
     }
+  });
+});
+
+describe('validateSubmission with a skipped controlling step', () => {
+  const definition: FormDefinition = {
+    id: 'skip-rules',
+    title: 'Skip rules',
+    submit: { label: 'Send' },
+    steps: [
+      { id: 's1', title: 'One', skip: { label: 'Skip' }, fields: [{ key: 'a', type: 'text', label: 'A', defaultValue: 'show' }] },
+      {
+        id: 's2',
+        title: 'Two',
+        fields: [
+          { key: 'n', type: 'number', label: 'N', show: [{ field: 'a', eq: 'show' }], validation: { min: 10 } },
+          { key: 'code', type: 'text', label: 'Code', show: [{ field: 'a', eq: 'show' }], validation: { pattern: '^[A-Z]+$' } },
+          {
+            key: 'g',
+            type: 'group',
+            label: 'G',
+            fields: [{ key: 'm', type: 'number', label: 'M', show: [{ field: 'a', eq: 'show' }], validation: { max: 5 } }],
+          },
+        ],
+      },
+    ],
+  };
+
+  it('runs the rules of fields that the skipped step defaults show', () => {
+    const result = validateSubmission(definition, { a: 'show', n: 1, code: 'abc', g: [{ m: 9 }] }, { skippedSteps: ['s1'] });
+    expect(result.values).toEqual({ n: 1, code: 'abc', g: [{ m: 9 }] });
+    expect(Object.keys(result.errors).sort()).toEqual(['code', 'g.0.m', 'n']);
+  });
+});
+
+describe('validateSubmission with missing keys', () => {
+  it('does not fill a default for a key the payload leaves out', () => {
+    const definition: FormDefinition = {
+      id: 'consent',
+      title: 'Consent',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'ask', type: 'checkbox', label: 'Ask' },
+        { key: 'consent', type: 'checkbox', label: 'Consent', defaultValue: true, show: [{ field: 'ask', eq: true }] },
+        { key: 'note', type: 'text', label: 'Note', defaultValue: 'n', show: [{ field: 'consent', eq: true }] },
+        {
+          key: 'g',
+          type: 'group',
+          label: 'G',
+          defaultItems: 1,
+          fields: [{ key: 'k', type: 'text', label: 'K', defaultValue: 'd' }],
+        },
+      ],
+    };
+    expect(validateSubmission(definition, { ask: true })).toEqual({ values: { ask: true }, errors: {} });
+    expect(validateSubmission(definition, { ask: true, g: [{}] })).toEqual({ values: { ask: true, g: [{}] }, errors: {} });
+    expect(validateSubmission(definition, { ask: true, consent: true, note: 'x' })).toEqual({
+      values: { ask: true, consent: true, note: 'x' },
+      errors: {},
+    });
   });
 });

@@ -137,6 +137,7 @@
         "values": {
           "name": "Ada",
           "phone": "+1",
+          "tier": "basic",
           "terms": false
         },
         "skippedSteps": ["nope"]
@@ -151,6 +152,25 @@
         "errors": {
           "terms": "Accept the terms"
         }
+      }
+    },
+    {
+      "name": "does not fill the default of a missing key",
+      "input": {
+        "values": {
+          "name": "Ada",
+          "phone": "+1",
+          "terms": true
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "name": "Ada",
+          "phone": "+1",
+          "terms": true
+        },
+        "errors": {}
       }
     }
   ]
