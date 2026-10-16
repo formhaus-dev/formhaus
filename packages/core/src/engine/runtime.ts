@@ -53,6 +53,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
   get topLevelErrors(): readonly string[] {
     const { errors, topLevelErrors, values } = this.state;
+    if (Object.keys(errors).length === 0) return [...topLevelErrors];
     return [
       ...topLevelErrors,
       ...this.visibility.allFields.flatMap(

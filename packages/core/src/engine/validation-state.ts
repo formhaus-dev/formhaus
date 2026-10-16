@@ -7,6 +7,7 @@ import type { EngineInternals } from './runtime-internals';
 import type { ItemField } from './visibility-state';
 
 export function errorKeys(nodes: FormNode[], errors: Record<string, string>, values: Record<string, unknown>): string[] {
+  if (Object.keys(errors).length === 0) return [];
   return valueFields(nodes).flatMap((field) => [
     ...(shownError(errors, field) ? [field.key] : []),
     ...(isGroup(field)
