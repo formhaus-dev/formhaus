@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
 import { afterEach, expect, it, vi } from 'vitest';
+import { FormActions } from '../src';
 import { FormhausForm } from '../src/cloud';
 
 const ORIGIN = 'https://formhaus.cc';
@@ -68,7 +69,7 @@ it('submits with a token from the challenge frame and ignores spoofed messages',
   fireEvent.change(name, { target: { value: 'Ada' } });
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   frame.dispatchEvent(new Event('load'));
-  await waitFor(() => expect(post).toHaveBeenCalledWith({ type: 'formhaus:challenge-request', formId: 'abc', fresh: true }, ORIGIN));
+  await waitFor(() => expect(post).toHaveBeenCalledWith({ type: 'formhaus:challenge-request', formId: 'abc', id: 1, fresh: true }, ORIGIN));
   send(frame, { type: 'formhaus:challenge', formId: 'abc', token: 'evil' }, 'https://evil.example');
   send(frame, { type: 'formhaus:challenge', formId: 'abc', token: 'evil' }, ORIGIN, window);
   answer(frame, { formId: 'other', token: 'evil' });
@@ -100,8 +101,9 @@ it('shows a failed check as a notice and runs the check again on retry', async (
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
   answer(frame, { token: 'ts_1' });
-  expect(await screen.findByText('The bot check did not pass. Try again.')).toBeDefined();
-  fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(await screen.findByText('The bot check did not pass. Submit again to retry.')).toBeDefined();
+  expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   await waitFor(() => expect(post).toHaveBeenCalledTimes(2));
   answer(frame, { token: 'ts_2' });
   expect(await screen.findByRole('status')).toBeDefined();
@@ -119,4 +121,14 @@ it('renders no frame for a form without a bot check', async () => {
   expect(await screen.findByRole('status')).toBeDefined();
   expect(document.querySelector('iframe')).toBeNull();
   expect(sent(fetchMock, 1)).not.toHaveProperty('_fh_ts');
+});
+
+it('keeps the frame when the parent re-renders with an inline actions component', async () => {
+  stub(reply(200, envelope));
+  const view = render(<FormhausForm id="abc" actionsComponent={(props) => <FormActions {...props} />} />);
+  fireEvent.focus(await screen.findByLabelText('Name'));
+  const { frame } = challengeFrame();
+  view.rerender(<FormhausForm id="abc" actionsComponent={(props) => <FormActions {...props} />} />);
+  expect(frame.isConnected).toBe(true);
+  expect(document.querySelectorAll('iframe')).toHaveLength(1);
 });

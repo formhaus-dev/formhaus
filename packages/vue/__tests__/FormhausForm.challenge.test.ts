@@ -73,7 +73,7 @@ it('submits with a token from the challenge frame and ignores spoofed messages',
   await fireEvent.update(name, 'Ada');
   await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   frame.dispatchEvent(new Event('load'));
-  await waitFor(() => expect(post).toHaveBeenCalledWith({ type: 'formhaus:challenge-request', formId: 'abc', fresh: true }, ORIGIN));
+  await waitFor(() => expect(post).toHaveBeenCalledWith({ type: 'formhaus:challenge-request', formId: 'abc', id: 1, fresh: true }, ORIGIN));
   send(frame, { type: 'formhaus:challenge', formId: 'abc', token: 'evil' }, 'https://evil.example');
   send(frame, { type: 'formhaus:challenge', formId: 'abc', token: 'evil' }, ORIGIN, window);
   answer(frame, { formId: 'other', token: 'evil' });
@@ -105,9 +105,10 @@ it('shows a failed check as a notice and runs the check again on retry', async (
   await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
   answer(frame, { token: 'ts_1' });
-  expect(await screen.findByText('The bot check did not pass. Try again.')).toBeDefined();
+  expect(await screen.findByText('The bot check did not pass. Submit again to retry.')).toBeDefined();
   await new Promise((resolve) => setTimeout(resolve));
-  await fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
+  await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   await waitFor(() => expect(post).toHaveBeenCalledTimes(2));
   answer(frame, { token: 'ts_2' });
   expect(await screen.findByRole('status')).toBeDefined();
