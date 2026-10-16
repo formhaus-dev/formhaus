@@ -651,6 +651,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt` |
 | `custom-type-name` | warning | A custom field type without `-` or `:`, such as `rating`. Not reported when `unknown-field-type` is |
+| `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
