@@ -283,7 +283,7 @@ Core clears the value of a field hidden by conditions. The key is removed from `
 
 A field that becomes visible and holds no value gets back its **start value**: its value in the initial values of the constructor or the last `reset()`, or else its `defaultValue`. This covers a field that starts hidden, such as a field on a step shown by an earlier answer. A restored value can show or hide other fields, which are then updated in the same way.
 
-A field that was **edited** comes back empty instead, so a value the user cleared, such as an unchecked preselected checkbox, is never restored. Any `setValue()` that changes the value of a key counts as an edit of that key, including a change back to the start value. Edits are forgotten on `reset()`, and Skip forgets the edits of the step it resets.
+A field that was **edited** comes back empty instead, so a value the user cleared, such as an unchecked preselected checkbox, is never restored. Any `setValue()` that changes the value of a key counts as an edit of that key, including a change back to the start value and a `setValue()` from the app, such as a prefill after a fetch. Pass a prefill as initial values or through `reset(values)` to make it the start value. Edits are forgotten on `reset()`, and Skip forgets the edits of the step it resets.
 
 A field of type `hidden` always gets back its start value, edited or not. Its start value also includes its resolved source, after the initial values and before `defaultValue`.
 
@@ -447,7 +447,7 @@ With the built-in renderers, a visible field on the active path has these payloa
 | `checkbox` or `switch` unchecked by the user | `false` |
 | `file` cleared by the user | `null` |
 
-Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. A field cleared and then hidden and shown again is absent, and an untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `validateSubmission()` reads an absent key as absent too: it applies no `defaultValue`, `defaultItems` or item field default to it. `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
+Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. A field cleared and then hidden and shown again is absent, and an untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `validateSubmission()` reads an absent key as absent too: it applies no `defaultValue`, `defaultItems` or item field default to it. It resets the fields of each step in `skippedSteps` like Skip does, ignores the values sent for them and evaluates conditions against the reset values. `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
 
 Reopening a draft through `initialValues` starts edit tracking over, so a field the draft omits can get its `defaultValue` back.
 
