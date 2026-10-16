@@ -8,7 +8,7 @@ import type {
   FormAnalyticsEvent,
   FormDefinition,
   FormField,
-  FormRendererHandle,
+  FormRendererHandle as CoreFormRendererHandle,
   GroupItemView,
   GroupView,
   LabelSource,
@@ -56,7 +56,11 @@ export interface FormStepProgressProps {
   counterLabel?: string;
 }
 
-export type { FormRendererHandle, OptionsProvider };
+export type { OptionsProvider };
+
+export interface FormRendererHandle extends CoreFormRendererHandle {
+  readonly values: Readonly<Record<string, unknown>>;
+}
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -92,6 +96,7 @@ export interface FormRendererProps {
 export interface FormRendererEmits {
   (e: 'cancel'): void;
   (e: 'fieldChange', key: string, value: unknown, allValues: Record<string, unknown>): void;
+  (e: 'valuesChange', values: Readonly<Record<string, unknown>>): void;
   (e: 'analyticsEvent', event: FormAnalyticsEvent): void;
 }
 

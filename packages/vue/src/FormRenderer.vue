@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, shallowRef } from 'vue';
 import FormActions from './FormActions.vue';
 import FormStepProgress from './FormStepProgress.vue';
 import HeadlessFormRenderer from './HeadlessFormRenderer.vue';
@@ -12,14 +12,15 @@ const emit = defineEmits<FormRendererEmits>();
 
 const components = computed(() => withDefaultFields(props.components));
 let inner: FormRendererHandle | null = null;
-const handle: FormRendererHandle = {
-  setValue: (key, value) => inner?.setValue(key, value),
-  getValues: () => inner?.getValues() ?? {},
-};
+const values = shallowRef<Readonly<Record<string, unknown>>>({});
 const bind = (instance: unknown) => {
   inner = instance as FormRendererHandle | null;
 };
-defineExpose(handle);
+defineExpose({
+  setValue: (key: string, value: unknown) => inner?.setValue(key, value),
+  getValues: () => inner?.getValues() ?? {},
+  values,
+});
 </script>
 
 <template>
@@ -31,6 +32,7 @@ defineExpose(handle);
     :progress-component="props.progressComponent ?? FormStepProgress"
     @cancel="emit('cancel')"
     @field-change="(key, value, allValues) => emit('fieldChange', key, value, allValues)"
+    @values-change="(next) => emit('valuesChange', (values = next))"
     @analytics-event="(event) => emit('analyticsEvent', event)"
   />
 </template>
