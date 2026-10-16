@@ -94,7 +94,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
               onAddBelow={addBelow}
               onCardKey={onCardKey}
             />
-            {field.type !== 'section' && (
+            {field.type !== 'section' && (field.type !== 'hidden' || field.required) && (
               <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />
             )}
           </div>
@@ -138,7 +138,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
             Switch to {typeLabel(suggestion)}
           </button>
         )}
-        <HelpText field={field} actions={actions} readOnly={readOnly} selected={selected} />
+        {field.type !== 'hidden' && <HelpText field={field} actions={actions} readOnly={readOnly} selected={selected} />}
         <LogicBadge
           block={field}
           onOpen={() => {
