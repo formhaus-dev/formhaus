@@ -1,4 +1,4 @@
-import { chmodSync, readlinkSync, rmSync, statSync, symlinkSync } from 'node:fs';
+import { chmodSync, readdirSync, readlinkSync, rmSync, statSync, symlinkSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { onWindows, type Sandbox, sandbox } from './helpers';
 
@@ -22,7 +22,6 @@ function expectRefused(result: { code: number; out: string }) {
 describe.skipIf(onWindows)('symbolic links', () => {
   it.each([
     ['the backup', 'app/.cursor/rules/formhaus.mdc.bak'],
-    ['the temporary file', 'app/.cursor/rules/formhaus.mdc.tmp'],
     ['the rule', 'app/.cursor/rules/formhaus.mdc'],
   ])('refuses to write when %s is a link', (_, link) => {
     box.write('app/.cursor/rules/.keep', '');
@@ -31,6 +30,17 @@ describe.skipIf(onWindows)('symbolic links', () => {
     symlinkSync(box.path('secret'), box.path(link));
     box.cwd = box.path('app');
     expectRefused(box.run());
+  });
+
+  it('never writes through links at the old temporary file names', () => {
+    box.write('app/.cursor/rules/formhaus.mdc', 'old rule');
+    box.write('app/.cursor/rules/formhaus.mdc.bak', 'old');
+    symlinkSync(box.path('secret'), box.path('app/.cursor/rules/formhaus.mdc.tmp'));
+    symlinkSync(box.path('secret'), box.path('app/.cursor/rules/formhaus.mdc.bak.tmp'));
+    box.cwd = box.path('app');
+    expect(box.run('--force').code).toBe(0);
+    expect(box.read('secret')).toBe('keep me');
+    expect(box.read('app/.cursor/rules/formhaus.mdc.bak')).toBe('old rule');
   });
 
   it('refuses a dangling link without creating its target', () => {
@@ -115,7 +125,7 @@ describe.skipIf(onWindows)('backups', () => {
     box.write('.cursor/mcp.json', '{"theme":"light"}');
     box.run();
     expect(box.read('.cursor/mcp.json.bak')).toBe('{"theme":"dark"}');
-    expect(box.exists('.cursor/mcp.json.tmp')).toBe(false);
+    expect(readdirSync(box.path('.cursor')).filter((name) => name.endsWith('.tmp'))).toEqual([]);
   });
 
   it('mentions the backup only when this run created it', () => {

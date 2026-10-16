@@ -4,9 +4,10 @@ export interface Context {
   env: NodeJS.ProcessEnv;
   platform: NodeJS.Platform;
   dryRun: boolean;
+  force: boolean;
 }
 
-export type State = 'added' | 'updated' | 'present' | 'different' | 'failed';
+export type State = 'added' | 'updated' | 'replaced' | 'present' | 'kept' | 'different' | 'skipped' | 'failed';
 export type ServerState = 'missing' | 'present' | 'different';
 
 export interface Change {
@@ -14,7 +15,7 @@ export interface Change {
   item: string;
   where: string;
   state: State;
-  error?: string;
+  note?: string;
 }
 
 export interface Agent {

@@ -2,12 +2,13 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import createFormSkill from '../../../plugins/formhaus/skills/formhaus-create-form/SKILL.md';
 import { type Agent, type Change, type Context, SERVER, SERVER_NAME, type State } from './context';
-import { display, step, writeIfChanged } from './files';
+import { display, step, writeAsset } from './files';
 import { jsonServerState, readJsonObject } from './json-config';
 import { command, findOnPath } from './which';
 
 const NAME = 'Claude Code';
 const PLUGIN_PREFIX = `${SERVER_NAME}@`;
+const SHIPPED_SKILLS = ['e929afc9f58a267647341d962283d84749a18028e5ec2c4bd770a214c26a7c25'];
 export const CLAUDE_ADD_ARGS = ['mcp', 'add', '--scope', 'user', SERVER_NAME, '--', SERVER.command, ...SERVER.args];
 
 function configDir(ctx: Context): string {
@@ -77,7 +78,7 @@ export const claudeCode: Agent = {
     return [
       step(ctx, NAME, 'MCP server', `claude mcp add --scope user ${SERVER_NAME}`, () => addServer(ctx, claude)),
       step(ctx, NAME, 'formhaus-create-form skill', skill, () =>
-        hasPlugin(ctx) ? 'present' : writeIfChanged(ctx, skill, createFormSkill),
+        hasPlugin(ctx) ? 'present' : writeAsset(ctx, skill, createFormSkill, SHIPPED_SKILLS),
       ),
       ...projectWarning(ctx),
     ];
