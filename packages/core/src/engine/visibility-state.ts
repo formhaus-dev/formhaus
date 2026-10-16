@@ -6,18 +6,7 @@ import type { ValidatorFn } from '../validation';
 import { validateFields } from '../validation';
 import type { FormDefinition, FormField, FormGroup, FormNode, FormStep } from '../types';
 import { isVisible } from '../visibility';
-import {
-  isEntry,
-  isGroup,
-  isSection,
-  itemPath,
-  keepId,
-  itemsOf,
-  itemScope,
-  shownFields,
-  splitPath,
-  valueFields,
-} from '../visibility/nodes';
+import { isEntry, isGroup, isSection, itemPath, keepId, itemsOf, itemView, shownFields, splitPath, valueFields } from '../visibility/nodes';
 
 interface VisibilityCache {
   visibleSteps: FormStep[];
@@ -71,7 +60,7 @@ export function createVisibility(definition: FormDefinition) {
   const owner = (key: string) => parse(key)?.[0] ?? key;
 
   function itemFields(group: FormGroup, item: unknown, values: Values): FormField[] {
-    const scope = itemScope(group, item, path.scope(values));
+    const scope = itemView(group, item, path.scope(values));
     return group.fields.filter((field) => isVisible(field, scope));
   }
 
