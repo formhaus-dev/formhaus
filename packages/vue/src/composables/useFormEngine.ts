@@ -70,7 +70,10 @@ export function useFormEngine(
     get engine() {
       return engineRef.value;
     },
-    values: read('values'),
+    values: computed(() => {
+      version.value;
+      return engineRef.value.getValuesSnapshot();
+    }),
     errors: read('errors'),
     topLevelErrors: read('topLevelErrors'),
     fieldLoading: read('fieldLoading'),

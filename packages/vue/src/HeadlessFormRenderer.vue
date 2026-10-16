@@ -8,7 +8,7 @@ import {
   shouldApplyExternalErrors,
   warnMissingComponents,
 } from '@formhaus/core/internal';
-import { computed, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
 import DefaultSection from './DefaultSection.vue';
@@ -17,7 +17,7 @@ import { useFormId } from './composables/useFormId';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
 import { useNodeProps } from './composables/useNodeProps';
-import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
+import type { FormRendererEmits, FormRendererProps } from './types';
 
 const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2, confirmRemove: true });
 
@@ -76,11 +76,20 @@ const {
   submitting,
 } = form;
 
-onMounted(() => applySources(form.engine, props.initialValues));
-watch(
-  () => form.engine,
-  (engine) => applySources(engine, props.initialValues),
-);
+let stopValues = () => {};
+let emitted: object;
+const watchValues = (engine: typeof form.engine) => {
+  stopValues();
+  applySources(engine, props.initialValues);
+  const changed = () => {
+    if (values.value !== emitted) emit('valuesChange', (emitted = values.value));
+  };
+  changed();
+  stopValues = engine.subscribeValues(changed);
+};
+onMounted(() => watchValues(form.engine));
+watch(() => form.engine, watchValues);
+onBeforeUnmount(() => stopValues());
 
 let watchMissing: (() => void) | undefined;
 try {
@@ -155,11 +164,11 @@ const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, 
   focus: onFieldFocus,
 });
 
-const handle: FormRendererHandle = {
-  setValue: (key, value) => form.engine.setValue(key, value),
+defineExpose({
+  setValue: (key: string, value: unknown) => form.engine.setValue(key, value),
   getValues: () => ({ ...form.engine.values }),
-};
-defineExpose(handle);
+  values,
+});
 
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.definition.labels);
 

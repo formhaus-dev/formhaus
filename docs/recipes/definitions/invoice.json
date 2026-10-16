@@ -1,5 +1,6 @@
 {
   "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "formatVersion": "1.1",
   "id": "invoice",
   "title": "New invoice",
   "submit": { "label": "Create invoice" },
@@ -12,6 +13,20 @@
       "label": "Due date",
       "helperText": "14 days after the issue date until you change it",
       "validation": { "required": true }
+    },
+    {
+      "key": "lines",
+      "type": "group",
+      "label": "Lines",
+      "itemLabel": "Line {index}",
+      "addLabel": "Add line",
+      "defaultItems": 1,
+      "validation": { "required": true },
+      "fields": [
+        { "key": "description", "type": "text", "label": "Description", "validation": { "required": true } },
+        { "key": "quantity", "type": "number", "label": "Quantity", "defaultValue": 1, "validation": { "required": true, "min": 1 } },
+        { "key": "price", "type": "number", "label": "Unit price", "validation": { "required": true, "min": 0 } }
+      ]
     }
   ]
 }

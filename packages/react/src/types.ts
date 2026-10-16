@@ -108,6 +108,7 @@ export interface FormRendererProps extends FormEngineOptions {
   onSubmit: SubmitHandler;
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, allValues: Record<string, unknown>) => void;
+  onValuesChange?: (values: Readonly<Record<string, unknown>>) => void;
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;

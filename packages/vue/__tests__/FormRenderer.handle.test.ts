@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/vue';
 import { parseDefinition } from '@formhaus/core';
 import { describe, expect, it, vi } from 'vitest';
-import { defineComponent, h, ref } from 'vue';
+import { computed, defineComponent, h, ref } from 'vue';
 import invoiceJson from '../../../docs/recipes/definitions/invoice.json';
 import FormRenderer from '../src/FormRenderer.vue';
 import HeadlessFormRenderer from '../src/HeadlessFormRenderer.vue';
@@ -16,6 +16,8 @@ function addDays(date: string, days: number) {
   return next.toISOString().slice(0, 10);
 }
 
+type Line = { quantity?: number | null; price?: number | null };
+
 const Invoice = defineComponent({
   setup() {
     const form = ref<FormRendererHandle>();
@@ -24,7 +26,13 @@ const Invoice = defineComponent({
       if (key === 'dueDate') dueDateEdited = true;
       if (key === 'issueDate' && !dueDateEdited && typeof value === 'string' && value) form.value?.setValue('dueDate', addDays(value, 14));
     }
-    return () => h(FormRenderer, { ref: form, definition: invoice, onFieldChange });
+    const amount = computed(() =>
+      ((form.value?.values.lines as Line[] | undefined) ?? []).reduce((sum, line) => sum + (line.quantity ?? 0) * (line.price ?? 0), 0),
+    );
+    return () => [
+      h(FormRenderer, { ref: form, definition: invoice, onFieldChange }),
+      h('p', { 'data-testid': 'total' }, amount.value.toFixed(2)),
+    ];
   },
 });
 
@@ -37,7 +45,7 @@ describe('renderer handle', () => {
     handle.value!.setValue('client', 'Acme');
     const values = handle.value!.getValues();
     values.client = 'changed';
-    expect(handle.value!.getValues()).toEqual({ client: 'Acme' });
+    expect(handle.value!.getValues().client).toBe('Acme');
     expect(onFieldChange).not.toHaveBeenCalled();
   });
 
@@ -50,5 +58,13 @@ describe('renderer handle', () => {
     await fireEvent.update(input('Due date'), '2027-02-01');
     await fireEvent.update(input('Issue date'), '2027-01-10');
     expect(input('Due date').value).toBe('2027-02-01');
+  });
+
+  it('totals the invoice lines from the reactive handle values', async () => {
+    render(Invoice);
+    expect(screen.getByTestId('total').textContent).toBe('0.00');
+    await fireEvent.update(input('Unit price'), '12.5');
+    await fireEvent.update(input('Quantity'), '3');
+    expect(screen.getByTestId('total').textContent).toBe('37.50');
   });
 });
