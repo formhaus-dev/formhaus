@@ -1,5 +1,11 @@
 # @formhaus/core
 
+## 0.14.2
+
+### Patch Changes
+
+- Fixed `FormhausForm` with `initialForm` showing empty fields instead of the saved draft.
+
 ## 0.14.1
 
 ### Patch Changes
