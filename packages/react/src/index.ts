@@ -24,6 +24,7 @@ export type {
   FieldComponentMap,
   FieldComponentProps,
   FormRendererProps,
+  FormRendererHandle,
   FormActionsProps,
   FormStepProgressProps,
   FormStepStatus,

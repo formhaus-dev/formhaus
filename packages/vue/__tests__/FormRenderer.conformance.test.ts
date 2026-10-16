@@ -23,17 +23,24 @@ const containers = {
         h('div', [h('h3', props.title), slots.default?.()]),
   }),
   group: defineComponent({
-    props: { label: String, items: Array as PropType<GroupItemComponentProps[]>, canAdd: Boolean, add: Function as PropType<() => void> },
+    props: {
+      id: String,
+      label: String,
+      items: Array as PropType<GroupItemComponentProps[]>,
+      canAdd: Boolean,
+      add: Function as PropType<() => void>,
+    },
     setup: (props) => () =>
-      h('div', [
+      h('div', { id: props.id }, [
         h('span', `${props.label}: ${props.items!.length}`),
         ...props.items!.map((item) =>
-          h('div', { key: item.id }, [
+          h('div', { key: item.id, 'data-fh-group-item': '' }, [
+            h('span', { id: item.titleId, tabindex: -1 }, item.title),
             h('button', { type: 'button', onClick: item.remove }, `Drop ${item.title}`),
             h(item.fields as Component),
           ]),
         ),
-        h('button', { type: 'button', disabled: !props.canAdd, onClick: props.add }, 'More'),
+        h('button', { type: 'button', disabled: !props.canAdd, onClick: props.add, 'data-fh-group-add': '' }, 'More'),
       ]),
   }),
   confirmDialog: defineComponent({

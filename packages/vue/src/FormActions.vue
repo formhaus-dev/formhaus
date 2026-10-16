@@ -1,21 +1,10 @@
 <script setup lang="ts">
 import { type FormAction, isActionDisabled } from '@formhaus/core';
-import type { FormActionsProps } from './types';
+import { formActionsEmits, formActionsProps } from './props';
 
-const props = withDefaults(defineProps<FormActionsProps>(), {
-  showPrimary: undefined,
-  showBack: undefined,
-  showSkip: undefined,
-});
+const props = defineProps(formActionsProps);
 
-const emit = defineEmits<{
-  (e: 'submit'): void;
-  (e: 'next'): void;
-  (e: 'prev'): void;
-  (e: 'cancel'): void;
-  (e: 'skip'): void;
-  (e: 'primary'): void;
-}>();
+const emit = defineEmits(formActionsEmits);
 
 function isPrimaryDisabled(): boolean {
   return (

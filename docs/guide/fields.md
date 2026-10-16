@@ -419,7 +419,7 @@ In the definition:
 }
 ```
 
-If no component is registered for a type, the form shows "Unsupported field type."
+If no component is registered for a type, the form shows an "Unsupported field type" placeholder. In development the placeholder names the type, and the renderer warns once per type with the code `missing-component` and lists the registered types. The warning goes to `onWarning` when you pass it, or else to the console.
 
 Put the settings of a custom type in `props`. Core ignores them, and the component reads them from `field.props`:
 
@@ -502,13 +502,10 @@ export function CustomPhoneInput({ field, value, error, disabled, onChange, onBl
 
 ```vue
 <script setup lang="ts">
-import type { FormFieldProps } from '@formhaus/vue'
+import { formFieldEmits, formFieldProps } from '@formhaus/vue'
 
-const props = defineProps<FormFieldProps>()
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: unknown): void
-  (e: 'blur'): void
-}>()
+const props = defineProps(formFieldProps)
+const emit = defineEmits(formFieldEmits)
 </script>
 
 <template>
@@ -527,6 +524,8 @@ const emit = defineEmits<{
   </div>
 </template>
 ```
+
+`formFieldProps` and `formFieldEmits` are runtime declarations with full types, so the SFC compiler does not need to resolve a type from the package. `defineProps<FormFieldProps>()` fails in some setups because the compiler cannot follow the types of `@formhaus/vue` and `@formhaus/core`. See [Runtime props in Vue](/guide/custom-components#runtime-props-in-vue).
 
 `field` has everything from the definition: `key`, `type`, `label`, `placeholder`, `helperText`, `options`, `validation`. Full type in the [Definition Reference](/api/definition).
 

@@ -13,6 +13,7 @@ interface FormGroupControllerProps extends ControllerProps {
   options: Record<string, FieldOption[]>;
   labels?: FormRendererProps['labels'];
   confirmRemove?: boolean;
+  onItemsChange: (key: string, apply: () => boolean) => boolean;
 }
 
 type Focus = { index: number; added: boolean } | { id: string } | null;
@@ -23,6 +24,7 @@ export const FormGroupController = memo(function FormGroupController({
   options,
   labels,
   confirmRemove = true,
+  onItemsChange,
   ...props
 }: FormGroupControllerProps) {
   const { engine, formId } = props;
@@ -49,13 +51,13 @@ export const FormGroupController = memo(function FormGroupController({
   });
 
   const add = () => {
-    if (!engine.addItem(group.key)) return;
+    if (!onItemsChange(group.key, () => engine.addItem(group.key))) return;
     focus.current = { index: items.length, added: true };
     setStatus(label('itemAdded', { item: title(items.length) }));
   };
   const drop = (index: number) => {
     setConfirming(null);
-    if (!engine.removeItem(group.key, index)) return;
+    if (!onItemsChange(group.key, () => engine.removeItem(group.key, index))) return;
     focus.current = { index, added: false };
     setStatus(label('itemRemoved', { item: title(index) }));
   };

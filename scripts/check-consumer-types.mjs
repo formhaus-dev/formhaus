@@ -24,7 +24,8 @@ function link(name, from) {
 
 const files = {
   'package.json': JSON.stringify({ name: 'consumer', private: true, type: 'module' }),
-  'src/react.tsx': `import { FormRenderer, HeadlessFormRenderer, TextField, type FieldComponentMap } from '@formhaus/react';
+  'src/react.tsx': `import { createRef } from 'react';
+import { FormRenderer, HeadlessFormRenderer, TextField, type FieldComponentMap, type FormRendererHandle } from '@formhaus/react';
 import { FormhausForm, CloudError } from '@formhaus/react/cloud';
 import { useLocalizedForm } from '@formhaus/react/i18n';
 import { localize, type Overlay } from '@formhaus/core/i18n';
@@ -32,9 +33,11 @@ import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/co
 import type { FormDefinition } from '@formhaus/core';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
+export const handle = createRef<FormRendererHandle>();
 export const views = [
   <FormRenderer definition={definition} onSubmit={async () => {}} />,
   <HeadlessFormRenderer definition={definition} onSubmit={async () => {}} />,
+  <FormRenderer ref={handle} definition={definition} onSubmit={async () => {}} />,
   <FormhausForm id="abc" />,
 ];
 export const extras = [TextField, CloudError];
@@ -54,6 +57,50 @@ export function Localized() {
   const form = useLocalizedForm(definition, { translate: (key, params, fallback) => fallback, prefix: false });
   return <FormRenderer {...form} onSubmit={() => {}} />;
 }
+`,
+  'src/vue-props.ts': `import { defineComponent, h, type ExtractPublicPropTypes } from 'vue';
+import * as Formhaus from '@formhaus/vue';
+
+type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
+type Props<T> = ExtractPublicPropTypes<T>;
+export const same: [
+  Same<Props<typeof Formhaus.formFieldProps>, Formhaus.FormFieldProps>,
+  Same<Props<typeof Formhaus.sectionComponentProps>, Formhaus.SectionComponentProps>,
+  Same<Props<typeof Formhaus.groupComponentProps>, Formhaus.GroupComponentProps>,
+  Same<Props<typeof Formhaus.groupItemComponentProps>, Formhaus.GroupItemComponentProps>,
+  Same<Props<typeof Formhaus.confirmDialogComponentProps>, Formhaus.ConfirmDialogComponentProps>,
+  Same<Props<typeof Formhaus.formActionsProps>, Formhaus.FormActionsProps>,
+  Same<Props<typeof Formhaus.formStepProgressProps>, Formhaus.FormStepProgressProps>,
+  Same<keyof Props<typeof Formhaus.formFieldProps>, keyof Formhaus.FormFieldProps>,
+  Same<keyof Props<typeof Formhaus.sectionComponentProps>, keyof Formhaus.SectionComponentProps>,
+  Same<keyof Props<typeof Formhaus.groupComponentProps>, keyof Formhaus.GroupComponentProps>,
+  Same<keyof Props<typeof Formhaus.groupItemComponentProps>, keyof Formhaus.GroupItemComponentProps>,
+  Same<keyof Props<typeof Formhaus.confirmDialogComponentProps>, keyof Formhaus.ConfirmDialogComponentProps>,
+  Same<keyof Props<typeof Formhaus.formActionsProps>, keyof Formhaus.FormActionsProps>,
+  Same<keyof Props<typeof Formhaus.formStepProgressProps>, keyof Formhaus.FormStepProgressProps>,
+] = [true, true, true, true, true, true, true, true, true, true, true, true, true, true];
+export const TypedField = defineComponent({
+  props: Formhaus.formFieldProps,
+  emits: Formhaus.formFieldEmits,
+  setup(props, { emit }) {
+    const key: string = props.field.key;
+    const disabled: boolean = props.disabled;
+    return () => h('input', { id: props.id ?? key, disabled, onInput: () => emit('update:modelValue', props.modelValue), onBlur: () => emit('blur') });
+  },
+});
+export const TypedActions = defineComponent({
+  props: Formhaus.formActionsProps,
+  emits: Formhaus.formActionsEmits,
+  setup(props, { emit }) {
+    const back: Formhaus.FormActionsProps['backAction'] = props.backAction;
+    return () => h('button', { 'data-variant': back ? back.variant : undefined, onClick: () => emit('prev') }, props.backLabel);
+  },
+});
+export const components: Formhaus.FieldComponentMap = { 'x-field': TypedField };
+export const handles: Formhaus.FormRendererHandle[] = [
+  {} as InstanceType<typeof Formhaus.FormRenderer>,
+  {} as InstanceType<typeof Formhaus.HeadlessFormRenderer>,
+];
 `,
   'src/vue.ts': `import { createApp, h } from 'vue';
 import * as Formhaus from '@formhaus/vue';

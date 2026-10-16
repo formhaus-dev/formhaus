@@ -133,3 +133,8 @@ export interface FieldEmits {
 export interface CommitFieldEmits extends FieldEmits {
   (e: 'commit', value: unknown): void;
 }
+
+export interface FormRendererHandle {
+  setValue(key: string, value: unknown): void;
+  getValues(): Record<string, unknown>;
+}

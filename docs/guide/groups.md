@@ -124,6 +124,7 @@ React and Vue render a group as a fieldset with one labelled card per item:
 - Remove on an item with answers opens a modal dialog first: `Remove Participant 2?`, a short warning, then Cancel and `Remove Participant 2`. Focus starts on Cancel. Escape, Cancel, the close button or a click on the backdrop closes it and returns focus to the item's Remove button. Empty items, or items that hold only their defaults, go at once. Turn it off with `confirmRemove={false}` (React) or `:confirm-remove="false"` (Vue).
 - Remove focuses the heading of the next item, or Add when no item follows.
 - A polite status region announces `{item} added` and `{item} removed`.
+- Add and Remove call `onFieldChange` (React) or emit `fieldChange` (Vue) with the group key, the new items and all values.
 - After a failed Submit, focus goes to the first invalid field. A count error focuses Add.
 - Error summary links point at item fields and read `Email (Participant 2): Enter a valid email`.
 
@@ -136,18 +137,18 @@ Pass `group` and `groupItem` in `components` to own the markup. Field components
 ```tsx
 import type { GroupComponentProps } from '@formhaus/react';
 
-function Participants({ label, items, canAdd, add }: GroupComponentProps) {
+function Participants({ id, label, items, canAdd, add }: GroupComponentProps) {
   return (
-    <section>
+    <section id={id}>
       <h3>{label}</h3>
       {items.map((item) => (
-        <article key={item.id} aria-labelledby={item.titleId}>
+        <article key={item.id} aria-labelledby={item.titleId} data-fh-group-item>
           <h4 id={item.titleId} tabIndex={-1}>{item.title}</h4>
           {item.children}
           {item.canRemove && <button type="button" onClick={item.remove}>{item.removeLabel}</button>}
         </article>
       ))}
-      {canAdd && <button type="button" onClick={add}>Add</button>}
+      {canAdd && <button type="button" onClick={add} data-fh-group-add>Add</button>}
     </section>
   );
 }
@@ -163,11 +164,21 @@ function Participants({ label, items, canAdd, add }: GroupComponentProps) {
 | `addLabel`, `removeLabel`, `status`, `disabled` | Button texts, the live announcement and the busy state |
 | `ItemComponent` (React), `itemComponent` (Vue) | The resolved `groupItem` component |
 
-Give the item title the `titleId` id and `tabindex="-1"`, the item's Remove button the id `${titleId}-remove`, and the Add button the `fh-group__add` class, so focus moves after Add and Remove. `DefaultGroup` and `DefaultGroupItem` are exported for wrapping.
+Focus after Add and Remove finds its targets by these ids and attributes:
+
+| Element | Mark it with |
+|---|---|
+| Group wrapper | the `id` prop |
+| Item wrapper | `data-fh-group-item` |
+| Item title | the `titleId` id and `tabindex="-1"` |
+| Item Remove button | the id `${titleId}-remove` |
+| Add button | `data-fh-group-add` |
+
+Add focuses the first field inside the new item wrapper, or its title when the item has no field. Remove focuses the title of the next item, or the Add button. The `fh-group__item` and `fh-group__add` classes work in place of the attributes. `DefaultGroup` and `DefaultGroupItem` are exported for wrapping.
 
 The `confirmDialog` entry replaces the remove dialog. It renders while a removal waits for an answer and gets `id`, `open`, `title`, `description`, `confirmLabel`, `cancelLabel`, `confirm()` and `cancel()`. `DefaultConfirmDialog` is a native `<dialog>` opened with `showModal()`.
 
-In Vue, render the item fields with `<component :is="item.fields" />`.
+In Vue, render the item fields with `<component :is="item.fields" />`, and declare props with `defineProps(groupComponentProps)` and `defineProps(groupItemComponentProps)`. See [Runtime props in Vue](/guide/custom-components#runtime-props-in-vue).
 
 ## Without a renderer
 

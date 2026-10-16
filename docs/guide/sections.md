@@ -90,7 +90,7 @@ const Section = ({ title, description, children }: SectionComponentProps) => (
 <FormRenderer definition={definition} components={{ section: Section }} onSubmit={send} />;
 ```
 
-It receives `id`, `section`, `title`, `description` and `descriptionId`, and the visible fields as `children` (React) or the default slot (Vue). `DefaultSection` is exported for wrapping.
+It receives `id`, `section`, `title`, `description` and `descriptionId`, and the visible fields as `children` (React) or the default slot (Vue). In Vue, declare the props with `defineProps(sectionComponentProps)`. `DefaultSection` is exported for wrapping.
 
 ## Translations
 

@@ -1,6 +1,14 @@
 import type { FormEngineOptions } from '@formhaus/core';
-import { applySources, canMoveFocus, errorDomId, focusField, restoreFocus, shouldApplyExternalErrors } from '@formhaus/core/internal';
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import {
+  applySources,
+  canMoveFocus,
+  errorDomId,
+  focusField,
+  restoreFocus,
+  shouldApplyExternalErrors,
+  warnMissingComponents,
+} from '@formhaus/core/internal';
+import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
@@ -9,7 +17,7 @@ import { FormTopLevelErrors } from './FormTopLevelErrors';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import { useRendererActions } from './hooks/useRendererActions';
-import type { FormRendererProps } from './types';
+import type { FormRendererHandle, FormRendererProps } from './types';
 
 let nextKey = 0;
 const engineKeys = new WeakMap<object, number>();
@@ -20,7 +28,7 @@ function engineKey(engine: object): number {
   return key;
 }
 
-export function HeadlessFormRenderer(props: FormRendererProps) {
+export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererProps>(function HeadlessFormRenderer(props, ref) {
   const {
     definition,
     initialValues,
@@ -54,9 +62,15 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
   const version = useFormSnapshot(engine);
   const previousStep = useRef(engine.currentStep?.id);
   const actions = useRendererActions(engine, props);
+  useImperativeHandle(ref, () => ({ setValue: (key, value) => engine.setValue(key, value), getValues: () => ({ ...engine.values }) }), [
+    engine,
+  ]);
   const handledInvalid = useRef(0);
 
   useEffect(() => applySources(engine, initialValues), [engine]);
+
+  const [warned] = useState(() => new Set<string>());
+  useEffect(() => warnMissingComponents(definition, components, warned, props.onWarning), [definition, components]);
 
   const appliedErrors = useRef<{ engine: typeof engine; errors: Record<string, string> } | null>(null);
   useEffect(() => {
@@ -147,6 +161,7 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
         labels={props.labels}
         confirmRemove={props.confirmRemove}
         onChange={actions.update}
+        onItemsChange={actions.changeItems}
         onCommit={actions.commit}
         onBlur={handleFieldBlur}
         onFocus={handleFieldFocus}
@@ -166,4 +181,4 @@ export function HeadlessFormRenderer(props: FormRendererProps) {
       />
     </form>
   );
-}
+});

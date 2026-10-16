@@ -4,17 +4,27 @@ import FormActions from './FormActions.vue';
 import FormStepProgress from './FormStepProgress.vue';
 import HeadlessFormRenderer from './HeadlessFormRenderer.vue';
 import { withDefaultFields } from './constants';
-import type { FormRendererEmits, FormRendererProps } from './types';
+import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
 
 const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true });
 
 const emit = defineEmits<FormRendererEmits>();
 
 const components = computed(() => withDefaultFields(props.components));
+let inner: FormRendererHandle | null = null;
+const handle: FormRendererHandle = {
+  setValue: (key, value) => inner?.setValue(key, value),
+  getValues: () => inner?.getValues() ?? {},
+};
+const bind = (instance: unknown) => {
+  inner = instance as FormRendererHandle | null;
+};
+defineExpose(handle);
 </script>
 
 <template>
   <HeadlessFormRenderer
+    :ref="bind"
     v-bind="props"
     :components="components"
     :actions-component="props.actionsComponent ?? FormActions"

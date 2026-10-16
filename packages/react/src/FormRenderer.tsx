@@ -1,19 +1,23 @@
-import { useMemo } from 'react';
+import { forwardRef, useMemo } from 'react';
 import { FormActions } from './FormActions';
 import { FormStepProgress } from './FormStepProgress';
 import { HeadlessFormRenderer } from './HeadlessFormRenderer';
 import { withDefaultFields } from './defaultFieldComponents';
-import type { FormRendererProps } from './types';
+import type { FormRendererHandle, FormRendererProps } from './types';
 
-export function FormRenderer({ components, actionsComponent, progressComponent, ...props }: FormRendererProps) {
+export const FormRenderer = forwardRef<FormRendererHandle, FormRendererProps>(function FormRenderer(
+  { components, actionsComponent, progressComponent, ...props },
+  ref,
+) {
   const fieldComponents = useMemo(() => withDefaultFields(components), [components]);
 
   return (
     <HeadlessFormRenderer
       {...props}
+      ref={ref}
       components={fieldComponents}
       actionsComponent={actionsComponent ?? FormActions}
       progressComponent={progressComponent ?? FormStepProgress}
     />
   );
-}
+});

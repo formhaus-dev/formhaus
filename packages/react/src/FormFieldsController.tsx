@@ -13,6 +13,7 @@ interface FormFieldsControllerProps extends ControllerProps {
   optionsProviders?: Record<string, OptionsProvider>;
   labels?: FormRendererProps['labels'];
   confirmRemove?: boolean;
+  onItemsChange: (key: string, apply: () => boolean) => boolean;
 }
 
 export const FormFieldsController = memo(function FormFieldsController({
@@ -20,6 +21,7 @@ export const FormFieldsController = memo(function FormFieldsController({
   optionsProviders,
   labels,
   confirmRemove,
+  onItemsChange,
   ...props
 }: FormFieldsControllerProps) {
   const { engine, formId } = props;
@@ -42,6 +44,7 @@ export const FormFieldsController = memo(function FormFieldsController({
           options={resolvedOptions}
           labels={labels}
           confirmRemove={confirmRemove}
+          onItemsChange={onItemsChange}
         />
       );
     if (!isSection(node))

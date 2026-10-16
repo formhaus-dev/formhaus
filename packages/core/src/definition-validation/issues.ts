@@ -29,6 +29,7 @@ export type DefinitionIssueCode =
   | 'unknown-field-type'
   | 'custom-type-name'
   | 'definition-reset'
+  | 'missing-component'
   | 'unknown-validator'
   | 'skip-unreachable'
   | 'route-fallthrough'

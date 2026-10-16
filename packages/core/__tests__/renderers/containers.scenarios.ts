@@ -103,6 +103,26 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
     await waitFor(() => expect(active()).toBe(button('Add')));
   });
 
+  it('reports Add and Remove through onFieldChange with the new items', async () => {
+    const calls: unknown[][] = [];
+    const onFieldChange = (...call: unknown[]) => calls.push(JSON.parse(JSON.stringify(call)));
+    harness.mount({
+      definition: team,
+      initialValues: { crew: [{ name: 'A' }, { name: 'B' }] },
+      confirmRemove: false,
+      onFieldChange,
+      onSubmit: () => {},
+    });
+    await harness.click(button('Add'));
+    await waitFor(() => expect(names()).toHaveLength(3));
+    await harness.click(button('Remove Crew 1'));
+    await waitFor(() => expect(names()).toHaveLength(2));
+    expect(calls).toEqual([
+      ['crew', [{ name: 'A' }, { name: 'B' }, {}], { crew: [{ name: 'A' }, { name: 'B' }, {}] }],
+      ['crew', [{ name: 'B' }, {}], { crew: [{ name: 'B' }, {}] }],
+    ]);
+  });
+
   it('keeps radio groups of items apart and shows item fields by item conditions', async () => {
     harness.mount({ definition: event, initialValues: { people: [{ name: 'A' }, { name: 'B' }] }, onSubmit: () => {} });
     const radios = screen.getAllByRole('radio', { name: 'Plan B' }) as HTMLInputElement[];
@@ -169,6 +189,24 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
     await harness.type(names()[0], 'Ada');
     await harness.click(button('Send'));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ company: true, people: [{ name: 'Ada' }] }, []));
+  });
+
+  it('moves focus in custom group markup marked with data-fh-group-item and data-fh-group-add', async () => {
+    harness.mount({
+      definition: team,
+      components: harness.containers,
+      initialValues: { crew: [{ name: 'A' }, { name: 'B' }] },
+      onSubmit: () => {},
+    });
+    await harness.click(button('More'));
+    await waitFor(() => expect(names()).toHaveLength(3));
+    await waitFor(() => expect(active()).toBe(names()[2]));
+    await harness.click(button('Drop Crew 3'));
+    await waitFor(() => expect(names()).toHaveLength(2));
+    await waitFor(() => expect(active()).toBe(button('More')));
+    await harness.click(button('More'));
+    await harness.click(button('Drop Crew 1'));
+    await waitFor(() => expect(active()?.textContent).toBe('Crew 1'));
   });
 
   it('keeps focus and the same input while typing in sections and group items', async () => {

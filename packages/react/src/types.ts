@@ -138,3 +138,8 @@ export interface FormRendererProps extends FormEngineOptions {
   headingLevel?: HeadingLevel;
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
 }
+
+export interface FormRendererHandle {
+  setValue(key: string, value: unknown): void;
+  getValues(): Record<string, unknown>;
+}

@@ -39,6 +39,12 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     form.engine.setValue(key, value);
     emit('fieldChange', key, value, form.engine.values);
   }
+  function changeItems(key: string, apply: () => boolean) {
+    const engine = form.engine;
+    if (props.loading || engine.stepValidating || engine.submitting || !apply()) return false;
+    emit('fieldChange', key, engine.values[key], engine.values);
+    return true;
+  }
   function commit(key: string, value: unknown) {
     const engine = form.engine;
     if (props.loading || engine.stepValidating || engine.submitting) return;
@@ -81,5 +87,5 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
         }),
       );
     });
-  return { update, commit, next, prev, skip, submit, actionError, invalidAttempts };
+  return { update, changeItems, commit, next, prev, skip, submit, actionError, invalidAttempts };
 }

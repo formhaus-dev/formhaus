@@ -170,6 +170,8 @@ const withPlans = computed(() => addPlanOptions(definition, props.plans));
 
 In development, the renderer warns when it gets a new definition object with the same content as the previous one.
 
+To change a value after the form mounts, put a ref on the renderer. `FormRenderer` and `HeadlessFormRenderer` expose `setValue(key, value)` and `getValues()`, typed as `FormRendererHandle`. `setValue` does not call `onFieldChange` (React) or emit `fieldChange` (Vue). See [Derived values](/recipes/derived-values).
+
 ## How it works
 
 ```

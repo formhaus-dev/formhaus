@@ -1,0 +1,17 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "id": "invoice",
+  "title": "New invoice",
+  "submit": { "label": "Create invoice" },
+  "fields": [
+    { "key": "client", "type": "text", "label": "Client", "validation": { "required": true } },
+    { "key": "issueDate", "type": "date", "label": "Issue date", "validation": { "required": true } },
+    {
+      "key": "dueDate",
+      "type": "date",
+      "label": "Due date",
+      "helperText": "14 days after the issue date until you change it",
+      "validation": { "required": true }
+    }
+  ]
+}

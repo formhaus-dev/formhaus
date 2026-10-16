@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { SectionComponentProps } from './types';
+import { sectionComponentProps } from './props';
 
-defineProps<SectionComponentProps>();
+defineProps(sectionComponentProps);
 </script>
 
 <template>
