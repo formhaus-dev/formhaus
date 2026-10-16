@@ -87,6 +87,7 @@ export default defineConfig({
           { text: 'Flat API', link: '/recipes/flat-api' },
           { text: 'Conditional fields', link: '/recipes/conditional-fields' },
           { text: 'Derived values', link: '/recipes/derived-values' },
+          { text: 'Nested sections', link: '/recipes/nested-sections' },
           { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
           { text: 'Headless engine', link: '/recipes/headless-engine' },
           { text: 'Svelte 5', link: '/recipes/svelte' },
