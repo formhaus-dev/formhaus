@@ -1,4 +1,4 @@
-import { isGroup, type FormField, type FormSection } from '@formhaus/core';
+import { isGroup, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
 import { fieldDomId, type OptionSource, optionSources, providedOptions } from '@formhaus/core/internal';
 import { computed, shallowRef, watch, type Ref } from 'vue';
 import { useFieldOptions } from './useFieldOptions';
@@ -11,6 +11,29 @@ interface Handlers {
   changeItems: (key: string, apply: () => boolean) => boolean;
   blur: (key: string) => void;
   focus: (key: string) => void;
+}
+
+interface GroupMemo {
+  items: GroupItem[];
+  errors: Record<string, string>;
+  loading: Record<string, boolean>;
+}
+
+const sameItems = (a: GroupItem[], b: GroupItem[]) =>
+  a.length === b.length &&
+  a.every(
+    (item, index) =>
+      item.id === b[index].id &&
+      item.fields.length === b[index].fields.length &&
+      item.fields.every((field, at) => field === b[index].fields[at]),
+  );
+
+function owned<T>(record: Readonly<Record<string, T>>, key: string, previous?: Record<string, T>): Record<string, T> {
+  const next: Record<string, T> = {};
+  for (const path of Object.keys(record)) if (path === key || path.startsWith(`${key}.`)) next[path] = record[path];
+  const keys = Object.keys(next);
+  const same = previous && keys.length === Object.keys(previous).length && keys.every((path) => previous[path] === next[path]);
+  return same ? previous : next;
 }
 
 export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps, formId: string, disabled: Ref<boolean>, on: Handlers) {
@@ -29,6 +52,18 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
     () => props.optionsProviders,
   );
   const options = computed(() => providedOptions(sources.value, props.optionsProviders, loaded.value));
+  const groups = new Map<string, GroupMemo>();
+  const groupState = (key: string): GroupMemo => {
+    const previous = groups.get(key);
+    const items = form.engine.items(key);
+    const next = {
+      items: previous && sameItems(previous.items, items) ? previous.items : items,
+      errors: owned(errors.value, key, previous?.errors),
+      loading: owned(fieldLoading.value, key, previous?.loading),
+    };
+    groups.set(key, next);
+    return next;
+  };
   return {
     sectionProps(section: FormSection) {
       const id = fieldDomId(formId, section.key, form.engine.definition);
@@ -42,14 +77,15 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
     },
     nodeProps(field: FormField) {
       if (isGroup(field)) {
+        const state = groupState(field.key);
         return {
           engine: form.engine,
           formId,
           group: field,
-          items: form.engine.items(field.key),
+          items: state.items,
           value: values.value[field.key],
-          errors: { ...errors.value },
-          fieldLoading: { ...fieldLoading.value },
+          errors: state.errors,
+          fieldLoading: state.loading,
           disabled: disabled.value,
           components: props.components,
           labels: props.labels,
