@@ -81,7 +81,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   function show(form: PublishedForm) {
     submitter = submitterFor(form);
     const draft = options.draftStore?.load(options.id, form.version) ?? null;
-    update({ ...cloudStateFor(form), revision: state.revision, attempt: state.attempt, initialValues: draft });
+    update({ ...cloudStateFor(form), revision: state.revision + (draft ? 1 : 0), attempt: state.attempt, initialValues: draft });
   }
 
   async function refresh(error: CloudError, sent: Record<string, unknown>) {
