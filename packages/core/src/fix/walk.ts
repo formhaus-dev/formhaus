@@ -1,4 +1,5 @@
 import type { DefinitionIssue } from '../definition-validation/issues';
+import { isEntry, itemsOf } from '../visibility/nodes';
 import { parsePointer, type PatchOperation } from './patch';
 
 export interface DefinitionFix {
@@ -9,8 +10,6 @@ export interface DefinitionFix {
 
 export type Entry = Record<string, unknown>;
 
-export const isEntry = (value: unknown): value is Entry => typeof value === 'object' && value !== null && !Array.isArray(value);
-export const list = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);
 export const text = (value: unknown) => (typeof value === 'string' ? value : undefined);
 const strings = (values: unknown[]) => values.filter((value): value is string => typeof value === 'string');
 
@@ -26,16 +25,16 @@ export const last = (path: string) => parsePointer(path).pop() ?? '';
 export const child = (path: string, key: string) => `${path}/${key.replace(/~/g, '~0').replace(/\//g, '~1')}`;
 
 function flatten(items: unknown): Entry[] {
-  return list(items).flatMap((item) => (isEntry(item) ? [item, ...flatten(item.fields)] : []));
+  return itemsOf(items).flatMap((item) => (isEntry(item) ? [item, ...flatten(item.fields)] : []));
 }
 
 function fields(definition: Entry): Entry[] {
-  return [...flatten(definition.fields), ...list(definition.steps).flatMap((step) => flatten(isEntry(step) ? step.fields : undefined))];
+  return [...flatten(definition.fields), ...itemsOf(definition.steps).flatMap((step) => flatten(isEntry(step) ? step.fields : undefined))];
 }
 
 export const keysOf = (definition: Entry) => strings(fields(definition).map((field) => field.key));
-export const stepIds = (definition: Entry) => strings(list(definition.steps).map((step) => (isEntry(step) ? step.id : undefined)));
-export const valuesOf = (options: unknown) => strings(list(options).map((option) => (isEntry(option) ? option.value : undefined)));
+export const stepIds = (definition: Entry) => strings(itemsOf(definition.steps).map((step) => (isEntry(step) ? step.id : undefined)));
+export const valuesOf = (options: unknown) => strings(itemsOf(options).map((option) => (isEntry(option) ? option.value : undefined)));
 
 export function references(definition: Entry): Set<string> {
   const found = new Set<string>();
@@ -62,7 +61,7 @@ export function conditionValues(definition: Entry, key: string): unknown[] {
     if (Array.isArray(node)) {
       for (const item of node) {
         if ((name === 'show' || name === 'showAny' || name === 'disabled') && isEntry(item) && item.field === key) {
-          found.push(item.eq, item.neq, ...list(item.in), ...list(item.notIn));
+          found.push(item.eq, item.neq, ...itemsOf(item.in), ...itemsOf(item.notIn));
         }
         visit(item);
       }

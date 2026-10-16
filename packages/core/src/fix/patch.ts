@@ -1,3 +1,5 @@
+import { hasOwn } from '../visibility/nodes';
+
 export type PatchOperation =
   | { op: 'add' | 'replace'; path: string; value: unknown }
   | { op: 'remove'; path: string }
@@ -25,9 +27,7 @@ export function parsePointer(pointer: string): string[] {
 const isContainer = (value: unknown): value is Container => typeof value === 'object' && value !== null;
 
 function has(container: Container, token: string): boolean {
-  return Array.isArray(container)
-    ? /^(0|[1-9]\d*)$/.test(token) && Number(token) < container.length
-    : Object.prototype.hasOwnProperty.call(container, token);
+  return Array.isArray(container) ? /^(0|[1-9]\d*)$/.test(token) && Number(token) < container.length : hasOwn(container, token);
 }
 
 function parentOf(root: unknown, pointer: string): [Container, string] {
