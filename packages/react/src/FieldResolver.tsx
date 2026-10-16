@@ -34,11 +34,11 @@ export function FieldResolver({
   const Component = components?.[field.type] as ComponentType<FieldComponentProps> | undefined;
 
   if (!Component) {
-    return (
-      <div className="fh-field--unsupported">
-        Unsupported field type{typeof process !== 'undefined' && process.env.NODE_ENV !== 'production' && `: ${field.type}`}
-      </div>
-    );
+    let typeName = '';
+    try {
+      if (process.env.NODE_ENV !== 'production') typeName = `: ${field.type}`;
+    } catch {}
+    return <div className="fh-field--unsupported">Unsupported field type{typeName}</div>;
   }
 
   return (

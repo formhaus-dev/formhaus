@@ -6,7 +6,10 @@ import type { FieldResolverProps } from './types';
 const props = defineProps<FieldResolverProps>();
 const emit = defineEmits(formFieldEmits);
 
-const development = typeof process !== 'undefined' && process.env.NODE_ENV !== 'production';
+let development = false;
+try {
+  development = process.env.NODE_ENV !== 'production';
+} catch {}
 const fieldComponent = computed<Component | null>(() => props.components?.[props.field.type] ?? null);
 </script>
 
