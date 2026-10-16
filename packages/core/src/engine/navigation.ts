@@ -55,7 +55,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
     const writes = written();
     if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues) {
       const steps = engine.visibleSteps;
-      const kept = edited();
+      const kept = new Set([...edited(), ...writes]);
       const current = engine.values;
       engine.state.values = { ...values };
       for (const key of kept) {

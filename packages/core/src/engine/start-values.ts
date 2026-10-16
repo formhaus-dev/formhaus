@@ -38,10 +38,10 @@ export function createStartValues(groups: FormGroup[]) {
       for (const key of Object.keys(seeds)) memory.set(key, undefined);
     },
 
-    remember(key: string, value: unknown): void {
+    remember(key: string, value: unknown, written = false): void {
       if (!remembering) return;
       memory.set(key, value);
-      writes?.add(key);
+      if (written) writes?.add(key);
     },
 
     watchWrites(): () => Set<string> {

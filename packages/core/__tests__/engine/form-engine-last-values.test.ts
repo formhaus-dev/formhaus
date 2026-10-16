@@ -153,6 +153,55 @@ describe('last values of fields shown again', () => {
     expect(engine.values).toEqual({ on: true });
   });
 
+  it('keeps a clear of a shown field made while a rejected Skip was pending', async () => {
+    const definition: FormDefinition = {
+      ...finalSkip,
+      steps: [finalSkip.steps![0], { ...finalSkip.steps![1], fields: [{ key: 'code', type: 'text', label: 'Code' }] }],
+    };
+    const engine = new FormEngine(definition, { on: true });
+    await engine.next();
+    engine.setValue('code', 'B2');
+    let reject = () => {};
+    const skipping = engine.skip(() => new Promise((resolve) => (reject = () => resolve({ ok: false }))));
+    engine.setValue('code', undefined);
+    reject();
+    expect(await skipping).toBe(false);
+    let sent: Record<string, unknown> = {};
+    await engine.submit(async (values) => {
+      sent = values;
+    });
+    expect(sent.code).toBeUndefined();
+  });
+
+  it('brings back the value from before Skip when a pending Skip edit hides the field again', async () => {
+    const definition: FormDefinition = {
+      ...finalSkip,
+      steps: [
+        finalSkip.steps![0],
+        {
+          ...finalSkip.steps![1],
+          fields: [
+            { key: 'a', type: 'checkbox', label: 'A', defaultValue: true },
+            { key: 'd', type: 'text', label: 'D', defaultValue: 'd0', show: [{ field: 'a', eq: true }] },
+          ],
+        },
+      ],
+    };
+    const engine = new FormEngine(definition, { on: true });
+    await engine.next();
+    engine.setValue('d', 'hello');
+    engine.setValue('a', false);
+    let reject = () => {};
+    const skipping = engine.skip(() => new Promise((resolve) => (reject = () => resolve({ ok: false }))));
+    expect(engine.values.d).toBe('d0');
+    engine.setValue('a', false);
+    reject();
+    expect(await skipping).toBe(false);
+    expect(engine.values).toEqual({ on: true, a: false });
+    engine.setValue('a', true);
+    expect(engine.values.d).toBe('hello');
+  });
+
   it('forgets a removed item', () => {
     const engine = new FormEngine(crew, { on: true, crew: [{ kind: 'x' }, { kind: 'x' }] });
     engine.setValue('crew.0.count', 4);
