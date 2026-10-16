@@ -96,7 +96,7 @@ describe('sections and groups', () => {
       answers: { company: 'Acme', participants: [{ name: ' Ada ', email: 'ada@example.com', dietNote: 'x', extra: 1 }] },
     });
     expect(result.wouldSubmit).toBe(true);
-    expect(result.submitValues).toEqual({ company: 'Acme', participants: [{ name: 'Ada', email: 'ada@example.com' }] });
+    expect(result.submitValues).toEqual({ company: 'Acme', participants: [{ name: 'Ada', email: 'ada@example.com', diet: 'none' }] });
   });
 
   it('builds a translation template with section and group addresses', () => {

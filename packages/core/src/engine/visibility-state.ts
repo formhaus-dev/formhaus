@@ -193,16 +193,19 @@ export function createVisibility(definition: FormDefinition) {
     reconcileHidden(values: Values, errors: Record<string, string>, initial = false): Set<string> {
       if (initial) starts.resetStarts(values);
       path.invalidate();
-      const queue = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
+      const dependents = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
+      const queue = [...dependents];
       const queued = new Set(queue);
       const cleared = new Set<string>();
       const held = (key: string) => values[key] !== undefined || errors[key] !== undefined;
       const mark = (key: string) => {
         path.invalidate();
         cleared.add(key);
-        if (queued.has(key)) return;
-        queued.add(key);
-        queue.push(key);
+        for (const next of routeFields.has(key) ? [...dependents, key] : [key]) {
+          if (queued.has(next)) continue;
+          queued.add(next);
+          queue.push(next);
+        }
       };
       const clear = (key: string) => {
         delete values[key];

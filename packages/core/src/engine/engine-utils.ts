@@ -1,6 +1,7 @@
 import type { FormDefinition, FormField } from '../types';
 import type { EngineState } from './runtime-internals';
-import { isGroup, topNodes, valueFields } from '../visibility/nodes';
+import { isPlainEntry } from '../validation/type-checks';
+import { isGroup, keepId, topNodes, valueFields } from '../visibility/nodes';
 
 export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
 
@@ -30,6 +31,11 @@ export function createValues(fields: FormField[], initialValues?: Record<string,
   const source = initialValues ?? {};
   for (const key of Object.keys(source)) {
     if (key !== '__proto__') values[key] = source[key];
+  }
+  for (const group of fields.filter(isGroup)) {
+    const items = values[group.key];
+    if (items === source[group.key] && Array.isArray(items))
+      values[group.key] = items.map((item) => (isPlainEntry(item) ? keepId(item, createValues(group.fields, item)) : item));
   }
   return values;
 }

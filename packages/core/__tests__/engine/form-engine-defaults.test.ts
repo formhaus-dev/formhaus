@@ -242,3 +242,68 @@ describe('defaults of fields that start hidden or are shown again', () => {
     expect(result.errors).toHaveProperty(['crew.0.count']);
   });
 });
+
+describe('defaults of item fields and of steps reached through restored routes', () => {
+  const crew: FormDefinition = {
+    id: 'crew',
+    title: 'Crew',
+    submit: { label: 'Send' },
+    fields: [
+      { key: 'on', type: 'checkbox', label: 'On' },
+      { key: 'partySize', type: 'number', label: 'Party', defaultValue: 1, show: [{ field: 'on', eq: true }] },
+      {
+        key: 'crew',
+        type: 'group',
+        label: 'Crew',
+        fields: [
+          { key: 'kind', type: 'text', label: 'Kind' },
+          { key: 'count', type: 'number', label: 'Count', defaultValue: 1, show: [{ field: 'kind', eq: 'x' }] },
+        ],
+      },
+    ],
+  };
+
+  it('gives item fields of initial items their defaults like top-level fields', () => {
+    const engine = new FormEngine(crew, { on: false, crew: [{ kind: 'y' }] });
+    engine.setValue('on', true);
+    expect(engine.values.partySize).toBe(1);
+    engine.setValue('crew.0.kind', 'x');
+    expect(engine.values.crew).toEqual([{ kind: 'x', count: 1 }]);
+    expect(new FormEngine(crew, { crew: [{ kind: 'x' }] }).values.crew).toEqual([{ kind: 'x', count: 1 }]);
+    expect(new FormEngine(crew, { crew: [{ kind: 'x', count: 3 }] }).values.crew).toEqual([{ kind: 'x', count: 3 }]);
+  });
+
+  it('gives item fields of reset items their defaults', () => {
+    const engine = new FormEngine(crew);
+    engine.reset({ crew: [{ kind: 'x' }] });
+    expect(engine.values.crew).toEqual([{ kind: 'x', count: 1 }]);
+  });
+
+  it('restores defaults on a step that a restored route makes reachable', () => {
+    const definition: FormDefinition = {
+      id: 'reach',
+      title: 'Reach',
+      submit: { label: 'Send' },
+      steps: [
+        { id: 's1', title: 'One', fields: [{ key: 'x', type: 'checkbox', label: 'X' }] },
+        {
+          id: 's2',
+          title: 'Two',
+          show: [{ field: 'x', eq: true }],
+          fields: [{ key: 'a', type: 'checkbox', label: 'A', defaultValue: true }],
+          routes: [{ to: 's3', show: [{ field: 'a', eq: true }] }, { to: 's4' }],
+        },
+        {
+          id: 's3',
+          title: 'Three',
+          fields: [{ key: 'c', type: 'number', label: 'C', defaultValue: 1, show: [{ field: 'x', eq: true }] }],
+        },
+        { id: 's4', title: 'Four', fields: [{ key: 'd', type: 'text', label: 'D' }] },
+      ],
+    };
+    const engine = new FormEngine(definition);
+    engine.setValue('x', true);
+    expect(engine.values).toMatchObject({ x: true, a: true, c: 1 });
+    expect(engine.getSubmitValues()).toEqual({ x: true, a: true, c: 1 });
+  });
+});
