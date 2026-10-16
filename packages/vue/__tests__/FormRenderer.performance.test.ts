@@ -1,9 +1,11 @@
 import { fireEvent, render, screen } from '@testing-library/vue';
 import type { FormDefinition } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
-import { type Component, type PropType, defineComponent, h } from 'vue';
+import { type Component, type PropType, defineComponent, effectScope, h, nextTick, ref } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
-import type { GroupItemComponentProps } from '../src/types';
+import { useFormEngine } from '../src/composables/useFormEngine';
+import { useNodeProps } from '../src/composables/useNodeProps';
+import type { FormRendererProps, GroupItemComponentProps } from '../src/types';
 
 let groupRenders = 0;
 
@@ -47,5 +49,32 @@ describe('FormRenderer group isolation', () => {
     await fireEvent.update(screen.getByRole('textbox', { name: 'Person' }), 'Grace');
 
     expect(screen.getByText('filled')).toBeDefined();
+  });
+});
+
+describe('group props memo', () => {
+  it('starts over when the definition is replaced', async () => {
+    const current = ref<FormDefinition>(definition);
+    const scope = effectScope();
+    const props = scope.run(() => {
+      const form = useFormEngine(() => current.value);
+      const noop = () => {};
+      return useNodeProps(form, { definition } as FormRendererProps, 'form', ref(false), {
+        update: noop,
+        commit: noop,
+        changeItems: () => true,
+        blur: noop,
+        focus: noop,
+      });
+    })!;
+    const group = definition.fields![1] as Parameters<typeof props.nodeProps>[0];
+    const before = props.nodeProps(group);
+    expect(props.nodeProps(group).errors).toBe(before.errors);
+
+    current.value = { ...definition, id: 'replaced' };
+    await nextTick();
+
+    expect(props.nodeProps(group).errors).not.toBe(before.errors);
+    scope.stop();
   });
 });
