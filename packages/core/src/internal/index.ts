@@ -26,3 +26,4 @@ export function autoAdvance(engine: FormEngine): Promise<boolean> {
   return (engine as unknown as EngineInternals).advance('autoAdvance');
 }
 export { applySources, browserSources } from './sources';
+export type { FormActionsView } from '../types/views';

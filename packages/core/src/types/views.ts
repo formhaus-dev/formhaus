@@ -1,3 +1,4 @@
+import type { FormAction } from './action';
 import type { FormGroup, FormSection } from './field';
 
 export interface SectionView {
@@ -49,6 +50,25 @@ export interface GroupView<TItem extends GroupItemView = GroupItemView> {
   removeLabel: string;
   disabled?: boolean;
   status: string;
+}
+
+export interface FormActionsView {
+  submitAction?: FormAction;
+  nextAction?: FormAction | false;
+  backAction?: FormAction | false;
+  cancelAction?: FormAction;
+  skipAction?: FormAction;
+  isFirstStep: boolean;
+  isLastStep: boolean;
+  isMultiStep: boolean;
+  loading?: boolean;
+  values?: Record<string, unknown>;
+  primaryLabel?: string;
+  showPrimary?: boolean;
+  showBack?: boolean;
+  backLabel?: string;
+  showSkip?: boolean;
+  skipLabel?: string;
 }
 
 export interface FormRendererHandle {
