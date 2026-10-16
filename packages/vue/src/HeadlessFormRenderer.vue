@@ -164,11 +164,9 @@ defineExpose(handle);
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.definition.labels);
 
 const actions = computed(() => {
-  currentStep.value;
-  isFirstStep.value;
-  isLastStep.value;
-  isMultiStep.value;
-  return actionsView(form.engine, props.labels);
+  void [currentStep.value, isFirstStep.value, isLastStep.value, isMultiStep.value];
+  const view = actionsView(form.engine, props.labels);
+  return Object.fromEntries(Object.entries(view).map(([key, value]) => [key.replace(/[A-Z]/g, '-$&').toLowerCase(), value]));
 });
 
 async function onPrimary() {

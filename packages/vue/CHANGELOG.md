@@ -20,6 +20,7 @@
 
 ### Patch Changes
 
+- Fixed a crash when a step sets `next` to `null`.
 - Requires `@formhaus/core` 0.15.0.
 
 ## 0.14.2
