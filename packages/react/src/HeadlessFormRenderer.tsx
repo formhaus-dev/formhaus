@@ -46,6 +46,10 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
   const focusKey = useRef<string | null>(null);
   const focusReturn = useRef<HTMLElement | null>(null);
   const [focusRequest, setFocusRequest] = useState(0);
+  const requestFocus = () => {
+    focusPending.current = true;
+    setFocusRequest((request) => request + 1);
+  };
   const wasBusy = useRef(false);
   const engineOptions: FormEngineOptions = {
     ...props,
@@ -85,9 +89,7 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
     if (!shouldApplyExternalErrors(engine, previous, props.errors)) return;
     appliedErrors.current = { engine, errors: props.errors };
     engine.setErrors(props.errors);
-    if (Object.keys(props.errors).length === 0 || !canMoveFocus(formRef.current)) return;
-    focusPending.current = true;
-    setFocusRequest((request) => request + 1);
+    if (Object.keys(props.errors).length > 0 && canMoveFocus(formRef.current)) requestFocus();
   }, [props.errors, engine]);
 
   useEffect(() => {
@@ -127,8 +129,7 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
   const showField = useCallback(
     (key: string) => {
       focusKey.current = key;
-      focusPending.current = true;
-      setFocusRequest((request) => request + 1);
+      requestFocus();
       engine.goToStepWithField(key);
     },
     [engine],
