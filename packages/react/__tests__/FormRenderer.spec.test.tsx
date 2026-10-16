@@ -61,6 +61,16 @@ const blanks: FormDefinition = {
   ],
 };
 
+const toggled: FormDefinition = {
+  id: 'toggled',
+  title: '',
+  submit: { label: 'Save' },
+  fields: [
+    { key: 'more', type: 'checkbox', label: 'More' },
+    { key: 'note', type: 'text', label: 'Note', defaultValue: 'none', show: [{ field: 'more', eq: true }] },
+  ],
+};
+
 describe('renderer spec rules', () => {
   it('hides Back on the first step and with back: false, uses next.label, and keeps Submit with next: false', async () => {
     render(<FormRenderer definition={steps} initialValues={{ name: 'Ada' }} onSubmit={() => {}} />);
@@ -146,5 +156,18 @@ describe('renderer spec rules', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Save' }));
     await waitFor(() => expect(onSubmit).toHaveBeenCalled());
     expect(onSubmit.mock.calls[0][0]).toEqual({ name: '', age: null, ok: false });
+  });
+
+  it('gives a field shown again the value typed before it was hidden', async () => {
+    const onSubmit = vi.fn();
+    render(<FormRenderer definition={toggled} initialValues={{ more: true }} onSubmit={onSubmit} />);
+    fireEvent.change(screen.getByLabelText('Note'), { target: { value: 'hi' } });
+    fireEvent.click(screen.getByLabelText('More'));
+    expect(screen.queryByLabelText('Note')).toBeNull();
+    fireEvent.click(screen.getByLabelText('More'));
+    expect((screen.getByLabelText('Note') as HTMLInputElement).value).toBe('hi');
+    fireEvent.click(screen.getByRole('button', { name: 'Save' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalled());
+    expect(onSubmit.mock.calls[0][0]).toEqual({ more: true, note: 'hi' });
   });
 });
