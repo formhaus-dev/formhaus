@@ -4,10 +4,11 @@ import FieldResolver from './FieldResolver.vue';
 import { fieldDomId } from '@formhaus/core/internal';
 import { useFormId } from './composables/useFormId';
 import { withDefaultFields } from './constants';
-import type { CommitFieldEmits, FieldResolverProps } from './types';
+import { formFieldEmits } from './props';
+import type { FieldResolverProps } from './types';
 
 const props = defineProps<FieldResolverProps>();
-const emit = defineEmits<CommitFieldEmits>();
+const emit = defineEmits(formFieldEmits);
 
 const components = computed(() => withDefaultFields(props.components));
 const fallbackId = useFormId();

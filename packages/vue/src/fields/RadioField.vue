@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import type { CommitFieldEmits, FormFieldProps } from '../types';
+import { formFieldEmits } from '../props';
+import type { FormFieldProps } from '../types';
 import FieldShell from './FieldShell.vue';
 import { useField } from './useField';
 
 const props = defineProps<FormFieldProps>();
-const emit = defineEmits<CommitFieldEmits>();
+const emit = defineEmits(formFieldEmits);
 const { inputId, control } = useField(props, emit);
 
 let arrowSelection = false;

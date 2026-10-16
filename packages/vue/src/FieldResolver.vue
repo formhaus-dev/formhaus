@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { isDevelopment } from '@formhaus/core/internal';
 import { type Component, computed } from 'vue';
-import type { CommitFieldEmits, FieldResolverProps } from './types';
+import { formFieldEmits } from './props';
+import type { FieldResolverProps } from './types';
 
 const props = defineProps<FieldResolverProps>();
-const emit = defineEmits<CommitFieldEmits>();
+const emit = defineEmits(formFieldEmits);
 
 const fieldComponent = computed<Component | null>(() => props.components?.[props.field.type] ?? null);
 </script>
