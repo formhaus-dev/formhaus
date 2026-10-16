@@ -141,6 +141,35 @@ async function submit(values: Record<string, unknown>) {
 
 The renderer reads the form definition, renders fields, handles validation, and gives you values on submit.
 
+## Definition and initial values
+
+`initialValues` is the starting value of the form, not a controlled value: changing it later does not change the form. A new `definition` object creates a new form and resets its values, even with the same content. Keep the definition in a module constant, `useMemo` or a Vue `computed`, and change `key` to reset the form on purpose:
+
+::: code-group
+```tsx [React]
+const definition = parseDefinition(json);
+
+function ProfileForm({ user, plans }) {
+  const withPlans = useMemo(() => addPlanOptions(definition, plans), [plans]);
+  return <FormRenderer key={user.id} definition={withPlans} initialValues={user} onSubmit={save} />;
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+const definition = parseDefinition(json);
+const props = defineProps<{ user: User; plans: Plan[] }>();
+const withPlans = computed(() => addPlanOptions(definition, props.plans));
+</script>
+
+<template>
+  <FormRenderer :key="user.id" :definition="withPlans" :initial-values="user" @submit="save" />
+</template>
+```
+:::
+
+In development, the renderer warns when it gets a new definition object with the same content as the previous one.
+
 ## How it works
 
 ```

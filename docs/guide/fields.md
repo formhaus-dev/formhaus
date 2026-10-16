@@ -385,7 +385,9 @@ When two keys in one form escape to the same id, such as `contact.email` and `co
 
 ## Custom field types
 
-`FieldType` accepts any string, not just the built-in types. Use the `components` prop to provide a renderer for your custom type:
+`FieldType` accepts any string, not just the built-in types. Name custom types with `-` or `:`, such as `x-rating` or `acme:rating`. Built-in types are single words, and names with `-` or `:` never become built-in types. `checkDefinition()` warns about a custom type without them with `custom-type-name`.
+
+Use the `components` prop to provide a renderer for your custom type:
 
 ::: code-group
 ```vue [Vue]

@@ -1,4 +1,5 @@
 import { FormEngine, type FormEngineOptions, type FormField, type FormNode, type FormDefinition, type FormStep } from '@formhaus/core';
+import { warnDefinitionReset } from '@formhaus/core/internal';
 import { type ComputedRef, computed, onScopeDispose, ref, shallowRef, watch } from 'vue';
 
 export interface UseFormEngineReturn {
@@ -35,7 +36,10 @@ export function useFormEngine(
 
   const engineRef = shallowRef(engine);
 
-  watch(getDefinition, () => {
+  let warned = false;
+
+  watch(getDefinition, (next, previous) => {
+    if (!warned) warned = warnDefinitionReset(previous, next, 'a constant or a computed', options?.onWarning);
     engine.cancelPendingActions();
     unsubscribe();
     engine = new FormEngine(getDefinition(), getValues(), options);

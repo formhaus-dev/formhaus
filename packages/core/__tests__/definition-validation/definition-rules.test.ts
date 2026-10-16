@@ -111,8 +111,52 @@ describe('condition rules', () => {
 
 describe('field rules', () => {
   it('warns about a field type that looks like a typo, not about custom types', () => {
-    expect(checkDefinition(form([field('a', { type: 'txt' }), field('b', { type: 'rating' })])).map((issue) => issue.message)).toEqual([
+    expect(checkDefinition(form([field('a', { type: 'txt' }), field('b', { type: 'x-rating' })])).map((issue) => issue.message)).toEqual([
       '/fields/0/type: "txt" is not a built-in field type. Use "text", or register a component for "txt".',
+    ]);
+  });
+
+  it('warns about a custom type name without a dash or colon', () => {
+    const definition = form([
+      field('a', { type: 'rating' }),
+      field('b', { type: 'x-rating' }),
+      field('c', { type: 'acme:rating' }),
+      field('d', { type: 'datetime' }),
+      field('e', { type: 'emial' }),
+    ]);
+    expect(checkDefinition(definition)).toEqual([
+      {
+        code: 'custom-type-name',
+        severity: 'warning',
+        path: '/fields/0/type',
+        message:
+          '/fields/0/type: "rating" is not a built-in field type. Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name.',
+        hint: 'Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name.',
+      },
+      expect.objectContaining({ code: 'unknown-field-type', path: '/fields/4/type' }),
+    ]);
+  });
+
+  it('checks custom type names inside sections, groups and steps', () => {
+    const definition = {
+      id: 'f',
+      title: 'F',
+      formatVersion: '1.1',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 's',
+          title: 'S',
+          fields: [
+            { key: 'sec', type: 'section', title: 'Sec', fields: [field('a', { type: 'stars' })] },
+            { key: 'list', type: 'group', label: 'List', fields: [field('b', { type: 'signature' }), field('c', { type: 'x-sign' })] },
+          ],
+        },
+      ],
+    } as unknown as FormDefinition;
+    expect(codes(definition)).toEqual([
+      'warning custom-type-name /steps/0/fields/0/fields/0/type',
+      'warning custom-type-name /steps/0/fields/1/fields/0/type',
     ]);
   });
 
@@ -147,7 +191,7 @@ describe('field rules', () => {
         form([
           field('a', { validation: { min: 1 } }),
           field('b', { type: 'number', validation: { maxLength: 3 } }),
-          field('c', { type: 'slider', validation: { min: 1 } }),
+          field('c', { type: 'x-slider', validation: { min: 1 } }),
         ]),
       ),
     ).toEqual(['warning rule-not-applicable /fields/0/validation/min', 'warning rule-not-applicable /fields/1/validation/maxLength']);

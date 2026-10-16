@@ -4,7 +4,7 @@ import { BOOLEAN_TYPES, BUILT_IN_TYPES } from '../validation/type-checks';
 import { conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
-import { closest, oneOf, suggest, warning } from './issues';
+import { closest, oneOf, warning } from './issues';
 import { propertyWarnings } from './properties';
 import { sourceWarnings } from './sources';
 
@@ -154,21 +154,22 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
 
 function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssue[] {
   const { field, path } = entry;
-  const match =
-    BUILT_IN_TYPES.includes(field.type) || field.type === 'group'
-      ? undefined
-      : closest(field.type, [...BUILT_IN_TYPES, 'group', 'section']);
+  const custom = !BUILT_IN_TYPES.includes(field.type) && field.type !== 'group';
+  const match = custom ? closest(field.type, [...BUILT_IN_TYPES, 'group', 'section']) : undefined;
+  const problem = `"${field.type}" is not a built-in field type`;
   return [
-    ...(match === undefined
-      ? []
-      : [
-          warning(
-            'unknown-field-type',
-            `${path}/type`,
-            `"${field.type}" is not a built-in field type`,
-            `Use "${match}", or register a component for "${field.type}"`,
-          ),
-        ]),
+    ...(match !== undefined
+      ? [warning('unknown-field-type', `${path}/type`, problem, `Use "${match}", or register a component for "${field.type}"`)]
+      : custom && !/[-:]/.test(field.type)
+        ? [
+            warning(
+              'custom-type-name',
+              `${path}/type`,
+              problem,
+              'Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name',
+            ),
+          ]
+        : []),
     ...optionIssues(entry),
     ...ruleWarnings(context, entry),
     ...sourceWarnings(entry),

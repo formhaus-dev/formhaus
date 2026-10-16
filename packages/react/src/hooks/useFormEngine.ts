@@ -1,4 +1,5 @@
 import { FormEngine, type FormEngineOptions, type FormDefinition } from '@formhaus/core';
+import { warnDefinitionReset } from '@formhaus/core/internal';
 import { useEffect, useRef } from 'react';
 import { useFormSnapshot } from './useEngineSnapshot';
 
@@ -11,8 +12,12 @@ export function useFormEngineStore(
   optionsRef.current = options;
   const engineRef = useRef<FormEngine | null>(null);
   const definitionRef = useRef(definition);
+  const warnedRef = useRef(false);
 
   if (engineRef.current === null || definitionRef.current !== definition) {
+    if (engineRef.current !== null && !warnedRef.current) {
+      warnedRef.current = warnDefinitionReset(definitionRef.current, definition, 'a constant or useMemo', options?.onWarning);
+    }
     engineRef.current = new FormEngine(definition, initialValues, {
       validators: options?.validators,
       messages: options?.messages,
