@@ -31,18 +31,25 @@ export function shownFields(nodes: FormNode[], values: Values): FormField[] {
 
 export const itemsOf = (value: unknown): unknown[] => (Array.isArray(value) ? value : []);
 
-export function itemScope(group: FormGroup, item: unknown, values: Values): Values {
-  const scope = { ...values };
+function withItem(scope: Values, group: FormGroup, item: unknown): Values {
   const source = isEntry(item) ? item : {};
   for (const field of group.fields) scope[field.key] = trimValue(field, source[field.key]);
   return scope;
+}
+
+export function itemScope(group: FormGroup, item: unknown, values: Values): Values {
+  return withItem({ ...values }, group, item);
+}
+
+export function itemView(group: FormGroup, item: unknown, values: Values): Values {
+  return withItem(Object.create(values), group, item);
 }
 
 export function cleanItems(group: FormGroup, value: unknown, values: Values): unknown {
   if (!Array.isArray(value)) return value;
   return value.map((item) => {
     if (!isPlainEntry(item)) return item;
-    const scope = itemScope(group, item, values);
+    const scope = itemView(group, item, values);
     const result: Values = {};
     for (const field of group.fields) {
       if (scope[field.key] !== undefined && isVisible(field, scope)) result[field.key] = scope[field.key];

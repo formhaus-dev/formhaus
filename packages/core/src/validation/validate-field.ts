@@ -22,10 +22,26 @@ function boundError(
   return undefined;
 }
 
+const patterns = new Map<string, RegExp | null>();
+
+function compile(source: string): RegExp | null {
+  const cached = typeof source === 'string' ? patterns.get(source) : undefined;
+  if (cached !== undefined) return cached;
+  let pattern: RegExp | null = null;
+  try {
+    pattern = new RegExp(source);
+  } catch {}
+  if (typeof source !== 'string') return pattern;
+  if (patterns.size >= 256) patterns.clear();
+  patterns.set(source, pattern);
+  return pattern;
+}
+
 function patternError(value: unknown, rules: FieldValidation, message: () => string): string | undefined {
   if (rules.pattern === undefined) return undefined;
+  const pattern = compile(rules.pattern);
+  if (!pattern) return undefined;
   try {
-    const pattern = new RegExp(rules.pattern);
     const text = String(value);
     return text.length <= MAX_STRING_LENGTH && pattern.test(text) ? undefined : (rules.patternMessage ?? message());
   } catch {

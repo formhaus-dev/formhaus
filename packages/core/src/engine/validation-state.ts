@@ -1,5 +1,6 @@
 import { validateFieldValue } from '../validation';
-import { validateShown } from '../validation/validate-step';
+import { customRules, validateShown } from '../validation/validate-step';
+import { isPlainEntry } from '../validation/type-checks';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
 import type { FormField, FormNode } from '../types';
 import { isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
@@ -7,6 +8,7 @@ import type { EngineInternals } from './runtime-internals';
 import type { ItemField } from './visibility-state';
 
 export function errorKeys(nodes: FormNode[], errors: Record<string, string>, values: Record<string, unknown>): string[] {
+  if (Object.keys(errors).length === 0) return [];
   return valueFields(nodes).flatMap((field) => [
     ...(shownError(errors, field) ? [field.key] : []),
     ...(isGroup(field)
@@ -17,13 +19,20 @@ export function errorKeys(nodes: FormNode[], errors: Record<string, string>, val
   ]);
 }
 
-export function fieldsErrors(engine: EngineInternals, nodes: FormNode[]): Record<string, string> {
+function unsettleOnWrite<T>(engine: EngineInternals, run: () => T): T {
+  const version = engine.getSnapshot();
+  const result = run();
+  if (version !== engine.getSnapshot()) engine.visibility.unsettle();
+  return result;
+}
+
+export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values = getSubmitValues(engine)): Record<string, string> {
   const scope = engine.visibility.conditionValues(engine.values);
-  return validateShown(nodes, getSubmitValues(engine), scope, engine.validators, engine.messages);
+  return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, engine.validators, engine.messages));
 }
 
 function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
-  return validateFieldValue(field, value, values, engine.validators, engine.messages);
+  return unsettleOnWrite(engine, () => validateFieldValue(field, value, values, engine.validators, engine.messages));
 }
 
 export function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {
@@ -120,7 +129,16 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   const previousErrors = engine.errors;
   const errors: Record<string, string> = {};
   if (engine.isMultiStep) {
-    for (const step of engine.visibleSteps) if (!engine.skipped.has(step.id)) Object.assign(errors, fieldsErrors(engine, step.fields));
+    let version = -1;
+    let values: Record<string, unknown> = {};
+    for (const step of engine.visibleSteps)
+      if (!engine.skipped.has(step.id)) {
+        if (version !== engine.getSnapshot()) {
+          version = engine.getSnapshot();
+          values = getSubmitValues(engine);
+        }
+        Object.assign(errors, fieldsErrors(engine, step.fields, customRules(step.fields) ? { ...values } : values));
+      }
   } else {
     Object.assign(errors, fieldsErrors(engine, engine.definition.fields ?? []));
   }
@@ -144,7 +162,12 @@ export function validateOne(engine: EngineInternals, key: string): string | null
 }
 
 export function getSubmitValues(engine: EngineInternals): Record<string, unknown> {
-  return withoutSkipped(engine, { ...engine.visibility.conditionValues(engine.values) });
+  const values = { ...engine.visibility.conditionValues(engine.values) };
+  for (const { key } of engine.visibility.groups) {
+    const items = values[key];
+    if (Array.isArray(items)) values[key] = items.map((item) => (isPlainEntry(item) ? { ...item } : item));
+  }
+  return withoutSkipped(engine, values);
 }
 
 export function resetEngine(engine: EngineInternals, values?: Record<string, unknown>): void {

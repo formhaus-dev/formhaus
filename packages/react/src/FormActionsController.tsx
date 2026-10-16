@@ -1,6 +1,6 @@
 import type { FormEngine } from '@formhaus/core';
 import { labelFor } from '@formhaus/core/internal';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
@@ -29,7 +29,8 @@ export function FormActionsController({
   onSkip,
   onCancel,
 }: FormActionsControllerProps) {
-  useFormSnapshot(engine);
+  const version = useFormSnapshot(engine);
+  const values = useMemo(() => engine.getSubmitValues(), [engine, version]);
   const step = engine.currentStep;
   const isLastStep = engine.isLastStep || !engine.isMultiStep;
   const primaryLabel =
@@ -56,7 +57,7 @@ export function FormActionsController({
       isLastStep={isLastStep}
       isMultiStep={engine.isMultiStep}
       loading={loading || engine.stepValidating || engine.submitting}
-      values={engine.getSubmitValues()}
+      values={values}
       onSubmit={onSubmit}
       onNext={onNext}
       onPrev={onPrev}
