@@ -83,7 +83,8 @@ import { DefaultSection, FormRenderer, type SectionComponentProps } from '@formh
 function Section(props: SectionComponentProps) {
   if (!props.section.key.endsWith('More')) return <DefaultSection {...props} />;
   return (
-    <div id={props.id} role="group" aria-label={props.title} className="subsection">
+    <div id={props.id} role="group" aria-label={props.title} aria-describedby={props.description ? props.descriptionId : undefined} className="subsection">
+      {props.description && <p id={props.descriptionId}>{props.description}</p>}
       {props.children}
     </div>
   );
@@ -107,8 +108,10 @@ A custom field type with no value renders a heading between the fields of one se
 ```tsx
 import { FormRenderer, type FieldComponentProps } from '@formhaus/react';
 
+const headings = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6'] as const;
+
 function Subheading({ field }: FieldComponentProps) {
-  const Heading = `h${Number(field.props?.level ?? 4)}` as 'h4';
+  const Heading = headings[Number(field.props?.level) - 1] ?? 'h4';
   return <Heading className="subheading">{field.label}</Heading>;
 }
 
@@ -139,18 +142,33 @@ import { DefaultGroup, FormRenderer, type GroupComponentProps } from '@formhaus/
 
 function Group(props: GroupComponentProps) {
   if (props.group.validation?.maxLength !== 1) return <DefaultGroup {...props} />;
+  const errorId = `${props.id}-error`;
   return (
-    <div id={props.id} role="group" aria-label={props.label}>
+    <div
+      id={props.id}
+      role="group"
+      aria-label={props.label}
+      aria-invalid={!!props.error || undefined}
+      aria-describedby={props.error ? errorId : undefined}
+    >
       <h4>{props.label}</h4>
+      {props.error && <p id={errorId} role="alert">{props.error}</p>}
       {props.items.map((item) => (
-        <div key={item.id} data-fh-group-item>{item.children}</div>
+        <div key={item.id} id={item.titleId} data-fh-group-item>{item.children}</div>
       ))}
+      {props.canAdd && (
+        <button type="button" onClick={props.add} disabled={props.disabled} data-fh-group-add>
+          {props.addLabel}
+        </button>
+      )}
     </div>
   );
 }
 
 <FormRenderer definition={definition} components={{ group: Group }} onSubmit={send} />;
 ```
+
+Keep the error and the Add button. With `address: []` in `initialValues` the group starts empty, Submit shows the group error and Add creates the item.
 
 Use a one-item group only when the API expects `address` as an object. Map `address[0]` to it before sending.
 
