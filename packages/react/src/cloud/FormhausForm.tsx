@@ -36,10 +36,12 @@ export function FormhausForm({
   const extraBody = useCallback(() => ({ _fh_hp: trap.current?.value ?? '' }), []);
   const box = useRef<HTMLDivElement>(null);
   const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, challengeHost: box, onSuccess, onError });
-  const Actions = rendererProps.actionsComponent ?? FormActions;
+  const actionsComponent = useRef(rendererProps.actionsComponent);
+  actionsComponent.current = rendererProps.actionsComponent;
   const actions = useMemo(
     () =>
       function ChallengeActions(props: FormActionsProps) {
+        const Actions = actionsComponent.current ?? FormActions;
         return (
           <>
             <div ref={box} style={CONTENTS} />
@@ -47,7 +49,7 @@ export function FormhausForm({
           </>
         );
       },
-    [Actions],
+    [],
   );
   const root = useRef<HTMLDivElement>(null);
   const notice = useRef<HTMLDivElement>(null);
@@ -75,7 +77,7 @@ export function FormhausForm({
 
   if (cloud.loadError)
     return (
-      <>
+      <div className="fh-cloud">
         <p role="alert" className="fh-form__error">
           {cloud.loadError.message}
         </p>
@@ -84,17 +86,19 @@ export function FormhausForm({
             Try again
           </button>
         )}
-      </>
+      </div>
     );
   if (!cloud.definition)
     return (
-      <div className="fh-form" aria-busy="true">
-        {fallback}
+      <div className="fh-cloud">
+        <div className="fh-form" aria-busy="true">
+          {fallback}
+        </div>
       </div>
     );
   if (cloud.done)
     return (
-      <>
+      <div className="fh-cloud">
         {success ?? (
           <p role="status" className="fh-form__success">
             {successMessage ?? 'Thank you. Your response was submitted.'}
@@ -105,7 +109,7 @@ export function FormhausForm({
             Submit another response
           </button>
         )}
-      </>
+      </div>
     );
   return (
     <div ref={root} className="fh-cloud">

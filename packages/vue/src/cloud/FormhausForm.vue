@@ -80,7 +80,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
 </script>
 
 <template>
-  <template v-if="state.loadError">
+  <div v-if="state.loadError" class="fh-cloud">
     <p role="alert" class="fh-form__error">{{ state.loadError.message }}</p>
     <button
       v-if="state.loadError instanceof CloudError && state.loadError.retryable"
@@ -90,9 +90,9 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
     >
       Try again
     </button>
-  </template>
-  <div v-else-if="!state.definition" class="fh-form" aria-busy="true"><slot name="fallback" /></div>
-  <template v-else-if="state.done">
+  </div>
+  <div v-else-if="!state.definition" class="fh-cloud"><div class="fh-form" aria-busy="true"><slot name="fallback" /></div></div>
+  <div v-else-if="state.done" class="fh-cloud">
     <slot name="success">
       <p role="status" class="fh-form__success">{{ state.settings.successMessage ?? 'Thank you. Your response was submitted.' }}</p>
     </slot>
@@ -104,7 +104,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
     >
       Submit another response
     </button>
-  </template>
+  </div>
   <div v-else ref="root" class="fh-cloud" @focusin="warm">
     <input ref="trap" name="_fh_hp" tabindex="-1" autocomplete="off" aria-hidden="true" :style="hidden" />
     <CloudNotice :notice="state.notice" @action="act" />
