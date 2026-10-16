@@ -75,7 +75,7 @@ describe('validateSubmission', () => {
   });
 });
 
-describe('validateSubmission with values hidden until a step is skipped', () => {
+describe('validateSubmission with values shown by a skipped step', () => {
   const definition: FormDefinition = {
     id: 'restore',
     title: 'Restore',
@@ -100,22 +100,22 @@ describe('validateSubmission with values hidden until a step is skipped', () => 
   };
   const skip = { skippedSteps: ['s1'] };
 
-  it('does not restore submitted top-level values', () => {
+  it('checks submitted top-level values against the reset values of the skipped step', () => {
     const result = validateSubmission(definition, { a: 'x', c: { evil: 1 }, f: { not: 'a string' } }, skip);
-    expect(result).toEqual({ values: {}, errors: {} });
+    expect(result.errors).toEqual({ c: 'Invalid value', f: 'Must be a file reference' });
   });
 
-  it('does not restore submitted item values', () => {
-    expect(validateSubmission(definition, { a: 'x', g: [{ r: { evil: 2 } }] }, skip)).toEqual({ values: { g: [{}] }, errors: {} });
+  it('checks submitted item values against the reset values of the skipped step', () => {
+    expect(validateSubmission(definition, { a: 'x', g: [{ r: { evil: 2 } }] }, skip).errors).toEqual({ 'g.0.r': 'Invalid value' });
   });
 
-  it('does not restore an oversized custom type string', () => {
+  it('rejects an oversized custom type string', () => {
     const long = 'z'.repeat(20000);
-    expect(validateSubmission(definition, { a: 'x', c: long, g: [{ r: long }] }, skip)).toEqual({ values: { g: [{}] }, errors: {} });
-    expect(validateSubmission(definition, { a: 'y', c: long, g: [{ r: long }] }, skip).errors).toEqual({
-      c: 'Must be at most 10000 characters',
-      'g.0.r': 'Must be at most 10000 characters',
-    });
+    for (const a of ['x', 'y'])
+      expect(validateSubmission(definition, { a, c: long, g: [{ r: long }] }, skip).errors).toEqual({
+        c: 'Must be at most 10000 characters',
+        'g.0.r': 'Must be at most 10000 characters',
+      });
   });
 
   it('keeps a legitimate submission', () => {
@@ -193,5 +193,82 @@ describe('validateSubmission with missing keys', () => {
       values: { ask: true, consent: true, note: 'x' },
       errors: {},
     });
+  });
+});
+
+describe('validateSubmission with a group missing from the payload', () => {
+  const definition: FormDefinition = {
+    id: 'missing-group',
+    title: 'Missing group',
+    submit: { label: 'Send' },
+    fields: [
+      { key: 'on', type: 'checkbox', label: 'On' },
+      {
+        key: 'g',
+        type: 'group',
+        label: 'G',
+        defaultItems: 1,
+        show: [{ field: 'on', eq: true }],
+        validation: { required: true },
+        fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'Ada', validation: { required: true } }],
+      },
+    ],
+  };
+
+  it('does not create the default items of a conditional group', () => {
+    const result = validateSubmission(definition, { on: true });
+    expect(result.values).toEqual({ on: true });
+    expect(Object.keys(result.errors)).toEqual(['g']);
+  });
+
+  it('does not create the default items of a group on a step shown by a skipped step', () => {
+    const steps: FormDefinition = {
+      id: 'skip-shown',
+      title: 'Skip shown',
+      submit: { label: 'Send' },
+      steps: [
+        { id: 's1', title: 'One', skip: { label: 'Skip' }, fields: [{ key: 'a', type: 'text', label: 'A', defaultValue: 'show' }] },
+        {
+          id: 's2',
+          title: 'Two',
+          show: [{ field: 'a', eq: 'show' }],
+          fields: [
+            { key: 'b', type: 'text', label: 'B', defaultValue: 'B' },
+            { key: 'g', type: 'group', label: 'G', defaultItems: 1, fields: [{ key: 'k', type: 'text', label: 'K', defaultValue: 'd' }] },
+          ],
+        },
+      ],
+    };
+    expect(validateSubmission(steps, {}, { skippedSteps: ['s1'] })).toEqual({ values: {}, errors: {} });
+    expect(validateSubmission(steps, { a: 'show' })).toEqual({ values: { a: 'show' }, errors: {} });
+  });
+});
+
+describe('validateSubmission with a field shown by the defaults of a skipped step', () => {
+  const definition: FormDefinition = {
+    id: 'skip-default',
+    title: 'Skip default',
+    submit: { label: 'Send' },
+    steps: [
+      { id: 's1', title: 'One', skip: { label: 'Skip' }, fields: [{ key: 'a', type: 'text', label: 'A', defaultValue: 'show' }] },
+      {
+        id: 's2',
+        title: 'Two',
+        fields: [
+          { key: 'n', type: 'number', label: 'N', show: [{ field: 'a', eq: 'show' }], validation: { required: true, min: 10 } },
+          { key: 'm', type: 'number', label: 'M', show: [{ field: 'a', eq: 'show' }] },
+        ],
+      },
+    ],
+  };
+  const skip = { skippedSteps: ['s1'] };
+
+  it('keeps an answer the browser sent without the skipped field', () => {
+    expect(validateSubmission(definition, { n: 12, m: 3 }, skip)).toEqual({ values: { n: 12, m: 3 }, errors: {} });
+  });
+
+  it('runs the rules of that answer', () => {
+    expect(validateSubmission(definition, { n: 2 }, skip).errors).toEqual({ n: 'Must be at least 10' });
+    expect(Object.keys(validateSubmission(definition, {}, skip).errors)).toEqual(['n']);
   });
 });

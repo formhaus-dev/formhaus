@@ -180,9 +180,12 @@ function rejectGroups(definition: FormDefinition, fields: FormField[], input: un
   return { resolved: activeValues(definition, fields, source), rejected };
 }
 
-export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
-  parseDefinition(definition);
-  const fields = getAllFields(definition);
+interface Checked extends SubmissionResult {
+  engine: FormEngine;
+  skipped: string[];
+}
+
+function check(definition: FormDefinition, fields: FormField[], values: unknown, options: SubmissionOptions): Checked {
   const messages = messageResolver(options.messages, definition.messages);
   const resolve = namedResolver(messages);
   const { resolved, rejected } = rejectGroups(definition, fields, values, resolve);
@@ -201,10 +204,10 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
     submitted[key] = resolved.values[key];
     for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
   }
-  const skipped = new Set([...internals(engine).skipped.values()].flat());
+  const skipped = [...internals(engine).skipped.values()].flat();
   for (const [key, value] of rejected) {
     const field = visibility.activeField(key, engine.values);
-    if (!field || skipped.has(key)) continue;
+    if (!field || skipped.includes(key)) continue;
     errors[key] = typeError(field, value, resolve) ?? resolve('value', {}, field);
     delete submitted[key];
     for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
@@ -212,6 +215,30 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   for (const [key, error] of items)
     if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;
   dropUnchecked(engine, submitted, errors, resolve);
+  return { values: submitted, errors, engine, skipped };
+}
+
+function withSkipped(source: Record<string, unknown>, { engine, skipped }: Checked): Record<string, unknown> {
+  const values = { ...source };
+  for (const key of skipped) {
+    delete values[key];
+    if (engine.values[key] !== undefined) values[key] = engine.values[key];
+  }
+  return values;
+}
+
+export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
+  parseDefinition(definition);
+  const fields = getAllFields(definition);
+  const source = values !== null && typeof values === 'object' && !Array.isArray(values) ? (values as Record<string, unknown>) : {};
+  let result = check(definition, fields, source, options);
+  for (let round = 0; round < (definition.steps?.length ?? 0) && result.skipped.length; round++) {
+    const next = check(definition, fields, withSkipped(source, result), options);
+    const settled = next.skipped.join() === result.skipped.join();
+    result = next;
+    if (settled) break;
+  }
+  const errors = { ...result.errors };
   if (isBody(fields, values)) errors.values = BODY_MESSAGE;
-  return { values: submitted, errors };
+  return { values: result.values, errors };
 }

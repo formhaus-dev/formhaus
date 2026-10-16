@@ -1,5 +1,5 @@
 import type { FormField, FormGroup } from '../types';
-import { isEntry, isGroup, itemId, itemsOf } from '../visibility/nodes';
+import { hasOwn, isEntry, isGroup, itemId, itemsOf } from '../visibility/nodes';
 import { createValues } from './engine-utils';
 
 type Values = Record<string, unknown>;
@@ -59,7 +59,7 @@ export function createStartValues(groups: FormGroup[]) {
     startValue(field: FormField): unknown {
       const { key } = field;
       if ((field.type === 'hidden' || !edits.has(key)) && seeds[key] !== undefined) return seeds[key];
-      return isGroup(field) && field.defaultItems! > 0 ? createValues([field])[key] : undefined;
+      return isGroup(field) && field.defaultItems! > 0 && hasOwn(seeds, key) ? createValues([field])[key] : undefined;
     },
 
     itemStartValue(item: unknown, key: string): unknown {
