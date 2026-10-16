@@ -1,5 +1,12 @@
 # @formhaus/react
 
+## 0.16.0
+
+### Minor Changes
+
+- New `onValuesChange` prop fires on mount and on every value change.
+- Requires `@formhaus/core` 0.16.0.
+
 ## 0.15.0
 
 ### Minor Changes

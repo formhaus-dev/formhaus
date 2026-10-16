@@ -1,5 +1,11 @@
 # @formhaus/core
 
+## 0.16.0
+
+### Minor Changes
+
+- New `subscribeValues()` and `getValuesSnapshot()` on `FormEngine`.
+
 ## 0.15.0
 
 ### Minor Changes
