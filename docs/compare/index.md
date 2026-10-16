@@ -27,10 +27,10 @@ Formhaus fits forms that are data: one JSON definition with steps, branching rou
 | Figma | Plugin draws the same definition with your design system ([guide](/guide/figma)) |
 | AI tooling | JSON Schema, `@formhaus/mcp` server, Claude Code plugin ([guide](/guide/mcp)) |
 | Frameworks | React 18 and 19, Vue 3.3.3+, framework-agnostic engine |
-| Bundle size | `@formhaus/core` 6.2 KB, `@formhaus/react` 4.8 KB, `@formhaus/vue` 6.4 KB gzipped |
+| Bundle size | 24.2 KB `@formhaus/core` + `@formhaus/react`, 27.4 KB `@formhaus/core` + `@formhaus/vue`, gzipped |
 | License | MIT |
 
-Formhaus sizes are minified ESM bundles gzipped at level 9 (1 KB = 1024 bytes) with `scripts/check-bundle-size.mjs` from the repository, measured on 2026-10-09 for version 0.9.0. The React and Vue numbers exclude `@formhaus/core`. Competitor sizes on each page come from [bundlephobia](https://bundlephobia.com), measured on the same date.
+All sizes on these pages come from [Bundle size](/guide/bundle-size): one method for every library, measured on 2026-10-16 for Formhaus 0.15.0.
 
 ## Sources
 
