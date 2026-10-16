@@ -70,7 +70,10 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
   useEffect(() => applySources(engine, initialValues), [engine]);
 
   const [warned] = useState(() => new Set<string>());
-  useEffect(() => warnMissingComponents(definition, components, warned, props.onWarning), [definition, components]);
+  useEffect(() => {
+    if (typeof process !== 'undefined' && process.env.NODE_ENV !== 'production')
+      warnMissingComponents(definition, components, warned, props.onWarning);
+  }, [definition, components]);
 
   const appliedErrors = useRef<{ engine: typeof engine; errors: Record<string, string> } | null>(null);
   useEffect(() => {
