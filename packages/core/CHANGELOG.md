@@ -1,5 +1,28 @@
 # @formhaus/core
 
+## 0.15.0
+
+### Minor Changes
+
+- **Breaking:** A field shown again gets back its last value, including `''`, `null` and `false`.
+- **Breaking:** A field that starts hidden gets its initial value or `defaultValue` when it is shown.
+- **Breaking:** A group shown again gets back its last items, or else its initial items, instead of `defaultItems` new items.
+- **Breaking:** An item in the initial values or in `reset(values)` gets the `defaultValue` of the item fields it leaves out.
+- **Breaking:** `validateSubmission()` no longer fills the `defaultValue` or `defaultItems` of a key missing from the payload.
+- Fields accept `props`, an object of settings for a custom field type. Renderers pass it to the component as `field.props`.
+- Definition format 1.2 adds `props`. `FORMAT_VERSION` is `"1.2"`.
+- Format 1.0 and 1.1 definitions are still accepted and follow the 0.15 runtime behavior.
+- New `custom-type-name` warning for a custom field type without `-` or `:`. Names with `-` or `:` never become built-in types.
+- New `condition-always-true` warning for `notEmpty: false` in a condition, which matches every value.
+- New `disabled-not-applicable` warning for `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore.
+- New `definition-reset` and `missing-component` issue codes for the React and Vue development warnings.
+- `OptionsProvider` is exported from `@formhaus/core`.
+- Fixed `validateSubmission()` skipping the rules of, or dropping, a field shown by the defaults of a skipped step.
+
+### Patch Changes
+
+- Fixed a key declared on two routes taking its `defaultValue`, `defaultItems` and item defaults from the route the form is not on.
+
 ## 0.14.2
 
 ### Patch Changes

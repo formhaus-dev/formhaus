@@ -1,5 +1,27 @@
 # @formhaus/vue
 
+## 0.15.0
+
+### Minor Changes
+
+- **Breaking:** A cleared number input writes `null` instead of an empty string.
+- `FormRenderer` and `HeadlessFormRenderer` take a ref that exposes `setValue(key, value)` and `getValues()`. The type is `FormRendererHandle`.
+- `setValue` from the ref does not emit `fieldChange`.
+- Group Add and Remove emit `fieldChange` with the group key and the new items.
+- `FormhausForm` saves a draft after group Add and Remove.
+- Focus after group Add and Remove finds custom item and Add elements marked with `data-fh-group-item` and `data-fh-group-add`.
+- Add focuses the new item's title when the item has no field to focus.
+- An error summary link to a group count error focuses a custom Add marked with `data-fh-group-add`.
+- Warns in development when a form gets a new `definition` object with the same content, which resets the form. The warning goes to `onWarning` with the code `definition-reset`.
+- Warns in development once per field type that has no component in `components`. The warning lists the registered types and goes to `onWarning` with the code `missing-component`.
+- The "Unsupported field type" placeholder names the type only in development.
+- New runtime prop declarations for custom components: `formFieldProps`, `formActionsProps`, `formStepProgressProps`, `sectionComponentProps`, `groupComponentProps`, `groupItemComponentProps` and `confirmDialogComponentProps`. Pass them to `defineProps` in an SFC.
+- New runtime emit declarations `formFieldEmits` and `formActionsEmits` for `defineEmits`.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 0.15.0.
+
 ## 0.14.2
 
 ### Patch Changes
