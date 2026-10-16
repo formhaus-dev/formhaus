@@ -11,7 +11,8 @@ describe('capabilities', () => {
     expect(result.validationRules.rules).toContain('matchField');
     expect(result.conditions.operators).toEqual(['eq', 'neq', 'in', 'notIn', 'notEmpty', 'gt', 'gte', 'lt', 'lte']);
     expect(result.steps.routes.join(' ')).toMatch(/to: null/);
-    expect(result.definition.formatVersion).toBe('1.1');
+    expect(result.definition.formatVersion).toBe('1.2');
+    expect(result.fieldProps.optional).toContain('props');
     expect(result.definition.optional).toContain('formatVersion');
     expect(result.adapters.map(({ name }) => name)).toContain('@formhaus/react');
   });

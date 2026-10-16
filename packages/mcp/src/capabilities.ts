@@ -69,9 +69,12 @@ export const capabilities = {
       'layout',
       'i18n',
       'source',
+      'props',
     ],
     source:
       'hidden only. Fills the value in the browser at mount: { "query": "utm_source" } reads a URL parameter; "referrer", "page" (URL without query and hash), "pageTitle", "language", "timezone" or "device" (mobile, tablet or desktop). "country" is filled by the server at submission, such as Formhaus Cloud; browsers leave it empty. A source that yields nothing leaves defaultValue. Values are user-controllable; do not make tracking fields required. A fixed value is defaultValue without a source.',
+    props:
+      'Custom field types only: an object of settings the custom component reads as field.props. Core ignores it. Added in format 1.2.',
     optionFieldTypes: OPTION_FIELD_TYPES,
     options: 'Array of { value: string, label: string }.',
     inputMode: ['text', 'numeric', 'decimal', 'tel', 'email', 'url', 'search'],
@@ -100,7 +103,8 @@ export const capabilities = {
     comparisons: 'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values.',
     scope:
       'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
-    hiddenValues: 'Fields hidden by conditions are cleared at once and left out of submitted values.',
+    hiddenValues:
+      'Fields hidden by conditions are cleared at once and left out of submitted values. A field shown again gets its defaultValue or initial value back unless the user edited it.',
   },
   steps: {
     props: ['id', 'title', 'description', 'fields', 'show', 'showAny', 'routes', 'next', 'back', 'skip'],
