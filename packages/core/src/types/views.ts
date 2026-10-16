@@ -50,3 +50,8 @@ export interface GroupView<TItem extends GroupItemView = GroupItemView> {
   disabled?: boolean;
   status: string;
 }
+
+export interface FormRendererHandle {
+  setValue(key: string, value: unknown): void;
+  getValues(): Record<string, unknown>;
+}
