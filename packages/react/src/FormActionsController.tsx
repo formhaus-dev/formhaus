@@ -33,7 +33,7 @@ export function FormActionsController({
   const handlePrimary = useCallback(async () => {
     if (view.isLastStep) onSubmit();
     else await onNext();
-  }, [engine, view.isLastStep, onNext, onSubmit]);
+  }, [view.isLastStep, onNext, onSubmit]);
 
   if (!ActionsComponent) return null;
 
