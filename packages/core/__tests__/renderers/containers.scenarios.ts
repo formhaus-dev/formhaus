@@ -171,6 +171,24 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ company: true, people: [{ name: 'Ada' }] }, []));
   });
 
+  it('moves focus in custom group markup marked with data-fh-group-item and data-fh-group-add', async () => {
+    harness.mount({
+      definition: team,
+      components: harness.containers,
+      initialValues: { crew: [{ name: 'A' }, { name: 'B' }] },
+      onSubmit: () => {},
+    });
+    await harness.click(button('More'));
+    await waitFor(() => expect(names()).toHaveLength(3));
+    await waitFor(() => expect(active()).toBe(names()[2]));
+    await harness.click(button('Drop Crew 3'));
+    await waitFor(() => expect(names()).toHaveLength(2));
+    await waitFor(() => expect(active()).toBe(button('More')));
+    await harness.click(button('More'));
+    await harness.click(button('Drop Crew 1'));
+    await waitFor(() => expect(active()?.textContent).toBe('Crew 1'));
+  });
+
   it('keeps focus and the same input while typing in sections and group items', async () => {
     harness.mount({ definition: event, initialValues: { company: true }, onSubmit: () => {} });
     const typeInto = async (find: () => HTMLInputElement, text: string) => {
