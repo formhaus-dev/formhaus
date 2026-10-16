@@ -26,9 +26,11 @@ interface FormRoot extends Focusable {
 type Found = Focusable | null | undefined;
 
 const CONTROLS = 'input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
+const GROUP_ITEM = '[data-fh-group-item], .fh-group__item';
+const GROUP_ADD = '[data-fh-group-add], .fh-group__add';
 
-function firstControl(root: Found): Found {
-  if (root?.matches('.fh-group')) return (root.querySelector('.fh-group__add') as Found) ?? (root.querySelector(CONTROLS) as Found);
+function firstControl(root: Found, group = root?.matches('.fh-group')): Found {
+  if (root && group) return (root.querySelector(GROUP_ADD) as Found) ?? (root.querySelector(CONTROLS) as Found);
   return root?.matches(CONTROLS) ? root : (root?.querySelector(CONTROLS) as Found);
 }
 
@@ -58,10 +60,9 @@ export function focusField(form: FormRoot | null | undefined, id: string | null)
   const chosen = id ? (fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) as Found) : null;
   if (id && !chosen) return;
   const field = (chosen?.closest?.('.fh-field, .fh-group') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) as Found;
+  const group = !!field && (field.matches('.fh-group') || !!field.querySelector(GROUP_ADD));
   const target =
-    (!field?.matches('.fh-group') && (field?.querySelector('input:checked:not(:disabled)') as Found)) ||
-    firstControl(field) ||
-    firstControl(fields);
+    (!group && (field?.querySelector('input:checked:not(:disabled)') as Found)) || firstControl(field, group) || firstControl(fields);
   (target ?? form)?.focus();
 }
 
@@ -76,11 +77,11 @@ export function focusItem(
 ): void {
   const item = document.getElementById(itemDomId(formId, group, index, undefined, definition)) as Focusable | null;
   const next = (
-    added ? (item?.closest?.('.fh-group__item') as Searchable | null | undefined)?.querySelector('input, select, textarea') : item
+    added ? ((item?.closest?.(GROUP_ITEM) as Searchable | null | undefined)?.querySelector('input, select, textarea') ?? item) : item
   ) as Found;
   (
     next ??
-    (root?.querySelector('.fh-group__add') as Found) ??
+    (root?.querySelector(GROUP_ADD) as Found) ??
     (document.getElementById(itemDomId(formId, group, index - 1, undefined, definition)) as Found)
   )?.focus();
 }

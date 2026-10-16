@@ -20,20 +20,23 @@ const containers = {
       {children}
     </div>
   ),
-  group: ({ label, items, canAdd, add }: GroupComponentProps) => (
-    <div>
+  group: ({ id, label, items, canAdd, add }: GroupComponentProps) => (
+    <div id={id}>
       <span>
         {label}: {items.length}
       </span>
       {items.map((item) => (
-        <div key={item.id}>
+        <div key={item.id} data-fh-group-item>
+          <span id={item.titleId} tabIndex={-1}>
+            {item.title}
+          </span>
           <button type="button" onClick={item.remove}>
             Drop {item.title}
           </button>
           {item.children}
         </div>
       ))}
-      <button type="button" disabled={!canAdd} onClick={add}>
+      <button type="button" disabled={!canAdd} onClick={add} data-fh-group-add>
         More
       </button>
     </div>

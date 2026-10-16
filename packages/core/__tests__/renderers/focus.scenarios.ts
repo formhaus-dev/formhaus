@@ -1,3 +1,4 @@
+import type { FormDefinition } from '../../src';
 import { filled, flat, wizard, type RendererHarness, type TestKit } from './fixtures';
 
 export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, screen }: TestKit): void {
@@ -116,5 +117,17 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     await harness.click(button('Continue'));
     await screen.findByRole('heading', { name: 'Two' });
     await waitFor(() => expect(active()).toBe(screen.getByRole('radio', { name: 'Plan A' })));
+  });
+
+  it('focuses Add in custom group markup from a count error summary link', async () => {
+    const crew = { key: 'crew', type: 'group', label: 'Crew', validation: { minLength: 2 }, fields: [flat.fields![0]] };
+    const definition: FormDefinition = { ...flat, fields: [crew] };
+    harness.mount({ definition, components: harness.containers, initialValues: { crew: [{}] }, errorSummary: true, onSubmit: () => {} });
+    await harness.click(button('Send'));
+    const link = await screen.findByRole('link', { name: 'Crew: Must be at least 2 items' });
+    await waitFor(() => expect(active()).not.toBe(document.body));
+    textbox('First').focus();
+    await harness.click(link);
+    await waitFor(() => expect(active()).toBe(button('More')));
   });
 }

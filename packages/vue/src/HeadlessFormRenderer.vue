@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isSection, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
-import { applySources, errorEntries, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { applySources, errorEntries, labelFor, shouldApplyExternalErrors, warnMissingComponents } from '@formhaus/core/internal';
 import { computed, onMounted, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
@@ -10,7 +10,7 @@ import { useFormId } from './composables/useFormId';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
 import { useNodeProps } from './composables/useNodeProps';
-import type { FormRendererEmits, FormRendererProps } from './types';
+import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
 
 const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2, confirmRemove: true });
 
@@ -75,8 +75,16 @@ watch(
   (engine) => applySources(engine, props.initialValues),
 );
 
+const warned = new Set<string>();
+watch(
+  [() => props.definition, () => props.components],
+  ([definition, components]) => warnMissingComponents(definition, components, warned, props.onWarning),
+  { immediate: true },
+);
+
 const {
   update: onFieldUpdate,
+  changeItems: onItemsChange,
   commit: onFieldCommit,
   next: onNext,
   prev: onPrev,
@@ -133,9 +141,16 @@ const disabled = computed(() => props.loading || stepValidating.value || submitt
 const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, {
   update: onFieldUpdate,
   commit: onFieldCommit,
+  changeItems: onItemsChange,
   blur: onFieldBlur,
   focus: onFieldFocus,
 });
+
+const handle: FormRendererHandle = {
+  setValue: (key, value) => form.engine.setValue(key, value),
+  getValues: () => ({ ...form.engine.values }),
+};
+defineExpose(handle);
 
 const effectiveIsLastStep = computed(() => isLastStep.value || !isMultiStep.value);
 

@@ -12,6 +12,7 @@ Each recipe is a complete JSON definition with framework code for one job. Every
 | How do I build a multi-step form with branching in React or Vue? | [Multi-step form with branching](/recipes/multi-step-branching) |
 | How do I send a multi-step form to an existing flat API and show its errors? | [Multi-step form on a flat API](/recipes/flat-api) |
 | How do I show or hide fields based on other answers? | [Conditional fields](/recipes/conditional-fields) |
+| How do I fill a field from another field until the user edits it? | [Derived values](/recipes/derived-values) |
 | How do I build a quiz or lead-capture funnel? | [Quiz funnel](/recipes/quiz-funnel) |
 | How do I use the form engine without React or Vue? | [Headless engine](/recipes/headless-engine) |
 | How do I use Formhaus with Svelte 5? | [Svelte 5](/recipes/svelte) |

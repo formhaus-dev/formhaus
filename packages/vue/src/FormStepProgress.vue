@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { FormStepProgressProps } from './types';
+import { formStepProgressProps } from './props';
 
-const props = withDefaults(defineProps<FormStepProgressProps>(), { headingLevel: 2 });
+const props = defineProps(formStepProgressProps);
 </script>
 
 <template>

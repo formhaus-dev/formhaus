@@ -8,6 +8,7 @@ import type { UseFormEngineReturn } from './useFormEngine';
 interface Handlers {
   update: (key: string, value: unknown) => void;
   commit: (key: string, value: unknown) => void;
+  changeItems: (key: string, apply: () => boolean) => boolean;
   blur: (key: string) => void;
   focus: (key: string) => void;
 }
@@ -54,6 +55,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
           labels: props.labels,
           confirmRemove: props.confirmRemove,
           options: options.value,
+          change: on.changeItems,
           onUpdate: on.update,
           onBlur: on.blur,
           onFocus: on.focus,
