@@ -2,6 +2,8 @@ import type { FormDefinition, FormNode, FormStep } from '../types';
 import { isVisible } from '../visibility';
 import { cleanItems, hasOwn, isGroup, shownFields, valueFields } from '../visibility/nodes';
 import { trimValue } from '../validation/type-checks';
+import { createPathPatch } from './path-patch';
+import type { DefinitionIndex } from './visibility-index';
 
 export function activeSteps(definition: FormDefinition, values: Record<string, unknown>): FormStep[] {
   return walkPath(definition, values).steps;
@@ -60,25 +62,57 @@ function addStepValues(step: { fields: FormNode[] }, values: Record<string, unkn
   for (const [key, value] of shown) target[key] = value;
 }
 
-export function createActivePath(definition: FormDefinition) {
+export function createActivePath(definition: FormDefinition, index: DefinitionIndex) {
+  const changes = createPathPatch(index);
   let source: Record<string, unknown> | null = null;
   let steps: FormStep[] = [];
   let active: Record<string, unknown> = {};
+  let ordered = true;
   const refresh = (values: Record<string, unknown>) => {
     if (source === values) return;
     source = values;
     ({ steps, values: active } = walkPath(definition, values));
+    ordered = true;
+  };
+  const reorder = () => {
+    const sorted: Record<string, unknown> = {};
+    const fields = definition.steps?.length ? steps.flatMap((step) => valueFields(step.fields)) : valueFields(definition.fields ?? []);
+    for (const { key } of fields) if (hasOwn(active, key) && !hasOwn(sorted, key)) sorted[key] = active[key];
+    active = sorted;
+    ordered = true;
   };
   return {
     invalidate(): void {
       source = null;
     },
+    patch(values: Record<string, unknown>, key: string): boolean {
+      const changed = source === values && changes(key, values, active, steps);
+      if (!changed) return false;
+      for (const [name, shown, value] of changed) {
+        if (!shown) delete active[name];
+        else if (hasOwn(active, name)) active[name] = value;
+        else {
+          active[name] = value;
+          ordered = false;
+        }
+      }
+      return true;
+    },
     steps(values: Record<string, unknown>): FormStep[] {
       refresh(values);
       return steps;
     },
+    has(values: Record<string, unknown>, step: FormStep): boolean {
+      refresh(values);
+      return steps.includes(step);
+    },
+    scope(values: Record<string, unknown>): Record<string, unknown> {
+      refresh(values);
+      return active;
+    },
     values(values: Record<string, unknown>): Record<string, unknown> {
       refresh(values);
+      if (!ordered) reorder();
       return active;
     },
   };

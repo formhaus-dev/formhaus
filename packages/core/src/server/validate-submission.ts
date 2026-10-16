@@ -36,12 +36,13 @@ interface ActiveValues {
 function activeValues(definition: FormDefinition, fields: FormField[], input: unknown): ActiveValues {
   const source = input !== null && typeof input === 'object' && !Array.isArray(input) ? (input as Record<string, unknown>) : {};
   const visibility = createVisibility(definition);
+  const first = new Map([...fields].reverse().map((field) => [field.key, field]));
   const keys = [...new Set(fields.map(({ key }) => key))].filter((key) => hasOwn(source, key));
   let result: ActiveValues = { values: {}, active: new Map() };
   for (let round = 0; round <= fields.length; round++) {
     const values: Record<string, unknown> = {};
     for (const key of keys) {
-      const value = normalizeValue(result.active.get(key) ?? fields.find((field) => field.key === key)!, source[key]);
+      const value = normalizeValue(result.active.get(key) ?? first.get(key)!, source[key]);
       if (value !== undefined) values[key] = value;
     }
     const active = new Map<string, FormField>();
@@ -97,7 +98,8 @@ function loadSubmitted(engine: FormEngine, values: Record<string, unknown>): voi
 
 function setError(visibility: EngineInternals['visibility'], errors: Record<string, string>, key: string, error: string): void {
   errors[key] = error;
-  for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
+  if (visibility.groups.some((group) => group.key === key))
+    for (const path of Object.keys(errors)) if (path !== key && visibility.owner(path) === key) delete errors[path];
 }
 
 function dropUnchecked(engine: FormEngine, submitted: Record<string, unknown>, errors: Record<string, string>, resolve: ResolveMessage) {

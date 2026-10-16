@@ -1,6 +1,7 @@
 import fc from 'fast-check';
 import { describe, expect, it } from 'vitest';
 import { createActivePath } from '../../src/engine/step-routes';
+import { indexDefinition } from '../../src/engine/visibility-index';
 import { isVisible } from '../../src/visibility';
 import { trimValue } from '../../src/validation/type-checks';
 import type { FormDefinition, FormField, FormStep, ShowCondition } from '../../src';
@@ -118,7 +119,7 @@ describe('active path', () => {
   it('matches the step-by-step projection for any definition and answers', () => {
     fc.assert(
       fc.property(definitionArbitrary, valuesArbitrary, (definition, values) => {
-        const path = createActivePath(definition);
+        const path = createActivePath(definition, indexDefinition(definition));
         const expected = referencePath(definition, values);
         expect(path.steps(values).map((step) => step.id)).toEqual(expected.steps);
         expect(Object.entries(path.values(values))).toEqual(expected.values);
@@ -144,7 +145,7 @@ describe('active path', () => {
         },
       ],
     };
-    const path = createActivePath(definition);
+    const path = createActivePath(definition, indexDefinition(definition));
     expect(Object.entries(path.values({ a: ' kept ', b: 'b' }))).toEqual([
       ['a', 'kept'],
       ['b', 'b'],

@@ -128,8 +128,9 @@ function fieldsOf(itemId: string): Component {
   return component;
 }
 
-const groupProps = computed(
-  (): GroupComponentProps => ({
+const groupProps = computed((): GroupComponentProps => {
+  values.value;
+  return {
     id: id.value,
     group: props.group,
     label: props.group.label,
@@ -159,8 +160,8 @@ const groupProps = computed(
     disabled: props.disabled,
     status: status.value + (announcements.value % 2 ? '\u00a0' : ''),
     itemComponent: (props.components?.groupItem ?? DefaultGroupItem) as Component,
-  }),
-);
+  };
+});
 
 const dialogProps = computed((): ConfirmDialogComponentProps | null => {
   const index = props.items.findIndex((item) => item.id === confirming.value);

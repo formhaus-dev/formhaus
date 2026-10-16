@@ -2,7 +2,7 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { FormRenderer } from '../src/FormRenderer';
-import type { FieldComponentProps } from '../src/types';
+import type { FieldComponentProps, GroupComponentProps } from '../src/types';
 
 const renderCounts = new Map<string, number>();
 
@@ -110,5 +110,52 @@ describe('FormRenderer field isolation', () => {
 
     expect(renderCounts.get('country')).toBe(1);
     expect(renderCounts.has('city')).toBe(false);
+  });
+});
+
+let groupRenders = 0;
+
+function CountedGroup({ label, items }: GroupComponentProps) {
+  groupRenders++;
+  return (
+    <div>
+      <span>{label}</span>
+      {items.map((item) => (
+        <div key={item.id}>
+          <span>{item.hasContent ? 'filled' : 'empty'}</span>
+          {item.children}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const groupDefinition: FormDefinition = {
+  id: 'group-isolation',
+  title: 'Group isolation',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'name', type: 'text', label: 'Name' },
+    { key: 'people', type: 'group', label: 'People', defaultItems: 1, fields: [{ key: 'person', type: 'text', label: 'Person' }] },
+  ],
+};
+
+describe('FormRenderer group isolation', () => {
+  it('does not render a group again when an unrelated field changes', () => {
+    render(<FormRenderer definition={groupDefinition} components={{ group: CountedGroup }} onSubmit={() => {}} />);
+    const before = groupRenders;
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Name' }), { target: { value: 'Ada' } });
+
+    expect(groupRenders).toBe(before);
+  });
+
+  it('renders a group again when one of its items changes', () => {
+    render(<FormRenderer definition={groupDefinition} components={{ group: CountedGroup }} onSubmit={() => {}} />);
+    expect(screen.getByText('empty')).toBeDefined();
+
+    fireEvent.change(screen.getByRole('textbox', { name: 'Person' }), { target: { value: 'Grace' } });
+
+    expect(screen.getByText('filled')).toBeDefined();
   });
 });

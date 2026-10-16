@@ -17,7 +17,7 @@ export function writeValue(
   engine.visibility.remember(key, value, true);
   if (own) clearError(engine, key, valueChanged);
   for (const [stepId, keys] of engine.skipped) if (valueChanged && keys.includes(key)) engine.skipped.delete(stepId);
-  const clearedFields = engine.visibility.reconcileHidden(values, errors);
+  const clearedFields = engine.visibility.reconcileHidden(values, errors, false, key);
   dropServerErrors(engine, clearedFields);
   const changedFields = new Set([...clearedFields, ...clearResolvedMatchErrors(engine, key), ...changed()]);
   if (valueChanged || previousError !== errors[key]) changedFields.add(key);
