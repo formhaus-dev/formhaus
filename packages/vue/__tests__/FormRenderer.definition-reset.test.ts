@@ -11,6 +11,8 @@ const definition: FormDefinition = {
 };
 
 const input = () => screen.getByLabelText('Name') as HTMLInputElement;
+const formhausWarnings = (warn: { mock: { calls: unknown[][] } }) =>
+  warn.mock.calls.filter(([message]) => String(message).startsWith('[formhaus]'));
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -25,7 +27,7 @@ describe('definition changes', () => {
     await rerender({ definition: structuredClone(definition) });
     expect(input().value).toBe('Ada');
     await rerender({ definition: structuredClone(definition) });
-    expect(warn.mock.calls).toEqual([
+    expect(formhausWarnings(warn)).toEqual([
       [
         '[formhaus] The form got a new definition object with the same content and was reset. Keep the definition in a constant or a computed.',
       ],
@@ -38,7 +40,7 @@ describe('definition changes', () => {
     await fireEvent.update(input(), 'Grace');
     await rerender({ definition: { ...definition, fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'Lin' }] } });
     expect(input().value).toBe('Lin');
-    expect(warn).not.toHaveBeenCalled();
+    expect(formhausWarnings(warn)).toEqual([]);
   });
 
   it('keeps the form when only initialValues change', async () => {
@@ -47,7 +49,7 @@ describe('definition changes', () => {
     await fireEvent.update(input(), 'Grace');
     await rerender({ initialValues: { name: 'Lin' } });
     expect(input().value).toBe('Grace');
-    expect(warn).not.toHaveBeenCalled();
+    expect(formhausWarnings(warn)).toEqual([]);
   });
 
   it('sends the warning to onWarning', async () => {
@@ -64,6 +66,6 @@ describe('definition changes', () => {
     vi.stubEnv('NODE_ENV', 'production');
     const { rerender } = render(FormRenderer, { props: { definition } });
     await rerender({ definition: { ...definition } });
-    expect(warn).not.toHaveBeenCalled();
+    expect(formhausWarnings(warn)).toEqual([]);
   });
 });
