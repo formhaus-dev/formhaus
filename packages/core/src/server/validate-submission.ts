@@ -78,6 +78,7 @@ function itemErrors(engine: FormEngine, invalid: Map<string, string>, resolve: R
         const error = typeError(field, item[field.key], resolve);
         if (!error) continue;
         errors.set(itemPath(group.key, index, field.key), error);
+        internals(engine).visibility.markItemEdited(item, field.key);
         cleared[field.key] = undefined;
       }
       return Object.keys(cleared).length ? keepId(item, { ...item, ...cleared }) : item;
