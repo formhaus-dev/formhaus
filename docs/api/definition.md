@@ -71,6 +71,8 @@ type DefaultFieldType =
 type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get autocomplete
 ```
 
+Name custom types with `-` or `:`, such as `x-rating`. These names never become built-in types. See [Custom field types](/guide/fields#custom-field-types).
+
 ## FormSection and FormGroup
 
 Containers inside a `fields` array. Added in 0.14.0 with format 1.1. See [Sections](/guide/sections) and [Repeatable groups](/guide/groups).
