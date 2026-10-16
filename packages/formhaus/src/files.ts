@@ -1,4 +1,5 @@
 import {
+  chmodSync,
   constants,
   copyFileSync,
   existsSync,
@@ -10,7 +11,7 @@ import {
   statSync,
   writeFileSync,
 } from 'node:fs';
-import { dirname, relative, resolve, sep } from 'node:path';
+import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { type Change, type Context, SetupError, type State } from './context';
 
 export function readText(file: string): string | undefined {
@@ -27,25 +28,37 @@ function refuseSymlink(ctx: Context, path: string): void {
   }
 }
 
+function isInside(parent: string, path: string): boolean {
+  const between = relative(parent, path);
+  return between !== '' && !between.startsWith('..') && !isAbsolute(between);
+}
+
+export function configRoot(ctx: Context, base: string): string {
+  return isInside(ctx.home, base) ? ctx.home : base;
+}
+
 function refuseLinkedDirectories(ctx: Context, root: string, file: string): void {
+  if (!isInside(root, file)) throw new SetupError(`${display(ctx, file)} is outside ${display(ctx, root)}. Edit the file by hand.`);
   const parts = relative(root, dirname(file)).split(sep).filter(Boolean);
   for (let index = 1; index <= parts.length; index++) refuseSymlink(ctx, resolve(root, ...parts.slice(0, index)));
 }
 
-export function writeText(ctx: Context, file: string, text: string, root?: string): void {
+export function writeText(ctx: Context, file: string, text: string, root: string): void {
   const backup = `${file}.bak`;
   const temporary = `${file}.tmp`;
-  if (root) refuseLinkedDirectories(ctx, root, file);
+  refuseLinkedDirectories(ctx, root, file);
   for (const path of [file, backup, temporary]) refuseSymlink(ctx, path);
   if (ctx.dryRun) return;
   mkdirSync(dirname(file), { recursive: true });
   if (existsSync(file) && !existsSync(backup)) copyFileSync(file, backup, constants.COPYFILE_EXCL);
+  const mode = statSync(file, { throwIfNoEntry: false })?.mode;
   rmSync(temporary, { force: true });
-  writeFileSync(temporary, text, { flag: 'wx' });
+  writeFileSync(temporary, text, { flag: 'wx', mode: mode === undefined ? undefined : mode & 0o600 });
+  if (mode !== undefined) chmodSync(temporary, mode & 0o7777);
   renameSync(temporary, file);
 }
 
-export function writeIfChanged(ctx: Context, file: string, text: string, root?: string): State {
+export function writeIfChanged(ctx: Context, file: string, text: string, root: string): State {
   const current = readText(file);
   if (current === text) return 'present';
   writeText(ctx, file, text, root);

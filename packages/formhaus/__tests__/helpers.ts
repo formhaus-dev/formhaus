@@ -51,7 +51,7 @@ export function sandbox(): Sandbox {
       const err: string[] = [];
       const code = main(
         argv,
-        { home, cwd: box.cwd, env: box.env, platform: box.platform },
+        { home: box.home, cwd: box.cwd, env: box.env, platform: box.platform },
         (line) => out.push(line),
         (line) => err.push(line),
       );

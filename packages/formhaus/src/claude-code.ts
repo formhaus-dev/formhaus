@@ -2,7 +2,7 @@ import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import createFormSkill from '../../../plugins/formhaus/skills/formhaus-create-form/SKILL.md';
 import { type Agent, type Change, type Context, SERVER, SERVER_NAME, type State } from './context';
-import { display, step, writeIfChanged } from './files';
+import { configRoot, display, step, writeIfChanged } from './files';
 import { jsonServerState, readJsonObject } from './json-config';
 import { command, findOnPath } from './which';
 
@@ -57,7 +57,7 @@ export const claudeCode: Agent = {
     return [
       step(ctx, NAME, 'MCP server', `claude mcp add --scope user ${SERVER_NAME}`, () => addServer(ctx, claude)),
       step(ctx, NAME, 'formhaus-create-form skill', skill, () =>
-        hasPlugin(ctx) ? 'present' : writeIfChanged(ctx, skill, createFormSkill),
+        hasPlugin(ctx) ? 'present' : writeIfChanged(ctx, skill, createFormSkill, configRoot(ctx, configDir(ctx))),
       ),
       ...projectWarning(ctx),
     ];

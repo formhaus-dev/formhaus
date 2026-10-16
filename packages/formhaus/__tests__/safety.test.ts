@@ -1,4 +1,4 @@
-import { readlinkSync, symlinkSync } from 'node:fs';
+import { chmodSync, readlinkSync, rmSync, statSync, symlinkSync } from 'node:fs';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { onWindows, type Sandbox, sandbox } from './helpers';
 
@@ -51,6 +51,38 @@ describe.skipIf(onWindows)('symbolic links', () => {
     expect(box.exists('elsewhere/formhaus.mdc')).toBe(false);
   });
 
+  it('refuses a linked Claude Code skill directory', () => {
+    box.fakeBin('claude');
+    box.write('elsewhere/.keep', '');
+    box.write('.claude/skills/.keep', '');
+    symlinkSync(box.path('elsewhere'), box.path('.claude/skills/formhaus-create-form'));
+    expect(box.run().out).toContain('~/.claude/skills/formhaus-create-form is a symbolic link');
+    expect(box.exists('elsewhere/SKILL.md')).toBe(false);
+  });
+
+  it('refuses a linked Cursor config directory', () => {
+    box.cleanup();
+    box = sandbox();
+    box.write('elsewhere/mcp.json', '{}');
+    symlinkSync(box.path('elsewhere'), box.path('.cursor'));
+    expect(box.run().out).toContain('~/.cursor is a symbolic link');
+    expect(box.read('elsewhere/mcp.json')).toBe('{}');
+    expect(box.exists('elsewhere/mcp.json.bak')).toBe(false);
+  });
+
+  it('allows a linked home directory', () => {
+    const linked = `${box.home}-link`;
+    symlinkSync(box.home, linked);
+    try {
+      box.home = linked;
+      box.env.HOME = linked;
+      expect(box.run().code).toBe(0);
+      expect(JSON.parse(box.read('.cursor/mcp.json')).mcpServers.formhaus).toBeDefined();
+    } finally {
+      rmSync(linked);
+    }
+  });
+
   it('refuses a linked JSON config', () => {
     box.write('secret', '{}');
     symlinkSync(box.path('secret'), box.path('.cursor/mcp.json'));
@@ -72,6 +104,16 @@ describe.skipIf(onWindows)('backups', () => {
   });
 });
 
+describe.skipIf(onWindows)('permissions', () => {
+  it('keeps the mode of a private config', () => {
+    box.write('.cursor/mcp.json', '{"mcpServers":{"other":{"command":"x","env":{"KEY":"secret"}}}}');
+    chmodSync(box.path('.cursor/mcp.json'), 0o600);
+    box.run();
+    expect(JSON.parse(box.read('.cursor/mcp.json')).mcpServers.formhaus).toBeDefined();
+    expect(statSync(box.path('.cursor/mcp.json')).mode & 0o777).toBe(0o600);
+  });
+});
+
 describe.skipIf(onWindows)('Codex inline servers', () => {
   it.each([
     ['an inline mcp_servers table', 'mcp_servers = { other = { command = "x" } }\n'],
@@ -83,5 +125,48 @@ describe.skipIf(onWindows)('Codex inline servers', () => {
     expect(result.out).toContain('sets mcp_servers inline. Add the formhaus server there by hand');
     expect(box.read('.codex/config.toml')).toBe(toml);
     expect(box.exists('.codex/config.toml.bak')).toBe(false);
+  });
+});
+
+describe.skipIf(onWindows)('Codex quoted tables', () => {
+  it.each([
+    ['a quoted parent key', '["mcp_servers".formhaus]\ncommand = "other"\n'],
+    ['single quotes on both keys', '[\'mcp_servers\'."formhaus"]\ncommand = "other"\n'],
+    ['spaces around the dot', '[ "mcp_servers" . formhaus ]\ncommand = "other"\n'],
+    ['a quoted parent with a sub-table', '["mcp_servers".formhaus.env]\nKEY = "x"\n'],
+    ['a quoted servers table', '["mcp_servers"]\nformhaus = { command = "other" }\n'],
+    ['a quoted dotted key', '"mcp_servers".formhaus.command = "other"\n'],
+  ])('leaves a different server under %s unchanged', (_, toml) => {
+    box.write('.codex/config.toml', toml);
+    const result = box.run();
+    expect(result.out).toContain('different server, check it');
+    expect(box.read('.codex/config.toml')).toBe(toml);
+  });
+
+  it('recognizes our server under a quoted parent key', () => {
+    const toml = '["mcp_servers".formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n';
+    box.write('.codex/config.toml', toml);
+    box.run();
+    expect(box.read('.codex/config.toml')).toBe(toml);
+    expect(box.exists('.codex/config.toml.bak')).toBe(false);
+  });
+
+  it('adds the server next to other quoted servers', () => {
+    box.write('.codex/config.toml', '["mcp_servers".other]\ncommand = "x"\n');
+    box.run();
+    expect(box.read('.codex/config.toml')).toBe(
+      '["mcp_servers".other]\ncommand = "x"\n\n[mcp_servers.formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n',
+    );
+  });
+
+  it.each([
+    ['an escaped parent key', '["mcp\\u005fservers".formhaus]\ncommand = "other"\n'],
+    ['an array of tables', '[[mcp_servers.formhaus]]\ncommand = "other"\n'],
+  ])('refuses %s', (_, toml) => {
+    box.write('.codex/config.toml', toml);
+    const result = box.run();
+    expect(result.code).toBe(1);
+    expect(result.out).toContain('Formhaus cannot read');
+    expect(box.read('.codex/config.toml')).toBe(toml);
   });
 });

@@ -2,13 +2,24 @@ import { type Context, isOurServer, SERVER, SERVER_NAME, type ServerState, Setup
 import { display, readText, writeText } from './files';
 
 const NAME = `(?:${SERVER_NAME}|"${SERVER_NAME}"|'${SERVER_NAME}')`;
-const TABLE = new RegExp(`^\\s*\\[\\s*mcp_servers\\s*\\.\\s*${NAME}\\s*[\\].]`, 'm');
-const OUR_TABLE = new RegExp(`^\\s*\\[\\s*mcp_servers\\s*\\.\\s*${NAME}\\s*\\]\\s*(?:#.*)?$`, 'm');
-const DOTTED_KEY = new RegExp(`^\\s*mcp_servers\\s*\\.\\s*${NAME}\\s*[.=]`, 'm');
-const SERVERS_TABLE = /^\s*\[\s*mcp_servers\s*\]\s*(?:#.*)?$/m;
+const PARENT = `(?:mcp_servers|"mcp_servers"|'mcp_servers')`;
+const TABLE = new RegExp(`^\\s*\\[\\s*${PARENT}\\s*\\.\\s*${NAME}\\s*[\\].]`, 'm');
+const OUR_TABLE = new RegExp(`^\\s*\\[\\s*${PARENT}\\s*\\.\\s*${NAME}\\s*\\]\\s*(?:#.*)?$`, 'm');
+const DOTTED_KEY = new RegExp(`^\\s*${PARENT}\\s*\\.\\s*${NAME}\\s*[.=]`, 'm');
+const SERVERS_TABLE = new RegExp(`^\\s*\\[\\s*${PARENT}\\s*\\]\\s*(?:#.*)?$`, 'm');
 const NEXT_TABLE = /^\s*\[/m;
-const INLINE_SERVERS = /^\s*mcp_servers\s*=/m;
+const INLINE_SERVERS = new RegExp(`^\\s*${PARENT}\\s*=`, 'm');
 const SERVER_KEY = new RegExp(`^\\s*${NAME}\\s*[.=]`, 'm');
+const KEY = `\\s*(?:[A-Za-z0-9_-]+|"[^"\\\\\\n]*"|'[^'\\n]*')\\s*`;
+const HEADER = new RegExp(`^\\[${KEY}(?:\\.${KEY})*\\]\\s*(?:#.*)?$`);
+const RELEVANT = new RegExp(`mcp_servers|${SERVER_NAME}|\\\\`);
+
+function hasUnreadableHeader(text: string): boolean {
+  return text.split('\n').some((line) => {
+    const trimmed = line.trim();
+    return trimmed.startsWith('[') && RELEVANT.test(trimmed) && !HEADER.test(trimmed);
+  });
+}
 
 function section(text: string, header: RegExp): string | undefined {
   const match = header.exec(text);
@@ -42,14 +53,19 @@ export const TOML_BLOCK = [
   '',
 ].join('\n');
 
-export function addTomlServer(ctx: Context, file: string): State {
+export function addTomlServer(ctx: Context, file: string, root: string): State {
   const text = readText(file) ?? '';
   const existing = tomlServerState(text);
   if (existing !== 'missing') return existing;
   if (INLINE_SERVERS.test(text)) {
     throw new SetupError(`${display(ctx, file)} sets mcp_servers inline. Add the formhaus server there by hand. The file was not changed.`);
   }
+  if (hasUnreadableHeader(text)) {
+    throw new SetupError(
+      `${display(ctx, file)} has an mcp_servers table Formhaus cannot read. Add the formhaus server there by hand. The file was not changed.`,
+    );
+  }
   const separator = text.trim() === '' ? '' : text.endsWith('\n') ? '\n' : '\n\n';
-  writeText(ctx, file, text.trim() === '' ? TOML_BLOCK : text + separator + TOML_BLOCK);
+  writeText(ctx, file, text.trim() === '' ? TOML_BLOCK : text + separator + TOML_BLOCK, root);
   return 'added';
 }
