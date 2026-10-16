@@ -31,7 +31,7 @@ export function textNodes(definition: FormDefinition): TextNode[] {
       (field as FormField).options?.forEach((option, position) => {
         add('option', option, `${at}/options/${position}`, [...key, 'options', option.value]);
       });
-      add('validation', field.validation, `${at}/validation`, [...key, 'validation'], field);
+      add('validation', field.validation, `${at}/validation`, [...key, 'validation'], field as FormField);
       if (isGroup(field)) fields(field.fields, at, key);
     });
   add('form', definition, '', []);
