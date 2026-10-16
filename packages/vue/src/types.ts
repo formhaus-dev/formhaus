@@ -38,7 +38,7 @@ export interface GroupComponentProps extends GroupView<GroupItemComponentProps> 
   itemComponent: Component;
 }
 
-export type FormActionsProps = FormActionsView;
+export interface FormActionsProps extends FormActionsView {}
 
 export interface FormStepStatus {
   id: string;
