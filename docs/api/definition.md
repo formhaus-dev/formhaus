@@ -14,7 +14,7 @@ Top-level structure. Use `fields` (single-step) or `steps` (multi-step), never b
 ```ts
 interface FormDefinition {
   $schema?: string;      // JSON Schema URL for editor validation
-  formatVersion?: string; // Definition format, such as "1.1". Added in 0.11.2
+  formatVersion?: string; // Definition format, such as "1.2". Added in 0.11.2
   id: string;            // Unique form identifier
   lang?: string;         // BCP 47 tag of the texts, such as "ru". Added in 0.13.0
   title: string;         // Form title for host UI and Figma output
@@ -42,7 +42,7 @@ interface FormField {
   label: string;                  // Label text
   placeholder?: string;           // Placeholder text
   helperText?: string;            // Hint text between the label and the control
-  defaultValue?: unknown;         // Pre-filled value
+  defaultValue?: unknown;         // Start value, restored when the field is shown again unedited
   autoAdvance?: boolean;          // Advance on explicit field activation. Added in 0.7.0
   show?: ShowCondition[];         // AND conditions for visibility
   showAny?: ShowCondition[];      // OR conditions for visibility
@@ -56,6 +56,7 @@ interface FormField {
   mask?: string;                  // Input mask pattern (shown as placeholder, custom components get full access)
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
   source?: FieldSource;           // Hidden fields: where the value comes from. Added in 0.14.0
+  props?: Record<string, unknown>; // Custom type settings, passed as field.props. Added in 0.15.0
 }
 
 type FieldSource =
@@ -334,6 +335,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `props` on fields, format 1.2 | 0.15.0 |
 | `type: "section"` and `type: "group"` nodes, format 1.1 | 0.14.0 |
 | `lang`, `messages`, `labels` and `i18n` | 0.13.0 |
 | `formatVersion` on `FormDefinition` | 0.11.2 |

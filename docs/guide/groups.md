@@ -53,7 +53,7 @@ A hidden item field is left out of its item. Text values are trimmed per item, a
 | `itemLabel` | string | Item heading. `{index}` is the item number from 1, `{label}` the group label. Default `{label} {index}`. |
 | `addLabel`, `removeLabel` | string | Button texts. Default `Add` and `Remove`. |
 | `defaultItems` | integer | Number of items the group starts with. |
-| `show`, `showAny` | condition[] | Group visibility. A hidden group is cleared, and when it shows again it starts with `defaultItems` new items. |
+| `show`, `showAny` | condition[] | Group visibility. A hidden group is cleared. When it shows again, it gets its initial items back, or `defaultItems` new items after an edit. |
 | `validation` | object | `required`, `minLength`, `maxLength`, their messages and `validator`. |
 | `fields` | field[] | Fields of one item. |
 

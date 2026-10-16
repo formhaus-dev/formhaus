@@ -124,6 +124,22 @@ It returns `false` only when `nextErrors` equals `previousErrors` and the engine
 `@formhaus/core/internal` holds the plumbing the React and Vue renderers share: `shouldApplyExternalErrors`, `autoAdvance`, `fieldDomId`, and the Cloud form controller (`createCloudController`, `initialCloudState`, `focusProblem`). It has no semver guarantee and can change in any release. Pin the exact `@formhaus/core` version if you import it.
 :::
 
+## Helpers
+
+The main entry also exports the functions the engine uses for conditions and validation. They work on plain values, without an engine.
+
+| Function | Returns | Description |
+|---|---|---|
+| `evaluateCondition(condition, values)` | `boolean` | Tests one [condition](/spec#conditions) against `values` |
+| `isVisible(node, values)` | `boolean` | Applies the `show` and `showAny` conditions of a field, section, group or step |
+| `isActionDisabled(action, values)` | `boolean` | Applies the `disabled` conditions of an action |
+| `validateFieldValue(field, value, values, validators?, messages?)` | `string \| null` | The first error of one field, or `null` |
+| `validateFields(nodes, values, validators?, messages?)` | `Record<string, string>` | Errors of the visible fields, sections and groups in `nodes`, by key or item path |
+| `validateStep(step, values, validators?, messages?)` | `Record<string, string>` | `validateFields()` for the fields of one step |
+| `getDefaultMessage(rule, params?)` | `string` | The built-in English message of a rule or message key, such as `getDefaultMessage('minLength', { min: 3 })` |
+
+`ValidationRule` is the type of the rule names: `required`, `minLength`, `maxLength`, `min`, `max`, `pattern` and `matchField`. `values` is the [active projection](/spec#visibility) the engine passes, such as `getSubmitValues()`.
+
 ## Groups
 
 Added in 0.14.0. See [Repeatable groups](/guide/groups).

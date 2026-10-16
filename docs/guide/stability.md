@@ -27,6 +27,11 @@ Not covered:
 
 Before 1.0, a minor version can break these parts and lists each break in the [changelog](/changelog).
 
+1.0 removes the APIs deprecated in 0.x, as announced in the changelog:
+
+- `validateDefinition` from `@formhaus/core`. Use `checkDefinition()`.
+- The Vue `submitHandler` prop. Use the `@submit` event.
+
 Two rules keep forms stable across minor versions:
 
 - Custom field types named with `-` or `:`, such as `x-rating`, never become built-in types. See [Custom field types](/guide/fields#custom-field-types).
