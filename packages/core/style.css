@@ -1,4 +1,4 @@
-:where(.fh-form, .fh-cloud) {
+:where(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)) {
   --fh-color-text: #18181b;
   --fh-color-text-muted: #5f5f68;
   --fh-color-border: #d4d4d8;
@@ -31,7 +31,7 @@
   --fh-card-padding: var(--fh-space-10);
 }
 
-:where([data-fh-theme="dark"] :is(.fh-form, .fh-cloud), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) {
+:where([data-fh-theme="dark"] :is(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) {
   color-scheme: dark;
 
   --fh-color-text: #ececee;
@@ -64,7 +64,7 @@
 }
 
 .fh-form, .fh-form__fields { display: grid; grid-template-columns: 100%; gap: var(--fh-gap); }
-.fh-form, .fh-cloud { color: var(--fh-color-text); font-size: var(--fh-font-size); line-height: 1.5; }
+.fh-form { color: var(--fh-color-text); font-size: var(--fh-font-size); line-height: 1.5; }
 .fh-field { display: flex; flex-direction: column; gap: var(--fh-space-3); min-width: 0; margin: 0; padding: 0; border: 0; }
 .fh-field__label { font-size: var(--fh-font-size); font-weight: 600; line-height: 1.4; }
 legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
@@ -200,7 +200,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 @keyframes fh-fade { from { opacity: 0; } }
 
 @media (max-width: 480px) {
-  :where(.fh-form, .fh-cloud) { --fh-card-padding: var(--fh-space-7); }
+  :where(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)) { --fh-card-padding: var(--fh-space-7); }
   .fh-dialog { width: 100%; max-height: calc(100dvh - var(--fh-space-10)); margin: auto 0 0; padding-bottom: env(safe-area-inset-bottom); border-width: 1px 0 0; border-radius: var(--fh-radius) var(--fh-radius) 0 0; }
   .fh-dialog__header { padding-inline-start: var(--fh-space-7); }
   .fh-dialog__footer { flex-direction: column-reverse; padding-inline: var(--fh-space-7); }
@@ -211,7 +211,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 }
 
 @media (pointer: coarse) {
-  :where(.fh-form, .fh-cloud) { --fh-font-size: 17px; --fh-font-size-small: 15px; }
+  :where(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)) { --fh-font-size: 17px; --fh-font-size-small: 15px; }
   .fh-field__input { font-size: max(16px, var(--fh-font-size)); }
   :is(.fh-field__checkbox-wrapper, .fh-field__switch-wrapper) { padding-block: var(--fh-space-4); }
   .fh-group .fh-group__remove, .fh-dialog .fh-form-actions__button { min-height: 44px; }
