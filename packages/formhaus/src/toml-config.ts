@@ -18,7 +18,7 @@ function isTable(value: unknown): value is Table {
 
 function parseToml(text: string): Table | undefined {
   try {
-    return parse(text);
+    return parse(text, { integersAsBigInt: true });
   } catch {
     return undefined;
   }

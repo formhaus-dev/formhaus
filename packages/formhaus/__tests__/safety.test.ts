@@ -218,6 +218,7 @@ describe.skipIf(onWindows)('Codex appends', () => {
     ['a multi-line string', 'text = """\n"form\\u0068aus" = 1\n[mcp_servers."\\u0066"]\n"""\n'],
     ['a literal string holding our table', `notes = '''\n${OUR_TOML}'''\n`],
     ['a Windows path in another server', '[mcp_servers.other]\ncommand = "C:\\\\tools\\\\x.exe"\n'],
+    ['an integer beyond the safe range', 'max_tokens = 9223372036854775807\n'],
     ['an escaped key outside mcp_servers', '[projects]\n"C:\\\\repo".trust_level = "trusted"\n'],
     ['a byte order mark', '\uFEFFmodel = "o3"\n'],
   ])('adds the server next to %s', (_, toml) => {
