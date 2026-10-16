@@ -14,7 +14,7 @@ beforeEach(() => {
 afterEach(() => box.cleanup());
 
 function windows(env: NodeJS.ProcessEnv): Context {
-  return { home: box.home, cwd: box.home, env, platform: 'win32', dryRun: false };
+  return { home: box.home, cwd: box.home, env, platform: 'win32', dryRun: false, force: false };
 }
 
 describe.skipIf(onWindows)('Windows resolution', () => {

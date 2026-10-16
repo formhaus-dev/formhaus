@@ -28,8 +28,8 @@ describe('cli', () => {
   });
 
   it('rejects an unknown option', () => {
-    const result = box.run('--force');
+    const result = box.run('--yes');
     expect(result.code).toBe(1);
-    expect(result.err).toContain("Unknown option '--force'");
+    expect(result.err).toContain("Unknown option '--yes'");
   });
 });
