@@ -1,13 +1,11 @@
-import { getAllFields } from './engine-utils';
 import { createStartValues } from './start-values';
-import { indexConditions } from './visibility-index';
+import { indexDefinition } from './visibility-index';
 import { createActivePath } from './step-routes';
 import type { ValidatorFn } from '../validation';
 import { validateFields } from '../validation';
-import type { FormDefinition, FormField, FormGroup, FormNode, FormSection, FormStep } from '../types';
+import type { FormDefinition, FormField, FormGroup, FormNode, FormStep } from '../types';
 import { isVisible } from '../visibility';
 import {
-  conditionFields,
   isEntry,
   isGroup,
   isSection,
@@ -17,7 +15,6 @@ import {
   itemScope,
   shownFields,
   splitPath,
-  topNodes,
   valueFields,
 } from '../visibility/nodes';
 
@@ -40,43 +37,24 @@ export interface ItemField {
 export type VisibilityState = ReturnType<typeof createVisibility>;
 
 export function createVisibility(definition: FormDefinition) {
-  const allFields = getAllFields(definition);
-  const fieldsByKey = new Map<string, FormField[]>();
-  const routeFields = new Set<string>();
-  const path = createActivePath(definition);
-  const fieldDependents = new Map<string, Set<FormField>>();
-  const stepDependents = new Map<string, Set<FormStep>>();
-  const stepOfField = new Map<FormField, FormStep>();
-  const sectionOf = new Map<FormField, FormSection>();
+  const index = indexDefinition(definition);
+  const { allFields, fieldsByKey, routeFields, fieldDependents, stepDependents, stepOfField, sectionOf } = index;
+  const path = createActivePath(definition, index);
   const groups = allFields.filter(isGroup);
   const starts = createStartValues(groups);
   let visibilityDirty = true;
   let canGoNextDirty = true;
   const cache: VisibilityCache = { visibleSteps: [], currentStep: null, visibleFields: [], visibleNodes: [], canGoNext: false };
 
-  for (const node of topNodes(definition)) if (isSection(node)) for (const field of node.fields) sectionOf.set(field, node);
-  for (const field of allFields) {
-    fieldsByKey.set(field.key, [...(fieldsByKey.get(field.key) ?? []), field]);
-    indexConditions(field, fieldDependents);
-    const section = sectionOf.get(field);
-    if (section) indexConditions(field, fieldDependents, section);
-    if (isGroup(field)) for (const item of field.fields) indexConditions<FormField>(field, fieldDependents, item);
-  }
-  for (const step of definition.steps ?? []) {
-    for (const field of valueFields(step.fields)) stepOfField.set(field, step);
-    indexConditions(step, stepDependents);
-    for (const route of step.routes ?? []) for (const key of conditionFields(route)) routeFields.add(key);
-  }
-
   const isMultiStep = () => !!definition.steps?.length;
   const visible = (source: FormField | FormStep, values: Values) => {
-    const active = path.values(values);
+    const active = path.scope(values);
     const section = sectionOf.get(source as FormField);
     return (!section || isVisible(section, active)) && isVisible(source, active);
   };
   const onPath = (field: FormField, values: Values) => {
     const step = stepOfField.get(field);
-    return !step || path.steps(values).includes(step);
+    return !step || path.has(values, step);
   };
   const activeField = (key: string, values: Values) =>
     fieldsByKey.get(key)?.find((field) => onPath(field, values) && visible(field, values));
@@ -92,7 +70,7 @@ export function createVisibility(definition: FormDefinition) {
   const owner = (key: string) => parse(key)?.[0] ?? key;
 
   function itemFields(group: FormGroup, item: unknown, values: Values): FormField[] {
-    const scope = itemScope(group, item, path.values(values));
+    const scope = itemScope(group, item, path.scope(values));
     return group.fields.filter((field) => isVisible(field, scope));
   }
 
@@ -113,7 +91,7 @@ export function createVisibility(definition: FormDefinition) {
     const steps = (cache.visibleSteps = isMultiStep() ? path.steps(values) : []);
     const current = (cache.currentStep = isMultiStep() ? (steps[stepIndex] ?? steps[steps.length - 1] ?? null) : null);
     const source = isMultiStep() ? (current?.fields ?? []) : (definition.fields ?? []);
-    const active = path.values(values);
+    const active = path.scope(values);
     cache.visibleFields = shownFields(source, active);
     cache.visibleNodes = source
       .filter((node) => isVisible(node, active))
@@ -122,6 +100,7 @@ export function createVisibility(definition: FormDefinition) {
   }
 
   function reconcileItems(values: Values, errors: Record<string, string>, cleared: Set<string>): void {
+    let replaced = false;
     for (const group of groups) {
       if (activeField(group.key, values) !== group) continue;
       const source = itemsOf(values[group.key]);
@@ -146,7 +125,10 @@ export function createVisibility(definition: FormDefinition) {
         }
         return result;
       });
-      if (items.some((item, index) => item !== source[index])) values[group.key] = items;
+      if (items.some((item, index) => item !== source[index])) {
+        values[group.key] = items;
+        replaced = true;
+      }
       for (const key of Object.keys(errors)) {
         const [index, field] = splitPath(group.key, key) ?? [];
         if (index === undefined || (index < items.length && itemFields(group, items[index], values).some((item) => item.key === field)))
@@ -155,7 +137,7 @@ export function createVisibility(definition: FormDefinition) {
         cleared.add(key);
       }
     }
-    path.invalidate();
+    if (replaced) path.invalidate();
   }
 
   return {
@@ -193,16 +175,16 @@ export function createVisibility(definition: FormDefinition) {
       return routeFields.has(key) || fieldDependents.has(key) || stepDependents.has(key) || clearedFields.size > 0;
     },
 
-    reconcileHidden(values: Values, errors: Record<string, string>, initial = false): Set<string> {
+    reconcileHidden(values: Values, errors: Record<string, string>, initial = false, written?: string): Set<string> {
       if (initial) starts.resetStarts(values);
-      path.invalidate();
+      if (written === undefined || !path.patch(values, written)) path.invalidate();
       const dependents = [...new Set([...fieldDependents.keys(), ...stepDependents.keys()])];
       const queue = [...dependents];
       const queued = new Set(queue);
       const cleared = new Set<string>();
       const held = (key: string) => values[key] !== undefined || errors[key] !== undefined;
       const mark = (key: string) => {
-        path.invalidate();
+        if (!path.patch(values, key)) path.invalidate();
         cleared.add(key);
         for (const next of routeFields.has(key) ? [...dependents, key] : [key]) {
           if (queued.has(next)) continue;
