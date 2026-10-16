@@ -181,12 +181,13 @@ function rejectGroups(definition: FormDefinition, fields: FormField[], input: un
   return { resolved: activeValues(definition, fields, source), rejected };
 }
 
-interface Checked extends SubmissionResult {
+interface Prepared {
   engine: FormEngine;
   skipped: string[];
+  check: () => SubmissionResult;
 }
 
-function check(definition: FormDefinition, fields: FormField[], values: unknown, options: SubmissionOptions): Checked {
+function prepare(definition: FormDefinition, fields: FormField[], values: unknown, options: SubmissionOptions): Prepared {
   const messages = messageResolver(options.messages, definition.messages);
   const resolve = namedResolver(messages);
   const { resolved, rejected } = rejectGroups(definition, fields, values, resolve);
@@ -196,28 +197,31 @@ function check(definition: FormDefinition, fields: FormField[], values: unknown,
   loadSubmitted(engine, resolved.values);
   const items = itemErrors(engine, invalid, resolve);
   applySkips(engine, options.skippedSteps);
-  const errors = engine.validate();
-  const submitted: Record<string, unknown> = engine.getSubmitValues();
-  const { visibility } = internals(engine);
-  for (const [key, error] of invalid) {
-    if (!hasOwn(submitted, key)) continue;
-    setError(visibility, errors, key, error);
-    submitted[key] = resolved.values[key];
-  }
   const skipped = [...internals(engine).skipped.values()].flat();
-  for (const [key, value] of rejected) {
-    const field = visibility.activeField(key, engine.values);
-    if (!field || skipped.includes(key)) continue;
-    setError(visibility, errors, key, typeError(field, value, resolve) ?? resolve('value', {}, field));
-    delete submitted[key];
-  }
-  for (const [key, error] of items)
-    if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;
-  dropUnchecked(engine, submitted, errors, resolve);
-  return { values: submitted, errors, engine, skipped };
+  const check = (): SubmissionResult => {
+    const errors = engine.validate();
+    const submitted: Record<string, unknown> = engine.getSubmitValues();
+    const { visibility } = internals(engine);
+    for (const [key, error] of invalid) {
+      if (!hasOwn(submitted, key)) continue;
+      setError(visibility, errors, key, error);
+      submitted[key] = resolved.values[key];
+    }
+    for (const [key, value] of rejected) {
+      const field = visibility.activeField(key, engine.values);
+      if (!field || skipped.includes(key)) continue;
+      setError(visibility, errors, key, typeError(field, value, resolve) ?? resolve('value', {}, field));
+      delete submitted[key];
+    }
+    for (const [key, error] of items)
+      if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;
+    dropUnchecked(engine, submitted, errors, resolve);
+    return { values: submitted, errors };
+  };
+  return { engine, skipped, check };
 }
 
-function withSkipped(source: Record<string, unknown>, { engine, skipped }: Checked): Record<string, unknown> {
+function withSkipped(source: Record<string, unknown>, { engine, skipped }: Prepared): Record<string, unknown> {
   const values = { ...source };
   for (const key of skipped) {
     delete values[key];
@@ -230,13 +234,14 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
   parseDefinition(definition);
   const fields = getAllFields(definition);
   const source = values !== null && typeof values === 'object' && !Array.isArray(values) ? (values as Record<string, unknown>) : {};
-  let result = check(definition, fields, source, options);
-  for (let round = 0; round < (definition.steps?.length ?? 0) && result.skipped.length; round++) {
-    const next = check(definition, fields, withSkipped(source, result), options);
-    const settled = next.skipped.join() === result.skipped.join();
-    result = next;
+  let prepared = prepare(definition, fields, source, options);
+  for (let round = 0; round < (definition.steps?.length ?? 0) && prepared.skipped.length; round++) {
+    const next = prepare(definition, fields, withSkipped(source, prepared), options);
+    const settled = next.skipped.join() === prepared.skipped.join();
+    prepared = next;
     if (settled) break;
   }
+  const result = prepared.check();
   const errors = { ...result.errors };
   if (isBody(fields, values)) errors.values = BODY_MESSAGE;
   return { values: result.values, errors };

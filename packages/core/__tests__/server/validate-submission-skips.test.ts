@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { validateSubmission } from '../../src/server';
 import type { FormDefinition } from '../../src';
 
@@ -30,6 +30,20 @@ describe('validateSubmission with a skipped controlling step', () => {
     const result = validateSubmission(definition, { a: 'show', n: 1, code: 'abc', g: [{ m: 9 }] }, { skippedSteps: ['s1'] });
     expect(result.values).toEqual({ n: 1, code: 'abc', g: [{ m: 9 }] });
     expect(Object.keys(result.errors).sort()).toEqual(['code', 'g.0.m', 'n']);
+  });
+
+  it('calls a custom validator once per field', () => {
+    const custom: FormDefinition = {
+      ...definition,
+      steps: [
+        definition.steps![0],
+        { id: 's2', title: 'Two', fields: [{ key: 'b', type: 'text', label: 'B', validation: { validator: 'check' } }] },
+      ],
+    };
+    const check = vi.fn(() => null);
+    const result = validateSubmission(custom, { b: 'x' }, { skippedSteps: ['s1'], validators: { check } });
+    expect(result).toEqual({ values: { b: 'x' }, errors: {} });
+    expect(check).toHaveBeenCalledTimes(1);
   });
 });
 
