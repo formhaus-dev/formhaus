@@ -415,7 +415,7 @@
         },
         "label": {
           "type": "string",
-          "description": "Label text."
+          "description": "Label text. Required for every type except hidden."
         },
         "placeholder": {
           "type": "string"
@@ -511,10 +511,24 @@
       },
       "required": [
         "key",
-        "type",
-        "label"
+        "type"
       ],
-      "additionalProperties": false
+      "additionalProperties": false,
+      "if": {
+        "properties": {
+          "type": {
+            "const": "hidden"
+          }
+        },
+        "required": [
+          "type"
+        ]
+      },
+      "else": {
+        "required": [
+          "label"
+        ]
+      }
     },
     "FieldType": {
       "anyOf": [
