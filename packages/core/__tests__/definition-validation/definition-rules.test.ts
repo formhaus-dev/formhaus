@@ -130,8 +130,8 @@ describe('field rules', () => {
         severity: 'warning',
         path: '/fields/0/type',
         message:
-          '/fields/0/type: "rating" is not a built-in field type. Name custom types with a dash, like "x-rating", so a future built-in type cannot take the name.',
-        hint: 'Name custom types with a dash, like "x-rating", so a future built-in type cannot take the name.',
+          '/fields/0/type: "rating" is not a built-in field type. Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name.',
+        hint: 'Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name.',
       },
       expect.objectContaining({ code: 'unknown-field-type', path: '/fields/4/type' }),
     ]);

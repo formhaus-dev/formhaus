@@ -7,17 +7,23 @@ description: "What semantic versioning covers in Formhaus from 1.0: definition s
 
 From 1.0, a breaking change to these parts needs a major version:
 
-- The form definition schema and its JSON Schema, including the meaning of built-in field types.
+- The form definition schema and its JSON Schemas (`schema.json`, `translation.schema.json`), including the meaning of built-in field types.
 - The submit payload: values, keys and skipped steps.
+- The `@formhaus/core` entries `.`, `/server`, `/i18n`, `/fix` and `/cloud`: exported functions, classes and types.
 - `FormEngine` public methods and properties.
-- React and Vue component props, events and slots.
+- React and Vue components, including `/cloud`: props, events and slots.
+- The React `useFormEngine` hook and the Vue `useFormEngine` composable.
+- The props a custom field component receives.
+- CSS custom properties for theming.
 - `checkDefinition()` issue codes and severities.
 
 Not covered:
 
 - `@formhaus/core/internal`.
-- The editor and builder packages.
-- Warning and error message texts.
+- The editor, builder and Figma plugin.
+- Warning and error message texts, fix titles and patches.
+- DOM structure and CSS class names.
+- `@formhaus/mcp` and the `formhaus` CLI, which have their own versions.
 
 Before 1.0, a minor version can break these parts and lists each break in the [changelog](/changelog).
 

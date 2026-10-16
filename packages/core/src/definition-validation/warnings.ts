@@ -166,7 +166,7 @@ function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssu
               'custom-type-name',
               `${path}/type`,
               problem,
-              'Name custom types with a dash, like "x-rating", so a future built-in type cannot take the name',
+              'Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name',
             ),
           ]
         : []),
