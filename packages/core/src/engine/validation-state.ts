@@ -19,13 +19,20 @@ export function errorKeys(nodes: FormNode[], errors: Record<string, string>, val
   ]);
 }
 
+function unsettleOnWrite<T>(engine: EngineInternals, run: () => T): T {
+  const version = engine.getSnapshot();
+  const result = run();
+  if (version !== engine.getSnapshot()) engine.visibility.unsettle();
+  return result;
+}
+
 export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values = getSubmitValues(engine)): Record<string, string> {
   const scope = engine.visibility.conditionValues(engine.values);
-  return validateShown(nodes, values, scope, engine.validators, engine.messages);
+  return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, engine.validators, engine.messages));
 }
 
 function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
-  return validateFieldValue(field, value, values, engine.validators, engine.messages);
+  return unsettleOnWrite(engine, () => validateFieldValue(field, value, values, engine.validators, engine.messages));
 }
 
 export function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {

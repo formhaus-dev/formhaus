@@ -155,6 +155,7 @@ export function createVisibility(definition: FormDefinition) {
     itemFields,
     owner,
     parse,
+    unsettle: hidden.unsettle,
 
     markChanged(structureChanged: boolean, valuesChanged: boolean): void {
       if (structureChanged) visibilityDirty = true;
