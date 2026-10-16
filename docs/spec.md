@@ -221,7 +221,7 @@ A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. 
 
 An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed, and removing an item forgets its own.
 
-A hidden group is cleared like a field. A group that becomes visible again gets back its last items, with the same item ids, or else its [start value](#visibility). A group whose last value is `undefined` starts again with `defaultItems` new items.
+A hidden group is cleared like a field. A group that becomes visible again gets back its last items, with the same item ids, or else its [start value](#visibility).
 
 `validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength`, with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
 

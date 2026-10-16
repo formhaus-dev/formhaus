@@ -80,6 +80,25 @@ describe('last values of fields shown again', () => {
     expect(engine.values.code).toBe('B2');
   });
 
+  it('remembers a clear to undefined made while the field is hidden', () => {
+    const engine = new FormEngine(toggled(code), { on: true });
+    engine.setValue('code', 'B2');
+    engine.setValue('on', false);
+    engine.setValue('code', undefined);
+    engine.setValue('on', true);
+    expect(engine.values).toEqual({ on: true });
+  });
+
+  it('keeps a group set to undefined empty', () => {
+    const engine = new FormEngine(
+      toggled({ key: 'crew', type: 'group', label: 'Crew', defaultItems: 2, fields: [{ key: 'kind', type: 'text', label: 'Kind' }] }),
+      { on: true },
+    );
+    engine.setValue('crew', undefined);
+    toggle(engine);
+    expect(engine.values).toEqual({ on: true });
+  });
+
   it('gives a group its last items with the same item ids', () => {
     const engine = new FormEngine(crew, { on: true, crew: [{ kind: 'a' }] });
     engine.addItem('crew');
@@ -99,6 +118,15 @@ describe('last values of fields shown again', () => {
     toggle(engine);
     engine.setValue('crew.0.kind', 'x');
     expect(engine.values.crew).toEqual([{ kind: 'x', count: 4 }]);
+  });
+
+  it('remembers an item field cleared to undefined while it is hidden', () => {
+    const engine = new FormEngine(crew, { on: true, crew: [{ kind: 'x' }] });
+    engine.setValue('crew.0.count', 4);
+    engine.setValue('crew.0.kind', 'y');
+    engine.setValue('crew.0.count', undefined);
+    engine.setValue('crew.0.kind', 'x');
+    expect(engine.values.crew).toEqual([{ kind: 'x' }]);
   });
 
   it('forgets a removed item', () => {

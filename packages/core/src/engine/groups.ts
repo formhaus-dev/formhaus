@@ -82,8 +82,8 @@ export function setItemValue(engine: EngineInternals, key: string, index: number
   const changed = !Object.is(item[fieldKey], value);
   const previousError = engine.errors[path];
   let next = items;
+  engine.visibility.rememberItem(current, fieldKey, value);
   if (changed) {
-    engine.visibility.rememberItem(current, fieldKey, value);
     const updated = keepId(current, { ...item, [fieldKey]: value });
     next = items.map((entry, position) => (position === index ? updated : entry));
   }
