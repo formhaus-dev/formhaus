@@ -1,6 +1,6 @@
 import type { CloudSubmission, DraftStore, PublishedForm } from '@formhaus/core/cloud';
 import { cloudStateFor, createCloudController } from '@formhaus/core/internal';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 interface CloudFormOptions {
   id: string;
@@ -8,11 +8,12 @@ interface CloudFormOptions {
   initialForm?: PublishedForm;
   draftStore?: DraftStore;
   extraBody: () => Record<string, unknown>;
+  challengeHost: RefObject<HTMLElement | null>;
   onSuccess?: (submission: CloudSubmission) => void;
   onError?: (error: unknown) => void;
 }
 
-export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, onSuccess, onError }: CloudFormOptions) {
+export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, challengeHost, onSuccess, onError }: CloudFormOptions) {
   const [state, setState] = useState(() => cloudStateFor(initialForm));
   const controller = useRef<ReturnType<typeof createCloudController> | null>(null);
   const callbacks = useRef({ onSuccess, onError, extraBody, initialForm, draftStore });
@@ -22,7 +23,14 @@ export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, 
     const { initialForm: form, draftStore: store } = callbacks.current;
     setState(cloudStateFor(form));
     const current = createCloudController(
-      { id, apiBase, initialForm: form, draftStore: store, extraBody: () => callbacks.current.extraBody() },
+      {
+        id,
+        apiBase,
+        initialForm: form,
+        draftStore: store,
+        extraBody: () => callbacks.current.extraBody(),
+        challengeHost: () => challengeHost.current,
+      },
       {
         onChange: setState,
         onSuccess: (submission) => callbacks.current.onSuccess?.(submission),
@@ -41,6 +49,7 @@ export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, 
   const retry = useCallback(() => controller.current!.start(), []);
   const again = useCallback(() => controller.current!.again(), []);
   const saveDraft = useCallback((values: Record<string, unknown>) => controller.current?.saveDraft(values), []);
+  const warm = useCallback(() => controller.current?.warm(), []);
 
-  return { ...state, submit, retry, again, saveDraft };
+  return { ...state, submit, retry, again, saveDraft, warm };
 }

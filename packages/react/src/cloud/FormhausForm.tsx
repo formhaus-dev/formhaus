@@ -1,7 +1,7 @@
-import { FormRenderer } from '@formhaus/react';
+import { FormActions, type FormActionsProps, FormRenderer } from '@formhaus/react';
 import { CloudError, type CloudAction } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
@@ -14,6 +14,8 @@ const HIDDEN = {
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
 } as const;
+
+const CONTENTS = { display: 'contents' } as const;
 
 function handled() {}
 
@@ -32,7 +34,21 @@ export function FormhausForm({
 }: FormhausFormProps) {
   const trap = useRef<HTMLInputElement>(null);
   const extraBody = useCallback(() => ({ _fh_hp: trap.current?.value ?? '' }), []);
-  const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, onSuccess, onError });
+  const box = useRef<HTMLDivElement>(null);
+  const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, challengeHost: box, onSuccess, onError });
+  const Actions = rendererProps.actionsComponent ?? FormActions;
+  const actions = useMemo(
+    () =>
+      function ChallengeActions(props: FormActionsProps) {
+        return (
+          <>
+            <div ref={box} style={CONTENTS} />
+            <Actions {...props} />
+          </>
+        );
+      },
+    [Actions],
+  );
   const root = useRef<HTMLDivElement>(null);
   const notice = useRef<HTMLDivElement>(null);
   const act = useCallback((action: Exclude<CloudAction, null>) => {
@@ -46,6 +62,12 @@ export function FormhausForm({
     const frame = requestAnimationFrame(() => focusProblem(root.current, notice.current));
     return () => cancelAnimationFrame(frame);
   }, [cloud.attempt]);
+
+  useEffect(() => {
+    const node = root.current;
+    node?.addEventListener('focusin', cloud.warm);
+    return () => node?.removeEventListener('focusin', cloud.warm);
+  }, [cloud.warm, cloud.challenge, cloud.done]);
 
   useEffect(() => {
     if (cloud.done && redirectUrl && !success) window.location.assign(redirectUrl);
@@ -97,6 +119,7 @@ export function FormhausForm({
         errors={cloud.errors}
         onSubmit={cloud.submit}
         onError={handled}
+        actionsComponent={cloud.challenge ? actions : rendererProps.actionsComponent}
         onFieldChange={(key, value, values) => {
           cloud.saveDraft(values);
           onFieldChange?.(key, value, values);
