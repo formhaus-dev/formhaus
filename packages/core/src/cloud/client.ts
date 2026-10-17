@@ -59,7 +59,7 @@ export interface CloudSubmitterOptions extends CloudClientOptions {
 }
 
 export function createSubmitter(options: CloudSubmitterOptions) {
-  let pending: { body: string; key: string } | null = null;
+  let pending: { stable: string; key: string } | null = null;
 
   return async (values: Record<string, unknown>, skippedSteps: string[] = [], challengeToken?: string): Promise<CloudSubmission> => {
     const body = JSON.stringify({
@@ -71,7 +71,8 @@ export function createSubmitter(options: CloudSubmitterOptions) {
       ...(options.firstRenderToken && { _fh_rt_first: options.firstRenderToken }),
       ...(challengeToken && { _fh_ts: challengeToken }),
     });
-    if (pending?.body !== body) pending = { body, key: randomId() };
+    const stable = JSON.stringify([values, skippedSteps]);
+    if (pending?.stable !== stable) pending = { stable, key: randomId() };
     const response = await send(`${endpoint(options)}?${CORE}`, SUBMIT_TIMEOUT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Idempotency-Key': pending.key },
