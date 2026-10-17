@@ -62,7 +62,7 @@ function attribution(): Record<string, string> {
   const params = new URLSearchParams((globalThis as { location?: { search: string } }).location?.search);
   const found: Record<string, string> = {};
   for (const name of ['source', 'medium', 'campaign', 'term', 'content']) {
-    const value = params.get(`utm_${name}`)?.trim();
+    const value = [...(params.get(`utm_${name}`)?.trim() ?? '')].slice(0, 100).join('').trim();
     if (value) found[`utm_${name}`] = value;
   }
   return found;
