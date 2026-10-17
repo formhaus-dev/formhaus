@@ -63,6 +63,22 @@ describe('cloud client', () => {
     expect(keys[2]).not.toBe(keys[1]);
   });
 
+  it('sends the UTM parameters of the page and nothing else from the address', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(reply(201, { id: 's1', values: {} }));
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('location', { search: '?utm_source=news&utm_campaign=+spring+&utm_term=&email=a%40b.c&gclid=x' });
+    await createSubmitter({ id: 'abc' })({ name: 'Ada' });
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).attribution).toEqual({ utm_source: 'news', utm_campaign: 'spring' });
+  });
+
+  it('sends empty attribution without UTM parameters', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(reply(201, { id: 's1', values: {} }));
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('location', { search: '?ref=x' });
+    await createSubmitter({ id: 'abc' })({ name: 'Ada' });
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).attribution).toEqual({});
+  });
+
   it('exposes field errors from a 422', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(reply(422, { errors: { name: 'Required' } })));
     await expect(createSubmitter({ id: 'abc' })({})).rejects.toMatchObject({ status: 422, errors: { name: 'Required' } });
@@ -74,7 +90,7 @@ describe('cloud client', () => {
     vi.stubGlobal('crypto', { getRandomValues: (array: Uint8Array) => array.fill(7) });
     await createSubmitter({ id: 'abc' })({ name: 'Ada' }, ['two']);
     const [, init] = fetchMock.mock.calls[0];
-    expect(JSON.parse(init.body)).toEqual({ values: { name: 'Ada' }, skippedSteps: ['two'] });
+    expect(JSON.parse(init.body)).toEqual({ attribution: {}, values: { name: 'Ada' }, skippedSteps: ['two'] });
     expect(init.headers['Idempotency-Key']).toMatch(/^[0-9a-f-]{36}$/);
   });
 });
