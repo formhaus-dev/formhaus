@@ -1,8 +1,9 @@
 import type { FormDefinition } from '../types';
 import { carryValues, splitErrors, updatedErrors } from './carry';
+import { createChallengeFrame, type ChallengeHost, type CloudChallengeFrame } from './challenge';
 import { createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
 import { draftValues, type DraftStore } from './draft';
-import { parseSettings, type CloudSettings, type PublishedForm } from './envelope';
+import { parseSettings, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
 
@@ -17,6 +18,7 @@ export interface CloudState {
   definition: FormDefinition | null;
   version: number | null;
   settings: CloudSettings;
+  challenge: CloudChallenge | null;
   loadError: Error | null;
   errors: Record<string, string>;
   notice: CloudNotice | null;
@@ -36,12 +38,14 @@ export interface CloudControllerOptions extends CloudClientOptions {
   initialForm?: PublishedForm;
   extraBody?: () => Record<string, unknown>;
   draftStore?: DraftStore;
+  challengeHost?: () => ChallengeHost | null;
 }
 
 export const initialCloudState: CloudState = {
   definition: null,
   version: null,
   settings: {},
+  challenge: null,
   loadError: null,
   errors: {},
   notice: null,
@@ -53,7 +57,13 @@ export const initialCloudState: CloudState = {
 
 export function cloudStateFor(form?: PublishedForm): CloudState {
   if (!form) return initialCloudState;
-  return { ...initialCloudState, definition: form.definition, version: form.version ?? null, settings: parseSettings(form.settings) };
+  return {
+    ...initialCloudState,
+    definition: form.definition,
+    version: form.version ?? null,
+    settings: parseSettings(form.settings),
+    challenge: form.challenge ?? null,
+  };
 }
 
 function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
@@ -72,6 +82,11 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   let initial = options.initialForm;
   const alive = () => !controller.signal.aborted;
   let state = initialCloudState;
+  let frame: CloudChallengeFrame | undefined;
+  const challenge = () =>
+    state.challenge && options.challengeHost
+      ? (frame ??= createChallengeFrame(state.challenge, options.id, options.challengeHost))
+      : undefined;
   const update = (patch: Partial<CloudState>) => {
     state = { ...state, ...patch };
     callbacks.onChange(state);
@@ -96,6 +111,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         definition: next.definition,
         version: next.version,
         settings: parseSettings(next.settings),
+        challenge: next.challenge ?? null,
         initialValues: kept,
         revision: state.revision + 1,
         errors: updatedErrors(next.definition, sent, kept, error.errors ?? {}),
@@ -136,6 +152,10 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     },
     dispose() {
       controller.abort();
+      frame?.dispose();
+    },
+    warm() {
+      challenge()?.warm();
     },
     saveDraft(values: Record<string, unknown>) {
       if (state.definition && !state.done)
@@ -146,13 +166,16 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     },
     async submit(values: Record<string, unknown>, skippedSteps?: string[]) {
       if (state.notice) update({ notice: null });
+      const check = challenge();
       try {
-        const submission = await submitter(values, skippedSteps);
+        const submission = await submitter(values, skippedSteps, await check?.token());
+        check?.spend();
         if (!alive()) return;
         options.draftStore?.clear(options.id);
         update({ done: true });
         callbacks.onSuccess?.(submission);
       } catch (error) {
+        if ((error as CloudError).code === 'verification_failed') check?.spend();
         if (!alive()) throw error;
         await fail(error, values);
         callbacks.onError?.(error);
