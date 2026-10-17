@@ -109,7 +109,8 @@ function onFieldChange(key: string, value: unknown) {
 - In Vue, the handle's `values` is reactive: read it in a `computed` or a template. `useFormEngine().values` is reactive the same way.
 - `onFieldChange` fires for user edits only. `setValue` from the handle does not fire it, so the derived write never marks the due date as edited.
 - The first edit of `dueDate` sets `dueDateEdited`, and later issue dates leave the due date alone.
-- `setValue` runs the same visibility and validation updates as typing. A value for a field hidden by its conditions is cleared at once. A `setValue` inside `onValuesChange` fires a nested `onValuesChange` right away.
+- `setValue` runs the same visibility and validation updates as typing. A value for a field hidden by its conditions is cleared at once. A `setValue` inside `onValuesChange` fires a nested `onValuesChange` right away, including on the first call at mount. The nested call gets the new values before the outer call returns.
+- Write a derived value only when it differs: `if (values.total !== next) form.setValue('total', next)`. An equal value fires nothing, so the chain stops. Two callbacks that keep changing each other's fields never stop.
 - `getValues()` returns a shallow copy of the current values.
 - The handle and events work the same on `HeadlessFormRenderer`.
 - To restore derived values with a draft, save `dueDateEdited` next to the draft.

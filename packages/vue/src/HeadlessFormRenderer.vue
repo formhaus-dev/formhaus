@@ -84,11 +84,11 @@ const watchValues = (engine: typeof form.engine) => {
   const changed = () => {
     if (values.value !== emitted) emit('valuesChange', (emitted = values.value));
   };
-  changed();
   stopValues = engine.subscribeValues(changed);
+  changed();
 };
 onMounted(() => watchValues(form.engine));
-watch(() => form.engine, watchValues);
+watch(() => form.engine, watchValues, { flush: 'sync' });
 onBeforeUnmount(() => stopValues());
 
 let watchMissing: (() => void) | undefined;
