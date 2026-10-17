@@ -38,7 +38,14 @@ describe('cloud protocol', () => {
     await createSubmitter({ id: 'abc', version: 5, renderToken: 'rt_1', extraBody: () => ({ _fh_hp: '' }) })({ name: 'Ada' }, []);
     const [url, init] = fetchMock.mock.calls[0];
     expect(url).toBe(`https://api.formhaus.cc/f/abc?core=${__FORMHAUS_CORE_VERSION__}`);
-    expect(JSON.parse(init.body)).toEqual({ _fh_hp: '', values: { name: 'Ada' }, skippedSteps: [], version: 5, _fh_rt: 'rt_1' });
+    expect(JSON.parse(init.body)).toEqual({
+      attribution: {},
+      _fh_hp: '',
+      values: { name: 'Ada' },
+      skippedSteps: [],
+      version: 5,
+      _fh_rt: 'rt_1',
+    });
   });
 
   it('renders an initial form without loading and submits with its token', async () => {

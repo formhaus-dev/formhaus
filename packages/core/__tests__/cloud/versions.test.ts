@@ -86,7 +86,7 @@ describe('versions', () => {
     const submit = createSubmitter({ id: 'abc', version: 3 });
     await expect(submit({ name: 'Ada' }, [])).rejects.toMatchObject({ status: 0, code: 'network', retryable: true });
     await submit({ name: 'Ada' }, []);
-    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ values: { name: 'Ada' }, skippedSteps: [], version: 3 });
+    expect(JSON.parse(fetchMock.mock.calls[1][1].body)).toEqual({ attribution: {}, values: { name: 'Ada' }, skippedSteps: [], version: 3 });
     expect(fetchMock.mock.calls[0][1].headers['Idempotency-Key']).toBe(fetchMock.mock.calls[1][1].headers['Idempotency-Key']);
   });
 
