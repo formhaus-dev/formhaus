@@ -55,9 +55,11 @@ describe('valuesChange with writes from the listener', () => {
       seen.push(values);
       if (values.qty !== undefined) return;
       form.setValue('qty', 1);
+      seen.push('between');
       form.setValue('total', 10);
+      seen.push('after');
     });
-    expect(seen).toEqual([{}, { qty: 1 }, { qty: 1, total: 10 }]);
+    expect(seen).toEqual([{}, { qty: 1 }, 'between', { qty: 1, total: 10 }, 'after']);
     expect(handle.value!.getValues()).toEqual({ qty: 1, total: 10 });
   });
 

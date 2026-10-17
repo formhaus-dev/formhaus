@@ -1,7 +1,7 @@
 import { act, render, screen } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
-import { createRef, StrictMode } from 'react';
-import { describe, expect, it, vi } from 'vitest';
+import { Component, createRef, type ReactNode, StrictMode } from 'react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FormRenderer, type FormRendererHandle } from '../src';
 
 const definition: FormDefinition = {
@@ -15,6 +15,18 @@ const definition: FormDefinition = {
 };
 
 const other: FormDefinition = { ...definition, id: 'other', fields: [{ key: 'email', type: 'email', label: 'Email' }] };
+
+class Boundary extends Component<{ children: ReactNode }, { failed: boolean }> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? <p>Failed</p> : this.props.children;
+  }
+}
+
+afterEach(() => window.history.replaceState(null, '', '/'));
 
 function derive(handle: React.RefObject<FormRendererHandle | null>, seen: unknown[]) {
   return (values: Readonly<Record<string, unknown>>) => {
@@ -54,11 +66,13 @@ describe('onValuesChange with writes from the callback', () => {
           seen.push(values);
           if (values.qty !== undefined) return;
           handle.current!.setValue('qty', 1);
+          seen.push('between');
           handle.current!.setValue('total', 10);
+          seen.push('after');
         }}
       />,
     );
-    expect(seen).toEqual([{}, { qty: 1 }, { qty: 1, total: 10 }]);
+    expect(seen).toEqual([{}, { qty: 1 }, 'between', { qty: 1, total: 10 }, 'after']);
     expect(handle.current!.getValues()).toEqual({ qty: 1, total: 10 });
   });
 
@@ -118,5 +132,46 @@ describe('onValuesChange with writes from the callback', () => {
     );
     expect(seen).toEqual([{ qty: 2 }, { qty: 2, total: 20 }]);
     expect(handle.current!.getValues()).toEqual({ qty: 2, total: 20 });
+  });
+
+  it('applies hidden sources once in StrictMode when the callback rewrites them', () => {
+    window.history.replaceState(null, '', '/?ref=ads');
+    const sourced: FormDefinition = { ...definition, fields: [{ key: 'ref', type: 'hidden', source: { query: 'ref' } }] };
+    const handle = createRef<FormRendererHandle>();
+    const seen: unknown[] = [];
+    render(
+      <StrictMode>
+        <FormRenderer
+          ref={handle}
+          definition={sourced}
+          onSubmit={() => {}}
+          onValuesChange={(values) => {
+            seen.push(values);
+            if (values.ref === 'ads') handle.current!.setValue('ref', 'normalized');
+          }}
+        />
+      </StrictMode>,
+    );
+    expect(seen).toEqual([{ ref: 'ads' }, { ref: 'normalized' }]);
+  });
+
+  it('stops listening when the first callback throws', () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const handle = createRef<FormRendererHandle>();
+    let form: FormRendererHandle | null = null;
+    const onValuesChange = vi.fn(() => {
+      form = handle.current;
+      throw new Error('boom');
+    });
+    render(
+      <Boundary>
+        <FormRenderer ref={handle} definition={definition} onSubmit={() => {}} onValuesChange={onValuesChange} />
+      </Boundary>,
+    );
+    expect(screen.getByText('Failed')).toBeTruthy();
+    const calls = onValuesChange.mock.calls.length;
+    act(() => form!.setValue('qty', 1));
+    expect(onValuesChange).toHaveBeenCalledTimes(calls);
+    vi.restoreAllMocks();
   });
 });
