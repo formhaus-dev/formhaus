@@ -78,7 +78,7 @@ describe('cloud controller with a bot check', () => {
     await second;
     expect(fake.requests().map((request) => request.fresh)).toEqual([true, true]);
     expect(sentBody(fetchMock, 1)._fh_ts).toBe('ts_2');
-    expect(key(fetchMock, 1)).not.toBe(key(fetchMock, 0));
+    expect(key(fetchMock, 1)).toBe(key(fetchMock, 0));
   });
 
   it('does not post when the check fails in the browser', async () => {
