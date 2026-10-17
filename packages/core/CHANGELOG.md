@@ -1,5 +1,22 @@
 # @formhaus/core
 
+## 0.17.0
+
+### Minor Changes
+
+- New `createChallengeFrame()` in `@formhaus/core/cloud` runs the Formhaus Cloud bot check in a frame from `formhaus.cc`.
+- `token()` on the frame resolves to the bot check token, or to `undefined` when the frame cannot load.
+- Submitters from `createSubmitter()` take the bot check token as a third argument.
+- Submitters from `createSubmitter()` send the `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` parameters of the page address with each submission. Each value is cut to 100 characters.
+- `PublishedForm` has `challenge` when Formhaus Cloud has the bot check on.
+- New messages for the `verification_failed` and `verification_required` errors and for a bot check that takes too long.
+- `style.css` applies the theme tokens and dark theme to `.fh-cloud`.
+- With `FormhausForm`, set theme tokens on `.fh-cloud`.
+
+### Patch Changes
+
+- Fixed a retry after a timeout creating a second submission when the bot check token was refreshed.
+
 ## 0.16.0
 
 ### Minor Changes

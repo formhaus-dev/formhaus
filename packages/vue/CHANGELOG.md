@@ -1,5 +1,24 @@
 # @formhaus/vue
 
+## 0.17.0
+
+### Minor Changes
+
+- `FormhausForm` runs the Formhaus Cloud bot check when Cloud has it on.
+- The bot check stays hidden unless it needs a click, then shows above the submit button.
+- Allow `frame-src https://formhaus.cc` in a Content-Security-Policy to enable the bot check.
+- When the bot check frame cannot load, the form submits without a token and the form's bot check setting decides.
+- A failed bot check shows a notice. Submitting again runs the check again.
+- `FormhausForm` sends the `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` parameters of the page address with each submission.
+- Notices, load errors and the success message use the theme tokens and dark theme.
+- With `FormhausForm`, set theme tokens on `.fh-cloud`.
+- Requires `@formhaus/core` 0.17.0.
+
+### Patch Changes
+
+- Fixed a value set inside the first `valuesChange` event not firing another change.
+- Fixed the handle's `values` going stale when `valuesChange` sets a value right after a new `definition`.
+
 ## 0.16.0
 
 ### Minor Changes
