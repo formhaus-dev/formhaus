@@ -29,8 +29,8 @@ function stub(...replies: Array<ReturnType<typeof reply>>) {
   return fetchMock;
 }
 
-function challengeFrame() {
-  const frame = document.querySelector<HTMLIFrameElement>('iframe[title="Bot check"]')!;
+async function challengeFrame() {
+  const frame = await screen.findByTitle<HTMLIFrameElement>('Bot check');
   const post = vi.spyOn(frame.contentWindow!, 'postMessage').mockImplementation(() => undefined);
   return { frame, post };
 }
@@ -53,7 +53,7 @@ it('loads the bot check on first focus, above the actions, hidden', async () => 
   const name = await screen.findByLabelText('Name');
   expect(document.querySelector('iframe')).toBeNull();
   fireEvent.focus(name);
-  const { frame } = challengeFrame();
+  const { frame } = await challengeFrame();
   expect(frame.src).toBe(envelope.challenge.url);
   expect(frame.getAttribute('aria-hidden')).toBe('true');
   expect(frame.tabIndex).toBe(-1);
@@ -65,7 +65,7 @@ it('submits with a token from the challenge frame and ignores spoofed messages',
   render(<FormhausForm id="abc" />);
   const name = await screen.findByLabelText('Name');
   fireEvent.focus(name);
-  const { frame, post } = challengeFrame();
+  const { frame, post } = await challengeFrame();
   fireEvent.change(name, { target: { value: 'Ada' } });
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   frame.dispatchEvent(new Event('load'));
@@ -83,7 +83,7 @@ it('shows the frame when Turnstile needs interaction', async () => {
   stub(reply(200, envelope));
   render(<FormhausForm id="abc" />);
   fireEvent.focus(await screen.findByLabelText('Name'));
-  const { frame } = challengeFrame();
+  const { frame } = await challengeFrame();
   answer(frame, { height: 65 });
   expect(frame.getAttribute('aria-hidden')).toBe('false');
   expect(frame.tabIndex).toBe(0);
@@ -95,7 +95,7 @@ it('shows a failed check as a notice and runs the check again on retry', async (
   render(<FormhausForm id="abc" />);
   const name = await screen.findByLabelText('Name');
   fireEvent.focus(name);
-  const { frame, post } = challengeFrame();
+  const { frame, post } = await challengeFrame();
   frame.dispatchEvent(new Event('load'));
   fireEvent.change(name, { target: { value: 'Ada' } });
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
@@ -127,7 +127,7 @@ it('keeps the frame when the parent re-renders with an inline actions component'
   stub(reply(200, envelope));
   const view = render(<FormhausForm id="abc" actionsComponent={(props) => <FormActions {...props} />} />);
   fireEvent.focus(await screen.findByLabelText('Name'));
-  const { frame } = challengeFrame();
+  const { frame } = await challengeFrame();
   view.rerender(<FormhausForm id="abc" actionsComponent={(props) => <FormActions {...props} />} />);
   expect(frame.isConnected).toBe(true);
   expect(document.querySelectorAll('iframe')).toHaveLength(1);
