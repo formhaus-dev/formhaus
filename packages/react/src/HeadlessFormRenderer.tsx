@@ -80,8 +80,9 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
       const values = onValuesChange.current && engine.getValuesSnapshot();
       if (values && values !== emitted.current) onValuesChange.current!((emitted.current = values));
     };
+    const unsubscribe = engine.subscribeValues(emit);
     emit();
-    return engine.subscribeValues(emit);
+    return unsubscribe;
   }, [engine]);
 
   const [warned] = useState(() => new Set<string>());
