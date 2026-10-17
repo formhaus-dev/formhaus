@@ -71,6 +71,22 @@ describe('cloud client', () => {
     expect(JSON.parse(fetchMock.mock.calls[0][1].body).attribution).toEqual({ utm_source: 'news', utm_campaign: 'spring' });
   });
 
+  it('lets extraBody override attribution and keeps the key when the address changes', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(reply(503, { error: 'unavailable' }))
+      .mockResolvedValue(reply(201, { id: 's1', values: {} }));
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('location', { search: '?utm_source=page' });
+    const submit = createSubmitter({ id: 'abc', extraBody: () => ({ attribution: { utm_source: 'frame' } }) });
+    await expect(submit({ name: 'Ada' })).rejects.toBeInstanceOf(CloudError);
+    vi.stubGlobal('location', { search: '?utm_source=other' });
+    await submit({ name: 'Ada' });
+    const calls = fetchMock.mock.calls.map(([, init]) => [JSON.parse(init.body).attribution, init.headers['Idempotency-Key']]);
+    expect(calls[0][0]).toEqual({ utm_source: 'frame' });
+    expect(calls[1][1]).toBe(calls[0][1]);
+  });
+
   it('sends empty attribution without UTM parameters', async () => {
     const fetchMock = vi.fn().mockResolvedValue(reply(201, { id: 's1', values: {} }));
     vi.stubGlobal('fetch', fetchMock);
