@@ -39,6 +39,8 @@ Create a waitlist form with an email field and publish it.
 
 Props, status codes, `Idempotency-Key` and validation rules are in [Collecting submissions](/cloud/submissions).
 
+`FormhausForm` and submitters from `createSubmitter` send `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` from the page address as `attribution`. Cloud stores them apart from the values. Other parameters of the address are not sent.
+
 ## Bot check
 
 When Formhaus Cloud has the bot check on, `FormhausForm` loads `https://formhaus.cc/challenge` in a frame on first focus and sends its token with the submission. The frame stays hidden unless the check needs a click. If your site sets a Content-Security-Policy, add `frame-src https://formhaus.cc`. If the frame cannot load, the form submits without a token and the form's bot check setting decides whether Cloud accepts it. With a self-hosted Cloud, allow your forms host in `frame-src` instead.

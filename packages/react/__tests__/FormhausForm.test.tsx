@@ -90,10 +90,17 @@ it('loads the form again after a failed load', async () => {
 it('posts values and reports the submission', async () => {
   const fetchMock = stubApi(reply(201, { id: 's1', values: { email: 'a@b.co' } }));
   const onSuccess = vi.fn();
+  window.history.replaceState(null, '', '/?utm_source=news&email=a%40b.co');
   render(<FormhausForm id="abc" onSuccess={onSuccess} />);
   await fillAndSend('a@b.co');
   await waitFor(() => expect(onSuccess).toHaveBeenCalledWith({ id: 's1', values: { email: 'a@b.co' } }));
-  expect(JSON.parse(posts(fetchMock)[0][1].body)).toEqual({ _fh_hp: '', values: { email: 'a@b.co' }, skippedSteps: [] });
+  window.history.replaceState(null, '', '/');
+  expect(JSON.parse(posts(fetchMock)[0][1].body)).toEqual({
+    attribution: { utm_source: 'news' },
+    _fh_hp: '',
+    values: { email: 'a@b.co' },
+    skippedSteps: [],
+  });
   expect(screen.getByRole('status')).toBeDefined();
 });
 

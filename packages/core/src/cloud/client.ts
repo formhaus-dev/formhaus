@@ -58,11 +58,22 @@ export interface CloudSubmitterOptions extends CloudClientOptions {
   extraBody?: () => Record<string, unknown>;
 }
 
+function attribution(): Record<string, string> {
+  const params = new URLSearchParams((globalThis as { location?: { search: string } }).location?.search);
+  const found: Record<string, string> = {};
+  for (const name of ['source', 'medium', 'campaign', 'term', 'content']) {
+    const value = params.get(`utm_${name}`)?.trim();
+    if (value) found[`utm_${name}`] = value;
+  }
+  return found;
+}
+
 export function createSubmitter(options: CloudSubmitterOptions) {
   let pending: { stable: string; key: string } | null = null;
 
   return async (values: Record<string, unknown>, skippedSteps: string[] = [], challengeToken?: string): Promise<CloudSubmission> => {
     const body = JSON.stringify({
+      attribution: attribution(),
       ...options.extraBody?.(),
       values,
       skippedSteps,
