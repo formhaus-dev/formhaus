@@ -71,6 +71,20 @@ describe('cloud client', () => {
     expect(JSON.parse(fetchMock.mock.calls[0][1].body).attribution).toEqual({ utm_source: 'news', utm_campaign: 'spring' });
   });
 
+  it('caps each UTM value at 100 characters', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(reply(201, { id: 's1', values: {} }));
+    vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('location', {
+      search: `?utm_source=${'😀'.repeat(99)}%20xyz&utm_medium=${'a'.repeat(150)}&utm_term=${'b'.repeat(99)}%00%E2%80%8B%E1%A0%8Bc`,
+    });
+    await createSubmitter({ id: 'abc' })({ name: 'Ada' });
+    expect(JSON.parse(fetchMock.mock.calls[0][1].body).attribution).toEqual({
+      utm_source: '😀'.repeat(99),
+      utm_medium: 'a'.repeat(100),
+      utm_term: `${'b'.repeat(99)}c`,
+    });
+  });
+
   it('lets extraBody override attribution and keeps the key when the address changes', async () => {
     const fetchMock = vi
       .fn()
