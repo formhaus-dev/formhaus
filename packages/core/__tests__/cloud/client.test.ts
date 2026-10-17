@@ -45,6 +45,24 @@ describe('cloud client', () => {
     expect(keys[2]).not.toBe(keys[1]);
   });
 
+  it('keeps the idempotency key when only the bot check token changes', async () => {
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(reply(503, { error: 'unavailable' }))
+      .mockResolvedValueOnce(reply(201, { id: 's1', values: {} }))
+      .mockResolvedValue(reply(201, { id: 's2', values: {} }));
+    vi.stubGlobal('fetch', fetchMock);
+    const submit = createSubmitter({ id: 'abc' });
+    await expect(submit({ name: 'Ada' }, [], 'token-1')).rejects.toBeInstanceOf(CloudError);
+    await submit({ name: 'Ada' }, [], 'token-2');
+    await submit({ name: 'Grace' }, [], 'token-3');
+    const keys = fetchMock.mock.calls.map(([, init]) => init.headers['Idempotency-Key']);
+    const tokens = fetchMock.mock.calls.map(([, init]) => JSON.parse(init.body)._fh_ts);
+    expect(tokens).toEqual(['token-1', 'token-2', 'token-3']);
+    expect(keys[1]).toBe(keys[0]);
+    expect(keys[2]).not.toBe(keys[1]);
+  });
+
   it('exposes field errors from a 422', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(reply(422, { errors: { name: 'Required' } })));
     await expect(createSubmitter({ id: 'abc' })({})).rejects.toMatchObject({ status: 422, errors: { name: 'Required' } });
