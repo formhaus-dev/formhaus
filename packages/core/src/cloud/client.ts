@@ -61,7 +61,7 @@ export interface CloudSubmitterOptions extends CloudClientOptions {
 export function createSubmitter(options: CloudSubmitterOptions) {
   let pending: { body: string; key: string } | null = null;
 
-  return async (values: Record<string, unknown>, skippedSteps: string[] = []): Promise<CloudSubmission> => {
+  return async (values: Record<string, unknown>, skippedSteps: string[] = [], challengeToken?: string): Promise<CloudSubmission> => {
     const body = JSON.stringify({
       ...options.extraBody?.(),
       values,
@@ -69,6 +69,7 @@ export function createSubmitter(options: CloudSubmitterOptions) {
       version: options.version,
       _fh_rt: options.renderToken,
       ...(options.firstRenderToken && { _fh_rt_first: options.firstRenderToken }),
+      ...(challengeToken && { _fh_ts: challengeToken }),
     });
     if (pending?.body !== body) pending = { body, key: randomId() };
     const response = await send(`${endpoint(options)}?${CORE}`, SUBMIT_TIMEOUT, {

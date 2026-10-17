@@ -38,3 +38,20 @@ Create a waitlist form with an email field and publish it.
 `FormhausForm` and `@formhaus/core/cloud` call `https://api.formhaus.cc` by default. If your site sets a Content-Security-Policy `connect-src` allowlist, add `https://api.formhaus.cc`. Pass `apiBase` to use another origin.
 
 Props, status codes, `Idempotency-Key` and validation rules are in [Collecting submissions](/cloud/submissions).
+
+## Bot check
+
+When Formhaus Cloud has the bot check on, `FormhausForm` loads `https://formhaus.cc/challenge` in a frame on first focus and sends its token with the submission. The frame stays hidden unless the check needs a click. If your site sets a Content-Security-Policy, add `frame-src https://formhaus.cc`. If the frame cannot load, the form submits without a token and the form's bot check setting decides whether Cloud accepts it. With a self-hosted Cloud, allow your forms host in `frame-src` instead.
+
+With `@formhaus/core/cloud`, get the token from `createChallengeFrame`, pass it to the submitter and call `spend()` after a successful submission or a `verification_failed` error:
+
+```ts
+import { createChallengeFrame, createSubmitter, fetchForm } from '@formhaus/core/cloud';
+
+const form = await fetchForm({ id: 'FORM_ID' });
+const submit = createSubmitter({ id: 'FORM_ID', version: form.version, renderToken: form.renderToken });
+const check = form.challenge && createChallengeFrame(form.challenge, 'FORM_ID', () => document.querySelector('#bot-check'));
+
+await submit(values, [], await check?.token());
+check?.spend();
+```

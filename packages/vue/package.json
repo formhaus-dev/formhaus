@@ -30,7 +30,7 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "@formhaus/core": "^0.16.0",
+    "@formhaus/core": "^0.17.0",
     "vue": "^3.3.3"
   },
   "devDependencies": {

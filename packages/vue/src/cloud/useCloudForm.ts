@@ -8,6 +8,7 @@ interface CloudFormOptions {
   initialForm: () => PublishedForm | undefined;
   draftStore: () => DraftStore | undefined;
   extraBody: () => Record<string, unknown>;
+  challengeHost: () => HTMLElement | null;
   onSuccess: (submission: CloudSubmission) => void;
   onError: () => ((error: unknown) => void) | undefined;
 }
@@ -26,6 +27,7 @@ export function useCloudForm(options: CloudFormOptions) {
         initialForm: options.initialForm(),
         draftStore: options.draftStore(),
         extraBody: options.extraBody,
+        challengeHost: options.challengeHost,
       },
       {
         onChange: (next) => {
@@ -46,5 +48,6 @@ export function useCloudForm(options: CloudFormOptions) {
   const retry = () => controller!.start();
   const again = () => controller!.again();
   const saveDraft = (values: Record<string, unknown>) => controller?.saveDraft(values);
-  return { state, submit, retry, again, saveDraft };
+  const warm = () => controller?.warm();
+  return { state, submit, retry, again, saveDraft, warm };
 }

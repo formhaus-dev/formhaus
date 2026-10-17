@@ -7,11 +7,18 @@ export interface CloudSettings {
   allowAnother?: boolean;
 }
 
+export interface CloudChallenge {
+  provider: string;
+  siteKey: string;
+  url: string;
+}
+
 export interface PublishedForm {
   definition: FormDefinition;
   version?: number;
   settings?: CloudSettings;
   renderToken?: string;
+  challenge?: CloudChallenge;
 }
 
 const VERSION_HEADERS = ['Formhaus-Form-Version', 'Formhaus-Version'];
@@ -33,12 +40,16 @@ function text(value: unknown): string | undefined {
   return typeof value === 'string' && value !== '' ? value : undefined;
 }
 
+function isHttp(value: unknown): value is string {
+  return typeof value === 'string' && /^https?:\/\//i.test(value);
+}
+
 export function parseSettings(value: unknown): CloudSettings {
   if (!isRecord(value)) return {};
   const redirect = text(value.redirectUrl);
   return {
     ...(text(value.successMessage) && { successMessage: text(value.successMessage) }),
-    ...(redirect && /^https?:\/\//i.test(redirect) && { redirectUrl: redirect }),
+    ...(isHttp(redirect) && { redirectUrl: redirect }),
     ...(typeof value.allowAnother === 'boolean' && { allowAnother: value.allowAnother }),
   };
 }
@@ -52,5 +63,6 @@ export function parseForm(body: unknown, response: CloudResponse): PublishedForm
     version: toVersion(body.version) ?? headerVersion(response),
     settings: parseSettings(body.settings),
     ...(text(body.renderToken) && { renderToken: text(body.renderToken) }),
+    ...(isRecord(body.challenge) && isHttp(body.challenge.url) && { challenge: body.challenge as unknown as CloudChallenge }),
   };
 }

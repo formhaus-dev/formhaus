@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, useSlots, watch } from 'vue';
-import { FormRenderer } from '@formhaus/vue';
+import { type FunctionalComponent, computed, h, onBeforeUnmount, ref, useSlots, watch } from 'vue';
+import { FormActions, FormRenderer } from '@formhaus/vue';
 import { CloudError, type CloudAction } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
 import CloudNotice from './CloudNotice.vue';
@@ -14,6 +14,7 @@ const emit = defineEmits<{
 }>();
 const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
+const box = ref<HTMLDivElement | null>(null);
 const hidden = {
   position: 'absolute',
   width: '1px',
@@ -24,12 +25,13 @@ const hidden = {
 } as const;
 const slots = useSlots();
 
-const { state, submit, retry, again, saveDraft } = useCloudForm({
+const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
   id: () => props.id,
   apiBase: () => props.apiBase,
   initialForm: () => props.initialForm,
   draftStore: () => props.draftStore,
   extraBody: () => ({ _fh_hp: trap.value?.value ?? '' }),
+  challengeHost: () => box.value,
   onSuccess: (submission) => emit('success', submission),
   onError: () => props.onError,
 });
@@ -38,6 +40,12 @@ const rendererProps = computed(() => {
   const { id, apiBase, onError, initialValues, initialForm, draftStore, ...rest } = props;
   return rest;
 });
+
+const ChallengeActions: FunctionalComponent = (_, { attrs }) => [
+  h('div', { ref: box, style: 'display:contents' }),
+  h(props.actionsComponent ?? FormActions, attrs),
+];
+ChallengeActions.inheritAttrs = false;
 
 function handled() {}
 
@@ -72,7 +80,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
 </script>
 
 <template>
-  <template v-if="state.loadError">
+  <div v-if="state.loadError" class="fh-cloud">
     <p role="alert" class="fh-form__error">{{ state.loadError.message }}</p>
     <button
       v-if="state.loadError instanceof CloudError && state.loadError.retryable"
@@ -82,9 +90,9 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
     >
       Try again
     </button>
-  </template>
-  <div v-else-if="!state.definition" class="fh-form" aria-busy="true"><slot name="fallback" /></div>
-  <template v-else-if="state.done">
+  </div>
+  <div v-else-if="!state.definition" class="fh-cloud"><div class="fh-form" aria-busy="true"><slot name="fallback" /></div></div>
+  <div v-else-if="state.done" class="fh-cloud">
     <slot name="success">
       <p role="status" class="fh-form__success">{{ state.settings.successMessage ?? 'Thank you. Your response was submitted.' }}</p>
     </slot>
@@ -96,8 +104,8 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
     >
       Submit another response
     </button>
-  </template>
-  <div v-else ref="root" class="fh-cloud">
+  </div>
+  <div v-else ref="root" class="fh-cloud" @focusin="warm">
     <input ref="trap" name="_fh_hp" tabindex="-1" autocomplete="off" aria-hidden="true" :style="hidden" />
     <CloudNotice :notice="state.notice" @action="act" />
     <FormRenderer
@@ -108,6 +116,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       :errors="state.errors"
       :on-submit="submit"
       :on-error="handled"
+      :actions-component="state.challenge ? ChallengeActions : props.actionsComponent"
       @field-change="onFieldChange"
     />
   </div>

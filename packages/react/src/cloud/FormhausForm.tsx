@@ -1,7 +1,7 @@
-import { FormRenderer } from '@formhaus/react';
+import { FormActions, type FormActionsProps, FormRenderer } from '@formhaus/react';
 import { CloudError, type CloudAction } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { CloudNotice } from './CloudNotice';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
@@ -14,6 +14,8 @@ const HIDDEN = {
   clip: 'rect(0 0 0 0)',
   clipPath: 'inset(50%)',
 } as const;
+
+const CONTENTS = { display: 'contents' } as const;
 
 function handled() {}
 
@@ -32,7 +34,23 @@ export function FormhausForm({
 }: FormhausFormProps) {
   const trap = useRef<HTMLInputElement>(null);
   const extraBody = useCallback(() => ({ _fh_hp: trap.current?.value ?? '' }), []);
-  const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, onSuccess, onError });
+  const box = useRef<HTMLDivElement>(null);
+  const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, challengeHost: box, onSuccess, onError });
+  const actionsComponent = useRef(rendererProps.actionsComponent);
+  actionsComponent.current = rendererProps.actionsComponent;
+  const actions = useMemo(
+    () =>
+      function ChallengeActions(props: FormActionsProps) {
+        const Actions = actionsComponent.current ?? FormActions;
+        return (
+          <>
+            <div ref={box} style={CONTENTS} />
+            <Actions {...props} />
+          </>
+        );
+      },
+    [],
+  );
   const root = useRef<HTMLDivElement>(null);
   const notice = useRef<HTMLDivElement>(null);
   const act = useCallback((action: Exclude<CloudAction, null>) => {
@@ -48,12 +66,18 @@ export function FormhausForm({
   }, [cloud.attempt]);
 
   useEffect(() => {
+    const node = root.current;
+    node?.addEventListener('focusin', cloud.warm);
+    return () => node?.removeEventListener('focusin', cloud.warm);
+  }, [cloud.warm, cloud.challenge, cloud.done]);
+
+  useEffect(() => {
     if (cloud.done && redirectUrl && !success) window.location.assign(redirectUrl);
   }, [cloud.done, redirectUrl, success]);
 
   if (cloud.loadError)
     return (
-      <>
+      <div className="fh-cloud">
         <p role="alert" className="fh-form__error">
           {cloud.loadError.message}
         </p>
@@ -62,17 +86,19 @@ export function FormhausForm({
             Try again
           </button>
         )}
-      </>
+      </div>
     );
   if (!cloud.definition)
     return (
-      <div className="fh-form" aria-busy="true">
-        {fallback}
+      <div className="fh-cloud">
+        <div className="fh-form" aria-busy="true">
+          {fallback}
+        </div>
       </div>
     );
   if (cloud.done)
     return (
-      <>
+      <div className="fh-cloud">
         {success ?? (
           <p role="status" className="fh-form__success">
             {successMessage ?? 'Thank you. Your response was submitted.'}
@@ -83,7 +109,7 @@ export function FormhausForm({
             Submit another response
           </button>
         )}
-      </>
+      </div>
     );
   return (
     <div ref={root} className="fh-cloud">
@@ -97,6 +123,7 @@ export function FormhausForm({
         errors={cloud.errors}
         onSubmit={cloud.submit}
         onError={handled}
+        actionsComponent={cloud.challenge ? actions : rendererProps.actionsComponent}
         onFieldChange={(key, value, values) => {
           cloud.saveDraft(values);
           onFieldChange?.(key, value, values);

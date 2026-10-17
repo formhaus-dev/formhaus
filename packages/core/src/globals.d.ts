@@ -46,6 +46,8 @@ declare class URL {
   constructor(url: string);
   readonly origin: string;
   readonly pathname: string;
+  readonly protocol: string;
+  readonly hostname: string;
 }
 
 declare class URLSearchParams {
