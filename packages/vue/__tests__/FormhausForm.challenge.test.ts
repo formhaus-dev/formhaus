@@ -127,3 +127,33 @@ it('renders no frame for a form without a bot check', async () => {
   expect(document.querySelector('iframe')).toBeNull();
   expect(sent(fetchMock, 1)).not.toHaveProperty('_fh_ts');
 });
+
+it('loads the new bot check frame when form_updated changes its URL', async () => {
+  const moved = { ...envelope, version: 2, challenge: { ...envelope.challenge, url: `${ORIGIN}/challenge?form=abc&v=2` } };
+  const fetchMock = stub(
+    reply(200, envelope),
+    reply(409, { error: 'form_updated', version: 2, errors: {} }),
+    reply(200, moved),
+    reply(201, { id: 's1', values: {} }),
+  );
+  render(FormhausForm, { props: { id: 'abc' } });
+  const name = await screen.findByLabelText('Name');
+  await focusIn(name);
+  const old = await challengeFrame();
+  await fireEvent.update(name, 'Ada');
+  await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+  old.frame.dispatchEvent(new Event('load'));
+  await waitFor(() => expect(old.post).toHaveBeenCalled());
+  answer(old.frame, { token: 'ts_old' });
+  await waitFor(() => expect(old.frame.isConnected).toBe(false));
+  await focusIn(screen.getByLabelText('Name'));
+  const next = await challengeFrame();
+  expect(next.frame.src).toBe(moved.challenge.url);
+  expect(document.querySelectorAll('iframe')).toHaveLength(1);
+  await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+  next.frame.dispatchEvent(new Event('load'));
+  await waitFor(() => expect(next.post).toHaveBeenCalledWith(expect.objectContaining({ id: 1, fresh: true }), ORIGIN));
+  answer(next.frame, { token: 'ts_new' });
+  await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(4));
+  expect(sent(fetchMock, 3)._fh_ts).toBe('ts_new');
+});
