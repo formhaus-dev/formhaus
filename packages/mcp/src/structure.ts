@@ -32,8 +32,12 @@ function fieldIssues(field: Pick<FormField, 'type' | 'autoAdvance'>, path: strin
   return issues;
 }
 
-function nodeIssues(nodes: FormNode[], path: string, item = false): Issue[] {
-  return nodes.flatMap((node, index) => {
+const list = <T>(value: unknown): T[] => (Array.isArray(value) ? value : []);
+const isNode = (value: unknown): value is FormNode => !!value && typeof value === 'object';
+
+function nodeIssues(nodes: unknown, path: string, item = false): Issue[] {
+  return list<unknown>(nodes).flatMap((node, index) => {
+    if (!isNode(node)) return [];
     const at = `${path}/${index}`;
     if (isSection(node)) return nodeIssues(node.fields, `${at}/fields`, item);
     return [...fieldIssues(node, at, item), ...(isGroup(node) ? nodeIssues(node.fields, `${at}/fields`, true) : [])];
@@ -41,18 +45,20 @@ function nodeIssues(nodes: FormNode[], path: string, item = false): Issue[] {
 }
 
 export function advancingRadios(step: FormStep): FormField[] {
-  return step.fields
-    .flatMap((node) => (isSection(node) ? node.fields : [node]))
+  return list<unknown>(step.fields)
+    .filter(isNode)
+    .flatMap((node) => (isSection(node) ? list<unknown>(node.fields).filter(isNode) : [node]))
     .filter((field): field is FormField => field.type === 'radio' && !!(field as FormField).autoAdvance);
 }
 
 export function structureIssues(definition: FormDefinition): Issue[] {
-  const fields = definition.fields ?? [];
-  const steps = definition.steps ?? [];
+  const fields = list<unknown>(definition.fields);
+  const steps = list<FormStep | null>(definition.steps);
   const issues = nodeIssues(fields, '/fields');
   if (!fields.length && !steps.length)
     issues.push(issue('empty-form', 'warning', '', 'the definition has no fields and no steps', 'Add "fields" or "steps"'));
   steps.forEach((step, index) => {
+    if (!step || typeof step !== 'object') return;
     issues.push(...nodeIssues(step.fields, `/steps/${index}/fields`));
     if (step.next === false && index < steps.length - 1 && !advancingRadios(step).length) {
       issues.push(
