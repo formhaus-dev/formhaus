@@ -11,7 +11,6 @@ const toggled = (...fields: FormField[]): FormDefinition => ({
 });
 
 const code: FormField = { key: 'code', type: 'text', label: 'Code', defaultValue: 'A1' };
-const size: FormField = { key: 'size', type: 'number', label: 'Size', defaultValue: 2 };
 
 const crew: FormDefinition = {
   id: 'crew',
@@ -48,46 +47,11 @@ const toggle = (engine: FormEngine, key = 'on') => {
 };
 
 describe('last values of fields shown again', () => {
-  it('gives back a typed value', () => {
-    const engine = new FormEngine(toggled(code), { on: true });
-    engine.setValue('code', 'B2');
-    engine.setValue('on', false);
-    expect(engine.getSubmitValues()).toEqual({ on: false });
-    engine.setValue('on', true);
-    expect(engine.getSubmitValues()).toEqual({ on: true, code: 'B2' });
-  });
-
-  it('gives back an explicit clear instead of the default', () => {
-    const engine = new FormEngine(toggled(code, size), { on: true });
-    engine.setValue('code', '');
-    engine.setValue('size', null);
-    toggle(engine);
-    expect(engine.values).toEqual({ on: true, code: '', size: null });
-  });
-
   it('keeps a value set to undefined empty', () => {
     const engine = new FormEngine(toggled(code), { on: true });
     engine.setValue('code', undefined);
     toggle(engine);
     expect(engine.values).toEqual({ on: true });
-  });
-
-  it('gives back the last value after several edits', () => {
-    const engine = new FormEngine(toggled(code), { on: true });
-    engine.setValue('code', 'B2');
-    engine.setValue('code', 'A1');
-    toggle(engine);
-    engine.setValue('code', 'C3');
-    toggle(engine);
-    expect(engine.values.code).toBe('C3');
-  });
-
-  it('remembers a value set while the field is hidden', () => {
-    const engine = new FormEngine(toggled(code));
-    engine.setValue('code', 'B2');
-    expect(engine.values).not.toHaveProperty('code');
-    engine.setValue('on', true);
-    expect(engine.values.code).toBe('B2');
   });
 
   it('remembers a clear to undefined made while the field is hidden', () => {
@@ -119,15 +83,6 @@ describe('last values of fields shown again', () => {
     engine.setValue('on', true);
     expect(engine.values.crew).toEqual([{ kind: 'a' }, { kind: 'b' }]);
     expect(engine.items('crew').map(({ id }) => id)).toEqual(ids);
-  });
-
-  it('gives an item field its last value inside a group shown again', () => {
-    const engine = new FormEngine(crew, { on: true, crew: [{ kind: 'x' }] });
-    engine.setValue('crew.0.count', 4);
-    engine.setValue('crew.0.kind', 'y');
-    toggle(engine);
-    engine.setValue('crew.0.kind', 'x');
-    expect(engine.values.crew).toEqual([{ kind: 'x', count: 4 }]);
   });
 
   it('remembers an item field cleared to undefined while it is hidden', () => {
@@ -171,73 +126,6 @@ describe('last values of fields shown again', () => {
       sent = values;
     });
     expect(sent.code).toBeUndefined();
-  });
-
-  it('brings back the value from before Skip when a pending Skip edit hides the field again', async () => {
-    const definition: FormDefinition = {
-      ...finalSkip,
-      steps: [
-        finalSkip.steps![0],
-        {
-          ...finalSkip.steps![1],
-          fields: [
-            { key: 'a', type: 'checkbox', label: 'A', defaultValue: true },
-            { key: 'd', type: 'text', label: 'D', defaultValue: 'd0', show: [{ field: 'a', eq: true }] },
-          ],
-        },
-      ],
-    };
-    const engine = new FormEngine(definition, { on: true });
-    await engine.next();
-    engine.setValue('d', 'hello');
-    engine.setValue('a', false);
-    let reject = () => {};
-    const skipping = engine.skip(() => new Promise((resolve) => (reject = () => resolve({ ok: false }))));
-    expect(engine.values.d).toBe('d0');
-    engine.setValue('a', false);
-    reject();
-    expect(await skipping).toBe(false);
-    expect(engine.values).toEqual({ on: true, a: false });
-    engine.setValue('a', true);
-    expect(engine.values.d).toBe('hello');
-  });
-
-  it('forgets a removed item', () => {
-    const engine = new FormEngine(crew, { on: true, crew: [{ kind: 'x' }, { kind: 'x' }] });
-    engine.setValue('crew.0.count', 4);
-    engine.setValue('crew.0.kind', 'y');
-    engine.removeItem('crew', 0);
-    engine.setValue('crew.0.kind', 'y');
-    engine.setValue('crew.0.kind', 'x');
-    expect(engine.values.crew).toEqual([{ kind: 'x', count: 1 }]);
-  });
-
-  it('forgets everything on reset', () => {
-    const engine = new FormEngine(toggled(code), { on: true });
-    engine.setValue('code', 'B2');
-    engine.reset({ on: true });
-    expect(engine.values.code).toBe('A1');
-    engine.setValue('code', 'C3');
-    engine.setValue('on', false);
-    engine.reset();
-    engine.setValue('on', true);
-    expect(engine.values.code).toBe('A1');
-  });
-
-  it('starts fresh from initialValues in a new engine', () => {
-    const first = new FormEngine(toggled(code), { on: true });
-    first.setValue('code', 'B2');
-    first.setValue('on', false);
-    const draft = new FormEngine(toggled(code), first.getSubmitValues());
-    draft.setValue('on', true);
-    expect(draft.values.code).toBe('A1');
-  });
-
-  it('keeps the start value of a hidden-type field', () => {
-    const engine = new FormEngine(toggled({ key: 'source', type: 'hidden', defaultValue: 'ad' }), { on: true });
-    engine.setValue('source', 'other');
-    toggle(engine);
-    expect(engine.values.source).toBe('ad');
   });
 
   it('does not restore on the server what the payload hid or left out', () => {

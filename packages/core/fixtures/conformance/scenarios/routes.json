@@ -1127,6 +1127,213 @@
           }
         }
       ]
+    },
+    {
+      "name": "reconciles to the nearest earlier step, not the first",
+      "definition": {
+        "id": "nearest",
+        "title": "nearest",
+        "submit": {
+          "label": "Send"
+        },
+        "steps": [
+          {
+            "id": "one",
+            "title": "One",
+            "fields": [
+              {
+                "key": "a",
+                "type": "text",
+                "label": "a"
+              }
+            ]
+          },
+          {
+            "id": "two",
+            "title": "Two",
+            "fields": [
+              {
+                "key": "gate",
+                "type": "text",
+                "label": "gate"
+              }
+            ],
+            "routes": [
+              {
+                "to": "three",
+                "show": [
+                  {
+                    "field": "gate",
+                    "eq": "go"
+                  }
+                ]
+              },
+              {
+                "to": "four"
+              }
+            ]
+          },
+          {
+            "id": "three",
+            "title": "Three",
+            "fields": [
+              {
+                "key": "extra",
+                "type": "text",
+                "label": "extra"
+              }
+            ]
+          },
+          {
+            "id": "four",
+            "title": "Four",
+            "fields": [
+              {
+                "key": "last",
+                "type": "text",
+                "label": "last"
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "gate": "go"
+      },
+      "steps": [
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "expect": {
+            "step": "three",
+            "stepIndex": 2,
+            "steps": ["one", "two", "three", "four"]
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "gate",
+          "value": "stop"
+        },
+        {
+          "expect": {
+            "step": "two",
+            "stepIndex": 1,
+            "steps": ["one", "two", "four"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "skips a hidden route target",
+      "definition": {
+        "id": "hidden-target",
+        "title": "hidden-target",
+        "submit": {
+          "label": "Send"
+        },
+        "steps": [
+          {
+            "id": "start",
+            "title": "Start",
+            "fields": [
+              {
+                "key": "detour",
+                "type": "checkbox",
+                "label": "Detour"
+              }
+            ],
+            "routes": [
+              {
+                "to": "detour"
+              }
+            ]
+          },
+          {
+            "id": "middle",
+            "title": "Middle",
+            "fields": [
+              {
+                "key": "note",
+                "type": "text",
+                "label": "note"
+              }
+            ]
+          },
+          {
+            "id": "detour",
+            "title": "Detour",
+            "show": [
+              {
+                "field": "detour",
+                "eq": true
+              }
+            ],
+            "fields": [
+              {
+                "key": "reason",
+                "type": "text",
+                "label": "reason"
+              }
+            ]
+          },
+          {
+            "id": "end",
+            "title": "End",
+            "fields": [
+              {
+                "key": "comment",
+                "type": "text",
+                "label": "comment"
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "expect": {
+            "steps": ["start", "middle", "end"]
+          }
+        },
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "expect": {
+            "step": "middle",
+            "stepIndex": 1
+          }
+        },
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "expect": {
+            "step": "end",
+            "stepIndex": 2
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "detour",
+          "value": true
+        },
+        {
+          "expect": {
+            "step": "end",
+            "steps": ["start", "detour", "end"]
+          }
+        }
+      ]
     }
   ]
 }
