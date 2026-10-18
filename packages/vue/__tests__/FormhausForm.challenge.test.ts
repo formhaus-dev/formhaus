@@ -45,7 +45,6 @@ const sent = (fetchMock: ReturnType<typeof stub>, call: number) =>
   JSON.parse(String((fetchMock.mock.calls[call] as unknown as [string, { body: string }])[1].body));
 
 async function focusIn(element: HTMLElement) {
-  await new Promise((resolve) => setTimeout(resolve, 2));
   await fireEvent.focusIn(element);
 }
 

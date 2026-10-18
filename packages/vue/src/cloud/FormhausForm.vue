@@ -54,6 +54,17 @@ function act(action: Exclude<CloudAction, null>) {
   else root.value?.querySelector('form')?.requestSubmit();
 }
 
+watch(
+  root,
+  (element, _, onCleanup) => {
+    if (!element) return;
+    element.addEventListener('focusin', warm);
+    onCleanup(() => element.removeEventListener('focusin', warm));
+    if (element.contains(document.activeElement)) warm();
+  },
+  { flush: 'post' },
+);
+
 let frame = 0;
 watch(
   () => state.value.attempt,
@@ -105,7 +116,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       Submit another response
     </button>
   </div>
-  <div v-else ref="root" class="fh-cloud" @focusin="warm">
+  <div v-else ref="root" class="fh-cloud">
     <input ref="trap" name="_fh_hp" tabindex="-1" autocomplete="off" aria-hidden="true" :style="hidden" />
     <CloudNotice :notice="state.notice" @action="act" />
     <FormRenderer
