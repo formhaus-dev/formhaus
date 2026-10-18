@@ -165,7 +165,7 @@ describe('cloud controller with a bot check', () => {
     });
 
     it('keeps the frame when the challenge is unchanged', async () => {
-      const { fake, controller } = await updateTo({ ...challenge });
+      const { fake, controller } = await updateTo({ url: challenge.url, siteKey: challenge.siteKey, provider: challenge.provider });
       controller.warm();
       expect(fake.frames).toHaveLength(1);
       expect(fake.frames[0].isConnected).toBe(true);

@@ -84,14 +84,15 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   let state = initialCloudState;
   let frame: CloudChallengeFrame | undefined;
   let framed = '';
+  const configOf = (c: CloudChallenge | null) => `${c?.provider} ${c?.siteKey} ${c?.url}`;
   const challenge = () => {
     if (!state.challenge || !options.challengeHost) return undefined;
-    framed = JSON.stringify(state.challenge);
+    framed = configOf(state.challenge);
     return (frame ??= createChallengeFrame(state.challenge, options.id, options.challengeHost));
   };
   const update = (patch: Partial<CloudState>) => {
     state = { ...state, ...patch };
-    if (frame && JSON.stringify(state.challenge) !== framed) {
+    if (frame && configOf(state.challenge) !== framed) {
       frame.dispose();
       frame = undefined;
     }
