@@ -12,6 +12,7 @@
 - `FormhausForm` sends the `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` parameters of the page address with each submission.
 - Notices, load errors and the success message use the theme tokens and dark theme.
 - With `FormhausForm`, theme tokens on `.fh-cloud` also style the notices, load errors and success message. Tokens on `.fh-form` still style the form.
+- Inside `FormhausForm`, the derived variables `--fh-color-border-focus`, `--fh-input-padding`, `--fh-font-size-heading`, `--fh-font-size-title`, `--fh-card-padding`, `--fh-color-primary-hover`, `--fh-color-primary-soft` and `--fh-color-error-soft` have no value unless you set them. Custom CSS that reads them needs a fallback, for example `var(--fh-input-padding, 10px 14px)`.
 - Requires `@formhaus/core` 0.17.0.
 
 ### Patch Changes

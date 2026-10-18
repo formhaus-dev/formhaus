@@ -38,7 +38,7 @@ The default React and Vue components render unstyled HTML. For a finished look i
 import '@formhaus/core/style.css';
 ```
 
-Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). The hover and selected-option colors are derived from `--fh-color-primary`. With `FormhausForm`, set theme tokens on `.fh-cloud` to also style the notices, load errors and success message.
+Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). The hover and selected-option colors are derived from `--fh-color-primary`. With `FormhausForm`, set theme tokens on `.fh-cloud` to also style the notices, load errors and success message. Inside `FormhausForm`, `--fh-color-border-focus`, `--fh-input-padding`, `--fh-font-size-heading`, `--fh-font-size-title`, `--fh-card-padding`, `--fh-color-primary-hover`, `--fh-color-primary-soft` and `--fh-color-error-soft` have no value unless you set them. Custom CSS that reads one needs a fallback, for example `var(--fh-input-padding, 10px 14px)`.
 
 Hover states apply only on devices with a mouse or trackpad, and transitions turn off under `prefers-reduced-motion`. These variables set the hover colors:
 
