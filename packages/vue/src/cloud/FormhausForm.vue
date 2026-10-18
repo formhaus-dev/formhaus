@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { type FunctionalComponent, computed, h, onBeforeUnmount, ref, useSlots, watch } from 'vue';
+import type { FormEvent } from '@formhaus/core';
 import { FormActions, FormRenderer } from '@formhaus/vue';
 import { CloudError, type CloudAction } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
@@ -12,6 +13,8 @@ defineSlots<{ fallback(): unknown; success(): unknown }>();
 const emit = defineEmits<{
   success: [submission: { id: string; values: Record<string, unknown> }];
   fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
+  formEvent: [event: FormEvent];
+  analyticsEvent: [event: FormEvent];
 }>();
 const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
@@ -130,6 +133,8 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       :on-error="handled"
       :actions-component="state.challenge ? ChallengeActions : props.actionsComponent"
       @field-change="onFieldChange"
+      @form-event="(event: FormEvent) => emit('formEvent', event)"
+      @analytics-event="(event: FormEvent) => emit('analyticsEvent', event)"
     />
   </div>
 </template>

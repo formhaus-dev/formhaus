@@ -4,12 +4,15 @@ import FormActions from './FormActions.vue';
 import FormStepProgress from './FormStepProgress.vue';
 import HeadlessFormRenderer from './HeadlessFormRenderer.vue';
 import { withDefaultFields } from './constants';
+import { useListening } from './composables/useListening';
+import type { FormEvent } from '@formhaus/core';
 import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
 
 const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true });
 
 const emit = defineEmits<FormRendererEmits>();
 
+const listening = useListening();
 const components = computed(() => withDefaultFields(props.components));
 let inner: FormRendererHandle | null = null;
 const values = shallowRef<Readonly<Record<string, unknown>>>({});
@@ -33,6 +36,7 @@ defineExpose({
     @cancel="emit('cancel')"
     @field-change="(key, value, allValues) => emit('fieldChange', key, value, allValues)"
     @values-change="(next) => emit('valuesChange', (values = next))"
-    @analytics-event="(event) => emit('analyticsEvent', event)"
+    :onFormEvent="listening('onFormEvent') ? (event: FormEvent) => emit('formEvent', event) : undefined"
+    :onAnalyticsEvent="listening('onAnalyticsEvent') ? (event: FormEvent) => emit('analyticsEvent', event) : undefined"
   />
 </template>

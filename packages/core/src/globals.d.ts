@@ -12,6 +12,7 @@ interface AbortSignal {
 
 declare function setTimeout(handler: () => void, timeout: number): unknown;
 declare function clearTimeout(id: unknown): void;
+declare function queueMicrotask(callback: () => void): void;
 
 declare class AbortController {
   readonly signal: AbortSignal;

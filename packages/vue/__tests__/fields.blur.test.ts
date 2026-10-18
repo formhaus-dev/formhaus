@@ -16,7 +16,7 @@ const definition: FormDefinition = {
 };
 
 it.each(['agree', 'alerts', 'plan', 'resume'])('reports field_blurred for %s', async (key) => {
-  const { container, emitted } = render(FormRenderer, { props: { definition } });
+  const { container, emitted } = render(FormRenderer, { props: { definition, onAnalyticsEvent: () => {} } });
   const control = container.querySelector(`[name="${key}"]`)!;
   await fireEvent.focus(control);
   await fireEvent.blur(control);

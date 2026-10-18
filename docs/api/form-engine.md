@@ -216,6 +216,7 @@ Renderers take `messages` and `labels` props with the same types as the engine o
 | `submit(handler)` | `Promise<boolean>` | Validates every step of the path, runs `onBeforeSubmit`, awaits `handler(values, skippedSteps)` and then `onAfterSubmit`. Resolves to `false` when the handler returns `{ ok: false }` |
 | `isStepSkipped(stepId)` | `boolean` | Whether the step is skipped and left out of validation and submitted values |
 | `goToStepWithField(key)` | `void` | Moves to the visible step containing a field without lifecycle hooks |
+| `start()` | `void` | Reports `form_viewed` and the first `step_viewed`. Call it once the form is on screen. Later calls do nothing |
 
 See [Async step validation](/guide/async-validation#using-the-engine-directly) for an `onStepValidate` example.
 
@@ -253,6 +254,17 @@ const values = useSyncExternalStore(
 ```
 
 `subscribeValues` runs for `setValue`, group item changes, values cleared or restored by conditions, `reset`, and step skip and its rollback. It may run when the values end up unchanged: a write to a hidden field, a reset to equal content, a skip. It does not run for errors, loading, navigation or a value equal to the current one. Listeners run synchronously, after the general `subscribe` listeners.
+
+## Form events
+
+`onFormEvent` receives every lifecycle event as a `FormEvent`:
+
+```ts
+const engine = new FormEngine(definition, {}, { onFormEvent: (event) => console.log(event.type, event) });
+engine.start();
+```
+
+The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped`, `field_shown`, `field_hidden`, `field_error`, `form_submitted`, `form_submit_succeeded`, `form_submit_failed` and `form_reset`. `step_viewed` fires after `start()` for every change of the current step, including `goToStepWithField`, `reset` and a step that a condition hides. Before `start()`, `step_viewed`, visibility events and `form_reset` stay silent. The renderers call `start()` on mount and add `field_focused` and `field_blurred`. An error thrown by `onFormEvent` is rethrown in a microtask and does not interrupt the action. See the [event table](/guide/custom-components#form-events).
 
 ## Navigation and submission lifecycle
 

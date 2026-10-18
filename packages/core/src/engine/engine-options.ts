@@ -1,4 +1,5 @@
 import type { DefinitionIssue } from '../definition-validation';
+import type { FormEvent } from '../types/analytics';
 import type { MessageSource, ValidatorFn } from '../validation';
 
 export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
@@ -26,4 +27,5 @@ export interface FormEngineOptions {
   messages?: MessageSource;
   onStepValidate?: StepValidateFn;
   onWarning?: (issue: DefinitionIssue) => void;
+  onFormEvent?: (event: FormEvent) => void;
 }

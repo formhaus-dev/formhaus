@@ -1,4 +1,5 @@
 import { getChangedKeys } from './engine-utils';
+import { emit } from './form-events';
 import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs, watchValues } from './pending-inputs';
 import { applyValidationErrors, dropServerErrors, fieldsErrors, getSubmitValues, pruneOffPathErrors } from './validation-state';
@@ -125,6 +126,7 @@ export async function changeStep(
     if (stale()) return false;
     if (validating && hasStepErrors(engine)) return false;
     committed = true;
+    if (direction === 'next') emit(engine, { type: skipping ? 'step_skipped' : 'step_completed', stepId: step.id });
     if (skipping) skipCurrentStep(engine);
     moveTo(engine, toIndex);
     await afterCommit('afterStepChange', () => lifecycle.onAfterStepChange?.(context));

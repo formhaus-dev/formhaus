@@ -1,11 +1,11 @@
 ---
 title: "Quiz or lead-capture funnel in React or Vue"
-description: "Build a quiz or lead-capture funnel with Formhaus: one-click radio answers with autoAdvance, routes per answer, lead saving and analytics events."
+description: "Build a quiz or lead-capture funnel with Formhaus: one-click radio answers with autoAdvance, routes per answer, lead saving and form events."
 ---
 
 # How do I build a quiz or lead-capture funnel?
 
-Formhaus describes the funnel as a multi-step JSON definition: radio questions with `autoAdvance: true` move on as soon as the visitor clicks an answer, `routes` send each answer to its next question, and a contact step collects the lead. `FormRenderer` reports every step and field event through `onAnalyticsEvent`, and lifecycle hooks save the lead before the visitor reaches the last step.
+Formhaus describes the funnel as a multi-step JSON definition: radio questions with `autoAdvance: true` move on as soon as the visitor clicks an answer, `routes` send each answer to its next question, and a contact step collects the lead. `FormRenderer` reports every step and field event through `onFormEvent`, and lifecycle hooks save the lead before the visitor reaches the last step.
 
 ## Definition
 
@@ -37,7 +37,7 @@ export function PlanQuiz() {
     <FormRenderer
       definition={definition}
       onBeforeStepChange={captureLead}
-      onAnalyticsEvent={(event) => track(event.type, event)}
+      onFormEvent={(event) => track(event.type, event)}
       onSubmit={async (values) => {
         leadId.current = await saveLead(leadId.current, values);
       }}
@@ -74,7 +74,7 @@ async function bookCall(values: Record<string, unknown>) {
     :definition="definition"
     :on-before-step-change="captureLead"
     @submit="bookCall"
-    @analytics-event="(event) => track(event.type, event)"
+    @form-event="(event) => track(event.type, event)"
   />
 </template>
 ```
@@ -86,12 +86,12 @@ async function bookCall(values: Record<string, unknown>) {
 - Progress counts the active path: four steps for solo visitors, five for teams.
 - `onBeforeStepChange` runs after the contact step validates. Saving the lead there captures the email before the optional phone step. When the save throws, the visitor stays on the step and the error goes to `onError`, or above the form when `onError` is not set.
 - `onSubmit` updates the same lead id, so Back and Continue never create a second lead.
-- `onAnalyticsEvent` emits `step_viewed`, `step_completed`, `step_skipped`, `field_focused`, `field_blurred`, `field_error` and `form_submitted`. Feed them to your analytics tool to build the funnel report.
+- `onFormEvent` reports every step view, step completion and skip, field focus and blur, validation error and submit result. Feed them to your analytics tool to build the funnel report.
 - The final step never auto-submits, even with `autoAdvance` radios.
 
 ## Related
 
 - [Multi-Step Forms](/guide/steps#advance-when-an-answer-is-activated): `autoAdvance`, `next: false` and lifecycle hooks
-- [Custom Actions & Progress](/guide/custom-components#analytics-events): analytics events
+- [Custom Actions & Progress](/guide/custom-components#form-events): form events
 - [Multi-step branching](/recipes/multi-step-branching): routes with Continue buttons and a skip step
 - [Examples README](https://github.com/ignsm/formhaus/tree/main/examples): run the quiz locally

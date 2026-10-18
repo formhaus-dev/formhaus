@@ -28,7 +28,7 @@ function button(name: string): HTMLButtonElement {
 describe('FormRenderer skip and button roles', () => {
   it('renders button roles, skips without validation and submits without skipped steps', async () => {
     const submitHandler = vi.fn();
-    const { emitted } = render(FormRenderer, { props: { definition, submitHandler } });
+    const { emitted } = render(FormRenderer, { props: { definition, submitHandler, onAnalyticsEvent: () => {} } });
     expect(screen.queryByRole('button', { name: 'Not now' })).toBeNull();
     await fireEvent.update(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
     await fireEvent.click(button('Continue'));
@@ -47,7 +47,9 @@ describe('FormRenderer skip and button roles', () => {
 
   it('reports field errors when a skip submit fails validation', async () => {
     let failing = false;
-    const { emitted } = render(FormRenderer, { props: { definition, validators: { flaky: () => (failing ? 'Bad name' : null) } } });
+    const { emitted } = render(FormRenderer, {
+      props: { definition, validators: { flaky: () => (failing ? 'Bad name' : null) }, onAnalyticsEvent: () => {} },
+    });
     await fireEvent.update(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
     await fireEvent.click(button('Continue'));
     await screen.findByRole('textbox', { name: /Phone/ });

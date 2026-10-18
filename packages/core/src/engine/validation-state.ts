@@ -1,4 +1,5 @@
 import { validateFieldValue } from '../validation';
+import { emit } from './form-events';
 import { customRules, validateShown } from '../validation/validate-step';
 import { isPlainEntry } from '../validation/type-checks';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
@@ -179,6 +180,10 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values, engine.visibility.activeField)));
   engine.skipped.clear();
   engine.visibility.reconcileHidden(engine.values, engine.errors, true);
+  if (engine.viewedStep !== undefined) {
+    emit(engine, { type: 'form_reset' });
+    engine.viewedStep = null;
+  }
   const changedValues = getChangedKeys(previousValues, engine.values);
   const changedFields = new Set([...changedValues, ...getChangedKeys(previousErrors, engine.errors), ...loadingFields]);
   engine.notify({

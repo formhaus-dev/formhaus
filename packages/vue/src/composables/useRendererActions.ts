@@ -55,38 +55,12 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     update(key, value);
     if (field.autoAdvance && engine.currentStep?.id === step?.id && !engine.isLastStep) void run(() => autoAdvance(engine));
   }
-  function send(handler: typeof props.submitHandler) {
-    return async (values: Record<string, unknown>, skippedSteps: string[]) => {
-      emit('analyticsEvent', { type: 'form_submitted', fieldCount: Object.keys(values).length });
-      return handler?.(values, skippedSteps);
-    };
-  }
-  async function report(engine: typeof form.engine, action: Promise<boolean>) {
-    const result = await action;
-    if (!result) {
-      for (const [fieldKey, error] of Object.entries(engine.errors)) {
-        emit('analyticsEvent', { type: 'field_error', fieldKey, error });
-      }
-    }
-    return result;
-  }
+  const handler = () => props.onSubmit ?? props.submitHandler ?? (() => {});
   const submit = () =>
     run(async () => {
       const engine = form.engine;
-      if (isActionDisabled(engine.definition.submit, engine.getSubmitValues())) return false;
-      return report(engine, engine.submit(send(props.onSubmit ?? props.submitHandler)));
+      return !isActionDisabled(engine.definition.submit, engine.getSubmitValues()) && engine.submit(handler());
     });
-  const skip = () =>
-    run(() => {
-      const engine = form.engine;
-      const submit = send(props.onSubmit ?? props.submitHandler);
-      return report(
-        engine,
-        engine.skip((values, skippedSteps) => {
-          emit('analyticsEvent', { type: 'step_skipped', stepId: engine.currentStep!.id });
-          return submit(values, skippedSteps);
-        }),
-      );
-    });
+  const skip = () => run(() => form.engine.skip(handler()));
   return { update, changeItems, commit, next, prev, skip, submit, actionError, invalidAttempts };
 }

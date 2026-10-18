@@ -186,7 +186,7 @@ describe('FormRenderer built-in fallbacks', () => {
   it('forwards every event from the headless core', async () => {
     const onSubmit = vi.fn();
     const { emitted } = render(FormRenderer, {
-      props: { definition, components: { text: CustomText }, actionsComponent: CustomActions, onSubmit },
+      props: { definition, components: { text: CustomText }, actionsComponent: CustomActions, onSubmit, onAnalyticsEvent: () => {} },
     });
     await fireEvent.update(screen.getByTestId('custom-name'), 'Ann');
     await fireEvent.click(screen.getByText('Send'));

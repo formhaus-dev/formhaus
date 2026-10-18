@@ -1,0 +1,35 @@
+{
+  "id": "survey",
+  "title": "Quick survey",
+  "submit": { "label": "Send" },
+  "steps": [
+    {
+      "id": "role",
+      "title": "What is your role?",
+      "fields": [
+        {
+          "key": "role",
+          "type": "radio",
+          "label": "Role",
+          "autoAdvance": true,
+          "validation": { "required": true },
+          "options": [
+            { "value": "engineer", "label": "Engineer" },
+            { "value": "designer", "label": "Designer" },
+            { "value": "other", "label": "Other" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "team",
+      "title": "How big is your team?",
+      "fields": [{ "key": "team", "type": "number", "label": "People", "validation": { "required": true, "min": 1 } }]
+    },
+    {
+      "id": "feedback",
+      "title": "Anything else?",
+      "fields": [{ "key": "feedback", "type": "textarea", "label": "Feedback" }]
+    }
+  ]
+}

@@ -8,6 +8,7 @@ export type {
   FieldValidation,
   FormAction,
   FormAnalyticsEvent,
+  FormEvent,
   FormDefinition,
   FormField,
   HiddenFormField,

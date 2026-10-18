@@ -89,6 +89,7 @@ export default defineConfig({
           { text: 'Derived values', link: '/recipes/derived-values' },
           { text: 'Nested sections', link: '/recipes/nested-sections' },
           { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
+          { text: 'Question timing', link: '/recipes/question-timing' },
           { text: 'Headless engine', link: '/recipes/headless-engine' },
           { text: 'Svelte 5', link: '/recipes/svelte' },
           { text: 'Figma to React', link: '/recipes/figma-to-react' },
