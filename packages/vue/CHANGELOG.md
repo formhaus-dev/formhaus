@@ -11,7 +11,7 @@
 - A failed bot check shows a notice. Submitting again runs the check again.
 - `FormhausForm` sends the `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` parameters of the page address with each submission.
 - Notices, load errors and the success message use the theme tokens and dark theme.
-- With `FormhausForm`, set theme tokens on `.fh-cloud`.
+- With `FormhausForm`, theme tokens on `.fh-cloud` also style the notices, load errors and success message. Tokens on `.fh-form` still style the form.
 - Requires `@formhaus/core` 0.17.0.
 
 ### Patch Changes
