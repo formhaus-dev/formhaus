@@ -3,6 +3,7 @@ import { messageResolver, type ResolveMessage } from '../validation/default-mess
 import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
 import type { FormEngineOptions, SubmitHandler } from './engine-options';
 import { createValues, initialState } from './engine-utils';
+import { reportErrors, startEvents, trackStep } from './form-events';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineState } from './runtime-internals';
@@ -19,6 +20,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private validationEpoch = 0;
   private operationEpoch = 0;
   private latestOperation = 0;
+  private viewedStep?: string | null;
   private readonly lifecycle: FormEngineOptions;
 
   private readonly validators: Record<string, ValidatorFn>;
@@ -196,6 +198,10 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.notify();
   }
 
+  start(): void {
+    startEvents(this as never);
+  }
+
   next(): Promise<boolean> {
     return this.advance('next');
   }
@@ -203,10 +209,10 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return changeStep(this as never, 'back');
   }
   skip(submit?: SubmitHandler): Promise<boolean> {
-    return skipStep(this as never, submit);
+    return reportErrors(this as never, () => skipStep(this as never, submit));
   }
   submit(handler: SubmitHandler): Promise<boolean> {
-    return submitForm(this as never, handler);
+    return reportErrors(this as never, () => submitForm(this as never, handler));
   }
   isStepSkipped(stepId: string): boolean {
     return this.skipped.has(stepId);
@@ -228,7 +234,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   private advance(reason: 'next' | 'autoAdvance'): Promise<boolean> {
-    return changeStep(this as never, 'next', reason);
+    return reportErrors(this as never, () => changeStep(this as never, 'next', reason));
   }
 
   private get view() {
@@ -239,5 +245,6 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     if (options.valuesChanged) this.snapshot = undefined;
     this.visibility.markChanged(!!options.structureChanged, !!options.valuesChanged);
     this.subscriptions.notify(options);
+    if (this.viewedStep !== undefined) trackStep(this as never);
   }
 }

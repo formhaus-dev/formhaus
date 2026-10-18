@@ -125,6 +125,7 @@ export async function changeStep(
     if (stale()) return false;
     if (validating && hasStepErrors(engine)) return false;
     committed = true;
+    if (direction === 'next') engine.lifecycle.onFormEvent?.({ type: skipping ? 'step_skipped' : 'step_completed', stepId: step.id });
     if (skipping) skipCurrentStep(engine);
     moveTo(engine, toIndex);
     await afterCommit('afterStepChange', () => lifecycle.onAfterStepChange?.(context));

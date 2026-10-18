@@ -51,11 +51,21 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
     const skippedSteps = [...engine.skipped.keys()];
     const sent = { ...engine.values };
     const serverErrors = engine.state.serverErrors;
-    const result = await submit(values, [...skippedSteps]);
+    const track = engine.lifecycle.onFormEvent;
+    if (keepSkipped) track?.({ type: 'step_skipped', stepId: engine.currentStep!.id });
+    track?.({ type: 'form_submitted', fieldCount: Object.keys(values).length });
+    let result: unknown;
+    try {
+      result = await submit(values, [...skippedSteps]);
+    } catch (error) {
+      track?.({ type: 'form_submit_failed', reason: 'error' });
+      throw error;
+    }
     const rejected = isRejection(result);
+    track?.(rejected ? { type: 'form_submit_failed', reason: 'rejected' } : { type: 'form_submit_succeeded' });
     if (operation !== engine.operationEpoch) return !rejected;
     if (rejected) {
-      applyRejection(engine, result, sent);
+      applyRejection(engine, result as Rejection, sent);
       return false;
     }
     if (engine.state.serverErrors === serverErrors) applyValidationErrors(engine, {}, true);

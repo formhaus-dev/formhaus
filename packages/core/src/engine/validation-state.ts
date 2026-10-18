@@ -179,6 +179,8 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values, engine.visibility.activeField)));
   engine.skipped.clear();
   engine.visibility.reconcileHidden(engine.values, engine.errors, true);
+  engine.lifecycle.onFormEvent?.({ type: 'form_reset' });
+  if (engine.viewedStep) engine.viewedStep = null;
   const changedValues = getChangedKeys(previousValues, engine.values);
   const changedFields = new Set([...changedValues, ...getChangedKeys(previousErrors, engine.errors), ...loadingFields]);
   engine.notify({
