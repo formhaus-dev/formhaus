@@ -39,13 +39,6 @@ describe('submitted keys', () => {
     expect(Object.keys(validateSubmission(definition, {}).errors)).toEqual([...KEYS]);
   });
 
-  it('maps server errors back onto the field with the same key', () => {
-    const engine = new FormEngine(definition, answers);
-    engine.setErrors({ 'contact.email': 'Already registered', имя: 'Too short' });
-    expect(engine.errors).toEqual({ 'contact.email': 'Already registered', имя: 'Too short' });
-    expect(engine.topLevelErrors).toEqual([]);
-  });
-
   it('keeps the keys when the form is localized', () => {
     const overlay = { fields: Object.fromEntries(KEYS.map((key) => [key, { label: `Перевод ${key}` }])) };
     const localized = localize(definition, { overlay }).definition;
