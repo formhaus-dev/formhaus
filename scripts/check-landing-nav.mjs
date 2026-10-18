@@ -4,7 +4,14 @@ import { createRequire } from 'node:module';
 const require = createRequire(new URL('../packages/editor-react/package.json', import.meta.url));
 const { chromium } = require('playwright');
 
-const pages = process.env.LANDING_NAV_PAGES?.split(',') ?? ['/', '/cloud', '/templates/', '/templates/contact-form', '/build'];
+const pages = process.env.LANDING_NAV_PAGES?.split(',') ?? [
+  '/',
+  '/framework',
+  '/cloud/overview',
+  '/templates/',
+  '/templates/contact-form',
+  '/build',
+];
 const widths = [1440, 1280, 1024, 390];
 const themes = ['light', 'dark'];
 const tolerance = 0.5;
@@ -16,7 +23,7 @@ const server = process.env.LANDING_NAV_BASE
 
 async function ready() {
   for (let attempt = 0; attempt < 100; attempt += 1) {
-    const ok = await fetch(`${base}/cloud`).then(
+    const ok = await fetch(`${base}/`).then(
       (res) => res.ok,
       () => false,
     );
