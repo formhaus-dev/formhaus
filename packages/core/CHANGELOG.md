@@ -1,5 +1,14 @@
 # @formhaus/core
 
+## 0.18.0
+
+### Minor Changes
+
+- `CloudSubmission` has `ending` when Formhaus Cloud picks an ending for the submission.
+- `FormhausForm` shows that ending. Its message or redirect replaces the form's success settings.
+- `FormhausForm` uploads the file of each `file` field to Formhaus Cloud before it submits and sends the upload id as the field value. A refused or failed upload shows its message on the field.
+- `style.css` styles the file input and its button with the theme tokens.
+
 ## 0.17.0
 
 ### Minor Changes

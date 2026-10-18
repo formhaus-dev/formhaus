@@ -1,5 +1,17 @@
 # @formhaus/vue
 
+## 0.18.0
+
+### Minor Changes
+
+- `FormhausForm` shows the ending that Formhaus Cloud picks for a submission. Its message or redirect replaces the form's success settings.
+- `FormhausForm` uploads the file of each `file` field to Formhaus Cloud before it submits. A refused or failed upload shows its message on the field.
+- Requires `@formhaus/core` 0.18.0.
+
+### Patch Changes
+
+- Fixed `FormhausForm` not loading the bot check when a field gets focus as the form first renders.
+
 ## 0.17.0
 
 ### Minor Changes
