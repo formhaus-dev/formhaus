@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, type FormDefinition } from '../../src';
+import { textSlots } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
-import { cases, corpus } from './corpus';
+import { cases, corpus, runtime } from './corpus';
 
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const byPathAndCode = (a: { code: string; path: string }, b: { code: string; path: string }) =>
@@ -42,6 +43,10 @@ describe('conformance corpus', () => {
       'disabled-actions',
       'flat-api-steps',
       'format-version',
+      'i18n-empty-overlay',
+      'i18n-exclusive-branches',
+      'i18n-own-properties',
+      'i18n-signup-steps',
       'impossible-dates',
       'invalid-labels',
       'invalid-messages',
@@ -73,6 +78,11 @@ describe('conformance corpus', () => {
       expect(actual.sort(byPathAndCode)).toEqual([...warnings!].sort(byPathAndCode));
     },
   );
+
+  it.each(corpus.filter(({ texts }) => texts).map((fixture) => [fixture.name, fixture] as const))('%s: texts', (_, fixture) => {
+    const slots = new Map(textSlots(runtime(fixture)).map(({ address, text }) => [address, text]));
+    expect(Object.fromEntries(Object.keys(fixture.texts!).map((address) => [address, slots.get(address) ?? null]))).toEqual(fixture.texts);
+  });
 
   it.each(corpus.filter(({ issues }) => issues.length).map((fixture) => [fixture.name, fixture] as const))(
     '%s: rejected by the engine and the server',
