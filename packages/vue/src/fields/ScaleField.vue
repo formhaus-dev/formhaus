@@ -20,7 +20,7 @@ const anchorId = (point: number) => {
 };
 const choice = useChoice(props, emit, (key) => {
   const [min, max] = range.value;
-  const point = key === '0' && min ? 10 : Number(key);
+  const point = key === '0' && min > 0 ? 10 : Number(key);
   return /^\d$/.test(key) && point >= min && point <= max ? point : undefined;
 });
 </script>

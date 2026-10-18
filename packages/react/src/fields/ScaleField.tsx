@@ -11,7 +11,7 @@ export function ScaleField(props: FieldComponentProps) {
   const points = Array.from({ length: Math.max(0, max - min + 1) }, (_, index) => min + index);
   const anchors = (field.options ?? []).slice(0, 3);
   const choice = choiceHandlers(props, useRef(false), (key) => {
-    const point = key === '0' && min ? 10 : Number(key);
+    const point = key === '0' && min > 0 ? 10 : Number(key);
     return /^\d$/.test(key) && point >= min && point <= max ? point : undefined;
   });
 

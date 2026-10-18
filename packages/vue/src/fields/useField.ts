@@ -45,9 +45,10 @@ export function useChoice(
     return {
       onKeydown(event: KeyboardEvent) {
         arrow = event.key.startsWith('Arrow');
-        const picked = pick?.(event.key);
+        const picked = event.metaKey || event.ctrlKey || event.altKey || event.isComposing ? undefined : pick?.(event.key);
         if (picked !== undefined) {
           event.preventDefault();
+          if (event.repeat) return;
           commit(picked);
           (event.currentTarget as HTMLElement).parentElement?.parentElement
             ?.querySelector<HTMLInputElement>(`[value="${picked}"]`)

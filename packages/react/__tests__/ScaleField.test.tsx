@@ -111,6 +111,13 @@ describe('ScaleField', () => {
     expect(document.querySelectorAll('input[name="five"]:checked')).toHaveLength(0);
   });
 
+  it('ignores digit keys with a modifier, during composition and on repeat', async () => {
+    render(<FormRenderer definition={single(nps)} onSubmit={() => {}} />);
+    for (const init of [{ ctrlKey: true }, { metaKey: true }, { altKey: true }, { isComposing: true }, { repeat: true }])
+      fireEvent.keyDown(radio('nps', 2), { key: '7', ...init });
+    expect(document.querySelectorAll('input[name="nps"]:checked')).toHaveLength(0);
+  });
+
   it('commits on click with autoAdvance', async () => {
     render(<FormRenderer definition={steps({ ...nps, autoAdvance: true })} onSubmit={() => {}} />);
     fireEvent.click(radio('nps', 9), { detail: 1 });

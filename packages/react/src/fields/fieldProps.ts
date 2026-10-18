@@ -39,9 +39,10 @@ export function choiceHandlers(
     },
     onKeyDown: (event: KeyboardEvent<HTMLInputElement>) => {
       arrow.current = event.key.startsWith('Arrow');
-      const picked = pick?.(event.key);
+      const picked = event.metaKey || event.ctrlKey || event.altKey || event.nativeEvent.isComposing ? undefined : pick?.(event.key);
       if (picked !== undefined) {
         event.preventDefault();
+        if (event.repeat) return;
         (commit || onChange)(picked);
         event.currentTarget.parentElement?.parentElement?.querySelector<HTMLInputElement>(`[value="${picked}"]`)?.focus();
       }
