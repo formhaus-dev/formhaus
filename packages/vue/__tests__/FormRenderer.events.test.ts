@@ -1,7 +1,9 @@
 import { render } from '@testing-library/vue';
 import type { FormDefinition } from '@formhaus/core';
-import { expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import FormRenderer from '../src/FormRenderer.vue';
+import HeadlessFormRenderer from '../src/HeadlessFormRenderer.vue';
+import TextField from '../src/fields/TextField.vue';
 
 const definition: FormDefinition = {
   id: 'events',
@@ -24,4 +26,19 @@ it('emits only to the listened event', () => {
   const { emitted } = render(FormRenderer, { props: { definition, onFormEvent: () => {} } });
   expect(emitted().formEvent).toHaveLength(2);
   expect(emitted().analyticsEvent).toBeUndefined();
+});
+
+describe.each([
+  ['FormRenderer', FormRenderer],
+  ['HeadlessFormRenderer', HeadlessFormRenderer],
+])('%s once listeners', (_name, component) => {
+  it('calls .once handlers for both events', () => {
+    const onFormEventOnce = vi.fn();
+    const onAnalyticsEventOnce = vi.fn();
+    render(component, { props: { definition, components: { text: TextField }, onFormEventOnce, onAnalyticsEventOnce } });
+    expect(onFormEventOnce).toHaveBeenCalledOnce();
+    expect(onFormEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
+    expect(onAnalyticsEventOnce).toHaveBeenCalledOnce();
+    expect(onAnalyticsEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
+  });
 });
