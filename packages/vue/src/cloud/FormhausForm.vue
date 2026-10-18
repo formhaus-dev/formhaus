@@ -8,6 +8,7 @@ import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
 const props = defineProps<FormhausFormProps>();
+defineSlots<{ fallback(): unknown; success(): unknown }>();
 const emit = defineEmits<{
   success: [submission: { id: string; values: Record<string, unknown> }];
   fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
