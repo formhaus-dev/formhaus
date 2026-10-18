@@ -5,7 +5,7 @@ description: "Example Formhaus JSON definitions: basic form, conditional fields,
 
 # Examples
 
-The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tree/main/examples/definitions) are returned by the MCP server's `example_definitions` tool. All of them except `branching-form.json`, `event-registration.json` and `survey.json` are also playground presets. Copy any of them into a project and pass it to `FormRenderer`.
+The JSON files in [`examples/definitions`](https://github.com/ignsm/formhaus/tree/main/examples/definitions) are returned by the MCP server's `example_definitions` tool. All of them except `branching-form.json` and `event-registration.json` are also playground presets. Copy any of them into a project and pass it to `FormRenderer`.
 
 ## Basic form
 
