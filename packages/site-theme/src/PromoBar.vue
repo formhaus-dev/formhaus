@@ -10,15 +10,17 @@ const dismissed = ref(false);
 const content = {
   cloud: {
     label: 'Formhaus framework',
-    long: 'Developer? The Formhaus framework is free and open source.',
-    short: 'Developer?',
+    lead: 'Developer?',
+    leadShort: 'Developer?',
+    rest: 'The Formhaus framework is free and open source.',
     link: 'Try the framework',
     href: '/framework',
   },
   framework: {
     label: 'Formhaus Cloud',
-    long: "Don't want to run a backend? Formhaus Cloud hosts your forms.",
-    short: 'No backend?',
+    lead: "Don't want to run a backend?",
+    leadShort: 'No backend?',
+    rest: 'Formhaus Cloud hosts your forms.',
     link: 'Try Cloud',
     href: '/',
   },
@@ -54,8 +56,9 @@ watch(variant, sync);
 <template>
   <div v-if="item && !dismissed" class="fh-promo" role="region" :aria-label="item.label">
     <p class="fh-promo__text">
-      <span class="fh-promo__long">{{ item.long }}</span>
-      <span class="fh-promo__short">{{ item.short }}</span>
+      <strong class="fh-promo__lead fh-promo__long">{{ item.lead }}</strong>
+      <strong class="fh-promo__lead fh-promo__short">{{ item.leadShort }}</strong>
+      <span class="fh-promo__rest fh-promo__long">{{ item.rest }}</span>
       <a class="fh-promo__link" :href="item.href" data-umami-event="promo_click" :data-umami-event-variant="variant">{{ item.link }} <span aria-hidden="true">→</span></a>
     </p>
     <button type="button" class="fh-promo__close" aria-label="Close" @click="close">
