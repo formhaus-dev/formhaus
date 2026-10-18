@@ -3,6 +3,7 @@ import { CloudError, isRecord, readJson } from './error';
 
 const UPLOAD_FAILED = 'The upload failed. Try again.';
 const TOO_MANY = 'Too many uploads right now. Try again in a few minutes.';
+const UPLOAD_GONE = 'Upload the file again.';
 const UPLOAD_DEADLINE = 840_000;
 
 interface UploadTicket {
@@ -25,6 +26,12 @@ function fileKeys(nodes: FormNode[] = []): string[] {
     node.type === 'section' ? fileKeys((node as { fields: FormNode[] }).fields) : node.type === 'file' ? [node.key] : [],
   );
 }
+
+const keysOf = (definition: FormDefinition) =>
+  new Set(fileKeys([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]));
+
+export const uploadGone = (definition: FormDefinition, values: Record<string, unknown>, errors: Record<string, string> = {}) =>
+  [...keysOf(definition)].some((key) => isFile(values[key]) && String(errors[key] ?? '').endsWith(UPLOAD_GONE));
 
 function bounded<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -76,9 +83,8 @@ export function createUploader(endpoint: string, send: Send) {
     async upload(definition: FormDefinition, values: Record<string, unknown>, signal?: AbortSignal): Promise<Record<string, unknown>> {
       const sent = { ...values };
       const errors: Record<string, string> = {};
-      const keys = new Set(fileKeys([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]));
       await Promise.all(
-        [...keys].map(async (key) => {
+        [...keysOf(definition)].map(async (key) => {
           const file = values[key];
           if (!isFile(file)) return;
           try {

@@ -6,6 +6,7 @@ import { draftValues, type DraftStore } from './draft';
 import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
+import { uploadGone } from './files';
 
 export interface CloudNotice {
   tone: 'error' | 'info';
@@ -178,23 +179,34 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     async submit(values: Record<string, unknown>, skippedSteps?: string[]) {
       if (state.notice) update({ notice: null });
       const check = challenge();
-      try {
-        const sent = state.definition ? await upload.upload(state.definition, values, controller.signal) : values;
-        if (!alive()) return;
-        const submission = await submitter(sent, skippedSteps, await check?.token());
-        check?.spend();
-        if (!alive()) return;
-        options.draftStore?.clear(options.id);
-        update({ done: true, settings: withEnding(settings, submission.ending) });
-        callbacks.onSuccess?.(submission);
-      } catch (error) {
-        if ((error as CloudError).code === 'verification_failed') check?.spend();
-        upload.forget(values, Object.keys((error as CloudError).errors ?? {}));
-        if (!alive()) throw error;
-        await fail(error, values);
-        callbacks.onError?.(error);
-        throw error;
-      }
+      const attempt = async (retried?: boolean): Promise<void> => {
+        let sending = false;
+        try {
+          const sent = state.definition ? await upload.upload(state.definition, values, controller.signal) : values;
+          if (!alive()) return;
+          const token = await check?.token();
+          sending = true;
+          const submission = await submitter(sent, skippedSteps, token);
+          check?.spend();
+          if (!alive()) return;
+          options.draftStore?.clear(options.id);
+          update({ done: true, settings: withEnding(settings, submission.ending) });
+          callbacks.onSuccess?.(submission);
+        } catch (error) {
+          const cloud = error as CloudError;
+          if (cloud.code === 'verification_failed') check?.spend();
+          upload.forget(values, Object.keys(cloud.errors ?? {}));
+          if (!alive()) throw error;
+          if (sending && !retried && cloud.status === 422 && state.definition && uploadGone(state.definition, values, cloud.errors)) {
+            check?.spend();
+            return attempt(true);
+          }
+          await fail(error, values);
+          callbacks.onError?.(error);
+          throw error;
+        }
+      };
+      return attempt();
     },
   };
 }
