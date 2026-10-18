@@ -46,3 +46,56 @@ describe('scale range and anchors', () => {
     expect(score.extra).toEqual({});
   });
 });
+
+describe('typing a range', () => {
+  function rated() {
+    const form = createForm();
+    const score = addField(form, { step: null }, { type: 'scale', label: 'Score' });
+    setAnchor(form, score.uid, 'start', 'Low');
+    setAnchor(form, score.uid, 'middle', 'Okay');
+    setAnchor(form, score.uid, 'end', 'High');
+    return { form, score };
+  }
+
+  it('keeps each anchor on its role while "10" is typed into a 1 to 5 scale', () => {
+    const { form, score } = rated();
+    setScaleRange(form, score.uid, { max: 1 });
+    expect(score.extra.options).toHaveLength(3);
+    setScaleRange(form, score.uid, { max: 10 });
+    expect(score.extra.options).toEqual([
+      { value: '1', label: 'Low' },
+      { value: '5', label: 'Okay' },
+      { value: '10', label: 'High' },
+    ]);
+    expect(anchorsOf(score)).toEqual({ start: 'Low', middle: 'Okay', end: 'High' });
+  });
+
+  it('never puts two anchors on one point', () => {
+    const { form, score } = rated();
+    for (const max of [2, 3, 1, 4, 6, 9, 11]) setScaleRange(form, score.uid, { max });
+    const values = (score.extra.options ?? []).map((option) => option.value);
+    expect(new Set(values).size).toBe(values.length);
+    expect(anchorsOf(score)).toEqual({ start: 'Low', middle: 'Okay', end: 'High' });
+  });
+
+  it('keeps labels on points that are not anchors', () => {
+    const form = createForm();
+    const score = addField(form, { step: null }, { type: 'scale', label: 'Score' });
+    score.extra.options = ['Never', 'Rarely', 'Sometimes', 'Often', 'Always'].map((label, index) => ({ value: String(index + 1), label }));
+    setAnchor(form, score.uid, 'start', 'Not once');
+    expect(score.extra.options.map((option) => option.label)).toEqual(['Not once', 'Rarely', 'Sometimes', 'Often', 'Always']);
+    setScaleRange(form, score.uid, { min: 1, max: 7 });
+    expect(score.extra.options.map((option) => option.label)).toEqual(['Not once', 'Rarely', 'Sometimes', 'Often', 'Always']);
+    setScaleRange(form, score.uid, { max: 3 });
+    expect(score.extra.options.map((option) => option.label)).toEqual(['Not once', 'Rarely', 'Sometimes']);
+  });
+});
+
+it('keeps a lone end anchor at the end after an invalid step', () => {
+  const form = createForm();
+  const score = addField(form, { step: null }, { type: 'scale', label: 'Score' });
+  setAnchor(form, score.uid, 'end', 'High');
+  setScaleRange(form, score.uid, { max: 1 });
+  setScaleRange(form, score.uid, { max: 10 });
+  expect(score.extra.options).toEqual([{ value: '10', label: 'High' }]);
+});

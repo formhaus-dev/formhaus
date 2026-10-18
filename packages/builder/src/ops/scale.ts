@@ -1,55 +1,86 @@
 import type { FieldOption } from '@formhaus/core';
-import type { BuilderQuestion, BuilderForm } from '../model';
+import type { BuilderForm, BuilderQuestion } from '../model';
 import { findField } from './locate';
 
 export type AnchorSlot = 'start' | 'middle' | 'end';
 export type Anchors = Record<AnchorSlot, string>;
 
+type Scale = Pick<BuilderQuestion, 'type' | 'extra'>;
+type Range = [number, number];
+
 export const SCALE_POINTS = { min: 3, max: 11 };
 export const RATING_STARS = { min: 3, max: 10 };
 
-export function scaleRange(question: Pick<BuilderQuestion, 'type' | 'extra'>): [number, number] {
+const SLOTS: AnchorSlot[] = ['start', 'middle', 'end'];
+
+export function scaleRange(question: Scale): Range {
   const rules = question.extra.validation ?? {};
   return [question.type === 'rating' ? 1 : (rules.min ?? 1), rules.max ?? 5];
 }
 
-export function scalePoints(question: Pick<BuilderQuestion, 'type' | 'extra'>): number[] {
+const valid = ([min, max]: Range) => Number.isInteger(min) && Number.isInteger(max) && max - min >= 2 && max - min <= 20;
+
+export function scalePoints(question: Scale): number[] {
   const [min, max] = scaleRange(question);
   return max >= min && max - min <= 20 ? Array.from({ length: max - min + 1 }, (_, index) => min + index) : [];
 }
 
-const middleOf = (min: number, max: number) => Math.floor((min + max) / 2);
-
-export function anchorsOf(question: Pick<BuilderQuestion, 'type' | 'extra'>): Anchors {
-  const [min, max] = scaleRange(question);
-  const list = question.extra.options ?? [];
-  const label = (point: number) => list.find((option) => option.value === String(point))?.label ?? '';
-  return { start: label(min), middle: max - min > 1 ? label(middleOf(min, max)) : '', end: label(max) };
+function slotPoints([min, max]: Range): Record<AnchorSlot, number | undefined> {
+  const middle = Math.floor((min + max) / 2);
+  return { start: min, middle: middle > min && middle < max ? middle : undefined, end: max };
 }
 
-function writeAnchors(question: BuilderQuestion, anchors: Anchors, [min, max]: [number, number]): void {
-  const points: [AnchorSlot, number][] = [
-    ['start', min],
-    ['middle', middleOf(min, max)],
-    ['end', max],
-  ];
-  const options: FieldOption[] = points
-    .filter(([slot, point]) => anchors[slot].trim() && (slot !== 'middle' || (point > min && point < max)))
-    .map(([slot, point]) => ({ value: String(point), label: anchors[slot] }));
+const labels = (question: Scale) => new Map((question.extra.options ?? []).map((option) => [Number(option.value), option.label]));
+
+export function anchorsOf(question: Scale): Anchors {
+  const points = slotPoints(scaleRange(question));
+  const known = labels(question);
+  const label = (slot: AnchorSlot) => {
+    const point = points[slot];
+    return point === undefined ? '' : (known.get(point) ?? '');
+  };
+  return { start: label('start'), middle: label('middle'), end: label('end') };
+}
+
+function guessRoles(question: Scale, [min]: Range): Map<number, AnchorSlot> {
+  const values = [...labels(question).keys()].sort((a, b) => a - b);
+  const roles = new Map<number, AnchorSlot>();
+  if (values.length === 1) return roles.set(values[0], values[0] === min ? 'start' : 'end');
+  roles.set(values[0], 'start').set(values[values.length - 1], 'end');
+  if (values.length === 3) roles.set(values[1], 'middle');
+  return roles;
+}
+
+function rolesOf(question: Scale, range: Range): Map<number, AnchorSlot> {
+  if (labels(question).size > SLOTS.length) return new Map();
+  if (!valid(range)) return guessRoles(question, range);
+  const points = slotPoints(range);
+  return new Map(SLOTS.flatMap((slot): [number, AnchorSlot][] => (points[slot] === undefined ? [] : [[points[slot], slot]])));
+}
+
+function write(question: BuilderQuestion, points: Map<number, string>): void {
+  const options: FieldOption[] = [...points]
+    .filter(([, label]) => label.trim())
+    .sort(([a], [b]) => a - b)
+    .map(([point, label]) => ({ value: String(point), label }));
   if (options.length) question.extra.options = options;
   else delete question.extra.options;
 }
 
 export function setAnchor(form: BuilderForm, uid: string, slot: AnchorSlot, label: string): void {
   const question = findField(form, uid);
-  if (!question) return;
-  writeAnchors(question, { ...anchorsOf(question), [slot]: label }, scaleRange(question));
+  const point = question && slotPoints(scaleRange(question))[slot];
+  if (!question || point === undefined || !valid(scaleRange(question))) return;
+  const points = labels(question);
+  points.set(point, label);
+  write(question, points);
 }
 
 export function setScaleRange(form: BuilderForm, uid: string, range: { min?: number; max?: number }): void {
   const question = findField(form, uid);
   if (!question) return;
-  const anchors = anchorsOf(question);
+  const before = scaleRange(question);
+  const known = labels(question);
   const rules = { ...question.extra.validation };
   for (const bound of ['min', 'max'] as const) {
     if (!(bound in range)) continue;
@@ -59,5 +90,16 @@ export function setScaleRange(form: BuilderForm, uid: string, range: { min?: num
   }
   if (Object.keys(rules).length) question.extra.validation = rules;
   else delete question.extra.validation;
-  writeAnchors(question, anchors, scaleRange(question));
+  const after = scaleRange(question);
+  if (!valid(after)) return;
+  const roles = rolesOf(question, before);
+  const targets = slotPoints(after);
+  const taken = new Set([...roles.values()].map((slot) => targets[slot]));
+  const points = new Map<number, string>();
+  for (const [point, label] of known) {
+    const role = roles.get(point);
+    const target = role ? targets[role] : taken.has(point) ? undefined : point;
+    if (target !== undefined && target >= after[0] && target <= after[1] && !points.has(target)) points.set(target, label);
+  }
+  write(question, points);
 }

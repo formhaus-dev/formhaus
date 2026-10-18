@@ -22,9 +22,11 @@ export function addStep(form: BuilderForm, after?: string): BuilderPage {
   return page;
 }
 
-export function addStepFirst(form: BuilderForm): BuilderPage {
+export function addStepFirst(form: BuilderForm, title = ''): BuilderPage {
+  const single = form.blocks.length > 0 && !isPage(form.blocks[0]);
   wrap(form);
-  const page = newPage(form, '');
+  if (single && isPage(form.blocks[0])) Object.assign(form.blocks[0], { title: '', id: 'step-1', idLocked: true });
+  const page = newPage(form, title);
   form.blocks.unshift(page);
   syncIdentifiers(form);
   return page;

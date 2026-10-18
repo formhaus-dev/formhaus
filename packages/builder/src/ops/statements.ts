@@ -16,7 +16,7 @@ export type StatementPlacement = Placement | { page: string | null };
 export function addStatement(form: BuilderForm, at: StatementPlacement, text: StatementText): BuilderBlock {
   const description = text.description?.trim() ? { description: text.description } : {};
   if ('page' in at) {
-    const page = at.page === null ? addStepFirst(form) : addStep(form, at.page);
+    const page = at.page === null ? addStepFirst(form, text.title) : addStep(form, at.page);
     page.title = text.title;
     page.nextLabel = text.next ?? '';
     Object.assign(page.extra, description);

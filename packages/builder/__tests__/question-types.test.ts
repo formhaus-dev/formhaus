@@ -168,6 +168,7 @@ describe('statements', () => {
     expect(isPage(form.blocks[0]) && form.blocks[0].uid === page.uid).toBe(true);
     const [welcome, rest] = toDefinition(form).steps ?? [];
     expect(welcome).toEqual({ id: 'welcome', title: 'Welcome', description: 'Two minutes.', next: { label: 'Start' }, fields: [] });
+    expect(rest).toMatchObject({ id: 'step-1', title: 'Step 2' });
     expect(rest.fields).toHaveLength(1);
     expect(findIssues(form)).toEqual([]);
   });
