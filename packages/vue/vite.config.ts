@@ -8,7 +8,7 @@ export default defineConfig({
     vue(),
     dts({
       include: ['src/**/*.ts', 'src/**/*.vue'],
-      rollupTypes: true,
+      bundleTypes: true,
       tsconfigPath: './tsconfig.json',
     }),
   ],
