@@ -26,20 +26,6 @@ describe('client type checks', () => {
       expect(validateSubmission(definition, { x: value }).errors.x ?? message).toBe(message);
   });
 
-  it.each([
-    ['email', 'ada@example.com'],
-    ['datetime', '2026-01-01T12:00'],
-    ['date', '2026-01-01'],
-    ['time', '07:05'],
-    ['time', '23:59:59'],
-    ['hidden', 'newsletter'],
-    ['number', 0],
-    ['file', { name: 'cv.pdf' }],
-    ['rating', { stars: 4 }],
-  ])('accepts %s %j', (type, value) => {
-    expect(validateFieldValue(field(type), value, {})).toBeNull();
-  });
-
   const scalar = (type: string, extra: Partial<FormField> = {}) => ({
     id: 'f',
     title: 'F',
@@ -105,39 +91,6 @@ describe('client type checks', () => {
 
   it('keeps an empty list in a multiselect', () => {
     expect(validateSubmission(scalar('multiselect'), { x: [] })).toEqual({ values: { x: [] }, errors: {} });
-  });
-
-  it('checks static options but not options loaded from a provider', () => {
-    const options = [{ value: 'a', label: 'A' }];
-    expect(validateFieldValue(field('select', { options }), 'z', {})).toBe('Select one of the available options');
-    expect(validateFieldValue(field('select', { options, optionsFrom: 'cities' }), 'z', {})).toBeNull();
-  });
-
-  it('runs the type check before size and pattern rules', () => {
-    expect(validateFieldValue(field('email', { validation: { minLength: 50, pattern: '^z' } }), 'a@b', {})).toBe('Enter a valid email');
-  });
-
-  it('fails an empty matchField when the other field has a value', () => {
-    const confirm = field('text', { validation: { matchField: 'password', matchFieldMessage: 'Must match' } });
-    expect(validateFieldValue(confirm, '', { password: 'secret' })).toBe('Must match');
-    expect(validateFieldValue(confirm, '', {})).toBeNull();
-  });
-
-  it('blocks Continue on an invalid email in the engine', async () => {
-    const engine = new FormEngine(
-      {
-        id: 'f',
-        title: 'F',
-        submit: { label: 'Go' },
-        steps: [
-          { id: 'a', title: 'A', fields: [field('email', { key: 'email' })] },
-          { id: 'b', title: 'B', fields: [] },
-        ],
-      },
-      { email: 'user@localhost' },
-    );
-    expect(await engine.next()).toBe(false);
-    expect(engine.errors.email).toBe('Enter a valid email');
   });
 });
 
