@@ -16,7 +16,7 @@ describe.each(scenarioFiles.map((file) => [file.name, file] as const))('scenario
 
   it.each(file.scenarios.map((scenario) => [scenario.name, scenario] as const))('%s', async (_, scenario) => {
     if (scenario.throws) {
-      expect(() => new FormEngine(runtimeDefinition(file), scenario.values ?? {})).toThrow(
+      expect(() => new FormEngine(runtimeDefinition(file, scenario), scenario.values ?? {})).toThrow(
         expect.objectContaining({ name: scenario.throws }),
       );
       return;
