@@ -1,6 +1,6 @@
 ---
 title: "Field types"
-description: "Field types in a Formhaus definition: text, select, autocomplete, multiselect, checkbox, radio, switch, date, time, file, hidden, plus custom field components."
+description: "Field types in a Formhaus definition: text, select, autocomplete, multiselect, checkbox, radio, scale, rating, picture choice, switch, date, time, file, hidden, plus custom field components."
 ---
 
 # Field Types
@@ -197,6 +197,86 @@ Pick one from a list. Options stack vertically, one full-width row per option.
 ```
 
 For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`. Options then sit side by side and wrap on narrow screens. Keep the default `stack` for options longer than a few words. `layout` was added in 0.10.0.
+
+## Scale
+
+Pick one number on a range, such as 1 to 5. Renders as a row of numbered boxes. The value is the number. Requires `@formhaus/core` 0.19 and `"formatVersion": "1.3"`.
+
+```json
+{
+  "key": "ease",
+  "type": "scale",
+  "label": "How easy was the setup?",
+  "validation": { "required": true, "min": 1, "max": 5 },
+  "options": [
+    { "value": "1", "label": "Very hard" },
+    { "value": "5", "label": "Very easy" }
+  ]
+}
+```
+
+- `validation.min` and `validation.max` set the range. They default to 1 and 5. Use `min` 0 or 1 and 3 to 11 points.
+- A value outside the range or not a whole number fails with `Select one of the available options`.
+- `options` are optional anchor labels, up to 3. `value` is the point number as a string. The first anchor sits under the start of the row, the last under the end, a middle one in the center.
+- Digit keys select a point. Arrow keys move between points. With `autoAdvance`, a click, Space, Enter or a digit key moves to the next step.
+
+### NPS
+
+An NPS question is a scale from 0 to 10. `0` counts as an answer for `required`.
+
+```json
+{
+  "key": "nps",
+  "type": "scale",
+  "label": "How likely are you to recommend us to a friend?",
+  "validation": { "required": true, "min": 0, "max": 10 },
+  "options": [
+    { "value": "0", "label": "Not at all likely" },
+    { "value": "10", "label": "Extremely likely" }
+  ]
+}
+```
+
+Show a follow-up for detractors with `{ "field": "nps", "lte": 6 }` and for promoters with `{ "field": "nps", "gte": 9 }`. See [Conditions](/guide/conditions#example-nps-follow-up).
+
+## Rating
+
+Pick a number of stars. The value is the number of stars. Requires `@formhaus/core` 0.19 and `"formatVersion": "1.3"`.
+
+```json
+{
+  "key": "stars",
+  "type": "rating",
+  "label": "Rate your stay",
+  "validation": { "required": true, "max": 5, "min": 2, "minMessage": "Pick at least 2 stars" }
+}
+```
+
+- `validation.max` sets the number of stars, 5 by default. Use 3 to 10.
+- `validation.min` is an ordinary rule: a rating below it fails with the `min` message.
+- `options` work as anchor labels, as on a scale.
+- Keyboard and `autoAdvance` work as on a scale. Screen readers announce the star number.
+
+## Picture choice
+
+Add `image` to the options of a `radio` or `multiselect` field. The options become a grid of cards with the picture above the label. Requires `@formhaus/core` 0.19.
+
+```json
+{
+  "key": "room",
+  "type": "radio",
+  "label": "Which room did you book?",
+  "options": [
+    { "value": "garden", "label": "Garden suite", "image": "https://example.com/garden.jpg" },
+    { "value": "sea", "label": "Sea view", "image": "https://example.com/sea.jpg" }
+  ]
+}
+```
+
+- The value is the option `value`, as without images.
+- The label stays visible and names the option for screen readers, so the image has an empty `alt`.
+- Images load lazily from the URL as given. Allow their host in `img-src` if the page has a Content Security Policy.
+- `select` and `autocomplete` ignore `image`.
 
 ## Switch
 
