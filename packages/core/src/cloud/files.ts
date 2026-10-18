@@ -3,7 +3,7 @@ import { CloudError, isRecord, readJson } from './error';
 
 const UPLOAD_FAILED = 'The upload failed. Try again.';
 const TOO_MANY = 'Too many uploads right now. Try again in a minute.';
-const REUSE_FOR = 60 * 60 * 1000;
+const UPLOAD_DEADLINE = 135_000;
 
 interface UploadTicket {
   id: string;
@@ -12,7 +12,7 @@ interface UploadTicket {
   headers: Record<string, string>;
 }
 
-export type Send = (url: string, init: CloudRequestInit, timeout: number) => Promise<CloudResponse>;
+export type Send = (url: string, init: CloudRequestInit, timeout: number, signal?: AbortSignal) => Promise<CloudResponse>;
 
 class UploadError extends Error {}
 
@@ -32,46 +32,54 @@ async function refusal(response: CloudResponse): Promise<string> {
   return isRecord(body) && typeof body.message === 'string' ? body.message : UPLOAD_FAILED;
 }
 
-async function uploadFile(endpoint: string, send: Send, field: string, file: CloudFile): Promise<string> {
-  const response = await send(
-    endpoint,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ field, name: file.name, size: file.size }),
-    },
-    15_000,
-  );
-  if (!response.ok) throw new UploadError(await refusal(response));
-  const ticket = (await readJson(response)) as UploadTicket;
-  const stored = await send(ticket.url, { method: ticket.method, headers: ticket.headers, body: file }, 120_000);
-  if (!stored.ok) throw new UploadError(UPLOAD_FAILED);
-  return ticket.id;
+async function uploadFile(endpoint: string, send: Send, field: string, file: CloudFile, signal?: AbortSignal): Promise<string> {
+  const deadline = new AbortController();
+  const stop = () => deadline.abort();
+  const timer = setTimeout(stop, UPLOAD_DEADLINE);
+  if (signal?.aborted) stop();
+  signal?.addEventListener('abort', stop);
+  try {
+    const response = await send(
+      endpoint,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ field, name: file.name, size: file.size }),
+      },
+      15_000,
+      deadline.signal,
+    );
+    if (!response.ok) throw new UploadError(await refusal(response));
+    const ticket = (await readJson(response)) as UploadTicket;
+    const stored = await send(ticket.url, { method: ticket.method, headers: ticket.headers, body: file }, 120_000, deadline.signal);
+    if (!stored.ok) throw new UploadError(UPLOAD_FAILED);
+    return ticket.id;
+  } finally {
+    clearTimeout(timer);
+    signal?.removeEventListener('abort', stop);
+  }
 }
 
-export function createUploader(endpoint: string, send: Send, now: () => number = Date.now) {
-  const uploaded = new WeakMap<CloudFile, { id: string; at: number }>();
-  const reusable = (file: CloudFile) => {
-    const known = uploaded.get(file);
-    return known && now() - known.at < REUSE_FOR ? known.id : undefined;
-  };
+export function createUploader(endpoint: string, send: Send) {
+  const uploaded = new WeakMap<CloudFile, string>();
   return {
-    async upload(definition: FormDefinition, values: Record<string, unknown>): Promise<Record<string, unknown>> {
+    async upload(definition: FormDefinition, values: Record<string, unknown>, signal?: AbortSignal): Promise<Record<string, unknown>> {
       const sent = { ...values };
       const errors: Record<string, string> = {};
-      const keys = fileKeys([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]);
+      const keys = new Set(fileKeys([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]));
       await Promise.all(
-        keys.map(async (key) => {
+        [...keys].map(async (key) => {
           const file = values[key];
           if (!isFile(file)) return;
           try {
-            let id = reusable(file);
+            let id = uploaded.get(file);
             if (id === undefined) {
-              id = await uploadFile(endpoint, send, key, file);
-              uploaded.set(file, { id, at: now() });
+              id = await uploadFile(endpoint, send, key, file, signal);
+              uploaded.set(file, id);
             }
             sent[key] = id;
           } catch (error) {
+            if (signal?.aborted) throw error;
             errors[key] = error instanceof UploadError ? error.message : UPLOAD_FAILED;
           }
         }),

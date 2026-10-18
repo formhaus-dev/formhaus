@@ -43,7 +43,7 @@ async function send(url: string, timeout: number, init: CloudRequestInit = {}, s
 }
 
 export function createFileUploader(options: CloudClientOptions) {
-  return createUploader(`${endpoint(options)}/uploads?${CORE}`, (url, init, timeout) => send(url, timeout, init));
+  return createUploader(`${endpoint(options)}/uploads?${CORE}`, (url, init, timeout, signal) => send(url, timeout, init, signal));
 }
 
 export async function fetchForm(options: CloudClientOptions, signal?: AbortSignal, after?: number): Promise<PublishedForm> {

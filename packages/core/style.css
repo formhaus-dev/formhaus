@@ -105,8 +105,8 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-field__input:focus { outline: 2px solid var(--fh-color-border-focus, var(--fh-auto-border-focus)); outline-offset: 1px; border-color: var(--fh-color-border-focus, var(--fh-auto-border-focus)); }
 .fh-field__input:disabled { background: var(--fh-color-bg-disabled); cursor: not-allowed; }
 .fh-field__input--textarea { min-height: 112px; resize: vertical; }
-.fh-field__input--file { padding: var(--fh-space-2); color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); cursor: pointer; }
-.fh-field__input--file::file-selector-button { height: calc(var(--fh-control-height) - 2px - 2 * var(--fh-space-2)); margin-inline-end: var(--fh-space-5); padding: 0 var(--fh-space-7); border: 1px solid var(--fh-color-secondary-border); border-radius: calc(var(--fh-radius) - var(--fh-space-2)); background: var(--fh-color-bg); color: var(--fh-color-text); font: inherit; font-weight: 600; cursor: pointer; transition: border-color 140ms; }
+.fh-field__input[type="file"] { padding: var(--fh-space-2); color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); cursor: pointer; }
+.fh-field__input[type="file"]::file-selector-button { height: calc(var(--fh-control-height) - 2px - 2 * var(--fh-space-2)); margin-inline-end: var(--fh-space-5); padding: 0 var(--fh-space-7); border: 1px solid var(--fh-color-secondary-border); border-radius: calc(var(--fh-radius) - var(--fh-space-2)); background: var(--fh-color-bg); color: var(--fh-color-text); font: inherit; font-weight: 600; cursor: pointer; transition: border-color 140ms; }
 
 .fh-field__input--select { padding-right: calc(var(--fh-space-10) + var(--fh-space-9)); text-overflow: ellipsis; appearance: none; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: right 21px center, right 16px center; background-size: 5px 5px; background-repeat: no-repeat; }
 
@@ -162,7 +162,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 
 @media (hover: hover) and (pointer: fine) {
   .fh-field__input:hover:not(:disabled, :focus, [aria-invalid="true"]) { border-color: var(--fh-color-border-hover); }
-  .fh-field__input--file:hover::file-selector-button { border-color: var(--fh-color-border-hover); }
+  .fh-field__input[type="file"]:hover::file-selector-button { border-color: var(--fh-color-border-hover); }
   :is(.fh-field__input--select, .fh-field__input--date, .fh-field__input--datetime, .fh-field__input--time):not(:disabled) { cursor: pointer; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):hover:not(:has(:checked, :disabled)) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
   :is(.fh-field__checkbox-wrapper, .fh-field__radio-option, .fh-field__multiselect-option):hover :is(.fh-field__radio, .fh-field__checkbox):not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-text-muted); }

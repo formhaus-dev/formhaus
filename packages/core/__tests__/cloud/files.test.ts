@@ -108,6 +108,23 @@ describe('cloud file uploads', () => {
     expect(JSON.parse(fetchMock.mock.calls.at(-1)?.[1].body).values).toEqual({ cv: 'up-2' });
   });
 
+  it('stops before submitting when disposed during an upload', async () => {
+    let finishPut: (value: unknown) => void = () => {};
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(reply(200, published))
+      .mockResolvedValueOnce(reply(201, { id: 'up-1', url: 'https://objects.test/k', method: 'PUT', headers: {} }))
+      .mockImplementationOnce(() => new Promise((resolve) => (finishPut = resolve)))
+      .mockResolvedValue(reply(201, { id: 's1', values: {} }));
+    const { controller } = await loaded(fetchMock);
+    const pending = controller.submit({ cv: file('cv.pdf') }).catch(() => undefined);
+    await vi.waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(3));
+    controller.dispose();
+    finishPut(reply(200, null));
+    await pending;
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
   it('leaves forms without file fields untouched', async () => {
     const fetchMock = vi
       .fn()

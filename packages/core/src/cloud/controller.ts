@@ -176,7 +176,8 @@ export function createCloudController(options: CloudControllerOptions, callbacks
       if (state.notice) update({ notice: null });
       const check = challenge();
       try {
-        const sent = state.definition ? await upload.upload(state.definition, values) : values;
+        const sent = state.definition ? await upload.upload(state.definition, values, controller.signal) : values;
+        if (!alive()) return;
         const submission = await submitter(sent, skippedSteps, await check?.token());
         check?.spend();
         if (!alive()) return;
