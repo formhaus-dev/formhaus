@@ -26,7 +26,6 @@ export interface SubmissionResult {
 }
 
 const allow: ValidatorFn = () => null;
-
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 
 interface ActiveValues {
