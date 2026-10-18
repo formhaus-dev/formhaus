@@ -1,15 +1,39 @@
+import type { FormEvent } from '../types/analytics';
 import type { EngineInternals } from './runtime-internals';
 
-export function trackStep(engine: EngineInternals): void {
+export function emit(engine: EngineInternals, event: FormEvent): void {
+  try {
+    engine.lifecycle.onFormEvent?.(event);
+  } catch (error) {
+    queueMicrotask(() => {
+      throw error;
+    });
+  }
+}
+
+function trackStep(engine: EngineInternals): void {
   const step = engine.currentStep;
   if (step && step.id !== engine.viewedStep)
-    engine.lifecycle.onFormEvent?.({ type: 'step_viewed', stepId: (engine.viewedStep = step.id), stepIndex: engine.currentStepIndex });
+    emit(engine, { type: 'step_viewed', stepId: (engine.viewedStep = step.id), stepIndex: engine.currentStepIndex });
+}
+
+function trackFields(engine: EngineInternals): void {
+  const previous = engine.shownFields;
+  engine.shownFields = engine.visibility.conditionResults(engine.values);
+  for (const [id, [fieldKey, shown]] of engine.shownFields)
+    if (previous?.get(id)?.[1] === !shown) emit(engine, { type: shown ? 'field_shown' : 'field_hidden', fieldKey });
 }
 
 export function startEvents(engine: EngineInternals): void {
   if (engine.viewedStep !== undefined) return;
-  engine.lifecycle.onFormEvent?.({ type: 'form_viewed' });
+  emit(engine, { type: 'form_viewed' });
   engine.viewedStep = null;
+  trackChanges(engine, true);
+}
+
+export function trackChanges(engine: EngineInternals, fields?: boolean): void {
+  if (engine.viewedStep === undefined) return;
+  if (fields) trackFields(engine);
   trackStep(engine);
 }
 
@@ -17,6 +41,6 @@ export async function reportErrors(engine: EngineInternals, action: () => Promis
   const errors = engine.errors;
   const done = await action();
   if (!done && engine.errors !== errors)
-    for (const [fieldKey, error] of Object.entries(engine.errors)) engine.lifecycle.onFormEvent?.({ type: 'field_error', fieldKey, error });
+    for (const [fieldKey, error] of Object.entries(engine.errors)) emit(engine, { type: 'field_error', fieldKey, error });
   return done;
 }

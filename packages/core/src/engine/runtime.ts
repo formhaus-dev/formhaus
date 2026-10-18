@@ -3,7 +3,7 @@ import { messageResolver, type ResolveMessage } from '../validation/default-mess
 import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
 import type { FormEngineOptions, SubmitHandler } from './engine-options';
 import { createValues, initialState } from './engine-utils';
-import { reportErrors, startEvents, trackStep } from './form-events';
+import { reportErrors, startEvents, trackChanges } from './form-events';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineState } from './runtime-internals';
@@ -245,6 +245,6 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     if (options.valuesChanged) this.snapshot = undefined;
     this.visibility.markChanged(!!options.structureChanged, !!options.valuesChanged);
     this.subscriptions.notify(options);
-    if (this.viewedStep !== undefined) trackStep(this as never);
+    trackChanges(this as never, options.valuesChanged || options.structureChanged);
   }
 }

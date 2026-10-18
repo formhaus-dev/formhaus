@@ -7,7 +7,19 @@ import { validateFields } from '../validation';
 import { customRules } from '../validation/validate-step';
 import type { FormDefinition, FormField, FormGroup, FormNode, FormStep } from '../types';
 import { isVisible } from '../visibility';
-import { isEntry, isGroup, isSection, itemPath, keepId, itemsOf, itemView, shownFields, splitPath, valueFields } from '../visibility/nodes';
+import {
+  isEntry,
+  isGroup,
+  isSection,
+  itemId,
+  itemPath,
+  keepId,
+  itemsOf,
+  itemView,
+  shownFields,
+  splitPath,
+  valueFields,
+} from '../visibility/nodes';
 
 interface VisibilityCache {
   visibleSteps: FormStep[];
@@ -33,6 +45,7 @@ export function createVisibility(definition: FormDefinition) {
   const path = createActivePath(definition, index);
   const groups = allFields.filter(isGroup);
   const starts = createStartValues(groups, () => hidden.unsettle());
+  const conditional = allFields.filter((field) => field.show || sectionOf.get(field)?.show);
   const customSteps = new Set(definition.steps?.filter((step) => customRules(step.fields)));
   let visibilityDirty = true;
   let canGoNextDirty = true;
@@ -156,6 +169,22 @@ export function createVisibility(definition: FormDefinition) {
     owner,
     parse,
     unsettle: hidden.unsettle,
+
+    conditionResults(values: Values): Map<string, [string, boolean]> {
+      const results = new Map<string, [string, boolean]>();
+      for (const field of conditional) results.set(field.key, [field.key, !!results.get(field.key)?.[1] || visible(field, values)]);
+      for (const group of groups)
+        itemsOf(values[group.key]).forEach((item, index) => {
+          const shown = itemFields(group, item, values);
+          for (const field of group.fields)
+            if (field.show)
+              results.set(`${group.key} ${itemId(item, index)} ${field.key}`, [
+                itemPath(group.key, index, field.key),
+                shown.includes(field),
+              ]);
+        });
+      return results;
+    },
 
     markChanged(structureChanged: boolean, valuesChanged: boolean): void {
       if (structureChanged) visibilityDirty = true;

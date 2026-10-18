@@ -31,6 +31,7 @@ export interface EngineInternals {
   operationEpoch: number;
   latestOperation: number;
   viewedStep?: string | null;
+  shownFields?: Map<string, [string, boolean]>;
   readonly skipped: Map<string, string[]>;
   readonly lifecycle: FormEngineOptions;
   readonly validators: Record<string, ValidatorFn>;
