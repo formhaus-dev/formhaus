@@ -66,6 +66,12 @@ function form(definition: FormDefinition, props: Partial<Parameters<typeof FormR
   return <FormRenderer definition={definition} onSubmit={() => {}} {...props} />;
 }
 
+function serverDom(html: string) {
+  const template = document.createElement('template');
+  template.innerHTML = html;
+  return template.content;
+}
+
 afterEach(() => {
   for (const root of roots.splice(0)) act(() => root.unmount());
   document.body.innerHTML = '';
@@ -107,11 +113,18 @@ describe('FormRenderer hydration', () => {
   });
 
   it('hydrates select, radio, checkbox and multiselect with options', async () => {
-    const { container } = await hydrate(form(choices, { initialValues: choiceValues }));
+    const { html, container } = await hydrate(form(choices, { initialValues: choiceValues }));
     expect(container.querySelector<HTMLSelectElement>('select[name="color"]')!.value).toBe('green');
     expect(container.querySelector<HTMLInputElement>('input[name="size"][value="blue"]')!.checked).toBe(true);
     expect(container.querySelector<HTMLInputElement>('input[name="terms"]')!.checked).toBe(true);
     expect(container.textContent).toContain('Blue');
+    expect(serverDom(html).querySelector<HTMLSelectElement>('select[name="color"]')!.value).toBe('green');
+  });
+
+  it('selects the select placeholder in the server HTML without a value', async () => {
+    const { html, container } = await hydrate(form(choices));
+    expect(serverDom(html).querySelector<HTMLSelectElement>('select[name="color"]')!.selectedIndex).toBe(0);
+    expect(container.querySelector<HTMLSelectElement>('select[name="color"]')!.selectedIndex).toBe(0);
   });
 
   it('hydrates a group with items', async () => {
