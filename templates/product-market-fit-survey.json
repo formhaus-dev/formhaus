@@ -5,9 +5,17 @@
   "category": "survey",
   "definition": {
     "id": "product-market-fit-survey",
+    "formatVersion": "1.3",
     "title": "Help us improve",
     "submit": { "label": "Send answers" },
     "steps": [
+      {
+        "id": "welcome",
+        "title": "A few questions about the product",
+        "description": "Your answers shape what we build next. It takes about two minutes.",
+        "next": { "label": "Start" },
+        "fields": []
+      },
       {
         "id": "fit",
         "title": "Your experience",
@@ -47,12 +55,7 @@
         "title": "What it does for you",
         "show": [{ "field": "disappointment", "neq": "stopped" }],
         "fields": [
-          {
-            "key": "idealUser",
-            "type": "textarea",
-            "label": "What type of people do you think would benefit most from it?",
-            "rows": 2
-          },
+          { "key": "idealUser", "type": "textarea", "label": "What type of people do you think would benefit most from it?", "rows": 2 },
           {
             "key": "benefit",
             "type": "textarea",
@@ -60,22 +63,9 @@
             "rows": 3,
             "validation": { "required": true }
           },
-          {
-            "key": "improve",
-            "type": "textarea",
-            "label": "How could we make it better for you?",
-            "rows": 3
-          },
-          {
-            "key": "alternative",
-            "type": "text",
-            "label": "What would you use instead if it were gone?"
-          },
-          {
-            "key": "discovery",
-            "type": "text",
-            "label": "How did you discover the product?"
-          }
+          { "key": "improve", "type": "textarea", "label": "How could we make it better for you?", "rows": 3 },
+          { "key": "alternative", "type": "text", "label": "What would you use instead if it were gone?" },
+          { "key": "discovery", "type": "text", "label": "How did you discover the product?" }
         ]
       },
       {
@@ -83,13 +73,7 @@
         "title": "Why you stopped",
         "show": [{ "field": "disappointment", "eq": "stopped" }],
         "fields": [
-          {
-            "key": "stopReason",
-            "type": "textarea",
-            "label": "Why did you stop using it?",
-            "rows": 3,
-            "validation": { "required": true }
-          },
+          { "key": "stopReason", "type": "textarea", "label": "Why did you stop using it?", "rows": 3, "validation": { "required": true } },
           { "key": "replacement", "type": "text", "label": "What do you use now?" }
         ]
       }
