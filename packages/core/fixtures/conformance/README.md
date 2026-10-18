@@ -21,6 +21,7 @@ Each file holds one `definition`, the issues `checkDefinition` reports for it, a
 - `issues` lists the issues with severity `error` that `checkDefinition` reports, as `{ code, path }`. Use `[]` for none.
 - `warnings` lists the issues with severity `warning`, as `{ code, path }`. When the key is missing, warnings are not checked. `[]` means there must be none.
 - `overlay` is an optional i18n overlay. Apply it to the definition with `localize` before running `cases`, as described in the specification under Translations.
+- `texts` maps text slot addresses to the text they hold after the overlay is applied, such as `"steps.account.fields.email.label": "Почта"`. Addresses are those of the specification under Translations, Addresses. Only the listed addresses are checked; an address with no text slot fails.
 - `cases` lists value cases. It may be empty or missing.
 
 ## Checks
@@ -31,7 +32,8 @@ Each file holds one `definition`, the issues `checkDefinition` reports for it, a
 4. If `issues` is not empty, creating the engine with no values and running the server validation with `{}` must both fail with a definition error.
 
 The checks run on the definition as written, without `overlay`. A structural error (wrong type, missing required property) stops the checks below it in the same node, so a condition without `field` reports only `missing-property`.
-5. If `issues` is empty, run each case.
+5. `texts`: if set, apply `overlay` to the definition, list its text slots, and compare the text at each listed address.
+6. If `issues` is empty, run each case.
 
 ## Cases
 
@@ -47,4 +49,4 @@ The corpus and the scenarios change with `@formhaus/core`. An implementation pin
 
 ## Not covered
 
-The corpus does not check issue messages, hints, fixes, translation checks, the JSON Schema or the order of issues. These stay in the TypeScript tests.
+The corpus does not check issue messages, hints, fixes, translation checks, the translate function, the JSON Schema or the order of issues. These stay in the TypeScript tests.
