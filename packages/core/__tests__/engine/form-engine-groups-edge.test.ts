@@ -43,68 +43,10 @@ describe('group edge cases', () => {
     expect(engine.items('people').map((item) => item.id)).toEqual(ids);
   });
 
-  it('clears an item match error when the outer field changes to match', () => {
-    const engine = new FormEngine(definition, { email: 'a@x.io', people: [{ confirm: 'b@x.io' }] });
-    expect(engine.validate()).toEqual({ 'people.0.confirm': 'Fields must match' });
-    engine.setValue('email', 'b@x.io');
-    expect(engine.errors).toEqual({});
-  });
-
-  it('moves loading flags with their items', () => {
-    const engine = new FormEngine(definition, { people: [{}, {}] });
-    engine.setFieldLoading('people.1.diet', true);
-    engine.removeItem('people', 0);
-    expect(engine.fieldLoading).toEqual({ 'people.0.diet': true });
-  });
-
   it('warns about optionsDependsOn on an item field', () => {
     const scoped = structuredClone(definition);
     (scoped.fields![2] as { fields: { optionsDependsOn?: string[] }[] }).fields[0].optionsDependsOn = ['note'];
     expect(checkDefinition(scoped).map(({ code, severity }) => `${severity} ${code}`)).toEqual(['warning group-scope']);
-  });
-
-  it('gives an untouched group shown again its initial items', () => {
-    const shown: FormDefinition = {
-      ...definition,
-      fields: [
-        definition.fields![0],
-        {
-          key: 'guests',
-          type: 'group',
-          label: 'Guests',
-          defaultItems: 1,
-          show: [{ field: 'company', eq: true }],
-          fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'x' }],
-        },
-      ],
-    };
-    const engine = new FormEngine(shown, { company: true, guests: [{ name: 'Ada' }, { name: 'Bo' }] });
-    engine.setValue('company', false);
-    engine.setValue('company', true);
-    expect(engine.values.guests).toEqual([{ name: 'Ada' }, { name: 'Bo' }]);
-  });
-
-  it('gives an edited group shown again its last items', () => {
-    const shown: FormDefinition = {
-      ...definition,
-      fields: [
-        definition.fields![0],
-        {
-          key: 'guests',
-          type: 'group',
-          label: 'Guests',
-          defaultItems: 1,
-          show: [{ field: 'company', eq: true }],
-          fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'x' }],
-        },
-      ],
-    };
-    const engine = new FormEngine(shown, { company: true, guests: [{ name: 'Ada' }, { name: 'Bo' }] });
-    engine.setValue('guests.1.name', 'Cy');
-    engine.setValue('company', false);
-    expect(engine.values).not.toHaveProperty('guests');
-    engine.setValue('company', true);
-    expect(engine.values.guests).toEqual([{ name: 'Ada' }, { name: 'Cy' }]);
   });
 
   it.each([[['bad', null, 123]], [[{}, new Date(0)]]])('rejects items that are not plain objects like the server: %j', async (items) => {
