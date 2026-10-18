@@ -33,7 +33,7 @@ export function startEvents(engine: EngineInternals): void {
 
 export function trackChanges(engine: EngineInternals, fields?: boolean): void {
   if (engine.viewedStep === undefined) return;
-  if (fields) trackFields(engine);
+  if (fields && engine.lifecycle.onFormEvent) trackFields(engine);
   trackStep(engine);
 }
 

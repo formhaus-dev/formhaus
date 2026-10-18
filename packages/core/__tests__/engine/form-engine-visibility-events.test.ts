@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import type { FormDefinition, FormEvent } from '../../src';
 import { FormEngine } from '../../src/engine';
 
@@ -83,5 +83,14 @@ describe('field visibility events', () => {
     engine.setValue('company', true);
     engine.reset();
     expect(events).toEqual([]);
+  });
+
+  it('skips the visibility check without a handler', () => {
+    const engine = new FormEngine(definition, {});
+    const check = vi.spyOn((engine as unknown as { visibility: { conditionResults: () => unknown } }).visibility, 'conditionResults');
+    engine.start();
+    engine.setValue('company', true);
+    engine.reset();
+    expect(check).not.toHaveBeenCalled();
   });
 });
