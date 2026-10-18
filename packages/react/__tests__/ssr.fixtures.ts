@@ -129,3 +129,43 @@ export const conditions: FormDefinition = {
     },
   ],
 };
+
+const agree = [
+  { value: '1', label: 'Disagree' },
+  { value: '2', label: 'Neutral' },
+  { value: '3', label: 'Agree' },
+];
+
+export const questionTypes: FormDefinition = {
+  formatVersion: '1.3',
+  id: 'question-types',
+  title: 'Question types',
+  submit: { label: 'Send' },
+  fields: [
+    {
+      key: 'nps',
+      type: 'scale',
+      label: 'Recommend',
+      validation: { min: 0, max: 10 },
+      options: [
+        { value: '0', label: 'Not at all likely' },
+        { value: '10', label: 'Extremely likely' },
+      ],
+    },
+    { key: 'stars', type: 'rating', label: 'Stars' },
+    { key: 'room', type: 'radio', label: 'Room', options: [{ value: 'sea', label: 'Sea', image: 'https://example.com/sea.jpg' }] },
+    {
+      key: 'pulse',
+      type: 'section',
+      layout: 'matrix',
+      title: 'Pulse',
+      fields: [
+        { key: 'clear', type: 'radio', label: 'Clear', options: agree },
+        { key: 'heard', type: 'radio', label: 'Heard', options: agree },
+      ],
+    },
+    { key: 'note', type: 'section', title: 'Thanks', fields: [] },
+  ],
+};
+
+export const questionValues = { nps: 0, stars: 4, room: 'sea', clear: '3' };
