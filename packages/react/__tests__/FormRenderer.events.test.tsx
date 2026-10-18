@@ -24,10 +24,10 @@ it('reports the form view once under StrictMode', () => {
   expect(onFormEvent.mock.calls).toEqual([[{ type: 'form_viewed' }], [{ type: 'step_viewed', stepId: 'one', stepIndex: 0 }]]);
 });
 
-it('prefers onFormEvent over the onAnalyticsEvent alias', () => {
+it('calls onFormEvent and the onAnalyticsEvent alias with every event', () => {
   const onFormEvent = vi.fn();
   const onAnalyticsEvent = vi.fn();
   render(<FormRenderer definition={definition} onSubmit={() => {}} onFormEvent={onFormEvent} onAnalyticsEvent={onAnalyticsEvent} />);
-  expect(onFormEvent).toHaveBeenCalledWith({ type: 'form_viewed' });
-  expect(onAnalyticsEvent).not.toHaveBeenCalled();
+  expect(onFormEvent.mock.calls).toEqual([[{ type: 'form_viewed' }], [{ type: 'step_viewed', stepId: 'one', stepIndex: 0 }]]);
+  expect(onAnalyticsEvent.mock.calls).toEqual(onFormEvent.mock.calls);
 });

@@ -1,4 +1,4 @@
-import type { FormEngineOptions } from '@formhaus/core';
+import type { FormEngineOptions, FormEvent } from '@formhaus/core';
 import {
   applySources,
   canMoveFocus,
@@ -41,7 +41,12 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
     progressComponent,
     headingLevel = 2,
   } = props;
-  const onFormEvent = props.onFormEvent ?? props.onAnalyticsEvent;
+  const handlers = useRef(props);
+  handlers.current = props;
+  const onFormEvent = useCallback((event: FormEvent) => {
+    handlers.current.onFormEvent?.(event);
+    handlers.current.onAnalyticsEvent?.(event);
+  }, []);
   const formId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const focusPending = useRef(false);
@@ -135,13 +140,13 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
 
   const handleFieldFocus = useCallback(
     (key: string) => {
-      onFormEvent?.({ type: 'field_focused', fieldKey: key });
+      onFormEvent({ type: 'field_focused', fieldKey: key });
     },
     [onFormEvent],
   );
   const handleFieldBlur = useCallback(
     (key: string) => {
-      onFormEvent?.({ type: 'field_blurred', fieldKey: key, hasValue: hasValue(engine, key) });
+      onFormEvent({ type: 'field_blurred', fieldKey: key, hasValue: hasValue(engine, key) });
     },
     [engine, onFormEvent],
   );
