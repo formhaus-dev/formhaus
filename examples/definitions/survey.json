@@ -1,0 +1,87 @@
+{
+  "id": "product-survey",
+  "formatVersion": "1.3",
+  "title": "Product survey",
+  "submit": { "label": "Send answers" },
+  "steps": [
+    {
+      "id": "welcome",
+      "title": "Help us improve Formhaus",
+      "description": "Four short questions. It takes about two minutes.",
+      "next": { "label": "Start" },
+      "fields": []
+    },
+    {
+      "id": "recommend",
+      "title": "Recommend",
+      "next": false,
+      "fields": [
+        {
+          "key": "nps",
+          "type": "scale",
+          "label": "How likely are you to recommend us to a friend or colleague?",
+          "autoAdvance": true,
+          "validation": { "required": true, "min": 0, "max": 10 },
+          "options": [{ "value": "0", "label": "Not at all likely" }, { "value": "10", "label": "Extremely likely" }]
+        }
+      ]
+    },
+    {
+      "id": "details",
+      "title": "A bit more",
+      "fields": [
+        {
+          "key": "improve",
+          "type": "textarea",
+          "label": "What should we improve first?",
+          "rows": 3,
+          "show": [{ "field": "nps", "lte": 6 }]
+        },
+        {
+          "key": "support",
+          "type": "rating",
+          "label": "How would you rate our support?",
+          "validation": { "required": true }
+        },
+        {
+          "key": "device",
+          "type": "radio",
+          "label": "Where do you build forms most often?",
+          "options": [
+            { "value": "laptop", "label": "Laptop", "image": "https://cdn.jsdelivr.net/npm/lucide-static@0.469.0/icons/laptop.svg" },
+            { "value": "desktop", "label": "Desktop", "image": "https://cdn.jsdelivr.net/npm/lucide-static@0.469.0/icons/monitor.svg" },
+            { "value": "tablet", "label": "Tablet", "image": "https://cdn.jsdelivr.net/npm/lucide-static@0.469.0/icons/tablet.svg" }
+          ]
+        },
+        {
+          "key": "agree",
+          "type": "section",
+          "layout": "matrix",
+          "title": "How much do you agree?",
+          "fields": [
+            {
+              "key": "easy",
+              "type": "radio",
+              "label": "The editor is easy to use",
+              "options": [
+                { "value": "disagree", "label": "Disagree" },
+                { "value": "neutral", "label": "Neutral" },
+                { "value": "agree", "label": "Agree" }
+              ]
+            },
+            {
+              "key": "docs",
+              "type": "radio",
+              "label": "The docs answer my questions",
+              "options": [
+                { "value": "disagree", "label": "Disagree" },
+                { "value": "neutral", "label": "Neutral" },
+                { "value": "agree", "label": "Agree" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
