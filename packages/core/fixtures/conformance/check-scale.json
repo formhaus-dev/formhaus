@@ -15,6 +15,19 @@
       "path": "/fields/3/show/0/eq"
     }
   ],
+  "overlay": {
+    "fields": {
+      "nps": {
+        "options": {
+          "0": "Совсем нет"
+        }
+      }
+    }
+  },
+  "texts": {
+    "fields.nps.options.0": "Совсем нет",
+    "fields.nps.options.10": "Extremely likely"
+  },
   "definition": {
     "formatVersion": "1.2",
     "id": "f",
