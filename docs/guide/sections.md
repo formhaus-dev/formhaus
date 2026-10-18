@@ -121,7 +121,8 @@ Style it with `.fh-section` and `.fh-section__title`. A headless renderer reads 
 - Use `radio` rows, or `multiselect` rows for several answers per row. Give every row the same options in the same order.
 - Rows validate and take conditions like any other field.
 - Do not set `autoAdvance` on a row: answering one row would leave the step.
-- Rows stack on every screen width: the row label sits above its cells, and the column header sticks to the top while you scroll.
+- The column headers come from the static `options` of the first row. A first row with `optionsFrom` gets no matrix layout.
+- Rows stack on every screen width: the row label sits above its cells, and the column header sticks to the top while you scroll. Set `--fh-matrix-sticky-top` to the height of a fixed page header to keep the column header below it.
 - A custom `section` component replaces the matrix layout. Older versions of `@formhaus/core` report `layout` as an unknown property and draw a plain section.
 
 ## Statement
