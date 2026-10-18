@@ -4,14 +4,7 @@ import { createRequire } from 'node:module';
 const require = createRequire(new URL('../packages/editor-react/package.json', import.meta.url));
 const { chromium } = require('playwright');
 
-const pages = process.env.LANDING_NAV_PAGES?.split(',') ?? [
-  '/',
-  '/framework',
-  '/cloud/overview',
-  '/templates/',
-  '/templates/contact-form',
-  '/build',
-];
+const pages = process.env.LANDING_NAV_PAGES?.split(',') ?? ['/', '/framework', '/templates/', '/templates/contact-form', '/build'];
 const widths = [1440, 1280, 1024, 390];
 const themes = ['light', 'dark'];
 const tolerance = 0.5;
@@ -49,11 +42,12 @@ function measureBar() {
 function measureScreen() {
   const screen = document.querySelector('.VPNavScreen');
   if (!screen) return [];
+  const top = screen.getBoundingClientRect().y;
   return [...screen.querySelectorAll('a, button')]
     .filter((el) => el.getBoundingClientRect().width > 0)
     .map((el) => {
       const rect = el.getBoundingClientRect();
-      return `${el.textContent.trim().replace(/\s+/g, ' ')}@${Math.round(rect.y)}`;
+      return `${el.textContent.trim().replace(/\s+/g, ' ')}@${Math.round(rect.y - top)}`;
     });
 }
 
