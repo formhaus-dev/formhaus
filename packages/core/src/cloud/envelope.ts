@@ -54,6 +54,10 @@ export function parseSettings(value: unknown): CloudSettings {
   };
 }
 
+export function withEnding(settings: CloudSettings, ending: unknown): CloudSettings {
+  return isRecord(ending) ? parseSettings({ ...ending, allowAnother: settings.allowAnother }) : settings;
+}
+
 export function parseForm(body: unknown, response: CloudResponse): PublishedForm {
   if (!isRecord(body)) throw new CloudError(response.status, 'invalid_response');
   if (!('definition' in body)) return { definition: body as unknown as FormDefinition, version: headerVersion(response), settings: {} };

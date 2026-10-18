@@ -3,7 +3,7 @@ import { carryValues, splitErrors, updatedErrors } from './carry';
 import { createChallengeFrame, type ChallengeHost, type CloudChallengeFrame } from './challenge';
 import { createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
 import { draftValues, type DraftStore } from './draft';
-import { parseSettings, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
+import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
 
@@ -179,7 +179,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         check?.spend();
         if (!alive()) return;
         options.draftStore?.clear(options.id);
-        update({ done: true });
+        update({ done: true, settings: withEnding(state.settings, submission.ending) });
         callbacks.onSuccess?.(submission);
       } catch (error) {
         if ((error as CloudError).code === 'verification_failed') check?.spend();
