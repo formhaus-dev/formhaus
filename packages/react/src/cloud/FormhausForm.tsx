@@ -51,7 +51,16 @@ export function FormhausForm({
       },
     [],
   );
-  const root = useRef<HTMLDivElement>(null);
+  const root = useRef<HTMLDivElement | null>(null);
+  const { warm } = cloud;
+  const attach = useCallback(
+    (node: HTMLDivElement | null) => {
+      root.current?.removeEventListener('focusin', warm);
+      root.current = node;
+      node?.addEventListener('focusin', warm);
+    },
+    [warm],
+  );
   const notice = useRef<HTMLDivElement>(null);
   const act = useCallback((action: Exclude<CloudAction, null>) => {
     if (action === 'reload') window.location.reload();
@@ -64,12 +73,6 @@ export function FormhausForm({
     const frame = requestAnimationFrame(() => focusProblem(root.current, notice.current));
     return () => cancelAnimationFrame(frame);
   }, [cloud.attempt]);
-
-  useEffect(() => {
-    const node = root.current;
-    node?.addEventListener('focusin', cloud.warm);
-    return () => node?.removeEventListener('focusin', cloud.warm);
-  }, [cloud.warm, cloud.challenge, cloud.done]);
 
   useEffect(() => {
     if (cloud.done && redirectUrl && !success) window.location.assign(redirectUrl);
@@ -112,7 +115,7 @@ export function FormhausForm({
       </div>
     );
   return (
-    <div ref={root} className="fh-cloud">
+    <div ref={attach} className="fh-cloud">
       <input ref={trap} name="_fh_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={HIDDEN} defaultValue="" />
       <CloudNotice notice={cloud.notice} noticeRef={notice} onAction={act} />
       <FormRenderer
