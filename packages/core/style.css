@@ -5,15 +5,12 @@
   --fh-color-border-hover: #a1a1aa;
   --fh-color-control-hover: #71717a;
   --fh-color-error: #c0352d;
-  --fh-color-error-soft: #fdf1f0;
   --fh-color-error-hover: #9e2a23;
   --fh-color-bg: #ffffff;
   --fh-color-bg-disabled: #f4f4f5;
   --fh-color-bg-hover: #f6f6f7;
   --fh-color-primary: #5502fb;
-  --fh-color-primary-hover: #4400cc;
   --fh-color-primary-text: #ffffff;
-  --fh-color-primary-soft: #f5f0ff;
   --fh-color-secondary-border: #d4d4d8;
   --fh-color-scrim: rgba(20, 20, 22, 0.32);
   --fh-color-shadow: rgba(20, 20, 22, 0.2);
@@ -32,6 +29,9 @@
   --fh-auto-heading: calc(var(--fh-font-size) + 2px);
   --fh-auto-title: calc(var(--fh-font-size) + 5px);
   --fh-auto-card-padding: var(--fh-space-10);
+  --fh-auto-primary-hover: #4400cc;
+  --fh-auto-primary-soft: #f5f0ff;
+  --fh-auto-error-soft: #fdf1f0;
 }
 
 :where(.fh-form:not(.fh-cloud .fh-form)) {
@@ -40,6 +40,9 @@
   --fh-font-size-heading: var(--fh-auto-heading);
   --fh-font-size-title: var(--fh-auto-title);
   --fh-card-padding: var(--fh-auto-card-padding);
+  --fh-color-primary-hover: var(--fh-auto-primary-hover);
+  --fh-color-primary-soft: var(--fh-auto-primary-soft);
+  --fh-color-error-soft: var(--fh-auto-error-soft);
 }
 
 :where([data-fh-theme="dark"] :is(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) {
@@ -51,31 +54,34 @@
   --fh-color-border-hover: #5a5a63;
   --fh-color-control-hover: #80808b;
   --fh-color-error: #f2736a;
-  --fh-color-error-soft: #2c1c1d;
   --fh-color-error-hover: #f6958e;
   --fh-color-bg: #18181c;
   --fh-color-bg-disabled: #232328;
   --fh-color-bg-hover: #212126;
   --fh-color-primary: #7c4dff;
-  --fh-color-primary-hover: #8d63ff;
   --fh-color-primary-text: #ffffff;
-  --fh-color-primary-soft: #241a3d;
   --fh-color-secondary-border: #3a3a41;
   --fh-color-scrim: rgba(0, 0, 0, 0.55);
   --fh-color-shadow: rgba(0, 0, 0, 0.6);
 }
 
+:where([data-fh-theme="dark"] :is(.fh-cloud, .fh-form), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) {
+  --fh-auto-primary-hover: #8d63ff;
+  --fh-auto-primary-soft: #241a3d;
+  --fh-auto-error-soft: #2c1c1d;
+}
+
 @supports (color: color-mix(in srgb, red, blue)) {
   :where(.fh-form, .fh-cloud) {
-    --fh-color-primary-hover: color-mix(in srgb, var(--fh-color-primary) 82%, #000000);
-    --fh-color-primary-soft: color-mix(in srgb, var(--fh-color-primary) 9%, var(--fh-color-bg));
-    --fh-color-error-soft: color-mix(in srgb, var(--fh-color-error) 8%, var(--fh-color-bg));
+    --fh-auto-primary-hover: color-mix(in srgb, var(--fh-color-primary) 82%, #000000);
+    --fh-auto-primary-soft: color-mix(in srgb, var(--fh-color-primary) 9%, var(--fh-color-bg));
+    --fh-auto-error-soft: color-mix(in srgb, var(--fh-color-error) 8%, var(--fh-color-bg));
   }
-  :where([data-fh-theme="dark"] :is(.fh-form, .fh-cloud), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) { --fh-color-primary-hover: color-mix(in srgb, var(--fh-color-primary) 85%, #ffffff); }
+  :where([data-fh-theme="dark"] :is(.fh-form, .fh-cloud), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) { --fh-auto-primary-hover: color-mix(in srgb, var(--fh-color-primary) 85%, #ffffff); }
 }
 
 .fh-form, .fh-form__fields { display: grid; grid-template-columns: 100%; gap: var(--fh-gap); }
-.fh-form { color: var(--fh-color-text); font-size: var(--fh-font-size); line-height: 1.5; }
+.fh-form, :where(.fh-cloud) { color: var(--fh-color-text); font-size: var(--fh-font-size); line-height: 1.5; }
 .fh-field { display: flex; flex-direction: column; gap: var(--fh-space-3); min-width: 0; margin: 0; padding: 0; border: 0; }
 .fh-field__label { font-size: var(--fh-font-size); font-weight: 600; line-height: 1.4; }
 legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
@@ -128,7 +134,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   transition: border-color 140ms, background-color 140ms;
 }
 
-:is(.fh-field__radio-option, .fh-field__multiselect-option):has(:checked) { border-color: var(--fh-color-primary); background: var(--fh-color-primary-soft); }
+:is(.fh-field__radio-option, .fh-field__multiselect-option):has(:checked) { border-color: var(--fh-color-primary); background: var(--fh-color-primary-soft, var(--fh-auto-primary-soft)); }
 :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:disabled) { opacity: 0.6; }
 :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:focus-visible) { outline: 2px solid var(--fh-color-border-focus, var(--fh-auto-border-focus)); outline-offset: 2px; }
 
@@ -170,12 +176,12 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):hover:not(:has(:checked, :disabled)) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
   :is(.fh-field__checkbox-wrapper, .fh-field__radio-option, .fh-field__multiselect-option):hover :is(.fh-field__radio, .fh-field__checkbox):not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-text-muted); }
   .fh-field__switch-wrapper:hover .fh-field__switch:not(:disabled) { background-color: var(--fh-color-border-hover); }
-  .fh-field__switch-wrapper:hover .fh-field__switch:checked:not(:disabled) { background-color: var(--fh-color-primary-hover); }
-  .fh-form-actions__button--primary:hover:not(:disabled) { background: var(--fh-color-primary-hover); }
+  .fh-field__switch-wrapper:hover .fh-field__switch:checked:not(:disabled) { background-color: var(--fh-color-primary-hover, var(--fh-auto-primary-hover)); }
+  .fh-form-actions__button--primary:hover:not(:disabled) { background: var(--fh-color-primary-hover, var(--fh-auto-primary-hover)); }
   .fh-form-actions__button--secondary:hover:not(:disabled) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
   .fh-form-actions__button--text:hover:not(:disabled) { background: var(--fh-color-bg-hover); color: var(--fh-color-text); }
-  .fh-group .fh-group__remove:hover:not(:disabled) { background: var(--fh-color-error-soft); color: var(--fh-color-error-hover); }
-  .fh-dialog .fh-dialog__danger:hover { background: var(--fh-color-error-soft); }
+  .fh-group .fh-group__remove:hover:not(:disabled) { background: var(--fh-color-error-soft, var(--fh-auto-error-soft)); color: var(--fh-color-error-hover); }
+  .fh-dialog .fh-dialog__danger:hover { background: var(--fh-color-error-soft, var(--fh-auto-error-soft)); }
   .fh-dialog__close:hover { background: var(--fh-color-bg-hover); color: var(--fh-color-text); }
 }
 
