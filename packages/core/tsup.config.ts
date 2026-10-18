@@ -4,7 +4,7 @@ import { defineConfig } from 'tsup';
 const { version } = JSON.parse(readFileSync('package.json', 'utf8'));
 
 const INTERNAL_PROPS =
-  /^(validationEpoch|operationEpoch|latestOperation|lifecycle|subscriptions|visibility|reconcileHidden|markChanged|allFields|conditionValues|activeField|activeItem|itemFields|getCanGoNext|findStepIndex|affectsStructure|serverErrors|serverFormErrors|skipped|seedItems|resetStarts|reseed|startValue|itemStartValue|view|keyList|scopes|notify|advance|seed|remember|rememberItem|dropItem|watchWrites|loadPayload|fieldsByKey|fieldDependents|routeFields|stepDependents|stepOfField|sectionOf|unsettle|reconcile|settle|onPath|conditionSources|invalidate)$/;
+  /^(validationEpoch|operationEpoch|latestOperation|lifecycle|subscriptions|visibility|reconcileHidden|markChanged|allFields|conditionValues|activeField|activeItem|itemFields|getCanGoNext|findStepIndex|affectsStructure|serverErrors|serverFormErrors|skipped|seedItems|resetStarts|reseed|startValue|itemStartValue|view|keyList|scopes|notify|advance|seed|remember|rememberItem|dropItem|watchWrites|loadPayload|fieldsByKey|fieldDependents|routeFields|stepDependents|stepOfField|sectionOf|unsettle|reconcile|settle|onPath|conditionSources|invalidate|viewedStep|shownFields|conditionResults)$/;
 
 const shared = {
   define: { __FORMHAUS_CORE_VERSION__: JSON.stringify(version) },

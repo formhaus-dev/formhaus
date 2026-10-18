@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, mkdtempSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readdirSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 
@@ -31,6 +31,7 @@ import { useLocalizedForm } from '@formhaus/react/i18n';
 import { localize, type Overlay } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
+import { questionTimer } from './question-timing.js';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }, { key: 'utm', type: 'hidden' }], submit: { label: 'Send' } };
 export const handle = createRef<FormRendererHandle>();
@@ -39,6 +40,7 @@ export const views = [
   <HeadlessFormRenderer definition={definition} onSubmit={async () => {}} />,
   <FormRenderer ref={handle} definition={definition} onSubmit={async () => {}} />,
   <FormhausForm id="abc" />,
+  <FormRenderer definition={definition} onSubmit={async () => {}} onFormEvent={questionTimer((time) => console.log(time.stepId, time.fieldKey, time.ms)).onEvent} />,
 ];
 export const extras = [TextField, CloudError];
 export const components: FieldComponentMap = {
@@ -122,6 +124,8 @@ export const extras = [Formhaus, CloudError];
 export const localized = useLocalizedForm(() => definition, () => ({ overlay: { title: 'Kontakt' } }));
 `,
 };
+
+files['src/question-timing.ts'] = readFileSync(join(root, 'docs/recipes/snippets/question-timing.ts'), 'utf8');
 
 const resolutions = { bundler: 'ESNext', node16: 'Node16' };
 for (const [resolution, module] of Object.entries(resolutions)) {

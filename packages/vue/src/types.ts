@@ -6,6 +6,7 @@ import type {
   DefinitionIssue,
   FieldType,
   FormAnalyticsEvent,
+  FormEvent,
   FormDefinition,
   FormField,
   FormRendererHandle as CoreFormRendererHandle,
@@ -97,6 +98,7 @@ export interface FormRendererEmits {
   (e: 'cancel'): void;
   (e: 'fieldChange', key: string, value: unknown, allValues: Record<string, unknown>): void;
   (e: 'valuesChange', values: Readonly<Record<string, unknown>>): void;
+  (e: 'formEvent', event: FormEvent): void;
   (e: 'analyticsEvent', event: FormAnalyticsEvent): void;
 }
 

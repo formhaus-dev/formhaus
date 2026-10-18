@@ -1,9 +1,10 @@
-import type { FormEngineOptions } from '@formhaus/core';
+import type { FormEngineOptions, FormEvent } from '@formhaus/core';
 import {
   applySources,
   canMoveFocus,
   errorDomId,
   focusField,
+  hasValue,
   restoreFocus,
   shouldApplyExternalErrors,
   warnMissingComponents,
@@ -39,8 +40,13 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
     actionsComponent,
     progressComponent,
     headingLevel = 2,
-    onAnalyticsEvent,
   } = props;
+  const handlers = useRef(props);
+  handlers.current = props;
+  const onFormEvent = useCallback((event: FormEvent) => {
+    handlers.current.onFormEvent?.(event);
+    handlers.current.onAnalyticsEvent?.(event);
+  }, []);
   const formId = useId();
   const formRef = useRef<HTMLFormElement>(null);
   const focusPending = useRef(false);
@@ -54,12 +60,9 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
   const wasBusy = useRef(false);
   const engineOptions: FormEngineOptions = {
     ...props,
+    onFormEvent: props.onFormEvent || props.onAnalyticsEvent ? onFormEvent : undefined,
     onAfterStepChange: async (context) => {
       focusPending.current = true;
-      if (context.reason !== 'back') {
-        onAnalyticsEvent?.({ type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
-        onAnalyticsEvent?.({ type: 'step_viewed', stepId: context.toStepId, stepIndex: engine.currentStepIndex });
-      }
       await props.onAfterStepChange?.(context);
     },
   };
@@ -80,6 +83,7 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
       sourced.add(engine);
       applySources(engine, initialValues);
     }
+    engine.start();
     const emit = () => {
       const values = onValuesChange.current && engine.getValuesSnapshot();
       if (values && values !== emitted.current) onValuesChange.current!((emitted.current = values));
@@ -136,15 +140,15 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
 
   const handleFieldFocus = useCallback(
     (key: string) => {
-      onAnalyticsEvent?.({ type: 'field_focused', fieldKey: key });
+      onFormEvent({ type: 'field_focused', fieldKey: key });
     },
-    [onAnalyticsEvent],
+    [onFormEvent],
   );
   const handleFieldBlur = useCallback(
     (key: string) => {
-      onAnalyticsEvent?.({ type: 'field_blurred', fieldKey: key, hasValue: engine.values[key] !== undefined && engine.values[key] !== '' });
+      onFormEvent({ type: 'field_blurred', fieldKey: key, hasValue: hasValue(engine, key) });
     },
-    [engine, onAnalyticsEvent],
+    [engine, onFormEvent],
   );
   const handleCancel = useCallback(() => props.onCancel?.(), [props.onCancel]);
   const showField = useCallback(

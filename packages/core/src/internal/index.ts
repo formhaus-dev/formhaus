@@ -29,3 +29,10 @@ export function conditionValues(engine: FormEngine): Record<string, unknown> {
 export function autoAdvance(engine: FormEngine): Promise<boolean> {
   return (engine as unknown as EngineInternals).advance('autoAdvance');
 }
+
+export function hasValue(engine: FormEngine, key: string): boolean {
+  const internals = engine as unknown as EngineInternals;
+  const path = internals.visibility.parse(key);
+  const value = path ? (internals.values[path[0]] as Record<string, unknown>[] | undefined)?.[path[1]]?.[path[2]] : internals.values[key];
+  return value !== undefined && value !== '';
+}

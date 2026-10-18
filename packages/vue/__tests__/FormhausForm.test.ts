@@ -210,3 +210,11 @@ it('saves a draft after an item is removed', async () => {
   await fireEvent.click(await screen.findByRole('button', { name: 'Remove Crew 1' }));
   await waitFor(() => expect(save).toHaveBeenLastCalledWith('abc', 2, { crew: [{ name: 'Bo' }] }));
 });
+
+it('forwards form events', async () => {
+  stubApi();
+  const { emitted } = render(FormhausForm, { props: { id: 'abc', apiBase: 'https://example.test' } });
+  await screen.findByText('Email');
+  expect(emitted().formEvent).toContainEqual([{ type: 'form_viewed' }]);
+  expect(emitted().analyticsEvent).toContainEqual([{ type: 'form_viewed' }]);
+});
