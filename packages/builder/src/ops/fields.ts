@@ -1,9 +1,22 @@
 import type { FieldType, FormField } from '@formhaus/core';
 import { syncIdentifiers, unique } from '../identifiers';
-import { clone, isContainer, isPage, isQuestion, newQuestion, setType, span, uid, type BuilderForm, type BuilderQuestion } from '../model';
+import {
+  clone,
+  hasOptions,
+  isContainer,
+  isPage,
+  isQuestion,
+  newQuestion,
+  setType,
+  span,
+  uid,
+  type BuilderForm,
+  type BuilderQuestion,
+} from '../model';
 import { bindReferences, dropReferences, scopeOf } from '../references';
 import { removeBlock } from './blocks';
-import { findField, blockIndex, stepEnd, stepFields } from './locate';
+import { childrenOf, findField, blockIndex, stepEnd, stepFields } from './locate';
+import { isMatrix, syncMatrix } from './matrix';
 
 export type Placement = { after: string } | { inside: string } | { step: string | null; index?: number };
 
@@ -39,9 +52,6 @@ function ancestorIn(form: BuilderForm, uid: string, parent: string | undefined):
   return item;
 }
 
-export const childrenOf = (form: BuilderForm, container: string) =>
-  form.blocks.filter((block): block is BuilderQuestion => isQuestion(block) && block.parent === container);
-
 export function addField(form: BuilderForm, at: Placement, preset: FieldPreset = {}): BuilderQuestion {
   const question = newQuestion(form, preset.type ?? 'text');
   question.label = preset.label ?? '';
@@ -64,6 +74,7 @@ export function addField(form: BuilderForm, at: Placement, preset: FieldPreset =
     form.blocks.splice(index + 1, 0, child);
   }
   syncIdentifiers(form);
+  joinMatrix(form, question);
   return question;
 }
 
@@ -79,11 +90,19 @@ export function setRequired(form: BuilderForm, uid: string, required: boolean): 
   if (item) item.required = required;
 }
 
+function joinMatrix(form: BuilderForm, question: BuilderQuestion): void {
+  const section = findField(form, question.parent ?? '');
+  if (!isMatrix(section)) return;
+  const source = childrenOf(form, section.uid).find((row) => row !== question && hasOptions(row.type));
+  if (source) syncMatrix(form, section.uid, source.uid);
+}
+
 export function setFieldType(form: BuilderForm, uid: string, type: FieldType): void {
   const item = findField(form, uid);
   if (!item) return;
   setType(form, item, type);
   syncIdentifiers(form);
+  if (hasOptions(type)) joinMatrix(form, item);
 }
 
 export function setKey(form: BuilderForm, uid: string, key: string): void {

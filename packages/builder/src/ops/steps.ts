@@ -22,6 +22,14 @@ export function addStep(form: BuilderForm, after?: string): BuilderPage {
   return page;
 }
 
+export function addStepFirst(form: BuilderForm): BuilderPage {
+  wrap(form);
+  const page = newPage(form, '');
+  form.blocks.unshift(page);
+  syncIdentifiers(form);
+  return page;
+}
+
 export function splitAt(form: BuilderForm, fieldUid: string): BuilderPage | undefined {
   const index = blockIndex(form, fieldUid);
   if (index <= 0 || isPage(form.blocks[index]) || isPage(form.blocks[index - 1])) return undefined;

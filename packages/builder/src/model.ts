@@ -11,6 +11,8 @@ export const QUESTION_TYPES = [
   { type: 'multiselect', label: 'Checkboxes', hint: 'Pick all that apply', icon: 'check-square', placeholder: 'Which of these…?' },
   { type: 'select', label: 'Select', hint: 'Pick one from a list', icon: 'chevron-down', placeholder: 'Choose a…' },
   { type: 'checkbox', label: 'Checkbox', hint: 'A single yes or no tick', icon: 'square-check', placeholder: 'I agree to…' },
+  { type: 'rating', label: 'Rating', hint: 'Stars from one to five', icon: 'star', placeholder: 'How would you rate…?' },
+  { type: 'scale', label: 'Opinion scale', hint: 'A number on a scale', icon: 'gauge', placeholder: 'How likely are you to…?' },
 ] as const;
 
 export type QuestionType = (typeof QUESTION_TYPES)[number]['type'];
@@ -104,7 +106,9 @@ export const isContainer = (block: BuilderBlock | undefined): block is BuilderQu
   isQuestion(block) && (block.type === 'section' || block.type === 'group');
 export const CONTAINER_LABELS: Record<string, string> = { section: 'Section', group: 'Repeatable group' };
 export const hasOptions = (type: FieldType) => type === 'radio' || type === 'multiselect' || type === 'select';
-export const canBranch = (type: FieldType) => type === 'radio' || type === 'select';
+export const isScale = (type: FieldType) => type === 'scale' || type === 'rating';
+export const canBranch = (type: FieldType) => type === 'radio' || type === 'select' || isScale(type);
+export const canAutoAdvance = (type: FieldType) => type === 'radio' || isScale(type);
 export const placeholderFor = (type: FieldType) =>
   QUESTION_TYPES.find((item) => item.type === type)?.placeholder ??
   (type === 'section' ? 'Section title' : type === 'group' ? 'Group name' : 'Question');
@@ -136,7 +140,17 @@ export function newQuestion(form: BuilderForm, type: FieldType = 'text'): Builde
   return question;
 }
 
+function dropScale(question: BuilderQuestion, keepRange: boolean): void {
+  const { min: _min, max, ...rules } = question.extra.validation ?? {};
+  const kept = keepRange && max !== undefined ? { ...rules, max } : rules;
+  if (!keepRange) delete question.extra.options;
+  if (Object.keys(kept).length) question.extra.validation = kept;
+  else delete question.extra.validation;
+}
+
 export function setType(form: BuilderForm, question: BuilderQuestion, type: FieldType): void {
+  if (isScale(question.type) && question.type !== type) dropScale(question, isScale(type));
+  if (!canAutoAdvance(type)) delete question.extra.autoAdvance;
   question.type = type;
   if (type === 'hidden') question.required = false;
   else delete question.extra.source;

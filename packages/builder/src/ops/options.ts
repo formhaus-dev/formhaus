@@ -3,6 +3,7 @@ import { bindReferences } from '../references';
 import { newOption, type BuilderForm, type BuilderOption } from '../model';
 import { moveItem } from './blocks';
 import { findField } from './locate';
+import { syncRow } from './matrix';
 
 export function addOptions(form: BuilderForm, fieldUid: string, labels: string[], after?: string): BuilderOption[] {
   const item = findField(form, fieldUid);
@@ -11,6 +12,7 @@ export function addOptions(form: BuilderForm, fieldUid: string, labels: string[]
   const created = labels.map((label) => newOption(form, label));
   item.options.splice(index >= 0 ? index + 1 : item.options.length, 0, ...created);
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
   return created;
 }
 
@@ -26,6 +28,7 @@ export function setOptionLabel(form: BuilderForm, fieldUid: string, optionUid: s
   if (!entry) return;
   entry.label = label;
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
 }
 
 export function setOptionValue(form: BuilderForm, fieldUid: string, optionUid: string, value: string): void {
@@ -36,6 +39,7 @@ export function setOptionValue(form: BuilderForm, fieldUid: string, optionUid: s
   entry.valueLocked = true;
   syncIdentifiers(form);
   restore();
+  syncRow(form, fieldUid);
 }
 
 export function removeOption(form: BuilderForm, fieldUid: string, optionUid: string): boolean {
@@ -45,6 +49,7 @@ export function removeOption(form: BuilderForm, fieldUid: string, optionUid: str
   if (index < 0) return false;
   item.options.splice(index, 1);
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
   return true;
 }
 
@@ -56,5 +61,15 @@ export function moveOption(form: BuilderForm, fieldUid: string, optionUid: strin
   const at = to > from ? to + 1 : to;
   if (!moveItem(item.options, from, Math.max(0, Math.min(at, item.options.length)))) return false;
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
   return true;
+}
+
+export function setOptionImage(form: BuilderForm, fieldUid: string, optionUid: string, image: string): void {
+  const entry = option(form, fieldUid, optionUid);
+  if (!entry) return;
+  const { image: _old, ...extra } = entry.extra ?? {};
+  const url = image.trim();
+  entry.extra = url ? { ...extra, image: url } : extra;
+  if (!Object.keys(entry.extra).length) delete entry.extra;
 }
