@@ -7,6 +7,7 @@ import type { EngineInternals } from '../engine/runtime-internals';
 import { FormEngine } from '../engine/runtime';
 import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
+import { trustDefinition } from '../engine/warnings';
 import { writeValue } from '../engine/write-value';
 import { normalizeValue, typeError } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, isSection, itemPath, itemsOf, keepId } from '../visibility/nodes';
@@ -25,7 +26,6 @@ export interface SubmissionResult {
 }
 
 const allow: ValidatorFn = () => null;
-
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 
 interface ActiveValues {
@@ -195,7 +195,7 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
   const { resolved, rejected } = rejectGroups(definition, fields, values, resolve);
   const invalid = typeErrors(resolved, resolve);
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
-  const engine = new FormEngine(withoutRules(definition, invalid), resolved.values, engineOptions);
+  const engine = new FormEngine(trustDefinition(withoutRules(definition, invalid)), resolved.values, engineOptions);
   loadSubmitted(engine, resolved.values);
   const items = itemErrors(engine, invalid, resolve);
   applySkips(engine, options.skippedSteps);

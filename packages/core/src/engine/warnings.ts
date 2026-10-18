@@ -12,7 +12,15 @@ function developmentIssues(definition: FormDefinition, validators: Record<string
   return check?.();
 }
 
+const parsed = new WeakSet<FormDefinition>();
+
+export function trustDefinition(definition: FormDefinition): FormDefinition {
+  parsed.add(definition);
+  return definition;
+}
+
 export function assertDefinition(definition: FormDefinition, options: FormEngineOptions, validators: Record<string, unknown>): void {
+  if (parsed.has(definition)) return;
   const issues = developmentIssues(definition, validators) ?? definitionErrors(definition);
   const errors = issues.filter(isError);
   if (errors.length) throw new FormDefinitionError(errors);
