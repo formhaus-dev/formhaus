@@ -1,136 +1,18 @@
-import { readdirSync, readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { FormEngine, type FormDefinition, type FormEngineOptions, type SubmitHandler } from '../../src';
-import { localize, type Overlay } from '../../src/i18n';
+import { FormEngine, type FormEngineOptions, type SubmitHandler } from '../../src';
+import {
+  type Action,
+  equal,
+  type Expectation,
+  plain,
+  projectError,
+  runtimeDefinition,
+  type Scenario,
+  type ScenarioFile,
+  type Step,
+} from './scenario-format';
+import { flush, Script } from './scenario-script';
 
-export type Reply = { return?: unknown; throw?: string; defer?: string };
-
-export type HookName = 'onBeforeStepChange' | 'onAfterStepChange' | 'onBeforeSubmit' | 'onAfterSubmit' | 'onStepValidate';
-
-export interface ValidatorSpec {
-  reject: unknown[];
-  error: string;
-}
-
-export type Action =
-  | { do: 'start' }
-  | { do: 'setValue'; key: string; value: unknown }
-  | { do: 'setItemValue'; key: string; index: number; field: string; value: unknown }
-  | { do: 'addItem'; key: string }
-  | { do: 'removeItem'; key: string; index: number }
-  | { do: 'setErrors'; errors: Record<string, string> }
-  | { do: 'setFieldLoading'; key: string; loading: boolean }
-  | { do: 'cancelPendingActions' }
-  | { do: 'next' }
-  | { do: 'back' }
-  | { do: 'skip'; handler?: Reply[] }
-  | { do: 'submit'; handler?: Reply[] }
-  | { do: 'validate' }
-  | { do: 'validateField'; key: string }
-  | { do: 'goToStepWithField'; key: string }
-  | { do: 'reset'; values?: Record<string, unknown> }
-  | { do: 'resolve'; deferred: string }
-  | { do: 'settle' };
-
-export type Step = (Action & { returns?: unknown; throws?: Record<string, unknown>; await?: boolean }) | { expect: Expectation };
-
-export interface Expectation {
-  values?: Record<string, unknown>;
-  submitValues?: Record<string, unknown>;
-  errors?: Record<string, string>;
-  topLevelErrors?: string[];
-  stepErrors?: Record<string, string[]>;
-  step?: string | null;
-  stepIndex?: number;
-  steps?: string[];
-  fields?: string[];
-  skipped?: string[];
-  items?: Record<string, number>;
-  isFirstStep?: boolean;
-  isLastStep?: boolean;
-  canGoNext?: boolean;
-  progress?: { current: number; total: number };
-  submitting?: boolean;
-  stepValidating?: boolean;
-  fieldLoading?: Record<string, boolean>;
-  log?: unknown[];
-}
-
-export interface Scenario {
-  name: string;
-  values?: Record<string, unknown>;
-  hooks?: Partial<Record<HookName, Reply[]>>;
-  validators?: Record<string, ValidatorSpec>;
-  messages?: Record<string, string>;
-  throws?: string;
-  steps: Step[];
-}
-
-export interface ScenarioFile {
-  name: string;
-  definition: FormDefinition;
-  overlay?: Overlay;
-  scenarios: Scenario[];
-}
-
-const dir = join(__dirname, '../../fixtures/conformance/scenarios');
-
-export const scenarioFiles: ScenarioFile[] = readdirSync(dir)
-  .filter((file) => file.endsWith('.json') && !file.endsWith('.schema.json'))
-  .sort()
-  .map((file) => JSON.parse(readFileSync(join(dir, file), 'utf8')));
-
-export const plain = (value: unknown): unknown => (value === undefined ? null : JSON.parse(JSON.stringify(value)));
-
-const equal = (a: unknown, b: unknown) => JSON.stringify(sorted(a)) === JSON.stringify(sorted(b));
-
-function sorted(value: unknown): unknown {
-  if (Array.isArray(value)) return value.map(sorted);
-  if (value && typeof value === 'object')
-    return Object.fromEntries(
-      Object.keys(value)
-        .sort()
-        .map((key) => [key, sorted((value as Record<string, unknown>)[key])]),
-    );
-  return value;
-}
-
-function projectError(error: unknown): Record<string, unknown> {
-  const { name, phase } = error as { name?: string; phase?: string };
-  return phase ? { name, phase } : { name };
-}
-
-class Script {
-  private readonly deferred = new Map<string, () => void>();
-
-  reply(entries: Reply[] | undefined, fallback?: unknown): unknown {
-    const entry = entries?.shift();
-    if (!entry) return fallback;
-    const settle = () => {
-      if (entry.throw !== undefined) throw new Error(entry.throw);
-      return entry.return;
-    };
-    if (!entry.defer) return settle();
-    return new Promise((resolve, reject) => {
-      this.deferred.set(entry.defer!, () => {
-        try {
-          resolve(settle());
-        } catch (error) {
-          reject(error);
-        }
-      });
-    });
-  }
-
-  resolve(name: string): void {
-    const release = this.deferred.get(name);
-    if (!release) throw new Error(`No pending deferred reply "${name}"`);
-    this.deferred.delete(name);
-    release();
-  }
-}
-
-const flush = () => new Promise((resolve) => setTimeout(resolve, 0));
+export { scenarioFiles } from './scenario-format';
 
 export class ScenarioRun {
   readonly engine: FormEngine;
@@ -143,8 +25,7 @@ export class ScenarioRun {
     private readonly file: ScenarioFile,
     private readonly scenario: Scenario,
   ) {
-    const definition = file.overlay ? localize(file.definition, { overlay: file.overlay }).definition : file.definition;
-    this.engine = new FormEngine(definition, scenario.values ?? {}, this.options());
+    this.engine = new FormEngine(runtimeDefinition(file), scenario.values ?? {}, this.options());
   }
 
   private options(): FormEngineOptions {
@@ -250,7 +131,7 @@ export class ScenarioRun {
       if (step.throws) this.check(`${label} throws`, null, step.throws);
       else if ('returns' in step) this.check(`${label} returns`, plain(value), step.returns);
     } catch (error) {
-      if (step.throws) this.check(`${label} throws`, projectError(error), step.throws);
+      if (step.throws) this.check(`${label} throws`, projectError(error, step.throws as Record<string, unknown>), step.throws);
       else this.failures.push(`${label} threw unexpectedly: ${String(error)}`);
     }
   }
@@ -316,6 +197,7 @@ export class ScenarioRun {
     }
     const unsettled = this.pending.filter(({ settled }) => !settled);
     if (unsettled.length) this.failures.push(`unsettled action(s): ${unsettled.map(({ label }) => label).join(', ')}`);
+    if (this.script.pending.length) this.failures.push(`unresolved deferred reply(s): ${this.script.pending.join(', ')}`);
     return this.failures;
   }
 }
