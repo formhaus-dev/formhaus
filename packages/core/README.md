@@ -1,8 +1,6 @@
 # @formhaus/core
 
-`@formhaus/core` runs a JSON form definition: field state, validation, conditional visibility, multi-step navigation and branching routes. It has zero runtime dependencies and no UI, so React, Vue, Svelte or vanilla JS can render on top of it.
-
-Part of [Formhaus](https://github.com/ignsm/formhaus). For React, use `@formhaus/react`. For Vue, use `@formhaus/vue`.
+Framework-free engine for JSON form definitions: field state, validation, conditional visibility, repeatable groups, multi-step navigation and branching routes. No runtime dependencies and no UI. Part of [Formhaus](https://github.com/ignsm/formhaus). For rendering, use [`@formhaus/react`](https://www.npmjs.com/package/@formhaus/react) or [`@formhaus/vue`](https://www.npmjs.com/package/@formhaus/vue).
 
 ## Install
 
@@ -10,7 +8,7 @@ Part of [Formhaus](https://github.com/ignsm/formhaus). For React, use `@formhaus
 npm install @formhaus/core
 ```
 
-Requires Node ≥18. ESM-only.
+Requires Node 20 or later. ESM, and `require()` works on Node 20.19+ and 22.12+.
 
 ## Usage
 
@@ -30,89 +28,44 @@ const definition: FormDefinition = {
 const engine = new FormEngine(definition);
 
 engine.setValue('name', 'Jane');
-const errors = engine.validate();
+engine.validate();
 // { email: 'This field is required' }
 
 engine.setValue('email', 'jane@example.com');
-engine.validate();
-// {}
-
 engine.getSubmitValues();
 // { name: 'Jane', email: 'jane@example.com' }
 ```
 
-## Generating a definition
+## Entry points
 
-Write the JSON by hand, or use the [`/formhaus:formhaus-create-form`](https://formhaus.dev/guide/formhaus-create-form.html) Claude Code skill to generate it from a text description, a CSV table, or a screenshot of an existing form.
+| Import | Contents |
+|--------|----------|
+| `@formhaus/core` | `FormEngine`, `checkDefinition()`, types |
+| `@formhaus/core/server` | `validateSubmission()` for untrusted payloads, also as `server.iife.js` |
+| `@formhaus/core/cloud` | Client for [Formhaus Cloud](https://formhaus.dev/cloud/overview): `fetchForm()`, `createSubmitter()`, `createChallengeFrame()` |
+| `@formhaus/core/i18n` | Message and label catalogs, overlays, translation keys |
+| `@formhaus/core/fix` | `suggestFixes()`, `applyFix()`, `fixAll()` |
+| `@formhaus/core/style.css` | Optional baseline styles with `--fh-*` theme tokens |
+| `@formhaus/core/schema.json` | JSON Schema of the definition |
 
-## Navigation and submission
+## Features
 
-`await engine.next()`, `back()`, `skip()` and `submit(handler)` validate and run the async before/after hooks, which can cancel the action. See [step navigation and lifecycle](https://formhaus.dev/guide/steps.html#lifecycle-hooks).
-
-Step `routes` choose an ordered forward path from answers. Back, progress, validation and submission follow that path. See [branching and retained answers](https://formhaus.dev/guide/steps.html#route-between-branches).
-
-## Server-side validation
-
-`validateSubmission()` checks a submitted payload against the definition without a browser. It drops hidden, skipped and unknown keys and checks value types. Custom validators run only when you pass them in `validators`. Strings over 10,000 characters or the field's `maxLength` fail before any rule runs. `pattern` rules still run on untrusted input, so bound the execution time of the call.
-
-```ts
-import { validateSubmission } from '@formhaus/core/server';
-
-const { values, errors } = validateSubmission(definition, body.values, { skippedSteps: body.skippedSteps });
-```
-
-`checkDefinition()` returns a list of issues with a `code`, a `severity` (`error` or `warning`), a JSON pointer `path` and a `message`. `FormEngine` throws a `FormDefinitionError` on errors.
-
-```ts
-import { checkDefinition } from '@formhaus/core';
-
-const errors = checkDefinition(definition).filter((issue) => issue.severity === 'error');
-```
-
-`@formhaus/core/server.iife.js` exposes both functions on a `Formhaus` global for embedded JS runtimes.
-
-## Optional baseline styles
-
-The default React and Vue field components render unstyled HTML with `fh-*` class names. For a sensible starting look (padding, focus states, error colour, button styles), import the optional stylesheet:
-
-```ts
-import '@formhaus/core/style.css';
-```
-
-Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.) — no need to fork the file. If you're using a UI kit through the `components` prop, the stylesheet doesn't affect those.
-
-## What it covers
-
-- Form state with reactive `subscribe()` / `getSnapshot()` for adapters
-- Per-field and structure subscriptions for renderers that need isolated updates
-- Field validation (required, min/max, pattern, matchField, custom validators)
-- Visibility conditions (`show` / `showAny`) with cascade-clearing of hidden values
-- Multi-step forms with conditional steps and per-step validation
-- Async step validation via `onStepValidate` + `next()`
-- Definition validation (duplicate keys, invalid regex, circular show conditions)
-- Translations through `@formhaus/core/i18n`: message and label catalogs, overlays and translation keys. See [translations](https://formhaus.dev/guide/translations.html).
-
-## Granular subscriptions
-
-`subscribe()` notifies on every engine update. Renderers can subscribe more narrowly so a change to one field does not update every field component:
-
-```ts
-const unsubscribe = engine.subscribeField('email', () => {
-  const value = engine.values.email;
-  const error = engine.errors.email;
-  renderEmail({ value, error });
-});
-
-engine.getFieldSnapshot('email');
-```
-
-Use `subscribeStructure()` and `getStructureSnapshot()` for visible field lists, visible steps, and navigation. Every subscribe method returns an unsubscribe function.
+- Field types, validation rules, `show` / `showAny` conditions, sections and [repeatable groups](https://formhaus.dev/guide/groups). See [fields](https://formhaus.dev/guide/fields) and [validation](https://formhaus.dev/guide/validation).
+- [Multi-step forms](https://formhaus.dev/guide/steps) with lifecycle hooks, async step validation and [branching routes](https://formhaus.dev/guide/steps#route-between-branches).
+- [Server-side validation](https://formhaus.dev/guide/server-validation) against the same definition.
+- [Form events](https://formhaus.dev/api/form-engine#form-events): pass `onFormEvent` and call `start()` to get `form_viewed`, `step_viewed`, `field_shown`, `form_submit_succeeded` and more.
+- Granular subscriptions: `subscribe()`, `subscribeField()`, `subscribeStructure()` and `subscribeValues()`.
+- [Translations](https://formhaus.dev/guide/translations) through catalogs and overlay files.
+- Definition checks and JSON Patch [fix suggestions](https://formhaus.dev/api/form-engine) through `checkDefinition()` and `@formhaus/core/fix`.
+- [Formhaus Cloud](https://formhaus.dev/guide/endpoint): hosted endpoint, submissions, files and bot check. `FormhausForm` in `@formhaus/react/cloud` and `@formhaus/vue/cloud` renders a published form.
+- [Theming](https://formhaus.dev/guide/#optional-baseline-styles): `import '@formhaus/core/style.css'`, then override `--fh-*` custom properties. A dark theme is on with `data-fh-theme="dark"`.
+- [Claude Code skill and MCP server](https://formhaus.dev/guide/mcp) to generate and check definitions.
 
 ## Docs
 
-- Full guide and API reference: https://formhaus.dev/framework
-- Live playground: https://formhaus.dev/playground.html
-- Source and issues: https://github.com/ignsm/formhaus
+- [Guide](https://formhaus.dev/guide/), [API reference](https://formhaus.dev/api/form-engine) and [recipes](https://formhaus.dev/recipes/)
+- [Framework overview](https://formhaus.dev/framework) and [playground](https://formhaus.dev/playground)
+- [Source and issues](https://github.com/ignsm/formhaus)
 
 ## License
 

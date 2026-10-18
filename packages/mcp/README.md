@@ -66,7 +66,7 @@ const report = await validateDefinitionTool({ definition });
 const result = await simulatePathTool({ definition, answers: { kind: 'business' } });
 ```
 
-See the [MCP guide](https://formhaus.dev/guide/mcp.html) for an example output.
+See the [MCP guide](https://formhaus.dev/guide/mcp) for example output. A [remote MCP server](https://formhaus.dev/cloud/mcp) for Formhaus Cloud is also available. `npx formhaus` sets up the server in the coding agents on your machine; see [`formhaus`](https://www.npmjs.com/package/formhaus).
 
 ## License
 
