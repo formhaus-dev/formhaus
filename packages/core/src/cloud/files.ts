@@ -26,6 +26,15 @@ function fileKeys(nodes: FormNode[] = []): string[] {
   );
 }
 
+function bounded<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const stop = () => reject(new UploadError(UPLOAD_FAILED));
+    if (signal.aborted) stop();
+    signal.addEventListener('abort', stop);
+    work.then(resolve, reject).finally(() => signal.removeEventListener('abort', stop));
+  });
+}
+
 async function refusal(response: CloudResponse): Promise<string> {
   if (response.status === 429) return TOO_MANY;
   const body: unknown = await response.json().catch(() => null);
@@ -49,8 +58,8 @@ async function uploadFile(endpoint: string, send: Send, field: string, file: Clo
       15_000,
       deadline.signal,
     );
-    if (!response.ok) throw new UploadError(await refusal(response));
-    const ticket = (await readJson(response)) as UploadTicket;
+    if (!response.ok) throw new UploadError(await bounded(refusal(response), deadline.signal));
+    const ticket = (await bounded(readJson(response), deadline.signal)) as UploadTicket;
     const stored = await send(ticket.url, { method: ticket.method, headers: ticket.headers, body: file }, 120_000, deadline.signal);
     if (!stored.ok) throw new UploadError(UPLOAD_FAILED);
     return ticket.id;
