@@ -1,4 +1,5 @@
 import { afterCommit } from './lifecycle-error';
+import { emit } from './form-events';
 import { watchCheckedInputs } from './pending-inputs';
 import type { SubmitHandler, SubmitResult } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
@@ -51,18 +52,17 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
     const skippedSteps = [...engine.skipped.keys()];
     const sent = { ...engine.values };
     const serverErrors = engine.state.serverErrors;
-    const track = engine.lifecycle.onFormEvent;
-    if (keepSkipped) track?.({ type: 'step_skipped', stepId: engine.currentStep!.id });
-    track?.({ type: 'form_submitted', fieldCount: Object.keys(values).length });
+    if (keepSkipped) emit(engine, { type: 'step_skipped', stepId: engine.currentStep!.id });
+    emit(engine, { type: 'form_submitted', fieldCount: Object.keys(values).length });
     let result: unknown;
     try {
       result = await submit(values, [...skippedSteps]);
     } catch (error) {
-      track?.({ type: 'form_submit_failed', reason: 'error' });
+      emit(engine, { type: 'form_submit_failed', reason: 'error' });
       throw error;
     }
     const rejected = isRejection(result);
-    track?.(rejected ? { type: 'form_submit_failed', reason: 'rejected' } : { type: 'form_submit_succeeded' });
+    emit(engine, rejected ? { type: 'form_submit_failed', reason: 'rejected' } : { type: 'form_submit_succeeded' });
     if (operation !== engine.operationEpoch) return !rejected;
     if (rejected) {
       applyRejection(engine, result as Rejection, sent);
