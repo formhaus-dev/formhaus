@@ -1,0 +1,90 @@
+{
+  "name": "check-scale",
+  "issues": [],
+  "warnings": [
+    {
+      "code": "outdated-format-version",
+      "path": "/formatVersion"
+    },
+    {
+      "code": "rule-not-applicable",
+      "path": "/fields/1/validation/minLength"
+    },
+    {
+      "code": "condition-value-mismatch",
+      "path": "/fields/3/show/0/eq"
+    }
+  ],
+  "definition": {
+    "formatVersion": "1.2",
+    "id": "f",
+    "title": "F",
+    "submit": {
+      "label": "Submit"
+    },
+    "fields": [
+      {
+        "key": "nps",
+        "type": "scale",
+        "label": "NPS",
+        "validation": {
+          "min": 0,
+          "max": 10
+        },
+        "options": [
+          {
+            "value": "0",
+            "label": "Not at all likely"
+          },
+          {
+            "value": "10",
+            "label": "Extremely likely"
+          }
+        ]
+      },
+      {
+        "key": "stars",
+        "type": "rating",
+        "label": "Stars",
+        "validation": {
+          "min": 2,
+          "max": 10,
+          "minLength": 1
+        }
+      },
+      {
+        "key": "promoter",
+        "type": "text",
+        "label": "Promoter",
+        "show": [
+          {
+            "field": "nps",
+            "eq": 7
+          }
+        ]
+      },
+      {
+        "key": "wrong",
+        "type": "text",
+        "label": "Wrong",
+        "show": [
+          {
+            "field": "nps",
+            "eq": "9"
+          }
+        ]
+      },
+      {
+        "key": "low",
+        "type": "text",
+        "label": "Low",
+        "show": [
+          {
+            "field": "stars",
+            "lte": 2
+          }
+        ]
+      }
+    ]
+  }
+}
