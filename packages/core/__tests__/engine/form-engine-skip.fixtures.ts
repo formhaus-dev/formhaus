@@ -28,25 +28,6 @@ export function skipDefinition(): FormDefinition {
   };
 }
 
-export function routedSkipDefinition(): FormDefinition {
-  return {
-    id: 'routed-skip',
-    title: 'Routed',
-    submit: { label: 'Submit' },
-    steps: [
-      {
-        id: 'kind',
-        title: 'Kind',
-        skip: { label: 'Skip' },
-        fields: [{ key: 'kind', type: 'text', label: 'Kind', defaultValue: 'personal' }],
-        routes: [{ to: 'business', show: [{ field: 'kind', eq: 'business' }] }, { to: 'personal' }],
-      },
-      { id: 'business', title: 'Business', fields: [{ key: 'company', type: 'text', label: 'Company' }], routes: [{ to: null }] },
-      { id: 'personal', title: 'Personal', fields: [{ key: 'nickname', type: 'text', label: 'Nickname' }] },
-    ],
-  };
-}
-
 export async function onExtras(options: FormEngineOptions = {}) {
   const engine = new FormEngine(skipDefinition(), { name: 'Ada' }, options);
   await engine.next();

@@ -11,13 +11,3 @@ export const valid = {
   street: '1 Main St',
   postcode: '10115',
 };
-
-export function deferred<T = void>() {
-  let resolve!: (value: T) => void;
-  let reject!: (error: unknown) => void;
-  const promise = new Promise<T>((done, fail) => {
-    resolve = done;
-    reject = fail;
-  });
-  return { promise, resolve, reject };
-}

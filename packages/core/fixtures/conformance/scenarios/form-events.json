@@ -346,6 +346,117 @@
           }
         }
       ]
+    },
+    {
+      "name": "does not report the form again when started after a reset",
+      "values": {
+        "name": "Ada"
+      },
+      "steps": [
+        {
+          "do": "start"
+        },
+        {
+          "expect": {
+            "log": [
+              {
+                "event": {
+                  "type": "form_viewed"
+                }
+              },
+              {
+                "event": {
+                  "type": "step_viewed",
+                  "stepId": "one",
+                  "stepIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "do": "reset"
+        },
+        {
+          "expect": {
+            "log": [
+              {
+                "event": {
+                  "type": "form_reset"
+                }
+              },
+              {
+                "event": {
+                  "type": "step_viewed",
+                  "stepId": "one",
+                  "stepIndex": 0
+                }
+              }
+            ]
+          }
+        },
+        {
+          "do": "start"
+        },
+        {
+          "expect": {
+            "log": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "does not report a single-step form again when started after a reset",
+      "definition": {
+        "id": "single",
+        "title": "",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Name"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "start"
+        },
+        {
+          "do": "start"
+        },
+        {
+          "expect": {
+            "log": [
+              {
+                "event": {
+                  "type": "form_viewed"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "do": "reset"
+        },
+        {
+          "do": "start"
+        },
+        {
+          "expect": {
+            "log": [
+              {
+                "event": {
+                  "type": "form_reset"
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }

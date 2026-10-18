@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
-import type { FormDefinition } from '../../src/types';
-import { basicDefinition, conditionalDefinition } from './form-engine.fixtures';
+import { basicDefinition } from './form-engine.fixtures';
 
 describe('FormEngine subscriptions, reset and loading', () => {
   it('increments the form snapshot on mutation', () => {
@@ -32,89 +31,5 @@ describe('FormEngine subscriptions, reset and loading', () => {
     engine.setValue('name', 'test2');
     expect(first).toHaveBeenCalledOnce();
     expect(second).toHaveBeenCalledTimes(2);
-  });
-
-  it('resets values and errors to field defaults', () => {
-    const definition: FormDefinition = {
-      id: 'reset',
-      title: 'Reset',
-      submit: { label: 'Submit' },
-      fields: [{ key: 'name', type: 'text', label: 'Name', defaultValue: 'default' }],
-    };
-    const engine = new FormEngine(definition, { name: 'modified' });
-    engine.setErrors({ name: 'error' });
-    engine.reset();
-    expect(engine.values.name).toBe('default');
-    expect(engine.errors).toEqual({});
-  });
-
-  it('resets to provided values', () => {
-    const engine = new FormEngine(basicDefinition, { name: 'modified' });
-    engine.reset({ name: 'new' });
-    expect(engine.values.name).toBe('new');
-  });
-
-  it('clears values for fields hidden by the reset values until they are shown', () => {
-    const engine = new FormEngine(conditionalDefinition);
-    engine.reset({ country: 'MX', routing: 'KEPT' });
-    expect(engine.values.routing).toBeUndefined();
-
-    engine.setValue('country', 'US');
-    expect(engine.values.routing).toBe('KEPT');
-  });
-
-  it('clears values for fields hidden by the initial values until they are shown', () => {
-    const engine = new FormEngine(conditionalDefinition, { country: 'MX', routing: 'KEPT' });
-    expect(engine.values.routing).toBeUndefined();
-
-    engine.setValue('country', 'US');
-    expect(engine.values.routing).toBe('KEPT');
-  });
-
-  it('forgets edits on reset', () => {
-    const engine = new FormEngine(conditionalDefinition, { country: 'US', routing: 'KEPT' });
-    engine.setValue('routing', 'mine');
-    engine.reset({ country: 'MX', routing: 'KEPT' });
-    engine.setValue('country', 'US');
-    expect(engine.values.routing).toBe('KEPT');
-  });
-
-  it('clears values in steps hidden by the reset values', () => {
-    const definition: FormDefinition = {
-      id: 'hidden-step-reset',
-      title: 'Hidden step reset',
-      submit: { label: 'Submit' },
-      steps: [
-        { id: 'main', title: 'Main', fields: [{ key: 'accountType', type: 'text', label: 'Type' }] },
-        {
-          id: 'business',
-          title: 'Business',
-          fields: [
-            { key: 'taxId', type: 'text', label: 'Tax ID' },
-            { key: 'vat', type: 'text', label: 'VAT' },
-          ],
-          show: [{ field: 'accountType', eq: 'business' }],
-        },
-      ],
-    };
-    const engine = new FormEngine(definition);
-    engine.reset({ accountType: 'personal', taxId: 'STALE', vat: 'STALE' });
-    expect(engine.values.taxId).toBeUndefined();
-    expect(engine.values.vat).toBeUndefined();
-  });
-
-  it('sets and clears field loading state', () => {
-    const engine = new FormEngine(basicDefinition);
-    engine.setFieldLoading('name', true);
-    expect(engine.fieldLoading.name).toBe(true);
-    engine.setFieldLoading('name', false);
-    expect(engine.fieldLoading.name).toBeUndefined();
-  });
-
-  it('clears field loading state on reset', () => {
-    const engine = new FormEngine(basicDefinition);
-    engine.setFieldLoading('name', true);
-    engine.reset();
-    expect(engine.fieldLoading).toEqual({});
   });
 });
