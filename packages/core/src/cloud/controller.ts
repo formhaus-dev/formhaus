@@ -83,6 +83,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   let initial = options.initialForm;
   const alive = () => !controller.signal.aborted;
   let state = initialCloudState;
+  let settings = state.settings;
   let frame: CloudChallengeFrame | undefined;
   let framed = '';
   const configOf = (c: CloudChallenge | null) => `${c?.provider} ${c?.siteKey} ${c?.url}`;
@@ -104,7 +105,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   function show(form: PublishedForm) {
     submitter = submitterFor(form);
     const draft = options.draftStore?.load(options.id, form.version) ?? null;
-    update({ ...cloudStateFor(form), revision: state.revision + (draft ? 1 : 0), attempt: state.attempt, initialValues: draft });
+    const next = cloudStateFor(form);
+    settings = next.settings;
+    update({ ...next, revision: state.revision + (draft ? 1 : 0), attempt: state.attempt, initialValues: draft });
   }
 
   async function refresh(error: CloudError, sent: Record<string, unknown>) {
@@ -118,7 +121,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
       report({
         definition: next.definition,
         version: next.version,
-        settings: parseSettings(next.settings),
+        settings: (settings = parseSettings(next.settings)),
         challenge: next.challenge ?? null,
         initialValues: kept,
         revision: state.revision + 1,
@@ -170,7 +173,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         options.draftStore?.save(options.id, state.version ?? undefined, draftValues(state.definition, values));
     },
     again() {
-      update({ done: false, errors: {}, notice: null, initialValues: null, revision: state.revision + 1 });
+      update({ done: false, settings, errors: {}, notice: null, initialValues: null, revision: state.revision + 1 });
     },
     async submit(values: Record<string, unknown>, skippedSteps?: string[]) {
       if (state.notice) update({ notice: null });
@@ -182,7 +185,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         check?.spend();
         if (!alive()) return;
         options.draftStore?.clear(options.id);
-        update({ done: true, settings: withEnding(state.settings, submission.ending) });
+        update({ done: true, settings: withEnding(settings, submission.ending) });
         callbacks.onSuccess?.(submission);
       } catch (error) {
         if ((error as CloudError).code === 'verification_failed') check?.spend();
