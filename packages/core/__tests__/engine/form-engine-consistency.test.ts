@@ -1,65 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { FormEngine } from '../../src/engine';
 import { validateFieldValue } from '../../src/validation';
-import type { FormDefinition } from '../../src/types';
-
-const passwordSteps: FormDefinition = {
-  id: 'passwords',
-  title: '',
-  submit: { label: 'Save' },
-  steps: [
-    {
-      id: 's1',
-      title: '',
-      fields: [
-        { key: 'password', type: 'password', label: 'Password' },
-        { key: 'confirm', type: 'password', label: 'Confirm', validation: { matchField: 'password' } },
-      ],
-    },
-    { id: 's2', title: '', fields: [] },
-  ],
-};
-
-const countrySteps: FormDefinition = {
-  id: 'country',
-  title: '',
-  submit: { label: 'Save' },
-  steps: [
-    { id: 'A', title: '', fields: [{ key: 'country', type: 'text', label: 'Country' }] },
-    { id: 'B', title: '', show: [{ field: 'country', eq: 'US' }], fields: [{ key: 'state', type: 'text', label: 'State' }] },
-    { id: 'C', title: '', fields: [{ key: 'email', type: 'email', label: 'Email' }] },
-  ],
-};
 
 describe('engine consistency', () => {
-  it('clears a cross-field error once the referenced field fixes it', async () => {
-    const engine = new FormEngine(passwordSteps, { password: 'a', confirm: 'b' });
-    expect(await engine.next()).toBe(false);
-    expect(engine.errors.confirm).toBe('Fields must match');
-    engine.setValue('password', 'b');
-    expect(engine.errors.confirm).toBeUndefined();
-    expect(await engine.next()).toBe(true);
-    await engine.back();
-    expect(engine.errors).toEqual({});
-  });
-
-  it('keeps the current step when an earlier answer reveals a step before it', async () => {
-    const engine = new FormEngine(countrySteps, { country: 'DE' });
-    await engine.next();
-    expect(engine.currentStep?.id).toBe('C');
-    engine.setValue('country', 'US');
-    expect(engine.currentStep?.id).toBe('C');
-    expect(engine.visibleSteps.map((step) => step.id)).toEqual(['A', 'B', 'C']);
-  });
-
-  it('returns to the nearest earlier step when the current step is hidden', async () => {
-    const engine = new FormEngine(countrySteps, { country: 'US' });
-    await engine.next();
-    expect(engine.currentStep?.id).toBe('B');
-    engine.setValue('country', 'DE');
-    expect(engine.currentStep?.id).toBe('A');
-  });
-
   it('treats an unchecked consent checkbox or switch as missing for required', () => {
     for (const type of ['checkbox', 'switch']) {
       const field = { key: 'terms', type, label: 'Terms', validation: { required: 'Accept the terms' } };

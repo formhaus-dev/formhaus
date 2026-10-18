@@ -58,6 +58,7 @@ export interface Expectation {
 
 export interface Scenario {
   name: string;
+  definition?: FormDefinition;
   values?: Record<string, unknown>;
   hooks?: Partial<Record<HookName, Reply[]>>;
   validators?: Record<string, ValidatorSpec>;
@@ -100,5 +101,9 @@ export function projectError(error: unknown, expected: Record<string, unknown>):
   return { name, ...(phase && { phase }), ...('message' in expected && { message }) };
 }
 
-export const runtimeDefinition = ({ definition, overlay }: ScenarioFile): FormDefinition =>
-  overlay ? localize(definition, { overlay }).definition : definition;
+export const scenarioDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition => scenario.definition ?? file.definition;
+
+export const runtimeDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition => {
+  const definition = scenarioDefinition(file, scenario);
+  return file.overlay ? localize(definition, { overlay: file.overlay }).definition : definition;
+};

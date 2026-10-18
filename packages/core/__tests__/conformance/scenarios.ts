@@ -6,6 +6,7 @@ import {
   plain,
   projectError,
   runtimeDefinition,
+  scenarioDefinition,
   type Scenario,
   type ScenarioFile,
   type Step,
@@ -25,7 +26,7 @@ export class ScenarioRun {
     private readonly file: ScenarioFile,
     private readonly scenario: Scenario,
   ) {
-    this.engine = new FormEngine(runtimeDefinition(file), scenario.values ?? {}, this.options());
+    this.engine = new FormEngine(runtimeDefinition(file, scenario), scenario.values ?? {}, this.options());
   }
 
   private options(): FormEngineOptions {
@@ -138,7 +139,7 @@ export class ScenarioRun {
 
   private project(expectation: Expectation): Record<string, unknown> {
     const { engine } = this;
-    const steps = this.file.definition.steps ?? [];
+    const steps = scenarioDefinition(this.file, this.scenario).steps ?? [];
     const read: Record<keyof Expectation, () => unknown> = {
       values: () => plain(engine.values),
       submitValues: () => plain(engine.getSubmitValues()),
