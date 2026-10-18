@@ -22,10 +22,6 @@ function chain(length: number, closeCycle = false): FormDefinition {
 }
 
 describe('checkDefinition', () => {
-  it('returns no issues for a valid definition', () => {
-    expect(checkDefinition(form([text('name'), text('email', { type: 'email' })]))).toEqual([]);
-  });
-
   it('rejects duplicate keys on one path with the path of the first declaration', () => {
     const definition: FormDefinition = {
       id: 'dup',
@@ -67,20 +63,6 @@ describe('checkDefinition', () => {
         message: '/fields/0/options/2/value: "pro" is already an option value.',
       },
     ]);
-  });
-
-  it('rejects an invalid regex pattern', () => {
-    expect(codes(form([text('code', { validation: { pattern: '[invalid(' } })]))).toEqual([
-      'error invalid-pattern /fields/0/validation/pattern',
-    ]);
-  });
-
-  it('warns about a pattern that repeats a group with a quantifier or alternation', () => {
-    const slow = ['^(a+)+$', '(a*)*', '(a|aa)+', '(\\w+\\s?)+', '(?:[a-z]+\\.){2,}'];
-    const fast = ['^[0-9]{5}$', '^(\\+\\d{1,3})?$', '(?=.*[A-Z])(?=.*[0-9])', '(ab)+', '[(a+)]+', '\\(a+\\)+', '(?:ab)+', '(a)+'];
-    for (const pattern of slow)
-      expect(codes(form([text('code', { validation: { pattern } })]))).toEqual(['warning slow-pattern /fields/0/validation/pattern']);
-    for (const pattern of fast) expect(codes(form([text('code', { validation: { pattern } })]))).toEqual([]);
   });
 
   it('checks a long adversarial pattern in linear time', () => {

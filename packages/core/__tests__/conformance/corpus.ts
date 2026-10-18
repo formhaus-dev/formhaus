@@ -13,9 +13,10 @@ export interface ConformanceCase {
 export interface ConformanceFixture {
   name: string;
   issues: { code: string; path: string }[];
+  warnings?: { code: string; path: string }[];
   definition: FormDefinition;
   overlay?: Overlay;
-  cases: ConformanceCase[];
+  cases?: ConformanceCase[];
 }
 
 const dir = join(__dirname, '../../fixtures/conformance');
@@ -29,5 +30,5 @@ export const valid = corpus.filter(({ issues }) => !issues.length);
 const runtime = ({ definition, overlay }: ConformanceFixture) => (overlay ? localize(definition, { overlay }).definition : definition);
 
 export const cases = valid.flatMap((fixture) =>
-  fixture.cases.map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const),
+  (fixture.cases ?? []).map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const),
 );

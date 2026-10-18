@@ -179,15 +179,6 @@ describe('malformed definitions', () => {
     expect((thrown as Error).message).toBe(`Invalid form definition:\n${message}`);
   });
 
-  it('reports a missing submit action, id and condition field', () => {
-    const input = { title: 'A', fields: [{ key: 'x', type: 'text', label: 'X', show: [{ eq: 'y' }] }] };
-    expect(checkDefinition(input).map(({ code, severity, path }) => [code, severity, path])).toEqual([
-      ['missing-property', 'error', ''],
-      ['missing-property', 'error', ''],
-      ['missing-property', 'error', '/fields/0/show/0'],
-    ]);
-  });
-
   it('warns about a missing title', () => {
     expect(checkDefinition({ id: 'a', submit: { label: 'Go' } })).toEqual([
       {
@@ -198,25 +189,6 @@ describe('malformed definitions', () => {
         hint: 'Add a title for host UI and editors.',
       },
     ]);
-  });
-
-  it('accepts null for optional lists', () => {
-    const input = {
-      ...base,
-      fields: null,
-      steps: [{ id: 's', title: 'S', show: null, routes: null, fields: [{ key: 'x', type: 'text', label: 'X', showAny: null }] }],
-    };
-    expect(checkDefinition(input)).toEqual([]);
-    expect(() => new FormEngine(input as unknown as FormDefinition)).not.toThrow();
-  });
-
-  it('accepts $schema in a typed definition', () => {
-    const definition: FormDefinition = {
-      $schema: 'https://formhaus.dev/schema/form-definition.json',
-      ...base,
-      fields: [{ key: 'x', type: 'text', label: 'X' }],
-    };
-    expect(checkDefinition(definition)).toEqual([]);
   });
 });
 
