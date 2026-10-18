@@ -24,25 +24,15 @@
 }
 
 :where(.fh-cloud, .fh-form) {
-  --fh-auto-border-focus: var(--fh-color-primary);
-  --fh-auto-input-padding: var(--fh-space-4) var(--fh-space-6);
-  --fh-auto-heading: calc(var(--fh-font-size) + 2px);
-  --fh-auto-title: calc(var(--fh-font-size) + 5px);
-  --fh-auto-card-padding: var(--fh-space-10);
-  --fh-auto-primary-hover: #4400cc;
-  --fh-auto-primary-soft: #f5f0ff;
-  --fh-auto-error-soft: #fdf1f0;
+  --fh-auto-border-focus: var(--fh-color-primary); --fh-auto-input-padding: var(--fh-space-4) var(--fh-space-6);
+  --fh-auto-heading: calc(var(--fh-font-size) + 2px); --fh-auto-title: calc(var(--fh-font-size) + 5px); --fh-auto-card-padding: var(--fh-space-10);
+  --fh-auto-primary-hover: #4400cc; --fh-auto-primary-soft: #f5f0ff; --fh-auto-error-soft: #fdf1f0;
 }
 
 :where(.fh-form:not(.fh-cloud .fh-form)) {
-  --fh-color-border-focus: var(--fh-auto-border-focus);
-  --fh-input-padding: var(--fh-auto-input-padding);
-  --fh-font-size-heading: var(--fh-auto-heading);
-  --fh-font-size-title: var(--fh-auto-title);
-  --fh-card-padding: var(--fh-auto-card-padding);
-  --fh-color-primary-hover: var(--fh-auto-primary-hover);
-  --fh-color-primary-soft: var(--fh-auto-primary-soft);
-  --fh-color-error-soft: var(--fh-auto-error-soft);
+  --fh-color-border-focus: var(--fh-auto-border-focus); --fh-input-padding: var(--fh-auto-input-padding);
+  --fh-font-size-heading: var(--fh-auto-heading); --fh-font-size-title: var(--fh-auto-title); --fh-card-padding: var(--fh-auto-card-padding);
+  --fh-color-primary-hover: var(--fh-auto-primary-hover); --fh-color-primary-soft: var(--fh-auto-primary-soft); --fh-color-error-soft: var(--fh-auto-error-soft);
 }
 
 :where([data-fh-theme="dark"] :is(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) {
@@ -66,9 +56,7 @@
 }
 
 :where([data-fh-theme="dark"] :is(.fh-cloud, .fh-form), :is(.fh-form, .fh-cloud)[data-fh-theme="dark"]) {
-  --fh-auto-primary-hover: #8d63ff;
-  --fh-auto-primary-soft: #241a3d;
-  --fh-auto-error-soft: #2c1c1d;
+  --fh-auto-primary-hover: #8d63ff; --fh-auto-primary-soft: #241a3d; --fh-auto-error-soft: #2c1c1d;
 }
 
 @supports (color: color-mix(in srgb, red, blue)) {
