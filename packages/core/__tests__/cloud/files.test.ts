@@ -87,7 +87,7 @@ describe('cloud file uploads', () => {
     await expect(controller.submit({ cv: file('a.pdf') })).rejects.toMatchObject({ status: 422 });
     expect(states.at(-1)?.errors).toEqual({ cv: 'The upload failed. Try again.' });
     await expect(controller.submit({ cv: file('b.pdf') })).rejects.toMatchObject({ status: 422 });
-    expect(states.at(-1)?.errors).toEqual({ cv: 'Too many uploads right now. Try again in a minute.' });
+    expect(states.at(-1)?.errors).toEqual({ cv: 'Too many uploads right now. Try again in a few minutes.' });
   });
 
   it('uploads again when the server no longer has the file', async () => {
