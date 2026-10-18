@@ -14,8 +14,14 @@ const definition: FormDefinition = {
 };
 
 it('emits formEvent and the analyticsEvent alias on mount', () => {
-  const { emitted } = render(FormRenderer, { props: { definition } });
+  const { emitted } = render(FormRenderer, { props: { definition, onFormEvent: () => {}, onAnalyticsEvent: () => {} } });
   const expected = [[{ type: 'form_viewed' }], [{ type: 'step_viewed', stepId: 'one', stepIndex: 0 }]];
   expect(emitted().formEvent).toEqual(expected);
   expect(emitted().analyticsEvent).toEqual(expected);
+});
+
+it('emits only to the listened event', () => {
+  const { emitted } = render(FormRenderer, { props: { definition, onFormEvent: () => {} } });
+  expect(emitted().formEvent).toHaveLength(2);
+  expect(emitted().analyticsEvent).toBeUndefined();
 });

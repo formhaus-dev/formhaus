@@ -60,7 +60,7 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
   const wasBusy = useRef(false);
   const engineOptions: FormEngineOptions = {
     ...props,
-    onFormEvent,
+    onFormEvent: props.onFormEvent || props.onAnalyticsEvent ? onFormEvent : undefined,
     onAfterStepChange: async (context) => {
       focusPending.current = true;
       await props.onAfterStepChange?.(context);

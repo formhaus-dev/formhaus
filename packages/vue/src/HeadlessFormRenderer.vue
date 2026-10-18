@@ -15,6 +15,7 @@ import FormGroup from './FormGroup.vue';
 import DefaultSection from './DefaultSection.vue';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
+import { useListening } from './composables/useListening';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine } from './composables/useFormEngine';
 import { useNodeProps } from './composables/useNodeProps';
@@ -30,8 +31,11 @@ const onFormEvent = (event: FormEvent) => {
   emit('formEvent', event);
   emit('analyticsEvent', event);
 };
+const listening = useListening();
 const engineOptions: FormEngineOptions = {
-  onFormEvent,
+  get onFormEvent() {
+    return listening('onFormEvent', 'onAnalyticsEvent') ? onFormEvent : undefined;
+  },
   validators: props.validators,
   onWarning: props.onWarning,
   get messages() {
