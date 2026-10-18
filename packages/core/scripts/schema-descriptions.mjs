@@ -1,7 +1,7 @@
 export const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.2". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2.',
+    'Format version of the definition, such as "1.3". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images and matrix sections in 1.3.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
@@ -13,6 +13,8 @@ export const DESCRIPTIONS = {
   'FormStep.i18n': 'Translation keys for the step title and description. The literal texts stay the fallback.',
   'FormField.i18n': 'Translation keys for label, placeholder and helperText. The literal texts stay the fallback.',
   'FieldOption.i18n': 'Translation key for the option label.',
+  'FieldOption.image':
+    'Image URL shown above the label on radio and multiselect options. The label stays visible and names the option. Select and autocomplete ignore it.',
   'FormAction.i18n': 'Translation key for the button label.',
   'FieldValidation.i18n': 'Translation keys for the messages of the validation rules, by rule name.',
   'FormDefinition.title': 'Form title for host UI and Figma output. Renderers do not display it.',
@@ -25,6 +27,7 @@ export const DESCRIPTIONS = {
   'FormStep.id': 'Unique step identifier, used as a route target. FormEngine rejects duplicates.',
   'FormStep.routes':
     'Forward destinations checked in order. The first match with a visible target wins. With no match, navigation continues to the next visible step.',
+  'FormStep.fields': 'Fields of the step. May be empty for a welcome or statement step.',
   'FormStep.next': 'Overrides the Continue button. false hides it.',
   'FormStep.back': 'Overrides the Back button. false hides it.',
   'FormStep.skip': 'Shows a Skip button that resets the step fields and moves forward without validation.',
@@ -40,11 +43,12 @@ export const DESCRIPTIONS = {
   'FormField.source':
     'Fills a hidden field in the browser at mount: a URL parameter ({ "query": "utm_source" }), the referrer, the page URL without query and hash, the page title, the browser language, the time zone or the device class. country is filled by the server. defaultValue is the fallback and initialValues win.',
   'FormField.autoAdvance':
-    'Moves to the next step when the field is committed: a built-in radio on click, Space or Enter, or a custom field calling onCommit. The last step never auto-submits.',
+    'Moves to the next step when the field is committed: a built-in radio, scale or rating on click, Space, Enter or a digit key, or a custom field calling onCommit. The last step never auto-submits.',
   'FormField.show': 'Field is visible only when all conditions match. Hidden fields are cleared, not validated and not submitted.',
   'FormField.showAny': 'Field is visible when any condition matches.',
   'FormField.validation': 'Validation rules checked on Continue and on submit, not on blur.',
-  'FormField.options': 'Static options for select, autocomplete, multiselect and radio fields.',
+  'FormField.options':
+    'Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, up to 3 anchor labels whose value is a point number.',
   'FormField.layout':
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
   'FormField.optionsFrom': 'Key of an options provider passed to the renderer, used instead of static options.',
@@ -54,9 +58,11 @@ export const DESCRIPTIONS = {
   'FormSection.key': 'Section identifier for translations, DOM ids and editors. Unique among field keys. Conditions cannot test it.',
   'FormSection.title': 'Section heading.',
   'FormSection.description': 'Text below the section heading.',
+  'FormSection.layout':
+    'matrix renders the section as a grid: each field is a row and the options of the first field are the column headers. Use radio or multiselect fields with the same options.',
   'FormSection.show': 'Section and its fields are visible only when all conditions match. Hidden fields are cleared.',
   'FormSection.showAny': 'Section is visible when any condition matches.',
-  'FormSection.fields': 'Fields and groups of the section. Sections do not nest.',
+  'FormSection.fields': 'Fields and groups of the section. Sections do not nest. May be empty for a statement.',
   'FormSection.i18n': 'Translation keys for the section title and description.',
   FormGroup: 'A repeatable group. Its value is an array of item objects keyed by the keys of its fields.',
   'FormGroup.key': 'Key of the item array in the submitted values. No other field key may start with this key and a dot.',

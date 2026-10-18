@@ -9,7 +9,7 @@
     },
     "formatVersion": {
       "type": "string",
-      "description": "Format version of the definition, such as \"1.2\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2.",
+      "description": "Format version of the definition, such as \"1.3\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images and matrix sections in 1.3.",
       "pattern": "^[1-9]\\d*(\\.\\d+)?$"
     },
     "id": {
@@ -426,7 +426,7 @@
         },
         "autoAdvance": {
           "type": "boolean",
-          "description": "Moves to the next step when the field is committed: a built-in radio on click, Space or Enter, or a custom field calling onCommit. The last step never auto-submits."
+          "description": "Moves to the next step when the field is committed: a built-in radio, scale or rating on click, Space, Enter or a digit key, or a custom field calling onCommit. The last step never auto-submits."
         },
         "defaultValue": {
           "description": "Initial value. Also the value restored on reset or skip, and the start value of a field shown with no last value."
@@ -458,7 +458,7 @@
           "items": {
             "$ref": "#/definitions/FieldOption"
           },
-          "description": "Static options for select, autocomplete, multiselect and radio fields."
+          "description": "Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, up to 3 anchor labels whose value is a point number."
         },
         "layout": {
           "type": "string",
@@ -559,7 +559,9 @@
         "datetime",
         "time",
         "textarea",
-        "hidden"
+        "hidden",
+        "scale",
+        "rating"
       ]
     },
     "FieldSource": {
@@ -693,6 +695,10 @@
         "label": {
           "type": "string"
         },
+        "image": {
+          "type": "string",
+          "description": "Image URL shown above the label on radio and multiselect options. The label stays visible and names the option. Select and autocomplete ignore it."
+        },
         "i18n": {
           "$ref": "#/definitions/LabelI18n",
           "description": "Translation key for the option label."
@@ -758,6 +764,11 @@
           "type": "string",
           "description": "Text below the section heading."
         },
+        "layout": {
+          "type": "string",
+          "const": "matrix",
+          "description": "matrix renders the section as a grid: each field is a row and the options of the first field are the column headers. Use radio or multiselect fields with the same options."
+        },
         "show": {
           "type": "array",
           "items": {
@@ -792,7 +803,7 @@
               "$ref": "#/definitions/FormField"
             }
           },
-          "description": "Fields and groups of the section. Sections do not nest."
+          "description": "Fields and groups of the section. Sections do not nest. May be empty for a statement."
         },
         "i18n": {
           "$ref": "#/definitions/StepI18n",
@@ -1006,7 +1017,8 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/FormNode"
-          }
+          },
+          "description": "Fields of the step. May be empty for a welcome or statement step."
         },
         "show": {
           "type": "array",
