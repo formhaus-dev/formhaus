@@ -1,5 +1,5 @@
 import { getChangedKeys } from './engine-utils';
-import { emit } from './form-events';
+import { baselineFields, emit } from './form-events';
 import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs, watchValues } from './pending-inputs';
 import { applyValidationErrors, dropServerErrors, fieldsErrors, getSubmitValues, pruneOffPathErrors } from './validation-state';
@@ -58,6 +58,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
       const steps = engine.visibleSteps;
       const kept = new Set([...edited(), ...writes]);
       const current = engine.values;
+      baselineFields(engine);
       engine.state.values = { ...values };
       for (const key of kept) {
         delete engine.values[key];

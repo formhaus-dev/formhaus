@@ -1,3 +1,4 @@
+import { baselineFields } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
 import { clearError, clearResolvedMatchErrors, dropServerErrors, pruneOffPathErrors } from './validation-state';
@@ -9,6 +10,7 @@ export function writeValue(
   own = true,
   changed: () => Iterable<string> = () => [],
 ): void {
+  baselineFields(engine);
   const { values, errors } = engine.state;
   const previousSteps = engine.isMultiStep ? engine.visibleSteps : null;
   const valueChanged = !Object.is(values[key], value);

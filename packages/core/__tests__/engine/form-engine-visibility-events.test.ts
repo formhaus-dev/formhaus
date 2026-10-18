@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import type { FormDefinition, FormEvent } from '../../src';
+import type { FormDefinition, FormEngineOptions, FormEvent } from '../../src';
 import { FormEngine } from '../../src/engine';
 
 const definition: FormDefinition = {
@@ -170,5 +170,27 @@ describe('field visibility events for every condition form', () => {
       { type: 'field_shown', fieldKey: 'members.0.phone' },
       { type: 'field_hidden', fieldKey: 'members.0.phone' },
     ]);
+  });
+
+  it('baselines a handler attached after start', () => {
+    const events: FormEvent[] = [];
+    const options: FormEngineOptions = {};
+    const engine = new FormEngine(definition, {}, options);
+    engine.start();
+    engine.setValue('company', true);
+    options.onFormEvent = (event) => events.push(event);
+    engine.setValue('company', false);
+    expect(visibility(events)).toEqual([{ type: 'field_hidden', fieldKey: 'vat' }]);
+  });
+
+  it('rebaselines a handler attached again after removal', () => {
+    const { engine, events } = setup();
+    const options = (engine as unknown as { lifecycle: FormEngineOptions }).lifecycle;
+    const handler = options.onFormEvent;
+    options.onFormEvent = undefined;
+    engine.setValue('company', true);
+    options.onFormEvent = handler;
+    engine.setValue('company', false);
+    expect(visibility(events)).toEqual([{ type: 'field_hidden', fieldKey: 'vat' }]);
   });
 });
