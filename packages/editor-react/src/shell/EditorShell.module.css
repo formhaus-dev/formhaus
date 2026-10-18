@@ -105,3 +105,33 @@
   max-width: var(--fh-ed-size-editor-canvas);
   margin-inline: auto;
 }
+
+.shortcuts {
+  margin: 0;
+}
+
+.shortcut {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fh-ed-space-4);
+  padding-block: var(--fh-ed-space-2);
+  border-bottom: var(--fh-ed-border-thin) solid var(--fh-ed-line);
+  color: var(--fh-ed-fg);
+  font-size: var(--fh-ed-font-size-md);
+}
+
+.shortcut:last-child {
+  border-bottom: 0;
+}
+
+.shortcut dt {
+  min-width: 0;
+}
+
+.shortcut dd {
+  display: flex;
+  flex-shrink: 0;
+  gap: var(--fh-ed-space-1);
+  margin: 0;
+}

@@ -78,7 +78,7 @@ export function EditorMenu({ published, compact, onHelp }: MenuProps) {
               Redo
             </DropdownMenuItem>
           )}
-          <DropdownMenuItem icon={<Keyboard aria-hidden />} hint="?" onSelect={onHelp}>
+          <DropdownMenuItem className={styles.shortcutsItem} icon={<Keyboard aria-hidden />} hint="?" onSelect={onHelp}>
             Keyboard shortcuts
           </DropdownMenuItem>
           {removable && (
