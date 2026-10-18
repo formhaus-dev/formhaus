@@ -51,4 +51,5 @@ If the load fails, `initialForm` is empty and the form loads in the browser. `re
 - Reading `window`, `document`, `localStorage` or the current time in a custom field component during render. Read them in `useEffect` or `onMounted`.
 - `initialValues` that differ between the server and the client, for example values from `localStorage`. Pass the same values on both sides, or set them after mount with the [`setValue` handle](/guide/#definition-and-initial-values).
 - Formatting dates or numbers with the default locale in a custom component. The server locale can differ from the browser locale. Pass an explicit locale.
-- Two server-rendered Vue apps on one page. Give each app its own `app.config.idPrefix` (Vue 3.5 and later), so the field ids do not collide.
+- Two server-rendered Vue apps on one page. Give each app its own `app.config.idPrefix`, so the field ids do not collide.
+- On Vue 3.3 and 3.4, a form inside an async component or `<Suspense>` hydrates late, and the field ids of the other forms in the same app shift. Mount such a form as its own app with its own `idPrefix`, or use Vue 3.5.

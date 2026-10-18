@@ -51,3 +51,25 @@ it('keeps field ids unique across client-only apps without Vue useId', () => {
   for (const app of apps) app.unmount();
   expect(new Set(ids.flat()).size).toBe(4);
 });
+
+it('prefixes field ids with the app idPrefix without Vue useId', async () => {
+  const prefixed = (prefix: string) => {
+    const app = page();
+    Object.assign(app.config, { idPrefix: prefix });
+    return app;
+  };
+  const problems: string[] = [];
+  const ids: string[] = [];
+  for (const prefix of ['a', 'b']) {
+    const container = document.body.appendChild(document.createElement('div'));
+    container.innerHTML = await renderToString(prefixed(prefix));
+    const app = prefixed(prefix);
+    app.config.warnHandler = (message) => problems.push(message);
+    app.mount(container);
+    ids.push(...[...container.querySelectorAll('input[name="name"]')].map((input) => input.id));
+    app.unmount();
+  }
+  expect(problems).toEqual([]);
+  expect(ids.map((id) => id[0])).toEqual(['a', 'a', 'b', 'b']);
+  expect(new Set(ids).size).toBe(4);
+});
