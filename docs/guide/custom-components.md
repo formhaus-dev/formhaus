@@ -266,15 +266,15 @@ const props = defineProps(groupItemComponentProps)
 
 Each declares every prop of the matching interface, such as `FormFieldProps` for `formFieldProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2`.
 
-## Analytics events
+## Form events
 
-Track form interactions via `onAnalyticsEvent` (React) or `@analyticsEvent` (Vue). Event `type` names are `snake_case`, the usual convention for analytics tools:
+Track the form lifecycle via `onFormEvent` (React) or `@formEvent` (Vue). Event `type` names are `snake_case`, the usual convention for analytics tools:
 
 ::: code-group
 ```tsx [React]
 <FormRenderer
   definition={definition}
-  onAnalyticsEvent={(event) => analytics.track(event.type, event)}
+  onFormEvent={(event) => analytics.track(event.type, event)}
   onSubmit={handleSubmit}
 />
 ```
@@ -282,7 +282,7 @@ Track form interactions via `onAnalyticsEvent` (React) or `@analyticsEvent` (Vue
 ```vue [Vue]
 <FormRenderer
   :definition="definition"
-  @analytics-event="(event) => analytics.track(event.type, event)"
+  @form-event="(event) => analytics.track(event.type, event)"
   @submit="onSubmit"
 />
 ```
@@ -292,15 +292,23 @@ Events emitted:
 
 | Event | When | Payload |
 |-------|------|---------|
-| `field_focused` | User focuses a field | `fieldKey` |
-| `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
-| `field_error` | Validation fails | `fieldKey`, `error` |
+| `form_viewed` | The form is shown, once per form | |
+| `step_viewed` | A step becomes active: on first show and after every step change | `stepId`, `stepIndex` |
 | `step_completed` | User advances past a step | `stepId` |
 | `step_skipped` | User skips a step | `stepId` |
-| `step_viewed` | A step becomes active | `stepId`, `stepIndex` |
+| `field_focused` | User focuses a field | `fieldKey` |
+| `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
+| `field_error` | Step validation, form validation or the submit handler fails with field errors | `fieldKey`, `error` |
 | `form_submitted` | Validation and `onBeforeSubmit` pass, right before the submit handler runs | `fieldCount` |
+| `form_submit_succeeded` | The submit handler resolves without `{ ok: false }` | |
+| `form_submit_failed` | The submit handler returns `{ ok: false }` or throws | `reason`: `'rejected'` or `'error'` |
+| `form_reset` | `engine.reset()` runs | |
 
-`form_submitted` marks a submission attempt, not a successful save. Track the save in `onAfterSubmit`. All events are optional. If you don't pass a handler, nothing fires.
+Group item fields report their path as `fieldKey`, such as `people.0.name`. All events are optional. If you don't pass a handler, nothing fires. The event type is `FormEvent`.
+
+`FormEngine` reports the same events, except `field_focused` and `field_blurred`, through the `onFormEvent` option. See [form events](/api/form-engine#form-events).
+
+`onAnalyticsEvent` and `@analyticsEvent` still receive every event. They are deprecated and will be removed in 1.0.
 
 ## Next steps
 
