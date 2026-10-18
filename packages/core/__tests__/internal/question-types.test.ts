@@ -40,8 +40,14 @@ describe('question type checks', () => {
       expect.objectContaining({
         code: 'outdated-format-version',
         message:
-          '/formatVersion: /fields/0 is a scale, which needs format 1.3. Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it.',
+          '/formatVersion: /fields/0 is a scale, which needs format 1.3. Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it. Upgrade the server that runs validateSubmission() first.',
       }),
+    ]);
+  });
+
+  it('suggests the built-in type for a dashed spelling of it', () => {
+    expect(checkDefinition(form([field({ type: 'multi-select' })]))).toEqual([
+      expect.objectContaining({ code: 'unknown-field-type', hint: 'Use "multiselect", or register a component for "multi-select".' }),
     ]);
   });
 

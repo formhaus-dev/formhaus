@@ -157,13 +157,16 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
 
 function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssue[] {
   const { field, path } = entry;
-  const custom = !BUILT_IN_TYPES.includes(field.type) && field.type !== 'group' && !/[-:]/.test(field.type);
-  const match = custom ? closest(field.type, [...BUILT_IN_TYPES, 'group', 'section']) : undefined;
+  const custom = !BUILT_IN_TYPES.includes(field.type) && field.type !== 'group';
+  const named = /[-:]/.test(field.type);
+  const spelled = named ? field.type.replace(/[-_:]/g, '') : '';
+  const match =
+    custom && (named ? BUILT_IN_TYPES.find((type) => type === spelled) : closest(field.type, [...BUILT_IN_TYPES, 'group', 'section']));
   const problem = `"${field.type}" is not a built-in field type`;
   return [
-    ...(match !== undefined
+    ...(match
       ? [warning('unknown-field-type', `${path}/type`, problem, `Use "${match}", or register a component for "${field.type}"`)]
-      : custom
+      : custom && !named
         ? [
             warning(
               'custom-type-name',
@@ -229,7 +232,7 @@ function versionWarnings({ definition, nodes }: CheckContext): DefinitionIssue[]
       '/formatVersion',
       `${found.path} is a ${found.node.type}, which needs format 1.${needed}`,
       needed > 1
-        ? 'Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it'
+        ? 'Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it. Upgrade the server that runs validateSubmission() first'
         : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
     ),
   ];

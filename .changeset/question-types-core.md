@@ -11,6 +11,7 @@
 - New `layout: "matrix"` on sections.
 - A step or section may have an empty `fields` array, for a welcome screen or a statement.
 - Format version 1.3. `checkDefinition()` warns with `outdated-format-version` about `scale` or `rating` without `"formatVersion": "1.3"`.
-- **Breaking:** `rating` and `scale` are built-in type names now. A custom field type named `rating` or `scale` gets the built-in checks and renderer. Rename it with a dash, such as `x-rating`.
-- `unknown-field-type` no longer suggests a built-in type for a custom type with `-` or `:`, such as `x-rating`.
+- **Breaking:** `rating` and `scale` are built-in type names now. A custom field type named `rating` or `scale` gets the built-in checks, and the built-in renderer when `components` has no entry for it. Rename it with a dash, such as `x-rating`.
+- **Breaking:** `DefaultFieldType` adds `scale` and `rating`, so an exhaustive `Record<DefaultFieldType, …>` must list them.
+- `unknown-field-type` reports a type with `-` or `:` only when it spells a built-in type with separators, such as `multi-select`. `x-rating` is no longer reported as a typo of `rating`.
 - `style.css` styles scale, rating, picture options, matrix sections and steps without fields.

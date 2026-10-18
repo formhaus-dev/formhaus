@@ -139,6 +139,7 @@ Built-in type names are single lowercase words without separators. A type name w
 - **`required`.** Works as on any field.
 - **`min` and `max` on `scale`.** They define the range. A value outside it fails the type check, so `minMessage` and `maxMessage` never show.
 - **`min` and `max` on `rating`.** `max` defines the range. `min` is an ordinary rule: a rating below it fails with the `min` message, such as `Must be at least 3`.
+- **`defaultValue`.** A point of the range. Another value fails validation like any other value.
 - **`minLength`, `maxLength`.** Do not apply. `checkDefinition()` warns with `rule-not-applicable`.
 - **Anchors.** `options` are optional anchor labels, at most 3. An anchor `value` is the point number as a string, such as `"0"`, and its `label` is the text. The first anchor is aligned to the start, the last to the end and a middle one to the center. Anchors are not choices: core does not check values against them, and `checkDefinition()` does not compare condition values with them.
 - **Conditions.** `eq`, `neq`, `in` and `notIn` compare numbers, and `gt`, `gte`, `lt` and `lte` compare the point. `checkDefinition()` warns about a string operand with `condition-value-mismatch`.
@@ -773,7 +774,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, or a `scale` or `rating` field without 1.3 |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
-| `unknown-field-type` | warning | A field type without `-` or `:` that looks like a typo of a built-in type, such as `txt` |
+| `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |
 | `custom-type-name` | warning | A custom field type without `-` or `:`, such as `stars`. Not reported when `unknown-field-type` is |
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
