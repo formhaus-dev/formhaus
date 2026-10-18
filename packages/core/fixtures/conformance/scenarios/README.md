@@ -47,6 +47,8 @@ Every `expect` step clears the log. `"log": [...]` compares the entries recorded
 
 ## Comparison
 
+Values are arbitrary JSON, whatever the field type: a scenario may put a number or an array in a `text` field to test conditions and validation on unexpected input. An implementation must keep such values as given.
+
 Actual and expected values are compared as JSON, with object keys in any order. A property with value `undefined` counts as absent, and a top-level `undefined` counts as `null`.
 
 ## Not covered
