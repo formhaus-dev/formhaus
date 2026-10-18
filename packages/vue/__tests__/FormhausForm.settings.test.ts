@@ -24,3 +24,35 @@ it('renders an initial form, honours its settings and sends the token and honeyp
   await fireEvent.click(screen.getByRole('button', { name: 'Submit another response' }));
   await waitFor(() => expect(screen.getByRole('textbox', { name: 'Email' })).toBeDefined());
 });
+
+it('shows the form success message for another response without an ending', async () => {
+  const reply = (body: object) => ({ ok: true, status: 201, json: async () => ({ id: 's1', values: {}, ...body }) });
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValueOnce(reply({ ending: { successMessage: 'Sales will call you.' } }))
+      .mockResolvedValueOnce(reply({})),
+  );
+  render(FormhausForm, {
+    props: { id: 'abc', initialForm: { definition, settings: { successMessage: 'See you soon', allowAnother: true } } },
+  });
+  await fireEvent.click(await screen.findByRole('button', { name: 'Send' }));
+  expect(await screen.findByText('Sales will call you.')).toBeDefined();
+  await fireEvent.click(screen.getByRole('button', { name: 'Submit another response' }));
+  await fireEvent.click(await screen.findByRole('button', { name: 'Send' }));
+  expect(await screen.findByText('See you soon')).toBeDefined();
+  expect(screen.queryByText('Sales will call you.')).toBeNull();
+});
+
+it('calls .once handlers for both events', async () => {
+  vi.stubGlobal('fetch', vi.fn());
+  const onFormEventOnce = vi.fn();
+  const onAnalyticsEventOnce = vi.fn();
+  render(FormhausForm, { props: { id: 'abc', initialForm: { definition }, onFormEventOnce, onAnalyticsEventOnce } });
+  await screen.findByRole('textbox', { name: 'Email' });
+  expect(onFormEventOnce).toHaveBeenCalledOnce();
+  expect(onFormEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
+  expect(onAnalyticsEventOnce).toHaveBeenCalledOnce();
+  expect(onAnalyticsEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
+});

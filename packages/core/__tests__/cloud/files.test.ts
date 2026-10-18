@@ -63,6 +63,36 @@ describe('cloud file uploads', () => {
     expect(JSON.parse(fetchMock.mock.calls[4][1].body).values).toEqual({ name: 'Ada', cv: 'up-1' });
   });
 
+  it('keeps the same payload on retry when one file is set in two fields', async () => {
+    const two = {
+      ...definition,
+      fields: [
+        { key: 'cv', type: 'file', label: 'CV' },
+        { key: 'cover', type: 'file', label: 'Cover' },
+      ],
+    } as FormDefinition;
+    const submits = [reply(503, { error: 'unavailable' }), reply(201, { id: 's1', values: {} })];
+    const fetchMock = vi.fn(async (url: string, init?: { method?: string; body?: unknown }) => {
+      if (!init?.method) return reply(200, two);
+      if (url.includes('/uploads')) {
+        const { field } = JSON.parse(init.body as string);
+        return reply(201, { id: `up-${field}`, url: `https://objects.test/${field}`, method: 'PUT', headers: {} });
+      }
+      return init.method === 'PUT' ? reply(200, null) : submits.shift()!;
+    });
+    const { controller } = await loaded(fetchMock);
+    const shared = file('cv.pdf');
+    await expect(controller.submit({ cv: shared, cover: shared })).rejects.toMatchObject({ status: 503 });
+    await controller.submit({ cv: shared, cover: shared });
+    const sent = fetchMock.mock.calls.filter(([url, init]) => init?.method === 'POST' && !String(url).includes('/uploads'));
+    expect(sent.map(([, init]) => JSON.parse(init!.body as string).values)).toEqual([
+      { cv: 'up-cv', cover: 'up-cover' },
+      { cv: 'up-cv', cover: 'up-cover' },
+    ]);
+    const keys = sent.map(([, init]) => (init as unknown as { headers: Record<string, string> }).headers['Idempotency-Key']);
+    expect(keys[0]).toBe(keys[1]);
+  });
+
   it('shows a refused upload on its field and does not submit', async () => {
     const fetchMock = vi
       .fn()

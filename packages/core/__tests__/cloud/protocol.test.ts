@@ -85,6 +85,30 @@ describe('cloud protocol', () => {
     }
   });
 
+  it('falls back to the form settings for another response without an ending', async () => {
+    const reply = (body: object) => ({ ok: true, status: 201, json: async () => ({ id: 's1', values: {}, ...body }) });
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(reply({ ending: { successMessage: 'Sales will call you.', redirectUrl: 'https://example.com/vip' } }))
+      .mockResolvedValueOnce(reply({}));
+    vi.stubGlobal('fetch', fetchMock);
+    const states: CloudState[] = [];
+    const initialForm = { ...form, settings: { successMessage: 'Thanks', allowAnother: true } };
+    const controller = createCloudController({ id: 'abc', initialForm }, { onChange: (state) => states.push(state) });
+    controller.start();
+    await controller.submit({ name: 'Ada' }, []);
+    expect(states.at(-1)?.settings).toEqual({
+      successMessage: 'Sales will call you.',
+      redirectUrl: 'https://example.com/vip',
+      allowAnother: true,
+    });
+    controller.again();
+    expect(states.at(-1)?.settings).toEqual({ successMessage: 'Thanks', allowAnother: true });
+    await controller.submit({ name: 'Bob' }, []);
+    expect(states.at(-1)).toMatchObject({ done: true, settings: { successMessage: 'Thanks', allowAnother: true } });
+    expect(states.at(-1)?.settings).not.toHaveProperty('redirectUrl');
+  });
+
   it('sends the first render token alongside the new one after a form refresh', async () => {
     const updated = { ok: false, status: 409, headers: { get: () => null }, json: async () => ({ error: 'form_updated', version: 6 }) };
     const refreshed = {

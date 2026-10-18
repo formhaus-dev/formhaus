@@ -53,3 +53,21 @@ it('keeps its own success handling when success is passed', async () => {
   expect(await screen.findByText('Mine')).toBeDefined();
   expect(assign).not.toHaveBeenCalled();
 });
+
+it('shows the form success message for another response without an ending', async () => {
+  const reply = (body: object) => ({ ok: true, status: 201, json: async () => ({ id: 's1', values: {}, ...body }) });
+  vi.stubGlobal(
+    'fetch',
+    vi
+      .fn()
+      .mockResolvedValueOnce(reply({ ending: { successMessage: 'Sales will call you.' } }))
+      .mockResolvedValueOnce(reply({})),
+  );
+  render(<FormhausForm id="abc" initialForm={{ definition, settings: { successMessage: 'See you soon', allowAnother: true } }} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+  expect(await screen.findByText('Sales will call you.')).toBeDefined();
+  fireEvent.click(screen.getByRole('button', { name: 'Submit another response' }));
+  fireEvent.click(await screen.findByRole('button', { name: 'Send' }));
+  expect(await screen.findByText('See you soon')).toBeDefined();
+  expect(screen.queryByText('Sales will call you.')).toBeNull();
+});

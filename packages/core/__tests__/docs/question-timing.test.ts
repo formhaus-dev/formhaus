@@ -81,6 +81,20 @@ describe('question timing recipe', () => {
     expect(times).toEqual([{ stepId: 'role', ms: 2000 }]);
   });
 
+  it('does not count a tab that starts in the background', () => {
+    const { clock, times, timer, mount } = setup();
+    const { page, view, setVisibility } = fakePage();
+    Object.assign(page, { visibilityState: 'hidden' });
+    mount();
+    const stop = watchPage(timer, page, view);
+    clock.now = 60000;
+    setVisibility('visible');
+    clock.now = 61500;
+    timer.leave();
+    stop();
+    expect(times).toEqual([{ stepId: 'role', ms: 1500 }]);
+  });
+
   it('reports an abandoned question on pagehide', async () => {
     const { clock, times, timer, mount } = setup();
     const { page, view, leavePage } = fakePage();

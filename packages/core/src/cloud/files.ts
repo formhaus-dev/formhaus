@@ -70,7 +70,8 @@ async function uploadFile(endpoint: string, send: Send, field: string, file: Clo
 }
 
 export function createUploader(endpoint: string, send: Send) {
-  const uploaded = new WeakMap<CloudFile, string>();
+  const uploaded = new WeakMap<CloudFile, Map<string, string>>();
+  const idsOf = (file: CloudFile) => uploaded.get(file) ?? uploaded.set(file, new Map()).get(file)!;
   return {
     async upload(definition: FormDefinition, values: Record<string, unknown>, signal?: AbortSignal): Promise<Record<string, unknown>> {
       const sent = { ...values };
@@ -81,10 +82,10 @@ export function createUploader(endpoint: string, send: Send) {
           const file = values[key];
           if (!isFile(file)) return;
           try {
-            let id = uploaded.get(file);
+            let id = idsOf(file).get(key);
             if (id === undefined) {
               id = await uploadFile(endpoint, send, key, file, signal);
-              uploaded.set(file, id);
+              idsOf(file).set(key, id);
             }
             sent[key] = id;
           } catch (error) {
@@ -99,7 +100,7 @@ export function createUploader(endpoint: string, send: Send) {
     forget(values: Record<string, unknown>, keys: string[]): void {
       for (const key of keys) {
         const file = values[key];
-        if (isFile(file)) uploaded.delete(file);
+        if (isFile(file)) uploaded.get(file)?.delete(key);
       }
     },
   };
