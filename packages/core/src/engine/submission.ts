@@ -43,7 +43,6 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
       const allowed = await lifecycle.onBeforeSubmit(values);
       if (stale() || allowed === false) return false;
     }
-    if (stale()) return false;
     if (lifecycle.onBeforeSubmit) {
       if (Object.keys(validateForm(engine, true)).length > 0 || stale()) return false;
       values = getSubmitValues(engine);
