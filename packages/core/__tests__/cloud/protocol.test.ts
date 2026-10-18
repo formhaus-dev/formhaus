@@ -62,6 +62,29 @@ describe('cloud protocol', () => {
     expect(states.at(-1)).toMatchObject({ done: false, revision: 1 });
   });
 
+  it('shows the ending the server picked', async () => {
+    const cases: [unknown, object][] = [
+      [{ successMessage: 'Sales will call you.' }, { successMessage: 'Sales will call you.', allowAnother: true }],
+      [{ redirectUrl: 'https://example.com/vip' }, { redirectUrl: 'https://example.com/vip', allowAnother: true }],
+      [{ redirectUrl: 'javascript:alert(1)' }, { allowAnother: true }],
+      [undefined, { successMessage: 'Thanks', redirectUrl: 'https://example.com/thanks', allowAnother: true }],
+    ];
+    for (const [ending, settings] of cases) {
+      const body = { id: 's1', values: {}, ...(ending !== undefined && { ending }) };
+      vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, status: 201, json: async () => body }));
+      const states: CloudState[] = [];
+      const initialForm = {
+        ...form,
+        settings: { successMessage: 'Thanks', redirectUrl: 'https://example.com/thanks', allowAnother: true },
+      };
+      const controller = createCloudController({ id: 'abc', initialForm }, { onChange: (state) => states.push(state) });
+      controller.start();
+      await controller.submit({ name: 'Ada' }, []);
+      expect(states.at(-1)).toMatchObject({ done: true });
+      expect(states.at(-1)?.settings).toEqual(settings);
+    }
+  });
+
   it('sends the first render token alongside the new one after a form refresh', async () => {
     const updated = { ok: false, status: 409, headers: { get: () => null }, json: async () => ({ error: 'form_updated', version: 6 }) };
     const refreshed = {
