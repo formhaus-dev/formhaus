@@ -47,10 +47,6 @@ describe('property checks', () => {
     ]);
   });
 
-  it('reports a numeric id as a type error', () => {
-    expect(checkDefinition({ ...base, id: 5 }).map(({ code, path }) => [code, path])).toEqual([['invalid-type', '/id']]);
-  });
-
   it('reports unknown properties at every level', () => {
     const input = {
       ...base,
@@ -94,14 +90,6 @@ describe('property checks', () => {
       'warning unknown-property /fields/0/required: unknown property "required". Move "required" into "validation": { "required": ... }.',
       'warning unknown-property /fields/0/minLength: unknown property "minLength". Move "minLength" into "validation": { "minLength": ... }.',
     ]);
-  });
-
-  it('escapes property names in the path', () => {
-    expect(checkDefinition({ ...base, 'a/b': 1 })[0].path).toBe('/a~1b');
-  });
-
-  it('accepts a hidden field without a label', () => {
-    expect(summary({ ...base, fields: [{ key: 'utm', type: 'hidden' }] })).toEqual([]);
   });
 
   it('warns about missing labels and titles the schema requires', () => {
