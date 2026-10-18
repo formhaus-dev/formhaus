@@ -3,7 +3,7 @@ import { CloudError, isRecord, readJson } from './error';
 
 const UPLOAD_FAILED = 'The upload failed. Try again.';
 const TOO_MANY = 'Too many uploads right now. Try again in a few minutes.';
-const UPLOAD_DEADLINE = 135_000;
+const UPLOAD_DEADLINE = 840_000;
 
 interface UploadTicket {
   id: string;
