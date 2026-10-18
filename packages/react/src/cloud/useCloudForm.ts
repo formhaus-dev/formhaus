@@ -16,6 +16,7 @@ interface CloudFormOptions {
 export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, challengeHost, onSuccess, onError }: CloudFormOptions) {
   const [state, setState] = useState(() => cloudStateFor(initialForm));
   const controller = useRef<ReturnType<typeof createCloudController> | null>(null);
+  const wanted = useRef(false);
   const callbacks = useRef({ onSuccess, onError, extraBody, initialForm, draftStore });
   callbacks.current = { onSuccess, onError, extraBody, initialForm, draftStore };
 
@@ -39,6 +40,7 @@ export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, 
     );
     controller.current = current;
     current.start();
+    if (wanted.current) current.warm();
     return () => current.dispose();
   }, [id, apiBase]);
 
@@ -49,7 +51,10 @@ export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, 
   const retry = useCallback(() => controller.current!.start(), []);
   const again = useCallback(() => controller.current!.again(), []);
   const saveDraft = useCallback((values: Record<string, unknown>) => controller.current?.saveDraft(values), []);
-  const warm = useCallback(() => controller.current?.warm(), []);
+  const warm = useCallback(() => {
+    wanted.current = true;
+    controller.current?.warm();
+  }, []);
 
   return { ...state, submit, retry, again, saveDraft, warm };
 }

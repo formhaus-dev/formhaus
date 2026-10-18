@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
+import { StrictMode, useLayoutEffect } from 'react';
 import { afterEach, expect, it, vi } from 'vitest';
 import { FormActions } from '../src';
 import { FormhausForm } from '../src/cloud';
@@ -58,6 +59,22 @@ it('loads the bot check on first focus, above the actions, hidden', async () => 
   expect(frame.getAttribute('aria-hidden')).toBe('true');
   expect(frame.tabIndex).toBe(-1);
   expect(frame.parentElement?.nextElementSibling?.className).toContain('fh-form-actions');
+});
+
+it('loads the bot check when a field is focused during the first commit', async () => {
+  stub();
+  function FocusName() {
+    useLayoutEffect(() => document.querySelector<HTMLInputElement>('input[name="name"]')?.focus(), []);
+    return null;
+  }
+  render(
+    <StrictMode>
+      <FormhausForm id="abc" initialForm={envelope} />
+      <FocusName />
+    </StrictMode>,
+  );
+  const { frame } = await challengeFrame();
+  expect(frame.src).toBe(envelope.challenge.url);
 });
 
 it('submits with a token from the challenge frame and ignores spoofed messages', async () => {
