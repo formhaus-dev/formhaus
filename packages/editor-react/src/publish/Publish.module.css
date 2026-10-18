@@ -91,3 +91,9 @@ button.row:focus-visible {
   opacity: 1;
   cursor: default;
 }
+
+@media (hover: none) and (pointer: coarse) {
+  .shortcutsItem {
+    display: none;
+  }
+}
