@@ -1,5 +1,6 @@
 import {
   canAutoAdvance,
+  childrenOf,
   findField,
   hasOptions,
   isMatrix,
@@ -88,7 +89,7 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
           }}
         />
       )}
-      {field.type === 'section' && (
+      {field.type === 'section' && childrenOf(form, field.uid).length > 0 && (
         <Switch
           className={styles.toggle}
           label="Show as matrix"

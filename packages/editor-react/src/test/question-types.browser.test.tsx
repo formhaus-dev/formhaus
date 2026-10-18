@@ -55,6 +55,31 @@ describe('question types in the editor', () => {
     expect(within(card).getByRole('list', { name: '7 stars' })).toBeVisible();
   });
 
+  it('keeps the anchors when "10" is typed into a 1 to 5 scale', async () => {
+    await page.viewport(1440, 1000);
+    const anchors = [
+      { value: '1', label: 'Low' },
+      { value: '5', label: 'High' },
+    ];
+    const { store } = renderEditor(fromDefinition(definition([{ key: 'score', type: 'scale', label: 'Score', options: anchors }])));
+    const card = screen.getByRole('group', { name: 'Score field' });
+    await userEvent.click(within(card).getByRole('button', { name: 'Field settings' }));
+    const end = within(card).getByRole('spinbutton', { name: 'Ends at' });
+    await userEvent.click(end);
+    await userEvent.keyboard('10');
+    expect(fieldAt(store, 0).options).toEqual(anchors);
+    await userEvent.keyboard('{Tab}');
+    await waitFor(() => {
+      expect(fieldAt(store, 0)).toMatchObject({
+        validation: { max: 10 },
+        options: [
+          { value: '1', label: 'Low' },
+          { value: '10', label: 'High' },
+        ],
+      });
+    });
+  });
+
   it('adds a matrix and keeps the columns of every row in sync', async () => {
     await page.viewport(1440, 1000);
     const { store } = renderEditor(fromDefinition(definition([name])));

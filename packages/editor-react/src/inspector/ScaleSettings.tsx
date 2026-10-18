@@ -8,6 +8,7 @@ import {
   type AnchorSlot,
   type BuilderQuestion,
 } from '@formhaus/builder';
+import { useState } from 'react';
 import { Field, Input, SegmentedControl } from '../ui';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
@@ -29,11 +30,16 @@ export function ScaleSettings({ field, actions, readOnly }: Props) {
   const rating = field.type === 'rating';
   const limits = rating ? RATING_STARS : { min: min + SCALE_POINTS.min - 1, max: min + SCALE_POINTS.max - 1 };
   const anchors = anchorsOf(field);
-  const setMax = (text: string) => {
-    const value = Number.parseInt(text, 10);
+  const stored = field.extra.validation?.max;
+  const [draft, setDraft] = useState<string | null>(null);
+  const commit = () => {
+    if (draft === null) return;
+    const value = Number.parseInt(draft, 10);
+    setDraft(null);
+    if (Number.isNaN(value) ? stored === undefined : value === stored) return;
     actions.edit((form) => {
       setScaleRange(form, field.uid, { max: Number.isNaN(value) ? undefined : value });
-    }, `${field.uid}:max`);
+    });
   };
   return (
     <div className={styles.scale}>
@@ -61,11 +67,15 @@ export function ScaleSettings({ field, actions, readOnly }: Props) {
           inputMode="numeric"
           min={limits.min}
           max={limits.max}
-          value={field.extra.validation?.max ?? ''}
+          value={draft ?? stored ?? ''}
           placeholder={String(max)}
           readOnly={readOnly}
           onChange={(event) => {
-            setMax(event.target.value);
+            setDraft(event.target.value);
+          }}
+          onBlur={commit}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') commit();
           }}
         />
       </Field>
