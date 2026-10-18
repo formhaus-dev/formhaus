@@ -50,6 +50,7 @@ export const useStep = (uid: string) =>
 export const useSelection = () => useEditor((state) => state.selection);
 export const useSave = () => useEditor((state) => state.save);
 export const useIsExpanded = (uid: string) => useEditor(useCallback((state) => state.expanded === uid, [uid]));
+export const useShowsPictures = (uid: string) => useEditor(useCallback((state) => state.pictures.includes(uid), [uid]));
 export const useReadOnly = () => useEditor((state) => state.readOnly);
 export const useCanUndo = () => useEditor((state) => state.canUndo);
 export const useCanRedo = () => useEditor((state) => state.canRedo);
