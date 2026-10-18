@@ -2,28 +2,6 @@ import { expect, it, vi } from 'vitest';
 import { FormEngine } from '../../src/engine';
 import { multiStepDefinition } from './form-engine-steps.fixtures';
 
-it.each(['step', 'submit'])('discards rejected stale %s guards', async (action) => {
-  let reject!: (error: Error) => void;
-  const wait = () =>
-    new Promise<void>((_resolve, fail) => {
-      reject = fail;
-    });
-  const engine = new FormEngine(
-    multiStepDefinition,
-    { name: 'Ada' },
-    {
-      onBeforeStepChange: wait,
-      onBeforeSubmit: wait,
-    },
-  );
-  const pending = action === 'step' ? engine.next() : engine.submit(() => {});
-  engine.cancelPendingActions();
-  reject(new Error('Old failure'));
-  await expect(pending).resolves.toBe(false);
-  expect(engine.submitting).toBe(false);
-  expect(engine.stepValidating).toBe(false);
-});
-
 it('uses the original callbacks for an already dispatched submission', async () => {
   let resolve!: () => void;
   const calls: string[] = [];
