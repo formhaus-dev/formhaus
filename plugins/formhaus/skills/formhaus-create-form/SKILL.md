@@ -60,6 +60,7 @@ These are the exact TypeScript types. Your output MUST conform to them.
 ```typescript
 interface FormDefinition {
   id: string;           // kebab-case identifier
+  formatVersion?: string; // "1.3" when the form uses scale, rating, option images or a matrix
   title: string;        // human-readable form title
   description?: string; // short intro under the title, up to 1000 characters
   submit: FormAction;   // submit button config (required)
@@ -72,7 +73,7 @@ interface FormStep {
   id: string;
   title: string;
   description?: string;
-  fields: FormField[];
+  fields: (FormField | FormSection)[]; // may be empty for a welcome or statement screen
   show?: ShowCondition[];    // step visible when ALL conditions true
   showAny?: ShowCondition[]; // step visible when ANY condition true
   routes?: StepRoute[];      // ordered forward destinations
@@ -94,11 +95,11 @@ interface FormField {
   placeholder?: string;
   helperText?: string;
   defaultValue?: unknown;
-  autoAdvance?: boolean;     // explicit activation advances; built-in radio supports it
+  autoAdvance?: boolean;     // explicit activation advances; built-in radio, scale and rating support it
   show?: ShowCondition[];     // field visible when ALL conditions true
   showAny?: ShowCondition[];  // field visible when ANY condition true
   validation?: FieldValidation;
-  options?: FieldOption[];    // for select, multiselect, radio
+  options?: FieldOption[];    // for select, multiselect, radio; up to 3 anchor labels on scale and rating
   layout?: 'stack' | 'inline'; // radio/multiselect; inline only for a few short options
   optionsFrom?: string;       // dynamic options loaded at runtime
   optionsDependsOn?: string[];
@@ -112,7 +113,19 @@ type FieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
   | 'select' | 'autocomplete' | 'multiselect'
   | 'checkbox' | 'radio' | 'switch'
-  | 'file' | 'date' | 'datetime' | 'time' | 'textarea' | 'hidden';
+  | 'file' | 'date' | 'datetime' | 'time' | 'textarea' | 'hidden'
+  | 'scale'    // whole number from validation.min (0 or 1, default 1) to validation.max (default 5)
+  | 'rating';  // stars from 1 to validation.max (default 5, 3 to 10)
+
+interface FormSection {
+  key: string;
+  type: 'section';
+  title: string;
+  description?: string;
+  layout?: 'matrix';          // grid: each field is a radio row with the same options
+  show?: ShowCondition[];
+  fields: FormField[];        // may be empty for a statement between questions
+}
 
 interface ShowCondition {
   field: string;                        // references another field's key
@@ -121,6 +134,8 @@ interface ShowCondition {
   in?: (string | number)[];             // one of
   notIn?: (string | number)[];          // not one of
   notEmpty?: boolean;                   // has a value
+  gt?: number; gte?: number;            // numeric comparisons, such as an NPS score
+  lt?: number; lte?: number;
 }
 
 interface FieldValidation {
@@ -140,7 +155,11 @@ interface FieldValidation {
   validator?: string;           // custom validator name
 }
 
-interface FieldOption { value: string; label: string; }
+interface FieldOption {
+  value: string;   // on scale and rating anchors: the point number, such as "0" or "10"
+  label: string;
+  image?: string;  // image URL for radio and multiselect (picture choice)
+}
 interface FormAction {
   label: string;
   variant?: 'primary' | 'secondary' | 'text';
@@ -182,6 +201,12 @@ obvious validation (required, email format, etc).
 - File upload, "Attach", "Upload" → `file`
 - Toggle, "Enable/Disable", notifications → `switch`
 - Numbers, amounts, quantities → `number`
+- "How likely are you to recommend" with 0 to 10 → `scale` with `validation: { min: 0, max: 10 }` and anchors `"0": "Not at all likely"`, `"10": "Extremely likely"` (NPS)
+- "Rate", "stars", satisfaction from 1 to 5 → `rating`
+- "Strongly disagree … Strongly agree" or "1 to 7" for one statement → `scale` with start and end anchors
+- Several statements with the same agree/disagree answers → a `section` with `layout: "matrix"` and one `radio` per statement, all with the same options
+- Options shown as pictures → `radio` or `multiselect` with `image` on each option
+- An intro, welcome or "thank you for joining" screen → a step with a title, a description, `next: { label: "Start" }` and `fields: []`
 - Everything else → `text`
 
 ### Step 3: Interactive refinement
@@ -236,6 +261,8 @@ Output the complete form definition JSON. Follow these rules:
 4. Use `fields` for single-step, `steps` for multi-step
 5. Only include optional properties when they add value (no empty strings, no `required: false`)
 6. Options for select/radio must have both `value` and `label`
+7. Set `"formatVersion": "1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section
+8. Conditions on `scale` and `rating` compare numbers: `{ "field": "nps", "lte": 6 }`. A range is two conditions: `gte` and `lte`
 
 Put `"$schema": "https://formhaus.dev/schema/form-definition.json"` as the first key
 so editors validate and autocomplete the file.
