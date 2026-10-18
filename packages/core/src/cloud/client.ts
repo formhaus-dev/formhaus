@@ -1,6 +1,7 @@
 import type { FormDefinition } from '../types';
 import { networkError, readJson, toCloudError } from './error';
 import { parseForm, type CloudSettings, type PublishedForm } from './envelope';
+import { createUploader } from './files';
 import { randomId } from './uuid';
 
 const DEFAULT_API_BASE = 'https://api.formhaus.cc';
@@ -39,6 +40,10 @@ async function send(url: string, timeout: number, init: CloudRequestInit = {}, s
     clearTimeout(timer);
     signal?.removeEventListener('abort', abort);
   }
+}
+
+export function createFileUploader(options: CloudClientOptions) {
+  return createUploader(`${endpoint(options)}/uploads?${CORE}`, (url, init, timeout) => send(url, timeout, init));
 }
 
 export async function fetchForm(options: CloudClientOptions, signal?: AbortSignal, after?: number): Promise<PublishedForm> {
