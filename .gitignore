@@ -15,3 +15,4 @@ examples/*/.next/
 examples/*/next-env.d.ts
 examples/*/.nuxt/
 examples/*/.output/
+.vitest-attachments/
