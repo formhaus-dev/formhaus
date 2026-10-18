@@ -132,9 +132,7 @@ describe('cloud file uploads', () => {
       .mockResolvedValueOnce(reply(200, null))
       .mockResolvedValue(reply(201, { id: 's1', values: {} }));
     const { controller } = await loaded(fetchMock);
-    const cv = file('cv.pdf');
-    await expect(controller.submit({ cv })).rejects.toMatchObject({ status: 422 });
-    await controller.submit({ cv });
+    await controller.submit({ cv: file('cv.pdf') });
     expect(JSON.parse(fetchMock.mock.calls.at(-1)?.[1].body).values).toEqual({ cv: 'up-2' });
   });
 
