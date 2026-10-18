@@ -33,6 +33,7 @@ defineExpose({
     @cancel="emit('cancel')"
     @field-change="(key, value, allValues) => emit('fieldChange', key, value, allValues)"
     @values-change="(next) => emit('valuesChange', (values = next))"
+    @form-event="(event) => emit('formEvent', event)"
     @analytics-event="(event) => emit('analyticsEvent', event)"
   />
 </template>

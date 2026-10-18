@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { isSection, type FormEngineOptions, type FormField, type LabelKey, type StepChangeContext } from '@formhaus/core';
+import { isSection, type FormEngineOptions, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
 import {
   actionsView,
   applySources,
   errorEntries,
+  hasValue,
   labelFor,
   shouldApplyExternalErrors,
   warnMissingComponents,
@@ -25,7 +26,12 @@ const emit = defineEmits<FormRendererEmits>();
 
 const formId = useFormId();
 const formRef = ref<HTMLFormElement>();
+const onFormEvent = (event: FormEvent) => {
+  emit('formEvent', event);
+  emit('analyticsEvent', event);
+};
 const engineOptions: FormEngineOptions = {
+  onFormEvent,
   validators: props.validators,
   onWarning: props.onWarning,
   get messages() {
@@ -44,14 +50,7 @@ const engineOptions: FormEngineOptions = {
     return props.onAfterSubmit;
   },
   get onAfterStepChange() {
-    const after = props.onAfterStepChange;
-    return async (context: StepChangeContext) => {
-      if (context.reason !== 'back') {
-        emit('analyticsEvent', { type: context.reason === 'skip' ? 'step_skipped' : 'step_completed', stepId: context.fromStepId });
-        emit('analyticsEvent', { type: 'step_viewed', stepId: context.toStepId, stepIndex: form.engine.currentStepIndex });
-      }
-      await after?.(context);
-    };
+    return props.onAfterStepChange;
   },
 };
 
@@ -86,6 +85,7 @@ const watchValues = (engine: typeof form.engine) => {
   };
   stopValues = engine.subscribeValues(changed);
   changed();
+  engine.start();
 };
 onMounted(() => watchValues(form.engine));
 watch(() => form.engine, watchValues, { flush: 'sync' });
@@ -139,15 +139,11 @@ const stepStatuses = computed(() => {
 });
 
 function onFieldFocus(key: string) {
-  emit('analyticsEvent', { type: 'field_focused', fieldKey: key });
+  onFormEvent({ type: 'field_focused', fieldKey: key });
 }
 
 function onFieldBlur(key: string) {
-  emit('analyticsEvent', {
-    type: 'field_blurred',
-    fieldKey: key,
-    hasValue: values.value[key] !== undefined && values.value[key] !== '',
-  });
+  onFormEvent({ type: 'field_blurred', fieldKey: key, hasValue: hasValue(form.engine, key) });
 }
 
 function onCancel() {
