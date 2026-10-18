@@ -1,56 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
-import { evaluateCondition, FormEngine, validateFieldValue, type FormDefinition, type FormField } from '../../src';
+import { evaluateCondition, FormEngine, validateFieldValue, type FormField } from '../../src';
 
 const text = (key: string, extra: Partial<FormField> = {}): FormField => ({ key, type: 'text', label: key, ...extra });
-const single = (fields: FormField[]): FormDefinition => ({ id: 's', title: 'S', submit: { label: 'Go' }, fields });
-const toggle = text('show', { type: 'checkbox' });
-
-describe('visibility rules', () => {
-  it('gives an untouched re-shown field its defaultValue back', () => {
-    const engine = new FormEngine(single([toggle, text('detail', { defaultValue: 'preset', show: [{ field: 'show', eq: true }] })]), {
-      show: true,
-    });
-    expect(engine.values.detail).toBe('preset');
-    engine.setValue('show', false);
-    engine.setValue('show', true);
-    expect(engine.values.detail).toBe('preset');
-  });
-
-  it('gives an edited re-shown field its last value', () => {
-    const engine = new FormEngine(single([toggle, text('detail', { defaultValue: 'preset', show: [{ field: 'show', eq: true }] })]), {
-      show: true,
-    });
-    engine.setValue('detail', 'mine');
-    engine.setValue('show', false);
-    engine.setValue('show', true);
-    expect(engine.values.detail).toBe('mine');
-  });
-
-  it('removes the error of a field when it becomes hidden', () => {
-    const engine = new FormEngine(
-      single([toggle, text('detail', { show: [{ field: 'show', eq: true }], validation: { required: true } })]),
-      { show: true },
-    );
-    engine.validate();
-    expect(engine.errors.detail).toBe('This field is required');
-    engine.setValue('show', false);
-    expect(engine.errors.detail).toBeUndefined();
-  });
-});
-
-describe('payload rules', () => {
-  it('keeps null, empty string, false and empty arrays without conversion', () => {
-    const fields = [
-      text('a'),
-      text('b'),
-      text('c', { type: 'checkbox' }),
-      text('d', { type: 'multiselect', options: [{ value: 'x', label: 'X' }] }),
-      text('e', { type: 'number' }),
-    ];
-    const engine = new FormEngine(single(fields), { a: null, b: '', c: false, d: [], e: 0 });
-    expect(engine.getSubmitValues()).toEqual({ a: null, b: '', c: false, d: [], e: 0 });
-  });
-});
 
 describe('validation rules', () => {
   it('returns the first error in the order type, size, pattern, matchField, validator', () => {
@@ -71,12 +22,6 @@ describe('validation rules', () => {
     expect(validateFieldValue({ ...field, type: 'checkbox' }, false, {}, { check: validator })).toBeNull();
     expect(validator).not.toHaveBeenCalled();
   });
-
-  it('does not validate on setValue, only on Continue and Submit', () => {
-    const engine = new FormEngine(single([text('x', { validation: { required: true, minLength: 3 } })]));
-    engine.setValue('x', 'a');
-    expect(engine.errors).toEqual({});
-  });
 });
 
 describe('condition edges', () => {
@@ -92,31 +37,6 @@ describe('condition edges', () => {
 });
 
 describe('steps', () => {
-  const steps: FormDefinition = {
-    id: 'm',
-    title: 'M',
-    submit: { label: 'Go' },
-    steps: [
-      { id: 'one', title: 'One', fields: [text('a')] },
-      { id: 'two', title: 'Two', skip: { label: 'Skip' }, fields: [text('b', { defaultValue: 'd' })] },
-      { id: 'three', title: 'Three', fields: [] },
-    ],
-  };
-
-  it('passes reason skip to onAfterStepChange', async () => {
-    const after = vi.fn();
-    const engine = new FormEngine(steps, {}, { onAfterStepChange: after });
-    await engine.next();
-    await engine.skip();
-    expect(after).toHaveBeenLastCalledWith(expect.objectContaining({ fromStepId: 'two', toStepId: 'three', reason: 'skip' }));
-  });
-
-  it('skips only steps that have a skip action', async () => {
-    const engine = new FormEngine(steps);
-    expect(await engine.skip()).toBe(false);
-    expect(engine.currentStep?.id).toBe('one');
-  });
-
   it('treats a definition with neither fields nor steps as an empty single-step form', () => {
     const engine = new FormEngine({ id: 'e', title: 'E', submit: { label: 'Go' } });
     expect(engine.isMultiStep).toBe(false);

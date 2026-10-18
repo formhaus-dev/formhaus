@@ -3,7 +3,10 @@ import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, typ
 import { validateSubmission } from '../../src/server';
 import { cases, corpus } from './corpus';
 
-const byPath = (a: { path: string }, b: { path: string }) => a.path.localeCompare(b.path);
+const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+const byPathAndCode = (a: { code: string; path: string }, b: { code: string; path: string }) =>
+  compare(a.path, b.path) || compare(a.code, b.code);
+const project = ({ code, path }: { code: string; path: string }) => ({ code, path });
 
 async function browserCanSubmit(definition: FormDefinition, values: Record<string, unknown>): Promise<boolean> {
   const engine = new FormEngine(definition, values);
@@ -16,6 +19,26 @@ async function browserCanSubmit(definition: FormDefinition, values: Record<strin
 describe('conformance corpus', () => {
   it('covers every audited case', () => {
     expect(corpus.map(({ name }) => name).sort()).toEqual([
+      'check-clean',
+      'check-conditions',
+      'check-container-conditions',
+      'check-container-keys',
+      'check-container-nesting',
+      'check-container-scope',
+      'check-container-shape',
+      'check-custom-type-names',
+      'check-disabled-not-applicable',
+      'check-escaped-property',
+      'check-field-rules',
+      'check-group-scope',
+      'check-missing-required',
+      'check-null-lists',
+      'check-numeric-id',
+      'check-outdated-version-1-0',
+      'check-outdated-version-missing',
+      'check-outdated-version-newer',
+      'check-section-forward-reference',
+      'check-slow-pattern',
       'disabled-actions',
       'flat-api-steps',
       'format-version',
@@ -37,9 +60,19 @@ describe('conformance corpus', () => {
   it.each(corpus.map((fixture) => [fixture.name, fixture] as const))('%s: checkDefinition', (_, { definition, issues }) => {
     const errors = checkDefinition(definition)
       .filter(({ severity }) => severity === 'error')
-      .map(({ code, path }) => ({ code, path }));
-    expect(errors.sort(byPath)).toEqual([...issues].sort(byPath));
+      .map(project);
+    expect(errors.sort(byPathAndCode)).toEqual([...issues].sort(byPathAndCode));
   });
+
+  it.each(corpus.filter(({ warnings }) => warnings).map((fixture) => [fixture.name, fixture] as const))(
+    '%s: warnings',
+    (_, { definition, warnings }) => {
+      const actual = checkDefinition(definition)
+        .filter(({ severity }) => severity === 'warning')
+        .map(project);
+      expect(actual.sort(byPathAndCode)).toEqual([...warnings!].sort(byPathAndCode));
+    },
+  );
 
   it.each(corpus.filter(({ issues }) => issues.length).map((fixture) => [fixture.name, fixture] as const))(
     '%s: rejected by the engine and the server',
