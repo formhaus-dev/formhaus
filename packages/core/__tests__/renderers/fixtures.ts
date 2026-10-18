@@ -12,6 +12,7 @@ export interface ScenarioProps {
   labels?: LabelSource;
   onStepValidate?: StepValidateFn;
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
+  onFormEvent?: (event: FormAnalyticsEvent) => void;
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, values: Record<string, unknown>) => void;
   components?: Record<string, unknown>;

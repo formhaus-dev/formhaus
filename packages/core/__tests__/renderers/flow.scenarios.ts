@@ -1,4 +1,4 @@
-import type { FormAnalyticsEvent, SubmitResult } from '../../src';
+import type { FormEvent, SubmitResult } from '../../src';
 import { deferred, filled, wizard, type RendererHarness, type TestKit } from './fixtures';
 
 export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
@@ -28,6 +28,7 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
   it('advances on an autoAdvance answer', async () => {
     const onAnalyticsEvent = fn();
     harness.mount({ definition: wizard, initialValues: { name: 'Ada' }, onSubmit: () => {}, onAnalyticsEvent });
+    expect(onAnalyticsEvent).toHaveBeenCalledWith({ type: 'form_viewed' });
     await harness.click(button('Continue'));
     await harness.click(await screen.findByRole('radio', { name: 'Plan B' }));
     await screen.findByRole('heading', { name: 'Three' });
@@ -37,8 +38,8 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
 
   it('skips a step and submits without it', async () => {
     const onSubmit = fn();
-    const onAnalyticsEvent = fn();
-    harness.mount({ definition: wizard, initialValues: filled, onSubmit, onAnalyticsEvent });
+    const onFormEvent = fn();
+    harness.mount({ definition: wizard, initialValues: filled, onSubmit, onFormEvent });
     await harness.click(button('Continue'));
     await screen.findByRole('heading', { name: 'Two' });
     await harness.click(button('Skip'));
@@ -50,9 +51,19 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Three' });
     await harness.click(button('Send'));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ name: 'Ada', city: 'Oslo' }, ['two']));
-    expect(
-      onAnalyticsEvent.mock.calls.map(([event]) => (event as FormAnalyticsEvent).type).filter((type) => !type.startsWith('field_')),
-    ).toEqual(['step_completed', 'step_viewed', 'step_skipped', 'step_viewed', 'step_skipped', 'step_viewed', 'form_submitted']);
+    expect(onFormEvent.mock.calls.map(([event]) => (event as FormEvent).type).filter((type) => !type.startsWith('field_'))).toEqual([
+      'form_viewed',
+      'step_viewed',
+      'step_completed',
+      'step_viewed',
+      'step_skipped',
+      'step_viewed',
+      'step_viewed',
+      'step_skipped',
+      'step_viewed',
+      'form_submitted',
+      'form_submit_succeeded',
+    ]);
   });
 
   it('shows the busy state while a submission is pending', async () => {
@@ -101,14 +112,14 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     expect(document.querySelector('.fh-step-progress__counter')?.textContent?.trim()).toBe('Schritt 2 von 3');
   });
 
-  it('reports analytics events with their details', async () => {
-    const onAnalyticsEvent = fn();
+  it('reports form events with their details', async () => {
+    const onFormEvent = fn();
     const onFieldChange = fn();
     harness.mount({
       definition: wizard,
       initialValues: { plan: 'a', city: 'Oslo' },
       onSubmit: () => ({ ok: false, errors: { city: 'Unknown' } }),
-      onAnalyticsEvent,
+      onFormEvent,
       onFieldChange,
     });
     await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
@@ -119,17 +130,61 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await harness.click(button('Send'));
     await screen.findByText('Unknown');
     expect(
-      onAnalyticsEvent.mock.calls
+      onFormEvent.mock.calls
         .map(([event]) => event)
-        .filter((event) => !['field_focused', 'field_blurred'].includes((event as FormAnalyticsEvent).type)),
+        .filter((event) => !['field_focused', 'field_blurred'].includes((event as FormEvent).type)),
     ).toEqual([
+      { type: 'form_viewed' },
+      { type: 'step_viewed', stepId: 'one', stepIndex: 0 },
       { type: 'step_completed', stepId: 'one' },
       { type: 'step_viewed', stepId: 'two', stepIndex: 1 },
       { type: 'step_completed', stepId: 'two' },
       { type: 'step_viewed', stepId: 'three', stepIndex: 2 },
       { type: 'form_submitted', fieldCount: 3 },
+      { type: 'form_submit_failed', reason: 'rejected' },
       { type: 'field_error', fieldKey: 'city', error: 'Unknown' },
     ]);
+  });
+
+  it('reports a jump to a rejected field as a step view', async () => {
+    const onFormEvent = fn();
+    harness.mount({
+      definition: wizard,
+      initialValues: filled,
+      errorSummary: true,
+      onSubmit: () => ({ ok: false, errors: { name: 'Taken' } }),
+      onFormEvent,
+    });
+    await harness.click(button('Continue'));
+    await harness.click(await screen.findByRole('button', { name: 'Continue' }));
+    await screen.findByRole('heading', { name: 'Three' });
+    await harness.click(button('Send'));
+    await harness.click(await screen.findByRole('link', { name: /Taken/ }));
+    await screen.findByRole('heading', { name: 'One' });
+    const views = onFormEvent.mock.calls.map(([event]) => event as FormEvent).filter((event) => event.type === 'step_viewed');
+    expect(views.at(-1)).toEqual({ type: 'step_viewed', stepId: 'one', stepIndex: 0 });
+    expect(views).toHaveLength(4);
+  });
+
+  it('reports step validation errors and a thrown submit handler', async () => {
+    const onFormEvent = fn();
+    harness.mount({
+      definition: wizard,
+      initialValues: { plan: 'a', city: 'Oslo' },
+      onSubmit: () => {
+        throw new Error('Offline');
+      },
+      onFormEvent,
+    });
+    await harness.click(button('Continue'));
+    await waitFor(() => expect(onFormEvent).toHaveBeenCalledWith({ type: 'field_error', fieldKey: 'name', error: expect.any(String) }));
+    await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
+    await harness.click(button('Continue'));
+    await harness.click(await screen.findByRole('button', { name: 'Continue' }));
+    await screen.findByRole('heading', { name: 'Three' });
+    await harness.click(button('Send'));
+    await screen.findByText('Offline');
+    expect(onFormEvent).toHaveBeenLastCalledWith({ type: 'form_submit_failed', reason: 'error' });
   });
 
   it('hides the summary once every error is fixed', async () => {
