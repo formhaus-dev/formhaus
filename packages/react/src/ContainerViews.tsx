@@ -1,16 +1,32 @@
-import { useEffect, useRef } from 'react';
+import type { FormField } from '@formhaus/core';
+import { type CSSProperties, useEffect, useRef } from 'react';
 import type { ConfirmDialogComponentProps, GroupComponentProps, GroupItemComponentProps, SectionComponentProps } from './types';
 
-export function DefaultSection({ id, title, description, descriptionId, children }: SectionComponentProps) {
+export function DefaultSection({ id, section, title, description, descriptionId, children }: SectionComponentProps) {
+  const columns = section.layout === 'matrix' && (section.fields[0] as FormField | undefined)?.options;
   return (
-    <fieldset id={id} className="fh-section" aria-describedby={descriptionId}>
+    <fieldset
+      id={id}
+      className={columns ? 'fh-section fh-section--matrix' : 'fh-section'}
+      aria-describedby={descriptionId}
+      style={columns ? ({ '--fh-matrix-columns': columns.length } as CSSProperties) : undefined}
+    >
       <legend className="fh-section__title">{title}</legend>
       {description && (
         <p id={descriptionId} className="fh-field__helper fh-section__description">
           {description}
         </p>
       )}
-      <div className="fh-section__body">{children}</div>
+      <div className="fh-section__body">
+        {columns && (
+          <div className="fh-section__matrix-header" aria-hidden="true">
+            {columns.map((option) => (
+              <span key={option.value}>{option.label}</span>
+            ))}
+          </div>
+        )}
+        {children}
+      </div>
     </fieldset>
   );
 }

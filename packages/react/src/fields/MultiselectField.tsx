@@ -1,6 +1,7 @@
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
 import { fieldId, optionProps } from './fieldProps';
+import { OptionImage } from './OptionImage';
 
 export function MultiselectField(props: FieldComponentProps) {
   const { field, value, error, onChange } = props;
@@ -18,6 +19,7 @@ export function MultiselectField(props: FieldComponentProps) {
         const optionId = `${fieldId(props)}-${index}`;
         return (
           <div key={opt.value} className="fh-field__multiselect-option">
+            <OptionImage option={opt} />
             <input
               {...optionProps(props)}
               id={optionId}

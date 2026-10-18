@@ -8,6 +8,7 @@ import { FileField } from './fields/FileField';
 import { HiddenField } from './fields/HiddenField';
 import { MultiselectField } from './fields/MultiselectField';
 import { RadioField } from './fields/RadioField';
+import { ScaleField } from './fields/ScaleField';
 import { SelectField } from './fields/SelectField';
 import { SwitchField } from './fields/SwitchField';
 import { TextField } from './fields/TextField';
@@ -33,6 +34,8 @@ export const defaultFieldComponents: Record<DefaultFieldType, ComponentType<Fiel
   time: TimeField,
   textarea: TextareaField,
   hidden: HiddenField,
+  scale: ScaleField,
+  rating: ScaleField,
 };
 
 export function withDefaultFields(components?: FieldComponentMap): FieldComponentMap {
