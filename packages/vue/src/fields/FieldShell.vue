@@ -7,14 +7,14 @@ const props = defineProps<{
   id?: string;
   field: FormField;
   error?: string;
-  variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect';
+  variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
 }>();
 
-const group = computed(() => props.variant === 'radio' || props.variant === 'multiselect');
-const inline = computed(() => !!props.variant && !group.value);
+const inline = computed(() => props.variant === 'checkbox' || props.variant === 'switch');
+const group = computed(() => !!props.variant && !inline.value);
 const ids = computed(() => fieldIds(props.field, props.id));
 const container = computed(() => {
-  const name = `fh-field__${props.variant}-${group.value ? 'group' : 'wrapper'}`;
+  const name = `fh-field__${props.variant === 'rating' ? 'scale' : props.variant}-${group.value ? 'group' : 'wrapper'}`;
   return group.value && props.field.layout === 'inline' ? [name, `${name}--inline`] : name;
 });
 const required = () =>

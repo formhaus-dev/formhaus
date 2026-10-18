@@ -33,3 +33,50 @@ export function useField(props: FormFieldProps, emit: FieldEmits) {
   }));
   return { inputId, control, input };
 }
+
+export function useChoice(
+  props: FormFieldProps,
+  emit: ((event: 'update:modelValue', value: unknown) => void) & ((event: 'commit', value: unknown) => void),
+  pick?: (key: string) => unknown,
+) {
+  let arrow = false;
+  return (value: unknown) => {
+    const commit = (input: unknown) => (props.field.autoAdvance ? emit('commit', input) : emit('update:modelValue', input));
+    return {
+      onKeydown(event: KeyboardEvent) {
+        arrow = event.key.startsWith('Arrow');
+        const picked = pick?.(event.key);
+        if (picked !== undefined) {
+          event.preventDefault();
+          commit(picked);
+          (event.currentTarget as HTMLElement).parentElement?.parentElement
+            ?.querySelector<HTMLInputElement>(`[value="${picked}"]`)
+            ?.focus();
+        }
+        if (props.field.autoAdvance && event.key === ' ') event.preventDefault();
+        if (props.field.autoAdvance && event.key === 'Enter') {
+          event.preventDefault();
+          if (!event.repeat) commit(value);
+        }
+      },
+      onKeyup(event: KeyboardEvent) {
+        arrow = false;
+        if (props.field.autoAdvance && event.key === ' ') {
+          event.preventDefault();
+          commit(value);
+        }
+      },
+      onPointerdown() {
+        arrow = false;
+      },
+      onClick(event: MouseEvent) {
+        if (!props.field.autoAdvance || arrow) return;
+        if (event.detail > 1) event.preventDefault();
+        else commit(value);
+      },
+      onChange() {
+        if (!props.field.autoAdvance || arrow) emit('update:modelValue', value);
+      },
+    };
+  };
+}

@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { formFieldProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
+import OptionImage from './OptionImage.vue';
 import { useField } from './useField';
 
 const props = defineProps(formFieldProps);
@@ -23,6 +24,7 @@ function handleToggle(optValue: string) {
       :key="String(option.value)"
       class="fh-field__multiselect-option"
     >
+      <OptionImage :option="option" />
       <input
         v-bind="control"
         :id="`${inputId}-${index}`"

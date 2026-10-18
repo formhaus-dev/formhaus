@@ -1,36 +1,13 @@
 <script setup lang="ts">
 import { formFieldEmits, formFieldProps } from '../props';
 import FieldShell from './FieldShell.vue';
-import { useField } from './useField';
+import OptionImage from './OptionImage.vue';
+import { useChoice, useField } from './useField';
 
 const props = defineProps(formFieldProps);
 const emit = defineEmits(formFieldEmits);
 const { inputId, control } = useField(props, emit);
-
-let arrowSelection = false;
-function onKeyDown(event: KeyboardEvent, value: string) {
-  arrowSelection = event.key.startsWith('Arrow');
-  if (props.field.autoAdvance && event.key === ' ') event.preventDefault();
-  if (props.field.autoAdvance && event.key === 'Enter') {
-    event.preventDefault();
-    if (!event.repeat) emit('commit', value);
-  }
-}
-function onChange(value: string) {
-  if (!props.field.autoAdvance || arrowSelection) emit('update:modelValue', value);
-}
-function onClick(event: MouseEvent, value: string) {
-  if (!props.field.autoAdvance || arrowSelection) return;
-  if (event.detail > 1) event.preventDefault();
-  else emit('commit', value);
-}
-function onKeyUp(event: KeyboardEvent, value: string) {
-  arrowSelection = false;
-  if (props.field.autoAdvance && event.key === ' ') {
-    event.preventDefault();
-    emit('commit', value);
-  }
-}
+const choice = useChoice(props, emit);
 </script>
 
 <template>
@@ -40,19 +17,15 @@ function onKeyUp(event: KeyboardEvent, value: string) {
       :key="String(option.value)"
       class="fh-field__radio-option"
     >
+      <OptionImage :option="option" />
       <input
-        v-bind="control"
+        v-bind="{ ...control, ...choice(option.value) }"
         :id="`${inputId}-${index}`"
         class="fh-field__radio"
         type="radio"
         :name="props.field.key"
         :value="option.value"
         :checked="String(props.modelValue) === String(option.value)"
-        @keydown="onKeyDown($event, option.value)"
-        @keyup="onKeyUp($event, option.value)"
-        @pointerdown="arrowSelection = false"
-        @click="onClick($event, option.value)"
-        @change="onChange(option.value)"
       />
       <label :for="`${inputId}-${index}`" class="fh-field__radio-label">
         {{ option.label }}
