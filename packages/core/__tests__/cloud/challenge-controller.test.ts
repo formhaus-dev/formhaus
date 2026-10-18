@@ -125,4 +125,61 @@ describe('cloud controller with a bot check', () => {
     expect(sentBody(fetchMock, 0)).not.toHaveProperty('_fh_ts');
     expect(sentBody(fetchMock, 1)).not.toHaveProperty('_fh_ts');
   });
+  describe('when form_updated changes the bot check', () => {
+    const moved = { ...challenge, url: 'https://formhaus.cc/challenge?form=abc&v=2' };
+    const served = (status: number, body: unknown, version?: number) => ({
+      ...respond(status, body),
+      headers: { get: (name: string) => (name === 'Formhaus-Version' && version ? String(version) : null) },
+    });
+
+    async function updateTo(next: unknown) {
+      const fetchMock = vi
+        .fn()
+        .mockResolvedValueOnce(respond(409, { error: 'form_updated', version: 2, errors: {} }))
+        .mockResolvedValueOnce(served(200, { definition, ...(next ? { challenge: next } : {}) }, 2))
+        .mockResolvedValueOnce(respond(201, { id: 's1', values: {} }));
+      vi.stubGlobal('fetch', fetchMock);
+      const fake = page();
+      const states: CloudState[] = [];
+      const controller = create(fake, states);
+      const first = controller.submit({ name: 'Ada' }, []);
+      await answer(fake, { token: 'ts_old' });
+      await first.catch(() => undefined);
+      expect(states.at(-1)?.version).toBe(2);
+      return { fetchMock, fake, states, controller };
+    }
+
+    it('replaces the frame when the challenge URL changes', async () => {
+      const { fetchMock, fake, controller } = await updateTo(moved);
+      expect(fake.frames[0].isConnected).toBe(false);
+      controller.warm();
+      expect(fake.frames).toHaveLength(2);
+      expect(fake.last().src).toBe(moved.url);
+      expect(fake.listeners.size).toBe(1);
+      const second = controller.submit({ name: 'Ada' }, []);
+      await answer(fake, { token: 'ts_new' });
+      await second;
+      expect(sentBody(fetchMock, 2)._fh_ts).toBe('ts_new');
+      expect(fake.requests()[0].fresh).toBe(true);
+      controller.dispose();
+    });
+
+    it('keeps the frame when the challenge is unchanged', async () => {
+      const { fake, controller } = await updateTo({ ...challenge });
+      controller.warm();
+      expect(fake.frames).toHaveLength(1);
+      expect(fake.frames[0].isConnected).toBe(true);
+      controller.dispose();
+    });
+
+    it('removes the frame when the challenge is turned off', async () => {
+      const { fetchMock, fake, controller } = await updateTo(null);
+      expect(fake.frames[0].isConnected).toBe(false);
+      expect(fake.listeners.size).toBe(0);
+      controller.warm();
+      await controller.submit({ name: 'Ada' }, []);
+      expect(fake.frames).toHaveLength(1);
+      expect(sentBody(fetchMock, 2)._fh_ts).toBeUndefined();
+    });
+  });
 });
