@@ -1,6 +1,7 @@
 import type { FormStep } from '../types';
 import { valueFields } from '../visibility/nodes';
 import { createValues } from './engine-utils';
+import { baselineFields } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { activeSteps } from './step-routes';
 import { dropServerErrors, pruneOffPathErrors } from './validation-state';
@@ -19,6 +20,7 @@ export function skipTarget(engine: EngineInternals): FormStep | undefined {
 export function skipCurrentStep(engine: EngineInternals): (kept: Set<string>) => void {
   const step = engine.currentStep!;
   const fieldKeys = valueFields(step.fields).map(({ key }) => key);
+  baselineFields(engine);
   engine.state.values = resetValues(engine);
   const restore = engine.visibility.reseed(fieldKeys, engine.values);
   const owned = Object.keys(engine.errors).filter((key) => fieldKeys.includes(engine.visibility.owner(key)));

@@ -24,6 +24,11 @@ function trackFields(engine: EngineInternals): void {
     if (previous?.get(id)?.[1] === !shown) emit(engine, { type: shown ? 'field_shown' : 'field_hidden', fieldKey });
 }
 
+export function baselineFields(engine: EngineInternals): void {
+  if (!engine.lifecycle.onFormEvent) engine.shownFields = undefined;
+  else if (engine.viewedStep !== undefined) engine.shownFields ??= engine.visibility.conditionResults(engine.values);
+}
+
 export function startEvents(engine: EngineInternals): void {
   if (engine.viewedStep !== undefined) return;
   emit(engine, { type: 'form_viewed' });
