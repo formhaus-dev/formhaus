@@ -81,6 +81,7 @@ Call `start()` when the form is on screen. It reports `form_viewed` and the firs
 - `form_submitted` ends the last question. `form_submit_failed` restarts its clock, because the visitor stays on it.
 - `field_focused` to `field_blurred` gives the time spent in each field. Those reports carry `fieldKey`.
 - `watchPage` pauses both clocks while the tab is hidden and reports the open question on `pagehide`, so abandoned questions are counted.
+- Single-page app navigation does not fire `pagehide`. Call `timer.leave()` when the route changes away from the form.
 - A question the visitor returns to is reported again. Sum the reports per `stepId` for the total.
 
 ## Related

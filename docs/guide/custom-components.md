@@ -298,8 +298,8 @@ Events emitted:
 | `step_skipped` | User skips a step | `stepId` |
 | `field_focused` | User focuses a field | `fieldKey` |
 | `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
-| `field_shown` | A field's `show` condition, or its section's, starts to pass | `fieldKey` |
-| `field_hidden` | A field's `show` condition, or its section's, stops passing | `fieldKey` |
+| `field_shown` | A field's `show` condition, or its section's, starts to pass. Reports fields on every step, not only the current one, and can fire on `reset()` | `fieldKey` |
+| `field_hidden` | A field's `show` condition, or its section's, stops passing. Reports fields on every step, not only the current one, and can fire on `reset()` | `fieldKey` |
 | `field_error` | Step validation, form validation or the submit handler fails with field errors | `fieldKey`, `error` |
 | `form_submitted` | Validation and `onBeforeSubmit` pass, right before the submit handler runs | `fieldCount` |
 | `form_submit_succeeded` | The submit handler resolves without `{ ok: false }` | |
