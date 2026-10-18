@@ -83,12 +83,19 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   const alive = () => !controller.signal.aborted;
   let state = initialCloudState;
   let frame: CloudChallengeFrame | undefined;
-  const challenge = () =>
-    state.challenge && options.challengeHost
-      ? (frame ??= createChallengeFrame(state.challenge, options.id, options.challengeHost))
-      : undefined;
+  let framed = '';
+  const configOf = (c: CloudChallenge | null) => `${c?.provider} ${c?.siteKey} ${c?.url}`;
+  const challenge = () => {
+    if (!state.challenge || !options.challengeHost) return undefined;
+    framed = configOf(state.challenge);
+    return (frame ??= createChallengeFrame(state.challenge, options.id, options.challengeHost));
+  };
   const update = (patch: Partial<CloudState>) => {
     state = { ...state, ...patch };
+    if (frame && configOf(state.challenge) !== framed) {
+      frame.dispose();
+      frame = undefined;
+    }
     callbacks.onChange(state);
   };
   const report = (patch: Partial<CloudState>) => update({ ...patch, attempt: state.attempt + 1 });
