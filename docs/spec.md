@@ -141,7 +141,7 @@ Built-in type names are single lowercase words without separators. A type name w
 - **`min` and `max` on `rating`.** `max` defines the range. `min` is an ordinary rule: a rating below it fails with the `min` message, such as `Must be at least 3`.
 - **`defaultValue`.** A point of the range. Another value fails validation like any other value.
 - **`minLength`, `maxLength`.** Do not apply. `checkDefinition()` warns with `rule-not-applicable`.
-- **Anchors.** `options` are optional anchor labels, at most 3. An anchor `value` is the point number as a string, such as `"0"`, and its `label` is the text. The first anchor is aligned to the start, the last to the end and a middle one to the center. Anchors are not choices: core does not check values against them, and `checkDefinition()` does not compare condition values with them.
+- **Anchors.** `options` are optional anchor labels. An anchor `value` is the point number as a string, such as `"0"`, and its `label` is the text. Renderers show the labels of three points: the first point at the start, the last point at the end and the middle point, `floor((min + max) / 2)`, in the center. Labels on other points are not shown. Anchors are not choices: core does not check values against them, and `checkDefinition()` does not compare condition values with them.
 - **Conditions.** `eq`, `neq`, `in` and `notIn` compare numbers, and `gt`, `gte`, `lt` and `lte` compare the point. `checkDefinition()` warns about a string operand with `condition-value-mismatch`.
 - **Keyboard.** Each point is a native radio. Arrow keys move between points. Digit keys 0 to 9 select the point with that number; on a range that ends at 10 and starts at 1, `0` selects 10.
 

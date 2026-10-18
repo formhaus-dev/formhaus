@@ -458,7 +458,7 @@
           "items": {
             "$ref": "#/definitions/FieldOption"
           },
-          "description": "Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, up to 3 anchor labels whose value is a point number."
+          "description": "Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, anchor labels whose value is a point number: the first, middle and last points show their label."
         },
         "layout": {
           "type": "string",
