@@ -16,6 +16,9 @@ function onKeyDown(event: KeyboardEvent, value: string) {
     if (!event.repeat) emit('commit', value);
   }
 }
+function onChange(value: string) {
+  if (!props.field.autoAdvance || arrowSelection) emit('update:modelValue', value);
+}
 function onClick(event: MouseEvent, value: string) {
   if (!props.field.autoAdvance || arrowSelection) return;
   if (event.detail > 1) event.preventDefault();
@@ -49,7 +52,7 @@ function onKeyUp(event: KeyboardEvent, value: string) {
         @keyup="onKeyUp($event, option.value)"
         @pointerdown="arrowSelection = false"
         @click="onClick($event, option.value)"
-        @change="() => { if (!props.field.autoAdvance || arrowSelection) emit('update:modelValue', option.value); }"
+        @change="onChange(option.value)"
       />
       <label :for="`${inputId}-${index}`" class="fh-field__radio-label">
         {{ option.label }}

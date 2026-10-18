@@ -2,6 +2,7 @@
 import { sectionComponentProps } from './props';
 
 defineProps(sectionComponentProps);
+defineSlots<{ default(): unknown }>();
 </script>
 
 <template>
