@@ -42,6 +42,19 @@ describe('sections and groups', () => {
     expect(summary(definition)).toEqual(['error unknown-property /fields/2/label', 'error unknown-property /fields/3/placeholder']);
   });
 
+  it('reports malformed sections, groups and steps instead of throwing', async () => {
+    const definition = {
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Send' },
+      formatVersion: '1.1',
+      fields: [{ key: 's', type: 'section', title: 'S' }, { key: 'g', type: 'group', label: 'G', fields: 'x' }, null],
+      steps: [null],
+    };
+    expect(validateDefinitionTool({ definition }).valid).toBe(false);
+    expect((await simulatePathTool({ definition })).ok).toBe(false);
+  });
+
   it('warns about autoAdvance inside a group', () => {
     const definition = registration();
     (definition.fields![3] as { fields: unknown[] }).fields.push({
