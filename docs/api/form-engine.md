@@ -264,7 +264,7 @@ const engine = new FormEngine(definition, {}, { onFormEvent: (event) => console.
 engine.start();
 ```
 
-The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped`, `field_error`, `form_submitted`, `form_submit_succeeded`, `form_submit_failed` and `form_reset`. `step_viewed` fires after `start()` for every change of the current step, including `goToStepWithField`, `reset` and a step that a condition hides. The renderers call `start()` on mount and add `field_focused` and `field_blurred`. See the [event table](/guide/custom-components#form-events).
+The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped`, `field_shown`, `field_hidden`, `field_error`, `form_submitted`, `form_submit_succeeded`, `form_submit_failed` and `form_reset`. `step_viewed` fires after `start()` for every change of the current step, including `goToStepWithField`, `reset` and a step that a condition hides. Before `start()`, `step_viewed`, visibility events and `form_reset` stay silent. The renderers call `start()` on mount and add `field_focused` and `field_blurred`. An error thrown by `onFormEvent` is rethrown in a microtask and does not interrupt the action. See the [event table](/guide/custom-components#form-events).
 
 ## Navigation and submission lifecycle
 

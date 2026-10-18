@@ -40,7 +40,7 @@ export const views = [
   <HeadlessFormRenderer definition={definition} onSubmit={async () => {}} />,
   <FormRenderer ref={handle} definition={definition} onSubmit={async () => {}} />,
   <FormhausForm id="abc" />,
-  <FormRenderer definition={definition} onSubmit={async () => {}} onFormEvent={questionTimer((stepId, ms) => console.log(stepId, ms))} />,
+  <FormRenderer definition={definition} onSubmit={async () => {}} onFormEvent={questionTimer((time) => console.log(time.stepId, time.fieldKey, time.ms)).onEvent} />,
 ];
 export const extras = [TextField, CloudError];
 export const components: FieldComponentMap = {
