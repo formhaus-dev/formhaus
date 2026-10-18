@@ -1,7 +1,7 @@
 import type { FormDefinition } from '../types';
 import { carryValues, splitErrors, updatedErrors } from './carry';
 import { createChallengeFrame, type ChallengeHost, type CloudChallengeFrame } from './challenge';
-import { createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
+import { createFileUploader, createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
 import { draftValues, type DraftStore } from './draft';
 import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, networkError } from './error';
@@ -79,6 +79,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     return createSubmitter({ ...options, version: form.version, renderToken: form.renderToken, firstRenderToken: first });
   };
   let submitter = createSubmitter(options);
+  const upload = createFileUploader(options);
   let initial = options.initialForm;
   const alive = () => !controller.signal.aborted;
   let state = initialCloudState;
@@ -175,7 +176,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
       if (state.notice) update({ notice: null });
       const check = challenge();
       try {
-        const submission = await submitter(values, skippedSteps, await check?.token());
+        const sent = state.definition ? await upload.upload(state.definition, values, controller.signal) : values;
+        if (!alive()) return;
+        const submission = await submitter(sent, skippedSteps, await check?.token());
         check?.spend();
         if (!alive()) return;
         options.draftStore?.clear(options.id);
@@ -183,6 +186,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         callbacks.onSuccess?.(submission);
       } catch (error) {
         if ((error as CloudError).code === 'verification_failed') check?.spend();
+        upload.forget(values, Object.keys((error as CloudError).errors ?? {}));
         if (!alive()) throw error;
         await fail(error, values);
         callbacks.onError?.(error);

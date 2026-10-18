@@ -25,10 +25,16 @@ interface CloudResponse {
   json(): Promise<unknown>;
 }
 
+interface CloudFile {
+  readonly name: string;
+  readonly size: number;
+  arrayBuffer(): Promise<unknown>;
+}
+
 interface CloudRequestInit {
   method?: string;
   headers?: Record<string, string>;
-  body?: string;
+  body?: string | CloudFile;
   signal?: AbortSignal;
 }
 

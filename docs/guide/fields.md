@@ -284,7 +284,7 @@ The browser and `validateSubmission()` accept `00:00` to `23:59:59` and reject a
 
 ## File
 
-File upload. Uses native file input. Set `accept` to restrict file types.
+File upload. Uses native file input. Set `accept` to restrict file types. With [Formhaus Cloud](/guide/endpoint#files), `FormhausForm` uploads the file and submits its id.
 
 ```json
 {

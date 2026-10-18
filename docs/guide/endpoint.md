@@ -41,6 +41,12 @@ Props, status codes, `Idempotency-Key` and validation rules are in [Collecting s
 
 `FormhausForm` and submitters from `createSubmitter` send `utm_source`, `utm_medium`, `utm_campaign`, `utm_term` and `utm_content` from the page address as `attribution`. Cloud stores them apart from the values. Other parameters of the address are not sent.
 
+## Files
+
+`FormhausForm` uploads the file of each `file` field before it submits and sends the upload id as the value. Files go straight from the browser to Cloud storage, up to 10 MB each and 5 per form. A refused file, such as one too large or of a type the form does not accept, shows its message on the field. See [Files](https://formhaus.dev/cloud/submissions#files) for the types and for uploads from your own client.
+
+`createSubmitter` sends values as they are. Upload files yourself before you call it.
+
 ## Bot check
 
 When Formhaus Cloud has the bot check on, `FormhausForm` loads `https://formhaus.cc/challenge` in a frame on first focus and sends its token with the submission. The frame stays hidden unless the check needs a click. If your site sets a Content-Security-Policy, add `frame-src https://formhaus.cc`. If the frame cannot load, the form submits without a token and the form's bot check setting decides whether Cloud accepts it. With a self-hosted Cloud, allow your forms host in `frame-src` instead.
