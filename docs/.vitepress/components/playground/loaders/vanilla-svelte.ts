@@ -3,7 +3,8 @@ import { FORMHAUS_VERSION } from './versions';
 
 export function buildFiles(definitionJson: string) {
   return {
-    'App.svelte': AppSvelte.replace('import definition from "./definition.json";', `const definition = ${definitionJson};`),
+    'App.svelte': AppSvelte,
+    'definition.json': definitionJson,
   };
 }
 
