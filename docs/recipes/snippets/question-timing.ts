@@ -94,6 +94,7 @@ export type QuestionTimer = ReturnType<typeof questionTimer>;
 export function watchPage(timer: QuestionTimer, page: Document = document, view: Window = window) {
   const visibility = () => (page.visibilityState === 'hidden' ? timer.hide() : timer.show());
   const leave = () => timer.leave();
+  visibility();
   page.addEventListener('visibilitychange', visibility);
   view.addEventListener('pagehide', leave);
   return () => {
