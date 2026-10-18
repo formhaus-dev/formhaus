@@ -112,4 +112,21 @@ export function fieldScenarios(harness: RendererHarness, { it, expect, waitFor, 
     await waitFor(() => expect(onFormEvent).toHaveBeenCalledWith({ type: 'field_blurred', fieldKey: 'people.0.name', hasValue: true }));
     expect(onFormEvent).toHaveBeenCalledWith({ type: 'field_focused', fieldKey: 'people.0.name' });
   });
+
+  it('reports a field shown and hidden by its condition', async () => {
+    const onFormEvent = fn();
+    harness.mount({ definition: event, onSubmit: () => {}, onFormEvent });
+    await harness.click(screen.getByRole('checkbox', { name: 'Company' }));
+    await screen.findByRole('textbox', { name: 'Street' });
+    await harness.click(screen.getByRole('checkbox', { name: 'Company' }));
+    await waitFor(() => expect(screen.queryByRole('textbox', { name: 'Street' })).toBeNull());
+    expect(
+      onFormEvent.mock.calls
+        .map(([item]) => item)
+        .filter((item) => ['field_shown', 'field_hidden'].includes((item as { type: string }).type)),
+    ).toEqual([
+      { type: 'field_shown', fieldKey: 'street' },
+      { type: 'field_hidden', fieldKey: 'street' },
+    ]);
+  });
 }
