@@ -1,5 +1,5 @@
 import type { HeadConfig, TransformContext } from 'vitepress';
-import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, homeJsonLd } from './jsonld';
+import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, frameworkJsonLd, homeJsonLd } from './jsonld';
 import { breadcrumbs, ogImage } from './meta';
 import { pageUrl, siteName } from './site';
 
@@ -26,12 +26,14 @@ export function transformHead({ pageData, title, description, content }: Transfo
   if (pageData.isNotFound) return [];
   const { relativePath, params } = pageData;
   const home = relativePath === 'index.md';
+  const framework = relativePath === 'framework.md';
+  const landing = home || framework;
   const url = pageUrl(relativePath);
   const image = ogImage(relativePath, params?.slug ? { slug: params.slug, title: params.title } : undefined);
   const tags: HeadConfig[] = [
     ['link', { rel: 'canonical', href: url }],
-    ['meta', { property: 'og:type', content: home ? 'website' : 'article' }],
-    ['meta', { property: 'og:title', content: home ? title : pageData.title }],
+    ['meta', { property: 'og:type', content: landing ? 'website' : 'article' }],
+    ['meta', { property: 'og:title', content: landing ? title : pageData.title }],
     ['meta', { property: 'og:description', content: description }],
     ['meta', { property: 'og:url', content: url }],
     ['meta', { property: 'og:image', content: image.url }],
@@ -42,8 +44,10 @@ export function transformHead({ pageData, title, description, content }: Transfo
     ['meta', { name: 'twitter:image:alt', content: image.alt }],
   ];
   if (home) tags.push(jsonLd(homeJsonLd(description)));
+  else if (framework) tags.push(jsonLd(frameworkJsonLd(description, url)));
   else tags.push(jsonLd(breadcrumbJsonLd(breadcrumbs(relativePath, pageData.title, url))));
-  if (home) tags.push(jsonLd(faqJsonLd(content)));
+  const faq = landing ? faqJsonLd(content) : null;
+  if (faq) tags.push(jsonLd(faq));
   if (isArticle(relativePath)) {
     tags.push(jsonLd(articleJsonLd(pageData.title, description, url, pageData.lastUpdated)));
   }

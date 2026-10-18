@@ -22,6 +22,7 @@
 
   .Layout:has(.VPContent.has-sidebar) .VPLocalNav {
     top: calc(var(--vp-nav-height) + var(--vp-layout-top-height, 0px));
+    padding-top: 0;
   }
 
   .Layout:has(.VPContent.has-sidebar) .VPLocalNavOutlineDropdown .items {
