@@ -10,7 +10,7 @@ const NAME = 'Claude Code';
 const PLUGIN_PREFIX = `${SERVER_NAME}@`;
 const SHIPPED_SKILLS = [
   'e929afc9f58a267647341d962283d84749a18028e5ec2c4bd770a214c26a7c25',
-  '8d49fdefda4e4184f3a3515047f0b4139d576ae38a88157e6ee2b0fec34fa3b2',
+  '7288b74973a7668592f0baef836793aaf8591f3468546c87ff0c2335c8380065',
 ];
 export const CLAUDE_ADD_ARGS = ['mcp', 'add', '--scope', 'user', SERVER_NAME, '--', SERVER.command, ...SERVER.args];
 

@@ -67,11 +67,11 @@ describe('scale lint', () => {
     ]);
   });
 
-  it('reports anchors outside the range and more than three anchors', () => {
+  it('reports anchors outside the range and anchors that are not shown', () => {
     const anchors = ['1', '2', '3', '9'].map((value) => ({ value, label: value }));
     expect(summary([scale({}, { options: anchors })])).toEqual([
+      'warning anchor-not-shown /fields/0/options/1/value',
       'warning anchor-out-of-range /fields/0/options/3/value',
-      'warning too-many-anchors /fields/0/options',
     ]);
     expect(summary([{ key: 'r', type: 'rating', label: 'R', options: [{ value: '0', label: 'None' }] }])).toEqual([
       'warning anchor-out-of-range /fields/0/options/0/value',

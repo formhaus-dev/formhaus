@@ -99,7 +99,7 @@ interface FormField {
   show?: ShowCondition[];     // field visible when ALL conditions true
   showAny?: ShowCondition[];  // field visible when ANY condition true
   validation?: FieldValidation;
-  options?: FieldOption[];    // for select, multiselect, radio; up to 3 anchor labels on scale and rating
+  options?: FieldOption[];    // for select, multiselect, radio; anchor labels on the first, middle and last point of scale and rating
   layout?: 'stack' | 'inline'; // radio/multiselect; inline only for a few short options
   optionsFrom?: string;       // dynamic options loaded at runtime
   optionsDependsOn?: string[];
@@ -261,7 +261,7 @@ Output the complete form definition JSON. Follow these rules:
 4. Use `fields` for single-step, `steps` for multi-step
 5. Only include optional properties when they add value (no empty strings, no `required: false`)
 6. Options for select/radio must have both `value` and `label`
-7. Set `"formatVersion": "1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section
+7. Set `"formatVersion": "1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section. Set at least `"1.1"` when it has sections or groups
 8. Conditions on `scale` and `rating` compare numbers: `{ "field": "nps", "lte": 6 }`. A range is two conditions: `gte` and `lte`
 
 Put `"$schema": "https://formhaus.dev/schema/form-definition.json"` as the first key

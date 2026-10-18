@@ -2,7 +2,6 @@ import type { FieldOption, FormField, FormSection } from '@formhaus/core';
 import { issue, type Issue } from './issues';
 import { IMAGE_FIELD_TYPES, MATRIX_ROW_TYPES, SCALE_FIELD_TYPES } from './vocabulary';
 
-const MAX_ANCHORS = 3;
 const MAX_COLUMNS = 7;
 
 const has = (list: readonly string[], type: unknown) => typeof type === 'string' && list.includes(type);
@@ -45,33 +44,34 @@ function rangeIssues(field: FormField, path: string): Issue[] {
 }
 
 function anchorIssues(field: FormField, path: string): Issue[] {
-  const list = options(field);
   const rules = field.validation ?? {};
   const [min, max] = [field.type === 'rating' ? 1 : (rules.min ?? 1), rules.max ?? 5];
-  const issues = list.flatMap((option, index) => {
+  const middle = Math.floor((min + max) / 2);
+  const shown = [min, max, ...(middle > min && middle < max ? [middle] : [])];
+  return options(field).flatMap((option, index) => {
     const point = Number(option.value);
-    if (String(option.value) === String(point) && whole(point) && point >= min && point <= max) return [];
+    const at = `${path}/options/${index}/value`;
+    if (String(option.value) !== String(point) || !whole(point) || point < min || point > max)
+      return [
+        issue(
+          'anchor-out-of-range',
+          'warning',
+          at,
+          `the anchor ${JSON.stringify(option.value)} of "${field.key}" is not a point from ${min} to ${max}`,
+          'Set the anchor value to a point number as a string, such as "1"',
+        ),
+      ];
+    if (shown.includes(point)) return [];
     return [
       issue(
-        'anchor-out-of-range',
+        'anchor-not-shown',
         'warning',
-        `${path}/options/${index}/value`,
-        `the anchor ${JSON.stringify(option.value)} of "${field.key}" is not a point from ${min} to ${max}`,
-        'Set the anchor value to a point number as a string, such as "1"',
+        at,
+        `the anchor on point ${point} of "${field.key}" is not shown; only the first, middle and last points show labels`,
+        `Move it to point ${shown.sort((a, b) => a - b).join(', ')}, or remove it`,
       ),
     ];
   });
-  if (list.length > MAX_ANCHORS)
-    issues.push(
-      issue(
-        'too-many-anchors',
-        'warning',
-        `${path}/options`,
-        `"${field.key}" has ${list.length} anchors; only the first, middle and last are shown`,
-        'Keep at most 3 anchors: start, middle and end',
-      ),
-    );
-  return issues;
 }
 
 function imageIssues(field: FormField, path: string): Issue[] {

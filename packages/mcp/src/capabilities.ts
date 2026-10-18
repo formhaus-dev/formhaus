@@ -20,7 +20,7 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups and "1.3" when it has scale or rating fields, otherwise outdated-format-version is reported.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section; outdated-format-version is reported for sections, groups, scale and rating.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
@@ -92,7 +92,7 @@ export const capabilities = {
     imageFieldTypes: IMAGE_FIELD_TYPES,
     anchorFieldTypes: SCALE_FIELD_TYPES,
     anchors:
-      'scale and rating only: options are up to 3 anchor labels, not choices. value is the point number as a string, such as "0" or "10"; the first anchor shows at the start, the last at the end and a middle one in the center.',
+      'scale and rating only: options are anchor labels, not choices. value is the point number as a string, such as "0" or "10". Only three points show their label: the first at the start, the middle point floor((min + max) / 2) in the center and the last at the end.',
     inputMode: ['text', 'numeric', 'decimal', 'tel', 'email', 'url', 'search'],
     layout: 'radio and multiselect only: "stack" (default) or "inline" for short options.',
     autoAdvance: `${AUTO_ADVANCE_TYPES.join(', ')} only. Ignored inside a group or a matrix section.`,
