@@ -110,7 +110,7 @@ Use `subscribeStructure()` and `getStructureSnapshot()` for visible field lists,
 
 ## Docs
 
-- Full guide and API reference: https://formhaus.dev
+- Full guide and API reference: https://formhaus.dev/framework
 - Live playground: https://formhaus.dev/playground.html
 - Source and issues: https://github.com/ignsm/formhaus
 

@@ -4,6 +4,8 @@ import type { EnhanceAppContext, Theme } from 'vitepress';
 import GithubStar from './GithubStar.vue';
 import NavCta from './NavCta.vue';
 import LpNav from './LpNav.vue';
+import PromoBar from './PromoBar.vue';
+import './promo.css';
 import './landing-nav.css';
 import DocsDrawerMenu from './DocsDrawerMenu.vue';
 import { ownerOf } from './routes.js';
@@ -13,6 +15,7 @@ import './docs-menu.css';
 import { startAnalytics } from './analytics';
 
 export { track } from './analytics';
+export { promoHead } from './promo';
 
 function stayInOwnBuild({ router }: EnhanceAppContext) {
   if (typeof window === 'undefined') return;
@@ -33,6 +36,7 @@ export function createTheme(enhance?: (context: EnhanceAppContext) => void): The
     extends: DefaultTheme,
     Layout: () =>
       h(DefaultTheme.Layout, null, {
+        'layout-top': () => h(PromoBar),
         'nav-bar-content-before': () => h(LpNav),
         'nav-bar-content-after': () => [h(GithubStar), h(NavCta)],
         'nav-screen-content-before': () => [h(NavCta, { mobile: true }), h(LpNav, { mobile: true })],

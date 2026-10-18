@@ -43,26 +43,13 @@ export function homeJsonLd(description: string) {
         publisher: organization,
       },
       {
-        '@type': 'SoftwareSourceCode',
-        '@id': `${siteUrl}/#source`,
-        name: siteName,
-        description,
-        url: `${siteUrl}/`,
-        codeRepository: repoUrl,
-        programmingLanguage: 'TypeScript',
-        license: 'https://opensource.org/licenses/MIT',
-        author,
-        keywords: keywords.join(', '),
-      },
-      {
-        '@type': 'SoftwareApplication',
+        '@type': 'WebApplication',
         '@id': `${siteUrl}/#app`,
-        name: siteName,
+        name: `${siteName} Cloud`,
         description,
         url: `${siteUrl}/`,
-        applicationCategory: 'DeveloperApplication',
+        applicationCategory: 'BusinessApplication',
         operatingSystem: 'Any',
-        softwareVersion: coreVersion,
         publisher: organization,
         offers: plans.map(({ name, price }) => ({
           '@type': 'Offer',
@@ -76,14 +63,32 @@ export function homeJsonLd(description: string) {
                 priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: 'USD', unitText: 'MONTH' },
               }),
         })),
-        sameAs: [
-          repoUrl,
-          'https://www.npmjs.com/package/@formhaus/core',
-          'https://www.npmjs.com/package/@formhaus/react',
-          'https://www.npmjs.com/package/@formhaus/vue',
-          'https://www.npmjs.com/package/@formhaus/mcp',
-        ],
       },
+    ],
+  };
+}
+
+export function frameworkJsonLd(description: string, url: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareSourceCode',
+    '@id': `${url}#source`,
+    name: siteName,
+    description,
+    url,
+    codeRepository: repoUrl,
+    programmingLanguage: 'TypeScript',
+    license: 'https://opensource.org/licenses/MIT',
+    version: coreVersion,
+    author,
+    publisher: { '@id': `${siteUrl}/#organization` },
+    keywords: keywords.join(', '),
+    sameAs: [
+      repoUrl,
+      'https://www.npmjs.com/package/@formhaus/core',
+      'https://www.npmjs.com/package/@formhaus/react',
+      'https://www.npmjs.com/package/@formhaus/vue',
+      'https://www.npmjs.com/package/@formhaus/mcp',
     ],
   };
 }
@@ -124,6 +129,7 @@ export function faqJsonLd(html: string) {
   const start = html.indexOf('id="faq"');
   const faq = start < 0 ? '' : html.slice(start).split('</section>')[0];
   const entries = [...faq.matchAll(/<h3[^>]*>([\s\S]*?)<\/h3>\s*(?:<div\b[^>]*>\s*)*<p[^>]*>([\s\S]*?)<\/p>/g)];
+  if (entries.length === 0) return null;
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
