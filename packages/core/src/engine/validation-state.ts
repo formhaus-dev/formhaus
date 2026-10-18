@@ -1,5 +1,5 @@
 import { validateFieldValue } from '../validation';
-import { emit } from './form-events';
+import { baselineFields, emit } from './form-events';
 import { customRules, validateShown } from '../validation/validate-step';
 import { isPlainEntry } from '../validation/type-checks';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
@@ -175,6 +175,7 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   const previousValues = engine.values;
   const previousErrors = engine.errors;
   const loadingFields = Object.keys(engine.fieldLoading);
+  baselineFields(engine);
   engine.validationEpoch++;
   engine.operationEpoch++;
   Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values, engine.visibility.activeField)));
