@@ -317,7 +317,8 @@
         {
           "do": "next",
           "throws": {
-            "name": "Error"
+            "name": "Error",
+            "message": "Network failure"
           }
         },
         {

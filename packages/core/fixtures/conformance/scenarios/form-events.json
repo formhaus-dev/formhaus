@@ -214,7 +214,8 @@
             }
           ],
           "throws": {
-            "name": "Error"
+            "name": "Error",
+            "message": "Offline"
           }
         },
         {

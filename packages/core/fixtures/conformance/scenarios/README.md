@@ -19,16 +19,19 @@ Each file holds one `definition` and a list of scenarios that drive `FormEngine`
 
 ## Running a scenario
 
-1. Create the engine with `values` and the options the scenario lists. If `throws` is set, the constructor must throw an error with that name.
-2. Run `steps` in order. An action step calls the engine method named in `do` and awaits it. `returns` is compared with the result. `throws` is compared with the `name` (and `phase`, if set) of the error the action throws or rejects with.
-3. With `"await": false`, the action starts and the runner moves on. `settle` awaits every started action and checks its `returns` or `throws`.
-4. An `expect` step reads only the properties it lists. All other state is not checked.
+1. Apply `overlay` to the definition, if set. Create the engine with `values` and the options the scenario lists.
+2. If `throws` is set, the constructor must throw an error with that name. Such a scenario has no steps and no options.
+3. Run `steps` in order. An action step calls the engine method named in `do` and awaits it. `returns` is compared with the result. `throws` is compared with the `name` of the error the action throws or rejects with, and with its `phase` and `message` if the expectation lists them.
+4. With `"await": false`, the action starts, the runner waits one macrotask, and moves on. `settle` awaits every started action and checks its `returns` or `throws`.
+5. An `expect` step reads only the properties it lists. All other state is not checked.
+6. At the end, the scenario fails if an action started with `"await": false` is still pending or a `defer` reply was never resolved. Unused replies are not an error.
 
 ## Hooks and validators
 
 - `hooks` installs only the listed hooks. Each call takes the next reply from its list. An exhausted list replies with nothing (`undefined`).
-- A reply returns `return`, or throws an `Error` with the message `throw`. A reply with `defer` stays pending until a `resolve` step names it.
-- A submit or skip handler takes its replies from the action's `handler` list.
+- A reply returns `return`, or throws an `Error` with the message `throw`, synchronously. A reply with `defer` returns a promise instead. It stays pending until a `resolve` step names it, and then resolves with `return` or rejects with `throw`. After `resolve`, the runner waits one macrotask. Resolving an unknown or already resolved name is an error.
+- `onStepValidate` always returns a promise of its reply.
+- `submit` always passes a handler, which takes its replies from the action's `handler` list. `skip` passes a handler only when the action has a `handler` key, so on the last step `"handler": []` submits and a missing `handler` does not.
 - `validators` maps a validator name to a list of values it rejects with `error`. Values are compared as JSON.
 - `messages` is a message catalog.
 
@@ -40,7 +43,7 @@ The runner records, in order:
 - `{ "warning": { "code", "path" } }` for every `onWarning` call.
 - `{ "call": "<hook>", ... }` for every installed hook and handler call, with its arguments: `context` for step hooks, `values` and `skippedSteps` for submit hooks and handlers, `stepId` and `values` for `onStepValidate`.
 
-Every `expect` step clears the log. `"log": [...]` compares the entries recorded since the previous `expect`.
+Every `expect` step clears the log. `"log": [...]` compares the entries recorded since the previous `expect`. Entries recorded after the last `expect` are not checked.
 
 ## Comparison
 

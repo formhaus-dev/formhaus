@@ -39,7 +39,8 @@
           "type": "string"
         },
         "defer": {
-          "type": "string"
+          "type": "string",
+          "minLength": 1
         }
       },
       "not": {
@@ -122,6 +123,38 @@
             ]
           }
         }
+      },
+      "if": {
+        "required": ["throws"]
+      },
+      "then": {
+        "properties": {
+          "steps": {
+            "maxItems": 0,
+            "type": "array"
+          }
+        },
+        "not": {
+          "anyOf": [
+            {
+              "required": ["hooks"]
+            },
+            {
+              "required": ["validators"]
+            },
+            {
+              "required": ["messages"]
+            }
+          ]
+        }
+      },
+      "else": {
+        "properties": {
+          "steps": {
+            "minItems": 1,
+            "type": "array"
+          }
+        }
       }
     },
     "action": {
@@ -182,7 +215,10 @@
         {
           "$ref": "#/$defs/do-settle"
         }
-      ]
+      ],
+      "not": {
+        "required": ["returns", "throws"]
+      }
     },
     "expectStep": {
       "type": "object",
@@ -301,28 +337,60 @@
       "type": "object",
       "oneOf": [
         {
+          "additionalProperties": false,
           "required": ["event"],
           "properties": {
             "event": {
               "type": "object",
-              "required": ["type"]
+              "required": ["type"],
+              "properties": {
+                "type": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
         {
+          "additionalProperties": false,
           "required": ["warning"],
           "properties": {
             "warning": {
               "type": "object",
-              "required": ["code", "path"]
+              "additionalProperties": false,
+              "required": ["code", "path"],
+              "properties": {
+                "code": {
+                  "type": "string"
+                },
+                "path": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
         {
+          "additionalProperties": false,
           "required": ["call"],
           "properties": {
             "call": {
               "enum": ["onBeforeStepChange", "onAfterStepChange", "onBeforeSubmit", "onAfterSubmit", "onStepValidate", "submit"]
+            },
+            "context": {
+              "type": "object"
+            },
+            "values": {
+              "type": "object"
+            },
+            "skippedSteps": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "stepId": {
+              "type": "string"
             }
           }
         }
@@ -337,6 +405,9 @@
           "type": "string"
         },
         "phase": {
+          "type": "string"
+        },
+        "message": {
           "type": "string"
         }
       }
