@@ -4,7 +4,6 @@
   --fh-color-border: #d4d4d8;
   --fh-color-border-hover: #a1a1aa;
   --fh-color-control-hover: #71717a;
-  --fh-color-border-focus: var(--fh-color-primary);
   --fh-color-error: #c0352d;
   --fh-color-error-soft: #fdf1f0;
   --fh-color-error-hover: #9e2a23;
@@ -22,10 +21,14 @@
   --fh-space-1: 4px; --fh-space-2: 6px; --fh-space-3: 8px; --fh-space-4: 10px; --fh-space-5: 12px;
   --fh-space-6: 14px; --fh-space-7: 16px; --fh-space-8: 18px; --fh-space-9: 20px; --fh-space-10: 24px;
   --fh-gap: 28px;
-  --fh-input-padding: var(--fh-space-4) var(--fh-space-6);
   --fh-control-height: 46px;
   --fh-font-size: 15px;
   --fh-font-size-small: 13px;
+}
+
+:where(.fh-cloud, .fh-form) {
+  --fh-color-border-focus: var(--fh-color-primary);
+  --fh-input-padding: var(--fh-space-4) var(--fh-space-6);
   --fh-font-size-heading: calc(var(--fh-font-size) + 2px);
   --fh-font-size-title: calc(var(--fh-font-size) + 5px);
   --fh-card-padding: var(--fh-space-10);
@@ -200,7 +203,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 @keyframes fh-fade { from { opacity: 0; } }
 
 @media (max-width: 480px) {
-  :where(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)) { --fh-card-padding: var(--fh-space-7); }
+  :where(.fh-cloud, .fh-form) { --fh-card-padding: var(--fh-space-7); }
   .fh-dialog { width: 100%; max-height: calc(100dvh - var(--fh-space-10)); margin: auto 0 0; padding-bottom: env(safe-area-inset-bottom); border-width: 1px 0 0; border-radius: var(--fh-radius) var(--fh-radius) 0 0; }
   .fh-dialog__header { padding-inline-start: var(--fh-space-7); }
   .fh-dialog__footer { flex-direction: column-reverse; padding-inline: var(--fh-space-7); }
