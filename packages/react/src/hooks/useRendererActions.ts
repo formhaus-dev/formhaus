@@ -4,7 +4,7 @@ import { useCallback, useState } from 'react';
 import type { FormRendererProps } from '../types';
 
 export function useRendererActions(engine: FormEngine, props: FormRendererProps) {
-  const { loading, onError, onFieldChange, onSubmit, onAnalyticsEvent } = props;
+  const { loading, onError, onFieldChange, onSubmit } = props;
   const [failure, setFailure] = useState<{ engine: FormEngine; message: string } | null>(null);
   const [invalidAttempts, setInvalidAttempts] = useState(0);
   const run = useCallback(
@@ -57,41 +57,11 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
     },
     [engine, loading, run, update],
   );
-  const send = useCallback(
-    async (values: Record<string, unknown>, skippedSteps: string[]) => {
-      onAnalyticsEvent?.({ type: 'form_submitted', fieldCount: Object.keys(values).length });
-      return onSubmit(values, skippedSteps);
-    },
-    [onSubmit, onAnalyticsEvent],
-  );
-  const report = useCallback(
-    async (action: Promise<boolean>) => {
-      const result = await action;
-      if (!result) {
-        for (const [key, error] of Object.entries(engine.errors)) {
-          onAnalyticsEvent?.({ type: 'field_error', fieldKey: key, error });
-        }
-      }
-      return result;
-    },
-    [engine, onAnalyticsEvent],
-  );
   const submit = useCallback(
-    () => run(async () => !isActionDisabled(engine.definition.submit, engine.getSubmitValues()) && report(engine.submit(send))),
-    [engine, run, send, report],
+    () => run(async () => !isActionDisabled(engine.definition.submit, engine.getSubmitValues()) && engine.submit(onSubmit)),
+    [engine, run, onSubmit],
   );
-  const skip = useCallback(
-    () =>
-      run(() =>
-        report(
-          engine.skip((values, skippedSteps) => {
-            onAnalyticsEvent?.({ type: 'step_skipped', stepId: engine.currentStep!.id });
-            return send(values, skippedSteps);
-          }),
-        ),
-      ),
-    [run, engine, send, report, onAnalyticsEvent],
-  );
+  const skip = useCallback(() => run(() => engine.skip(onSubmit)), [run, engine, onSubmit]);
   const actionError = failure?.engine === engine ? failure.message : null;
   return { next, prev, skip, update, changeItems, commit, submit, actionError, invalidAttempts };
 }

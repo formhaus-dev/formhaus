@@ -39,6 +39,9 @@ export function useFormEngineStore(
       get onAfterSubmit() {
         return optionsRef.current?.onAfterSubmit;
       },
+      get onFormEvent() {
+        return optionsRef.current?.onFormEvent;
+      },
       onWarning: options?.onWarning,
     });
     definitionRef.current = definition;
