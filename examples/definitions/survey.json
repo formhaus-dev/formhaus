@@ -51,17 +51,17 @@
             {
               "value": "laptop",
               "label": "Laptop",
-              "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=480&h=360&fit=crop&auto=format&q=70"
+              "image": "https://formhaus.dev/assets/examples/survey/laptop.jpg"
             },
             {
               "value": "desktop",
               "label": "Desktop",
-              "image": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=480&h=360&fit=crop&auto=format&q=70"
+              "image": "https://formhaus.dev/assets/examples/survey/desktop.jpg"
             },
             {
               "value": "tablet",
               "label": "Tablet",
-              "image": "https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=480&h=360&fit=crop&auto=format&q=70"
+              "image": "https://formhaus.dev/assets/examples/survey/tablet.jpg"
             }
           ]
         },

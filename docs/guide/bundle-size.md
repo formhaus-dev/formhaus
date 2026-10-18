@@ -11,8 +11,8 @@ Gzipped size of the code a minimal app imports from each library.
 |---|---|---|
 | react-hook-form 7.90.0 | 11.5 KB | Form state and validation, no UI |
 | `@formhaus/core` 0.19, `FormEngine` only | 15.9 KB | Logic, steps, branches, conditions, groups, validation, no UI |
-| `@formhaus/core` + `@formhaus/react` 0.19 | 25.6 KB | Engine, ready fields, steps, error summary, a11y |
-| `@formhaus/core` + `@formhaus/vue` 0.19 | 29.1 KB | Engine, ready fields, steps, error summary, a11y |
+| `@formhaus/core` + `@formhaus/react` 0.19 | 25.7 KB | Engine, ready fields, steps, error summary, a11y |
+| `@formhaus/core` + `@formhaus/vue` 0.19 | 29.2 KB | Engine, ready fields, steps, error summary, a11y |
 | @formkit/vue 2.1.2 | 30.1 KB | Ready inputs, validation rules, English messages |
 | react-jsonschema-form 6.11.0 (`@rjsf/core` + `@rjsf/validator-ajv8`) | 124.7 KB | JSON Schema to UI, AJV validation |
 | SurveyJS 3.2.1 (`survey-core` + `survey-react-ui`) | 409.3 KB | JSON to survey UI, pages, conditions, validation |
