@@ -46,7 +46,7 @@
     "vue-i18n": "^11.4.13"
   },
   "license": "MIT",
-  "homepage": "https://formhaus.dev",
+  "homepage": "https://formhaus.dev/framework",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ignsm/formhaus.git",

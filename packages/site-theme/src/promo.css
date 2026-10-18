@@ -1,0 +1,16 @@
+:root:not(.fh-promo-off):has(.fh-promo) { --vp-layout-top-height: 40px; }
+.fh-promo-off .fh-promo { display: none; }
+.fh-promo { position: fixed; inset: 0 0 auto; z-index: var(--vp-z-index-nav); display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 var(--fh-site-space-10); border-bottom: 1px solid var(--vp-c-divider); background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); font-size: var(--fh-site-font-size-xs); line-height: 20px; }
+.fh-promo__text { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fh-promo__lead { color: var(--vp-c-text-1); font-weight: 600; }
+.fh-promo__short { display: none; }
+.fh-promo__link { color: var(--vp-c-brand-1); font-weight: 600; text-decoration: none; }
+.fh-promo__link:hover { text-decoration: underline; text-underline-offset: 3px; }
+.fh-promo__close { position: absolute; top: 50%; right: var(--fh-site-space-2); display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; color: var(--vp-c-text-2); transform: translateY(-50%); cursor: pointer; }
+.fh-promo__close:hover { color: var(--vp-c-text-1); background: var(--vp-c-default-soft); }
+:is(.fh-promo__link, .fh-promo__close):focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 2px; }
+
+@media (max-width: 639px) {
+  .fh-promo__long { display: none; }
+  .fh-promo__short { display: inline; }
+}

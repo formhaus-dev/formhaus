@@ -11,13 +11,18 @@
     display: none;
   }
 
+  .Layout:has(.VPContent.has-sidebar) {
+    padding-top: var(--vp-layout-top-height, 0);
+  }
+
   .Layout:has(.VPContent.has-sidebar) .VPNav {
     position: sticky;
-    top: 0;
+    top: var(--vp-layout-top-height, 0);
   }
 
   .Layout:has(.VPContent.has-sidebar) .VPLocalNav {
-    top: var(--vp-nav-height);
+    top: calc(var(--vp-nav-height) + var(--vp-layout-top-height, 0px));
+    padding-top: 0;
   }
 
   .Layout:has(.VPContent.has-sidebar) .VPLocalNavOutlineDropdown .items {
