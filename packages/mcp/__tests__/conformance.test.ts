@@ -8,7 +8,7 @@ interface Fixture {
   issues: unknown[];
   definition: unknown;
   overlay?: unknown;
-  cases: {
+  cases?: {
     name: string;
     input: { values: Record<string, unknown> };
     expected: { values: Record<string, unknown>; errors: Record<string, string> };
@@ -21,8 +21,10 @@ const corpus: Fixture[] = readdirSync(dir)
   .filter((file) => file.endsWith('.json'))
   .map((file) => JSON.parse(readFileSync(join(dir, file), 'utf8')));
 const cases = corpus
-  .filter(({ issues }) => !issues.length)
-  .flatMap(({ name, definition, overlay, cases }) => cases.map((item) => [`${name}: ${item.name}`, definition, overlay, item] as const));
+  .filter(({ name, issues }) => !issues.length && !name.startsWith('check-'))
+  .flatMap(({ name, definition, overlay, cases }) =>
+    (cases ?? []).map((item) => [`${name}: ${item.name}`, definition, overlay, item] as const),
+  );
 
 describe('conformance corpus in simulate_path', () => {
   it.each(corpus.filter(({ issues }) => issues.length).map(({ name, definition }) => [name, definition] as const))(

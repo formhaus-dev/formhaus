@@ -15,7 +15,7 @@ Each file holds one `definition`, the issues `checkDefinition` reports for it, a
 
 ## Fields
 
-- `name` is the file name without `.json`.
+- `name` is the file name without `.json`. Files named `check-*` test definition checks: their definitions may use unusual shapes, such as `null` lists or escaped keys, and are not meant as example forms.
 - `covers` lists the titles of the TypeScript tests the file replaced. Runners ignore it.
 - `definition` is the form definition. It may be malformed.
 - `issues` lists the issues with severity `error` that `checkDefinition` reports, as `{ code, path }`. Use `[]` for none.
