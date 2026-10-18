@@ -94,3 +94,81 @@ describe('field visibility events', () => {
     expect(check).not.toHaveBeenCalled();
   });
 });
+
+describe('field visibility events for every condition form', () => {
+  const forms: FormDefinition = {
+    id: 'forms',
+    title: '',
+    submit: { label: 'Send' },
+    fields: [
+      { key: 'plan', type: 'text', label: 'Plan' },
+      {
+        key: 'seats',
+        type: 'number',
+        label: 'Seats',
+        showAny: [
+          { field: 'plan', eq: 'team' },
+          { field: 'plan', eq: 'pro' },
+        ],
+      },
+      {
+        key: 'billing',
+        type: 'section',
+        title: 'Billing',
+        show: [{ field: 'plan', eq: 'pro' }],
+        fields: [{ key: 'iban', type: 'text', label: 'IBAN' }],
+      },
+      {
+        key: 'admin',
+        type: 'section',
+        title: 'Admin',
+        showAny: [{ field: 'plan', eq: 'team' }],
+        fields: [{ key: 'owner', type: 'text', label: 'Owner' }],
+      },
+      {
+        key: 'members',
+        type: 'group',
+        label: 'Members',
+        showAny: [{ field: 'plan', eq: 'team' }],
+        fields: [
+          { key: 'role', type: 'text', label: 'Role' },
+          { key: 'phone', type: 'text', label: 'Phone', showAny: [{ field: 'role', eq: 'lead' }] },
+        ],
+      },
+    ],
+  };
+
+  it('reports fields shown and hidden by show, showAny and section conditions', () => {
+    const events: FormEvent[] = [];
+    const engine = new FormEngine(forms, {}, { onFormEvent: (event) => events.push(event) });
+    engine.start();
+    events.length = 0;
+    engine.setValue('plan', 'team');
+    engine.setValue('plan', 'pro');
+    engine.setValue('plan', '');
+    expect(events).toEqual([
+      { type: 'field_shown', fieldKey: 'seats' },
+      { type: 'field_shown', fieldKey: 'owner' },
+      { type: 'field_shown', fieldKey: 'members' },
+      { type: 'field_shown', fieldKey: 'iban' },
+      { type: 'field_hidden', fieldKey: 'owner' },
+      { type: 'field_hidden', fieldKey: 'members' },
+      { type: 'field_hidden', fieldKey: 'seats' },
+      { type: 'field_hidden', fieldKey: 'iban' },
+    ]);
+  });
+
+  it('reports group item fields with showAny', () => {
+    const events: FormEvent[] = [];
+    const engine = new FormEngine(forms, { plan: 'team' }, { onFormEvent: (event) => events.push(event) });
+    engine.start();
+    engine.addItem('members');
+    events.length = 0;
+    engine.setItemValue('members', 0, 'role', 'lead');
+    engine.setItemValue('members', 0, 'role', 'dev');
+    expect(events).toEqual([
+      { type: 'field_shown', fieldKey: 'members.0.phone' },
+      { type: 'field_hidden', fieldKey: 'members.0.phone' },
+    ]);
+  });
+});

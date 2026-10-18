@@ -45,7 +45,8 @@ export function createVisibility(definition: FormDefinition) {
   const path = createActivePath(definition, index);
   const groups = allFields.filter(isGroup);
   const starts = createStartValues(groups, () => hidden.unsettle());
-  const conditional = allFields.filter((field) => field.show || sectionOf.get(field)?.show);
+  const conditioned = (node?: Pick<FormField, 'show' | 'showAny'>) => !!(node?.show || node?.showAny);
+  const conditional = allFields.filter((field) => conditioned(field) || conditioned(sectionOf.get(field)));
   const customSteps = new Set(definition.steps?.filter((step) => customRules(step.fields)));
   let visibilityDirty = true;
   let canGoNextDirty = true;
@@ -177,7 +178,7 @@ export function createVisibility(definition: FormDefinition) {
         itemsOf(values[group.key]).forEach((item, index) => {
           const shown = itemFields(group, item, values);
           for (const field of group.fields)
-            if (field.show)
+            if (conditioned(field))
               results.set(`${group.key} ${itemId(item, index)} ${field.key}`, [
                 itemPath(group.key, index, field.key),
                 shown.includes(field),
