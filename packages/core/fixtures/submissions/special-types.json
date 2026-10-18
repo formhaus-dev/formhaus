@@ -24,7 +24,7 @@
       },
       {
         "key": "rating",
-        "type": "rating",
+        "type": "x-rating",
         "label": "Rating"
       },
       {
