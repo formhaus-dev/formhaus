@@ -126,6 +126,7 @@ export const localized = useLocalizedForm(() => definition, () => ({ overlay: { 
 };
 
 files['src/question-timing.ts'] = readFileSync(join(root, 'docs/recipes/snippets/question-timing.ts'), 'utf8');
+files['src/ssr-cloud-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/ssr-cloud-page.tsx'), 'utf8');
 
 const resolutions = { bundler: 'ESNext', node16: 'Node16' };
 for (const [resolution, module] of Object.entries(resolutions)) {
