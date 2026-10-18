@@ -67,7 +67,8 @@ export const sharedDedupe = ['@formhaus/core', 'vue', 'vitepress'];
 export const sharedNav: DefaultTheme.NavItem[] = [
   { text: 'Guide', link: '/guide/' },
   { text: 'Templates', link: '/templates/', activeMatch: '^/templates/' },
-  { text: 'Cloud', link: '/cloud' },
+  { text: 'Cloud', link: '/' },
+  { text: 'Framework', link: '/framework' },
   { text: 'API', link: '/api/definition' },
   { text: 'Builder', link: '/build' },
   { text: 'Playground', link: '/playground' },
@@ -83,3 +84,4 @@ export async function sharedThemeConfig() {
     githubStars: count === null ? null : { count, label: formatStarCount(count) },
   };
 }
+export { promoHead } from './promo';

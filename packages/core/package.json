@@ -66,7 +66,7 @@
     "vitest": "^4.1.2"
   },
   "license": "MIT",
-  "homepage": "https://formhaus.dev",
+  "homepage": "https://formhaus.dev/framework",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ignsm/formhaus.git",

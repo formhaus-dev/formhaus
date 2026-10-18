@@ -26,7 +26,6 @@ export function transformHead({ pageData, title, description, content }: Transfo
   if (pageData.isNotFound) return [];
   const { relativePath, params } = pageData;
   const home = relativePath === 'index.md';
-  const cloud = relativePath === 'cloud.md';
   const url = pageUrl(relativePath);
   const image = ogImage(relativePath, params?.slug ? { slug: params.slug, title: params.title } : undefined);
   const tags: HeadConfig[] = [
@@ -44,7 +43,7 @@ export function transformHead({ pageData, title, description, content }: Transfo
   ];
   if (home) tags.push(jsonLd(homeJsonLd(description)));
   else tags.push(jsonLd(breadcrumbJsonLd(breadcrumbs(relativePath, pageData.title, url))));
-  if (cloud) tags.push(jsonLd(faqJsonLd(content)));
+  if (home) tags.push(jsonLd(faqJsonLd(content)));
   if (isArticle(relativePath)) {
     tags.push(jsonLd(articleJsonLd(pageData.title, description, url, pageData.lastUpdated)));
   }
