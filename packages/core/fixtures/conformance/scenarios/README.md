@@ -1,6 +1,6 @@
 # Engine scenarios
 
-Each file holds one `definition` and a list of scenarios that drive `FormEngine` through its public API. `scenario.schema.json` describes the shape. The TypeScript runner is `packages/core/__tests__/conformance/scenarios.ts`; any other engine implementation runs the same files.
+Each file holds a `definition` and a list of scenarios that drive `FormEngine` through its public API. `scenario.schema.json` describes the shape. The TypeScript runner is `packages/core/__tests__/conformance/scenarios.ts`; any other engine implementation runs the same files.
 
 ```json
 {
@@ -19,7 +19,7 @@ Each file holds one `definition` and a list of scenarios that drive `FormEngine`
 
 ## Running a scenario
 
-1. Apply `overlay` to the definition, if set. Create the engine with `values` and the options the scenario lists.
+1. Take the scenario's own `definition` if it has one, and the file's `definition` otherwise. Apply the file's `overlay` to it, if set. Create the engine with `values` and the options the scenario lists.
 2. If `throws` is set, the constructor must throw an error with that name. Such a scenario has no steps and no options.
 3. Run `steps` in order. An action step calls the engine method named in `do` and awaits it. `returns` is compared with the result. `throws` is compared with the `name` of the error the action throws or rejects with, and with its `phase` and `message` if the expectation lists them.
 4. With `"await": false`, the action starts, the runner waits one macrotask, and moves on. `settle` awaits every started action and checks its `returns` or `throws`.
