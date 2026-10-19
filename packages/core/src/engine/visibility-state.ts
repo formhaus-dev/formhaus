@@ -64,6 +64,7 @@ export function createVisibility(definition: FormDefinition) {
   };
   const activeField = (key: string, values: Values) =>
     fieldsByKey.get(key)?.find((field) => onPath(field, values) && visible(field, values));
+  const fieldOf = (key: string, values: Values) => activeField(key, values) ?? fieldsByKey.get(key)?.[0];
 
   const parse = (key: string) => {
     if (fieldsByKey.has(key)) return undefined;
@@ -165,6 +166,7 @@ export function createVisibility(definition: FormDefinition) {
     conditionValues: path.values,
     state,
     activeField,
+    fieldOf,
     activeItem,
     itemFields,
     owner,

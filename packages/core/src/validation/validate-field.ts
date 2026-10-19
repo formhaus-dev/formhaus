@@ -1,7 +1,7 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
 import { messageResolver, namedResolver, type MessageSource, type ResolveMessage } from './default-messages';
-import { BOOLEAN_TYPES, clientTypeError, MAX_STRING_LENGTH, trimValue } from './type-checks';
+import { BOOLEAN_TYPES, clientTypeError, exclusiveValues, MAX_STRING_LENGTH, trimValue } from './type-checks';
 
 export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) => string | null;
 
@@ -53,7 +53,9 @@ function sizeError(value: unknown, rules: FieldValidation, field: FormField, res
   if (typeof value === 'number') return boundError(value, '', rules, (key, params) => resolve(key, params, field));
   if (typeof value !== 'string' && !Array.isArray(value)) return undefined;
   const unit = Array.isArray(value) ? 'Items' : 'Length';
-  return boundError(value.length, 'Length', rules, (key, params) => resolve(`${key}${unit}`, params, field));
+  const exclusive = Array.isArray(value) && value.length === 1 && exclusiveValues(field).includes(value[0]);
+  const bounds = exclusive ? { ...rules, minLength: undefined } : rules;
+  return boundError(value.length, 'Length', bounds, (key, params) => resolve(`${key}${unit}`, params, field));
 }
 
 export function validateFieldValue(
