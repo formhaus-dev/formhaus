@@ -26,7 +26,6 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
   const continues = !!step && !last && step.extra.next !== false;
   const name = step ? step.title.trim() || 'this step' : 'the form';
   const back = !!step && !first;
-  const span = [continues, last, back].filter(Boolean).length === 1 ? settings.wide : undefined;
   return (
     <div className={card.card} role="group" aria-label={`Buttons for ${name}`}>
       <div className={card.body}>
@@ -34,7 +33,7 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
         <div className={`${settings.settings} ${settings.plain}`}>
           <div className={settings.panel}>
             {continues && (
-              <Field label="Continue button" className={span}>
+              <Field label="Continue button">
                 <Input
                   value={step.nextLabel}
                   placeholder={DEFAULT_NEXT}
@@ -46,7 +45,7 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
               </Field>
             )}
             {last && (
-              <Field label="Submit button" className={span}>
+              <Field label="Submit button">
                 <Input
                   value={form.submit}
                   placeholder="Submit"
@@ -60,7 +59,7 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
               </Field>
             )}
             {back && (
-              <Field label="Back button" className={span}>
+              <Field label="Back button">
                 <Input
                   value={step.backLabel}
                   placeholder={DEFAULT_BACK}
@@ -72,32 +71,31 @@ export function ButtonsCard({ step, first, last, actions }: Props) {
               </Field>
             )}
             {continues && (
-              <div className={styles.skip}>
-                <Switch
-                  label="Allow skipping"
-                  checked={!!skip}
-                  disabled={readOnly}
-                  onCheckedChange={(next) => {
+              <Switch
+                className={settings.toggle}
+                label="Allow skipping"
+                checked={!!skip}
+                disabled={readOnly}
+                onCheckedChange={(next) => {
+                  actions.edit((draft) => {
+                    setStepProp(draft, step.uid, 'skip', next ? { label: 'Skip' } : undefined);
+                  });
+                }}
+              />
+            )}
+            {continues && skip && (
+              <Field label="Skip button">
+                <Input
+                  value={skip.label}
+                  readOnly={readOnly}
+                  onChange={(event) => {
+                    const text = event.target.value;
                     actions.edit((draft) => {
-                      setStepProp(draft, step.uid, 'skip', next ? { label: 'Skip' } : undefined);
-                    });
+                      setStepProp(draft, step.uid, 'skip', { ...skip, label: text });
+                    }, `${step.uid}:skip`);
                   }}
                 />
-                {skip && (
-                  <Field label="Skip button">
-                    <Input
-                      value={skip.label}
-                      readOnly={readOnly}
-                      onChange={(event) => {
-                        const text = event.target.value;
-                        actions.edit((draft) => {
-                          setStepProp(draft, step.uid, 'skip', { ...skip, label: text });
-                        }, `${step.uid}:skip`);
-                      }}
-                    />
-                  </Field>
-                )}
-              </div>
+              </Field>
             )}
           </div>
         </div>

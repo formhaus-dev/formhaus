@@ -5,7 +5,7 @@ import styles from './AddRow.module.css';
 
 export type AddRowProps = Omit<ComponentPropsWithRef<'button'>, 'children'> & {
   label: string;
-  inset?: 'card' | 'option' | 'none';
+  inset?: 'card' | 'option' | 'none' | 'flush';
 };
 
 export function AddRow({ label, inset = 'none', className, type = 'button', ...rest }: AddRowProps) {

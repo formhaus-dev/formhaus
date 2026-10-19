@@ -21,6 +21,7 @@ export { Input } from './components/Input/Input';
 export { Kbd } from './components/Kbd/Kbd';
 export { LiveRegionProvider } from './components/LiveRegion/LiveRegion';
 export { useAnnounce } from './components/LiveRegion/useAnnounce';
+export { Picture } from './components/Picture/Picture';
 export { Popover } from './components/Popover/Popover';
 export { SaveStatus, type SaveState } from './components/SaveStatus/SaveStatus';
 export { SegmentedControl } from './components/SegmentedControl/SegmentedControl';

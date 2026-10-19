@@ -70,6 +70,7 @@ export function LogicSection({ block, actions }: { block: BuilderBlock; actions:
           {logic.mode !== 'always' && !readOnly && (
             <AddRow
               label="Add condition"
+              inset="flush"
               onClick={() => {
                 write(logic.mode, [...logic.rows, ...fresh()]);
               }}

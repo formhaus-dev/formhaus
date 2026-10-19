@@ -2,6 +2,7 @@ import * as RadixPopover from '@radix-ui/react-popover';
 import type { ReactElement, ReactNode } from 'react';
 import { cx } from '../../lib/cx';
 import styles from './Popover.module.css';
+import { layer } from '../../lib/layer';
 
 export interface PopoverProps {
   children: ReactNode;
@@ -41,6 +42,7 @@ export function Popover({
       {anchor && <RadixPopover.Anchor asChild>{anchor}</RadixPopover.Anchor>}
       <RadixPopover.Portal>
         <RadixPopover.Content
+          {...layer}
           className={cx(styles.content, styles[width], flush && styles.flush, capped && styles.capped)}
           side={side}
           align={align}

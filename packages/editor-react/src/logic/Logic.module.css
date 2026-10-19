@@ -1,4 +1,5 @@
 .section {
+  container: logic / inline-size;
   display: flex;
   flex-direction: column;
   gap: var(--fh-ed-space-2);
@@ -11,23 +12,46 @@
 }
 
 .condition {
-  display: flex;
-  flex-direction: column;
-  gap: var(--fh-ed-space-2);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--fh-ed-space-2) var(--fh-ed-space-1);
   padding: var(--fh-ed-space-2-5);
   border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
   border-radius: var(--fh-ed-radius-md);
 }
 
-.conditionHead {
-  display: flex;
-  align-items: center;
-  gap: var(--fh-ed-space-1);
+.source {
+  grid-row: 1;
+  grid-column: 1;
+  min-width: 0;
 }
 
-.grow {
-  flex: 1;
+.remove {
+  grid-row: 1;
+  grid-column: 2;
+}
+
+.operator,
+.value {
+  grid-column: 1 / -1;
   min-width: 0;
+}
+
+@container logic (width >= 720px) {
+  .condition {
+    grid-template-columns: minmax(0, 1fr) var(--fh-ed-size-operator) auto;
+    column-gap: var(--fh-ed-space-2);
+  }
+
+  .operator {
+    grid-row: 1;
+    grid-column: 2;
+  }
+
+  .remove {
+    grid-column: 3;
+  }
 }
 
 .values {

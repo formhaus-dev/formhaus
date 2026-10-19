@@ -2,6 +2,7 @@ import * as RadixTooltip from '@radix-ui/react-tooltip';
 import { useState, type ReactElement, type ReactNode } from 'react';
 import { useDragActive } from '../../lib/dragState';
 import styles from './Tooltip.module.css';
+import { layer } from '../../lib/layer';
 
 export interface TooltipProps {
   content: ReactNode;
@@ -29,7 +30,7 @@ export function Tooltip({ content, children, side = 'top' }: TooltipProps) {
     >
       <RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
       <RadixTooltip.Portal>
-        <RadixTooltip.Content className={styles.content} side={side} sideOffset={6} collisionPadding={8}>
+        <RadixTooltip.Content {...layer} className={styles.content} side={side} sideOffset={6} collisionPadding={8}>
           {content}
         </RadixTooltip.Content>
       </RadixTooltip.Portal>

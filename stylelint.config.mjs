@@ -22,11 +22,14 @@ const tokenRule = (properties) => [
   properties,
   {
     ignoreFunctions: false,
-    ignoreValues: Object.fromEntries(properties.map((property) => [property, sizeProperties.includes(property) ? noRawPx : noRawColor])),
+    ignoreValues: Object.fromEntries(properties.map((property) => [property, ignoredFor(property)])),
     message: 'Use a design token for "${value}" of "${property}"',
   },
 ];
 const noRawPx = '/^(?!-?\\d*\\.?\\d+px$)/';
+const fontKeywords = '/^(inherit|initial|unset|revert)$/';
+const ignoredFor = (property) =>
+  property.startsWith('font') && property !== 'font-size' ? fontKeywords : sizeProperties.includes(property) ? noRawPx : noRawColor;
 const noRawColor = `/^(?!.*(${rawColor}))/`;
 
 export default {
@@ -54,6 +57,6 @@ export default {
     'value-keyword-case': ['lower', { camelCaseSvgKeywords: true, ignoreProperties: ['/^--/', 'font-family'] }],
     'property-no-vendor-prefix': [true, { ignoreProperties: ['-webkit-mask'] }],
     'selector-pseudo-class-no-unknown': [true, { ignorePseudoClasses: ['global'] }],
-    'scale-unlimited/declaration-strict-value': tokenRule([...sizeProperties, ...colorProperties]),
+    'scale-unlimited/declaration-strict-value': tokenRule([...sizeProperties, ...colorProperties, 'font-family', 'font']),
   },
 };

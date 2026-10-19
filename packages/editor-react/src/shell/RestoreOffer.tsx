@@ -1,6 +1,6 @@
 import { History } from 'lucide-react';
 import { useSyncExternalStore } from 'react';
-import { Button } from '../ui';
+import { Button, Text } from '../ui';
 import type { Recovery } from '../store/recovery';
 import styles from './RestoreOffer.module.css';
 
@@ -20,7 +20,9 @@ export function RestoreOffer({ recovery }: { recovery: Recovery | null | undefin
   return (
     <div role="status" className={styles.offer}>
       <History aria-hidden className={styles.icon} />
-      <p className={styles.text}>Restore unsaved changes from {restoreTime(offer.at)}?</p>
+      <Text as="p" size="sm" className={styles.text}>
+        Restore unsaved changes from {restoreTime(offer.at)}?
+      </Text>
       <div className={styles.actions}>
         <Button variant="ghost" onClick={recovery.dismiss}>
           Discard

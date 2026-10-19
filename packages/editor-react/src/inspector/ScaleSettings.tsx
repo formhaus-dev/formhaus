@@ -9,7 +9,7 @@ import {
   type BuilderQuestion,
 } from '@formhaus/builder';
 import { useState } from 'react';
-import { Field, Input, SegmentedControl } from '../ui';
+import { Field, Input, Select } from '../ui';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
 
@@ -21,7 +21,7 @@ interface Props {
 
 const ANCHORS: [AnchorSlot, string][] = [
   ['start', 'Start label'],
-  ['middle', 'Middle label'],
+  ['middle', 'Middle label (optional)'],
   ['end', 'End label'],
 ];
 
@@ -42,24 +42,24 @@ export function ScaleSettings({ field, actions, readOnly }: Props) {
     });
   };
   return (
-    <div className={styles.scale}>
+    <div className={styles.pair}>
       {!rating && (
-        <div className={styles.control}>
-          <span className={styles.controlLabel}>Starts at</span>
-          <SegmentedControl
-            label="Starts at"
+        <Field label="Starts at" hint="0 or 1">
+          <Select
+            value={String(min)}
+            disabled={readOnly}
             options={[
               { value: '0', label: '0' },
               { value: '1', label: '1' },
             ]}
-            value={String(min)}
-            onValueChange={(value) => {
+            onChange={(event) => {
+              const value = event.target.value;
               actions.edit((form) => {
                 setScaleRange(form, field.uid, { min: value === '0' ? 0 : undefined });
               });
             }}
           />
-        </div>
+        </Field>
       )}
       <Field label={rating ? 'Stars' : 'Ends at'} hint={`From ${String(limits.min)} to ${String(limits.max)}`}>
         <Input
@@ -79,9 +79,9 @@ export function ScaleSettings({ field, actions, readOnly }: Props) {
           }}
         />
       </Field>
-      <div className={styles.anchors}>
+      <div className={styles.pair}>
         {ANCHORS.map(([slot, label]) => (
-          <Field key={slot} label={label}>
+          <Field key={slot} label={label} className={slot === 'middle' ? styles.middle : undefined}>
             <Input
               value={anchors[slot]}
               placeholder={slot === 'start' ? 'Not likely' : slot === 'end' ? 'Very likely' : 'Neutral'}

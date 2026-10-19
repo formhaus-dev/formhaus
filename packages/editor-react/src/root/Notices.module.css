@@ -16,7 +16,7 @@
   display: flex;
   align-items: center;
   gap: var(--fh-ed-space-2);
-  width: min(100%, 420px);
+  width: min(100%, var(--fh-ed-size-notice));
   padding: var(--fh-ed-space-2) var(--fh-ed-space-2) var(--fh-ed-space-2) var(--fh-ed-space-4);
   border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
   border-radius: var(--fh-ed-radius-lg);

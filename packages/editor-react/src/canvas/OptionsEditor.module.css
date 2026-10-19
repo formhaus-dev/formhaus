@@ -4,7 +4,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--fh-ed-space-1);
-  padding-inline-start: var(--option-inset);
 }
 
 .list {
@@ -197,4 +196,19 @@
 
 .actions > button {
   width: auto;
+}
+
+@container (width < 420px) {
+  .row {
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  .grip {
+    position: static;
+    flex: none;
+    width: var(--fh-ed-size-touch);
+    height: var(--fh-ed-size-touch);
+    opacity: 1;
+  }
 }

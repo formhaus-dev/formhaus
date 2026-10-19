@@ -10,9 +10,7 @@
 
 .caption {
   margin: calc(var(--fh-ed-space-2) * -1) 0 var(--fh-ed-space-4);
-  color: var(--fh-ed-fg-muted);
-  font-size: var(--fh-ed-font-size-sm);
-  line-height: 18px;
+  line-height: var(--fh-ed-font-leading-tight);
   text-align: center;
 }
 

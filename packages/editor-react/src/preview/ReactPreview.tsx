@@ -13,7 +13,9 @@ export default function ReactPreview({ definition }: { definition: FormDefinitio
   const [sent, setSent] = useState(false);
   return (
     <>
-      <p className={styles.caption}>Nothing is sent.</p>
+      <Text as="p" size="sm" tone="muted" className={styles.caption}>
+        Nothing is sent.
+      </Text>
       <section className={styles.panel} aria-label="Preview">
         {sent ? (
           <div role="status" className={styles.sent}>
