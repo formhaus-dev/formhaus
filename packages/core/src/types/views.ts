@@ -66,14 +66,14 @@ export interface FormActionsState {
   showBack: boolean;
   backLabel: string;
   showSkip: boolean;
+  skipLabel: string;
 }
 
-type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'showBack' | 'backLabel' | 'showSkip';
+type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'showBack' | 'backLabel' | 'showSkip' | 'skipLabel';
 
 export interface FormActionsView extends Omit<FormActionsState, DerivedActionProps>, Partial<Pick<FormActionsState, DerivedActionProps>> {
   loading?: boolean;
   values?: Record<string, unknown>;
-  skipLabel?: string;
 }
 
 export interface FormRendererHandle {

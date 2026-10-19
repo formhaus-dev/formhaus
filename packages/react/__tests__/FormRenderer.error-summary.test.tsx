@@ -77,7 +77,7 @@ describe('error summary and step marks', () => {
     await submitFromLastStep();
     await screen.findByText('Taken');
     const items = [...document.querySelectorAll('.fh-step-progress__step')];
-    expect(items.map((item) => item.textContent)).toEqual(['About you · 1 error', 'Account · 1 error', 'Address · 1 error']);
+    expect(items.map((item) => item.textContent)).toEqual(['About you · Errors: 1', 'Account · Errors: 1', 'Address · Errors: 1']);
     expect(items[0].getAttribute('aria-current')).toBe('step');
     fireEvent.change(screen.getByRole('textbox', { name: /Email/ }), { target: { value: 'ada@lovelace.dev' } });
     expect(items[0].textContent).toBe('About you');

@@ -663,6 +663,14 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `cancel` | `Cancel` | |
 | `enlargeImage` | `Enlarge image: {label}` | `label` (the option label) |
 | `close` | `Close` | |
+| `clear` | `Clear` | |
+| `done` | `Done` | |
+| `chooseFile` | `Choose file` | |
+| `required` | `required` | |
+| `skip` | `Skip` | |
+| `submit` | `Submit` | |
+| `stepTitle` | `Step {index}` | `index` (1-based) |
+| `stepErrors` | `Errors: {count}` | `count` |
 
 A message for a failed rule comes from the first of:
 
@@ -671,7 +679,7 @@ A message for a failed rule comes from the first of:
 3. `definition.messages`.
 4. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `required`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 

@@ -36,7 +36,15 @@ export type LabelKey =
   | 'removeItemBody'
   | 'cancel'
   | 'enlargeImage'
-  | 'close';
+  | 'close'
+  | 'clear'
+  | 'done'
+  | 'chooseFile'
+  | 'required'
+  | 'skip'
+  | 'submit'
+  | 'stepTitle'
+  | 'stepErrors';
 
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 export type LabelCatalog = Partial<Record<LabelKey, string>>;

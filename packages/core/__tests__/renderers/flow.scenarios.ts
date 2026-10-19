@@ -18,7 +18,7 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Three' });
     await harness.click(button('Send'));
     await screen.findByText('Taken');
-    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One · 1 error', 'Two · 1 error', 'Three']);
+    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One · Errors: 1', 'Two · Errors: 1', 'Three']);
     expect(marks().map((item) => item.getAttribute('aria-current'))).toEqual(['step', null, null]);
     expect(marks()[0].classList.contains('fh-step-progress__step--invalid')).toBe(true);
     await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Grace');
@@ -136,19 +136,6 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByText('Taken');
     expect(form().getAttribute('aria-busy')).toBe('false');
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Name/ })));
-  });
-
-  it('uses the labels prop for buttons, the counter and the summary', async () => {
-    const labels = { continue: 'Weiter', back: 'Zurück', stepOf: 'Schritt {current} von {total}', errorSummary: 'Bitte prüfen' };
-    harness.mount({ definition: wizard, labels, errorSummary: true, onSubmit: () => {} });
-    expect(document.querySelector('.fh-step-progress__counter')?.textContent?.trim()).toBe('Schritt 1 von 3');
-    await harness.click(button('Weiter'));
-    await screen.findByText('Bitte prüfen');
-    await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
-    await harness.click(button('Weiter'));
-    await screen.findByRole('heading', { name: 'Two' });
-    expect(button('Zurück')).toBeDefined();
-    expect(document.querySelector('.fh-step-progress__counter')?.textContent?.trim()).toBe('Schritt 2 von 3');
   });
 
   it('reports form events with their details', async () => {

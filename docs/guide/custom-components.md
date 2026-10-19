@@ -43,7 +43,7 @@ Your component receives pre-computed convenience props so you don't need to re-d
 
 | Prop | Type | Description |
 |------|------|-------------|
-| `primaryLabel` | `string?` | Resolved label for the primary button ("Continue" or submit label) |
+| `primaryLabel` | `string?` | Resolved label for the primary button: the `continue` [label](/guide/translations), the submit label or the `submit` label |
 | `showPrimary` | `boolean?` | False when the current step hides Next with `next: false`; final Submit remains visible |
 | `showBack` | `boolean?` | Whether the back button should be shown |
 | `backLabel` | `string?` | Resolved label for the back button |

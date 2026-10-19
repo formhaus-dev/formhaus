@@ -105,7 +105,8 @@ function head(form: BuilderForm) {
 
 function stepTitle(page: BuilderPage | undefined, index: number): { title?: string } {
   if (page?.title.trim()) return { title: page.title };
-  return page?.shape && !page.shape.includes('title') ? {} : { title: pageTitle(page, index) };
+  if (page?.shape) return page.shape.includes('title') ? { title: page.title } : {};
+  return { title: pageTitle(page, index) };
 }
 
 export function serialize(form: BuilderForm): Serialized {

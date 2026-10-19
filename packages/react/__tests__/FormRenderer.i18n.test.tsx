@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { createInstance } from 'i18next';
 import { describe, expect, it } from 'vitest';
+import { FormActions } from '../src/FormActions';
 import { FormRenderer } from '../src/FormRenderer';
+import { FormStepProgress } from '../src/FormStepProgress';
 import { type LocalizeSource, useLocalizedForm } from '../src/i18n';
 import { definition, overlay, resources } from './i18n.fixtures';
 
@@ -78,5 +80,33 @@ describe('localized forms', () => {
     fireEvent.change(screen.getByLabelText(/Почта/), { target: { value: 'kept@example.com' } });
     rerender(<Signup source={{ ...translate }} />);
     expect((screen.getByLabelText(/Почта/) as HTMLInputElement).value).toBe('kept@example.com');
+  });
+
+  it('formats a standalone step progress and action bar with the default labels', () => {
+    render(
+      <>
+        <FormStepProgress
+          current={2}
+          total={2}
+          steps={[
+            { id: 'a', title: '', errorCount: 3 },
+            { id: 'b', title: 'B', errorCount: 0 },
+          ]}
+        />
+        <FormActions
+          isFirstStep={false}
+          isLastStep
+          isMultiStep
+          onSubmit={() => {}}
+          onNext={() => {}}
+          onPrev={() => {}}
+          onCancel={() => {}}
+        />
+      </>,
+    );
+    expect(screen.getByText('Step 2 of 2')).toBeTruthy();
+    expect([...document.querySelectorAll('.fh-step-progress__step')].map((item) => item.textContent)).toEqual(['Step 1 · Errors: 3', 'B']);
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Back' })).toBeTruthy();
   });
 });
