@@ -1,6 +1,6 @@
 # @formhaus/mcp
 
-[![formhaus-dev/formhaus MCP server](https://glama.ai/mcp/servers/formhaus-dev/formhaus/badges/score.svg)](https://glama.ai/mcp/servers/formhaus-dev/formhaus)
+[![formhaus-dev/formhaus MCP server](https://glama.ai/mcp/servers/ignsm/formhaus/badges/score.svg)](https://glama.ai/mcp/servers/ignsm/formhaus)
 
 MCP server that lets AI agents check [Formhaus](https://github.com/formhaus-dev/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 22.12 or later. The checks need no account or key.
 
