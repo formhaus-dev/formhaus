@@ -16,6 +16,7 @@ import {
   OPERATOR_LABELS,
   QUESTION_TYPES,
   removeOption,
+  setFieldProp,
   setFieldType,
   setLogic,
   setMatrix,
@@ -197,5 +198,15 @@ describe('picture options', () => {
     expect(toDefinition(form).fields?.[0].options?.[0]).toEqual({ value: 'red', label: 'Red', image: 'https://example.com/red.png' });
     setOptionImage(form, pick.uid, pick.options[0].uid, '');
     expect(pick.options[0].extra).toBeUndefined();
+  });
+
+  it('keeps columns between radio and multiselect and drops it for other types', () => {
+    const form = createForm();
+    const pick = addField(form, { step: null }, { type: 'radio', label: 'Pick' });
+    setFieldProp(form, pick.uid, 'columns', 2);
+    setFieldType(form, pick.uid, 'multiselect');
+    expect(pick.extra.columns).toBe(2);
+    setFieldType(form, pick.uid, 'select');
+    expect(pick.extra.columns).toBeUndefined();
   });
 });

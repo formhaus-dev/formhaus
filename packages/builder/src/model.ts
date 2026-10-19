@@ -151,6 +151,7 @@ function dropScale(question: BuilderQuestion, keepRange: boolean): void {
 export function setType(form: BuilderForm, question: BuilderQuestion, type: FieldType): void {
   if (isScale(question.type) && question.type !== type) dropScale(question, isScale(type));
   if (!canAutoAdvance(type)) delete question.extra.autoAdvance;
+  if (type !== 'radio' && type !== 'multiselect') delete question.extra.columns;
   question.type = type;
   if (type === 'hidden') question.required = false;
   else delete question.extra.source;
