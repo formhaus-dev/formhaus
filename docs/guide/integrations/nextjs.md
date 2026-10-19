@@ -7,7 +7,7 @@ description: "Use Formhaus with the Next.js App Router: load the definition in a
 
 A server component loads the definition, a client component renders it with `@formhaus/react`, and a route handler validates the submission with `validateSubmission` from `@formhaus/core/server`.
 
-[Open in StackBlitz](https://stackblitz.com/github/ignsm/formhaus/tree/main/examples/nextjs-app-router) · [Source](https://github.com/ignsm/formhaus/tree/main/examples/nextjs-app-router)
+[Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/nextjs-app-router) · [Source](https://github.com/formhaus-dev/formhaus/tree/main/examples/nextjs-app-router)
 
 ## Install
 

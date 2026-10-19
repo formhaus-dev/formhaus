@@ -1,6 +1,6 @@
 # @formhaus/react
 
-Renders a JSON form definition in React: multi-step, conditional and branching forms on top of [`@formhaus/core`](https://www.npmjs.com/package/@formhaus/core). Native HTML inputs by default. Part of [Formhaus](https://github.com/ignsm/formhaus).
+Renders a JSON form definition in React: multi-step, conditional and branching forms on top of [`@formhaus/core`](https://www.npmjs.com/package/@formhaus/core). Native HTML inputs by default. Part of [Formhaus](https://github.com/formhaus-dev/formhaus).
 
 ## Install
 
@@ -53,7 +53,7 @@ import { FormhausForm } from '@formhaus/react/cloud';
 
 - [Guide](https://formhaus.dev/guide/), [API reference](https://formhaus.dev/api/form-engine) and [recipes](https://formhaus.dev/recipes/)
 - [Framework overview](https://formhaus.dev/framework) and [playground](https://formhaus.dev/playground)
-- [Source and issues](https://github.com/ignsm/formhaus)
+- [Source and issues](https://github.com/formhaus-dev/formhaus)
 
 ## License
 
