@@ -5,6 +5,7 @@ import { CONTAINS, conditionErrors, missingTarget, OPERATORS } from './condition
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue, DefinitionIssueCode } from './issues';
 import { closest, oneOf, warning } from './issues';
+import { autocompleteWarnings } from './autocomplete-warnings';
 import { propertyWarnings } from './properties';
 import { versionWarnings } from './version-warnings';
 import { recallWarnings } from './recall-warnings';
@@ -193,6 +194,7 @@ function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssu
     ...optionIssues(entry),
     ...ruleWarnings(context, entry),
     ...sourceWarnings(entry),
+    ...autocompleteWarnings(entry),
     ...(field.optionsDependsOn ?? []).flatMap((key, index) =>
       missingTarget(context, key, `${path}/optionsDependsOn/${index}`).map((issue) => ({ ...issue, severity: 'warning' as const })),
     ),
