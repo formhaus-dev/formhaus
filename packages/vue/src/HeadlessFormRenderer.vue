@@ -96,11 +96,8 @@ const watchValues = (engine: typeof form.engine) => {
 };
 onMounted(() => watchValues(form.engine));
 watch(() => form.engine, watchValues, { flush: 'sync' });
-watch(
-  () => props.definition,
-  () => props.keepValues && applySources(form.engine, form.engine.values),
-  { flush: 'post' },
-);
+const resolveSources = () => props.keepValues && applySources(form.engine, form.engine.values);
+watch(() => props.definition, resolveSources, { flush: 'post' });
 onBeforeUnmount(() => stopValues());
 
 let watchMissing: (() => void) | undefined;
