@@ -1,7 +1,7 @@
 import { FormEngine } from '../../src/engine';
 import type { FormDefinition, FormEngineOptions } from '../../src';
 
-export function skipDefinition(): FormDefinition {
+function skipDefinition(): FormDefinition {
   return {
     id: 'skip',
     title: 'Skip',

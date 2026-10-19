@@ -21,19 +21,19 @@ const meta = (token) => token.original.$extensions?.['dev.formhaus'] ?? {};
 const aliasPath = (value) => (typeof value === 'string' && /^\{[^{}]+\}$/.test(value) ? value.slice(1, -1) : undefined);
 const channel = (value) => Math.round(value * 255);
 
-export function colorToCss(value) {
+function colorToCss(value) {
   if (typeof value === 'string') return value;
   const alpha = value.alpha ?? 1;
   if (alpha === 1) return value.hex ?? `#${value.components.map((c) => channel(c).toString(16).padStart(2, '0')).join('')}`;
   return `rgba(${value.components.map(channel).join(', ')}, ${alpha})`;
 }
 
-export function dimensionToCss(value) {
+function dimensionToCss(value) {
   if (typeof value === 'string') return value;
   return value.value === 0 ? '0' : `${value.value}${value.unit}`;
 }
 
-export const hooks = {
+const hooks = {
   transforms: {
     'fh/name': {
       type: 'name',

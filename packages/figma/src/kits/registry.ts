@@ -16,7 +16,7 @@ export interface LoadedKit {
   components: Map<Role, KitNode>;
 }
 
-export function kitById(id: KitId): Kit {
+function kitById(id: KitId): Kit {
   return KITS[id];
 }
 

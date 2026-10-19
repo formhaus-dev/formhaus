@@ -77,7 +77,7 @@ export function writeText(ctx: Context, file: string, text: string, project?: st
   });
 }
 
-export function sha256(text: string): string {
+function sha256(text: string): string {
   return createHash('sha256').update(text).digest('hex');
 }
 

@@ -1,7 +1,7 @@
 import type { DefaultFieldType, FormField } from '@formhaus/core';
 import type { TextSlot } from './config';
 
-export const FIELD_ROLES = [
+const FIELD_ROLES = [
   'field.text',
   'field.select',
   'field.textarea',
@@ -17,7 +17,7 @@ export const BUTTON_ROLES = ['button.primary', 'button.secondary', 'button.text'
 
 export type ButtonKind = 'primary' | 'secondary' | 'text';
 
-export type FieldRole = (typeof FIELD_ROLES)[number];
+type FieldRole = (typeof FIELD_ROLES)[number];
 export type ButtonRole = (typeof BUTTON_ROLES)[number];
 export type Role = FieldRole | ButtonRole;
 

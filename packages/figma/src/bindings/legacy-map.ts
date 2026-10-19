@@ -44,7 +44,7 @@ function variantProps(name: string): Record<string, string> {
   );
 }
 
-export function variantWith(set: ComponentSetNode, wanted: Record<string, string>, required: string[]): ComponentNode | null {
+function variantWith(set: ComponentSetNode, wanted: Record<string, string>, required: string[]): ComponentNode | null {
   const variants = set.children.filter((node): node is ComponentNode => node.type === 'COMPONENT');
   const matches = (node: ComponentNode, keys: string[]) => keys.every((key) => variantProps(node.name)[key] === wanted[key]);
   return variants.find((node) => matches(node, Object.keys(wanted))) ?? variants.find((node) => matches(node, required)) ?? null;
