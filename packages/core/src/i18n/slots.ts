@@ -104,25 +104,50 @@ function catalogSlots(definition: FormDefinition, name: 'messages' | 'labels', u
 }
 
 export function definitionSlots(definition: FormDefinition): Slot[] {
-  const steps = !!definition.steps?.length;
-  const labels = new Set<LabelKey>(steps ? ['continue', 'back', 'stepOf', 'errorSummary'] : ['errorSummary']);
-  if (getAllFields(definition).some(isGroup))
-    for (const key of [
-      'addItem',
-      'removeItem',
-      'itemLabel',
-      'itemAdded',
-      'itemRemoved',
-      'removeItemNamed',
-      'removeItemPrompt',
-      'removeItemBody',
-      'cancel',
-    ] as const)
-      labels.add(key);
-  if (
-    getAllFields(definition).some((field) => ['radio', 'multiselect'].includes(field.type) && field.options?.some((option) => option.image))
-  )
-    for (const key of ['enlargeImage', 'close'] as const) labels.add(key);
+  const steps = definition.steps ?? [];
+  const nodes = getAllFields(definition);
+  const fields = nodes.flatMap((field) => (isGroup(field) ? field.fields : [field]));
+  const labels = new Set<LabelKey>(['errorSummary']);
+  const add = (when: unknown, keys: LabelKey[]) => {
+    if (when) for (const key of keys) labels.add(key);
+  };
+  add(steps.length, ['continue', 'back', 'stepOf', 'stepErrors']);
+  add(
+    steps.some((step) => !step.title),
+    ['stepTitle'],
+  );
+  add(
+    steps.some((step) => step.skip && !step.skip.label),
+    ['skip'],
+  );
+  add(!definition.submit?.label, ['submit']);
+  add(nodes.some(isGroup), [
+    'addItem',
+    'removeItem',
+    'itemLabel',
+    'itemAdded',
+    'itemRemoved',
+    'removeItemNamed',
+    'removeItemPrompt',
+    'removeItemBody',
+    'cancel',
+  ]);
+  add(
+    fields.some((field) => ['radio', 'multiselect'].includes(field.type) && field.options?.some((option) => option.image)),
+    ['enlargeImage', 'close'],
+  );
+  add(
+    fields.some((field) => field.validation?.required),
+    ['required'],
+  );
+  add(
+    fields.some((field) => ['date', 'time', 'datetime', 'file'].includes(field.type)),
+    ['clear'],
+  );
+  add(
+    fields.some((field) => field.type === 'file'),
+    ['chooseFile'],
+  );
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),

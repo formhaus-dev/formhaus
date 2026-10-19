@@ -145,6 +145,27 @@
         },
         "close": {
           "type": "string"
+        },
+        "clear": {
+          "type": "string"
+        },
+        "chooseFile": {
+          "type": "string"
+        },
+        "required": {
+          "type": "string"
+        },
+        "skip": {
+          "type": "string"
+        },
+        "submit": {
+          "type": "string"
+        },
+        "stepTitle": {
+          "type": "string"
+        },
+        "stepErrors": {
+          "type": "string"
         }
       },
       "additionalProperties": false

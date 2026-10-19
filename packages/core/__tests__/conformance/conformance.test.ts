@@ -52,6 +52,7 @@ describe('conformance corpus', () => {
       'i18n-empty-overlay',
       'i18n-exclusive-branches',
       'i18n-own-properties',
+      'i18n-renderer-labels',
       'i18n-signup-steps',
       'impossible-dates',
       'invalid-labels',

@@ -35,7 +35,7 @@
     },
     "labels": {
       "$ref": "#/definitions/LabelCatalog",
-      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}) and close."
+      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, chooseFile, required, skip, submit, stepTitle ({index}) and stepErrors ({count})."
     },
     "i18n": {
       "$ref": "#/definitions/FormI18n",
@@ -222,6 +222,34 @@
           "minLength": 1
         },
         "close": {
+          "type": "string",
+          "minLength": 1
+        },
+        "clear": {
+          "type": "string",
+          "minLength": 1
+        },
+        "chooseFile": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required": {
+          "type": "string",
+          "minLength": 1
+        },
+        "skip": {
+          "type": "string",
+          "minLength": 1
+        },
+        "submit": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stepTitle": {
+          "type": "string",
+          "minLength": 1
+        },
+        "stepErrors": {
           "type": "string",
           "minLength": 1
         }
