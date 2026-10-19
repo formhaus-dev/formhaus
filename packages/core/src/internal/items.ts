@@ -3,7 +3,7 @@ import { errorKeys } from '../engine/validation-state';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
 import { labelFor } from '../i18n/labels';
-import type { FormGroup, LabelSource } from '../types';
+import type { FormGroup, FormStep, LabelSource } from '../types';
 import { isBlank } from '../visibility/evaluate-condition';
 import { isEntry, itemsOf } from '../visibility/nodes';
 import { formatText } from '../validation/default-messages';
@@ -26,19 +26,28 @@ export function errorDomId(engine: FormEngine, formId: string, key: string): str
 export interface ErrorEntry {
   key: string;
   id: string;
-  label: string;
-  message: string;
+  text: string;
 }
 
-export function errorEntries(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorEntry[] {
+export interface ErrorGroup {
+  id: string;
+  title: string;
+  entries: ErrorEntry[];
+}
+
+export function errorGroups(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorGroup[] {
   const { errors, values } = engine;
-  const nodes = engine.isMultiStep ? engine.visibleSteps.flatMap((step) => step.fields) : (engine.definition.fields ?? []);
-  return errorKeys(nodes, errors, values).flatMap((key) => {
-    const item = visibility(engine).activeItem(key, values);
-    const field = item?.field ?? visibility(engine).activeField(key, values);
-    if (!field) return [];
-    const label = item ? `${field.label} (${itemTitle(item.group, item.index, ...labels)})` : field.label;
-    return [{ key, id: errorDomId(engine, formId, key), label, message: errors[key] }];
+  return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap(({ id, title, fields = [] }, index) => {
+    const entries = errorKeys(fields, errors, values).flatMap((key) => {
+      const item = visibility(engine).activeItem(key, values);
+      const field = item?.field ?? visibility(engine).activeField(key, values);
+      if (!field) return [];
+      const label = item ? `${field.label} (${itemTitle(item.group, item.index, ...labels)})` : field.label;
+      return [
+        { key, id: errorDomId(engine, formId, key), text: label + (/[?!:.。]$/.test(label.normalize('NFKC')) ? ' ' : ': ') + errors[key] },
+      ];
+    });
+    return entries[0] ? [{ id, title: title || labelFor('stepTitle', { index: index + 1 }, ...labels), entries }] : [];
   });
 }
 

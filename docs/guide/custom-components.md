@@ -141,6 +141,7 @@ Your component receives these props:
 | `headingLevel` | `1` to `6`, optional | Heading level for the step title, from the renderer's `headingLevel` prop. The built-in progress renders `<h2>` by default |
 | `steps` | `FormStepStatus[]?` | Steps of the active path as `{ id, title, errorCount }`. Passed only when the renderer has `stepErrorMarks` |
 | `counterLabel` | `string?` | Step counter text from the `stepOf` [label](/guide/translations), such as `Step 2 of 3` |
+| `stepErrorCount` | `number?` | Number of field errors on the current step |
 
 The progress component only renders for multi-step forms.
 

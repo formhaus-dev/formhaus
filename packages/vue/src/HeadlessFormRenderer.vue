@@ -3,7 +3,7 @@ import { isSection, type FormEvent, type FormField, type LabelKey } from '@formh
 import {
   actionsView,
   applySources,
-  errorEntries,
+  errorGroups,
   hasValue,
   labelFor,
   shouldApplyExternalErrors,
@@ -135,17 +135,19 @@ watch(
   { immediate: true },
 );
 
-const summaryEntries = computed(() => {
-  errors.value;
-  progress.value;
-  return errorEntries(form.engine, formId, props.labels, props.definition.labels);
+const summaryGroups = computed(() => {
+  void [errors.value, progress.value];
+  return errorGroups(form.engine, formId, props.labels, props.definition.labels);
 });
-const stepStatuses = computed(() => {
-  if (!props.stepErrorMarks) return undefined;
-  progress.value;
-  const marks = form.engine.stepErrors;
-  return form.visibleSteps.value.map(({ id, title }) => ({ id, title, errorCount: marks[id]?.length ?? 0 }));
+const stepErrors = computed(() => {
+  void [errors.value, progress.value];
+  return form.engine.stepErrors;
 });
+const stepStatuses = computed(() =>
+  props.stepErrorMarks
+    ? form.visibleSteps.value.map(({ id, title }) => ({ id, title, errorCount: stepErrors.value[id]?.length ?? 0 }))
+    : undefined,
+);
 
 function onFieldFocus(key: string) {
   onFormEvent({ type: 'field_focused', fieldKey: key });
@@ -204,17 +206,9 @@ async function onPrimary() {
       :step-description="currentStep?.description"
       :heading-level="props.headingLevel"
       :steps="stepStatuses"
+      :step-error-count="stepErrors[currentStep?.id as string]?.length"
       :counter-label="label('stepOf', progress)"
     />
-
-    <div v-if="props.errorSummary && summaryEntries.length > 0" class="fh-error-summary" role="alert">
-      <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
-      <ul class="fh-error-summary__list">
-        <li v-for="entry in summaryEntries" :key="entry.key">
-          <a class="fh-error-summary__link" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.label }}: {{ entry.message }}</a>
-        </li>
-      </ul>
-    </div>
 
     <div class="fh-form__fields">
       <template v-for="node in visibleNodes" :key="node.key">
@@ -226,9 +220,17 @@ async function onPrimary() {
     </div>
 
     <div v-if="formErrors.length > 0" class="fh-form__top-errors" role="alert">
-      <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">
-        {{ error }}
-      </p>
+      <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">{{ error }}</p>
+    </div>
+
+    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert">
+      <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
+      <template v-for="group in summaryGroups" :key="group.id">
+        <p v-if="summaryGroups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
+        <ul class="fh-error-summary__list">
+          <li v-for="entry in group.entries" :key="entry.key"><a class="fh-error-summary__link" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.text }}</a></li>
+        </ul>
+      </template>
     </div>
 
     <component

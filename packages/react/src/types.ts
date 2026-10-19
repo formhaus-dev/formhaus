@@ -99,6 +99,7 @@ export interface FormStepProgressProps {
   headingLevel?: HeadingLevel;
   steps?: FormStepStatus[];
   counterLabel?: string;
+  stepErrorCount?: number;
 }
 
 export interface FormRendererProps extends FormEngineOptions {

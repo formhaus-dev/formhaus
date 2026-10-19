@@ -89,7 +89,9 @@ return { ok: false, formErrors: ['Your account has been temporarily suspended.']
 
 ## Error summary and step marks
 
-`errorSummary` adds a list of every field error above the fields, in step order. Each entry is a link that opens the step of the field and focuses it. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. Both are off by default.
+`errorSummary` adds a list of every field error below the fields, above the step buttons, in step order. Each entry is a link that opens the step of the field and focuses it. When errors span more than one step, the list groups them under each step's title. A label that ends with `?`, `!`, `:` or `.` is followed by a space instead of `: `. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. Both are off by default.
+
+The progress header always shows the title of the current step in the error color while that step has errors, with the `stepErrors` label as text for screen readers.
 
 ::: code-group
 ```vue [Vue]
@@ -101,7 +103,7 @@ return { ok: false, formErrors: ['Your account has been temporarily suspended.']
 ```
 :::
 
-A custom progress component receives the step list as `steps` when `stepErrorMarks` is on. Headless code reads `engine.stepErrors`.
+A custom progress component receives the error count of the current step as `stepErrorCount`, and the step list as `steps` when `stepErrorMarks` is on. Headless code reads `engine.stepErrors`.
 
 ## Async step validation errors
 

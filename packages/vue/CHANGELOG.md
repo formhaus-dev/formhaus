@@ -9,6 +9,10 @@
 - The final Submit button uses the `submit` label when the `submit` action has no label.
 - The step progress names a step without a title with `stepTitle`.
 - **Behavior change:** the step progress marks a step with errors as `· Errors: 2` instead of `· 2 errors`. Change it with the `stepErrors` label.
+- **Behavior change:** the error summary sits below the fields and form-level errors, above the step buttons.
+- The error summary groups errors under each step's title when they come from more than one step.
+- The step progress shows the current step's title in the error color while the step has errors, with the `stepErrors` label as visually hidden text.
+- A custom progress component receives `stepErrorCount`, the number of errors on the current step.
 - `FormActions` and `FormStepProgress` use the renderer `labels` and `definition.labels` for their fallback texts.
 - `clear`, `done`, `chooseFile` and `required` are for native renderers. The web renderers do not show them.
 - `textSlots()` and `translationTemplate()` list each new label only when the form uses it.
@@ -21,6 +25,7 @@
 
 ### Patch Changes
 
+- Error summary entries join a label that ends with `?`, `!`, `:`, `.` or their full-width forms to its message with a space instead of `: `.
 - `autocomplete` shows the label of the selected option instead of its value, including for values set before the options load.
 - `autocomplete` suggestions list and filter by label. Typing or picking a label stores the option's value.
 - Requires `@formhaus/core` 0.20.0.

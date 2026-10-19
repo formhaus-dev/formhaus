@@ -185,7 +185,6 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
           marks={props.stepErrorMarks}
           labels={props.labels}
         />
-        {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
         <FormFieldsController
           key={engineKey(engine)}
           engine={engine}
@@ -202,6 +201,7 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
           onFocus={handleFieldFocus}
         />
         <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
+        {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
         <FormActionsController
           engine={engine}
           loading={loading}

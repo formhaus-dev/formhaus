@@ -11,6 +11,7 @@ import { labelScenarios } from '../../core/__tests__/renderers/labels.scenarios'
 import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
 import { optionScenarios } from '../../core/__tests__/renderers/options.scenarios';
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
+import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
@@ -72,6 +73,7 @@ const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
 
 describe('renderer conformance: focus', () => focusScenarios(harness, kit));
 describe('renderer conformance: flow', () => flowScenarios(harness, kit));
+describe('renderer conformance: error summary', () => summaryScenarios(harness, kit));
 describe('renderer conformance: labels', () => labelScenarios(harness, kit));
 describe('renderer conformance: states', () => stateScenarios(harness, kit));
 describe('renderer conformance: fields', () => fieldScenarios(harness, kit));

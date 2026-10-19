@@ -24,6 +24,7 @@ const text = useLabel();
       </li>
     </ol>
     <component :is="`h${props.headingLevel}`" v-if="props.stepTitle" class="fh-step-progress__title">{{ props.stepTitle }}</component>
+    <span v-if="props.stepErrorCount" class="fh-step-progress__status">{{ text('stepErrors', { count: props.stepErrorCount }) }}</span>
     <p v-if="props.stepDescription" class="fh-step-progress__description">{{ props.stepDescription }}</p>
   </div>
 </template>

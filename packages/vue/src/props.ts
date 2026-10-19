@@ -115,4 +115,5 @@ export const formStepProgressProps = {
   headingLevel: { type: Number as PropType<HeadingLevel>, default: 2 },
   steps: Array as PropType<FormStepStatus[]>,
   counterLabel: String,
+  stepErrorCount: Number,
 };
