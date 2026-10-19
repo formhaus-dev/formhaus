@@ -1,0 +1,54 @@
+{
+  "name": "check-outdated-version-contains",
+  "covers": ["asks for format 1.4 when a condition uses contains"],
+  "issues": [],
+  "warnings": [
+    {
+      "code": "outdated-format-version",
+      "path": "/formatVersion"
+    }
+  ],
+  "texts": {
+    "fields.other.label": "Other source of wealth"
+  },
+  "definition": {
+    "formatVersion": "1.3",
+    "id": "f",
+    "title": "F",
+    "submit": {
+      "label": "Submit"
+    },
+    "fields": [
+      {
+        "key": "sourceOfWealth",
+        "type": "multiselect",
+        "label": "Source of wealth",
+        "options": [
+          {
+            "value": "SALARY",
+            "label": "Salary"
+          },
+          {
+            "value": "OTHER",
+            "label": "Other"
+          },
+          {
+            "value": "GIFT",
+            "label": "Gift"
+          }
+        ]
+      },
+      {
+        "key": "other",
+        "type": "text",
+        "label": "Other source of wealth",
+        "show": [
+          {
+            "field": "sourceOfWealth",
+            "contains": "OTHER"
+          }
+        ]
+      }
+    ]
+  }
+}
