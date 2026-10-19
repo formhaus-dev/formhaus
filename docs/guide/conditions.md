@@ -26,6 +26,8 @@ Hidden fields are not validated and not included in submit values.
 | Not equals | `neq` | Value does not equal |
 | In list | `in` | Value is one of the listed values |
 | Not in list | `notIn` | Value is not in the list |
+| Includes | `contains` | Value is an array that holds the given value |
+| Does not include | `notContains` | Value is not an array that holds the given value |
 | Not empty | `notEmpty` | Value is not null, undefined, empty string, or empty array |
 | Greater than | `gt` | Value is a number greater than the given number |
 | At least | `gte` | Value is a number greater than or equal to the given number |
@@ -61,6 +63,35 @@ Ask detractors what went wrong and promoters what they liked. A `scale` value is
 ```
 
 On `scale` and `rating`, `eq`, `neq`, `in` and `notIn` also take numbers: `{ "field": "score", "eq": 10 }`, not `"10"`. A string operand never matches, and `checkDefinition()` warns about it. `notEmpty` matches `0`. The anchor `options` are labels, not values, so a condition may test any point of the range.
+
+## Example: multiselect
+
+A `multiselect` value is an array, so `eq` and `in` never match it. Test one option with `contains` or `notContains`:
+
+```json
+{
+  "formatVersion": "1.4",
+  "fields": [
+    {
+      "key": "sourceOfWealth",
+      "type": "multiselect",
+      "label": "Source of wealth",
+      "options": [
+        { "value": "SALARY", "label": "Salary" },
+        { "value": "OTHER", "label": "Other" }
+      ]
+    },
+    {
+      "key": "otherSourceOfWealth",
+      "type": "text",
+      "label": "Other source of wealth",
+      "show": [{ "field": "sourceOfWealth", "contains": "OTHER" }]
+    }
+  ]
+}
+```
+
+`contains` compares items with strict equality. It never matches a value that is not an array, such as an unanswered question. `notContains` matches whenever `contains` does not, so it matches an unanswered question too. `checkDefinition()` warns with `contains-not-list` when the field does not hold a list, and with `contains-not-in-options` when the value is not one of its options. Definitions that use these operators need format 1.4 and `@formhaus/core` 0.20 or later.
 
 ## Example: show field when select changes
 
