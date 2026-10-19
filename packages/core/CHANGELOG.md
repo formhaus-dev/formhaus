@@ -37,6 +37,7 @@
 - Matrix sections switch to the table layout from 480px wide instead of 560px, so a matrix inside a 640px card is a table.
 - `replaceDefinition()` no longer lets a second submit start while the first is in flight.
 - `validateSubmission()` treats a `multiselect` value that is not a list or has more items than allowed as unanswered when it evaluates conditions. Large submitted arrays no longer slow down condition checks.
+- `validateSubmission()` applies the same limit to `multiselect` answers inside group items.
 
 ## 0.19.1
 
