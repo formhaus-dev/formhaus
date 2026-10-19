@@ -17,6 +17,7 @@
   --fh-shadow-raised: 0 2px 8px var(--fh-color-shadow);
   --fh-icon-button-size: 32px;
   --fh-option-image-width: 200px;
+  --fh-option-card-border: var(--fh-color-input-border); --fh-option-card-border-hover: var(--fh-color-input-border-hover);
   --fh-font-size: 15px; --fh-font-size-small: 13px;
   --fh-star-size: 32px;
 }
@@ -143,7 +144,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 
 .fh-field__radio-option, .fh-field__multiselect-option {
   position: relative; display: flex; align-items: flex-start; gap: var(--fh-space-5); padding: var(--fh-space-5) var(--fh-space-6);
-  border: 1px solid var(--fh-color-border); border-radius: var(--fh-radius); background: var(--fh-color-bg);
+  border: 1px solid var(--fh-option-card-border); border-radius: var(--fh-radius); background: var(--fh-color-bg);
   transition: border-color 140ms, background-color 140ms;
 }
 
@@ -229,7 +230,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   .fh-field__input:hover:not(:disabled, :focus, [aria-invalid="true"]) { border-color: var(--fh-color-input-border-hover); }
   .fh-field__input[type="file"]:hover::file-selector-button { border-color: var(--fh-color-border-hover); }
   :is(.fh-field__input--select, .fh-field__input--date, .fh-field__input--datetime, .fh-field__input--time):not(:disabled) { cursor: pointer; }
-  :is(.fh-field__radio-option, .fh-field__multiselect-option):hover:not(:has(:checked, :disabled)) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
+  :is(.fh-field__radio-option, .fh-field__multiselect-option):hover:not(:has(:checked, :disabled)) { border-color: var(--fh-option-card-border-hover); background: var(--fh-color-bg-hover); }
   :is(.fh-field__checkbox-wrapper, .fh-field__radio-option, .fh-field__multiselect-option):hover :is(.fh-field__radio, .fh-field__checkbox):not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-text-muted); }
   .fh-field__scale-input:hover:not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-input-border-hover); background: var(--fh-color-bg-hover); }
   .fh-field--rating .fh-field__scale-group:has(.fh-field__scale-input:hover:enabled) .fh-field__scale-label { background: var(--fh-color-primary-hover, var(--fh-auto-primary-hover)); --fh-mask: var(--fh-star-fill); }

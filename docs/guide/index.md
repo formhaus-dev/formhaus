@@ -40,14 +40,15 @@ import '@formhaus/core/style.css';
 
 Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`, etc.). The hover and selected-option colors are derived from `--fh-color-primary`. With `FormhausForm`, set theme tokens on `.fh-cloud` to also style the notices, load errors and success message. Inside `FormhausForm`, `--fh-color-border-focus`, `--fh-input-padding`, `--fh-font-size-heading`, `--fh-font-size-title`, `--fh-card-padding`, `--fh-color-primary-hover`, `--fh-color-primary-soft` and `--fh-color-error-soft` have no value unless you set them. Custom CSS that reads one needs a fallback, for example `var(--fh-input-padding, 10px 14px)`.
 
-Inputs, textareas, selects, date, time and file fields, scale boxes and the switch track use `--fh-color-input-border`. Option cards, group cards, dividers and dialogs use `--fh-color-border`. The token source is in `@formhaus/core/tokens/`.
+Inputs, textareas, selects, date, time and file fields, scale boxes and the switch track use `--fh-color-input-border`. Radio and multiselect option cards use `--fh-option-card-border`, which is `--fh-color-input-border` by default. Group cards, dividers and dialogs use `--fh-color-border`. The token source is in `@formhaus/core/tokens/`.
 
 Hover states apply only on devices with a mouse or trackpad, and transitions turn off under `prefers-reduced-motion`. These variables set the hover colors:
 
 | Variable | Used for |
 |---|---|
 | `--fh-color-input-border-hover` | Input and scale box borders and the switch track |
-| `--fh-color-border-hover` | Option and secondary button borders |
+| `--fh-option-card-border-hover` | Option card borders |
+| `--fh-color-border-hover` | Secondary button borders |
 | `--fh-color-control-hover` | Radio and checkbox borders |
 | `--fh-color-bg-hover` | Option, secondary and text button backgrounds |
 | `--fh-color-primary-hover` | Primary button background and checked switch track |

@@ -29,6 +29,7 @@
 - A line break in a step or section `description` or in `helperText` shows as a line break.
 - **Breaking:** `validateSubmission()` no longer returns a value that fails its type check in `values`, at top level and in group items.
 - `validateSubmission()` treats a value that fails its type check as unanswered in conditions, and custom validators no longer receive it.
+- Radio and multiselect option cards draw their border with `--fh-color-input-border`.
 
 ### Patch Changes
 

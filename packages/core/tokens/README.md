@@ -8,7 +8,7 @@ The source of every `--fh-*` custom property in `style.css`, in the [W3C Design 
 |---|---|---|
 | `primitive.tokens.json` | primitive | `palette.*` colors and the `size.*` scale. Not emitted as CSS variables. |
 | `semantic.tokens.json` | semantic | Values that are the same in every mode: `space.*`, `gap`, `radius`, `control.height`, `shadow.raised`, `color.border.focus` |
-| `component.tokens.json` | component | `input.padding`, `icon-button.size`, `option-image.width` |
+| `component.tokens.json` | component | `input.padding`, `icon-button.size`, `option-image.width`, `option-card.border`, `option-card.border-hover` |
 | `modes/theme-light.tokens.json`, `modes/theme-dark.tokens.json` | semantic | All `color.*` tokens per theme |
 | `modes/pointer-fine.tokens.json`, `modes/pointer-coarse.tokens.json` | semantic, component | `font-size.*`, `star.size` |
 | `modes/width-regular.tokens.json`, `modes/width-compact.tokens.json` | component | `card.padding` |
@@ -83,7 +83,7 @@ In CSS these tokens are `color-mix()` expressions on the variables, so overridin
 | `color.input.border` | `#84848d`, 3.71:1 | `#73737d`, 3.77:1 |
 | `color.input.border-hover` | `#5f5f68`, 6.32:1 | `#9a9aa5`, 6.36:1 |
 
-Option cards, group cards, dividers, matrix rows and dialogs keep `color.border.default`.
+Radio and multiselect option cards, including picture cards, use it through `option-card.border` and `option-card.border-hover`. Group cards, dividers, matrix rows, the picture Enlarge button and dialogs keep `color.border.default`.
 
 ## Build
 
