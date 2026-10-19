@@ -18,6 +18,12 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
   <footer class="fh-footer" :class="{ 'fh-footer--sidebar': hasSidebar, 'fh-footer--landing': landing }">
     <div class="fh-footer__container">
       <div class="fh-footer__grid">
+        <div class="fh-footer__identity">
+          <a class="fh-footer__brand" href="/" aria-label="Formhaus home">
+            <VPImage :image="logo" />
+          </a>
+          <p class="fh-footer__tagline">The simple way to collect responses.</p>
+        </div>
         <nav v-for="column in footerColumns" :key="column.title" class="fh-footer__column" :aria-labelledby="`fh-footer-${column.id}`">
           <h2 :id="`fh-footer-${column.id}`" class="fh-footer__title">{{ column.title }}</h2>
           <ul class="fh-footer__links">
@@ -32,10 +38,6 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
         </nav>
       </div>
       <div class="fh-footer__bottom">
-        <a class="fh-footer__brand" href="/" aria-label="Formhaus home">
-          <VPImage :image="logo" />
-        </a>
-        <p class="fh-footer__tagline">The simple way to collect responses.</p>
         <p class="fh-footer__copyright">© 2026 Formhaus</p>
         <a
           class="fh-footer__github"
@@ -71,7 +73,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
   box-sizing: content-box;
   max-width: 1152px;
   margin: 0 auto;
-  padding: var(--fh-site-space-12) var(--fh-site-space-6) var(--fh-site-space-6);
+  padding: var(--fh-site-space-12) var(--fh-site-space-6) var(--fh-site-space-4);
 }
 
 .fh-footer--landing .fh-footer__container {
@@ -80,8 +82,31 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
 
 .fh-footer__grid {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: var(--fh-site-space-8);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--fh-site-space-8) var(--fh-site-space-6);
+}
+
+.fh-footer__identity {
+  grid-column: 1 / -1;
+}
+
+.fh-footer__brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-top: calc(-1 * var(--fh-site-space-2-5));
+}
+
+.fh-footer__brand :deep(.VPImage) {
+  height: 24px;
+  width: auto;
+}
+
+.fh-footer__tagline {
+  margin: var(--fh-site-space-1) 0 0;
+  font-size: var(--fh-site-font-size-sm);
+  line-height: 20px;
+  color: var(--vp-c-text-2);
 }
 
 .fh-footer__title {
@@ -112,7 +137,6 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
 }
 
 .fh-footer__link:hover,
-.fh-footer__brand:hover,
 .fh-footer__github:hover {
   color: var(--vp-c-brand-1);
 }
@@ -125,34 +149,13 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
 }
 
 .fh-footer__bottom {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: var(--fh-site-space-2) var(--fh-site-space-4);
-  margin-top: var(--fh-site-space-10);
-  padding-top: var(--fh-site-space-6);
-  border-top: 1px solid var(--vp-c-divider);
-}
-
-.fh-footer__brand {
   display: flex;
   align-items: center;
-  grid-column: 1 / -1;
-  justify-self: start;
-  min-height: 44px;
-}
-
-.fh-footer__brand :deep(.VPImage) {
-  height: 24px;
-  width: auto;
-}
-
-.fh-footer__tagline {
-  grid-column: 1 / -1;
-  margin: 0;
-  font-size: var(--fh-site-font-size-sm);
-  line-height: 20px;
-  color: var(--vp-c-text-2);
+  justify-content: space-between;
+  gap: var(--fh-site-space-4);
+  margin-top: var(--fh-site-space-10);
+  padding-top: var(--fh-site-space-3);
+  border-top: 1px solid var(--vp-c-divider);
 }
 
 .fh-footer__copyright {
@@ -176,8 +179,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
 
 @media (min-width: 640px) {
   .fh-footer__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--fh-site-space-8) var(--fh-site-space-6);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
@@ -201,19 +203,16 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
     grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 
+  .fh-footer__identity {
+    grid-column: auto;
+  }
+
   .fh-footer__link {
     min-height: 32px;
   }
 
   .fh-footer__bottom {
-    grid-template-columns: auto 1fr auto auto;
-    gap: var(--fh-site-space-6);
     margin-top: var(--fh-site-space-12);
-  }
-
-  .fh-footer__brand,
-  .fh-footer__tagline {
-    grid-column: auto;
   }
 }
 
