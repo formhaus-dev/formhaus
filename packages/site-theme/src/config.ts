@@ -80,7 +80,6 @@ export async function sharedThemeConfig() {
     logo: { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg', alt: 'Formhaus' },
     siteTitle: false as const,
     nav: sharedNav,
-    footer: { message: 'Formhaus is MIT licensed. <a href="/legal/">Legal</a>' },
     githubStars: count === null ? null : { count, label: formatStarCount(count) },
   };
 }
