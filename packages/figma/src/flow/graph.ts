@@ -38,7 +38,7 @@ export function describeCondition(condition: ShowCondition, fields: Map<string, 
   return condition.lte === undefined ? '' : `${name} is at most ${condition.lte}`;
 }
 
-export function describeConditions(owner: { show?: ShowCondition[]; showAny?: ShowCondition[] }, fields: Map<string, FormField>): string {
+function describeConditions(owner: { show?: ShowCondition[]; showAny?: ShowCondition[] }, fields: Map<string, FormField>): string {
   const describe = (conditions: ShowCondition[] = [], joiner: string) =>
     conditions
       .map((condition) => describeCondition(condition, fields))

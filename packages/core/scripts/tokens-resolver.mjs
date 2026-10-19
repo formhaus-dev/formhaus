@@ -3,7 +3,7 @@ import { join, relative, resolve } from 'node:path';
 import StyleDictionary from 'style-dictionary';
 import { createConfig } from '../style-dictionary.config.mjs';
 
-export const RESOLVER_FILE = 'formhaus.resolver.json';
+const RESOLVER_FILE = 'formhaus.resolver.json';
 
 function tokenFiles(directory) {
   return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
@@ -84,7 +84,7 @@ const toHex = (rgb) =>
     )
     .join('')}`;
 
-export function derivedProblems(dictionary, label) {
+function derivedProblems(dictionary, label) {
   const problems = [];
   for (const token of dictionary.allTokens) {
     const original = token.original.$value;

@@ -36,7 +36,7 @@ function fieldError(engine: EngineInternals, field: FormField, value: unknown, v
   return unsettleOnWrite(engine, () => validateFieldValue(field, value, values, engine.validators, engine.messages));
 }
 
-export function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {
+function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {
   const values = getSubmitValues(engine);
   const scope = itemScope(group, itemsOf(values[group.key])[index], values);
   return fieldError(engine, field, scope[field.key], scope);

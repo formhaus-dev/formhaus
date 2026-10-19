@@ -13,7 +13,7 @@ const SHIPPED_SKILLS = [
   '7288b74973a7668592f0baef836793aaf8591f3468546c87ff0c2335c8380065',
   '4638f4303a3907af4f6c077dd52251cb2e909875fe6010641e9932333ce0f351',
 ];
-export const CLAUDE_ADD_ARGS = ['mcp', 'add', '--scope', 'user', SERVER_NAME, '--', SERVER.command, ...SERVER.args];
+const CLAUDE_ADD_ARGS = ['mcp', 'add', '--scope', 'user', SERVER_NAME, '--', SERVER.command, ...SERVER.args];
 
 function configDir(ctx: Context): string {
   return ctx.env.CLAUDE_CONFIG_DIR || join(ctx.home, '.claude');

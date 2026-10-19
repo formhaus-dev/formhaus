@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import type { FormDefinition } from '../../src';
 import { localize, type Overlay } from '../../src/i18n';
 
-export interface ConformanceCase {
+interface ConformanceCase {
   name: string;
   input: { values: Record<string, unknown>; skippedSteps: string[] };
   expected: { values: Record<string, unknown>; errors: Record<string, string> };
@@ -27,7 +27,7 @@ export const corpus: ConformanceFixture[] = readdirSync(dir)
   .filter((file) => file.endsWith('.json'))
   .map((file) => JSON.parse(readFileSync(join(dir, file), 'utf8')));
 
-export const valid = corpus.filter(({ issues }) => !issues.length);
+const valid = corpus.filter(({ issues }) => !issues.length);
 
 export const runtime = ({ definition, overlay }: ConformanceFixture) =>
   overlay ? localize(definition, { overlay }).definition : definition;

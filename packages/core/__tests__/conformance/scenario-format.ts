@@ -5,9 +5,9 @@ import { localize, type Overlay } from '../../src/i18n';
 
 export type Reply = { return?: unknown; throw?: string; defer?: string };
 
-export type HookName = 'onBeforeStepChange' | 'onAfterStepChange' | 'onBeforeSubmit' | 'onAfterSubmit' | 'onStepValidate';
+type HookName = 'onBeforeStepChange' | 'onAfterStepChange' | 'onBeforeSubmit' | 'onAfterSubmit' | 'onStepValidate';
 
-export interface ValidatorSpec {
+interface ValidatorSpec {
   reject: unknown[];
   error: string;
 }
@@ -103,7 +103,7 @@ export function projectError(error: unknown, expected: Record<string, unknown>):
   return { name, ...(phase && { phase }), ...('message' in expected && { message }) };
 }
 
-export const scenarioDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition => scenario.definition ?? file.definition;
+const scenarioDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition => scenario.definition ?? file.definition;
 
 export const runtimeDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition =>
   localized(file, scenarioDefinition(file, scenario));
