@@ -1,6 +1,7 @@
 import { anchorsOf, hasOptions, isScale, placeholderFor, scalePoints, type BuilderForm, type BuilderQuestion } from '@formhaus/builder';
 import { ChevronDown, EyeOff, Star } from 'lucide-react';
 import { useCallback } from 'react';
+import { Picture } from '../ui';
 import { cx } from '../ui/lib/cx';
 import { targetsAfter } from '../logic/targets';
 import { useEditor } from '../store/context';
@@ -53,7 +54,7 @@ function Choices({ field }: { field: BuilderQuestion }) {
         <li key={option.uid} className={cx(styles.choice, pictures && styles.picture)}>
           {pictures &&
             (option.extra?.image ? (
-              <img className={styles.cover} src={option.extra.image} alt="" />
+              <Picture className={styles.cover} src={option.extra.image} />
             ) : (
               <span className={styles.cover} aria-hidden />
             ))}
