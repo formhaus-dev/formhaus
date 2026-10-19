@@ -128,12 +128,16 @@ export function display(ctx: Context, path: string): string {
 
 export function step(ctx: Context, agent: string, item: string, where: string, apply: () => State): Change {
   const target = display(ctx, where);
-  const firstBackup = existsSync(where) && !existsSync(`${where}.bak`);
+  const backup = `${where}.bak`;
+  const hadBackup = existsSync(backup);
   try {
     const state = apply();
-    const backedUp = state === 'replaced' || (firstBackup && !ctx.dryRun && (state === 'added' || state === 'updated'));
-    const change: Change = { agent, item, where: backedUp ? `${target} (backup: ${target}.bak)` : target, state };
-    if (state === 'kept') change.note = `Run npx formhaus --force to replace it. Your version will be saved as ${target}.bak.`;
+    const change: Change = { agent, item, where: target, state };
+    if (!ctx.dryRun && existsSync(backup)) {
+      change.backup = `${target}.bak`;
+      change.newBackup = !hadBackup || state === 'replaced';
+    }
+    if (state === 'kept') change.note = 'Run npx formhaus --force to replace it and save your version as .bak.';
     return change;
   } catch (error) {
     return { agent, item, where: target, state: 'failed', note: error instanceof Error ? error.message : String(error) };

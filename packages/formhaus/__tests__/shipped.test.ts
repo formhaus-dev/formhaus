@@ -40,7 +40,7 @@ describe.skipIf(onWindows)('previously shipped assets', () => {
 
   it('plans the update in a dry run without writing', () => {
     box.write('app/.cursor/rules/formhaus.mdc', repoFile('.cursor/rules/formhaus.mdc'));
-    expect(box.run('--dry-run').out).toMatch(/formhaus rule\s+will update/);
+    expect(box.run('--dry-run').out).toContain('will update Cursor rule');
     expect(box.read('app/.cursor/rules/formhaus.mdc')).toBe(repoFile('.cursor/rules/formhaus.mdc'));
   });
 });

@@ -5,7 +5,7 @@ description: "Check, fix and translate Formhaus definitions from Claude Code, Cl
 
 # MCP Server
 
-`@formhaus/mcp` is an MCP server that lets AI agents check Formhaus definitions against the real engine. It runs over stdio and needs Node 20 or later. The checks need no account or key.
+`@formhaus/mcp` is an MCP server that lets AI agents check Formhaus definitions against the real engine. It runs over stdio and needs Node 22.12 or later. The checks need no account or key.
 
 ## Which path
 
@@ -25,7 +25,35 @@ Rules for agents:
 npx formhaus
 ```
 
-Adds the server to every supported agent it finds on your machine: Claude Code, Codex, Cursor and Claude Desktop. In Claude Code it also installs the [`formhaus-create-form`](/guide/formhaus-create-form) skill, and inside a project it adds the Cursor rule. Existing entries are kept, and `--dry-run` shows the changes without writing. For Windsurf, Gemini CLI, OpenCode and VS Code it prints the manual steps.
+Adds the server to every supported agent it finds on your machine: Claude Code, Codex, Cursor and Claude Desktop. In Claude Code it also installs the [`formhaus-create-form`](/guide/formhaus-create-form) skill, and inside a project it adds the Cursor rule. Existing entries are kept, and `--dry-run` shows the changes without writing. For Windsurf, Gemini CLI, OpenCode and VS Code it links to the manual steps below.
+
+```text
+Formhaus is ready in Claude Code, Codex, Cursor and Claude Desktop.
+
+  ✓ Claude Code     added MCP server and form skill
+  ✓ Codex           added MCP server
+  ✓ Cursor          added MCP server · run in a project to add the Cursor rule
+  ✓ Claude Desktop  added MCP server
+  – OpenCode        add it by hand: https://formhaus.dev/guide/mcp
+
+Next
+  1. Restart your agents.
+  2. Ask one: "Build a contact form with Formhaus: name, email, message."
+  3. Show it on your site: npm i @formhaus/core @formhaus/react
+     For Vue use @formhaus/vue. Guide: https://formhaus.dev/guide/
+     No site? Publish it and collect responses at https://app.formhaus.dev
+
+Config backups were saved as .bak. See every file: npx formhaus --verbose
+```
+
+Running it again prints `already set up` for each agent. `--verbose` lists every file it checked or changed and the `.bak` backups.
+
+#### What next
+
+1. Restart your agents so they load the server.
+2. Ask one to build a form: "Build a contact form with Formhaus: name, email, message."
+3. Render the definition on your site with `@formhaus/react` or `@formhaus/vue`. See [Getting started](/guide/).
+4. Or publish it without code and collect responses in [Formhaus Cloud](https://app.formhaus.dev).
 
 ### Claude Code plugin
 
