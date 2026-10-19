@@ -19,7 +19,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.3**. `@formhaus/core` 0.19 and later implement it. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.3**. `@formhaus/core` 0.19 and later implement it. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
@@ -31,7 +31,7 @@ A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or 
 
 A definition with `props` MAY declare `"formatVersion": "1.2"`. Core 0.14 reports `props` as `unknown-property` and ignores it; its renderers still pass it to custom components.
 
-A definition with a `scale` or `rating` field SHOULD declare `"formatVersion": "1.3"`. Core 0.18 and older read these types as custom types: they skip the type check, and their `validateSubmission()` accepts any value for them. `checkDefinition()` warns about a `scale` or `rating` field without format 1.3. Upgrade the server that runs `validateSubmission()` before the clients. A definition with option `image` or section `layout` MAY declare 1.3. Core 0.18 reports them as `unknown-property`, and its renderers draw plain options and a plain section.
+A definition with a `scale` or `rating` field SHOULD declare `"formatVersion": "1.3"`. Core 0.18 and older read these types as custom types: they skip the type check, and their `validateSubmission()` accepts any value for them. `checkDefinition()` warns about a `scale` or `rating` field without format 1.3. Upgrade the server that runs `validateSubmission()` before the clients. A definition with option `image`, field `columns` or section `layout` MAY declare 1.3. Core 0.18 reports them as `unknown-property`, and its renderers draw plain options and a plain section.
 
 ```json
 { "formatVersion": "1.3", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
@@ -76,6 +76,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `validation` | [validation](#validation) | Validation rules. |
 | `options` | `{ value: string, label: string, image?: string }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
 | `layout` | `"stack"` or `"inline"` | Option layout for `radio` and `multiselect`. `stack` (default) lists options vertically. `inline` places short options side by side. |
+| `columns` | integer, 1 to 4 | Cards per row for [picture options](#picture-options). |
 | `optionsFrom` | string | Name of a renderer options provider. |
 | `optionsDependsOn` | string[] | Field keys whose changes reload `optionsFrom`. |
 | `autoAdvance` | boolean | See [Auto-advance](#auto-advance). |
@@ -173,6 +174,8 @@ An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors
 ### Picture options
 
 An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host.
+
+`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` on a field whose options have no `image` is a `columns-not-applicable` warning and is ignored. Each card has a button that opens the image at full size.
 
 ## Sections
 
@@ -763,7 +766,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
 | `duplicate-option-value` | error | An option value that an earlier option of the same field already uses |
-| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, or `defaultItems` greater than `maxLength` |
+| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, `defaultItems` greater than `maxLength`, or `columns` outside 1 to 4 |
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
@@ -779,6 +782,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
+| `columns-not-applicable` | warning | `columns` on a field whose options have no `image` |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |

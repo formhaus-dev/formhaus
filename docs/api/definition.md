@@ -49,6 +49,7 @@ interface FormField {
   validation?: FieldValidation;   // Validation rules
   options?: FieldOption[];        // For select, radio, multiselect; anchor labels for scale and rating
   layout?: 'stack' | 'inline';    // Radio and multiselect option layout. Added in 0.10.0
+  columns?: number;               // Picture cards per row, 1 to 4. Added in 0.19.0
   optionsFrom?: string;           // Dynamic options provider key
   optionsDependsOn?: string[];    // Re-fetch options when these fields change
   accept?: string;                // File input mime types
@@ -338,7 +339,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
-| `scale` and `rating` types, `image` on options, `layout: "matrix"` on sections, format 1.3 | 0.19.0 |
+| `scale` and `rating` types, `image` on options, `columns` on fields, `layout: "matrix"` on sections, format 1.3 | 0.19.0 |
 | `props` on fields, format 1.2 | 0.15.0 |
 | `type: "section"` and `type: "group"` nodes, format 1.1 | 0.14.0 |
 | `lang`, `messages`, `labels` and `i18n` | 0.13.0 |

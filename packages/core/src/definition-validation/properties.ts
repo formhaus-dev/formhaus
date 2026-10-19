@@ -7,7 +7,7 @@ export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
   step: 'id title description fields show showAny routes next back skip i18n',
   field:
-    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout optionsFrom optionsDependsOn accept rows mask inputMode props i18n',
+    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout columns optionsFrom optionsDependsOn accept rows mask inputMode props i18n',
   section: 'key type title description layout show showAny fields i18n',
   group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
   option: 'value label image i18n',
@@ -69,6 +69,16 @@ function fieldWarnings({ field, path }: FieldEntry): DefinitionIssue[] {
       ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
     ]),
     ...(isEntry(field.validation) ? unknown(field.validation, `${path}/validation`, PROPERTIES.validation) : []),
+    ...(field.columns !== undefined && !field.options?.some((option) => option.image)
+      ? [
+          warning(
+            'columns-not-applicable',
+            `${path}/columns`,
+            `"columns" of "${field.key}" applies to options with images only`,
+            'Add "image" to the options, or remove "columns"',
+          ),
+        ]
+      : []),
   ];
 }
 

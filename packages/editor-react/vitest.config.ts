@@ -13,6 +13,7 @@ export default defineConfig({
       '@codemirror/view',
       '@lezer/highlight',
       'react/jsx-dev-runtime',
+      'react/jsx-runtime',
     ],
   },
   css: {

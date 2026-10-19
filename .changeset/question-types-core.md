@@ -8,6 +8,7 @@
 - `validateSubmission()` converts decimal strings such as `"7"` to numbers for `scale` and `rating`, as it does for `number`.
 - `options` on `scale` and `rating` are anchor labels, not choices. Conditions on these fields compare numbers.
 - New `image` on options of `radio` and `multiselect` fields.
+- New `columns` on fields sets picture cards per row, from 1 to 4. `checkDefinition()` rejects other values and warns with `columns-not-applicable` when the options have no images.
 - New `layout: "matrix"` on sections.
 - A step or section may have an empty `fields` array, for a welcome screen or a statement.
 - Format version 1.3. `checkDefinition()` warns with `outdated-format-version` about `scale` or `rating` without `"formatVersion": "1.3"`.
@@ -15,3 +16,4 @@
 - **Breaking:** `DefaultFieldType` adds `scale` and `rating`, so an exhaustive `Record<DefaultFieldType, …>` must list them.
 - `unknown-field-type` reports a type with `-` or `:` only when it spells a built-in type with separators, such as `multi-select`. `x-rating` is no longer reported as a typo of `rating`.
 - `style.css` styles scale, rating, picture options, matrix sections and steps without fields.
+- `style.css` wraps scales of 8 to 11 points into two rows when 44px points do not fit, and places rating stars 4px apart with 44px hit areas on touch screens.

@@ -13,6 +13,7 @@
         "key": "room",
         "type": "radio",
         "label": "room",
+        "columns": 2,
         "validation": {
           "required": true
         },
