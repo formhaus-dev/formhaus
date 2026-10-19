@@ -109,10 +109,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "name": "Аня",
-          "email": "nope"
-        },
+        "values": { "name": "Аня" },
         "errors": {
           "email": "Введите корректный email"
         }

@@ -51,12 +51,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "username": {
-            "$ne": null
-          },
-          "website": 42
-        },
+        "values": {},
         "errors": {
           "username": "Must be text",
           "website": "Must be text"
