@@ -18,7 +18,7 @@ function newId(): string {
   return `${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export function documentId(): string {
+function documentId(): string {
   const existing = figma.root.getSharedPluginData(PLUGIN_NAMESPACE, DOCUMENT_KEY);
   if (existing) return existing;
   const id = newId();

@@ -1,7 +1,7 @@
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
 
-export const FORMAT_VERSION = '1.4';
+export const FORMAT_VERSION = '1.5';
 
 export function formatIssues({ formatVersion: version }: Record<string, unknown>): DefinitionIssue[] {
   if (version === undefined) return [];

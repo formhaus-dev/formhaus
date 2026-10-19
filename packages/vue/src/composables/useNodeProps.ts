@@ -1,5 +1,5 @@
 import { isGroup, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
-import { fieldDomId, type OptionSource, optionSources, providedOptions } from '@formhaus/core/internal';
+import { fieldDomId, type OptionSource, optionSources, providedOptions, recalled, recalls } from '@formhaus/core/internal';
 import { computed, shallowRef, watch, type Ref } from 'vue';
 import { useFieldOptions } from './useFieldOptions';
 import type { FormRendererProps } from '../types';
@@ -70,12 +70,13 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
   return {
     sectionProps(section: FormSection) {
       const id = fieldDomId(formId, section.key, form.engine.definition);
+      const { title, description } = recalled(form.engine, section);
       return {
         id,
         section,
-        title: section.title,
-        description: section.description,
-        descriptionId: section.description ? `${id}-description` : undefined,
+        title,
+        description,
+        descriptionId: description ? `${id}-description` : undefined,
       };
     },
     nodeProps(field: FormField) {
@@ -87,6 +88,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
           group: field,
           items: state.items,
           value: values.value[field.key],
+          recall: [field, ...field.fields].some((node) => recalls(form.engine, node)) ? values.value : undefined,
           errors: state.errors,
           fieldLoading: state.loading,
           disabled: disabled.value,
@@ -103,7 +105,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
       const resolved = options.value[field.key];
       return {
         id: fieldDomId(formId, field.key, form.engine.definition),
-        field: resolved ? { ...field, options: resolved } : field,
+        field: recalled(form.engine, resolved ? { ...field, options: resolved } : field),
         modelValue: values.value[field.key],
         error: errors.value[field.key],
         loading: fieldLoading.value[field.key],

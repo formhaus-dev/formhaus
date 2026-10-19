@@ -21,7 +21,7 @@ export interface ScenarioProps {
   optionsProviders?: Record<string, (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>>;
 }
 
-export interface Mounted {
+interface Mounted {
   update(props: Partial<ScenarioProps>): Promise<void>;
 }
 

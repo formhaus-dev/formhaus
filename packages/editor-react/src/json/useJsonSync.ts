@@ -7,7 +7,7 @@ import { loader } from '../store/initial';
 import { mountJsonEditor, type JsonEditorHandle } from './jsonEditor';
 import { formatDefinition, locate, parseJson, plainDefinition, sameDefinition, type JsonError } from './sync';
 
-export const JSON_DELAY = 400;
+const JSON_DELAY = 400;
 
 export type JsonSyncState = ReturnType<typeof useJsonSync>;
 

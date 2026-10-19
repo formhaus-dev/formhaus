@@ -1,4 +1,4 @@
-export type FontWeight = 'regular' | 'medium' | 'semibold';
+type FontWeight = 'regular' | 'medium' | 'semibold';
 
 export type KitFonts = Record<FontWeight, FontName>;
 

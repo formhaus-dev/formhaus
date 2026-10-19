@@ -19,7 +19,7 @@ function partBox(node: ChildNode): DOMRect | null {
   return node instanceof Element && visible(node) ? node.getBoundingClientRect() : null;
 }
 
-export function verticalOffsets(container: Element): Offset[] {
+function verticalOffsets(container: Element): Offset[] {
   const box = container.getBoundingClientRect();
   const style = getComputedStyle(container);
   const top = box.top + Number.parseFloat(style.borderTopWidth);

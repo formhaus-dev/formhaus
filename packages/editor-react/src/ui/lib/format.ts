@@ -16,9 +16,3 @@ export function formatAgo(iso: string, now: Date = new Date()): string {
   if (then.getUTCFullYear() === now.getUTCFullYear()) return dayFormat.format(then);
   return dateFormat.format(then);
 }
-
-export function initial(text: string): string {
-  const first = Array.from(text.trim())[0];
-  if (!first || !/[\p{L}\p{N}]/u.test(first)) return '?';
-  return first.toUpperCase();
-}

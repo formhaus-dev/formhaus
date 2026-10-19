@@ -11,7 +11,7 @@ declare global {
   }
 }
 
-export const umamiWebsiteId = 'abeb3361-e26b-4aaf-a25c-ef868c82f9b6';
+const umamiWebsiteId = 'abeb3361-e26b-4aaf-a25c-ef868c82f9b6';
 
 const respectGpc = 'window.fhBeforeSend=function(t,p){return navigator.globalPrivacyControl===true?false:p}';
 const appHost = 'app.formhaus.dev';
