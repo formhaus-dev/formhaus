@@ -14,6 +14,11 @@
 - The final Submit button uses the `submit` label when the `submit` action has no label.
 - The step progress names a step without a title with `stepTitle`.
 - **Behavior change:** the step progress marks a step with errors as `· Errors: 2` instead of `· 2 errors`. Change it with the `stepErrors` label.
+- **Behavior change:** the error summary sits below the fields and form-level errors, above the step buttons.
+- The error summary groups errors under each step's title when they come from more than one step.
+- The step progress shows the current step's title in the error color while the step has errors, with the `stepErrors` label as visually hidden text.
+- A custom progress component receives `stepErrorCount`, the number of errors on the current step.
+- New `.fh-error-summary__step` class styles the step names in a grouped error summary.
 - `FormActions` and `FormStepProgress` use the renderer `labels` and `definition.labels` for their fallback texts.
 - `clear`, `done`, `chooseFile` and `required` are for native renderers. The web renderers do not show them.
 - `textSlots()` and `translationTemplate()` list each new label only when the form uses it.
@@ -26,6 +31,7 @@
 
 ### Patch Changes
 
+- Error summary entries join a label that ends with `?`, `!`, `:`, `.` or their full-width forms to its message with a space instead of `: `.
 - Cloud forms keep `scale` and `rating` answers when the form is updated during submit. An answer outside the new range is dropped.
 - Submissions with duplicate options now fail validation. A `multiselect` value that repeats an option, including in a matrix row or a group item, gets the `options` message from `validateSubmission()` and the engine.
 - Matrix sections switch to the table layout from 480px wide instead of 560px, so a matrix inside a 640px card is a table.

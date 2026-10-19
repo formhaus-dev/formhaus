@@ -10,6 +10,7 @@ export function FormStepProgress({
   headingLevel = 2,
   steps,
   counterLabel,
+  stepErrorCount = 0,
 }: FormStepProgressProps) {
   const text = useContext(LabelContext);
   const Heading = `h${headingLevel}` as const;
@@ -41,6 +42,7 @@ export function FormStepProgress({
         </ol>
       )}
       {stepTitle && <Heading className="fh-step-progress__title">{stepTitle}</Heading>}
+      {stepErrorCount > 0 && <span className="fh-step-progress__status">{text('stepErrors', { count: stepErrorCount })}</span>}
       {stepDescription && <p className="fh-step-progress__description">{stepDescription}</p>}
     </div>
   );
