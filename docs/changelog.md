@@ -5,10 +5,10 @@ description: "Release notes for @formhaus/core, @formhaus/react and @formhaus/vu
 
 # Changelog
 
-Current releases are listed on [GitHub Releases](https://github.com/ignsm/formhaus/releases). Each published package also keeps its own changelog:
+Current releases are listed on [GitHub Releases](https://github.com/formhaus-dev/formhaus/releases). Each published package also keeps its own changelog:
 
-- [`@formhaus/core`](https://github.com/ignsm/formhaus/blob/main/packages/core/CHANGELOG.md)
-- [`@formhaus/react`](https://github.com/ignsm/formhaus/blob/main/packages/react/CHANGELOG.md)
-- [`@formhaus/vue`](https://github.com/ignsm/formhaus/blob/main/packages/vue/CHANGELOG.md)
+- [`@formhaus/core`](https://github.com/formhaus-dev/formhaus/blob/main/packages/core/CHANGELOG.md)
+- [`@formhaus/react`](https://github.com/formhaus-dev/formhaus/blob/main/packages/react/CHANGELOG.md)
+- [`@formhaus/vue`](https://github.com/formhaus-dev/formhaus/blob/main/packages/vue/CHANGELOG.md)
 
-The root [CHANGELOG.md](https://github.com/ignsm/formhaus/blob/main/CHANGELOG.md) contains the older combined release history.
+The root [CHANGELOG.md](https://github.com/formhaus-dev/formhaus/blob/main/CHANGELOG.md) contains the older combined release history.

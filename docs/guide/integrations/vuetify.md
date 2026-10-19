@@ -7,7 +7,7 @@ description: "Render Formhaus JSON forms with Vuetify 3: map v-text-field, v-sel
 
 Map Vuetify inputs to Formhaus field types through the `components` prop of `FormRenderer` from `@formhaus/vue`.
 
-[Open in StackBlitz](https://stackblitz.com/github/ignsm/formhaus/tree/main/examples/vue-vuetify) · [Source](https://github.com/ignsm/formhaus/tree/main/examples/vue-vuetify)
+[Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/vue-vuetify) · [Source](https://github.com/formhaus-dev/formhaus/tree/main/examples/vue-vuetify)
 
 ## Install
 
@@ -27,7 +27,7 @@ npm install @formhaus/core @formhaus/vue vuetify
 
 <<< @/../examples/vue-vuetify/src/App.vue
 
-The other renderers are in [`src/fields`](https://github.com/ignsm/formhaus/tree/main/examples/vue-vuetify/src/fields) and [`src/actions`](https://github.com/ignsm/formhaus/tree/main/examples/vue-vuetify/src/actions).
+The other renderers are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/vue-vuetify/src/fields) and [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/vue-vuetify/src/actions).
 
 ## Server validation
 

@@ -3,10 +3,10 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/ignsm/formhaus/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/ignsm/formhaus/ci.yml?branch=main&label=tests" alt="Tests"></a>
+  <a href="https://github.com/formhaus-dev/formhaus/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/formhaus-dev/formhaus/ci.yml?branch=main&label=tests" alt="Tests"></a>
   <a href="https://www.npmjs.com/package/@formhaus/core"><img src="https://img.shields.io/npm/v/@formhaus/core?label=npm" alt="npm"></a>
   <a href="https://bundlejs.com/?q=@formhaus/core"><img src="https://img.shields.io/bundlejs/size/@formhaus/core?label=core" alt="core size"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/ignsm/formhaus" alt="MIT license"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/formhaus-dev/formhaus" alt="MIT license"></a>
 </p>
 
 <p align="center"><strong>The form framework for the AI era.</strong></p>
@@ -74,7 +74,7 @@ Two independent ways to use it:
 - [Multi-step forms with branching](https://formhaus.dev/guide/steps.html#route-between-branches) in React or Vue.
 - [Rendering a form from JSON with your own components](https://formhaus.dev/guide/fields.html#override-default-components).
 - [Designing the form in Figma](https://formhaus.dev/guide/figma.html) from the same file.
-- Generating and checking definitions with AI agents: [Claude Code skills](https://formhaus.dev/guide/formhaus-create-form.html), the [MCP server](https://formhaus.dev/guide/mcp.html) (`claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus`), the [JSON Schema](https://formhaus.dev/api/definition.html#json-schema) and the [format specification](https://formhaus.dev/spec.html).
+- Generating and checking definitions with AI agents: [Claude Code skills](https://formhaus.dev/guide/formhaus-create-form.html), the [MCP server](https://formhaus.dev/guide/mcp.html) (`claude plugin marketplace add formhaus-dev/formhaus && claude plugin install formhaus@formhaus`), the [JSON Schema](https://formhaus.dev/api/definition.html#json-schema) and the [format specification](https://formhaus.dev/spec.html).
 - [Translated forms](https://formhaus.dev/guide/translations.html) with your own catalogs, or with i18next, vue-i18n and Lokalise keys.
 - A [headless engine](https://formhaus.dev/api/form-engine.html) for Svelte or vanilla JS.
 

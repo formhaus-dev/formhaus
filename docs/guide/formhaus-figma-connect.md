@@ -16,11 +16,11 @@ Find your form components in a Figma library and bind them to the [Figma plugin]
 Install the plugin:
 
 ```bash
-claude plugin marketplace add ignsm/formhaus
+claude plugin marketplace add formhaus-dev/formhaus
 claude plugin install formhaus@formhaus
 ```
 
-Inside a Claude Code session, `/plugin marketplace add ignsm/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
+Inside a Claude Code session, `/plugin marketplace add formhaus-dev/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
 
 ## Setting up Figma MCP
 

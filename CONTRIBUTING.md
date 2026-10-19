@@ -5,7 +5,7 @@ Thanks for wanting to help. Here's how to get started.
 ## Setup
 
 ```bash
-git clone https://github.com/ignsm/formhaus.git
+git clone https://github.com/formhaus-dev/formhaus.git
 cd formhaus
 pnpm install
 ```

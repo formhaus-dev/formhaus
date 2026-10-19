@@ -9,7 +9,7 @@ Formhaus describes the funnel as a multi-step JSON definition: radio questions w
 
 ## Definition
 
-The plan quiz from [`examples/react-quiz`](https://github.com/ignsm/formhaus/tree/main/examples/react-quiz). Team visitors get an extra question about team size, solo visitors skip it.
+The plan quiz from [`examples/react-quiz`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-quiz). Team visitors get an extra question about team size, solo visitors skip it.
 
 <<< @/../examples/react-quiz/src/quiz.json
 
@@ -94,4 +94,4 @@ async function bookCall(values: Record<string, unknown>) {
 - [Multi-Step Forms](/guide/steps#advance-when-an-answer-is-activated): `autoAdvance`, `next: false` and lifecycle hooks
 - [Custom Actions & Progress](/guide/custom-components#form-events): form events
 - [Multi-step branching](/recipes/multi-step-branching): routes with Continue buttons and a skip step
-- [Examples README](https://github.com/ignsm/formhaus/tree/main/examples): run the quiz locally
+- [Examples README](https://github.com/formhaus-dev/formhaus/tree/main/examples): run the quiz locally

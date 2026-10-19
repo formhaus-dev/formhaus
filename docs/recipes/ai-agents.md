@@ -16,10 +16,10 @@ A support form an agent might produce. The `$schema` line enables completion and
 ## 1. Install the Claude Code plugin
 
 ```bash
-claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus
+claude plugin marketplace add formhaus-dev/formhaus && claude plugin install formhaus@formhaus
 ```
 
-Inside a Claude Code session, `/plugin marketplace add ignsm/formhaus` and `/plugin install formhaus@formhaus` do the same. The plugin bundles the `/formhaus:formhaus-create-form` skill and the `@formhaus/mcp` server, which exposes `validate_definition`, `simulate_path`, `capabilities` and `example_definitions`.
+Inside a Claude Code session, `/plugin marketplace add formhaus-dev/formhaus` and `/plugin install formhaus@formhaus` do the same. The plugin bundles the `/formhaus:formhaus-create-form` skill and the `@formhaus/mcp` server, which exposes `validate_definition`, `simulate_path`, `capabilities` and `example_definitions`.
 
 To add only the server, run `claude mcp add formhaus -- npx -y @formhaus/mcp`. For Claude Desktop and Cursor, see [MCP Server setup](/guide/mcp#claude-desktop-and-cursor).
 
@@ -96,7 +96,7 @@ With `"topic": "billing"` the `screenshot` step leaves the path and `orderId` ap
 
 ## 5. Add instructions to your repository
 
-Paste this into `AGENTS.md` or `CLAUDE.md` so every agent session follows the same rules. Cursor users can copy [`.cursor/rules/formhaus.mdc`](https://github.com/ignsm/formhaus/blob/main/.cursor/rules/formhaus.mdc) into their project's `.cursor/rules/` instead, as described in [Cursor rule](/guide/mcp#cursor-rule).
+Paste this into `AGENTS.md` or `CLAUDE.md` so every agent session follows the same rules. Cursor users can copy [`.cursor/rules/formhaus.mdc`](https://github.com/formhaus-dev/formhaus/blob/main/.cursor/rules/formhaus.mdc) into their project's `.cursor/rules/` instead, as described in [Cursor rule](/guide/mcp#cursor-rule).
 
 ```markdown
 ## Forms
