@@ -156,6 +156,8 @@ export const materialKit: Kit = {
     fonts,
     text: C.onSurface,
     muted: C.onSurfaceVariant,
+    accent: C.primary,
+    control: { height: 40, radius: 4 },
     card: { fill: C.surface, radius: 28, padding: 24, gap: 16, width: 400 },
     actionsGap: 8,
     optionGroup: { gap: 0 },
@@ -165,4 +167,5 @@ export const materialKit: Kit = {
     captionSize: 12,
   }),
   build: (role, fonts) => buildRole(PARTS, role, fonts),
+  glyph: (kind) => (kind === 'radio' ? radioGlyph() : checkboxGlyph()),
 };
