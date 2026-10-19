@@ -1,4 +1,5 @@
-.fh-editor {
+.fh-editor,
+:where([class*='fh_ed_']:not(.fh-editor *, [class*='fh_ed_'] *)) {
   font-family: var(--fh-ed-font-family-sans);
   font-size: var(--fh-ed-font-size-md);
   line-height: var(--fh-ed-font-leading-base);
