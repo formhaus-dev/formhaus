@@ -100,6 +100,70 @@ function onFieldChange(key: string, value: unknown) {
 
 `@values-change="(values) => …"` works too, the same way as `onValuesChange` in React.
 
+## Use a computed value later in the form
+
+Write the computed value to a `hidden` field with `setValue`, then recall it in a text with `{{total}}` and branch on it with a `gte` condition.
+
+A booking that adds two seat counts into `total`. The next step shows it with `{{total}}` and asks for a group request from 10 seats. Requires `@formhaus/core` 0.21 and `formatVersion` `"1.5"`.
+
+<<< @/recipes/definitions/booking-total.json
+
+A `hidden` field holds text, so write the sum as a string. `gte` compares it as a number.
+
+### React
+
+```tsx
+import { useRef } from 'react';
+import { FormRenderer, type FormRendererHandle } from '@formhaus/react';
+import { parseDefinition } from '@formhaus/core';
+import booking from './booking-total.json';
+
+const definition = parseDefinition(booking);
+
+export function BookingForm({ onDone }: { onDone: (values: Record<string, unknown>) => void }) {
+  const form = useRef<FormRendererHandle>(null);
+  return (
+    <FormRenderer
+      ref={form}
+      definition={definition}
+      onSubmit={onDone}
+      onValuesChange={(values) => {
+        const total = String(Number(values.adults ?? 0) + Number(values.children ?? 0));
+        if (values.total !== total) form.current?.setValue('total', total);
+      }}
+    />
+  );
+}
+```
+
+### Vue
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue';
+import { FormRenderer, type FormRendererHandle } from '@formhaus/vue';
+import { parseDefinition } from '@formhaus/core';
+import booking from './booking-total.json';
+
+const definition = parseDefinition(booking);
+const emit = defineEmits<{ done: [values: Record<string, unknown>] }>();
+const form = ref<FormRendererHandle>();
+
+function onValuesChange(values: Record<string, unknown>) {
+  const total = String(Number(values.adults ?? 0) + Number(values.children ?? 0));
+  if (values.total !== total) form.value?.setValue('total', total);
+}
+</script>
+
+<template>
+  <FormRenderer ref="form" :definition="definition" @values-change="onValuesChange" @submit="(values) => emit('done', values)" />
+</template>
+```
+
+- The computation needs app code. A form published as JSON only, such as a hosted form, cannot compute values.
+- Write only when the value differs, so the callback does not trigger itself.
+- See [Answer recall](/guide/fields#answer-recall) and [Conditions](/guide/conditions).
+
 ## How it works
 
 - `onValuesChange` and `valuesChange` fire once on mount with the initial values, then once for every value-changing operation: user edits, `setValue` from the handle, adding or removing group items, values cleared or restored by conditions, and `reset`. A change that clears several hidden fields fires once. Errors, loading and step navigation do not fire them, and neither does writing a value equal to the current one.

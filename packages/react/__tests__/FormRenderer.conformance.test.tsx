@@ -6,6 +6,7 @@ import { definitionScenarios } from '../../core/__tests__/renderers/definition.s
 import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
 import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
+import { recallScenarios } from '../../core/__tests__/renderers/recall.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
 import { labelScenarios } from '../../core/__tests__/renderers/labels.scenarios';
 import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
@@ -81,6 +82,7 @@ const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
 
 describe('renderer conformance: focus', () => focusScenarios(harness, kit));
 describe('renderer conformance: flow', () => flowScenarios(harness, kit));
+describe('renderer conformance: recall', () => recallScenarios(harness, kit));
 describe('renderer conformance: error summary', () => summaryScenarios(harness, kit));
 describe('renderer conformance: labels', () => labelScenarios(harness, kit));
 describe('renderer conformance: states', () => stateScenarios(harness, kit));

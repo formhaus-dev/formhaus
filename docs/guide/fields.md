@@ -460,6 +460,57 @@ A hidden field follows the same rules as any other field:
 
 Server errors returned for a hidden field's key also show as form-level errors, as sent. `validateSubmission()` already names the field in them.
 
+## Answer recall
+
+`{{key}}` in a text shows the answer to an earlier field. Set `"formatVersion": "1.5"`. Requires `@formhaus/core` 0.21.
+
+```json
+{
+  "formatVersion": "1.5",
+  "id": "signup",
+  "title": "Sign up",
+  "submit": { "label": "Send" },
+  "steps": [
+    {
+      "id": "about",
+      "title": "About you",
+      "fields": [
+        { "key": "name", "type": "text", "label": "Name" },
+        { "key": "email", "type": "email", "label": "Email" },
+        {
+          "key": "plan",
+          "type": "radio",
+          "label": "Plan",
+          "options": [
+            { "value": "pro", "label": "Pro" },
+            { "value": "team", "label": "Team" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "title": "Review",
+      "description": "Check your answers: {{name}}, {{email}}, plan {{plan}}",
+      "fields": []
+    }
+  ]
+}
+```
+
+A step can greet the user by the name asked on the first step:
+
+```json
+{ "id": "more", "title": "Hello, {{name}}!", "description": "A few more questions.", "fields": [] }
+```
+
+- Tokens work in step and section `title` and `description`, field and group `label` and `helperText`, and `placeholder`.
+- Options show their label from the definition `options`, and a value from `optionsFrom` shows as stored. A multiselect joins labels with `, `, a checkbox or switch shows its label when on, and a group shows its item count.
+- A missing value, a hidden field and an unknown key give an empty text.
+- `checkDefinition()` warns when a token names no field or a field answered later.
+- Inside a group item, `{{key}}` also reads the item's own fields.
+- The [Derived values](/recipes/derived-values#use-a-computed-value-later-in-the-form) recipe fills a `hidden` field from app code and recalls it.
+
 ## Keys and element ids
 
 Submitted values use each field's key exactly as written. A key such as `contact.email` stays one flat key and is never split into nested objects. Errors from `validateSubmission()` and the `errors` prop use the same keys.

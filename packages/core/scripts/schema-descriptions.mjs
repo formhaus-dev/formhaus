@@ -1,7 +1,7 @@
 export const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.4". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4.',
+    'Format version of the definition, such as "1.5". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts in 1.5.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
@@ -35,7 +35,7 @@ export const DESCRIPTIONS = {
   'FormStep.showAny': 'Step is visible when any condition matches.',
   'FormField.key': 'Key of the field value in the submitted values. Unique within the form.',
   'FormField.type': 'Field type. A built-in type or a custom type rendered through the renderer components prop.',
-  'FormField.label': 'Label text. Required for every type except hidden.',
+  'FormField.label': 'Label text. Required for every type except hidden. From 1.5, {{key}} shows an earlier answer.',
   'FormField.helperText': 'Hint text between the label and the control.',
   'FormField.defaultValue':
     'Initial value. Also the value restored on reset or skip, and the start value of a field shown with no last value.',

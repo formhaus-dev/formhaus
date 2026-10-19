@@ -8,6 +8,7 @@ import { isBlank } from '../visibility/evaluate-condition';
 import { isEntry, itemsOf } from '../visibility/nodes';
 import { formatText } from '../validation/default-messages';
 import { fieldDomId, itemDomId } from './ids';
+import { recalled } from './recall';
 
 export { itemLimits };
 
@@ -37,11 +38,14 @@ export interface ErrorGroup {
 
 export function errorGroups(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorGroup[] {
   const { errors, values } = engine;
-  return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap(({ id, title, fields = [] }, index) => {
+  return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap((source, index) => {
+    const { id, title } = recalled(engine, source);
+    const { fields = [] } = source;
     const entries = errorKeys(fields, errors, values).flatMap((key) => {
       const item = visibility(engine).activeItem(key, values);
-      const field = item?.field ?? visibility(engine).activeField(key, values);
-      if (!field) return [];
+      const raw = item?.field ?? visibility(engine).activeField(key, values);
+      if (!raw) return [];
+      const field = recalled(engine, raw, item ? key : undefined);
       const label = item ? `${field.label} (${itemTitle(item.group, item.index, ...labels)})` : field.label;
       return [
         { key, id: errorDomId(engine, formId, key), text: label + (/[?!:.。]$/.test(label.normalize('NFKC')) ? ' ' : ': ') + errors[key] },

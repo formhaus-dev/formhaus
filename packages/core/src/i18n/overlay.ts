@@ -27,4 +27,11 @@ export function leaves(overlay: unknown, path: string[] = []): { path: string[];
 
 export const addressKey = (path: string[]) => JSON.stringify(path);
 
-export const placeholders = (text: string) => [...new Set(text.match(/\{\w+\}/g) ?? [])].map((name) => name.slice(1, -1)).sort();
+export const placeholders = (text: string) =>
+  [
+    ...new Set(
+      (text.match(/\{\{\s*[^\s{}]+\s*\}\}|\{\w+\}/g) ?? []).map((token) =>
+        token.startsWith('{{') ? token.replace(/\s/g, '') : token.slice(1, -1),
+      ),
+    ),
+  ].sort();

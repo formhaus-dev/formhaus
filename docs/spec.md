@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.4 specification"
-description: "Formhaus form definition format 1.4: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
+title: "Form definition 1.5 specification"
+description: "Formhaus form definition format 1.5: structure, fields, sections, groups, conditions, validation, steps, routes, answer recall, translations and the payload."
 ---
 
-# Formhaus form definition 1.4
+# Formhaus form definition 1.5
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,13 +19,13 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.4**. `@formhaus/core` 0.20 and later implement it. Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.5**. `@formhaus/core` 0.21 and later implement it. Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.4"`. Without it, core reads the definition as 1.4. A minor version newer than 1.4 is also read as 1.4. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.5"`. Without it, core reads the definition as 1.5, but shows `{{key}}` tokens as written. A minor version newer than 1.5 is also read as 1.5. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
@@ -35,8 +35,10 @@ A definition with a `scale` or `rating` field SHOULD declare `"formatVersion": "
 
 A definition with a `contains` or `notContains` condition SHOULD declare `"formatVersion": "1.4"`. Core 0.19 and older reject it with `unknown-operator`: the constructor and `validateSubmission()` throw. `checkDefinition()` warns about these operators without format 1.4. Upgrade the server that runs `validateSubmission()` before the clients.
 
+A definition whose texts recall answers MUST declare `"formatVersion": "1.5"` or newer. Without it, and in core 0.20 and older, the texts show `{{key}}` as written. `checkDefinition()` warns about a `{{key}}` token without format 1.5.
+
 ```json
-{ "formatVersion": "1.4", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
+{ "formatVersion": "1.5", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
 ```
 
 ## Document structure
@@ -541,6 +543,62 @@ Core trims leading and trailing whitespace from string values of every built-in 
 
 `autoAdvance: true` lets a renderer advance when the user commits an answer. The built-in `radio`, `scale` and `rating` commit on click, Space and Enter, and `scale` and `rating` also on a digit key; arrow keys only select. Do not set it on [matrix](#matrix) rows. Commit validates the whole current step and then moves forward. Initial values and `setValue()` never advance, and the last step never auto-submits. Other built-in types ignore `autoAdvance`. Custom fields commit through `onCommit` in React and the `commit` event in Vue.
 
+## Answer recall
+
+A text can show an earlier answer with a `{{key}}` token, where `key` is a top-level field key. Whitespace inside the braces is allowed: `{{ key }}`. Inside a group item, the item's own fields are also recalled by their item key, from the same item. There are no expressions, filters or formats.
+
+```json
+{
+  "formatVersion": "1.5",
+  "id": "signup",
+  "title": "Sign up",
+  "submit": { "label": "Send" },
+  "steps": [
+    {
+      "id": "about",
+      "title": "About you",
+      "fields": [
+        { "key": "name", "type": "text", "label": "Name" },
+        { "key": "email", "type": "email", "label": "Email", "helperText": "We write to {{name}} here" },
+        {
+          "key": "plan",
+          "type": "radio",
+          "label": "Plan",
+          "options": [
+            { "value": "pro", "label": "Pro" },
+            { "value": "team", "label": "Team" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "review",
+      "title": "Review",
+      "description": "Check your answers: {{name}}, {{email}}, plan {{plan}}",
+      "fields": [{ "key": "notes", "type": "textarea", "label": "Anything to add?" }]
+    }
+  ]
+}
+```
+
+Tokens are resolved in the step `title` and `description`, the section `title` and `description`, the field and group `label` and `helperText`, and the field `placeholder`. Option labels, action labels, catalogs and messages show tokens as written. Recall works only with `formatVersion` 1.5 or newer.
+
+A token is replaced with the submit value of the field:
+
+| Field | Text |
+|---|---|
+| `select`, `radio`, `autocomplete` | the option label from the definition `options`; a value without one, such as a value from `optionsFrom`, as is |
+| `multiselect` | the option labels joined with `, ` |
+| `checkbox`, `switch` | the field label when `true`, else empty |
+| `number`, `scale`, `rating` | the number as JavaScript writes it, such as `4.5` |
+| `date`, `time`, `datetime`, text types, `hidden` | the value as stored |
+| `file` | the file names joined with `, ` |
+| group | the number of items |
+
+A field without a value, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. Each recalled value is cut to 10000 code units. Recall runs once: a recalled value that holds `{{key}}` is not expanded again. The result is plain text, and renderers draw it as text, never as HTML. React and Vue update the texts when a value changes. `recallText(definition, text, values, item?)` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item.
+
+Translations keep the tokens. Recall resolves the translated text, and option labels come from the translated definition. `translationIssues()` reports a translation that drops or adds a `{{key}}` token in `placeholderMismatch`.
+
 ## Submit payload
 
 `getSubmitValues()` and the submit handler receive an object with:
@@ -804,7 +862,9 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, or a `contains` or `notContains` condition without 1.4 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, or a `{{key}}` token without 1.5 |
+| `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
+| `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |

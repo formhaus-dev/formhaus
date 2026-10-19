@@ -1,0 +1,31 @@
+{
+  "$schema": "https://formhaus.dev/schema/form-definition.json",
+  "formatVersion": "1.5",
+  "id": "booking-total",
+  "title": "Book seats",
+  "submit": { "label": "Book" },
+  "steps": [
+    {
+      "id": "seats",
+      "title": "Seats",
+      "fields": [
+        { "key": "adults", "type": "number", "label": "Adults", "defaultValue": 1, "validation": { "required": true, "min": 0 } },
+        { "key": "children", "type": "number", "label": "Children", "defaultValue": 0, "validation": { "required": true, "min": 0 } },
+        { "key": "total", "type": "hidden" }
+      ]
+    },
+    {
+      "id": "summary",
+      "title": "Booking for {{total}}",
+      "description": "{{adults}} adults and {{children}} children.",
+      "fields": [
+        {
+          "key": "groupNote",
+          "type": "textarea",
+          "label": "Group request",
+          "show": [{ "field": "total", "gte": 10 }]
+        }
+      ]
+    }
+  ]
+}

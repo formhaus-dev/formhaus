@@ -96,6 +96,7 @@ export const capabilitiesOutput = {
   fieldProps: z.record(z.string(), z.unknown()),
   validationRules: z.record(z.string(), z.unknown()),
   conditions: z.record(z.string(), z.unknown()),
+  recall: z.record(z.string(), z.unknown()),
   steps: z.record(z.string(), z.unknown()),
   actions: z.record(z.string(), z.unknown()),
   i18n: z.record(z.string(), z.unknown()).optional(),

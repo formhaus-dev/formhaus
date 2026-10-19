@@ -31,3 +31,12 @@ export function useFieldSnapshot(engine: FormEngine, key: string): number {
     key,
   );
 }
+
+export function useRecallSnapshot(engine: FormEngine, active: boolean): number {
+  return useEngineStore(
+    (listener) => (active ? engine.subscribe(listener) : () => {}),
+    () => (active ? engine.getSnapshot() : 0),
+    engine,
+    active,
+  );
+}

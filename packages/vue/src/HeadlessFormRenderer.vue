@@ -18,6 +18,7 @@ import { useFormId } from './composables/useFormId';
 import { useListening } from './composables/useListening';
 import { useRendererActions } from './composables/useRendererActions';
 import { useFormEngine, type UseFormEngineOptions } from './composables/useFormEngine';
+import { useStepTexts } from './composables/useStepTexts';
 import { useNodeProps } from './composables/useNodeProps';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
@@ -136,18 +137,14 @@ watch(
 );
 
 const summaryGroups = computed(() => {
-  void [errors.value, progress.value];
+  void [errors.value, progress.value, values.value];
   return errorGroups(form.engine, formId, props.labels, props.definition.labels);
 });
 const stepErrors = computed(() => {
   void [errors.value, progress.value];
   return form.engine.stepErrors;
 });
-const stepStatuses = computed(() =>
-  props.stepErrorMarks
-    ? form.visibleSteps.value.map(({ id, title }) => ({ id, title, errorCount: stepErrors.value[id]?.length ?? 0 }))
-    : undefined,
-);
+const { step, stepStatuses } = useStepTexts(form, stepErrors, () => props.stepErrorMarks);
 
 function onFieldFocus(key: string) {
   onFormEvent({ type: 'field_focused', fieldKey: key });
@@ -202,8 +199,8 @@ async function onPrimary() {
       v-if="isMultiStep && props.progressComponent"
       :current="progress.current"
       :total="progress.total"
-      :step-title="currentStep?.title"
-      :step-description="currentStep?.description"
+      :step-title="step?.title"
+      :step-description="step?.description"
       :heading-level="props.headingLevel"
       :steps="stepStatuses"
       :step-error-count="stepErrors[currentStep?.id as string]?.length"

@@ -61,4 +61,48 @@ export function summaryScenarios(harness: RendererHarness, { it, expect, waitFor
       'Plain: Bad',
     ]);
   });
+
+  it('shows recalled answers in the step names and field labels of the summary', async () => {
+    harness.mount({
+      definition: {
+        formatVersion: '1.5',
+        id: 'recall',
+        title: '',
+        submit: { label: 'Send' },
+        steps: [
+          {
+            id: 'one',
+            title: 'About {{name}}',
+            fields: [
+              { key: 'name', type: 'text', label: 'Name' },
+              {
+                key: 'guests',
+                type: 'group',
+                label: 'Guests',
+                fields: [
+                  { key: 'guest', type: 'text', label: 'Guest' },
+                  { key: 'meal', type: 'text', label: 'Meal for {{guest}}' },
+                ],
+              },
+            ],
+          },
+          { id: 'two', title: 'Hello, {{name}}', fields: [{ key: 'city', type: 'text', label: 'City of {{name}}' }] },
+        ],
+      },
+      initialValues: { name: 'Ada', guests: [{ guest: 'Bo', meal: 'Soup' }], city: 'Rome' },
+      errorSummary: true,
+      onSubmit: () => ({ ok: false, errors: { 'guests.0.meal': 'Taken', city: 'Unknown' } }),
+    });
+    await harness.click(button('Continue'));
+    await harness.click(await screen.findByRole('button', { name: 'Send' }));
+    await screen.findByRole('link', { name: 'City of Ada: Unknown' });
+    expect([...document.querySelectorAll('.fh-error-summary__step')].map((title) => title.textContent?.trim())).toEqual([
+      'About Ada',
+      'Hello, Ada',
+    ]);
+    expect(screen.getAllByRole('link').map((item) => item.textContent?.trim())).toEqual([
+      expect.stringMatching(/^Meal for Bo \(.*\): Taken$/),
+      'City of Ada: Unknown',
+    ]);
+  });
 }

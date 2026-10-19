@@ -1,10 +1,21 @@
 import type { FieldOption, FormGroup, LabelKey } from '@formhaus/core';
-import { fieldDomId, focusItem, itemDomId, itemHasContent, itemLimits, itemTitle, labelFor, optionKey } from '@formhaus/core/internal';
+import {
+  fieldDomId,
+  focusItem,
+  itemDomId,
+  itemHasContent,
+  itemLimits,
+  itemTitle,
+  labelFor,
+  optionKey,
+  recalled,
+  recalls,
+} from '@formhaus/core/internal';
 import { memo, useEffect, useRef, useState } from 'react';
 import { DefaultConfirmDialog, DefaultGroup, DefaultGroupItem } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { describedBy } from './fields/fieldProps';
-import { useFieldSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
+import { useFieldSnapshot, useRecallSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps, GroupItemComponentProps } from './types';
 
 interface FormGroupControllerProps extends ControllerProps {
@@ -30,6 +41,7 @@ export const FormGroupController = memo(function FormGroupController({
   const { engine, formId } = props;
   useFieldSnapshot(engine, group.key);
   useStructureSnapshot(engine);
+  useRecallSnapshot(engine, recalls(engine, group));
   const [announced, setAnnounced] = useState({ text: '', count: 0 });
   const setStatus = (text: string) => setAnnounced((previous) => ({ text, count: previous.count + 1 }));
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -42,6 +54,7 @@ export const FormGroupController = memo(function FormGroupController({
   const error = engine.errors[group.key];
   const title = (index: number) => itemTitle(group, index, labels, engine.definition.labels);
   const remove = group.removeLabel ?? label('removeItem');
+  const texts = recalled(engine, group);
 
   useEffect(() => {
     const target = focus.current;
@@ -108,8 +121,8 @@ export const FormGroupController = memo(function FormGroupController({
       <Group
         id={id}
         group={group}
-        label={group.label}
-        helperText={group.helperText}
+        label={texts.label}
+        helperText={texts.helperText}
         error={error}
         describedBy={describedBy(group, id, error)}
         items={entries}

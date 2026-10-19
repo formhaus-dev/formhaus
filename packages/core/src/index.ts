@@ -51,6 +51,8 @@ export {
   type SubmitResult,
 } from './engine';
 
+export { recallText, type RecallItem } from './engine/recall';
+
 export { evaluateCondition, isActionDisabled, isGroup, isSection, isVisible } from './visibility';
 
 export {
