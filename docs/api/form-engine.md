@@ -21,8 +21,12 @@ const engine = new FormEngine(definition, initialValues, {
   onBeforeSubmit,
   onAfterSubmit,
   onWarning,
+  lang,
+  formatRecall,
 });
 ```
+
+`lang` and `formatRecall` control how [recalled answers](/spec#answer-recall) look: `formatRecall(value, field, locale)` returns the text of one answer, and `lang` wins over `definition.lang`. Renderers take both as props.
 
 `messages` is a [message catalog](/spec#message-and-label-catalogs) or a function `(key, params, field) => string | undefined`. It wins over `definition.messages` and is fixed for the lifetime of the engine. Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
@@ -139,6 +143,8 @@ The main entry also exports the functions the engine uses for conditions and val
 | `validateFieldValue(field, value, values, validators?, messages?)` | `string \| null` | The first error of one field, or `null` |
 | `validateFields(nodes, values, validators?, messages?)` | `Record<string, string>` | Errors of the visible fields, sections and groups in `nodes`, by key or item path |
 | `validateStep(step, values, validators?, messages?)` | `Record<string, string>` | `validateFields()` for the fields of one step |
+| `recallText(definition, text, values, { item?, lang?, format? }?)` | `string` | Resolves the [recall tokens](/spec#answer-recall) of a text with the values from `getSubmitValues()` |
+| `recallStatic(definition, text, group?)` | `string` | Replaces each recall token with the label of its field, for texts that stand for many submissions |
 | `getDefaultMessage(rule, params?)` | `string` | The built-in English message of a rule or message key, such as `getDefaultMessage('minLength', { min: 3 })` |
 
 `ValidationRule` is the type of the rule names: `required`, `minLength`, `maxLength`, `min`, `max`, `pattern` and `matchField`. `values` is the [active projection](/spec#visibility) the engine passes, such as `getSubmitValues()`.
