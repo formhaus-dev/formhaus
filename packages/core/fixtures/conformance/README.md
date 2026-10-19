@@ -44,7 +44,7 @@ A case has `name`, `input` (`values` and `skippedSteps`), `expected` (`values` a
 - Server: validating `input.values` with `input.skippedSteps` returns `expected`. The returned values are a plain object.
 - Browser engine: creating the engine with `input.values`, then `validate()` returns `expected.errors`, and the submit values equal `expected.values`. `canSubmit` says whether stepping through every step and submitting is allowed: on each step before the last, `next.disabled` does not match the submit values and `next()` succeeds; on the last, `validate()` returns no errors and `submit.disabled` does not match.
 - A payload the browser accepts passes server validation without errors.
-- `serverValues` is optional. When set, the server returns it in place of `expected.values`. The server drops an invalid group item value, and the browser engine keeps it.
+- `serverValues` is optional. When set, the server returns it in place of `expected.values`. The server drops a value with a type error, and the browser engine keeps it.
 
 ## Recall
 
@@ -66,6 +66,8 @@ The corpus and the scenarios assume the ECMAScript semantics of the TypeScript i
 ## Versions
 
 The corpus and the scenarios change with `@formhaus/core`. An implementation pins them to a release tag of this repository, such as `@formhaus/core@0.18.0`, and states which tag it passes.
+
+Since 0.21, `serverValues` and `fixtures/submissions` expect the server to drop every value that fails its type check, at top level and in group items. Earlier tags expect a top-level value with a type error to be returned with its error.
 
 ## Not covered
 

@@ -55,6 +55,7 @@ describe('conformance corpus', () => {
       'duplicate-options',
       'flat-api-steps',
       'format-version',
+      'group-list-answers',
       'i18n-empty-overlay',
       'i18n-exclusive-branches',
       'i18n-own-properties',

@@ -182,7 +182,7 @@ describe('validateSubmission with an oversized multiselect value', () => {
     const result = validateSubmission(definition(tags()), values);
     expect(performance.now() - started).toBeLessThan(2000);
     expect(result.errors).toEqual({ tags: 'Select one of the available options' });
-    expect(Object.keys(result.values).sort()).toEqual(['other0', 'tags']);
+    expect(result.values).toEqual({ other0: 'kept' });
   });
 
   it('caps a value with remote options at 1000 items', () => {
@@ -202,7 +202,7 @@ describe('validateSubmission with an oversized multiselect value', () => {
 
   it('treats a string as blank', () => {
     expect(validateSubmission(definition(tags()), { tags: 'x', picked: 'p' })).toEqual({
-      values: { tags: 'x' },
+      values: {},
       errors: { tags: 'Must be a list of available options' },
     });
   });

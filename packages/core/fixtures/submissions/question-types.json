@@ -144,11 +144,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "nps": 9,
-          "stars": " 4 ",
-          "food": 3
-        },
+        "values": { "nps": 9, "food": 3 },
         "errors": {
           "stars": "Select one of the available options"
         }
@@ -181,11 +177,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "nps": 7.5,
-          "stars": 6,
-          "food": 2
-        },
+        "values": { "food": 2 },
         "errors": {
           "nps": "Select one of the available options",
           "stars": "Select one of the available options",
@@ -202,9 +194,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "stars": 0
-        },
+        "values": {},
         "errors": {
           "nps": "This field is required",
           "stars": "Select one of the available options"
