@@ -1,4 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
+import { recallVersion, subscribeRecall } from '@formhaus/core/internal';
 import { useCallback, useSyncExternalStore } from 'react';
 
 function useEngineStore(subscribe: (listener: () => void) => () => void, getSnapshot: () => number, ...deps: unknown[]): number {
@@ -32,10 +33,18 @@ export function useFieldSnapshot(engine: FormEngine, key: string): number {
   );
 }
 
-export function useRecallSnapshot(engine: FormEngine, active: boolean): number {
+export function useRecallSnapshot(engine: FormEngine, active = true): number {
   return useEngineStore(
-    (listener) => (active ? engine.subscribe(listener) : () => {}),
-    () => (active ? engine.getSnapshot() : 0),
+    (listener) => {
+      if (!active) return () => {};
+      const stop = engine.subscribe(listener);
+      const stopRecall = subscribeRecall(engine, listener);
+      return () => {
+        stop();
+        stopRecall();
+      };
+    },
+    () => (active ? engine.getSnapshot() + recallVersion(engine) : 0),
     engine,
     active,
   );

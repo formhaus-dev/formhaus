@@ -1,5 +1,13 @@
 import type { expect, it, vi } from 'vitest';
-import type { FieldOption, FormAnalyticsEvent, FormDefinition, LabelSource, StepValidateFn, SubmitHandler } from '../../src';
+import type {
+  FieldOption,
+  FormAnalyticsEvent,
+  FormDefinition,
+  LabelSource,
+  RecallFormatFn,
+  StepValidateFn,
+  SubmitHandler,
+} from '../../src';
 
 export interface ScenarioProps {
   definition: FormDefinition;
@@ -12,6 +20,8 @@ export interface ScenarioProps {
   stepErrorMarks?: boolean;
   labels?: LabelSource;
   onStepValidate?: StepValidateFn;
+  lang?: string;
+  formatRecall?: RecallFormatFn;
   onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
   onFormEvent?: (event: FormAnalyticsEvent) => void;
   onCancel?: () => void;

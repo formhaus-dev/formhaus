@@ -96,8 +96,9 @@ function add() {
 
 function drop(index: number) {
   confirming.value = null;
+  const item = title(index);
   if (!props.onItemsChange(props.group.key, () => props.engine.removeItem(props.group.key, index))) return;
-  status.value = label('itemRemoved', { item: title(index) });
+  status.value = label('itemRemoved', { item });
   announcements.value++;
   void focusAfter(index, false);
 }

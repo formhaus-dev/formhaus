@@ -70,9 +70,10 @@ export const FormGroupController = memo(function FormGroupController({
   };
   const drop = (index: number) => {
     setConfirming(null);
+    const item = title(index);
     if (!onItemsChange(group.key, () => engine.removeItem(group.key, index))) return;
     focus.current = { index, added: false };
-    setStatus(label('itemRemoved', { item: title(index) }));
+    setStatus(label('itemRemoved', { item }));
   };
 
   const ask = (index: number) => {

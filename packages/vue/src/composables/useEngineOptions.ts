@@ -20,6 +20,12 @@ export function useEngineOptions(props: FormRendererProps, onFormEvent: (event: 
     get onStepValidate() {
       return props.onStepValidate;
     },
+    get lang() {
+      return props.lang;
+    },
+    get formatRecall() {
+      return props.formatRecall;
+    },
     get onBeforeStepChange() {
       return props.onBeforeStepChange;
     },
