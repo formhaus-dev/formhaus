@@ -21,7 +21,8 @@
             "label": "Your full name",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "name"
           },
           {
             "key": "guardianRelation",
@@ -53,7 +54,8 @@
             "inputMode": "email",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "email"
           },
           {
             "key": "phone",
@@ -61,7 +63,8 @@
             "label": "Mobile phone",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "tel"
           },
           {
             "key": "street",
@@ -69,12 +72,14 @@
             "label": "Street address",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "address-line1"
           },
           {
             "key": "unit",
             "type": "text",
-            "label": "Apartment, suite or unit"
+            "label": "Apartment, suite or unit",
+            "autocomplete": "address-line2"
           },
           {
             "key": "city",
@@ -82,7 +87,8 @@
             "label": "City",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "address-level2"
           },
           {
             "key": "zip",
@@ -93,7 +99,8 @@
               "required": true,
               "pattern": "^\\d{5}(-\\d{4})?$",
               "patternMessage": "Enter a 5-digit ZIP code"
-            }
+            },
+            "autocomplete": "postal-code"
           }
         ]
       },

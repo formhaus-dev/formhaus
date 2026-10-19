@@ -5,7 +5,7 @@
   "category": "lead-gen",
   "definition": {
     "id": "moving-quote-request",
-    "formatVersion": "1.4",
+    "formatVersion": "1.5",
     "title": "Get a moving quote",
     "submit": {
       "label": "Request a quote"
@@ -24,7 +24,8 @@
               "required": true,
               "pattern": "^\\d{5}(-\\d{4})?$",
               "patternMessage": "Enter a 5-digit ZIP code"
-            }
+            },
+            "autocomplete": "postal-code"
           },
           {
             "key": "toZip",
@@ -520,7 +521,8 @@
             "label": "Full name",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "name"
           },
           {
             "key": "contactBy",
@@ -557,7 +559,8 @@
             ],
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "tel"
           },
           {
             "key": "email",
@@ -572,7 +575,8 @@
             ],
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "email"
           }
         ]
       }

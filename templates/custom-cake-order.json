@@ -5,7 +5,7 @@
   "category": "lead-gen",
   "definition": {
     "id": "custom-cake-order",
-    "formatVersion": "1.4",
+    "formatVersion": "1.5",
     "title": "Order a custom cake",
     "submit": {
       "label": "Send order request"
@@ -73,12 +73,14 @@
                 "label": "Street address",
                 "validation": {
                   "required": true
-                }
+                },
+                "autocomplete": "address-line1"
               },
               {
                 "key": "unit",
                 "type": "text",
-                "label": "Apartment, suite or venue room"
+                "label": "Apartment, suite or venue room",
+                "autocomplete": "address-line2"
               },
               {
                 "key": "city",
@@ -86,7 +88,8 @@
                 "label": "City",
                 "validation": {
                   "required": true
-                }
+                },
+                "autocomplete": "address-level2"
               },
               {
                 "key": "zip",
@@ -97,7 +100,8 @@
                   "required": true,
                   "pattern": "^\\d{5}(-\\d{4})?$",
                   "patternMessage": "Enter a 5-digit ZIP code"
-                }
+                },
+                "autocomplete": "postal-code"
               },
               {
                 "key": "deliveryTime",
@@ -428,7 +432,8 @@
             "label": "Full name",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "name"
           },
           {
             "key": "email",
@@ -437,7 +442,8 @@
             "inputMode": "email",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "email"
           },
           {
             "key": "phone",
@@ -445,7 +451,8 @@
             "label": "Phone",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "tel"
           }
         ]
       }

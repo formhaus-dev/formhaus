@@ -38,7 +38,8 @@
             "label": "First name",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "given-name"
           },
           {
             "key": "lastName",
@@ -46,7 +47,8 @@
             "label": "Last name",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "family-name"
           },
           {
             "key": "email",
@@ -55,7 +57,8 @@
             "inputMode": "email",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "email"
           },
           {
             "key": "phone",
@@ -63,7 +66,8 @@
             "label": "Phone",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "tel"
           }
         ]
       },
@@ -77,12 +81,14 @@
             "label": "Street address",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "address-line1"
           },
           {
             "key": "unit",
             "type": "text",
-            "label": "Apartment or unit"
+            "label": "Apartment or unit",
+            "autocomplete": "address-line2"
           },
           {
             "key": "city",
@@ -90,7 +96,8 @@
             "label": "City",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "address-level2"
           },
           {
             "key": "state",
@@ -98,7 +105,8 @@
             "label": "State",
             "validation": {
               "required": true
-            }
+            },
+            "autocomplete": "address-level1"
           },
           {
             "key": "zip",
@@ -109,7 +117,8 @@
               "required": true,
               "pattern": "^\\d{5}(-\\d{4})?$",
               "patternMessage": "Enter a 5-digit ZIP code"
-            }
+            },
+            "autocomplete": "postal-code"
           },
           {
             "key": "housing",
