@@ -1,5 +1,17 @@
 # @formhaus/mcp
 
+## 0.8.0
+
+### Minor Changes
+
+- `capabilities` lists the `contains` and `notContains` condition operators for `multiselect` answers.
+- `validate_definition` reports the `contains-not-list` and `contains-not-in-options` warnings.
+
+### Patch Changes
+
+- `capabilities` describes the `clear`, `done`, `chooseFile`, `required`, `skip`, `submit`, `stepTitle` and `stepErrors` labels.
+- Requires `@formhaus/core` 0.20.0.
+
 ## 0.7.1
 
 ### Patch Changes
