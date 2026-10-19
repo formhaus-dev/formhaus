@@ -2,7 +2,7 @@ import type { FormDefinition, FormField } from '@formhaus/core';
 import { element, iconButton } from '../dom';
 import { icon } from '../icons';
 import { labelled, textInput } from './controls';
-import { addOption, FIELD_TYPES, hasOptions, renameField, renameOption, setRequired, setType } from './model';
+import { addOption, editorType, FIELD_TYPES, hasOptions, renameField, renameOption, setRequired, setType } from './model';
 
 export interface RowContext {
   draft: FormDefinition;
@@ -30,6 +30,9 @@ const TYPE_LABELS: Record<string, string> = {
   datetime: 'Date & time',
   time: 'Time',
   file: 'File',
+  scale: 'Scale',
+  nps: 'NPS (0 to 10)',
+  rating: 'Star rating',
   hidden: 'Hidden',
 };
 
@@ -146,8 +149,8 @@ export function fieldRow(field: FormField, context: RowContext): HTMLElement {
   );
   main.append(
     handle,
-    typeSelect(field.type, (type) => {
-      setType(field, type);
+    typeSelect(editorType(field), (type) => {
+      setType(field, type, context.draft);
       context.rerender();
     }),
     label,
