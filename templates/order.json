@@ -16,7 +16,9 @@
   "support-satisfaction-survey",
   "event-feedback",
   "workshop-registration",
+  "summer-camp-registration",
   "client-onboarding",
+  "tax-preparation-intake",
   "security-report",
   "time-off-request",
   "expense-reimbursement",
@@ -33,10 +35,13 @@
   "coaching-intake",
   "maintenance-request",
   "rental-showing-request",
+  "rental-application",
   "legal-consultation-request",
   "home-repair-quote",
+  "moving-quote-request",
   "photography-inquiry",
   "catering-inquiry",
+  "custom-cake-order",
   "pet-adoption-application",
   "patient-appointment-request"
 ]

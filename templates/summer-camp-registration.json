@@ -1,0 +1,459 @@
+{
+  "slug": "summer-camp-registration",
+  "title": "Summer camp registration",
+  "summary": "One parent, several campers. Program, weeks and health needs per child, then pickup and consent.",
+  "category": "registration",
+  "definition": {
+    "id": "summer-camp-registration",
+    "formatVersion": "1.5",
+    "title": "Camp registration request",
+    "submit": {
+      "label": "Send registration request"
+    },
+    "steps": [
+      {
+        "id": "guardian",
+        "title": "Parent or guardian",
+        "fields": [
+          {
+            "key": "guardianName",
+            "type": "text",
+            "label": "Your full name",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "name"
+          },
+          {
+            "key": "guardianRelation",
+            "type": "radio",
+            "label": "Your relationship to the campers",
+            "layout": "inline",
+            "options": [
+              {
+                "value": "parent",
+                "label": "Parent"
+              },
+              {
+                "value": "guardian",
+                "label": "Legal guardian"
+              },
+              {
+                "value": "other",
+                "label": "Other"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "email"
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Mobile phone",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "tel"
+          },
+          {
+            "key": "street",
+            "type": "text",
+            "label": "Street address",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "address-line1"
+          },
+          {
+            "key": "unit",
+            "type": "text",
+            "label": "Apartment, suite or unit",
+            "autocomplete": "address-line2"
+          },
+          {
+            "key": "city",
+            "type": "text",
+            "label": "City",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "address-level2"
+          },
+          {
+            "key": "zip",
+            "type": "text",
+            "label": "ZIP code",
+            "inputMode": "numeric",
+            "validation": {
+              "required": true,
+              "pattern": "^\\d{5}(-\\d{4})?$",
+              "patternMessage": "Enter a 5-digit ZIP code"
+            },
+            "autocomplete": "postal-code"
+          }
+        ]
+      },
+      {
+        "id": "campers",
+        "title": "Campers",
+        "fields": [
+          {
+            "key": "campers",
+            "type": "group",
+            "label": "Campers",
+            "helperText": "Add each child you are registering, up to 6. Emergency contact and pickup on the next step apply to all of them.",
+            "itemLabel": "Camper {index}",
+            "addLabel": "Add another camper",
+            "removeLabel": "Remove camper",
+            "defaultItems": 1,
+            "validation": {
+              "required": true,
+              "maxLength": 6
+            },
+            "fields": [
+              {
+                "key": "firstName",
+                "type": "text",
+                "label": "First name",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "lastName",
+                "type": "text",
+                "label": "Last name",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "preferredName",
+                "type": "text",
+                "label": "Preferred name",
+                "helperText": "Leave empty if it is the same."
+              },
+              {
+                "key": "dateOfBirth",
+                "type": "date",
+                "label": "Date of birth",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "grade",
+                "type": "select",
+                "label": "Grade {{firstName}} is going into this fall",
+                "options": [
+                  {
+                    "value": "k",
+                    "label": "Kindergarten"
+                  },
+                  {
+                    "value": "1",
+                    "label": "1st grade"
+                  },
+                  {
+                    "value": "2",
+                    "label": "2nd grade"
+                  },
+                  {
+                    "value": "3",
+                    "label": "3rd grade"
+                  },
+                  {
+                    "value": "4",
+                    "label": "4th grade"
+                  },
+                  {
+                    "value": "5",
+                    "label": "5th grade"
+                  },
+                  {
+                    "value": "6",
+                    "label": "6th grade"
+                  },
+                  {
+                    "value": "7",
+                    "label": "7th grade"
+                  },
+                  {
+                    "value": "8",
+                    "label": "8th grade"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "program",
+                "type": "radio",
+                "label": "Which camp for {{firstName}}?",
+                "options": [
+                  {
+                    "value": "day",
+                    "label": "Day camp, ages 5 to 12"
+                  },
+                  {
+                    "value": "sports",
+                    "label": "Sports camp, ages 8 to 14"
+                  },
+                  {
+                    "value": "arts",
+                    "label": "Arts camp, ages 6 to 12"
+                  },
+                  {
+                    "value": "science",
+                    "label": "Science and making, ages 9 to 14"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "weeks",
+                "type": "multiselect",
+                "label": "Weeks for {{firstName}}",
+                "helperText": "Pick every week you need.",
+                "options": [
+                  {
+                    "value": "w1",
+                    "label": "Week 1"
+                  },
+                  {
+                    "value": "w2",
+                    "label": "Week 2"
+                  },
+                  {
+                    "value": "w3",
+                    "label": "Week 3"
+                  },
+                  {
+                    "value": "w4",
+                    "label": "Week 4"
+                  },
+                  {
+                    "value": "w5",
+                    "label": "Week 5"
+                  },
+                  {
+                    "value": "w6",
+                    "label": "Week 6"
+                  },
+                  {
+                    "value": "w7",
+                    "label": "Week 7"
+                  },
+                  {
+                    "value": "w8",
+                    "label": "Week 8"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "allergies",
+                "type": "radio",
+                "label": "Does {{firstName}} have any allergies?",
+                "layout": "inline",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "allergyDetails",
+                "type": "textarea",
+                "label": "What is {{firstName}} allergic to, and what happens?",
+                "rows": 2,
+                "helperText": "Include food, insect stings and medicine. Say if they carry an epinephrine injector.",
+                "show": [
+                  {
+                    "field": "allergies",
+                    "eq": "yes"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "medicine",
+                "type": "radio",
+                "label": "Does {{firstName}} need any medicine at camp?",
+                "layout": "inline",
+                "helperText": "Sunscreen and bug spray count.",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "medicineDetails",
+                "type": "textarea",
+                "label": "Which medicine, and when?",
+                "rows": 2,
+                "show": [
+                  {
+                    "field": "medicine",
+                    "eq": "yes"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "support",
+                "type": "textarea",
+                "label": "Anything that would help us support {{firstName}}?",
+                "rows": 3,
+                "helperText": "Health conditions, fears, how they do in groups."
+              },
+              {
+                "key": "photos",
+                "type": "radio",
+                "label": "May we use photos of {{firstName}} in camp newsletters and on social media?",
+                "layout": "inline",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pickup",
+        "title": "Emergency contact and pickup",
+        "fields": [
+          {
+            "key": "emergencyName",
+            "type": "text",
+            "label": "Emergency contact’s name",
+            "helperText": "Someone other than you, for when we cannot reach you.",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "emergencyRelation",
+            "type": "text",
+            "label": "Their relationship to the campers",
+            "placeholder": "Grandparent, neighbor",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "emergencyPhone",
+            "type": "phone",
+            "label": "Their phone",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "pickup",
+            "type": "group",
+            "label": "Other people who may pick up",
+            "helperText": "Leave empty if only you will pick up. Register children with different pickup arrangements separately.",
+            "itemLabel": "Person {index}",
+            "addLabel": "Add a person",
+            "removeLabel": "Remove",
+            "validation": {
+              "maxLength": 5
+            },
+            "fields": [
+              {
+                "key": "personName",
+                "type": "text",
+                "label": "Full name",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "personRelation",
+                "type": "text",
+                "label": "Relationship"
+              },
+              {
+                "key": "personPhone",
+                "type": "phone",
+                "label": "Phone",
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          },
+          {
+            "key": "codeWord",
+            "type": "text",
+            "label": "Pickup code word",
+            "helperText": "A word you choose. Do not use a name or a birthday."
+          },
+          {
+            "key": "notAllowed",
+            "type": "textarea",
+            "label": "Anyone who must not pick up",
+            "rows": 2
+          },
+          {
+            "key": "emergencyCare",
+            "type": "checkbox",
+            "label": "If I cannot be reached, camp staff may get emergency medical care for my campers.",
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
