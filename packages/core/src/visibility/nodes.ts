@@ -84,6 +84,6 @@ export function itemId(item: unknown, index: number): string {
 }
 
 export function keepId<T extends object>(from: unknown, to: T): T {
-  keys.set(to, isEntry(from) ? itemKey(from) : { id: '0' });
+  if (isEntry(from)) keys.set(to, itemKey(from));
   return to;
 }
