@@ -3,7 +3,7 @@ import { hasOwn } from '../visibility/nodes';
 import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, NUMBER_TYPES, SCALE_TYPES } from '../validation/type-checks';
 import { conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
-import type { DefinitionIssue } from './issues';
+import type { DefinitionIssue, DefinitionIssueCode } from './issues';
 import { closest, oneOf, warning } from './issues';
 import { propertyWarnings } from './properties';
 import { sourceWarnings } from './sources';
@@ -18,39 +18,25 @@ function expectedType(field: FormField): string | undefined {
   return BUILT_IN_TYPES.includes(field.type) && !LIST_TYPES.includes(field.type) && field.type !== 'file' ? 'string' : undefined;
 }
 
-function containsIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {
-  if (!LIST_TYPES.includes(target.type))
-    return BUILT_IN_TYPES.includes(target.type) || target.type === 'group'
-      ? [
-          warning(
-            'contains-not-list',
-            path,
-            `"${target.key}" is a ${target.type} field, so "${operator}" ${operator === 'contains' ? 'never' : 'always'} matches it`,
-            'Use eq or in, or test a multiselect field',
-          ),
-        ]
-      : [];
-  const options = !target.optionsFrom && target.options?.length ? target.options.map((option) => option.value) : null;
-  return options && !options.includes(operand as string)
-    ? [warning('contains-not-in-options', path, `${JSON.stringify(operand)} is not an option of "${target.key}"`, oneOf(options))]
-    : [];
-}
-
 function valueIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {
-  const mismatch = (problem: string, hint: string) => [warning('condition-value-mismatch', path, problem, hint)];
-  if (CONTAINS.includes(operator)) return containsIssue(target, operator, operand, path);
+  const contains = CONTAINS.includes(operator);
+  const list = LIST_TYPES.includes(target.type);
+  const mismatch = (problem: string, hint: string, code = contains ? 'contains-not-list' : 'condition-value-mismatch') => [
+    warning(code as DefinitionIssueCode, path, problem, hint),
+  ];
   if (operator === 'notEmpty')
     return operand
       ? []
       : [warning('condition-always-true', path, '"notEmpty": false matches every value', 'Use "notEmpty": true, or remove the condition')];
-  if (COMPARISONS.includes(operator)) {
-    if (!LIST_TYPES.includes(target.type) && !BOOLEAN_TYPES.includes(target.type)) return [];
+  if (COMPARISONS.includes(operator) || (contains && !list)) {
+    if (contains ? !BUILT_IN_TYPES.includes(target.type) && target.type !== 'group' : !list && !BOOLEAN_TYPES.includes(target.type))
+      return [];
     return mismatch(
-      `"${target.key}" is a ${target.type} field, so "${operator}" never matches it`,
-      'Compare a number, text, radio or select field',
+      `"${target.key}" is a ${target.type} field, so "${operator}" ${operator === 'notContains' ? 'always' : 'never'} matches it`,
+      contains ? 'Use eq or in, or test a multiselect field' : 'Compare a number, text, radio or select field',
     );
   }
-  if (LIST_TYPES.includes(target.type)) {
+  if (list && !contains) {
     const result = operator === 'neq' || operator === 'notIn' ? 'always' : 'never';
     return mismatch(
       `"${target.key}" holds a list of values, so "${operator}" ${result} matches it`,
@@ -63,9 +49,15 @@ function valueIssue(target: FormField, operator: string, operand: unknown, path:
   if (expected && wrong !== undefined)
     return mismatch(`${JSON.stringify(wrong)} is a ${typeof wrong}, but "${target.key}" holds a ${expected}`, `Use a ${expected} value`);
   const options =
-    expected === 'string' && !target.optionsFrom && target.options?.length ? target.options.map((option) => option.value) : null;
+    (expected === 'string' || list) && !target.optionsFrom && target.options?.length ? target.options.map((option) => option.value) : null;
   const missing = options && operands.find((item) => !options.includes(item as string));
-  return options && missing !== undefined ? mismatch(`${JSON.stringify(missing)} is not an option of "${target.key}"`, oneOf(options)) : [];
+  return options && missing !== undefined
+    ? mismatch(
+        `${JSON.stringify(missing)} is not an option of "${target.key}"`,
+        oneOf(options),
+        contains ? 'contains-not-in-options' : undefined,
+      )
+    : [];
 }
 
 function conditionWarnings(context: CheckContext, entry: ConditionEntry): DefinitionIssue[] {
@@ -257,11 +249,9 @@ function versionWarnings({ definition, nodes, conditions }: CheckContext): Defin
       'outdated-format-version',
       '/formatVersion',
       `${problem}, which needs format 1.${needed}`,
-      needed > 3
-        ? 'Set "formatVersion": "1.4". Older versions of @formhaus/core reject this operator. Upgrade the server that runs validateSubmission() first'
-        : needed > 1
-          ? 'Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it. Upgrade the server that runs validateSubmission() first'
-          : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
+      needed > 1
+        ? `Set "formatVersion": "1.${needed}". Older versions of @formhaus/core ${needed > 3 ? 'reject this operator' : 'treat this type as a custom type and do not validate it'}. Upgrade the server that runs validateSubmission() first`
+        : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
     ),
   ];
 }
