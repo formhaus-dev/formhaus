@@ -15,6 +15,7 @@ export type MessageKey =
   | 'time'
   | 'option'
   | 'options'
+  | 'exclusive'
   | 'boolean'
   | 'string'
   | 'file'

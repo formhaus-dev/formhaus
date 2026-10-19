@@ -8,49 +8,31 @@ export function exclusiveWarnings({ entries }: CheckContext): DefinitionIssue[] 
     const { key, defaultValue, validation } = field;
     const options = field.options ?? [];
     const exclusive = exclusiveValues(field);
-    const issues = options.flatMap(({ value, exclusive: flag }, index) =>
-      !flag
-        ? []
-        : !exclusive.length
-          ? [
-              warning(
-                'exclusive-not-applicable',
-                `${path}/options/${index}/exclusive`,
-                `"exclusive" on "${value}" in "${key}" needs a multiselect with static options`,
-                'Remove "exclusive"',
-              ),
-            ]
-          : options.slice(index + 1).some((next) => !next.exclusive)
-            ? [
-                warning(
-                  'exclusive-option-position',
-                  `${path}/options/${index}`,
-                  `the exclusive option "${value}" in "${key}" is not last`,
-                  'Move exclusive options to the end',
-                ),
-              ]
-            : [],
-    );
-    const mixed =
-      Array.isArray(defaultValue) && defaultValue.length > 1 ? defaultValue.findIndex((value) => exclusive.includes(value)) : -1;
-    if (mixed >= 0)
-      issues.push(
-        warning(
-          'exclusive-default-value',
-          `${path}/defaultValue`,
-          `the default of "${key}" mixes the exclusive option "${(defaultValue as unknown[])[mixed]}" with others`,
-          'Keep the exclusive option alone',
-        ),
+    const at = (index: number) => `${path}/options/${index}`;
+    if (!exclusive.length)
+      return options.flatMap((option, index) =>
+        option.exclusive
+          ? [warning('exclusive-not-applicable', `${at(index)}/exclusive`, `"${key}" is not a multiselect with static options`)]
+          : [],
       );
-    if (exclusive.length && (validation?.minLength ?? 0) > 1)
-      issues.push(
-        warning(
-          'exclusive-with-min-length',
-          `${path}/validation/minLength`,
-          `"${key}" has an exclusive option, so "minLength" does not apply to it`,
-          'Remove "minLength"',
-        ),
-      );
-    return issues;
+    const first = options.findIndex((option) => option.exclusive);
+    const defaults = Array.isArray(defaultValue) && defaultValue.length > 1 ? defaultValue : [];
+    return [
+      ...(options.slice(first).some((option) => !option.exclusive)
+        ? [warning('exclusive-option-position', at(first), `exclusive options of "${key}" are not last`)]
+        : []),
+      ...(defaults.some((value) => exclusive.includes(value))
+        ? [warning('exclusive-default-value', `${path}/defaultValue`, `the default of "${key}" mixes exclusive and other options`)]
+        : []),
+      ...((validation?.minLength ?? 0) > 1
+        ? [
+            warning(
+              'exclusive-with-min-length',
+              `${path}/validation/minLength`,
+              `"minLength" does not apply to an exclusive option of "${key}"`,
+            ),
+          ]
+        : []),
+    ];
   });
 }

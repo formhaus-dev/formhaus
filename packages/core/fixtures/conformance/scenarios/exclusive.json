@@ -254,7 +254,7 @@
       ]
     },
     {
-      "name": "initial values are not changed and a mixed value fails validation",
+      "name": "initial values and writes that add nothing are not changed",
       "values": {
         "conditions": ["asthma", "none"]
       },
@@ -262,13 +262,37 @@
         {
           "do": "validate",
           "returns": {
-            "conditions": "Must be a list of available options"
+            "conditions": "Select \"None of these\" or other options, not both"
           }
         },
         {
           "expect": {
             "values": {
               "conditions": ["asthma", "none"]
+            }
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "conditions",
+          "value": ["asthma", "none"]
+        },
+        {
+          "expect": {
+            "values": {
+              "conditions": ["asthma", "none"]
+            }
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "conditions",
+          "value": ["asthma", "none", "diabetes"]
+        },
+        {
+          "expect": {
+            "values": {
+              "conditions": ["asthma", "diabetes"]
             }
           }
         }

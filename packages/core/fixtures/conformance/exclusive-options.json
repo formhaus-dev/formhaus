@@ -179,10 +179,11 @@
           "conditions": ["asthma", "none"]
         },
         "errors": {
-          "conditions": "Must be a list of available options"
+          "conditions": "Select \"None of these\" or other options, not both"
         }
       },
-      "canSubmit": false
+      "canSubmit": false,
+      "serverValues": {}
     },
     {
       "name": "an exclusive option with another value in a group item is a type error",
@@ -207,7 +208,7 @@
           ]
         },
         "errors": {
-          "people.0.history": "Must be a list of available options"
+          "people.0.history": "Select \"None of these\" or other options, not both"
         }
       },
       "canSubmit": false,
@@ -269,10 +270,13 @@
           "symptoms": ["none", "private"]
         },
         "errors": {
-          "symptoms": "Must be a list of available options"
+          "symptoms": "Select \"None of these\" or other options, not both"
         }
       },
-      "canSubmit": false
+      "canSubmit": false,
+      "serverValues": {
+        "conditions": ["none"]
+      }
     }
   ]
 }

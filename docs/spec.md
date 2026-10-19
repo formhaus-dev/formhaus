@@ -208,8 +208,8 @@ An option of a `multiselect` field MAY have `"exclusive": true`. It is the only 
 }
 ```
 
-- `setValue()` and `setItemValue()` apply the rule against the current value. A new list that adds an exclusive option becomes a list of that option alone; when it adds several, the last one wins. Otherwise a new list that holds an exclusive option and other values drops the exclusive options. Several exclusive options clear each other.
-- Initial values, `reset()` and loaded drafts are not changed. A list with an exclusive option and any other value, including a second exclusive option, fails the type check with the `options` message, in `validate()` and in `validateSubmission()`. The server never picks one for the user.
+- `setValue()` and `setItemValue()` apply the rule against the current value. A new list that adds no value is written as given. A new list that adds an exclusive option becomes a list of that option alone; when it adds several, the last one wins. Otherwise a new list that adds other values and holds an exclusive option drops the exclusive options. Several exclusive options clear each other.
+- Initial values, `reset()` and loaded drafts are not changed. A list with an exclusive option and any other value, including a second exclusive option, fails the type check with the `exclusive` message, in `validate()` and in `validateSubmission()`. `validateSubmission()` leaves it out of the returned values like any value that fails its type check. The server never picks one for the user.
 - One exclusive option alone is an answer: it satisfies `required`, and `minLength` does not apply to it. `maxLength`, `contains`, `notContains` and `notEmpty` work as for any list.
 - The built-in renderers show the [`or` label](#message-and-label-catalogs) before the first exclusive option that follows a non-exclusive one. The options stay native checkboxes. In a section with `layout: "matrix"` the divider is hidden.
 - `exclusive` is ignored on other field types and on a field with `optionsFrom`, which reports `exclusive-not-applicable`. An exclusive option followed by a non-exclusive one is an `exclusive-option-position` warning, a `defaultValue` with an exclusive option and other values is `exclusive-default-value`, and `minLength` greater than 1 is `exclusive-with-min-length`.
@@ -729,13 +729,14 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `time` | `Enter a valid time` | |
 | `option` | `Select one of the available options` | |
 | `options` | `Must be a list of available options` | |
+| `exclusive` | `Select "{option}" or other options, not both` | `option` (the label of the exclusive option) |
 | `boolean` | `Must be true or false` | |
 | `string` | `Must be text` | |
 | `file` | `Must be a file reference` | |
 | `value` | `Invalid value` | |
 | `hidden` | `{label}: {message}` | `label`, `message` |
 
-`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`. A `multiselect` value that is not an array, repeats a value or holds an exclusive option with other values fails with `options`; an item that is not a static option fails with `option`.
+`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`. A `multiselect` value that is not an array or repeats a value fails with `options`, and one that holds an exclusive option with other values fails with `exclusive`; an item that is not a static option fails with `option`.
 
 | Label key | Default | Params |
 |---|---|---|

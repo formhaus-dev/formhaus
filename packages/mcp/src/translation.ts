@@ -67,7 +67,7 @@ export const i18nCapabilities = {
   lang: 'Optional BCP 47 tag of the definition texts, such as "ru". Renderers set it as the lang attribute of the form.',
   messages: {
     defaults: defaultMessages,
-    rule: 'Optional "messages" catalog of validation templates by key. {min} and {max} are replaced. minItems and maxItems apply to multiselect values. A field message (required: "text", minLengthMessage, ...) wins over the catalog.',
+    rule: 'Optional "messages" catalog of validation templates by key. {min} and {max} are replaced. minItems and maxItems apply to multiselect values, and exclusive takes {option}, the label of an exclusive option. A field message (required: "text", minLengthMessage, ...) wins over the catalog.',
   },
   labels: {
     defaults: defaultLabels,

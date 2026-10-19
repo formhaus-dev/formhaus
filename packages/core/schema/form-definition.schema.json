@@ -139,6 +139,10 @@
           "type": "string",
           "minLength": 1
         },
+        "exclusive": {
+          "type": "string",
+          "minLength": 1
+        },
         "boolean": {
           "type": "string",
           "minLength": 1

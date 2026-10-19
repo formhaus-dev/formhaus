@@ -113,9 +113,9 @@ function multiselectError(field: FormField, value: unknown, fail: Fail): string 
   if (value.length > (staticOptions(field)?.length ?? MAX_ITEMS)) return fail('option');
   const valid = value.every((item) => typeof item === 'string' && item.length <= MAX_STRING_LENGTH && isOption(field, item));
   if (!valid) return fail('option');
-  const exclusive = exclusiveValues(field);
-  const mixed = value.length > 1 && value.some((item) => exclusive.includes(item));
-  return new Set(value).size === value.length && !mixed ? null : fail('options');
+  if (new Set(value).size !== value.length) return fail('options');
+  const exclusive = value.length > 1 ? staticOptions(field)?.find((option) => option.exclusive && value.includes(option.value)) : undefined;
+  return exclusive ? fail('exclusive', { option: exclusive.label }) : null;
 }
 
 function stringError(field: FormField, value: unknown, key: MessageKey, fail: Fail): string | null {
@@ -172,7 +172,7 @@ export function typeMessageKeys(field: FormField): MessageKey[] {
   if (BOOLEAN_TYPES.includes(field.type)) return ['boolean'];
   if (field.type === 'number') return ['number'];
   if (SCALE_TYPES.includes(field.type)) return ['option'];
-  if (LIST_TYPES.includes(field.type)) return ['options', 'option'];
+  if (LIST_TYPES.includes(field.type)) return ['options', 'option', ...(exclusiveValues(field).length ? ['exclusive' as const] : [])];
   const format = FORMATS.get(field.type)?.[1];
   if (format) return [format, 'maxLength'];
   if (field.type === 'file') return ['file', 'maxLength'];

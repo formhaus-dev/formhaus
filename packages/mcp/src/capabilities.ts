@@ -91,7 +91,7 @@ export const capabilities = {
     options:
       'Array of { value: string, label: string, image?, exclusive? }. image is an image URL shown above the label on radio and multiselect options (picture choice); the label stays visible and names the option. select and autocomplete ignore image.',
     exclusive:
-      'multiselect with static options only: "exclusive": true makes an option such as "None of these" or "Prefer not to say" the only answer. Picking it clears the other answers, picking another option clears it, and several exclusive options also clear each other. Put exclusive options last; renderers show the "or" label before them. A submitted list with an exclusive option and any other value fails the type check. One exclusive option alone answers required and skips minLength. contains and notContains work as usual. Set "formatVersion": "1.5".',
+      'multiselect with static options only: "exclusive": true makes an option such as "None of these" or "Prefer not to say" the only answer. Picking it clears the other answers, picking another option clears it, and several exclusive options also clear each other. Put exclusive options last; renderers show the "or" label before them. A list with an exclusive option and any other value fails the type check with the exclusive message. One exclusive option alone answers required and skips minLength. contains and notContains work as usual. Set "formatVersion": "1.5".',
     imageFieldTypes: IMAGE_FIELD_TYPES,
     anchorFieldTypes: SCALE_FIELD_TYPES,
     anchors:

@@ -80,6 +80,9 @@
         "options": {
           "type": "string"
         },
+        "exclusive": {
+          "type": "string"
+        },
         "boolean": {
           "type": "string"
         },

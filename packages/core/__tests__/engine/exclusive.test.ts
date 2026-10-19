@@ -28,6 +28,13 @@ describe('exclusive options', () => {
     expect(engine.values.conditions).toEqual([]);
   });
 
+  it('writes a list that adds nothing as given', () => {
+    const engine = new FormEngine(single(), { conditions: ['asthma', 'none'] });
+    const value = ['asthma', 'none'];
+    engine.setValue('conditions', value);
+    expect(engine.values.conditions).toBe(value);
+  });
+
   it('ignores exclusive on a field with optionsFrom', () => {
     const engine = new FormEngine(single({ optionsFrom: 'conditions' }), {}, { onWarning: () => {} });
     engine.setValue('conditions', ['asthma', 'none']);
@@ -42,10 +49,12 @@ describe('exclusive options', () => {
     ]);
   });
 
-  it('lists the or label only for forms with exclusive options', () => {
+  it('lists the or label and the exclusive message only for forms with exclusive options', () => {
     const labels = (definition: FormDefinition) => textSlots(definition).filter(({ address }) => address === 'labels.or');
     expect(labels(single())).toEqual([expect.objectContaining({ text: 'or' })]);
     expect(labels(single({ options: conditions.slice(0, 2) }))).toEqual([]);
+    const messages = textSlots(single()).filter(({ address }) => address === 'messages.exclusive');
+    expect(messages).toEqual([expect.objectContaining({ text: 'Select "{option}" or other options, not both' })]);
   });
 
   it('explains the outdated format version', () => {

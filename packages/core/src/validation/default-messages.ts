@@ -23,6 +23,7 @@ export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.fre
   time: 'Enter a valid time',
   option: 'Select one of the available options',
   options: 'Must be a list of available options',
+  exclusive: 'Select "{option}" or other options, not both',
   boolean: 'Must be true or false',
   string: 'Must be text',
   file: 'Must be a file reference',
