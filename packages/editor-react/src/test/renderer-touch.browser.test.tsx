@@ -56,11 +56,12 @@ describe('touch targets at 390px', () => {
       expect(point.width).toBeGreaterThanOrEqual(44);
       expect(point.height).toBeGreaterThanOrEqual(44);
     }
-    const [start, end] = [...document.querySelectorAll('.fh-field__scale-anchor')].map((node) => {
+    const texts = [...document.querySelectorAll('.fh-field__scale-anchor')].map((node) => {
       const range = document.createRange();
       range.selectNodeContents(node);
       return range.getBoundingClientRect();
     });
+    const [start, end] = [texts[0], texts.at(-1)];
     expect(Math.round(start!.left)).toBe(Math.round(points[0]!.left));
     expect(Math.round(end!.right)).toBe(Math.round(points[10]!.right));
     expect(screen.getAllByRole('radio')).toHaveLength(11);
@@ -95,7 +96,8 @@ describe('touch targets at 390px', () => {
     renderAt(640, stars(5));
     const glyphs = boxes('.fh-field__scale-label');
     expect(Math.round(glyphs[1]!.left - glyphs[0]!.right)).toBe(4);
-    const [start, end] = boxes('.fh-field__scale-anchor');
+    const anchors = boxes('.fh-field__scale-anchor');
+    const [start, end] = [anchors[0], anchors.at(-1)];
     expect(Math.round(start!.left)).toBe(Math.round(glyphs[0]!.left));
     expect(Math.round(end!.right)).toBe(Math.round(glyphs[4]!.right));
   });
