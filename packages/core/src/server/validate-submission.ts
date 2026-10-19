@@ -9,7 +9,7 @@ import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { trustDefinition } from '../engine/warnings';
 import { writeValue } from '../engine/write-value';
-import { normalizeValue, oversizedList, typeError } from '../validation/type-checks';
+import { blankLists, normalizeValue, oversizedList, typeError } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, isSection, itemPath, itemsOf, keepId } from '../visibility/nodes';
 
 export interface SubmissionOptions {
@@ -174,11 +174,12 @@ function rejectGroups(definition: FormDefinition, fields: FormField[], input: un
   const fits = (key: string) => fields.some((field) => field.key === key && !typeError(field, source[key], resolve));
   const unchecked = (key: string) => fields.some((field) => field.key === key && (isGroup(field) || oversizedList(field, source[key])));
   reject([...new Set(fields.map(({ key }) => key))].filter((key) => hasOwn(source, key) && unchecked(key) && !fits(key)));
+  const blanked = blankLists(fields, source, resolve);
   const resolved = activeValues(definition, fields, source);
   const misfits = [...resolved.active].filter(([key, field]) => isGroup(field) && typeError(field, resolved.values[key], resolve));
-  if (misfits.length === 0) return { resolved, rejected };
+  if (misfits.length === 0) return { resolved, rejected, blanked };
   reject(misfits.map(([key]) => key));
-  return { resolved: activeValues(definition, fields, source), rejected };
+  return { resolved: activeValues(definition, fields, source), rejected, blanked };
 }
 
 interface Prepared {
@@ -190,12 +191,12 @@ interface Prepared {
 function prepare(definition: FormDefinition, fields: FormField[], values: unknown, options: SubmissionOptions): Prepared {
   const messages = messageResolver(options.messages, definition.messages);
   const resolve = namedResolver(messages);
-  const { resolved, rejected } = rejectGroups(definition, fields, values, resolve);
+  const { resolved, rejected, blanked } = rejectGroups(definition, fields, values, resolve);
   const invalid = typeErrors(resolved, resolve);
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(trustDefinition(withoutRules(definition, invalid)), resolved.values, engineOptions);
   loadSubmitted(engine, resolved.values);
-  const items = itemErrors(engine, invalid, resolve);
+  const items = new Map([...blanked, ...itemErrors(engine, invalid, resolve)]);
   applySkips(engine, options.skippedSteps);
   const skipped = [...internals(engine).skipped.values()].flat();
   const check = (): SubmissionResult => {
