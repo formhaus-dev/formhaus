@@ -1,0 +1,10 @@
+.empty {
+  display: grid;
+  place-items: center;
+  color: var(--fh-ed-fg-subtle);
+}
+
+.empty svg {
+  width: var(--fh-ed-size-icon-md);
+  height: var(--fh-ed-size-icon-md);
+}

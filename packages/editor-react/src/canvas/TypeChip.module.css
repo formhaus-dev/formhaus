@@ -2,7 +2,9 @@
   display: inline-flex;
   flex: none;
   align-items: center;
+  justify-content: center;
   gap: var(--fh-ed-space-1-5);
+  min-width: var(--fh-ed-size-control-md);
   min-height: var(--fh-ed-size-control-md);
   padding: 0 var(--fh-ed-space-2-5);
   border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
@@ -33,8 +35,14 @@
 }
 
 @container (width < 420px) {
-  .chip > span,
-  .chipChevron {
-    display: none;
+  .chip {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .chip > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

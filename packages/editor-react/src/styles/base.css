@@ -1,4 +1,5 @@
-.fh-editor {
+.fh-editor,
+:where([data-fh-ed-layer]) {
   font-family: var(--fh-ed-font-family-sans);
   font-size: var(--fh-ed-font-size-md);
   line-height: var(--fh-ed-font-leading-base);
@@ -6,28 +7,28 @@
   -webkit-font-smoothing: antialiased;
 }
 
-:where(.fh-editor, [class*='fh_ed_']),
-:where(.fh-editor, [class*='fh_ed_']) *,
-:where(.fh-editor, [class*='fh_ed_']) *::before,
-:where(.fh-editor, [class*='fh_ed_']) *::after {
+:where(.fh-editor, [data-fh-ed-layer]),
+:where(.fh-editor, [data-fh-ed-layer]) *,
+:where(.fh-editor, [data-fh-ed-layer]) *::before,
+:where(.fh-editor, [data-fh-ed-layer]) *::after {
   box-sizing: border-box;
 }
 
-:where(.fh-editor, [class*='fh_ed_']) :where(h1, h2, h3, p, ul, ol, dl, dd, pre) {
+:where(.fh-editor, [data-fh-ed-layer]) :where(h1, h2, h3, p, ul, ol, dl, dd, pre) {
   margin: 0;
 }
 
-:where(.fh-editor, [class*='fh_ed_']) :where(button, input, select, textarea) {
+:where(.fh-editor, [data-fh-ed-layer]) :where(button, input, select, textarea) {
   font: inherit;
   color: inherit;
 }
 
-:where(.fh-editor, [class*='fh_ed_']) :focus-visible {
+:where(.fh-editor, [data-fh-ed-layer]) :focus-visible {
   outline: var(--fh-ed-border-focus) solid var(--fh-ed-accent);
   outline-offset: var(--fh-ed-border-thin);
 }
 
-:where(.fh-editor, [class*='fh_ed_'])
+:where(.fh-editor, [data-fh-ed-layer])
   :where(
     button:not(:disabled),
     [role='button'],
@@ -40,12 +41,11 @@
     label:has(input:not(:disabled)),
     a[href],
     select
-  ),
-:where([class*='fh_ed_']):where(button:not(:disabled), [role='option'], [role='menuitem'], [role='radio'], [role='switch'], a[href]) {
+  ) {
   cursor: pointer;
 }
 
-:where(.fh-editor, [class*='fh_ed_']) [aria-disabled='true'] {
+:where(.fh-editor, [data-fh-ed-layer]) [aria-disabled='true'] {
   cursor: default;
 }
 
@@ -70,9 +70,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :where(.fh-editor, [class*='fh_ed_']) *,
-  :where(.fh-editor, [class*='fh_ed_']) *::before,
-  :where(.fh-editor, [class*='fh_ed_']) *::after {
+  :where(.fh-editor, [data-fh-ed-layer]) *,
+  :where(.fh-editor, [data-fh-ed-layer]) *::before,
+  :where(.fh-editor, [data-fh-ed-layer]) *::after {
     animation-duration: 0s !important;
     transition-duration: 0s !important;
   }

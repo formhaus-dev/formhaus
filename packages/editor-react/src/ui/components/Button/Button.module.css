@@ -82,6 +82,27 @@
   color: var(--fh-ed-danger);
 }
 
+.link {
+  display: inline;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  padding: calc((var(--fh-ed-size-control-md) - 1lh) / 2) 0;
+  margin-block: calc((var(--fh-ed-size-control-md) - 1lh) / -2);
+  border: 0;
+  background: transparent;
+  color: var(--fh-ed-accent);
+  font-size: inherit;
+  line-height: inherit;
+  white-space: normal;
+}
+
+.link:hover {
+  background: transparent;
+  color: var(--fh-ed-accent);
+  text-decoration: underline;
+}
+
 .lg {
   height: var(--fh-ed-size-control-lg);
   min-width: var(--fh-ed-size-control-lg);

@@ -18,8 +18,29 @@ export function ResponseKey({ field, actions, readOnly }: { field: BuilderQuesti
       : 'Follows the label until the form is published.';
   if (renaming || (!live && field.keyLocked && !readOnly)) {
     return (
-      <div className={styles.group}>
-        <Field label="Response key" hint={hint}>
+      <div className={styles.pair}>
+        <Field
+          label="Response key"
+          hint={
+            live ? (
+              hint
+            ) : (
+              <>
+                {hint}{' '}
+                <Button
+                  variant="link"
+                  onClick={() => {
+                    actions.edit((form) => {
+                      unlockKey(form, field.uid);
+                    });
+                  }}
+                >
+                  Match the label
+                </Button>
+              </>
+            )
+          }
+        >
           <Input
             mono
             value={field.key}
@@ -34,18 +55,6 @@ export function ResponseKey({ field, actions, readOnly }: { field: BuilderQuesti
           />
         </Field>
         {live && <Banner tone="warning">Existing responses and webhooks keep the old key. New responses use the new one.</Banner>}
-        {!live && (
-          <Button
-            variant="ghost"
-            onClick={() => {
-              actions.edit((form) => {
-                unlockKey(form, field.uid);
-              });
-            }}
-          >
-            Match the label
-          </Button>
-        )}
       </div>
     );
   }
@@ -56,8 +65,7 @@ export function ResponseKey({ field, actions, readOnly }: { field: BuilderQuesti
       <span className={styles.keyHint}>{hint}</span>
       {!readOnly && (
         <Button
-          variant="ghost"
-          className={styles.keyAction}
+          variant="link"
           onClick={() => {
             if (live) {
               setRenaming(true);

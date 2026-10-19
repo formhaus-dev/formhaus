@@ -5,6 +5,7 @@ import { cx } from '../../lib/cx';
 import { IconButton } from '../IconButton/IconButton';
 import styles from './Sheet.module.css';
 import { useReturnFocus } from '../Dialog/useReturnFocus';
+import { layer } from '../../lib/layer';
 
 export type SheetDetent = 'medium' | 'large';
 
@@ -47,8 +48,9 @@ export function Sheet({ title, description, open, onOpenChange, children, footer
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className={styles.overlay} />
+        <RadixDialog.Overlay {...layer} className={styles.overlay} />
         <RadixDialog.Content
+          {...layer}
           className={cx(styles.sheet, styles[current])}
           data-detent={current}
           onOpenAutoFocus={focus.remember}

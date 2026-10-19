@@ -24,6 +24,7 @@ export * from './ops/options';
 export * from './ops/form';
 export * from './ops/matrix';
 export * from './ops/scale';
+export * from './ops/rules';
 export * from './ops/statements';
 export * from './ops/routes';
 export * from './smart';
