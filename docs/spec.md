@@ -631,7 +631,7 @@ A text can show an earlier answer with a `{{key}}` token, where `key` is a top-l
 
 Tokens are resolved in the step `title` and `description`, the section `title` and `description`, the field and group `label` and `helperText`, the field `placeholder` and the group `itemLabel`. The `itemLabel` is resolved inside each item, in one pass with its `{label}` and `{index}` parameters: text that one of them inserts is never read again. Option labels, action labels, catalogs and messages show tokens as written. Recall works only with `formatVersion` 1.5 or newer.
 
-A token is replaced with the answer of the field:
+A token is replaced with the answer of the field. When fields on different route branches share a key, the token reads the field on the active path, with its own options and type:
 
 | Field | Answer |
 |---|---|
@@ -640,7 +640,7 @@ A token is replaced with the answer of the field:
 | `checkbox`, `switch` | the field label when `true`, else empty |
 | `number`, `scale`, `rating` | the number |
 | `date`, `time`, `datetime`, text types other than `password`, `hidden` | the value as stored |
-| `password` | empty |
+| `password` | empty, also when another field with the same key on another route branch is not a `password` |
 | `file` | the list of file names |
 | group | the number of items |
 
@@ -943,7 +943,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |
-| `recall-sensitive-field` | warning | A `{{key}}` token for a `password` field. It shows nothing |
+| `recall-sensitive-field` | warning | A `{{key}}` token for a key that is a `password` field on any route branch. It shows nothing |
 | `recall-query-source` | warning | A `{{key}}` token for a `hidden` field with a `query` source, whose text anyone can set in a link |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
