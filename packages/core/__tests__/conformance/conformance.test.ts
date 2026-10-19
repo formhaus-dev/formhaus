@@ -75,6 +75,7 @@ describe('conformance corpus', () => {
       'localized-overlay',
       'options-from',
       'proto-keys',
+      'recall-branches',
       'recall-groups',
       'recall-inactive',
       'recall-limit',

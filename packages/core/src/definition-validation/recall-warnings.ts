@@ -1,5 +1,5 @@
 import { RECALL_SLOTS, recallEnabled, recallKeys, reservedTokens } from '../engine/recall';
-import type { FormGroup } from '../types';
+import type { FormField, FormGroup } from '../types';
 import type { CheckContext } from './context';
 import type { DefinitionIssue } from './issues';
 import { warning } from './issues';
@@ -29,12 +29,17 @@ export function recallTexts({ definition, nodes }: CheckContext): RecallText[] {
   );
 }
 
-function keyWarnings(context: CheckContext, { path, keys, step, owner, group }: RecallText): DefinitionIssue[] {
+function keyWarnings(
+  context: CheckContext,
+  shared: Map<string, FormField[]>,
+  { path, keys, step, owner, group }: RecallText,
+): DefinitionIssue[] {
   return [...new Set(keys)].flatMap((key) => {
     const token = `"{{${key}}}"`;
     const target = context.target(key, group?.key);
     if (!target) return [warning('unknown-recall-field', path, `${token} names no field`, 'Use the key of an earlier field')];
     const { field } = target;
+    const fields = target.group ? [field] : shared.get(key)!;
     return [
       ...(field === owner || target.step > step
         ? [
@@ -46,10 +51,10 @@ function keyWarnings(context: CheckContext, { path, keys, step, owner, group }: 
             ),
           ]
         : []),
-      ...(field.type === 'password'
+      ...(fields.some(({ type }) => type === 'password')
         ? [warning('recall-sensitive-field', path, `${token} recalls a password, which shows nothing`, 'Remove the token')]
         : []),
-      ...(field.type === 'hidden' && typeof field.source === 'object' && field.source !== null
+      ...(fields.some(({ type, source }) => type === 'hidden' && typeof source === 'object' && source !== null)
         ? [
             warning(
               'recall-query-source',
@@ -65,6 +70,8 @@ function keyWarnings(context: CheckContext, { path, keys, step, owner, group }: 
 
 export function recallWarnings(context: CheckContext): DefinitionIssue[] {
   if (!recallEnabled(context.definition)) return [];
+  const shared = new Map<string, FormField[]>();
+  for (const { field, group } of context.entries) if (!group) shared.get(field.key)?.push(field) ?? shared.set(field.key, [field]);
   return recallTexts(context).flatMap((text) => {
     const issues = [
       ...text.reserved
@@ -77,7 +84,7 @@ export function recallWarnings(context: CheckContext): DefinitionIssue[] {
             'Put only a field key inside {{ }}, or write \\{{ for literal braces',
           ),
         ),
-      ...keyWarnings(context, text),
+      ...keyWarnings(context, shared, text),
     ];
     const codes = new Set<string>();
     return issues.filter(({ code }) => !codes.has(code) && Boolean(codes.add(code)));
