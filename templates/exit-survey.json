@@ -48,7 +48,6 @@
             "key": "mainOther",
             "type": "text",
             "label": "What’s the main reason?",
-            "validation": { "required": true },
             "show": [{ "field": "mainReason", "eq": "other" }]
           },
           {

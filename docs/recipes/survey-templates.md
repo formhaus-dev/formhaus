@@ -24,21 +24,11 @@ Hidden fields read their value from the page URL.
 
 `usability-questionnaire` collects the ten System Usability Scale statements as published by Brooke (1996), in the original order. Two words follow Finstad (2006): "product" instead of "system", and "awkward" instead of "cumbersome". Brooke labels only the two ends of the scale. The template labels all five points, so the table has a header on every column. The values stay 1 to 5.
 
-Every statement is required, because a score needs all ten answers. Do not score a payload with a missing answer.
+Every statement is required, because a score needs all ten answers. The function returns `null` for a missing answer or a value that is not one of the option values `"1"` to `"5"`.
 
 For items 1, 3, 5, 7 and 9, a point is the answer minus 1. For items 2, 4, 6, 8 and 10, a point is 5 minus the answer. The score is the sum of the ten points times 2.5, from 0 to 100.
 
-```ts
-export function susScore(values: Record<string, unknown>): number | null {
-  let sum = 0;
-  for (let item = 1; item <= 10; item += 1) {
-    const answer = Number(values[`sus${item}`]);
-    if (!Number.isInteger(answer) || answer < 1 || answer > 5) return null;
-    sum += item % 2 === 1 ? answer - 1 : 5 - answer;
-  }
-  return sum * 2.5;
-}
-```
+<<< @/recipes/snippets/sus-score.ts
 
 A score is a comparison between releases or groups. Use one SUS per test session, after the tasks.
 
