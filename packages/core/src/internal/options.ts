@@ -7,6 +7,25 @@ export type OptionSource = [key: string, field: FormField];
 
 export const optionKey = (group: string, field: string): string => `${group}.${field}`;
 
+const countTexts = (texts: string[]) =>
+  texts.reduce((counts, text) => counts.set(text, (counts.get(text) ?? 0) + 1), new Map<string, number>());
+
+export function optionTexts(options: FieldOption[]): string[] {
+  const labels = countTexts(options.map(({ label }) => label));
+  const texts = options.map(({ label, value }) => (labels.get(label)! > 1 ? `${label} (${value})` : label));
+  const counts = countTexts(texts);
+  const taken = new Set(texts);
+  const next = new Map<string, number>();
+  return texts.map((text) => {
+    if (counts.get(text)! < 2) return text;
+    let index = next.get(text) ?? 1;
+    while (taken.has(`${text} (${index})`)) index++;
+    next.set(text, index + 1);
+    taken.add(`${text} (${index})`);
+    return `${text} (${index})`;
+  });
+}
+
 export function optionSources(fields: FormField[]): OptionSource[] {
   return fields.flatMap((field): OptionSource[] =>
     isGroup(field) ? field.fields.map((child): OptionSource => [optionKey(field.key, child.key), child]) : [[field.key, field]],
