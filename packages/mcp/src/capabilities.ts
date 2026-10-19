@@ -78,6 +78,7 @@ export const capabilities = {
       'inputMode',
       'autoAdvance',
       'layout',
+      'columns',
       'i18n',
       'source',
       'props',
@@ -96,6 +97,8 @@ export const capabilities = {
     inputMode: ['text', 'numeric', 'decimal', 'tel', 'email', 'url', 'search'],
     layout: 'radio and multiselect only: "stack" (default) or "inline" for short options.',
     autoAdvance: `${AUTO_ADVANCE_TYPES.join(', ')} only. Ignored inside a group or a matrix section.`,
+    columns:
+      'radio and multiselect with option images only: picture cards per row, a whole number from 1 to 4. Omit it to fill the row with cards about 200px wide. Added in format 1.3.',
   },
   validationRules: {
     rules: VALIDATION_RULES,

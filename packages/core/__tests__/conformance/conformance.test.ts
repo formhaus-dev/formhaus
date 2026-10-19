@@ -21,6 +21,8 @@ describe('conformance corpus', () => {
   it('covers every audited case', () => {
     expect(corpus.map(({ name }) => name).sort()).toEqual([
       'check-clean',
+      'check-columns',
+      'check-columns-not-applicable',
       'check-conditions',
       'check-container-conditions',
       'check-container-keys',

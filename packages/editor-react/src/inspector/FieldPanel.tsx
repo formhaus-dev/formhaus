@@ -19,6 +19,7 @@ import styles from './Inspector.module.css';
 import { FieldText } from './FieldText';
 import { LimitSettings } from './LimitSettings';
 import { limitSpec } from './limits';
+import { PerRow } from './PerRow';
 import { ResponseKey } from './ResponseKey';
 import { ScaleSettings } from './ScaleSettings';
 
@@ -78,6 +79,8 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
   const parent = findField(form, field.parent ?? '');
   const advances = canAutoAdvance(field.type) && parent?.type !== 'group' && !isMatrix(parent);
   const limits = limitSpec(field.type);
+  const choices = hasOptions(field.type) && field.type !== 'select' && !isMatrix(parent);
+  const pictures = choices && field.options.some((option) => option.extra?.image);
   return (
     <div className={styles.panel} role="group" aria-label="Field settings">
       {field.type !== 'section' && (
@@ -126,7 +129,8 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
           }}
         />
       )}
-      {hasOptions(field.type) && field.type !== 'select' && !isMatrix(parent) && (
+      {pictures && <PerRow field={field} actions={actions} />}
+      {choices && !pictures && (
         <div className={styles.control}>
           <span className={styles.controlLabel}>Option layout</span>
           <SegmentedControl

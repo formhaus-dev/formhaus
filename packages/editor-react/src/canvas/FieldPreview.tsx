@@ -20,11 +20,8 @@ function Scale({ field }: { field: BuilderQuestion }) {
   const anchors = anchorsOf(field);
   const rating = field.type === 'rating';
   return (
-    <div className={styles.scale}>
-      <ol
-        className={cx(styles.points, rating && styles.stars, !rating && points.length > 6 && styles.wrap)}
-        aria-label={rating ? `${String(points.length)} stars` : 'Points'}
-      >
+    <div className={cx(styles.scale, rating && styles.rated)}>
+      <ol className={cx(styles.points, rating && styles.stars)} aria-label={rating ? `${String(points.length)} stars` : 'Points'}>
         {points.map((point) => (
           <li key={point} className={rating ? styles.star : styles.point}>
             {rating ? <Star aria-hidden /> : point}
@@ -44,19 +41,29 @@ function Scale({ field }: { field: BuilderQuestion }) {
 
 function Choices({ field }: { field: BuilderQuestion }) {
   const square = field.type === 'multiselect';
+  const pictures = field.options.some((option) => option.extra?.image);
   const labels = JSON.parse(useEditor(useCallback((state) => jumpLabels(state.form, field), [field]))) as (string | null)[];
-  return (
-    <ul className={cx(styles.choices, field.extra.layout === 'inline' && styles.inline)}>
+  const list = (
+    <ul
+      className={cx(pictures ? styles.pictures : styles.choices, !pictures && field.extra.layout === 'inline' && styles.inline)}
+      data-columns={pictures ? field.extra.columns : undefined}
+    >
       {field.options.map((option, index) => (
-        <li key={option.uid} className={styles.choice}>
+        <li key={option.uid} className={cx(styles.choice, pictures && styles.picture)}>
+          {pictures &&
+            (option.extra?.image ? (
+              <img className={styles.cover} src={option.extra.image} alt="" />
+            ) : (
+              <span className={styles.cover} aria-hidden />
+            ))}
           <span className={cx(styles.glyph, square && styles.square)} aria-hidden />
-          {option.extra?.image && <img className={styles.thumb} src={option.extra.image} alt="" />}
           <span className={cx(!option.label.trim() && styles.placeholder)}>{option.label.trim() || `Option ${String(index + 1)}`}</span>
           {labels[index] && <span className={styles.jump}>→ {labels[index]}</span>}
         </li>
       ))}
     </ul>
   );
+  return pictures ? <div className={styles.frame}>{list}</div> : list;
 }
 
 export function FieldPreview({ field }: { field: BuilderQuestion }) {

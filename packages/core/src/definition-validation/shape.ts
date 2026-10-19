@@ -115,6 +115,11 @@ function dependencies(value: unknown, path: string): DefinitionIssue[] {
   return valid ? [] : [error('invalid-type', path, 'must be an array of field keys')];
 }
 
+function columns(value: unknown, path: string): DefinitionIssue[] {
+  if (value === undefined || (Number.isInteger(value) && (value as number) >= 1 && (value as number) <= 4)) return [];
+  return [error(typeof value === 'number' ? 'invalid-range' : 'invalid-type', path, '"columns" must be a whole number from 1 to 4')];
+}
+
 const field: Check = (value, path) => {
   const container = (value.type === 'section' || value.type === 'group') && nestable(path);
   return [
@@ -141,6 +146,7 @@ const field: Check = (value, path) => {
     ...validation(value.validation, `${path}/validation`),
     ...dependencies(value.optionsDependsOn, `${path}/optionsDependsOn`),
     ...props(value.props, `${path}/props`),
+    ...columns(value.columns, `${path}/columns`),
   ];
 };
 

@@ -9,7 +9,7 @@
     },
     "formatVersion": {
       "type": "string",
-      "description": "Format version of the definition, such as \"1.3\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images and matrix sections in 1.3.",
+      "description": "Format version of the definition, such as \"1.3\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3.",
       "pattern": "^[1-9]\\d*(\\.\\d+)?$"
     },
     "id": {
@@ -467,6 +467,12 @@
             "inline"
           ],
           "description": "Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them."
+        },
+        "columns": {
+          "type": "integer",
+          "description": "Cards per row, 1 to 4, for radio and multiselect options with images. Without it, cards fill the row at about 200px each. Narrow screens show at most 2 per row.",
+          "minimum": 1,
+          "maximum": 4
         },
         "optionsFrom": {
           "type": "string",

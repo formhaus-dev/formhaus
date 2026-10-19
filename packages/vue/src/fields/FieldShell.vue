@@ -36,7 +36,7 @@ const Helper = () =>
     </legend>
     <Label v-if="!props.variant" />
     <Helper v-if="!inline" />
-    <div v-if="props.variant" :class="container">
+    <div v-if="props.variant" :class="container" :data-columns="props.field.columns">
       <slot />
       <Label v-if="inline" />
     </div>

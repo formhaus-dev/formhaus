@@ -32,7 +32,7 @@ export function FieldShell({ id, field, error, variant, children }: FieldShellPr
       {!variant && <FieldLabel field={field} inputId={id} />}
       {!inline && helper}
       {variant ? (
-        <div className={group && field.layout === 'inline' ? `${container} ${container}--inline` : container}>
+        <div className={group && field.layout === 'inline' ? `${container} ${container}--inline` : container} data-columns={field.columns}>
           {children}
           {inline && field.label && (
             <label className="fh-field__label" htmlFor={id}>

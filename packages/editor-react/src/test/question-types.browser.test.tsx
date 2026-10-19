@@ -122,6 +122,29 @@ describe('question types in the editor', () => {
     });
   });
 
+  it('sets cards per row on a picture choice and shows them on the canvas', async () => {
+    await page.viewport(1440, 1000);
+    const rooms: FormField = {
+      key: 'room',
+      type: 'radio',
+      label: 'Room',
+      options: ['a', 'b', 'c'].map((value) => ({ value, label: value.toUpperCase(), image: `https://example.com/${value}.png` })),
+    };
+    const { store } = renderEditor(fromDefinition(definition([rooms, name])));
+    const card = screen.getByRole('group', { name: 'Room field' });
+    expect(card.querySelectorAll('img')).toHaveLength(3);
+    await userEvent.click(within(card).getByRole('button', { name: 'Field settings' }));
+    expect(screen.queryByRole('radiogroup', { name: 'Option layout' })).toBeNull();
+    await userEvent.click(within(screen.getByRole('radiogroup', { name: 'Per row' })).getByRole('radio', { name: '2' }));
+    await waitFor(() => {
+      expect(fieldAt(store, 0).columns).toBe(2);
+    });
+    await userEvent.click(within(screen.getByRole('radiogroup', { name: 'Per row' })).getByRole('radio', { name: 'Auto' }));
+    await waitFor(() => {
+      expect(fieldAt(store, 0)).not.toHaveProperty('columns');
+    });
+  });
+
   it('branches on a scale with is at least', async () => {
     await page.viewport(1440, 1000);
     const nps: FormField = { key: 'nps', type: 'scale', label: 'NPS', validation: { min: 0, max: 10 } };
