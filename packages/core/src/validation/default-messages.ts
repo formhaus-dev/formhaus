@@ -1,7 +1,6 @@
 import type { FormField, MessageCatalog, MessageKey } from '../types';
 import { hasOwn } from '../visibility/nodes';
 
-export type { MessageCatalog, MessageKey };
 export type MessageParams = Record<string, unknown>;
 export type MessageFn = (key: MessageKey, params: MessageParams, field: FormField) => string | undefined;
 export type MessageSource = MessageCatalog | MessageFn;

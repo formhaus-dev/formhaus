@@ -6,7 +6,7 @@ import { LIST_TYPES, typeMessageKeys } from '../validation/type-checks';
 import { DEFAULT_LABELS, hasRule, SLOTS, type Entry } from './nodes';
 import { slotAddress, textNodes, type TextNode } from './walk';
 
-export type SlotKind = 'text' | 'rule' | 'message' | 'label';
+type SlotKind = 'text' | 'rule' | 'message' | 'label';
 
 export interface Slot {
   kind: SlotKind;

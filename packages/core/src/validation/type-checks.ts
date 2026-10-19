@@ -1,5 +1,5 @@
-import type { FormField, FormGroup } from '../types';
-import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
+import type { FormField, FormGroup, MessageKey } from '../types';
+import { messageResolver, type ResolveMessage } from './default-messages';
 import { hasOwn } from '../visibility/nodes';
 import { allowedLarge, isBlank, MAX_ITEMS } from '../visibility/evaluate-condition';
 

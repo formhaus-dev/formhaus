@@ -13,7 +13,7 @@ const SCALE_MEDIUM = 544;
 const RATING_NARROW = 440;
 const ANCHORS = ['Start', 'Middle', 'End'] as const;
 
-export function scalePoints(field: FormField): number[] {
+function scalePoints(field: FormField): number[] {
   const [min, max] = scaleRange(field);
   return Array.from({ length: Math.min(MAX_POINTS, Math.max(0, max - min + 1)) }, (_, index) => min + index);
 }

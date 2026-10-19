@@ -122,7 +122,7 @@ export const addItems: CommandItem[] = [...TYPE_GROUPS, ['Layout', ['section', '
   },
 );
 
-export function presetFor(id: string): FieldPreset {
+function presetFor(id: string): FieldPreset {
   return presets[id]?.preset ?? { type: id };
 }
 

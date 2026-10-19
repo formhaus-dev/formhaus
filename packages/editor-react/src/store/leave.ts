@@ -18,7 +18,7 @@ export function trackLeave(handle: EditorHandle): () => void {
 
 export const hasUnsavedChanges = () => guarded().some(isUnsaved);
 
-export const savesFailing = () => guarded().some((handle) => ['error', 'conflict'].includes(handle.store.getState().save.status));
+const savesFailing = () => guarded().some((handle) => ['error', 'conflict'].includes(handle.store.getState().save.status));
 
 export function leaveMessage(): string {
   const kept = guarded()

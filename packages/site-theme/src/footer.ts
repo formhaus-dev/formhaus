@@ -1,6 +1,6 @@
 export const footerRepo = 'https://github.com/formhaus-dev/formhaus';
 
-export interface FooterLink {
+interface FooterLink {
   text: string;
   href: string;
   dest?: string;
