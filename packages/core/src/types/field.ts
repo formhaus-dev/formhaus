@@ -31,6 +31,7 @@ export interface FieldOption {
   value: string;
   label: string;
   image?: string;
+  exclusive?: boolean;
   i18n?: LabelI18n;
 }
 

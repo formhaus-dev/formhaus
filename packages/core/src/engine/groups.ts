@@ -4,6 +4,7 @@ import { createValues, getChangedKeys } from './engine-utils';
 import type { EngineInternals } from './runtime-internals';
 import { clearError, clearResolvedMatchErrors } from './validation-state';
 import { writeValue } from './write-value';
+import { exclusiveWrite } from './exclusive';
 
 export interface GroupItem {
   id: string;
@@ -71,13 +72,14 @@ export function removeItem(engine: EngineInternals, key: string, index: number):
   return true;
 }
 
-export function setItemValue(engine: EngineInternals, key: string, index: number, fieldKey: string, value: unknown): void {
+export function setItemValue(engine: EngineInternals, key: string, index: number, fieldKey: string, input: unknown): void {
   const group = activeGroup(engine, key);
   const items = itemsOf(engine.values[key]);
   const field = group?.fields.find((candidate) => candidate.key === fieldKey);
   if (!group || !field || !within(index, items)) return;
   const current = items[index];
   const item = isEntry(current) ? current : {};
+  const value = exclusiveWrite(field, item[fieldKey], input);
   const path = itemPath(key, index, fieldKey);
   const changed = !Object.is(item[fieldKey], value);
   const previousError = engine.errors[path];

@@ -1,0 +1,278 @@
+{
+  "$schema": "./scenario.schema.json",
+  "name": "exclusive",
+  "definition": {
+    "formatVersion": "1.5",
+    "id": "f",
+    "title": "F",
+    "submit": {
+      "label": "Submit"
+    },
+    "fields": [
+      {
+        "key": "conditions",
+        "type": "multiselect",
+        "label": "Do you have any of these conditions?",
+        "options": [
+          {
+            "value": "asthma",
+            "label": "Asthma"
+          },
+          {
+            "value": "diabetes",
+            "label": "Diabetes"
+          },
+          {
+            "value": "none",
+            "label": "None of these",
+            "exclusive": true
+          }
+        ],
+        "validation": {
+          "required": true
+        }
+      },
+      {
+        "key": "details",
+        "type": "text",
+        "label": "Tell us more",
+        "show": [
+          {
+            "field": "conditions",
+            "notContains": "none"
+          }
+        ]
+      },
+      {
+        "key": "people",
+        "type": "group",
+        "label": "People",
+        "fields": [
+          {
+            "key": "history",
+            "type": "multiselect",
+            "label": "Family history",
+            "options": [
+              {
+                "value": "asthma",
+                "label": "Asthma"
+              },
+              {
+                "value": "diabetes",
+                "label": "Diabetes"
+              },
+              {
+                "value": "none",
+                "label": "None of these",
+                "exclusive": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "symptoms",
+        "type": "multiselect",
+        "label": "Symptoms",
+        "options": [
+          {
+            "value": "asthma",
+            "label": "Asthma"
+          },
+          {
+            "value": "diabetes",
+            "label": "Diabetes"
+          },
+          {
+            "value": "none",
+            "label": "None of these",
+            "exclusive": true
+          },
+          {
+            "value": "private",
+            "label": "Prefer not to say",
+            "exclusive": true
+          }
+        ],
+        "validation": {
+          "minLength": 2
+        }
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "picking an exclusive option clears the other answers",
+      "values": {
+        "conditions": ["asthma", "diabetes"]
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "conditions",
+          "value": ["asthma", "diabetes", "none"]
+        },
+        {
+          "expect": {
+            "values": {
+              "conditions": ["none"]
+            },
+            "fields": ["conditions", "people", "symptoms"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "picking another option removes the exclusive one",
+      "values": {
+        "conditions": ["none"]
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "conditions",
+          "value": ["none", "asthma"]
+        },
+        {
+          "expect": {
+            "values": {
+              "conditions": ["asthma"]
+            },
+            "fields": ["conditions", "details", "people", "symptoms"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "the last newly picked exclusive option wins",
+      "definition": {
+        "formatVersion": "1.5",
+        "id": "f",
+        "title": "F",
+        "submit": {
+          "label": "Submit"
+        },
+        "fields": [
+          {
+            "key": "conditions",
+            "type": "multiselect",
+            "label": "Do you have any of these conditions?",
+            "options": [
+              {
+                "value": "asthma",
+                "label": "Asthma"
+              },
+              {
+                "value": "diabetes",
+                "label": "Diabetes"
+              },
+              {
+                "value": "none",
+                "label": "None of these",
+                "exclusive": true
+              },
+              {
+                "value": "private",
+                "label": "Prefer not to say",
+                "exclusive": true
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "conditions",
+          "value": ["asthma", "none", "private"]
+        },
+        {
+          "expect": {
+            "values": {
+              "conditions": ["private"]
+            }
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "conditions",
+          "value": ["private", "none"]
+        },
+        {
+          "expect": {
+            "values": {
+              "conditions": ["none"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "group items follow the same rules",
+      "values": {
+        "people": [
+          {
+            "history": ["asthma"]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "setItemValue",
+          "key": "people",
+          "index": 0,
+          "field": "history",
+          "value": ["asthma", "none"]
+        },
+        {
+          "expect": {
+            "values": {
+              "people": [
+                {
+                  "history": ["none"]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "people.0.history",
+          "value": ["none", "diabetes"]
+        },
+        {
+          "expect": {
+            "values": {
+              "people": [
+                {
+                  "history": ["diabetes"]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "initial values are not changed and a mixed value fails validation",
+      "values": {
+        "conditions": ["asthma", "none"]
+      },
+      "steps": [
+        {
+          "do": "validate",
+          "returns": {
+            "conditions": "Must be a list of available options"
+          }
+        },
+        {
+          "expect": {
+            "values": {
+              "conditions": ["asthma", "none"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

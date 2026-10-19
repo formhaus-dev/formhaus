@@ -94,6 +94,9 @@ function normalizeItems(group: FormGroup, input: unknown): unknown {
 
 const staticOptions = (field: FormField) => (field.optionsFrom ? undefined : field.options);
 
+export const exclusiveValues = (field: FormField): unknown[] =>
+  LIST_TYPES.includes(field.type) ? (staticOptions(field) ?? []).filter((option) => option.exclusive).map(({ value }) => value) : [];
+
 function isOption(field: FormField, value: unknown): boolean {
   const options = staticOptions(field);
   return !options || options.some((option) => option.value === value);
@@ -110,7 +113,9 @@ function multiselectError(field: FormField, value: unknown, fail: Fail): string 
   if (value.length > (staticOptions(field)?.length ?? MAX_ITEMS)) return fail('option');
   const valid = value.every((item) => typeof item === 'string' && item.length <= MAX_STRING_LENGTH && isOption(field, item));
   if (!valid) return fail('option');
-  return new Set(value).size === value.length ? null : fail('options');
+  const exclusive = exclusiveValues(field);
+  const mixed = value.length > 1 && value.some((item) => exclusive.includes(item));
+  return new Set(value).size === value.length && !mixed ? null : fail('options');
 }
 
 function stringError(field: FormField, value: unknown, key: MessageKey, fail: Fail): string | null {

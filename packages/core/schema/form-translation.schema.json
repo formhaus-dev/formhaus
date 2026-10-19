@@ -169,6 +169,9 @@
         },
         "stepErrors": {
           "type": "string"
+        },
+        "or": {
+          "type": "string"
         }
       },
       "additionalProperties": false
