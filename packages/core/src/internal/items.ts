@@ -3,6 +3,7 @@ import { errorKeys } from '../engine/validation-state';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
 import { labelFor } from '../i18n/labels';
+import { cut } from '../validation/bounded-text';
 import type { FormGroup, FormStep, LabelSource } from '../types';
 import { isBlank } from '../visibility/evaluate-condition';
 import { isEntry, itemsOf } from '../visibility/nodes';
@@ -16,7 +17,7 @@ const visibility = (engine: FormEngine) => (engine as unknown as EngineInternals
 export function itemTitle(engine: FormEngine, group: FormGroup, index: number, ...labels: (LabelSource | undefined)[]): string {
   const item = { group: group.key, index };
   const params = { label: recalled(engine, group).label, index: index + 1 };
-  return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : labelFor('itemLabel', params, ...labels);
+  return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : cut(labelFor('itemLabel', params, ...labels));
 }
 
 export function errorDomId(engine: FormEngine, formId: string, key: string): string {

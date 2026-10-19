@@ -543,6 +543,8 @@ A step can greet the user by the name asked on the first step:
 - A missing value, a hidden field and an unknown key give an empty text. Put each optional recall on its own line, so an empty one leaves no stray comma.
 - Only a key goes inside the braces. Keys may hold dots, so `{{contact.email}}` works. `{{name|upper}}` shows as written, and `\{{` shows literal braces.
 - `checkDefinition()` warns when a token names no field, a field answered later, or holds more than a key.
+- A `password` field shows nothing, and `checkDefinition()` warns about it.
+- A hidden field with a `query` source holds whatever text a link puts in the URL, so `checkDefinition()` warns when a text recalls it. Recall it only where any text is safe to show.
 - Inside a group item, `{{key}}` also reads the item's own fields.
 - The [Derived values](/recipes/derived-values#use-a-computed-value-later-in-the-form) recipe fills a `hidden` field from app code and recalls it.
 

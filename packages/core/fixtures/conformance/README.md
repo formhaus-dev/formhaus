@@ -48,7 +48,7 @@ A case has `name`, `input` (`values` and `skippedSteps`), `expected` (`values` a
 
 ## Recall
 
-A recall case has `name`, `values` and `texts`. Create the engine with `values` and take its submit values. Each entry of `texts` has an `address`, an optional `group` and `item`, and the expected `text`. Take the text at `address` from the text slots, resolve its `{{key}}` tokens with the submit values and the identity formatter as the specification describes under Answer recall, and compare the result with `text`. With `group`, resolve it inside item number `item` (from 0) of that group.
+A recall case has `name`, `values` and `texts`. Create the engine with `values` and take its submit values. Each entry of `texts` has an `address`, an optional `group` and `item`, and the expected `text`. Take the text at `address` from the text slots, resolve its `{{key}}` tokens with the submit values, the engine's active path and the identity formatter as the specification describes under Answer recall, and compare the result with `text`. With `group`, resolve it inside item number `item` (from 0) of that group.
 
 The identity formatter makes the expected texts the same on every platform. The default formatter is locale-native: each port builds it on its platform formatters with the style classes listed in the specification under Recall formatting, and matches the style class, not the bytes. Its locale falls back to `en`, never to the platform default. The corpus does not check it.
 

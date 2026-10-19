@@ -1,6 +1,9 @@
 import type { FormField, FormGroup, MessageKey } from '../types';
 import { messageResolver, type ResolveMessage } from './default-messages';
 import { hasOwn } from '../visibility/nodes';
+import { MAX_STRING_LENGTH } from './bounded-text';
+
+export { MAX_STRING_LENGTH };
 import { allowedLarge, isBlank, MAX_ITEMS } from '../visibility/evaluate-condition';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
@@ -33,7 +36,6 @@ export function scaleRange({ type, validation }: FormField): [number, number] {
   return [type === 'rating' ? 1 : (validation?.min ?? 1), validation?.max ?? 5];
 }
 
-export const MAX_STRING_LENGTH = 10000;
 export const MAX_HIDDEN_LENGTH = 2000;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_GROUP_ITEMS = 100;
