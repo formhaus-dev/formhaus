@@ -5,6 +5,8 @@ export interface Context {
   platform: NodeJS.Platform;
   dryRun: boolean;
   force: boolean;
+  verbose: boolean;
+  tty?: boolean;
 }
 
 export type State = 'added' | 'updated' | 'replaced' | 'present' | 'kept' | 'different' | 'skipped' | 'failed';
@@ -16,6 +18,8 @@ export interface Change {
   where: string;
   state: State;
   note?: string;
+  backup?: string;
+  newBackup?: boolean;
 }
 
 export interface Agent {
@@ -30,6 +34,8 @@ export const SERVER_NAME = 'formhaus';
 export const SERVER_PACKAGE = '@formhaus/mcp';
 export const SERVER = { command: 'npx', args: ['-y', SERVER_PACKAGE] };
 export const GUIDE_URL = 'https://formhaus.dev/guide/mcp';
+export const START_URL = 'https://formhaus.dev/guide/';
+export const APP_URL = 'https://app.formhaus.dev';
 
 export function isOurServer(command: unknown, args: unknown): boolean {
   return (
