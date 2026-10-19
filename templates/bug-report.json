@@ -117,13 +117,11 @@
             ],
             "validation": { "required": true }
           },
-          {
-            "key": "recording",
-            "type": "text",
-            "label": "Link to a screenshot or screen recording",
-            "placeholder": "https://"
-          },
-          { "key": "email", "type": "email", "label": "Email for follow-up", "inputMode": "email" }
+          { "key": "attachment", "type": "file", "label": "Screenshot or screen recording", "accept": "image/*,video/*" },
+          { "key": "recording", "type": "text", "label": "Link to a recording, if it’s too large to upload", "placeholder": "https://" },
+          { "key": "email", "type": "email", "label": "Email for follow-up", "inputMode": "email" },
+          { "key": "page", "type": "hidden", "source": "page" },
+          { "key": "device", "type": "hidden", "source": "device" }
         ]
       }
     ]

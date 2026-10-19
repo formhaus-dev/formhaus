@@ -128,6 +128,8 @@ jobs:
 
       - run: pnpm check:seo
 
+      - run: pnpm check:template-aliases
+
   examples:
     runs-on: ubuntu-latest
 

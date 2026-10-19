@@ -1,13 +1,12 @@
 {
   "slug": "team-pulse-survey",
   "title": "Team pulse survey",
-  "summary": "A one-minute anonymous check-in: eNPS, workload, clarity, manager support and recognition.",
+  "summary": "A one-minute check-in: eNPS, workload, clarity, manager support and recognition.",
   "category": "survey",
   "definition": {
     "id": "team-pulse-survey",
     "formatVersion": "1.3",
     "title": "Team pulse",
-    "description": "Your answers are anonymous. It takes about a minute.",
     "submit": { "label": "Send answers" },
     "fields": [
       {
@@ -25,7 +24,8 @@
           { "value": "too-much", "label": "Far too much" },
           { "value": "bit-much", "label": "A bit too much" },
           { "value": "right", "label": "About right" },
-          { "value": "room", "label": "I could take on more" }
+          { "value": "bit-little", "label": "A bit too little" },
+          { "value": "too-little", "label": "Far too little" }
         ],
         "validation": { "required": true }
       },
@@ -44,7 +44,8 @@
               { "value": "2", "label": "Disagree" },
               { "value": "3", "label": "Neutral" },
               { "value": "4", "label": "Agree" },
-              { "value": "5", "label": "Strongly agree" }
+              { "value": "5", "label": "Strongly agree" },
+              { "value": "na", "label": "Not applicable" }
             ],
             "validation": { "required": true }
           },
@@ -57,7 +58,8 @@
               { "value": "2", "label": "Disagree" },
               { "value": "3", "label": "Neutral" },
               { "value": "4", "label": "Agree" },
-              { "value": "5", "label": "Strongly agree" }
+              { "value": "5", "label": "Strongly agree" },
+              { "value": "na", "label": "Not applicable" }
             ],
             "validation": { "required": true }
           },
@@ -70,7 +72,8 @@
               { "value": "2", "label": "Disagree" },
               { "value": "3", "label": "Neutral" },
               { "value": "4", "label": "Agree" },
-              { "value": "5", "label": "Strongly agree" }
+              { "value": "5", "label": "Strongly agree" },
+              { "value": "na", "label": "Not applicable" }
             ],
             "validation": { "required": true }
           }
@@ -81,8 +84,9 @@
         "type": "textarea",
         "label": "One thing that would make next month better",
         "rows": 3,
-        "helperText": "Leave out names and details that could identify you."
+        "helperText": "Leave out names and details you’d rather not share."
       }
-    ]
+    ],
+    "description": "It takes about a minute."
   }
 }

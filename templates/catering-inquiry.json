@@ -37,12 +37,7 @@
             "label": "Event date",
             "validation": { "required": true }
           },
-          {
-            "key": "serviceTime",
-            "type": "text",
-            "label": "Start time",
-            "placeholder": "7 pm"
-          },
+          { "key": "serviceTime", "type": "time", "label": "Start time" },
           {
             "key": "guests",
             "type": "number",
@@ -98,6 +93,13 @@
               { "value": "halal", "label": "Halal" },
               { "value": "kosher", "label": "Kosher" }
             ]
+          },
+          {
+            "key": "dietaryDetails",
+            "type": "textarea",
+            "label": "How many guests need each, and any allergies?",
+            "rows": 2,
+            "show": [{ "field": "dietary", "notEmpty": true }]
           },
           {
             "key": "budget",
