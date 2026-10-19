@@ -306,6 +306,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-step-progress__description { margin: 0; color: var(--fh-color-text-muted); }
 .fh-step-progress__bar { height: 4px; border-radius: 999px; background: var(--fh-color-bg-disabled); overflow: hidden; }
 .fh-step-progress__fill { height: 100%; background: var(--fh-color-primary); transition: width 200ms ease-out; }
+.fh-step-progress:has(> .fh-step-progress__steps) > .fh-step-progress__bar { display: none; }
 .fh-step-progress__steps { display: flex; flex-wrap: wrap; gap: var(--fh-space-3) var(--fh-space-9); margin: 0; padding: 0; list-style: none; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: 1.45; counter-reset: fh-step; }
 .fh-step-progress__step { position: relative; display: flex; align-items: flex-start; gap: var(--fh-space-3); min-width: 0; counter-increment: fh-step; --fh-step-marker: calc(var(--fh-font-size-small) * 1.45); }
 .fh-step-progress__step::before { content: counter(fh-step); display: grid; flex: none; place-items: center; box-sizing: border-box; width: var(--fh-step-marker); height: var(--fh-step-marker); border: 1.5px solid var(--fh-color-border); border-radius: 50%; font-size: calc(var(--fh-font-size-small) * 0.8); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
@@ -326,7 +327,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 @container (width < 400px) {
   .fh-step-progress__steps { column-gap: var(--fh-space-5); }
   .fh-step-progress__step { gap: var(--fh-space-1); }
-  .fh-step-progress__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .fh-step-progress__name, .fh-step-progress__errors { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
 
 @media (forced-colors: active) {

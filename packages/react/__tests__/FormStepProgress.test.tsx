@@ -34,6 +34,16 @@ describe('FormStepProgress', () => {
     );
   });
 
+  it('keeps the bar element with and without the step list', () => {
+    const { rerender } = render(<FormStepProgress current={2} total={3} steps={steps} />);
+    expect(
+      document.querySelector('.fh-step-progress > .fh-step-progress__bar + .fh-step-progress__info + .fh-step-progress__steps'),
+    ).not.toBeNull();
+    rerender(<FormStepProgress current={2} total={3} />);
+    expect(document.querySelector('.fh-step-progress__bar')).not.toBeNull();
+    expect(document.querySelector('.fh-step-progress__steps')).toBeNull();
+  });
+
   it('keeps the counter label override', () => {
     render(<FormStepProgress current={1} total={3} steps={steps} counterLabel="Almost there" />);
     expect(document.querySelector('.fh-step-progress__counter')?.textContent).toBe('Almost there');
