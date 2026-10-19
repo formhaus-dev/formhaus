@@ -10,6 +10,7 @@ import { recallScenarios } from '../../core/__tests__/renderers/recall.scenarios
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
 import { labelScenarios } from '../../core/__tests__/renderers/labels.scenarios';
 import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
+import { exclusiveScenarios } from '../../core/__tests__/renderers/exclusive.scenarios';
 import { optionScenarios } from '../../core/__tests__/renderers/options.scenarios';
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
@@ -81,6 +82,7 @@ describe('renderer conformance: states', () => stateScenarios(harness, kit));
 describe('renderer conformance: fields', () => fieldScenarios(harness, kit));
 describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
+describe('renderer conformance: exclusive options', () => exclusiveScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
 describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));

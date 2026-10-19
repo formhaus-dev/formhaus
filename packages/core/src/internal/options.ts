@@ -5,6 +5,9 @@ export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[]
 
 export type OptionSource = [key: string, field: FormField];
 
+export const dividerBefore = (field: FormField, options: FieldOption[], index: number): boolean =>
+  !field.optionsFrom && !!options[index].exclusive && index > 0 && !options[index - 1].exclusive;
+
 export const optionKey = (group: string, field: string): string => `${group}.${field}`;
 
 const countTexts = (texts: string[]) =>
