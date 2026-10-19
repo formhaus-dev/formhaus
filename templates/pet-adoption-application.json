@@ -5,6 +5,7 @@
   "category": "application",
   "definition": {
     "id": "pet-adoption-application",
+    "formatVersion": "1.1",
     "title": "Adoption application",
     "submit": { "label": "Send application" },
     "steps": [
@@ -69,10 +70,18 @@
             "validation": { "required": true }
           },
           {
-            "key": "landlordContact",
+            "key": "landlordName",
             "type": "text",
-            "label": "Landlord or property manager’s name and phone",
+            "label": "Landlord or property manager’s name",
             "helperText": "We’ll check with them that pets are allowed.",
+            "show": [{ "field": "ownership", "eq": "rent" }],
+            "validation": { "required": true }
+          },
+          {
+            "key": "landlordPhone",
+            "type": "phone",
+            "label": "Landlord or property manager’s phone",
+            "inputMode": "tel",
             "show": [{ "field": "ownership", "eq": "rent" }],
             "validation": { "required": true }
           },
@@ -114,10 +123,32 @@
           },
           {
             "key": "otherPets",
-            "type": "textarea",
+            "type": "group",
             "label": "Other pets in your home",
-            "rows": 2,
-            "placeholder": "Type, age, and whether they’re spayed or neutered"
+            "itemLabel": "Pet {index}",
+            "addLabel": "Add a pet",
+            "defaultItems": 0,
+            "fields": [
+              {
+                "key": "petKind",
+                "type": "text",
+                "label": "Type of animal",
+                "placeholder": "Dog, cat, rabbit…",
+                "validation": { "required": true }
+              },
+              { "key": "petAge", "type": "text", "label": "Age" },
+              {
+                "key": "petFixed",
+                "type": "radio",
+                "label": "Spayed or neutered?",
+                "layout": "inline",
+                "options": [
+                  { "value": "yes", "label": "Yes" },
+                  { "value": "no", "label": "No" },
+                  { "value": "not-sure", "label": "Not sure" }
+                ]
+              }
+            ]
           }
         ]
       },

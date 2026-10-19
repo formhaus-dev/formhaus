@@ -1,7 +1,7 @@
 {
   "slug": "job-application",
   "title": "Job application",
-  "summary": "Role, contact details, resume, experience, work eligibility and start date for a single opening.",
+  "summary": "Role, contact details, resume, experience, US work eligibility and start date for one opening.",
   "category": "application",
   "definition": {
     "id": "job-application",
@@ -54,10 +54,9 @@
         "fields": [
           {
             "key": "resume",
-            "type": "text",
-            "label": "Link to your resume",
-            "placeholder": "https://",
-            "helperText": "A shared Google Drive or Dropbox PDF works. Make sure anyone with the link can view it.",
+            "type": "file",
+            "label": "Resume",
+            "accept": ".pdf,.doc,.docx",
             "validation": { "required": true }
           },
           {

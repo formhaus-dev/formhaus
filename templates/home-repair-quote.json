@@ -44,11 +44,18 @@
             "validation": { "required": true }
           },
           {
+            "key": "photo",
+            "type": "file",
+            "label": "Photo of the problem",
+            "accept": "image/*",
+            "helperText": "Photos help us quote without a visit."
+          },
+          {
             "key": "photos",
             "type": "text",
-            "label": "Link to photos of the problem",
+            "label": "Link to more photos",
             "placeholder": "https://",
-            "helperText": "A shared album or folder. Photos help us quote without a visit."
+            "helperText": "A shared album or folder."
           },
           {
             "key": "urgency",
@@ -101,7 +108,7 @@
             "type": "text",
             "label": "ZIP code",
             "inputMode": "numeric",
-            "validation": { "required": true }
+            "validation": { "required": true, "pattern": "^\\d{5}(-\\d{4})?$", "patternMessage": "Enter a 5-digit ZIP code" }
           },
           {
             "key": "access",

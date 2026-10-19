@@ -5,7 +5,7 @@
   "category": "feedback",
   "definition": {
     "id": "event-feedback",
-    "formatVersion": "1.3",
+    "formatVersion": "1.4",
     "title": "Event feedback",
     "submit": { "label": "Send feedback" },
     "fields": [
@@ -27,7 +27,15 @@
       {
         "key": "venueRating",
         "type": "rating",
-        "label": "How would you rate the venue, food and drinks?",
+        "label": "How would you rate the venue?",
+        "show": [{ "field": "attended", "eq": "in-person" }],
+        "options": [{ "value": "1", "label": "Poor" }, { "value": "5", "label": "Excellent" }]
+      },
+      {
+        "key": "cateringRating",
+        "type": "rating",
+        "label": "How would you rate the food and drinks?",
+        "helperText": "Skip this if there was no food or drinks.",
         "show": [{ "field": "attended", "eq": "in-person" }],
         "options": [{ "value": "1", "label": "Poor" }, { "value": "5", "label": "Excellent" }]
       },
@@ -43,6 +51,13 @@
           { "value": "organization", "label": "Organization" },
           { "value": "other", "label": "Something else" }
         ]
+      },
+      {
+        "key": "highlightsOther",
+        "type": "text",
+        "label": "What else did you enjoy?",
+        "show": [{ "field": "highlights", "contains": "other" }],
+        "validation": { "required": true }
       },
       { "key": "bestSession", "type": "text", "label": "Which session was most useful?" },
       { "key": "change", "type": "textarea", "label": "What should we change next time?", "rows": 3 },

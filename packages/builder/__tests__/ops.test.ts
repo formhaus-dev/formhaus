@@ -68,9 +68,9 @@ describe('field ops', () => {
   });
 
   it('lists the blocks that reference a key', () => {
-    const form = fromDefinition(template('agency-fit-quiz.json'));
-    const users = referencesTo(form, form.blocks.find((block) => block.kind === 'question' && block.key === 'need')!.uid);
-    expect(users.length).toBe(1);
+    const form = fromDefinition(template('website-project-inquiry.json'));
+    const users = referencesTo(form, form.blocks.find((block) => block.kind === 'question' && block.key === 'projectType')!.uid);
+    expect(users.length).toBe(4);
   });
 });
 
@@ -116,10 +116,10 @@ describe('step ops', () => {
   });
 
   it('clears branch targets that point to a removed step', () => {
-    const form = fromDefinition(template('agency-fit-quiz.json'));
-    const resources = form.blocks.find((block) => isPage(block) && block.id === 'resources')!;
+    const form = fromDefinition(template('website-project-inquiry.json'));
+    const resources = form.blocks.find((block) => isPage(block) && block.id === 'smallbudget')!;
     removeStep(form, resources.uid, 'with-fields');
     const budget = toDefinition(form).steps?.find((step) => step.id === 'budget');
-    expect(JSON.stringify(budget?.routes ?? [])).not.toContain('resources');
+    expect(JSON.stringify(budget?.routes ?? [])).not.toContain('smallbudget');
   });
 });
