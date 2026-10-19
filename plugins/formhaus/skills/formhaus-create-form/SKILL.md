@@ -60,7 +60,7 @@ These are the exact TypeScript types. Your output MUST conform to them.
 ```typescript
 interface FormDefinition {
   id: string;           // kebab-case identifier
-  formatVersion?: string; // "1.4" with contains or notContains, "1.3" with scale, rating, option images or a matrix
+  formatVersion?: string; // "1.5" with {{key}} recall, "1.4" with contains or notContains, "1.3" with scale, rating, option images or a matrix
   title: string;        // human-readable form title
   description?: string; // short intro under the title, up to 1000 characters
   submit: FormAction;   // submit button config (required)
@@ -263,9 +263,10 @@ Output the complete form definition JSON. Follow these rules:
 4. Use `fields` for single-step, `steps` for multi-step
 5. Only include optional properties when they add value (no empty strings, no `required: false`)
 6. Options for select/radio must have both `value` and `label`
-7. Set `"formatVersion": "1.4"` when a condition uses `contains` or `notContains`, else `"1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section. Set at least `"1.1"` when it has sections or groups
+7. Set `"formatVersion": "1.5"` when a text uses `{{key}}`, else `"1.4"` when a condition uses `contains` or `notContains`, else `"1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section. Set at least `"1.1"` when it has sections or groups
 8. Conditions on `scale` and `rating` compare numbers: `{ "field": "nps", "lte": 6 }`. A range is two conditions: `gte` and `lte`
 9. A `multiselect` answer is a list. Test one option with `{ "field": "interests", "contains": "other" }`, never with `eq` or `in`
+10. Show an earlier answer in a later step title or description, a label, `helperText` or `placeholder` with `{{key}}`, such as a review step: `"description": "Check your answers: {{name}}, {{email}}, plan {{plan}}"`. Recall only fields from earlier steps
 
 Put `"$schema": "https://formhaus.dev/schema/form-definition.json"` as the first key
 so editors validate and autocomplete the file.

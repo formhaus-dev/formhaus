@@ -1,5 +1,7 @@
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
+export { recalled, recalls } from './recall';
+export { recallEnabled, recallKeys } from '../engine/recall';
 
 export {
   cloudStateFor,
