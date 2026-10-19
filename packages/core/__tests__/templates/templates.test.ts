@@ -3,6 +3,7 @@ import { resolve } from 'node:path';
 import Ajv from 'ajv';
 import { describe, expect, it } from 'vitest';
 import { FormEngine, validateDefinition } from '../../src';
+import { validateSubmission } from '../../src/server';
 import { buildIndex } from '../../../../scripts/templates-index.mjs';
 
 const directory = resolve(__dirname, '../../../../templates');
@@ -46,5 +47,34 @@ describe('form templates', () => {
     expect(validate(template.definition), JSON.stringify(validate.errors)).toBe(true);
     expect(validateDefinition(template.definition)).toEqual([]);
     expect(() => new FormEngine(template.definition)).not.toThrow();
+  });
+});
+
+describe('return-request evidence', () => {
+  const { definition } = read('return-request.json');
+  const item = (reason: string, extra: Record<string, unknown> = {}) => ({
+    item: 'Shirt',
+    quantity: 1,
+    reason,
+    condition: 'used',
+    resolution: 'refund',
+    details: 'x',
+    ...extra,
+  });
+  const base = { orderNumber: '1', email: 'a@b.co', name: 'A', returnMethod: 'label' };
+
+  it('requires a photo link for a damaged item on the server', () => {
+    const missing = validateSubmission(definition, { ...base, items: [item('fit'), item('damaged')] });
+    expect(missing.errors).toEqual({ 'items.1.damageLink': expect.any(String) });
+    const fixed = validateSubmission(definition, { ...base, items: [item('fit'), item('damaged', { damageLink: 'https://x.co/a' })] });
+    expect(fixed.errors).toEqual({});
+  });
+
+  it('requires a photo link for a damaged item in the client', () => {
+    const engine = new FormEngine(definition);
+    engine.setValue('items.0.reason', 'damaged');
+    expect(engine.validate()).toHaveProperty(['items.0.damageLink']);
+    engine.setValue('items.0.reason', 'fit');
+    expect(engine.validate()).not.toHaveProperty(['items.0.damageLink']);
   });
 });

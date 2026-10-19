@@ -112,12 +112,7 @@
             ],
             "validation": { "required": true }
           },
-          {
-            "key": "timezone",
-            "type": "text",
-            "label": "Time zone",
-            "placeholder": "City or UTC offset"
-          }
+          { "key": "timezone", "type": "hidden", "source": "timezone" }
         ]
       },
       {

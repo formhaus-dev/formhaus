@@ -115,7 +115,7 @@
             "validation": { "required": true }
           },
           { "key": "phone", "type": "phone", "label": "Phone", "inputMode": "tel" },
-          { "key": "timezone", "type": "text", "label": "Time zone", "placeholder": "City or UTC offset" },
+          { "key": "timezone", "type": "hidden", "source": "timezone" },
           {
             "key": "heardFrom",
             "type": "select",

@@ -5,6 +5,7 @@
   "category": "application",
   "definition": {
     "id": "partner-application",
+    "formatVersion": "1.4",
     "title": "Become a partner",
     "submit": { "label": "Apply" },
     "steps": [
@@ -45,6 +46,13 @@
               { "value": "community", "label": "Community or course" },
               { "value": "other", "label": "Other" }
             ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "channelsOther",
+            "type": "text",
+            "label": "Which other channel?",
+            "show": [{ "field": "channels", "contains": "other" }],
             "validation": { "required": true }
           },
           {

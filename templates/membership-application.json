@@ -5,6 +5,7 @@
   "category": "registration",
   "definition": {
     "id": "membership-application",
+    "formatVersion": "1.1",
     "title": "Become a member",
     "submit": { "label": "Apply for membership" },
     "steps": [
@@ -41,13 +42,47 @@
             "validation": { "required": true }
           },
           {
+            "key": "partner",
+            "type": "group",
+            "label": "Your partner",
+            "itemLabel": "Partner",
+            "addLabel": "Add your partner",
+            "defaultItems": 1,
+            "show": [{ "field": "plan", "eq": "couple" }],
+            "validation": { "required": true, "maxLength": 1 },
+            "fields": [
+              {
+                "key": "partnerName",
+                "type": "text",
+                "label": "Full name",
+                "validation": { "required": true }
+              }
+            ]
+          },
+          {
             "key": "members",
-            "type": "textarea",
-            "label": "Names and dates of birth of everyone else on the membership",
-            "rows": 3,
+            "type": "group",
+            "label": "Other members",
+            "itemLabel": "Member {index}",
+            "addLabel": "Add a member",
+            "defaultItems": 1,
+            "show": [{ "field": "plan", "eq": "family" }],
             "helperText": "Family plans cover two adults and their children under 18.",
-            "show": [{ "field": "plan", "in": ["couple", "family"] }],
-            "validation": { "required": true }
+            "validation": { "required": true },
+            "fields": [
+              {
+                "key": "memberName",
+                "type": "text",
+                "label": "Full name",
+                "validation": { "required": true }
+              },
+              {
+                "key": "memberBirthDate",
+                "type": "date",
+                "label": "Date of birth",
+                "validation": { "required": true }
+              }
+            ]
           },
           {
             "key": "billing",

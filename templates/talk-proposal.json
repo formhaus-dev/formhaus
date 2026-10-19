@@ -5,6 +5,7 @@
   "category": "application",
   "definition": {
     "id": "talk-proposal",
+    "formatVersion": "1.1",
     "title": "Submit a talk",
     "submit": { "label": "Submit proposal" },
     "steps": [
@@ -141,10 +142,28 @@
             "placeholder": "https://"
           },
           {
-            "key": "coSpeaker",
-            "type": "text",
-            "label": "Co-speaker name and email",
-            "helperText": "Leave empty if you’re presenting alone."
+            "key": "coSpeakers",
+            "type": "group",
+            "label": "Co-speakers",
+            "itemLabel": "Co-speaker {index}",
+            "addLabel": "Add a co-speaker",
+            "defaultItems": 0,
+            "validation": { "maxLength": 3 },
+            "fields": [
+              {
+                "key": "coSpeakerName",
+                "type": "text",
+                "label": "Full name",
+                "validation": { "required": true }
+              },
+              {
+                "key": "coSpeakerEmail",
+                "type": "email",
+                "label": "Email",
+                "inputMode": "email",
+                "validation": { "required": true }
+              }
+            ]
           }
         ]
       }

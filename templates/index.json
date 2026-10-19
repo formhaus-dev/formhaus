@@ -21,7 +21,7 @@
     "summary": "Steps to reproduce, expected and actual result, environment and severity.",
     "category": "feedback",
     "steps": 2,
-    "fields": 12
+    "fields": 15
   },
   {
     "slug": "feature-request",
@@ -53,7 +53,7 @@
     "summary": "Category, urgency and details first. Account and invoice fields only show when they’re relevant.",
     "category": "operations",
     "steps": 2,
-    "fields": 9
+    "fields": 11
   },
   {
     "slug": "demo-request",
@@ -66,15 +66,15 @@
   {
     "slug": "event-rsvp",
     "title": "Event RSVP",
-    "summary": "Yes or no first. Party size and dietary needs only appear for guests who are coming.",
+    "summary": "Yes or no first. Guests and dietary needs only appear for people who are coming.",
     "category": "registration",
     "steps": 2,
-    "fields": 7
+    "fields": 6
   },
   {
     "slug": "job-application",
     "title": "Job application",
-    "summary": "Role, contact details, resume, experience, work eligibility and start date for a single opening.",
+    "summary": "Role, contact details, resume, experience, US work eligibility and start date for one opening.",
     "category": "application",
     "steps": 3,
     "fields": 16
@@ -125,7 +125,7 @@
     "summary": "Overall rating, best session, highlights, what to change and whether people would come again.",
     "category": "feedback",
     "steps": 1,
-    "fields": 9
+    "fields": 11
   },
   {
     "slug": "workshop-registration",
@@ -170,7 +170,7 @@
   {
     "slug": "team-pulse-survey",
     "title": "Team pulse survey",
-    "summary": "A one-minute anonymous check-in: eNPS, workload, clarity, manager support and recognition.",
+    "summary": "A one-minute check-in: eNPS, workload, clarity, manager support and recognition.",
     "category": "survey",
     "steps": 1,
     "fields": 6
@@ -178,10 +178,10 @@
   {
     "slug": "return-request",
     "title": "Return or refund request",
-    "summary": "Order, item, reason, condition and refund or exchange, with photos only when an item arrived damaged.",
+    "summary": "Order, then each item with its reason, condition and refund or exchange, plus a photo of the problem.",
     "category": "operations",
     "steps": 3,
-    "fields": 13
+    "fields": 8
   },
   {
     "slug": "partner-application",
@@ -189,7 +189,7 @@
     "summary": "Affiliates describe their audience and channels, agencies their clients. Contact and payout email last.",
     "category": "application",
     "steps": 5,
-    "fields": 15
+    "fields": 16
   },
   {
     "slug": "talk-proposal",
@@ -209,19 +209,11 @@
   },
   {
     "slug": "website-project-inquiry",
-    "title": "Website project inquiry",
-    "summary": "For studios and freelancers. Asks about the project, scope and budget before contact details.",
+    "title": "Project inquiry",
+    "summary": "For studios and agencies. Project and budget first, a short path for small budgets, then scope and contact.",
     "category": "lead-gen",
-    "steps": 4,
-    "fields": 15
-  },
-  {
-    "slug": "agency-fit-quiz",
-    "title": "Agency fit quiz",
-    "summary": "Qualifies leads in a few taps and sends small budgets to a free guides signup instead of a sales call.",
-    "category": "quiz",
-    "steps": 6,
-    "fields": 13
+    "steps": 5,
+    "fields": 16
   },
   {
     "slug": "supplier-registration",
@@ -245,7 +237,7 @@
     "summary": "For gyms, fitness studios and sports clubs. Plan, billing, health screen, emergency contact and waiver.",
     "category": "registration",
     "steps": 3,
-    "fields": 19
+    "fields": 20
   },
   {
     "slug": "training-plan-quiz",
@@ -269,7 +261,7 @@
     "summary": "For tenants and facilities teams. Unit, issue, urgency, photos and permission to enter.",
     "category": "operations",
     "steps": 3,
-    "fields": 14
+    "fields": 15
   },
   {
     "slug": "rental-showing-request",
@@ -277,7 +269,7 @@
     "summary": "For landlords and property managers. Property, move-in date, household, income, pets and showing times.",
     "category": "lead-gen",
     "steps": 3,
-    "fields": 13
+    "fields": 14
   },
   {
     "slug": "legal-consultation-request",
@@ -293,7 +285,7 @@
     "summary": "For trades and home services. The job, the property and the timing first, then how to reach the customer.",
     "category": "lead-gen",
     "steps": 3,
-    "fields": 14
+    "fields": 15
   },
   {
     "slug": "photography-inquiry",
@@ -309,7 +301,7 @@
     "summary": "Event type, guest count, service style and dietary needs for a catering quote.",
     "category": "lead-gen",
     "steps": 3,
-    "fields": 15
+    "fields": 16
   },
   {
     "slug": "pet-adoption-application",
@@ -317,7 +309,7 @@
     "summary": "Home, household and experience questions for shelters and rescues.",
     "category": "application",
     "steps": 4,
-    "fields": 22
+    "fields": 23
   },
   {
     "slug": "patient-appointment-request",

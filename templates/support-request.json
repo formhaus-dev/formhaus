@@ -54,10 +54,12 @@
           },
           {
             "key": "attachment",
-            "type": "text",
-            "label": "Link to a screenshot or recording",
-            "placeholder": "https://"
-          }
+            "type": "file",
+            "label": "Screenshot, recording or document",
+            "accept": "image/*,video/*,application/pdf"
+          },
+          { "key": "recording", "type": "text", "label": "Link to a recording, if it’s too large to upload", "placeholder": "https://" },
+          { "key": "page", "type": "hidden", "source": "page" }
         ]
       },
       {

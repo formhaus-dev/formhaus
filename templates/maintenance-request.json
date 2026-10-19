@@ -66,10 +66,11 @@
             ],
             "validation": { "required": true }
           },
+          { "key": "photo", "type": "file", "label": "Photo or video of the problem", "accept": "image/*,video/*" },
           {
             "key": "photos",
             "type": "text",
-            "label": "Link to photos or a video",
+            "label": "Link to more photos or a video",
             "placeholder": "https://",
             "helperText": "A shared album or folder."
           }
