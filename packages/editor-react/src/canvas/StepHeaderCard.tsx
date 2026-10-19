@@ -1,7 +1,7 @@
 import { setStepProp, setStepTitle, stepFields } from '@formhaus/builder';
 import { Info, Settings2 } from 'lucide-react';
 import { useLayoutEffect, useState } from 'react';
-import { IconButton, InlineText } from '../ui';
+import { IconButton, InlineText, Text } from '../ui';
 import settings from '../inspector/Inspector.module.css';
 import { StepPanel } from '../inspector/StepPanel';
 import { LogicBadge } from '../logic/LogicBadge';
@@ -110,10 +110,10 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
         />
       )}
       {!readOnly && stepFields(form, uid).length === 0 && (
-        <p className={styles.empty}>
+        <Text as="p" size="sm" tone="muted" className={styles.empty}>
           <Info aria-hidden />
           No fields. This step shows its title, description and button.
-        </p>
+        </Text>
       )}
       <LogicBadge
         block={step}
