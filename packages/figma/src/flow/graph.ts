@@ -29,7 +29,13 @@ export function describeCondition(condition: ShowCondition, fields: Map<string, 
   if (condition.neq !== undefined) return `${name} is not ${valueText(field, condition.neq)}`;
   if (condition.in) return `${name} is ${list(condition.in)}`;
   if (condition.notIn) return `${name} is not ${list(condition.notIn)}`;
-  return condition.notEmpty ? `${name} is filled` : '';
+  if (condition.contains !== undefined) return `${name} includes ${valueText(field, condition.contains)}`;
+  if (condition.notContains !== undefined) return `${name} doesn't include ${valueText(field, condition.notContains)}`;
+  if (condition.notEmpty !== undefined) return condition.notEmpty ? `${name} is filled` : '';
+  if (condition.gt !== undefined) return `${name} is more than ${condition.gt}`;
+  if (condition.gte !== undefined) return `${name} is at least ${condition.gte}`;
+  if (condition.lt !== undefined) return `${name} is less than ${condition.lt}`;
+  return condition.lte === undefined ? '' : `${name} is at most ${condition.lte}`;
 }
 
 export function describeConditions(owner: { show?: ShowCondition[]; showAny?: ShowCondition[] }, fields: Map<string, FormField>): string {

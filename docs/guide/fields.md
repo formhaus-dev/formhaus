@@ -120,7 +120,7 @@ The renderer calls the provider when the field appears and whenever a field list
 
 ## Autocomplete
 
-Type-to-filter dropdown for long option lists. Default renderer uses `<input type="text">` with a `<datalist>` — native browser filtering, zero JS, SSR-safe. Same `options` shape as `select` (and `optionsFrom` works the same way). For richer pickers (MUI `Autocomplete`, Headless UI `Combobox`) plug in your own component via `components`.
+Type-to-filter dropdown for long option lists. Default renderer uses `<input type="text">` with a `<datalist>` — native browser filtering, SSR-safe. Same `options` shape as `select` (and `optionsFrom` works the same way). For richer pickers (MUI `Autocomplete`, Headless UI `Combobox`) plug in your own component via `components`.
 
 ```json
 {
@@ -135,11 +135,12 @@ Type-to-filter dropdown for long option lists. Default renderer uses `<input typ
 }
 ```
 
-::: warning Native `<datalist>` quirks
-The default renderer uses the browser's `<datalist>` element. Two things to know:
+The field stores the option `value`. The input shows the matching `label`, also when the value comes from `initialValues` or `setValue()` before `optionsFrom` resolves. A value that matches no option is shown as is.
 
-1. **Filtering matches against `value`, not `label`.** Typing "Virginia" against `{ value: "us-east-1", label: "US East (N. Virginia)" }` shows nothing. If users will search by the label, swap the field to a custom component (MUI Autocomplete, Headless UI Combobox).
-2. **The input does not enforce that the value is in the list.** Users can type anything. If you need "must be one of the options", add a custom validator or use a custom component.
+The suggestions list and filter by `label`. Typing or picking a label stores its `value`. Other text is stored as typed.
+
+::: warning Native `<datalist>` quirks
+The default renderer uses the browser's `<datalist>` element. The input does not enforce that the value is in the list: users can type anything. If you need "must be one of the options", add a custom validator or use a custom component (MUI Autocomplete, Headless UI Combobox).
 :::
 
 ## Multiselect
@@ -160,7 +161,7 @@ Pick multiple from a list. Renders as a checkbox group. The value is an array of
 }
 ```
 
-`minLength` / `maxLength` on multiselect controls how many options can be selected.
+`minLength` / `maxLength` on multiselect controls how many options can be selected. A value that repeats an option fails validation, so `minLength: 3` needs three different options.
 
 Options stack vertically. Set `"layout": "inline"` to place short options side by side, as with radio. `layout` was added in 0.10.0.
 

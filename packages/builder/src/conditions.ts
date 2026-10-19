@@ -3,7 +3,7 @@ import { hasOptions, isQuestion, isScale, type BuilderBlock, type BuilderForm, t
 import { blockIndex } from './ops/locate';
 import { resolver, scopeOf } from './references';
 
-export type Operator = 'eq' | 'neq' | 'gte' | 'lte' | 'in' | 'notIn' | 'notEmpty' | 'checked' | 'unchecked';
+export type Operator = 'eq' | 'neq' | 'gte' | 'lte' | 'in' | 'notIn' | 'contains' | 'notContains' | 'notEmpty' | 'checked' | 'unchecked';
 export type ConditionMode = 'always' | 'all' | 'any';
 export type ConditionValue = string | string[];
 
@@ -26,6 +26,8 @@ export const OPERATOR_LABELS: Record<Operator, string> = {
   lte: 'is at most',
   in: 'is any of',
   notIn: 'is none of',
+  contains: 'includes',
+  notContains: "doesn't include",
   notEmpty: 'is answered',
   checked: 'is checked',
   unchecked: 'is unchecked',
@@ -37,6 +39,7 @@ export const isNumeric = (type: FieldType) => type === 'number' || isScale(type)
 export function operatorsFor(type: FieldType): Operator[] {
   if (toggles(type)) return ['checked', 'unchecked'];
   if (isScale(type)) return ['eq', 'neq', 'gte', 'lte', 'in', 'notIn', 'notEmpty'];
+  if (type === 'multiselect') return ['contains', 'notContains', 'notEmpty'];
   if (type === 'number') return ['eq', 'neq', 'gte', 'lte', 'notEmpty'];
   if (hasOptions(type)) return ['eq', 'neq', 'in', 'notIn', 'notEmpty'];
   return ['eq', 'neq', 'notEmpty'];
@@ -82,6 +85,9 @@ export function fromCondition(condition: ShowCondition, type: FieldType | undefi
   if (condition.neq !== undefined && typeof condition.neq !== 'boolean') return { field, operator: 'neq', value: String(condition.neq) };
   for (const operator of ['gte', 'lte'] as const)
     if (typeof condition[operator] === 'number' && isNumeric(type)) return { field, operator, value: String(condition[operator]) };
+  for (const operator of ['contains', 'notContains'] as const)
+    if (condition[operator] !== undefined && typeof condition[operator] !== 'boolean')
+      return { field, operator, value: String(condition[operator]) };
   if (condition.in) return { field, operator: 'in', value: condition.in.map(String) };
   if (condition.notIn) return { field, operator: 'notIn', value: condition.notIn.map(String) };
   return undefined;

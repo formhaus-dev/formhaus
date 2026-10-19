@@ -24,11 +24,15 @@ const text = (value: unknown) => typeof value === 'string' && value.length > 0;
 
 function fieldErrors(fields: unknown, where: string): string[] {
   if (!Array.isArray(fields)) return [`${where} needs a "fields" array.`];
-  return fields.flatMap((field, index) =>
-    isRecord(field) && text(field.key) && text(field.type) && typeof field.label === 'string'
+  return fields.flatMap((field, index) => {
+    if (isRecord(field) && field.type === 'section')
+      return text(field.key) && typeof field.title === 'string'
+        ? fieldErrors(field.fields, `${where} section "${field.key}"`)
+        : [`${where} section ${index + 1} needs "key" and "title".`];
+    return isRecord(field) && text(field.key) && text(field.type) && typeof field.label === 'string'
       ? []
-      : [`${where} field ${index + 1} needs "key", "type" and "label".`],
-  );
+      : [`${where} field ${index + 1} needs "key", "type" and "label".`];
+  });
 }
 
 function shapeErrors(value: Record<string, unknown>): string[] {

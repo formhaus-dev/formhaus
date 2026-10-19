@@ -1,6 +1,6 @@
 import type { ShowCondition } from '../types';
 
-export const CONDITION_OPERATORS = ['eq', 'neq', 'in', 'notIn', 'notEmpty', 'gt', 'gte', 'lt', 'lte'] as const;
+export const CONDITION_OPERATORS = ['eq', 'neq', 'in', 'notIn', 'contains', 'notContains', 'notEmpty', 'gt', 'gte', 'lt', 'lte'] as const;
 
 export function isBlank(value: unknown): boolean {
   return value == null || value === '' || (Array.isArray(value) && !value.length);
@@ -18,6 +18,8 @@ const TESTS: { [K in keyof Operands]: (value: unknown, operand: Operands[K]) => 
   neq: (value, operand) => value !== operand,
   in: (value, operand) => operand.includes(value as string | number),
   notIn: (value, operand) => !operand.includes(value as string | number),
+  contains: (value, operand) => Array.isArray(value) && value.includes(operand),
+  notContains: (value, operand) => !(Array.isArray(value) && value.includes(operand)),
   notEmpty: (value, operand) => !operand || !isBlank(value),
   gt: (value, operand) => toNumber(value)! > operand,
   gte: (value, operand) => toNumber(value)! >= operand,

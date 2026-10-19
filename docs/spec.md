@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.3 specification"
-description: "Formhaus form definition format 1.3: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
+title: "Form definition 1.4 specification"
+description: "Formhaus form definition format 1.4: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
 ---
 
-# Formhaus form definition 1.3
+# Formhaus form definition 1.4
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,13 +19,13 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.3**. `@formhaus/core` 0.19 and later implement it. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.4**. `@formhaus/core` 0.20 and later implement it. Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.3"`. Without it, core reads the definition as 1.3. A minor version newer than 1.3 is also read as 1.3. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.4"`. Without it, core reads the definition as 1.4. A minor version newer than 1.4 is also read as 1.4. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
@@ -33,8 +33,10 @@ A definition with `props` MAY declare `"formatVersion": "1.2"`. Core 0.14 report
 
 A definition with a `scale` or `rating` field SHOULD declare `"formatVersion": "1.3"`. Core 0.18 and older read these types as custom types: they skip the type check, and their `validateSubmission()` accepts any value for them. `checkDefinition()` warns about a `scale` or `rating` field without format 1.3. Upgrade the server that runs `validateSubmission()` before the clients. A definition with option `image`, field `columns` or section `layout` MAY declare 1.3. Core 0.18 reports them as `unknown-property`, and its renderers draw plain options and a plain section.
 
+A definition with a `contains` or `notContains` condition SHOULD declare `"formatVersion": "1.4"`. Core 0.19 and older reject it with `unknown-operator`: the constructor and `validateSubmission()` throw. `checkDefinition()` warns about these operators without format 1.4. Upgrade the server that runs `validateSubmission()` before the clients.
+
 ```json
-{ "formatVersion": "1.3", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
+{ "formatVersion": "1.4", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
 ```
 
 ## Document structure
@@ -100,7 +102,7 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | `text`, `email`, `phone`, `password`, `textarea`, `autocomplete`, `hidden` | string |
 | `number` | number, or `null` when the input is cleared |
 | `select`, `radio` | string, the selected option `value` |
-| `multiselect` | string[] of selected option values |
+| `multiselect` | string[] of distinct selected option values |
 | `checkbox`, `switch` | boolean |
 | `file` | a `File`, or `null` |
 | `date` | string `YYYY-MM-DD` |
@@ -133,7 +135,7 @@ Built-in type names are single lowercase words without separators. A type name w
 
 `scale` and `rating` ask for one point on a numeric range. The built-in renderers draw `scale` as a row of numbered boxes and `rating` as a row of stars.
 
-- **Range.** For `scale`, the points run from `validation.min` to `validation.max`. `min` defaults to 1 and `max` to 5. Use `min` 0 or 1 and 3 to 11 points. For `rating`, the stars run from 1 to `validation.max`, which defaults to 5. Use 3 to 10 stars. Bounds that are not integers, or a range of fewer than 2 or more than 11 points, are an `invalid-scale` error: `rating` `max` must be 2 to 11.
+- **Range.** For `scale`, the points run from `validation.min` to `validation.max`. `min` defaults to 1 and `max` to 5. We recommend `min` 0 or 1 and 3 to 11 points; this is advice, not a check. For `rating`, the stars run from 1 to `validation.max`, which defaults to 5. We recommend 3 to 10 stars. Bounds that are not integers, or a range of fewer than 2 or more than 11 points, are an `invalid-scale` error: `rating` `max` must be 2 to 11.
 - **Value.** An integer number of the range, such as `7`. Built-in renderers write a number. Core does not convert a numeric string in the browser; `validateSubmission()` converts a decimal string, such as `"7"`, to a number before the checks, as it does for `number`.
 - **Empty.** Like any field: `undefined`, `null` or `''`. `0` is a value, so `0` on a 0-based scale passes `required` and `notEmpty`.
 - **Type check.** A value that is not an integer of the range fails with the `option` message. `7.5`, `11` on a 0 to 10 scale, `"7"` in the browser and `true` all fail.
@@ -175,7 +177,7 @@ An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors
 
 An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host. The image host sees the respondent's IP address. The built-in renderers send no `Referer` header with option images. An `image` that does not start with `https:` or `data:image/` is an `unsafe-image-url` warning.
 
-`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field in a matrix section. Each card has a button that opens the image at full size.
+`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field whose parent container has `layout: "matrix"`. Each card has a button that opens the image at full size.
 
 ## Sections
 
@@ -329,6 +331,8 @@ A condition tests the value of one field:
 | `neq` | string, number or boolean | value `!==` `neq` |
 | `in` | (string or number)[] | the list contains the value |
 | `notIn` | (string or number)[] | the list does not contain the value |
+| `contains` | string, number or boolean | the value is an array with an item `===` `contains`. Added in 1.4 |
+| `notContains` | string, number or boolean | `contains` with the same operand does not match. Added in 1.4 |
 | `notEmpty` | boolean | `true`: the value is not empty |
 | `gt` | number | the numeric value `>` `gt` |
 | `gte` | number | the numeric value `>=` `gte` |
@@ -337,7 +341,7 @@ A condition tests the value of one field:
 
 A condition MUST use exactly one operator. The constructor throws on a condition with no operator, with several operators, or with a key that is not an operator. At runtime, a condition without a known operator never matches. `notEmpty: false` always matches; `checkDefinition()` warns about it with `condition-always-true`.
 
-Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
+Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `contains` and `notContains` test the items of an array value, such as a `multiselect` answer. `contains` never matches a value that is not an array, including an unanswered field, so `notContains` matches it. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
 
 For `gt`, `gte`, `lt` and `lte`, the numeric value is the value itself when it is a finite number, or `Number(value)` when it is a non-empty string that converts to a finite number. Any other value, including an empty one, does not match.
 
@@ -404,7 +408,7 @@ Each rule except `required` and `validator` has a matching message property: `mi
 Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
-2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
+2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, an array without repeated values for `multiselect`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
 3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched.
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
@@ -627,7 +631,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `value` | `Invalid value` | |
 | `hidden` | `{label}: {message}` | `label`, `message` |
 
-`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`.
+`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`. A `multiselect` value that is not an array or repeats a value fails with `options`; an item that is not a static option fails with `option`.
 
 | Label key | Default | Params |
 |---|---|---|
@@ -773,11 +777,13 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
+| `contains-not-list` | warning | `contains` or `notContains` on a built-in field that does not hold a list, or on a group. Only `multiselect` holds a list; custom types are not checked |
+| `contains-not-in-options` | warning | A `contains` or `notContains` value that is not one of the static `options` of the `multiselect` |
 | `slow-pattern` | warning | A `pattern` that repeats a group with a quantifier or an alternation inside, such as `(a+)+`, which can take very long to match |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, or a `scale` or `rating` field without 1.3 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, or a `contains` or `notContains` condition without 1.4 |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |
@@ -785,7 +791,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
-| `columns-not-applicable` | warning | `columns` on a field whose options have no `image`, on a field other than `radio` or `multiselect`, or on a field in a matrix section |
+| `columns-not-applicable` | warning | `columns` on a field whose options have no `image`, on a field other than `radio` or `multiselect`, or on a field whose parent has `layout: "matrix"` |
 | `unsafe-image-url` | warning | An option `image` that does not start with `https:` or `data:image/` |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |

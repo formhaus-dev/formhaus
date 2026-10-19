@@ -5,7 +5,7 @@ description: "Show or hide form fields based on earlier answers with Formhaus sh
 
 # How do I show or hide fields based on other answers?
 
-In Formhaus you add `show` (all conditions must match) or `showAny` (at least one must match) to a field in the JSON definition. The `FormEngine` re-evaluates visibility on every change, clears the values of fields that become hidden, and skips hidden fields in validation and submission. The React and Vue renderers apply this without extra code.
+In Formhaus you add `show` (all conditions must match) or `showAny` (at least one must match) to a field in the JSON definition. The `FormEngine` re-evaluates visibility on every change, clears the values of fields that become hidden, gives them back when they show again, and skips hidden fields in validation and submission. The React and Vue renderers apply this without extra code.
 
 ## Definition
 
@@ -49,10 +49,10 @@ const emit = defineEmits<{ done: [values: Record<string, unknown>] }>();
 - `companyName` has `show: [{ "field": "customerType", "eq": "business" }]` and appears only for business buyers.
 - `invoiceEmail` uses `showAny`: it appears when `customerType` is `business` or when `needInvoice` is `true`.
 - `address` and `pickupPoint` depend on `delivery`. Only one of them is visible at a time, so only one is required.
-- Switching from Business to Individual hides `companyName` and removes its value from the engine. Switching back shows an empty field.
-- Cleanup cascades. Switching from Individual to Business hides `needInvoice` and clears it; `invoiceEmail` stays because its business condition still matches.
+- Switching from Business to Individual hides `companyName` and removes its value from the engine. Switching back shows the field with the name typed before. A name the user erased before switching stays empty.
+- Cleanup cascades. Switching from Individual to Business hides `needInvoice` and clears it; `invoiceEmail` stays because its business condition still matches. Switching back checks `needInvoice` again.
 - Hidden fields are not validated. A required `pickupPoint` does not block submit while Courier is selected.
-- `onSubmit` receives only visible values. Operators are `eq`, `neq`, `in`, `notIn` and `notEmpty`.
+- `onSubmit` receives only visible values. Operators are `eq`, `neq`, `in`, `notIn`, `contains`, `notContains`, `notEmpty`, `gt`, `gte`, `lt` and `lte`. Use `contains` to test one option of a `multiselect`.
 - Steps accept the same `show` and `showAny` keys. A hidden step is skipped and drops out of the progress count.
 
 ## Related

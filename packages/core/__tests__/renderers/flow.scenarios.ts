@@ -25,6 +25,45 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await waitFor(() => expect(marks()[0].textContent?.trim()).toBe('One'));
   });
 
+  it('shows a field while a multiselect includes an option', async () => {
+    const onSubmit = fn();
+    harness.mount({
+      definition: {
+        formatVersion: '1.4',
+        id: 'signup',
+        title: '',
+        submit: { label: 'Send' },
+        fields: [
+          {
+            key: 'interests',
+            type: 'multiselect',
+            label: 'Interests',
+            options: [
+              { value: 'design', label: 'Design' },
+              { value: 'other', label: 'Other' },
+            ],
+          },
+          {
+            key: 'otherInterest',
+            type: 'text',
+            label: 'Other interest',
+            show: [{ field: 'interests', contains: 'other' }],
+          },
+        ],
+      },
+      onSubmit,
+    });
+    const other = () => screen.queryByRole('textbox', { name: /Other interest/ });
+    await harness.click(screen.getByRole('checkbox', { name: 'Design' }));
+    expect(other()).toBeNull();
+    await harness.click(screen.getByRole('checkbox', { name: 'Other' }));
+    await harness.type(await screen.findByRole('textbox', { name: /Other interest/ }), 'Chess');
+    await harness.click(screen.getByRole('checkbox', { name: 'Other' }));
+    await waitFor(() => expect(other()).toBeNull());
+    await harness.click(button('Send'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ interests: ['design'] }, []));
+  });
+
   it('advances on an autoAdvance answer', async () => {
     const onAnalyticsEvent = fn();
     harness.mount({ definition: wizard, initialValues: { name: 'Ada' }, onSubmit: () => {}, onAnalyticsEvent });
