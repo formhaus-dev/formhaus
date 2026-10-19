@@ -145,6 +145,10 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
     ['clear'],
   );
   add(
+    fields.some((field) => ['date', 'time', 'datetime'].includes(field.type)),
+    ['done'],
+  );
+  add(
     fields.some((field) => field.type === 'file'),
     ['chooseFile'],
   );

@@ -102,7 +102,7 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | `text`, `email`, `phone`, `password`, `textarea`, `autocomplete`, `hidden` | string |
 | `number` | number, or `null` when the input is cleared |
 | `select`, `radio` | string, the selected option `value` |
-| `multiselect` | string[] of selected option values |
+| `multiselect` | string[] of distinct selected option values |
 | `checkbox`, `switch` | boolean |
 | `file` | a `File`, or `null` |
 | `date` | string `YYYY-MM-DD` |
@@ -125,7 +125,7 @@ A `hidden` field may have a `source`: `{ "query": name }` or one of `referrer`, 
 | `device` | `mobile`, `tablet` or `desktop` |
 | `country` | Supplied by the host, such as a server. Browsers supply none |
 
-A value is used when it is a string that is not empty after trimming. It is cut to the field's `maxLength`, or 2000 characters without it. Otherwise, or when reading it throws, the source yields nothing and `defaultValue` stays. A key present in the initial values with a value other than `""` or `null` is not resolved. The resolved value is also the value a `hidden` field gets back when its conditions match again. `reset()` and Skip drop resolved values, and renderers resolve again only when they mount or get a new definition.
+A value is used when it is a string that is not empty after trimming. It is cut to the field's `maxLength`, or 2000 characters without it. Otherwise, or when reading it throws, the source yields nothing and `defaultValue` stays. A key present in the initial values with a value other than `""` or `null` is not resolved. The resolved value is also the value a `hidden` field gets back when its conditions match again. `reset()` and Skip drop resolved values, and renderers resolve again only when they mount or get a new definition. With `keepValues`, a renderer resolves the sources of a new definition only for fields that hold no value.
 
 Any other string is a **custom type**. A renderer provides its component through its `components` option and passes it the whole field, so the component reads its settings from `field.props`. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
 
@@ -362,13 +362,13 @@ A field condition MUST reference a field of the same or an earlier step. A step 
 
 A field is visible when its own conditions pass, the conditions of its section pass and, in a multi-step form, its step is on the active path. An item field is visible when its group is visible and its conditions pass against the active projection plus the values of its own item.
 
-Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared.
+Core clears the value of a field hidden by conditions. The key is removed from `engine.values` and its error is removed. Clearing runs when the engine is constructed, after `reset()` and `replaceDefinition()`, after every `setValue()` and after Skip, so a value written to a field hidden by conditions is cleared at once. It cascades: if a cleared value hides another field or step, that value is cleared too. Every field of a step hidden by its own conditions is cleared.
 
 A field that becomes visible and holds no value gets back its **last value**: the value it held when it was hidden, or the last value written to it while hidden. `''`, `null`, `false` and `undefined` are last values too, so an unchecked preselected checkbox comes back unchecked and a cleared field comes back cleared.
 
 A field without a last value gets its **start value**: its value in the initial values of the constructor or the last `reset()`, or else its `defaultValue`. This covers a field that starts hidden, such as a field on a step shown by an earlier answer. A restored value can show or hide other fields, which are then updated in the same way.
 
-Last values live in the engine. `reset()` forgets them, and Skip forgets those of the step it resets. A new engine, such as one that reopens a draft through `initialValues`, starts without them.
+Last values live in the engine. `reset()` and `replaceDefinition()` forget them, and Skip forgets those of the step it resets. A new engine, such as one that reopens a draft through `initialValues`, starts without them.
 
 A field of type `hidden` always gets back its start value, never its last value. Its start value also includes its resolved source, after the initial values and before `defaultValue`.
 
@@ -387,6 +387,19 @@ When the engine is constructed or reset, values are built in this order:
 An initial value of `null` or `''` is a start value too, so the field does not fall back to `defaultValue`.
 
 Initial values for keys that do not belong to any field stay in `engine.values` but are not submitted.
+
+## Replacing the definition
+
+`engine.replaceDefinition(definition)` switches a running form to a new definition and keeps the answers that still fit. The renderers call it when the `definition` prop changes and `keepValues` is set. Without `keepValues`, a new definition object still starts a new form.
+
+1. The new definition is checked like in the constructor. On an error, `replaceDefinition()` throws `FormDefinitionError` and the engine stays unchanged.
+2. A value is kept when a field with the same key and the same `type` exists in both definitions. Values of fields whose `type` changed, of removed fields and of keys that belong to no field are dropped.
+3. Values are then built as on construction, with the kept values as initial values: new fields get their `defaultValue` or `defaultItems`, kept group items keep their ids and the values of item fields with the same key and `type`, other item fields get their `defaultValue`, and fields hidden by conditions are cleared. Kept values are start values. Last values from before the replacement are forgotten.
+4. A field error or server error stays when its field is visible on the new active path and its `type` did not change. An item field error also needs the item field to keep its key and `type`, and follows the rules of [Groups](#groups). Form-level errors stay.
+5. The current step stays when its id is on the new active path, at its new position. Otherwise core moves to the nearest earlier step of the old path that is on the new path, or to the first step. Steps inserted before the current step do not move it. Submit validates them and opens the first step with an error.
+6. A skipped step stays skipped while the new definition has a step with its id. Its fields are the fields of the new step.
+7. Pending navigation and pre-submit results are discarded, as with `cancelPendingActions()`. A response to a submission already sent is ignored. See [Concurrent submissions](#concurrent-submissions).
+8. After `start()`, the engine reports `step_viewed` when the current step changes, and `field_shown` or `field_hidden` for conditional fields of both definitions whose visibility changed. It does not report `form_reset`.
 
 ## Validation
 
@@ -408,7 +421,7 @@ Each rule except `required` and `validator` has a matching message property: `mi
 Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
-2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
+2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, an array without repeated values for `multiselect`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
 3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched.
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
@@ -631,7 +644,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `value` | `Invalid value` | |
 | `hidden` | `{label}: {message}` | `label`, `message` |
 
-`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`.
+`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`. A `multiselect` value that is not an array or repeats a value fails with `options`; an item that is not a static option fails with `option`.
 
 | Label key | Default | Params |
 |---|---|---|
@@ -651,6 +664,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `enlargeImage` | `Enlarge image: {label}` | `label` (the option label) |
 | `close` | `Close` | |
 | `clear` | `Clear` | |
+| `done` | `Done` | |
 | `chooseFile` | `Choose file` | |
 | `required` | `required` | |
 | `skip` | `Skip` | |
@@ -665,7 +679,7 @@ A message for a failed rule comes from the first of:
 3. `definition.messages`.
 4. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `clear` names the button that clears a field and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `chooseFile` or `required`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `required`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 

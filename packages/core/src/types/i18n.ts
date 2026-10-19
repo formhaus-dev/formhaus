@@ -38,6 +38,7 @@ export type LabelKey =
   | 'enlargeImage'
   | 'close'
   | 'clear'
+  | 'done'
   | 'chooseFile'
   | 'required'
   | 'skip'

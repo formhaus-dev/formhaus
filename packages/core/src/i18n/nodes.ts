@@ -37,6 +37,7 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = Object.freeze(
   enlargeImage: 'Enlarge image: {label}',
   close: 'Close',
   clear: 'Clear',
+  done: 'Done',
   chooseFile: 'Choose file',
   required: 'required',
   skip: 'Skip',

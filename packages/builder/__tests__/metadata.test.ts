@@ -1,6 +1,16 @@
 import type { FormDefinition } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
-import { duplicateField, fromDefinition, isQuestion, moveOption, setFormTitle, setRequired, setOptionLabel, toDefinition } from '../src';
+import {
+  addStep,
+  duplicateField,
+  fromDefinition,
+  isQuestion,
+  moveOption,
+  setFormTitle,
+  setRequired,
+  setOptionLabel,
+  toDefinition,
+} from '../src';
 
 const translated = {
   id: 'support',
@@ -124,5 +134,18 @@ describe('translated identifiers', () => {
     const size = form.blocks.find(isQuestion)!;
     setOptionLabel(form, size.uid, size.options[1].uid, 'Huge');
     expect(toDefinition(form).steps![0].fields[0].options!.map((option) => option.value)).toEqual(['small', 'large']);
+  });
+});
+
+describe('untitled steps', () => {
+  it('keeps an imported empty step title and names a new step', () => {
+    const form = fromDefinition({
+      id: 'f',
+      title: 'F',
+      submit: {},
+      steps: [{ id: 'details', title: '', fields: [{ key: 'name', type: 'text', label: 'Name' }] }],
+    } as FormDefinition);
+    addStep(form);
+    expect(toDefinition(form).steps!.map((step) => step.title)).toEqual(['', 'Step 2']);
   });
 });

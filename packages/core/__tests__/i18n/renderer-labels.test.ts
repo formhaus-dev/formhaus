@@ -11,7 +11,7 @@ describe('renderer labels', () => {
         .map(({ address, text, params }) => [address.slice(7), [text, params]]),
     );
 
-  it('lists clear, chooseFile, required, skip, submit, stepTitle and stepErrors where a renderer uses them', () => {
+  it('lists clear, done, chooseFile, required, skip, submit, stepTitle and stepErrors where a renderer uses them', () => {
     const definition = {
       id: 'f',
       title: 'F',
@@ -31,6 +31,7 @@ describe('renderer labels', () => {
     } as unknown as FormDefinition;
     expect(labelSlots(definition)).toMatchObject({
       clear: ['Clear', []],
+      done: ['Done', []],
       chooseFile: ['Choose file', []],
       required: ['required', []],
       skip: ['Skip', []],
@@ -67,6 +68,11 @@ describe('renderer labels', () => {
     expect(labelSlots(definition)).toHaveProperty('required');
     expect(labelSlots(definition)).not.toHaveProperty('stepTitle');
     expect(labelSlots(definition)).not.toHaveProperty('stepErrors');
+    expect(labelSlots(definition)).not.toHaveProperty('done');
+    expect(labelSlots({ ...definition, fields: [{ key: 'at', type: 'datetime', label: 'At' }] })).toMatchObject({
+      clear: ['Clear', []],
+      done: ['Done', []],
+    });
   });
 
   it('formats the step title and the error mark with their params', () => {

@@ -3,22 +3,26 @@ import { warnDefinitionReset } from '@formhaus/core/internal';
 import { useEffect, useRef } from 'react';
 import { useFormSnapshot } from './useEngineSnapshot';
 
+export interface UseFormEngineOptions extends FormEngineOptions {
+  keepValues?: boolean;
+}
+
 export function useFormEngineStore(
   definition: FormDefinition,
   initialValues?: Record<string, unknown>,
-  options?: FormEngineOptions,
+  options?: UseFormEngineOptions,
 ): FormEngine {
   const optionsRef = useRef(options);
   optionsRef.current = options;
   const engineRef = useRef<FormEngine | null>(null);
-  const definitionRef = useRef(definition);
   const warnedRef = useRef(false);
+  const previous = engineRef.current?.definition;
 
-  if (engineRef.current === null || definitionRef.current !== definition) {
+  if (!previous || (previous !== definition && !options?.keepValues)) {
     let warn: (() => boolean) | undefined;
     try {
-      if (engineRef.current !== null && !warnedRef.current && process.env.NODE_ENV !== 'production')
-        warn = () => warnDefinitionReset(definitionRef.current, definition, 'a constant or useMemo', options?.onWarning);
+      if (previous && !warnedRef.current && process.env.NODE_ENV !== 'production')
+        warn = () => warnDefinitionReset(previous, definition, 'a constant or useMemo', options?.onWarning);
     } catch {}
     if (warn) warnedRef.current = warn();
     engineRef.current = new FormEngine(definition, initialValues, {
@@ -44,18 +48,20 @@ export function useFormEngineStore(
       },
       onWarning: options?.onWarning,
     });
-    definitionRef.current = definition;
   }
 
-  const engine = engineRef.current;
+  const engine = engineRef.current!;
   useEffect(() => () => engine.cancelPendingActions(), [engine]);
+  useEffect(() => {
+    if (engine.definition !== definition) engine.replaceDefinition(definition);
+  }, [engine, definition]);
   return engine;
 }
 
 export function useFormEngine(
   definition: FormDefinition,
   initialValues?: Record<string, unknown>,
-  options?: FormEngineOptions,
+  options?: UseFormEngineOptions,
 ): FormEngine {
   const engine = useFormEngineStore(definition, initialValues, options);
   useFormSnapshot(engine);

@@ -51,6 +51,7 @@ describe('conformance corpus', () => {
       'check-slow-pattern',
       'contains-disabled',
       'disabled-actions',
+      'duplicate-options',
       'flat-api-steps',
       'format-version',
       'i18n-empty-overlay',

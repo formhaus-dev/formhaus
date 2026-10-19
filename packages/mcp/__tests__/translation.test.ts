@@ -48,6 +48,21 @@ describe('translation_template', () => {
     expect(result.slots.find(({ address }) => address === 'steps.name.title')).toMatchObject({ key: 'signup.steps.name.title' });
   });
 
+  it('asks for the done label on a date or time field', () => {
+    const definition = {
+      id: 'visit',
+      title: 'Visit',
+      submit: { label: 'Book' },
+      fields: [{ key: 'at', type: 'time', label: 'Time' }],
+    };
+    const result = translationTemplateTool({ definition, lang: 'ru' });
+    if (!result.ok) throw new Error('expected a template');
+    expect(result.overlay.labels).toMatchObject({ clear: 'Clear', done: 'Done' });
+    const plain = translationTemplateTool({ definition: keyed, lang: 'ru' });
+    if (!plain.ok) throw new Error('expected a template');
+    expect(plain.overlay.labels).not.toHaveProperty('done');
+  });
+
   it('lists explicit keys only with prefix false', () => {
     const result = translationTemplateTool({ definition: keyed, lang: 'de', prefix: false });
     if (!result.ok) throw new Error('expected a template');
@@ -90,6 +105,8 @@ describe('capabilities i18n', () => {
     expect(i18n.labels.defaults.stepOf).toBe('Step {current} of {total}');
     expect(i18n.labels.defaults.stepErrors).toBe('Errors: {count}');
     expect(i18n.labels.rule).toContain('stepTitle takes {index}');
+    expect(i18n.labels.defaults.done).toBe('Done');
+    expect(i18n.labels.rule).toContain('the confirm button of a date or time picker');
     expect(i18n.keys.slots.validation).toContain('matchField');
   });
 });
