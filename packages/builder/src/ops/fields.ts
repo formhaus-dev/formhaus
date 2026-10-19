@@ -93,6 +93,7 @@ export function setRequired(form: BuilderForm, uid: string, required: boolean): 
 function joinMatrix(form: BuilderForm, question: BuilderQuestion): void {
   const section = findField(form, question.parent ?? '');
   if (!isMatrix(section)) return;
+  delete question.extra.columns;
   const source = childrenOf(form, section.uid).find((row) => row !== question && hasOptions(row.type));
   if (source) syncMatrix(form, section.uid, source.uid);
 }

@@ -24,6 +24,7 @@ export function syncMatrix(form: BuilderForm, sectionUid: string, sourceUid?: st
   const section = findField(form, sectionUid);
   if (!isMatrix(section)) return;
   const rows = childrenOf(form, section.uid);
+  for (const row of rows) delete row.extra.columns;
   const source = rows.find((row) => row.uid === sourceUid && isRow(row)) ?? rows.find(isRow);
   if (!source) return;
   const restore = bindReferences(form);
