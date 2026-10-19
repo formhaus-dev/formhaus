@@ -20,7 +20,7 @@ export { TextareaField } from './fields/TextareaField';
 export { TextField } from './fields/TextField';
 export { TimeField } from './fields/TimeField';
 export { FormStepProgress } from './FormStepProgress';
-export { useFormEngine } from './hooks/useFormEngine';
+export { useFormEngine, type UseFormEngineOptions } from './hooks/useFormEngine';
 export type {
   FieldComponentMap,
   FieldComponentProps,
