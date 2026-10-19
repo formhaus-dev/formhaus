@@ -115,8 +115,9 @@ describe('question types in the editor', () => {
     await page.viewport(1440, 1000);
     const { store } = renderEditor(fromDefinition(definition([name])));
     await pick(/^Picture choice/);
-    const url = await screen.findByRole('textbox', { name: 'Image URL for Option 1' });
+    const url = await screen.findByRole('textbox', { name: 'Image link for Option 1' });
     await userEvent.fill(url, 'https://example.com/a.png');
+    await userEvent.keyboard('{Enter}');
     await waitFor(() => {
       expect(fieldAt(store, 1).options?.[0]).toMatchObject({ image: 'https://example.com/a.png' });
     });

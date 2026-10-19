@@ -1,20 +1,13 @@
-import {
-  canBranch,
-  matrixOf,
-  setOptionImage,
-  setOptionLabel,
-  splitLines,
-  type BuilderOption,
-  type BuilderQuestion,
-} from '@formhaus/builder';
+import { canBranch, matrixOf, setOptionLabel, splitLines, type BuilderOption, type BuilderQuestion } from '@formhaus/builder';
 import { GripVertical, X } from 'lucide-react';
 import { useLayoutEffect, useRef, type ClipboardEvent, type KeyboardEvent } from 'react';
-import { AddRow, IconButton, InlineText, Input, Picture, Sortable } from '../ui';
+import { AddRow, IconButton, InlineText, Sortable } from '../ui';
 import { cx } from '../ui/lib/cx';
 import { branchTargets, setJump } from '../logic/targets';
 import { useForm, useReadOnly, useShowsPictures } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import { GoTo } from './GoTo';
+import { OptionImage } from './OptionImage';
 import styles from './OptionsEditor.module.css';
 
 interface Props {
@@ -23,29 +16,6 @@ interface Props {
 }
 
 const optionLabel = (option: BuilderOption, index: number) => option.label.trim() || `Option ${String(index + 1)}`;
-
-function ImageInput({ field, option, index, actions, readOnly }: Props & { option: BuilderOption; index: number; readOnly: boolean }) {
-  const image = option.extra?.image ?? '';
-  return (
-    <div className={styles.image}>
-      <Picture className={styles.thumb} src={image} />
-      <Input
-        type="url"
-        inputMode="url"
-        className={styles.url}
-        aria-label={`Image URL for ${optionLabel(option, index)}`}
-        placeholder="Image URL, https://…"
-        value={image}
-        readOnly={readOnly}
-        onChange={(event) => {
-          actions.edit((form) => {
-            setOptionImage(form, field.uid, option.uid, event.target.value);
-          }, `${option.uid}:image`);
-        }}
-      />
-    </div>
-  );
-}
 
 export function OptionsEditor({ field, actions }: Props) {
   const readOnly = useReadOnly();
@@ -165,7 +135,7 @@ export function OptionsEditor({ field, actions }: Props) {
           return (
             <div className={styles.option}>
               {line}
-              <ImageInput field={field} option={option} index={index} actions={actions} readOnly={readOnly} />
+              <OptionImage field={field} option={option} name={optionLabel(option, index)} actions={actions} readOnly={readOnly} />
             </div>
           );
         }}

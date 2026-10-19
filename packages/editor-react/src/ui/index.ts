@@ -15,6 +15,7 @@ export {
   DropdownMenuTrigger,
 } from './components/DropdownMenu/DropdownMenu';
 export { Field } from './components/Field/Field';
+export { ImageDrop, type ImageDropProps } from './components/ImageDrop/ImageDrop';
 export { IconButton } from './components/IconButton/IconButton';
 export { InlineText } from './components/InlineText/InlineText';
 export { Input } from './components/Input/Input';

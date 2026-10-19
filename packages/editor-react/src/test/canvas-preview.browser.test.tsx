@@ -52,7 +52,7 @@ describe('canvas preview', () => {
     expect(card.querySelectorAll('img')).toHaveLength(0);
     card.click();
     await waitFor(() => {
-      expect(within(card).getAllByRole('textbox', { name: /Image URL/ })).toHaveLength(2);
+      expect(within(card).getAllByRole('button', { name: /^Edit image link for/ })).toHaveLength(2);
       expect(card.querySelectorAll('[data-picture="empty"]')).toHaveLength(2);
     });
   });

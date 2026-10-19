@@ -166,28 +166,6 @@
   padding-block-end: var(--fh-ed-space-2);
 }
 
-.image {
-  display: flex;
-  align-items: center;
-  gap: var(--fh-ed-space-2);
-  padding-inline-start: calc(var(--fh-ed-size-choice) + var(--fh-ed-space-2));
-}
-
-.thumb {
-  flex: none;
-  width: var(--fh-ed-size-control-md);
-  height: var(--fh-ed-size-control-md);
-  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
-  border-radius: var(--fh-ed-radius-sm);
-  background: var(--fh-ed-sub);
-  object-fit: cover;
-}
-
-.url {
-  flex: 1;
-  min-width: 0;
-}
-
 .actions {
   display: flex;
   flex-wrap: wrap;

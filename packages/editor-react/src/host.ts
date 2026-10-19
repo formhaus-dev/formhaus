@@ -88,6 +88,10 @@ export interface BackupSlot {
   base: () => BackupBase;
 }
 
+export interface UploadedImage {
+  url: string;
+}
+
 export interface EditorFeatures {
   country?: boolean;
 }
@@ -110,5 +114,7 @@ export interface EditorHost {
   ago: (iso: string) => string;
   savedHint?: string;
   features?: EditorFeatures;
+  uploadImage?: (file: File) => Promise<UploadedImage>;
+  isUploadedImage?: (url: string) => boolean;
   Preview: ComponentType<{ definition: FormDefinition }>;
 }

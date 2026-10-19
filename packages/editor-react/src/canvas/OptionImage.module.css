@@ -1,0 +1,18 @@
+.root {
+  margin-inline-start: calc(var(--fh-ed-size-choice) + var(--fh-ed-space-2));
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.link {
+  flex: 1;
+  min-width: 0;
+}
+
+.error {
+  margin: 0;
+}
