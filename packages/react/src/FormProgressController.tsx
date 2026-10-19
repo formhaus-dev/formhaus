@@ -14,10 +14,7 @@ interface FormProgressControllerProps {
 
 export function FormProgressController({ engine, ProgressComponent, headingLevel, marks, labels }: FormProgressControllerProps) {
   const version = useFormSnapshot(engine);
-  const errors = useMemo(
-    () => (marks && ProgressComponent && engine.isMultiStep ? engine.stepErrors : {}),
-    [engine, version, marks, ProgressComponent],
-  );
+  const errors = useMemo(() => (ProgressComponent && engine.isMultiStep ? engine.stepErrors : {}), [engine, version, ProgressComponent]);
   if (!engine.isMultiStep || !ProgressComponent) return null;
   const { current, total } = engine.progress;
 
@@ -29,6 +26,7 @@ export function FormProgressController({ engine, ProgressComponent, headingLevel
       stepTitle={engine.currentStep?.title}
       stepDescription={engine.currentStep?.description}
       headingLevel={headingLevel}
+      stepErrorCount={errors[engine.currentStep?.id ?? '']?.length ?? 0}
       steps={marks ? engine.visibleSteps.map(({ id, title }) => ({ id, title, errorCount: errors[id]?.length ?? 0 })) : undefined}
     />
   );
