@@ -5,6 +5,7 @@ import { cx } from '../../lib/cx';
 import { IconButton } from '../IconButton/IconButton';
 import styles from './Dialog.module.css';
 import { useReturnFocus } from './useReturnFocus';
+import { layer } from '../../lib/layer';
 
 export interface DialogProps {
   title: ReactNode;
@@ -53,8 +54,9 @@ export function Dialog({
     <RadixDialog.Root {...state} {...(onOpenChange ? { onOpenChange } : {})}>
       {trigger && <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>}
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className={styles.overlay} />
+        <RadixDialog.Overlay {...layer} className={styles.overlay} />
         <RadixDialog.Content
+          {...layer}
           className={cx(styles.content, styles[placement])}
           onOpenAutoFocus={(event) => {
             focus.remember();
