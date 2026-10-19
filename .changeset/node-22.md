@@ -6,4 +6,4 @@
 "formhaus": minor
 ---
 
-- **Breaking:** Minimum Node is 22.12.
+- **Breaking:** Minimum Node is `22.12`.
