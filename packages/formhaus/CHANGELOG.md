@@ -1,5 +1,11 @@
 # formhaus
 
+## 0.21.0
+
+### Patch Changes
+
+- The `formhaus-create-form` skill describes answer recall, exclusive options and `autocomplete`, and sets format 1.5 for them.
+
 ## 0.20.2
 
 No changes in this release.
