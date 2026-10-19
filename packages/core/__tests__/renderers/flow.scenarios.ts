@@ -5,6 +5,8 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
   const button = (name: string) => screen.getByRole('button', { name }) as HTMLButtonElement;
   const form = () => document.querySelector('form')!;
   const marks = () => [...document.querySelectorAll('.fh-step-progress__step')];
+  const markText = (item: Element) =>
+    [...item.querySelectorAll('.fh-step-progress__name, .fh-step-progress__errors-label')].map((part) => part.textContent).join(' · ');
 
   it('marks steps with errors and the current step', async () => {
     harness.mount({
@@ -18,11 +20,11 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Three' });
     await harness.click(button('Send'));
     await screen.findByText('Taken');
-    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One · Errors: 1', 'Two · Errors: 1', 'Three']);
+    expect(marks().map(markText)).toEqual(['One · Errors: 1', 'Two · Errors: 1', 'Three']);
     expect(marks().map((item) => item.getAttribute('aria-current'))).toEqual(['step', null, null]);
     expect(marks()[0].classList.contains('fh-step-progress__step--invalid')).toBe(true);
     await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Grace');
-    await waitFor(() => expect(marks()[0].textContent?.trim()).toBe('One'));
+    await waitFor(() => expect(markText(marks()[0])).toBe('One'));
   });
 
   it('shows a field while a multiselect includes an option', async () => {

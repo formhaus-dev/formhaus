@@ -8,6 +8,9 @@ import FormStepProgress from '../src/FormStepProgress.vue';
 import { type LocalizeSource, useLocalizedForm } from '../src/i18n';
 import { definition, overlay, resources } from './i18n.fixtures';
 
+const stepText = (item: Element) =>
+  [...item.querySelectorAll('.fh-step-progress__name, .fh-step-progress__errors-label')].map((part) => part.textContent).join(' · ');
+
 const i18n = createI18n({
   legacy: false,
   locale: 'ru',
@@ -100,10 +103,7 @@ describe('Vue localized forms', () => {
     });
     render(FormActions, { props: { isFirstStep: false, isLastStep: true, isMultiStep: true, showBack: true } });
     expect(screen.getByText('Step 2 of 2')).toBeTruthy();
-    expect([...document.querySelectorAll('.fh-step-progress__step')].map((item) => item.textContent?.trim())).toEqual([
-      'Step 1 · Errors: 3',
-      'B',
-    ]);
+    expect([...document.querySelectorAll('.fh-step-progress__step')].map(stepText)).toEqual(['Step 1 · Errors: 3', 'B']);
     expect(screen.getByRole('button', { name: 'Submit' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Back' })).toBeTruthy();
   });

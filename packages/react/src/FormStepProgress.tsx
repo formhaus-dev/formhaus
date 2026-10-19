@@ -25,19 +25,21 @@ export function FormStepProgress({
       </div>
       {steps && (
         <ol className="fh-step-progress__steps">
-          {steps.map((step, index) => {
-            const label = step.title || text('stepTitle', { index: index + 1 });
-            return (
-              <li
-                key={step.id}
-                className={`fh-step-progress__step${step.errorCount ? ' fh-step-progress__step--invalid' : ''}`}
-                aria-current={index + 1 === current ? 'step' : undefined}
-              >
-                {index + 1 === current ? <strong>{label}</strong> : label}
-                {step.errorCount > 0 && ` · ${text('stepErrors', { count: step.errorCount })}`}
-              </li>
-            );
-          })}
+          {steps.map((step, index) => (
+            <li
+              key={step.id}
+              className={`fh-step-progress__step${step.errorCount ? ' fh-step-progress__step--invalid' : ''}`}
+              aria-current={index + 1 === current ? 'step' : undefined}
+            >
+              <span className="fh-step-progress__name">{step.title || text('stepTitle', { index: index + 1 })}</span>
+              {step.errorCount > 0 && (
+                <span className="fh-step-progress__errors">
+                  <span aria-hidden="true">{step.errorCount}</span>
+                  <span className="fh-step-progress__errors-label">{text('stepErrors', { count: step.errorCount })}</span>
+                </span>
+              )}
+            </li>
+          ))}
         </ol>
       )}
       {stepTitle && <Heading className="fh-step-progress__title">{stepTitle}</Heading>}

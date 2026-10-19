@@ -5,6 +5,9 @@ import { describe, expect, it } from 'vitest';
 import account from '../../../examples/react-flat-api/src/account.json';
 import { FormRenderer } from '../src/FormRenderer';
 
+const stepText = (item: Element) =>
+  [...item.querySelectorAll('.fh-step-progress__name, .fh-step-progress__errors-label')].map((part) => part.textContent).join(' · ');
+
 const definition = account as FormDefinition;
 const valid = {
   firstName: 'Ada',
@@ -77,10 +80,10 @@ describe('error summary and step marks', () => {
     await submitFromLastStep();
     await screen.findByText('Taken');
     const items = [...document.querySelectorAll('.fh-step-progress__step')];
-    expect(items.map((item) => item.textContent)).toEqual(['About you · Errors: 1', 'Account · Errors: 1', 'Address · Errors: 1']);
+    expect(items.map(stepText)).toEqual(['About you · Errors: 1', 'Account · Errors: 1', 'Address · Errors: 1']);
     expect(items[0].getAttribute('aria-current')).toBe('step');
     fireEvent.change(screen.getByRole('textbox', { name: /Email/ }), { target: { value: 'ada@lovelace.dev' } });
-    expect(items[0].textContent).toBe('About you');
+    expect(stepText(items[0])).toBe('About you');
     expect(items[0].classList.contains('fh-step-progress__step--invalid')).toBe(false);
   });
 
@@ -153,7 +156,7 @@ it('does not mark a step called constructor', async () => {
   };
   render(<FormRenderer definition={reserved} onSubmit={() => {}} stepErrorMarks />);
   const items = [...document.querySelectorAll('.fh-step-progress__step')];
-  expect(items.map((item) => item.textContent)).toEqual(['One', 'Two']);
+  expect(items.map(stepText)).toEqual(['One', 'Two']);
 });
 
 it('focuses the field when a summary link is clicked on a single-step form', async () => {

@@ -20,7 +20,11 @@ const text = useLabel();
     <ol v-if="props.steps" class="fh-step-progress__steps">
       <li v-for="(step, index) in props.steps" :key="step.id" :class="['fh-step-progress__step', { 'fh-step-progress__step--invalid': step.errorCount }]"
         :aria-current="index + 1 === props.current ? 'step' : undefined">
-        <strong v-if="index + 1 === props.current">{{ step.title || text('stepTitle', { index: index + 1 }) }}</strong><template v-else>{{ step.title || text('stepTitle', { index: index + 1 }) }}</template>{{ step.errorCount > 0 ? ` · ${text('stepErrors', { count: step.errorCount })}` : '' }}
+        <span class="fh-step-progress__name">{{ step.title || text('stepTitle', { index: index + 1 }) }}</span>
+        <span v-if="step.errorCount > 0" class="fh-step-progress__errors">
+          <span aria-hidden="true">{{ step.errorCount }}</span>
+          <span class="fh-step-progress__errors-label">{{ text('stepErrors', { count: step.errorCount }) }}</span>
+        </span>
       </li>
     </ol>
     <component :is="`h${props.headingLevel}`" v-if="props.stepTitle" class="fh-step-progress__title">{{ props.stepTitle }}</component>
