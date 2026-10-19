@@ -32,7 +32,7 @@ function onInput(event: Event) {
       :list="`${inputId}-list`"
       :value="shown"
       :placeholder="props.field.placeholder"
-      autocomplete="off"
+      :autocomplete="props.field.autocomplete ?? 'off'"
       @input="onInput"
     />
     <datalist :id="`${inputId}-list`">

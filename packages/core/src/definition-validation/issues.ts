@@ -47,6 +47,8 @@ export type DefinitionIssueCode =
   | 'unknown-source'
   | 'source-not-applicable'
   | 'columns-not-applicable'
+  | 'unknown-autocomplete-token'
+  | 'autocomplete-not-applicable'
   | 'unsafe-image-url'
   | 'exclusive-not-applicable'
   | 'exclusive-option-position'

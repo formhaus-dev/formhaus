@@ -569,6 +569,10 @@
             "search"
           ]
         },
+        "autocomplete": {
+          "type": "string",
+          "description": "HTML autofill token, such as \"given-name\", \"email\" or \"street-address\", or \"off\". Built-in text, email, phone, password, textarea, number, date, select, autocomplete and radio fields set it as the autocomplete attribute."
+        },
         "props": {
           "type": "object",
           "additionalProperties": {},
