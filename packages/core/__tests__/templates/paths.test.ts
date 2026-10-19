@@ -69,3 +69,39 @@ describe('custom-cake-order', () => {
     expect(errorsOf('custom-cake-order', { ...base, hasAllergies: 'yes', allergies: ['milk', 'other'], allergyOther: 'Kiwi' })).toEqual({});
   });
 });
+
+describe('rental-application', () => {
+  const base = {
+    property: '12 Oak St',
+    moveIn: '2030-05-01',
+    firstName: 'Sam',
+    lastName: 'Lee',
+    email: 'sam@example.com',
+    phone: '5551234567',
+    street: '1 Main St',
+    city: 'Springfield',
+    state: 'IL',
+    zip: '62701',
+    housing: 'own',
+    howLong: '2y-plus',
+    employment: 'retired',
+    monthlyIncome: 3000,
+    occupants: '1',
+    pets: 'no',
+    accurate: true,
+  };
+  const adults = (count: number) =>
+    Array.from({ length: count }, (_, index) => ({ adultName: `Adult ${index}`, adultEmail: `adult${index}@example.com` }));
+
+  it('accepts the largest household', () => {
+    expect(errorsOf('rental-application', { ...base, occupants: '12', coApplicants: adults(11) })).toEqual({});
+  });
+
+  it('rejects more other adults than the household can hold', () => {
+    expect(Object.keys(errorsOf('rental-application', { ...base, occupants: '12', coApplicants: adults(12) }))).toEqual(['coApplicants']);
+  });
+
+  it.each(['1.5', '0', '13'])('rejects %s occupants', (occupants) => {
+    expect(Object.keys(errorsOf('rental-application', { ...base, occupants }))).toEqual(['occupants']);
+  });
+});
