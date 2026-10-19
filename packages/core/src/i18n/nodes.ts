@@ -45,4 +45,5 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = Object.freeze(
   stepTitle: 'Step {index}',
   stepErrors: 'Errors: {count}',
   or: 'or',
+  select: 'Select',
 });

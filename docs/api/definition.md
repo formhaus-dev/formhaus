@@ -232,7 +232,8 @@ type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary'
   | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' // Group labels added in 0.14.0
   | 'enlargeImage' | 'close' // Picture preview labels added in 0.19.0
   | 'clear' | 'done' | 'chooseFile' | 'required' | 'skip' | 'submit' | 'stepTitle' | 'stepErrors' // Added in 0.20.0
-  | 'or'; // Exclusive option divider added in 0.21.0
+  | 'or'  // Exclusive option divider added in 0.21.0
+  | 'select'; // Empty select prompt added in 0.21.0
 
 type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"
 type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} из {total}"

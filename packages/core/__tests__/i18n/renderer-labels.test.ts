@@ -11,7 +11,7 @@ describe('renderer labels', () => {
         .map(({ address, text, params }) => [address.slice(7), [text, params]]),
     );
 
-  it('lists clear, done, chooseFile, required, skip, submit, stepTitle and stepErrors where a renderer uses them', () => {
+  it('lists clear, done, chooseFile, select, required, skip, submit, stepTitle and stepErrors where a renderer uses them', () => {
     const definition = {
       id: 'f',
       title: 'F',
@@ -24,6 +24,7 @@ describe('renderer labels', () => {
           fields: [
             { key: 'day', type: 'date', label: 'Day', validation: { required: true } },
             { key: 'scan', type: 'file', label: 'Scan' },
+            { key: 'kind', type: 'select', label: 'Kind', options: [{ value: 'a', label: 'A' }] },
           ],
         },
         { id: 'two', title: 'Two', fields: [{ key: 'note', type: 'text', label: 'Note' }] },
@@ -33,6 +34,7 @@ describe('renderer labels', () => {
       clear: ['Clear', []],
       done: ['Done', []],
       chooseFile: ['Choose file', []],
+      select: ['Select', []],
       required: ['required', []],
       skip: ['Skip', []],
       submit: ['Submit', []],

@@ -141,6 +141,10 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
     ['or'],
   );
   add(
+    fields.some((field) => field.type === 'select'),
+    ['select'],
+  );
+  add(
     fields.some((field) => field.validation?.required),
     ['required'],
   );

@@ -46,7 +46,8 @@ export type LabelKey =
   | 'submit'
   | 'stepTitle'
   | 'stepErrors'
-  | 'or';
+  | 'or'
+  | 'select';
 
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 export type LabelCatalog = Partial<Record<LabelKey, string>>;
