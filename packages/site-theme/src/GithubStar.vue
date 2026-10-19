@@ -3,7 +3,7 @@ import { computed } from 'vue';
 import { useData } from 'vitepress';
 
 const { theme } = useData();
-const repo = 'https://github.com/ignsm/formhaus';
+const repo = 'https://github.com/formhaus-dev/formhaus';
 
 const minimumCount = 100;
 const stars = computed<{ count: number; label: string } | null>(() => {

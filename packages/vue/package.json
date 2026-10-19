@@ -51,11 +51,11 @@
   "homepage": "https://formhaus.dev/framework",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ignsm/formhaus.git",
+    "url": "git+https://github.com/formhaus-dev/formhaus.git",
     "directory": "packages/vue"
   },
   "bugs": {
-    "url": "https://github.com/ignsm/formhaus/issues"
+    "url": "https://github.com/formhaus-dev/formhaus/issues"
   },
   "keywords": [
     "form",

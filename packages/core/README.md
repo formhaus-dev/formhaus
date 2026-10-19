@@ -1,6 +1,6 @@
 # @formhaus/core
 
-Framework-free engine for JSON form definitions: field state, validation, conditional visibility, repeatable groups, multi-step navigation and branching routes. No runtime dependencies and no UI. Part of [Formhaus](https://github.com/ignsm/formhaus). For rendering, use [`@formhaus/react`](https://www.npmjs.com/package/@formhaus/react) or [`@formhaus/vue`](https://www.npmjs.com/package/@formhaus/vue).
+Framework-free engine for JSON form definitions: field state, validation, conditional visibility, repeatable groups, multi-step navigation and branching routes. No runtime dependencies and no UI. Part of [Formhaus](https://github.com/formhaus-dev/formhaus). For rendering, use [`@formhaus/react`](https://www.npmjs.com/package/@formhaus/react) or [`@formhaus/vue`](https://www.npmjs.com/package/@formhaus/vue).
 
 ## Install
 
@@ -65,7 +65,7 @@ engine.getSubmitValues();
 
 - [Guide](https://formhaus.dev/guide/), [API reference](https://formhaus.dev/api/form-engine) and [recipes](https://formhaus.dev/recipes/)
 - [Framework overview](https://formhaus.dev/framework) and [playground](https://formhaus.dev/playground)
-- [Source and issues](https://github.com/ignsm/formhaus)
+- [Source and issues](https://github.com/formhaus-dev/formhaus)
 
 ## License
 

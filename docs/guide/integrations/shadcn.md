@@ -7,7 +7,7 @@ description: "Render Formhaus JSON forms with shadcn/ui: map Input, Textarea, Se
 
 Map shadcn/ui components to Formhaus field types through the `components` prop of `FormRenderer`.
 
-[Open in StackBlitz](https://stackblitz.com/github/ignsm/formhaus/tree/main/examples/react-shadcn) · [Source](https://github.com/ignsm/formhaus/tree/main/examples/react-shadcn)
+[Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/react-shadcn) · [Source](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-shadcn)
 
 ## Setup
 

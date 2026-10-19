@@ -1,6 +1,6 @@
 # Changelog
 
-> Starting with v0.4.0, per-package changelogs live alongside each package and on [GitHub Releases](https://github.com/ignsm/formhaus/releases). Releases are managed with [Changesets](https://github.com/changesets/changesets) — see CONTRIBUTING.md for the workflow.
+> Starting with v0.4.0, per-package changelogs live alongside each package and on [GitHub Releases](https://github.com/formhaus-dev/formhaus/releases). Releases are managed with [Changesets](https://github.com/changesets/changesets) — see CONTRIBUTING.md for the workflow.
 >
 > Per-package changelogs:
 > - [`@formhaus/core`](packages/core/CHANGELOG.md)

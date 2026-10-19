@@ -28,5 +28,14 @@
     "typescript": "^5.7.3",
     "vitest": "^4.1.2"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/formhaus-dev/formhaus.git",
+    "directory": "packages/builder"
+  },
+  "bugs": {
+    "url": "https://github.com/formhaus-dev/formhaus/issues"
+  },
+  "homepage": "https://formhaus.dev"
 }

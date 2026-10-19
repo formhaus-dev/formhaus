@@ -22,7 +22,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ignsm/formhaus.git",
+    "url": "git+https://github.com/formhaus-dev/formhaus.git",
     "directory": "packages/figma"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/formhaus-dev/formhaus/issues"
+  },
+  "homepage": "https://formhaus.dev"
 }

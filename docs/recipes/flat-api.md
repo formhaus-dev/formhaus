@@ -7,7 +7,7 @@ description: "Send a Formhaus multi-step form as one flat API request, map field
 
 Formhaus keeps the answers of every step in one flat object, so a multi-step form can post to an endpoint that expects a single object. Write two plain functions next to your HTTP call: one renames the keys for the request, the other turns the response into a [submit result](/guide/errors#submit-results). The backend stays as it is.
 
-The complete app is the [`react-flat-api` example](https://github.com/ignsm/formhaus/tree/main/examples/react-flat-api). Its mock API rejects answers on the first and the last step in one response.
+The complete app is the [`react-flat-api` example](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-flat-api). Its mock API rejects answers on the first and the last step in one response.
 
 ## Definition
 

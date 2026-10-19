@@ -2,7 +2,7 @@
 
 A server component loads the definition, a client component renders it with `@formhaus/react`, and a route handler validates the submission with `validateSubmission` from `@formhaus/core/server`.
 
-[Open in StackBlitz](https://stackblitz.com/github/ignsm/formhaus/tree/main/examples/nextjs-app-router)
+[Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/nextjs-app-router)
 
 ## Run
 

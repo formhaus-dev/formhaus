@@ -46,5 +46,13 @@
     "stylelint": "^17.16.0",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-declaration-strict-value": "^1.12.1"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/formhaus-dev/formhaus.git"
+  },
+  "bugs": {
+    "url": "https://github.com/formhaus-dev/formhaus/issues"
+  },
+  "homepage": "https://formhaus.dev"
 }

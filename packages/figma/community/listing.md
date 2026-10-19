@@ -32,7 +32,7 @@ forms, form builder, design system, components, prototype, flow, wizard, onboard
 
 ## Support
 
-https://github.com/ignsm/formhaus/issues
+https://github.com/formhaus-dev/formhaus/issues
 
 ## Data and network
 

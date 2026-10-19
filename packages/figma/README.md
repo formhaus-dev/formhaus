@@ -1,6 +1,6 @@
 # @formhaus/figma
 
-Figma plugin that draws [Formhaus](https://github.com/ignsm/formhaus) form definitions as editable mockups, with a built-in Material 3 or iOS-like kit or with your own design system components.
+Figma plugin that draws [Formhaus](https://github.com/formhaus-dev/formhaus) form definitions as editable mockups, with a built-in Material 3 or iOS-like kit or with your own design system components.
 
 ![The Formhaus plugin editing a branching form next to its flow map](../../docs/public/figma/hero.png)
 
@@ -9,7 +9,7 @@ Figma plugin that draws [Formhaus](https://github.com/ignsm/formhaus) form defin
 Not published to the Figma Community yet. Install it as a local plugin.
 
 
-1. Clone the repo: `git clone https://github.com/ignsm/formhaus.git`
+1. Clone the repo: `git clone https://github.com/formhaus-dev/formhaus.git`
 2. Build the plugin: `cd formhaus && pnpm install && pnpm --filter @formhaus/figma build`
 3. In Figma desktop: **Plugins → Development → Import plugin from manifest...**
 4. Pick `packages/figma/manifest.json`
@@ -35,7 +35,7 @@ The [`/formhaus:formhaus-figma-connect`](https://formhaus.dev/guide/formhaus-fig
 
 - Plugin guide: https://formhaus.dev/guide/figma.html
 - Community listing and publishing checklist: [community/listing.md](community/listing.md)
-- Source and issues: https://github.com/ignsm/formhaus
+- Source and issues: https://github.com/formhaus-dev/formhaus
 
 ## License
 

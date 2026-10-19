@@ -75,5 +75,14 @@
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",
     "vitest": "5.0.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/formhaus-dev/formhaus.git",
+    "directory": "packages/editor-react"
+  },
+  "bugs": {
+    "url": "https://github.com/formhaus-dev/formhaus/issues"
+  },
+  "homepage": "https://formhaus.dev"
 }

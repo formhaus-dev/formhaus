@@ -32,11 +32,11 @@ Adds the server to every supported agent it finds on your machine: Claude Code, 
 The Formhaus plugin bundles this server with the [`/formhaus:formhaus-create-form`](/guide/formhaus-create-form) and [`/formhaus:formhaus-figma-connect`](/guide/formhaus-figma-connect) skills:
 
 ```bash
-claude plugin marketplace add ignsm/formhaus
+claude plugin marketplace add formhaus-dev/formhaus
 claude plugin install formhaus@formhaus
 ```
 
-Inside a Claude Code session, `/plugin marketplace add ignsm/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
+Inside a Claude Code session, `/plugin marketplace add formhaus-dev/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
 
 ### Claude Code, server only
 
@@ -61,11 +61,11 @@ Claude Desktop (`claude_desktop_config.json`) and Cursor (`.cursor/mcp.json`):
 
 ### Cursor rule
 
-Copy [`.cursor/rules/formhaus.mdc`](https://github.com/ignsm/formhaus/blob/main/.cursor/rules/formhaus.mdc) into your project's `.cursor/rules/`. It describes Formhaus definitions and tells Cursor to validate them with this server.
+Copy [`.cursor/rules/formhaus.mdc`](https://github.com/formhaus-dev/formhaus/blob/main/.cursor/rules/formhaus.mdc) into your project's `.cursor/rules/`. It describes Formhaus definitions and tells Cursor to validate them with this server.
 
 ```bash
 mkdir -p .cursor/rules
-curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/ignsm/formhaus/main/.cursor/rules/formhaus.mdc
+curl -o .cursor/rules/formhaus.mdc https://raw.githubusercontent.com/formhaus-dev/formhaus/main/.cursor/rules/formhaus.mdc
 ```
 
 ## Tools

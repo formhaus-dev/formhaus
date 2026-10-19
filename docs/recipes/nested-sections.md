@@ -5,7 +5,7 @@ description: "Formhaus sections do not nest. Use steps for the outer level, or o
 
 # How do I put a section inside a section?
 
-A section cannot contain a section. That is an `invalid-nesting` error. Nesting is left out on purpose because few forms need it. If you do, tell us in [GitHub issues](https://github.com/ignsm/formhaus/issues).
+A section cannot contain a section. That is an `invalid-nesting` error. Nesting is left out on purpose because few forms need it. If you do, tell us in [GitHub issues](https://github.com/formhaus-dev/formhaus/issues).
 
 | Approach | Use it when |
 |---|---|

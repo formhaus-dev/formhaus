@@ -1,8 +1,8 @@
 # @formhaus/mcp
 
-[![ignsm/formhaus MCP server](https://glama.ai/mcp/servers/ignsm/formhaus/badges/score.svg)](https://glama.ai/mcp/servers/ignsm/formhaus)
+[![formhaus-dev/formhaus MCP server](https://glama.ai/mcp/servers/formhaus-dev/formhaus/badges/score.svg)](https://glama.ai/mcp/servers/formhaus-dev/formhaus)
 
-MCP server that lets AI agents check [Formhaus](https://github.com/ignsm/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later. The checks need no account or key.
+MCP server that lets AI agents check [Formhaus](https://github.com/formhaus-dev/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later. The checks need no account or key.
 
 `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
 
@@ -11,11 +11,11 @@ MCP server that lets AI agents check [Formhaus](https://github.com/ignsm/formhau
 Claude Code plugin, with the Formhaus skills:
 
 ```bash
-claude plugin marketplace add ignsm/formhaus
+claude plugin marketplace add formhaus-dev/formhaus
 claude plugin install formhaus@formhaus
 ```
 
-Inside a Claude Code session, `/plugin marketplace add ignsm/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
+Inside a Claude Code session, `/plugin marketplace add formhaus-dev/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
 
 Claude Code, server only:
 

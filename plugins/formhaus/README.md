@@ -7,7 +7,7 @@ A Formhaus form definition is a JSON file that describes fields, validation, con
 ## Install
 
 ```bash
-claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus
+claude plugin marketplace add formhaus-dev/formhaus && claude plugin install formhaus@formhaus
 ```
 
 ## What it adds
@@ -26,7 +26,7 @@ The MCP server runs locally over stdio. `validate_definition`, `simulate_path`, 
 
 - Docs: https://formhaus.dev/guide/mcp.html
 - Recipe: https://formhaus.dev/recipes/ai-agents.html
-- Source and issues: https://github.com/ignsm/formhaus
+- Source and issues: https://github.com/formhaus-dev/formhaus
 
 ## License
 
