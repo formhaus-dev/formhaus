@@ -11,7 +11,7 @@ const { inputId, control } = useField(props, emit);
 const range = computed(() => scaleRange(props.field));
 const points = computed(() => {
   const [min, max] = range.value;
-  return Array.from({ length: Math.max(0, max - min + 1) }, (_, index) => min + index);
+  return Array.from({ length: Math.min(11, Math.max(0, max - min + 1)) }, (_, index) => min + index);
 });
 const roles = computed(() => {
   const [min, max] = range.value;
