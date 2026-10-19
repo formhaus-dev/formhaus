@@ -1,17 +1,17 @@
 import type { FormDefinition, FormStep } from '../../src';
 import type { RendererHarness, TestKit } from './fixtures';
 
-const countryStep: FormStep = {
-  id: 'country',
-  title: 'Country',
+const planStep: FormStep = {
+  id: 'plan',
+  title: 'Plan',
   fields: [
     {
-      key: 'country',
+      key: 'plan',
       type: 'radio',
-      label: 'Country',
+      label: 'Plan',
       options: [
-        { value: 'us', label: 'United States' },
-        { value: 'de', label: 'Germany' },
+        { value: 'team', label: 'Team' },
+        { value: 'solo', label: 'Solo' },
       ],
     },
     { key: 'name', type: 'text', label: 'Name', validation: { required: true } },
@@ -20,18 +20,18 @@ const countryStep: FormStep = {
 
 const reviewStep: FormStep = { id: 'review', title: 'Review', fields: [] };
 
-const kyc: FormDefinition = { id: 'kyc', title: '', submit: { label: 'Send' }, steps: [countryStep, reviewStep] };
+const signup: FormDefinition = { id: 'signup', title: '', submit: { label: 'Send' }, steps: [planStep, reviewStep] };
 
-const usKyc: FormDefinition = {
-  ...kyc,
+const teamSignup: FormDefinition = {
+  ...signup,
   steps: [
-    countryStep,
-    { id: 'tax', title: 'Tax', fields: [{ key: 'ssn', type: 'text', label: 'SSN', validation: { required: true } }] },
+    planStep,
+    { id: 'team', title: 'Team', fields: [{ key: 'company', type: 'text', label: 'Company', validation: { required: true } }] },
     {
-      id: 'address',
-      title: 'Address',
+      id: 'billing',
+      title: 'Billing',
       fields: [
-        { key: 'street', type: 'text', label: 'Street', defaultValue: 'Main St' },
+        { key: 'cycle', type: 'text', label: 'Billing cycle', defaultValue: 'monthly' },
         { key: 'campaign', type: 'hidden', label: 'Campaign', source: { query: 'campaign' } },
       ],
     },
@@ -48,40 +48,47 @@ export function definitionScenarios(harness: RendererHarness, { it, expect, scre
     window.history.replaceState(null, '', '/?campaign=spring');
     try {
       const onSubmit = fn();
-      const mounted = harness.mount({ definition: kyc, keepValues: true, onSubmit });
-      await harness.click(screen.getByRole('radio', { name: 'United States' }));
-      await harness.type(textbox('Name'), 'Ada');
-      await mounted.update({ definition: usKyc });
-      expect(textbox('Name').value).toBe('Ada');
-      expect((screen.getByRole('radio', { name: 'United States' }) as HTMLInputElement).checked).toBe(true);
+      const mounted = harness.mount({ definition: signup, keepValues: true, onSubmit });
+      await harness.click(screen.getByRole('radio', { name: 'Team' }));
+      const name = textbox('Name');
+      await harness.type(name, 'Ada');
+      await mounted.update({ definition: teamSignup });
+      expect(textbox('Name')).toBe(name);
+      expect(name.value).toBe('Ada');
+      expect((screen.getByRole('radio', { name: 'Team' }) as HTMLInputElement).checked).toBe(true);
       await harness.click(button('Continue'));
-      await harness.type(await screen.findByRole('textbox', { name: /SSN/ }), '123');
+      await harness.type(await screen.findByRole('textbox', { name: /Company/ }), 'Acme');
       await harness.click(button('Continue'));
-      expect(((await screen.findByRole('textbox', { name: /Street/ })) as HTMLInputElement).value).toBe('Main St');
+      expect(((await screen.findByRole('textbox', { name: /Billing cycle/ })) as HTMLInputElement).value).toBe('monthly');
       await harness.click(button('Continue'));
       await screen.findByRole('heading', { name: 'Review' });
       await harness.click(button('Send'));
-      expect(onSubmit).toHaveBeenCalledWith({ country: 'us', name: 'Ada', ssn: '123', street: 'Main St', campaign: 'spring' }, []);
+      expect(onSubmit).toHaveBeenCalledWith({ plan: 'team', name: 'Ada', company: 'Acme', cycle: 'monthly', campaign: 'spring' }, []);
     } finally {
       window.history.replaceState(null, '', previous);
     }
   });
 
   it('stays on the current step when steps are inserted before it', async () => {
-    const mounted = harness.mount({ definition: kyc, keepValues: true, initialValues: { country: 'us', name: 'Ada' }, onSubmit: () => {} });
+    const mounted = harness.mount({
+      definition: signup,
+      keepValues: true,
+      initialValues: { plan: 'team', name: 'Ada' },
+      onSubmit: () => {},
+    });
     await harness.click(button('Continue'));
     await screen.findByRole('heading', { name: 'Review' });
-    await mounted.update({ definition: usKyc });
+    await mounted.update({ definition: teamSignup });
     expect(screen.getByRole('heading', { name: 'Review' })).toBeDefined();
     expect(document.querySelector('.fh-step-progress__counter')?.textContent?.trim()).toBe('Step 4 of 4');
     await harness.click(button('Send'));
-    expect(await screen.findByRole('textbox', { name: /SSN/ })).toBeDefined();
+    expect(await screen.findByRole('textbox', { name: /Company/ })).toBeDefined();
   });
 
   it('resets the form on a new definition without keepValues', async () => {
-    const mounted = harness.mount({ definition: kyc, onSubmit: () => {} });
+    const mounted = harness.mount({ definition: signup, onSubmit: () => {} });
     await harness.type(textbox('Name'), 'Ada');
-    await mounted.update({ definition: usKyc });
+    await mounted.update({ definition: teamSignup });
     expect(textbox('Name').value).toBe('');
   });
 }

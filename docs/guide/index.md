@@ -176,18 +176,18 @@ In development, the renderer warns when it gets a new definition object with the
 
 ### Keep answers when the definition changes
 
-Some flows load part of the form later. A KYC form asks for the country, then the backend returns the steps for that country. Set `keepValues` and pass the new definition: the form keeps the answers and the current step instead of resetting.
+Some flows load part of the form later. A signup form asks for the plan, then the backend returns the steps for that plan. Set `keepValues` and pass the new definition: the form keeps the answers and the current step instead of resetting.
 
 ::: code-group
 ```tsx [React]
-function KycForm() {
+function SignupForm() {
   const [definition, setDefinition] = useState(baseDefinition);
   return (
     <FormRenderer
       definition={definition}
       keepValues
       onFieldChange={async (key, value) => {
-        if (key === 'country') setDefinition(await loadKycDefinition(value));
+        if (key === 'plan') setDefinition(await loadPlanDefinition(value));
       }}
       onSubmit={submit}
     />
@@ -199,7 +199,7 @@ function KycForm() {
 <script setup lang="ts">
 const definition = shallowRef(baseDefinition);
 async function changed(key: string, value: unknown) {
-  if (key === 'country') definition.value = await loadKycDefinition(value);
+  if (key === 'plan') definition.value = await loadPlanDefinition(value);
 }
 </script>
 
