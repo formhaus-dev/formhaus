@@ -45,10 +45,10 @@ function dropBounds(field: FormField): void {
 }
 
 function requireScaleFormat(draft: FormDefinition): void {
-  const [, minor = 0] = String(draft.formatVersion ?? '1.0')
+  const [major, minor = 0] = String(draft.formatVersion ?? '1.0')
     .split('.')
     .map(Number);
-  if (minor < 3) draft.formatVersion = SCALE_FORMAT;
+  if (major === 1 && minor < 3) draft.formatVersion = SCALE_FORMAT;
 }
 
 export function hasOptions(field: FormField): boolean {
@@ -171,6 +171,7 @@ export function setRequired(field: FormField, required: boolean): void {
 export function setType(field: FormField, type: string, draft?: FormDefinition): void {
   const target = type === 'nps' ? 'scale' : type;
   if (SCALE_TYPES.has(field.type) || SCALE_TYPES.has(target)) dropBounds(field);
+  if (SCALE_TYPES.has(field.type)) delete field.options;
   field.type = target;
   if (OPTION_TYPES.has(target) && !field.options?.length) field.options = [{ value: 'option1', label: 'Option 1' }];
   if (!OPTION_TYPES.has(target) && target !== 'checkbox') delete field.options;

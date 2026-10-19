@@ -103,9 +103,18 @@ describe('editing fields', () => {
   });
 
   it('keeps a newer format version', () => {
-    const draft = { ...form(), formatVersion: '1.4' };
-    addField(draft, 0, 'rating');
-    expect(draft.formatVersion).toBe('1.4');
+    for (const formatVersion of ['1.4', '2.0', '2']) {
+      const draft = { ...form(), formatVersion };
+      addField(draft, 0, 'rating');
+      expect(draft.formatVersion).toBe(formatVersion);
+    }
+  });
+
+  it('replaces scale anchors with a default option when switching to a choice type', () => {
+    const draft = form();
+    const field = addField(draft, 0, 'nps');
+    setType(field, 'radio', draft);
+    expect(field.options).toEqual([{ value: 'option1', label: 'Option 1' }]);
   });
 
   it('keeps option values that conditions refer to', () => {
