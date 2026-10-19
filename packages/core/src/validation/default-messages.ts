@@ -9,10 +9,10 @@ export type ResolveMessage = (key: MessageKey, params: MessageParams, field: For
 
 export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.freeze({
   required: 'This field is required',
-  minLength: 'Must be at least {min} characters',
-  maxLength: 'Must be at most {max} characters',
-  minItems: 'Must be at least {min} items',
-  maxItems: 'Must be at most {max} items',
+  minLength: 'Minimum length is {min}',
+  maxLength: 'Maximum length is {max}',
+  minItems: 'At least {min} required',
+  maxItems: 'At most {max} allowed',
   min: 'Must be at least {min}',
   max: 'Must be at most {max}',
   pattern: 'Invalid format',
@@ -69,5 +69,5 @@ export function namedResolver(resolve: ResolveMessage): ResolveMessage {
 export function getDefaultMessage(rule: ValidationRule | MessageKey, params: Record<string, unknown> = {}): string {
   const template = hasOwn(DEFAULT_MESSAGES, rule) ? DEFAULT_MESSAGES[rule] : DEFAULT_MESSAGES.value;
   const custom = params.unit !== undefined && (rule === 'minLength' || rule === 'maxLength');
-  return formatText(custom ? template.replace('characters', '{unit}') : template, params);
+  return formatText(custom ? `At ${rule === 'minLength' ? 'least {min}' : 'most {max}'} {unit}` : template, params);
 }

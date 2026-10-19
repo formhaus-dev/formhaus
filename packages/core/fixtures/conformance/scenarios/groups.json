@@ -339,7 +339,7 @@
         {
           "do": "validate",
           "returns": {
-            "people": "Must be at least 2 items"
+            "people": "At least 2 required"
           }
         }
       ]

@@ -57,7 +57,7 @@ jobs:
 
       - run: pnpm check:require
 
-      - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium
+      - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium firefox webkit
 
       - run: pnpm test
 

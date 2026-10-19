@@ -26,7 +26,7 @@ export function providedOptions(
 export function sameOptions(previous: FieldOption[] | undefined, next: FieldOption[]): boolean {
   return (
     previous?.length === next.length &&
-    previous.every((option, index) => option.value === next[index].value && option.label === next[index].label)
+    previous.every((option, index) => (['value', 'label', 'image'] as const).every((key) => option[key] === next[index][key]))
   );
 }
 

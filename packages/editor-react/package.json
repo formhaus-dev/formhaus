@@ -27,7 +27,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
-    "test:browser": "vitest run --project browser"
+    "test:browser": "vitest run --project browser --project engines"
   },
   "peerDependencies": {
     "@formhaus/builder": "workspace:*",

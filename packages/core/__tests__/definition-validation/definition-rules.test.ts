@@ -66,7 +66,7 @@ describe('field rules', () => {
 
   it('warns about a custom type name without a dash or colon', () => {
     const definition = form([
-      field('a', { type: 'rating' }),
+      field('a', { type: 'stars' }),
       field('b', { type: 'x-rating' }),
       field('c', { type: 'acme:rating' }),
       field('d', { type: 'datetime' }),
@@ -78,7 +78,7 @@ describe('field rules', () => {
         severity: 'warning',
         path: '/fields/0/type',
         message:
-          '/fields/0/type: "rating" is not a built-in field type. Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name.',
+          '/fields/0/type: "stars" is not a built-in field type. Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name.',
         hint: 'Name custom types with a dash or colon, like "x-rating", so a future built-in type cannot take the name.',
       },
       expect.objectContaining({ code: 'unknown-field-type', path: '/fields/4/type' }),

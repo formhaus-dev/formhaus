@@ -44,8 +44,9 @@ Submitted values stay flat:
 | `type` | `"section"` | |
 | `title` | string | Heading. |
 | `description` | string | Text under the heading. |
+| `layout` | `"matrix"` | Draws the section as a [matrix](#matrix). Added in 0.19.0. |
 | `show`, `showAny` | condition[] | Visibility of the section and everything in it. |
-| `fields` | field or group[] | Fields and [groups](/guide/groups) of the section. |
+| `fields` | field or group[] | Fields and [groups](/guide/groups) of the section. May be empty, see [Statement](#statement). |
 | `i18n` | object | Translation keys for `title` and `description`. |
 
 ## Rules
@@ -71,6 +72,68 @@ React and Vue render a section as a fieldset:
 ```
 
 Style it with `.fh-section` and `.fh-section__title`. A headless renderer reads `engine.visibleNodes`: a visible section arrives with only its visible fields. `engine.visibleFields` stays flat and lists the section fields in place.
+
+## Matrix
+
+`"layout": "matrix"` draws the section as a grid: one row per field, one column per option. The options of the first field are the column headers. Requires `@formhaus/core` 0.19 and `"formatVersion": "1.3"`.
+
+```json
+{
+  "formatVersion": "1.3",
+  "id": "pulse",
+  "title": "Team pulse",
+  "submit": { "label": "Send" },
+  "fields": [
+    {
+      "key": "agree",
+      "type": "section",
+      "layout": "matrix",
+      "title": "How much do you agree?",
+      "fields": [
+        {
+          "key": "goals",
+          "type": "radio",
+          "label": "The goals of my team are clear",
+          "validation": { "required": true },
+          "options": [
+            { "value": "1", "label": "Disagree" },
+            { "value": "2", "label": "Neutral" },
+            { "value": "3", "label": "Agree" }
+          ]
+        },
+        {
+          "key": "heard",
+          "type": "radio",
+          "label": "My opinion is heard",
+          "options": [
+            { "value": "1", "label": "Disagree" },
+            { "value": "2", "label": "Neutral" },
+            { "value": "3", "label": "Agree" }
+          ]
+        }
+      ]
+    }
+  ]
+}
+```
+
+- Each row keeps its own key, so the submitted values stay flat: `{ "goals": "3", "heard": "2" }`.
+- Use `radio` rows, or `multiselect` rows for several answers per row. Give every row the same options in the same order.
+- Rows validate and take conditions like any other field.
+- Do not set `autoAdvance` on a row: answering one row would leave the step.
+- The column headers come from the static `options` of the first row. A first row with `optionsFrom` gets no matrix layout.
+- Rows stack on every screen width: the row label sits above its cells, and the column header sticks to the top while you scroll. Set `--fh-matrix-sticky-top` to the height of a fixed page header to keep the column header below it.
+- A custom `section` component replaces the matrix layout. Older versions of `@formhaus/core` report `layout` as an unknown property and draw a plain section.
+
+## Statement
+
+A section with `"fields": []` shows only its title and description. Use it for a note between questions.
+
+```json
+{ "key": "privacy", "type": "section", "title": "Your answers stay anonymous", "description": "We only see totals.", "fields": [] }
+```
+
+For a whole screen of text, such as a welcome screen, use a [step without fields](/guide/steps#welcome-screen).
 
 ## Custom markup
 

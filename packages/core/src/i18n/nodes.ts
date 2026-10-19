@@ -34,4 +34,6 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = Object.freeze(
   removeItemPrompt: 'Remove {item}?',
   removeItemBody: 'This removes {item} and its answers. This cannot be undone.',
   cancel: 'Cancel',
+  enlargeImage: 'Enlarge image: {label}',
+  close: 'Close',
 });

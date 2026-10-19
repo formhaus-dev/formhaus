@@ -1,6 +1,6 @@
 import type { FormField } from '../types';
 import { hasOwn } from '../visibility/nodes';
-import { BOOLEAN_TYPES, BUILT_IN_TYPES } from '../validation/type-checks';
+import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, NUMBER_TYPES, SCALE_TYPES } from '../validation/type-checks';
 import { conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
@@ -12,9 +12,9 @@ const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
 
 function expectedType(field: FormField): string | undefined {
-  if (field.type === 'number') return 'number';
+  if (NUMBER_TYPES.includes(field.type)) return 'number';
   if (BOOLEAN_TYPES.includes(field.type)) return 'boolean';
-  return BUILT_IN_TYPES.includes(field.type) && field.type !== 'multiselect' && field.type !== 'file' ? 'string' : undefined;
+  return BUILT_IN_TYPES.includes(field.type) && !LIST_TYPES.includes(field.type) && field.type !== 'file' ? 'string' : undefined;
 }
 
 function valueIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {
@@ -24,13 +24,13 @@ function valueIssue(target: FormField, operator: string, operand: unknown, path:
       ? []
       : [warning('condition-always-true', path, '"notEmpty": false matches every value', 'Use "notEmpty": true, or remove the condition')];
   if (COMPARISONS.includes(operator)) {
-    if (target.type !== 'multiselect' && !BOOLEAN_TYPES.includes(target.type)) return [];
+    if (!LIST_TYPES.includes(target.type) && !BOOLEAN_TYPES.includes(target.type)) return [];
     return mismatch(
       `"${target.key}" is a ${target.type} field, so "${operator}" never matches it`,
       'Compare a number, text, radio or select field',
     );
   }
-  if (target.type === 'multiselect') {
+  if (LIST_TYPES.includes(target.type)) {
     const result = operator === 'neq' || operator === 'notIn' ? 'always' : 'never';
     return mismatch(
       `"${target.key}" holds a list of values, so "${operator}" ${result} matches it`,
@@ -117,10 +117,10 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
   const rule = (name: string, problem: string, hint: string) => warning('rule-not-applicable', `${path}/validation/${name}`, problem, hint);
   const items = field.type === 'group';
   const known = items || BUILT_IN_TYPES.includes(field.type);
-  const numeric = field.type === 'number';
+  const numeric = NUMBER_TYPES.includes(field.type);
   const ranges = known && !numeric ? (['min', 'max'] as const).filter((name) => rules[name] !== undefined) : [];
   const sized =
-    known && ['number', 'checkbox', 'switch'].includes(field.type)
+    known && [...NUMBER_TYPES, ...BOOLEAN_TYPES].includes(field.type)
       ? (['minLength', 'maxLength'] as const).filter((name) => rules[name] !== undefined)
       : [];
   const issues = [
@@ -158,12 +158,15 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
 function fieldWarnings(context: CheckContext, entry: FieldEntry): DefinitionIssue[] {
   const { field, path } = entry;
   const custom = !BUILT_IN_TYPES.includes(field.type) && field.type !== 'group';
-  const match = custom ? closest(field.type, [...BUILT_IN_TYPES, 'group', 'section']) : undefined;
+  const named = /[-:]/.test(field.type);
+  const spelled = named ? field.type.replace(/[-_:]/g, '') : '';
+  const match =
+    custom && (named ? BUILT_IN_TYPES.find((type) => type === spelled) : closest(field.type, [...BUILT_IN_TYPES, 'group', 'section']));
   const problem = `"${field.type}" is not a built-in field type`;
   return [
-    ...(match !== undefined
+    ...(match
       ? [warning('unknown-field-type', `${path}/type`, problem, `Use "${match}", or register a component for "${field.type}"`)]
-      : custom && !/[-:]/.test(field.type)
+      : custom && !named
         ? [
             warning(
               'custom-type-name',
@@ -219,14 +222,18 @@ function versionWarnings({ definition, nodes }: CheckContext): DefinitionIssue[]
   const [major, minor = 0] = String(definition.formatVersion ?? '1.0')
     .split('.')
     .map(Number);
+  const scale = nodes.find(({ node }) => SCALE_TYPES.includes(node.type));
   const container = nodes.find(({ node }) => node.type === 'section' || node.type === 'group');
-  if (!container || major !== 1 || minor >= 1) return [];
+  const [found, needed] = scale && minor < 3 ? [scale, 3] : [container, 1];
+  if (!found || major !== 1 || minor >= needed) return [];
   return [
     warning(
       'outdated-format-version',
       '/formatVersion',
-      `${container.path} is a ${container.node.type}, which needs format 1.1`,
-      'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
+      `${found.path} is a ${found.node.type}, which needs format 1.${needed}`,
+      needed > 1
+        ? 'Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it. Upgrade the server that runs validateSubmission() first'
+        : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
     ),
   ];
 }

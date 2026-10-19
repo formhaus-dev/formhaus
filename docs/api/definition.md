@@ -47,8 +47,9 @@ interface FormField {
   show?: ShowCondition[];         // AND conditions for visibility
   showAny?: ShowCondition[];      // OR conditions for visibility
   validation?: FieldValidation;   // Validation rules
-  options?: FieldOption[];        // For select, radio, multiselect
+  options?: FieldOption[];        // For select, radio, multiselect; anchor labels for scale and rating
   layout?: 'stack' | 'inline';    // Radio and multiselect option layout. Added in 0.10.0
+  columns?: number;               // Picture cards per row, 1 to 4. Added in 0.19.0
   optionsFrom?: string;           // Dynamic options provider key
   optionsDependsOn?: string[];    // Re-fetch options when these fields change
   accept?: string;                // File input mime types
@@ -67,7 +68,8 @@ type DefaultFieldType =
   | 'text' | 'email' | 'phone' | 'number' | 'password'
   | 'select' | 'autocomplete' | 'multiselect'
   | 'checkbox' | 'radio' | 'switch'
-  | 'file' | 'date' | 'datetime' | 'time' | 'textarea' | 'hidden';
+  | 'file' | 'date' | 'datetime' | 'time' | 'textarea' | 'hidden'
+  | 'scale' | 'rating';            // Added in 0.19.0
 
 type FieldType = DefaultFieldType | (string & {});  // any string, built-ins get autocomplete
 ```
@@ -86,9 +88,10 @@ interface FormSection {
   type: 'section';
   title: string;
   description?: string;
+  layout?: 'matrix';              // Rows as a grid. Added in 0.19.0
   show?: ShowCondition[];
   showAny?: ShowCondition[];
-  fields: (FormField | FormGroup)[];
+  fields: (FormField | FormGroup)[]; // May be empty
   i18n?: StepI18n;
 }
 
@@ -130,7 +133,7 @@ interface FormStep {
   id: string;
   title: string;
   description?: string;
-  fields: FormNode[];           // Fields, sections and groups
+  fields: FormNode[];           // Fields, sections and groups. Empty for a welcome or statement step
   show?: ShowCondition[];       // Step-level visibility
   showAny?: ShowCondition[];
   routes?: StepRoute[];         // Ordered forward destinations. Added in 0.7.0
@@ -201,12 +204,13 @@ interface FieldValidation {
 
 ## FieldOption
 
-Options for select, radio, and multiselect fields.
+Options for select, radio, and multiselect fields, and anchor labels for scale and rating fields.
 
 ```ts
 interface FieldOption {
   value: string;
   label: string;
+  image?: string;                 // Picture URL for radio and multiselect. Added in 0.19.0
   i18n?: { label?: string };
 }
 ```
@@ -220,7 +224,8 @@ type MessageKey =
   | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
   | 'email' | 'number' | 'date' | 'datetime' | 'time' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value';
 type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary'
-  | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel'; // Group labels added in 0.14.0
+  | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' // Group labels added in 0.14.0
+  | 'enlargeImage' | 'close'; // Picture preview labels added in 0.19.0
 
 type MessageCatalog = Partial<Record<MessageKey, string>>; // "Минимум {min} символов"
 type LabelCatalog = Partial<Record<LabelKey, string>>;     // "Шаг {current} из {total}"
@@ -335,6 +340,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `scale` and `rating` types, `image` on options, `columns` on fields, `layout: "matrix"` on sections, format 1.3 | 0.19.0 |
 | `props` on fields, format 1.2 | 0.15.0 |
 | `type: "section"` and `type: "group"` nodes, format 1.1 | 0.14.0 |
 | `lang`, `messages`, `labels` and `i18n` | 0.13.0 |

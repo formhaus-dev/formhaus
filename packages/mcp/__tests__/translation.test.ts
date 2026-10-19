@@ -27,7 +27,7 @@ describe('translation_template', () => {
       },
       messages: {
         required: 'This field is required',
-        maxLength: 'Must be at most {max} characters',
+        maxLength: 'Maximum length is {max}',
         email: 'Enter a valid email',
         string: 'Must be text',
       },
@@ -78,7 +78,7 @@ describe('simulate_path with an overlay', () => {
 describe('capabilities i18n', () => {
   it('derives message and label defaults from core', () => {
     const { i18n } = capabilitiesTool();
-    expect(i18n.messages.defaults.minItems).toBe('Must be at least {min} items');
+    expect(i18n.messages.defaults.minItems).toBe('At least {min} required');
     expect(Object.keys(i18n.messages.defaults)).toHaveLength(21);
     expect(i18n.labels.defaults.stepOf).toBe('Step {current} of {total}');
     expect(i18n.keys.slots.validation).toContain('matchField');

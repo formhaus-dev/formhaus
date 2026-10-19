@@ -8,7 +8,7 @@ describe('validation rules', () => {
     const validator = vi.fn(() => 'From validator');
     const field = text('code', { validation: { minLength: 5, pattern: '^[0-9]+$', matchField: 'other', validator: 'check' } });
     const validators = { check: validator };
-    expect(validateFieldValue(field, 'ab', { other: 'zz' }, validators)).toBe('Must be at least 5 characters');
+    expect(validateFieldValue(field, 'ab', { other: 'zz' }, validators)).toBe('Minimum length is 5');
     expect(validateFieldValue(field, 'abcdef', { other: 'zz' }, validators)).toBe('Invalid format');
     expect(validateFieldValue(field, '123456', { other: 'zz' }, validators)).toBe('Fields must match');
     expect(validateFieldValue(field, '123456', { other: '123456' }, validators)).toBe('From validator');

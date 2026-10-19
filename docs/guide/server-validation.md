@@ -84,12 +84,12 @@ The second argument of `validateSubmission()` is the values object, not the whol
 
 ## What it checks
 
-Both run the `validation` rules on the active path and skip fields and steps hidden by conditions and inactive branches. Both also run the same type checks for built-in types: `email`, `date` (`YYYY-MM-DD`), `datetime` (ISO 8601) and `time` (`HH:mm`) formats, booleans for `checkbox` and `switch`, static `options` for `select`, `radio` and `multiselect`, and the 10,000 character cap on text, 2000 on `hidden` fields without `maxLength`. Both skip the `options` check on fields with `optionsFrom`, so validate dynamic lists in your app. The browser also skips `file` fields. The returned `values` hold only fields on the active path; unknown keys are dropped. A missing key stays missing: `validateSubmission()` applies no `defaultValue`, `defaultItems` or item field default to it. The fields of a step in `skippedSteps` are reset as Skip resets them in the browser: values sent for them are ignored, and conditions see their `defaultValue`. `validateSubmission()` also handles what a browser cannot be trusted to send:
+Both run the `validation` rules on the active path and skip fields and steps hidden by conditions and inactive branches. Both also run the same type checks for built-in types: `email`, `date` (`YYYY-MM-DD`), `datetime` (ISO 8601) and `time` (`HH:mm`) formats, booleans for `checkbox` and `switch`, whole numbers in range for `scale` and `rating`, static `options` for `select`, `radio` and `multiselect`, and the 10,000 character cap on text, 2000 on `hidden` fields without `maxLength`. Both skip the `options` check on fields with `optionsFrom`, so validate dynamic lists in your app. The browser also skips `file` fields. The returned `values` hold only fields on the active path; unknown keys are dropped. A missing key stays missing: `validateSubmission()` applies no `defaultValue`, `defaultItems` or item field default to it. The fields of a step in `skippedSteps` are reset as Skip resets them in the browser: values sent for them are ignored, and conditions see their `defaultValue`. `validateSubmission()` also handles what a browser cannot be trusted to send:
 
 | Behavior | `validateSubmission()` | `FormEngine.validate()` |
 |---|---|---|
 | Steps in `skippedSteps` dropped, only when the step has `skip` | Yes | No |
-| `number` decimal string such as `"5"` converted to a number | Yes | No. The string fails the number check |
+| `number`, `scale` and `rating` decimal string such as `"5"` converted to a number | Yes | No. The string fails the type check |
 | `[]` in a built-in field other than `multiselect` dropped like a missing answer | Yes | No. It counts as empty and stays in the payload |
 | Named `validator` functions | Ignored unless passed in `validators` | Yes |
 

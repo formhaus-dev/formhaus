@@ -1,3 +1,4 @@
+import type { FormSection } from '../types';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { closest, pointer, warning } from './issues';
@@ -7,10 +8,10 @@ export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
   step: 'id title description fields show showAny routes next back skip i18n',
   field:
-    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout optionsFrom optionsDependsOn accept rows mask inputMode props i18n',
-  section: 'key type title description show showAny fields i18n',
+    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout columns optionsFrom optionsDependsOn accept rows mask inputMode props i18n',
+  section: 'key type title description layout show showAny fields i18n',
   group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
-  option: 'value label i18n',
+  option: 'value label image i18n',
   action: 'label variant disabled i18n',
   route: 'to show showAny',
   validation:
@@ -57,7 +58,7 @@ function action(value: unknown, path: string, disables = true): DefinitionIssue[
 const misplaced = (key: string) =>
   key !== 'i18n' && PROPERTIES.validation.split(' ').includes(key) ? `Move "${key}" into "validation": { "${key}": ... }` : undefined;
 
-function fieldWarnings({ field, path }: FieldEntry): DefinitionIssue[] {
+function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
   const visible = field.type !== 'hidden';
   const empty = visible && typeof field.label === 'string' && !field.label.trim();
   return [
@@ -69,6 +70,19 @@ function fieldWarnings({ field, path }: FieldEntry): DefinitionIssue[] {
       ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
     ]),
     ...(isEntry(field.validation) ? unknown(field.validation, `${path}/validation`, PROPERTIES.validation) : []),
+    ...(field.columns !== undefined &&
+    (!/^(radio|multiselect)$/.test(field.type) ||
+      (parent as FormSection | undefined)?.layout === 'matrix' ||
+      !field.options?.some((option) => option.image))
+      ? [
+          warning(
+            'columns-not-applicable',
+            `${path}/columns`,
+            `"columns" of "${field.key}" applies to radio and multiselect options with images outside a matrix`,
+            'Remove "columns"',
+          ),
+        ]
+      : []),
   ];
 }
 

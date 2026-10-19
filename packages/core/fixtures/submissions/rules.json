@@ -106,7 +106,7 @@
           "confirm": "secret123"
         },
         "errors": {
-          "nickname": "Must be at most 5 characters"
+          "nickname": "Maximum length is 5"
         }
       }
     },
@@ -127,7 +127,7 @@
           "confirm": "secret123"
         },
         "errors": {
-          "code": "Must be at most 10000 characters"
+          "code": "Maximum length is 10000"
         }
       }
     },

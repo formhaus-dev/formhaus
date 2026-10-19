@@ -13,6 +13,7 @@ export default defineConfig({
       '@codemirror/view',
       '@lezer/highlight',
       'react/jsx-dev-runtime',
+      'react/jsx-runtime',
     ],
   },
   css: {
@@ -28,7 +29,7 @@ export default defineConfig({
           name: 'unit',
           environment: 'jsdom',
           include: ['src/**/*.test.{ts,tsx}'],
-          exclude: ['src/**/*.browser.test.tsx'],
+          exclude: ['src/**/*.browser.test.tsx', 'src/**/*.engines.test.tsx'],
           setupFiles: ['src/test/setup.ts'],
           css: { modules: { classNameStrategy: 'non-scoped' } },
         },
@@ -40,6 +41,20 @@ export default defineConfig({
           include: ['src/**/*.browser.test.tsx'],
           css: true,
           browser: { enabled: true, headless: true, provider: playwright(), instances: [{ browser: 'chromium' }] },
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'engines',
+          include: ['src/**/*.engines.test.tsx'],
+          css: true,
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright(),
+            instances: [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }],
+          },
         },
       },
     ],

@@ -7,7 +7,7 @@ import FormRenderer from '../src/FormRenderer.vue';
 import HeadlessFormRenderer from '../src/HeadlessFormRenderer.vue';
 import { useLocalizedForm } from '../src/i18n';
 import { definition as localizedDefinition, overlay } from './i18n.fixtures';
-import { choices, choiceValues, conditions, group, groupValues, hidden, plain, steps } from './ssr.fixtures';
+import { choices, choiceValues, conditions, group, groupValues, hidden, plain, questionTypes, questionValues, steps } from './ssr.fixtures';
 
 const BROWSER_GLOBALS = ['window', 'document', 'localStorage', 'sessionStorage', 'location', 'requestAnimationFrame'] as const;
 const apps: App[] = [];
@@ -117,6 +117,16 @@ describe('FormRenderer hydration', () => {
     expect(container.querySelector<HTMLInputElement>('input[name="terms"]')!.checked).toBe(true);
     expect(container.textContent).toContain('Blue');
     expect(serverDom(html).querySelector<HTMLSelectElement>('select[name="color"]')!.value).toBe('green');
+  });
+
+  it('hydrates scale, rating, picture options, a matrix and an empty section', async () => {
+    const { html, container } = await hydrate(form(questionTypes, { initialValues: questionValues }));
+    expect(container.querySelector<HTMLInputElement>('input[name="nps"][value="0"]')!.checked).toBe(true);
+    expect(container.querySelector<HTMLInputElement>('input[name="stars"][value="4"]')!.checked).toBe(true);
+    expect(container.querySelector<HTMLInputElement>('input[name="clear"][value="3"]')!.checked).toBe(true);
+    expect(container.querySelector('.fh-field__option-image')!.getAttribute('alt')).toBe('');
+    expect(container.querySelector('.fh-section--matrix .fh-section__matrix-header')!.textContent).toBe('DisagreeNeutralAgree');
+    expect(serverDom(html).querySelector<HTMLInputElement>('input[name="nps"][value="0"]')!.checked).toBe(true);
   });
 
   it('selects the select placeholder in the server HTML without a value', async () => {

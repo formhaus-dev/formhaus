@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.2 specification"
-description: "Formhaus form definition format 1.2: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
+title: "Form definition 1.3 specification"
+description: "Formhaus form definition format 1.3: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
 ---
 
-# Formhaus form definition 1.2
+# Formhaus form definition 1.3
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,20 +19,22 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.2**. `@formhaus/core` 0.15 and later implement it. Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.3**. `@formhaus/core` 0.19 and later implement it. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.2"`. Without it, core reads the definition as 1.2. A minor version newer than 1.2 is also read as 1.2. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.3"`. Without it, core reads the definition as 1.3. A minor version newer than 1.3 is also read as 1.3. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
 A definition with `props` MAY declare `"formatVersion": "1.2"`. Core 0.14 reports `props` as `unknown-property` and ignores it; its renderers still pass it to custom components.
 
+A definition with a `scale` or `rating` field SHOULD declare `"formatVersion": "1.3"`. Core 0.18 and older read these types as custom types: they skip the type check, and their `validateSubmission()` accepts any value for them. `checkDefinition()` warns about a `scale` or `rating` field without format 1.3. Upgrade the server that runs `validateSubmission()` before the clients. A definition with option `image`, field `columns` or section `layout` MAY declare 1.3. Core 0.18 reports them as `unknown-property`, and its renderers draw plain options and a plain section.
+
 ```json
-{ "formatVersion": "1.2", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
+{ "formatVersion": "1.3", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
 ```
 
 ## Document structure
@@ -72,8 +74,9 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `show` | [condition](#conditions)[] | Visible when all conditions match. |
 | `showAny` | [condition](#conditions)[] | Visible when at least one condition matches. |
 | `validation` | [validation](#validation) | Validation rules. |
-| `options` | `{ value: string, label: string }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. |
+| `options` | `{ value: string, label: string, image?: string }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
 | `layout` | `"stack"` or `"inline"` | Option layout for `radio` and `multiselect`. `stack` (default) lists options vertically. `inline` places short options side by side. |
+| `columns` | integer, 1 to 4 | Cards per row for [picture options](#picture-options). |
 | `optionsFrom` | string | Name of a renderer options provider. |
 | `optionsDependsOn` | string[] | Field keys whose changes reload `optionsFrom`. |
 | `autoAdvance` | boolean | See [Auto-advance](#auto-advance). |
@@ -84,7 +87,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `props` | object | Settings of a [custom type](#field-types). Core ignores it. Renderers pass it unchanged as `field.props`. Added in 1.2. |
 | `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
 
-An option MAY have `i18n: { label }`. `validation` MAY have `i18n` with keys by rule name.
+An option MAY have `i18n: { label }` and an [`image`](#picture-options). `validation` MAY have `i18n` with keys by rule name.
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate. Section keys share this namespace.
 
@@ -103,6 +106,7 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | `date` | string `YYYY-MM-DD` |
 | `datetime` | string `YYYY-MM-DDTHH:mm`, without a timezone |
 | `time` | string `HH:mm`, 24-hour |
+| `scale`, `rating` | integer number, the selected point. See [Scale and rating](#scale-and-rating) |
 
 A `hidden` field renders no label and no focusable control. Its value comes from the initial values, then its `source`, then `defaultValue`. Its value is text of at most `maxLength` characters, or 2000 without it. Its conditions, rules and type check work like those of any other field. While it is active, an error under its key is a form-level error: `topLevelErrors` lists it after the other form-level errors, and the error summary, step error counts and focus skip the field. `errors` and `validate()` still list it under its key. Built-in messages for it are wrapped in the `hidden` message template, which names the field by its `label`, or by its `key` when the label is empty. A message set in the definition, such as a string `required` or `patternMessage`, and a validator result stay as written. Server errors under its key are handled the same way but are not wrapped.
 
@@ -125,9 +129,53 @@ Any other string is a **custom type**. A renderer provides its component through
 
 Built-in type names are single lowercase words without separators. A type name with `-` or `:`, such as `x-rating`, `acme-rating` or `acme:rating`, is reserved for custom types and never becomes a built-in type. A custom type without `-` or `:` can collide with a built-in type added in a later minor version, which then applies its type checks to the field.
 
+### Scale and rating
+
+`scale` and `rating` ask for one point on a numeric range. The built-in renderers draw `scale` as a row of numbered boxes and `rating` as a row of stars.
+
+- **Range.** For `scale`, the points run from `validation.min` to `validation.max`. `min` defaults to 1 and `max` to 5. Use `min` 0 or 1 and 3 to 11 points. For `rating`, the stars run from 1 to `validation.max`, which defaults to 5. Use 3 to 10 stars.
+- **Value.** An integer number of the range, such as `7`. Built-in renderers write a number. Core does not convert a numeric string in the browser; `validateSubmission()` converts a decimal string, such as `"7"`, to a number before the checks, as it does for `number`.
+- **Empty.** Like any field: `undefined`, `null` or `''`. `0` is a value, so `0` on a 0-based scale passes `required` and `notEmpty`.
+- **Type check.** A value that is not an integer of the range fails with the `option` message. `7.5`, `11` on a 0 to 10 scale, `"7"` in the browser and `true` all fail.
+- **`required`.** Works as on any field.
+- **`min` and `max` on `scale`.** They define the range. A value outside it fails the type check, so `minMessage` and `maxMessage` never show.
+- **`min` and `max` on `rating`.** `max` defines the range. `min` is an ordinary rule: a rating below it fails with the `min` message, such as `Must be at least 3`.
+- **`defaultValue`.** A point of the range. Another value fails validation like any other value.
+- **`minLength`, `maxLength`.** Do not apply. `checkDefinition()` warns with `rule-not-applicable`.
+- **Anchors.** `options` are optional anchor labels, at most 3. An anchor `value` is the point number as a string, such as `"0"`, and its `label` is the text. The first anchor is aligned to the start, the last to the end and a middle one to the center. Anchors are not choices: core does not check values against them, and `checkDefinition()` does not compare condition values with them.
+- **Conditions.** `eq`, `neq`, `in` and `notIn` compare numbers, and `gt`, `gte`, `lt` and `lte` compare the point. `checkDefinition()` warns about a string operand with `condition-value-mismatch`.
+- **Keyboard.** Each point is a native radio. Arrow keys move between points. Digit keys 0 to 9 select the point with that number; on a range that ends at 10 and starts at 1, `0` selects 10.
+
+An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors with `lte: 6` and on promoters with `gte: 9`:
+
+```json
+{
+  "formatVersion": "1.3",
+  "id": "nps",
+  "title": "NPS",
+  "submit": { "label": "Send" },
+  "fields": [
+    {
+      "key": "score", "type": "scale", "label": "How likely are you to recommend us to a friend?",
+      "validation": { "required": true, "min": 0, "max": 10 },
+      "options": [{ "value": "0", "label": "Not at all likely" }, { "value": "10", "label": "Extremely likely" }]
+    },
+    { "key": "fix", "type": "textarea", "label": "What should we fix first?", "show": [{ "field": "score", "lte": 6 }] },
+    { "key": "love", "type": "textarea", "label": "What do you like most?", "show": [{ "field": "score", "gte": 9 }] },
+    { "key": "stars", "type": "rating", "label": "Rate the support you got", "validation": { "max": 5 } }
+  ]
+}
+```
+
 ### Options
 
 `options` is a static list. `optionsFrom` names an options provider passed to the renderer. Built-in renderers call the provider with all current values, and again each time a field in `optionsDependsOn` changes. The returned options replace `options`. Core checks that a `select`, `radio` or `multiselect` value is one of the static `options`. It skips that check when `optionsFrom` is set, so the app validates dynamic lists itself. Core does not read `optionsDependsOn`.
+
+### Picture options
+
+An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host.
+
+`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field in a matrix section. Each card has a button that opens the image at full size.
 
 ## Sections
 
@@ -160,7 +208,8 @@ A section is a node with `type: "section"`. It groups fields under a title and s
 | `title` | string, required | Section heading. |
 | `description` | string | Text below the heading. |
 | `show`, `showAny` | [condition](#conditions)[] | Section visibility. |
-| `fields` | (field or group)[], required | Fields and groups of the section. |
+| `layout` | `"matrix"` | Draws the section as a [matrix](#matrix). Added in 1.3. |
+| `fields` | (field or group)[], required | Fields and groups of the section. MAY be empty. |
 | `i18n` | object | [Translation keys](#translation-keys) for `title` and `description`. |
 
 A section holds no value. A condition that names a section key is an `unknown-field` error. A section MAY appear in `step.fields` and in single-step `fields`, and never spans steps. A section MUST NOT contain another section.
@@ -168,6 +217,36 @@ A section holds no value. A condition that names a section key is an `unknown-fi
 A field inside a section is visible when the conditions of the section and its own conditions pass. Section conditions follow the rules of field conditions. A section condition on a field inside the same section is a `condition-cycle` error. When a section is hidden, its fields and groups are cleared like fields hidden by their own conditions.
 
 Fields inside a section keep their keys. The [submit payload](#submit-payload) does not change when a field moves into or out of a section.
+
+A section MAY have an empty `fields` array. It then shows only its title and description, as a statement between questions.
+
+### Matrix
+
+`layout: "matrix"` draws a section as a grid, also called a Likert table. Each field of the section is a row, and the options of the first field are the column headers. Use `radio` rows, or `multiselect` rows for several answers per row, with the same options in the same order. Values stay flat: each row writes its own key, and conditions, rules and the payload treat a row like any other field. Do not set `autoAdvance` on a row: answering one row would leave the step. A renderer that does not know `layout` draws a plain section of the same fields.
+
+```json
+{
+  "formatVersion": "1.3",
+  "id": "pulse",
+  "title": "Team pulse",
+  "submit": { "label": "Send" },
+  "fields": [
+    {
+      "key": "agree", "type": "section", "layout": "matrix", "title": "How much do you agree?",
+      "fields": [
+        {
+          "key": "goals", "type": "radio", "label": "The goals of my team are clear", "validation": { "required": true },
+          "options": [{ "value": "1", "label": "Disagree" }, { "value": "2", "label": "Neutral" }, { "value": "3", "label": "Agree" }]
+        },
+        {
+          "key": "heard", "type": "radio", "label": "My opinion is heard",
+          "options": [{ "value": "1", "label": "Disagree" }, { "value": "2", "label": "Neutral" }, { "value": "3", "label": "Agree" }]
+        }
+      ]
+    }
+  ]
+}
+```
 
 ## Groups
 
@@ -312,10 +391,10 @@ Initial values for keys that do not belong to any field stay in `engine.values` 
 | Rule | Type | Applies to | Default message |
 |---|---|---|---|
 | `required` | boolean or string | any value | `This field is required` |
-| `minLength` | number | string length; item count of a `multiselect` or a group | `Must be at least N characters` (`items` for arrays) |
-| `maxLength` | number | string length; item count of a `multiselect` or a group | `Must be at most N characters` (`items` for arrays) |
-| `min` | number | number values | `Must be at least N` |
-| `max` | number | number values | `Must be at most N` |
+| `minLength` | number | string length; item count of a `multiselect` or a group | `Minimum length is N`; `At least N required` for arrays |
+| `maxLength` | number | string length; item count of a `multiselect` or a group | `Maximum length is N`; `At most N allowed` for arrays |
+| `min` | number | number values; the range of a `scale`; the lowest rating of a `rating` | `Must be at least N` |
+| `max` | number | number values; the range of a `scale` or `rating` | `Must be at most N` |
 | `pattern` | string | `String(value)` | `Invalid format` |
 | `matchField` | string | any value | `Fields must match` |
 | `validator` | string | any value | message returned by the validator |
@@ -325,7 +404,7 @@ Each rule except `required` and `validator` has a matching message property: `mi
 Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
-2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
+2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
 3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched.
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
@@ -349,6 +428,22 @@ Validation runs on Continue for the visible fields of the current step, and on S
 | `i18n` | object | [Translation keys](#translation-keys) for `title` and `description`. |
 
 Step ids MUST be unique. The constructor throws on duplicates.
+
+A step MAY have an empty `fields` array. It then shows only its title, description and actions, as a welcome screen or a statement. Set `next` to label its button, such as `{ "label": "Start" }`. Continue on it always succeeds. It counts toward progress, so a welcome step makes "Step 1 of N" one step longer.
+
+```json
+{
+  "formatVersion": "1.3",
+  "id": "welcome",
+  "title": "Feedback",
+  "submit": { "label": "Send" },
+  "steps": [
+    { "id": "intro", "title": "Tell us about your stay", "description": "It takes two minutes.", "fields": [], "next": { "label": "Start" } },
+    { "id": "rate", "title": "Your rating", "fields": [{ "key": "stars", "type": "rating", "label": "Rate your stay", "autoAdvance": true }] },
+    { "id": "comment", "title": "Anything else?", "fields": [{ "key": "comment", "type": "textarea", "label": "Comment" }] }
+  ]
+}
+```
 
 A step hidden by conditions is left out of navigation, progress, validation and submission, and its field values are cleared.
 
@@ -418,7 +513,7 @@ On the last step, `skip(submit)` submits the form without that step and runs the
 
 ## Trimming
 
-Core trims leading and trailing whitespace from string values of every built-in type except `password`, `number`, `select`, `radio` and `file`.
+Core trims leading and trailing whitespace from string values of every built-in type except `password`, `number`, `scale`, `rating`, `select`, `radio` and `file`.
 
 - `engine.values` keep the raw text as typed.
 - `getSubmitValues()` and the submit payload hold the trimmed text.
@@ -427,7 +522,7 @@ Core trims leading and trailing whitespace from string values of every built-in 
 
 ## Auto-advance
 
-`autoAdvance: true` lets a renderer advance when the user commits an answer. The built-in `radio` commits on click, Space and Enter; arrow keys only select. Commit validates the whole current step and then moves forward. Initial values and `setValue()` never advance, and the last step never auto-submits. Other built-in types ignore `autoAdvance`. Custom fields commit through `onCommit` in React and the `commit` event in Vue.
+`autoAdvance: true` lets a renderer advance when the user commits an answer. The built-in `radio`, `scale` and `rating` commit on click, Space and Enter, and `scale` and `rating` also on a digit key; arrow keys only select. Do not set it on [matrix](#matrix) rows. Commit validates the whole current step and then moves forward. Initial values and `setValue()` never advance, and the last step never auto-submits. Other built-in types ignore `autoAdvance`. Custom fields commit through `onCommit` in React and the `commit` event in Vue.
 
 ## Submit payload
 
@@ -514,8 +609,8 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | Message key | Default | Params |
 |---|---|---|
 | `required` | `This field is required` | |
-| `minLength`, `maxLength` | `Must be at least {min} characters`, `Must be at most {max} characters` | `min`, `max` |
-| `minItems`, `maxItems` | `Must be at least {min} items`, `Must be at most {max} items` | `min`, `max` |
+| `minLength`, `maxLength` | `Minimum length is {min}`, `Maximum length is {max}` | `min`, `max` |
+| `minItems`, `maxItems` | `At least {min} required`, `At most {max} allowed` | `min`, `max` |
 | `min`, `max` | `Must be at least {min}`, `Must be at most {max}` | `min`, `max` |
 | `pattern` | `Invalid format` | |
 | `matchField` | `Fields must match` | |
@@ -549,6 +644,8 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `removeItemPrompt` | `Remove {item}?` | `item` |
 | `removeItemBody` | `This removes {item} and its answers. This cannot be undone.` | `item` |
 | `cancel` | `Cancel` | |
+| `enlargeImage` | `Enlarge image: {label}` | `label` (the option label) |
+| `close` | `Close` | |
 
 A message for a failed rule comes from the first of:
 
@@ -671,22 +768,23 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
 | `duplicate-option-value` | error | An option value that an earlier option of the same field already uses |
-| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, or `defaultItems` greater than `maxLength` |
+| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, `defaultItems` greater than `maxLength`, or `columns` outside 1 to 4 |
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `slow-pattern` | warning | A `pattern` that repeats a group with a quantifier or an alternation inside, such as `(a+)+`, which can take very long to match |
-| `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number` or on a group, or `minLength`/`maxLength` on `number`, `checkbox` or `switch` |
+| `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, or a `scale` or `rating` field without 1.3 |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
-| `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt` |
-| `custom-type-name` | warning | A custom field type without `-` or `:`, such as `rating`. Not reported when `unknown-field-type` is |
+| `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |
+| `custom-type-name` | warning | A custom field type without `-` or `:`, such as `stars`. Not reported when `unknown-field-type` is |
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
+| `columns-not-applicable` | warning | `columns` on a field whose options have no `image`, on a field other than `radio` or `multiselect`, or on a field in a matrix section |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |

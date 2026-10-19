@@ -29,8 +29,8 @@ All rules are optional. Combine them freely.
 | Rule | Type | What it checks | Default message |
 |------|------|---------------|-----------------|
 | `required` | `boolean \| string` | Not null, undefined, an empty string or an empty array. Checkbox and switch fields must be checked | "This field is required" |
-| `minLength` | `number` | String length or selected-item count >= value | "Must be at least N characters/items" |
-| `maxLength` | `number` | String length or selected-item count <= value | "Must be at most N characters/items" |
+| `minLength` | `number` | String length or selected-item count >= value | "Minimum length is N", or "At least N required" for items |
+| `maxLength` | `number` | String length or selected-item count <= value | "Maximum length is N", or "At most N allowed" for items |
 | `min` | `number` | Number >= value | "Must be at least N" |
 | `max` | `number` | Number <= value | "Must be at most N" |
 | `pattern` | `string` | Matches regex | "Invalid format" |

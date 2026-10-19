@@ -38,21 +38,20 @@ Each condition uses exactly one operator. A condition with no operator or with t
 
 ## Example: NPS follow-up
 
-Ask detractors what went wrong and promoters what they liked:
+Ask detractors what went wrong and promoters what they liked. A `scale` value is a number, so compare it with numbers:
 
 ```json
 {
+  "formatVersion": "1.3",
   "fields": [
     {
       "key": "score",
-      "type": "radio",
+      "type": "scale",
       "label": "How likely are you to recommend us?",
-      "layout": "inline",
+      "validation": { "required": true, "min": 0, "max": 10 },
       "options": [
-        { "value": "0", "label": "0" }, { "value": "1", "label": "1" }, { "value": "2", "label": "2" },
-        { "value": "3", "label": "3" }, { "value": "4", "label": "4" }, { "value": "5", "label": "5" },
-        { "value": "6", "label": "6" }, { "value": "7", "label": "7" }, { "value": "8", "label": "8" },
-        { "value": "9", "label": "9" }, { "value": "10", "label": "10" }
+        { "value": "0", "label": "Not at all likely" },
+        { "value": "10", "label": "Extremely likely" }
       ]
     },
     { "key": "problem", "type": "textarea", "label": "What went wrong?", "show": [{ "field": "score", "lte": 6 }] },
@@ -60,6 +59,8 @@ Ask detractors what went wrong and promoters what they liked:
   ]
 }
 ```
+
+On `scale` and `rating`, `eq`, `neq`, `in` and `notIn` also take numbers: `{ "field": "score", "eq": 10 }`, not `"10"`. A string operand never matches, and `checkDefinition()` warns about it. `notEmpty` matches `0`. The anchor `options` are labels, not values, so a condition may test any point of the range.
 
 ## Example: show field when select changes
 

@@ -17,7 +17,7 @@ describe('client type checks', () => {
     ['number', Number.NaN, 'Enter a number'],
     ['number', Infinity, 'Enter a number'],
     ['number', '5', 'Enter a number'],
-    ['textarea', 'a'.repeat(10001), 'Must be at most 10000 characters'],
+    ['textarea', 'a'.repeat(10001), 'Maximum length is 10000'],
     ['checkbox', 'yes', 'Must be true or false'],
   ])('rejects %s %j like the server', (type, value, message) => {
     expect(validateFieldValue(field(type), value, {})).toBe(message);
