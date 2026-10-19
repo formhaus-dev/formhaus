@@ -161,7 +161,7 @@ Pick multiple from a list. Renders as a checkbox group. The value is an array of
 }
 ```
 
-`minLength` / `maxLength` on multiselect controls how many options can be selected.
+`minLength` / `maxLength` on multiselect controls how many options can be selected. A value that repeats an option fails validation, so `minLength: 3` needs three different options.
 
 Options stack vertically. Set `"layout": "inline"` to place short options side by side, as with radio. `layout` was added in 0.10.0.
 
