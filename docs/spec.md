@@ -341,7 +341,7 @@ A condition tests the value of one field:
 
 A condition MUST use exactly one operator. The constructor throws on a condition with no operator, with several operators, or with a key that is not an operator. At runtime, a condition without a known operator never matches. `notEmpty: false` always matches; `checkDefinition()` warns about it with `condition-always-true`.
 
-Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `contains` and `notContains` test the items of an array value, such as a `multiselect` answer. `contains` never matches a value that is not an array, including an empty one, so `notContains` matches it. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
+Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `contains` and `notContains` test the items of an array value, such as a `multiselect` answer. `contains` never matches a value that is not an array, including an unanswered field, so `notContains` matches it. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
 
 For `gt`, `gte`, `lt` and `lte`, the numeric value is the value itself when it is a finite number, or `Number(value)` when it is a non-empty string that converts to a finite number. Any other value, including an empty one, does not match.
 

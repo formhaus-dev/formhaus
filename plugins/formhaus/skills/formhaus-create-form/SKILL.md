@@ -265,7 +265,7 @@ Output the complete form definition JSON. Follow these rules:
 6. Options for select/radio must have both `value` and `label`
 7. Set `"formatVersion": "1.4"` when a condition uses `contains` or `notContains`, else `"1.3"` when the form has a `scale`, a `rating`, an option `image` or a matrix section. Set at least `"1.1"` when it has sections or groups
 8. Conditions on `scale` and `rating` compare numbers: `{ "field": "nps", "lte": 6 }`. A range is two conditions: `gte` and `lte`
-9. A `multiselect` answer is a list. Test one option with `{ "field": "sources", "contains": "OTHER" }`, never with `eq` or `in`
+9. A `multiselect` answer is a list. Test one option with `{ "field": "interests", "contains": "other" }`, never with `eq` or `in`
 
 Put `"$schema": "https://formhaus.dev/schema/form-definition.json"` as the first key
 so editors validate and autocomplete the file.

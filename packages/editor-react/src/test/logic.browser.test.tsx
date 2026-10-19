@@ -42,12 +42,12 @@ describe('field logic in a browser', () => {
   it("offers includes and doesn't include for a multiselect source", async () => {
     await page.viewport(1440, 1000);
     const sources: FormField = {
-      key: 'sourceOfWealth',
+      key: 'interests',
       type: 'multiselect',
-      label: 'Source of wealth',
+      label: 'Interests',
       options: [
-        { value: 'SALARY', label: 'Salary' },
-        { value: 'OTHER', label: 'Other' },
+        { value: 'design', label: 'Design' },
+        { value: 'other', label: 'Other' },
       ],
     };
     const { store } = renderEditor(fromDefinition(definition([sources, company])));
@@ -61,11 +61,11 @@ describe('field logic in a browser', () => {
       'is answered',
     ]);
     await userEvent.selectOptions(operator, 'notContains');
-    await userEvent.selectOptions(within(logic).getByRole('combobox', { name: 'Value' }), 'OTHER');
+    await userEvent.selectOptions(within(logic).getByRole('combobox', { name: 'Value' }), 'other');
     await waitFor(() => {
-      expect(toDefinition(store.getState().form).fields?.[1]?.show).toEqual([{ field: 'sourceOfWealth', notContains: 'OTHER' }]);
+      expect(toDefinition(store.getState().form).fields?.[1]?.show).toEqual([{ field: 'interests', notContains: 'other' }]);
     });
-    expect(within(card('Company')).getByRole('button', { name: "Shown if Source of wealth doesn't include Other" })).toBeVisible();
+    expect(within(card('Company')).getByRole('button', { name: "Shown if Interests doesn't include Other" })).toBeVisible();
   });
 
   it('asks before deleting a field that conditions use and removes them', async () => {

@@ -106,10 +106,10 @@ describe('buildGraph', () => {
 
   it('describes contains conditions with option labels', () => {
     const fields = new Map([
-      ['sources', { key: 'sources', type: 'multiselect', label: 'Source of wealth', options: [{ value: 'OTHER', label: 'Other' }] }],
+      ['interests', { key: 'interests', type: 'multiselect', label: 'Interests', options: [{ value: 'other', label: 'Other' }] }],
     ]);
-    expect(describeCondition({ field: 'sources', contains: 'OTHER' }, fields)).toBe('Source of wealth includes Other');
-    expect(describeCondition({ field: 'sources', notContains: 'OTHER' }, fields)).toBe("Source of wealth doesn't include Other");
+    expect(describeCondition({ field: 'interests', contains: 'other' }, fields)).toBe('Interests includes Other');
+    expect(describeCondition({ field: 'interests', notContains: 'other' }, fields)).toBe("Interests doesn't include Other");
   });
 
   it('widens a column gap to fit its longest label', () => {

@@ -4,7 +4,7 @@
   "issues": [],
   "warnings": [],
   "texts": {
-    "steps.declare.fields.declarations.options.ACCURATE": "Accurate"
+    "steps.agree.fields.agreements.options.terms": "Terms"
   },
   "definition": {
     "formatVersion": "1.4",
@@ -14,62 +14,62 @@
       "label": "Send",
       "disabled": [
         {
-          "field": "declarations",
-          "notContains": "ACCURATE"
+          "field": "agreements",
+          "notContains": "terms"
         }
       ]
     },
     "steps": [
       {
-        "id": "wealth",
-        "title": "Wealth",
+        "id": "about",
+        "title": "About",
         "next": {
           "label": "Continue",
           "disabled": [
             {
-              "field": "sourceOfWealth",
-              "contains": "GIFT"
+              "field": "interests",
+              "contains": "music"
             }
           ]
         },
         "fields": [
           {
-            "key": "sourceOfWealth",
+            "key": "interests",
             "type": "multiselect",
-            "label": "Source of wealth",
+            "label": "Interests",
             "options": [
               {
-                "value": "SALARY",
-                "label": "Salary"
+                "value": "design",
+                "label": "Design"
               },
               {
-                "value": "OTHER",
+                "value": "other",
                 "label": "Other"
               },
               {
-                "value": "GIFT",
-                "label": "Gift"
+                "value": "music",
+                "label": "Music"
               }
             ]
           }
         ]
       },
       {
-        "id": "declare",
-        "title": "Declare",
+        "id": "agree",
+        "title": "Agree",
         "fields": [
           {
-            "key": "declarations",
+            "key": "agreements",
             "type": "multiselect",
-            "label": "Declarations",
+            "label": "Agreements",
             "options": [
               {
-                "value": "ACCURATE",
-                "label": "Accurate"
+                "value": "terms",
+                "label": "Terms"
               },
               {
-                "value": "CONSENT",
-                "label": "Consent"
+                "value": "newsletter",
+                "label": "Newsletter"
               }
             ]
           }
@@ -82,15 +82,15 @@
       "name": "next disabled",
       "input": {
         "values": {
-          "sourceOfWealth": ["SALARY", "GIFT"],
-          "declarations": ["ACCURATE"]
+          "interests": ["design", "music"],
+          "agreements": ["terms"]
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
-          "sourceOfWealth": ["SALARY", "GIFT"],
-          "declarations": ["ACCURATE"]
+          "interests": ["design", "music"],
+          "agreements": ["terms"]
         },
         "errors": {}
       },
@@ -100,15 +100,15 @@
       "name": "submit disabled",
       "input": {
         "values": {
-          "sourceOfWealth": ["SALARY"],
-          "declarations": ["CONSENT"]
+          "interests": ["design"],
+          "agreements": ["newsletter"]
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
-          "sourceOfWealth": ["SALARY"],
-          "declarations": ["CONSENT"]
+          "interests": ["design"],
+          "agreements": ["newsletter"]
         },
         "errors": {}
       },
@@ -118,13 +118,13 @@
       "name": "submit disabled before an answer",
       "input": {
         "values": {
-          "sourceOfWealth": ["SALARY"]
+          "interests": ["design"]
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
-          "sourceOfWealth": ["SALARY"]
+          "interests": ["design"]
         },
         "errors": {}
       },
@@ -134,15 +134,15 @@
       "name": "both enabled",
       "input": {
         "values": {
-          "sourceOfWealth": ["SALARY"],
-          "declarations": ["CONSENT", "ACCURATE"]
+          "interests": ["design"],
+          "agreements": ["newsletter", "terms"]
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
-          "sourceOfWealth": ["SALARY"],
-          "declarations": ["CONSENT", "ACCURATE"]
+          "interests": ["design"],
+          "agreements": ["newsletter", "terms"]
         },
         "errors": {}
       },

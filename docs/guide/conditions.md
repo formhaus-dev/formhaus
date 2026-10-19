@@ -73,19 +73,19 @@ A `multiselect` value is an array, so `eq` and `in` never match it. Test one opt
   "formatVersion": "1.4",
   "fields": [
     {
-      "key": "sourceOfWealth",
+      "key": "interests",
       "type": "multiselect",
-      "label": "Source of wealth",
+      "label": "Interests",
       "options": [
-        { "value": "SALARY", "label": "Salary" },
-        { "value": "OTHER", "label": "Other" }
+        { "value": "design", "label": "Design" },
+        { "value": "other", "label": "Other" }
       ]
     },
     {
-      "key": "otherSourceOfWealth",
+      "key": "otherInterest",
       "type": "text",
-      "label": "Other source of wealth",
-      "show": [{ "field": "sourceOfWealth", "contains": "OTHER" }]
+      "label": "Other interest",
+      "show": [{ "field": "interests", "contains": "other" }]
     }
   ]
 }

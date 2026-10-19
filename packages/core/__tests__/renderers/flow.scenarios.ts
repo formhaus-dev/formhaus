@@ -30,38 +30,38 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     harness.mount({
       definition: {
         formatVersion: '1.4',
-        id: 'kyc',
+        id: 'signup',
         title: '',
         submit: { label: 'Send' },
         fields: [
           {
-            key: 'sourceOfWealth',
+            key: 'interests',
             type: 'multiselect',
-            label: 'Source of wealth',
+            label: 'Interests',
             options: [
-              { value: 'SALARY', label: 'Salary' },
-              { value: 'OTHER', label: 'Other' },
+              { value: 'design', label: 'Design' },
+              { value: 'other', label: 'Other' },
             ],
           },
           {
-            key: 'otherSourceOfWealth',
+            key: 'otherInterest',
             type: 'text',
-            label: 'Other source of wealth',
-            show: [{ field: 'sourceOfWealth', contains: 'OTHER' }],
+            label: 'Other interest',
+            show: [{ field: 'interests', contains: 'other' }],
           },
         ],
       },
       onSubmit,
     });
-    const other = () => screen.queryByRole('textbox', { name: /Other source of wealth/ });
-    await harness.click(screen.getByRole('checkbox', { name: 'Salary' }));
+    const other = () => screen.queryByRole('textbox', { name: /Other interest/ });
+    await harness.click(screen.getByRole('checkbox', { name: 'Design' }));
     expect(other()).toBeNull();
     await harness.click(screen.getByRole('checkbox', { name: 'Other' }));
-    await harness.type(await screen.findByRole('textbox', { name: /Other source of wealth/ }), 'Lottery');
+    await harness.type(await screen.findByRole('textbox', { name: /Other interest/ }), 'Chess');
     await harness.click(screen.getByRole('checkbox', { name: 'Other' }));
     await waitFor(() => expect(other()).toBeNull());
     await harness.click(button('Send'));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ sourceOfWealth: ['SALARY'] }, []));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ interests: ['design'] }, []));
   });
 
   it('advances on an autoAdvance answer', async () => {

@@ -10,73 +10,73 @@
     },
     "steps": [
       {
-        "id": "wealth",
-        "title": "Wealth",
+        "id": "about",
+        "title": "About",
         "fields": [
           {
-            "key": "sourceOfWealth",
+            "key": "interests",
             "type": "multiselect",
-            "label": "Source of wealth",
+            "label": "Interests",
             "options": [
               {
-                "value": "SALARY",
-                "label": "Salary"
+                "value": "design",
+                "label": "Design"
               },
               {
-                "value": "OTHER",
+                "value": "other",
                 "label": "Other"
               },
               {
-                "value": "GIFT",
-                "label": "Gift"
+                "value": "music",
+                "label": "Music"
               }
             ]
           },
           {
-            "key": "otherSourceOfWealth",
+            "key": "otherInterest",
             "type": "text",
-            "label": "Other source of wealth",
+            "label": "Other interest",
             "show": [
               {
-                "field": "sourceOfWealth",
-                "contains": "OTHER"
+                "field": "interests",
+                "contains": "other"
               }
             ]
           },
           {
-            "key": "employer",
+            "key": "portfolio",
             "type": "text",
-            "label": "Employer",
+            "label": "Portfolio",
             "showAny": [
               {
-                "field": "sourceOfWealth",
-                "contains": "SALARY"
+                "field": "interests",
+                "contains": "design"
               },
               {
-                "field": "sourceOfWealth",
-                "contains": "GIFT"
+                "field": "interests",
+                "contains": "music"
               }
             ]
           },
           {
-            "key": "noGift",
+            "key": "noMusic",
             "type": "text",
-            "label": "No gift",
+            "label": "No music",
             "show": [
               {
-                "field": "sourceOfWealth",
-                "notContains": "GIFT"
+                "field": "interests",
+                "notContains": "music"
               }
             ]
           }
         ],
         "routes": [
           {
-            "to": "gift",
+            "to": "music",
             "show": [
               {
-                "field": "sourceOfWealth",
-                "contains": "GIFT"
+                "field": "interests",
+                "contains": "music"
               }
             ]
           },
@@ -86,13 +86,13 @@
         ]
       },
       {
-        "id": "gift",
-        "title": "Gift",
+        "id": "music",
+        "title": "Music",
         "fields": [
           {
-            "key": "donor",
+            "key": "instrument",
             "type": "text",
-            "label": "Donor"
+            "label": "Instrument"
           }
         ],
         "routes": [
@@ -118,22 +118,22 @@
     {
       "name": "show: contains matches when the list holds the operand",
       "values": {
-        "sourceOfWealth": ["SALARY", "OTHER"]
+        "interests": ["design", "other"]
       },
       "steps": [
         {
           "expect": {
-            "fields": ["sourceOfWealth", "otherSourceOfWealth", "employer", "noGift"]
+            "fields": ["interests", "otherInterest", "portfolio", "noMusic"]
           }
         },
         {
           "do": "setValue",
-          "key": "sourceOfWealth",
-          "value": ["SALARY"]
+          "key": "interests",
+          "value": ["design"]
         },
         {
           "expect": {
-            "fields": ["sourceOfWealth", "employer", "noGift"]
+            "fields": ["interests", "portfolio", "noMusic"]
           }
         }
       ]
@@ -141,32 +141,32 @@
     {
       "name": "show: contains never matches and notContains always matches a value that is not a list",
       "values": {
-        "sourceOfWealth": "OTHER"
+        "interests": "other"
       },
       "steps": [
         {
           "expect": {
-            "fields": ["sourceOfWealth", "noGift"]
+            "fields": ["interests", "noMusic"]
           }
         },
         {
           "do": "setValue",
-          "key": "sourceOfWealth",
+          "key": "interests",
           "value": null
         },
         {
           "expect": {
-            "fields": ["sourceOfWealth", "noGift"]
+            "fields": ["interests", "noMusic"]
           }
         },
         {
           "do": "setValue",
-          "key": "sourceOfWealth",
+          "key": "interests",
           "value": []
         },
         {
           "expect": {
-            "fields": ["sourceOfWealth", "noGift"]
+            "fields": ["interests", "noMusic"]
           }
         }
       ]
@@ -174,12 +174,12 @@
     {
       "name": "show: contains compares items strictly",
       "values": {
-        "sourceOfWealth": ["other", "OTHER "]
+        "interests": ["Other", "other "]
       },
       "steps": [
         {
           "expect": {
-            "fields": ["sourceOfWealth", "noGift"]
+            "fields": ["interests", "noMusic"]
           }
         }
       ]
@@ -187,16 +187,16 @@
     {
       "name": "show: a hidden contains field leaves the payload",
       "values": {
-        "sourceOfWealth": ["SALARY"],
-        "otherSourceOfWealth": "Lottery",
-        "employer": "Acme"
+        "interests": ["design"],
+        "otherInterest": "Chess",
+        "portfolio": "example.com"
       },
       "steps": [
         {
           "expect": {
             "submitValues": {
-              "sourceOfWealth": ["SALARY"],
-              "employer": "Acme"
+              "interests": ["design"],
+              "portfolio": "example.com"
             }
           }
         }
@@ -205,22 +205,22 @@
     {
       "name": "showAny: matches when any contains condition matches",
       "values": {
-        "sourceOfWealth": ["GIFT"]
+        "interests": ["music"]
       },
       "steps": [
         {
           "expect": {
-            "fields": ["sourceOfWealth", "employer"]
+            "fields": ["interests", "portfolio"]
           }
         },
         {
           "do": "setValue",
-          "key": "sourceOfWealth",
-          "value": ["OTHER"]
+          "key": "interests",
+          "value": ["other"]
         },
         {
           "expect": {
-            "fields": ["sourceOfWealth", "otherSourceOfWealth", "noGift"]
+            "fields": ["interests", "otherInterest", "noMusic"]
           }
         }
       ]
@@ -228,12 +228,12 @@
     {
       "name": "routes: contains picks the branch",
       "values": {
-        "sourceOfWealth": ["SALARY", "GIFT"]
+        "interests": ["design", "music"]
       },
       "steps": [
         {
           "expect": {
-            "steps": ["wealth", "gift", "review"],
+            "steps": ["about", "music", "review"],
             "progress": {
               "current": 1,
               "total": 3
@@ -246,7 +246,7 @@
         },
         {
           "expect": {
-            "step": "gift"
+            "step": "music"
           }
         },
         {
@@ -255,12 +255,12 @@
         },
         {
           "do": "setValue",
-          "key": "sourceOfWealth",
-          "value": ["SALARY"]
+          "key": "interests",
+          "value": ["design"]
         },
         {
           "expect": {
-            "steps": ["wealth", "review"]
+            "steps": ["about", "review"]
           }
         },
         {

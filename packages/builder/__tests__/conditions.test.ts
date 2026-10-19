@@ -40,14 +40,14 @@ describe('operators', () => {
   });
 
   it('writes and reads contains for list questions', () => {
-    expect(toCondition({ field: 'sources', operator: 'contains', value: 'OTHER' }, 'multiselect')).toEqual({
-      field: 'sources',
-      contains: 'OTHER',
+    expect(toCondition({ field: 'interests', operator: 'contains', value: 'other' }, 'multiselect')).toEqual({
+      field: 'interests',
+      contains: 'other',
     });
-    expect(fromCondition({ field: 'sources', notContains: 'OTHER' }, 'multiselect')).toEqual({
-      field: 'sources',
+    expect(fromCondition({ field: 'interests', notContains: 'other' }, 'multiselect')).toEqual({
+      field: 'interests',
       operator: 'notContains',
-      value: 'OTHER',
+      value: 'other',
     });
   });
 

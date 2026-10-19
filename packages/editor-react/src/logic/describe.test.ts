@@ -27,15 +27,15 @@ describe('describeLogic', () => {
 
   it('describes a contains condition with the option label', () => {
     const form = fromDefinition({
-      id: 'kyc',
-      title: 'KYC',
+      id: 'signup',
+      title: 'Sign up',
       submit: { label: 'Send' },
       fields: [
-        { key: 'sources', type: 'multiselect', label: 'Source of wealth', options: [{ value: 'OTHER', label: 'Other' }] },
-        { key: 'other', type: 'text', label: 'Other source', show: [{ field: 'sources', contains: 'OTHER' }] },
+        { key: 'interests', type: 'multiselect', label: 'Interests', options: [{ value: 'other', label: 'Other' }] },
+        { key: 'other', type: 'text', label: 'Other interest', show: [{ field: 'interests', contains: 'other' }] },
       ],
     });
     const other = form.blocks.find((block) => isQuestion(block) && block.key === 'other')!;
-    expect(describeLogic(form, logicOf(form, other))).toBe('Shown if Source of wealth includes Other');
+    expect(describeLogic(form, logicOf(form, other))).toBe('Shown if Interests includes Other');
   });
 });
