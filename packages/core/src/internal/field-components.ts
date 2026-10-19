@@ -1,6 +1,6 @@
 import type { DefaultFieldType } from '../types';
 
-export const DEFAULT_FIELD_COMPONENT_NAMES = {
+const DEFAULT_FIELD_COMPONENT_NAMES = {
   text: 'TextField',
   email: 'TextField',
   phone: 'TextField',
@@ -22,7 +22,7 @@ export const DEFAULT_FIELD_COMPONENT_NAMES = {
   rating: 'ScaleField',
 } as const satisfies Record<DefaultFieldType, string>;
 
-export type DefaultFieldComponentName = (typeof DEFAULT_FIELD_COMPONENT_NAMES)[DefaultFieldType];
+type DefaultFieldComponentName = (typeof DEFAULT_FIELD_COMPONENT_NAMES)[DefaultFieldType];
 
 export function fieldComponentsByName<T>(byName: Record<DefaultFieldComponentName, T>): Record<DefaultFieldType, T> {
   return Object.fromEntries(Object.entries(DEFAULT_FIELD_COMPONENT_NAMES).map(([type, name]) => [type, byName[name]])) as Record<
