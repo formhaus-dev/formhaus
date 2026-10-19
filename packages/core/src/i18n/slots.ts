@@ -119,6 +119,10 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
       'cancel',
     ] as const)
       labels.add(key);
+  if (
+    getAllFields(definition).some((field) => ['radio', 'multiselect'].includes(field.type) && field.options?.some((option) => option.image))
+  )
+    for (const key of ['enlargeImage', 'close'] as const) labels.add(key);
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),

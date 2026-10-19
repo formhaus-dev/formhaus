@@ -158,7 +158,7 @@ export function containerScenarios(harness: RendererHarness, { it, expect, waitF
   it('maps server errors to item fields and focuses Add for a count error', async () => {
     harness.mount({ definition: team, initialValues: { crew: [{ name: 'A' }] }, errorSummary: true, onSubmit: () => {} });
     await harness.click(button('Send'));
-    await screen.findByText('Must be at least 2 items');
+    await screen.findByText('At least 2 required');
     await waitFor(() => expect(active()).toBe(button('Add')));
     expect(screen.getByRole('group', { name: 'Crew' }).getAttribute('aria-invalid')).toBe('true');
   });

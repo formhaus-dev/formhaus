@@ -48,8 +48,8 @@ describe('validateSubmission with oversized or invalid groups', () => {
     const definition = group({ maxLength: 3 });
     const items = Array.from({ length: 101 }, () => ({ name: 'A' }));
     const engine = new FormEngine(definition, { people: items });
-    expect(validateSubmission(definition, { people: items }).errors).toEqual({ people: 'Must be at most 3 items' });
-    expect(engine.validate()).toEqual({ people: 'Must be at most 3 items' });
+    expect(validateSubmission(definition, { people: items }).errors).toEqual({ people: 'At most 3 allowed' });
+    expect(engine.validate()).toEqual({ people: 'At most 3 allowed' });
   });
 
   it('omits values that are not lists of plain objects and drops unknown item keys', () => {
@@ -113,7 +113,7 @@ describe('validateSubmission with a key shared by exclusive branches', () => {
     expect(validateSubmission(definition, { route: wide, answer: two })).toEqual({ values: { route: wide, answer: two }, errors: {} });
     expect(validateSubmission(definition, { route: narrow, answer: two })).toEqual({
       values: { route: narrow },
-      errors: { answer: 'Must be at most 1 items' },
+      errors: { answer: 'At most 1 allowed' },
     });
   });
 

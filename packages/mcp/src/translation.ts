@@ -71,7 +71,7 @@ export const i18nCapabilities = {
   },
   labels: {
     defaults: defaultLabels,
-    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. addItem and removeItem are the group button defaults, itemLabel takes {label} and {index}, itemAdded, itemRemoved and removeItemPrompt take {item}, removeItemNamed is the accessible name of a Remove button with {label} and {item}, removeItemBody takes {item} and is the text of the remove dialog, cancel closes it. Explicit next and back labels and group texts win.',
+    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. addItem and removeItem are the group button defaults, itemLabel takes {label} and {index}, itemAdded, itemRemoved and removeItemPrompt take {item}, removeItemNamed is the accessible name of a Remove button with {label} and {item}, removeItemBody takes {item} and is the text of the remove dialog, cancel closes it. enlargeImage takes {label} and names the button that opens an option image, close closes that preview. Explicit next and back labels and group texts win.',
   },
   keys: {
     slots,

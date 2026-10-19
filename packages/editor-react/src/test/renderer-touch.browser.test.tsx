@@ -56,14 +56,16 @@ describe('touch targets at 390px', () => {
       expect(point.width).toBeGreaterThanOrEqual(44);
       expect(point.height).toBeGreaterThanOrEqual(44);
     }
-    const texts = [...document.querySelectorAll('.fh-field__scale-anchor')].map((node) => {
+    const ranges = [...document.querySelectorAll('.fh-field__scale-anchor')].map((node) => {
       const range = document.createRange();
       range.selectNodeContents(node);
-      return range.getBoundingClientRect();
+      return range;
     });
-    const [start, end] = [texts[0], texts.at(-1)];
-    expect(Math.round(start!.left)).toBe(Math.round(points[0]!.left));
-    expect(Math.round(end!.right)).toBe(Math.round(points[10]!.right));
+    const [start, end] = [ranges[0]!, ranges.at(-1)!];
+    expect(Math.round(start.getBoundingClientRect().left)).toBe(Math.round(points[0]!.left));
+    expect(Math.round(end.getBoundingClientRect().right)).toBe(Math.round(points[5]!.right));
+    expect(Math.round(start.getBoundingClientRect().top)).toBe(Math.round(end.getBoundingClientRect().top));
+    expect([start.getClientRects().length, end.getClientRects().length]).toEqual([1, 1]);
     expect(screen.getAllByRole('radio')).toHaveLength(11);
   });
 

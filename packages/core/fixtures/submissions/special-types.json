@@ -147,7 +147,7 @@
           "avatar": "Must be a file reference",
           "birthday": "Enter a valid date",
           "meeting": "Enter a valid date and time",
-          "rating": "Must be at most 10000 characters"
+          "rating": "Maximum length is 10000"
         }
       }
     }
