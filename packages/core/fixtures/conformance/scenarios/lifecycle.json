@@ -836,6 +836,90 @@
           }
         }
       ]
+    },
+    {
+      "name": "discards stale before-hook work after an empty field is answered",
+      "values": {
+        "name": "Ada"
+      },
+      "hooks": {
+        "onBeforeStepChange": [
+          {
+            "defer": "guard"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "next",
+          "await": false,
+          "returns": false
+        },
+        {
+          "do": "setValue",
+          "key": "accountType",
+          "value": "personal"
+        },
+        {
+          "do": "resolve",
+          "deferred": "guard"
+        },
+        {
+          "do": "settle"
+        },
+        {
+          "expect": {
+            "step": "personal",
+            "stepValidating": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "discards a pending submission when an empty field is answered",
+      "values": {
+        "name": "Ada"
+      },
+      "hooks": {
+        "onBeforeSubmit": [
+          {
+            "defer": "allow"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "submit",
+          "handler": [],
+          "await": false,
+          "returns": false
+        },
+        {
+          "do": "setValue",
+          "key": "accountType",
+          "value": "personal"
+        },
+        {
+          "do": "resolve",
+          "deferred": "allow"
+        },
+        {
+          "do": "settle"
+        },
+        {
+          "expect": {
+            "submitting": false,
+            "log": [
+              {
+                "call": "onBeforeSubmit",
+                "values": {
+                  "name": "Ada"
+                }
+              }
+            ]
+          }
+        }
+      ]
     }
   ]
 }
