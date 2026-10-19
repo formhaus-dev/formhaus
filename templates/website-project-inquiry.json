@@ -106,9 +106,9 @@
           {
             "key": "goals",
             "type": "textarea",
-            "label": "What should the site do for your business?",
+            "label": "What should this project achieve?",
             "rows": 4,
-            "placeholder": "Sell online, get more bookings, look more credible…",
+            "placeholder": "Sell online, get more bookings, look more credible, reach new customers…",
             "validation": { "required": true }
           },
           {

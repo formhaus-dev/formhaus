@@ -89,6 +89,15 @@
                 "validation": { "required": true }
               },
               {
+                "key": "damageLink",
+                "type": "text",
+                "label": "Link to photos of the damage and the packaging",
+                "placeholder": "https://",
+                "helperText": "A shared album or folder. We need them to file a claim with the carrier.",
+                "show": [{ "field": "reason", "eq": "damaged" }],
+                "validation": { "required": true }
+              },
+              {
                 "key": "condition",
                 "type": "radio",
                 "label": "Condition of the item",
@@ -125,7 +134,7 @@
             "type": "file",
             "label": "Photo of the damage or the item",
             "accept": "image/*",
-            "helperText": "For a damaged, faulty or wrong item. We need a photo of the damage and the packaging to file a claim with the carrier."
+            "helperText": "For a faulty or wrong item."
           },
           {
             "key": "photosLink",
