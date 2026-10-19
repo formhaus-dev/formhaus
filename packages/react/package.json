@@ -5,7 +5,7 @@
   "type": "module",
   "sideEffects": false,
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "exports": {
     ".": {
@@ -46,7 +46,7 @@
     "react-dom": "^19.3.0",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",
-    "vitest": "^4.1.3"
+    "vitest": "^5.0.3"
   },
   "license": "MIT",
   "homepage": "https://formhaus.dev/framework",

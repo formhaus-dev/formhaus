@@ -8,7 +8,7 @@
     "dist/server.iife.js"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "exports": {
     ".": {
@@ -63,7 +63,7 @@
     "ts-json-schema-generator": "^2.9.0",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",
-    "vitest": "^4.1.2"
+    "vitest": "^5.0.3"
   },
   "license": "MIT",
   "homepage": "https://formhaus.dev/framework",

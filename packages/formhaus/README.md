@@ -6,7 +6,7 @@ Adds the [Formhaus](https://formhaus.dev) MCP server and agent instructions to t
 npx formhaus
 ```
 
-Run it anywhere inside a project to also add the Cursor rule at the project root: the nearest folder above with `.git`, `package.json` or `.cursor`, below your home directory. Requires Node 20 or later.
+Run it anywhere inside a project to also add the Cursor rule at the project root: the nearest folder above with `.git`, `package.json` or `.cursor`, below your home directory. Requires Node 22.12 or later.
 
 ```text
 Formhaus is ready in Claude Code, Codex, Cursor and Claude Desktop.
