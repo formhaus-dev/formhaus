@@ -2,7 +2,7 @@ import type { ComponentPropsWithRef, CSSProperties } from 'react';
 import { cx } from '../../lib/cx';
 import styles from './Stack.module.css';
 
-export type Space = '0' | '0-5' | '1' | '1-5' | '2' | '2-5' | '3' | '4' | '5' | '6' | '8' | '10' | '12';
+type Space = '0' | '0-5' | '1' | '1-5' | '2' | '2-5' | '3' | '4' | '5' | '6' | '8' | '10' | '12';
 
 type Align = 'start' | 'center' | 'end' | 'baseline' | 'stretch';
 type Justify = 'start' | 'center' | 'end' | 'between';

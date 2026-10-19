@@ -4,7 +4,7 @@ import type { KitTheme } from '../kits/kit';
 import type { FlowEdge } from './graph';
 import type { Point } from './layout';
 
-export const FLOW_KEY = 'flowOf';
+const FLOW_KEY = 'flowOf';
 const ANCHOR = 64;
 const SPREAD = 28;
 const END_LENGTH = 72;
@@ -17,7 +17,7 @@ interface Box {
   height: number;
 }
 
-export function edgePoints(source: Box, target: Box | null, outIndex: number, inIndex: number): Point[] {
+function edgePoints(source: Box, target: Box | null, outIndex: number, inIndex: number): Point[] {
   const start = { x: source.x + source.width, y: source.y + ANCHOR + outIndex * SPREAD };
   if (!target) return [start, { x: start.x + END_LENGTH, y: start.y }];
   const end = { x: target.x, y: target.y + ANCHOR + inIndex * SPREAD };

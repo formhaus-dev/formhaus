@@ -1,6 +1,6 @@
 import type { FieldOption, FormField, FormSection } from '@formhaus/core';
 import { issue, type Issue } from './issues';
-import { IMAGE_FIELD_TYPES, MATRIX_ROW_TYPES, SCALE_FIELD_TYPES } from './vocabulary';
+import { IMAGE_FIELD_TYPES, SCALE_FIELD_TYPES } from './vocabulary';
 
 const MAX_COLUMNS = 7;
 
@@ -106,7 +106,7 @@ export function matrixIssues(section: FormSection, path: string): Issue[] {
     at: `${path}/fields/${index}`,
   }));
   const issues: Issue[] = rows
-    .filter(({ node }) => node.type !== 'hidden' && !has(MATRIX_ROW_TYPES, node.type))
+    .filter(({ node }) => node.type !== 'hidden' && !has(IMAGE_FIELD_TYPES, node.type))
     .map(({ node, at }) =>
       issue(
         'matrix-row-type',
@@ -116,7 +116,7 @@ export function matrixIssues(section: FormSection, path: string): Issue[] {
         'Use radio or multiselect fields in a matrix section',
       ),
     );
-  const choices = rows.filter(({ node }) => has(MATRIX_ROW_TYPES, node.type));
+  const choices = rows.filter(({ node }) => has(IMAGE_FIELD_TYPES, node.type));
   const first = choices[0];
   if (!first) return issues;
   for (const { node, at } of choices.slice(1)) {

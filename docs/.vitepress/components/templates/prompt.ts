@@ -1,6 +1,6 @@
 const mcpUrl = 'https://api.formhaus.dev/mcp';
 
-export const templateJsonUrl = (slug: string) => `https://formhaus.dev/templates/${slug}.json`;
+const templateJsonUrl = (slug: string) => `https://formhaus.dev/templates/${slug}.json`;
 
 export function templatePrompt(title: string, slug: string): string {
   return [

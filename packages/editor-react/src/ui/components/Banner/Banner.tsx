@@ -3,7 +3,7 @@ import type { ComponentPropsWithRef, ReactNode } from 'react';
 import { cx } from '../../lib/cx';
 import styles from './Banner.module.css';
 
-export type BannerTone = 'info' | 'success' | 'warning' | 'danger';
+type BannerTone = 'info' | 'success' | 'warning' | 'danger';
 
 const icons = { info: Info, success: CircleCheck, warning: TriangleAlert, danger: CircleAlert };
 

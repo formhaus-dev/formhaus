@@ -31,7 +31,7 @@ export interface Agent {
 export class SetupError extends Error {}
 
 export const SERVER_NAME = 'formhaus';
-export const SERVER_PACKAGE = '@formhaus/mcp';
+const SERVER_PACKAGE = '@formhaus/mcp';
 export const SERVER = { command: 'npx', args: ['-y', SERVER_PACKAGE] };
 export const GUIDE_URL = 'https://formhaus.dev/guide/mcp';
 export const START_URL = 'https://formhaus.dev/guide/';
