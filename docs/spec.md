@@ -133,7 +133,7 @@ Built-in type names are single lowercase words without separators. A type name w
 
 `scale` and `rating` ask for one point on a numeric range. The built-in renderers draw `scale` as a row of numbered boxes and `rating` as a row of stars.
 
-- **Range.** For `scale`, the points run from `validation.min` to `validation.max`. `min` defaults to 1 and `max` to 5. Use `min` 0 or 1 and 3 to 11 points. For `rating`, the stars run from 1 to `validation.max`, which defaults to 5. Use 3 to 10 stars.
+- **Range.** For `scale`, the points run from `validation.min` to `validation.max`. `min` defaults to 1 and `max` to 5. Use `min` 0 or 1 and 3 to 11 points. For `rating`, the stars run from 1 to `validation.max`, which defaults to 5. Use 3 to 10 stars. Bounds that are not integers, or a range of fewer than 2 or more than 11 points, are an `invalid-scale` error: `rating` `max` must be 2 to 11.
 - **Value.** An integer number of the range, such as `7`. Built-in renderers write a number. Core does not convert a numeric string in the browser; `validateSubmission()` converts a decimal string, such as `"7"`, to a number before the checks, as it does for `number`.
 - **Empty.** Like any field: `undefined`, `null` or `''`. `0` is a value, so `0` on a 0-based scale passes `required` and `notEmpty`.
 - **Type check.** A value that is not an integer of the range fails with the `option` message. `7.5`, `11` on a 0 to 10 scale, `"7"` in the browser and `true` all fail.
@@ -173,7 +173,7 @@ An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors
 
 ### Picture options
 
-An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host.
+An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host. The image host sees the respondent's IP address. The built-in renderers send no `Referer` header with option images. An `image` that does not start with `https:` or `data:image/` is an `unsafe-image-url` warning.
 
 `columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field in a matrix section. Each card has a button that opens the image at full size.
 
@@ -769,6 +769,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
 | `duplicate-option-value` | error | An option value that an earlier option of the same field already uses |
 | `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, `defaultItems` greater than `maxLength`, or `columns` outside 1 to 4 |
+| `invalid-scale` | error | A `scale` or `rating` whose `min` or `max` is not an integer, or whose range has fewer than 2 or more than 11 points |
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
@@ -785,6 +786,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `columns-not-applicable` | warning | `columns` on a field whose options have no `image`, on a field other than `radio` or `multiselect`, or on a field in a matrix section |
+| `unsafe-image-url` | warning | An option `image` that does not start with `https:` or `data:image/` |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |
