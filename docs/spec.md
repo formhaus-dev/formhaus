@@ -19,7 +19,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.5**. `@formhaus/core` 0.21 and later implement it. Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.5**. `@formhaus/core` 0.21 and later implement it. Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall) and [exclusive options](#exclusive-options). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
@@ -36,6 +36,8 @@ A definition with a `scale` or `rating` field SHOULD declare `"formatVersion": "
 A definition with a `contains` or `notContains` condition SHOULD declare `"formatVersion": "1.4"`. Core 0.19 and older reject it with `unknown-operator`: the constructor and `validateSubmission()` throw. `checkDefinition()` warns about these operators without format 1.4. Upgrade the server that runs `validateSubmission()` before the clients.
 
 A definition whose texts recall answers MUST declare `"formatVersion": "1.5"` or newer. Without it, and in core 0.20 and older, the texts show `{{key}}` as written. `checkDefinition()` warns about a `{{key}}` token without format 1.5.
+
+A definition with an [exclusive option](#exclusive-options) SHOULD declare `"formatVersion": "1.5"`. Core 0.20 and older report `exclusive` as `unknown-property` and ignore it: their engine keeps the other answers, and their `validateSubmission()` accepts an exclusive option with other values. `checkDefinition()` warns about an exclusive option without format 1.5. Upgrade the server that runs `validateSubmission()` before the clients.
 
 ```json
 { "formatVersion": "1.5", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
@@ -78,7 +80,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `show` | [condition](#conditions)[] | Visible when all conditions match. |
 | `showAny` | [condition](#conditions)[] | Visible when at least one condition matches. |
 | `validation` | [validation](#validation) | Validation rules. |
-| `options` | `{ value: string, label: string, image?: string }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
+| `options` | `{ value: string, label: string, image?: string, exclusive?: boolean }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
 | `layout` | `"stack"` or `"inline"` | Option layout for `radio` and `multiselect`. `stack` (default) lists options vertically. `inline` places short options side by side. |
 | `columns` | integer, 1 to 4 | Cards per row for [picture options](#picture-options). |
 | `optionsFrom` | string | Name of a renderer options provider. |
@@ -91,7 +93,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `props` | object | Settings of a [custom type](#field-types). Core ignores it. Renderers pass it unchanged as `field.props`. Added in 1.2. |
 | `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
 
-An option MAY have `i18n: { label }` and an [`image`](#picture-options). `validation` MAY have `i18n` with keys by rule name.
+An option MAY have `i18n: { label }`, an [`image`](#picture-options) and [`exclusive`](#exclusive-options). `validation` MAY have `i18n` with keys by rule name.
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate. Section keys share this namespace.
 
@@ -180,6 +182,37 @@ An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors
 An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host. The image host sees the respondent's IP address. The built-in renderers send no `Referer` header with option images. An `image` that does not start with `https:` or `data:image/` is an `unsafe-image-url` warning.
 
 `columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field whose parent container has `layout: "matrix"`. Each card has a button that opens the image at full size.
+
+### Exclusive options
+
+An option of a `multiselect` field MAY have `"exclusive": true`. It is the only answer when picked, as in "None of these" or "Prefer not to say".
+
+```json
+{
+  "formatVersion": "1.5",
+  "id": "health",
+  "title": "Health",
+  "submit": { "label": "Send" },
+  "fields": [
+    {
+      "key": "conditions",
+      "type": "multiselect",
+      "label": "Do you have any of these conditions?",
+      "options": [
+        { "value": "asthma", "label": "Asthma" },
+        { "value": "diabetes", "label": "Diabetes" },
+        { "value": "none", "label": "None of these", "exclusive": true }
+      ]
+    }
+  ]
+}
+```
+
+- `setValue()` and `setItemValue()` apply the rule against the current value. A new list that adds no value is written as given. A new list that adds an exclusive option becomes a list of that option alone; when it adds several, the last one wins. Otherwise a new list that adds other values and holds an exclusive option drops the exclusive options. Several exclusive options clear each other.
+- Initial values, `reset()` and loaded drafts are not changed. A list with an exclusive option and any other value, including a second exclusive option, fails the type check with the `exclusive` message, in `validate()` and in `validateSubmission()`. `validateSubmission()` leaves it out of the returned values like any value that fails its type check. The server never picks one for the user.
+- One exclusive option alone is an answer: it satisfies `required`, and `minLength` does not apply to it. `maxLength`, `contains`, `notContains` and `notEmpty` work as for any list.
+- The built-in renderers show the [`or` label](#message-and-label-catalogs) before the first exclusive option that follows a non-exclusive one. The options stay native checkboxes. In a section with `layout: "matrix"` the divider is hidden.
+- `exclusive` is ignored on other field types and on a field with `optionsFrom`, which reports `exclusive-not-applicable`. An exclusive option followed by a non-exclusive one is an `exclusive-option-position` warning, a `defaultValue` with an exclusive option and other values is `exclusive-default-value`, and `minLength` greater than 1 is `exclusive-with-min-length`.
 
 ## Sections
 
@@ -423,7 +456,7 @@ Each rule except `required` and `validator` has a matching message property: `mi
 Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
-2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, an array without repeated values for `multiselect`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
+2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, an array without repeated values and without an [exclusive option](#exclusive-options) next to other values for `multiselect`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
 3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched.
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
@@ -696,13 +729,14 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `time` | `Enter a valid time` | |
 | `option` | `Select one of the available options` | |
 | `options` | `Must be a list of available options` | |
+| `exclusive` | `Select "{option}" or other options, not both` | `option` (the label of the exclusive option) |
 | `boolean` | `Must be true or false` | |
 | `string` | `Must be text` | |
 | `file` | `Must be a file reference` | |
 | `value` | `Invalid value` | |
 | `hidden` | `{label}: {message}` | `label`, `message` |
 
-`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`. A `multiselect` value that is not an array or repeats a value fails with `options`; an item that is not a static option fails with `option`.
+`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`. A `multiselect` value that is not an array or repeats a value fails with `options`, and one that holds an exclusive option with other values fails with `exclusive`; an item that is not a static option fails with `option`.
 
 | Label key | Default | Params |
 |---|---|---|
@@ -729,6 +763,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `submit` | `Submit` | |
 | `stepTitle` | `Step {index}` | `index` (1-based) |
 | `stepErrors` | `Errors: {count}` | `count` |
+| `or` | `or` | |
 
 A message for a failed rule comes from the first of:
 
@@ -737,7 +772,7 @@ A message for a failed rule comes from the first of:
 3. `definition.messages`.
 4. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `required`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `required`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 
@@ -862,7 +897,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, or a `{{key}}` token without 1.5 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, or a `{{key}}` token or an exclusive option without 1.5 |
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
@@ -874,6 +909,10 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `columns-not-applicable` | warning | `columns` on a field whose options have no `image`, on a field other than `radio` or `multiselect`, or on a field whose parent has `layout: "matrix"` |
 | `unsafe-image-url` | warning | An option `image` that does not start with `https:` or `data:image/` |
+| `exclusive-not-applicable` | warning | `exclusive` on an option of a field other than `multiselect`, or of a field with `optionsFrom` |
+| `exclusive-option-position` | warning | An exclusive option followed by an option that is not exclusive |
+| `exclusive-default-value` | warning | A `defaultValue` that holds an exclusive option and other values |
+| `exclusive-with-min-length` | warning | `minLength` greater than 1 on a `multiselect` with an exclusive option |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |

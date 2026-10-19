@@ -15,6 +15,7 @@ export type MessageKey =
   | 'time'
   | 'option'
   | 'options'
+  | 'exclusive'
   | 'boolean'
   | 'string'
   | 'file'
@@ -44,7 +45,8 @@ export type LabelKey =
   | 'skip'
   | 'submit'
   | 'stepTitle'
-  | 'stepErrors';
+  | 'stepErrors'
+  | 'or';
 
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 export type LabelCatalog = Partial<Record<LabelKey, string>>;

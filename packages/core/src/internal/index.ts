@@ -22,6 +22,7 @@ export { fieldDomId, itemDomId } from './ids';
 export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle, type ErrorEntry, type ErrorGroup } from './items';
 export { warnMissingComponents } from './missing-components';
 export {
+  dividerBefore,
   loadOptions,
   optionKey,
   optionSources,

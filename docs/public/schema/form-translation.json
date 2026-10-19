@@ -80,6 +80,9 @@
         "options": {
           "type": "string"
         },
+        "exclusive": {
+          "type": "string"
+        },
         "boolean": {
           "type": "string"
         },
@@ -168,6 +171,9 @@
           "type": "string"
         },
         "stepErrors": {
+          "type": "string"
+        },
+        "or": {
           "type": "string"
         }
       },

@@ -94,6 +94,9 @@ function normalizeItems(group: FormGroup, input: unknown): unknown {
 
 const staticOptions = (field: FormField) => (field.optionsFrom ? undefined : field.options);
 
+export const exclusiveValues = (field: FormField): unknown[] =>
+  LIST_TYPES.includes(field.type) ? (staticOptions(field) ?? []).filter((option) => option.exclusive).map(({ value }) => value) : [];
+
 function isOption(field: FormField, value: unknown): boolean {
   const options = staticOptions(field);
   return !options || options.some((option) => option.value === value);
@@ -110,7 +113,9 @@ function multiselectError(field: FormField, value: unknown, fail: Fail): string 
   if (value.length > (staticOptions(field)?.length ?? MAX_ITEMS)) return fail('option');
   const valid = value.every((item) => typeof item === 'string' && item.length <= MAX_STRING_LENGTH && isOption(field, item));
   if (!valid) return fail('option');
-  return new Set(value).size === value.length ? null : fail('options');
+  if (new Set(value).size !== value.length) return fail('options');
+  const exclusive = value.length > 1 ? staticOptions(field)?.find((option) => option.exclusive && value.includes(option.value)) : undefined;
+  return exclusive ? fail('exclusive', { option: exclusive.label }) : null;
 }
 
 function stringError(field: FormField, value: unknown, key: MessageKey, fail: Fail): string | null {
@@ -167,7 +172,7 @@ export function typeMessageKeys(field: FormField): MessageKey[] {
   if (BOOLEAN_TYPES.includes(field.type)) return ['boolean'];
   if (field.type === 'number') return ['number'];
   if (SCALE_TYPES.includes(field.type)) return ['option'];
-  if (LIST_TYPES.includes(field.type)) return ['options', 'option'];
+  if (LIST_TYPES.includes(field.type)) return ['options', 'option', ...(exclusiveValues(field).length ? ['exclusive' as const] : [])];
   const format = FORMATS.get(field.type)?.[1];
   if (format) return [format, 'maxLength'];
   if (field.type === 'file') return ['file', 'maxLength'];

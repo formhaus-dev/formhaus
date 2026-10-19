@@ -9,6 +9,7 @@ import { propertyWarnings } from './properties';
 import { versionWarnings } from './version-warnings';
 import { recallWarnings } from './recall-warnings';
 import { sourceWarnings } from './sources';
+import { exclusiveWarnings } from './exclusive-warnings';
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
@@ -239,5 +240,6 @@ export function definitionWarnings(context: CheckContext): DefinitionIssue[] {
     ...context.entries.flatMap((entry) => fieldWarnings(context, entry)),
     ...routeWarnings(context),
     ...recallWarnings(context),
+    ...exclusiveWarnings(context),
   ];
 }

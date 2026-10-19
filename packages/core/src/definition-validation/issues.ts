@@ -47,7 +47,11 @@ export type DefinitionIssueCode =
   | 'unknown-source'
   | 'source-not-applicable'
   | 'columns-not-applicable'
-  | 'unsafe-image-url';
+  | 'unsafe-image-url'
+  | 'exclusive-not-applicable'
+  | 'exclusive-option-position'
+  | 'exclusive-default-value'
+  | 'exclusive-with-min-length';
 
 export interface DefinitionIssue {
   code: DefinitionIssueCode;

@@ -165,6 +165,27 @@ Pick multiple from a list. Renders as a checkbox group. The value is an array of
 
 Options stack vertically. Set `"layout": "inline"` to place short options side by side, as with radio. `layout` was added in 0.10.0.
 
+### None of these
+
+Mark an option `"exclusive": true` to make it the only answer. Picking it clears the other answers, and picking another option clears it. The renderers show "or" before it, from the `or` label. Requires `"formatVersion": "1.5"` and `@formhaus/core` 0.21.
+
+```json
+{
+  "key": "conditions",
+  "type": "multiselect",
+  "label": "Do you have any of these conditions?",
+  "options": [
+    { "value": "asthma", "label": "Asthma" },
+    { "value": "diabetes", "label": "Diabetes" },
+    { "value": "heart", "label": "Heart disease" },
+    { "value": "none", "label": "None of these", "exclusive": true }
+  ],
+  "validation": { "required": true }
+}
+```
+
+`["none"]` answers a required field. `validateSubmission()` rejects `["none", "asthma"]`. Put exclusive options last. Several are allowed, such as "None of these" and "Prefer not to say", and they clear each other. `contains` and `notContains` test them like any option.
+
 ## Checkbox
 
 Boolean toggle with a label.

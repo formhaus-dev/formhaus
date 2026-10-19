@@ -84,7 +84,10 @@ function action(value: unknown, path: string): DefinitionIssue[] {
   return [...typed(value, { label: 'string' }, path), ...list(value.disabled, `${path}/disabled`, 'a condition object', condition)];
 }
 
-const option: Check = (value, path) => [...text(value, 'value', path), ...typed(value, { label: 'string', image: 'string' }, path)];
+const option: Check = (value, path) => [
+  ...text(value, 'value', path),
+  ...typed(value, { label: 'string', image: 'string', exclusive: 'boolean' }, path),
+];
 
 const RULES: Record<string, Kind> = {
   required: 'requirement',
