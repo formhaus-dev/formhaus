@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
 import { validateSubmission } from '../../src/server';
-import type { FormDefinition } from '../../src';
+import type { FormDefinition, FormField } from '../../src';
 
 interface SubmissionCase {
   name: string;
@@ -134,5 +134,76 @@ describe.skipIf(!existsSync(iifePath) && !process.env.CI)('server IIFE build', (
       const result = context.Formhaus!.validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps });
       expect(JSON.parse(JSON.stringify(result)), name).toEqual(expected);
     }
+  });
+});
+
+describe('validateSubmission with an oversized multiselect value', () => {
+  const tags = (extra: Partial<FormField> = {}): FormField => ({
+    key: 'tags',
+    type: 'multiselect',
+    label: 'Tags',
+    options: [
+      { value: 'a', label: 'A' },
+      { value: 'x', label: 'X' },
+    ],
+    ...extra,
+  });
+  const definition = (field: FormField): FormDefinition => ({
+    id: 'tags',
+    title: '',
+    submit: { label: 'Send' },
+    fields: [
+      field,
+      {
+        key: 'picked',
+        type: 'text',
+        label: 'Picked',
+        show: [{ field: 'tags', contains: 'x' }],
+      },
+      ...Array.from(
+        { length: 300 },
+        (_, index): FormField => ({
+          key: `other${index}`,
+          type: 'text',
+          label: 'Other',
+          show: [{ field: 'tags', notContains: `q${index}` }],
+        }),
+      ),
+    ],
+  });
+
+  it('evaluates conditions as if the value were blank', () => {
+    const values = {
+      tags: Array.from({ length: 250000 }, () => 'x'),
+      picked: 'smuggled',
+      other0: 'kept',
+    };
+    const started = performance.now();
+    const result = validateSubmission(definition(tags()), values);
+    expect(performance.now() - started).toBeLessThan(2000);
+    expect(result.errors).toEqual({ tags: 'Select one of the available options' });
+    expect(Object.keys(result.values).sort()).toEqual(['other0', 'tags']);
+  });
+
+  it('caps a value with remote options at 1000 items', () => {
+    const remote = tags({ optionsFrom: 'tags', options: [] });
+    const fits = validateSubmission(definition(remote), {
+      tags: Array.from({ length: 1000 }, (_, index) => `x${index}`),
+      picked: 'p',
+    });
+    expect(fits.errors).toEqual({});
+    const over = validateSubmission(definition(remote), {
+      tags: ['x', ...Array.from({ length: 1000 }, (_, index) => `y${index}`)],
+      picked: 'p',
+    });
+    expect(over.errors).toEqual({ tags: 'Select one of the available options' });
+    expect(over.values.picked).toBeUndefined();
+  });
+
+  it('treats a string as blank', () => {
+    expect(validateSubmission(definition(tags()), { tags: 'x', picked: 'p' })).toEqual({
+      values: { tags: 'x' },
+      errors: { tags: 'Must be a list of available options' },
+    });
   });
 });

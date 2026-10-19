@@ -45,6 +45,42 @@ describe('FormEngine.replaceDefinition: pending work, skips and notifications', 
     expect(engine.currentStep?.id).toBe('confirm');
   });
 
+  it('blocks a second submit until the dispatched request settles', async () => {
+    const response = deferred<void>();
+    const engine = new FormEngine(base, { plan: 'team', name: 'Ada' });
+    await engine.next();
+    const first = vi.fn(() => response.promise);
+    const submitting = engine.submit(first);
+    await Promise.resolve();
+    expect(first).toHaveBeenCalledTimes(1);
+    engine.replaceDefinition({ ...base, title: 'Sign up v2' });
+    expect(engine.submitting).toBe(true);
+    const second = vi.fn();
+    expect(await engine.submit(second)).toBe(false);
+    expect(second).not.toHaveBeenCalled();
+    response.resolve();
+    expect(await submitting).toBe(true);
+    expect(engine.submitting).toBe(false);
+    expect(await engine.submit(second)).toBe(true);
+    expect(second).toHaveBeenCalledTimes(1);
+  });
+
+  it('releases the submit lock when the dispatched request throws after a replacement', async () => {
+    const response = deferred<void>();
+    const engine = new FormEngine(base, { plan: 'team', name: 'Ada' });
+    await engine.next();
+    const submitting = engine.submit(async () => {
+      await response.promise;
+      throw new Error('Network');
+    });
+    await Promise.resolve();
+    engine.replaceDefinition(extended);
+    expect(engine.submitting).toBe(true);
+    response.resolve();
+    await expect(submitting).rejects.toThrow('Network');
+    expect(engine.submitting).toBe(false);
+  });
+
   it('keeps a skipped step skipped when it still exists', async () => {
     const optional = {
       ...extended,

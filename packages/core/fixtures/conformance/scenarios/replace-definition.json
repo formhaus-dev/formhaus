@@ -1423,6 +1423,111 @@
       ]
     },
     {
+      "name": "blocks a second submit while the first request is in flight",
+      "values": {
+        "plan": "team",
+        "name": "Ada"
+      },
+      "steps": [
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "do": "submit",
+          "handler": [
+            {
+              "defer": "response",
+              "return": null
+            }
+          ],
+          "await": false,
+          "returns": true
+        },
+        {
+          "do": "replaceDefinition",
+          "definition": {
+            "id": "signup",
+            "title": "Sign up v2",
+            "submit": {
+              "label": "Send"
+            },
+            "steps": [
+              {
+                "id": "plan",
+                "title": "Plan",
+                "fields": [
+                  {
+                    "key": "plan",
+                    "type": "select",
+                    "label": "Plan",
+                    "options": [
+                      {
+                        "value": "team",
+                        "label": "Team"
+                      },
+                      {
+                        "value": "solo",
+                        "label": "Solo"
+                      }
+                    ],
+                    "validation": {
+                      "required": true
+                    }
+                  },
+                  {
+                    "key": "name",
+                    "type": "text",
+                    "label": "Name",
+                    "validation": {
+                      "required": true
+                    }
+                  }
+                ]
+              },
+              {
+                "id": "confirm",
+                "title": "Confirm",
+                "fields": [
+                  {
+                    "key": "agree",
+                    "type": "checkbox",
+                    "label": "Agree"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "expect": {
+            "submitting": true
+          }
+        },
+        {
+          "do": "submit",
+          "handler": [
+            {
+              "return": null
+            }
+          ],
+          "returns": false
+        },
+        {
+          "do": "resolve",
+          "deferred": "response"
+        },
+        {
+          "do": "settle"
+        },
+        {
+          "expect": {
+            "submitting": false
+          }
+        }
+      ]
+    },
+    {
       "name": "keeps a skipped step skipped when it still exists",
       "definition": {
         "id": "signup",

@@ -9,7 +9,7 @@ import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { trustDefinition } from '../engine/warnings';
 import { writeValue } from '../engine/write-value';
-import { normalizeValue, typeError } from '../validation/type-checks';
+import { normalizeValue, oversizedList, typeError } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, isSection, itemPath, itemsOf, keepId } from '../visibility/nodes';
 
 export interface SubmissionOptions {
@@ -28,10 +28,7 @@ export interface SubmissionResult {
 const allow: ValidatorFn = () => null;
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 
-interface ActiveValues {
-  values: Record<string, unknown>;
-  active: Map<string, FormField>;
-}
+type ActiveValues = { values: Record<string, unknown>; active: Map<string, FormField> };
 
 function activeValues(definition: FormDefinition, fields: FormField[], input: unknown): ActiveValues {
   const source = isEntry(input) ? input : {};
@@ -175,7 +172,8 @@ function rejectGroups(definition: FormDefinition, fields: FormField[], input: un
     }
   };
   const fits = (key: string) => fields.some((field) => field.key === key && !typeError(field, source[key], resolve));
-  reject([...new Set(fields.filter(isGroup).map(({ key }) => key))].filter((key) => hasOwn(source, key) && !fits(key)));
+  const unchecked = (key: string) => fields.some((field) => field.key === key && (isGroup(field) || oversizedList(field, source[key])));
+  reject([...new Set(fields.map(({ key }) => key))].filter((key) => hasOwn(source, key) && unchecked(key) && !fits(key)));
   const resolved = activeValues(definition, fields, source);
   const misfits = [...resolved.active].filter(([key, field]) => isGroup(field) && typeError(field, resolved.values[key], resolve));
   if (misfits.length === 0) return { resolved, rejected };
@@ -213,7 +211,8 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
       const field = visibility.activeField(key, engine.values);
       if (!field || skipped.includes(key)) continue;
       setError(visibility, errors, key, typeError(field, value, resolve) ?? resolve('value', {}, field));
-      delete submitted[key];
+      if (oversizedList(field, value)) submitted[key] = value;
+      else delete submitted[key];
     }
     for (const [key, error] of items)
       if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;

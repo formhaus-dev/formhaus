@@ -28,7 +28,6 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   if (engine.submitting || engine.stepValidating) return false;
   if (!keepSkipped) includeCurrentStep(engine);
   const lifecycle = { ...engine.lifecycle };
-  let dispatched = false;
   const epoch = engine.validationEpoch;
   const operation = (engine.latestOperation = ++engine.operationEpoch);
   let values = getSubmitValues(engine);
@@ -47,7 +46,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
       if (Object.keys(validateForm(engine, true)).length > 0 || stale()) return false;
       values = getSubmitValues(engine);
     }
-    dispatched = true;
+    engine.sending = operation;
     const skippedSteps = [...engine.skipped.keys()];
     const sent = { ...engine.values };
     const serverErrors = engine.state.serverErrors;
@@ -71,10 +70,10 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
     await afterCommit('afterSubmit', () => lifecycle.onAfterSubmit?.(values, skippedSteps));
     return true;
   } catch (error) {
-    if (!dispatched && stale()) return false;
+    if (engine.sending !== operation && stale()) return false;
     throw error;
   } finally {
-    if (operation === engine.operationEpoch) {
+    if (operation === engine.latestOperation) {
       engine.state.submitting = false;
       engine.notify();
     }

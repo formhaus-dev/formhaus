@@ -27,6 +27,23 @@ describe('useFormEngine keepValues', () => {
     scope.stop();
   });
 
+  it('keeps a dispatched submit in flight across a replacement', async () => {
+    const definition = shallowRef(first);
+    const scope = effectScope();
+    const form = scope.run(() => useFormEngine(() => definition.value, { name: 'Ada' }, { keepValues: true }))!;
+    let release!: () => void;
+    const submitting = form.engine.submit(() => new Promise<void>((resolve) => (release = resolve)));
+    await Promise.resolve();
+    definition.value = second;
+    await nextTick();
+    expect(form.engine.submitting).toBe(true);
+    expect(await form.engine.submit(() => {})).toBe(false);
+    release();
+    expect(await submitting).toBe(true);
+    expect(form.engine.submitting).toBe(false);
+    scope.stop();
+  });
+
   it('creates a new engine without keepValues', async () => {
     const definition = shallowRef(first);
     const scope = effectScope();

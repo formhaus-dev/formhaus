@@ -20,6 +20,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private validationEpoch = 0;
   private operationEpoch = 0;
   private latestOperation = 0;
+  private sending?: number;
   private viewedStep?: string | null;
   private readonly lifecycle: FormEngineOptions;
 
