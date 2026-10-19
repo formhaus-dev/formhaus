@@ -20,7 +20,7 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. outdated-format-version is reported for sections, groups, scale, rating, contains and notContains.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains and {{key}}.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
@@ -128,6 +128,22 @@ export const capabilities = {
       'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
     hiddenValues:
       'Fields hidden by conditions are cleared at once and left out of submitted values. A field shown again gets back its last value, or else its initial value or defaultValue.',
+  },
+  recall: {
+    syntax:
+      '{{key}} in a text shows the answer of the field with that top-level key. Inside a group item, {{itemKey}} shows a field of the same item. Whitespace inside the braces is allowed. Needs "formatVersion": "1.5"; below it the braces show as written.',
+    slots: ['step title and description', 'section title and description', 'field and group label and helperText', 'field placeholder'],
+    values: [
+      'Options show their label, multiselect labels joined with ", ".',
+      'checkbox and switch show the field label when true and nothing when false.',
+      'Numbers, dates, times, text and hidden values show as stored. A file shows its file names. A group shows its item count.',
+      'Missing answers, fields hidden by conditions, skipped steps and unknown keys show nothing.',
+    ],
+    rules: [
+      'Recall answers from earlier steps, such as a review step: "Check your answers: {{name}}, {{email}}, plan {{plan}}". A field on a later step or the field that holds the text is recall-forward-reference; an unknown key is unknown-recall-field.',
+      'Option labels, action labels and messages show {{key}} as written. There are no expressions or formats.',
+      'Keep the {{key}} tokens in translations.',
+    ],
   },
   steps: {
     props: ['id', 'title', 'description', 'fields', 'show', 'showAny', 'routes', 'next', 'back', 'skip'],

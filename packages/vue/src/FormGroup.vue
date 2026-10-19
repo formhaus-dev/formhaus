@@ -10,6 +10,7 @@ import {
   itemTitle,
   labelFor,
   optionKey,
+  recalled,
 } from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
 import DefaultGroup from './DefaultGroup.vue';
@@ -34,6 +35,7 @@ const props = withDefaults(
     options: Record<string, FieldOption[]>;
     confirmRemove?: boolean;
     onItemsChange: (key: string, apply: () => boolean) => boolean;
+    recall?: unknown;
   }>(),
   { confirmRemove: true },
 );
@@ -61,7 +63,7 @@ function itemProps(index: number, field: FormField) {
   const update = (value: unknown) => emit('update', key, value);
   return {
     id: errorDomId(props.engine, props.formId, key),
-    field: { ...field, ...(options && { options }), key, autoAdvance: undefined },
+    field: recalled(props.engine, { ...field, ...(options && { options }), key, autoAdvance: undefined }, key),
     modelValue: values.value[index]?.[field.key],
     error: props.errors[key],
     loading: props.fieldLoading[key],
@@ -117,6 +119,7 @@ function fieldsOf(itemId: string): Component {
     component = defineComponent({
       name: 'GroupItemFields',
       setup: () => () => {
+        void props.recall;
         const index = props.items.findIndex((item) => item.id === itemId);
         return index < 0
           ? null
@@ -129,12 +132,13 @@ function fieldsOf(itemId: string): Component {
 }
 
 const groupProps = computed((): GroupComponentProps => {
-  values.value;
+  void [values.value, props.recall];
+  const texts = recalled(props.engine, props.group);
   return {
     id: id.value,
     group: props.group,
-    label: props.group.label,
-    helperText: props.group.helperText,
+    label: texts.label,
+    helperText: texts.helperText,
     error: error.value,
     describedBy: fieldAria(props.group, id.value, error.value)['aria-describedby'],
     items: props.items.map((item, index) => ({

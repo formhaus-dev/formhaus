@@ -7,6 +7,7 @@ import type { DefinitionIssue, DefinitionIssueCode } from './issues';
 import { closest, oneOf, warning } from './issues';
 import { propertyWarnings } from './properties';
 import { versionWarnings } from './version-warnings';
+import { recallWarnings } from './recall-warnings';
 import { sourceWarnings } from './sources';
 
 const LIST_OPERATORS = ['in', 'notIn'];
@@ -237,5 +238,6 @@ export function definitionWarnings(context: CheckContext): DefinitionIssue[] {
     ...context.conditions.flatMap((entry) => conditionWarnings(context, entry)),
     ...context.entries.flatMap((entry) => fieldWarnings(context, entry)),
     ...routeWarnings(context),
+    ...recallWarnings(context),
   ];
 }

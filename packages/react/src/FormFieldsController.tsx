@@ -1,5 +1,5 @@
 import { isGroup, isSection, type FormField, type FormNode } from '@formhaus/core';
-import { fieldDomId, optionSources, providedOptions } from '@formhaus/core/internal';
+import { fieldDomId, optionSources, providedOptions, recalled } from '@formhaus/core/internal';
 import { memo, useMemo } from 'react';
 import { DefaultSection } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
@@ -59,14 +59,15 @@ export const FormFieldsController = memo(function FormFieldsController({
       );
     const id = fieldDomId(formId, node.key, engine.definition);
     const Section = props.components?.section ?? DefaultSection;
+    const { title, description } = recalled(engine, node);
     return (
       <Section
         key={node.key}
         id={id}
         section={node}
-        title={node.title}
-        description={node.description}
-        descriptionId={node.description ? `${id}-description` : undefined}
+        title={title}
+        description={description}
+        descriptionId={description ? `${id}-description` : undefined}
       >
         {node.fields.map(render)}
       </Section>
