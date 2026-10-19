@@ -170,6 +170,8 @@ interface ShowCondition {
   neq?: string | number | boolean;        // Not equals
   in?: (string | number)[];               // Value is in list
   notIn?: (string | number)[];            // Value is not in list
+  contains?: string | number | boolean;   // Array value includes this item
+  notContains?: string | number | boolean; // Array value does not include this item
   notEmpty?: boolean;                     // Value is not null, undefined, '' or []
   gt?: number;                            // Value is greater than
   gte?: number;                           // Value is greater than or equal to
@@ -341,6 +343,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `contains` and `notContains` conditions, format 1.4 | 0.20.0 |
 | `scale` and `rating` types, `image` on options, `columns` on fields, `layout: "matrix"` on sections, format 1.3 | 0.19.0 |
 | `props` on fields, format 1.2 | 0.15.0 |
 | `type: "section"` and `type: "group"` nodes, format 1.1 | 0.14.0 |

@@ -14,7 +14,7 @@ describe('condition rules', () => {
   it('rejects an unknown operator and suggests a known one', () => {
     const issues = checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', equals: 'x' } as never] })]));
     expect(issues.map((issue) => issue.message)).toEqual([
-      '/fields/1/show/0/equals: "equals" is not a condition operator. Use one of: "eq", "neq", "in", "notIn", "notEmpty", "gt", "gte", "lt", "lte".',
+      '/fields/1/show/0/equals: "equals" is not a condition operator. Use one of: "eq", "neq", "in", "notIn", "contains", "notContains", "notEmpty", "gt", "gte", "lt", ....',
     ]);
     expect(checkDefinition(form([field('a'), field('b', { show: [{ field: 'a', eg: 'x' } as never] })]))[0].hint).toBe('Use "eq".');
   });
@@ -24,7 +24,7 @@ describe('condition rules', () => {
       form([field('tags', { type: 'multiselect', options }), field('b', { show: [{ field: 'tags', neq: 'a' }] })]),
     );
     expect(issues[0].message).toBe(
-      '/fields/1/show/0/neq: "tags" holds a list of values, so "neq" always matches it. Use notEmpty, or a select or radio field.',
+      '/fields/1/show/0/neq: "tags" holds a list of values, so "neq" always matches it. Use contains, notContains or notEmpty.',
     );
   });
 
@@ -104,5 +104,61 @@ describe('comparison rules', () => {
     expect(checkDefinition(form(fields)).map((issue) => issue.message)).toEqual([
       '/fields/1/show/0/gt: "agree" is a checkbox field, so "gt" never matches it. Compare a number, text, radio or select field.',
     ]);
+  });
+});
+
+describe('contains rules', () => {
+  const tags = field('tags', { type: 'multiselect', options });
+  const latest = (fields: FormField[]): FormDefinition => ({ ...form(fields), formatVersion: '1.4' });
+  const describeIssues = (definition: FormDefinition) =>
+    checkDefinition(definition).map(({ code, path, message }) => ({ code, path, message }));
+
+  it('accepts contains and notContains on a multiselect option', () => {
+    expect(
+      checkDefinition(
+        latest([tags, field('b', { show: [{ field: 'tags', contains: 'a' }], showAny: [{ field: 'tags', notContains: 'b' }] })]),
+      ),
+    ).toEqual([]);
+  });
+
+  it('warns about contains on a field that does not hold a list', () => {
+    expect(describeIssues(latest([field('a'), field('b', { show: [{ field: 'a', notContains: 'x' }] })]))).toEqual([
+      {
+        code: 'contains-not-list',
+        path: '/fields/1/show/0/notContains',
+        message:
+          '/fields/1/show/0/notContains: "a" is a text field, so "notContains" always matches it. Use eq or in, or test a multiselect field.',
+      },
+    ]);
+  });
+
+  it('does not warn about contains on a custom type', () => {
+    expect(checkDefinition(latest([field('a', { type: 'x-tags' }), field('b', { show: [{ field: 'a', contains: 'x' }] })]))).toEqual([]);
+  });
+
+  it('warns about an operand that is not an option', () => {
+    expect(describeIssues(latest([tags, field('b', { show: [{ field: 'tags', contains: 'z' }] })]))).toEqual([
+      {
+        code: 'contains-not-in-options',
+        path: '/fields/1/show/0/contains',
+        message: '/fields/1/show/0/contains: "z" is not an option of "tags". Use one of: "a", "b".',
+      },
+    ]);
+  });
+
+  it('asks for format 1.4 when a condition uses contains', () => {
+    const definition = steps([
+      { id: 'one', title: 'One', fields: [tags], routes: [{ to: 'two', show: [{ field: 'tags', contains: 'a' }] }] },
+      { id: 'two', title: 'Two', fields: [field('b')] },
+    ]);
+    expect(describeIssues({ ...definition, formatVersion: '1.3' })).toEqual([
+      {
+        code: 'outdated-format-version',
+        path: '/formatVersion',
+        message:
+          '/formatVersion: /steps/0/routes/0/show/0 uses "contains", which needs format 1.4. Set "formatVersion": "1.4". Older versions of @formhaus/core reject this operator. Upgrade the server that runs validateSubmission() first.',
+      },
+    ]);
+    expect(checkDefinition({ ...definition, formatVersion: '1.4' })).toEqual([]);
   });
 });
