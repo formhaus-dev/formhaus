@@ -1,6 +1,8 @@
 .row {
   display: flex;
+  align-items: center;
   min-width: 0;
+  min-height: var(--fh-ed-size-inline-row, auto);
   padding: var(--fh-ed-space-1) 0;
   cursor: text;
 }
@@ -36,6 +38,10 @@
   padding-inline: calc(var(--fh-ed-space-2-5) + var(--fh-ed-border-thin));
   border-radius: var(--fh-ed-radius-md);
   transition: box-shadow var(--fh-ed-duration-fast);
+}
+
+.ring:not(.boxed) {
+  margin-inline: calc((var(--fh-ed-space-2-5) + var(--fh-ed-border-thin)) * -1);
 }
 
 .boxed {

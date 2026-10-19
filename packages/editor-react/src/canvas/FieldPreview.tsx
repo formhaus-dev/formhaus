@@ -21,7 +21,10 @@ function Scale({ field }: { field: BuilderQuestion }) {
   const rating = field.type === 'rating';
   return (
     <div className={styles.scale}>
-      <ol className={cx(styles.points, rating && styles.stars)} aria-label={rating ? `${String(points.length)} stars` : 'Points'}>
+      <ol
+        className={cx(styles.points, rating && styles.stars, !rating && points.length > 6 && styles.wrap)}
+        aria-label={rating ? `${String(points.length)} stars` : 'Points'}
+      >
         {points.map((point) => (
           <li key={point} className={rating ? styles.star : styles.point}>
             {rating ? <Star aria-hidden /> : point}

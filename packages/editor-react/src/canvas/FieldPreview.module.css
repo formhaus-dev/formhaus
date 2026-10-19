@@ -41,7 +41,6 @@
   gap: var(--fh-ed-space-2);
   margin: 0;
   padding: 0;
-  padding-inline-start: calc(var(--fh-ed-space-2-5) + var(--fh-ed-border-thin));
   list-style: none;
 }
 
@@ -170,4 +169,15 @@
 
 .anchors > :last-child {
   text-align: end;
+}
+
+@container (width < 420px) {
+  .wrap {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-flow: row;
+  }
+
+  .wrap .point {
+    min-height: var(--fh-ed-size-touch);
+  }
 }
