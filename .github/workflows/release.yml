@@ -40,12 +40,19 @@ jobs:
 
       - run: pnpm -r publish --access public --no-git-checks
 
-      - run: pnpm changeset git-tag
-
-      - name: Push tags
+      - name: Tag and push released versions
         env:
           GH_TOKEN: ${{ github.token }}
-        run: git push "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" --tags
+        run: |
+          remote="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          for dir in packages/*/; do
+            [ "$(jq -r '.private // false' "$dir/package.json")" = true ] && continue
+            tag="$(jq -r '.name + "@" + .version' "$dir/package.json")"
+            git ls-remote --exit-code --tags "$remote" "refs/tags/$tag" >/dev/null && continue
+            git tag "$tag"
+            git push "$remote" "refs/tags/$tag"
+            echo "$tag" >> "$RUNNER_TEMP/new-tags"
+          done
 
       - name: Start follow-up workflows
         env:
@@ -53,9 +60,10 @@ jobs:
         run: |
           core=$(jq -r .version packages/core/package.json)
           mcp=$(jq -r .version packages/mcp/package.json)
-          if git tag --points-at HEAD | grep -qx "@formhaus/core@$core"; then
+          touch "$RUNNER_TEMP/new-tags"
+          if grep -qx "@formhaus/core@$core" "$RUNNER_TEMP/new-tags"; then
             gh workflow run docs-pins.yml -f version="$core"
           fi
-          if git tag --points-at HEAD | grep -qx "@formhaus/mcp@$mcp"; then
+          if grep -qx "@formhaus/mcp@$mcp" "$RUNNER_TEMP/new-tags"; then
             gh workflow run mcp-registry.yml --ref "@formhaus/mcp@$mcp"
           fi
