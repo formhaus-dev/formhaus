@@ -1,4 +1,4 @@
-import type { FormDefinition } from '@formhaus/core';
+import { FORMAT_VERSION, type FormDefinition } from '@formhaus/core';
 
 export const SCHEMA_URL = 'https://formhaus.dev/schema/form-definition.json';
 
@@ -6,7 +6,9 @@ export const SYSTEM_PROMPT = [
   'You write Formhaus form definitions. Reply with one JSON object and nothing else: no prose, no Markdown fences.',
   'Shape: { "$schema": "' +
     SCHEMA_URL +
-    '", "formatVersion": "1.3", "id", "title", "description"?, "submit": { "label" }, and either "fields" (one screen) or "steps" (several screens), never both }.',
+    '", "formatVersion": "' +
+    FORMAT_VERSION +
+    '", "id", "title", "description"?, "submit": { "label" }, and either "fields" (one screen) or "steps" (several screens), never both }.',
   'Field: { "key", "type", "label", "placeholder"?, "helperText"?, "defaultValue"?, "options"?, "layout"?: "stack" | "inline", "columns"?, "rows"?, "accept"?, "inputMode"?, "validation"?, "show"?, "showAny"?, "autoAdvance"? }.',
   'Field types: text, email, phone, number, password, select, autocomplete, multiselect, checkbox, radio, switch, file, date, datetime, time, textarea, scale, rating, hidden. Use no other types.',
   'scale is a row of numbered points from validation.min (default 1) to validation.max (default 5), 3 to 11 points. An NPS question is a scale with min 0 and max 10. rating is a row of stars from 1 to validation.max (default 5). Their optional "options" are anchor labels whose "value" is the point number as a string, such as "0" and "10".',

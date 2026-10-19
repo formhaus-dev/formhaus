@@ -1,3 +1,4 @@
+import { FORMAT_VERSION } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
 import { BUILT_IN_TYPES } from '../../../core/src/validation/type-checks';
 import { firstJsonObject, repairMessage, requestMessage, SCHEMA_URL, SYSTEM_PROMPT } from '../ui/ai/prompt';
@@ -16,7 +17,7 @@ describe('AI prompt', () => {
       'routes',
       'camelCase',
       'showAny',
-      '"formatVersion": "1.3"',
+      `"formatVersion": "${FORMAT_VERSION}"`,
       SCHEMA_URL,
     ]) {
       expect(SYSTEM_PROMPT).toContain(rule);
