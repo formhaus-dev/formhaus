@@ -14,6 +14,14 @@ describe.each(scenarioFiles.map((file) => [file.name, file] as const))('scenario
     expect(validate(file) ? [] : validate.errors).toEqual([]);
   });
 
+  it('uses each defer name once per scenario', () => {
+    const repeated = file.scenarios.flatMap(({ name, hooks, steps }) => {
+      const names = JSON.stringify([hooks, steps]).match(/"defer":"[^"]*"/g) ?? [];
+      return names.length === new Set(names).size ? [] : [name];
+    });
+    expect(repeated).toEqual([]);
+  });
+
   it.each(file.scenarios.map((scenario) => [scenario.name, scenario] as const))('%s', async (_, scenario) => {
     if (scenario.throws) {
       expect(() => new FormEngine(runtimeDefinition(file, scenario), scenario.values ?? {})).toThrow(
