@@ -6,6 +6,7 @@ import SelectFieldTsx from '../../../../../examples/react-mui/src/fields/SelectF
 import AutocompleteFieldTsx from '../../../../../examples/react-mui/src/fields/AutocompleteField.tsx?raw';
 import CheckboxFieldTsx from '../../../../../examples/react-mui/src/fields/CheckboxField.tsx?raw';
 import RadioFieldTsx from '../../../../../examples/react-mui/src/fields/RadioField.tsx?raw';
+import RatingFieldTsx from '../../../../../examples/react-mui/src/fields/RatingField.tsx?raw';
 import SwitchFieldTsx from '../../../../../examples/react-mui/src/fields/SwitchField.tsx?raw';
 import FileFieldTsx from '../../../../../examples/react-mui/src/fields/FileField.tsx?raw';
 import HiddenFieldTsx from '../../../../../examples/react-mui/src/fields/HiddenField.tsx?raw';
@@ -24,6 +25,7 @@ export function buildFiles(definitionJson: string) {
     '/fields/AutocompleteField.tsx': AutocompleteFieldTsx,
     '/fields/CheckboxField.tsx': CheckboxFieldTsx,
     '/fields/RadioField.tsx': RadioFieldTsx,
+    '/fields/RatingField.tsx': RatingFieldTsx,
     '/fields/SwitchField.tsx': SwitchFieldTsx,
     '/fields/FileField.tsx': FileFieldTsx,
     '/fields/HiddenField.tsx': HiddenFieldTsx,

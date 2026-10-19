@@ -1,10 +1,18 @@
-import { canBranch, setOptionLabel, splitLines, type BuilderOption, type BuilderQuestion } from '@formhaus/builder';
+import {
+  canBranch,
+  matrixOf,
+  setOptionImage,
+  setOptionLabel,
+  splitLines,
+  type BuilderOption,
+  type BuilderQuestion,
+} from '@formhaus/builder';
 import { GripVertical, X } from 'lucide-react';
 import { useLayoutEffect, useRef, type ClipboardEvent, type KeyboardEvent } from 'react';
-import { AddRow, IconButton, InlineText, Sortable } from '../ui';
+import { AddRow, IconButton, InlineText, Input, Sortable } from '../ui';
 import { cx } from '../ui/lib/cx';
 import { branchTargets, setJump } from '../logic/targets';
-import { useForm, useReadOnly } from '../store/hooks';
+import { useForm, useReadOnly, useShowsPictures } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import { GoTo } from './GoTo';
 import styles from './OptionsEditor.module.css';
@@ -16,10 +24,36 @@ interface Props {
 
 const optionLabel = (option: BuilderOption, index: number) => option.label.trim() || `Option ${String(index + 1)}`;
 
+function ImageInput({ field, option, index, actions, readOnly }: Props & { option: BuilderOption; index: number; readOnly: boolean }) {
+  const image = option.extra?.image ?? '';
+  return (
+    <div className={styles.image}>
+      {image ? <img className={styles.thumb} src={image} alt="" /> : <span className={styles.thumb} aria-hidden />}
+      <Input
+        type="url"
+        inputMode="url"
+        className={styles.url}
+        aria-label={`Image URL for ${optionLabel(option, index)}`}
+        placeholder="Image URL, https://…"
+        value={image}
+        readOnly={readOnly}
+        onChange={(event) => {
+          actions.edit((form) => {
+            setOptionImage(form, field.uid, option.uid, event.target.value);
+          }, `${option.uid}:image`);
+        }}
+      />
+    </div>
+  );
+}
+
 export function OptionsEditor({ field, actions }: Props) {
   const readOnly = useReadOnly();
   const form = useForm();
-  const targets = canBranch(field.type) ? branchTargets(form, field.uid) : [];
+  const row = !!matrixOf(form, field.uid);
+  const targets = canBranch(field.type) && !row ? branchTargets(form, field.uid) : [];
+  const requested = useShowsPictures(field.uid);
+  const pictures = field.type !== 'select' && !row && (requested || field.options.some((option) => option.extra?.image !== undefined));
   const root = useRef<HTMLDivElement>(null);
   const pending = useRef<string | null>(null);
 
@@ -68,7 +102,7 @@ export function OptionsEditor({ field, actions }: Props) {
         className={styles.list}
         renderItem={({ option }, { handleProps }) => {
           const index = field.options.indexOf(option);
-          return (
+          const line = (
             <div className={styles.row} data-option={option.uid}>
               <button {...handleProps} type="button" className={styles.grip} disabled={readOnly}>
                 <GripVertical aria-hidden />
@@ -127,16 +161,34 @@ export function OptionsEditor({ field, actions }: Props) {
               )}
             </div>
           );
+          if (!pictures) return line;
+          return (
+            <div className={styles.option}>
+              {line}
+              <ImageInput field={field} option={option} index={index} actions={actions} readOnly={readOnly} />
+            </div>
+          );
         }}
       />
       {!readOnly && (
-        <AddRow
-          label="Add option"
-          inset="option"
-          onClick={() => {
-            focusLater(actions.addOption(field.uid, field.options.at(-1)?.uid));
-          }}
-        />
+        <div className={styles.actions}>
+          <AddRow
+            label="Add option"
+            inset="option"
+            onClick={() => {
+              focusLater(actions.addOption(field.uid, field.options.at(-1)?.uid));
+            }}
+          />
+          {!pictures && field.type !== 'select' && !row && (
+            <AddRow
+              label="Add pictures"
+              inset="option"
+              onClick={() => {
+                actions.showPictures(field.uid);
+              }}
+            />
+          )}
+        </div>
       )}
     </div>
   );

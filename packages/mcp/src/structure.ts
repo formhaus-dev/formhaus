@@ -1,10 +1,20 @@
 import { isGroup, isSection, type FormDefinition, type FormField, type FormNode, type FormStep } from '@formhaus/core';
 import { issue, type Issue } from './issues';
-import { CONTAINER_TYPES, FIELD_TYPES } from './vocabulary';
+import { matrixIssues, questionIssues } from './question-lint';
+import { AUTO_ADVANCE_TYPES, CONTAINER_TYPES, FIELD_TYPES } from './vocabulary';
 
 const KNOWN_TYPES = new Set<string>([...FIELD_TYPES, ...CONTAINER_TYPES]);
+const ADVANCING = new Set<string>(AUTO_ADVANCE_TYPES);
 
-function fieldIssues(field: Pick<FormField, 'type' | 'autoAdvance'>, path: string, item: boolean): Issue[] {
+type Place = 'step' | 'group' | 'matrix';
+
+const IGNORED: Record<Place, [string, string]> = {
+  step: ['only radio, scale and rating fields advance automatically', 'Remove autoAdvance or use a radio, scale or rating field'],
+  group: ['fields inside a group do not advance automatically', 'Remove autoAdvance'],
+  matrix: ['rows of a matrix section do not advance automatically', 'Remove autoAdvance'],
+};
+
+function fieldIssues(field: FormField, path: string, place: Place): Issue[] {
   const issues: Issue[] = [];
   if (!KNOWN_TYPES.has(field.type)) {
     issues.push(
@@ -17,38 +27,34 @@ function fieldIssues(field: Pick<FormField, 'type' | 'autoAdvance'>, path: strin
       ),
     );
   }
-  if (field.autoAdvance && (field.type !== 'radio' || item)) {
-    const problem = item ? 'radio fields inside a group do not advance automatically' : 'only radio fields advance automatically';
-    issues.push(
-      issue(
-        'auto-advance-ignored',
-        'warning',
-        `${path}/autoAdvance`,
-        problem,
-        item ? 'Remove autoAdvance' : 'Remove autoAdvance or use a radio field',
-      ),
-    );
+  if (field.autoAdvance && (!ADVANCING.has(field.type) || place !== 'step')) {
+    const [problem, hint] = IGNORED[ADVANCING.has(field.type) ? place : 'step'];
+    issues.push(issue('auto-advance-ignored', 'warning', `${path}/autoAdvance`, problem, hint));
   }
-  return issues;
+  return [...issues, ...questionIssues(field, path)];
 }
 
 const list = <T>(value: unknown): T[] => (Array.isArray(value) ? value : []);
 const isNode = (value: unknown): value is FormNode => !!value && typeof value === 'object';
 
-function nodeIssues(nodes: unknown, path: string, item = false): Issue[] {
+function nodeIssues(nodes: unknown, path: string, place: Place = 'step'): Issue[] {
   return list<unknown>(nodes).flatMap((node, index) => {
-    if (!isNode(node)) return [];
     const at = `${path}/${index}`;
-    if (isSection(node)) return nodeIssues(node.fields, `${at}/fields`, item);
-    return [...fieldIssues(node, at, item), ...(isGroup(node) ? nodeIssues(node.fields, `${at}/fields`, true) : [])];
+    if (!isNode(node)) return [];
+    if (isSection(node))
+      return [
+        ...matrixIssues(node, at),
+        ...nodeIssues(node.fields, `${at}/fields`, node.layout === 'matrix' && place === 'step' ? 'matrix' : place),
+      ];
+    return [...fieldIssues(node as FormField, at, place), ...(isGroup(node) ? nodeIssues(node.fields, `${at}/fields`, 'group') : [])];
   });
 }
 
-export function advancingRadios(step: FormStep): FormField[] {
+export function advancingFields(step: FormStep): FormField[] {
   return list<unknown>(step.fields)
     .filter(isNode)
-    .flatMap((node) => (isSection(node) ? list<unknown>(node.fields).filter(isNode) : [node]))
-    .filter((field): field is FormField => field.type === 'radio' && !!(field as FormField).autoAdvance);
+    .flatMap((node) => (isSection(node) ? (node.layout === 'matrix' ? [] : list<unknown>(node.fields).filter(isNode)) : [node]))
+    .filter((field): field is FormField => ADVANCING.has(field.type) && !!(field as FormField).autoAdvance);
 }
 
 export function structureIssues(definition: FormDefinition): Issue[] {
@@ -60,14 +66,14 @@ export function structureIssues(definition: FormDefinition): Issue[] {
   steps.forEach((step, index) => {
     if (!step || typeof step !== 'object') return;
     issues.push(...nodeIssues(step.fields, `/steps/${index}/fields`));
-    if (step.next === false && index < steps.length - 1 && !advancingRadios(step).length) {
+    if (step.next === false && index < steps.length - 1 && !advancingFields(step).length) {
       issues.push(
         issue(
           'next-hidden',
           'warning',
           `/steps/${index}/next`,
-          'next is false and no autoAdvance radio moves the form forward',
-          'Add an autoAdvance radio or remove "next": false',
+          'next is false and no autoAdvance radio, scale or rating moves the form forward',
+          'Add an autoAdvance radio, scale or rating, or remove "next": false',
         ),
       );
     }

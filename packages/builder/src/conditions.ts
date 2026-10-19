@@ -1,9 +1,9 @@
 import type { FieldType, ShowCondition } from '@formhaus/core';
-import { hasOptions, isQuestion, type BuilderBlock, type BuilderForm, type BuilderQuestion } from './model';
+import { hasOptions, isQuestion, isScale, type BuilderBlock, type BuilderForm, type BuilderQuestion } from './model';
 import { blockIndex } from './ops/locate';
 import { resolver, scopeOf } from './references';
 
-export type Operator = 'eq' | 'neq' | 'in' | 'notIn' | 'notEmpty' | 'checked' | 'unchecked';
+export type Operator = 'eq' | 'neq' | 'gte' | 'lte' | 'in' | 'notIn' | 'notEmpty' | 'checked' | 'unchecked';
 export type ConditionMode = 'always' | 'all' | 'any';
 export type ConditionValue = string | string[];
 
@@ -22,6 +22,8 @@ export interface Logic {
 export const OPERATOR_LABELS: Record<Operator, string> = {
   eq: 'is',
   neq: 'is not',
+  gte: 'is at least',
+  lte: 'is at most',
   in: 'is any of',
   notIn: 'is none of',
   notEmpty: 'is answered',
@@ -30,9 +32,12 @@ export const OPERATOR_LABELS: Record<Operator, string> = {
 };
 
 const toggles = (type: FieldType) => type === 'checkbox' || type === 'switch';
+export const isNumeric = (type: FieldType) => type === 'number' || isScale(type);
 
 export function operatorsFor(type: FieldType): Operator[] {
   if (toggles(type)) return ['checked', 'unchecked'];
+  if (isScale(type)) return ['eq', 'neq', 'gte', 'lte', 'in', 'notIn', 'notEmpty'];
+  if (type === 'number') return ['eq', 'neq', 'gte', 'lte', 'notEmpty'];
   if (hasOptions(type)) return ['eq', 'neq', 'in', 'notIn', 'notEmpty'];
   return ['eq', 'neq', 'notEmpty'];
 }
@@ -40,14 +45,15 @@ export function operatorsFor(type: FieldType): Operator[] {
 export const takesList = (operator: Operator) => operator === 'in' || operator === 'notIn';
 export const takesValue = (operator: Operator) => operator !== 'notEmpty' && operator !== 'checked' && operator !== 'unchecked';
 
-function scalar(value: ConditionValue, type: FieldType): string | number {
-  const text = Array.isArray(value) ? (value[0] ?? '') : value;
-  if (type !== 'number' || text.trim() === '') return text;
+function numeric(text: string, type: FieldType): string | number {
+  if (!isNumeric(type) || text.trim() === '') return text;
   const number = Number(text);
   return Number.isFinite(number) ? number : text;
 }
 
-const list = (value: ConditionValue) => (Array.isArray(value) ? value : value ? [value] : []);
+const scalar = (value: ConditionValue, type: FieldType) => numeric(Array.isArray(value) ? (value[0] ?? '') : value, type);
+const list = (value: ConditionValue, type: FieldType) =>
+  (Array.isArray(value) ? value : value ? [value] : []).map((item) => numeric(item, type));
 
 export function toCondition(row: ConditionRow, type: FieldType): ShowCondition {
   switch (row.operator) {
@@ -59,7 +65,7 @@ export function toCondition(row: ConditionRow, type: FieldType): ShowCondition {
       return { field: row.field, notEmpty: true };
     case 'in':
     case 'notIn':
-      return { field: row.field, [row.operator]: list(row.value) };
+      return { field: row.field, [row.operator]: list(row.value, type) };
     default:
       return { field: row.field, [row.operator]: scalar(row.value, type) };
   }
@@ -74,6 +80,8 @@ export function fromCondition(condition: ShowCondition, type: FieldType | undefi
   if (condition.notEmpty === true) return { field, operator: 'notEmpty', value: '' };
   if (condition.eq !== undefined) return { field, operator: 'eq', value: String(condition.eq) };
   if (condition.neq !== undefined && typeof condition.neq !== 'boolean') return { field, operator: 'neq', value: String(condition.neq) };
+  for (const operator of ['gte', 'lte'] as const)
+    if (typeof condition[operator] === 'number' && isNumeric(type)) return { field, operator, value: String(condition[operator]) };
   if (condition.in) return { field, operator: 'in', value: condition.in.map(String) };
   if (condition.notIn) return { field, operator: 'notIn', value: condition.notIn.map(String) };
   return undefined;

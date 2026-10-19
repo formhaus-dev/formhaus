@@ -28,6 +28,12 @@ function sync() {
 
 engine.subscribe(() => sync());
 
+function points(field) {
+  const min = field.type === 'rating' ? 1 : (field.validation?.min ?? 1);
+  const max = field.validation?.max ?? 5;
+  return Array.from({ length: max - min + 1 }, (_, index) => min + index);
+}
+
 function handleFieldChange(key, value) {
   engine.setValue(key, value);
   sync();
@@ -78,6 +84,12 @@ async function handleSubmit() {
           {#each field.options ?? [] as opt}
             <label style="display: block"><input type="radio" name={field.key} value={opt.value} checked={values[field.key] === opt.value} on:change={e => handleFieldChange(field.key, opt.value)} /> {opt.label}</label>
           {/each}
+        {:else if field.type === 'scale' || field.type === 'rating'}
+          <div role="radiogroup" aria-label={field.label} style="display: flex; flex-wrap: wrap; gap: 8px">
+            {#each points(field) as point}
+              <label><input type="radio" name={field.key} value={point} checked={values[field.key] === point} on:change={() => handleFieldChange(field.key, point)} /> {field.type === 'rating' ? '\u2605 ' : ''}{point}</label>
+            {/each}
+          </div>
         {:else if field.type === 'switch'}
           <label><input type="checkbox" role="switch" checked={values[field.key] ?? false} on:change={e => handleFieldChange(field.key, e.target.checked)} /> {field.label}</label>
         {:else if field.type === 'textarea'}

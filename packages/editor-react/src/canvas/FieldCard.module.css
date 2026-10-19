@@ -210,3 +210,9 @@
   min-width: var(--fh-ed-space-10);
   max-width: 100%;
 }
+
+@container (width < 420px) {
+  .title .ghost {
+    display: none;
+  }
+}

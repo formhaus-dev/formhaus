@@ -4,9 +4,13 @@ import {
   ACTION_VARIANTS,
   CONDITION_OPERATORS,
   CONTAINER_TYPES,
+  AUTO_ADVANCE_TYPES,
   FIELD_TYPES,
   GROUP_RULES,
+  IMAGE_FIELD_TYPES,
   OPTION_FIELD_TYPES,
+  SCALE_FIELD_TYPES,
+  SECTION_LAYOUTS,
   VALIDATION_RULES,
 } from './vocabulary';
 
@@ -16,16 +20,19 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups, otherwise outdated-format-version is reported.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section; outdated-format-version is reported for sections, groups, scale and rating.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
-    shape: '{ key, type: "section", title, description?, show?, showAny?, fields, i18n? }',
+    shape: '{ key, type: "section", title, description?, layout?, show?, showAny?, fields, i18n? }',
+    layouts: SECTION_LAYOUTS,
     rules: [
       'A section is a titled block of fields and groups inside "fields" or "step.fields". It holds no value, and its fields keep their own keys in the payload.',
       'Its show/showAny apply to every field inside. Hidden section fields are cleared.',
       'The key shares the namespace of field keys. Conditions cannot test a section key (unknown-field).',
       'Sections do not nest (invalid-nesting). A section condition on its own field is a condition-cycle.',
+      'fields may be empty: a section with a title and description and no fields is a statement between questions.',
+      'layout: "matrix" shows the section as a grid (Likert). Each field is a row: radio, or multiselect for several picks per row. Every row has the same options, which become the column headers. Values stay flat, one key per row. Keep it to 7 columns or fewer. Rows do not autoAdvance.',
     ],
   },
   groups: {
@@ -45,6 +52,10 @@ export const capabilities = {
   fieldTypes: FIELD_TYPES,
   customFieldTypes: 'Any other string is allowed; the renderer must register a component for it.',
   fieldTypeNotes: {
+    scale:
+      'Opinion scale. The value is a whole number. validation.min (0 or 1, default 1) and validation.max (default 5) set the range, 3 to 11 points. NPS is a scale with min 0, max 10 and anchors "Not at all likely" and "Extremely likely"; branch on it with lte: 6 and gte: 9. 0 counts as an answer for required and notEmpty.',
+    rating:
+      'Stars from 1 to validation.max (default 5, allowed 3 to 10). The value is a whole number. validation.min is an ordinary rule, "at least N stars".',
     time: 'A 24-hour "HH:MM" or "HH:MM:SS" string.',
     hidden:
       'Renders no label or control, so the label is optional. Its value comes from the initial values, then its source, then defaultValue. It is checked as text up to maxLength, or 2000 characters without it, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field by its label, or by its key without one.',
@@ -77,9 +88,15 @@ export const capabilities = {
     props:
       'Custom field types only: an object of settings the custom component reads as field.props. Core ignores it. Added in format 1.2.',
     optionFieldTypes: OPTION_FIELD_TYPES,
-    options: 'Array of { value: string, label: string }.',
+    options:
+      'Array of { value: string, label: string, image? }. image is an image URL shown above the label on radio and multiselect options (picture choice); the label stays visible and names the option. select and autocomplete ignore image.',
+    imageFieldTypes: IMAGE_FIELD_TYPES,
+    anchorFieldTypes: SCALE_FIELD_TYPES,
+    anchors:
+      'scale and rating only: options are anchor labels, not choices. value is the point number as a string, such as "0" or "10". Only three points show their label: the first at the start, the middle point floor((min + max) / 2) in the center and the last at the end.',
     inputMode: ['text', 'numeric', 'decimal', 'tel', 'email', 'url', 'search'],
     layout: 'radio and multiselect only: "stack" (default) or "inline" for short options.',
+    autoAdvance: `${AUTO_ADVANCE_TYPES.join(', ')} only. Ignored inside a group or a matrix section.`,
     columns:
       'radio and multiselect with option images only: picture cards per row, a whole number from 1 to 4. Omit it to fill the row with cards about 200px wide. Added in format 1.3.',
   },
@@ -91,7 +108,7 @@ export const capabilities = {
       'minLength/maxLength apply to strings and arrays; min/max apply to numbers.',
       'pattern is a JavaScript regular expression string.',
       'matchField requires the value to equal another field, and fails when this field is empty and the other is not.',
-      'Built-in types are checked: email format, date, datetime and time shape, numbers, booleans and option values.',
+      'Built-in types are checked: email format, date, datetime and time shape, numbers, booleans and option values. scale and rating values must be whole numbers in range.',
       'validator names a custom function passed to the engine.',
       'Fields hidden by conditions and skipped steps are not validated.',
       'Group items are validated one by one; their errors use paths such as participants.0.email.',
@@ -103,7 +120,8 @@ export const capabilities = {
     show: 'All conditions must match.',
     showAny: 'At least one condition must match.',
     appliesTo: ['field', 'section', 'group', 'step', 'route', 'action.disabled'],
-    comparisons: 'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values.',
+    comparisons:
+      'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values. Conditions on scale and rating take numbers, such as { "field": "nps", "lte": 6 }. Use two conditions for a range: [{ "field": "nps", "gte": 7 }, { "field": "nps", "lte": 8 }].',
     scope:
       'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
     hiddenValues:
@@ -116,6 +134,7 @@ export const capabilities = {
       'Back returns to the previous step on the active path without validating.',
       'Steps with show/showAny that do not match are left out of the path.',
       'The last step on the active path shows Submit instead of Next.',
+      'fields may be empty: a step with only a title, description and next label is a welcome or statement screen. It counts toward the step total.',
     ],
     routes: [
       'routes is an array of { to, show?, showAny? } checked in order; the first match whose target is visible wins.',
@@ -129,7 +148,8 @@ export const capabilities = {
     next: 'next: false hides the primary Next button; navigation still works through autoAdvance. It never hides Submit.',
     back: 'back: false hides the Back button on that step.',
     skip: 'skip: { label } shows a Skip button that resets the step fields to defaults and moves on without validation. Skipped fields are not submitted. Skip on the last step submits.',
-    autoAdvance: 'autoAdvance: true on a radio field advances after the user picks an option and the step validates.',
+    autoAdvance:
+      'autoAdvance: true on a radio, scale or rating field advances after the user commits a choice (click, Space, Enter or a digit key) and the step validates. Arrow keys only move the selection.',
   },
   actions: {
     shape: '{ label, variant?, disabled? }',

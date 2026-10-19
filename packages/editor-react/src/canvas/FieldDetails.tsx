@@ -12,13 +12,15 @@ interface Props {
 }
 
 export function HelpText({ field, actions, readOnly, selected }: Props & { selected: boolean }) {
-  const text = field.extra.helperText ?? '';
+  const prop = (field.type === 'section' ? 'description' : 'helperText') as 'helperText';
+  const name = field.type === 'section' ? 'Description' : 'Help text';
+  const text = field.extra[prop] ?? '';
   if (!text && (!selected || readOnly)) return null;
   return (
     <InlineText
       value={text}
-      label="Help text"
-      placeholder="Help text"
+      label={name}
+      placeholder={name}
       size="sm"
       tone="muted"
       multiline
@@ -27,8 +29,8 @@ export function HelpText({ field, actions, readOnly, selected }: Props & { selec
       rowClassName={styles.help}
       onValueChange={(value) => {
         actions.edit((form) => {
-          setFieldProp(form, field.uid, 'helperText', value);
-        }, `${field.uid}:helperText`);
+          setFieldProp(form, field.uid, prop, value);
+        }, `${field.uid}:${prop}`);
       }}
     />
   );
