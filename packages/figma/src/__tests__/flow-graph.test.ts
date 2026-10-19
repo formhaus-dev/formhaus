@@ -104,6 +104,14 @@ describe('buildGraph', () => {
     expect(describeCondition({ field: 'size' }, fields)).toBe('');
   });
 
+  it('describes contains conditions with option labels', () => {
+    const fields = new Map([
+      ['sources', { key: 'sources', type: 'multiselect', label: 'Source of wealth', options: [{ value: 'OTHER', label: 'Other' }] }],
+    ]);
+    expect(describeCondition({ field: 'sources', contains: 'OTHER' }, fields)).toBe('Source of wealth includes Other');
+    expect(describeCondition({ field: 'sources', notContains: 'OTHER' }, fields)).toBe("Source of wealth doesn't include Other");
+  });
+
   it('widens a column gap to fit its longest label', () => {
     const graph = buildGraph(quiz);
     const sizes = new Map(['goal', 'leads', 'survey', 'contact'].map((id) => [id, { width: 400, height: 300 }]));

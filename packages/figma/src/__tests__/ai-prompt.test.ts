@@ -3,7 +3,19 @@ import { firstJsonObject, repairMessage, requestMessage, SCHEMA_URL, SYSTEM_PROM
 
 describe('AI prompt', () => {
   it('states the definition rules the plugin relies on', () => {
-    for (const rule of ['"eq"', '"neq"', '"in"', '"notIn"', '"notEmpty"', 'routes', 'camelCase', 'showAny', SCHEMA_URL]) {
+    for (const rule of [
+      '"eq"',
+      '"neq"',
+      '"in"',
+      '"notIn"',
+      '"contains"',
+      '"notContains"',
+      '"notEmpty"',
+      'routes',
+      'camelCase',
+      'showAny',
+      SCHEMA_URL,
+    ]) {
       expect(SYSTEM_PROMPT).toContain(rule);
     }
   });
