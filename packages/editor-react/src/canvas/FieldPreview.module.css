@@ -159,6 +159,10 @@
   object-fit: cover;
 }
 
+.scale:not(.rated) {
+  container-type: inline-size;
+}
+
 .scale {
   display: flex;
   flex-direction: column;
@@ -194,7 +198,7 @@
 }
 
 .stars {
-  grid-auto-columns: var(--fh-ed-size-control-md);
+  grid-auto-columns: calc(var(--fh-ed-size-star) + var(--fh-ed-space-1));
   gap: 0;
 }
 
@@ -206,8 +210,8 @@
 }
 
 .star svg {
-  width: var(--fh-ed-size-control-md);
-  height: var(--fh-ed-size-control-md);
+  width: var(--fh-ed-size-star);
+  height: var(--fh-ed-size-star);
 }
 
 .anchors {
@@ -226,13 +230,32 @@
   text-align: end;
 }
 
-@container (width < 420px) {
-  .wrap {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+@container (width < 444px) {
+  .points:has(> :nth-child(8)) {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     grid-auto-flow: row;
   }
 
-  .wrap .point {
-    min-height: var(--fh-ed-size-touch);
+  .points:has(> :nth-child(9)) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+
+  .points:has(> :nth-child(9)):not(:has(> :nth-child(10))) + .anchors {
+    padding-inline-end: calc((100% - 4 * var(--fh-ed-space-1)) / 5 + var(--fh-ed-space-1));
+  }
+}
+
+@container (width < 544px) {
+  .points:has(> :nth-child(10)) {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-auto-flow: row;
+  }
+
+  .points:has(> :nth-child(11)) {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .points:has(> :nth-child(11)):not(:has(> :nth-child(12))) + .anchors {
+    padding-inline-end: calc((100% - 5 * var(--fh-ed-space-1)) / 6 + var(--fh-ed-space-1));
   }
 }

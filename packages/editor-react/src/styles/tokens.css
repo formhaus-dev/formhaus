@@ -73,6 +73,7 @@
   --fh-ed-size-notice: 420px;
   --fh-ed-size-operator: 200px;
   --fh-ed-size-row: 56px;
+  --fh-ed-size-star: 32px;
   --fh-ed-size-row-dense: 40px;
   --fh-ed-size-sheet-large: 92dvh;
   --fh-ed-size-sheet-medium: 50dvh;
@@ -108,4 +109,10 @@
   --fh-ed-z-sticky: 10;
   --fh-ed-z-toast: 70;
   --fh-ed-z-tooltip: 60;
+}
+
+@media (pointer: coarse) {
+  :where(:root) {
+    --fh-ed-size-star: 40px;
+  }
 }
