@@ -16,6 +16,8 @@ export function httpsLink(value: string): string | null {
   if (!/^https:\/\//i.test(trimmed)) return null;
   try {
     const url = new URL(trimmed);
+    url.username = '';
+    url.password = '';
     return url.protocol === 'https:' && url.hostname ? url.href : null;
   } catch {
     return null;

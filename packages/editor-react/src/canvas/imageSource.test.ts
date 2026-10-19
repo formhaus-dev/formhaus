@@ -20,6 +20,8 @@ describe('option image sources', () => {
   it.each([
     ['https://cdn.example.com/a.png', 'https://cdn.example.com/a.png'],
     ['  HTTPS://cdn.example.com/a b.png ', 'https://cdn.example.com/a%20b.png'],
+    ['https://user:secret@cdn.example.com/a.png', 'https://cdn.example.com/a.png'],
+    ['https://token@cdn.example.com/a.png', 'https://cdn.example.com/a.png'],
     ['http://cdn.example.com/a.png', null],
     ['data:image/png;base64,AAAA', null],
     ['data:image/svg+xml,%3Csvg/%3E', null],
