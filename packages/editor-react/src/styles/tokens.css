@@ -70,6 +70,8 @@
   --fh-ed-size-icon-md: 16px;
   --fh-ed-size-icon-sm: 14px;
   --fh-ed-size-menu: 220px;
+  --fh-ed-size-notice: 420px;
+  --fh-ed-size-operator: 200px;
   --fh-ed-size-row: 56px;
   --fh-ed-size-row-dense: 40px;
   --fh-ed-size-sheet-large: 92dvh;
@@ -80,6 +82,7 @@
   --fh-ed-size-tile: 140px;
   --fh-ed-size-toast: 360px;
   --fh-ed-size-tooltip: 280px;
+  --fh-ed-size-touch: 44px;
   --fh-ed-space-0-5: 2px;
   --fh-ed-space-1: 4px;
   --fh-ed-space-1-5: 6px;

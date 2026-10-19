@@ -103,24 +103,23 @@ export function ConditionEditor({ row, sources, readOnly, onChange, onRemove }: 
   const source = sources.find((item) => item.key === row.field);
   return (
     <div className={styles.condition}>
-      <div className={styles.conditionHead}>
-        <Select
-          aria-label="Field"
-          className={styles.grow}
-          value={row.field}
-          disabled={readOnly}
-          options={sources.map((item) => ({ value: item.key, label: item.label.trim() || item.key }))}
-          onChange={(event) => {
-            const next = sources.find((item) => item.key === event.target.value);
-            if (next) onChange(defaultRow(next));
-          }}
-        />
-        {!readOnly && <IconButton label="Remove condition" icon={<X aria-hidden />} onClick={onRemove} />}
-      </div>
+      <Select
+        aria-label="Field"
+        className={styles.source}
+        value={row.field}
+        disabled={readOnly}
+        options={sources.map((item) => ({ value: item.key, label: item.label.trim() || item.key }))}
+        onChange={(event) => {
+          const next = sources.find((item) => item.key === event.target.value);
+          if (next) onChange(defaultRow(next));
+        }}
+      />
+      {!readOnly && <IconButton label="Remove condition" className={styles.remove} icon={<X aria-hidden />} onClick={onRemove} />}
       {source && (
         <>
           <Select
             aria-label="Operator"
+            className={styles.operator}
             value={row.operator}
             disabled={readOnly}
             options={operatorsFor(source.type).map((operator) => ({ value: operator, label: OPERATOR_LABELS[operator] }))}
@@ -130,7 +129,11 @@ export function ConditionEditor({ row, sources, readOnly, onChange, onRemove }: 
               onChange({ ...row, operator, value: takesList(operator) ? [] : reset ? defaultRow(source).value : row.value });
             }}
           />
-          {takesValue(row.operator) && <Value row={row} source={source} readOnly={readOnly} onChange={onChange} />}
+          {takesValue(row.operator) && (
+            <div className={styles.value}>
+              <Value row={row} source={source} readOnly={readOnly} onChange={onChange} />
+            </div>
+          )}
         </>
       )}
     </div>
