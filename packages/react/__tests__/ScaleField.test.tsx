@@ -213,6 +213,32 @@ describe('matrix section', () => {
     expect(radio('heard', 2).checked).toBe(true);
   });
 
+  it('keeps each row a group named by its label with the error inside the row', async () => {
+    render(
+      <FormRenderer
+        definition={single({
+          key: 'pulse',
+          type: 'section',
+          layout: 'matrix',
+          title: 'Pulse',
+          fields: [
+            { key: 'clear', type: 'radio', label: 'Clear', options: agree, validation: { required: true } },
+            { key: 'heard', type: 'radio', label: 'Heard', options: agree, validation: { required: true } },
+          ],
+        } as unknown as FormField)}
+        onSubmit={() => {}}
+      />,
+    );
+    fireEvent.click(screen.getAllByRole('radio', { name: 'Agree' })[0]!);
+    fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+    const heard = screen.getByRole('group', { name: 'Heard' });
+    const error = await screen.findByRole('alert');
+    expect(error.parentElement).toBe(heard);
+    expect(heard.getAttribute('aria-describedby')).toBe(error.id);
+    expect(screen.getByRole('group', { name: 'Clear' }).getAttribute('aria-invalid')).toBeNull();
+    expect(screen.getAllByRole('radio', { name: 'Disagree' })).toHaveLength(2);
+  });
+
   it('renders a plain section without layout', () => {
     render(
       <FormRenderer
