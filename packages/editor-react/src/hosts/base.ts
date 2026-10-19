@@ -1,6 +1,6 @@
 import type { FormDefinition } from '@formhaus/core';
 import type { ComponentType } from 'react';
-import type { EditorFeatures, EditorHost, Notice, SavedDraft } from '../host';
+import type { EditorFeatures, EditorHost, Notice, SavedDraft, UploadedImage } from '../host';
 import { formatAgo } from '../ui/lib/format';
 
 export interface HostOptions {
@@ -11,6 +11,8 @@ export interface HostOptions {
   definition?: FormDefinition;
   savedHint?: string;
   features?: EditorFeatures;
+  uploadImage?: (file: File) => Promise<UploadedImage>;
+  isUploadedImage?: (url: string) => boolean;
 }
 
 export const savedDraft = (definition: FormDefinition, revision: number): SavedDraft => ({
@@ -27,6 +29,8 @@ export function baseHost({
   onTitle,
   savedHint,
   features,
+  uploadImage,
+  isUploadedImage,
 }: Omit<HostOptions, 'onChange' | 'definition'>) {
   return {
     isNew: true,
@@ -38,5 +42,7 @@ export function baseHost({
     ...(onTitle ? { onTitle } : {}),
     ...(savedHint ? { savedHint } : {}),
     ...(features ? { features } : {}),
+    ...(uploadImage ? { uploadImage } : {}),
+    ...(isUploadedImage ? { isUploadedImage } : {}),
   } satisfies Partial<EditorHost>;
 }

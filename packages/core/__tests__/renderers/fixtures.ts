@@ -5,6 +5,7 @@ export interface ScenarioProps {
   definition: FormDefinition;
   onSubmit: SubmitHandler;
   initialValues?: Record<string, unknown>;
+  keepValues?: boolean;
   errors?: Record<string, string>;
   errorSummary?: boolean;
   loading?: boolean;

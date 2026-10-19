@@ -36,3 +36,4 @@ Two rules keep forms stable across minor versions:
 
 - Custom field types named with `-` or `:`, such as `x-rating`, never become built-in types. See [Custom field types](/guide/fields#custom-field-types).
 - `initialValues` is read when the form is created, and a new `definition` object creates a new form. See [Definition and initial values](/guide/#definition-and-initial-values).
+- `keepValues` and `engine.replaceDefinition()` are the opt-in way to change the definition and keep the answers. See [Keep answers when the definition changes](/guide/#keep-answers-when-the-definition-changes).

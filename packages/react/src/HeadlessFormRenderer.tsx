@@ -24,7 +24,7 @@ import type { FormRendererHandle, FormRendererProps } from './types';
 
 let nextKey = 0;
 const engineKeys = new WeakMap<object, number>();
-const sourced = new WeakSet<object>();
+const sourced = new WeakMap<object, object>();
 
 function engineKey(engine: object): number {
   let key = engineKeys.get(engine);
@@ -81,9 +81,9 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
   onValuesChange.current = props.onValuesChange;
   const emitted = useRef<object | null>(null);
   useEffect(() => {
-    if (!sourced.has(engine)) {
-      sourced.add(engine);
-      applySources(engine, initialValues);
+    if (sourced.get(engine) !== engine.definition) {
+      applySources(engine, sourced.has(engine) ? engine.values : initialValues);
+      sourced.set(engine, engine.definition);
     }
     engine.start();
     const emit = () => {
@@ -98,7 +98,7 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
       throw error;
     }
     return unsubscribe;
-  }, [engine]);
+  }, [engine, definition]);
 
   const [warned] = useState(() => new Set<string>());
   useEffect(() => {

@@ -103,12 +103,15 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `validateField(key)` | `string \| null` | Validates one visible field. When it passes, it also removes the field's server error |
 | `getSubmitValues()` | `Partial<TValues>` | Returns visible field values on the active path, excluding inactive branch answers |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
+| `replaceDefinition(definition)` | `void` | Switches to a new definition and keeps the answers, the step and the errors that still fit. Throws `FormDefinitionError` on an invalid definition and changes nothing |
 
 ::: warning
 `validate()` is the browser check. It runs the same type checks as the server for built-in types, but trusts the values your app put in the engine. On the server, use [`validateSubmission()`](/guide/server-validation).
 :::
 
 `reset()` also removes values hidden by the new reset values, while preserving answers in skipped route branches. Independently hidden fields still follow visibility clearing rules. Pending navigation and pre-submit results are discarded. A submission already dispatched cannot be undone.
+
+`replaceDefinition()` keeps the value of a field that has the same key and type in the new definition. A field whose type changed starts from its `defaultValue`, and values of removed fields are dropped. The current step stays when its id is still on the active path. Otherwise the engine moves to the last step before it on the old path that is still on the new path. Pending navigation and pre-submit results are discarded, like with `cancelPendingActions()`. See [Replacing the definition](/spec#replacing-the-definition).
 
 A custom renderer that receives external errors as a prop can skip redundant `setErrors()` calls:
 
@@ -264,7 +267,7 @@ const engine = new FormEngine(definition, {}, { onFormEvent: (event) => console.
 engine.start();
 ```
 
-The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped`, `field_shown`, `field_hidden`, `field_error`, `form_submitted`, `form_submit_succeeded`, `form_submit_failed` and `form_reset`. `step_viewed` fires after `start()` for every change of the current step, including `goToStepWithField`, `reset` and a step that a condition hides. Before `start()`, `step_viewed`, visibility events and `form_reset` stay silent. The renderers call `start()` on mount and add `field_focused` and `field_blurred`. An error thrown by `onFormEvent` is rethrown in a microtask and does not interrupt the action. See the [event table](/guide/custom-components#form-events).
+The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped`, `field_shown`, `field_hidden`, `field_error`, `form_submitted`, `form_submit_succeeded`, `form_submit_failed` and `form_reset`. `step_viewed` fires after `start()` for every change of the current step, including `goToStepWithField`, `reset`, `replaceDefinition` and a step that a condition hides. Before `start()`, `step_viewed`, visibility events and `form_reset` stay silent. The renderers call `start()` on mount and add `field_focused` and `field_blurred`. An error thrown by `onFormEvent` is rethrown in a microtask and does not interrupt the action. See the [event table](/guide/custom-components#form-events).
 
 ## Navigation and submission lifecycle
 
