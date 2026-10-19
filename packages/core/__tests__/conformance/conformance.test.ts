@@ -20,6 +20,9 @@ async function browserCanSubmit(definition: FormDefinition, values: Record<strin
 describe('conformance corpus', () => {
   it('covers every audited case', () => {
     expect(corpus.map(({ name }) => name).sort()).toEqual([
+      'check-autocomplete',
+      'check-autocomplete-type',
+      'check-autocomplete-version',
       'check-clean',
       'check-columns',
       'check-columns-not-applicable',

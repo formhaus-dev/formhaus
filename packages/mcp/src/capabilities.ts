@@ -20,7 +20,7 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall or an option is exclusive. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}} and exclusive options.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options and autocomplete.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
@@ -76,6 +76,7 @@ export const capabilities = {
       'rows',
       'mask',
       'inputMode',
+      'autocomplete',
       'autoAdvance',
       'layout',
       'columns',
@@ -97,6 +98,9 @@ export const capabilities = {
     anchors:
       'scale and rating only: options are anchor labels, not choices. value is the point number as a string, such as "0" or "10". Only three points show their label: the first at the start, the middle point floor((min + max) / 2) in the center and the last at the end.',
     inputMode: ['text', 'numeric', 'decimal', 'tel', 'email', 'url', 'search'],
+    autocomplete:
+      'HTML autofill token that lets browsers fill the field, such as "given-name", "family-name", "email", "tel", "street-address", "postal-code", "bday", "organization", "one-time-code" or "off". Optional prefixes: "section-name", "shipping" or "billing", and a contact type ("home", "work", "mobile") before "tel" or "email". Applies to text, email, phone, password, textarea, number, date, select, autocomplete and radio fields, such as "country" on a select. The autocomplete field type sets "off" when unset. Inside a group item the renderers prefix "section-<group key>-<index>". Set it on personal data fields; there is no default. An unknown token is unknown-autocomplete-token, another field type is autocomplete-not-applicable. Needs "formatVersion": "1.5".',
+    lineBreaks: 'A \\n in a step or section description or in helperText shows as a line break. The text stays plain: no HTML or Markdown.',
     layout: 'radio and multiselect only: "stack" (default) or "inline" for short options.',
     autoAdvance: `${AUTO_ADVANCE_TYPES.join(', ')} only. Ignored inside a group or a matrix section.`,
     columns:

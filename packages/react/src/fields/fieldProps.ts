@@ -20,6 +20,7 @@ export function inputProps(props: FieldComponentProps) {
   return {
     id,
     name: props.field.key,
+    autoComplete: props.field.autocomplete,
     ...optionProps(props),
     'aria-invalid': !!props.error,
     'aria-required': !!props.field.validation?.required || undefined,

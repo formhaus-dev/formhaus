@@ -55,6 +55,8 @@ const DESCRIPTIONS = {
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
   'FormField.columns':
     'Cards per row, 1 to 4, for radio and multiselect options with images. Without it, cards fill the row at about 200px each. Narrow screens show at most 2 per row.',
+  'FormField.autocomplete':
+    'HTML autofill token, such as "given-name", "email" or "street-address", or "off". Built-in text, email, phone, password, textarea, number, date, select, autocomplete and radio fields set it as the autocomplete attribute.',
   'FormField.optionsFrom': 'Key of an options provider passed to the renderer, used instead of static options.',
   'FieldValidation.matchField': 'Key of another field whose value this field must equal.',
   FormNode: 'A field, a section of fields or a repeatable group, told apart by type.',

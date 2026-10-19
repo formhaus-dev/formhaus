@@ -23,7 +23,7 @@ export function AutocompleteField(props: FieldComponentProps) {
         className="fh-field__input fh-field__input--autocomplete"
         value={toValue(text) === stored ? text : index < 0 ? stored : texts[index]}
         placeholder={field.placeholder}
-        autoComplete="off"
+        autoComplete={field.autocomplete ?? 'off'}
         onChange={(e) => {
           setText(e.target.value);
           onChange(toValue(e.target.value));

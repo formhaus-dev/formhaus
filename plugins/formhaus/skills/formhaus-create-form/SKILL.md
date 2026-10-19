@@ -107,6 +107,7 @@ interface FormField {
   rows?: number;              // for textarea
   mask?: string;              // input mask
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
+  autocomplete?: string;      // HTML autofill token: given-name, family-name, email, tel, street-address, postal-code, off (format 1.5)
 }
 
 type FieldType =

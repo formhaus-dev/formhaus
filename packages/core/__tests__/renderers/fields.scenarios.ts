@@ -36,6 +36,64 @@ const wizard: FormDefinition = {
   ],
 };
 
+const autofill: FormDefinition = {
+  formatVersion: '1.5',
+  id: 'autofill',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    {
+      id: 'about',
+      title: 'About you',
+      description: 'We keep it short.\nTwo minutes at most.',
+      fields: [
+        { key: 'first', type: 'text', label: 'First name', autocomplete: 'given-name' },
+        { key: 'mail', type: 'email', label: 'Email', autocomplete: 'email', helperText: 'Work address\nor personal' },
+        { key: 'bio', type: 'textarea', label: 'Bio', autocomplete: 'off' },
+        { key: 'born', type: 'date', label: 'Born', autocomplete: 'bday' },
+        { key: 'city', type: 'text', label: 'City' },
+        {
+          key: 'state',
+          type: 'autocomplete',
+          label: 'State',
+          autocomplete: 'address-level1',
+          options: [{ value: 'ca', label: 'California' }],
+        },
+        { key: 'town', type: 'autocomplete', label: 'Town', options: [{ value: 'sf', label: 'San Francisco' }] },
+        {
+          key: 'plan',
+          type: 'radio',
+          label: 'Plan',
+          autocomplete: 'off',
+          options: [
+            { value: 'a', label: 'A' },
+            { value: 'b', label: 'B' },
+          ],
+        },
+        {
+          key: 'guests',
+          type: 'group',
+          label: 'Guests',
+          defaultItems: 2,
+          fields: [
+            { key: 'guest', type: 'text', label: 'Guest', autocomplete: 'name' },
+            { key: 'diet', type: 'text', label: 'Diet', autocomplete: 'off' },
+            { key: 'street', type: 'text', label: 'Street', autocomplete: 'section-home street-address' },
+            { key: 'code', type: 'text', label: 'Code', autocomplete: 'one-time-code' },
+          ],
+        },
+        {
+          key: 'extras',
+          type: 'section',
+          title: 'Extras',
+          description: 'First line\nSecond line',
+          fields: [{ key: 'note', type: 'text', label: 'Note' }],
+        },
+      ],
+    },
+  ],
+};
+
 export function fieldScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
   const button = (name: string) => screen.getByRole('button', { name }) as HTMLButtonElement;
   const topErrors = () => document.querySelector('.fh-form__top-errors')?.textContent?.trim();
@@ -128,5 +186,53 @@ export function fieldScenarios(harness: RendererHarness, { it, expect, waitFor, 
       { type: 'field_shown', fieldKey: 'street' },
       { type: 'field_hidden', fieldKey: 'street' },
     ]);
+  });
+
+  it('sets the autocomplete attribute from the field and leaves it off otherwise', () => {
+    harness.mount({ definition: autofill, onSubmit: () => {} });
+    const attribute = (key: string) => document.querySelector(`[name="${key}"]`)?.getAttribute('autocomplete');
+    expect(['first', 'mail', 'bio', 'born'].map(attribute)).toEqual(['given-name', 'email', 'off', 'bday']);
+    expect(document.querySelector('[name="city"]')?.hasAttribute('autocomplete')).toBe(false);
+  });
+
+  it('uses the field token on autocomplete and radio fields, and off on an autocomplete field without one', () => {
+    harness.mount({ definition: autofill, onSubmit: () => {} });
+    const attributes = (selector: string) => [...document.querySelectorAll(selector)].map((node) => node.getAttribute('autocomplete'));
+    expect(attributes('[name="state"]')).toEqual(['address-level1']);
+    expect(attributes('[name="town"]')).toEqual(['off']);
+    expect(attributes('[name="plan"]')).toEqual(['off', 'off']);
+  });
+
+  it('rejects a number autocomplete with a definition error', () => {
+    const definition = {
+      id: 'f',
+      title: '',
+      submit: { label: 'Send' },
+      fields: [{ key: 'a', type: 'text', label: 'A', autocomplete: 123 }],
+    };
+    expect(() => harness.mount({ definition: definition as unknown as FormDefinition, onSubmit: () => {} })).toThrow(/autocomplete/);
+  });
+
+  it('gives each group item its own autofill section', () => {
+    harness.mount({ definition: autofill, onSubmit: () => {} });
+    const attributes = (key: string) =>
+      [...document.querySelectorAll(`[name$=".${key}"]`)].map((node) => node.getAttribute('autocomplete'));
+    expect(attributes('guest')).toEqual(['section-guests-0 name', 'section-guests-1 name']);
+    expect(attributes('street')).toEqual(['section-guests-0-home street-address', 'section-guests-1-home street-address']);
+    expect(attributes('code')).toEqual(['section-guests-0 one-time-code', 'section-guests-1 one-time-code']);
+    expect(attributes('diet')).toEqual(['off', 'off']);
+  });
+
+  it('keeps line breaks of step, section and helper texts as plain text', () => {
+    harness.mount({ definition: autofill, onSubmit: () => {} });
+    const texts = ['.fh-step-progress__description', '.fh-field__helper:not(.fh-section__description)', '.fh-section__description'].map(
+      (selector) => document.querySelector(selector),
+    );
+    expect(texts.map((node) => node?.textContent)).toEqual([
+      'We keep it short.\nTwo minutes at most.',
+      'Work address\nor personal',
+      'First line\nSecond line',
+    ]);
+    expect(texts.map((node) => node?.children.length)).toEqual([0, 0, 0]);
   });
 }

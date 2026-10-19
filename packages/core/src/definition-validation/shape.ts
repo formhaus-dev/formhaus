@@ -135,6 +135,7 @@ const field: Check = (value, path) => {
       {
         label: 'string',
         placeholder: 'string',
+        autocomplete: 'string',
         helperText: 'string',
         title: 'string',
         description: 'string',

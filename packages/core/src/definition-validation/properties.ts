@@ -8,7 +8,7 @@ export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
   step: 'id title description fields show showAny routes next back skip i18n',
   field:
-    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout columns optionsFrom optionsDependsOn accept rows mask inputMode props i18n',
+    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout columns optionsFrom optionsDependsOn accept rows mask inputMode autocomplete props i18n',
   section: 'key type title description layout show showAny fields i18n',
   group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
   option: 'value label image exclusive i18n',

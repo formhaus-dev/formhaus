@@ -17,6 +17,7 @@ export function RadioField(props: FieldComponentProps) {
             <input
               {...optionProps(props)}
               {...choice(opt.value)}
+              autoComplete={field.autocomplete}
               id={optionId}
               type="radio"
               className="fh-field__radio"

@@ -98,7 +98,7 @@
 legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-field__required { color: var(--fh-color-error); }
 
-.fh-field__helper { margin: calc(-1 * var(--fh-space-1)) 0 0; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: 1.45; text-wrap: pretty; }
+.fh-field__helper { margin: calc(-1 * var(--fh-space-1)) 0 0; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: 1.45; text-wrap: pretty; white-space: pre-line; }
 :is(.fh-field--checkbox, .fh-field--switch) > :is(.fh-field__helper, .fh-field__error) { margin: 0; padding-left: calc(var(--fh-space-8) + var(--fh-space-5)); }
 .fh-field--switch > :is(.fh-field__helper, .fh-field__error) { padding-left: calc(2 * var(--fh-space-8) + var(--fh-space-5)); }
 
@@ -326,7 +326,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-step-progress { display: flex; flex-direction: column; gap: var(--fh-space-2); }
 .fh-step-progress__counter { color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); font-variant-numeric: tabular-nums; }
 .fh-step-progress__title { margin: var(--fh-space-1) 0 0; font-size: var(--fh-font-size-title, var(--fh-auto-title)); font-weight: 600; line-height: 1.3; letter-spacing: -0.015em; text-wrap: balance; }
-.fh-step-progress__description { margin: 0; color: var(--fh-color-text-muted); }
+.fh-step-progress__description { margin: 0; color: var(--fh-color-text-muted); white-space: pre-line; }
 .fh-step-progress__bar { height: 4px; border-radius: 999px; background: var(--fh-color-bg-disabled); overflow: hidden; }
 .fh-step-progress__fill { height: 100%; background: var(--fh-color-primary); transition: width 200ms ease-out; }
 .fh-step-progress__steps { display: flex; flex-wrap: wrap; gap: var(--fh-space-1) var(--fh-space-7); margin: 0; padding: 0; list-style: none; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); }

@@ -56,6 +56,7 @@ export interface FormField {
   rows?: number;
   mask?: string;
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
+  autocomplete?: string;
   props?: Record<string, unknown>;
   i18n?: FieldI18n;
 }

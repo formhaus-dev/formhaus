@@ -52,6 +52,18 @@ The `email` type checks the format in the browser and in `validateSubmission()` 
 }
 ```
 
+## Autofill and line breaks
+
+`autocomplete` takes an [HTML autofill token](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute), so browsers and password managers can fill personal data (WCAG 2.2, 1.3.5). Set `"formatVersion": "1.5"`. Requires `@formhaus/core` 0.21. There is no default: the renderers set the attribute only when you do.
+
+```json
+{ "key": "firstName", "type": "text", "label": "First name", "autocomplete": "given-name" }
+```
+
+It works on `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` fields, such as `country` on a select. In a group item the renderers prefix `section-<group key>-<index>`, so each item is filled on its own. The `autocomplete` field type sets `off` when the field has no `autocomplete`. `checkDefinition()` reports an unknown token as `unknown-autocomplete-token` and another field type as `autocomplete-not-applicable`.
+
+A `\n` in a step or section `description` or in `helperText` starts a new line. The text stays plain; HTML and Markdown are not rendered.
+
 ## Select
 
 Dropdown with predefined options. Define options inline or load them dynamically.

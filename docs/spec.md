@@ -19,7 +19,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.5**. `@formhaus/core` 0.21 and later implement it. Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall) and [exclusive options](#exclusive-options). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.5**. `@formhaus/core` 0.21 and later implement it. Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
@@ -42,6 +42,8 @@ A definition with an [exclusive option](#exclusive-options) SHOULD declare `"for
 ```json
 { "formatVersion": "1.5", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
 ```
+
+A definition with a field `autocomplete` MAY declare `"formatVersion": "1.5"`. Core 0.20 reports `autocomplete` as `unknown-property`, and its renderers do not set the attribute. `checkDefinition()` warns about `autocomplete` without format 1.5.
 
 ## Document structure
 
@@ -90,12 +92,25 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `rows` | number | Row count for `textarea`. |
 | `mask` | string | Input mask. The built-in `text`, `email`, `phone`, `number` and `password` inputs use it as the placeholder when `placeholder` is absent. |
 | `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint, applied by the built-in `text`, `email`, `phone`, `number` and `password` inputs. |
+| `autocomplete` | string | HTML autofill token, such as `given-name`. See [Autocomplete](#autocomplete). Added in 1.5. |
 | `props` | object | Settings of a [custom type](#field-types). Core ignores it. Renderers pass it unchanged as `field.props`. Added in 1.2. |
 | `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
 
 An option MAY have `i18n: { label }`, an [`image`](#picture-options) and [`exclusive`](#exclusive-options). `validation` MAY have `i18n` with keys by rule name.
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate. Section keys share this namespace.
+
+### Autocomplete
+
+`autocomplete` is an [HTML autofill token](https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#autofilling-form-controls:-the-autocomplete-attribute), such as `given-name`, `family-name`, `email`, `tel`, `street-address`, `postal-code`, `bday`, `organization`, `one-time-code` or `off`. It lets browsers and password managers fill the field, as WCAG 2.2 success criterion 1.3.5 requires for personal data. The built-in React and Vue renderers set it as the `autocomplete` attribute of the input, `textarea` or `select`. A renderer MUST NOT guess a token when the field has none.
+
+The value is one token, or tokens separated by spaces: an optional `section-*` name, then `shipping` or `billing`, then for `tel`, `email` and `impp` an optional contact type (`home`, `work`, `mobile`, `fax`, `pager`), then the field name. Case and extra spaces do not matter. `on` and `off` stand alone.
+
+`autocomplete` applies to `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` fields, and to custom types. For `radio`, the renderers set it on each input. The `autocomplete` type sets `off` when the field has no `autocomplete`. It does not change validation. In a group item, the built-in renderers put `section-<group key>-<item index>` before the token, such as `section-guests-1 name`, with every character of the key other than `a-z` and `0-9` written as `_<hex code point>_`, so that browsers do not fill every item with the same value. `on` and `off` stay as written. A token with its own section keeps it after the item section: `section-home street-address` in item 1 of `guests` becomes `section-guests-1-home street-address`.
+
+### Line breaks in texts
+
+A `\n` in a step or section `description`, a field or group `helperText` or a statement text starts a new line in the built-in renderers. The text stays plain: there is no HTML or Markdown.
 
 ### Field types
 
@@ -897,7 +912,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, or a `{{key}}` token or an exclusive option without 1.5 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5 |
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
@@ -907,6 +922,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
+| `unknown-autocomplete-token` | warning | An `autocomplete` that is not a valid [autofill token](#autocomplete) |
+| `autocomplete-not-applicable` | warning | `autocomplete` on a built-in field type other than `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` |
 | `columns-not-applicable` | warning | `columns` on a field whose options have no `image`, on a field other than `radio` or `multiselect`, or on a field whose parent has `layout: "matrix"` |
 | `unsafe-image-url` | warning | An option `image` that does not start with `https:` or `data:image/` |
 | `exclusive-not-applicable` | warning | `exclusive` on an option of a field other than `multiselect`, or of a field with `optionsFrom` |

@@ -1,5 +1,6 @@
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
+export { autofilled } from './autofill';
 export { recalled, recalls } from './recall';
 export { recallEnabled, recallKeys } from '../engine/recall';
 
