@@ -12,7 +12,7 @@ const matrix = {
   layout: 'matrix',
   title: 'About the staff',
   fields: [
-    { key: 'friendly', type: 'radio', label: 'Friendly', options },
+    { key: 'friendly', type: 'radio', label: 'Friendly', options, validation: { required: true } },
     { key: 'quick', type: 'radio', label: 'Explained the options clearly and did not rush me through the checkout', options },
   ],
 } as unknown as FormField;
@@ -30,6 +30,13 @@ function renderAt(width: number) {
 
 const box = (node: Element) => node.getBoundingClientRect();
 const center = (rect: DOMRect) => rect.left + rect.width / 2;
+
+async function expectOneLeftEdge() {
+  screen.getByRole('button', { name: 'Send' }).click();
+  const error = await screen.findByRole('alert');
+  const edges = [screen.getByText('About the staff'), screen.getByText('Friendly'), error].map((node) => Math.round(box(node).left));
+  expect(new Set(edges).size).toBe(1);
+}
 
 describe('matrix layout', () => {
   afterEach(() => {
@@ -56,6 +63,7 @@ describe('matrix layout', () => {
       });
       expect(row.querySelector('.fh-field__radio-label')!.getBoundingClientRect().width).toBe(0);
     }
+    await expectOneLeftEdge();
   });
 
   it('shows the column label under each radio at 390', async () => {
@@ -73,5 +81,6 @@ describe('matrix layout', () => {
       expect(Math.abs(center(caption) - center(radio))).toBeLessThan(1);
       expect(box(cell).height).toBeGreaterThanOrEqual(44);
     }
+    await expectOneLeftEdge();
   });
 });
