@@ -21,6 +21,7 @@ import { instructions, moveAnnouncements } from './announcements';
 import styles from './Sortable.module.css';
 import { overlayHandle } from './overlay';
 import { SortableRow, type SortableRenderState } from './SortableRow';
+import { layer } from '../../lib/layer';
 
 const vertical: Modifier = ({ transform }) => ({ ...transform, x: 0 });
 
@@ -110,7 +111,7 @@ export function Sortable<T extends { id: string }>({
       {createPortal(
         <DragOverlay modifiers={[vertical]} dropAnimation={null}>
           {lifted && (
-            <div className={cx('fh-editor', styles.overlay)}>
+            <div {...layer} className={cx('fh-editor', styles.overlay)}>
               {renderItem(lifted, { handleProps: overlayHandle(getLabel(lifted)), isDragging: true })}
             </div>
           )}

@@ -5,6 +5,7 @@ import { cx } from '../../lib/cx';
 import { IconButton } from '../IconButton/IconButton';
 import styles from './Dialog.module.css';
 import { useReturnFocus } from './useReturnFocus';
+import { layer } from '../../lib/layer';
 
 export interface DialogProps {
   title: ReactNode;
@@ -17,6 +18,7 @@ export interface DialogProps {
   onCloseAutoFocus?: (event: Event) => void;
   children?: ReactNode;
   placement?: 'center' | 'right' | 'left';
+  size?: 'md' | 'wide';
   dismissible?: boolean;
 }
 
@@ -44,6 +46,7 @@ export function Dialog({
   onCloseAutoFocus,
   children,
   placement = 'center',
+  size = 'md',
   dismissible = true,
 }: DialogProps) {
   const state = open === undefined ? {} : { open };
@@ -53,9 +56,10 @@ export function Dialog({
     <RadixDialog.Root {...state} {...(onOpenChange ? { onOpenChange } : {})}>
       {trigger && <RadixDialog.Trigger asChild>{trigger}</RadixDialog.Trigger>}
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className={styles.overlay} />
+        <RadixDialog.Overlay {...layer} className={styles.overlay} />
         <RadixDialog.Content
-          className={cx(styles.content, styles[placement])}
+          {...layer}
+          className={cx(styles.content, styles[placement], size === 'wide' && styles.wide)}
           onOpenAutoFocus={(event) => {
             focus.remember();
             focusFirstField(event);
@@ -79,7 +83,11 @@ export function Dialog({
             </div>
           </header>
           {children && <div className={styles.body}>{children}</div>}
-          {footer && <footer className={styles.footer}>{footer}</footer>}
+          {footer && (
+            <footer className={styles.footer}>
+              <div className={styles.footerActions}>{footer}</div>
+            </footer>
+          )}
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>

@@ -52,6 +52,13 @@
   --add-row-start: calc(var(--fh-ed-space-3) + var(--fh-ed-size-icon-sm) + var(--add-row-icon-gap));
 }
 
+.flush {
+  --add-row-start: calc(var(--fh-ed-space-3) + var(--fh-ed-size-icon-sm) + var(--add-row-icon-gap));
+
+  width: calc(100% + var(--fh-ed-space-3));
+  margin-inline-start: calc(var(--fh-ed-space-3) * -1);
+}
+
 .card {
   --add-row-start: calc(var(--fh-ed-space-6) + var(--fh-ed-size-icon-sm) + var(--fh-ed-space-2));
   --add-row-icon-gap: var(--fh-ed-space-2);

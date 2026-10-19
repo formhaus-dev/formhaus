@@ -9,7 +9,7 @@ import {
 } from '@formhaus/builder';
 import { GripVertical, X } from 'lucide-react';
 import { useLayoutEffect, useRef, type ClipboardEvent, type KeyboardEvent } from 'react';
-import { AddRow, IconButton, InlineText, Input, Sortable } from '../ui';
+import { AddRow, IconButton, InlineText, Input, Picture, Sortable } from '../ui';
 import { cx } from '../ui/lib/cx';
 import { branchTargets, setJump } from '../logic/targets';
 import { useForm, useReadOnly, useShowsPictures } from '../store/hooks';
@@ -28,7 +28,7 @@ function ImageInput({ field, option, index, actions, readOnly }: Props & { optio
   const image = option.extra?.image ?? '';
   return (
     <div className={styles.image}>
-      {image ? <img className={styles.thumb} src={image} alt="" /> : <span className={styles.thumb} aria-hidden />}
+      <Picture className={styles.thumb} src={image} />
       <Input
         type="url"
         inputMode="url"

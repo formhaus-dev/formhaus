@@ -1,10 +1,12 @@
 import { anchorsOf, hasOptions, isScale, placeholderFor, scalePoints, type BuilderForm, type BuilderQuestion } from '@formhaus/builder';
 import { ChevronDown, EyeOff, Star } from 'lucide-react';
 import { useCallback } from 'react';
+import { Picture } from '../ui';
 import { cx } from '../ui/lib/cx';
 import { targetsAfter } from '../logic/targets';
 import { useEditor } from '../store/context';
 import styles from './FieldPreview.module.css';
+import scale from './ScalePreview.module.css';
 import { describeHidden } from './hiddenSources';
 
 function jumpLabels(form: BuilderForm, field: BuilderQuestion): string {
@@ -20,16 +22,16 @@ function Scale({ field }: { field: BuilderQuestion }) {
   const anchors = anchorsOf(field);
   const rating = field.type === 'rating';
   return (
-    <div className={cx(styles.scale, rating && styles.rated)}>
-      <ol className={cx(styles.points, rating && styles.stars)} aria-label={rating ? `${String(points.length)} stars` : 'Points'}>
+    <div className={cx(scale.scale, rating && scale.rated)}>
+      <ol className={cx(scale.points, rating && scale.stars)} aria-label={rating ? `${String(points.length)} stars` : 'Points'}>
         {points.map((point) => (
-          <li key={point} className={rating ? styles.star : styles.point}>
+          <li key={point} className={rating ? scale.star : scale.point}>
             {rating ? <Star aria-hidden /> : point}
           </li>
         ))}
       </ol>
       {(anchors.start || anchors.middle || anchors.end) && (
-        <div className={styles.anchors}>
+        <div className={scale.anchors}>
           <span>{anchors.start}</span>
           <span>{anchors.middle}</span>
           <span>{anchors.end}</span>
@@ -50,12 +52,7 @@ function Choices({ field }: { field: BuilderQuestion }) {
     >
       {field.options.map((option, index) => (
         <li key={option.uid} className={cx(styles.choice, pictures && styles.picture)}>
-          {pictures &&
-            (option.extra?.image ? (
-              <img className={styles.cover} src={option.extra.image} alt="" />
-            ) : (
-              <span className={styles.cover} aria-hidden />
-            ))}
+          {pictures && <Picture className={styles.cover} src={option.extra?.image ?? ''} />}
           <span className={cx(styles.glyph, square && styles.square)} aria-hidden />
           <span className={cx(!option.label.trim() && styles.placeholder)}>{option.label.trim() || `Option ${String(index + 1)}`}</span>
           {labels[index] && <span className={styles.jump}>→ {labels[index]}</span>}
