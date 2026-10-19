@@ -2,28 +2,28 @@
   "$schema": "./scenario.schema.json",
   "name": "replace-definition",
   "definition": {
-    "id": "kyc",
-    "title": "KYC",
+    "id": "signup",
+    "title": "Sign up",
     "submit": {
       "label": "Send"
     },
     "steps": [
       {
-        "id": "country",
-        "title": "Country",
+        "id": "plan",
+        "title": "Plan",
         "fields": [
           {
-            "key": "country",
+            "key": "plan",
             "type": "select",
-            "label": "Country",
+            "label": "Plan",
             "options": [
               {
-                "value": "us",
-                "label": "United States"
+                "value": "team",
+                "label": "Team"
               },
               {
-                "value": "de",
-                "label": "Germany"
+                "value": "solo",
+                "label": "Solo"
               }
             ],
             "validation": {
@@ -59,8 +59,8 @@
       "steps": [
         {
           "do": "setValue",
-          "key": "country",
-          "value": "us"
+          "key": "plan",
+          "value": "team"
         },
         {
           "do": "setValue",
@@ -70,28 +70,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -109,13 +109,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -123,14 +123,14 @@
                 ]
               },
               {
-                "id": "address",
-                "title": "Address",
+                "id": "billing",
+                "title": "Billing",
                 "fields": [
                   {
-                    "key": "street",
+                    "key": "cycle",
                     "type": "text",
-                    "label": "Street",
-                    "defaultValue": "Main St"
+                    "label": "Billing cycle",
+                    "defaultValue": "monthly"
                   }
                 ]
               },
@@ -151,12 +151,12 @@
         {
           "expect": {
             "values": {
-              "country": "us",
+              "plan": "team",
               "name": "Ada",
-              "street": "Main St"
+              "cycle": "monthly"
             },
-            "step": "country",
-            "steps": ["country", "tax", "address", "confirm"]
+            "step": "plan",
+            "steps": ["plan", "team", "billing", "confirm"]
           }
         },
         {
@@ -165,8 +165,8 @@
         },
         {
           "do": "setValue",
-          "key": "ssn",
-          "value": "123"
+          "key": "company",
+          "value": "Acme"
         },
         {
           "do": "next",
@@ -192,19 +192,19 @@
               {
                 "event": {
                   "type": "step_completed",
-                  "stepId": "country"
+                  "stepId": "plan"
                 }
               },
               {
                 "event": {
                   "type": "step_completed",
-                  "stepId": "tax"
+                  "stepId": "team"
                 }
               },
               {
                 "event": {
                   "type": "step_completed",
-                  "stepId": "address"
+                  "stepId": "billing"
                 }
               },
               {
@@ -216,10 +216,10 @@
               {
                 "call": "submit",
                 "values": {
-                  "country": "us",
+                  "plan": "team",
                   "name": "Ada",
-                  "ssn": "123",
-                  "street": "Main St",
+                  "company": "Acme",
+                  "cycle": "monthly",
                   "agree": true
                 },
                 "skippedSteps": []
@@ -237,7 +237,7 @@
     {
       "name": "stays on the current step when steps are inserted before it",
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "steps": [
@@ -248,28 +248,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -287,13 +287,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -301,14 +301,14 @@
                 ]
               },
               {
-                "id": "address",
-                "title": "Address",
+                "id": "billing",
+                "title": "Billing",
                 "fields": [
                   {
-                    "key": "street",
+                    "key": "cycle",
                     "type": "text",
-                    "label": "Street",
-                    "defaultValue": "Main St"
+                    "label": "Billing cycle",
+                    "defaultValue": "monthly"
                   }
                 ]
               },
@@ -343,9 +343,9 @@
         },
         {
           "expect": {
-            "step": "tax",
+            "step": "team",
             "errors": {
-              "ssn": "This field is required"
+              "company": "This field is required"
             }
           }
         }
@@ -354,28 +354,28 @@
     {
       "name": "moves to the last surviving step before a removed current step",
       "definition": {
-        "id": "kyc",
-        "title": "KYC",
+        "id": "signup",
+        "title": "Sign up",
         "submit": {
           "label": "Send"
         },
         "steps": [
           {
-            "id": "country",
-            "title": "Country",
+            "id": "plan",
+            "title": "Plan",
             "fields": [
               {
-                "key": "country",
+                "key": "plan",
                 "type": "select",
-                "label": "Country",
+                "label": "Plan",
                 "options": [
                   {
-                    "value": "us",
-                    "label": "United States"
+                    "value": "team",
+                    "label": "Team"
                   },
                   {
-                    "value": "de",
-                    "label": "Germany"
+                    "value": "solo",
+                    "label": "Solo"
                   }
                 ],
                 "validation": {
@@ -393,13 +393,13 @@
             ]
           },
           {
-            "id": "tax",
-            "title": "Tax",
+            "id": "team",
+            "title": "Team",
             "fields": [
               {
-                "key": "ssn",
+                "key": "company",
                 "type": "text",
-                "label": "SSN",
+                "label": "Company",
                 "validation": {
                   "required": true
                 }
@@ -407,14 +407,14 @@
             ]
           },
           {
-            "id": "address",
-            "title": "Address",
+            "id": "billing",
+            "title": "Billing",
             "fields": [
               {
-                "key": "street",
+                "key": "cycle",
                 "type": "text",
-                "label": "Street",
-                "defaultValue": "Main St"
+                "label": "Billing cycle",
+                "defaultValue": "monthly"
               }
             ]
           },
@@ -432,9 +432,9 @@
         ]
       },
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada",
-        "ssn": "123"
+        "company": "Acme"
       },
       "steps": [
         {
@@ -447,34 +447,34 @@
         },
         {
           "expect": {
-            "step": "address"
+            "step": "billing"
           }
         },
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -492,13 +492,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -521,11 +521,11 @@
         },
         {
           "expect": {
-            "step": "tax",
+            "step": "team",
             "values": {
-              "country": "us",
+              "plan": "team",
               "name": "Ada",
-              "ssn": "123"
+              "company": "Acme"
             }
           }
         }
@@ -534,7 +534,7 @@
     {
       "name": "falls back to the first step when no earlier step survives",
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "steps": [
@@ -545,8 +545,8 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
@@ -584,7 +584,7 @@
     {
       "name": "drops the value and the error of a field whose type changed",
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "steps": [
@@ -592,34 +592,34 @@
           "do": "setErrors",
           "errors": {
             "name": "Taken",
-            "country": "Not served"
+            "plan": "Not available"
           }
         },
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -651,11 +651,11 @@
         {
           "expect": {
             "values": {
-              "country": "us",
+              "plan": "team",
               "name": "Unknown"
             },
             "errors": {
-              "country": "Not served"
+              "plan": "Not available"
             }
           }
         }
@@ -664,28 +664,28 @@
     {
       "name": "keeps errors of fields that are still shown and drops the others",
       "definition": {
-        "id": "kyc",
-        "title": "KYC",
+        "id": "signup",
+        "title": "Sign up",
         "submit": {
           "label": "Send"
         },
         "steps": [
           {
-            "id": "country",
-            "title": "Country",
+            "id": "plan",
+            "title": "Plan",
             "fields": [
               {
-                "key": "country",
+                "key": "plan",
                 "type": "select",
-                "label": "Country",
+                "label": "Plan",
                 "options": [
                   {
-                    "value": "us",
-                    "label": "United States"
+                    "value": "team",
+                    "label": "Team"
                   },
                   {
-                    "value": "de",
-                    "label": "Germany"
+                    "value": "solo",
+                    "label": "Solo"
                   }
                 ],
                 "validation": {
@@ -703,13 +703,13 @@
             ]
           },
           {
-            "id": "tax",
-            "title": "Tax",
+            "id": "team",
+            "title": "Team",
             "fields": [
               {
-                "key": "ssn",
+                "key": "company",
                 "type": "text",
-                "label": "SSN",
+                "label": "Company",
                 "validation": {
                   "required": true
                 }
@@ -717,14 +717,14 @@
             ]
           },
           {
-            "id": "address",
-            "title": "Address",
+            "id": "billing",
+            "title": "Billing",
             "fields": [
               {
-                "key": "street",
+                "key": "cycle",
                 "type": "text",
-                "label": "Street",
-                "defaultValue": "Main St"
+                "label": "Billing cycle",
+                "defaultValue": "monthly"
               }
             ]
           },
@@ -742,7 +742,7 @@
         ]
       },
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "steps": [
@@ -750,36 +750,36 @@
           "do": "setErrors",
           "errors": {
             "name": "Taken",
-            "ssn": "Invalid",
-            "street": "Unknown street",
+            "company": "Invalid",
+            "cycle": "Unknown cycle",
             "ghost": "Form problem"
           }
         },
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -797,13 +797,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -828,7 +828,7 @@
           "expect": {
             "errors": {
               "name": "Taken",
-              "ssn": "Invalid"
+              "company": "Invalid"
             },
             "topLevelErrors": ["Form problem"]
           }
@@ -841,7 +841,7 @@
         {
           "expect": {
             "errors": {
-              "ssn": "Invalid"
+              "company": "Invalid"
             }
           }
         }
@@ -850,35 +850,35 @@
     {
       "name": "clears values hidden by the new definition and restores them when shown again",
       "values": {
-        "country": "de",
+        "plan": "solo",
         "name": "Ada"
       },
       "steps": [
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -894,8 +894,8 @@
                     },
                     "show": [
                       {
-                        "field": "country",
-                        "eq": "us"
+                        "field": "plan",
+                        "eq": "team"
                       }
                     ]
                   }
@@ -918,19 +918,19 @@
         {
           "expect": {
             "values": {
-              "country": "de"
+              "plan": "solo"
             }
           }
         },
         {
           "do": "setValue",
-          "key": "country",
-          "value": "us"
+          "key": "plan",
+          "value": "team"
         },
         {
           "expect": {
             "values": {
-              "country": "us",
+              "plan": "team",
               "name": "Ada"
             }
           }
@@ -940,7 +940,7 @@
     {
       "name": "rejects an invalid definition and leaves the engine unchanged",
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "steps": [
@@ -951,28 +951,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -990,21 +990,21 @@
                 ]
               },
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1030,9 +1030,9 @@
         {
           "expect": {
             "step": "confirm",
-            "steps": ["country", "confirm"],
+            "steps": ["plan", "confirm"],
             "values": {
-              "country": "us",
+              "plan": "team",
               "name": "Ada"
             }
           }
@@ -1042,7 +1042,7 @@
     {
       "name": "ignores a late onStepValidate result",
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "hooks": {
@@ -1069,28 +1069,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1108,13 +1108,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -1122,14 +1122,14 @@
                 ]
               },
               {
-                "id": "address",
-                "title": "Address",
+                "id": "billing",
+                "title": "Billing",
                 "fields": [
                   {
-                    "key": "street",
+                    "key": "cycle",
                     "type": "text",
-                    "label": "Street",
-                    "defaultValue": "Main St"
+                    "label": "Billing cycle",
+                    "defaultValue": "monthly"
                   }
                 ]
               },
@@ -1162,7 +1162,7 @@
         {
           "expect": {
             "errors": {},
-            "step": "country"
+            "step": "plan"
           }
         }
       ]
@@ -1170,7 +1170,7 @@
     {
       "name": "ignores a late before-submit result",
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "hooks": {
@@ -1200,28 +1200,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1239,13 +1239,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -1253,14 +1253,14 @@
                 ]
               },
               {
-                "id": "address",
-                "title": "Address",
+                "id": "billing",
+                "title": "Billing",
                 "fields": [
                   {
-                    "key": "street",
+                    "key": "cycle",
                     "type": "text",
-                    "label": "Street",
-                    "defaultValue": "Main St"
+                    "label": "Billing cycle",
+                    "defaultValue": "monthly"
                   }
                 ]
               },
@@ -1302,7 +1302,7 @@
     {
       "name": "applies no errors from a response that arrives after the replacement",
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "steps": [
@@ -1329,28 +1329,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1368,13 +1368,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -1382,14 +1382,14 @@
                 ]
               },
               {
-                "id": "address",
-                "title": "Address",
+                "id": "billing",
+                "title": "Billing",
                 "fields": [
                   {
-                    "key": "street",
+                    "key": "cycle",
                     "type": "text",
-                    "label": "Street",
-                    "defaultValue": "Main St"
+                    "label": "Billing cycle",
+                    "defaultValue": "monthly"
                   }
                 ]
               },
@@ -1425,28 +1425,28 @@
     {
       "name": "keeps a skipped step skipped when it still exists",
       "definition": {
-        "id": "kyc",
-        "title": "KYC",
+        "id": "signup",
+        "title": "Sign up",
         "submit": {
           "label": "Send"
         },
         "steps": [
           {
-            "id": "country",
-            "title": "Country",
+            "id": "plan",
+            "title": "Plan",
             "fields": [
               {
-                "key": "country",
+                "key": "plan",
                 "type": "select",
-                "label": "Country",
+                "label": "Plan",
                 "options": [
                   {
-                    "value": "us",
-                    "label": "United States"
+                    "value": "team",
+                    "label": "Team"
                   },
                   {
-                    "value": "de",
-                    "label": "Germany"
+                    "value": "solo",
+                    "label": "Solo"
                   }
                 ],
                 "validation": {
@@ -1464,13 +1464,13 @@
             ]
           },
           {
-            "id": "tax",
-            "title": "Tax",
+            "id": "team",
+            "title": "Team",
             "fields": [
               {
-                "key": "ssn",
+                "key": "company",
                 "type": "text",
-                "label": "SSN",
+                "label": "Company",
                 "validation": {
                   "required": true
                 }
@@ -1478,14 +1478,14 @@
             ]
           },
           {
-            "id": "address",
-            "title": "Address",
+            "id": "billing",
+            "title": "Billing",
             "fields": [
               {
-                "key": "street",
+                "key": "cycle",
                 "type": "text",
-                "label": "Street",
-                "defaultValue": "Main St"
+                "label": "Billing cycle",
+                "defaultValue": "monthly"
               }
             ],
             "skip": {
@@ -1506,9 +1506,9 @@
         ]
       },
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada",
-        "ssn": "1"
+        "company": "Acme"
       },
       "steps": [
         {
@@ -1526,28 +1526,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC v2",
+            "id": "signup",
+            "title": "Sign up v2",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1565,13 +1565,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -1579,14 +1579,14 @@
                 ]
               },
               {
-                "id": "address",
-                "title": "Address",
+                "id": "billing",
+                "title": "Billing",
                 "fields": [
                   {
-                    "key": "street",
+                    "key": "cycle",
                     "type": "text",
-                    "label": "Street",
-                    "defaultValue": "Main St"
+                    "label": "Billing cycle",
+                    "defaultValue": "monthly"
                   }
                 ],
                 "skip": {
@@ -1609,39 +1609,39 @@
         },
         {
           "expect": {
-            "skipped": ["address"],
+            "skipped": ["billing"],
             "submitValues": {
-              "country": "us",
+              "plan": "team",
               "name": "Ada",
-              "ssn": "1"
+              "company": "Acme"
             }
           }
         },
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1682,28 +1682,28 @@
     {
       "name": "reports step and visibility changes without a reset event",
       "definition": {
-        "id": "kyc",
-        "title": "KYC",
+        "id": "signup",
+        "title": "Sign up",
         "submit": {
           "label": "Send"
         },
         "steps": [
           {
-            "id": "country",
-            "title": "Country",
+            "id": "plan",
+            "title": "Plan",
             "fields": [
               {
-                "key": "country",
+                "key": "plan",
                 "type": "select",
-                "label": "Country",
+                "label": "Plan",
                 "options": [
                   {
-                    "value": "us",
-                    "label": "United States"
+                    "value": "team",
+                    "label": "Team"
                   },
                   {
-                    "value": "de",
-                    "label": "Germany"
+                    "value": "solo",
+                    "label": "Solo"
                   }
                 ],
                 "validation": {
@@ -1730,8 +1730,8 @@
                 "label": "Agree",
                 "show": [
                   {
-                    "field": "country",
-                    "eq": "us"
+                    "field": "plan",
+                    "eq": "team"
                   }
                 ]
               }
@@ -1740,7 +1740,7 @@
         ]
       },
       "values": {
-        "country": "us",
+        "plan": "team",
         "name": "Ada"
       },
       "steps": [
@@ -1759,28 +1759,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1807,8 +1807,8 @@
                     "label": "Agree",
                     "show": [
                       {
-                        "field": "country",
-                        "eq": "de"
+                        "field": "plan",
+                        "eq": "solo"
                       }
                     ]
                   }
@@ -1837,28 +1837,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1889,7 +1889,7 @@
               {
                 "event": {
                   "type": "step_viewed",
-                  "stepId": "country",
+                  "stepId": "plan",
                   "stepIndex": 0
                 }
               }
@@ -1901,24 +1901,24 @@
     {
       "name": "turns a single-page form into steps",
       "definition": {
-        "id": "kyc",
-        "title": "KYC",
+        "id": "signup",
+        "title": "Sign up",
         "submit": {
           "label": "Send"
         },
         "fields": [
           {
-            "key": "country",
+            "key": "plan",
             "type": "select",
-            "label": "Country",
+            "label": "Plan",
             "options": [
               {
-                "value": "us",
-                "label": "United States"
+                "value": "team",
+                "label": "Team"
               },
               {
-                "value": "de",
-                "label": "Germany"
+                "value": "solo",
+                "label": "Solo"
               }
             ],
             "validation": {
@@ -1942,28 +1942,28 @@
         {
           "do": "replaceDefinition",
           "definition": {
-            "id": "kyc",
-            "title": "KYC",
+            "id": "signup",
+            "title": "Sign up",
             "submit": {
               "label": "Send"
             },
             "steps": [
               {
-                "id": "country",
-                "title": "Country",
+                "id": "plan",
+                "title": "Plan",
                 "fields": [
                   {
-                    "key": "country",
+                    "key": "plan",
                     "type": "select",
-                    "label": "Country",
+                    "label": "Plan",
                     "options": [
                       {
-                        "value": "us",
-                        "label": "United States"
+                        "value": "team",
+                        "label": "Team"
                       },
                       {
-                        "value": "de",
-                        "label": "Germany"
+                        "value": "solo",
+                        "label": "Solo"
                       }
                     ],
                     "validation": {
@@ -1981,13 +1981,13 @@
                 ]
               },
               {
-                "id": "tax",
-                "title": "Tax",
+                "id": "team",
+                "title": "Team",
                 "fields": [
                   {
-                    "key": "ssn",
+                    "key": "company",
                     "type": "text",
-                    "label": "SSN",
+                    "label": "Company",
                     "validation": {
                       "required": true
                     }
@@ -1995,14 +1995,14 @@
                 ]
               },
               {
-                "id": "address",
-                "title": "Address",
+                "id": "billing",
+                "title": "Billing",
                 "fields": [
                   {
-                    "key": "street",
+                    "key": "cycle",
                     "type": "text",
-                    "label": "Street",
-                    "defaultValue": "Main St"
+                    "label": "Billing cycle",
+                    "defaultValue": "monthly"
                   }
                 ]
               },
@@ -2022,11 +2022,11 @@
         },
         {
           "expect": {
-            "step": "country",
-            "steps": ["country", "tax", "address", "confirm"],
+            "step": "plan",
+            "steps": ["plan", "team", "billing", "confirm"],
             "values": {
               "name": "Ada",
-              "street": "Main St"
+              "cycle": "monthly"
             }
           }
         }

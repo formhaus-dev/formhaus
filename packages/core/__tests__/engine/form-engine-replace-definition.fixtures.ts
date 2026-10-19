@@ -1,17 +1,17 @@
 import type { FormDefinition, FormStep } from '../../src';
 import { FormEngine } from '../../src/engine';
 
-export const countryStep: FormStep = {
-  id: 'country',
-  title: 'Country',
+export const planStep: FormStep = {
+  id: 'plan',
+  title: 'Plan',
   fields: [
     {
-      key: 'country',
+      key: 'plan',
       type: 'select',
-      label: 'Country',
+      label: 'Plan',
       options: [
-        { value: 'us', label: 'United States' },
-        { value: 'de', label: 'Germany' },
+        { value: 'team', label: 'Team' },
+        { value: 'solo', label: 'Solo' },
       ],
       validation: { required: true },
     },
@@ -21,14 +21,14 @@ export const countryStep: FormStep = {
 
 export const confirmStep: FormStep = { id: 'confirm', title: 'Confirm', fields: [{ key: 'agree', type: 'checkbox', label: 'Agree' }] };
 
-export const base: FormDefinition = { id: 'kyc', title: 'KYC', submit: { label: 'Send' }, steps: [countryStep, confirmStep] };
+export const base: FormDefinition = { id: 'signup', title: 'Sign up', submit: { label: 'Send' }, steps: [planStep, confirmStep] };
 
 export const extended: FormDefinition = {
   ...base,
   steps: [
-    countryStep,
-    { id: 'tax', title: 'Tax', fields: [{ key: 'ssn', type: 'text', label: 'SSN', validation: { required: true } }] },
-    { id: 'address', title: 'Address', fields: [{ key: 'street', type: 'text', label: 'Street', defaultValue: 'Main St' }] },
+    planStep,
+    { id: 'team', title: 'Team', fields: [{ key: 'company', type: 'text', label: 'Company', validation: { required: true } }] },
+    { id: 'billing', title: 'Billing', fields: [{ key: 'cycle', type: 'text', label: 'Billing cycle', defaultValue: 'monthly' }] },
     confirmStep,
   ],
 };
@@ -37,7 +37,7 @@ export const ids = (engine: FormEngine) => engine.visibleSteps.map(({ id }) => i
 
 export function answered(definition = base) {
   const engine = new FormEngine(definition);
-  engine.setValue('country', 'us');
+  engine.setValue('plan', 'team');
   engine.setValue('name', 'Ada');
   return engine;
 }

@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { FormDefinition, FormEvent } from '../../src';
 import { FormEngine } from '../../src/engine';
-import { answered, base, confirmStep, countryStep, deferred, extended } from './form-engine-replace-definition.fixtures';
+import { answered, base, confirmStep, planStep, deferred, extended } from './form-engine-replace-definition.fixtures';
 
 describe('FormEngine.replaceDefinition: pending work, skips and notifications', () => {
   it('ignores a late onStepValidate result', async () => {
     const check = deferred<Record<string, string>>();
-    const engine = new FormEngine(base, { country: 'us', name: 'Ada' }, { onStepValidate: () => check.promise });
+    const engine = new FormEngine(base, { plan: 'team', name: 'Ada' }, { onStepValidate: () => check.promise });
     const moving = engine.next();
     expect(engine.stepValidating).toBe(true);
     engine.replaceDefinition(extended);
@@ -14,13 +14,13 @@ describe('FormEngine.replaceDefinition: pending work, skips and notifications', 
     check.resolve({ name: 'Taken' });
     expect(await moving).toBe(false);
     expect(engine.errors).toEqual({});
-    expect(engine.currentStep?.id).toBe('country');
+    expect(engine.currentStep?.id).toBe('plan');
     expect(await engine.next()).toBe(false);
   });
 
   it('ignores a late before-hook and a pending submit', async () => {
     const allow = deferred<boolean>();
-    const engine = new FormEngine(base, { country: 'us', name: 'Ada' }, { onBeforeSubmit: () => allow.promise });
+    const engine = new FormEngine(base, { plan: 'team', name: 'Ada' }, { onBeforeSubmit: () => allow.promise });
     await engine.next();
     const submit = vi.fn();
     const submitting = engine.submit(submit);
@@ -34,7 +34,7 @@ describe('FormEngine.replaceDefinition: pending work, skips and notifications', 
 
   it('applies no errors from a response that arrives after the replacement', async () => {
     const response = deferred<{ ok: false; errors: Record<string, string> }>();
-    const engine = new FormEngine(base, { country: 'us', name: 'Ada' });
+    const engine = new FormEngine(base, { plan: 'team', name: 'Ada' });
     await engine.next();
     const submitting = engine.submit(() => response.promise);
     await Promise.resolve();
@@ -48,43 +48,43 @@ describe('FormEngine.replaceDefinition: pending work, skips and notifications', 
   it('keeps a skipped step skipped when it still exists', async () => {
     const optional = {
       ...extended,
-      steps: extended.steps!.map((step) => (step.id === 'address' ? { ...step, skip: { label: 'Skip' } } : step)),
+      steps: extended.steps!.map((step) => (step.id === 'billing' ? { ...step, skip: { label: 'Skip' } } : step)),
     };
     const engine = answered(optional);
     await engine.next();
-    engine.setValue('ssn', '1');
+    engine.setValue('company', 'Acme');
     await engine.next();
     expect(await engine.skip()).toBe(true);
-    expect(engine.isStepSkipped('address')).toBe(true);
-    engine.replaceDefinition({ ...optional, title: 'KYC v2' });
-    expect(engine.isStepSkipped('address')).toBe(true);
-    expect(engine.getSubmitValues()).toEqual({ country: 'us', name: 'Ada', ssn: '1' });
+    expect(engine.isStepSkipped('billing')).toBe(true);
+    engine.replaceDefinition({ ...optional, title: 'Sign up v2' });
+    expect(engine.isStepSkipped('billing')).toBe(true);
+    expect(engine.getSubmitValues()).toEqual({ plan: 'team', name: 'Ada', company: 'Acme' });
     engine.replaceDefinition(base);
-    expect(engine.isStepSkipped('address')).toBe(false);
+    expect(engine.isStepSkipped('billing')).toBe(false);
   });
 
   it('reports step and visibility changes without a reset event', async () => {
     const events: FormEvent[] = [];
     const conditional: FormDefinition = {
       ...base,
-      steps: [countryStep, { ...confirmStep, fields: [{ ...confirmStep.fields[0], show: [{ field: 'country', eq: 'us' }] }] }],
+      steps: [planStep, { ...confirmStep, fields: [{ ...confirmStep.fields[0], show: [{ field: 'plan', eq: 'team' }] }] }],
     };
-    const engine = new FormEngine(conditional, { country: 'us', name: 'Ada' }, { onFormEvent: (event) => events.push(event) });
+    const engine = new FormEngine(conditional, { plan: 'team', name: 'Ada' }, { onFormEvent: (event) => events.push(event) });
     engine.start();
     await engine.next();
     events.length = 0;
     engine.replaceDefinition({
       ...base,
       steps: [
-        countryStep,
-        { ...confirmStep, fields: [{ ...confirmStep.fields[0], show: [{ field: 'country', eq: 'de' }] }] },
+        planStep,
+        { ...confirmStep, fields: [{ ...confirmStep.fields[0], show: [{ field: 'plan', eq: 'solo' }] }] },
         { id: 'done', title: 'Done', fields: [] },
       ],
     });
     expect(events).toEqual([{ type: 'field_hidden', fieldKey: 'agree' }]);
     events.length = 0;
-    engine.replaceDefinition({ ...base, steps: [countryStep, { id: 'done', title: 'Done', fields: [] }] });
-    expect(events).toEqual([{ type: 'step_viewed', stepId: 'country', stepIndex: 0 }]);
+    engine.replaceDefinition({ ...base, steps: [planStep, { id: 'done', title: 'Done', fields: [] }] });
+    expect(events).toEqual([{ type: 'step_viewed', stepId: 'plan', stepIndex: 0 }]);
   });
 
   it('notifies listeners once with a structure change', () => {
@@ -96,7 +96,7 @@ describe('FormEngine.replaceDefinition: pending work, skips and notifications', 
     engine.subscribe(listener);
     engine.subscribeStructure(structure);
     engine.subscribeValues(values);
-    engine.subscribeField('ssn', field);
+    engine.subscribeField('company', field);
     engine.replaceDefinition(extended);
     expect([listener, structure, values, field].map((spy) => spy.mock.calls.length)).toEqual([1, 1, 1, 1]);
   });
