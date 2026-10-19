@@ -121,10 +121,10 @@
           },
           {
             "key": "receipt",
-            "type": "text",
-            "label": "Link to the receipt",
-            "placeholder": "https://",
-            "helperText": "A photo or PDF in a shared folder.",
+            "type": "file",
+            "label": "Receipt",
+            "accept": "image/*,application/pdf",
+            "helperText": "A photo or PDF.",
             "show": [{ "field": "category", "neq": "mileage" }],
             "validation": { "required": true }
           },
