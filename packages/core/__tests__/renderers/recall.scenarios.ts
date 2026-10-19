@@ -69,6 +69,31 @@ export function recallScenarios(harness: RendererHarness, { it, expect, waitFor,
     expect(text('.fh-section__title')).toBe('1 guests');
   });
 
+  it('greets by name on the next step', async () => {
+    harness.mount({
+      definition: {
+        formatVersion: '1.5',
+        id: 'hello',
+        title: '',
+        submit: { label: 'Send' },
+        steps: [
+          { id: 'name', title: 'Your name', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+          {
+            id: 'more',
+            title: 'Hello, {{name}}!',
+            description: 'A few more questions.',
+            fields: [{ key: 'role', type: 'text', label: 'Role' }],
+          },
+        ],
+      },
+      onSubmit: () => {},
+    });
+    await harness.type(screen.getByRole('textbox', { name: /^Name/ }), 'Ada');
+    await harness.click(button('Continue'));
+    await screen.findByRole('heading', { name: 'Hello, Ada!' });
+    expect(document.body.textContent).toContain('A few more questions.');
+  });
+
   it('shows the braces below format 1.5', async () => {
     harness.mount({ definition: definition('1.4'), initialValues: { name: 'Ada' }, onSubmit: () => {} });
     await waitFor(() => expect(document.body.textContent).toContain('We write to {{name}} here'));

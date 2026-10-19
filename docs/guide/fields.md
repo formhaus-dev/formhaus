@@ -498,6 +498,12 @@ Server errors returned for a hidden field's key also show as form-level errors, 
 }
 ```
 
+A step can greet the user by the name asked on the first step:
+
+```json
+{ "id": "more", "title": "Hello, {{name}}!", "description": "A few more questions.", "fields": [] }
+```
+
 - Tokens work in step and section `title` and `description`, field and group `label` and `helperText`, and `placeholder`.
 - Options show their label, a multiselect joins labels with `, `, a checkbox or switch shows its label when on, and a group shows its item count.
 - A missing value, a hidden field and an unknown key give an empty text.

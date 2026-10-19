@@ -1,6 +1,6 @@
 ---
 title: "Form definition 1.5 specification"
-description: "Formhaus form definition format 1.5: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, answer recall, translations and the payload."
+description: "Formhaus form definition format 1.5: structure, fields, sections, groups, conditions, validation, steps, routes, answer recall, translations and the payload."
 ---
 
 # Formhaus form definition 1.5

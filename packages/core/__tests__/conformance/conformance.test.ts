@@ -69,6 +69,7 @@ describe('conformance corpus', () => {
       'proto-keys',
       'recall-groups',
       'recall-inactive',
+      'recall-steps',
       'recall-translations',
       'recall-values',
       'recall-version',

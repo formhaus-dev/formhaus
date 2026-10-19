@@ -1,5 +1,5 @@
 ---
-title: "Computed values: use a calculated total later in the form"
+title: "Computed values: recall a calculated total"
 description: "Store a calculated total in a hidden field, show it in a later step with {{total}} and branch on it with a gte condition. Formhaus React and Vue renderers."
 ---
 
