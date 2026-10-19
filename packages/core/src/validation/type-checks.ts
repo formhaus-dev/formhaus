@@ -106,7 +106,8 @@ function multiselectError(field: FormField, value: unknown, fail: Fail): string 
   if (!Array.isArray(value)) return fail('options');
   if (value.length > (staticOptions(field)?.length ?? MAX_ITEMS)) return fail('option');
   const valid = value.every((item) => typeof item === 'string' && item.length <= MAX_STRING_LENGTH && isOption(field, item));
-  return valid ? null : fail('option');
+  if (!valid) return fail('option');
+  return new Set(value).size === value.length ? null : fail('options');
 }
 
 function stringError(field: FormField, value: unknown, key: MessageKey, fail: Fail): string | null {

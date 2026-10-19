@@ -102,7 +102,7 @@ Field keys MUST be unique on every possible path. Two fields MAY share a key onl
 | `text`, `email`, `phone`, `password`, `textarea`, `autocomplete`, `hidden` | string |
 | `number` | number, or `null` when the input is cleared |
 | `select`, `radio` | string, the selected option `value` |
-| `multiselect` | string[] of selected option values |
+| `multiselect` | string[] of distinct selected option values |
 | `checkbox`, `switch` | boolean |
 | `file` | a `File`, or `null` |
 | `date` | string `YYYY-MM-DD` |
@@ -421,7 +421,7 @@ Each rule except `required` and `validator` has a matching message property: `mi
 Core evaluates one field as follows and returns the first error:
 
 1. If the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
-2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
+2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, an array without repeated values for `multiselect`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it.
 3. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 4. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched.
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
@@ -644,7 +644,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `value` | `Invalid value` | |
 | `hidden` | `{label}: {message}` | `label`, `message` |
 
-`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`.
+`minLength` and `maxLength` on an array value, including a group, use `minItems` and `maxItems`. The 10,000-character limit of the type check uses `maxLength`. A `multiselect` value that is not an array or repeats a value fails with `options`; an item that is not a static option fails with `option`.
 
 | Label key | Default | Params |
 |---|---|---|
