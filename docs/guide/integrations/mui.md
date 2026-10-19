@@ -7,7 +7,7 @@ description: "Render Formhaus JSON forms with Material UI: map TextField, Select
 
 Map Material UI inputs to Formhaus field types through the `components` prop of `FormRenderer`.
 
-[Open in StackBlitz](https://stackblitz.com/github/ignsm/formhaus/tree/main/examples/react-mui) · [Source](https://github.com/ignsm/formhaus/tree/main/examples/react-mui)
+[Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/react-mui) · [Source](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui)
 
 ## Install
 
@@ -29,7 +29,7 @@ One renderer covers text, email, phone, number, password, date, datetime and tim
 
 <<< @/../examples/react-mui/src/App.tsx
 
-The other renderers are in [`src/fields`](https://github.com/ignsm/formhaus/tree/main/examples/react-mui/src/fields) and [`src/actions`](https://github.com/ignsm/formhaus/tree/main/examples/react-mui/src/actions).
+The other renderers are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/fields) and [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/actions).
 
 ## Server validation
 

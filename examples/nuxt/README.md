@@ -2,7 +2,7 @@
 
 A Nuxt page renders the form with `@formhaus/vue`, and a server route validates the submission with `validateSubmission` from `@formhaus/core/server`.
 
-[Open in StackBlitz](https://stackblitz.com/github/ignsm/formhaus/tree/main/examples/nuxt)
+[Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/nuxt)
 
 ## Run
 
