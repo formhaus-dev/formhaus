@@ -30,8 +30,8 @@ const side = (rule: Bound, label: string, messageLabel: string, fallback: (value
 const characters: LimitSpec = {
   whole: true,
   pattern: true,
-  low: side('minLength', 'Min characters', 'Error if too short', (value) => `Must be at least ${String(value)} characters`),
-  high: side('maxLength', 'Max characters', 'Error if too long', (value) => `Must be at most ${String(value)} characters`),
+  low: side('minLength', 'Min characters', 'Error if too short', (value) => `Minimum length is ${String(value)}`),
+  high: side('maxLength', 'Max characters', 'Error if too long', (value) => `Maximum length is ${String(value)}`),
 };
 
 const SPECS: Record<string, LimitSpec> = {
@@ -46,8 +46,8 @@ const SPECS: Record<string, LimitSpec> = {
   multiselect: {
     whole: true,
     pattern: false,
-    low: side('minLength', 'Min selections', 'Error if too few', (value) => `Must be at least ${String(value)} items`),
-    high: side('maxLength', 'Max selections', 'Error if too many', (value) => `Must be at most ${String(value)} items`),
+    low: side('minLength', 'Min selections', 'Error if too few', (value) => `At least ${String(value)} required`),
+    high: side('maxLength', 'Max selections', 'Error if too many', (value) => `At most ${String(value)} allowed`),
   },
 };
 

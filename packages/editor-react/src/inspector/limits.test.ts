@@ -74,7 +74,7 @@ describe('limits per type', () => {
   });
 
   it('describes the default message for a bound', () => {
-    expect(text.low.fallback(3)).toBe('Must be at least 3 characters');
+    expect(text.low.fallback(3)).toBe('Minimum length is 3');
     expect(number.high.fallback(9)).toBe('Must be at most 9');
   });
 

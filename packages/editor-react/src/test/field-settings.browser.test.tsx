@@ -115,7 +115,7 @@ describe('field settings in the inspector', () => {
     await waitFor(() => {
       expect(first(store).validation).toEqual({ minLength: 1, maxLength: 2 });
     });
-    expect(panel.getByRole('textbox', { name: 'Error if too many' })).toHaveAttribute('placeholder', 'Must be at most 2 items');
+    expect(panel.getByRole('textbox', { name: 'Error if too many' })).toHaveAttribute('placeholder', 'At most 2 allowed');
   });
 
   it('shows JSON limits, keeps unknown rules and survives a label change', async () => {
