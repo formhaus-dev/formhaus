@@ -143,7 +143,7 @@ The main entry also exports the functions the engine uses for conditions and val
 | `validateFieldValue(field, value, values, validators?, messages?)` | `string \| null` | The first error of one field, or `null` |
 | `validateFields(nodes, values, validators?, messages?)` | `Record<string, string>` | Errors of the visible fields, sections and groups in `nodes`, by key or item path |
 | `validateStep(step, values, validators?, messages?)` | `Record<string, string>` | `validateFields()` for the fields of one step |
-| `recallText(definition, text, values, { item?, lang?, format? }?)` | `string` | Resolves the [recall tokens](/spec#answer-recall) of a text with the values from `getSubmitValues()` |
+| `recallText(definition, text, values, { item?, lang?, format?, engine? }?)` | `string` | Resolves the [recall tokens](/spec#answer-recall) of a text with the values from `getSubmitValues()`. Pass `engine` to follow its active path |
 | `recallStatic(definition, text, group?)` | `string` | Replaces each recall token with the label of its field, for texts that stand for many submissions |
 | `getDefaultMessage(rule, params?)` | `string` | The built-in English message of a rule or message key, such as `getDefaultMessage('minLength', { min: 3 })` |
 

@@ -1,5 +1,6 @@
 import type { FormField, MessageCatalog, MessageKey } from '../types';
 import { hasOwn } from '../visibility/nodes';
+import { fill } from './bounded-text';
 
 export type MessageParams = Record<string, unknown>;
 export type MessageFn = (key: MessageKey, params: MessageParams, field: FormField) => string | undefined;
@@ -33,8 +34,10 @@ export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.fre
 
 export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
 
+const PARAM = /\{(\w+)\}/g;
+
 export function formatText(template: string, params: Record<string, unknown>): string {
-  return template.replace(/\{(\w+)\}/g, (match, name: string) => (hasOwn(params, name) ? String(params[name]) : match));
+  return fill(template, PARAM, ([match, name]) => (hasOwn(params, name) ? String(params[name]) : match));
 }
 
 type TextSource<K extends string> =

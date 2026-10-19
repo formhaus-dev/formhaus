@@ -75,8 +75,11 @@ describe('conformance corpus', () => {
       'localized-overlay',
       'options-from',
       'proto-keys',
+      'recall-branches',
       'recall-groups',
       'recall-inactive',
+      'recall-limit',
+      'recall-sensitive',
       'recall-steps',
       'recall-syntax',
       'recall-translations',
@@ -122,11 +125,13 @@ describe('conformance corpus', () => {
 
   it.each(recalls)('%s: recall', (_, definition, { values, texts }) => {
     const slots = new Map(textSlots(definition).map(({ address, text }) => [address, text]));
-    const submitted = new FormEngine(definition, values, { onWarning: () => {} }).getSubmitValues();
+    const engine = new FormEngine(definition, values, { onWarning: () => {} });
+    const submitted = engine.getSubmitValues();
     const resolve = ({ address, group, item }: (typeof texts)[number]) =>
       recallText(definition, slots.get(address)!, submitted, {
         item: group === undefined ? undefined : { group, index: item! },
         format: asStored,
+        engine,
       });
     expect(texts.map((entry) => ({ ...entry, text: resolve(entry) }))).toEqual(texts);
   });

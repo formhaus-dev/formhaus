@@ -631,7 +631,7 @@ A text can show an earlier answer with a `{{key}}` token, where `key` is a top-l
 
 Tokens are resolved in the step `title` and `description`, the section `title` and `description`, the field and group `label` and `helperText`, the field `placeholder` and the group `itemLabel`. The `itemLabel` is resolved inside each item, in one pass with its `{label}` and `{index}` parameters: text that one of them inserts is never read again. Option labels, action labels, catalogs and messages show tokens as written. Recall works only with `formatVersion` 1.5 or newer.
 
-A token is replaced with the answer of the field:
+A token is replaced with the answer of the field. When fields on different route branches share a key, the token reads the field on the active path, with its own options and type:
 
 | Field | Answer |
 |---|---|
@@ -639,13 +639,16 @@ A token is replaced with the answer of the field:
 | `multiselect` | the list of option labels |
 | `checkbox`, `switch` | the field label when `true`, else empty |
 | `number`, `scale`, `rating` | the number |
-| `date`, `time`, `datetime`, text types, `hidden` | the value as stored |
+| `date`, `time`, `datetime`, text types other than `password`, `hidden` | the value as stored |
+| `password` | empty, also when another field with the same key on another route branch, or in another group with the same key, is not a `password` |
 | `file` | the list of file names |
 | group | the number of items |
 
-A field without a value, an empty list, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. Each recalled text is cut to 10000 code units. Recall runs once: a recalled value that holds `{{key}}` is not expanded again. The result is plain text, and renderers draw it as text, never as HTML. React and Vue update the texts when a value, `lang` or `formatRecall` changes. `recallText(definition, text, values, { item?, lang?, format? })` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item.
+A field without a value, an empty list, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. After the tokens and the `itemLabel` parameters are replaced, a text longer than 10000 UTF-16 code units is cut to its first 10000. When the last unit kept is a high surrogate, it is dropped too, so the text never ends in half a character. The same cut applies to a message or label filled with parameters, such as an item title from the `itemLabel` label or its default. Swift counts the units of `String.utf16`. Recall runs once: a recalled value that holds `{{key}}` is not expanded again. The result is plain text, and renderers draw it as text, never as HTML. React and Vue update the texts when a value, `lang` or `formatRecall` changes. `recallText(definition, text, values, { item?, lang?, format?, engine? })` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item. With `engine`, a shared key reads the field on the engine's active path. Without it, the path is computed from `values`, which leave out skipped steps, so a route that reads a skipped step's default can pick another branch.
 
 An optional answer can be empty, so `{{street}}, {{city}}` can show `, Springfield`. Put each optional recall on its own line or in its own text instead of joining answers with punctuation.
+
+`checkDefinition()` reports each recall warning code at most once per text, for its first token.
 
 ### Recall formatting
 
@@ -940,6 +943,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |
+| `recall-sensitive-field` | warning | A `{{key}}` token for a key that is a `password` field on any route branch. It shows nothing |
+| `recall-query-source` | warning | A `{{key}}` token for a `hidden` field with a `query` source, whose text anyone can set in a link |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |
