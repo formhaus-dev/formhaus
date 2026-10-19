@@ -5,6 +5,7 @@ import { cx } from '../ui/lib/cx';
 import { targetsAfter } from '../logic/targets';
 import { useEditor } from '../store/context';
 import styles from './FieldPreview.module.css';
+import scale from './ScalePreview.module.css';
 import { describeHidden } from './hiddenSources';
 
 function jumpLabels(form: BuilderForm, field: BuilderQuestion): string {
@@ -20,16 +21,16 @@ function Scale({ field }: { field: BuilderQuestion }) {
   const anchors = anchorsOf(field);
   const rating = field.type === 'rating';
   return (
-    <div className={cx(styles.scale, rating && styles.rated)}>
-      <ol className={cx(styles.points, rating && styles.stars)} aria-label={rating ? `${String(points.length)} stars` : 'Points'}>
+    <div className={cx(scale.scale, rating && scale.rated)}>
+      <ol className={cx(scale.points, rating && scale.stars)} aria-label={rating ? `${String(points.length)} stars` : 'Points'}>
         {points.map((point) => (
-          <li key={point} className={rating ? styles.star : styles.point}>
+          <li key={point} className={rating ? scale.star : scale.point}>
             {rating ? <Star aria-hidden /> : point}
           </li>
         ))}
       </ol>
       {(anchors.start || anchors.middle || anchors.end) && (
-        <div className={styles.anchors}>
+        <div className={scale.anchors}>
           <span>{anchors.start}</span>
           <span>{anchors.middle}</span>
           <span>{anchors.end}</span>
