@@ -102,6 +102,15 @@ describe('buildGraph', () => {
     const fields = new Map();
     expect(describeCondition({ field: 'size', eq: 'large', notEmpty: true }, fields)).toBe('size is large');
     expect(describeCondition({ field: 'size' }, fields)).toBe('');
+    expect(describeCondition({ field: 'size', notEmpty: false, gt: 3 }, fields)).toBe('');
+  });
+
+  it('describes number comparisons for scale branches', () => {
+    const fields = new Map([['score', { key: 'score', type: 'scale', label: 'Score' }]]);
+    expect(describeCondition({ field: 'score', lte: 6 }, fields)).toBe('Score is at most 6');
+    expect(describeCondition({ field: 'score', gte: 9 }, fields)).toBe('Score is at least 9');
+    expect(describeCondition({ field: 'score', gt: 0 }, fields)).toBe('Score is more than 0');
+    expect(describeCondition({ field: 'score', lt: 3 }, fields)).toBe('Score is less than 3');
   });
 
   it('widens a column gap to fit its longest label', () => {
