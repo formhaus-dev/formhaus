@@ -32,7 +32,7 @@ Each file holds one `definition`, the issues `checkDefinition` reports for it, a
 4. If `issues` is not empty, creating the engine with no values and running the server validation with `{}` must both fail with a definition error.
 
 The checks run on the definition as written, without `overlay`. A structural error (wrong type, missing required property) stops the checks below it in the same node, so a condition without `field` reports only `missing-property`.
-5. `texts`: if set, apply `overlay` to the definition, list its text slots, and compare the text at each listed address.
+5. `texts`: if set, apply `overlay` to the definition, list its text slots, and compare the text at each listed address. Do this even when step 1 rejected the definition: text slots do not depend on validation.
 6. If `issues` is empty, run each case.
 
 ## Cases
