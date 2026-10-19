@@ -11,17 +11,19 @@ export function checkImageFile(file: File): string | null {
   return null;
 }
 
+const PLAIN_HOST = /^[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*(?::[0-9]{1,5})?$/;
+const PLAIN_TAIL = /^[\x21-\x5b\x5d-\x7e]*$/;
+const BAD_ESCAPE = /%(?![0-9A-Fa-f]{2})/;
+
 export function httpsLink(value: string): string | null {
-  const trimmed = value.trim();
-  if (!/^https:\/\//i.test(trimmed)) return null;
-  try {
-    const url = new URL(trimmed);
-    url.username = '';
-    url.password = '';
-    return url.protocol === 'https:' && url.hostname ? url.href : null;
-  } catch {
-    return null;
-  }
+  const link = value.trim();
+  if (!link.startsWith('https://')) return null;
+  const rest = link.slice('https://'.length);
+  const end = rest.search(/[/?#]/);
+  const host = end < 0 ? rest : rest.slice(0, end);
+  const tail = end < 0 ? '' : rest.slice(end);
+  if (!PLAIN_HOST.test(host) || !PLAIN_TAIL.test(tail) || BAD_ESCAPE.test(tail)) return null;
+  return link;
 }
 
 export const isEmbedded = (src: string) => /^data:/i.test(src.trim());
