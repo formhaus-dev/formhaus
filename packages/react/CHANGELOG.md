@@ -1,5 +1,20 @@
 # @formhaus/react
 
+## 0.21.0
+
+### Minor Changes
+
+- Texts with `{{key}}` tokens show earlier answers in titles, descriptions, labels, helper texts, placeholders, group item titles and the error summary.
+- New `lang` and `formatRecall` props on `FormRenderer` and `HeadlessFormRenderer`, and options on `useFormEngine`.
+- Exclusive `multiselect` options show an "or" divider before them, from the `or` label.
+- The `autocomplete` field property sets the HTML `autocomplete` attribute. Inside a group item the token gets a `section-` prefix per item.
+- The `autocomplete` field type sets `autocomplete="off"` when the field has no token.
+- A line break in a step or section `description` or in `helperText` shows as a line break.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 0.21.0.
+
 ## 0.20.2
 
 No changes in this release.

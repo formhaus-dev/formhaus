@@ -1,5 +1,39 @@
 # @formhaus/core
 
+## 0.21.0
+
+### Minor Changes
+
+- Format 1.5. Core 0.20 and older reject definitions that use `{{key}}` tokens, exclusive options or `autocomplete`.
+- `{{key}}` in a text shows the answer of an earlier field. Below format 1.5 the braces show as written.
+- Tokens work in step and section `title` and `description`, field and group `label` and `helperText`, `placeholder` and group `itemLabel`. Inside a group item, a token also reads the item's own fields.
+- A token shows an option label, a number, a date, text, file names, or the item count of a group. A checkbox or switch shows its label when on.
+- A missing answer, a hidden field, a `password` field and an unknown key show nothing. The result is plain text.
+- When route branches share a key, a token reads the field on the active path. A key that is a `password` on any branch shows nothing.
+- Recalled dates, times, numbers and lists are formatted for the locale with `Intl`. A stored date shows its own day in every time zone.
+- Token keys may hold letters, digits, `_`, `-` and `.`. A token with any other content shows as written. `\{{` shows literal braces.
+- A text with tokens, and a message or label filled with parameters, is cut to 10000 UTF-16 code units.
+- New `formatRecall` and `lang` engine options. `formatRecall` replaces the formatting of recalled answers. `lang` wins over the definition `lang`, and both fall back to `en`.
+- New `recallText()` resolves a text against answers. Its `engine` option follows the engine's active path.
+- New `recallStatic()` replaces each token with the label of its field, for texts shown outside one submission.
+- New `RecallFormatFn` and `RecallOptions` types.
+- A `multiselect` option with `"exclusive": true` is the only answer when picked, as in "None of these". Picking another option clears it.
+- An exclusive option alone satisfies `required` and skips `minLength`.
+- A list with an exclusive option and any other value fails with the new `exclusive` message, default `Select "{option}" or other options, not both`.
+- A field takes `autocomplete`, an HTML autofill token such as `given-name`, `email` or `off`.
+- New labels `or` (`or`), shown before exclusive options, and `select` (`Select`), for the empty prompt of a select.
+- New `checkDefinition()` warnings: `unknown-recall-field`, `recall-forward-reference`, `recall-syntax`, `recall-sensitive-field`, `recall-query-source`, `exclusive-not-applicable`, `exclusive-option-position`, `exclusive-default-value`, `exclusive-with-min-length`, `unknown-autocomplete-token` and `autocomplete-not-applicable`.
+- `checkDefinition()` warns with `outdated-format-version` about these features without `"formatVersion": "1.5"`.
+- `translationIssues()` reports a translation that drops or adds a `{{key}}` token.
+- `textSlots()` lists the `or` and `select` labels and the `exclusive` message only for forms that use them.
+- A line break in a step or section `description` or in `helperText` shows as a line break.
+- **Breaking:** `validateSubmission()` no longer returns a value that fails its type check in `values`, at top level and in group items.
+- `validateSubmission()` treats a value that fails its type check as unanswered in conditions, and custom validators no longer receive it.
+
+### Patch Changes
+
+- `validateSubmission()` no longer reports a field in a group item as required when an invalid answer in the same item hid it and was then dropped.
+
 ## 0.20.2
 
 ### Patch Changes
