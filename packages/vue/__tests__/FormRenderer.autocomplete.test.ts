@@ -5,19 +5,19 @@ import { defineComponent, h, nextTick, ref } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import type { FormRendererHandle } from '../src/types';
 
-const banks: FieldOption[] = [
-  { value: '012', label: 'BBVA México' },
-  { value: '002', label: 'Banamex' },
+const regions: FieldOption[] = [
+  { value: 'us-east-1', label: 'US East (N. Virginia)' },
+  { value: 'eu-west-1', label: 'Europe (Ireland)' },
 ];
 
 const definition: FormDefinition = {
-  id: 'payout',
-  title: 'Payout',
+  id: 'deploy',
+  title: 'Deploy',
   submit: { label: 'Save' },
-  fields: [{ key: 'bank', type: 'autocomplete', label: 'Bank', optionsFrom: 'banks' }],
+  fields: [{ key: 'region', type: 'autocomplete', label: 'Region', optionsFrom: 'regions' }],
 };
 
-const input = () => screen.getByRole('combobox', { name: /Bank/ }) as HTMLInputElement;
+const input = () => screen.getByRole('combobox', { name: /Region/ }) as HTMLInputElement;
 const listed = () => [...document.querySelectorAll('datalist option')].map((o) => o.getAttribute('value'));
 
 function mount(props: Record<string, unknown>) {
@@ -30,54 +30,54 @@ function mount(props: Record<string, unknown>) {
 describe('autocomplete value and label', () => {
   it('shows the label when the value is set before the options load', async () => {
     let resolve!: (options: FieldOption[]) => void;
-    const handle = mount({ optionsProviders: { banks: () => new Promise<FieldOption[]>((r) => (resolve = r)) } });
+    const handle = mount({ optionsProviders: { regions: () => new Promise<FieldOption[]>((r) => (resolve = r)) } });
     await waitFor(() => expect(resolve).toBeDefined());
-    handle.value!.setValue('bank', '012');
+    handle.value!.setValue('region', 'us-east-1');
     await nextTick();
-    resolve(banks);
-    await waitFor(() => expect(input().value).toBe('BBVA México'));
-    expect(handle.value!.getValues().bank).toBe('012');
+    resolve(regions);
+    await waitFor(() => expect(input().value).toBe('US East (N. Virginia)'));
+    expect(handle.value!.getValues().region).toBe('us-east-1');
   });
 
   it('shows the label when the value is set after the options load', async () => {
-    const handle = mount({ optionsProviders: { banks: () => banks } });
+    const handle = mount({ optionsProviders: { regions: () => regions } });
     await waitFor(() => expect(listed()).toHaveLength(2));
-    handle.value!.setValue('bank', '002');
+    handle.value!.setValue('region', 'eu-west-1');
     await nextTick();
-    expect(input().value).toBe('Banamex');
+    expect(input().value).toBe('Europe (Ireland)');
   });
 
   it('shows the label for initialValues', async () => {
-    mount({ initialValues: { bank: '012' }, optionsProviders: { banks: () => banks } });
-    await waitFor(() => expect(input().value).toBe('BBVA México'));
+    mount({ initialValues: { region: 'us-east-1' }, optionsProviders: { regions: () => regions } });
+    await waitFor(() => expect(input().value).toBe('US East (N. Virginia)'));
   });
 
   it('shows a value that matches no option as typed', async () => {
-    const handle = mount({ optionsProviders: { banks: () => banks } });
+    const handle = mount({ optionsProviders: { regions: () => regions } });
     await waitFor(() => expect(listed()).toHaveLength(2));
-    handle.value!.setValue('bank', '999');
+    handle.value!.setValue('region', 'unknown-1');
     await nextTick();
-    expect(input().value).toBe('999');
+    expect(input().value).toBe('unknown-1');
   });
 
   it('lists labels and stores the value of a picked label', async () => {
     const onSubmit = vi.fn();
-    mount({ optionsProviders: { banks: () => banks }, onSubmit });
+    mount({ optionsProviders: { regions: () => regions }, onSubmit });
     await waitFor(() => expect(listed()).toHaveLength(2));
-    expect(listed()).toEqual(['BBVA México', 'Banamex']);
-    await fireEvent.update(input(), 'BBVA México');
-    expect(input().value).toBe('BBVA México');
+    expect(listed()).toEqual(['US East (N. Virginia)', 'Europe (Ireland)']);
+    await fireEvent.update(input(), 'US East (N. Virginia)');
+    expect(input().value).toBe('US East (N. Virginia)');
     await fireEvent.click(screen.getByText('Save'));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ bank: '012' }, expect.any(Array)));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ region: 'us-east-1' }, expect.any(Array)));
   });
 
   it('keeps typed text that equals an option value', async () => {
     const onSubmit = vi.fn();
-    mount({ optionsProviders: { banks: () => banks }, onSubmit });
+    mount({ optionsProviders: { regions: () => regions }, onSubmit });
     await waitFor(() => expect(listed()).toHaveLength(2));
-    await fireEvent.update(input(), '012');
-    expect(input().value).toBe('012');
+    await fireEvent.update(input(), 'us-east-1');
+    expect(input().value).toBe('us-east-1');
     await fireEvent.click(screen.getByText('Save'));
-    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ bank: '012' }, expect.any(Array)));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ region: 'us-east-1' }, expect.any(Array)));
   });
 });
