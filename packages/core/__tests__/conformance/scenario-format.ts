@@ -46,6 +46,7 @@ export interface Expectation {
   fields?: string[];
   skipped?: string[];
   items?: Record<string, number>;
+  distinctItemIds?: Record<string, number>;
   isFirstStep?: boolean;
   isLastStep?: boolean;
   canGoNext?: boolean;

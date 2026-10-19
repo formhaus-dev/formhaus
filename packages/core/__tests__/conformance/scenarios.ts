@@ -152,6 +152,10 @@ export class ScenarioRun {
       fields: () => engine.visibleFields.map(({ key }) => key),
       skipped: () => steps.map(({ id }) => id).filter((id) => engine.isStepSkipped(id)),
       items: () => Object.fromEntries(Object.keys(expectation.items ?? {}).map((key) => [key, engine.items(key).length])),
+      distinctItemIds: () =>
+        Object.fromEntries(
+          Object.keys(expectation.distinctItemIds ?? {}).map((key) => [key, new Set(engine.items(key).map(({ id }) => id)).size]),
+        ),
       isFirstStep: () => engine.isFirstStep,
       isLastStep: () => engine.isLastStep,
       canGoNext: () => engine.canGoNext,

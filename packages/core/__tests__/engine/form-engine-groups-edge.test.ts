@@ -43,6 +43,16 @@ describe('group edge cases', () => {
     expect(engine.items('people').map((item) => item.id)).toEqual(ids);
   });
 
+  it('keeps distinct item ids on edited items that were not objects', () => {
+    const engine = new FormEngine(definition, { people: [1, 2, { diet: 'none' }] });
+    engine.setItemValue('people', 0, 'diet', 'none');
+    engine.setItemValue('people', 1, 'diet', 'other');
+    const ids = engine.items('people').map((item) => item.id);
+    expect(new Set(ids).size).toBe(3);
+    engine.setItemValue('people', 1, 'diet', 'none');
+    expect(engine.items('people').map((item) => item.id)).toEqual(ids);
+  });
+
   it('warns about optionsDependsOn on an item field', () => {
     const scoped = structuredClone(definition);
     (scoped.fields![2] as { fields: { optionsDependsOn?: string[] }[] }).fields[0].optionsDependsOn = ['note'];
