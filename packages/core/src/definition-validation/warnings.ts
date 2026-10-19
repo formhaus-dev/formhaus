@@ -10,6 +10,7 @@ import { sourceWarnings } from './sources';
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
+const CONTAINS = ['contains', 'notContains'];
 
 function expectedType(field: FormField): string | undefined {
   if (NUMBER_TYPES.includes(field.type)) return 'number';
@@ -17,8 +18,27 @@ function expectedType(field: FormField): string | undefined {
   return BUILT_IN_TYPES.includes(field.type) && !LIST_TYPES.includes(field.type) && field.type !== 'file' ? 'string' : undefined;
 }
 
+function containsIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {
+  if (!LIST_TYPES.includes(target.type))
+    return BUILT_IN_TYPES.includes(target.type) || target.type === 'group'
+      ? [
+          warning(
+            'contains-not-list',
+            path,
+            `"${target.key}" is a ${target.type} field, so "${operator}" ${operator === 'contains' ? 'never' : 'always'} matches it`,
+            'Use eq or in, or test a multiselect field',
+          ),
+        ]
+      : [];
+  const options = !target.optionsFrom && target.options?.length ? target.options.map((option) => option.value) : null;
+  return options && !options.includes(operand as string)
+    ? [warning('contains-not-in-options', path, `${JSON.stringify(operand)} is not an option of "${target.key}"`, oneOf(options))]
+    : [];
+}
+
 function valueIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {
   const mismatch = (problem: string, hint: string) => [warning('condition-value-mismatch', path, problem, hint)];
+  if (CONTAINS.includes(operator)) return containsIssue(target, operator, operand, path);
   if (operator === 'notEmpty')
     return operand
       ? []
@@ -34,7 +54,7 @@ function valueIssue(target: FormField, operator: string, operand: unknown, path:
     const result = operator === 'neq' || operator === 'notIn' ? 'always' : 'never';
     return mismatch(
       `"${target.key}" holds a list of values, so "${operator}" ${result} matches it`,
-      'Use notEmpty, or a select or radio field',
+      'Use contains, notContains or notEmpty',
     );
   }
   const operands = LIST_OPERATORS.includes(operator) && Array.isArray(operand) ? operand : [operand];
@@ -218,22 +238,30 @@ function routeWarnings({ definition }: CheckContext): DefinitionIssue[] {
   });
 }
 
-function versionWarnings({ definition, nodes }: CheckContext): DefinitionIssue[] {
+function versionWarnings({ definition, nodes, conditions }: CheckContext): DefinitionIssue[] {
   const [major, minor = 0] = String(definition.formatVersion ?? '1.0')
     .split('.')
     .map(Number);
+  const list = conditions.find(({ condition }) => CONTAINS.some((operator) => hasOwn(condition, operator)));
   const scale = nodes.find(({ node }) => SCALE_TYPES.includes(node.type));
   const container = nodes.find(({ node }) => node.type === 'section' || node.type === 'group');
-  const [found, needed] = scale && minor < 3 ? [scale, 3] : [container, 1];
-  if (!found || major !== 1 || minor >= needed) return [];
+  const [problem, needed] =
+    list && minor < 4
+      ? [`${list.path} uses "${CONTAINS.find((operator) => hasOwn(list.condition, operator))}"`, 4]
+      : scale && minor < 3
+        ? [`${scale.path} is a ${scale.node.type}`, 3]
+        : [container && `${container.path} is a ${container.node.type}`, 1];
+  if (!problem || major !== 1 || minor >= needed) return [];
   return [
     warning(
       'outdated-format-version',
       '/formatVersion',
-      `${found.path} is a ${found.node.type}, which needs format 1.${needed}`,
-      needed > 1
-        ? 'Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it. Upgrade the server that runs validateSubmission() first'
-        : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
+      `${problem}, which needs format 1.${needed}`,
+      needed > 3
+        ? 'Set "formatVersion": "1.4". Older versions of @formhaus/core reject this operator. Upgrade the server that runs validateSubmission() first'
+        : needed > 1
+          ? 'Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it. Upgrade the server that runs validateSubmission() first'
+          : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
     ),
   ];
 }
