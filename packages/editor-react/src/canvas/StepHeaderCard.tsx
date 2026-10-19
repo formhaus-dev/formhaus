@@ -130,7 +130,7 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
         open={confirm}
         onOpenChange={setConfirm}
         title={title}
-        first={position === 1}
+        position={position}
         fields={stepFields(form, uid).length}
         onDelete={(mode) => {
           setConfirm(false);

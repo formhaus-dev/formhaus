@@ -6,20 +6,20 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   title: string;
   fields: number;
-  first: boolean;
+  position: number;
   onDelete: (mode: StepRemoval) => void;
 }
 
-export function DeleteStepDialog({ open, onOpenChange, title, fields, first, onDelete }: Props) {
-  const keep = first ? 'Move fields to the next step' : 'Move fields to the previous step';
+export function DeleteStepDialog({ open, onOpenChange, title, fields, position, onDelete }: Props) {
+  const target = position === 1 ? 2 : position - 1;
+  const noun = fields === 1 ? 'field' : 'fields';
   return (
     <Dialog
       open={open}
       onOpenChange={onOpenChange}
+      size="wide"
       title={`Delete “${title}”?`}
-      description={
-        fields ? `This step has ${String(fields)} ${fields === 1 ? 'field' : 'fields'}. You can undo this.` : 'You can undo this.'
-      }
+      description={fields ? `This step has ${String(fields)} ${noun}. You can undo this.` : 'You can undo this.'}
       footer={
         <>
           <DialogClose asChild>
@@ -31,7 +31,7 @@ export function DeleteStepDialog({ open, onOpenChange, title, fields, first, onD
                 onDelete('keep-fields');
               }}
             >
-              {keep}
+              Move {noun} to step {target}
             </Button>
           )}
           <Button
@@ -40,7 +40,7 @@ export function DeleteStepDialog({ open, onOpenChange, title, fields, first, onD
               onDelete('with-fields');
             }}
           >
-            {fields ? `Delete step and ${String(fields)} ${fields === 1 ? 'field' : 'fields'}` : 'Delete step'}
+            {fields ? `Delete step and ${noun}` : 'Delete step'}
           </Button>
         </>
       }
