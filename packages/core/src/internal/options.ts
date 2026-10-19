@@ -7,6 +7,17 @@ export type OptionSource = [key: string, field: FormField];
 
 export const optionKey = (group: string, field: string): string => `${group}.${field}`;
 
+export function optionTexts(options: FieldOption[]): string[] {
+  let texts = options.map(({ label }) => label);
+  for (;;) {
+    const seen = new Set<string>();
+    const repeated = new Set<string>();
+    for (const text of texts) (seen.has(text) ? repeated : seen).add(text);
+    if (!repeated.size) return texts;
+    texts = texts.map((text, index) => (repeated.has(text) ? `${text} (${options[index].value})` : text));
+  }
+}
+
 export function optionSources(fields: FormField[]): OptionSource[] {
   return fields.flatMap((field): OptionSource[] =>
     isGroup(field) ? field.fields.map((child): OptionSource => [optionKey(field.key, child.key), child]) : [[field.key, field]],

@@ -81,3 +81,55 @@ describe('autocomplete value and label', () => {
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ region: 'us-east-1' }, expect.any(Array)));
   });
 });
+
+describe('autocomplete options with the same label', () => {
+  const cities: FieldOption[] = [
+    { value: 'paris-fr', label: 'Paris' },
+    { value: 'paris-tx', label: 'Paris' },
+    { value: 'rome', label: 'Rome' },
+  ];
+  const cityForm: FormDefinition = {
+    id: 'trip',
+    title: 'Trip',
+    submit: { label: 'Save' },
+    fields: [{ key: 'city', type: 'autocomplete', label: 'City', options: cities }],
+  };
+  const city = () => screen.getByRole('combobox', { name: /City/ }) as HTMLInputElement;
+
+  it('lists a distinct text for each option and submits the picked one', async () => {
+    const onSubmit = vi.fn();
+    mount({ definition: cityForm, onSubmit });
+    expect(listed()).toEqual(['Paris (paris-fr)', 'Paris (paris-tx)', 'Rome']);
+    await fireEvent.update(city(), 'Paris (paris-tx)');
+    expect(city().value).toBe('Paris (paris-tx)');
+    await fireEvent.click(screen.getByText('Save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ city: 'paris-tx' }, expect.any(Array)));
+  });
+
+  it('shows the distinct text for setValue', async () => {
+    const handle = mount({ definition: cityForm });
+    handle.value!.setValue('city', 'paris-tx');
+    await nextTick();
+    expect(city().value).toBe('Paris (paris-tx)');
+    handle.value!.setValue('city', 'paris-fr');
+    await nextTick();
+    expect(city().value).toBe('Paris (paris-fr)');
+  });
+
+  it('shows the distinct text for initialValues', async () => {
+    mount({ definition: cityForm, initialValues: { city: 'paris-tx' } });
+    await nextTick();
+    expect(city().value).toBe('Paris (paris-tx)');
+  });
+
+  it('keeps a label that looks like a disambiguated text distinct', async () => {
+    const onSubmit = vi.fn();
+    const options = [...cities.slice(0, 2), { value: 'odd', label: 'Paris (paris-tx)' }];
+    const form: FormDefinition = { ...cityForm, fields: [{ ...cityForm.fields![0], options } as never] };
+    mount({ definition: form, onSubmit });
+    expect(listed()).toEqual(['Paris (paris-fr)', 'Paris (paris-tx) (paris-tx)', 'Paris (paris-tx) (odd)']);
+    await fireEvent.update(city(), 'Paris (paris-tx) (odd)');
+    await fireEvent.click(screen.getByText('Save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ city: 'odd' }, expect.any(Array)));
+  });
+});

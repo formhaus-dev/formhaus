@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { optionTexts } from '@formhaus/core/internal';
 import { computed, ref } from 'vue';
 import { formFieldProps } from '../props';
 import type { FieldEmits } from '../types';
@@ -9,10 +10,12 @@ const props = defineProps(formFieldProps);
 const emit = defineEmits<FieldEmits>();
 const { inputId, input } = useField(props, emit);
 const text = ref('');
-const toValue = (value: string) => props.field.options?.find((opt) => opt.label === value)?.value ?? value;
+const texts = computed(() => optionTexts(props.field.options ?? []));
+const toValue = (value: string) => props.field.options?.[texts.value.indexOf(value)]?.value ?? value;
 const shown = computed(() => {
   const stored = (props.modelValue as string) ?? '';
-  return toValue(text.value) === stored ? text.value : (props.field.options?.find((opt) => opt.value === stored)?.label ?? stored);
+  const index = props.field.options?.findIndex((opt) => opt.value === stored) ?? -1;
+  return toValue(text.value) === stored ? text.value : index < 0 ? stored : texts.value[index];
 });
 function onInput(event: Event) {
   text.value = (event.target as HTMLInputElement).value;
@@ -33,7 +36,7 @@ function onInput(event: Event) {
       @input="onInput"
     />
     <datalist :id="`${inputId}-list`">
-      <option v-for="opt in props.field.options" :key="opt.value" :value="opt.label" />
+      <option v-for="(opt, index) in props.field.options" :key="opt.value" :value="texts[index]" />
     </datalist>
   </FieldShell>
 </template>

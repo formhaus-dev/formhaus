@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { optionTexts } from '@formhaus/core/internal';
+import { useMemo, useState } from 'react';
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
 import { fieldId, inputProps } from './fieldProps';
@@ -8,8 +9,10 @@ export function AutocompleteField(props: FieldComponentProps) {
   const listId = `${fieldId(props)}-list`;
   const options = field.options ?? [];
   const [text, setText] = useState('');
-  const toValue = (input: string) => options.find((opt) => opt.label === input)?.value ?? input;
+  const texts = useMemo(() => optionTexts(options), [field.options]);
+  const toValue = (input: string) => options[texts.indexOf(input)]?.value ?? input;
   const stored = (value as string) ?? '';
+  const index = options.findIndex((opt) => opt.value === stored);
 
   return (
     <FieldShell id={fieldId(props)} field={field} error={error}>
@@ -18,7 +21,7 @@ export function AutocompleteField(props: FieldComponentProps) {
         type="text"
         list={listId}
         className="fh-field__input fh-field__input--autocomplete"
-        value={toValue(text) === stored ? text : (options.find((opt) => opt.value === stored)?.label ?? stored)}
+        value={toValue(text) === stored ? text : index < 0 ? stored : texts[index]}
         placeholder={field.placeholder}
         autoComplete="off"
         onChange={(e) => {
@@ -27,8 +30,8 @@ export function AutocompleteField(props: FieldComponentProps) {
         }}
       />
       <datalist id={listId}>
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.label} />
+        {options.map((opt, index) => (
+          <option key={opt.value} value={texts[index]} />
         ))}
       </datalist>
     </FieldShell>
