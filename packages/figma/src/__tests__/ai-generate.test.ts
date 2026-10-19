@@ -43,6 +43,37 @@ describe('checkReply', () => {
     expect(result).toEqual({ definition: { ...valid, $schema: SCHEMA_URL }, fatal: [], warnings: [] });
   });
 
+  it('accepts scale, rating, picture options and matrix sections', () => {
+    const survey = {
+      formatVersion: '1.3',
+      id: 'survey',
+      title: 'Survey',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'score', type: 'scale', label: 'Recommend us?', validation: { min: 0, max: 10 } },
+        { key: 'stars', type: 'rating', label: 'Rate us' },
+        {
+          key: 'plan',
+          type: 'radio',
+          label: 'Plan',
+          columns: 2,
+          options: [{ value: 'pro', label: 'Pro', image: 'https://example.com/pro.png' }],
+        },
+        {
+          key: 'agree',
+          type: 'section',
+          layout: 'matrix',
+          title: 'Agree?',
+          fields: [{ key: 'goals', type: 'radio', label: 'Goals', options: [{ value: 'yes', label: 'Yes' }] }],
+        },
+      ],
+    };
+    expect(checkReply(JSON.stringify(survey)).fatal).toEqual([]);
+    expect(checkReply(JSON.stringify({ ...survey, fields: [{ key: 'agree', type: 'section', fields: [{ key: 'x' }] }] })).fatal).toEqual([
+      'The form section 1 needs "key" and "title".',
+    ]);
+  });
+
   it('reports missing parts as fatal', () => {
     expect(checkReply('{"title": "x"}').fatal).toEqual([
       '"id" must be a non-empty string.',

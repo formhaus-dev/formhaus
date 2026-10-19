@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { ROLES, roleForField } from '../roles';
+import { drawingForField, ROLES } from '../roles';
 import { slotForName } from '../text-slots';
 
 const field = (type: string, options?: { value: string; label: string }[]) => ({ key: 'k', type, label: 'L', options });
 
-describe('roleForField', () => {
+describe('drawingForField', () => {
   it.each([
     ['text', 'field.text'],
     ['email', 'field.text'],
@@ -22,18 +22,22 @@ describe('roleForField', () => {
     ['radio', 'option.radio'],
     ['multiselect', 'option.checkbox'],
     ['checkbox', 'field.checkbox'],
+    ['scale', 'scale'],
+    ['rating', 'rating'],
+    ['hidden', null],
     ['custom-rating', 'field.text'],
+    ['constructor', 'field.text'],
   ])('maps %s to %s', (type, role) => {
-    expect(roleForField(field(type))).toBe(role);
+    expect(drawingForField(field(type))).toBe(role);
   });
 
   it('renders a checkbox with options as a group of rows', () => {
-    expect(roleForField(field('checkbox', [{ value: 'a', label: 'A' }]))).toBe('option.checkbox');
+    expect(drawingForField(field('checkbox', [{ value: 'a', label: 'A' }]))).toBe('option.checkbox');
   });
 
   it('maps every field type to a role that kits provide', () => {
     const types = ['text', 'email', 'select', 'textarea', 'date', 'file', 'checkbox', 'switch', 'radio', 'multiselect', 'other'];
-    for (const type of types) expect(ROLES).toContain(roleForField(field(type)));
+    for (const type of types) expect(ROLES).toContain(drawingForField(field(type)));
   });
 });
 

@@ -43,8 +43,14 @@ https://github.com/formhaus-dev/formhaus/issues
 
 ## Publishing checklist
 
-1. Publish from Figma desktop: **Plugins → Development → Formhaus → Publish**. Figma assigns a numeric plugin id; replace `"id": "formhaus"` in `manifest.json` with it and commit.
-2. Upload `community/icon.png` (128×128) and `community/cover.png` (1920×960). Add `docs/public/figma/prototype.gif`, `flow-map.png`, `components.png` and `one-page.png` as carousel images.
-3. Paste the tagline, description and tags above.
-4. Set the support contact to the issues link.
-5. Before publishing, run the plugin from a clean build (`pnpm --filter @formhaus/figma build`) in a new file: generate the example forms with a built-in kit, bind a few components, update a form, play the prototype.
+Full steps: [Publishing to Figma Community](../README.md#publishing-to-figma-community).
+
+1. Enable two-factor authentication on the publishing account. Publish from the Figma desktop app.
+2. Build from a clean checkout (`pnpm --filter @formhaus/figma build`) and test in a new file: generate the example forms with a built-in kit, bind a few components, update a form, play the prototype.
+3. Open a file, click the Figma logo, then **Plugins → Manage plugins**. Open the menu next to Formhaus and select **Publish**.
+4. Click **Generate ID** in the publish dialog. Replace `"id": "formhaus"` in `manifest.json` with the new id, rebuild and commit.
+5. **Describe your resource:** paste the name, tagline and description above, and pick a category.
+6. **Choose some images:** icon `community/icon.png` (128×128) and thumbnail `community/cover.png`. Figma recommends 1920×1080; the current cover is 1920×960. Add `docs/public/figma/prototype.gif`, `flow-map.png`, `components.png` and `one-page.png` as carousel images.
+7. **Data security** (optional): answer from "Data and network" above.
+8. **Add the final details:** set the support contact to the issues link and check the network access label.
+9. Click **Publish** and wait for the review email.

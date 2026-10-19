@@ -1,11 +1,14 @@
 import type { FormField } from '@formhaus/core';
 import type { Binding, PluginConfig } from '../config';
 import type { KitTheme } from '../kits/kit';
-import { STATE_PROPERTY, solid, stack, text } from '../kits/primitives';
+import { STATE_PROPERTY, solid, stack } from '../kits/primitives';
 import { loadKit } from '../kits/registry';
-import { isOptionRole, ROLE_FALLBACKS, ROLE_LABELS, roleForField, type Role } from '../roles';
+import { drawingForField, isOptionRole, ROLE_FALLBACKS, ROLE_LABELS, type Role } from '../roles';
 import { applySlots } from '../text-slots';
+import { appendFill, choiceGroup } from './choice';
 import { customTheme, textButtonStyle } from './custom-theme';
+import { hasPictures, hideLastSeparator, type OptionInstance, pictureOptions } from './picture-options';
+import { scaleField } from './scale';
 import { textButton } from './text-button';
 import { asComponent, componentForBinding, instantiate, setVariant } from './resolve';
 import { labelText, type FormRenderer } from './types';
@@ -20,7 +23,7 @@ export interface KitRenderer extends FormRenderer {
 }
 
 export async function createKitRenderer(config: PluginConfig): Promise<KitRenderer> {
-  const { theme: kitTheme, components } = await loadKit(config.kit);
+  const { kit, theme: kitTheme, components } = await loadKit(config.kit);
   const cache = new Map<Role, Resolved | null>();
 
   async function bound(role: Role): Promise<Resolved | null> {
@@ -62,8 +65,9 @@ export async function createKitRenderer(config: PluginConfig): Promise<KitRender
   return {
     theme,
     async field(field) {
-      const role = roleForField(field);
-      if (isOptionRole(role)) return optionGroup(field, role, theme, instance);
+      const role = drawingForField(field) ?? 'field.text';
+      if (role === 'scale' || role === 'rating') return scaleField(field, theme);
+      if (isOptionRole(role)) return (hasPictures(field) ? pictureOptions : optionGroup)(field, role, theme, instance);
       const filled = field.defaultValue !== undefined && field.defaultValue !== '';
       const node = await instance(
         role,
@@ -84,6 +88,7 @@ export async function createKitRenderer(config: PluginConfig): Promise<KitRender
       node.name = ROLE_LABELS[role];
       return node;
     },
+    glyph: (kind) => kit.glyph(kind),
     async button(label, kind) {
       const node = (kind === 'text' && (await synthesized(label))) || (await instance(`button.${kind}`, { label }));
       node.name = label;
@@ -94,29 +99,23 @@ export async function createKitRenderer(config: PluginConfig): Promise<KitRender
 
 async function optionGroup(
   field: FormField,
-  role: Role,
+  role: 'option.radio' | 'option.checkbox',
   theme: KitTheme,
-  instance: (role: Role, values: { label: string }) => Promise<InstanceNode>,
+  instance: OptionInstance,
 ): Promise<FrameNode> {
-  const group = stack('VERTICAL', field.key, { itemSpacing: 8 });
-  const labelStyle = theme.groupLabel ?? { font: theme.fonts.medium, size: theme.captionSize + 2, color: theme.muted };
-  group.appendChild(text(labelText(field), labelStyle, 'Label'));
+  const group = choiceGroup(field, theme);
   const list = stack('VERTICAL', 'Options', { itemSpacing: theme.optionGroup.gap });
   if (theme.optionGroup.fill) {
     list.fills = solid(theme.optionGroup.fill);
     list.cornerRadius = theme.optionGroup.radius ?? 0;
     list.clipsContent = true;
   }
-  group.appendChild(list);
-  list.layoutSizingHorizontal = 'FILL';
+  appendFill(group, list);
   for (const option of field.options ?? []) {
     const row = await instance(role, { label: option.label });
     row.name = option.value;
-    list.appendChild(row);
-    row.layoutSizingHorizontal = 'FILL';
+    appendFill(list, row);
   }
-  const last = list.children[list.children.length - 1];
-  const separator = last && 'findOne' in last ? last.findOne((node) => node.name === 'Separator') : null;
-  if (separator) separator.visible = false;
+  hideLastSeparator(list.children[list.children.length - 1]);
   return group;
 }

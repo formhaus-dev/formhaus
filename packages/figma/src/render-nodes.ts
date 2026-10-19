@@ -1,8 +1,9 @@
 import { isGroup, isSection, type FormField, type FormGroup, type FormNode } from '@formhaus/core';
 import { solid, stack, text } from './kits/primitives';
+import { matrixColumns, renderMatrix } from './render-matrix';
 import type { FormRenderer } from './renderers/types';
 
-export async function appendNodes(frame: FrameNode, nodes: FormNode[], renderer: FormRenderer): Promise<void> {
+export async function appendNodes(frame: FrameNode, nodes: FormNode[] = [], renderer: FormRenderer): Promise<void> {
   const { theme } = renderer;
   for (const node of nodes) {
     if (isSection(node)) {
@@ -14,7 +15,9 @@ export async function appendNodes(frame: FrameNode, nodes: FormNode[], renderer:
           section,
           text(node.description, { font: theme.fonts.regular, size: theme.captionSize, color: theme.muted }, 'Section description'),
         );
-      await appendNodes(section, node.fields, renderer);
+      if (node.layout === 'matrix' && matrixColumns(node).length > 0)
+        append(section, await renderMatrix(node, renderer, (parent, child) => appendNodes(parent, [child], renderer)));
+      else await appendNodes(section, node.fields, renderer);
     } else if (isGroup(node)) {
       append(frame, await renderGroup(node, renderer));
     } else if (node.type !== 'hidden') {

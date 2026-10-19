@@ -1,4 +1,6 @@
+import { FORMAT_VERSION } from '@formhaus/core';
 import { describe, expect, it } from 'vitest';
+import { BUILT_IN_TYPES } from '../../../core/src/validation/type-checks';
 import { firstJsonObject, repairMessage, requestMessage, SCHEMA_URL, SYSTEM_PROMPT } from '../ui/ai/prompt';
 
 describe('AI prompt', () => {
@@ -11,13 +13,20 @@ describe('AI prompt', () => {
       '"contains"',
       '"notContains"',
       '"notEmpty"',
+      '"lte"',
       'routes',
       'camelCase',
       'showAny',
+      `"formatVersion": "${FORMAT_VERSION}"`,
       SCHEMA_URL,
     ]) {
       expect(SYSTEM_PROMPT).toContain(rule);
     }
+  });
+
+  it('lists every built-in field type and the matrix layout', () => {
+    for (const type of BUILT_IN_TYPES) expect(SYSTEM_PROMPT).toMatch(new RegExp(`types:[^\\n]*\\b${type}\\b`));
+    for (const rule of ['NPS', '"image"', '"columns"', '"layout"?: "matrix"']) expect(SYSTEM_PROMPT).toContain(rule);
   });
 
   it('asks for a new form from the description', () => {
