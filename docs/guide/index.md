@@ -221,7 +221,7 @@ React 18 and 19. Renders native HTML by default and accepts replacements through
 
 ### @formhaus/mcp
 
-Node 20+. Runs over stdio in Claude Code, Claude Desktop, Cursor and other MCP clients. See [MCP Server](/guide/mcp).
+Node 22.12+. Runs over stdio in Claude Code, Claude Desktop, Cursor and other MCP clients. See [MCP Server](/guide/mcp).
 
 ## Next steps
 

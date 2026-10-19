@@ -33,7 +33,7 @@
     "og:images": "node scripts/og-images.mjs"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",

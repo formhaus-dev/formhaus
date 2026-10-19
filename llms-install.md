@@ -29,7 +29,7 @@ Cline `cline_mcp_settings.json`:
 
 ## Local server (npm)
 
-Requires Node 20 or later. Tools: `validate_definition`, `simulate_path`, `capabilities` and `example_definitions` run offline and check form definitions. `publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call the Formhaus Cloud REST API. `delete_form` is only on the remote server.
+Requires Node 22.12 or later. Tools: `validate_definition`, `simulate_path`, `capabilities` and `example_definitions` run offline and check form definitions. `publish_form`, `list_forms`, `get_submissions` and `update_form_settings` call the Formhaus Cloud REST API. `delete_form` is only on the remote server.
 
 ```json
 {

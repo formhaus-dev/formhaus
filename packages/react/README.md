@@ -8,7 +8,7 @@ Renders a JSON form definition in React: multi-step, conditional and branching f
 npm install @formhaus/core @formhaus/react
 ```
 
-Requires React 18 or 19 and Node 20 or later.
+Requires React 18 or 19 and Node 22.12 or later.
 
 ## Usage
 

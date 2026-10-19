@@ -8,7 +8,7 @@ Renders a JSON form definition in Vue 3: multi-step, conditional and branching f
 npm install @formhaus/core @formhaus/vue
 ```
 
-Requires Vue 3.3 or later and Node 20 or later.
+Requires Vue 3.3 or later and Node 22.12 or later.
 
 ## Usage
 
