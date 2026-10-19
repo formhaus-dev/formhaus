@@ -1,10 +1,11 @@
 {
   "slug": "return-request",
   "title": "Return or refund request",
-  "summary": "Order, item, reason, condition and refund or exchange, with photos only when an item arrived damaged.",
+  "summary": "Order, then each item with its reason, condition and refund or exchange, plus a photo of the problem.",
   "category": "operations",
   "definition": {
     "id": "return-request",
+    "formatVersion": "1.1",
     "title": "Start a return",
     "submit": { "label": "Send request" },
     "steps": [
@@ -33,97 +34,112 @@
             "type": "text",
             "label": "Full name",
             "validation": { "required": true }
-          },
-          {
-            "key": "items",
-            "type": "textarea",
-            "label": "Which items are you returning?",
-            "rows": 2,
-            "placeholder": "Item name, size or color, and quantity",
-            "validation": { "required": true }
           }
         ]
       },
       {
-        "id": "reason",
-        "title": "What’s wrong",
+        "id": "items",
+        "title": "What you’re returning",
         "fields": [
           {
-            "key": "reason",
-            "type": "radio",
-            "label": "Reason for the return",
-            "options": [
-              { "value": "fit", "label": "Wrong size or doesn’t fit" },
-              { "value": "damaged", "label": "Arrived damaged" },
-              { "value": "defective", "label": "Stopped working or is faulty" },
-              { "value": "wrong-item", "label": "Received the wrong item" },
-              { "value": "not-as-described", "label": "Not as described" },
-              { "value": "changed-mind", "label": "Changed my mind" },
-              { "value": "other", "label": "Other" }
-            ],
-            "validation": { "required": true }
+            "key": "items",
+            "type": "group",
+            "label": "Items",
+            "itemLabel": "Item {index}",
+            "addLabel": "Add another item",
+            "defaultItems": 1,
+            "validation": { "required": true, "maxLength": 10 },
+            "fields": [
+              {
+                "key": "item",
+                "type": "text",
+                "label": "Item",
+                "placeholder": "Linen shirt, blue, M",
+                "validation": { "required": true }
+              },
+              {
+                "key": "quantity",
+                "type": "number",
+                "label": "Quantity",
+                "inputMode": "numeric",
+                "defaultValue": 1,
+                "validation": { "required": true, "min": 1 }
+              },
+              {
+                "key": "reason",
+                "type": "radio",
+                "label": "Reason for the return",
+                "options": [
+                  { "value": "fit", "label": "Wrong size or doesn’t fit" },
+                  { "value": "damaged", "label": "Arrived damaged" },
+                  { "value": "defective", "label": "Stopped working or is faulty" },
+                  { "value": "wrong-item", "label": "Received the wrong item" },
+                  { "value": "not-as-described", "label": "Not as described" },
+                  { "value": "changed-mind", "label": "Changed my mind" },
+                  { "value": "other", "label": "Other" }
+                ],
+                "validation": { "required": true }
+              },
+              {
+                "key": "details",
+                "type": "textarea",
+                "label": "Tell us what happened",
+                "rows": 3,
+                "show": [{ "field": "reason", "in": ["damaged", "defective", "not-as-described", "other"] }],
+                "validation": { "required": true }
+              },
+              {
+                "key": "condition",
+                "type": "radio",
+                "label": "Condition of the item",
+                "options": [
+                  { "value": "unopened", "label": "Unopened, with tags" },
+                  { "value": "unused", "label": "Opened but unused" },
+                  { "value": "used", "label": "Used" }
+                ],
+                "validation": { "required": true }
+              },
+              {
+                "key": "resolution",
+                "type": "radio",
+                "label": "How should we make it right?",
+                "options": [
+                  { "value": "refund", "label": "Refund to my original payment method" },
+                  { "value": "exchange", "label": "Exchange for another size or item" },
+                  { "value": "store-credit", "label": "Store credit" }
+                ],
+                "validation": { "required": true }
+              },
+              {
+                "key": "exchangeFor",
+                "type": "text",
+                "label": "What would you like instead?",
+                "placeholder": "Same item in size M",
+                "show": [{ "field": "resolution", "eq": "exchange" }],
+                "validation": { "required": true }
+              }
+            ]
           },
           {
-            "key": "details",
-            "type": "textarea",
-            "label": "Tell us what happened",
-            "rows": 3,
-            "show": [{ "field": "reason", "in": ["damaged", "defective", "not-as-described", "other"] }],
-            "validation": { "required": true }
+            "key": "photo",
+            "type": "file",
+            "label": "Photo of the damage or the item",
+            "accept": "image/*",
+            "helperText": "For a damaged, faulty or wrong item. We need a photo of the damage and the packaging to file a claim with the carrier."
           },
           {
-            "key": "damagePhotos",
+            "key": "photosLink",
             "type": "text",
-            "label": "Link to photos of the damage and the packaging",
+            "label": "Link to more photos",
             "placeholder": "https://",
-            "helperText": "A shared album or folder. We need them to file a claim with the carrier.",
-            "show": [{ "field": "reason", "eq": "damaged" }],
-            "validation": { "required": true }
-          },
-          {
-            "key": "photos",
-            "type": "text",
-            "label": "Link to photos of the item",
-            "placeholder": "https://",
-            "helperText": "A shared album or folder. It helps us approve the return faster.",
-            "show": [{ "field": "reason", "in": ["defective", "wrong-item"] }]
-          },
-          {
-            "key": "condition",
-            "type": "radio",
-            "label": "Condition of the item",
-            "options": [
-              { "value": "unopened", "label": "Unopened, with tags" },
-              { "value": "unused", "label": "Opened but unused" },
-              { "value": "used", "label": "Used" }
-            ],
-            "validation": { "required": true }
+            "helperText": "A shared album or folder."
           }
         ]
       },
       {
         "id": "resolution",
-        "title": "What you’d like",
+        "title": "Sending it back",
         "fields": [
-          {
-            "key": "resolution",
-            "type": "radio",
-            "label": "How should we make it right?",
-            "options": [
-              { "value": "refund", "label": "Refund to my original payment method" },
-              { "value": "exchange", "label": "Exchange for another size or item" },
-              { "value": "store-credit", "label": "Store credit" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "exchangeFor",
-            "type": "text",
-            "label": "What would you like instead?",
-            "placeholder": "Same item in size M",
-            "show": [{ "field": "resolution", "eq": "exchange" }],
-            "validation": { "required": true }
-          },
           {
             "key": "returnMethod",
             "type": "radio",

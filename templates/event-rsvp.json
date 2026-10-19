@@ -1,10 +1,11 @@
 {
   "slug": "event-rsvp",
   "title": "Event RSVP",
-  "summary": "Yes or no first. Party size and dietary needs only appear for guests who are coming.",
+  "summary": "Yes or no first. Guests and dietary needs only appear for people who are coming.",
   "category": "registration",
   "definition": {
     "id": "event-rsvp",
+    "formatVersion": "1.1",
     "title": "RSVP",
     "submit": { "label": "Send RSVP" },
     "steps": [
@@ -39,21 +40,25 @@
         "title": "Your party",
         "show": [{ "field": "attending", "eq": "yes" }],
         "fields": [
+          { "key": "dietary", "type": "text", "label": "Any dietary needs for you?" },
           {
-            "key": "partySize",
-            "type": "number",
-            "label": "How many people, including you?",
-            "inputMode": "numeric",
-            "defaultValue": 1,
-            "validation": { "required": true, "min": 1, "max": 10 }
+            "key": "guests",
+            "type": "group",
+            "label": "Who else is coming?",
+            "itemLabel": "Guest {index}",
+            "addLabel": "Add a guest",
+            "defaultItems": 0,
+            "validation": { "maxLength": 9 },
+            "fields": [
+              {
+                "key": "guestName",
+                "type": "text",
+                "label": "Full name",
+                "validation": { "required": true }
+              },
+              { "key": "guestDiet", "type": "text", "label": "Dietary needs" }
+            ]
           },
-          {
-            "key": "guestNames",
-            "type": "text",
-            "label": "Names of your guests",
-            "helperText": "Leave empty if it’s just you."
-          },
-          { "key": "dietary", "type": "text", "label": "Dietary restrictions in your party" },
           { "key": "note", "type": "textarea", "label": "A note for the hosts", "rows": 3 }
         ]
       }
