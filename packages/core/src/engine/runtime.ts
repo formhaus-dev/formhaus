@@ -1,8 +1,8 @@
 import type { ValidatorFn } from '../validation';
-import { messageResolver, type ResolveMessage } from '../validation/default-messages';
+import type { ResolveMessage } from '../validation/default-messages';
 import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
 import type { FormEngineOptions, SubmitHandler } from './engine-options';
-import { createValues, initialState } from './engine-utils';
+import { initialState } from './engine-utils';
 import { reportErrors, startEvents, trackChanges } from './form-events';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStepWithField, skipStep } from './navigation';
@@ -10,10 +10,9 @@ import type { EngineState } from './runtime-internals';
 import { createSubscriptions, type NotifyOptions } from './subscriptions';
 import { applyValidationErrors, errorKeys, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
 import { submitForm } from './submission';
-import { replaceDefinition } from './replace-definition';
-import { assertDefinition } from './warnings';
+import { loadDefinition, replaceDefinition } from './replace-definition';
 import { writeValue } from './write-value';
-import { createVisibility, type VisibilityState } from './visibility-state';
+import type { VisibilityState } from './visibility-state';
 
 export class FormEngine<TValues extends object = Record<string, unknown>> {
   private readonly state: EngineState;
@@ -38,16 +37,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     this.lifecycle = options ?? {};
     this.validators = options?.validators ?? {};
     this.state = initialState({});
-    this.load(definition, () => initialValues as Record<string, unknown> | undefined);
-  }
-
-  private load(definition: FormDefinition, values: (fields: FormField[]) => Record<string, unknown> | undefined): void {
-    assertDefinition(definition, this.lifecycle, this.validators);
-    (this as { definition: FormDefinition }).definition = definition;
-    this.messages = messageResolver(this.lifecycle.messages, definition.messages);
-    this.visibility = createVisibility(definition);
-    this.state.values = createValues(this.visibility.allFields, values(this.visibility.allFields), this.visibility.activeField);
-    this.visibility.reconcileHidden(this.state.values, this.state.errors, true);
+    loadDefinition(this as never, definition, () => initialValues as Record<string, unknown> | undefined);
   }
 
   get values(): Readonly<Partial<TValues>> {

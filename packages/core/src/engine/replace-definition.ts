@@ -1,8 +1,26 @@
-import type { FormDefinition } from '../types';
+import type { FormDefinition, FormField } from '../types';
+import { messageResolver } from '../validation/default-messages';
 import { hasOwn, valueFields } from '../visibility/nodes';
+import { createValues } from './engine-utils';
 import { baselineFields } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
+import { createVisibility } from './visibility-state';
+import { assertDefinition } from './warnings';
+
+export function loadDefinition(
+  engine: EngineInternals,
+  definition: FormDefinition,
+  values: (fields: FormField[]) => Record<string, unknown> | undefined,
+): void {
+  assertDefinition(definition, engine.lifecycle, engine.validators);
+  const visibility = createVisibility(definition);
+  engine.definition = definition;
+  engine.messages = messageResolver(engine.lifecycle.messages, definition.messages);
+  engine.visibility = visibility;
+  engine.state.values = createValues(visibility.allFields, values(visibility.allFields), visibility.activeField);
+  visibility.reconcileHidden(engine.state.values, engine.state.errors, true);
+}
 
 export function replaceDefinition(engine: EngineInternals, definition: FormDefinition): void {
   const { state, skipped, values, currentStepIndex } = engine;
@@ -10,7 +28,7 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
   const steps = engine.visibleSteps;
   const types = new Map(engine.visibility.allFields.map((field) => [field.key, field.type]));
   baselineFields(engine);
-  engine.load(definition, (fields) => {
+  loadDefinition(engine, definition, (fields) => {
     const kept: Record<string, unknown> = {};
     for (const { key, type } of fields) if (types.get(key) === type && hasOwn(values, key)) kept[key] = values[key];
     return kept;

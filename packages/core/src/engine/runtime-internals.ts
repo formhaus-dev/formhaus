@@ -18,7 +18,7 @@ export interface EngineState {
 }
 
 export interface EngineInternals {
-  readonly definition: FormDefinition;
+  definition: FormDefinition;
   readonly state: EngineState;
   readonly values: Record<string, unknown>;
   readonly errors: Record<string, string>;
@@ -35,8 +35,8 @@ export interface EngineInternals {
   readonly skipped: Map<string, string[]>;
   readonly lifecycle: FormEngineOptions;
   readonly validators: Record<string, ValidatorFn>;
-  readonly messages: ResolveMessage;
-  readonly visibility: VisibilityState;
+  messages: ResolveMessage;
+  visibility: VisibilityState;
   readonly isMultiStep: boolean;
   readonly visibleSteps: FormStep[];
   readonly currentStep: FormStep | null;
@@ -46,5 +46,4 @@ export interface EngineInternals {
   notify(options?: NotifyOptions): void;
   getSnapshot(): number;
   advance(reason: 'next' | 'autoAdvance'): Promise<boolean>;
-  load(definition: FormDefinition, values: (fields: FormField[]) => Record<string, unknown> | undefined): void;
 }
