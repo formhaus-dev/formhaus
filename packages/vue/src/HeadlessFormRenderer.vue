@@ -99,6 +99,7 @@ watch(() => form.engine, watchValues, { flush: 'sync' });
 watch(
   () => props.definition,
   () => props.keepValues && applySources(form.engine, form.engine.values),
+  { flush: 'post' },
 );
 onBeforeUnmount(() => stopValues());
 
