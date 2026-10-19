@@ -40,11 +40,10 @@ const cursor: Agent = {
     const changes = [step(ctx, 'Cursor', 'MCP server', file, () => addJsonServer(ctx, file))];
     const root = findProjectRoot(ctx);
     if (root === undefined) {
-      const note = 'Run npx formhaus inside a project to add the Cursor rule.';
-      return [...changes, { agent: 'Cursor', item: 'formhaus rule', where: display(ctx, ctx.cwd), state: 'skipped', note }];
+      return [...changes, { agent: 'Cursor', item: 'Cursor rule', where: display(ctx, ctx.cwd), state: 'skipped' }];
     }
     const rule = join(root, '.cursor', 'rules', 'formhaus.mdc');
-    changes.push(step(ctx, 'Cursor', 'formhaus rule', rule, () => writeAsset(ctx, rule, cursorRule, SHIPPED_RULES, root)));
+    changes.push(step(ctx, 'Cursor', 'Cursor rule', rule, () => writeAsset(ctx, rule, cursorRule, SHIPPED_RULES, root)));
     return changes;
   },
 };
