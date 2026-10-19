@@ -1,0 +1,176 @@
+{
+  "slug": "course-evaluation",
+  "title": "Course evaluation",
+  "summary": "End-of-course feedback on content and teaching, plus workload, pace and two open questions.",
+  "category": "survey",
+  "definition": {
+    "id": "course-evaluation",
+    "formatVersion": "1.5",
+    "title": "Course feedback",
+    "description": "It takes about 3 minutes.",
+    "submit": { "label": "Send feedback" },
+    "steps": [
+      {
+        "id": "course",
+        "title": "The course",
+        "fields": [
+          {
+            "key": "course",
+            "type": "hidden",
+            "label": "Course",
+            "source": { "query": "course" }
+          },
+          {
+            "key": "courseAgree",
+            "type": "section",
+            "layout": "matrix",
+            "title": "How much do you agree?",
+            "fields": [
+              {
+                "key": "objectives",
+                "type": "radio",
+                "label": "The goals of the course were clear",
+                "options": [
+                  { "value": "1", "label": "Strongly disagree" },
+                  { "value": "2", "label": "Disagree" },
+                  { "value": "3", "label": "Neutral" },
+                  { "value": "4", "label": "Agree" },
+                  { "value": "5", "label": "Strongly agree" },
+                  { "value": "na", "label": "Not applicable" }
+                ]
+              },
+              {
+                "key": "organized",
+                "type": "radio",
+                "label": "The course was well organized",
+                "options": [
+                  { "value": "1", "label": "Strongly disagree" },
+                  { "value": "2", "label": "Disagree" },
+                  { "value": "3", "label": "Neutral" },
+                  { "value": "4", "label": "Agree" },
+                  { "value": "5", "label": "Strongly agree" },
+                  { "value": "na", "label": "Not applicable" }
+                ]
+              },
+              {
+                "key": "materials",
+                "type": "radio",
+                "label": "The materials helped me learn",
+                "options": [
+                  { "value": "1", "label": "Strongly disagree" },
+                  { "value": "2", "label": "Disagree" },
+                  { "value": "3", "label": "Neutral" },
+                  { "value": "4", "label": "Agree" },
+                  { "value": "5", "label": "Strongly agree" },
+                  { "value": "na", "label": "Not applicable" }
+                ]
+              },
+              {
+                "key": "apply",
+                "type": "radio",
+                "label": "I can apply what I learned to my work or studies",
+                "options": [
+                  { "value": "1", "label": "Strongly disagree" },
+                  { "value": "2", "label": "Disagree" },
+                  { "value": "3", "label": "Neutral" },
+                  { "value": "4", "label": "Agree" },
+                  { "value": "5", "label": "Strongly agree" },
+                  { "value": "na", "label": "Not applicable" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "teaching",
+        "title": "The teaching",
+        "fields": [
+          {
+            "key": "teachingAgree",
+            "type": "section",
+            "layout": "matrix",
+            "title": "How much do you agree?",
+            "fields": [
+              {
+                "key": "clear",
+                "type": "radio",
+                "label": "The instructor explained things clearly",
+                "options": [
+                  { "value": "1", "label": "Strongly disagree" },
+                  { "value": "2", "label": "Disagree" },
+                  { "value": "3", "label": "Neutral" },
+                  { "value": "4", "label": "Agree" },
+                  { "value": "5", "label": "Strongly agree" },
+                  { "value": "na", "label": "Not applicable" }
+                ]
+              },
+              {
+                "key": "feedback",
+                "type": "radio",
+                "label": "I got useful feedback on my work",
+                "options": [
+                  { "value": "1", "label": "Strongly disagree" },
+                  { "value": "2", "label": "Disagree" },
+                  { "value": "3", "label": "Neutral" },
+                  { "value": "4", "label": "Agree" },
+                  { "value": "5", "label": "Strongly agree" },
+                  { "value": "na", "label": "Not applicable" }
+                ]
+              },
+              {
+                "key": "available",
+                "type": "radio",
+                "label": "I could get help when I needed it",
+                "options": [
+                  { "value": "1", "label": "Strongly disagree" },
+                  { "value": "2", "label": "Disagree" },
+                  { "value": "3", "label": "Neutral" },
+                  { "value": "4", "label": "Agree" },
+                  { "value": "5", "label": "Strongly agree" },
+                  { "value": "na", "label": "Not applicable" }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "overall",
+        "title": "Overall",
+        "fields": [
+          {
+            "key": "overall",
+            "type": "rating",
+            "label": "Overall, how would you rate the course?",
+            "validation": { "required": true, "max": 5 },
+            "options": [{ "value": "1", "label": "Poor" }, { "value": "5", "label": "Excellent" }]
+          },
+          {
+            "key": "pace",
+            "type": "radio",
+            "label": "How was the pace?",
+            "options": [
+              { "value": "slow", "label": "Too slow" },
+              { "value": "right", "label": "About right" },
+              { "value": "fast", "label": "Too fast" }
+            ]
+          },
+          {
+            "key": "hours",
+            "type": "radio",
+            "label": "Outside of class, about how many hours a week did you spend on the course?",
+            "options": [
+              { "value": "up-to-2", "label": "Up to 2" },
+              { "value": "2-5", "label": "Over 2 to 5" },
+              { "value": "5-10", "label": "Over 5 to 10" },
+              { "value": "over-10", "label": "Over 10" }
+            ]
+          },
+          { "key": "keep", "type": "textarea", "label": "What should we keep?", "rows": 3 },
+          { "key": "change", "type": "textarea", "label": "What’s one thing you would change?", "rows": 3 }
+        ]
+      }
+    ]
+  }
+}

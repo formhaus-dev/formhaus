@@ -88,6 +88,22 @@
     "fields": 13
   },
   {
+    "slug": "usability-questionnaire",
+    "title": "Usability questionnaire",
+    "summary": "The ten System Usability Scale statements after a usability test, ready for SUS scoring.",
+    "category": "survey",
+    "steps": 1,
+    "fields": 13
+  },
+  {
+    "slug": "design-preference-test",
+    "title": "Design preference test",
+    "summary": "Choose between three designs, pick reaction words for each one and say why.",
+    "category": "survey",
+    "steps": 3,
+    "fields": 6
+  },
+  {
     "slug": "beta-tester-application",
     "title": "Beta tester application",
     "summary": "Picks early users by role, platform, usage and willingness to give feedback.",
@@ -120,12 +136,28 @@
     "fields": 4
   },
   {
+    "slug": "post-purchase-feedback",
+    "title": "Post-purchase feedback",
+    "summary": "Overall rating, delivery and description checks, and one open question about the rating.",
+    "category": "feedback",
+    "steps": 2,
+    "fields": 8
+  },
+  {
     "slug": "event-feedback",
     "title": "Event feedback",
     "summary": "Overall rating, best session, highlights, what to change and whether people would come again.",
     "category": "feedback",
     "steps": 1,
     "fields": 11
+  },
+  {
+    "slug": "course-evaluation",
+    "title": "Course evaluation",
+    "summary": "End-of-course feedback on content and teaching, plus workload, pace and two open questions.",
+    "category": "survey",
+    "steps": 3,
+    "fields": 13
   },
   {
     "slug": "workshop-registration",
@@ -190,6 +222,14 @@
     "category": "survey",
     "steps": 1,
     "fields": 6
+  },
+  {
+    "slug": "exit-survey",
+    "title": "Exit survey",
+    "summary": "Why people leave, how their time went and whether they would return. Every question is optional.",
+    "category": "survey",
+    "steps": 3,
+    "fields": 15
   },
   {
     "slug": "return-request",

@@ -1,0 +1,141 @@
+{
+  "slug": "design-preference-test",
+  "title": "Design preference test",
+  "summary": "Choose between three designs, pick reaction words for each one and say why.",
+  "category": "survey",
+  "definition": {
+    "id": "design-preference-test",
+    "formatVersion": "1.5",
+    "title": "Which design works best?",
+    "submit": { "label": "Send answers" },
+    "steps": [
+      {
+        "id": "pick",
+        "title": "Pick one",
+        "description": "Look at each design for a few seconds. Tap a picture to see it full size. There are no right answers.",
+        "fields": [
+          {
+            "key": "participant",
+            "type": "hidden",
+            "label": "Participant ID",
+            "source": { "query": "pid" }
+          },
+          {
+            "key": "choice",
+            "type": "radio",
+            "label": "Which design do you prefer?",
+            "columns": 3,
+            "options": [
+              { "value": "a", "label": "Design A", "image": "https://formhaus.dev/assets/templates/design-preference/design-a.svg" },
+              { "value": "b", "label": "Design B", "image": "https://formhaus.dev/assets/templates/design-preference/design-b.svg" },
+              { "value": "c", "label": "Design C", "image": "https://formhaus.dev/assets/templates/design-preference/design-c.svg" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      {
+        "id": "words",
+        "title": "How do the designs feel?",
+        "description": "Choose the words that fit each design. Use Back to look at the pictures again.",
+        "fields": [
+          {
+            "key": "designA",
+            "type": "section",
+            "title": "Design A",
+            "fields": [
+              {
+                "key": "wordsA",
+                "type": "multiselect",
+                "label": "Which words describe Design A?",
+                "helperText": "Choose up to 5.",
+                "layout": "inline",
+                "options": [
+                  { "value": "clear", "label": "Clear" },
+                  { "value": "boring", "label": "Boring" },
+                  { "value": "friendly", "label": "Friendly" },
+                  { "value": "cluttered", "label": "Cluttered" },
+                  { "value": "professional", "label": "Professional" },
+                  { "value": "dated", "label": "Dated" },
+                  { "value": "fresh", "label": "Fresh" },
+                  { "value": "confusing", "label": "Confusing" },
+                  { "value": "trustworthy", "label": "Trustworthy" },
+                  { "value": "cheap", "label": "Cheap" },
+                  { "value": "creative", "label": "Creative" },
+                  { "value": "generic", "label": "Generic" },
+                  { "value": "none", "label": "None of these", "exclusive": true }
+                ],
+                "validation": { "required": true, "maxLength": 5, "maxLengthMessage": "Choose up to 5 words" }
+              }
+            ]
+          },
+          {
+            "key": "designB",
+            "type": "section",
+            "title": "Design B",
+            "fields": [
+              {
+                "key": "wordsB",
+                "type": "multiselect",
+                "label": "Which words describe Design B?",
+                "helperText": "Choose up to 5.",
+                "layout": "inline",
+                "options": [
+                  { "value": "clear", "label": "Clear" },
+                  { "value": "boring", "label": "Boring" },
+                  { "value": "friendly", "label": "Friendly" },
+                  { "value": "cluttered", "label": "Cluttered" },
+                  { "value": "professional", "label": "Professional" },
+                  { "value": "dated", "label": "Dated" },
+                  { "value": "fresh", "label": "Fresh" },
+                  { "value": "confusing", "label": "Confusing" },
+                  { "value": "trustworthy", "label": "Trustworthy" },
+                  { "value": "cheap", "label": "Cheap" },
+                  { "value": "creative", "label": "Creative" },
+                  { "value": "generic", "label": "Generic" },
+                  { "value": "none", "label": "None of these", "exclusive": true }
+                ],
+                "validation": { "required": true, "maxLength": 5, "maxLengthMessage": "Choose up to 5 words" }
+              }
+            ]
+          },
+          {
+            "key": "designC",
+            "type": "section",
+            "title": "Design C",
+            "fields": [
+              {
+                "key": "wordsC",
+                "type": "multiselect",
+                "label": "Which words describe Design C?",
+                "helperText": "Choose up to 5.",
+                "layout": "inline",
+                "options": [
+                  { "value": "clear", "label": "Clear" },
+                  { "value": "boring", "label": "Boring" },
+                  { "value": "friendly", "label": "Friendly" },
+                  { "value": "cluttered", "label": "Cluttered" },
+                  { "value": "professional", "label": "Professional" },
+                  { "value": "dated", "label": "Dated" },
+                  { "value": "fresh", "label": "Fresh" },
+                  { "value": "confusing", "label": "Confusing" },
+                  { "value": "trustworthy", "label": "Trustworthy" },
+                  { "value": "cheap", "label": "Cheap" },
+                  { "value": "creative", "label": "Creative" },
+                  { "value": "generic", "label": "Generic" },
+                  { "value": "none", "label": "None of these", "exclusive": true }
+                ],
+                "validation": { "required": true, "maxLength": 5, "maxLengthMessage": "Choose up to 5 words" }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "why",
+        "title": "Your choice",
+        "fields": [{ "key": "reason", "type": "textarea", "label": "What made you choose {{choice}}?", "rows": 3 }]
+      }
+    ]
+  }
+}
