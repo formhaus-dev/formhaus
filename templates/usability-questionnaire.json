@@ -1,0 +1,167 @@
+{
+  "slug": "usability-questionnaire",
+  "title": "Usability questionnaire",
+  "summary": "The ten System Usability Scale statements after a usability test, ready for SUS scoring.",
+  "category": "survey",
+  "definition": {
+    "id": "usability-questionnaire",
+    "formatVersion": "1.5",
+    "title": "Usability questionnaire",
+    "submit": { "label": "Send answers" },
+    "fields": [
+      {
+        "key": "participant",
+        "type": "hidden",
+        "label": "Participant ID",
+        "source": { "query": "pid" }
+      },
+      {
+        "key": "product",
+        "type": "hidden",
+        "label": "Product",
+        "source": { "query": "product" },
+        "defaultValue": "the product"
+      },
+      {
+        "key": "sus",
+        "type": "section",
+        "layout": "matrix",
+        "title": "Your experience with {{product}}",
+        "description": "Answer every statement with your first reaction. If you’re not sure, choose Neutral.",
+        "fields": [
+          {
+            "key": "sus1",
+            "type": "radio",
+            "label": "I think that I would like to use this product frequently",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus2",
+            "type": "radio",
+            "label": "I found the product unnecessarily complex",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus3",
+            "type": "radio",
+            "label": "I thought the product was easy to use",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus4",
+            "type": "radio",
+            "label": "I think that I would need the support of a technical person to be able to use this product",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus5",
+            "type": "radio",
+            "label": "I found the various functions in this product were well integrated",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus6",
+            "type": "radio",
+            "label": "I thought there was too much inconsistency in this product",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus7",
+            "type": "radio",
+            "label": "I would imagine that most people would learn to use this product very quickly",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus8",
+            "type": "radio",
+            "label": "I found the product very awkward to use",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus9",
+            "type": "radio",
+            "label": "I felt very confident using the product",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "sus10",
+            "type": "radio",
+            "label": "I needed to learn a lot of things before I could get going with this product",
+            "options": [
+              { "value": "1", "label": "Strongly disagree" },
+              { "value": "2", "label": "Disagree" },
+              { "value": "3", "label": "Neutral" },
+              { "value": "4", "label": "Agree" },
+              { "value": "5", "label": "Strongly agree" }
+            ],
+            "validation": { "required": true }
+          }
+        ]
+      },
+      { "key": "comments", "type": "textarea", "label": "Any other comments?", "rows": 3 }
+    ]
+  }
+}

@@ -1,0 +1,80 @@
+{
+  "slug": "post-purchase-feedback",
+  "title": "Post-purchase feedback",
+  "summary": "Overall rating, delivery and description checks, and one open question about the rating.",
+  "category": "feedback",
+  "definition": {
+    "id": "post-purchase-feedback",
+    "formatVersion": "1.5",
+    "title": "How was your order?",
+    "submit": { "label": "Send feedback" },
+    "steps": [
+      {
+        "id": "order",
+        "title": "Your order",
+        "fields": [
+          {
+            "key": "orderId",
+            "type": "hidden",
+            "label": "Order number",
+            "source": { "query": "order" }
+          },
+          {
+            "key": "overall",
+            "type": "rating",
+            "label": "How would you rate your order overall?",
+            "validation": { "required": true, "max": 5 },
+            "options": [{ "value": "1", "label": "Poor" }, { "value": "5", "label": "Excellent" }]
+          },
+          {
+            "key": "onTime",
+            "type": "radio",
+            "label": "Did your order arrive on time?",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "not-received", "label": "I haven’t received it" },
+              { "value": "unsure", "label": "Not sure" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "asDescribed",
+            "type": "radio",
+            "label": "Was the item as described?",
+            "layout": "inline",
+            "options": [{ "value": "yes", "label": "Yes" }, { "value": "no", "label": "No" }],
+            "validation": { "required": true },
+            "show": [{ "field": "onTime", "neq": "not-received" }]
+          },
+          {
+            "key": "service",
+            "type": "radio",
+            "label": "If you contacted us, were you satisfied with the help?",
+            "options": [
+              { "value": "yes", "label": "Yes" },
+              { "value": "no", "label": "No" },
+              { "value": "none", "label": "I didn’t contact you" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "more",
+        "title": "Anything to add?",
+        "fields": [
+          { "key": "comment", "type": "textarea", "label": "What’s the main reason for your rating of {{overall}} out of 5?", "rows": 3 },
+          { "key": "followUp", "type": "checkbox", "label": "You can contact me about this order" },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": { "required": true },
+            "show": [{ "field": "followUp", "eq": true }]
+          }
+        ]
+      }
+    ]
+  }
+}
