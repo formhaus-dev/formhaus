@@ -79,7 +79,7 @@
           "subscribe": false
         },
         "errors": {
-          "name": "Must be at least 2 characters",
+          "name": "Minimum length is 2",
           "email": "This field is required",
           "age": "Must be at least 18"
         }
@@ -280,7 +280,7 @@
           "email": "ada@example.com"
         },
         "errors": {
-          "name": "Must be at most 10000 characters"
+          "name": "Maximum length is 10000"
         }
       }
     }

@@ -307,7 +307,7 @@
       "expected": {
         "values": {},
         "errors": {
-          "people": "Must be at most 2 items"
+          "people": "At most 2 allowed"
         }
       }
     },
@@ -641,7 +641,7 @@
       "expected": {
         "values": {},
         "errors": {
-          "people": "Must be at most 2 items"
+          "people": "At most 2 allowed"
         }
       }
     }
