@@ -9,6 +9,14 @@
     {
       "code": "columns-not-applicable",
       "path": "/fields/4/columns"
+    },
+    {
+      "code": "columns-not-applicable",
+      "path": "/fields/5/columns"
+    },
+    {
+      "code": "columns-not-applicable",
+      "path": "/fields/6/fields/0/columns"
     }
   ],
   "definition": {
@@ -103,6 +111,50 @@
           }
         ],
         "columns": 2
+      },
+      {
+        "key": "picker",
+        "type": "select",
+        "label": "Picker",
+        "options": [
+          {
+            "value": "a",
+            "label": "A",
+            "image": "https://example.com/a.jpg"
+          },
+          {
+            "value": "b",
+            "label": "B",
+            "image": "https://example.com/b.jpg"
+          }
+        ],
+        "columns": 2
+      },
+      {
+        "key": "grid",
+        "type": "section",
+        "layout": "matrix",
+        "title": "Grid",
+        "fields": [
+          {
+            "key": "row",
+            "type": "radio",
+            "label": "Row",
+            "options": [
+              {
+                "value": "a",
+                "label": "A",
+                "image": "https://example.com/a.jpg"
+              },
+              {
+                "value": "b",
+                "label": "B",
+                "image": "https://example.com/b.jpg"
+              }
+            ],
+            "columns": 2
+          }
+        ]
       }
     ]
   },

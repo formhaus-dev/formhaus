@@ -7,6 +7,7 @@ export interface FieldEntry {
   path: string;
   step: number;
   group?: FormGroup;
+  parent?: FormNode;
 }
 
 export interface NodeEntry {
@@ -75,8 +76,8 @@ export function createContext(
       visit(step.fields, `/steps/${index}/fields`, index);
     });
   } else visit(definition.fields ?? [], '/fields', -1);
-  const entries: FieldEntry[] = nodes.flatMap(({ node, path, step, group }) =>
-    isSection(node) ? [] : [{ field: node as FormField, path, step, group }],
+  const entries: FieldEntry[] = nodes.flatMap(({ node, path, step, group, parent }) =>
+    isSection(node) ? [] : [{ field: node as FormField, path, step, group, parent }],
   );
   const keys = new Map<string, FieldEntry>();
   const scopes = new Map<string, Map<string, FieldEntry>>();
