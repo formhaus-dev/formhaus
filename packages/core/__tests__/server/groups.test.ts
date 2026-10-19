@@ -145,3 +145,63 @@ describe('validateSubmission with a key shared by exclusive branches', () => {
     }
   });
 });
+
+describe('validateSubmission with an oversized multiselect inside group items', () => {
+  const roles: FormNode = {
+    key: 'roles',
+    type: 'multiselect',
+    label: 'Roles',
+    options: [
+      { value: 'x', label: 'X' },
+      { value: 'y', label: 'Y' },
+    ],
+  };
+  const shown = Array.from(
+    { length: 50 },
+    (_, index): FormNode => ({
+      key: `t${index}`,
+      type: 'text',
+      label: 'T',
+      show: [index % 2 ? { field: 'roles', contains: `q${index}` } : { field: 'roles', notContains: `q${index}` }],
+    }),
+  );
+  const definition: FormDefinition = {
+    ...group(),
+    fields: [
+      {
+        key: 'people',
+        type: 'group',
+        label: 'People',
+        fields: [roles, { key: 'picked', type: 'text', label: 'Picked', show: [{ field: 'roles', contains: 'x' }] }, ...shown],
+      },
+    ],
+  };
+
+  it('blanks a 250,000-item value in each of 100 items before conditions run', () => {
+    const huge = Array.from({ length: 250_000 }, () => 'x');
+    const items = Array.from({ length: 100 }, () => ({ roles: huge, picked: 'smuggled', t0: 'kept', t1: 'hidden' }));
+    let result = validateSubmission(definition, { people: items });
+    expect(timed(() => (result = validateSubmission(definition, { people: items })))).toBeLessThan(1000);
+    expect(Object.keys(result.errors)).toHaveLength(100);
+    expect(result.errors['people.99.roles']).toBe('Select one of the available options');
+    expect(result.values).toEqual({ people: Array.from({ length: 100 }, () => ({ t0: 'kept' })) });
+    const engine = new FormEngine(definition, { people: items });
+    expect(engine.items('people')[0].fields.map(({ key }) => key)).toEqual([
+      'roles',
+      ...shown.filter((_, index) => index % 2 === 0).map(({ key }) => key),
+    ]);
+    expect(engine.validate()['people.99.roles']).toBe(result.errors['people.99.roles']);
+  });
+
+  it('blanks a string value and keeps the client message', () => {
+    const values = {
+      people: [
+        { roles: 'x', picked: 'p' },
+        { roles: ['x'], picked: 'p' },
+      ],
+    };
+    const errors = { 'people.0.roles': 'Must be a list of available options' };
+    expect(validateSubmission(definition, values)).toEqual({ values: { people: [{}, { roles: ['x'], picked: 'p' }] }, errors });
+    expect(new FormEngine(definition, values).validate()).toEqual(errors);
+  });
+});

@@ -1,7 +1,7 @@
 import type { FormField, FormGroup } from '../types';
 import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
-import { hasOwn } from '../visibility/nodes';
-import { isBlank } from '../visibility/evaluate-condition';
+import { hasOwn, isEntry, isGroup, itemPath } from '../visibility/nodes';
+import { isBlank, MAX_ITEMS } from '../visibility/evaluate-condition';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
 export const BUILT_IN_TYPES = [
@@ -36,7 +36,6 @@ export function scaleRange({ type, validation }: FormField): [number, number] {
 export const MAX_STRING_LENGTH = 10000;
 export const MAX_HIDDEN_LENGTH = 2000;
 const MAX_EMAIL_LENGTH = 254;
-const MAX_ITEMS = 1000;
 const MAX_GROUP_ITEMS = 100;
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
@@ -93,6 +92,24 @@ const staticOptions = (field: FormField) => (field.optionsFrom ? undefined : fie
 
 export const oversizedList = (field: FormField, value: unknown) =>
   LIST_TYPES.includes(field.type) && (!Array.isArray(value) || value.length > (staticOptions(field)?.length ?? MAX_ITEMS));
+
+export function blankLists(fields: FormField[], source: Record<string, unknown>, resolve: ResolveMessage): Map<string, string> {
+  const blanked = new Map<string, string>();
+  for (const group of fields.filter(isGroup))
+    if (Array.isArray(source[group.key]))
+      source[group.key] = (source[group.key] as unknown[]).map((item, index) => {
+        if (!isEntry(item)) return item;
+        const entry = { ...item };
+        for (const field of group.fields) {
+          const error = hasOwn(entry, field.key) && oversizedList(field, entry[field.key]) && typeError(field, entry[field.key], resolve);
+          if (!error) continue;
+          blanked.set(itemPath(group.key, index, field.key), error);
+          delete entry[field.key];
+        }
+        return entry;
+      });
+  return blanked;
+}
 
 function isOption(field: FormField, value: unknown): boolean {
   const options = staticOptions(field);
