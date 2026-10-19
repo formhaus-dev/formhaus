@@ -5,6 +5,7 @@
   "category": "feedback",
   "definition": {
     "id": "testimonial-request",
+    "formatVersion": "1.3",
     "title": "Share your experience",
     "submit": { "label": "Send testimonial" },
     "steps": [
@@ -27,17 +28,9 @@
           },
           {
             "key": "rating",
-            "type": "radio",
+            "type": "rating",
             "label": "How would you rate working with us?",
-            "layout": "inline",
-            "helperText": "1 is poor, 5 is excellent.",
-            "options": [
-              { "value": "1", "label": "1" },
-              { "value": "2", "label": "2" },
-              { "value": "3", "label": "3" },
-              { "value": "4", "label": "4" },
-              { "value": "5", "label": "5" }
-            ]
+            "options": [{ "value": "1", "label": "Poor" }, { "value": "5", "label": "Excellent" }]
           },
           {
             "key": "quote",
@@ -53,38 +46,40 @@
         "title": "About you",
         "fields": [
           {
-            "key": "name",
-            "type": "text",
-            "label": "Full name",
-            "validation": { "required": true }
-          },
-          { "key": "jobTitle", "type": "text", "label": "Job title" },
-          { "key": "company", "type": "text", "label": "Company" },
-          {
-            "key": "email",
-            "type": "email",
-            "label": "Email",
-            "inputMode": "email",
-            "helperText": "Only if we should send you the final version to approve."
-          },
-          {
             "key": "permission",
             "type": "radio",
             "label": "How can we use your testimonial?",
             "options": [
               { "value": "full", "label": "With my name, title and company" },
               { "value": "first-name", "label": "With my first name only" },
-              { "value": "anonymous", "label": "Anonymously" },
+              { "value": "anonymous", "label": "Without my name" },
               { "value": "private", "label": "Please don’t publish it" }
             ],
             "validation": { "required": true }
           },
           {
-            "key": "photo",
+            "key": "name",
             "type": "text",
-            "label": "Link to a headshot",
-            "placeholder": "https://",
+            "label": "Full name",
+            "show": [{ "field": "permission", "in": ["full", "first-name"] }],
+            "validation": { "required": true }
+          },
+          { "key": "jobTitle", "type": "text", "label": "Job title", "show": [{ "field": "permission", "eq": "full" }] },
+          { "key": "company", "type": "text", "label": "Company", "show": [{ "field": "permission", "eq": "full" }] },
+          {
+            "key": "photo",
+            "type": "file",
+            "label": "Headshot",
+            "accept": "image/*",
+            "helperText": "Optional. Only if you’re happy for us to publish it with your testimonial.",
             "show": [{ "field": "permission", "eq": "full" }]
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "helperText": "Only if we should send you the final version to approve."
           }
         ]
       }
