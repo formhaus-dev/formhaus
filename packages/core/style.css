@@ -154,7 +154,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 @supports selector(:has(*)) { :is(.fh-field__radio-option, .fh-field__multiselect-option) input:focus-visible { outline: none; } }
 :is(.fh-field__radio-label, .fh-field__multiselect-label) { flex: 1 1 auto; cursor: pointer; text-wrap: pretty; }
 .fh-field__option-divider { grid-column: 1 / -1; place-self: center; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: 1.3; text-align: center; }
-.fh-field__multiselect-group--inline > .fh-field__option-divider { flex-basis: 100%; }
+.fh-field__multiselect-group--inline > .fh-field__option-divider { display: grid; box-sizing: border-box; flex-basis: 100%; grid-template-columns: 18px; justify-items: center; padding-inline-start: calc(1px + var(--fh-space-6)); }
 :is(.fh-field__radio-label, .fh-field__multiselect-label, .fh-field__checkbox-wrapper .fh-field__label, .fh-field__switch-wrapper .fh-field__label)::before { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 
 .fh-field__option-image { grid-area: 1 / 1 / 2 / -1; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: calc(var(--fh-radius) - var(--fh-space-1)); background: var(--fh-color-bg-disabled); }
