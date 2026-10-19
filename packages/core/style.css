@@ -307,27 +307,29 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-step-progress__bar { height: 4px; border-radius: 999px; background: var(--fh-color-bg-disabled); overflow: hidden; }
 .fh-step-progress__fill { height: 100%; background: var(--fh-color-primary); transition: width 200ms ease-out; }
 .fh-step-progress:has(> .fh-step-progress__steps) > .fh-step-progress__bar { display: none; }
-.fh-step-progress__steps { display: flex; flex-wrap: wrap; gap: var(--fh-space-3) var(--fh-space-9); margin: 0; padding: 0; list-style: none; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: 1.45; counter-reset: fh-step; }
-.fh-step-progress__step { position: relative; display: flex; align-items: flex-start; gap: var(--fh-space-3); min-width: 0; counter-increment: fh-step; --fh-step-marker: calc(var(--fh-font-size-small) * 1.45); }
-.fh-step-progress__step::before { content: counter(fh-step); display: grid; flex: none; place-items: center; box-sizing: border-box; width: var(--fh-step-marker); height: var(--fh-step-marker); border: 1.5px solid var(--fh-color-border); border-radius: 50%; font-size: calc(var(--fh-font-size-small) * 0.8); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
-.fh-step-progress__step::after { position: absolute; top: 0; left: 0; width: var(--fh-step-marker); height: var(--fh-step-marker); -webkit-mask: var(--fh-step-icon) center / 70% no-repeat; mask: var(--fh-step-icon) center / 70% no-repeat; }
+.fh-step-progress__steps { display: flex; flex-wrap: wrap; gap: var(--fh-space-3) var(--fh-space-9); margin: 0; padding: 0; list-style: none; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: var(--fh-step-marker); counter-reset: fh-step; --fh-step-marker: var(--fh-space-9); }
+.fh-step-progress:has(> .fh-step-progress__steps) > .fh-step-progress__title { margin-top: var(--fh-space-5); }
+.fh-step-progress__step { position: relative; display: flex; align-items: flex-start; gap: var(--fh-space-3); min-width: 0; counter-increment: fh-step; }
+.fh-step-progress__step::before { content: counter(fh-step); display: grid; flex: none; place-items: center; box-sizing: border-box; width: var(--fh-step-marker); height: var(--fh-step-marker); border: 1.5px solid var(--fh-color-control-hover); border-radius: 50%; font-size: calc(var(--fh-font-size-small) * 0.85); font-weight: 600; line-height: 1; font-variant-numeric: tabular-nums; }
 .fh-step-progress__name { text-wrap: pretty; }
 .fh-step-progress__step:has(~ [aria-current="step"]), .fh-step-progress__step--invalid, .fh-step-progress__step[aria-current="step"] { color: var(--fh-color-text); }
 .fh-step-progress__step[aria-current="step"] { font-weight: 600; }
 .fh-step-progress__step[aria-current="step"]::before { border-color: var(--fh-color-primary); background: var(--fh-color-primary); color: var(--fh-color-primary-text); }
-.fh-step-progress__step:has(~ [aria-current="step"])::before, .fh-step-progress__step.fh-step-progress__step--invalid::before { border-color: transparent; background: var(--fh-color-primary-soft, var(--fh-auto-primary-soft)); color: transparent; }
-.fh-step-progress__step:has(~ [aria-current="step"])::after { content: ""; background: var(--fh-color-primary); --fh-step-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
-.fh-step-progress__step.fh-step-progress__step--invalid::before { border-color: var(--fh-color-error); background: var(--fh-color-error-soft, var(--fh-auto-error-soft)); }
-.fh-step-progress__step.fh-step-progress__step--invalid::after { content: ""; background: var(--fh-color-error); --fh-step-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 3.5v5.5' stroke='black' stroke-width='2' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='12.5' r='1.25'/%3E%3C/svg%3E"); }
-.fh-step-progress__step--invalid[aria-current="step"]::before { background: var(--fh-color-error); }
-.fh-step-progress__step--invalid[aria-current="step"]::after { background: var(--fh-color-bg); }
-.fh-step-progress__errors { padding: 0 var(--fh-space-2); border-radius: 999px; outline: 1px solid transparent; outline-offset: -1px; background: var(--fh-color-error-soft, var(--fh-auto-error-soft)); color: var(--fh-color-error); font-weight: 600; font-variant-numeric: tabular-nums; }
+.fh-step-progress__step:has(~ [aria-current="step"])::before { border-color: var(--fh-color-primary); background: var(--fh-color-primary-soft, var(--fh-auto-primary-soft)); color: transparent; }
+.fh-step-progress__step:has(~ [aria-current="step"])::after { content: ""; position: absolute; top: 0; left: 0; width: var(--fh-step-marker); height: var(--fh-step-marker); background: var(--fh-color-primary); --fh-step-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.5 8.5l3 3 6-7' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); -webkit-mask: var(--fh-step-check) center / 70% no-repeat; mask: var(--fh-step-check) center / 70% no-repeat; }
+.fh-step-progress__step.fh-step-progress__step--invalid::before { border-color: var(--fh-color-error); background: var(--fh-color-error-soft, var(--fh-auto-error-soft)); color: var(--fh-color-error); }
+.fh-step-progress__step.fh-step-progress__step--invalid[aria-current="step"]::before { background: var(--fh-color-error); color: var(--fh-color-bg); }
+.fh-step-progress__step--invalid:has(~ [aria-current="step"])::after { content: none; }
+.fh-step-progress__errors { display: inline-flex; align-items: center; min-height: var(--fh-step-marker); gap: var(--fh-space-1); padding: 0 var(--fh-space-3) 0 var(--fh-space-2); border-radius: 999px; outline: 1px solid transparent; outline-offset: -1px; background: var(--fh-color-error-soft, var(--fh-auto-error-soft)); color: var(--fh-color-error); font-weight: 600; font-variant-numeric: tabular-nums; }
+.fh-step-progress__errors::before { content: ""; width: var(--fh-space-1); height: var(--fh-space-5); background: currentColor; --fh-step-alert: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 12'%3E%3Cpath d='M2 1.5v5.5' stroke='black' stroke-width='2.25' stroke-linecap='round'/%3E%3Ccircle cx='2' cy='10.25' r='1.25'/%3E%3C/svg%3E"); -webkit-mask: var(--fh-step-alert) center / contain no-repeat; mask: var(--fh-step-alert) center / contain no-repeat; }
 .fh-error-summary__link { color: var(--fh-color-error); }
 
 @container (width < 400px) {
   .fh-step-progress__steps { column-gap: var(--fh-space-5); }
   .fh-step-progress__step { gap: var(--fh-space-1); }
-  .fh-step-progress__name, .fh-step-progress__errors { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .fh-step-progress__errors > [aria-hidden] { display: none; }
+  .fh-step-progress__errors { padding: 0 var(--fh-space-3); }
+  .fh-step-progress__name { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
 
 @media (forced-colors: active) {
@@ -340,10 +342,9 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   .fh-field__scale-input:checked + .fh-field__scale-label { color: Canvas; forced-color-adjust: none; }
   .fh-field--rating :is(.fh-field__scale-input:checked + *, .fh-field__scale-option:has(~ * :checked) > .fh-field__scale-label) { background: Highlight; }
   .fh-field__scale-input:focus-visible { outline: 2px solid CanvasText; }
-  .fh-step-progress__step:has(~ [aria-current="step"])::before, .fh-step-progress__step.fh-step-progress__step--invalid::before { content: ""; }
-  .fh-step-progress__steps .fh-step-progress__step::after { background: CanvasText; forced-color-adjust: none; }
+  .fh-step-progress__step:not(.fh-step-progress__step--invalid):has(~ [aria-current="step"])::before { content: ""; }
+  .fh-step-progress__steps .fh-step-progress__step::after, .fh-step-progress__errors::before { background: CanvasText; forced-color-adjust: none; }
   .fh-step-progress__steps .fh-step-progress__step[aria-current="step"]::before { border-color: Highlight; background: Highlight; color: HighlightText; forced-color-adjust: none; }
-  .fh-step-progress__steps .fh-step-progress__step--invalid[aria-current="step"]::after { background: HighlightText; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:checked) { border-color: Highlight; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:focus-visible), .fh-form-actions__button:focus-visible, .fh-field__input:focus, :is(.fh-field__radio, .fh-field__checkbox, .fh-field__switch):focus-visible { outline: 2px solid CanvasText; }
 }
