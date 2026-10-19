@@ -11,7 +11,7 @@
 - A token shows an option label, a number, a date, text, file names, or the item count of a group. A checkbox or switch shows its label when on.
 - A missing answer, a hidden field, a `password` field and an unknown key show nothing. The result is plain text.
 - When route branches share a key, a token reads the field on the active path. A key that is a `password` on any branch, or in any group with the same key, shows nothing.
-- A text with tokens is cut to 10000 UTF-16 code units, without a trailing high surrogate.
+- A text with tokens, and a message or label filled with parameters, is cut to 10000 UTF-16 code units, without a trailing high surrogate.
 - New `recallText()` resolves a text against `engine.getSubmitValues()`.
 - `recallText()` takes an `engine` option to follow the engine's active path.
 - `checkDefinition()` reports `unknown-recall-field` and `recall-forward-reference`, and `outdated-format-version` for a token below format 1.5.
