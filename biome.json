@@ -116,6 +116,56 @@
       }
     },
     {
+      "includes": [
+        "packages/editor-react/src/**/*.tsx",
+        "!packages/editor-react/src/ui/**",
+        "!packages/editor-react/src/test/**",
+        "!**/*.test.tsx",
+        "!packages/editor-react/src/canvas/FieldCard.tsx",
+        "!packages/editor-react/src/canvas/FieldDetails.tsx",
+        "!packages/editor-react/src/canvas/FieldPreview.tsx",
+        "!packages/editor-react/src/canvas/GoTo.tsx",
+        "!packages/editor-react/src/canvas/HiddenValue.tsx",
+        "!packages/editor-react/src/canvas/InsertGap.tsx",
+        "!packages/editor-react/src/canvas/OptionsEditor.tsx",
+        "!packages/editor-react/src/canvas/RequiredTag.tsx",
+        "!packages/editor-react/src/canvas/TypeChip.tsx",
+        "!packages/editor-react/src/json/JsonIssues.tsx",
+        "!packages/editor-react/src/json/JsonPane.tsx",
+        "!packages/editor-react/src/logic/LogicBadge.tsx",
+        "!packages/editor-react/src/outline/StepOutline.tsx",
+        "!packages/editor-react/src/publish/IssueList.tsx",
+        "!packages/editor-react/src/root/Notices.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "correctness": {
+            "noRestrictedElements": {
+              "level": "error",
+              "options": {
+                "elements": {
+                  "button": "Use a shared component from packages/editor-react/src/ui",
+                  "input": "Use a shared component from packages/editor-react/src/ui",
+                  "select": "Use a shared component from packages/editor-react/src/ui",
+                  "textarea": "Use a shared component from packages/editor-react/src/ui",
+                  "dialog": "Use a shared component from packages/editor-react/src/ui",
+                  "h1": "Use a shared component from packages/editor-react/src/ui",
+                  "h2": "Use a shared component from packages/editor-react/src/ui",
+                  "h3": "Use a shared component from packages/editor-react/src/ui",
+                  "h4": "Use a shared component from packages/editor-react/src/ui",
+                  "h5": "Use a shared component from packages/editor-react/src/ui",
+                  "h6": "Use a shared component from packages/editor-react/src/ui",
+                  "ul": "Use a shared component from packages/editor-react/src/ui",
+                  "ol": "Use a shared component from packages/editor-react/src/ui",
+                  "li": "Use a shared component from packages/editor-react/src/ui"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
       "includes": ["packages/editor-react/src/ui/components/CommandList/CommandOptions.tsx"],
       "linter": {
         "rules": {
