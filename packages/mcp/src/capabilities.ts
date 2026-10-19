@@ -116,12 +116,14 @@ export const capabilities = {
   },
   conditions: {
     operators: CONDITION_OPERATORS,
-    shape: '{ field, eq | neq | in | notIn | notEmpty | gt | gte | lt | lte }, exactly one operator',
+    shape: '{ field, eq | neq | in | notIn | contains | notContains | notEmpty | gt | gte | lt | lte }, exactly one operator',
     show: 'All conditions must match.',
     showAny: 'At least one condition must match.',
     appliesTo: ['field', 'section', 'group', 'step', 'route', 'action.disabled'],
     comparisons:
       'gt, gte, lt and lte take a number and also compare numeric strings such as radio option values. Conditions on scale and rating take numbers, such as { "field": "nps", "lte": 6 }. Use two conditions for a range: [{ "field": "nps", "gte": 7 }, { "field": "nps", "lte": 8 }].',
+    lists:
+      'A multiselect value is a list, so eq, neq, in and notIn never test its items. contains matches when the list holds the value, such as { "field": "sourceOfWealth", "contains": "OTHER" }. notContains matches when it does not, also before the question is answered. contains never matches a value that is not a list. Set "formatVersion": "1.4" on definitions that use them.',
     scope:
       'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
     hiddenValues:
