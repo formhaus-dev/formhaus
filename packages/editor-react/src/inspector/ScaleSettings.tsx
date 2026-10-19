@@ -21,8 +21,8 @@ interface Props {
 
 const ANCHORS: [AnchorSlot, string][] = [
   ['start', 'Start label'],
+  ['middle', 'Middle label (optional)'],
   ['end', 'End label'],
-  ['middle', 'Middle label'],
 ];
 
 export function ScaleSettings({ field, actions, readOnly }: Props) {
@@ -81,7 +81,7 @@ export function ScaleSettings({ field, actions, readOnly }: Props) {
       </Field>
       <div className={styles.pair}>
         {ANCHORS.map(([slot, label]) => (
-          <Field key={slot} label={label}>
+          <Field key={slot} label={label} className={slot === 'middle' ? styles.middle : undefined}>
             <Input
               value={anchors[slot]}
               placeholder={slot === 'start' ? 'Not likely' : slot === 'end' ? 'Very likely' : 'Neutral'}

@@ -106,6 +106,11 @@
   gap: var(--fh-ed-space-3) var(--fh-ed-space-6);
 }
 
+.middle {
+  grid-row: 2;
+  grid-column: 1;
+}
+
 .section {
   display: flex;
   grid-column: 1 / -1;
@@ -123,5 +128,9 @@
 @container settings (width < 560px) {
   .pair {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .middle {
+    grid-row: auto;
   }
 }
