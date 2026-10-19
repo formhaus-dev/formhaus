@@ -1,5 +1,37 @@
 # @formhaus/core
 
+## 0.20.0
+
+### Minor Changes
+
+- New `contains` and `notContains` condition operators test one item of an array value, like a `multiselect` answer. They work in `show`, `showAny`, routes and `disabled`.
+- `contains` never matches a value that is not an array. `notContains` matches whenever `contains` does not, including before the question is answered.
+- New warnings `contains-not-list` for `contains` or `notContains` on a field that does not hold a list, and `contains-not-in-options` for a value that is not one of the field's options.
+- Format version 1.4. Core 0.19 and older reject definitions that use `contains` or `notContains`.
+- `checkDefinition()` warns with `outdated-format-version` about `contains` or `notContains` without `"formatVersion": "1.4"`.
+- New labels `clear` (`Clear`), `done` (`Done`), `chooseFile` (`Choose file`), `required` (`required`), `skip` (`Skip`), `submit` (`Submit`), `stepTitle` (`Step {index}`) and `stepErrors` (`Errors: {count}`).
+- The Skip button uses the `skip` label when the step `skip` action has no label.
+- The final Submit button uses the `submit` label when the `submit` action has no label.
+- The step progress names a step without a title with `stepTitle`.
+- **Behavior change:** the step progress marks a step with errors as `· Errors: 2` instead of `· 2 errors`. Change it with the `stepErrors` label.
+- `FormActions` and `FormStepProgress` use the renderer `labels` and `definition.labels` for their fallback texts.
+- `clear`, `done`, `chooseFile` and `required` are for native renderers. The web renderers do not show them.
+- `textSlots()` and `translationTemplate()` list each new label only when the form uses it.
+- `translationIssues()` reports these labels as missing from existing translations of forms that use them.
+- A custom actions component receives `skipLabel`.
+- New `engine.replaceDefinition(definition)` switches a running form to a new definition and keeps the answers, the current step and the errors that still fit.
+- New `keepValues` prop on `FormRenderer` and `HeadlessFormRenderer` keeps the answers when the `definition` prop changes. Without it, a new definition still resets the form.
+- `useFormEngine` in React and Vue takes `keepValues` in its options. The new `UseFormEngineOptions` type describes them.
+- A value is kept when the new definition has a field with the same key and type. Values of removed fields and of fields whose type changed are dropped.
+
+### Patch Changes
+
+- Cloud forms keep `scale` and `rating` answers when the form is updated during submit. An answer outside the new range is dropped.
+- Submissions with duplicate options now fail validation. A `multiselect` value that repeats an option, including in a matrix row or a group item, gets the `options` message from `validateSubmission()` and the engine.
+- Matrix sections switch to the table layout from 480px wide instead of 560px, so a matrix inside a 640px card is a table.
+- `replaceDefinition()` no longer lets a second submit start while the first is in flight.
+- `validateSubmission()` treats a `multiselect` value that is not a list or has more items than allowed as unanswered when it evaluates conditions. Large submitted arrays no longer slow down condition checks.
+
 ## 0.19.1
 
 ### Patch Changes
