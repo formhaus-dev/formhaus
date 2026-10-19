@@ -59,6 +59,27 @@ describe('recall checks', () => {
     ]);
   });
 
+  it('warns once per text and code', () => {
+    expect(warnings(steps('1.5', { title: '{{a}} {{b}} {{x|y}} {{x|z}} {{email}} {{email}}' }))).toEqual([
+      { code: 'recall-syntax', path: '/steps/0/title' },
+      { code: 'unknown-recall-field', path: '/steps/0/title' },
+      { code: 'recall-forward-reference', path: '/steps/0/title' },
+    ]);
+  });
+
+  it('warns about recalled passwords and query sources', () => {
+    const input = steps('1.5', { description: '{{pw}} {{utm}} {{ref}}' });
+    input.steps![0].fields.push(
+      { key: 'pw', type: 'password', label: 'Password' },
+      { key: 'utm', type: 'hidden', source: { query: 'utm' } },
+      { key: 'ref', type: 'hidden', source: 'referrer' },
+    );
+    expect(warnings(input)).toEqual([
+      { code: 'recall-sensitive-field', path: '/steps/1/description' },
+      { code: 'recall-query-source', path: '/steps/1/description' },
+    ]);
+  });
+
   it('asks for format 1.5 when a text recalls an answer', () => {
     expect(warnings(steps('1.4', { description: '{{name}}' }))).toEqual([{ code: 'outdated-format-version', path: '/formatVersion' }]);
     expect(checkDefinition(steps('1.4', { description: '{{name}}' }))[0].message).toContain('needs format 1.5');
