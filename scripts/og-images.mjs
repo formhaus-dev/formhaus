@@ -87,7 +87,7 @@ const forms = await browser.newPage({ ...options, viewport: { width: 520, height
 async function formShot(slug, chrome = 0) {
   await forms.goto(`${origin}/templates/${slug}`, { waitUntil: 'networkidle' });
   const form = forms.locator('.tpl-preview__form');
-  await form.locator('input, select, textarea').first().waitFor();
+  await form.locator('input:not([type=hidden]), select, textarea').first().waitFor();
   await forms.evaluate(() => document.activeElement?.blur());
   const shot = await form.screenshot({ animations: 'disabled', caret: 'hide' });
   const height = (404 * shot.readUInt32BE(20)) / shot.readUInt32BE(16);
