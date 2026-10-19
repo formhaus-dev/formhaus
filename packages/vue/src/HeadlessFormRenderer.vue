@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isSection, type FormEngineOptions, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
+import { isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
 import {
   actionsView,
   applySources,
@@ -17,7 +17,7 @@ import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
 import { useListening } from './composables/useListening';
 import { useRendererActions } from './composables/useRendererActions';
-import { useFormEngine } from './composables/useFormEngine';
+import { useFormEngine, type UseFormEngineOptions } from './composables/useFormEngine';
 import { useNodeProps } from './composables/useNodeProps';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
@@ -32,7 +32,10 @@ const onFormEvent = (event: FormEvent) => {
   emit('analyticsEvent', event);
 };
 const listening = useListening();
-const engineOptions: FormEngineOptions = {
+const engineOptions: UseFormEngineOptions = {
+  get keepValues() {
+    return props.keepValues;
+  },
   get onFormEvent() {
     return listening('onFormEvent', 'onAnalyticsEvent') ? onFormEvent : undefined;
   },
@@ -93,6 +96,10 @@ const watchValues = (engine: typeof form.engine) => {
 };
 onMounted(() => watchValues(form.engine));
 watch(() => form.engine, watchValues, { flush: 'sync' });
+watch(
+  () => props.definition,
+  () => props.keepValues && applySources(form.engine, form.engine.values),
+);
 onBeforeUnmount(() => stopValues());
 
 let watchMissing: (() => void) | undefined;
