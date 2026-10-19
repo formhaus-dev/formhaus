@@ -4,6 +4,8 @@ import {
   addField,
   addOption,
   addStep,
+  editorType,
+  FIELD_TYPES,
   keyFromLabel,
   moveField,
   removeField,
@@ -14,6 +16,7 @@ import {
   setType,
   steps,
 } from '../ui/editor/model';
+import { BUILT_IN_TYPES } from '../../../core/src/validation/type-checks';
 
 const form = (): FormDefinition => ({
   id: 'f',
@@ -69,6 +72,40 @@ describe('editing fields', () => {
     expect(field.options).toBeUndefined();
     setType(field, 'select');
     expect(field.options).toHaveLength(1);
+  });
+
+  it('offers every built-in field type and an NPS preset', () => {
+    expect(BUILT_IN_TYPES.filter((type) => !(FIELD_TYPES as readonly string[]).includes(type))).toEqual([]);
+    expect(FIELD_TYPES).toContain('nps');
+  });
+
+  it('adds an NPS question as a 0 to 10 scale with anchors and format 1.3', () => {
+    const draft = form();
+    const field = addField(draft, 0, 'nps');
+    expect(field).toMatchObject({ type: 'scale', validation: { min: 0, max: 10 } });
+    expect(field.options?.map((option) => option.value)).toEqual(['0', '10']);
+    expect(editorType(field)).toBe('nps');
+    expect(draft.formatVersion).toBe('1.3');
+  });
+
+  it('drops scale bounds and anchors when switching between scale types', () => {
+    const draft = { ...form(), formatVersion: '1.1' };
+    const field = addField(draft, 0, 'nps');
+    setType(field, 'rating', draft);
+    expect(field.validation).toBeUndefined();
+    expect(field.options).toBeUndefined();
+    expect(editorType(field)).toBe('rating');
+    setType(field, 'scale', draft);
+    expect(editorType(field)).toBe('scale');
+    setType(field, 'radio', draft);
+    expect(field.options).toHaveLength(1);
+    expect(draft.formatVersion).toBe('1.3');
+  });
+
+  it('keeps a newer format version', () => {
+    const draft = { ...form(), formatVersion: '1.4' };
+    addField(draft, 0, 'rating');
+    expect(draft.formatVersion).toBe('1.4');
   });
 
   it('keeps option values that conditions refer to', () => {

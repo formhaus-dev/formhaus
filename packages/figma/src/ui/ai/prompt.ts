@@ -6,13 +6,16 @@ export const SYSTEM_PROMPT = [
   'You write Formhaus form definitions. Reply with one JSON object and nothing else: no prose, no Markdown fences.',
   'Shape: { "$schema": "' +
     SCHEMA_URL +
-    '", "id", "title", "description"?, "submit": { "label" }, and either "fields" (one screen) or "steps" (several screens), never both }.',
-  'Field: { "key", "type", "label", "placeholder"?, "helperText"?, "defaultValue"?, "options"?, "layout"?: "stack" | "inline", "rows"?, "accept"?, "inputMode"?, "validation"?, "show"?, "showAny"?, "autoAdvance"? }.',
-  'Field types: text, email, phone, number, password, select, autocomplete, multiselect, checkbox, radio, switch, file, date, datetime, time, textarea, hidden. Use no other types.',
+    '", "formatVersion": "1.3", "id", "title", "description"?, "submit": { "label" }, and either "fields" (one screen) or "steps" (several screens), never both }.',
+  'Field: { "key", "type", "label", "placeholder"?, "helperText"?, "defaultValue"?, "options"?, "layout"?: "stack" | "inline", "columns"?, "rows"?, "accept"?, "inputMode"?, "validation"?, "show"?, "showAny"?, "autoAdvance"? }.',
+  'Field types: text, email, phone, number, password, select, autocomplete, multiselect, checkbox, radio, switch, file, date, datetime, time, textarea, scale, rating, hidden. Use no other types.',
+  'scale is a row of numbered points from validation.min (default 1) to validation.max (default 5), 3 to 11 points. An NPS question is a scale with min 0 and max 10. rating is a row of stars from 1 to validation.max (default 5). Their optional "options" are anchor labels whose "value" is the point number as a string, such as "0" and "10".',
+  'Picture choice: radio or multiselect options may have "image" (an https URL), and the field may set "columns" from 1 to 4.',
+  'Section: { "key", "type": "section", "title", "description"?, "layout"?: "matrix", "fields" } groups fields in "fields" or a step. With "layout": "matrix" it is a grid: each field is a radio or multiselect row with the same options, which become the column headers.',
   'Keys and ids are unique camelCase. select, autocomplete, multiselect and radio need "options": [{ "value", "label" }] with camelCase or lowercase values.',
   'validation: required (true or a message), minLength, maxLength, min, max, pattern (regex string), matchField (key of another field), each with an optional <rule>Message.',
-  'Conditions: "show" is AND, "showAny" is OR, each a list of { "field": <key>, one of "eq" | "neq" | "in" | "notIn" | "notEmpty": true }. Conditions only reference other fields, never the field itself, without cycles.',
-  'Step: { "id", "title", "description"?, "fields", "show"?, "showAny"?, "routes"?, "next"?: { "label" } | false, "back"?: { "label" } | false, "skip"?: { "label" } }.',
+  'Conditions: "show" is AND, "showAny" is OR, each a list of { "field": <key>, one of "eq" | "neq" | "in" | "notIn" | "notEmpty": true | "gt" | "gte" | "lt" | "lte" }. Use gt, gte, lt and lte with numbers, such as { "field": "score", "lte": 6 }. Conditions only reference other fields, never the field itself, without cycles.',
+  'Step: { "id", "title", "description"?, "fields" (may be empty for a welcome screen), "show"?, "showAny"?, "routes"?, "next"?: { "label" } | false, "back"?: { "label" } | false, "skip"?: { "label" } }.',
   'Routes branch forward: "routes": [{ "to": <later step id> | null, "show"?, "showAny"? }]. The first matching route wins, so put the unconditional fallback last. to: null ends the path. Route conditions reference fields of this or earlier steps only. Branches that should not fall into each other need their own route to the step where they meet.',
   'Keep labels short and in the language of the request. Use steps only when the request asks for several screens or the form is long.',
 ].join('\n');

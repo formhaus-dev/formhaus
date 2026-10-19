@@ -19,10 +19,37 @@ export const FIELD_TYPES = [
   'datetime',
   'time',
   'file',
+  'scale',
+  'nps',
+  'rating',
   'hidden',
 ] as const;
 
 const OPTION_TYPES = new Set(['select', 'autocomplete', 'multiselect', 'radio']);
+const SCALE_TYPES = new Set(['scale', 'rating']);
+const SCALE_FORMAT = '1.3';
+const NPS_ANCHORS = [
+  { value: '0', label: 'Not at all likely' },
+  { value: '10', label: 'Extremely likely' },
+];
+
+export function editorType(field: FormField): string {
+  return field.type === 'scale' && field.validation?.min === 0 && field.validation?.max === 10 ? 'nps' : field.type;
+}
+
+function dropBounds(field: FormField): void {
+  if (!field.validation) return;
+  delete field.validation.min;
+  delete field.validation.max;
+  if (Object.keys(field.validation).length === 0) delete field.validation;
+}
+
+function requireScaleFormat(draft: FormDefinition): void {
+  const [, minor = 0] = String(draft.formatVersion ?? '1.0')
+    .split('.')
+    .map(Number);
+  if (minor < 3) draft.formatVersion = SCALE_FORMAT;
+}
 
 export function hasOptions(field: FormField): boolean {
   return OPTION_TYPES.has(field.type) || (field.type === 'checkbox' && Boolean(field.options?.length));
@@ -120,6 +147,7 @@ export function addField(draft: FormDefinition, stepIndex: number, type: string)
       { value: 'option1', label: 'Option 1' },
       { value: 'option2', label: 'Option 2' },
     ];
+  setType(field, type, draft);
   fieldsOf(draft, stepIndex).push(field);
   return field;
 }
@@ -140,10 +168,17 @@ export function setRequired(field: FormField, required: boolean): void {
   if (Object.keys(field.validation).length === 0) delete field.validation;
 }
 
-export function setType(field: FormField, type: string): void {
-  field.type = type;
-  if (OPTION_TYPES.has(type) && !field.options?.length) field.options = [{ value: 'option1', label: 'Option 1' }];
-  if (!OPTION_TYPES.has(type) && type !== 'checkbox') delete field.options;
+export function setType(field: FormField, type: string, draft?: FormDefinition): void {
+  const target = type === 'nps' ? 'scale' : type;
+  if (SCALE_TYPES.has(field.type) || SCALE_TYPES.has(target)) dropBounds(field);
+  field.type = target;
+  if (OPTION_TYPES.has(target) && !field.options?.length) field.options = [{ value: 'option1', label: 'Option 1' }];
+  if (!OPTION_TYPES.has(target) && target !== 'checkbox') delete field.options;
+  if (type === 'nps') {
+    field.validation = { ...field.validation, min: 0, max: 10 };
+    field.options = NPS_ANCHORS.map((anchor) => ({ ...anchor }));
+  }
+  if (draft && SCALE_TYPES.has(target)) requireScaleFormat(draft);
 }
 
 export function removeField(draft: FormDefinition, stepIndex: number, fieldIndex: number): string | null {
