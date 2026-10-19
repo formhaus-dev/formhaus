@@ -8,7 +8,7 @@
     "dist/server.iife.js"
   ],
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "exports": {
     ".": {
