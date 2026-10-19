@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import type { FieldOption } from '@formhaus/core';
-import { ref } from 'vue';
+import type { FieldOption, LabelKey } from '@formhaus/core';
+import { labelFor } from '@formhaus/core/internal';
+import { inject, ref } from 'vue';
 
 defineProps<{ option: FieldOption }>();
+const text = inject('fhLabel', (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params));
 const dialog = ref<HTMLDialogElement>();
 const trigger = ref<HTMLButtonElement>();
 </script>
@@ -14,9 +16,9 @@ const trigger = ref<HTMLButtonElement>();
       ref="trigger"
       type="button"
       class="fh-field__option-zoom"
-      :aria-label="`Enlarge image: ${option.label}`"
+      :aria-label="text('enlargeImage', { label: option.label })"
       aria-haspopup="dialog"
-      @click.stop="dialog?.showModal()"
+      @click.stop="dialog?.toggleAttribute('data-pointer', $event.detail > 0), dialog?.showModal()"
     />
     <dialog
       ref="dialog"
@@ -24,11 +26,11 @@ const trigger = ref<HTMLButtonElement>();
       :aria-label="option.label"
       @close="trigger?.focus()"
       @click.self="dialog?.close()"
-      @keydown.stop
+      @keydown.stop="dialog?.removeAttribute('data-pointer')"
     >
       <div class="fh-dialog__header">
         <p class="fh-dialog__title">{{ option.label }}</p>
-        <button type="button" class="fh-dialog__close" aria-label="Close" @click="dialog?.close()" />
+        <button type="button" class="fh-dialog__close" :aria-label="text('close')" @click="dialog?.close()" />
       </div>
       <img class="fh-dialog__image" :src="option.image" alt="" loading="lazy" />
     </dialog>

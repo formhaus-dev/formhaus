@@ -9,7 +9,7 @@ import {
   shouldApplyExternalErrors,
   warnMissingComponents,
 } from '@formhaus/core/internal';
-import { computed, onBeforeUnmount, onMounted, ref, watch, watchEffect } from 'vue';
+import { computed, onBeforeUnmount, onMounted, provide, ref, watch, watchEffect } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
 import DefaultSection from './DefaultSection.vue';
@@ -171,6 +171,7 @@ defineExpose({
 });
 
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.definition.labels);
+provide('fhLabel', label);
 
 const actions = computed(() => {
   void [currentStep.value, isFirstStep.value, isLastStep.value, isMultiStep.value];
