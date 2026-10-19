@@ -266,6 +266,7 @@ Add `image` to the options of a `radio` or `multiselect` field. The options beco
   "key": "room",
   "type": "radio",
   "label": "Which room did you book?",
+  "columns": 2,
   "options": [
     { "value": "garden", "label": "Garden suite", "image": "https://example.com/garden.jpg" },
     { "value": "sea", "label": "Sea view", "image": "https://example.com/sea.jpg" }
@@ -277,6 +278,8 @@ Add `image` to the options of a `radio` or `multiselect` field. The options beco
 - The label stays visible and names the option for screen readers, so the image has an empty `alt`.
 - Images load lazily from the URL as given. Allow their host in `img-src` if the page has a Content Security Policy.
 - `select` and `autocomplete` ignore `image`.
+- `columns` sets the cards per row, from 1 to 4. Without it, cards are about 200px wide and fill the row. Phones show at most 2 per row.
+- The button in the corner of each image opens it at full size. Esc, a click outside or the close button closes it.
 
 ## Switch
 
