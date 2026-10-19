@@ -1,5 +1,9 @@
 # @formhaus/react
 
+## 0.20.2
+
+No changes in this release.
+
 ## 0.20.1
 
 ### Patch Changes
