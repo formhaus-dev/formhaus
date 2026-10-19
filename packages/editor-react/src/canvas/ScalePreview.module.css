@@ -55,7 +55,7 @@
 
 .anchors {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   gap: var(--fh-ed-space-2);
   color: var(--fh-ed-fg-muted);
   font-size: var(--fh-ed-font-size-sm);
@@ -78,10 +78,6 @@
   .points:has(> :nth-child(9)) {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
-
-  .points:has(> :nth-child(9)):not(:has(> :nth-child(10))) + .anchors {
-    padding-inline-end: calc((100% - 4 * var(--fh-ed-space-1)) / 5 + var(--fh-ed-space-1));
-  }
 }
 
 @container (width < 544px) {
@@ -92,9 +88,5 @@
 
   .points:has(> :nth-child(11)) {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-  }
-
-  .points:has(> :nth-child(11)):not(:has(> :nth-child(12))) + .anchors {
-    padding-inline-end: calc((100% - 5 * var(--fh-ed-space-1)) / 6 + var(--fh-ed-space-1));
   }
 }
