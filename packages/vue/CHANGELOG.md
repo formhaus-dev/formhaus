@@ -10,6 +10,7 @@
 - The `autocomplete` field property sets the HTML `autocomplete` attribute. Inside a group item the token gets a `section-` prefix per item.
 - The `autocomplete` field type sets `autocomplete="off"` when the field has no token.
 - A line break in a step or section `description` or in `helperText` shows as a line break.
+- Radio and multiselect option cards draw their border with `--fh-color-input-border`.
 
 ### Patch Changes
 
