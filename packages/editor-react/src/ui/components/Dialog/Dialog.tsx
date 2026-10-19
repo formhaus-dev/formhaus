@@ -18,6 +18,7 @@ export interface DialogProps {
   onCloseAutoFocus?: (event: Event) => void;
   children?: ReactNode;
   placement?: 'center' | 'right' | 'left';
+  size?: 'md' | 'wide';
   dismissible?: boolean;
 }
 
@@ -45,6 +46,7 @@ export function Dialog({
   onCloseAutoFocus,
   children,
   placement = 'center',
+  size = 'md',
   dismissible = true,
 }: DialogProps) {
   const state = open === undefined ? {} : { open };
@@ -57,7 +59,7 @@ export function Dialog({
         <RadixDialog.Overlay {...layer} className={styles.overlay} />
         <RadixDialog.Content
           {...layer}
-          className={cx(styles.content, styles[placement])}
+          className={cx(styles.content, styles[placement], size === 'wide' && styles.wide)}
           onOpenAutoFocus={(event) => {
             focus.remember();
             focusFirstField(event);
@@ -81,7 +83,11 @@ export function Dialog({
             </div>
           </header>
           {children && <div className={styles.body}>{children}</div>}
-          {footer && <footer className={styles.footer}>{footer}</footer>}
+          {footer && (
+            <footer className={styles.footer}>
+              <div className={styles.footerActions}>{footer}</div>
+            </footer>
+          )}
         </RadixDialog.Content>
       </RadixDialog.Portal>
     </RadixDialog.Root>
