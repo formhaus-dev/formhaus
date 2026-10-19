@@ -1,6 +1,6 @@
 {
   "name": "formhaus",
-  "version": "0.14.3",
+  "version": "0.19.0",
   "description": "Set up the Formhaus MCP server and agent instructions in Claude Code, Codex, Cursor and Claude Desktop with one command.",
   "type": "module",
   "engines": {

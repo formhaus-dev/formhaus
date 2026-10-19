@@ -1,5 +1,20 @@
 # formhaus
 
+## 0.19.0
+
+### Minor Changes
+
+- Version now matches `@formhaus/core`, `@formhaus/react` and `@formhaus/vue`.
+- **Breaking:** Minimum Node is `22.12`.
+
+### Patch Changes
+
+- Setup output lists each agent on one line and ends with next steps: restart your agents, ask for a form, render it or publish it on Formhaus Cloud.
+- A second run says `already set up` for each agent.
+- New `--verbose` flag lists every file checked or changed and the `.bak` backups. File paths are hidden without it.
+- Status symbols are colored only in a terminal. `NO_COLOR` turns color off.
+- The Claude Code skill `formhaus-create-form` writes `scale`, `rating`, picture options, matrix sections and welcome steps, and branches on scores with `gte` and `lte`.
+
 ## 0.14.3
 
 ### Patch Changes
