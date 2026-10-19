@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { evaluateCondition } from '../../src/visibility';
+import { trimValue } from '../../src/validation/type-checks';
+import { allowedLarge } from '../../src/visibility/evaluate-condition';
 
 describe('evaluateCondition', () => {
   it('never matches a condition without a known operator', () => {
@@ -43,5 +45,28 @@ describe('list operators', () => {
     expect(evaluateCondition({ field: 'x', contains: 'other' }, { x })).toBe(false);
     expect(evaluateCondition({ field: 'x', notContains: 'other' }, { x })).toBe(true);
     expect(evaluateCondition({ field: 'x', contains: 'other' }, { x: x.slice(1) })).toBe(true);
+  });
+
+  it('checks a longer list that its field allows', () => {
+    const x = Array.from({ length: 1001 }, () => 'other');
+    allowedLarge.add(x);
+    expect(evaluateCondition({ field: 'x', contains: 'other' }, { x })).toBe(true);
+    expect(evaluateCondition({ field: 'x', notContains: 'other' }, { x })).toBe(false);
+  });
+
+  it('allows a longer list only within the static options of a multiselect', () => {
+    const options = Array.from({ length: 1200 }, (_, index) => ({ value: `o${index}`, label: `O${index}` }));
+    const x = options.slice(0, 1100).map(({ value }) => value);
+    const check = () => evaluateCondition({ field: 'x', contains: 'o0' }, { x });
+    trimValue({ key: 'x', type: 'multiselect', label: 'X', optionsFrom: 'tags' }, x);
+    expect(check()).toBe(false);
+    trimValue({ key: 'x', type: 'multiselect', label: 'X', options: options.slice(0, 1050) }, x);
+    expect(check()).toBe(false);
+    trimValue({ key: 'x', type: 'text', label: 'X' }, x);
+    expect(check()).toBe(false);
+    trimValue({ key: 'x', type: 'multiselect', label: 'X', options }, x);
+    expect(check()).toBe(true);
+    trimValue({ key: 'x', type: 'text', label: 'X' }, x);
+    expect(check()).toBe(false);
   });
 });

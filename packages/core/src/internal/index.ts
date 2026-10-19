@@ -18,7 +18,16 @@ export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from 
 export { fieldDomId, itemDomId } from './ids';
 export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle, type ErrorEntry, type ErrorGroup } from './items';
 export { warnMissingComponents } from './missing-components';
-export { loadOptions, optionKey, optionSources, providedOptions, sameOptions, type OptionSource, type OptionsProvider } from './options';
+export {
+  loadOptions,
+  optionKey,
+  optionSources,
+  optionTexts,
+  providedOptions,
+  sameOptions,
+  type OptionSource,
+  type OptionsProvider,
+} from './options';
 export { applySources } from './sources';
 export { scaleRange } from '../validation/type-checks';
 
