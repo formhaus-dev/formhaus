@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { FormDefinitionError, type FormStep } from '../../src';
+import { type FormDefinition, FormDefinitionError, type FormField, type FormStep } from '../../src';
 import { FormEngine } from '../../src/engine';
 import { answered, base, confirmStep, planStep, extended, ids } from './form-engine-replace-definition.fixtures';
 
@@ -123,5 +123,40 @@ describe('FormEngine.replaceDefinition', () => {
     expect(engine.isMultiStep).toBe(true);
     expect(engine.currentStep?.id).toBe('plan');
     expect(engine.values).toEqual({ name: 'Ada', cycle: 'monthly' });
+  });
+
+  it('drops item values and errors of item fields that changed type or were removed', () => {
+    const team = (fields: FormField[]): FormDefinition => ({
+      ...base,
+      steps: undefined,
+      fields: [{ key: 'members', type: 'group', label: 'Members', fields }],
+    });
+    const engine = new FormEngine(
+      team([
+        { key: 'seats', type: 'text', label: 'Seats' },
+        { key: 'role', type: 'text', label: 'Role' },
+        { key: 'email', type: 'email', label: 'Email' },
+      ]),
+      { members: [{ seats: '3', role: 'admin', email: 'ada@example.com' }] },
+    );
+    engine.setErrors({ 'members.0.seats': 'Too many', 'members.0.email': 'Taken' });
+    engine.replaceDefinition(
+      team([
+        { key: 'seats', type: 'number', label: 'Seats', defaultValue: 1 },
+        { key: 'email', type: 'email', label: 'Email' },
+      ]),
+    );
+    expect(engine.values.members).toEqual([{ seats: 1, email: 'ada@example.com' }]);
+    expect(engine.errors).toEqual({ 'members.0.email': 'Taken' });
+  });
+
+  it('keeps the values snapshot when no value changes', () => {
+    const engine = answered();
+    const snapshot = engine.getValuesSnapshot();
+    const values = vi.fn();
+    engine.subscribeValues(values);
+    engine.replaceDefinition({ ...base, title: 'Join' });
+    expect(engine.getValuesSnapshot()).toBe(snapshot);
+    expect(values).not.toHaveBeenCalled();
   });
 });

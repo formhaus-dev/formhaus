@@ -2031,6 +2031,103 @@
           }
         }
       ]
+    },
+    {
+      "name": "drops item values and errors of item fields that changed type or were removed",
+      "definition": {
+        "id": "members",
+        "title": "Members",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "members",
+            "type": "group",
+            "label": "Members",
+            "fields": [
+              {
+                "key": "seats",
+                "type": "text",
+                "label": "Seats"
+              },
+              {
+                "key": "role",
+                "type": "text",
+                "label": "Role"
+              },
+              {
+                "key": "email",
+                "type": "email",
+                "label": "Email"
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "members": [
+          {
+            "seats": "3",
+            "role": "admin",
+            "email": "ada@example.com"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "setErrors",
+          "errors": {
+            "members.0.seats": "Too many",
+            "members.0.email": "Taken"
+          }
+        },
+        {
+          "do": "replaceDefinition",
+          "definition": {
+            "id": "members",
+            "title": "Members",
+            "submit": {
+              "label": "Send"
+            },
+            "fields": [
+              {
+                "key": "members",
+                "type": "group",
+                "label": "Members",
+                "fields": [
+                  {
+                    "key": "seats",
+                    "type": "number",
+                    "label": "Seats",
+                    "defaultValue": 1
+                  },
+                  {
+                    "key": "email",
+                    "type": "email",
+                    "label": "Email"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "expect": {
+            "values": {
+              "members": [
+                {
+                  "seats": 1,
+                  "email": "ada@example.com"
+                }
+              ]
+            },
+            "errors": {
+              "members.0.email": "Taken"
+            }
+          }
+        }
+      ]
     }
   ]
 }

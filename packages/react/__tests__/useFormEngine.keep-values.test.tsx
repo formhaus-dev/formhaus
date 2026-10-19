@@ -1,7 +1,8 @@
-import { act, renderHook } from '@testing-library/react';
+import { act, render, renderHook, screen } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
+import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
-import { useFormEngine } from '../src';
+import { FormRenderer, useFormEngine } from '../src';
 
 const first: FormDefinition = { id: 'one', title: '', submit: { label: 'Send' }, fields: [{ key: 'name', type: 'text', label: 'Name' }] };
 const second: FormDefinition = {
@@ -32,5 +33,18 @@ describe('useFormEngine keepValues', () => {
     rerender({ definition: second });
     expect(result.current).not.toBe(engine);
     expect(result.current.values).toEqual({ city: 'Oslo' });
+  });
+
+  it('settles when the definition is built from the values on every render', async () => {
+    function Signup() {
+      const [values, setValues] = useState<Readonly<Record<string, unknown>>>({});
+      const definition: FormDefinition = values.name ? { ...second } : first;
+      return (
+        <FormRenderer definition={definition} keepValues initialValues={{ name: 'Ada' }} onValuesChange={setValues} onSubmit={() => {}} />
+      );
+    }
+    render(<Signup />);
+    expect(((await screen.findByLabelText(/City/)) as HTMLInputElement).value).toBe('Oslo');
+    expect((screen.getByLabelText(/Full name/) as HTMLInputElement).value).toBe('Ada');
   });
 });
