@@ -5,7 +5,8 @@ import { exclusiveValues } from '../validation/type-checks';
 
 export function exclusiveWarnings({ entries }: CheckContext): DefinitionIssue[] {
   return entries.flatMap(({ field, path }) => {
-    const { key, options = [], defaultValue, validation } = field;
+    const { key, defaultValue, validation } = field;
+    const options = field.options ?? [];
     const exclusive = exclusiveValues(field);
     const issues = options.flatMap(({ value, exclusive: flag }, index) =>
       !flag
@@ -30,13 +31,14 @@ export function exclusiveWarnings({ entries }: CheckContext): DefinitionIssue[] 
               ]
             : [],
     );
-    const mixed = Array.isArray(defaultValue) && defaultValue.length > 1 && defaultValue.find((value) => exclusive.includes(value));
-    if (mixed)
+    const mixed =
+      Array.isArray(defaultValue) && defaultValue.length > 1 ? defaultValue.findIndex((value) => exclusive.includes(value)) : -1;
+    if (mixed >= 0)
       issues.push(
         warning(
           'exclusive-default-value',
           `${path}/defaultValue`,
-          `the default of "${key}" mixes the exclusive option "${mixed}" with others`,
+          `the default of "${key}" mixes the exclusive option "${(defaultValue as unknown[])[mixed]}" with others`,
           'Keep the exclusive option alone',
         ),
       );

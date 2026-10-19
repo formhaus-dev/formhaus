@@ -157,7 +157,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   setValue(key: string, value: unknown): void {
     const path = this.visibility.parse(key);
     if (path) setItemValue(this as never, ...path, value);
-    else writeValue(this as never, key, exclusiveWrite(this.visibility.activeField(key, this.state.values), this.state.values[key], value));
+    else writeValue(this as never, key, exclusiveWrite(this.visibility.fieldOf(key, this.state.values), this.state.values[key], value));
   }
 
   items(key: string): GroupItem[] {

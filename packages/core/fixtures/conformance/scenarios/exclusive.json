@@ -273,6 +273,135 @@
           }
         }
       ]
+    },
+    {
+      "name": "a write to a hidden field keeps the rule when the field is shown again",
+      "definition": {
+        "formatVersion": "1.5",
+        "id": "f",
+        "title": "F",
+        "submit": {
+          "label": "Submit"
+        },
+        "fields": [
+          {
+            "key": "ask",
+            "type": "checkbox",
+            "label": "Ask"
+          },
+          {
+            "key": "conditions",
+            "type": "multiselect",
+            "label": "Do you have any of these conditions?",
+            "options": [
+              {
+                "value": "asthma",
+                "label": "Asthma"
+              },
+              {
+                "value": "diabetes",
+                "label": "Diabetes"
+              },
+              {
+                "value": "none",
+                "label": "None of these",
+                "exclusive": true
+              }
+            ],
+            "show": [
+              {
+                "field": "ask",
+                "eq": true
+              }
+            ]
+          },
+          {
+            "key": "people",
+            "type": "group",
+            "label": "People",
+            "fields": [
+              {
+                "key": "asked",
+                "type": "checkbox",
+                "label": "Asked"
+              },
+              {
+                "key": "history",
+                "type": "multiselect",
+                "label": "Family history",
+                "options": [
+                  {
+                    "value": "asthma",
+                    "label": "Asthma"
+                  },
+                  {
+                    "value": "diabetes",
+                    "label": "Diabetes"
+                  },
+                  {
+                    "value": "none",
+                    "label": "None of these",
+                    "exclusive": true
+                  }
+                ],
+                "show": [
+                  {
+                    "field": "asked",
+                    "eq": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "people": [{}]
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "conditions",
+          "value": ["asthma", "none"]
+        },
+        {
+          "do": "setItemValue",
+          "key": "people",
+          "index": 0,
+          "field": "history",
+          "value": ["diabetes", "none"]
+        },
+        {
+          "do": "setValue",
+          "key": "ask",
+          "value": true
+        },
+        {
+          "do": "setItemValue",
+          "key": "people",
+          "index": 0,
+          "field": "asked",
+          "value": true
+        },
+        {
+          "expect": {
+            "values": {
+              "ask": true,
+              "conditions": ["none"],
+              "people": [
+                {
+                  "asked": true,
+                  "history": ["none"]
+                }
+              ]
+            }
+          }
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
     }
   ]
 }

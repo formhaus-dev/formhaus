@@ -22,6 +22,14 @@
     {
       "code": "exclusive-with-min-length",
       "path": "/fields/5/validation/minLength"
+    },
+    {
+      "code": "exclusive-default-value",
+      "path": "/fields/7/defaultValue"
+    },
+    {
+      "code": "missing-options",
+      "path": "/fields/8/options"
     }
   ],
   "texts": {
@@ -184,6 +192,29 @@
         "validation": {
           "minLength": 1
         }
+      },
+      {
+        "key": "blank",
+        "type": "multiselect",
+        "label": "Blank",
+        "options": [
+          {
+            "value": "asthma",
+            "label": "Asthma"
+          },
+          {
+            "value": "",
+            "label": "None",
+            "exclusive": true
+          }
+        ],
+        "defaultValue": ["asthma", ""]
+      },
+      {
+        "key": "empty",
+        "type": "multiselect",
+        "label": "Empty",
+        "options": null
       }
     ]
   }
