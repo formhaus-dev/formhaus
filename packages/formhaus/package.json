@@ -4,7 +4,7 @@
   "description": "Set up the Formhaus MCP server and agent instructions in Claude Code, Codex, Cursor and Claude Desktop with one command.",
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": ">=22.12"
   },
   "bin": {
     "formhaus": "./dist/cli.js"

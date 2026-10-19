@@ -8,7 +8,7 @@ Framework-free engine for JSON form definitions: field state, validation, condit
 npm install @formhaus/core
 ```
 
-Requires Node 20 or later. ESM, and `require()` works on Node 20.19+ and 22.12+.
+Requires Node 22.12 or later. ESM; `require()` works too.
 
 ## Usage
 

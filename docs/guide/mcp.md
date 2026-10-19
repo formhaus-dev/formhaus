@@ -5,7 +5,7 @@ description: "Check, fix and translate Formhaus definitions from Claude Code, Cl
 
 # MCP Server
 
-`@formhaus/mcp` is an MCP server that lets AI agents check Formhaus definitions against the real engine. It runs over stdio and needs Node 20 or later. The checks need no account or key.
+`@formhaus/mcp` is an MCP server that lets AI agents check Formhaus definitions against the real engine. It runs over stdio and needs Node 22.12 or later. The checks need no account or key.
 
 ## Which path
 

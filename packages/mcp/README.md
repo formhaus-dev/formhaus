@@ -2,7 +2,7 @@
 
 [![formhaus-dev/formhaus MCP server](https://glama.ai/mcp/servers/ignsm/formhaus/badges/score.svg)](https://glama.ai/mcp/servers/ignsm/formhaus)
 
-MCP server that lets AI agents check [Formhaus](https://github.com/formhaus-dev/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 20 or later. The checks need no account or key.
+MCP server that lets AI agents check [Formhaus](https://github.com/formhaus-dev/formhaus) form definitions against the real `@formhaus/core` engine. Runs over stdio. Requires Node 22.12 or later. The checks need no account or key.
 
 `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` run offline. The other tools publish forms, read submissions and manage settings in [Formhaus Cloud](https://formhaus.dev/cloud/overview). If the app has its own backend, keep the data there and don't publish without the user's consent.
 
