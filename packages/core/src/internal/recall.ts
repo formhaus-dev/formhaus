@@ -28,10 +28,17 @@ export function refreshRecall(engine: FormEngine): void {
 }
 
 function resolver(engine: FormEngine, item?: RecallItem) {
-  const { lang, formatRecall } = internals(engine).lifecycle;
+  const { lifecycle, visibility } = internals(engine);
   const values = engine.getSubmitValues();
   return (text: string, params?: Record<string, unknown>) =>
-    resolveRecall(engine.definition, text, values, { item, lang, format: formatRecall }, params);
+    resolveRecall(
+      engine.definition,
+      text,
+      values,
+      visibility.activeField,
+      { item, lang: lifecycle.lang, format: lifecycle.formatRecall },
+      params,
+    );
 }
 
 export function recallTemplate(engine: FormEngine, text: string, item: RecallItem, params: Record<string, unknown>): string {
