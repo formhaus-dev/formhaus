@@ -19,6 +19,7 @@
     "check:builder-isolation": "node scripts/check-builder-isolation.mjs",
     "check:migration": "node scripts/check-migration.mjs",
     "check:require": "node scripts/check-require.cjs",
+    "check:tokens": "pnpm -C packages/core tokens --check",
     "templates": "node scripts/templates-index.mjs",
     "templates:check": "node scripts/templates-index.mjs --check",
     "changeset": "changeset",

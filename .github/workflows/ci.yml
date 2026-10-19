@@ -51,6 +51,7 @@ jobs:
       - run: pnpm check:builder-isolation
       - run: pnpm check:migration
       - run: pnpm check:docs-versions
+      - run: pnpm check:tokens
       - run: pnpm templates:check
 
       - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve
