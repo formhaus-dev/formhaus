@@ -57,6 +57,8 @@ export function bindReferences(
     if (!question) return;
     if (item.eq !== undefined) value(question, item.eq, (next) => (item.eq = next));
     if (item.neq !== undefined) value(question, item.neq, (next) => (item.neq = next));
+    if (item.contains !== undefined) value(question, item.contains, (next) => (item.contains = next));
+    if (item.notContains !== undefined) value(question, item.notContains, (next) => (item.notContains = next));
     for (const prop of ['in', 'notIn'] as const) {
       const list = item[prop];
       list?.forEach((entry, index) => {

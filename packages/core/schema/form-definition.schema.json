@@ -9,7 +9,7 @@
     },
     "formatVersion": {
       "type": "string",
-      "description": "Format version of the definition, such as \"1.3\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3.",
+      "description": "Format version of the definition, such as \"1.4\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4.",
       "pattern": "^[1-9]\\d*(\\.\\d+)?$"
     },
     "id": {
@@ -321,6 +321,22 @@
           },
           "description": "Matches when the value is none of these."
         },
+        "contains": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ],
+          "description": "Matches when the value is an array that holds this item. Added in 1.4."
+        },
+        "notContains": {
+          "type": [
+            "string",
+            "number",
+            "boolean"
+          ],
+          "description": "Matches when the value is not an array that holds this item. Added in 1.4."
+        },
         "notEmpty": {
           "type": "boolean",
           "description": "Matches when the value is not undefined, null, an empty string or an empty array."
@@ -346,7 +362,7 @@
         "field"
       ],
       "additionalProperties": false,
-      "description": "A condition on another field value. Use exactly one operator: eq, neq, in, notIn, notEmpty, gt, gte, lt or lte.",
+      "description": "A condition on another field value. Use exactly one operator: eq, neq, in, notIn, contains, notContains, notEmpty, gt, gte, lt or lte.",
       "minProperties": 2,
       "maxProperties": 2
     },

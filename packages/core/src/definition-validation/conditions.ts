@@ -5,6 +5,7 @@ import type { DefinitionIssue } from './issues';
 import { error, pointer } from './issues';
 
 export const OPERATORS: readonly string[] = CONDITION_OPERATORS;
+export const CONTAINS = ['contains', 'notContains'];
 
 function operatorIssues({ suggest }: CheckContext, condition: ShowCondition, path: string): DefinitionIssue[] {
   const keys = Object.keys(condition).filter((key) => key !== 'field');

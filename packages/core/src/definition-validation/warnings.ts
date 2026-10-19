@@ -1,11 +1,12 @@
 import type { FormField } from '../types';
 import { hasOwn } from '../visibility/nodes';
-import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, NUMBER_TYPES, SCALE_TYPES } from '../validation/type-checks';
-import { conditionErrors, missingTarget, OPERATORS } from './conditions';
+import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, NUMBER_TYPES } from '../validation/type-checks';
+import { CONTAINS, conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
-import type { DefinitionIssue } from './issues';
+import type { DefinitionIssue, DefinitionIssueCode } from './issues';
 import { closest, oneOf, warning } from './issues';
 import { propertyWarnings } from './properties';
+import { versionWarnings } from './version-warnings';
 import { sourceWarnings } from './sources';
 
 const LIST_OPERATORS = ['in', 'notIn'];
@@ -18,23 +19,28 @@ function expectedType(field: FormField): string | undefined {
 }
 
 function valueIssue(target: FormField, operator: string, operand: unknown, path: string): DefinitionIssue[] {
-  const mismatch = (problem: string, hint: string) => [warning('condition-value-mismatch', path, problem, hint)];
+  const contains = CONTAINS.includes(operator);
+  const list = LIST_TYPES.includes(target.type);
+  const mismatch = (problem: string, hint: string, code = contains ? 'contains-not-list' : 'condition-value-mismatch') => [
+    warning(code as DefinitionIssueCode, path, problem, hint),
+  ];
   if (operator === 'notEmpty')
     return operand
       ? []
       : [warning('condition-always-true', path, '"notEmpty": false matches every value', 'Use "notEmpty": true, or remove the condition')];
-  if (COMPARISONS.includes(operator)) {
-    if (!LIST_TYPES.includes(target.type) && !BOOLEAN_TYPES.includes(target.type)) return [];
+  if (COMPARISONS.includes(operator) || (contains && !list)) {
+    if (contains ? !BUILT_IN_TYPES.includes(target.type) && target.type !== 'group' : !list && !BOOLEAN_TYPES.includes(target.type))
+      return [];
     return mismatch(
-      `"${target.key}" is a ${target.type} field, so "${operator}" never matches it`,
-      'Compare a number, text, radio or select field',
+      `"${target.key}" is a ${target.type} field, so "${operator}" ${operator === 'notContains' ? 'always' : 'never'} matches it`,
+      contains ? 'Use eq or in, or test a multiselect field' : 'Compare a number, text, radio or select field',
     );
   }
-  if (LIST_TYPES.includes(target.type)) {
+  if (list && !contains) {
     const result = operator === 'neq' || operator === 'notIn' ? 'always' : 'never';
     return mismatch(
       `"${target.key}" holds a list of values, so "${operator}" ${result} matches it`,
-      'Use notEmpty, or a select or radio field',
+      'Use contains, notContains or notEmpty',
     );
   }
   const operands = LIST_OPERATORS.includes(operator) && Array.isArray(operand) ? operand : [operand];
@@ -43,9 +49,15 @@ function valueIssue(target: FormField, operator: string, operand: unknown, path:
   if (expected && wrong !== undefined)
     return mismatch(`${JSON.stringify(wrong)} is a ${typeof wrong}, but "${target.key}" holds a ${expected}`, `Use a ${expected} value`);
   const options =
-    expected === 'string' && !target.optionsFrom && target.options?.length ? target.options.map((option) => option.value) : null;
+    (expected === 'string' || list) && !target.optionsFrom && target.options?.length ? target.options.map((option) => option.value) : null;
   const missing = options && operands.find((item) => !options.includes(item as string));
-  return options && missing !== undefined ? mismatch(`${JSON.stringify(missing)} is not an option of "${target.key}"`, oneOf(options)) : [];
+  return options && missing !== undefined
+    ? mismatch(
+        `${JSON.stringify(missing)} is not an option of "${target.key}"`,
+        oneOf(options),
+        contains ? 'contains-not-in-options' : undefined,
+      )
+    : [];
 }
 
 function conditionWarnings(context: CheckContext, entry: ConditionEntry): DefinitionIssue[] {
@@ -216,26 +228,6 @@ function routeWarnings({ definition }: CheckContext): DefinitionIssue[] {
     }
     return issues;
   });
-}
-
-function versionWarnings({ definition, nodes }: CheckContext): DefinitionIssue[] {
-  const [major, minor = 0] = String(definition.formatVersion ?? '1.0')
-    .split('.')
-    .map(Number);
-  const scale = nodes.find(({ node }) => SCALE_TYPES.includes(node.type));
-  const container = nodes.find(({ node }) => node.type === 'section' || node.type === 'group');
-  const [found, needed] = scale && minor < 3 ? [scale, 3] : [container, 1];
-  if (!found || major !== 1 || minor >= needed) return [];
-  return [
-    warning(
-      'outdated-format-version',
-      '/formatVersion',
-      `${found.path} is a ${found.node.type}, which needs format 1.${needed}`,
-      needed > 1
-        ? 'Set "formatVersion": "1.3". Older versions of @formhaus/core treat this type as a custom type and do not validate it. Upgrade the server that runs validateSubmission() first'
-        : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
-    ),
-  ];
 }
 
 export function definitionWarnings(context: CheckContext): DefinitionIssue[] {

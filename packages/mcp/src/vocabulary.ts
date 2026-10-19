@@ -39,6 +39,8 @@ export const CONDITION_OPERATORS = [
   'neq',
   'in',
   'notIn',
+  'contains',
+  'notContains',
   'notEmpty',
   'gt',
   'gte',

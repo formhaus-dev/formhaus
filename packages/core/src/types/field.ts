@@ -107,6 +107,8 @@ export interface ShowCondition {
   neq?: string | number | boolean;
   in?: (string | number)[];
   notIn?: (string | number)[];
+  contains?: string | number | boolean;
+  notContains?: string | number | boolean;
   notEmpty?: boolean;
   gt?: number;
   gte?: number;

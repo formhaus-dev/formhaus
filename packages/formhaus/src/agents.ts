@@ -21,7 +21,10 @@ function found(ctx: Context, directory: string, bin: string): boolean {
   return isDirectory(directory) || findOnPath(ctx, bin) !== undefined;
 }
 
-const SHIPPED_RULES = ['1bb79502ba88f1d38bef0bb3f34ede713f94487643496eae94ca6be7d2c8a32c'];
+const SHIPPED_RULES = [
+  '1bb79502ba88f1d38bef0bb3f34ede713f94487643496eae94ca6be7d2c8a32c',
+  '2be2512e6127d311d5b887a6688e1d71067033126355ee9c797b77c857dbd6b1',
+];
 
 const codex: Agent = {
   name: 'Codex',

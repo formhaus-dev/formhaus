@@ -38,7 +38,14 @@ export function referencedKeys(draft: FormDefinition): Set<string> {
 export function referencedValues(draft: FormDefinition, key: string): Set<string> {
   const values = new Set<string>();
   for (const condition of conditions(draft).filter((item) => item.field === key)) {
-    for (const value of [condition.eq, condition.neq, ...(condition.in ?? []), ...(condition.notIn ?? [])]) {
+    for (const value of [
+      condition.eq,
+      condition.neq,
+      condition.contains,
+      condition.notContains,
+      ...(condition.in ?? []),
+      ...(condition.notIn ?? []),
+    ]) {
       if (value !== undefined) values.add(String(value));
     }
   }

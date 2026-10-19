@@ -61,7 +61,7 @@ export function conditionValues(definition: Entry, key: string): unknown[] {
     if (Array.isArray(node)) {
       for (const item of node) {
         if ((name === 'show' || name === 'showAny' || name === 'disabled') && isEntry(item) && item.field === key) {
-          found.push(item.eq, item.neq, ...itemsOf(item.in), ...itemsOf(item.notIn));
+          found.push(item.eq, item.neq, item.contains, item.notContains, ...itemsOf(item.in), ...itemsOf(item.notIn));
         }
         visit(item);
       }

@@ -52,7 +52,7 @@ const emit = defineEmits<{ done: [values: Record<string, unknown>] }>();
 - Switching from Business to Individual hides `companyName` and removes its value from the engine. Switching back shows an empty field.
 - Cleanup cascades. Switching from Individual to Business hides `needInvoice` and clears it; `invoiceEmail` stays because its business condition still matches.
 - Hidden fields are not validated. A required `pickupPoint` does not block submit while Courier is selected.
-- `onSubmit` receives only visible values. Operators are `eq`, `neq`, `in`, `notIn` and `notEmpty`.
+- `onSubmit` receives only visible values. Operators are `eq`, `neq`, `in`, `notIn`, `contains`, `notContains` and `notEmpty`. Use `contains` to test one option of a `multiselect`.
 - Steps accept the same `show` and `showAny` keys. A hidden step is skipped and drops out of the progress count.
 
 ## Related

@@ -17,6 +17,8 @@ export type DefinitionIssueCode =
   | 'condition-operator-count'
   | 'unknown-operator'
   | 'condition-value-mismatch'
+  | 'contains-not-list'
+  | 'contains-not-in-options'
   | 'condition-cycle'
   | 'condition-always-true'
   | 'invalid-pattern'
