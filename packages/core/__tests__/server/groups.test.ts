@@ -52,6 +52,23 @@ describe('validateSubmission with oversized or invalid groups', () => {
     expect(engine.validate()).toEqual({ people: 'At most 3 allowed' });
   });
 
+  it('rejects repeated options in an item multiselect', () => {
+    const roles = {
+      key: 'roles',
+      type: 'multiselect' as const,
+      label: 'Roles',
+      options: [
+        { value: 'x', label: 'X' },
+        { value: 'y', label: 'Y' },
+      ],
+    };
+    const definition: FormDefinition = { ...group(), fields: [{ key: 'people', type: 'group', label: 'People', fields: [roles] }] };
+    const values = { people: [{ roles: ['x', 'y'] }, { roles: ['x', 'x'] }] };
+    const errors = { 'people.1.roles': 'Must be a list of available options' };
+    expect(validateSubmission(definition, values).errors).toEqual(errors);
+    expect(new FormEngine(definition, values).validate()).toEqual(errors);
+  });
+
   it('omits values that are not lists of plain objects and drops unknown item keys', () => {
     expect(validateSubmission(group(), { people: 'Ada' })).toEqual({ values: {}, errors: { people: 'Invalid value' } });
     expect(validateSubmission(group(), { people: [{ name: 'Ada' }, 5] })).toEqual({ values: {}, errors: { people: 'Invalid value' } });

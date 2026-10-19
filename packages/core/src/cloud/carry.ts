@@ -1,12 +1,15 @@
 import type { FormDefinition, FormField } from '../types';
 import { splitPath, valueFields } from '../visibility/nodes';
 import { ANSWER_AGAIN } from './failures';
+import { SCALE_TYPES, scaleRange } from '../validation/type-checks';
 
 const SHAPES: Record<string, string> = {
   multiselect: 'list',
   checkbox: 'flag',
   switch: 'flag',
   number: 'number',
+  scale: 'number',
+  rating: 'number',
   file: 'file',
   group: 'list',
 };
@@ -20,6 +23,10 @@ function shapeOf(field: FormField): string {
 }
 
 function allowed(field: FormField, value: unknown): boolean {
+  if (SCALE_TYPES.includes(field.type)) {
+    const [min, max] = scaleRange(field);
+    return Number.isInteger(value) && (value as number) >= min && (value as number) <= max;
+  }
   if (!Array.isArray(field.options)) return true;
   const options = new Set(field.options.map((option) => String(option.value)));
   return (Array.isArray(value) ? value : [value]).every((item) => options.has(String(item)));

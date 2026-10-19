@@ -187,6 +187,23 @@
           "tags": "Select one of the available options"
         }
       }
+    },
+    {
+      "name": "rejects repeated multiselect items",
+      "input": {
+        "values": {
+          "tags": ["b", "b"]
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "tags": ["b", "b"]
+        },
+        "errors": {
+          "tags": "Must be a list of available options"
+        }
+      }
     }
   ]
 }

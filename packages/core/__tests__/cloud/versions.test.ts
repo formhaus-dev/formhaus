@@ -126,6 +126,34 @@ describe('controller', () => {
     });
   });
 
+  it('keeps scale and rating answers when form_updated serves the same definition', async () => {
+    const survey: FormDefinition = {
+      ...v1,
+      fields: [
+        { key: 'score', type: 'scale', label: 'Score' },
+        { key: 'stars', type: 'rating', label: 'Stars' },
+        {
+          key: 'anchored',
+          type: 'scale',
+          label: 'Anchored',
+          validation: { min: 1, max: 5 },
+          options: [
+            { value: '1', label: 'Low' },
+            { value: '5', label: 'High' },
+          ],
+        },
+      ],
+    };
+    const { controller, last } = setup(
+      reply(200, survey, 1),
+      reply(409, { error: 'form_updated', version: 2, errors: {} }),
+      reply(200, survey, 2),
+    );
+    await vi.waitFor(() => expect(last().version).toBe(1));
+    await expect(controller.submit({ score: 4, stars: 4, anchored: 3 })).rejects.toMatchObject({ code: 'form_updated' });
+    expect(last()).toMatchObject({ version: 2, initialValues: { score: 4, stars: 4, anchored: 3 }, errors: {} });
+  });
+
   it('asks for a reload when the served definition is older than the 409 version', async () => {
     const { controller, last } = setup(reply(200, v1, 1), reply(409, { error: 'form_updated', version: 3, errors: {} }), reply(200, v2, 2));
     await vi.waitFor(() => expect(last().version).toBe(1));
