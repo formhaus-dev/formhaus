@@ -136,11 +136,27 @@
     "fields": 9
   },
   {
+    "slug": "summer-camp-registration",
+    "title": "Summer camp registration",
+    "summary": "One parent, several campers. Program, weeks and health needs per child, then pickup and consent.",
+    "category": "registration",
+    "steps": 3,
+    "fields": 16
+  },
+  {
     "slug": "client-onboarding",
     "title": "Client onboarding",
     "summary": "Billing details, key contacts, brand assets and access, collected once when a client signs.",
     "category": "intake",
     "steps": 3,
+    "fields": 18
+  },
+  {
+    "slug": "tax-preparation-intake",
+    "title": "Tax preparation intake",
+    "summary": "Household, income and expenses before a tax appointment, then a list of documents to bring.",
+    "category": "intake",
+    "steps": 5,
     "fields": 18
   },
   {
@@ -272,6 +288,14 @@
     "fields": 14
   },
   {
+    "slug": "rental-application",
+    "title": "Rental application",
+    "summary": "Current home, work and income, other adults and pets. No Social Security number or screening consent.",
+    "category": "application",
+    "steps": 4,
+    "fields": 29
+  },
+  {
     "slug": "legal-consultation-request",
     "title": "Legal consultation request",
     "summary": "Area of law, deadline, a short summary and a conflict check. Nothing confidential up front.",
@@ -288,6 +312,14 @@
     "fields": 15
   },
   {
+    "slug": "moving-quote-request",
+    "title": "Moving quote request",
+    "summary": "ZIP codes, home size and access at both ends, then follow-ups for special items and services.",
+    "category": "lead-gen",
+    "steps": 4,
+    "fields": 24
+  },
+  {
     "slug": "photography-inquiry",
     "title": "Photography booking inquiry",
     "summary": "Shoot type, date, location and coverage, so you can quote before the first call.",
@@ -302,6 +334,14 @@
     "category": "lead-gen",
     "steps": 3,
     "fields": 16
+  },
+  {
+    "slug": "custom-cake-order",
+    "title": "Custom cake order",
+    "summary": "Date and delivery first, allergies before design, then size, style, flavor and message.",
+    "category": "lead-gen",
+    "steps": 4,
+    "fields": 25
   },
   {
     "slug": "pet-adoption-application",

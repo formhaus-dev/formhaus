@@ -1,0 +1,433 @@
+{
+  "slug": "custom-cake-order",
+  "title": "Custom cake order",
+  "summary": "Date and delivery first, allergies before design, then size, style, flavor and message.",
+  "category": "lead-gen",
+  "definition": {
+    "id": "custom-cake-order",
+    "formatVersion": "1.4",
+    "title": "Order a custom cake",
+    "submit": {
+      "label": "Send order request"
+    },
+    "steps": [
+      {
+        "id": "when",
+        "title": "Date and delivery",
+        "fields": [
+          {
+            "key": "date",
+            "type": "date",
+            "label": "When do you need the cake?",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "fulfillment",
+            "type": "radio",
+            "label": "Pickup or delivery?",
+            "layout": "inline",
+            "options": [
+              {
+                "value": "pickup",
+                "label": "Pickup"
+              },
+              {
+                "value": "delivery",
+                "label": "Delivery"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "pickupTime",
+            "type": "time",
+            "label": "Pickup time",
+            "show": [
+              {
+                "field": "fulfillment",
+                "eq": "pickup"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "delivery",
+            "type": "section",
+            "title": "Delivery address",
+            "show": [
+              {
+                "field": "fulfillment",
+                "eq": "delivery"
+              }
+            ],
+            "fields": [
+              {
+                "key": "street",
+                "type": "text",
+                "label": "Street address",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "unit",
+                "type": "text",
+                "label": "Apartment, suite or venue room"
+              },
+              {
+                "key": "city",
+                "type": "text",
+                "label": "City",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "zip",
+                "type": "text",
+                "label": "ZIP code",
+                "inputMode": "numeric",
+                "validation": {
+                  "required": true,
+                  "pattern": "^\\d{5}(-\\d{4})?$",
+                  "patternMessage": "Enter a 5-digit ZIP code"
+                }
+              },
+              {
+                "key": "deliveryTime",
+                "type": "time",
+                "label": "When should it arrive?",
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          },
+          {
+            "key": "servings",
+            "type": "radio",
+            "label": "How many people will it serve?",
+            "options": [
+              {
+                "value": "10",
+                "label": "10 to 12"
+              },
+              {
+                "value": "20",
+                "label": "20 to 24"
+              },
+              {
+                "value": "35",
+                "label": "30 to 40"
+              },
+              {
+                "value": "50",
+                "label": "50 or more"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "allergies",
+        "title": "Allergies and diets",
+        "fields": [
+          {
+            "key": "allergies",
+            "type": "multiselect",
+            "label": "Does anyone eating the cake have an allergy?",
+            "options": [
+              {
+                "value": "milk",
+                "label": "Milk"
+              },
+              {
+                "value": "eggs",
+                "label": "Eggs"
+              },
+              {
+                "value": "wheat",
+                "label": "Wheat"
+              },
+              {
+                "value": "soy",
+                "label": "Soy"
+              },
+              {
+                "value": "tree-nuts",
+                "label": "Tree nuts"
+              },
+              {
+                "value": "peanuts",
+                "label": "Peanuts"
+              },
+              {
+                "value": "sesame",
+                "label": "Sesame"
+              },
+              {
+                "value": "other",
+                "label": "Other"
+              },
+              {
+                "value": "none",
+                "label": "None"
+              },
+              {
+                "value": "unsure",
+                "label": "Not sure"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "allergyOther",
+            "type": "text",
+            "label": "What else are they allergic to?",
+            "show": [
+              {
+                "field": "allergies",
+                "contains": "other"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "diet",
+            "type": "multiselect",
+            "label": "Any diets we should plan for?",
+            "helperText": "Leave empty if none.",
+            "options": [
+              {
+                "value": "vegan",
+                "label": "Vegan"
+              },
+              {
+                "value": "vegetarian",
+                "label": "Vegetarian"
+              },
+              {
+                "value": "gluten-free",
+                "label": "Gluten-free"
+              },
+              {
+                "value": "dairy-free",
+                "label": "Dairy-free"
+              },
+              {
+                "value": "other",
+                "label": "Other"
+              }
+            ]
+          },
+          {
+            "key": "dietOther",
+            "type": "text",
+            "label": "Which other diet?",
+            "show": [
+              {
+                "field": "diet",
+                "contains": "other"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "allergyNotes",
+            "type": "textarea",
+            "label": "Anything else about allergies or diets?",
+            "rows": 2
+          }
+        ]
+      },
+      {
+        "id": "design",
+        "title": "Design",
+        "fields": [
+          {
+            "key": "style",
+            "type": "radio",
+            "label": "Pick a style",
+            "options": [
+              {
+                "value": "simple",
+                "label": "Smooth buttercream"
+              },
+              {
+                "value": "flowers",
+                "label": "Piped flowers"
+              },
+              {
+                "value": "drip",
+                "label": "Drip"
+              },
+              {
+                "value": "semi-naked",
+                "label": "Semi-naked"
+              },
+              {
+                "value": "drawing",
+                "label": "Drawing on top"
+              },
+              {
+                "value": "custom",
+                "label": "Something else"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "shape",
+            "type": "radio",
+            "label": "Shape",
+            "layout": "inline",
+            "options": [
+              {
+                "value": "round",
+                "label": "Round"
+              },
+              {
+                "value": "heart",
+                "label": "Heart"
+              },
+              {
+                "value": "square",
+                "label": "Square"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "flavor",
+            "type": "radio",
+            "label": "Cake flavor",
+            "options": [
+              {
+                "value": "vanilla",
+                "label": "Vanilla"
+              },
+              {
+                "value": "chocolate",
+                "label": "Chocolate"
+              },
+              {
+                "value": "lemon",
+                "label": "Lemon"
+              },
+              {
+                "value": "red-velvet",
+                "label": "Red velvet"
+              },
+              {
+                "value": "carrot",
+                "label": "Carrot"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "colors",
+            "type": "text",
+            "label": "Colors",
+            "placeholder": "Pale pink and white"
+          },
+          {
+            "key": "message",
+            "type": "text",
+            "label": "Message on the cake",
+            "helperText": "Up to 30 characters. Leave empty for no message.",
+            "validation": {
+              "maxLength": 30
+            }
+          },
+          {
+            "key": "photo",
+            "type": "text",
+            "label": "Link to an inspiration photo",
+            "placeholder": "https://",
+            "helperText": "For ideas only."
+          },
+          {
+            "key": "customDesign",
+            "type": "textarea",
+            "label": "Describe the design you want",
+            "rows": 3,
+            "show": [
+              {
+                "field": "style",
+                "eq": "custom"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "designNotes",
+            "type": "textarea",
+            "label": "Anything else about the design?",
+            "rows": 3,
+            "show": [
+              {
+                "field": "style",
+                "neq": "custom"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "Your details",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

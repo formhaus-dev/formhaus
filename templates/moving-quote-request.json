@@ -1,0 +1,575 @@
+{
+  "slug": "moving-quote-request",
+  "title": "Moving quote request",
+  "summary": "ZIP codes, home size and access at both ends, then follow-ups for special items and services.",
+  "category": "lead-gen",
+  "definition": {
+    "id": "moving-quote-request",
+    "formatVersion": "1.4",
+    "title": "Get a moving quote",
+    "submit": {
+      "label": "Request a quote"
+    },
+    "steps": [
+      {
+        "id": "move",
+        "title": "Your move",
+        "fields": [
+          {
+            "key": "fromZip",
+            "type": "text",
+            "label": "ZIP code you’re moving from",
+            "inputMode": "numeric",
+            "validation": {
+              "required": true,
+              "pattern": "^\\d{5}(-\\d{4})?$",
+              "patternMessage": "Enter a 5-digit ZIP code"
+            }
+          },
+          {
+            "key": "toZip",
+            "type": "text",
+            "label": "ZIP code you’re moving to",
+            "inputMode": "numeric",
+            "validation": {
+              "pattern": "^\\d{5}(-\\d{4})?$",
+              "patternMessage": "Enter a 5-digit ZIP code"
+            },
+            "helperText": "Leave empty if you don’t know yet."
+          },
+          {
+            "key": "moveDate",
+            "type": "date",
+            "label": "Moving date",
+            "helperText": "Leave empty if you don’t know yet."
+          },
+          {
+            "key": "dateFlexibility",
+            "type": "radio",
+            "label": "How fixed is that date?",
+            "show": [
+              {
+                "field": "moveDate",
+                "notEmpty": true
+              }
+            ],
+            "options": [
+              {
+                "value": "fixed",
+                "label": "It has to be that day"
+              },
+              {
+                "value": "few-days",
+                "label": "A few days either way"
+              },
+              {
+                "value": "flexible",
+                "label": "Flexible"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "home",
+        "title": "Your home",
+        "fields": [
+          {
+            "key": "size",
+            "type": "radio",
+            "label": "How big is the place you’re moving from?",
+            "options": [
+              {
+                "value": "studio",
+                "label": "Studio"
+              },
+              {
+                "value": "1br",
+                "label": "1 bedroom"
+              },
+              {
+                "value": "2br",
+                "label": "2 bedrooms"
+              },
+              {
+                "value": "3br",
+                "label": "3 bedrooms"
+              },
+              {
+                "value": "4br",
+                "label": "4 or more bedrooms"
+              },
+              {
+                "value": "partial",
+                "label": "Just a few items"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "fromAccess",
+            "type": "section",
+            "title": "Access at your current place",
+            "fields": [
+              {
+                "key": "fromFloor",
+                "type": "select",
+                "label": "Which floor?",
+                "options": [
+                  {
+                    "value": "ground",
+                    "label": "Ground floor"
+                  },
+                  {
+                    "value": "2",
+                    "label": "2nd floor"
+                  },
+                  {
+                    "value": "3",
+                    "label": "3rd floor"
+                  },
+                  {
+                    "value": "4",
+                    "label": "4th floor"
+                  },
+                  {
+                    "value": "5",
+                    "label": "5th floor or higher"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "fromElevator",
+                "type": "radio",
+                "label": "Is there an elevator you can use?",
+                "layout": "inline",
+                "show": [
+                  {
+                    "field": "fromFloor",
+                    "in": ["2", "3", "4", "5"]
+                  }
+                ],
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "fromParking",
+                "type": "radio",
+                "label": "Can a large truck park close to the door?",
+                "layout": "inline",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  },
+                  {
+                    "value": "unsure",
+                    "label": "Not sure"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          },
+          {
+            "key": "toAccess",
+            "type": "section",
+            "title": "Access at your new place",
+            "fields": [
+              {
+                "key": "toFloor",
+                "type": "select",
+                "label": "Which floor?",
+                "options": [
+                  {
+                    "value": "ground",
+                    "label": "Ground floor"
+                  },
+                  {
+                    "value": "2",
+                    "label": "2nd floor"
+                  },
+                  {
+                    "value": "3",
+                    "label": "3rd floor"
+                  },
+                  {
+                    "value": "4",
+                    "label": "4th floor"
+                  },
+                  {
+                    "value": "5",
+                    "label": "5th floor or higher"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "toElevator",
+                "type": "radio",
+                "label": "Is there an elevator you can use?",
+                "layout": "inline",
+                "show": [
+                  {
+                    "field": "toFloor",
+                    "in": ["2", "3", "4", "5"]
+                  }
+                ],
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "toParking",
+                "type": "radio",
+                "label": "Can a large truck park close to the door?",
+                "layout": "inline",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  },
+                  {
+                    "value": "unsure",
+                    "label": "Not sure"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "items",
+        "title": "Items and services",
+        "fields": [
+          {
+            "key": "specialItems",
+            "type": "multiselect",
+            "label": "Are you moving any of these?",
+            "options": [
+              {
+                "value": "piano",
+                "label": "Piano"
+              },
+              {
+                "value": "safe",
+                "label": "Safe or gun cabinet"
+              },
+              {
+                "value": "pool-table",
+                "label": "Pool table"
+              },
+              {
+                "value": "art",
+                "label": "Art, antiques or large mirrors"
+              },
+              {
+                "value": "gym",
+                "label": "Treadmill or home gym"
+              },
+              {
+                "value": "hot-tub",
+                "label": "Hot tub"
+              }
+            ]
+          },
+          {
+            "key": "pianoType",
+            "type": "radio",
+            "label": "What kind of piano?",
+            "show": [
+              {
+                "field": "specialItems",
+                "contains": "piano"
+              }
+            ],
+            "options": [
+              {
+                "value": "upright",
+                "label": "Upright"
+              },
+              {
+                "value": "baby-grand",
+                "label": "Baby grand"
+              },
+              {
+                "value": "grand",
+                "label": "Grand"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "safeWeight",
+            "type": "radio",
+            "label": "About how heavy is the safe?",
+            "show": [
+              {
+                "field": "specialItems",
+                "contains": "safe"
+              }
+            ],
+            "options": [
+              {
+                "value": "under-300",
+                "label": "Under 300 lb"
+              },
+              {
+                "value": "300-600",
+                "label": "300 to 600 lb"
+              },
+              {
+                "value": "over-600",
+                "label": "Over 600 lb"
+              },
+              {
+                "value": "unsure",
+                "label": "Not sure"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "artDetails",
+            "type": "text",
+            "label": "Which pieces, and about how big?",
+            "placeholder": "Two framed prints, 4 by 3 feet",
+            "show": [
+              {
+                "field": "specialItems",
+                "contains": "art"
+              }
+            ]
+          },
+          {
+            "key": "services",
+            "type": "multiselect",
+            "label": "Do you need help with any of these?",
+            "options": [
+              {
+                "value": "packing",
+                "label": "Packing"
+              },
+              {
+                "value": "unpacking",
+                "label": "Unpacking"
+              },
+              {
+                "value": "furniture",
+                "label": "Taking apart and reassembling furniture"
+              },
+              {
+                "value": "storage",
+                "label": "Storage between homes"
+              },
+              {
+                "value": "haul-away",
+                "label": "Hauling away things you’re not keeping"
+              }
+            ]
+          },
+          {
+            "key": "packingScope",
+            "type": "radio",
+            "label": "What should we pack?",
+            "show": [
+              {
+                "field": "services",
+                "contains": "packing"
+              }
+            ],
+            "options": [
+              {
+                "value": "everything",
+                "label": "Everything"
+              },
+              {
+                "value": "fragile",
+                "label": "Fragile items only"
+              },
+              {
+                "value": "kitchen",
+                "label": "Kitchen only"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "storageLength",
+            "type": "radio",
+            "label": "How long do you need storage?",
+            "show": [
+              {
+                "field": "services",
+                "contains": "storage"
+              }
+            ],
+            "options": [
+              {
+                "value": "under-1m",
+                "label": "Less than a month"
+              },
+              {
+                "value": "1-3m",
+                "label": "1 to 3 months"
+              },
+              {
+                "value": "over-3m",
+                "label": "More than 3 months"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "survey",
+            "type": "radio",
+            "label": "How should we estimate your move?",
+            "options": [
+              {
+                "value": "in-home",
+                "label": "A visit to my home"
+              },
+              {
+                "value": "video",
+                "label": "A video call"
+              },
+              {
+                "value": "list",
+                "label": "I’ll send a list and photos"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "notes",
+            "type": "textarea",
+            "label": "Anything else we should know?",
+            "rows": 3,
+            "placeholder": "Narrow staircase, items going to two addresses"
+          }
+        ]
+      },
+      {
+        "id": "contact",
+        "title": "How to reach you",
+        "fields": [
+          {
+            "key": "name",
+            "type": "text",
+            "label": "Full name",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "contactBy",
+            "type": "radio",
+            "label": "How should we contact you?",
+            "layout": "inline",
+            "options": [
+              {
+                "value": "call",
+                "label": "Phone call"
+              },
+              {
+                "value": "text",
+                "label": "Text"
+              },
+              {
+                "value": "email",
+                "label": "Email"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "show": [
+              {
+                "field": "contactBy",
+                "in": ["call", "text"]
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "show": [
+              {
+                "field": "contactBy",
+                "eq": "email"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

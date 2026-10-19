@@ -1,0 +1,697 @@
+{
+  "slug": "tax-preparation-intake",
+  "title": "Tax preparation intake",
+  "summary": "Household, income and expenses before a tax appointment, then a list of documents to bring.",
+  "category": "intake",
+  "definition": {
+    "id": "tax-preparation-intake",
+    "formatVersion": "1.5",
+    "title": "Tax preparation intake",
+    "submit": {
+      "label": "Send to my preparer"
+    },
+    "steps": [
+      {
+        "id": "you",
+        "title": "About you",
+        "fields": [
+          {
+            "key": "firstName",
+            "type": "text",
+            "label": "First name",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "lastName",
+            "type": "text",
+            "label": "Last name",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "dateOfBirth",
+            "type": "date",
+            "label": "Date of birth",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "household",
+        "title": "Your household",
+        "fields": [
+          {
+            "key": "maritalStatus",
+            "type": "radio",
+            "label": "What was your marital status on December 31 last year?",
+            "options": [
+              {
+                "value": "never-married",
+                "label": "Never married"
+              },
+              {
+                "value": "married",
+                "label": "Married"
+              },
+              {
+                "value": "divorced",
+                "label": "Divorced"
+              },
+              {
+                "value": "separated",
+                "label": "Legally separated"
+              },
+              {
+                "value": "widowed",
+                "label": "Widowed"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "spouse",
+            "type": "section",
+            "title": "Your spouse",
+            "show": [
+              {
+                "field": "maritalStatus",
+                "eq": "married"
+              }
+            ],
+            "fields": [
+              {
+                "key": "spouseFirstName",
+                "type": "text",
+                "label": "Spouse’s first name",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "spouseLastName",
+                "type": "text",
+                "label": "Spouse’s last name",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "spouseDateOfBirth",
+                "type": "date",
+                "label": "Spouse’s date of birth",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "fileJointly",
+                "type": "radio",
+                "label": "Do you want to file a joint return?",
+                "layout": "inline",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  },
+                  {
+                    "value": "unsure",
+                    "label": "Not sure"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          },
+          {
+            "key": "claimedByOther",
+            "type": "radio",
+            "label": "Can anyone else claim you as a dependent?",
+            "layout": "inline",
+            "options": [
+              {
+                "value": "yes",
+                "label": "Yes"
+              },
+              {
+                "value": "no",
+                "label": "No"
+              },
+              {
+                "value": "unsure",
+                "label": "Not sure"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "dependents",
+            "type": "group",
+            "label": "People you lived with or supported",
+            "helperText": "Everyone who lived with you last year, except your spouse, and anyone you supported who lived somewhere else. Leave empty if there is no one.",
+            "itemLabel": "Person {index}",
+            "addLabel": "Add a person",
+            "removeLabel": "Remove",
+            "validation": {
+              "maxLength": 12
+            },
+            "fields": [
+              {
+                "key": "name",
+                "type": "text",
+                "label": "Full name",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "birthDate",
+                "type": "date",
+                "label": "Date of birth",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "relationship",
+                "type": "select",
+                "label": "Relationship to you",
+                "options": [
+                  {
+                    "value": "child",
+                    "label": "Son or daughter"
+                  },
+                  {
+                    "value": "stepchild",
+                    "label": "Stepchild"
+                  },
+                  {
+                    "value": "foster",
+                    "label": "Foster child"
+                  },
+                  {
+                    "value": "grandchild",
+                    "label": "Grandchild"
+                  },
+                  {
+                    "value": "parent",
+                    "label": "Parent"
+                  },
+                  {
+                    "value": "sibling",
+                    "label": "Brother or sister"
+                  },
+                  {
+                    "value": "other-relative",
+                    "label": "Other relative"
+                  },
+                  {
+                    "value": "not-related",
+                    "label": "Not related"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "months",
+                "type": "number",
+                "label": "Months {{name}} lived with you last year",
+                "inputMode": "numeric",
+                "validation": {
+                  "required": true,
+                  "min": 0,
+                  "max": 12
+                }
+              },
+              {
+                "key": "student",
+                "type": "radio",
+                "label": "Was {{name}} a full-time student?",
+                "layout": "inline",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  },
+                  {
+                    "value": "unsure",
+                    "label": "Not sure"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "disabled",
+                "type": "radio",
+                "label": "Is {{name}} permanently and totally disabled?",
+                "layout": "inline",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No"
+                  },
+                  {
+                    "value": "unsure",
+                    "label": "Not sure"
+                  }
+                ],
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "income",
+        "title": "Income last year",
+        "description": "Check everything you received, and anything your spouse received if you are married. Your preparer asks about amounts at the appointment.",
+        "fields": [
+          {
+            "key": "income",
+            "type": "multiselect",
+            "label": "What money did you get last year?",
+            "options": [
+              {
+                "value": "wages",
+                "label": "Wages from a job (W-2)"
+              },
+              {
+                "value": "self-employment",
+                "label": "Contract, freelance or gig work"
+              },
+              {
+                "value": "unemployment",
+                "label": "Unemployment benefits"
+              },
+              {
+                "value": "social-security",
+                "label": "Social Security or railroad retirement"
+              },
+              {
+                "value": "retirement",
+                "label": "Pension, annuity or retirement account withdrawals"
+              },
+              {
+                "value": "interest",
+                "label": "Interest or dividends"
+              },
+              {
+                "value": "investments",
+                "label": "Sale of stocks, bonds, crypto or real estate"
+              },
+              {
+                "value": "rental",
+                "label": "Rent from a property or a room"
+              },
+              {
+                "value": "other",
+                "label": "Something else"
+              },
+              {
+                "value": "none",
+                "label": "None of these"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      },
+      {
+        "id": "expenses",
+        "title": "Expenses and changes",
+        "fields": [
+          {
+            "key": "expenses",
+            "type": "multiselect",
+            "label": "Did you pay any of these last year?",
+            "options": [
+              {
+                "value": "mortgage",
+                "label": "Mortgage interest"
+              },
+              {
+                "value": "property-tax",
+                "label": "Property tax"
+              },
+              {
+                "value": "medical",
+                "label": "Medical, dental or prescription costs"
+              },
+              {
+                "value": "charity",
+                "label": "Donations to charity"
+              },
+              {
+                "value": "student-loan",
+                "label": "Student loan interest"
+              },
+              {
+                "value": "childcare",
+                "label": "Child or dependent care"
+              },
+              {
+                "value": "retirement-contribution",
+                "label": "Contributions to a retirement account"
+              },
+              {
+                "value": "none",
+                "label": "None of these"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "events",
+            "type": "multiselect",
+            "label": "Did any of these happen last year?",
+            "options": [
+              {
+                "value": "classes",
+                "label": "You or a family member took college or job-related classes"
+              },
+              {
+                "value": "marketplace",
+                "label": "You bought health insurance through the Marketplace"
+              },
+              {
+                "value": "home-sale",
+                "label": "You sold a home"
+              },
+              {
+                "value": "debt-cancelled",
+                "label": "A lender cancelled a debt"
+              },
+              {
+                "value": "estimated",
+                "label": "You made estimated tax payments"
+              },
+              {
+                "value": "irs-letter",
+                "label": "You got a letter from the IRS"
+              },
+              {
+                "value": "none",
+                "label": "None of these"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "refund",
+            "type": "radio",
+            "label": "If you get a refund, how do you want it?",
+            "options": [
+              {
+                "value": "deposit",
+                "label": "Direct deposit"
+              },
+              {
+                "value": "check",
+                "label": "Paper check"
+              },
+              {
+                "value": "apply",
+                "label": "Apply it to next year’s taxes"
+              },
+              {
+                "value": "unsure",
+                "label": "Not sure yet"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "notes",
+            "type": "textarea",
+            "label": "Anything else your preparer should know?",
+            "rows": 3
+          }
+        ]
+      },
+      {
+        "id": "bring",
+        "title": "What to bring",
+        "description": "This list covers the common forms for what you checked. Your preparer may ask for more.",
+        "fields": [
+          {
+            "key": "bringAlways",
+            "type": "section",
+            "title": "Everyone on the return",
+            "description": "Photo ID, Social Security cards or ITIN letters, and last year’s return if you have it.",
+            "fields": []
+          },
+          {
+            "key": "bringSpouse",
+            "type": "section",
+            "title": "Your spouse",
+            "description": "Photo ID if you file jointly.",
+            "show": [
+              {
+                "field": "maritalStatus",
+                "eq": "married"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bringW2",
+            "type": "section",
+            "title": "W-2 forms",
+            "description": "One from each employer.",
+            "show": [
+              {
+                "field": "income",
+                "contains": "wages"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1099",
+            "type": "section",
+            "title": "1099-NEC and 1099-K forms",
+            "description": "Plus totals of your business income and expenses.",
+            "show": [
+              {
+                "field": "income",
+                "contains": "self-employment"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1099G",
+            "type": "section",
+            "title": "Form 1099-G",
+            "show": [
+              {
+                "field": "income",
+                "contains": "unemployment"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bringSsa",
+            "type": "section",
+            "title": "Form SSA-1099 or RRB-1099",
+            "show": [
+              {
+                "field": "income",
+                "contains": "social-security"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1099R",
+            "type": "section",
+            "title": "Form 1099-R",
+            "show": [
+              {
+                "field": "income",
+                "contains": "retirement"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1099Int",
+            "type": "section",
+            "title": "Forms 1099-INT and 1099-DIV",
+            "show": [
+              {
+                "field": "income",
+                "contains": "interest"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1099B",
+            "type": "section",
+            "title": "Forms 1099-B or 1099-S",
+            "description": "Plus what you paid for what you sold.",
+            "show": [
+              {
+                "field": "income",
+                "contains": "investments"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1098",
+            "type": "section",
+            "title": "Form 1098",
+            "description": "The mortgage interest statement.",
+            "show": [
+              {
+                "field": "expenses",
+                "contains": "mortgage"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1098E",
+            "type": "section",
+            "title": "Form 1098-E",
+            "description": "The student loan interest statement.",
+            "show": [
+              {
+                "field": "expenses",
+                "contains": "student-loan"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bringChildcare",
+            "type": "section",
+            "title": "Childcare details",
+            "description": "The provider’s name, address and tax ID, and what you paid.",
+            "show": [
+              {
+                "field": "expenses",
+                "contains": "childcare"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1098T",
+            "type": "section",
+            "title": "Form 1098-T",
+            "description": "The tuition statement.",
+            "show": [
+              {
+                "field": "events",
+                "contains": "classes"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1095A",
+            "type": "section",
+            "title": "Form 1095-A",
+            "description": "The Marketplace health insurance statement.",
+            "show": [
+              {
+                "field": "events",
+                "contains": "marketplace"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bring1099C",
+            "type": "section",
+            "title": "Form 1099-C",
+            "show": [
+              {
+                "field": "events",
+                "contains": "debt-cancelled"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "bringLetter",
+            "type": "section",
+            "title": "The IRS letter",
+            "show": [
+              {
+                "field": "events",
+                "contains": "irs-letter"
+              }
+            ],
+            "fields": []
+          },
+          {
+            "key": "accurate",
+            "type": "checkbox",
+            "label": "My answers are complete and correct as far as I know.",
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
