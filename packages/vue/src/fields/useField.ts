@@ -27,6 +27,7 @@ export function useField(props: FormFieldProps, emit: FieldEmits) {
   const input = computed(() => ({
     id: inputId.value,
     name: props.field.key,
+    autocomplete: props.field.autocomplete,
     ...control.value,
     ...fieldAria(props.field, props.id, props.error),
     'aria-required': !!props.field.validation?.required || undefined,

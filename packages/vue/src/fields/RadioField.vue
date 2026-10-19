@@ -19,6 +19,7 @@ const choice = useChoice(props, emit);
     >
       <input
         v-bind="{ ...control, ...choice(option.value) }"
+        :autocomplete="props.field.autocomplete"
         :id="`${inputId}-${index}`"
         class="fh-field__radio"
         type="radio"

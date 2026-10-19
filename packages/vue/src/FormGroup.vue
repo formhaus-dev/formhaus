@@ -10,6 +10,7 @@ import {
   itemTitle,
   labelFor,
   optionKey,
+  autofilled,
   recalled,
 } from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
@@ -63,7 +64,11 @@ function itemProps(index: number, field: FormField) {
   const update = (value: unknown) => emit('update', key, value);
   return {
     id: errorDomId(props.engine, props.formId, key),
-    field: recalled(props.engine, { ...field, ...(options && { options }), key, autoAdvance: undefined }, key),
+    field: autofilled(
+      props.engine,
+      recalled(props.engine, { ...field, ...(options && { options }), key, autoAdvance: undefined }, key),
+      key,
+    ),
     modelValue: values.value[index]?.[field.key],
     error: props.errors[key],
     loading: props.fieldLoading[key],
