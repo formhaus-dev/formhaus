@@ -1,6 +1,6 @@
 import { findField, setRule, type BuilderQuestion } from '@formhaus/builder';
 import { useRef, useState } from 'react';
-import { Field, Input } from '../ui';
+import { Field, Input, Text } from '../ui';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
 import { checkLimits, limitWrites, storedLimits, type Drafts, type LimitSide, type LimitSpec } from './limits';
@@ -88,7 +88,9 @@ export function LimitSettings({ field, spec, actions, readOnly }: Props) {
   };
   return (
     <section className={styles.section} aria-label="Limits">
-      <span className={styles.controlLabel}>Limits</span>
+      <Text size="sm" tone="muted" weight="medium">
+        Limits
+      </Text>
       <div className={styles.pair}>
         {column(spec.low)}
         {column(spec.high)}
