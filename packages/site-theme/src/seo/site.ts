@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 
 export const siteUrl = 'https://formhaus.dev';
 export const siteName = 'Formhaus';
-export const repoUrl = 'https://github.com/ignsm/formhaus';
+export const repoUrl = 'https://github.com/formhaus-dev/formhaus';
 export const authorUrl = 'https://github.com/ignsm';
 
 const packageVersion = (name: string): string =>

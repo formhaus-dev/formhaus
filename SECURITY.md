@@ -6,6 +6,6 @@ Security fixes go to the latest minor release of `@formhaus/core`, `@formhaus/re
 
 ## Reporting a vulnerability
 
-Report vulnerabilities privately through [GitHub security advisories](https://github.com/ignsm/formhaus/security/advisories/new). Do not open a public issue.
+Report vulnerabilities privately through [GitHub security advisories](https://github.com/formhaus-dev/formhaus/security/advisories/new). Do not open a public issue.
 
 Include the affected package and version, a minimal definition or code that reproduces the problem, and the impact you expect.

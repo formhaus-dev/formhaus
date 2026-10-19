@@ -14,5 +14,14 @@
   },
   "devDependencies": {
     "vitest": "^4.1.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/formhaus-dev/formhaus.git",
+    "directory": "packages/site-theme"
+  },
+  "bugs": {
+    "url": "https://github.com/formhaus-dev/formhaus/issues"
+  },
+  "homepage": "https://formhaus.dev"
 }

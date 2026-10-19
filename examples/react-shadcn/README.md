@@ -2,7 +2,7 @@
 
 This example maps Formhaus `FieldComponentProps` to [shadcn/ui](https://ui.shadcn.com) components through the `components` prop.
 
-[Open in StackBlitz](https://stackblitz.com/github/ignsm/formhaus/tree/main/examples/react-shadcn)
+[Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/react-shadcn)
 
 ## Run
 

@@ -41,8 +41,8 @@ it('locks submission before notifying validation subscribers', async () => {
   expect(calls).toBe(1);
 });
 
-it('keeps values written by before-hooks in the action', async () => {
-  let submitted: Record<string, unknown> | undefined;
+it('discards a submission when its before-hook answers an empty field', async () => {
+  const send = vi.fn();
   const engine: FormEngine = new FormEngine(
     multiStepDefinition,
     { name: 'Ada' },
@@ -57,12 +57,9 @@ it('keeps values written by before-hooks in the action', async () => {
   );
   expect(await engine.next()).toBe(true);
   expect(engine.currentStep?.id).toBe('payment');
-  expect(
-    await engine.submit((values) => {
-      submitted = values;
-    }),
-  ).toBe(true);
-  expect(submitted).toMatchObject({ name: 'Ada', method: 'bank' });
+  expect(await engine.submit(send)).toBe(false);
+  expect(send).not.toHaveBeenCalled();
+  expect(engine.values.method).toBe('bank');
 });
 
 it('discards a submission when a checked value changes during its before-hook', async () => {

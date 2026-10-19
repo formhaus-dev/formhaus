@@ -33,4 +33,4 @@ All sizes on these pages come from [Bundle size](/guide/bundle-size): one method
 
 ## Sources
 
-Every statement about another library links to its documentation, npm metadata or issue tracker. Facts were checked on 2026-10-09. If something has changed, open an issue on [GitHub](https://github.com/ignsm/formhaus/issues).
+Every statement about another library links to its documentation, npm metadata or issue tracker. Facts were checked on 2026-10-09. If something has changed, open an issue on [GitHub](https://github.com/formhaus-dev/formhaus/issues).
