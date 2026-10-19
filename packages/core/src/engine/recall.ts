@@ -1,6 +1,7 @@
 import type { FormEngine } from './runtime';
 import type { FormDefinition, FormField, FormGroup } from '../types';
-import { BOOLEAN_TYPES, MAX_STRING_LENGTH } from '../validation/type-checks';
+import { BOOLEAN_TYPES } from '../validation/type-checks';
+import { fill } from '../validation/bounded-text';
 import { formatText } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, itemsOf } from '../visibility/nodes';
 import { getAllFields } from './engine-utils';
@@ -59,27 +60,12 @@ function substitute(
   if (!recallEnabled(definition)) return params ? formatText(text, params) : text;
   if (!text.includes(params ? '{' : '{{')) return text;
   const resolve = resolver();
-  const replace = (token: string, content?: string, name?: string): string => {
+  return fill(text, TOKEN, ([token, content, name]) => {
     if (name !== undefined) return params && hasOwn(params, name) ? String(params[name]) : token;
     if (content === undefined) return '{{';
     const key = KEY.exec(content)?.[1];
     return key ? resolve(key) : token;
-  };
-  let result = '';
-  let last = 0;
-  for (const match of text.matchAll(TOKEN)) {
-    if (result.length > MAX_STRING_LENGTH) break;
-    const [token, content, name] = match;
-    result += text.slice(last, match.index) + replace(token, content, name).slice(0, MAX_STRING_LENGTH + 1);
-    last = match.index + token.length;
-  }
-  return cut(result + text.slice(last));
-}
-
-function cut(text: string): string {
-  if (text.length <= MAX_STRING_LENGTH) return text;
-  const code = text.charCodeAt(MAX_STRING_LENGTH - 1);
-  return text.slice(0, code >= 0xd800 && code <= 0xdbff ? MAX_STRING_LENGTH - 1 : MAX_STRING_LENGTH);
+  });
 }
 
 function answer(field: FormField, value: unknown): string | number | string[] | undefined {

@@ -162,6 +162,18 @@ describe('item titles', () => {
     expect(itemTitle(engine, engine.definition.fields![1] as FormGroup, 0)).toBe('Guests of Ada [] 1: Bo');
   });
 
+  it('cuts default, catalog and function item titles at the string limit', () => {
+    const fields = [
+      { key: 'name', type: 'text', label: 'Name' },
+      { key: 'kids', type: 'group', label: '{{name}}', fields: [{ key: 'kid', type: 'text', label: 'Kid' }] },
+    ];
+    const engine = new FormEngine({ ...definition(), fields } as FormDefinition, { name: 'x'.repeat(10000), kids: [{}] });
+    const group = engine.definition.fields![1] as FormGroup;
+    expect(itemTitle(engine, group, 0)).toBe('x'.repeat(10000));
+    expect(itemTitle(engine, group, 0, { itemLabel: '{label}'.repeat(1000) })).toBe('x'.repeat(10000));
+    expect(itemTitle(engine, group, 0, () => 'y'.repeat(20000))).toHaveLength(10000);
+  });
+
   it('fills parameters below format 1.5', () => {
     const fields = [{ key: 'kids', type: 'group', label: 'Kids', itemLabel: '{label} #{index} {{kid}}', fields: [] }];
     const engine = new FormEngine({ ...definition('1.4'), fields } as FormDefinition, { kids: [{}] });
