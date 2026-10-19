@@ -1,6 +1,6 @@
 ---
 title: "Form definition examples"
-description: "Example Formhaus JSON definitions: basic form, conditional fields, multi-step, validation, a branching form with radio auto-advance and a survey with NPS, rating and a matrix."
+description: "Example Formhaus JSON definitions: conditional fields, multi-step, validation, branching with auto-advance, and a survey with NPS, rating and a matrix."
 ---
 
 # Examples
