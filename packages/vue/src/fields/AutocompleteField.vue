@@ -36,7 +36,7 @@ function onInput(event: Event) {
       @input="onInput"
     />
     <datalist :id="`${inputId}-list`">
-      <option v-for="(opt, index) in props.field.options" :key="opt.value" :value="texts[index]" />
+      <option v-for="text in texts" :key="text" :value="text" />
     </datalist>
   </FieldShell>
 </template>

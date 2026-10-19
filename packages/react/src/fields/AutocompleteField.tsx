@@ -30,8 +30,8 @@ export function AutocompleteField(props: FieldComponentProps) {
         }}
       />
       <datalist id={listId}>
-        {options.map((opt, index) => (
-          <option key={opt.value} value={texts[index]} />
+        {texts.map((text) => (
+          <option key={text} value={text} />
         ))}
       </datalist>
     </FieldShell>

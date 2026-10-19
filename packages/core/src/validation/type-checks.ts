@@ -1,7 +1,7 @@
 import type { FormField, FormGroup } from '../types';
 import { type MessageKey, messageResolver, type ResolveMessage } from './default-messages';
 import { hasOwn } from '../visibility/nodes';
-import { isBlank, MAX_ITEMS, oversized } from '../visibility/evaluate-condition';
+import { allowedLarge, isBlank, MAX_ITEMS } from '../visibility/evaluate-condition';
 
 export const BOOLEAN_TYPES = ['checkbox', 'switch'];
 export const BUILT_IN_TYPES = [
@@ -62,7 +62,10 @@ function isCalendarDate(value: string): boolean {
 const UNTRIMMED_TYPES = new Set(['password', 'select', 'radio', 'file', ...NUMBER_TYPES]);
 
 export function trimValue(field: FormField, value: unknown): unknown {
-  if (Array.isArray(value)) oversized[oversizedList(field, value) ? 'add' : 'delete'](value);
+  if (Array.isArray(value))
+    allowedLarge[
+      value.length > MAX_ITEMS && LIST_TYPES.includes(field.type) && value.length <= (staticOptions(field)?.length ?? 0) ? 'add' : 'delete'
+    ](value);
   return typeof value === 'string' && !UNTRIMMED_TYPES.has(field.type) ? value.trim() : value;
 }
 

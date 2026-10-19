@@ -13,9 +13,10 @@ function toNumber(value: unknown): number | undefined {
   return typeof number === 'number' && Number.isFinite(number) ? number : undefined;
 }
 
-export const oversized = new WeakSet<object>();
+export const allowedLarge = new WeakSet<object>();
 
-const has = (value: unknown, operand: unknown) => Array.isArray(value) && !oversized.has(value) && value.includes(operand);
+const has = (value: unknown, operand: unknown) =>
+  Array.isArray(value) && (value.length <= MAX_ITEMS || allowedLarge.has(value)) && value.includes(operand);
 
 type Operands = Required<Omit<ShowCondition, 'field'>>;
 

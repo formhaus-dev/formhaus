@@ -127,9 +127,24 @@ describe('autocomplete options with the same label', () => {
     const options = [...cities.slice(0, 2), { value: 'odd', label: 'Paris (paris-tx)' }];
     const form: FormDefinition = { ...cityForm, fields: [{ ...cityForm.fields![0], options } as never] };
     mount({ definition: form, onSubmit });
-    expect(listed()).toEqual(['Paris (paris-fr)', 'Paris (paris-tx) (paris-tx)', 'Paris (paris-tx) (odd)']);
-    await fireEvent.update(city(), 'Paris (paris-tx) (odd)');
+    expect(listed()).toEqual(['Paris (paris-fr)', 'Paris (paris-tx) (1)', 'Paris (paris-tx) (2)']);
+    await fireEvent.update(city(), 'Paris (paris-tx) (2)');
     await fireEvent.click(screen.getByText('Save'));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ city: 'odd' }, expect.any(Array)));
+  });
+
+  it('numbers options that share both label and value', async () => {
+    const onSubmit = vi.fn();
+    const options = [cities[0], cities[0], cities[1]];
+    const form: FormDefinition = { ...cityForm, fields: [{ key: 'city', type: 'autocomplete', label: 'City', optionsFrom: 'cities' }] };
+    mount({ definition: form, optionsProviders: { cities: () => options }, onSubmit });
+    await waitFor(() => expect(listed()).toHaveLength(3));
+    expect(listed()).toEqual(['Paris (paris-fr) (1)', 'Paris (paris-fr) (2)', 'Paris (paris-tx)']);
+    await fireEvent.update(city(), 'Paris (paris-tx)');
+    await fireEvent.click(screen.getByText('Save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenLastCalledWith({ city: 'paris-tx' }, expect.any(Array)));
+    await fireEvent.update(city(), 'Paris (paris-fr) (2)');
+    await fireEvent.click(screen.getByText('Save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenLastCalledWith({ city: 'paris-fr' }, expect.any(Array)));
   });
 });

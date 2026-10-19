@@ -148,11 +148,30 @@ describe('autocomplete options with the same label', () => {
     const { container } = render(<FormRenderer definition={form} onSubmit={onSubmit} />);
     expect([...container.querySelectorAll('datalist option')].map((o) => o.getAttribute('value'))).toEqual([
       'Paris (paris-fr)',
-      'Paris (paris-tx) (paris-tx)',
-      'Paris (paris-tx) (odd)',
+      'Paris (paris-tx) (1)',
+      'Paris (paris-tx) (2)',
     ]);
-    fireEvent.change(city(), { target: { value: 'Paris (paris-tx) (odd)' } });
+    fireEvent.change(city(), { target: { value: 'Paris (paris-tx) (2)' } });
     fireEvent.click(screen.getByText('Save'));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ city: 'odd' }, expect.any(Array)));
+  });
+
+  it('numbers options that share both label and value', async () => {
+    const onSubmit = vi.fn();
+    const options = [cities[0], cities[0], cities[1]];
+    const form: FormDefinition = { ...cityForm, fields: [{ key: 'city', type: 'autocomplete', label: 'City', optionsFrom: 'cities' }] };
+    const { container } = render(<FormRenderer definition={form} optionsProviders={{ cities: () => options }} onSubmit={onSubmit} />);
+    await waitFor(() => expect(container.querySelectorAll('datalist option')).toHaveLength(3));
+    expect([...container.querySelectorAll('datalist option')].map((o) => o.getAttribute('value'))).toEqual([
+      'Paris (paris-fr) (1)',
+      'Paris (paris-fr) (2)',
+      'Paris (paris-tx)',
+    ]);
+    fireEvent.change(city(), { target: { value: 'Paris (paris-tx)' } });
+    fireEvent.click(screen.getByText('Save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenLastCalledWith({ city: 'paris-tx' }, expect.any(Array)));
+    fireEvent.change(city(), { target: { value: 'Paris (paris-fr) (2)' } });
+    fireEvent.click(screen.getByText('Save'));
+    await waitFor(() => expect(onSubmit).toHaveBeenLastCalledWith({ city: 'paris-fr' }, expect.any(Array)));
   });
 });
