@@ -26,6 +26,22 @@ describe('useFormEngine keepValues', () => {
     expect(engine.values).toEqual({ name: 'Ada', city: 'Oslo' });
   });
 
+  it('keeps a dispatched submit in flight across a replacement', async () => {
+    const { result, rerender } = renderHook(({ definition }) => useFormEngine(definition, { name: 'Ada' }, { keepValues: true }), {
+      initialProps: { definition: first },
+    });
+    const engine = result.current;
+    let release!: () => void;
+    const submitting = engine.submit(() => new Promise<void>((resolve) => (release = resolve)));
+    await Promise.resolve();
+    rerender({ definition: second });
+    expect(engine.submitting).toBe(true);
+    expect(await engine.submit(() => {})).toBe(false);
+    release();
+    expect(await submitting).toBe(true);
+    expect(engine.submitting).toBe(false);
+  });
+
   it('creates a new engine without keepValues', () => {
     const { result, rerender } = renderHook(({ definition }) => useFormEngine(definition), { initialProps: { definition: first } });
     const engine = result.current;

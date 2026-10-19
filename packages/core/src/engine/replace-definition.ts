@@ -59,7 +59,8 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
   const { visibility } = engine;
   engine.validationEpoch++;
   engine.operationEpoch++;
-  state.stepValidating = state.submitting = false;
+  state.stepValidating = false;
+  if (engine.sending !== engine.latestOperation) state.submitting = false;
   for (const key in state.errors) {
     const [group, , child] = visibility.parse(key) ?? [];
     const field = visibility.activeField(group ?? key, engine.values);
