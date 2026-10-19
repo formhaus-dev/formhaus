@@ -8,9 +8,9 @@
 - `validateSubmission()` converts decimal strings such as `"7"` to numbers for `scale` and `rating`, as it does for `number`.
 - `options` on `scale` and `rating` are anchor labels, not choices. Conditions on these fields compare numbers.
 - New `image` on options of `radio` and `multiselect` fields.
-- Default length messages read "Minimum length is {min}" and "Maximum length is {max}". Item counts read "At least {min} required" and "At most {max} allowed".
+- **Behavior change:** `getDefaultMessage()` and the default errors use new texts for length and item limits. `Must be at least {min} characters` → `Minimum length is {min}`, `Must be at most {max} characters` → `Maximum length is {max}`, `Must be at least {min} items` → `At least {min} required`, `Must be at most {max} items` → `At most {max} allowed`. With a `unit`, `Must be at least {min} {unit}` → `At least {min} {unit}` and `Must be at most {max} {unit}` → `At most {max} {unit}`. The conformance fixtures expect the new texts.
 - New labels `enlargeImage` (`Enlarge image: {label}`) and `close` (`Close`) for the picture preview. `textSlots()` lists them for forms with option images.
-- New `columns` on fields sets picture cards per row, from 1 to 4. `checkDefinition()` rejects other values and warns with `columns-not-applicable` when the options have no images.
+- New `columns` on fields sets picture cards per row, from 1 to 4. `checkDefinition()` rejects other values and warns with `columns-not-applicable` when the options have no images, the field is not `radio` or `multiselect`, or the field is in a matrix section.
 - New `layout: "matrix"` on sections.
 - A step or section may have an empty `fields` array, for a welcome screen or a statement.
 - Format version 1.3. `checkDefinition()` warns with `outdated-format-version` about `scale` or `rating` without `"formatVersion": "1.3"`.
@@ -18,4 +18,5 @@
 - **Breaking:** `DefaultFieldType` adds `scale` and `rating`, so an exhaustive `Record<DefaultFieldType, …>` must list them.
 - `unknown-field-type` reports a type with `-` or `:` only when it spells a built-in type with separators, such as `multi-select`. `x-rating` is no longer reported as a typo of `rating`.
 - `style.css` styles scale, rating, picture options, matrix sections and steps without fields.
+- New theme tokens `--fh-icon-button-size` (32px), `--fh-star-size` (32px, 40px on touch screens), `--fh-option-image-width` (200px) and `--fh-shadow-raised`.
 - `style.css` wraps scales of 8 to 11 points into two rows when 44px points do not fit, and places rating stars 4px apart with 44px hit areas on touch screens.

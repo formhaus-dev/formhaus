@@ -14,7 +14,6 @@ export function RadioField(props: FieldComponentProps) {
         const optionId = `${fieldId(props)}-${index}`;
         return (
           <div key={opt.value} className="fh-field__radio-option">
-            <OptionImage option={opt} />
             <input
               {...optionProps(props)}
               {...choice(opt.value)}
@@ -28,6 +27,7 @@ export function RadioField(props: FieldComponentProps) {
             <label className="fh-field__radio-label" htmlFor={optionId}>
               {opt.label}
             </label>
+            <OptionImage option={opt} />
           </div>
         );
       })}

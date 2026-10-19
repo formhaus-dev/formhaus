@@ -1,15 +1,21 @@
 import type { FieldOption } from '@formhaus/core';
-import { useContext, useRef } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { LabelContext } from '../labels';
+
+let pressed: EventTarget | null = null;
 
 export function OptionImage({ option: { image, label } }: { option: FieldOption }) {
   const text = useContext(LabelContext);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
+  const [failed, setFailed] = useState<string>();
   const close = () => dialog.current?.close();
-  return image ? (
+  if (!image) return null;
+  return failed === image ? (
+    <span className="fh-field__option-image" />
+  ) : (
     <>
-      <img className="fh-field__option-image" src={image} alt="" loading="lazy" decoding="async" />
+      <img className="fh-field__option-image" src={image} alt="" loading="lazy" decoding="async" onError={() => setFailed(image)} />
       <button
         ref={trigger}
         type="button"
@@ -27,7 +33,10 @@ export function OptionImage({ option: { image, label } }: { option: FieldOption 
         className="fh-dialog fh-dialog--image"
         aria-label={label}
         onClose={() => trigger.current?.focus()}
-        onClick={(event) => event.target === event.currentTarget && close()}
+        onPointerDown={(event) => {
+          pressed = event.target;
+        }}
+        onClick={(event) => event.target === event.currentTarget && pressed === event.target && close()}
         onKeyDown={(event) => {
           event.stopPropagation();
           event.currentTarget.removeAttribute('data-pointer');
@@ -40,5 +49,5 @@ export function OptionImage({ option: { image, label } }: { option: FieldOption 
         <img className="fh-dialog__image" src={image} alt="" loading="lazy" />
       </dialog>
     </>
-  ) : null;
+  );
 }

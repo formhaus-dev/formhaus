@@ -62,10 +62,45 @@ describe('picture option preview', () => {
     render(FormRenderer, { props: { definition: single(room), onSubmit: () => {} } });
     await fireEvent.click(screen.getByRole('button', { name: 'Enlarge image: Garden' }));
     const dialog = document.querySelectorAll('dialog')[1];
+    await fireEvent.pointerDown(dialog.querySelector('img')!);
     await fireEvent.click(dialog.querySelector('img')!);
     expect(dialog.open).toBe(true);
     await fireEvent.click(dialog);
+    expect(dialog.open).toBe(true);
+    await fireEvent.pointerDown(dialog);
+    await fireEvent.click(dialog);
     expect(dialog.open).toBe(false);
+  });
+
+  it('stays open when a drag from the image ends on the backdrop', async () => {
+    render(FormRenderer, { props: { definition: single(room), onSubmit: () => {} } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Enlarge image: Sea view' }));
+    const dialog = document.querySelector('dialog')!;
+    await fireEvent.pointerDown(dialog.querySelector('.fh-dialog__title')!);
+    await fireEvent.click(dialog);
+    expect(dialog.open).toBe(true);
+  });
+
+  it('puts the zoom button after the option input and label', () => {
+    render(FormRenderer, { props: { definition: single(room), onSubmit: () => {} } });
+    const option = document.querySelector('.fh-field__radio-option')!;
+    const order = [...option.children].map((node) => node.className || node.tagName.toLowerCase());
+    expect(order.slice(0, 4)).toEqual(['fh-field__radio', 'fh-field__radio-label', 'fh-field__option-image', 'fh-field__option-zoom']);
+    const focusable = [...document.querySelectorAll('input, button:not(dialog button)')].slice(0, 2);
+    expect(focusable[0]).toBe(screen.getByRole('radio', { name: 'Sea view' }));
+    expect(focusable[1]).toBe(screen.getByRole('button', { name: 'Enlarge image: Sea view' }));
+  });
+
+  it('draws a plain surface without a preview when the image fails to load', async () => {
+    const { rerender } = render(FormRenderer, { props: { definition: single(room), onSubmit: () => {} } });
+    await fireEvent.error(document.querySelector('img.fh-field__option-image')!);
+    const option = document.querySelector('.fh-field__radio-option')!;
+    expect(option.querySelector('span.fh-field__option-image')).toBeTruthy();
+    expect(option.querySelector('img, .fh-field__option-zoom, dialog')).toBeNull();
+    expect(screen.getByRole('radio', { name: 'Sea view' })).toBeTruthy();
+    const options = room.options!.map((option) => ({ ...option, image: `${option.image}?v=2` }));
+    await rerender({ definition: single({ ...room, options }) });
+    expect(document.querySelector('img.fh-field__option-image')!.getAttribute('src')).toBe('https://example.com/sea.jpg?v=2');
   });
 
   it('keeps keys pressed in the preview away from the host page', async () => {

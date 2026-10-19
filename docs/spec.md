@@ -175,7 +175,7 @@ An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors
 
 An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host.
 
-`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` on a field whose options have no `image` is a `columns-not-applicable` warning and is ignored. Each card has a button that opens the image at full size.
+`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field in a matrix section. Each card has a button that opens the image at full size.
 
 ## Sections
 
@@ -784,7 +784,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
-| `columns-not-applicable` | warning | `columns` on a field whose options have no `image` |
+| `columns-not-applicable` | warning | `columns` on a field whose options have no `image`, on a field other than `radio` or `multiselect`, or on a field in a matrix section |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |

@@ -17,7 +17,6 @@ const choice = useChoice(props, emit);
       :key="String(option.value)"
       class="fh-field__radio-option"
     >
-      <OptionImage :option="option" />
       <input
         v-bind="{ ...control, ...choice(option.value) }"
         :id="`${inputId}-${index}`"
@@ -30,6 +29,7 @@ const choice = useChoice(props, emit);
       <label :for="`${inputId}-${index}`" class="fh-field__radio-label">
         {{ option.label }}
       </label>
+      <OptionImage :option="option" />
     </div>
   </FieldShell>
 </template>

@@ -209,4 +209,40 @@ describe('picture options', () => {
     setFieldType(form, pick.uid, 'select');
     expect(pick.extra.columns).toBeUndefined();
   });
+
+  it('drops columns when the last option image goes', () => {
+    const form = createForm();
+    const pick = addField(form, { step: null }, { type: 'radio', label: 'Pick' });
+    addOption(form, pick.uid);
+    const [red, blue, green] = pick.options;
+    setOptionImage(form, pick.uid, red.uid, 'https://example.com/red.png');
+    setOptionImage(form, pick.uid, blue.uid, 'https://example.com/blue.png');
+    setFieldProp(form, pick.uid, 'columns', 2);
+    setOptionImage(form, pick.uid, red.uid, '');
+    expect(pick.extra.columns).toBe(2);
+    removeOption(form, pick.uid, green.uid);
+    expect(pick.extra.columns).toBe(2);
+    removeOption(form, pick.uid, blue.uid);
+    expect(pick.extra.columns).toBeUndefined();
+    setOptionImage(form, pick.uid, red.uid, 'https://example.com/red.png');
+    setFieldProp(form, pick.uid, 'columns', 3);
+    setOptionImage(form, pick.uid, red.uid, ' ');
+    expect(pick.extra.columns).toBeUndefined();
+    expect(findIssues(form)).toEqual([]);
+  });
+
+  it('drops columns from rows of a matrix section', () => {
+    const { form, section, first, second } = matrix();
+    setFieldType(form, first.uid, 'radio');
+    setFieldProp(form, first.uid, 'columns', 2);
+    setMatrix(form, section.uid, true);
+    expect(first.extra.columns).toBeUndefined();
+    expect(second.extra.columns).toBeUndefined();
+    const third = addField(form, { after: second.uid }, { type: 'multiselect', label: 'Cheap', extra: { columns: 4 } });
+    expect(third.extra.columns).toBeUndefined();
+    setFieldProp(form, third.uid, 'columns', 2);
+    setFieldType(form, third.uid, 'radio');
+    expect(third.extra.columns).toBeUndefined();
+    expect(toDefinition(form).fields?.[0]).not.toHaveProperty('fields.0.columns');
+  });
 });
