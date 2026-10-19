@@ -2,7 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/vue';
 import { defineComponent, h, type PropType } from 'vue';
 import { createI18n } from 'vue-i18n';
 import { describe, expect, it } from 'vitest';
+import FormActions from '../src/FormActions.vue';
 import FormRenderer from '../src/FormRenderer.vue';
+import FormStepProgress from '../src/FormStepProgress.vue';
 import { type LocalizeSource, useLocalizedForm } from '../src/i18n';
 import { definition, overlay, resources } from './i18n.fixtures';
 
@@ -83,5 +85,26 @@ describe('Vue localized forms', () => {
     render(Signup, { props: { source: () => undefined } });
     expect(screen.getByRole('heading', { name: 'Account' })).toBeTruthy();
     expect(screen.getByText('Step 1 of 2')).toBeTruthy();
+  });
+
+  it('formats a standalone step progress and action bar with the default labels', () => {
+    render(FormStepProgress, {
+      props: {
+        current: 2,
+        total: 2,
+        steps: [
+          { id: 'a', title: '', errorCount: 3 },
+          { id: 'b', title: 'B', errorCount: 0 },
+        ],
+      },
+    });
+    render(FormActions, { props: { isFirstStep: false, isLastStep: true, isMultiStep: true, showBack: true } });
+    expect(screen.getByText('Step 2 of 2')).toBeTruthy();
+    expect([...document.querySelectorAll('.fh-step-progress__step')].map((item) => item.textContent?.trim())).toEqual([
+      'Step 1 · Errors: 3',
+      'B',
+    ]);
+    expect(screen.getByRole('button', { name: 'Submit' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Back' })).toBeTruthy();
   });
 });

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { type FormAction, isActionDisabled } from '@formhaus/core';
+import { useLabel } from './composables/useLabel';
 import { formActionsEmits, formActionsProps } from './props';
 
 const props = defineProps(formActionsProps);
 
 const emit = defineEmits(formActionsEmits);
+const text = useLabel();
 
 function isPrimaryDisabled(): boolean {
   return (
@@ -28,8 +30,8 @@ function onPrimaryClick() {
 
 function getPrimaryLabel(): string {
   if (props.primaryLabel !== undefined) return props.primaryLabel;
-  if (props.isMultiStep && !props.isLastStep) return 'Continue';
-  return props.submitAction?.label ?? 'Submit';
+  if (props.isMultiStep && !props.isLastStep) return text('continue');
+  return props.submitAction?.label ?? text('submit');
 }
 
 function getShouldShowBack(): boolean {
@@ -43,7 +45,7 @@ function getShouldShowSkip(): boolean {
 
 function getBackLabel(): string {
   if (props.backLabel !== undefined) return props.backLabel;
-  return (typeof props.backAction === 'object' ? props.backAction?.label : undefined) ?? 'Back';
+  return (typeof props.backAction === 'object' ? props.backAction?.label : undefined) ?? text('back');
 }
 </script>
 
@@ -75,7 +77,7 @@ function getBackLabel(): string {
         :disabled="props.loading"
         @click="emit('skip')"
       >
-        {{ props.skipLabel ?? props.skipAction?.label ?? 'Skip' }}
+        {{ props.skipLabel ?? props.skipAction?.label ?? text('skip') }}
       </button>
     </div>
     <button

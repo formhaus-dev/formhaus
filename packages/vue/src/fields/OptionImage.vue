@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { FieldOption, LabelKey } from '@formhaus/core';
-import { labelFor } from '@formhaus/core/internal';
-import { inject, ref } from 'vue';
+import type { FieldOption } from '@formhaus/core';
+import { ref } from 'vue';
+import { useLabel } from '../composables/useLabel';
 
 defineProps<{ option: FieldOption }>();
-const text = inject('fhLabel', (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params));
+const text = useLabel();
 const dialog = ref<HTMLDialogElement>();
 const trigger = ref<HTMLButtonElement>();
 const failed = ref<string>();
