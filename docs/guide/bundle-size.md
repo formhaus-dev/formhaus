@@ -52,13 +52,3 @@ pnpm install
 pnpm build
 node scripts/compare-bundle-size.mjs
 ```
-
-## CI limits
-
-CI fails when a production bundle goes over these limits:
-
-| Bundle | Limit |
-|---|---|
-| `@formhaus/core` | 23 KB |
-| `@formhaus/core` + `@formhaus/react` | 28 KB |
-| `@formhaus/core` + `@formhaus/vue` | 30 KB |

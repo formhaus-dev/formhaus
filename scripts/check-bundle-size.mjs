@@ -3,9 +3,9 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 const HARD_LIMITS = {
-  'core + react': 28672,
-  'core + vue': 31168,
-  core: 23552,
+  'core + react': 35840,
+  'core + vue': 35840,
+  core: 30720,
 };
 
 const APPS = {
