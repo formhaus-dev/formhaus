@@ -1,4 +1,6 @@
 import { isActionDisabled, type FormAction } from '@formhaus/core';
+import { useContext } from 'react';
+import { LabelContext } from './labels';
 import type { FormActionsProps } from './types';
 
 function buttonClass(action: FormAction | false | undefined, variant: NonNullable<FormAction['variant']>): string {
@@ -29,11 +31,12 @@ export function FormActions({
   skipLabel: skipLabelProp,
   onPrimary: onPrimaryProp,
 }: FormActionsProps) {
+  const text = useContext(LabelContext);
   const showBack = showBackProp ?? (isMultiStep && !isFirstStep && backAction !== false);
-  const backLabel = backLabelProp ?? (backAction || undefined)?.label ?? 'Back';
+  const backLabel = backLabelProp ?? (backAction || undefined)?.label ?? text('back');
   const showSkip = showSkipProp ?? (isMultiStep && !!skipAction);
-  const skipLabel = skipLabelProp ?? skipAction?.label ?? 'Skip';
-  const primaryLabel = primaryLabelProp ?? (isMultiStep && !isLastStep ? 'Continue' : (submitAction?.label ?? 'Submit'));
+  const skipLabel = skipLabelProp ?? skipAction?.label ?? text('skip');
+  const primaryLabel = primaryLabelProp ?? (isMultiStep && !isLastStep ? text('continue') : (submitAction?.label ?? text('submit')));
 
   const primaryDisabled = !!loading || isActionDisabled(isMultiStep && !isLastStep ? nextAction : submitAction, values);
 

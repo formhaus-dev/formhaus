@@ -49,6 +49,8 @@ describe('textSlots and translationTemplate', () => {
       back: 'Back',
       stepOf: 'Step {current} of {total}',
       errorSummary: 'Check these answers',
+      required: 'required',
+      stepErrors: 'Errors: {count}',
     });
     expect(translationIssues(signup, template)).toEqual({ missing: [], unknown: [], invalid: [], placeholderMismatch: [], unlabeled: [] });
   });

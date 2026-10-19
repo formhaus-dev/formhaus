@@ -147,6 +147,7 @@ describe('HeadlessFormRenderer', () => {
       'show-primary',
       'show-skip',
       'skip-action',
+      'skip-label',
       'submit-action',
       'values',
     ]);
