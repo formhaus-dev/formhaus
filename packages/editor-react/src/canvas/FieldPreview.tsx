@@ -52,12 +52,7 @@ function Choices({ field }: { field: BuilderQuestion }) {
     >
       {field.options.map((option, index) => (
         <li key={option.uid} className={cx(styles.choice, pictures && styles.picture)}>
-          {pictures &&
-            (option.extra?.image ? (
-              <Picture className={styles.cover} src={option.extra.image} />
-            ) : (
-              <span className={styles.cover} aria-hidden />
-            ))}
+          {pictures && <Picture className={styles.cover} src={option.extra?.image ?? ''} />}
           <span className={cx(styles.glyph, square && styles.square)} aria-hidden />
           <span className={cx(!option.label.trim() && styles.placeholder)}>{option.label.trim() || `Option ${String(index + 1)}`}</span>
           {labels[index] && <span className={styles.jump}>→ {labels[index]}</span>}
