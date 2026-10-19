@@ -36,6 +36,19 @@ describe('operators', () => {
     expect(operatorsFor('radio')).toEqual(['eq', 'neq', 'in', 'notIn', 'notEmpty']);
     expect(operatorsFor('email')).toEqual(['eq', 'neq', 'notEmpty']);
     expect(operatorsFor('switch')).toEqual(['checked', 'unchecked']);
+    expect(operatorsFor('multiselect')).toEqual(['contains', 'notContains', 'notEmpty']);
+  });
+
+  it('writes and reads contains for list questions', () => {
+    expect(toCondition({ field: 'interests', operator: 'contains', value: 'other' }, 'multiselect')).toEqual({
+      field: 'interests',
+      contains: 'other',
+    });
+    expect(fromCondition({ field: 'interests', notContains: 'other' }, 'multiselect')).toEqual({
+      field: 'interests',
+      operator: 'notContains',
+      value: 'other',
+    });
   });
 
   it('stores numbers as numbers and toggles as booleans', () => {

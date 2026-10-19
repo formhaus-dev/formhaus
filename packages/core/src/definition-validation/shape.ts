@@ -61,6 +61,8 @@ const condition: Check = (value, path) =>
       neq: 'scalar',
       in: 'list',
       notIn: 'list',
+      contains: 'scalar',
+      notContains: 'scalar',
       notEmpty: 'boolean',
       gt: 'number',
       gte: 'number',

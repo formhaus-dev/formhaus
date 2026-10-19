@@ -9,9 +9,21 @@ describe('capabilities', () => {
     expect(result.fieldTypes).toContain('radio');
     expect(result.fieldTypes).toEqual(expect.arrayContaining(['time', 'hidden']));
     expect(result.validationRules.rules).toContain('matchField');
-    expect(result.conditions.operators).toEqual(['eq', 'neq', 'in', 'notIn', 'notEmpty', 'gt', 'gte', 'lt', 'lte']);
+    expect(result.conditions.operators).toEqual([
+      'eq',
+      'neq',
+      'in',
+      'notIn',
+      'contains',
+      'notContains',
+      'notEmpty',
+      'gt',
+      'gte',
+      'lt',
+      'lte',
+    ]);
     expect(result.steps.routes.join(' ')).toMatch(/to: null/);
-    expect(result.definition.formatVersion).toBe('1.3');
+    expect(result.definition.formatVersion).toBe('1.4');
     expect(result.fieldProps.optional).toContain('props');
     expect(result.definition.optional).toContain('formatVersion');
     expect(result.adapters.map(({ name }) => name)).toContain('@formhaus/react');

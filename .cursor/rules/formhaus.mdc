@@ -11,7 +11,7 @@ A Formhaus form is a JSON definition rendered by `@formhaus/core` with `@formhau
 - Required keys: `id` (kebab-case), `title`, `submit: { "label": "..." }`.
 - Use `fields` for a single page or `steps` for a multi-step form, never both.
 - Field `key` values are camelCase and unique across all steps.
-- `show` and `showAny` conditions reference existing field keys and use `eq`, `neq`, `in`, `notIn` or `notEmpty`.
+- `show` and `showAny` conditions reference existing field keys and use `eq`, `neq`, `in`, `notIn`, `contains`, `notContains` or `notEmpty`. A `multiselect` holds a list: test it with `contains` or `notContains`.
 - Step `routes` only point to later steps. `to: null` ends the form without auto-submission.
 
 ## Checking definitions
