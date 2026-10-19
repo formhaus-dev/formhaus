@@ -24,4 +24,18 @@ describe('describeLogic', () => {
     const [, second] = form.blocks.filter((block) => isQuestion(block) && block.key === 'detail');
     expect(describeLogic(form, logicOf(form, second!), scopeOf(form, second))).toBe('Shown if Kind is Firm');
   });
+
+  it('describes a contains condition with the option label', () => {
+    const form = fromDefinition({
+      id: 'kyc',
+      title: 'KYC',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'sources', type: 'multiselect', label: 'Source of wealth', options: [{ value: 'OTHER', label: 'Other' }] },
+        { key: 'other', type: 'text', label: 'Other source', show: [{ field: 'sources', contains: 'OTHER' }] },
+      ],
+    });
+    const other = form.blocks.find((block) => isQuestion(block) && block.key === 'other')!;
+    expect(describeLogic(form, logicOf(form, other))).toBe('Shown if Source of wealth includes Other');
+  });
 });
