@@ -1,5 +1,22 @@
 # @formhaus/mcp
 
+## 0.7.0
+
+### Minor Changes
+
+- `capabilities` lists the `scale` and `rating` field types, anchor options, picture options with `image`, matrix sections and empty steps for welcome screens.
+- `example_definitions` adds `product-survey`: a welcome step, an NPS scale, a rating, picture choice and a matrix.
+- `validate_definition` accepts `autoAdvance` on `scale` and `rating` and warns about it on matrix rows.
+- New warnings: `scale-range`, `rating-min`, `anchor-out-of-range`, `anchor-not-shown`, `matrix-options-mismatch`, `matrix-row-type`, `matrix-too-wide` and `image-not-applicable`.
+- `simulate_path` moves past a `next: false` step once its `autoAdvance` scale or rating is answered.
+- **Breaking:** Minimum Node is `22.12`.
+
+### Patch Changes
+
+- Fixed `validate_definition` and `simulate_path` throwing on a section or group whose `fields` is missing or not an array, and on `null` entries in `fields` or `steps`. They now return the validation errors.
+- The MCP Registry name is now `io.github.formhaus-dev/formhaus`.
+- Requires `@formhaus/core` 0.19.0.
+
 ## 0.6.3
 
 ### Patch Changes
