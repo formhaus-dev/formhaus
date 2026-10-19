@@ -10,8 +10,35 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    runs-on: ubuntu-latest
+
+    outputs:
+      full: ${{ steps.changes.outputs.full }}
+      code: ${{ steps.changes.outputs.code }}
+      peers: ${{ steps.changes.outputs.peers }}
+      deps: ${{ steps.changes.outputs.deps }}
+      docs: ${{ steps.changes.outputs.docs }}
+      templates: ${{ steps.changes.outputs.templates }}
+      examples: ${{ steps.changes.outputs.examples }}
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+
+      - id: changes
+        run: node scripts/ci-affected.mjs changes
+
   check:
     name: check (${{ matrix.node }})
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
 
     strategy:
@@ -26,6 +53,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+          fetch-depth: 2
 
       - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
 
@@ -60,11 +88,55 @@ jobs:
 
       - run: pnpm check:require
 
-      - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium firefox webkit
+      - id: affected
+        env:
+          FULL: ${{ needs.changes.outputs.full }}
+        run: |
+          if [ "$FULL" = true ]; then filter='./packages/*'; else filter='...[HEAD^1]'; fi
+          if pnpm --filter "$filter" --filter '!{.}' list --depth -1 --json | grep -q '"@formhaus/editor-react"'; then echo 'browsers=true' >> "$GITHUB_OUTPUT"; fi
 
-      - run: pnpm test
+      - if: steps.affected.outputs.browsers == 'true'
+        run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium firefox webkit
+
+      - if: needs.changes.outputs.full == 'true'
+        run: pnpm test
+
+      - if: needs.changes.outputs.full != 'true'
+        run: pnpm --filter '...[HEAD^1]' --filter '!{.}' test
+
+  content:
+    needs: changes
+    if: needs.changes.outputs.full != 'true' && (needs.changes.outputs.templates == 'true' || needs.changes.outputs.docs == 'true' || needs.changes.outputs.examples == 'true')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm lint
+
+      - run: pnpm --filter @formhaus/core build
+
+      - run: pnpm docs:install
+      - run: pnpm check:knip
+      - run: pnpm check:docs-versions
+      - run: pnpm templates:check
+
+      - run: node scripts/ci-affected.mjs content-tests
 
   lowest-peers:
+    needs: changes
+    if: needs.changes.outputs.peers == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -90,6 +162,8 @@ jobs:
       - run: pnpm --filter @formhaus/react --filter @formhaus/vue test
 
   audit:
+    needs: changes
+    if: needs.changes.outputs.deps == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -106,6 +180,8 @@ jobs:
       - run: pnpm audit --prod --audit-level high
 
   docs:
+    needs: changes
+    if: needs.changes.outputs.code == 'true' || needs.changes.outputs.docs == 'true' || needs.changes.outputs.templates == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -131,6 +207,8 @@ jobs:
       - run: pnpm check:template-aliases
 
   examples:
+    needs: changes
+    if: needs.changes.outputs.examples == 'true'
     runs-on: ubuntu-latest
 
     strategy:
@@ -156,3 +234,12 @@ jobs:
       - name: Build example
         working-directory: examples/${{ matrix.example }}
         run: pnpm build
+
+  ci-ok:
+    needs: [changes, check, content, lowest-peers, audit, docs, examples]
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - if: contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled')
+        run: exit 1
