@@ -2,7 +2,7 @@ import type { FormDefinition, FormField } from '@formhaus/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { nextFrameX, renderForm } from '../render-form';
 import { itemTitle } from '../render-nodes';
-import { node, renderer, stubFigma, theme } from './render-fixtures';
+import { node, renderer, stubFigma } from './render-fixtures';
 
 const definition: FormDefinition = {
   id: 'existing-form',
@@ -95,7 +95,7 @@ describe('renderForm', () => {
         },
       ],
     };
-    await renderForm(nested, { theme, field, button });
+    await renderForm(nested, { ...renderer(field), button });
     expect(field.mock.calls.map(([rendered]) => rendered.key)).toEqual(['street', 'email']);
     expect(created.map((frame) => (frame as unknown as { name: string }).name)).toEqual(
       expect.arrayContaining(['Section: Billing', 'Group: People', 'Person 1']),

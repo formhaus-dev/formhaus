@@ -1,4 +1,4 @@
-import type { FormField } from '@formhaus/core';
+import type { DefaultFieldType, FormField } from '@formhaus/core';
 import type { TextSlot } from './config';
 
 export const FIELD_ROLES = [
@@ -69,24 +69,35 @@ export const ROLE_LABELS: Record<Role, string> = {
   'button.text': 'Text button',
 };
 
-const ROLE_BY_TYPE: Record<string, FieldRole> = {
+export type FieldDrawing = FieldRole | 'scale' | 'rating';
+
+export const FIELD_DRAWINGS: Record<DefaultFieldType, FieldDrawing | null> = {
+  text: 'field.text',
+  email: 'field.text',
+  phone: 'field.text',
+  number: 'field.text',
+  password: 'field.text',
   select: 'field.select',
   autocomplete: 'field.select',
-  textarea: 'field.textarea',
+  multiselect: 'option.checkbox',
+  checkbox: 'field.checkbox',
+  radio: 'option.radio',
+  switch: 'field.switch',
+  file: 'field.file',
   date: 'field.date',
   datetime: 'field.date',
   time: 'field.date',
-  file: 'field.file',
-  switch: 'field.switch',
-  radio: 'option.radio',
-  multiselect: 'option.checkbox',
+  textarea: 'field.textarea',
+  hidden: null,
+  scale: 'scale',
+  rating: 'rating',
 };
 
-export function roleForField(field: FormField): FieldRole {
-  if (field.type === 'checkbox') return field.options?.length ? 'option.checkbox' : 'field.checkbox';
-  return ROLE_BY_TYPE[field.type] ?? 'field.text';
+export function drawingForField(field: Pick<FormField, 'type' | 'options'>): FieldDrawing | null {
+  if (field.type === 'checkbox' && field.options?.length) return 'option.checkbox';
+  return Object.prototype.hasOwnProperty.call(FIELD_DRAWINGS, field.type) ? FIELD_DRAWINGS[field.type as DefaultFieldType] : 'field.text';
 }
 
-export function isOptionRole(role: Role): role is 'option.radio' | 'option.checkbox' {
+export function isOptionRole(role: Role | FieldDrawing): role is 'option.radio' | 'option.checkbox' {
   return role === 'option.radio' || role === 'option.checkbox';
 }

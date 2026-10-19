@@ -176,6 +176,8 @@ export const iosKit: Kit = {
     fonts,
     text: C.label,
     muted: '#8A8A8E',
+    accent: C.blue,
+    control: { height: 44, radius: 12, target: 44 },
     card: { fill: C.grouped, radius: 34, padding: 20, gap: 20, width: 370 },
     actionsGap: 12,
     optionGroup: { gap: 0, fill: C.cell, radius: CELL_RADIUS },
@@ -185,4 +187,5 @@ export const iosKit: Kit = {
     captionSize: 13,
   }),
   build: (role, fonts) => buildRole(PARTS, role, fonts),
+  glyph: () => circle(),
 };
