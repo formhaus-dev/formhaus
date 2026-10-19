@@ -1,3 +1,4 @@
+import type { FormEngine } from './runtime';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { BOOLEAN_TYPES, MAX_STRING_LENGTH } from '../validation/type-checks';
 import { formatText } from '../validation/default-messages';
@@ -14,6 +15,7 @@ export interface RecallOptions {
   item?: RecallItem;
   lang?: string;
   format?: RecallFormatFn;
+  engine?: FormEngine<object>;
 }
 
 export const RECALL_SLOTS = ['title', 'description', 'label', 'placeholder', 'helperText', 'itemLabel'] as const;
@@ -81,7 +83,7 @@ function cut(text: string): string {
 }
 
 function answer(field: FormField, value: unknown): string | number | string[] | undefined {
-  if (value === undefined || value === null || field.type === 'password') return undefined;
+  if (value === undefined || value === null) return undefined;
   if (isGroup(field)) return Array.isArray(value) ? value.length : undefined;
   if (BOOLEAN_TYPES.includes(field.type)) return value === true ? field.label : undefined;
   const text = (item: unknown) =>
@@ -97,7 +99,7 @@ function answer(field: FormField, value: unknown): string | number | string[] | 
   return value.length ? value.map((item) => String(text(item))) : undefined;
 }
 
-export type ActiveField = (key: string, values: Record<string, unknown>) => FormField | undefined;
+export type ActiveField = (key: string) => FormField | undefined;
 
 export function resolveRecall(
   definition: FormDefinition,
@@ -112,14 +114,15 @@ export function resolveRecall(
     text,
     () => {
       const fields = getAllFields(definition);
-      const group = item && active(item.group, values);
+      const group = item && active(item.group);
       const entry = group && isGroup(group) ? itemsOf(values[group.key])[item.index] : undefined;
       const scope = isEntry(entry) ? (group as FormGroup).fields : [];
+      const shared = scope.length ? fields.flatMap((field) => (isGroup(field) && field.key === item!.group ? field.fields : [])) : [];
       return (key) => {
         const own = scope.find((field) => field.key === key);
         const source = own ? (entry as Record<string, unknown>) : values;
-        const field =
-          own ?? (fields.some((candidate) => candidate.key === key && candidate.type === 'password') ? undefined : active(key, values));
+        const sensitive = (own ? shared : fields).some((candidate) => candidate.key === key && candidate.type === 'password');
+        const field = sensitive ? undefined : (own ?? active(key));
         const value = field && hasOwn(source, key) ? answer(field, source[key]) : undefined;
         return value === undefined ? '' : format(value, field!, lang || definition.lang || 'en');
       };
