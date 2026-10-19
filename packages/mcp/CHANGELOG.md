@@ -1,5 +1,17 @@
 # @formhaus/mcp
 
+## 0.9.0
+
+### Minor Changes
+
+- `capabilities` describes format 1.5: answer recall with `{{key}}`, exclusive `multiselect` options, the `autocomplete` property and line breaks in descriptions.
+- `validate_definition` reports the new recall, exclusive and `autocomplete` warnings.
+- `translation_template` lists the `or` and `select` labels and the `exclusive` message for forms that use them.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 0.21.0.
+
 ## 0.8.2
 
 ### Patch Changes
