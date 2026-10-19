@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { FormEngine } from '../../src';
 import { validateSubmission } from '../../src/server';
 
 const definition = (slug: string) => JSON.parse(readFileSync(resolve(__dirname, `../../../../templates/${slug}.json`), 'utf8')).definition;
@@ -103,5 +104,41 @@ describe('rental-application', () => {
 
   it.each(['1.5', '0', '13'])('rejects %s occupants', (occupants) => {
     expect(Object.keys(errorsOf('rental-application', { ...base, occupants }))).toEqual(['occupants']);
+  });
+});
+
+describe('tax-preparation-intake', () => {
+  const base = {
+    firstName: 'Sam',
+    lastName: 'Lee',
+    dateOfBirth: '1990-01-01',
+    email: 'sam@example.com',
+    phone: '5551234567',
+    maritalStatus: 'never-married',
+    claimedByOther: 'no',
+    income: ['wages'],
+    expenses: ['none'],
+    events: ['none'],
+    refund: 'deposit',
+    accurate: true,
+  };
+
+  it('accepts a complete answer', () => {
+    expect(errorsOf('tax-preparation-intake', base)).toEqual({});
+  });
+
+  it.each(['income', 'expenses', 'events'])('rejects None of these with another choice in %s on the server', (key) => {
+    const other = { income: 'wages', expenses: 'mortgage', events: 'classes' }[key];
+    expect(Object.keys(errorsOf('tax-preparation-intake', { ...base, [key]: [other, 'none'] }))).toEqual([key]);
+  });
+
+  it.each(['income', 'expenses', 'events'])('keeps None of these alone in %s on the client', (key) => {
+    const other = { income: 'wages', expenses: 'mortgage', events: 'classes' }[key] as string;
+    const engine = new FormEngine(definition('tax-preparation-intake'));
+    engine.setValue(key, [other]);
+    engine.setValue(key, [other, 'none']);
+    expect(engine.values[key]).toEqual(['none']);
+    engine.setValue(key, ['none', other]);
+    expect(engine.values[key]).toEqual([other]);
   });
 });

@@ -354,7 +354,8 @@
               },
               {
                 "value": "none",
-                "label": "None of these"
+                "label": "None of these",
+                "exclusive": true
               }
             ],
             "validation": {
@@ -402,7 +403,8 @@
               },
               {
                 "value": "none",
-                "label": "None of these"
+                "label": "None of these",
+                "exclusive": true
               }
             ],
             "validation": {
@@ -440,7 +442,8 @@
               },
               {
                 "value": "none",
-                "label": "None of these"
+                "label": "None of these",
+                "exclusive": true
               }
             ],
             "validation": {
