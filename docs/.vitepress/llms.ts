@@ -24,7 +24,7 @@ const details = [
   '',
   `JSON Schema of an overlay: ${siteUrl}/schema/form-translation.json`,
   '',
-  'Claude Code plugin (skills and MCP server): `claude plugin marketplace add ignsm/formhaus && claude plugin install formhaus@formhaus`',
+  'Claude Code plugin (skills and MCP server): `claude plugin marketplace add formhaus-dev/formhaus && claude plugin install formhaus@formhaus`',
   '',
   'MCP server only: `claude mcp add formhaus -- npx -y @formhaus/mcp`',
   '',

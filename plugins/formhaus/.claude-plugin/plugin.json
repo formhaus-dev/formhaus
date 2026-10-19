@@ -7,7 +7,7 @@
     "url": "https://github.com/ignsm"
   },
   "homepage": "https://formhaus.dev/guide/mcp.html",
-  "repository": "https://github.com/ignsm/formhaus",
+  "repository": "https://github.com/formhaus-dev/formhaus",
   "license": "MIT",
   "keywords": ["forms", "form-definition", "mcp", "figma"]
 }

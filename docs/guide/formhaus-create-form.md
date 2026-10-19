@@ -15,11 +15,11 @@ Generate an `@formhaus/core` form definition from a description, CSV data, or a 
 Install the plugin:
 
 ```bash
-claude plugin marketplace add ignsm/formhaus
+claude plugin marketplace add formhaus-dev/formhaus
 claude plugin install formhaus@formhaus
 ```
 
-Inside a Claude Code session, `/plugin marketplace add ignsm/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
+Inside a Claude Code session, `/plugin marketplace add formhaus-dev/formhaus` and `/plugin install formhaus@formhaus` do the same after a confirmation prompt.
 
 The plugin also starts the [MCP server](/guide/mcp). The skill uses it to validate the definition and simulate step paths before it shows the result.
 
@@ -55,8 +55,8 @@ The skill infers field types and validation rules, then asks about steps and con
 The generated form definition works with:
 
 - The [Figma plugin](/guide/figma): paste into the Generate tab
-- [React adapter](https://github.com/ignsm/formhaus/tree/main/packages/react): pass to `FormRenderer`
-- [Vue adapter](https://github.com/ignsm/formhaus/tree/main/packages/vue): pass to `FormRenderer`
+- [React adapter](https://github.com/formhaus-dev/formhaus/tree/main/packages/react): pass to `FormRenderer`
+- [Vue adapter](https://github.com/formhaus-dev/formhaus/tree/main/packages/vue): pass to `FormRenderer`
 
 ## Next steps
 

@@ -5,7 +5,7 @@ Thanks for wanting to help. Here's how to get started.
 ## Setup
 
 ```bash
-git clone https://github.com/ignsm/formhaus.git
+git clone https://github.com/formhaus-dev/formhaus.git
 cd formhaus
 pnpm install
 ```
@@ -54,11 +54,11 @@ Opens at http://localhost:5173.
 
 ### Changesets
 
-Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR that touches a published package adds a `.changeset/*.md` file. When the maintainer is ready to release, `pnpm version` consumes those files into per-package CHANGELOGs, bumps versions and syncs `packages/mcp/server.json`; `pnpm release` builds, publishes to npm and creates git tags. Pushing an `@formhaus/mcp@*` tag publishes `server.json` to the MCP Registry. Pushing an `@formhaus/core@*` tag opens a PR that moves the docs site and playground to that version; to do it by hand, run `node scripts/bump-docs-pins.mjs <version>` and `pnpm --dir docs install`.
+Releases are managed with [Changesets](https://github.com/changesets/changesets). Each PR that touches a published package adds a `.changeset/*.md` file. When the maintainer is ready to release, `pnpm version` consumes those files into per-package CHANGELOGs, bumps versions and syncs `packages/mcp/server.json`; the Release workflow (run by hand from GitHub Actions, approved in the `npm` environment) builds, publishes to npm through trusted publishing with provenance, pushes the git tags, publishes `server.json` to the MCP Registry and opens a PR that moves the docs site and playground to the new version; to do it by hand, run `node scripts/bump-docs-pins.mjs <version>` and `pnpm --dir docs install`.
 
 Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 
-`@formhaus/core`, `@formhaus/react`, and `@formhaus/vue` are versioned together (the `fixed` group in `.changeset/config.json`). `@formhaus/figma` is private and not published.
+`@formhaus/core`, `@formhaus/react`, `@formhaus/vue` and the `formhaus` CLI are versioned together (the `fixed` group in `.changeset/config.json`). `@formhaus/figma` is private and not published.
 
 ## What could use help
 
