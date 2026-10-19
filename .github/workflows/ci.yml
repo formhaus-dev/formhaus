@@ -48,6 +48,8 @@ jobs:
       - run: pnpm check:bundle-size
       - run: pnpm check:duplicates
       - run: pnpm check:source-size
+      - run: pnpm docs:install
+      - run: pnpm check:knip
       - run: pnpm check:builder-isolation
       - run: pnpm check:migration
       - run: pnpm check:docs-versions
