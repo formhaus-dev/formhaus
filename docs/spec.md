@@ -639,13 +639,16 @@ A token is replaced with the answer of the field:
 | `multiselect` | the list of option labels |
 | `checkbox`, `switch` | the field label when `true`, else empty |
 | `number`, `scale`, `rating` | the number |
-| `date`, `time`, `datetime`, text types, `hidden` | the value as stored |
+| `date`, `time`, `datetime`, text types other than `password`, `hidden` | the value as stored |
+| `password` | empty |
 | `file` | the list of file names |
 | group | the number of items |
 
-A field without a value, an empty list, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. Each recalled text is cut to 10000 code units. Recall runs once: a recalled value that holds `{{key}}` is not expanded again. The result is plain text, and renderers draw it as text, never as HTML. React and Vue update the texts when a value, `lang` or `formatRecall` changes. `recallText(definition, text, values, { item?, lang?, format? })` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item.
+A field without a value, an empty list, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. After the tokens and the `itemLabel` parameters are replaced, a text longer than 10000 UTF-16 code units is cut to its first 10000. When the last unit kept is a high surrogate, it is dropped too, so the text never ends in half a character. Swift counts the units of `String.utf16`. Recall runs once: a recalled value that holds `{{key}}` is not expanded again. The result is plain text, and renderers draw it as text, never as HTML. React and Vue update the texts when a value, `lang` or `formatRecall` changes. `recallText(definition, text, values, { item?, lang?, format? })` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item.
 
 An optional answer can be empty, so `{{street}}, {{city}}` can show `, Springfield`. Put each optional recall on its own line or in its own text instead of joining answers with punctuation.
+
+`checkDefinition()` reports each recall warning code at most once per text, for its first token.
 
 ### Recall formatting
 
@@ -940,6 +943,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |
+| `recall-sensitive-field` | warning | A `{{key}}` token for a `password` field. It shows nothing |
+| `recall-query-source` | warning | A `{{key}}` token for a `hidden` field with a `query` source, whose text anyone can set in a link |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |
