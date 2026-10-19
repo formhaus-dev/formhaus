@@ -128,6 +128,7 @@ describe('fixes for repeated option values', () => {
   it.each([
     ['an eq condition', [plan(), text('x', { show: [{ field: 'plan', eq: 'pro' }] })]],
     ['an in condition', [plan(), text('x', { showAny: [{ field: 'plan', in: ['free', 'pro'] }] })]],
+    ['a contains condition', [plan({ type: 'multiselect' }), text('x', { show: [{ field: 'plan', contains: 'pro' }] })]],
     ['the default value', [plan({ defaultValue: 'pro' })]],
   ])('marks the fix unsafe when %s uses the value', (_, fields) => {
     expect(fixesAt(form(fields), '/fields/0/options/1/value')[0].safe).toBe(false);

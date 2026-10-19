@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.3 specification"
-description: "Formhaus form definition format 1.3: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
+title: "Form definition 1.4 specification"
+description: "Formhaus form definition format 1.4: structure, fields, sections, repeatable groups, conditions, validation, steps, routes, translations and the payload."
 ---
 
-# Formhaus form definition 1.3
+# Formhaus form definition 1.4
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,13 +19,13 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.3**. `@formhaus/core` 0.19 and later implement it. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.4**. `@formhaus/core` 0.20 and later implement it. Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.3"`. Without it, core reads the definition as 1.3. A minor version newer than 1.3 is also read as 1.3. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.4"`. Without it, core reads the definition as 1.4. A minor version newer than 1.4 is also read as 1.4. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
@@ -33,8 +33,10 @@ A definition with `props` MAY declare `"formatVersion": "1.2"`. Core 0.14 report
 
 A definition with a `scale` or `rating` field SHOULD declare `"formatVersion": "1.3"`. Core 0.18 and older read these types as custom types: they skip the type check, and their `validateSubmission()` accepts any value for them. `checkDefinition()` warns about a `scale` or `rating` field without format 1.3. Upgrade the server that runs `validateSubmission()` before the clients. A definition with option `image`, field `columns` or section `layout` MAY declare 1.3. Core 0.18 reports them as `unknown-property`, and its renderers draw plain options and a plain section.
 
+A definition with a `contains` or `notContains` condition SHOULD declare `"formatVersion": "1.4"`. Core 0.19 and older reject it with `unknown-operator`: the constructor and `validateSubmission()` throw. `checkDefinition()` warns about these operators without format 1.4. Upgrade the server that runs `validateSubmission()` before the clients.
+
 ```json
-{ "formatVersion": "1.3", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
+{ "formatVersion": "1.4", "id": "contact", "title": "Contact", "submit": { "label": "Send" } }
 ```
 
 ## Document structure
@@ -329,6 +331,8 @@ A condition tests the value of one field:
 | `neq` | string, number or boolean | value `!==` `neq` |
 | `in` | (string or number)[] | the list contains the value |
 | `notIn` | (string or number)[] | the list does not contain the value |
+| `contains` | string, number or boolean | the value is an array with an item `===` `contains`. Added in 1.4 |
+| `notContains` | string, number or boolean | `contains` with the same operand does not match. Added in 1.4 |
 | `notEmpty` | boolean | `true`: the value is not empty |
 | `gt` | number | the numeric value `>` `gt` |
 | `gte` | number | the numeric value `>=` `gte` |
@@ -337,7 +341,7 @@ A condition tests the value of one field:
 
 A condition MUST use exactly one operator. The constructor throws on a condition with no operator, with several operators, or with a key that is not an operator. At runtime, a condition without a known operator never matches. `notEmpty: false` always matches; `checkDefinition()` warns about it with `condition-always-true`.
 
-Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
+Comparison is strict and without type coercion: `"1"` does not equal `1`. `in` and `notIn` test the value itself, so an array value never matches `in`. `contains` and `notContains` test the items of an array value, such as a `multiselect` answer. `contains` never matches a value that is not an array, including an unanswered field, so `notContains` matches it. `false` and `0` count as not empty for `notEmpty`. `in: []` never matches; `notIn: []` always matches.
 
 For `gt`, `gte`, `lt` and `lte`, the numeric value is the value itself when it is a finite number, or `Number(value)` when it is a non-empty string that converts to a finite number. Any other value, including an empty one, does not match.
 
@@ -773,11 +777,13 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
+| `contains-not-list` | warning | `contains` or `notContains` on a built-in field that does not hold a list, or on a group. Only `multiselect` holds a list; custom types are not checked |
+| `contains-not-in-options` | warning | A `contains` or `notContains` value that is not one of the static `options` of the `multiselect` |
 | `slow-pattern` | warning | A `pattern` that repeats a group with a quantifier or an alternation inside, such as `(a+)+`, which can take very long to match |
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, or a `scale` or `rating` field without 1.3 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, or a `contains` or `notContains` condition without 1.4 |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |

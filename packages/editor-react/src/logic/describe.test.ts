@@ -24,4 +24,18 @@ describe('describeLogic', () => {
     const [, second] = form.blocks.filter((block) => isQuestion(block) && block.key === 'detail');
     expect(describeLogic(form, logicOf(form, second!), scopeOf(form, second))).toBe('Shown if Kind is Firm');
   });
+
+  it('describes a contains condition with the option label', () => {
+    const form = fromDefinition({
+      id: 'signup',
+      title: 'Sign up',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'interests', type: 'multiselect', label: 'Interests', options: [{ value: 'other', label: 'Other' }] },
+        { key: 'other', type: 'text', label: 'Other interest', show: [{ field: 'interests', contains: 'other' }] },
+      ],
+    });
+    const other = form.blocks.find((block) => isQuestion(block) && block.key === 'other')!;
+    expect(describeLogic(form, logicOf(form, other))).toBe('Shown if Interests includes Other');
+  });
 });
