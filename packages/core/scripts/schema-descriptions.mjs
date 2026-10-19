@@ -1,7 +1,7 @@
 export const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.3". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images and matrix sections in 1.3.',
+    'Format version of the definition, such as "1.3". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
@@ -51,6 +51,8 @@ export const DESCRIPTIONS = {
     'Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, up to 3 anchor labels whose value is a point number.',
   'FormField.layout':
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
+  'FormField.columns':
+    'Cards per row, 1 to 4, for radio and multiselect options with images. Without it, cards fill the row at about 200px each. Narrow screens show at most 2 per row.',
   'FormField.optionsFrom': 'Key of an options provider passed to the renderer, used instead of static options.',
   'FieldValidation.matchField': 'Key of another field whose value this field must equal.',
   FormNode: 'A field, a section of fields or a repeatable group, told apart by type.',
