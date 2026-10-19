@@ -28,6 +28,8 @@ export const footerColumns: FooterColumn[] = [
     title: 'Developers',
     links: [
       { text: 'Docs', href: '/guide/' },
+      { text: 'Form builder', href: '/build' },
+      { text: 'Playground', href: '/playground' },
       { text: 'API reference', href: '/api/definition' },
       { text: 'MCP server', href: '/guide/mcp' },
       { text: 'Changelog', href: '/changelog' },
