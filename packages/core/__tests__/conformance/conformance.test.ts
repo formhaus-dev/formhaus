@@ -50,6 +50,7 @@ describe('conformance corpus', () => {
       'check-section-forward-reference',
       'check-slow-pattern',
       'contains-disabled',
+      'contains-limit',
       'disabled-actions',
       'duplicate-options',
       'flat-api-steps',
@@ -104,9 +105,9 @@ describe('conformance corpus', () => {
     },
   );
 
-  it.each(cases)('%s: server', (_, definition, { input, expected }) => {
+  it.each(cases)('%s: server', (_, definition, { input, expected, serverValues }) => {
     const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps });
-    expect(result).toEqual(expected);
+    expect(result).toEqual({ ...expected, values: serverValues ?? expected.values });
     expect(Object.getPrototypeOf(result.values)).toBe(Object.prototype);
   });
 

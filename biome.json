@@ -62,6 +62,12 @@
   },
   "overrides": [
     {
+      "includes": ["packages/core/fixtures/conformance/contains-limit.json"],
+      "formatter": {
+        "enabled": false
+      }
+    },
+    {
       "includes": ["**/*.vue", "**/*.svelte"],
       "linter": {
         "rules": {
