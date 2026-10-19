@@ -15,7 +15,15 @@ export function OptionImage({ option: { image, label } }: { option: FieldOption 
     <span className="fh-field__option-image" />
   ) : (
     <>
-      <img className="fh-field__option-image" src={image} alt="" loading="lazy" decoding="async" onError={() => setFailed(image)} />
+      <img
+        className="fh-field__option-image"
+        src={image}
+        alt=""
+        loading="lazy"
+        decoding="async"
+        referrerPolicy="no-referrer"
+        onError={() => setFailed(image)}
+      />
       <button
         ref={trigger}
         type="button"
@@ -46,7 +54,7 @@ export function OptionImage({ option: { image, label } }: { option: FieldOption 
           <p className="fh-dialog__title">{label}</p>
           <button type="button" className="fh-dialog__close" aria-label={text('close')} onClick={close} />
         </div>
-        <img className="fh-dialog__image" src={image} alt="" loading="lazy" />
+        <img className="fh-dialog__image" src={image} alt="" loading="lazy" referrerPolicy="no-referrer" />
       </dialog>
     </>
   );

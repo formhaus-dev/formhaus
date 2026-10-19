@@ -215,7 +215,7 @@ Pick one number on a range, such as 1 to 5. Renders as a row of numbered boxes. 
 }
 ```
 
-- `validation.min` and `validation.max` set the range. They default to 1 and 5. Use `min` 0 or 1 and 3 to 11 points.
+- `validation.min` and `validation.max` set the range. They default to 1 and 5. Use `min` 0 or 1 and 3 to 11 points. Bounds that are not whole numbers, or fewer than 2 or more than 11 points, are an `invalid-scale` error.
 - A value outside the range or not a whole number fails with `Select one of the available options`.
 - `options` are optional anchor labels. `value` is the point number as a string. The label of the first point sits under the start of the row, the last point under the end and the middle point, `floor((min + max) / 2)`, in the center. Labels on other points are not shown.
 - Digit keys select a point. Arrow keys move between points. With `autoAdvance`, a click, Space, Enter or a digit key moves to the next step.
@@ -252,7 +252,7 @@ Pick a number of stars. The value is the number of stars. Requires `@formhaus/co
 }
 ```
 
-- `validation.max` sets the number of stars, 5 by default. Use 3 to 10.
+- `validation.max` sets the number of stars, 5 by default. Use 3 to 10. A `max` outside 2 to 11 is an `invalid-scale` error.
 - `validation.min` is an ordinary rule: a rating below it fails with the `min` message.
 - `options` work as anchor labels, as on a scale.
 - Keyboard and `autoAdvance` work as on a scale. Screen readers announce the star number.
@@ -277,6 +277,7 @@ Add `image` to the options of a `radio` or `multiselect` field. The options beco
 - The value is the option `value`, as without images.
 - The label stays visible and names the option for screen readers, so the image has an empty `alt`.
 - Images load lazily from the URL as given. Allow their host in `img-src` if the page has a Content Security Policy.
+- The image host sees the respondent's IP address. The built-in renderers send no `Referer` header. `checkDefinition()` warns about an `image` that is not an `https:` or `data:image/` URL with `unsafe-image-url`.
 - `select` and `autocomplete` ignore `image`.
 - `columns` sets the cards per row, from 1 to 4. Without it, cards are about 200px wide and fill the row. Phones show at most 2 per row.
 - The button in the corner of each image opens it at full size. Esc, a click outside or the close button closes it.

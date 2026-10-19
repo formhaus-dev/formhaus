@@ -18,11 +18,11 @@ export function scaleRange(question: Scale): Range {
   return [question.type === 'rating' ? 1 : (rules.min ?? 1), rules.max ?? 5];
 }
 
-const valid = ([min, max]: Range) => Number.isInteger(min) && Number.isInteger(max) && max - min >= 2 && max - min <= 20;
+const valid = ([min, max]: Range) => Number.isInteger(min) && Number.isInteger(max) && max - min >= 2 && max - min < SCALE_POINTS.max;
 
 export function scalePoints(question: Scale): number[] {
   const [min, max] = scaleRange(question);
-  return max >= min && max - min <= 20 ? Array.from({ length: max - min + 1 }, (_, index) => min + index) : [];
+  return max >= min && max - min < SCALE_POINTS.max ? Array.from({ length: max - min + 1 }, (_, index) => min + index) : [];
 }
 
 function slotPoints([min, max]: Range): Record<AnchorSlot, number | undefined> {

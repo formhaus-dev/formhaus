@@ -34,11 +34,12 @@ export function ScaleSettings({ field, actions, readOnly }: Props) {
   const [draft, setDraft] = useState<string | null>(null);
   const commit = () => {
     if (draft === null) return;
-    const value = Number.parseInt(draft, 10);
+    const typed = Number.parseInt(draft, 10);
+    const value = Number.isNaN(typed) ? undefined : Math.min(Math.max(typed, limits.min), limits.max);
     setDraft(null);
-    if (Number.isNaN(value) ? stored === undefined : value === stored) return;
+    if (value === stored) return;
     actions.edit((form) => {
-      setScaleRange(form, field.uid, { max: Number.isNaN(value) ? undefined : value });
+      setScaleRange(form, field.uid, { max: value });
     });
   };
   return (

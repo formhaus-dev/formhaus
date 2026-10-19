@@ -68,6 +68,16 @@ function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
     ...(field.options ?? []).flatMap((option, index) => [
       ...required(option, `${path}/options/${index}`, 'label'),
       ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
+      ...(typeof option.image === 'string' && !/^(https:|data:image\/)/i.test(option.image)
+        ? [
+            warning(
+              'unsafe-image-url',
+              `${path}/options/${index}/image`,
+              `the image of option "${option.value}" in "${field.key}" is not an https: or data:image/ URL`,
+              'Serve the image over https',
+            ),
+          ]
+        : []),
     ]),
     ...(isEntry(field.validation) ? unknown(field.validation, `${path}/validation`, PROPERTIES.validation) : []),
     ...(field.columns !== undefined &&

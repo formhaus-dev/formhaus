@@ -50,10 +50,20 @@ describe('scale lint', () => {
 
   it('reports impossible, empty and oversized ranges', () => {
     expect(summary([scale({ min: 2 })])).toEqual(['warning scale-range /fields/0/validation/min']);
-    expect(summary([scale({ min: 0.5 })])).toEqual(['warning scale-range /fields/0/validation/min']);
-    expect(summary([scale({ max: 1 })])).toEqual(['warning scale-range /fields/0/validation/max']);
-    expect(summary([scale({ min: 0, max: 12 })])).toEqual(['warning scale-range /fields/0/validation/max']);
+    expect(summary([scale({ min: 0.5 })])).toEqual([
+      'error invalid-scale /fields/0/validation',
+      'warning scale-range /fields/0/validation/min',
+    ]);
+    expect(summary([scale({ max: 1 })])).toEqual([
+      'error invalid-scale /fields/0/validation',
+      'warning scale-range /fields/0/validation/max',
+    ]);
+    expect(summary([scale({ min: 0, max: 12 })])).toEqual([
+      'error invalid-scale /fields/0/validation',
+      'warning scale-range /fields/0/validation/max',
+    ]);
     expect(summary([{ key: 'r', type: 'rating', label: 'R', validation: { max: 12 } }])).toEqual([
+      'error invalid-scale /fields/0/validation',
       'warning scale-range /fields/0/validation/max',
     ]);
   });

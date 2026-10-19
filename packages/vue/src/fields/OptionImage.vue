@@ -20,6 +20,7 @@ let pressed: EventTarget | null = null;
       alt=""
       loading="lazy"
       decoding="async"
+      referrerpolicy="no-referrer"
       @error="failed = option.image"
     />
     <button
@@ -43,7 +44,7 @@ let pressed: EventTarget | null = null;
         <p class="fh-dialog__title">{{ option.label }}</p>
         <button type="button" class="fh-dialog__close" :aria-label="text('close')" @click="dialog?.close()" />
       </div>
-      <img class="fh-dialog__image" :src="option.image" alt="" loading="lazy" />
+      <img class="fh-dialog__image" :src="option.image" alt="" loading="lazy" referrerpolicy="no-referrer" />
     </dialog>
   </template>
 </template>

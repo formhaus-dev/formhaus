@@ -8,7 +8,7 @@ export function ScaleField(props: FieldComponentProps) {
   const { field, value, error } = props;
   const id = fieldId(props);
   const [min, max] = scaleRange(field);
-  const points = Array.from({ length: Math.max(0, max - min + 1) }, (_, index) => min + index);
+  const points = Array.from({ length: Math.min(11, Math.max(0, max - min + 1)) }, (_, index) => min + index);
   const roles = [min, Math.floor((min + max) / 2), max];
   const anchors = roles.map((point, index) =>
     index === 1 && (point === min || point === max) ? undefined : field.options?.find((option) => option.value === String(point)),
