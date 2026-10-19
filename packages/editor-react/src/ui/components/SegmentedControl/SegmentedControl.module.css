@@ -27,7 +27,7 @@
 .label {
   display: inline-flex;
   align-items: center;
-  height: calc(var(--fh-ed-size-control-md) - var(--fh-ed-space-1-5));
+  height: var(--fh-ed-size-segment, calc(var(--fh-ed-size-control-md) - var(--fh-ed-space-1-5)));
   padding: 0 var(--fh-ed-space-3);
   border-radius: var(--fh-ed-radius-sm);
   color: var(--fh-ed-fg-muted);

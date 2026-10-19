@@ -26,6 +26,7 @@ export function PatternSettings({ field, actions, readOnly }: Props) {
     return (
       <AddRow
         label="Add a pattern"
+        inset="flush"
         onClick={() => {
           setOpen(true);
         }}
