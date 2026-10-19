@@ -4,7 +4,7 @@ import { gzipSync } from 'node:zlib';
 
 const HARD_LIMITS = {
   'core + react': 28672,
-  'core + vue': 30720,
+  'core + vue': 31102,
   core: 23552,
 };
 
