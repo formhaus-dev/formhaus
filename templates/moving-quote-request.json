@@ -35,7 +35,7 @@
               "pattern": "^\\d{5}(-\\d{4})?$",
               "patternMessage": "Enter a 5-digit ZIP code"
             },
-            "helperText": "Leave empty if you don’t know yet."
+            "helperText": "Leave empty if you don’t know yet. Questions about the new place then wait."
           },
           {
             "key": "moveDate",
@@ -200,6 +200,12 @@
             "key": "toAccess",
             "type": "section",
             "title": "Access at your new place",
+            "show": [
+              {
+                "field": "toZip",
+                "notEmpty": true
+              }
+            ],
             "fields": [
               {
                 "key": "toFloor",

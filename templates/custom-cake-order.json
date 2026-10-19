@@ -142,9 +142,32 @@
         "title": "Allergies and diets",
         "fields": [
           {
+            "key": "hasAllergies",
+            "type": "radio",
+            "label": "Does anyone eating the cake have a food allergy?",
+            "layout": "inline",
+            "options": [
+              {
+                "value": "yes",
+                "label": "Yes"
+              },
+              {
+                "value": "no",
+                "label": "No"
+              },
+              {
+                "value": "unsure",
+                "label": "Not sure"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
             "key": "allergies",
             "type": "multiselect",
-            "label": "Does anyone eating the cake have an allergy?",
+            "label": "What are they allergic to?",
             "options": [
               {
                 "value": "milk",
@@ -177,14 +200,12 @@
               {
                 "value": "other",
                 "label": "Other"
-              },
+              }
+            ],
+            "show": [
               {
-                "value": "none",
-                "label": "None"
-              },
-              {
-                "value": "unsure",
-                "label": "Not sure"
+                "field": "hasAllergies",
+                "eq": "yes"
               }
             ],
             "validation": {
