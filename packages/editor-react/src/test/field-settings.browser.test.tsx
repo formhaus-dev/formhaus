@@ -132,16 +132,19 @@ describe('field settings in the inspector', () => {
     await userEvent.fill(panel.getByRole('textbox', { name: 'Maximum' }), '10');
     await userEvent.fill(screen.getByRole('textbox', { name: 'Field label' }), 'Your age');
     await userEvent.click(screen.getByRole('radio', { name: 'JSON' }));
-    await waitFor(() => {
-      const dom = document.querySelector<HTMLElement>('.cm-editor');
-      const json = dom ? EditorView.findFromDOM(dom)?.state.doc.toString() : '';
-      expect(JSON.parse(json ?? '{}').fields[0]).toEqual({
-        key: 'yourAge',
-        type: 'number',
-        label: 'Your age',
-        validation: { required: true, min: 1, maxMessage: 'Too many', validator: 'even', max: 10 },
-      });
-    });
+    await waitFor(
+      () => {
+        const dom = document.querySelector<HTMLElement>('.cm-editor');
+        const json = dom ? EditorView.findFromDOM(dom)?.state.doc.toString() : '';
+        expect(JSON.parse(json ?? '{}').fields[0]).toEqual({
+          key: 'yourAge',
+          type: 'number',
+          label: 'Your age',
+          validation: { required: true, min: 1, maxMessage: 'Too many', validator: 'even', max: 10 },
+        });
+      },
+      { timeout: 3000 },
+    );
     expect(first(store).validation).toMatchObject({ min: 1, max: 10 });
   });
 

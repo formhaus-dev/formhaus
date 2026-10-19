@@ -89,6 +89,15 @@ function measure(card: HTMLElement) {
     .filter(visible)
     .filter(outside)
     .map((node) => (node.tagName === 'SELECT' ? node.parentElement! : node));
+  const texts = [...panel.querySelectorAll('p, [class*="settingLabel"]')].filter(visible).filter(outside);
+  const textStart = (node: Element) => {
+    const range = document.createRange();
+    range.selectNodeContents(node);
+    return round(range.getClientRects()[0]?.left ?? box(node).left);
+  };
+  const strayTexts = texts
+    .filter((node) => !lines.has(textStart(node)))
+    .map((node) => `text "${node.textContent?.trim().slice(0, 30) ?? ''}" at ${String(textStart(node))}`);
   const strays = [...labels, ...controls]
     .filter((node) => !lines.has(round(box(node).left)))
     .map(
@@ -106,7 +115,7 @@ function measure(card: HTMLElement) {
     .filter((node): node is Element => !!node && visible(node))
     .map((node) => round(box(node).left))
     .filter((x) => x !== left);
-  return { strays, uneven, edges };
+  return { strays: [...strays, ...strayTexts], uneven, edges };
 }
 
 function small(card: HTMLElement) {
