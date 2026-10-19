@@ -19,8 +19,9 @@ describe('message catalogs', () => {
   });
 
   it('keeps getDefaultMessage output, units included', () => {
-    expect(getDefaultMessage('minLength', { min: 3, unit: 'items' })).toBe('Must be at least 3 items');
-    expect(getDefaultMessage('minItems', { min: 2 })).toBe('Must be at least 2 items');
+    expect(getDefaultMessage('minLength', { min: 3, unit: 'items' })).toBe('At least 3 items');
+    expect(getDefaultMessage('minItems', { min: 2 })).toBe('At least 2 required');
+    expect(getDefaultMessage('minLength', { min: 1 })).toBe('Minimum length is 1');
     expect(getDefaultMessage('email')).toBe('Enter a valid email');
   });
 });
@@ -44,7 +45,7 @@ describe('engine messages', () => {
   it('ignores catalog values that are not text', () => {
     const odd = { ...definition, messages: { required: 5, minLength: '' } } as unknown as FormDefinition;
     expect(new FormEngine(odd, { password: 'abc' }).validate()).toEqual({
-      password: 'Must be at least 8 characters',
+      password: 'Minimum length is 8',
       name: 'This field is required',
     });
   });
