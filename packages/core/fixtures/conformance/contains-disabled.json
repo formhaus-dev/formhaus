@@ -1,0 +1,152 @@
+{
+  "name": "contains-disabled",
+  "covers": [],
+  "issues": [],
+  "warnings": [],
+  "texts": {
+    "steps.declare.fields.declarations.options.ACCURATE": "Accurate"
+  },
+  "definition": {
+    "formatVersion": "1.4",
+    "id": "contains-disabled",
+    "title": "Contains in disabled actions",
+    "submit": {
+      "label": "Send",
+      "disabled": [
+        {
+          "field": "declarations",
+          "notContains": "ACCURATE"
+        }
+      ]
+    },
+    "steps": [
+      {
+        "id": "wealth",
+        "title": "Wealth",
+        "next": {
+          "label": "Continue",
+          "disabled": [
+            {
+              "field": "sourceOfWealth",
+              "contains": "GIFT"
+            }
+          ]
+        },
+        "fields": [
+          {
+            "key": "sourceOfWealth",
+            "type": "multiselect",
+            "label": "Source of wealth",
+            "options": [
+              {
+                "value": "SALARY",
+                "label": "Salary"
+              },
+              {
+                "value": "OTHER",
+                "label": "Other"
+              },
+              {
+                "value": "GIFT",
+                "label": "Gift"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "declare",
+        "title": "Declare",
+        "fields": [
+          {
+            "key": "declarations",
+            "type": "multiselect",
+            "label": "Declarations",
+            "options": [
+              {
+                "value": "ACCURATE",
+                "label": "Accurate"
+              },
+              {
+                "value": "CONSENT",
+                "label": "Consent"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "next disabled",
+      "input": {
+        "values": {
+          "sourceOfWealth": ["SALARY", "GIFT"],
+          "declarations": ["ACCURATE"]
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "sourceOfWealth": ["SALARY", "GIFT"],
+          "declarations": ["ACCURATE"]
+        },
+        "errors": {}
+      },
+      "canSubmit": false
+    },
+    {
+      "name": "submit disabled",
+      "input": {
+        "values": {
+          "sourceOfWealth": ["SALARY"],
+          "declarations": ["CONSENT"]
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "sourceOfWealth": ["SALARY"],
+          "declarations": ["CONSENT"]
+        },
+        "errors": {}
+      },
+      "canSubmit": false
+    },
+    {
+      "name": "submit disabled before an answer",
+      "input": {
+        "values": {
+          "sourceOfWealth": ["SALARY"]
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "sourceOfWealth": ["SALARY"]
+        },
+        "errors": {}
+      },
+      "canSubmit": false
+    },
+    {
+      "name": "both enabled",
+      "input": {
+        "values": {
+          "sourceOfWealth": ["SALARY"],
+          "declarations": ["CONSENT", "ACCURATE"]
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "sourceOfWealth": ["SALARY"],
+          "declarations": ["CONSENT", "ACCURATE"]
+        },
+        "errors": {}
+      },
+      "canSubmit": true
+    }
+  ]
+}

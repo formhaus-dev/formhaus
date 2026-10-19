@@ -1,0 +1,278 @@
+{
+  "$schema": "./scenario.schema.json",
+  "name": "contains",
+  "definition": {
+    "formatVersion": "1.4",
+    "id": "contains",
+    "title": "",
+    "submit": {
+      "label": "Send"
+    },
+    "steps": [
+      {
+        "id": "wealth",
+        "title": "Wealth",
+        "fields": [
+          {
+            "key": "sourceOfWealth",
+            "type": "multiselect",
+            "label": "Source of wealth",
+            "options": [
+              {
+                "value": "SALARY",
+                "label": "Salary"
+              },
+              {
+                "value": "OTHER",
+                "label": "Other"
+              },
+              {
+                "value": "GIFT",
+                "label": "Gift"
+              }
+            ]
+          },
+          {
+            "key": "otherSourceOfWealth",
+            "type": "text",
+            "label": "Other source of wealth",
+            "show": [
+              {
+                "field": "sourceOfWealth",
+                "contains": "OTHER"
+              }
+            ]
+          },
+          {
+            "key": "employer",
+            "type": "text",
+            "label": "Employer",
+            "showAny": [
+              {
+                "field": "sourceOfWealth",
+                "contains": "SALARY"
+              },
+              {
+                "field": "sourceOfWealth",
+                "contains": "GIFT"
+              }
+            ]
+          },
+          {
+            "key": "noGift",
+            "type": "text",
+            "label": "No gift",
+            "show": [
+              {
+                "field": "sourceOfWealth",
+                "notContains": "GIFT"
+              }
+            ]
+          }
+        ],
+        "routes": [
+          {
+            "to": "gift",
+            "show": [
+              {
+                "field": "sourceOfWealth",
+                "contains": "GIFT"
+              }
+            ]
+          },
+          {
+            "to": "review"
+          }
+        ]
+      },
+      {
+        "id": "gift",
+        "title": "Gift",
+        "fields": [
+          {
+            "key": "donor",
+            "type": "text",
+            "label": "Donor"
+          }
+        ],
+        "routes": [
+          {
+            "to": "review"
+          }
+        ]
+      },
+      {
+        "id": "review",
+        "title": "Review",
+        "fields": [
+          {
+            "key": "notes",
+            "type": "text",
+            "label": "Notes"
+          }
+        ]
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "show: contains matches when the list holds the operand",
+      "values": {
+        "sourceOfWealth": ["SALARY", "OTHER"]
+      },
+      "steps": [
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "otherSourceOfWealth", "employer", "noGift"]
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "sourceOfWealth",
+          "value": ["SALARY"]
+        },
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "employer", "noGift"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "show: contains never matches and notContains always matches a value that is not a list",
+      "values": {
+        "sourceOfWealth": "OTHER"
+      },
+      "steps": [
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "noGift"]
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "sourceOfWealth",
+          "value": null
+        },
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "noGift"]
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "sourceOfWealth",
+          "value": []
+        },
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "noGift"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "show: contains compares items strictly",
+      "values": {
+        "sourceOfWealth": ["other", "OTHER "]
+      },
+      "steps": [
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "noGift"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "show: a hidden contains field leaves the payload",
+      "values": {
+        "sourceOfWealth": ["SALARY"],
+        "otherSourceOfWealth": "Lottery",
+        "employer": "Acme"
+      },
+      "steps": [
+        {
+          "expect": {
+            "submitValues": {
+              "sourceOfWealth": ["SALARY"],
+              "employer": "Acme"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "showAny: matches when any contains condition matches",
+      "values": {
+        "sourceOfWealth": ["GIFT"]
+      },
+      "steps": [
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "employer"]
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "sourceOfWealth",
+          "value": ["OTHER"]
+        },
+        {
+          "expect": {
+            "fields": ["sourceOfWealth", "otherSourceOfWealth", "noGift"]
+          }
+        }
+      ]
+    },
+    {
+      "name": "routes: contains picks the branch",
+      "values": {
+        "sourceOfWealth": ["SALARY", "GIFT"]
+      },
+      "steps": [
+        {
+          "expect": {
+            "steps": ["wealth", "gift", "review"],
+            "progress": {
+              "current": 1,
+              "total": 3
+            }
+          }
+        },
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "expect": {
+            "step": "gift"
+          }
+        },
+        {
+          "do": "back",
+          "returns": true
+        },
+        {
+          "do": "setValue",
+          "key": "sourceOfWealth",
+          "value": ["SALARY"]
+        },
+        {
+          "expect": {
+            "steps": ["wealth", "review"]
+          }
+        },
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "expect": {
+            "step": "review"
+          }
+        }
+      ]
+    }
+  ]
+}
