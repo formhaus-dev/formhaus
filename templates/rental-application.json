@@ -1,0 +1,474 @@
+{
+  "slug": "rental-application",
+  "title": "Rental application",
+  "summary": "Current home, work and income, other adults and pets. No Social Security number or screening consent.",
+  "category": "application",
+  "definition": {
+    "id": "rental-application",
+    "formatVersion": "1.5",
+    "title": "Rental application",
+    "submit": {
+      "label": "Submit application"
+    },
+    "steps": [
+      {
+        "id": "you",
+        "title": "The home and you",
+        "fields": [
+          {
+            "key": "property",
+            "type": "text",
+            "label": "Which home are you applying for?",
+            "placeholder": "Address or listing ID",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "moveIn",
+            "type": "date",
+            "label": "When do you want to move in?",
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "firstName",
+            "type": "text",
+            "label": "First name",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "given-name"
+          },
+          {
+            "key": "lastName",
+            "type": "text",
+            "label": "Last name",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "family-name"
+          },
+          {
+            "key": "email",
+            "type": "email",
+            "label": "Email",
+            "inputMode": "email",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "email"
+          },
+          {
+            "key": "phone",
+            "type": "phone",
+            "label": "Phone",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "tel"
+          }
+        ]
+      },
+      {
+        "id": "home",
+        "title": "Where you live now",
+        "fields": [
+          {
+            "key": "street",
+            "type": "text",
+            "label": "Street address",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "address-line1"
+          },
+          {
+            "key": "unit",
+            "type": "text",
+            "label": "Apartment or unit",
+            "autocomplete": "address-line2"
+          },
+          {
+            "key": "city",
+            "type": "text",
+            "label": "City",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "address-level2"
+          },
+          {
+            "key": "state",
+            "type": "text",
+            "label": "State",
+            "validation": {
+              "required": true
+            },
+            "autocomplete": "address-level1"
+          },
+          {
+            "key": "zip",
+            "type": "text",
+            "label": "ZIP code",
+            "inputMode": "numeric",
+            "validation": {
+              "required": true,
+              "pattern": "^\\d{5}(-\\d{4})?$",
+              "patternMessage": "Enter a 5-digit ZIP code"
+            },
+            "autocomplete": "postal-code"
+          },
+          {
+            "key": "housing",
+            "type": "radio",
+            "label": "Do you rent or own it?",
+            "options": [
+              {
+                "value": "rent",
+                "label": "I rent"
+              },
+              {
+                "value": "own",
+                "label": "I own"
+              },
+              {
+                "value": "family",
+                "label": "I live with family or friends"
+              },
+              {
+                "value": "other",
+                "label": "Other"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "rent",
+            "type": "number",
+            "label": "Monthly rent",
+            "inputMode": "decimal",
+            "validation": {
+              "required": true,
+              "min": 0
+            },
+            "show": [
+              {
+                "field": "housing",
+                "eq": "rent"
+              }
+            ]
+          },
+          {
+            "key": "landlordName",
+            "type": "text",
+            "label": "Landlord or property manager",
+            "show": [
+              {
+                "field": "housing",
+                "eq": "rent"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "landlordPhone",
+            "type": "phone",
+            "label": "Their phone",
+            "show": [
+              {
+                "field": "housing",
+                "eq": "rent"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "howLong",
+            "type": "radio",
+            "label": "How long have you lived there?",
+            "options": [
+              {
+                "value": "under-2y",
+                "label": "Less than 2 years"
+              },
+              {
+                "value": "2y-plus",
+                "label": "2 years or more"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "previous",
+            "type": "section",
+            "title": "Your previous home",
+            "description": "Where you lived before this address.",
+            "show": [
+              {
+                "field": "howLong",
+                "eq": "under-2y"
+              }
+            ],
+            "fields": [
+              {
+                "key": "previousAddress",
+                "type": "textarea",
+                "label": "Previous address",
+                "rows": 2,
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "previousLandlord",
+                "type": "text",
+                "label": "Landlord’s name and phone",
+                "helperText": "Leave empty if you didn’t rent."
+              },
+              {
+                "key": "leaving",
+                "type": "text",
+                "label": "Why are you moving?",
+                "placeholder": "Need more space, new job"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "income",
+        "title": "Work and income",
+        "fields": [
+          {
+            "key": "employment",
+            "type": "radio",
+            "label": "What best describes your work?",
+            "options": [
+              {
+                "value": "employed",
+                "label": "Employed"
+              },
+              {
+                "value": "self-employed",
+                "label": "Self-employed"
+              },
+              {
+                "value": "student",
+                "label": "Student"
+              },
+              {
+                "value": "retired",
+                "label": "Retired"
+              },
+              {
+                "value": "not-working",
+                "label": "Not working right now"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "employer",
+            "type": "text",
+            "label": "Employer",
+            "show": [
+              {
+                "field": "employment",
+                "eq": "employed"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "jobTitle",
+            "type": "text",
+            "label": "Job title",
+            "show": [
+              {
+                "field": "employment",
+                "eq": "employed"
+              }
+            ]
+          },
+          {
+            "key": "business",
+            "type": "text",
+            "label": "What’s your business?",
+            "show": [
+              {
+                "field": "employment",
+                "eq": "self-employed"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "monthlyIncome",
+            "type": "number",
+            "label": "Your monthly income before tax",
+            "inputMode": "decimal",
+            "validation": {
+              "required": true,
+              "min": 0
+            },
+            "helperText": "From all sources. Benefits, support payments and regular help count."
+          }
+        ]
+      },
+      {
+        "id": "household",
+        "title": "Who will live there",
+        "fields": [
+          {
+            "key": "occupants",
+            "type": "select",
+            "label": "How many people will live there, including you?",
+            "options": [
+              {
+                "value": "1",
+                "label": "1"
+              },
+              {
+                "value": "2",
+                "label": "2"
+              },
+              {
+                "value": "3",
+                "label": "3"
+              },
+              {
+                "value": "4",
+                "label": "4"
+              },
+              {
+                "value": "5",
+                "label": "5"
+              },
+              {
+                "value": "6",
+                "label": "6"
+              },
+              {
+                "value": "7",
+                "label": "7"
+              },
+              {
+                "value": "8",
+                "label": "8"
+              },
+              {
+                "value": "9",
+                "label": "9"
+              },
+              {
+                "value": "10",
+                "label": "10"
+              },
+              {
+                "value": "11",
+                "label": "11"
+              },
+              {
+                "value": "12",
+                "label": "12"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "coApplicants",
+            "type": "group",
+            "label": "Other adults who will live there",
+            "helperText": "Name and email of each adult 18 or older. Leave empty if it is just you.",
+            "itemLabel": "Adult {index}",
+            "addLabel": "Add an adult",
+            "removeLabel": "Remove",
+            "validation": {
+              "maxLength": 11
+            },
+            "fields": [
+              {
+                "key": "adultName",
+                "type": "text",
+                "label": "Full name",
+                "validation": {
+                  "required": true
+                }
+              },
+              {
+                "key": "adultEmail",
+                "type": "email",
+                "label": "Email for {{adultName}}",
+                "inputMode": "email",
+                "validation": {
+                  "required": true
+                }
+              }
+            ]
+          },
+          {
+            "key": "pets",
+            "type": "radio",
+            "label": "Will any pets live with you?",
+            "layout": "inline",
+            "helperText": "Service and assistance animals are not pets. You don’t need to list them here.",
+            "options": [
+              {
+                "value": "yes",
+                "label": "Yes"
+              },
+              {
+                "value": "no",
+                "label": "No"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "petDetails",
+            "type": "textarea",
+            "label": "Type, breed and weight of each pet",
+            "rows": 2,
+            "show": [
+              {
+                "field": "pets",
+                "eq": "yes"
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "accurate",
+            "type": "checkbox",
+            "label": "The information in this application is true and complete.",
+            "validation": {
+              "required": true
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
