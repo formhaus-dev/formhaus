@@ -5,6 +5,7 @@ import GithubStar from './GithubStar.vue';
 import NavCta from './NavCta.vue';
 import LpNav from './LpNav.vue';
 import PromoBar from './PromoBar.vue';
+import SiteFooter from './SiteFooter.vue';
 import './promo.css';
 import './landing-nav.css';
 import DocsDrawerMenu from './DocsDrawerMenu.vue';
@@ -41,6 +42,7 @@ export function createTheme(enhance?: (context: EnhanceAppContext) => void): The
         'nav-bar-content-after': () => [h(GithubStar), h(NavCta)],
         'nav-screen-content-before': () => [h(NavCta, { mobile: true }), h(LpNav, { mobile: true })],
         'nav-screen-content-after': () => h(DocsDrawerMenu),
+        'layout-bottom': () => h(SiteFooter),
       }),
     enhanceApp(context) {
       stayInOwnBuild(context);
