@@ -167,7 +167,7 @@ describe('picture options', () => {
       ['', 'lazy', 'async'],
     ]);
     expect(images[0].parentElement!.className).toBe('fh-field__radio-option');
-    expect(screen.getByLabelText('Sea').getAttribute('type')).toBe('radio');
+    expect(screen.getByRole('radio', { name: 'Sea' }).getAttribute('type')).toBe('radio');
     expect(screen.getByLabelText('Gym').parentElement!.querySelector('img')).toBeNull();
   });
 });
