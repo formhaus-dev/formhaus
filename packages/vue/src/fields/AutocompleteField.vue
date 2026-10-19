@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed, ref } from 'vue';
 import { formFieldProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
@@ -7,6 +8,16 @@ import { useField } from './useField';
 const props = defineProps(formFieldProps);
 const emit = defineEmits<FieldEmits>();
 const { inputId, input } = useField(props, emit);
+const text = ref('');
+const toValue = (value: string) => props.field.options?.find((opt) => opt.label === value)?.value ?? value;
+const shown = computed(() => {
+  const stored = (props.modelValue as string) ?? '';
+  return toValue(text.value) === stored ? text.value : (props.field.options?.find((opt) => opt.value === stored)?.label ?? stored);
+});
+function onInput(event: Event) {
+  text.value = (event.target as HTMLInputElement).value;
+  emit('update:modelValue', toValue(text.value));
+}
 </script>
 
 <template>
@@ -16,15 +27,13 @@ const { inputId, input } = useField(props, emit);
       class="fh-field__input"
       type="text"
       :list="`${inputId}-list`"
-      :value="(props.modelValue as string) ?? ''"
+      :value="shown"
       :placeholder="props.field.placeholder"
       autocomplete="off"
-      @input="(e) => emit('update:modelValue', (e.target as HTMLInputElement).value)"
+      @input="onInput"
     />
     <datalist :id="`${inputId}-list`">
-      <option v-for="opt in (props.field.options ?? [])" :key="opt.value" :value="opt.value">
-        {{ opt.label }}
-      </option>
+      <option v-for="opt in props.field.options" :key="opt.value" :value="opt.label" />
     </datalist>
   </FieldShell>
 </template>
