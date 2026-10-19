@@ -46,4 +46,5 @@ export interface EngineInternals {
   notify(options?: NotifyOptions): void;
   getSnapshot(): number;
   advance(reason: 'next' | 'autoAdvance'): Promise<boolean>;
+  load(definition: FormDefinition, values: (fields: FormField[]) => Record<string, unknown> | undefined): void;
 }
