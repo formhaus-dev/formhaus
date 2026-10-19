@@ -1,5 +1,30 @@
 # @formhaus/vue
 
+## 0.19.0
+
+### Minor Changes
+
+- **Breaking:** Minimum Node is `22.12`.
+- New `ScaleField` renders `scale` as numbered boxes and `rating` as stars, with native radios, anchor labels and digit-key selection.
+- `scale` and `rating` support `autoAdvance`: a click, Space, Enter or a digit key moves to the next step.
+- `RadioField` and `MultiselectField` show option images as a grid of picture cards, about 200px wide or `columns` per row.
+- Each picture card has an Enlarge button that opens the image in a dialog. It comes after the option in Tab order. Its button names come from the `enlargeImage` and `close` labels.
+- A picture card whose image fails to load shows a plain surface and no Enlarge button.
+- `DefaultSection` draws a section with `layout: "matrix"` as a grid with a column header.
+
+### Patch Changes
+
+- `FormhausForm` uploads a file again and resubmits once, without user action, when Formhaus Cloud answers "Upload the file again." for an expired upload.
+- The resubmit asks for a new bot check token and does not show the first attempt's error.
+- `checkDefinition()`, the `FormEngine` constructor and `validateSubmission()` reject a `scale` or `rating` whose `min` or `max` is not an integer, or whose range has fewer than 2 or more than 11 points, with the new `invalid-scale` error. `rating` `max` must be 2 to 11.
+- `checkDefinition()` warns with the new `unsafe-image-url` code about an option `image` that does not start with `https:` or `data:image/`.
+- `ScaleField` draws at most 11 points.
+- Option images and the enlarged preview load with `referrerpolicy="no-referrer"`.
+- Fixed hydration mismatches of field ids and label `for` attributes on Vue 3.3 and 3.4 when a form was rendered on the server.
+- Field ids of server-rendered forms on Vue 3.3 and 3.4 start with `app.config.idPrefix` when it is set.
+- Fixed the select field showing the first option instead of the current value or the placeholder in server-rendered HTML. On Vue 3.3 the wrong option also stayed after hydration.
+- Requires `@formhaus/core` 0.19.0.
+
 ## 0.18.0
 
 ### Minor Changes
