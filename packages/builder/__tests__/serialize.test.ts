@@ -4,7 +4,7 @@ import { template } from './fixtures';
 
 describe('serialize', () => {
   it('maps definition paths to uids', () => {
-    const form = fromDefinition(template('agency-fit-quiz.json'));
+    const form = fromDefinition(template('website-project-inquiry.json'));
     const { paths, definition } = serialize(form);
     expect(paths.get('steps.0')).toBe(form.blocks[0].uid);
     expect(paths.get('steps.0.fields.0')).toBe(form.blocks[1].uid);
@@ -12,10 +12,10 @@ describe('serialize', () => {
     expect(definition.steps?.length).toBeGreaterThan(1);
   });
 
-  it('models the agency quiz branch as option jumps', () => {
-    const form = fromDefinition(template('agency-fit-quiz.json'));
+  it('keeps step routes out of the page blocks', () => {
+    const form = fromDefinition(template('website-project-inquiry.json'));
     const pages = form.blocks.filter((block) => block.kind === 'page');
-    expect(pages.every((page) => !page.routes || page.id === 'resources')).toBe(true);
+    expect(pages.every((page) => !page.routes || ['budget', 'smallbudget'].includes(page.id))).toBe(true);
   });
 
   it('adds the schema url to new forms', () => {

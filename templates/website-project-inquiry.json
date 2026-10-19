@@ -1,11 +1,11 @@
 {
   "slug": "website-project-inquiry",
-  "title": "Website project inquiry",
-  "summary": "For studios and freelancers. Asks about the project, scope and budget before contact details.",
+  "title": "Project inquiry",
+  "summary": "For studios and agencies. Project and budget first, a short path for small budgets, then scope and contact.",
   "category": "lead-gen",
   "definition": {
     "id": "website-project-inquiry",
-    "title": "Start a website project",
+    "title": "Start a project",
     "submit": { "label": "Send inquiry" },
     "steps": [
       {
@@ -22,7 +22,10 @@
               { "value": "landing-page", "label": "A landing page" },
               { "value": "online-store", "label": "An online store" },
               { "value": "web-app", "label": "A web app" },
-              { "value": "other", "label": "Other" }
+              { "value": "branding", "label": "A brand or visual identity" },
+              { "value": "product-design", "label": "App or product design" },
+              { "value": "marketing", "label": "Marketing or growth" },
+              { "value": "other", "label": "Something else" }
             ],
             "validation": { "required": true }
           },
@@ -38,66 +41,7 @@
             "type": "text",
             "label": "Current website",
             "placeholder": "https://",
-            "show": [{ "field": "projectType", "in": ["redesign", "online-store"] }]
-          },
-          {
-            "key": "goals",
-            "type": "textarea",
-            "label": "What should the site do for your business?",
-            "rows": 4,
-            "placeholder": "Sell online, get more bookings, look more credible…",
-            "validation": { "required": true }
-          }
-        ]
-      },
-      {
-        "id": "scope",
-        "title": "Scope",
-        "fields": [
-          {
-            "key": "services",
-            "type": "multiselect",
-            "label": "Which services do you need?",
-            "helperText": "Pick all that apply.",
-            "options": [
-              { "value": "design", "label": "Design" },
-              { "value": "development", "label": "Development" },
-              { "value": "copywriting", "label": "Copywriting" },
-              { "value": "seo", "label": "SEO" },
-              { "value": "maintenance", "label": "Hosting and maintenance" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "pages",
-            "type": "radio",
-            "label": "Roughly how many pages?",
-            "options": [
-              { "value": "1-5", "label": "1 to 5" },
-              { "value": "6-15", "label": "6 to 15" },
-              { "value": "16-40", "label": "16 to 40" },
-              { "value": "40-plus", "label": "More than 40" },
-              { "value": "not-sure", "label": "Not sure yet" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "content",
-            "type": "radio",
-            "label": "Is your content ready?",
-            "options": [
-              { "value": "ready", "label": "Yes, text and images are ready" },
-              { "value": "partly", "label": "Partly" },
-              { "value": "need-help", "label": "No, we need help with it" }
-            ],
-            "validation": { "required": true }
-          },
-          {
-            "key": "examples",
-            "type": "textarea",
-            "label": "Sites you like",
-            "rows": 3,
-            "placeholder": "Links and what you like about each one"
+            "show": [{ "field": "projectType", "in": ["redesign", "online-store", "marketing"] }]
           }
         ]
       },
@@ -136,6 +80,85 @@
             "type": "date",
             "label": "Hard deadline",
             "helperText": "Leave empty if there isn’t one."
+          }
+        ],
+        "routes": [{ "to": "smallbudget", "show": [{ "field": "budget", "eq": "under-5k" }] }, { "to": "brief" }]
+      },
+      {
+        "id": "smallbudget",
+        "title": "Tell us what you need",
+        "description": "This budget is below what most of our projects need. Send a few lines and your details, and we’ll tell you whether we can help.",
+        "fields": [
+          {
+            "key": "shortBrief",
+            "type": "textarea",
+            "label": "What do you need?",
+            "rows": 4,
+            "validation": { "required": true }
+          }
+        ],
+        "routes": [{ "to": "contact" }]
+      },
+      {
+        "id": "brief",
+        "title": "The brief",
+        "fields": [
+          {
+            "key": "goals",
+            "type": "textarea",
+            "label": "What should the site do for your business?",
+            "rows": 4,
+            "placeholder": "Sell online, get more bookings, look more credible…",
+            "validation": { "required": true }
+          },
+          {
+            "key": "services",
+            "type": "multiselect",
+            "label": "Which services do you need?",
+            "helperText": "Pick all that apply.",
+            "options": [
+              { "value": "design", "label": "Design" },
+              { "value": "branding", "label": "Brand and identity" },
+              { "value": "development", "label": "Development" },
+              { "value": "copywriting", "label": "Copywriting" },
+              { "value": "seo", "label": "SEO" },
+              { "value": "marketing", "label": "Marketing and growth" },
+              { "value": "maintenance", "label": "Hosting and maintenance" }
+            ],
+            "validation": { "required": true }
+          },
+          {
+            "key": "pages",
+            "type": "radio",
+            "label": "Roughly how many pages?",
+            "options": [
+              { "value": "1-5", "label": "1 to 5" },
+              { "value": "6-15", "label": "6 to 15" },
+              { "value": "16-40", "label": "16 to 40" },
+              { "value": "40-plus", "label": "More than 40" },
+              { "value": "not-sure", "label": "Not sure yet" }
+            ],
+            "validation": { "required": true },
+            "show": [{ "field": "projectType", "in": ["new-site", "redesign", "landing-page", "online-store", "web-app"] }]
+          },
+          {
+            "key": "content",
+            "type": "radio",
+            "label": "Is your content ready?",
+            "options": [
+              { "value": "ready", "label": "Yes, text and images are ready" },
+              { "value": "partly", "label": "Partly" },
+              { "value": "need-help", "label": "No, we need help with it" }
+            ],
+            "validation": { "required": true },
+            "show": [{ "field": "projectType", "in": ["new-site", "redesign", "landing-page", "online-store", "web-app"] }]
+          },
+          {
+            "key": "examples",
+            "type": "textarea",
+            "label": "Examples you like",
+            "rows": 3,
+            "placeholder": "Links and what you like about each one"
           }
         ]
       },
