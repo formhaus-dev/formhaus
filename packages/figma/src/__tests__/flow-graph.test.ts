@@ -113,6 +113,14 @@ describe('buildGraph', () => {
     expect(describeCondition({ field: 'score', lt: 3 }, fields)).toBe('Score is less than 3');
   });
 
+  it('describes contains conditions with option labels', () => {
+    const fields = new Map([
+      ['interests', { key: 'interests', type: 'multiselect', label: 'Interests', options: [{ value: 'other', label: 'Other' }] }],
+    ]);
+    expect(describeCondition({ field: 'interests', contains: 'other' }, fields)).toBe('Interests includes Other');
+    expect(describeCondition({ field: 'interests', notContains: 'other' }, fields)).toBe("Interests doesn't include Other");
+  });
+
   it('widens a column gap to fit its longest label', () => {
     const graph = buildGraph(quiz);
     const sizes = new Map(['goal', 'leads', 'survey', 'contact'].map((id) => [id, { width: 400, height: 300 }]));

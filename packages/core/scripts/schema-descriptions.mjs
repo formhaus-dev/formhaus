@@ -1,7 +1,7 @@
 export const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.3". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3.',
+    'Format version of the definition, such as "1.4". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
@@ -84,12 +84,15 @@ export const DESCRIPTIONS = {
   'StepRoute.to': 'Id of a later step. null makes the current step the last one on this path.',
   'StepRoute.show': 'Route matches only when all conditions match. Without show or showAny the route always matches.',
   'StepRoute.showAny': 'Route matches when any condition matches.',
-  ShowCondition: 'A condition on another field value. Use exactly one operator: eq, neq, in, notIn, notEmpty, gt, gte, lt or lte.',
+  ShowCondition:
+    'A condition on another field value. Use exactly one operator: eq, neq, in, notIn, contains, notContains, notEmpty, gt, gte, lt or lte.',
   'ShowCondition.field': 'Key of the field to check.',
   'ShowCondition.eq': 'Matches when the value strictly equals this.',
   'ShowCondition.neq': 'Matches when the value does not strictly equal this.',
   'ShowCondition.in': 'Matches when the value is one of these.',
   'ShowCondition.notIn': 'Matches when the value is none of these.',
+  'ShowCondition.contains': 'Matches when the value is an array that holds this item. Added in 1.4.',
+  'ShowCondition.notContains': 'Matches when the value is not an array that holds this item. Added in 1.4.',
   'ShowCondition.notEmpty': 'Matches when the value is not undefined, null, an empty string or an empty array.',
   'ShowCondition.gt': 'Matches when the value is a number, or a numeric string, greater than this.',
   'ShowCondition.gte': 'Matches when the value is a number, or a numeric string, greater than or equal to this.',

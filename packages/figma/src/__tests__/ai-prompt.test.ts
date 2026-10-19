@@ -9,6 +9,8 @@ describe('AI prompt', () => {
       '"neq"',
       '"in"',
       '"notIn"',
+      '"contains"',
+      '"notContains"',
       '"notEmpty"',
       '"lte"',
       'routes',
