@@ -1,3 +1,5 @@
+import { useContext } from 'react';
+import { LabelContext } from './labels';
 import type { FormStepProgressProps } from './types';
 
 export function FormStepProgress({
@@ -9,6 +11,7 @@ export function FormStepProgress({
   steps,
   counterLabel,
 }: FormStepProgressProps) {
+  const text = useContext(LabelContext);
   const Heading = `h${headingLevel}` as const;
   const percent = (current / total) * 100;
 
@@ -18,12 +21,12 @@ export function FormStepProgress({
         <div className="fh-step-progress__fill" style={{ width: `${percent}%` }} />
       </div>
       <div className="fh-step-progress__info">
-        <span className="fh-step-progress__counter">{counterLabel ?? `Step ${current} of ${total}`}</span>
+        <span className="fh-step-progress__counter">{counterLabel ?? text('stepOf', { current, total })}</span>
       </div>
       {steps && (
         <ol className="fh-step-progress__steps">
           {steps.map((step, index) => {
-            const label = step.title || `Step ${index + 1}`;
+            const label = step.title || text('stepTitle', { index: index + 1 });
             return (
               <li
                 key={step.id}
@@ -31,7 +34,7 @@ export function FormStepProgress({
                 aria-current={index + 1 === current ? 'step' : undefined}
               >
                 {index + 1 === current ? <strong>{label}</strong> : label}
-                {step.errorCount > 0 && ` · ${step.errorCount} ${step.errorCount === 1 ? 'error' : 'errors'}`}
+                {step.errorCount > 0 && ` · ${text('stepErrors', { count: step.errorCount })}`}
               </li>
             );
           })}

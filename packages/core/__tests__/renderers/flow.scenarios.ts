@@ -1,4 +1,4 @@
-import type { FormEvent, SubmitResult } from '../../src';
+import type { FormDefinition, FormEvent, SubmitResult } from '../../src';
 import { deferred, filled, wizard, type RendererHarness, type TestKit } from './fixtures';
 
 export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
@@ -18,7 +18,7 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Three' });
     await harness.click(button('Send'));
     await screen.findByText('Taken');
-    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One · 1 error', 'Two · 1 error', 'Three']);
+    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One · Errors: 1', 'Two · Errors: 1', 'Three']);
     expect(marks().map((item) => item.getAttribute('aria-current'))).toEqual(['step', null, null]);
     expect(marks()[0].classList.contains('fh-step-progress__step--invalid')).toBe(true);
     await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Grace');
@@ -110,6 +110,53 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await screen.findByRole('heading', { name: 'Two' });
     expect(button('Zurück')).toBeDefined();
     expect(document.querySelector('.fh-step-progress__counter')?.textContent?.trim()).toBe('Schritt 2 von 3');
+  });
+
+  it('takes the skip, submit, step title and error mark texts from the labels', async () => {
+    const [one, two, three] = wizard.steps!;
+    const definition = {
+      ...wizard,
+      submit: {},
+      labels: { stepTitle: 'Schritt {index}' },
+      steps: [one, { ...two, title: '', skip: {} }, three],
+    } as unknown as FormDefinition;
+    harness.mount({
+      definition,
+      initialValues: filled,
+      stepErrorMarks: true,
+      labels: { skip: 'Überspringen', submit: 'Senden', stepErrors: 'Fehler: {count}' },
+      onSubmit: () => ({ ok: false, errors: { name: 'Taken' } }),
+    });
+    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One', 'Schritt 2', 'Three']);
+    await harness.click(button('Continue'));
+    await harness.click(await screen.findByRole('button', { name: 'Überspringen' }));
+    await harness.click(await screen.findByRole('button', { name: 'Senden' }));
+    await screen.findByText('Taken');
+    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One · Fehler: 1', 'Schritt 2', 'Three']);
+  });
+
+  it('falls back to the default skip, submit and step texts', async () => {
+    const [one, two, three] = wizard.steps!;
+    const definition = { ...wizard, submit: {}, steps: [one, { ...two, title: '', skip: {} }, three] } as unknown as FormDefinition;
+    harness.mount({
+      definition,
+      initialValues: filled,
+      stepErrorMarks: true,
+      onSubmit: () => ({ ok: false, errors: { name: 'Taken', city: 'Far' } }),
+    });
+    expect(marks()[1].textContent?.trim()).toBe('Step 2');
+    await harness.click(button('Continue'));
+    await harness.click(await screen.findByRole('button', { name: 'Skip' }));
+    await harness.click(await screen.findByRole('button', { name: 'Submit' }));
+    await screen.findByText('Taken');
+    expect(marks().map((item) => item.textContent?.trim())).toEqual(['One · Errors: 1', 'Step 2', 'Three · Errors: 1']);
+  });
+
+  it('keeps explicit skip and submit labels over the catalog', async () => {
+    harness.mount({ definition: wizard, initialValues: filled, labels: { skip: 'Überspringen', submit: 'Senden' }, onSubmit: () => {} });
+    await harness.click(button('Continue'));
+    await harness.click(await screen.findByRole('button', { name: 'Skip' }));
+    expect(await screen.findByRole('button', { name: 'Send' })).toBeDefined();
   });
 
   it('reports form events with their details', async () => {

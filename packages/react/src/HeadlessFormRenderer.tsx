@@ -177,15 +177,15 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
         void (engine.isLastStep ? actions.submit() : actions.next());
       }}
     >
-      <FormProgressController
-        engine={engine}
-        ProgressComponent={progressComponent}
-        headingLevel={headingLevel}
-        marks={props.stepErrorMarks}
-        labels={props.labels}
-      />
-      {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
       <LabelContext.Provider value={(key, params = {}) => labelFor(key, params, props.labels, engine.definition.labels)}>
+        <FormProgressController
+          engine={engine}
+          ProgressComponent={progressComponent}
+          headingLevel={headingLevel}
+          marks={props.stepErrorMarks}
+          labels={props.labels}
+        />
+        {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
         <FormFieldsController
           key={engineKey(engine)}
           engine={engine}
@@ -201,19 +201,19 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
           onBlur={handleFieldBlur}
           onFocus={handleFieldFocus}
         />
+        <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
+        <FormActionsController
+          engine={engine}
+          loading={loading}
+          labels={props.labels}
+          ActionsComponent={actionsComponent}
+          onSubmit={actions.submit}
+          onNext={actions.next}
+          onPrev={actions.prev}
+          onSkip={actions.skip}
+          onCancel={handleCancel}
+        />
       </LabelContext.Provider>
-      <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
-      <FormActionsController
-        engine={engine}
-        loading={loading}
-        labels={props.labels}
-        ActionsComponent={actionsComponent}
-        onSubmit={actions.submit}
-        onNext={actions.next}
-        onPrev={actions.prev}
-        onSkip={actions.skip}
-        onCancel={handleCancel}
-      />
     </form>
   );
 });
