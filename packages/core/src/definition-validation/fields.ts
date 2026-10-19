@@ -1,4 +1,5 @@
 import type { FieldValidation } from '../types';
+import { SCALE_TYPES, scaleRange } from '../validation/type-checks';
 import { missingTarget } from './conditions';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
@@ -33,11 +34,15 @@ function patternIssue(pattern: string | undefined, path: string): DefinitionIssu
 function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry): DefinitionIssue[] {
   const rules = field.validation ?? {};
   const match = rules.matchField;
+  const [min, max] = scaleRange(field);
   const items = field.type === 'group' ? (field as { defaultItems?: number }).defaultItems : undefined;
   return [
     ...rangeIssue(rules, path, 'minLength', 'maxLength'),
     ...rangeIssue(rules, path, 'min', 'max'),
     ...patternIssue(rules.pattern, path),
+    ...(SCALE_TYPES.includes(field.type) && !([min, max].every(Number.isInteger) && max > min && max - min < 11)
+      ? [error('invalid-scale', `${path}/validation`, 'a scale needs 2 to 11 whole-number points')]
+      : []),
     ...(match === undefined ? [] : missingTarget(context, match, `${path}/validation/matchField`, group?.key)),
     ...(items !== undefined && rules.maxLength !== undefined && items > rules.maxLength
       ? [

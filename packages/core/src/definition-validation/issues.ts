@@ -22,6 +22,7 @@ export type DefinitionIssueCode =
   | 'invalid-pattern'
   | 'slow-pattern'
   | 'invalid-range'
+  | 'invalid-scale'
   | 'rule-not-applicable'
   | 'disabled-not-applicable'
   | 'missing-options'
@@ -41,7 +42,8 @@ export type DefinitionIssueCode =
   | 'i18n-unsafe-identifier'
   | 'unknown-source'
   | 'source-not-applicable'
-  | 'columns-not-applicable';
+  | 'columns-not-applicable'
+  | 'unsafe-image-url';
 
 export interface DefinitionIssue {
   code: DefinitionIssueCode;
