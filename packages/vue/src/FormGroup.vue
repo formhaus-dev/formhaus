@@ -55,7 +55,7 @@ const limits = computed(() => itemLimits(props.group));
 const error = computed(() => props.errors[props.group.key]);
 const values = computed(() => (Array.isArray(props.value) ? props.value : []) as Record<string, unknown>[]);
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.engine.definition.labels);
-const title = (index: number) => itemTitle(props.group, index, props.labels, props.engine.definition.labels);
+const title = (index: number) => itemTitle(props.engine, props.group, index, props.labels, props.engine.definition.labels);
 const remove = computed(() => props.group.removeLabel ?? label('removeItem'));
 
 function itemProps(index: number, field: FormField) {

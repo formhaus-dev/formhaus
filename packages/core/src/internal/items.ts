@@ -6,17 +6,17 @@ import { labelFor } from '../i18n/labels';
 import type { FormGroup, FormStep, LabelSource } from '../types';
 import { isBlank } from '../visibility/evaluate-condition';
 import { isEntry, itemsOf } from '../visibility/nodes';
-import { formatText } from '../validation/default-messages';
 import { fieldDomId, itemDomId } from './ids';
-import { recalled } from './recall';
+import { recallTemplate, recalled } from './recall';
 
 export { itemLimits };
 
 const visibility = (engine: FormEngine) => (engine as unknown as EngineInternals).visibility;
 
-export function itemTitle(group: FormGroup, index: number, ...labels: (LabelSource | undefined)[]): string {
-  const params = { label: group.label, index: index + 1 };
-  return group.itemLabel ? formatText(group.itemLabel, params) : labelFor('itemLabel', params, ...labels);
+export function itemTitle(engine: FormEngine, group: FormGroup, index: number, ...labels: (LabelSource | undefined)[]): string {
+  const item = { group: group.key, index };
+  const params = { label: recalled(engine, group).label, index: index + 1 };
+  return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : labelFor('itemLabel', params, ...labels);
 }
 
 export function errorDomId(engine: FormEngine, formId: string, key: string): string {
@@ -46,7 +46,7 @@ export function errorGroups(engine: FormEngine, formId: string, ...labels: (Labe
       const raw = item?.field ?? visibility(engine).activeField(key, values);
       if (!raw) return [];
       const field = recalled(engine, raw, item ? key : undefined);
-      const label = item ? `${field.label} (${itemTitle(item.group, item.index, ...labels)})` : field.label;
+      const label = item ? `${field.label} (${itemTitle(engine, item.group, item.index, ...labels)})` : field.label;
       return [
         { key, id: errorDomId(engine, formId, key), text: label + (/[?!:.。]$/.test(label.normalize('NFKC')) ? ' ' : ': ') + errors[key] },
       ];

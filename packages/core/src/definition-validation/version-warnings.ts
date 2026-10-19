@@ -12,7 +12,7 @@ const UPGRADE = 'Upgrade the server that runs validateSubmission() first';
 export function versionWarnings(context: CheckContext): DefinitionIssue[] {
   const { definition, nodes, conditions, entries } = context;
   const [major, minor = 0] = formatOf(definition);
-  const recall = recallTexts(context)[0];
+  const recall = recallTexts(context).find(({ keys }) => keys[0]);
   const exclusive = entries.find(({ field }) => field.options?.some((option) => option.exclusive));
   const fill = entries.find(({ field }) => field.autocomplete !== undefined);
   const list = conditions.find(({ condition }) => CONTAINS.some((operator) => hasOwn(condition, operator)));
