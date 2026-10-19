@@ -31,7 +31,14 @@ describe('translation_template', () => {
         email: 'Enter a valid email',
         string: 'Must be text',
       },
-      labels: { continue: 'Continue', back: 'Back', stepOf: 'Step {current} of {total}', errorSummary: 'Check these answers' },
+      labels: {
+        continue: 'Continue',
+        back: 'Back',
+        stepOf: 'Step {current} of {total}',
+        errorSummary: 'Check these answers',
+        required: 'required',
+        stepErrors: 'Errors: {count}',
+      },
     });
     expect(result.slots.find(({ address }) => address === 'steps.name.fields.name.label')).toMatchObject({
       key: 'signup.name',
@@ -81,6 +88,8 @@ describe('capabilities i18n', () => {
     expect(i18n.messages.defaults.minItems).toBe('At least {min} required');
     expect(Object.keys(i18n.messages.defaults)).toHaveLength(21);
     expect(i18n.labels.defaults.stepOf).toBe('Step {current} of {total}');
+    expect(i18n.labels.defaults.stepErrors).toBe('Errors: {count}');
+    expect(i18n.labels.rule).toContain('stepTitle takes {index}');
     expect(i18n.keys.slots.validation).toContain('matchField');
   });
 });
