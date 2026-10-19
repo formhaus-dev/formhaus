@@ -35,7 +35,7 @@
   },
   "devDependencies": {
     "@formhaus/core": "workspace:*",
-    "@microsoft/api-extractor": "^7.58.2",
+    "@microsoft/api-extractor": "^7.59.4",
     "@testing-library/vue": "^8.1.0",
     "@vitejs/plugin-vue": "^5.0.0",
     "@vue/language-core": "^3.3.13",
