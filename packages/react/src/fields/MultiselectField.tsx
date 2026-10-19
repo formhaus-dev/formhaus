@@ -19,7 +19,6 @@ export function MultiselectField(props: FieldComponentProps) {
         const optionId = `${fieldId(props)}-${index}`;
         return (
           <div key={opt.value} className="fh-field__multiselect-option">
-            <OptionImage option={opt} />
             <input
               {...optionProps(props)}
               id={optionId}
@@ -32,6 +31,7 @@ export function MultiselectField(props: FieldComponentProps) {
             <label className="fh-field__multiselect-label" htmlFor={optionId}>
               {opt.label}
             </label>
+            <OptionImage option={opt} />
           </div>
         );
       })}

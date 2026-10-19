@@ -58,6 +58,10 @@ Spacing and sizes come from these variables:
 | `--fh-card-padding` | 24px (16px up to 480px wide) | Side and bottom padding of group item cards |
 | `--fh-input-padding` | `--fh-space-4` `--fh-space-6` | Padding inside inputs |
 | `--fh-control-height`, `--fh-radius` | 46px, 10px | Input and button height, corner radius |
+| `--fh-icon-button-size` | 32px | Width and height of the picture Enlarge button and the dialog Close button |
+| `--fh-star-size` | 32px (40px on touch screens) | Size of a rating star |
+| `--fh-option-image-width` | 200px | Smallest picture card width when the field has no `columns` |
+| `--fh-shadow-raised` | `0 2px 8px` `--fh-color-shadow` | Shadow of the picture Enlarge button |
 | `--fh-font-size`, `--fh-font-size-small` | 15px, 13px (17px, 15px on touch screens) | Labels and inputs; helpers, errors and item titles |
 | `--fh-font-size-heading`, `--fh-font-size-title` | font size + 2px, + 5px | Section headings; step titles |
 | `--fh-color-error-soft`, `--fh-color-error-hover` | derived from `--fh-color-error` | Hover of the group item Remove button |

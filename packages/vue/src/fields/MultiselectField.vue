@@ -24,7 +24,6 @@ function handleToggle(optValue: string) {
       :key="String(option.value)"
       class="fh-field__multiselect-option"
     >
-      <OptionImage :option="option" />
       <input
         v-bind="control"
         :id="`${inputId}-${index}`"
@@ -37,6 +36,7 @@ function handleToggle(optValue: string) {
       <label :for="`${inputId}-${index}`" class="fh-field__multiselect-label">
         {{ option.label }}
       </label>
+      <OptionImage :option="option" />
     </div>
   </FieldShell>
 </template>
