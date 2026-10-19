@@ -587,7 +587,7 @@ A token is replaced with the submit value of the field:
 
 | Field | Text |
 |---|---|
-| `select`, `radio`, `autocomplete` | the option label; a value without an option as is |
+| `select`, `radio`, `autocomplete` | the option label from the definition `options`; a value without one, such as a value from `optionsFrom`, as is |
 | `multiselect` | the option labels joined with `, ` |
 | `checkbox`, `switch` | the field label when `true`, else empty |
 | `number`, `scale`, `rating` | the number as JavaScript writes it, such as `4.5` |

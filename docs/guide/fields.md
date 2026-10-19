@@ -505,11 +505,11 @@ A step can greet the user by the name asked on the first step:
 ```
 
 - Tokens work in step and section `title` and `description`, field and group `label` and `helperText`, and `placeholder`.
-- Options show their label, a multiselect joins labels with `, `, a checkbox or switch shows its label when on, and a group shows its item count.
+- Options show their label from the definition `options`, and a value from `optionsFrom` shows as stored. A multiselect joins labels with `, `, a checkbox or switch shows its label when on, and a group shows its item count.
 - A missing value, a hidden field and an unknown key give an empty text.
 - `checkDefinition()` warns when a token names no field or a field answered later.
 - Inside a group item, `{{key}}` also reads the item's own fields.
-- The [Computed values](/recipes/computed-values) recipe fills a `hidden` field from app code and recalls it.
+- The [Derived values](/recipes/derived-values#use-a-computed-value-later-in-the-form) recipe fills a `hidden` field from app code and recalls it.
 
 ## Keys and element ids
 

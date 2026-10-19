@@ -137,7 +137,7 @@ watch(
 );
 
 const summaryGroups = computed(() => {
-  void [errors.value, progress.value];
+  void [errors.value, progress.value, values.value];
   return errorGroups(form.engine, formId, props.labels, props.definition.labels);
 });
 const stepErrors = computed(() => {

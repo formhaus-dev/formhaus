@@ -14,12 +14,12 @@ const TOKEN = /\{\{\s*([^\s{}]+)\s*\}\}/g;
 
 export const recallKeys = (text: string): string[] => [...text.matchAll(TOKEN)].map((match) => match[1]);
 
-export const formatOf = ({ formatVersion }: FormDefinition): number[] =>
+export const formatOf = ({ formatVersion }: Pick<FormDefinition, 'formatVersion'>): number[] =>
   String(formatVersion ?? '1.0')
     .split('.')
     .map(Number);
 
-export function recallEnabled(definition: FormDefinition): boolean {
+export function recallEnabled(definition: Pick<FormDefinition, 'formatVersion'>): boolean {
   const [major, minor = 0] = formatOf(definition);
   return major > 1 || minor >= 5;
 }

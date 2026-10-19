@@ -12,8 +12,7 @@ Each recipe is a complete JSON definition with framework code for one job. Every
 | How do I build a multi-step form with branching in React or Vue? | [Multi-step form with branching](/recipes/multi-step-branching) |
 | How do I send a multi-step form to an existing flat API and show its errors? | [Multi-step form on a flat API](/recipes/flat-api) |
 | How do I show or hide fields based on other answers? | [Conditional fields](/recipes/conditional-fields) |
-| How do I derive values from what the user enters? | [Derived values](/recipes/derived-values) |
-| How do I use a calculated value later in the form? | [Computed values](/recipes/computed-values) |
+| How do I derive values from what the user enters, or use a computed one later? | [Derived values](/recipes/derived-values) |
 | How do I put a section inside a section? | [Nested sections](/recipes/nested-sections) |
 | How do I build a quiz or lead-capture funnel? | [Quiz funnel](/recipes/quiz-funnel) |
 | How do I measure time per question? | [Question timing](/recipes/question-timing) |

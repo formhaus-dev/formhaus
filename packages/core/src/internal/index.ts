@@ -1,6 +1,7 @@
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
-import { RECALL_SLOTS, recallEnabled, recallText } from '../engine/recall';
+export { recalled, recalls } from './recall';
+export { recallEnabled, recallKeys } from '../engine/recall';
 
 export {
   cloudStateFor,
@@ -46,20 +47,4 @@ export function hasValue(engine: FormEngine, key: string): boolean {
   const path = internals.visibility.parse(key);
   const value = path ? (internals.values[path[0]] as Record<string, unknown>[] | undefined)?.[path[1]]?.[path[2]] : internals.values[key];
   return value !== undefined && value !== '';
-}
-
-export function recalls(engine: FormEngine, node: object): boolean {
-  const texts = node as Record<string, unknown>;
-  return recallEnabled(engine.definition) && RECALL_SLOTS.some((slot) => String(texts[slot] ?? '').includes('{{'));
-}
-
-export function recalled<T extends object>(engine: FormEngine, node: T, path?: string): T {
-  if (!recalls(engine, node)) return node;
-  const parts = path ? (engine as unknown as EngineInternals).visibility.parse(path) : undefined;
-  const item = parts && { group: parts[0], index: parts[1] };
-  const values = engine.getSubmitValues();
-  const result = { ...node } as Record<string, unknown>;
-  for (const slot of RECALL_SLOTS)
-    if (typeof result[slot] === 'string') result[slot] = recallText(engine.definition, result[slot] as string, values, item);
-  return result as T;
 }

@@ -1,3 +1,4 @@
+import { recallEnabled, recallKeys } from '@formhaus/core/internal';
 import { hasOptions, isPage, isQuestion, type BuilderForm } from './model';
 import { conditionsOf, resolver } from './references';
 
@@ -11,15 +12,7 @@ export interface Issue {
 
 const reserved = (key: string) => key in Object.prototype || key === 'prototype';
 
-const recalled = (texts: (string | undefined)[]) =>
-  texts.flatMap((text) => [...(text ?? '').matchAll(/\{\{\s*([^\s{}]+)\s*\}\}/g)].map((match) => match[1]));
-
-function recalls({ formatVersion }: BuilderForm['extra']): boolean {
-  const [major, minor = 0] = String(formatVersion ?? '1.0')
-    .split('.')
-    .map(Number);
-  return major > 1 || minor >= 5;
-}
+const recalled = (texts: (string | undefined)[]) => texts.flatMap((text) => recallKeys(text ?? ''));
 
 function duplicates<T>(items: T[], name: (item: T) => string): T[] {
   const seen = new Set<string>();
@@ -61,7 +54,7 @@ export function findIssues(form: BuilderForm): Issue[] {
   const pageOf = new Map(form.blocks.map((block) => [block, isPage(block) ? ++page : page]));
   form.blocks.forEach((block, index) => {
     const texts = isPage(block) ? [block.title, block.extra.description] : [block.label, block.extra.helperText, block.extra.placeholder];
-    for (const key of recalls(form.extra) ? recalled(texts) : []) {
+    for (const key of recallEnabled(form.extra) ? recalled(texts) : []) {
       const found = target(key, scope(block));
       if (!found) issues.push({ uid: block.uid, severity: 'warning', message: `Recalls "{{${key}}}", which is not a field.` });
       else if (found === block || pageOf.get(found)! > pageOf.get(block)!)

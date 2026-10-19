@@ -154,5 +154,8 @@ describe('recall checks', () => {
     expect(translationIssues(source, { steps: { two: { description: 'Danke' } } }).placeholderMismatch).toEqual(['steps.two.description']);
     expect(translationIssues(source, { steps: { two: { description: 'Danke {{ name }}' } } }).placeholderMismatch).toEqual([]);
     expect(translationIssues(source, { steps: { one: { title: 'Eins {{name}}' } } }).placeholderMismatch).toEqual(['steps.one.title']);
+    expect(translationIssues(source, { steps: { two: { description: 'Danke {name}' } } }).placeholderMismatch).toEqual([
+      'steps.two.description',
+    ]);
   });
 });
