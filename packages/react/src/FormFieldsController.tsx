@@ -4,7 +4,7 @@ import { memo, useMemo } from 'react';
 import { DefaultSection } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { FormGroupController } from './FormGroupController';
-import { useFormSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
+import { useRecallSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
 import { useFieldOptions } from './hooks/useFieldOptions';
 import type { FormRendererProps, OptionsProvider } from './types';
 
@@ -26,7 +26,7 @@ export const FormFieldsController = memo(function FormFieldsController({
 }: FormFieldsControllerProps) {
   const { engine, formId } = props;
   useStructureSnapshot(engine);
-  useFormSnapshot(engine);
+  useRecallSnapshot(engine);
   const fields = engine.visibleFields;
   const sources = useMemo(() => optionSources(fields), [fields]);
   const loaded = useFieldOptions(sources, engine, optionsProviders);

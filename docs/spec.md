@@ -593,7 +593,7 @@ Core trims leading and trailing whitespace from string values of every built-in 
 
 ## Answer recall
 
-A text can show an earlier answer with a `{{key}}` token, where `key` is a top-level field key. Whitespace inside the braces is allowed: `{{ key }}`. Inside a group item, the item's own fields are also recalled by their item key, from the same item. There are no expressions, filters or formats.
+A text can show an earlier answer with a `{{key}}` token, where `key` is a top-level field key. Whitespace inside the braces is allowed: `{{ key }}`. Inside a group item, the item's own fields are also recalled by their item key, from the same item. A token key is made of characters from the Unicode categories L (letters), M (marks) and N (numbers), plus `_`, `-` and `.`, so `{{contact.email}}` recalls the field `contact.email`. Other content inside `{{ }}` is reserved: a token with `|`, `?`, `:`, `(`, `)`, `[`, `]`, `'`, `"` or whitespace inside the key, like `{{name|upper}}`, shows as written, and `checkDefinition()` warns with `recall-syntax`. `\{{` shows `{{` and starts no token. It is the only escape: a backslash before it is kept as written, so `\\{{` shows `\{{`. There are no expressions, filters or formats in the definition.
 
 ```json
 {
@@ -629,21 +629,44 @@ A text can show an earlier answer with a `{{key}}` token, where `key` is a top-l
 }
 ```
 
-Tokens are resolved in the step `title` and `description`, the section `title` and `description`, the field and group `label` and `helperText`, and the field `placeholder`. Option labels, action labels, catalogs and messages show tokens as written. Recall works only with `formatVersion` 1.5 or newer.
+Tokens are resolved in the step `title` and `description`, the section `title` and `description`, the field and group `label` and `helperText`, the field `placeholder` and the group `itemLabel`. The `itemLabel` is resolved inside each item, in one pass with its `{label}` and `{index}` parameters: text that one of them inserts is never read again. Option labels, action labels, catalogs and messages show tokens as written. Recall works only with `formatVersion` 1.5 or newer.
 
-A token is replaced with the submit value of the field:
+A token is replaced with the answer of the field:
 
-| Field | Text |
+| Field | Answer |
 |---|---|
 | `select`, `radio`, `autocomplete` | the option label from the definition `options`; a value without one, such as a value from `optionsFrom`, as is |
-| `multiselect` | the option labels joined with `, ` |
+| `multiselect` | the list of option labels |
 | `checkbox`, `switch` | the field label when `true`, else empty |
-| `number`, `scale`, `rating` | the number as JavaScript writes it, such as `4.5` |
+| `number`, `scale`, `rating` | the number |
 | `date`, `time`, `datetime`, text types, `hidden` | the value as stored |
-| `file` | the file names joined with `, ` |
+| `file` | the list of file names |
 | group | the number of items |
 
-A field without a value, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. Each recalled value is cut to 10000 code units. Recall runs once: a recalled value that holds `{{key}}` is not expanded again. The result is plain text, and renderers draw it as text, never as HTML. React and Vue update the texts when a value changes. `recallText(definition, text, values, item?)` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item.
+A field without a value, an empty list, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. Each recalled text is cut to 10000 code units. Recall runs once: a recalled value that holds `{{key}}` is not expanded again. The result is plain text, and renderers draw it as text, never as HTML. React and Vue update the texts when a value, `lang` or `formatRecall` changes. `recallText(definition, text, values, { item?, lang?, format? })` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item.
+
+An optional answer can be empty, so `{{street}}, {{city}}` can show `, Springfield`. Put each optional recall on its own line or in its own text instead of joining answers with punctuation.
+
+### Recall formatting
+
+Each answer that is not empty goes through one formatter, `(value, field, locale) => string`. `value` is a text, a number or a list of texts, as the table above gives it. Apps replace the formatter with the `formatRecall` option of the engine and the renderers. The locale is the `lang` option of the engine or renderer, then the definition `lang`, then `en`. An overlay carries no locale: the app that applies it passes `lang`, to the renderer or to `localize()`.
+
+The identity formatter writes a text as is, a number as JavaScript `String()` writes it (`0` for `-0`, `1e+21`, `0.30000000000000004`) and a list joined with `, `. The [conformance corpus](https://github.com/formhaus-dev/formhaus/tree/main/packages/core/fixtures/conformance) checks recall with it. Per-submission texts outside a form, such as emails, webhooks and PDFs, resolve with the values of that submission and the identity semantics. Texts that stand for many submissions, such as CSV headers and statistics, use `recallStatic(definition, text, group?)`: it replaces each token with the label of its field, the key for a field without a label, and an empty text for an unknown key. With `group`, item keys of that group are read first, as inside an item.
+
+The default formatter uses the platform formatters, so the exact text depends on the platform and its locale data:
+
+| Answer | `@formhaus/core` | Swift |
+|---|---|---|
+| `date` | `Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeZone: 'UTC' })` | `Date.FormatStyle(date: .abbreviated, time: .omitted)` in UTC |
+| `time` | `Intl.DateTimeFormat(locale, { timeStyle: 'short', timeZone: 'UTC' })` | `Date.FormatStyle(date: .omitted, time: .shortened)` in UTC |
+| `datetime` | `Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short', timeZone: 'UTC' })` | `Date.FormatStyle(date: .abbreviated, time: .shortened)` in UTC |
+| number | `Intl.NumberFormat(locale, { maximumSignificantDigits: 21 })` | `.number.precision(.significantDigits(1...21))` |
+| list | `Intl.ListFormat(locale, { type: 'conjunction' })` | `.list(type: .and, width: .standard)` |
+| text | as is | as is |
+
+Numbers are formatted only for `number`, `scale`, `rating` and the item count of a group, and `-0` shows as `0`. A number that JavaScript writes with an exponent, below `1e-6` or from `1e21`, and a number in any other field show as the identity formatter writes it, so no digit is lost. A date or time is formatted only when it passes the type check of its field. A stored date or time shows the day and clock as written: it is read in UTC and formatted in UTC, and an offset in a `datetime` is ignored, so `2027-06-14` never shows as the 13th. Runs of whitespace in a text or list item collapse to one space. A value that does not parse as its type, or an impossible date such as `2027-02-30`, shows as the identity formatter writes it. A malformed locale or one the platform does not support falls back to `en`.
+
+The token grammar, the slots, the answer table, the identity formatter and the formatter signature are fixed for format 1.x. The default styles are platform-native and can change in a 1.x release.
 
 Translations keep the tokens. Recall resolves the translated text, and option labels come from the translated definition. `translationIssues()` reports a translation that drops or adds a `{{key}}` token in `placeholderMismatch`.
 
@@ -915,6 +938,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5 |
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
+| `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |

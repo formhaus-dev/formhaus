@@ -52,7 +52,7 @@ export const FormGroupController = memo(function FormGroupController({
   const [min, max] = itemLimits(group);
   const id = fieldDomId(formId, group.key, engine.definition);
   const error = engine.errors[group.key];
-  const title = (index: number) => itemTitle(group, index, labels, engine.definition.labels);
+  const title = (index: number) => itemTitle(engine, group, index, labels, engine.definition.labels);
   const remove = group.removeLabel ?? label('removeItem');
   const texts = recalled(engine, group);
 
@@ -70,9 +70,10 @@ export const FormGroupController = memo(function FormGroupController({
   };
   const drop = (index: number) => {
     setConfirming(null);
+    const item = title(index);
     if (!onItemsChange(group.key, () => engine.removeItem(group.key, index))) return;
     focus.current = { index, added: false };
-    setStatus(label('itemRemoved', { item: title(index) }));
+    setStatus(label('itemRemoved', { item }));
   };
 
   const ask = (index: number) => {

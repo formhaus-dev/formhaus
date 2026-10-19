@@ -59,6 +59,11 @@ function isCalendarDate(value: string): boolean {
   return day <= new Date(new Date(0).setUTCFullYear(year, month, 0)).getUTCDate();
 }
 
+export function matchesFormat(type: string, value: string): boolean {
+  const format = FORMATS.get(type)?.[0];
+  return !!format && format.test(value) && (format === EMAIL || format === TIME || isCalendarDate(value));
+}
+
 const UNTRIMMED_TYPES = new Set(['password', 'select', 'radio', 'file', ...NUMBER_TYPES]);
 
 export function trimValue(field: FormField, value: unknown): unknown {
@@ -122,12 +127,9 @@ function stringError(field: FormField, value: unknown, key: MessageKey, fail: Fa
   return typeof value === 'string' ? lengthError(field, value, fail) : fail(key);
 }
 
-function formatError(field: FormField, value: unknown, [format, key, max]: [RegExp, MessageKey, number], fail: Fail): string | null {
+function formatError(field: FormField, value: unknown, [, key, max]: [RegExp, MessageKey, number], fail: Fail): string | null {
   if (typeof value !== 'string') return fail(key);
-  return (
-    lengthError(field, value, fail) ??
-    (value.length <= max && format.test(value) && (format === EMAIL || format === TIME || isCalendarDate(value)) ? null : fail(key))
-  );
+  return lengthError(field, value, fail) ?? (value.length <= max && matchesFormat(field.type, value) ? null : fail(key));
 }
 
 function primitiveError(field: FormField, value: unknown, fail: Fail): string | null {

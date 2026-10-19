@@ -138,16 +138,23 @@ export const capabilities = {
   recall: {
     syntax:
       '{{key}} in a text shows the answer of the field with that top-level key. Inside a group item, {{itemKey}} shows a field of the same item. Whitespace inside the braces is allowed. Needs "formatVersion": "1.5"; below it the braces show as written.',
-    slots: ['step title and description', 'section title and description', 'field and group label and helperText', 'field placeholder'],
+    slots: [
+      'step title and description',
+      'section title and description',
+      'field and group label and helperText',
+      'field placeholder',
+      'group itemLabel, inside each item',
+    ],
     values: [
-      'Options show their label, multiselect labels joined with ", ".',
+      'Options show their label, a multiselect lists its labels.',
       'checkbox and switch show the field label when true and nothing when false.',
-      'Numbers, dates, times, text and hidden values show as stored. A file shows its file names. A group shows its item count.',
+      'Renderers format numbers, dates, times and lists for the locale. Text and hidden values show as stored. A file lists its file names. A group shows its item count.',
       'Missing answers, fields hidden by conditions, skipped steps and unknown keys show nothing.',
     ],
     rules: [
       'Recall answers from earlier steps, such as a review step: "Check your answers: {{name}}, {{email}}, plan {{plan}}". A field on a later step or the field that holds the text is recall-forward-reference; an unknown key is unknown-recall-field.',
-      'Option labels, action labels and messages show {{key}} as written. There are no expressions or formats.',
+      'Option labels, action labels and messages show {{key}} as written. There are no expressions or formats: other content inside {{ }} shows as written and is recall-syntax. Write \\{{ for literal braces.',
+      'An optional answer can be empty, so put each optional recall on its own line instead of joining answers with commas.',
       'Keep the {{key}} tokens in translations.',
     ],
   },

@@ -16,6 +16,7 @@ export type DefinitionIssueCode =
   | 'forward-reference'
   | 'unknown-recall-field'
   | 'recall-forward-reference'
+  | 'recall-syntax'
   | 'condition-operator-count'
   | 'unknown-operator'
   | 'condition-value-mismatch'

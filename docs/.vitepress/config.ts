@@ -39,6 +39,12 @@ export default defineConfig({
   description:
     'JSON form definition for React, Vue, Figma and AI agents: validation, conditional fields, multi-step forms and branching routes.',
   lastUpdated: true,
+  markdown: {
+    config: (md) => {
+      const code = md.renderer.rules.code_inline!;
+      md.renderer.rules.code_inline = (...args) => code(...args).replace('<code', '<code v-pre');
+    },
+  },
   cleanUrls: true,
   ignoreDeadLinks: [(url) => url.startsWith('/') && ownerOf(url.split(/[?#]/)[0]) === 'marketing'],
   sitemap: { hostname: siteUrl, transformItems: sitemap.transformItems },
