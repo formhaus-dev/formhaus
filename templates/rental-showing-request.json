@@ -20,6 +20,11 @@
             "helperText": "Leave empty if you came from the listing page."
           },
           {
+            "key": "listing",
+            "type": "hidden",
+            "source": { "query": "listing" }
+          },
+          {
             "key": "moveIn",
             "type": "date",
             "label": "Earliest move-in date",
