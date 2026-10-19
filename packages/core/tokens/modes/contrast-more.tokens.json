@@ -1,0 +1,19 @@
+{
+  "$description": "Increased contrast. Borders that mark cards and buttons use the input border colors.",
+  "color": {
+    "$type": "color",
+    "border": {
+      "default": {
+        "$value": "{color.input.border}"
+      },
+      "hover": {
+        "$value": "{color.input.border-hover}"
+      }
+    },
+    "secondary": {
+      "border": {
+        "$value": "{color.input.border}"
+      }
+    }
+  }
+}
