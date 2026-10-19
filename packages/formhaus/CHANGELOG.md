@@ -1,5 +1,11 @@
 # formhaus
 
+## 0.20.0
+
+### Patch Changes
+
+- The `formhaus-create-form` skill and the Cursor rule test `multiselect` answers with `contains`.
+
 ## 0.19.1
 
 No changes in this release.
