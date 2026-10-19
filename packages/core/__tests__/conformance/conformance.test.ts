@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, type FormDefinition } from '../../src';
+import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, recallText, type FormDefinition } from '../../src';
 import { textSlots } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
-import { cases, corpus, runtime } from './corpus';
+import { cases, corpus, recalls, runtime } from './corpus';
 
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const byPathAndCode = (a: { code: string; path: string }, b: { code: string; path: string }) =>
@@ -67,6 +67,11 @@ describe('conformance corpus', () => {
       'localized-overlay',
       'options-from',
       'proto-keys',
+      'recall-groups',
+      'recall-inactive',
+      'recall-translations',
+      'recall-values',
+      'recall-version',
       'shared-key-branches',
       'times-and-hidden',
       'trimmed-conditions',
@@ -104,6 +109,14 @@ describe('conformance corpus', () => {
       expect(() => validateSubmission(definition, {})).toThrow(FormDefinitionError);
     },
   );
+
+  it.each(recalls)('%s: recall', (_, definition, { values, texts }) => {
+    const slots = new Map(textSlots(definition).map(({ address, text }) => [address, text]));
+    const submitted = new FormEngine(definition, values, { onWarning: () => {} }).getSubmitValues();
+    const resolve = ({ address, group, item }: (typeof texts)[number]) =>
+      recallText(definition, slots.get(address)!, submitted, group === undefined ? undefined : { group, index: item! });
+    expect(texts.map((entry) => ({ ...entry, text: resolve(entry) }))).toEqual(texts);
+  });
 
   it.each(cases)('%s: server', (_, definition, { input, expected, serverValues }) => {
     const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps });

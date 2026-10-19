@@ -11,6 +11,16 @@ export interface Issue {
 
 const reserved = (key: string) => key in Object.prototype || key === 'prototype';
 
+const recalled = (texts: (string | undefined)[]) =>
+  texts.flatMap((text) => [...(text ?? '').matchAll(/\{\{\s*([^\s{}]+)\s*\}\}/g)].map((match) => match[1]));
+
+function recalls({ formatVersion }: BuilderForm['extra']): boolean {
+  const [major, minor = 0] = String(formatVersion ?? '1.0')
+    .split('.')
+    .map(Number);
+  return major > 1 || minor >= 5;
+}
+
 function duplicates<T>(items: T[], name: (item: T) => string): T[] {
   const seen = new Set<string>();
   return items.filter((item) => {
@@ -47,7 +57,16 @@ export function findIssues(form: BuilderForm): Issue[] {
   for (const page of duplicates(pages, (entry) => entry.id)) {
     issues.push({ uid: page.uid, severity: 'error', message: `Step id "${page.id}" is used by another step.` });
   }
+  let page = 0;
+  const pageOf = new Map(form.blocks.map((block) => [block, isPage(block) ? ++page : page]));
   form.blocks.forEach((block, index) => {
+    const texts = isPage(block) ? [block.title, block.extra.description] : [block.label, block.extra.helperText, block.extra.placeholder];
+    for (const key of recalls(form.extra) ? recalled(texts) : []) {
+      const found = target(key, scope(block));
+      if (!found) issues.push({ uid: block.uid, severity: 'warning', message: `Recalls "{{${key}}}", which is not a field.` });
+      else if (found === block || pageOf.get(found)! > pageOf.get(block)!)
+        issues.push({ uid: block.uid, severity: 'warning', message: `Recalls "{{${key}}}", which is not answered yet.` });
+    }
     if (isPage(block) && !isQuestion(form.blocks[index + 1]) && !block.title.trim() && !block.extra.description?.trim())
       issues.push({ uid: block.uid, severity: 'warning', message: 'This step has no fields or text.' });
     for (const condition of conditionsOf(block.extra)) {
