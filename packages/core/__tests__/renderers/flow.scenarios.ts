@@ -25,6 +25,45 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await waitFor(() => expect(marks()[0].textContent?.trim()).toBe('One'));
   });
 
+  it('shows a field while a multiselect includes an option', async () => {
+    const onSubmit = fn();
+    harness.mount({
+      definition: {
+        formatVersion: '1.4',
+        id: 'kyc',
+        title: '',
+        submit: { label: 'Send' },
+        fields: [
+          {
+            key: 'sourceOfWealth',
+            type: 'multiselect',
+            label: 'Source of wealth',
+            options: [
+              { value: 'SALARY', label: 'Salary' },
+              { value: 'OTHER', label: 'Other' },
+            ],
+          },
+          {
+            key: 'otherSourceOfWealth',
+            type: 'text',
+            label: 'Other source of wealth',
+            show: [{ field: 'sourceOfWealth', contains: 'OTHER' }],
+          },
+        ],
+      },
+      onSubmit,
+    });
+    const other = () => screen.queryByRole('textbox', { name: /Other source of wealth/ });
+    await harness.click(screen.getByRole('checkbox', { name: 'Salary' }));
+    expect(other()).toBeNull();
+    await harness.click(screen.getByRole('checkbox', { name: 'Other' }));
+    await harness.type(await screen.findByRole('textbox', { name: /Other source of wealth/ }), 'Lottery');
+    await harness.click(screen.getByRole('checkbox', { name: 'Other' }));
+    await waitFor(() => expect(other()).toBeNull());
+    await harness.click(button('Send'));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ sourceOfWealth: ['SALARY'] }, []));
+  });
+
   it('advances on an autoAdvance answer', async () => {
     const onAnalyticsEvent = fn();
     harness.mount({ definition: wizard, initialValues: { name: 'Ada' }, onSubmit: () => {}, onAnalyticsEvent });
