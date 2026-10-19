@@ -1,5 +1,7 @@
+import type { FormEngine } from './runtime';
 import type { FormDefinition, FormField, FormGroup } from '../types';
-import { BOOLEAN_TYPES, MAX_STRING_LENGTH } from '../validation/type-checks';
+import { BOOLEAN_TYPES } from '../validation/type-checks';
+import { fill } from '../validation/bounded-text';
 import { formatText } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, itemsOf } from '../visibility/nodes';
 import { getAllFields } from './engine-utils';
@@ -14,6 +16,7 @@ export interface RecallOptions {
   item?: RecallItem;
   lang?: string;
   format?: RecallFormatFn;
+  engine?: FormEngine<object>;
 }
 
 export const RECALL_SLOTS = ['title', 'description', 'label', 'placeholder', 'helperText', 'itemLabel'] as const;
@@ -57,7 +60,7 @@ function substitute(
   if (!recallEnabled(definition)) return params ? formatText(text, params) : text;
   if (!text.includes(params ? '{' : '{{')) return text;
   const resolve = resolver();
-  return text.replace(TOKEN, (token, content?: string, name?: string) => {
+  return fill(text, TOKEN, ([token, content, name]) => {
     if (name !== undefined) return params && hasOwn(params, name) ? String(params[name]) : token;
     if (content === undefined) return '{{';
     const key = KEY.exec(content)?.[1];
@@ -82,10 +85,13 @@ function answer(field: FormField, value: unknown): string | number | string[] | 
   return value.length ? value.map((item) => String(text(item))) : undefined;
 }
 
+export type ActiveField = (key: string) => FormField | undefined;
+
 export function resolveRecall(
   definition: FormDefinition,
   text: string,
   values: Record<string, unknown>,
+  active: ActiveField,
   { item, lang, format = formatRecallValue }: RecallOptions = {},
   params?: Record<string, unknown>,
 ): string {
@@ -94,23 +100,21 @@ export function resolveRecall(
     text,
     () => {
       const fields = getAllFields(definition);
-      const group = item && fields.find((field): field is FormGroup => isGroup(field) && field.key === item.group);
-      const entry = group && itemsOf(values[group.key])[item.index];
-      const scope = isEntry(entry) ? group!.fields : [];
+      const group = item && active(item.group);
+      const entry = group && isGroup(group) ? itemsOf(values[group.key])[item.index] : undefined;
+      const scope = isEntry(entry) ? (group as FormGroup).fields : [];
+      const shared = scope.length ? fields.flatMap((field) => (isGroup(field) && field.key === item!.group ? field.fields : [])) : [];
       return (key) => {
         const own = scope.find((field) => field.key === key);
         const source = own ? (entry as Record<string, unknown>) : values;
-        const field = own ?? fields.find((candidate) => candidate.key === key);
+        const sensitive = (own ? shared : fields).some((candidate) => candidate.key === key && candidate.type === 'password');
+        const field = sensitive ? undefined : (own ?? active(key));
         const value = field && hasOwn(source, key) ? answer(field, source[key]) : undefined;
-        return value === undefined ? '' : format(value, field!, lang || definition.lang || 'en').slice(0, MAX_STRING_LENGTH);
+        return value === undefined ? '' : format(value, field!, lang || definition.lang || 'en');
       };
     },
     params,
   );
-}
-
-export function recallText(definition: FormDefinition, text: string, values: Record<string, unknown>, options?: RecallOptions): string {
-  return resolveRecall(definition, text, values, options);
 }
 
 export function recallStatic(definition: FormDefinition, text: string, group?: string): string {
