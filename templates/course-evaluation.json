@@ -12,14 +12,13 @@
     "steps": [
       {
         "id": "course",
-        "title": "About {{course}}",
+        "title": "The course",
         "fields": [
           {
             "key": "course",
             "type": "hidden",
             "label": "Course",
-            "source": { "query": "course" },
-            "defaultValue": "this course"
+            "source": { "query": "course" }
           },
           {
             "key": "courseAgree",
@@ -143,7 +142,7 @@
           {
             "key": "overall",
             "type": "rating",
-            "label": "Overall, how would you rate {{course}}?",
+            "label": "Overall, how would you rate the course?",
             "validation": { "required": true, "max": 5 },
             "options": [{ "value": "1", "label": "Poor" }, { "value": "5", "label": "Excellent" }]
           },

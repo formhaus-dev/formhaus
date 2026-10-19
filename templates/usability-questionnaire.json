@@ -19,14 +19,13 @@
         "key": "product",
         "type": "hidden",
         "label": "Product",
-        "source": { "query": "product" },
-        "defaultValue": "the product"
+        "source": { "query": "product" }
       },
       {
         "key": "sus",
         "type": "section",
         "layout": "matrix",
-        "title": "Your experience with {{product}}",
+        "title": "Your experience with the product",
         "description": "Answer every statement with your first reaction. If you’re not sure, choose Neutral.",
         "fields": [
           {

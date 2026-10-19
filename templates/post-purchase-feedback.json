@@ -71,7 +71,8 @@
             "label": "Email",
             "inputMode": "email",
             "validation": { "required": true },
-            "show": [{ "field": "followUp", "eq": true }]
+            "show": [{ "field": "followUp", "eq": true }],
+            "autocomplete": "email"
           }
         ]
       }

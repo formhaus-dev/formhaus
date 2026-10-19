@@ -14,11 +14,11 @@ Hidden fields read their value from the page URL.
 | Template | Parameter | Used for |
 |---|---|---|
 | `post-purchase-feedback` | `order` | Order number, stored with the answers |
-| `course-evaluation` | `course` | Course name in the step and rating titles |
-| `usability-questionnaire` | `product`, `pid` | Product name in the section title, participant ID |
+| `course-evaluation` | `course` | Course name, stored with the answers |
+| `usability-questionnaire` | `product`, `pid` | Product name and participant ID, stored with the answers |
 | `design-preference-test` | `pid` | Participant ID |
 
-`course` and `product` have a default text, `this course` and `the product`. Without the parameter the default text is also in the submitted payload.
+The templates do not show these values on the page, because anyone can write text into a link.
 
 ## Score the usability questionnaire
 
@@ -38,7 +38,7 @@ A score is a comparison between releases or groups. Use one SUS per test session
 
 Core does not shuffle options. A fixed order favors the first design. Publish three copies of the definition and give each respondent one of them in turn: A, B, C in the first, B, C, A in the second and C, A, B in the third. Reorder the `options` of `choice` and the `design` sections of the `words` step in the same way. Keep the option values and the field keys, so all copies produce the same payload.
 
-Reaction words follow the Desirability Toolkit of Benedek and Miner (2002). The list has 12 words, half of them negative, as [Nielsen Norman Group recommends](https://www.nngroup.com/articles/microsoft-desirability-toolkit/). Edit the words to fit your designs.
+Reaction words follow the Desirability Toolkit of Benedek and Miner (2002). The list has 12 words, half of them negative, and a "None of these" option that is the only answer when picked, as [Nielsen Norman Group recommends](https://www.nngroup.com/articles/microsoft-desirability-toolkit/). Edit the words to fit your designs.
 
 ## Sources
 

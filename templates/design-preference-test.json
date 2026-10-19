@@ -62,7 +62,8 @@
                   { "value": "trustworthy", "label": "Trustworthy" },
                   { "value": "cheap", "label": "Cheap" },
                   { "value": "creative", "label": "Creative" },
-                  { "value": "generic", "label": "Generic" }
+                  { "value": "generic", "label": "Generic" },
+                  { "value": "none", "label": "None of these", "exclusive": true }
                 ],
                 "validation": { "required": true, "maxLength": 5, "maxLengthMessage": "Choose up to 5 words" }
               }
@@ -91,7 +92,8 @@
                   { "value": "trustworthy", "label": "Trustworthy" },
                   { "value": "cheap", "label": "Cheap" },
                   { "value": "creative", "label": "Creative" },
-                  { "value": "generic", "label": "Generic" }
+                  { "value": "generic", "label": "Generic" },
+                  { "value": "none", "label": "None of these", "exclusive": true }
                 ],
                 "validation": { "required": true, "maxLength": 5, "maxLengthMessage": "Choose up to 5 words" }
               }
@@ -120,7 +122,8 @@
                   { "value": "trustworthy", "label": "Trustworthy" },
                   { "value": "cheap", "label": "Cheap" },
                   { "value": "creative", "label": "Creative" },
-                  { "value": "generic", "label": "Generic" }
+                  { "value": "generic", "label": "Generic" },
+                  { "value": "none", "label": "None of these", "exclusive": true }
                 ],
                 "validation": { "required": true, "maxLength": 5, "maxLengthMessage": "Choose up to 5 words" }
               }
