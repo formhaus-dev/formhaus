@@ -22,7 +22,7 @@ export interface ConformanceFixture {
   recall?: RecallCase[];
 }
 
-export interface RecallCase {
+interface RecallCase {
   name: string;
   values: Record<string, unknown>;
   texts: { address: string; group?: string; item?: number; text: string }[];
