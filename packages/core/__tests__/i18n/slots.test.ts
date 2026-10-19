@@ -20,7 +20,7 @@ describe('textSlots and translationTemplate', () => {
     });
     expect(byAddress['messages.minLength']).toMatchObject({
       key: 'signup.messages.minLength',
-      text: 'Must be at least {min} characters',
+      text: 'Minimum length is {min}',
       params: ['min'],
     });
     expect(byAddress['labels.stepOf']).toMatchObject({ params: ['current', 'total'] });
@@ -38,8 +38,8 @@ describe('textSlots and translationTemplate', () => {
     expect(localized).toEqual(signup);
     expect(messages).toEqual({
       required: 'This field is required',
-      minLength: 'Must be at least {min} characters',
-      maxLength: 'Must be at most {max} characters',
+      minLength: 'Minimum length is {min}',
+      maxLength: 'Maximum length is {max}',
       email: 'Enter a valid email',
       option: 'Select one of the available options',
       string: 'Must be text',
@@ -72,6 +72,24 @@ describe('textSlots and translationTemplate', () => {
     const { definition: localized, messages } = localize(definition, { overlay });
     const { errors } = validateSubmission(localized, { plan: 'x', tags: 'a', agree: 'yes', name: 5 }, { messages });
     expect(errors).toEqual({ plan: 'ru:option', tags: 'ru:options', agree: 'ru:boolean', name: 'ru:string' });
+  });
+});
+
+describe('picture preview labels', () => {
+  it('lists enlargeImage and close only for forms with option images', () => {
+    const form = (image?: string): FormDefinition => ({
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Send' },
+      fields: [{ key: 'room', type: 'radio', label: 'Room', options: [{ value: 'sea', label: 'Sea', ...(image ? { image } : {}) }] }],
+    });
+    const labels = (definition: FormDefinition) =>
+      textSlots(definition).filter(({ address }) => /^labels\.(enlargeImage|close)$/.test(address));
+    expect(labels(form('https://example.com/sea.jpg')).map(({ address, text }) => [address, text])).toEqual([
+      ['labels.enlargeImage', 'Enlarge image: {label}'],
+      ['labels.close', 'Close'],
+    ]);
+    expect(labels(form())).toEqual([]);
   });
 });
 
