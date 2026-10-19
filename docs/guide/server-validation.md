@@ -91,7 +91,10 @@ Both run the `validation` rules on the active path and skip fields and steps hid
 | Steps in `skippedSteps` dropped, only when the step has `skip` | Yes | No |
 | `number`, `scale` and `rating` decimal string such as `"5"` converted to a number | Yes | No. The string fails the type check |
 | `[]` in a built-in field other than `multiselect` dropped like a missing answer | Yes | No. It counts as empty and stays in the payload |
+| A value that fails its type check, at top level or in a group item, left out of `values` and treated as unanswered by conditions and validators | Yes | No. It stays in the payload and conditions see it |
 | Named `validator` functions | Ignored unless passed in `validators` | Yes |
+
+A type error can name a field the user never saw, sent by a stale or tampered client. Pass server errors back through a rejected submit or `setErrors()`, which shows errors of fields that are not on screen as form-level errors, or show them at form level yourself.
 
 `FormEngine.validate()` is the browser check. Do not use it on untrusted input.
 

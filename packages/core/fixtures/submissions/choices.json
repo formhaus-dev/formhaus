@@ -102,13 +102,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "color": "green",
-          "size": "xl",
-          "tags": ["a", "z"],
-          "agree": "yes",
-          "alerts": 1
-        },
+        "values": {},
         "errors": {
           "color": "Select one of the available options",
           "size": "Select one of the available options",
@@ -127,9 +121,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "tags": "a"
-        },
+        "values": {},
         "errors": {
           "tags": "Must be a list of available options"
         }
@@ -180,9 +172,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "tags": ["a", "a", "b"]
-        },
+        "values": {},
         "errors": {
           "tags": "Select one of the available options"
         }
@@ -197,9 +187,7 @@
         "skippedSteps": []
       },
       "expected": {
-        "values": {
-          "tags": ["b", "b"]
-        },
+        "values": {},
         "errors": {
           "tags": "Must be a list of available options"
         }

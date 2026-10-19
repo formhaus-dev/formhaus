@@ -94,9 +94,6 @@ function normalizeItems(group: FormGroup, input: unknown): unknown {
 
 const staticOptions = (field: FormField) => (field.optionsFrom ? undefined : field.options);
 
-export const oversizedList = (field: FormField, value: unknown) =>
-  LIST_TYPES.includes(field.type) && (!Array.isArray(value) || value.length > (staticOptions(field)?.length ?? MAX_ITEMS));
-
 function isOption(field: FormField, value: unknown): boolean {
   const options = staticOptions(field);
   return !options || options.some((option) => option.value === value);
