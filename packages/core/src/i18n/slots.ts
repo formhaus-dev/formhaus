@@ -137,6 +137,10 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
     ['enlargeImage', 'close'],
   );
   add(
+    fields.some((field) => field.type === 'multiselect' && field.options?.some((option) => option.exclusive)),
+    ['or'],
+  );
+  add(
     fields.some((field) => field.validation?.required),
     ['required'],
   );

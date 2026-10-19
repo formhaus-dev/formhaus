@@ -1,13 +1,13 @@
 const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.5". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts in 1.5.',
+    'Format version of the definition, such as "1.5". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
     'Validation message templates by message key. {min} and {max} are replaced. Field-level messages win over these.',
   'FormDefinition.labels':
-    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, done, chooseFile, required, skip, submit, stepTitle ({index}) and stepErrors ({count}).',
+    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, done, chooseFile, required, skip, submit, stepTitle ({index}), stepErrors ({count}) and or.',
   'FormDefinition.i18n':
     'Translation keys for the form texts and the messages and labels catalogs, resolved by the app translate function.',
   'FormStep.i18n': 'Translation keys for the step title and description. The literal texts stay the fallback.',
@@ -15,6 +15,8 @@ const DESCRIPTIONS = {
   'FieldOption.i18n': 'Translation key for the option label.',
   'FieldOption.image':
     'Image URL shown above the label on radio and multiselect options. The label stays visible and names the option. Select and autocomplete ignore it.',
+  'FieldOption.exclusive':
+    'Multiselect only: picking this option clears the other answers, and picking another option clears it. Renderers show an "or" divider before it. Added in format 1.5.',
   'FormAction.i18n': 'Translation key for the button label.',
   'FieldValidation.i18n': 'Translation keys for the messages of the validation rules, by rule name.',
   'FormDefinition.title': 'Form title for host UI and Figma output. Renderers do not display it.',

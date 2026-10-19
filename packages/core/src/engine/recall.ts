@@ -1,6 +1,7 @@
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { BOOLEAN_TYPES, MAX_STRING_LENGTH } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, itemsOf } from '../visibility/nodes';
+import { RECALL_TOKEN } from './recall-token';
 import { getAllFields } from './engine-utils';
 
 export interface RecallItem {
@@ -10,9 +11,7 @@ export interface RecallItem {
 
 export const RECALL_SLOTS = ['title', 'description', 'label', 'placeholder', 'helperText'] as const;
 
-const TOKEN = /\{\{\s*([^\s{}]+)\s*\}\}/g;
-
-export const recallKeys = (text: string): string[] => [...text.matchAll(TOKEN)].map((match) => match[1]);
+export const recallKeys = (text: string): string[] => [...text.matchAll(RECALL_TOKEN)].map((match) => match[1]);
 
 export const formatOf = ({ formatVersion }: Pick<FormDefinition, 'formatVersion'>): number[] =>
   String(formatVersion ?? '1.0')
@@ -43,7 +42,7 @@ export function recallText(definition: FormDefinition, text: string, values: Rec
   const group = item && fields.find((field): field is FormGroup => isGroup(field) && field.key === item.group);
   const entry = group && itemsOf(values[group.key])[item.index];
   const scope = isEntry(entry) ? group!.fields : [];
-  return text.replace(TOKEN, (_, key: string) => {
+  return text.replace(RECALL_TOKEN, (_, key: string) => {
     const own = scope.find((field) => field.key === key);
     const source = own ? (entry as Record<string, unknown>) : values;
     const field = own ?? fields.find((candidate) => candidate.key === key);

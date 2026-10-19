@@ -11,7 +11,7 @@ export const PROPERTIES = {
     'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options layout columns optionsFrom optionsDependsOn accept rows mask inputMode props i18n',
   section: 'key type title description layout show showAny fields i18n',
   group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
-  option: 'value label image i18n',
+  option: 'value label image exclusive i18n',
   action: 'label variant disabled i18n',
   route: 'to show showAny',
   validation:

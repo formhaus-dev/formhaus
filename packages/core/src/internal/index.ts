@@ -17,10 +17,12 @@ export type { FormActionsState, FormActionsView } from '../types/views';
 export { actionsView } from './actions';
 export { warnDefinitionReset } from './definition-reset';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
+export { fieldComponentsByName, mergeFieldComponents } from './field-components';
 export { fieldDomId, itemDomId } from './ids';
 export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle, type ErrorEntry, type ErrorGroup } from './items';
 export { warnMissingComponents } from './missing-components';
 export {
+  dividerBefore,
   loadOptions,
   optionKey,
   optionSources,
