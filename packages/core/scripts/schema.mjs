@@ -52,6 +52,7 @@ export function buildSchema() {
   generated.definitions.FormNode = byType('section', ref('FormSection'), byType('group', ref('FormGroup'), ref('FormField')));
   generated.definitions.FormSection.properties.fields.items = byType('group', ref('FormGroup'), ref('FormField'));
   Object.assign(generated.definitions.FormGroup.properties.defaultItems, { type: 'integer', minimum: 0 });
+  Object.assign(field.properties.columns, { type: 'integer', minimum: 1, maximum: 4 });
   generated.definitions.FormDefinition.properties.description.maxLength = 1000;
   generated.definitions.FormDefinition.properties.formatVersion.pattern = '^[1-9]\\d*(\\.\\d+)?$';
   for (const name of I18N_DEFINITIONS) {

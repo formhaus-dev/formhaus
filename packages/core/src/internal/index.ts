@@ -20,6 +20,7 @@ export { errorDomId, errorEntries, itemHasContent, itemLimits, itemTitle, type E
 export { warnMissingComponents } from './missing-components';
 export { loadOptions, optionKey, optionSources, providedOptions, sameOptions, type OptionSource, type OptionsProvider } from './options';
 export { applySources } from './sources';
+export { scaleRange } from '../validation/type-checks';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;

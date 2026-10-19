@@ -113,8 +113,8 @@ describe('validateSubmission with values shown by a skipped step', () => {
     const long = 'z'.repeat(20000);
     for (const a of ['x', 'y'])
       expect(validateSubmission(definition, { a, c: long, g: [{ r: long }] }, skip).errors).toEqual({
-        c: 'Must be at most 10000 characters',
-        'g.0.r': 'Must be at most 10000 characters',
+        c: 'Maximum length is 10000',
+        'g.0.r': 'Maximum length is 10000',
       });
   });
 

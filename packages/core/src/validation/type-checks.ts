@@ -22,7 +22,16 @@ export const BUILT_IN_TYPES = [
   'time',
   'textarea',
   'hidden',
+  'scale',
+  'rating',
 ];
+export const SCALE_TYPES = ['scale', 'rating'];
+export const NUMBER_TYPES = ['number', ...SCALE_TYPES];
+export const LIST_TYPES = ['multiselect'];
+
+export function scaleRange({ type, validation }: FormField): [number, number] {
+  return [type === 'rating' ? 1 : (validation?.min ?? 1), validation?.max ?? 5];
+}
 
 export const MAX_STRING_LENGTH = 10000;
 export const MAX_HIDDEN_LENGTH = 2000;
@@ -51,17 +60,18 @@ function isCalendarDate(value: string): boolean {
   return day <= new Date(new Date(0).setUTCFullYear(year, month, 0)).getUTCDate();
 }
 
-const UNTRIMMED_TYPES = new Set(['password', 'number', 'select', 'radio', 'file']);
+const UNTRIMMED_TYPES = new Set(['password', 'select', 'radio', 'file', ...NUMBER_TYPES]);
 
 export function trimValue(field: FormField, value: unknown): unknown {
   return typeof value === 'string' && !UNTRIMMED_TYPES.has(field.type) ? value.trim() : value;
 }
 
 export function normalizeValue(field: FormField, input: unknown): unknown {
-  if (Array.isArray(input) && input.length === 0 && field.type !== 'multiselect' && BUILT_IN_TYPES.includes(field.type)) return undefined;
+  if (Array.isArray(input) && input.length === 0 && !LIST_TYPES.includes(field.type) && BUILT_IN_TYPES.includes(field.type))
+    return undefined;
   if (field.type === 'group') return normalizeItems(field as FormGroup, input);
   const value = trimValue(field, input);
-  if (field.type !== 'number' || typeof value !== 'string' || !DECIMAL.test(value)) return value;
+  if (!NUMBER_TYPES.includes(field.type) || typeof value !== 'string' || !DECIMAL.test(value)) return value;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : value;
 }
@@ -117,7 +127,7 @@ function primitiveError(field: FormField, value: unknown, fail: Fail): string | 
 }
 
 function isEmpty(field: FormField, value: unknown): boolean {
-  return isBlank(value) && (field.type === 'multiselect' || !Array.isArray(value));
+  return isBlank(value) && (LIST_TYPES.includes(field.type) || !Array.isArray(value));
 }
 
 export const isPlainEntry = (item: unknown) => Object.prototype.toString.call(item) === '[object Object]';
@@ -135,7 +145,11 @@ export function typeError(field: FormField, value: unknown, resolve: ResolveMess
   if (field.type === 'group') return groupError(field, value, fail);
   if (BOOLEAN_TYPES.includes(field.type)) return typeof value === 'boolean' ? null : fail('boolean');
   if (field.type === 'number') return typeof value === 'number' && Number.isFinite(value) ? null : fail('number');
-  if (field.type === 'multiselect') return multiselectError(field, value, fail);
+  if (SCALE_TYPES.includes(field.type)) {
+    const [min, max] = scaleRange(field);
+    return Number.isInteger(value) && (value as number) >= min && (value as number) <= max ? null : fail('option');
+  }
+  if (LIST_TYPES.includes(field.type)) return multiselectError(field, value, fail);
   if (field.type === 'file') return stringError(field, value, 'file', fail);
   const format = FORMATS.get(field.type);
   if (format) return formatError(field, value, format, fail);
@@ -148,7 +162,8 @@ export function typeMessageKeys(field: FormField): MessageKey[] {
   if (field.type === 'group') return ['value'];
   if (BOOLEAN_TYPES.includes(field.type)) return ['boolean'];
   if (field.type === 'number') return ['number'];
-  if (field.type === 'multiselect') return ['options', 'option'];
+  if (SCALE_TYPES.includes(field.type)) return ['option'];
+  if (LIST_TYPES.includes(field.type)) return ['options', 'option'];
   const format = FORMATS.get(field.type)?.[1];
   if (format) return [format, 'maxLength'];
   if (field.type === 'file') return ['file', 'maxLength'];

@@ -17,7 +17,9 @@ export type DefaultFieldType =
   | 'datetime'
   | 'time'
   | 'textarea'
-  | 'hidden';
+  | 'hidden'
+  | 'scale'
+  | 'rating';
 
 export type FieldType = DefaultFieldType | (string & {});
 
@@ -28,6 +30,7 @@ export type FieldSource = FieldSourceName | { query: string };
 export interface FieldOption {
   value: string;
   label: string;
+  image?: string;
   i18n?: LabelI18n;
 }
 
@@ -45,6 +48,7 @@ export interface FormField {
   validation?: FieldValidation;
   options?: FieldOption[];
   layout?: 'stack' | 'inline';
+  columns?: number;
   optionsFrom?: string;
   optionsDependsOn?: string[];
   accept?: string;
@@ -88,6 +92,7 @@ export interface FormSection {
   type: 'section';
   title: string;
   description?: string;
+  layout?: 'matrix';
   show?: ShowCondition[];
   showAny?: ShowCondition[];
   fields: (FormField | HiddenFormField | FormGroup)[];

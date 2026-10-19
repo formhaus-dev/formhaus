@@ -1,14 +1,29 @@
 <script setup lang="ts">
+import type { FormField } from '@formhaus/core';
+import { computed } from 'vue';
 import { sectionComponentProps } from './props';
 
-defineProps(sectionComponentProps);
+const props = defineProps(sectionComponentProps);
 defineSlots<{ default(): unknown }>();
+const columns = computed(() =>
+  props.section.layout === 'matrix' ? (props.section.fields[0] as FormField | undefined)?.options : undefined,
+);
 </script>
 
 <template>
-  <fieldset :id="id" class="fh-section" :aria-describedby="descriptionId">
+  <fieldset
+    :id="id"
+    :class="['fh-section', columns && 'fh-section--matrix']"
+    :aria-describedby="descriptionId"
+    :style="columns && { '--fh-matrix-columns': columns.length }"
+  >
     <legend class="fh-section__title">{{ title }}</legend>
     <p v-if="description" :id="descriptionId" class="fh-field__helper fh-section__description">{{ description }}</p>
-    <div class="fh-section__body"><slot /></div>
+    <div class="fh-section__body">
+      <div v-if="columns" class="fh-section__matrix-header" aria-hidden="true">
+        <span v-for="option in columns" :key="option.value">{{ option.label }}</span>
+      </div>
+      <slot />
+    </div>
   </fieldset>
 </template>

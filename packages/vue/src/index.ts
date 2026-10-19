@@ -12,6 +12,7 @@ export { default as TextareaField } from './fields/TextareaField.vue';
 export { default as SelectField } from './fields/SelectField.vue';
 export { default as CheckboxField } from './fields/CheckboxField.vue';
 export { default as RadioField } from './fields/RadioField.vue';
+export { default as ScaleField } from './fields/ScaleField.vue';
 export { default as SwitchField } from './fields/SwitchField.vue';
 export { default as FileField } from './fields/FileField.vue';
 export { default as DateField } from './fields/DateField.vue';

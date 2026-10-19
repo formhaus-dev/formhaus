@@ -40,7 +40,8 @@ export type DefinitionIssueCode =
   | 'unknown-label-key'
   | 'i18n-unsafe-identifier'
   | 'unknown-source'
-  | 'source-not-applicable';
+  | 'source-not-applicable'
+  | 'columns-not-applicable';
 
 export interface DefinitionIssue {
   code: DefinitionIssueCode;

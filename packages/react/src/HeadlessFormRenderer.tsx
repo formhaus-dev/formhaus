@@ -5,6 +5,7 @@ import {
   errorDomId,
   focusField,
   hasValue,
+  labelFor,
   restoreFocus,
   shouldApplyExternalErrors,
   warnMissingComponents,
@@ -15,6 +16,7 @@ import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
 import { FormTopLevelErrors } from './FormTopLevelErrors';
+import { LabelContext } from './labels';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import { useRendererActions } from './hooks/useRendererActions';
@@ -183,21 +185,23 @@ export const HeadlessFormRenderer = forwardRef<FormRendererHandle, FormRendererP
         labels={props.labels}
       />
       {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
-      <FormFieldsController
-        key={engineKey(engine)}
-        engine={engine}
-        formId={formId}
-        loading={loading}
-        components={components}
-        optionsProviders={optionsProviders}
-        labels={props.labels}
-        confirmRemove={props.confirmRemove}
-        onChange={actions.update}
-        onItemsChange={actions.changeItems}
-        onCommit={actions.commit}
-        onBlur={handleFieldBlur}
-        onFocus={handleFieldFocus}
-      />
+      <LabelContext.Provider value={(key, params = {}) => labelFor(key, params, props.labels, engine.definition.labels)}>
+        <FormFieldsController
+          key={engineKey(engine)}
+          engine={engine}
+          formId={formId}
+          loading={loading}
+          components={components}
+          optionsProviders={optionsProviders}
+          labels={props.labels}
+          confirmRemove={props.confirmRemove}
+          onChange={actions.update}
+          onItemsChange={actions.changeItems}
+          onCommit={actions.commit}
+          onBlur={handleFieldBlur}
+          onFocus={handleFieldFocus}
+        />
+      </LabelContext.Provider>
       <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
       <FormActionsController
         engine={engine}

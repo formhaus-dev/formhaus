@@ -2,7 +2,7 @@ import { getAllFields } from '../engine/engine-utils';
 import { isGroup } from '../visibility/nodes';
 import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
 import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
-import { typeMessageKeys } from '../validation/type-checks';
+import { LIST_TYPES, typeMessageKeys } from '../validation/type-checks';
 import { DEFAULT_LABELS, hasRule, SLOTS, type Entry } from './nodes';
 import { slotAddress, textNodes, type TextNode } from './walk';
 
@@ -23,7 +23,7 @@ const BOUNDS: Record<string, string> = { minLength: 'min', maxLength: 'max', min
 
 function ruleKey(field: FormField, rule: string): MessageKey {
   return (
-    (field.type === 'multiselect' || field.type === 'group') && rule.endsWith('Length') ? rule.replace('Length', 'Items') : rule
+    (LIST_TYPES.includes(field.type) || field.type === 'group') && rule.endsWith('Length') ? rule.replace('Length', 'Items') : rule
   ) as MessageKey;
 }
 
@@ -119,6 +119,10 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
       'cancel',
     ] as const)
       labels.add(key);
+  if (
+    getAllFields(definition).some((field) => ['radio', 'multiselect'].includes(field.type) && field.options?.some((option) => option.image))
+  )
+    for (const key of ['enlargeImage', 'close'] as const) labels.add(key);
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),

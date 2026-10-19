@@ -21,6 +21,8 @@ describe('conformance corpus', () => {
   it('covers every audited case', () => {
     expect(corpus.map(({ name }) => name).sort()).toEqual([
       'check-clean',
+      'check-columns',
+      'check-columns-not-applicable',
       'check-conditions',
       'check-container-conditions',
       'check-container-keys',
@@ -32,12 +34,14 @@ describe('conformance corpus', () => {
       'check-escaped-property',
       'check-field-rules',
       'check-group-scope',
+      'check-matrix',
       'check-missing-required',
       'check-null-lists',
       'check-numeric-id',
       'check-outdated-version-1-0',
       'check-outdated-version-missing',
       'check-outdated-version-newer',
+      'check-scale',
       'check-section-forward-reference',
       'check-slow-pattern',
       'disabled-actions',

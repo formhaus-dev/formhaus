@@ -147,7 +147,7 @@ describe('hidden values on the server', () => {
     const definition = form([hidden('utm_source', { query: 'utm_source' }), hidden('country', 'country')]);
     expect(validateSubmission(definition, {})).toEqual({ values: {}, errors: {} });
     expect(validateSubmission(definition, { utm_source: 'a'.repeat(2001) }).errors).toEqual({
-      utm_source: 'utm_source: Must be at most 2000 characters',
+      utm_source: 'utm_source: Maximum length is 2000',
     });
     const longer = form([hidden('token', undefined, { validation: { maxLength: 5000 } })]);
     expect(validateSubmission(longer, { token: 'a'.repeat(3000) }).errors).toEqual({});

@@ -1,16 +1,16 @@
 {
-  "core": 19663,
-  "core:production": 19651,
-  "core#FormEngine:production": 16203,
-  "react": 7767,
-  "vue": 11201,
+  "core": 20093,
+  "core:production": 20077,
+  "core#FormEngine:production": 16385,
+  "react": 8690,
+  "vue": 12389,
   "core/cloud": 3448,
-  "core/internal": 9628,
-  "core/i18n": 9298,
-  "core/fix": 11910,
+  "core/internal": 9765,
+  "core/i18n": 9523,
+  "core/fix": 12291,
   "react/cloud": 1658,
   "react/i18n": 224,
   "vue/cloud": 2326,
   "vue/i18n": 188,
-  "core/style.css": 4379
+  "core/style.css": 5978
 }

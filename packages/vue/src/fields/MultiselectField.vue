@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { formFieldProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
+import OptionImage from './OptionImage.vue';
 import { useField } from './useField';
 
 const props = defineProps(formFieldProps);
@@ -35,6 +36,7 @@ function handleToggle(optValue: string) {
       <label :for="`${inputId}-${index}`" class="fh-field__multiselect-label">
         {{ option.label }}
       </label>
+      <OptionImage :option="option" />
     </div>
   </FieldShell>
 </template>

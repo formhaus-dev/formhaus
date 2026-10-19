@@ -7,15 +7,15 @@ interface FieldShellProps {
   id: string;
   field: FormField;
   error?: string;
-  variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect';
+  variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
   children: ReactNode;
 }
 
 export function FieldShell({ id, field, error, variant, children }: FieldShellProps) {
-  const group = variant === 'radio' || variant === 'multiselect';
-  const inline = variant && !group;
+  const inline = variant === 'checkbox' || variant === 'switch';
+  const group = variant && !inline;
   const Root = group ? 'fieldset' : 'div';
-  const container = `fh-field__${variant}-${group ? 'group' : 'wrapper'}`;
+  const container = `fh-field__${variant === 'rating' ? 'scale' : variant}-${group ? 'group' : 'wrapper'}`;
   const helper = field.helperText && (
     <p id={`${id}-helper`} className="fh-field__helper">
       {field.helperText}
@@ -32,7 +32,7 @@ export function FieldShell({ id, field, error, variant, children }: FieldShellPr
       {!variant && <FieldLabel field={field} inputId={id} />}
       {!inline && helper}
       {variant ? (
-        <div className={group && field.layout === 'inline' ? `${container} ${container}--inline` : container}>
+        <div className={group && field.layout === 'inline' ? `${container} ${container}--inline` : container} data-columns={field.columns}>
           {children}
           {inline && field.label && (
             <label className="fh-field__label" htmlFor={id}>

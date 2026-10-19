@@ -13,6 +13,7 @@ export { FileField } from './fields/FileField';
 export { HiddenField } from './fields/HiddenField';
 export { MultiselectField } from './fields/MultiselectField';
 export { RadioField } from './fields/RadioField';
+export { ScaleField } from './fields/ScaleField';
 export { SelectField } from './fields/SelectField';
 export { SwitchField } from './fields/SwitchField';
 export { TextareaField } from './fields/TextareaField';
