@@ -22,7 +22,7 @@ export { default as HiddenField } from './fields/HiddenField.vue';
 export { default as AutocompleteField } from './fields/AutocompleteField.vue';
 export { default as MultiselectField } from './fields/MultiselectField.vue';
 export { useFormEngine } from './composables/useFormEngine';
-export type { UseFormEngineReturn } from './composables/useFormEngine';
+export type { UseFormEngineOptions, UseFormEngineReturn } from './composables/useFormEngine';
 export { defaultFieldComponents } from './constants';
 export {
   confirmDialogComponentProps,

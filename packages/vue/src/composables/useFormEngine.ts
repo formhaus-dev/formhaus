@@ -21,10 +21,14 @@ export interface UseFormEngineReturn {
   submitting: ComputedRef<boolean>;
 }
 
+export interface UseFormEngineOptions extends FormEngineOptions {
+  keepValues?: boolean;
+}
+
 export function useFormEngine(
   definitionOrGetter: FormDefinition | (() => FormDefinition),
   initialValues?: Record<string, unknown> | (() => Record<string, unknown> | undefined),
-  options?: FormEngineOptions,
+  options?: UseFormEngineOptions,
 ): UseFormEngineReturn {
   const getDefinition = typeof definitionOrGetter === 'function' ? definitionOrGetter : () => definitionOrGetter;
   const getValues = typeof initialValues === 'function' ? initialValues : () => initialValues;
@@ -39,6 +43,7 @@ export function useFormEngine(
   let warned = false;
 
   watch(getDefinition, (next, previous) => {
+    if (options?.keepValues) return engine.replaceDefinition(next);
     let warn: (() => boolean) | undefined;
     try {
       if (!warned && process.env.NODE_ENV !== 'production')

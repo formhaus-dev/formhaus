@@ -80,6 +80,7 @@ export interface FormRendererProps {
   headingLevel?: HeadingLevel;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
+  keepValues?: boolean;
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: Callback<StepValidateFn>;
   errors?: Record<string, string>;

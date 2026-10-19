@@ -3,10 +3,10 @@ import {
   type Action,
   equal,
   type Expectation,
+  localized,
   plain,
   projectError,
   runtimeDefinition,
-  scenarioDefinition,
   type Scenario,
   type ScenarioFile,
   type Step,
@@ -114,6 +114,8 @@ export class ScenarioRun {
         return engine.goToStepWithField(action.key);
       case 'reset':
         return engine.reset(action.values);
+      case 'replaceDefinition':
+        return engine.replaceDefinition(localized(this.file, structuredClone(action.definition)));
       case 'resolve':
         return this.script.resolve(action.deferred);
       case 'settle':
@@ -139,7 +141,6 @@ export class ScenarioRun {
 
   private project(expectation: Expectation): Record<string, unknown> {
     const { engine } = this;
-    const steps = scenarioDefinition(this.file, this.scenario).steps ?? [];
     const read: Record<keyof Expectation, () => unknown> = {
       values: () => plain(engine.values),
       submitValues: () => plain(engine.getSubmitValues()),
@@ -150,7 +151,7 @@ export class ScenarioRun {
       stepIndex: () => engine.currentStepIndex,
       steps: () => engine.visibleSteps.map(({ id }) => id),
       fields: () => engine.visibleFields.map(({ key }) => key),
-      skipped: () => steps.map(({ id }) => id).filter((id) => engine.isStepSkipped(id)),
+      skipped: () => (engine.definition.steps ?? []).map(({ id }) => id).filter((id) => engine.isStepSkipped(id)),
       items: () => Object.fromEntries(Object.keys(expectation.items ?? {}).map((key) => [key, engine.items(key).length])),
       distinctItemIds: () =>
         Object.fromEntries(

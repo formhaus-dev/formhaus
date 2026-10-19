@@ -29,6 +29,7 @@ export type Action =
   | { do: 'validateField'; key: string }
   | { do: 'goToStepWithField'; key: string }
   | { do: 'reset'; values?: Record<string, unknown> }
+  | { do: 'replaceDefinition'; definition: FormDefinition }
   | { do: 'resolve'; deferred: string }
   | { do: 'settle' };
 
@@ -104,7 +105,8 @@ export function projectError(error: unknown, expected: Record<string, unknown>):
 
 export const scenarioDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition => scenario.definition ?? file.definition;
 
-export const runtimeDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition => {
-  const definition = scenarioDefinition(file, scenario);
-  return file.overlay ? localize(definition, { overlay: file.overlay }).definition : definition;
-};
+export const runtimeDefinition = (file: ScenarioFile, scenario: Scenario): FormDefinition =>
+  localized(file, scenarioDefinition(file, scenario));
+
+export const localized = (file: ScenarioFile, definition: FormDefinition): FormDefinition =>
+  file.overlay ? localize(definition, { overlay: file.overlay }).definition : definition;

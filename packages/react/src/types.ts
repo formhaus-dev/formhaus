@@ -105,6 +105,7 @@ export interface FormRendererProps extends FormEngineOptions {
   onError?: (error: unknown) => void;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
+  keepValues?: boolean;
   onSubmit: SubmitHandler;
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, allValues: Record<string, unknown>) => void;
