@@ -29,10 +29,13 @@ describe('field settings in the inspector', () => {
     cleanup();
   });
 
-  it('sets help text and placeholder', async () => {
+  it('sets help text on the card and the placeholder in settings', async () => {
     const { store } = renderEditor(fromDefinition(definition([{ key: 'age', type: 'number', label: 'Age' }])));
     const panel = await settings('Age');
-    await userEvent.fill(panel.getByRole('textbox', { name: 'Help text' }), 'In whole years');
+    await userEvent.fill(
+      within(screen.getByRole('group', { name: 'Age field' })).getAllByRole('textbox', { name: 'Help text' })[0]!,
+      'In whole years',
+    );
     await userEvent.fill(panel.getByRole('textbox', { name: 'Placeholder' }), '30');
     await waitFor(() => {
       expect(first(store)).toMatchObject({ helperText: 'In whole years', placeholder: '30' });
@@ -43,10 +46,10 @@ describe('field settings in the inspector', () => {
     });
   });
 
-  it('shows help text but no placeholder or limits for a date', async () => {
+  it('shows no placeholder or limits for a date', async () => {
     renderEditor(fromDefinition(definition([{ key: 'day', type: 'date', label: 'Day' }])));
     const panel = await settings('Day');
-    expect(panel.getByRole('textbox', { name: 'Help text' })).toBeVisible();
+    expect(panel.queryByRole('textbox', { name: 'Help text' })).toBeNull();
     expect(panel.queryByRole('textbox', { name: 'Placeholder' })).toBeNull();
     expect(panel.queryByRole('region', { name: 'Limits' })).toBeNull();
   });

@@ -11,24 +11,21 @@ interface Props {
 }
 
 export function FieldText({ field, actions, readOnly }: Props) {
-  const text = (prop: 'helperText' | 'placeholder', label: string, placeholder: string) => (
-    <Field label={label}>
-      <Input
-        value={field.extra[prop] ?? ''}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        onChange={(event) => {
-          actions.edit((form) => {
-            setFieldProp(form, field.uid, prop, event.target.value);
-          }, `${field.uid}:${prop}`);
-        }}
-      />
-    </Field>
-  );
+  if (!takesPlaceholder(field)) return null;
   return (
     <div className={styles.pair}>
-      {text('helperText', 'Help text', 'Shown under the question')}
-      {takesPlaceholder(field) && text('placeholder', 'Placeholder', field.type === 'select' ? 'Choose…' : 'Shown in the empty box')}
+      <Field label="Placeholder">
+        <Input
+          value={field.extra.placeholder ?? ''}
+          placeholder={field.type === 'select' ? 'Choose…' : 'Shown in the empty box'}
+          readOnly={readOnly}
+          onChange={(event) => {
+            actions.edit((form) => {
+              setFieldProp(form, field.uid, 'placeholder', event.target.value);
+            }, `${field.uid}:placeholder`);
+          }}
+        />
+      </Field>
     </div>
   );
 }
