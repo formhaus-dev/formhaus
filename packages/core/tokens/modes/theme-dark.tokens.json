@@ -25,7 +25,7 @@
     "input": {
       "border": {
         "$value": "{palette.graphite.500}",
-        "$description": "Rest border of text inputs, textarea, select, date and time, file fields and the switch track. At least 3:1 against color.bg.default."
+        "$description": "Rest border of text inputs, textarea, select, date and time, file fields, scale boxes and the switch track. At least 3:1 against color.bg.default."
       },
       "border-hover": {
         "$value": "{palette.graphite.350}",

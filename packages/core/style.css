@@ -169,7 +169,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-field__option-zoom:focus-visible { outline: 2px solid var(--fh-color-border-focus, var(--fh-auto-border-focus)); outline-offset: 2px; }
 .fh-field__scale-group { display: flex; flex-wrap: wrap; gap: var(--fh-space-2); }
 .fh-field__scale-option { position: relative; display: grid; flex: 1 1 1px; place-items: center; min-width: 0; min-height: var(--fh-control-height); font-weight: 500; font-variant-numeric: tabular-nums; }
-.fh-field__scale-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; border: 1px solid var(--fh-color-border); border-radius: var(--fh-radius); background: var(--fh-color-bg); font: inherit; appearance: none; cursor: pointer; transition: background-color 140ms, border-color 140ms; }
+.fh-field__scale-input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; border: 1px solid var(--fh-color-input-border); border-radius: var(--fh-radius); background: var(--fh-color-bg); font: inherit; appearance: none; cursor: pointer; transition: background-color 140ms, border-color 140ms; }
 .fh-field__scale-input:checked { border-color: var(--fh-color-primary); background: var(--fh-color-primary); }
 .fh-field__scale-input:focus-visible { outline: 2px solid var(--fh-color-border-focus, var(--fh-auto-border-focus)); outline-offset: 2px; }
 .fh-field__scale-input:disabled { opacity: 0.6; cursor: not-allowed; }
@@ -229,7 +229,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   :is(.fh-field__input--select, .fh-field__input--date, .fh-field__input--datetime, .fh-field__input--time):not(:disabled) { cursor: pointer; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):hover:not(:has(:checked, :disabled)) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
   :is(.fh-field__checkbox-wrapper, .fh-field__radio-option, .fh-field__multiselect-option):hover :is(.fh-field__radio, .fh-field__checkbox):not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-text-muted); }
-  .fh-field__scale-input:hover:not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-border-hover); background: var(--fh-color-bg-hover); }
+  .fh-field__scale-input:hover:not(:checked, :disabled, [aria-invalid="true"]) { border-color: var(--fh-color-input-border-hover); background: var(--fh-color-bg-hover); }
   .fh-field--rating .fh-field__scale-group:has(.fh-field__scale-input:hover:enabled) .fh-field__scale-label { background: var(--fh-color-primary-hover, var(--fh-auto-primary-hover)); --fh-mask: var(--fh-star-fill); }
   .fh-field--rating .fh-field__scale-group .fh-field__scale-option:hover ~ .fh-field__scale-option .fh-field__scale-label { background: var(--fh-color-control-hover); --fh-mask: var(--fh-star); }
   .fh-section--matrix .fh-field:hover { --fh-matrix-row: var(--fh-color-bg-hover); }

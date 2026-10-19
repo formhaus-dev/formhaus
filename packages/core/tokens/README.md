@@ -76,14 +76,14 @@ In CSS these tokens are `color-mix()` expressions on the variables, so overridin
 
 ## Input border contrast
 
-`color.input.border` marks text inputs, textarea, select, date and time, file fields and the switch track, whose fill is the page color. It is at least 3:1 against `color.bg.default` (WCAG 1.4.11).
+`color.input.border` marks text inputs, textarea, select, date and time, file fields, scale boxes and the switch track, whose fill is the page color. It is at least 3:1 against `color.bg.default` (WCAG 1.4.11).
 
 | | Light on `#ffffff` | Dark on `#18181c` |
 |---|---|---|
 | `color.input.border` | `#84848d`, 3.71:1 | `#73737d`, 3.77:1 |
 | `color.input.border-hover` | `#5f5f68`, 6.32:1 | `#9a9aa5`, 6.36:1 |
 
-Option cards, group cards, dividers, matrix rows, scale boxes and dialogs keep `color.border.default`.
+Option cards, group cards, dividers, matrix rows and dialogs keep `color.border.default`.
 
 ## Build
 
