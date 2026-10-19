@@ -1,7 +1,9 @@
 import type { FieldOption } from '@formhaus/core';
-import { useRef } from 'react';
+import { useContext, useRef } from 'react';
+import { LabelContext } from '../labels';
 
 export function OptionImage({ option: { image, label } }: { option: FieldOption }) {
+  const text = useContext(LabelContext);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const close = () => dialog.current?.close();
@@ -12,10 +14,11 @@ export function OptionImage({ option: { image, label } }: { option: FieldOption 
         ref={trigger}
         type="button"
         className="fh-field__option-zoom"
-        aria-label={`Enlarge image: ${label}`}
+        aria-label={text('enlargeImage', { label })}
         aria-haspopup="dialog"
         onClick={(event) => {
           event.stopPropagation();
+          dialog.current?.toggleAttribute('data-pointer', event.detail > 0);
           dialog.current?.showModal();
         }}
       />
@@ -25,11 +28,14 @@ export function OptionImage({ option: { image, label } }: { option: FieldOption 
         aria-label={label}
         onClose={() => trigger.current?.focus()}
         onClick={(event) => event.target === event.currentTarget && close()}
-        onKeyDown={(event) => event.stopPropagation()}
+        onKeyDown={(event) => {
+          event.stopPropagation();
+          event.currentTarget.removeAttribute('data-pointer');
+        }}
       >
         <div className="fh-dialog__header">
           <p className="fh-dialog__title">{label}</p>
-          <button type="button" className="fh-dialog__close" aria-label="Close" onClick={close} />
+          <button type="button" className="fh-dialog__close" aria-label={text('close')} onClick={close} />
         </div>
         <img className="fh-dialog__image" src={image} alt="" loading="lazy" />
       </dialog>
