@@ -14,7 +14,7 @@ beforeEach(() => {
 afterEach(() => box.cleanup());
 
 function windows(env: NodeJS.ProcessEnv): Context {
-  return { home: box.home, cwd: box.home, env, platform: 'win32', dryRun: false, force: false };
+  return { home: box.home, cwd: box.home, env, platform: 'win32', dryRun: false, force: false, verbose: false };
 }
 
 describe.skipIf(onWindows)('Windows resolution', () => {
@@ -47,14 +47,14 @@ describe.skipIf(onWindows)('platform specifics', () => {
   it('lists Claude Desktop on Linux for manual setup', () => {
     box.write('.config/Claude/.keep', '');
     const result = box.run();
-    expect(result.out).toContain('Set up by hand: Claude Desktop');
+    expect(result.out).toMatch(/– Claude Desktop\s+add it by hand/);
     expect(box.exists('.config/Claude/claude_desktop_config.json')).toBe(false);
   });
 
   it('configures Claude Desktop in APPDATA on Windows', () => {
     box.write('AppData/Roaming/Claude/.keep', '');
     box.platform = 'win32';
-    expect(box.run().out).toContain('Found Claude Desktop.');
+    expect(box.run().out).toContain('Formhaus is ready in Claude Desktop.');
     expect(box.exists('AppData/Roaming/Claude/claude_desktop_config.json')).toBe(true);
   });
 });

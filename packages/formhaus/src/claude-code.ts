@@ -43,9 +43,12 @@ function hasPlugin(ctx: Context): boolean {
   );
 }
 
+function userConfig(ctx: Context): string {
+  return ctx.env.CLAUDE_CONFIG_DIR ? join(ctx.env.CLAUDE_CONFIG_DIR, '.claude.json') : join(ctx.home, '.claude.json');
+}
+
 function userServer(ctx: Context) {
-  const file = ctx.env.CLAUDE_CONFIG_DIR ? join(ctx.env.CLAUDE_CONFIG_DIR, '.claude.json') : join(ctx.home, '.claude.json');
-  return jsonServerState(readJsonObject(ctx, file));
+  return jsonServerState(readJsonObject(ctx, userConfig(ctx)));
 }
 
 function projectWarning(ctx: Context): Change[] {
@@ -79,10 +82,8 @@ export const claudeCode: Agent = {
     const claude = findOnPath(ctx, 'claude')!;
     const skill = join(configDir(ctx), 'skills', 'formhaus-create-form', 'SKILL.md');
     return [
-      step(ctx, NAME, 'MCP server', `claude mcp add --scope user ${SERVER_NAME}`, () => addServer(ctx, claude)),
-      step(ctx, NAME, 'formhaus-create-form skill', skill, () =>
-        hasPlugin(ctx) ? 'present' : writeAsset(ctx, skill, createFormSkill, SHIPPED_SKILLS),
-      ),
+      step(ctx, NAME, 'MCP server', userConfig(ctx), () => addServer(ctx, claude)),
+      step(ctx, NAME, 'form skill', skill, () => (hasPlugin(ctx) ? 'present' : writeAsset(ctx, skill, createFormSkill, SHIPPED_SKILLS))),
       ...projectWarning(ctx),
     ];
   },

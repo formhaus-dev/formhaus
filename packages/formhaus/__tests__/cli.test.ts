@@ -15,6 +15,7 @@ describe('cli', () => {
     const result = box.run('--help');
     expect(result.code).toBe(0);
     expect(result.out).toContain('Usage: npx formhaus [setup] [options]');
+    expect(result.out).toContain('--verbose');
   });
 
   it('prints the version', () => {

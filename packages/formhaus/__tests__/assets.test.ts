@@ -34,8 +34,8 @@ describe.skipIf(onWindows)('edited assets', () => {
     const result = box.run();
     expect(result.code).toBe(0);
     expect(box.read(file)).toBe(`${shipped}\nMy own rule.\n`);
-    expect(result.out).toContain('has your edits, left unchanged');
-    expect(result.out).toContain('Run npx formhaus --force to replace it.');
+    expect(result.out).toMatch(/(Cursor rule|form skill) has your edits, kept/);
+    expect(result.text).toContain('Run npx formhaus --force to replace it and save your version as .bak.');
     expect(box.exists(`${file}.bak`)).toBe(false);
   });
 
@@ -47,7 +47,8 @@ describe.skipIf(onWindows)('edited assets', () => {
     box.write(`${file}.bak`, 'older backup');
     const result = box.run('--force');
     expect(result.code).toBe(0);
-    expect(result.out).toMatch(/replaced\s+\S+ \(backup: /);
+    expect(result.out).toMatch(/replaced (Cursor rule|form skill)/);
+    expect(result.out).toContain('Config backups were saved as .bak.');
     expect(box.read(file)).toBe(shipped);
     expect(box.read(`${file}.bak`)).toBe('first edit');
     expect(readdirSync(box.path(dirname(file))).filter((name) => name.endsWith('.tmp'))).toEqual([]);
@@ -59,7 +60,7 @@ describe.skipIf(onWindows)('edited assets', () => {
   it('leaves an unchanged asset alone with --force', () => {
     box.run();
     const result = box.run('--force');
-    expect(result.out).toContain('Everything is already set up.');
+    expect(result.out).toContain('Formhaus is already set up in');
     expect(box.exists(`${RULE}.bak`)).toBe(false);
   });
 
@@ -85,10 +86,10 @@ describe.skipIf(onWindows)('edited assets', () => {
     box.write(RULE, 'my edit');
     box.write(SKILL, 'my skill');
     const kept = box.run('--dry-run');
-    expect(kept.out).toMatch(/formhaus rule\s+has your edits, will leave unchanged/);
+    expect(kept.out).toContain('Cursor rule has your edits, will keep');
     const forced = box.run('--dry-run', '--force');
-    expect(forced.out).toMatch(/formhaus rule\s+will replace/);
-    expect(forced.out).toMatch(/formhaus-create-form skill\s+will replace/);
+    expect(forced.out).toContain('will replace Cursor rule');
+    expect(forced.out).toContain('will replace form skill');
     expect(box.read(RULE)).toBe('my edit');
     expect(box.read(SKILL)).toBe('my skill');
     expect(box.exists(`${RULE}.bak`)).toBe(false);
@@ -117,8 +118,8 @@ describe.skipIf(onWindows)('project root', () => {
     box.cwd = box.path('notes/drafts');
     const result = box.run();
     expect(result.code).toBe(0);
-    expect(result.out).toMatch(/Cursor\s+formhaus rule\s+skipped, not in a project\s+~\/notes\/drafts/);
-    expect(result.out).toContain('Run npx formhaus inside a project to add the Cursor rule.');
+    expect(result.out).toMatch(/✓ Cursor\s+added MCP server · run in a project to add the Cursor rule/);
+    expect(box.run('--verbose').out).toContain('      no project found in ~/notes/drafts');
     expect(box.exists('notes/drafts/.cursor')).toBe(false);
   });
 
@@ -127,22 +128,30 @@ describe.skipIf(onWindows)('project root', () => {
     box.write('package.json', '{}');
     box.write('notes/.keep', '');
     box.cwd = box.home;
-    expect(box.run().out).toMatch(/skipped, not in a project\s+~\n/);
+    expect(box.run('--verbose').out).toContain('no project found in ~\n');
     box.cwd = box.path('notes');
-    expect(box.run().out).toMatch(/skipped, not in a project\s+~\/notes\n/);
+    expect(box.run('--verbose').out).toContain('no project found in ~/notes\n');
     expect(box.exists('.cursor/rules')).toBe(false);
   });
 
   it('never treats a filesystem root as a project', () => {
     box.write('package.json', '{}');
     box.write('work/tmp/.keep', '');
-    const ctx = { home: box.path('alice'), cwd: box.path('work/tmp'), env: {}, platform: box.platform, dryRun: false, force: false };
+    const ctx = {
+      home: box.path('alice'),
+      cwd: box.path('work/tmp'),
+      env: {},
+      platform: box.platform,
+      dryRun: false,
+      force: false,
+      verbose: false,
+    };
     expect(findProjectRoot(ctx, (directory) => directory === box.home)).toBeUndefined();
     expect(findProjectRoot(ctx)).toBe(box.home);
   });
 
   it('stops at the filesystem root', () => {
-    const ctx = { home: box.home, cwd: '/', env: {}, platform: box.platform, dryRun: false, force: false };
+    const ctx = { home: box.home, cwd: '/', env: {}, platform: box.platform, dryRun: false, force: false, verbose: false };
     expect(findProjectRoot(ctx, () => false)).toBeUndefined();
     expect(findProjectRoot(ctx)).toBeUndefined();
   });
@@ -163,8 +172,9 @@ describe.skipIf(onWindows)('project root', () => {
     box.write('repo/.git/HEAD', '');
     box.write('repo/src/.keep', '');
     box.cwd = box.path('repo/src');
-    const result = box.run('--dry-run');
-    expect(result.out).toMatch(/formhaus rule\s+will add\s+~\/repo\/\.cursor\/rules\/formhaus\.mdc/);
+    const result = box.run('--dry-run', '--verbose');
+    expect(result.out).toContain('will add MCP server and Cursor rule');
+    expect(result.out).toContain('      ~/repo/.cursor/rules/formhaus.mdc');
     expect(box.exists('repo/.cursor')).toBe(false);
   });
 });

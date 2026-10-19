@@ -14,10 +14,13 @@ changes nothing. Your edits to the skill and the rule are kept.
 Options:
   --dry-run      Show the planned changes and write nothing
   --force        Replace your edited skill and rule, saving them as .bak
+  --verbose      List every file it checks or changes, and the backups
   -h, --help     Show this help
-  -v, --version  Show the version`;
+  -v, --version  Show the version
 
-export function main(argv: string[], ctx: Omit<Context, 'dryRun' | 'force'>, print: Print, printError: Print): number {
+Guide: https://formhaus.dev/guide/mcp`;
+
+export function main(argv: string[], ctx: Omit<Context, 'dryRun' | 'force' | 'verbose'>, print: Print, printError: Print): number {
   let parsed: ReturnType<typeof parse>;
   try {
     parsed = parse(argv);
@@ -34,7 +37,7 @@ export function main(argv: string[], ctx: Omit<Context, 'dryRun' | 'force'>, pri
     printError(`Unknown command: ${positionals.join(' ')}\nRun npx formhaus --help for usage.`);
     return 1;
   }
-  return setup({ ...ctx, dryRun: values['dry-run'] === true, force: values.force === true }, print);
+  return setup({ ...ctx, dryRun: values['dry-run'] === true, force: values.force === true, verbose: values.verbose === true }, print);
 }
 
 function parse(argv: string[]) {
@@ -44,6 +47,7 @@ function parse(argv: string[]) {
     options: {
       'dry-run': { type: 'boolean' },
       force: { type: 'boolean' },
+      verbose: { type: 'boolean' },
       help: { type: 'boolean', short: 'h' },
       version: { type: 'boolean', short: 'v' },
     },

@@ -8,6 +8,7 @@ export interface Sandbox {
   bin: string;
   cwd: string;
   platform: NodeJS.Platform;
+  tty: boolean;
   env: NodeJS.ProcessEnv;
   path(...parts: string[]): string;
   write(relative: string, text: string): void;
@@ -15,7 +16,7 @@ export interface Sandbox {
   exists(relative: string): boolean;
   fakeBin(name: string, exitCode?: number): void;
   claudeCalls(): string[];
-  run(...argv: string[]): { code: number; out: string; err: string };
+  run(...argv: string[]): { code: number; out: string; err: string; text: string };
   cleanup(): void;
 }
 
@@ -32,6 +33,7 @@ export function sandbox(): Sandbox {
     bin,
     cwd: home,
     platform: 'linux',
+    tty: false,
     env: { PATH: bin, HOME: home },
     path,
     write(relative, text) {
@@ -51,11 +53,11 @@ export function sandbox(): Sandbox {
       const err: string[] = [];
       const code = main(
         argv,
-        { home: box.home, cwd: box.cwd, env: box.env, platform: box.platform },
+        { home: box.home, cwd: box.cwd, env: box.env, platform: box.platform, tty: box.tty },
         (line) => out.push(line),
         (line) => err.push(line),
       );
-      return { code, out: out.join('\n'), err: err.join('\n') };
+      return { code, out: out.join('\n'), err: err.join('\n'), text: out.join('\n').replace(/\s+/g, ' ') };
     },
     cleanup: () => rmSync(home, { recursive: true, force: true }),
   };
