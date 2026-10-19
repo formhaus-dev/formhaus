@@ -37,7 +37,7 @@
     "@formhaus/core": "workspace:*",
     "@microsoft/api-extractor": "^7.59.4",
     "@testing-library/vue": "^8.1.0",
-    "@vitejs/plugin-vue": "^5.0.0",
+    "@vitejs/plugin-vue": "^6.0.10",
     "@vue/language-core": "^3.3.13",
     "jsdom": "^29.0.2",
     "typescript": "^5.7.3",
