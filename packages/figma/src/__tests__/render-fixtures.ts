@@ -3,6 +3,8 @@ import type { KitTheme } from '../kits/kit';
 import type { FormRenderer } from '../renderers/types';
 
 const font = { family: 'Inter', style: 'Regular' };
+export const TEXT_ADVANCE = 7;
+
 export const theme: KitTheme = {
   fonts: { regular: font, medium: font, semibold: font },
   text: '#000000',
@@ -32,6 +34,7 @@ export function node(extra: Record<string, unknown> = {}) {
     appendChild: vi.fn((child: unknown) => void children.push(child)),
     findAll: () => [],
     findChild: () => null,
+    remove: vi.fn(),
     ...extra,
   };
 }
@@ -67,7 +70,11 @@ export function stubFigma(children: unknown[]) {
       findAllWithCriteria: ({ types }: { types: string[] }) =>
         (children as { type: string }[]).filter((child) => types.includes(child.type)),
     },
-    createText: () => node({ type: 'TEXT' }),
+    createText: () => {
+      const created = Object.assign(node({ type: 'TEXT' }), { characters: '' });
+      Object.defineProperty(created, 'width', { get: () => created.characters.length * TEXT_ADVANCE });
+      return created;
+    },
     createEllipse: () => node({ type: 'ELLIPSE' }),
     createRectangle: () => node({ type: 'RECTANGLE' }),
     createNodeFromSvg: (svg: string) => node({ type: 'FRAME', svg }),

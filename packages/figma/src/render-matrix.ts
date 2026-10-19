@@ -1,6 +1,6 @@
 import type { FieldOption, FormField, FormNode, FormSection } from '@formhaus/core';
 import type { KitTheme } from './kits/kit';
-import { stack, text } from './kits/primitives';
+import { stack, type TextStyle, text } from './kits/primitives';
 import { appendFill, captionStyle, hairline } from './renderers/choice';
 import { type FormRenderer, labelText } from './renderers/types';
 import { drawingForField, isOptionRole } from './roles';
@@ -21,6 +21,21 @@ function bottomBorder(frame: FrameNode, theme: KitTheme): void {
   frame.strokeLeftWeight = 0;
   frame.strokeRightWeight = 0;
   frame.strokeBottomWeight = 1;
+}
+
+function headerStyle(theme: KitTheme): TextStyle {
+  return { ...captionStyle(theme), font: theme.fonts.medium };
+}
+
+function widestWord(columns: FieldOption[], style: TextStyle): number {
+  const probe = text('', style, 'Probe');
+  let widest = 0;
+  for (const word of columns.flatMap((option) => option.label.split(/\s+/)).filter(Boolean)) {
+    probe.characters = word;
+    widest = Math.max(widest, probe.width);
+  }
+  probe.remove();
+  return widest;
 }
 
 function centered(name: string, direction: 'HORIZONTAL' | 'VERTICAL' = 'HORIZONTAL'): FrameNode {
@@ -51,7 +66,7 @@ function header(columns: FieldOption[], label: number, theme: KitTheme): FrameNo
   const cells = stack('HORIZONTAL', 'Cells', { itemSpacing: CELL_GAP });
   appendFill(row, cells);
   for (const option of columns) {
-    const node = text(option.label, { ...captionStyle(theme), font: theme.fonts.medium }, option.value);
+    const node = text(option.label, headerStyle(theme), option.value);
     appendFill(cells, node);
     node.textAlignHorizontal = 'CENTER';
   }
@@ -97,7 +112,8 @@ export async function renderMatrix(section: FormSection, renderer: FormRenderer,
   const columns = matrixColumns(section);
   const width = theme.card.width - 2 * theme.card.padding;
   const label = Math.max(LABEL_MIN, (width * LABEL_SHARE) / (LABEL_SHARE + columns.length));
-  const table = columns.length > 0 && (width - label) / columns.length >= CELL_MIN;
+  const cell = (width - label - CELL_GAP * (columns.length - 1)) / columns.length;
+  const table = columns.length > 0 && cell >= CELL_MIN && widestWord(columns, headerStyle(theme)) <= cell;
   const root = stack('VERTICAL', 'Matrix');
   if (table) appendFill(root, header(columns, label, theme));
   const rows = section.fields.filter((node) => node.type !== 'hidden');

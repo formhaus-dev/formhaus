@@ -69,6 +69,15 @@ describe('renderMatrix', () => {
     expect(find(cell, 'Caption')?.characters).toBe('Strongly agree');
   });
 
+  it('stacks the rows when a header word is wider than its column', async () => {
+    const root = await draw(
+      matrix(['Disagree', 'Indifferent', 'Agree']),
+      renderer(async () => node() as unknown as SceneNode),
+    );
+    expect(find(root, 'Header')).toBeUndefined();
+    expect(find(find(root, 'goals')!, 'Caption')?.characters).toBe('Disagree');
+  });
+
   it('draws rows that are not choice fields with the regular renderer', async () => {
     const field = vi.fn(async (_: FormField) => node({ name: 'note' }) as unknown as SceneNode);
     const section = matrix(['No', 'Yes']);
