@@ -39,10 +39,6 @@
   width: 100%;
 }
 
-.group > button {
-  width: auto;
-}
-
 .keyLine {
   display: flex;
   flex-wrap: wrap;
@@ -79,33 +75,30 @@
 .control {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: var(--fh-ed-space-1-5);
 }
 
 .toggle {
-  min-height: 0;
+  grid-column: 1 / -1;
+  justify-self: start;
 }
 
 @container settings (width < 560px) {
+  .panel {
+    --fh-ed-size-control-md: var(--fh-ed-size-touch);
+    --fh-ed-size-segment: var(--fh-ed-size-touch);
+  }
+
   .keyLine {
     flex-direction: column;
     align-items: flex-start;
     gap: var(--fh-ed-space-1);
   }
 
-  .keyAction {
-    min-height: 0;
-    padding-inline: 0;
-    border: 0;
-  }
-
-  .keyAction:hover {
-    background: transparent;
-    text-decoration: underline;
-  }
 }
 
-.scale {
+.pair {
   display: grid;
   grid-column: 1 / -1;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -113,19 +106,22 @@
   gap: var(--fh-ed-space-3) var(--fh-ed-space-6);
 }
 
-.anchors {
-  display: grid;
+.section {
+  display: flex;
   grid-column: 1 / -1;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  flex-direction: column;
+  gap: var(--fh-ed-space-2);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
   gap: var(--fh-ed-space-3);
+  min-width: 0;
 }
 
 @container settings (width < 560px) {
-  .scale {
-    gap: var(--fh-ed-space-3);
-  }
-
-  .anchors {
+  .pair {
     grid-template-columns: minmax(0, 1fr);
   }
 }

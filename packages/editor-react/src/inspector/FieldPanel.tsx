@@ -16,6 +16,9 @@ import { LogicSection } from '../logic/LogicSection';
 import { useForm, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
+import { FieldText } from './FieldText';
+import { LimitSettings } from './LimitSettings';
+import { limitSpec } from './limits';
 import { ResponseKey } from './ResponseKey';
 import { ScaleSettings } from './ScaleSettings';
 
@@ -74,6 +77,7 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
   const form = useForm();
   const parent = findField(form, field.parent ?? '');
   const advances = canAutoAdvance(field.type) && parent?.type !== 'group' && !isMatrix(parent);
+  const limits = limitSpec(field.type);
   return (
     <div className={styles.panel} role="group" aria-label="Field settings">
       {field.type !== 'section' && (
@@ -102,9 +106,13 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
           }}
         />
       )}
+      {field.type !== 'section' && field.type !== 'hidden' && <FieldText field={field} actions={actions} readOnly={readOnly} />}
       {field.type === 'group' && <GroupSettings field={field} actions={actions} readOnly={readOnly} />}
       {isScale(field.type) && <ScaleSettings field={field} actions={actions} readOnly={readOnly} />}
-      <LogicSection block={field} actions={actions} />
+      {limits && <LimitSettings field={field} spec={limits} actions={actions} readOnly={readOnly} />}
+      <div className={styles.wide}>
+        <LogicSection block={field} actions={actions} />
+      </div>
       {advances && (
         <Switch
           className={styles.toggle}
