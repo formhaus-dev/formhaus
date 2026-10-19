@@ -1,5 +1,5 @@
 import type { FormDefinition, FormField } from '@formhaus/core';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { FormRenderer } from '../src/FormRenderer';
 
@@ -75,6 +75,26 @@ describe('picture option preview', () => {
     fireEvent.keyDown(document.querySelector('dialog')!, { key: 'Escape' });
     document.removeEventListener('keydown', host);
     expect(host).not.toHaveBeenCalled();
+  });
+
+  it('takes the button names from the labels catalog', () => {
+    render(<FormRenderer definition={single(room)} labels={{ enlargeImage: 'Увеличить: {label}' }} onSubmit={() => {}} />);
+    expect(screen.getByRole('button', { name: 'Увеличить: Sea view' })).toBeTruthy();
+    cleanup();
+    render(<FormRenderer definition={{ ...single(room), labels: { close: 'Закрыть' } }} onSubmit={() => {}} />);
+    expect(screen.getAllByRole('button', { name: 'Закрыть', hidden: true })).toHaveLength(2);
+  });
+
+  it('hides the focus ring of the close button after a pointer click until a key is pressed', () => {
+    render(<FormRenderer definition={single(room)} onSubmit={() => {}} />);
+    const trigger = screen.getByRole('button', { name: 'Enlarge image: Sea view' });
+    const dialog = trigger.parentElement!.querySelector('dialog')!;
+    fireEvent.click(trigger, { detail: 1 });
+    expect(dialog.hasAttribute('data-pointer')).toBe(true);
+    fireEvent.keyDown(dialog, { key: 'Tab' });
+    expect(dialog.hasAttribute('data-pointer')).toBe(false);
+    fireEvent.click(trigger, { detail: 0 });
+    expect(dialog.hasAttribute('data-pointer')).toBe(false);
   });
 
   it('renders no preview for options without images', () => {

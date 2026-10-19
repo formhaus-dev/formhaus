@@ -124,7 +124,7 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     const definition: FormDefinition = { ...flat, fields: [crew] };
     harness.mount({ definition, components: harness.containers, initialValues: { crew: [{}] }, errorSummary: true, onSubmit: () => {} });
     await harness.click(button('Send'));
-    const link = await screen.findByRole('link', { name: 'Crew: Must be at least 2 items' });
+    const link = await screen.findByRole('link', { name: 'Crew: At least 2 required' });
     await waitFor(() => expect(active()).not.toBe(document.body));
     textbox('First').focus();
     await harness.click(link);

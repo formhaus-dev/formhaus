@@ -391,8 +391,8 @@ Initial values for keys that do not belong to any field stay in `engine.values` 
 | Rule | Type | Applies to | Default message |
 |---|---|---|---|
 | `required` | boolean or string | any value | `This field is required` |
-| `minLength` | number | string length; item count of a `multiselect` or a group | `Must be at least N characters` (`items` for arrays) |
-| `maxLength` | number | string length; item count of a `multiselect` or a group | `Must be at most N characters` (`items` for arrays) |
+| `minLength` | number | string length; item count of a `multiselect` or a group | `Minimum length is N`; `At least N required` for arrays |
+| `maxLength` | number | string length; item count of a `multiselect` or a group | `Maximum length is N`; `At most N allowed` for arrays |
 | `min` | number | number values; the range of a `scale`; the lowest rating of a `rating` | `Must be at least N` |
 | `max` | number | number values; the range of a `scale` or `rating` | `Must be at most N` |
 | `pattern` | string | `String(value)` | `Invalid format` |
@@ -609,8 +609,8 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | Message key | Default | Params |
 |---|---|---|
 | `required` | `This field is required` | |
-| `minLength`, `maxLength` | `Must be at least {min} characters`, `Must be at most {max} characters` | `min`, `max` |
-| `minItems`, `maxItems` | `Must be at least {min} items`, `Must be at most {max} items` | `min`, `max` |
+| `minLength`, `maxLength` | `Minimum length is {min}`, `Maximum length is {max}` | `min`, `max` |
+| `minItems`, `maxItems` | `At least {min} required`, `At most {max} allowed` | `min`, `max` |
 | `min`, `max` | `Must be at least {min}`, `Must be at most {max}` | `min`, `max` |
 | `pattern` | `Invalid format` | |
 | `matchField` | `Fields must match` | |
@@ -644,6 +644,8 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `removeItemPrompt` | `Remove {item}?` | `item` |
 | `removeItemBody` | `This removes {item} and its answers. This cannot be undone.` | `item` |
 | `cancel` | `Cancel` | |
+| `enlargeImage` | `Enlarge image: {label}` | `label` (the option label) |
+| `close` | `Close` | |
 
 A message for a failed rule comes from the first of:
 

@@ -139,6 +139,12 @@
         },
         "cancel": {
           "type": "string"
+        },
+        "enlargeImage": {
+          "type": "string"
+        },
+        "close": {
+          "type": "string"
         }
       },
       "additionalProperties": false
