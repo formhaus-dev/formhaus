@@ -1,7 +1,7 @@
 import type { FieldOption, FormField } from '@formhaus/core';
 import type { KitTheme } from '../kits/kit';
 import { icon, solid, stack } from '../kits/primitives';
-import { appendFill, choiceGroup, hairline } from './choice';
+import { appendFill, choiceGroup, hairline, spacer } from './choice';
 
 const DEFAULT_COLUMNS = 2;
 const MAX_COLUMNS = 4;
@@ -67,7 +67,7 @@ export async function pictureOptions(
     const row = stack('HORIZONTAL', `Row ${start / columns + 1}`, { itemSpacing: gap });
     appendFill(list, row);
     for (const option of options.slice(start, start + columns)) appendFill(row, await card(option, width, role, theme, instance));
-    while (row.children.length < columns) appendFill(row, stack('VERTICAL', 'Spacer'));
+    while (row.children.length < columns) appendFill(row, spacer());
   }
   return group;
 }

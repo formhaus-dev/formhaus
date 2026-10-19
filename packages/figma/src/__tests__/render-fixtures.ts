@@ -10,7 +10,7 @@ export const theme: KitTheme = {
   text: '#000000',
   muted: '#666666',
   accent: '#0000FF',
-  control: { height: 40, radius: 8 },
+  control: { height: 40, radius: 8, target: 44 },
   card: { fill: '#FFFFFF', radius: 12, padding: 24, gap: 16, width: 400 },
   actionsGap: 8,
   optionGroup: { gap: 0 },

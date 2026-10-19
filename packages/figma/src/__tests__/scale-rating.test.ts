@@ -1,15 +1,21 @@
 import type { FormField } from '@formhaus/core';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { hex } from '../kits/primitives';
-import { scaleField } from '../renderers/scale';
+import { fitColumns, ratingColumns, scaleColumns, scaleField } from '../renderers/scale';
 import { find, type SceneStub, stubFigma, texts, theme } from './render-fixtures';
 
 function render(field: FormField): SceneStub {
   return scaleField(field, theme) as unknown as SceneStub;
 }
 
-function names(node: SceneStub | undefined): string[] {
-  return (node?.children ?? []).map((child) => child.name);
+function rows(root: SceneStub, name: string): string[][] {
+  return (find(root, name)?.children ?? []).map((row) => row.children.map((cell) => cell.name));
+}
+
+function cells(root: SceneStub, name: string): string[] {
+  return rows(root, name)
+    .flat()
+    .filter((cell) => cell !== 'Spacer');
 }
 
 describe('scaleField', () => {
@@ -22,7 +28,7 @@ describe('scaleField', () => {
     const root = render({ key: 'ease', type: 'scale', label: 'How easy was it?' });
     expect(root.name).toBe('ease');
     expect(find(root, 'Label')?.characters).toBe('How easy was it?');
-    expect(names(find(root, 'Points'))).toEqual(['1', '2', '3', '4', '5']);
+    expect(rows(root, 'Points')).toEqual([['1', '2', '3', '4', '5']]);
     expect(find(root, 'Anchors')).toBeUndefined();
   });
 
@@ -38,7 +44,10 @@ describe('scaleField', () => {
       ],
     });
     expect(find(root, 'Label')?.characters).toBe('How likely are you to recommend us? *');
-    expect(names(find(root, 'Points'))).toEqual(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10']);
+    expect(rows(root, 'Points')).toEqual([
+      ['0', '1', '2', '3', '4', '5'],
+      ['6', '7', '8', '9', '10', 'Spacer'],
+    ]);
     expect(find(root, 'Start')?.characters).toBe('Not at all likely');
     expect(find(root, 'End')?.characters).toBe('Extremely likely');
     expect(find(root, 'Middle')).toBeUndefined();
@@ -62,8 +71,8 @@ describe('scaleField', () => {
   it('draws a rating as stars from 1 to max and fills them up to the default value', () => {
     const root = render({ key: 'stars', type: 'rating', label: 'Rate us', defaultValue: 2, validation: { min: 3, max: 4 } });
     const stars = find(root, 'Stars');
-    expect(names(stars)).toEqual(['1', '2', '3', '4']);
-    const svgs = (stars?.children ?? []).map((star) => (star as unknown as { svg: string }).svg);
+    expect(cells(root, 'Stars')).toEqual(['1', '2', '3', '4']);
+    const svgs = (stars?.children ?? []).flatMap((row) => row.children.map((cell) => (cell.children[0] as unknown as { svg: string }).svg));
     expect(svgs.slice(0, 2).every((svg) => svg.includes(theme.accent))).toBe(true);
     expect(svgs.slice(2).every((svg) => svg.includes(theme.muted))).toBe(true);
     expect(texts(stars!)).toEqual([]);
@@ -71,6 +80,33 @@ describe('scaleField', () => {
 
   it('caps a scale at 11 points', () => {
     const root = render({ key: 'wide', type: 'scale', label: 'Wide', validation: { min: 0, max: 40 } });
-    expect(names(find(root, 'Points'))).toHaveLength(11);
+    expect(cells(root, 'Points')).toHaveLength(11);
+  });
+
+  it('wraps 10 stars into rows of 5 on a narrow card', () => {
+    const root = render({ key: 'stars', type: 'rating', label: 'Rate us', validation: { max: 10 } });
+    expect(rows(root, 'Stars').map((row) => row.length)).toEqual([5, 5]);
+  });
+});
+
+describe('scale columns', () => {
+  it('follows the web breakpoints for 8 to 11 points under 444px', () => {
+    expect([5, 7, 8, 9, 10, 11].map((count) => scaleColumns(count, 352, 44))).toEqual([5, 7, 4, 5, 5, 6]);
+  });
+
+  it('wraps 10 and 11 points under 544px and keeps one row above it', () => {
+    expect([8, 9, 10, 11].map((count) => scaleColumns(count, 500, 44))).toEqual([8, 9, 5, 6]);
+    expect(scaleColumns(11, 600, 44)).toBe(11);
+  });
+
+  it('never makes a cell narrower than the touch target', () => {
+    expect(scaleColumns(7, 330, 48)).toBe(4);
+    expect(scaleColumns(11, 300, 48)).toBe(4);
+    expect(fitColumns(5, 5, 100, 48, 6)).toBe(1);
+  });
+
+  it('wraps 9 or more stars into rows of 5 under 440px', () => {
+    expect([5, 8, 9, 11].map((count) => ratingColumns(count, 352, 48))).toEqual([5, 4, 5, 5]);
+    expect(ratingColumns(10, 600, 48)).toBe(10);
   });
 });

@@ -8,7 +8,7 @@ export interface KitTheme {
   text: string;
   muted: string;
   accent: string;
-  control: { height: number; radius: number };
+  control: { height: number; radius: number; target: number };
   card: { fill: string; radius: number; padding: number; gap: number; width: number };
   actionsGap: number;
   optionGroup: { gap: number; fill?: string; radius?: number };

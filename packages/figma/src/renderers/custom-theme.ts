@@ -7,7 +7,7 @@ const NEUTRAL = {
   text: '#1A1A1A',
   muted: '#6B6B6B',
   accent: '#1A1A1A',
-  control: { height: 46, radius: 10 },
+  control: { height: 46, radius: 10, target: 44 },
   card: { fill: '#FFFFFF', radius: 16, padding: 24, gap: 16 },
   actionsGap: 8,
   optionGroup: { gap: 8 },

@@ -21,6 +21,12 @@ export function appendFill(parent: FrameNode, child: SceneNode & LayoutMixin): v
   if (child.type === 'TEXT') child.textAutoResize = 'HEIGHT';
 }
 
+export function spacer(): FrameNode {
+  const frame = stack('HORIZONTAL', 'Spacer');
+  frame.resize(1, 1);
+  return frame;
+}
+
 export function choiceGroup(field: FormField, theme: KitTheme): FrameNode {
   const group = stack('VERTICAL', field.key, { itemSpacing: 8 });
   appendFill(group, text(labelText(field), labelStyle(theme), 'Label'));
