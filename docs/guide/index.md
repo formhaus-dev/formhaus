@@ -174,6 +174,43 @@ const withPlans = computed(() => addPlanOptions(definition, props.plans));
 
 In development, the renderer warns when it gets a new definition object with the same content as the previous one.
 
+### Keep answers when the definition changes
+
+Some flows load part of the form later. A KYC form asks for the country, then the backend returns the steps for that country. Set `keepValues` and pass the new definition: the form keeps the answers and the current step instead of resetting.
+
+::: code-group
+```tsx [React]
+function KycForm() {
+  const [definition, setDefinition] = useState(baseDefinition);
+  return (
+    <FormRenderer
+      definition={definition}
+      keepValues
+      onFieldChange={async (key, value) => {
+        if (key === 'country') setDefinition(await loadKycDefinition(value));
+      }}
+      onSubmit={submit}
+    />
+  );
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+const definition = shallowRef(baseDefinition);
+async function changed(key: string, value: unknown) {
+  if (key === 'country') definition.value = await loadKycDefinition(value);
+}
+</script>
+
+<template>
+  <FormRenderer :definition="definition" keep-values @field-change="changed" @submit="submit" />
+</template>
+```
+:::
+
+A field keeps its value when the new definition has a field with the same key and type. New fields start from their defaults. The user stays on the same step when it still exists, and steps added before it are checked on submit. Without `keepValues`, a new definition resets the form as before. The `useFormEngine` hook and composable take `keepValues` in their options, and `engine.replaceDefinition()` does the same on a bare engine. See [Replacing the definition](/spec#replacing-the-definition).
+
 To change a value after the form mounts, put a ref on the renderer. `FormRenderer` and `HeadlessFormRenderer` expose `setValue(key, value)` and `getValues()`, typed as `FormRendererHandle`. `setValue` does not call `onFieldChange` (React) or emit `fieldChange` (Vue).
 
 `onValuesChange` (React) and `valuesChange` (Vue) fire on mount and on every value-changing operation, with a frozen copy of the values. In Vue, the handle also has a reactive `values`. See [Derived values](/recipes/derived-values).
