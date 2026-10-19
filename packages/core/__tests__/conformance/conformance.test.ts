@@ -77,6 +77,8 @@ describe('conformance corpus', () => {
       'proto-keys',
       'recall-groups',
       'recall-inactive',
+      'recall-limit',
+      'recall-sensitive',
       'recall-steps',
       'recall-syntax',
       'recall-translations',
