@@ -13,9 +13,19 @@ const points = computed(() => {
   const [min, max] = range.value;
   return Array.from({ length: Math.max(0, max - min + 1) }, (_, index) => min + index);
 });
-const anchors = computed(() => (props.field.options ?? []).slice(0, 3));
+const roles = computed(() => {
+  const [min, max] = range.value;
+  return [min, Math.floor((min + max) / 2), max];
+});
+const anchors = computed(() =>
+  roles.value.map((point, index) =>
+    index === 1 && (point === roles.value[0] || point === roles.value[2])
+      ? undefined
+      : props.field.options?.find((option) => option.value === String(point)),
+  ),
+);
 const anchorId = (point: number) => {
-  const index = anchors.value.findIndex((option) => option.value === String(point));
+  const index = roles.value.findIndex((role, slot) => role === point && anchors.value[slot]);
   return index < 0 ? undefined : `${inputId.value}-anchor-${index}`;
 };
 const choice = useChoice(props, emit, (key) => {
@@ -40,9 +50,9 @@ const choice = useChoice(props, emit, (key) => {
       />
       <label :for="`${inputId}-${point}`" class="fh-field__scale-label">{{ point }}</label>
     </div>
-    <div v-if="anchors.length" class="fh-field__scale-anchors" :style="{ '--fh-scale-points': points.length }">
-      <span v-for="(option, index) in anchors" :id="`${inputId}-anchor-${index}`" :key="option.value" class="fh-field__scale-anchor">{{
-        option.label
+    <div v-if="anchors.some(Boolean)" class="fh-field__scale-anchors" :style="{ '--fh-scale-points': points.length }">
+      <span v-for="(option, index) in anchors" :id="option && `${inputId}-anchor-${index}`" :key="index" class="fh-field__scale-anchor">{{
+        option?.label
       }}</span>
     </div>
   </FieldShell>

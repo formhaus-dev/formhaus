@@ -6,6 +6,7 @@ import SelectFieldVue from '../../../../../examples/vue-vuetify/src/fields/Selec
 import AutocompleteFieldVue from '../../../../../examples/vue-vuetify/src/fields/AutocompleteField.vue?raw';
 import CheckboxFieldVue from '../../../../../examples/vue-vuetify/src/fields/CheckboxField.vue?raw';
 import RadioFieldVue from '../../../../../examples/vue-vuetify/src/fields/RadioField.vue?raw';
+import RatingFieldVue from '../../../../../examples/vue-vuetify/src/fields/RatingField.vue?raw';
 import SwitchFieldVue from '../../../../../examples/vue-vuetify/src/fields/SwitchField.vue?raw';
 import FileFieldVue from '../../../../../examples/vue-vuetify/src/fields/FileField.vue?raw';
 import HiddenFieldVue from '../../../../../examples/vue-vuetify/src/fields/HiddenField.vue?raw';
@@ -24,6 +25,7 @@ export function buildFiles(definitionJson: string) {
     'src/fields/AutocompleteField.vue': AutocompleteFieldVue,
     'src/fields/CheckboxField.vue': CheckboxFieldVue,
     'src/fields/RadioField.vue': RadioFieldVue,
+    'src/fields/RatingField.vue': RatingFieldVue,
     'src/fields/SwitchField.vue': SwitchFieldVue,
     'src/fields/FileField.vue': FileFieldVue,
     'src/fields/HiddenField.vue': HiddenFieldVue,

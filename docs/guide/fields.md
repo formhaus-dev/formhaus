@@ -217,7 +217,7 @@ Pick one number on a range, such as 1 to 5. Renders as a row of numbered boxes. 
 
 - `validation.min` and `validation.max` set the range. They default to 1 and 5. Use `min` 0 or 1 and 3 to 11 points.
 - A value outside the range or not a whole number fails with `Select one of the available options`.
-- `options` are optional anchor labels, up to 3. `value` is the point number as a string. The first anchor sits under the start of the row, the last under the end, a middle one in the center.
+- `options` are optional anchor labels. `value` is the point number as a string. The label of the first point sits under the start of the row, the last point under the end and the middle point, `floor((min + max) / 2)`, in the center. Labels on other points are not shown.
 - Digit keys select a point. Arrow keys move between points. With `autoAdvance`, a click, Space, Enter or a digit key moves to the next step.
 
 ### NPS

@@ -39,3 +39,6 @@ export function stepFields(form: BuilderForm, stepUid: string | null): BuilderQu
   }
   return result;
 }
+
+export const childrenOf = (form: BuilderForm, container: string) =>
+  form.blocks.filter((block): block is BuilderQuestion => isQuestion(block) && block.parent === container);

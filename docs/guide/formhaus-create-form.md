@@ -35,6 +35,10 @@ Then describe your form:
 
 > "Registration form with name, email, password, confirm password, and agree to terms"
 
+> "Customer survey with a welcome screen, a 0 to 10 recommend question, a star rating for support, a picture choice of plans and an agree or disagree grid"
+
+Survey questions become `scale`, `rating`, options with `image` and sections with `layout: "matrix"`. See [Field Types](/guide/fields).
+
 The skill infers field types and validation rules, then asks about steps and conditional visibility when the answer is not clear from the input. It returns JSON that matches the current `FormDefinition` type.
 
 ## Input formats

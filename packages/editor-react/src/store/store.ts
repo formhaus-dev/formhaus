@@ -16,6 +16,7 @@ export interface EditorState {
   form: BuilderForm;
   selection: Selection | null;
   expanded: string | null;
+  pictures: readonly string[];
   canUndo: boolean;
   canRedo: boolean;
   save: SaveState;
@@ -28,6 +29,7 @@ export interface EditorStore {
   update: <T>(recipe: (form: BuilderForm) => T, group?: string) => T | undefined;
   select: (selection: Selection | null) => void;
   expand: (uid: string | null) => void;
+  showPictures: (uid: string) => void;
   undo: () => void;
   redo: () => void;
   seal: () => void;
@@ -47,6 +49,7 @@ export function createEditorStore(initial: BuilderForm, options: { readOnly?: bo
     form: history.present,
     selection: null,
     expanded: null,
+    pictures: [],
     canUndo: false,
     canRedo: false,
     save: { status: 'idle', savedAt: null, conflict: null },
@@ -90,6 +93,9 @@ export function createEditorStore(initial: BuilderForm, options: { readOnly?: bo
     },
     expand(uid) {
       if (uid !== state.expanded) set({ expanded: uid });
+    },
+    showPictures(uid) {
+      if (!state.pictures.includes(uid)) set({ pictures: [...state.pictures, uid] });
     },
     undo() {
       const form = history.undo();

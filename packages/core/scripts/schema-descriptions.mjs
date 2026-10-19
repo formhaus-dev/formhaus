@@ -48,7 +48,7 @@ export const DESCRIPTIONS = {
   'FormField.showAny': 'Field is visible when any condition matches.',
   'FormField.validation': 'Validation rules checked on Continue and on submit, not on blur.',
   'FormField.options':
-    'Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, up to 3 anchor labels whose value is a point number.',
+    'Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, anchor labels whose value is a point number: the first, middle and last points show their label.',
   'FormField.layout':
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
   'FormField.columns':

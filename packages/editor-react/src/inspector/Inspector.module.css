@@ -104,3 +104,28 @@
     text-decoration: underline;
   }
 }
+
+.scale {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--fh-ed-space-3) var(--fh-ed-space-6);
+}
+
+.anchors {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--fh-ed-space-3);
+}
+
+@container settings (width < 560px) {
+  .scale {
+    gap: var(--fh-ed-space-3);
+  }
+
+  .anchors {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

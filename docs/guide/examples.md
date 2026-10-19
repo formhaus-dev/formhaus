@@ -1,6 +1,6 @@
 ---
 title: "Form definition examples"
-description: "Example Formhaus JSON definitions: basic form, conditional fields, multi-step, validation and a branching form with radio auto-advance."
+description: "Example Formhaus JSON definitions: conditional fields, multi-step, validation, branching with auto-advance, and a survey with NPS, rating and a matrix."
 ---
 
 # Examples
@@ -42,6 +42,12 @@ A radio answer with `autoAdvance` picks a business or personal step, and both br
 A [section](/guide/sections) for the billing address shows when an invoice is requested, and a [repeatable group](/guide/groups) collects up to five participants. Requires `@formhaus/core` 0.14.
 
 <<< @/../examples/definitions/event-registration.json
+
+## Survey
+
+A welcome step, an NPS [scale](/guide/fields) that advances on its own, a follow-up for scores of 6 or less, a star rating, picture choice and a matrix [section](/guide/sections). Requires `@formhaus/core` 0.19.
+
+<<< @/../examples/definitions/survey.json
 
 ## Next steps
 

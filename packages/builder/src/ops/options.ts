@@ -1,8 +1,9 @@
 import { syncIdentifiers } from '../identifiers';
 import { bindReferences } from '../references';
-import { newOption, type BuilderForm, type BuilderOption } from '../model';
+import { newOption, type BuilderForm, type BuilderOption, type BuilderQuestion } from '../model';
 import { moveItem } from './blocks';
 import { findField } from './locate';
+import { syncRow } from './matrix';
 
 export function addOptions(form: BuilderForm, fieldUid: string, labels: string[], after?: string): BuilderOption[] {
   const item = findField(form, fieldUid);
@@ -11,6 +12,7 @@ export function addOptions(form: BuilderForm, fieldUid: string, labels: string[]
   const created = labels.map((label) => newOption(form, label));
   item.options.splice(index >= 0 ? index + 1 : item.options.length, 0, ...created);
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
   return created;
 }
 
@@ -26,6 +28,7 @@ export function setOptionLabel(form: BuilderForm, fieldUid: string, optionUid: s
   if (!entry) return;
   entry.label = label;
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
 }
 
 export function setOptionValue(form: BuilderForm, fieldUid: string, optionUid: string, value: string): void {
@@ -36,6 +39,11 @@ export function setOptionValue(form: BuilderForm, fieldUid: string, optionUid: s
   entry.valueLocked = true;
   syncIdentifiers(form);
   restore();
+  syncRow(form, fieldUid);
+}
+
+function dropColumns(item: BuilderQuestion): void {
+  if (!item.options.some((entry) => entry.extra?.image)) delete item.extra.columns;
 }
 
 export function removeOption(form: BuilderForm, fieldUid: string, optionUid: string): boolean {
@@ -44,7 +52,9 @@ export function removeOption(form: BuilderForm, fieldUid: string, optionUid: str
   const index = item.options.findIndex((entry) => entry.uid === optionUid);
   if (index < 0) return false;
   item.options.splice(index, 1);
+  dropColumns(item);
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
   return true;
 }
 
@@ -56,5 +66,17 @@ export function moveOption(form: BuilderForm, fieldUid: string, optionUid: strin
   const at = to > from ? to + 1 : to;
   if (!moveItem(item.options, from, Math.max(0, Math.min(at, item.options.length)))) return false;
   syncIdentifiers(form);
+  syncRow(form, fieldUid);
   return true;
+}
+
+export function setOptionImage(form: BuilderForm, fieldUid: string, optionUid: string, image: string): void {
+  const item = findField(form, fieldUid);
+  const entry = item?.options.find((candidate) => candidate.uid === optionUid);
+  if (!item || !entry) return;
+  const { image: _old, ...extra } = entry.extra ?? {};
+  const url = image.trim();
+  entry.extra = url ? { ...extra, image: url } : extra;
+  if (!Object.keys(entry.extra).length) delete entry.extra;
+  dropColumns(item);
 }
