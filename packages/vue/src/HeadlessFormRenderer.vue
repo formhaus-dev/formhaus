@@ -1,24 +1,17 @@
 <script setup lang="ts">
 import { isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
-import {
-  actionsView,
-  applySources,
-  errorGroups,
-  hasValue,
-  labelFor,
-  shouldApplyExternalErrors,
-  warnMissingComponents,
-} from '@formhaus/core/internal';
-import { computed, onBeforeUnmount, onMounted, provide, ref, watch, watchEffect } from 'vue';
+import { actionsView, errorGroups, hasValue, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { computed, provide, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
 import DefaultSection from './DefaultSection.vue';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
-import { useListening } from './composables/useListening';
+import { useEngineOptions } from './composables/useEngineOptions';
 import { useRendererActions } from './composables/useRendererActions';
-import { useFormEngine, type UseFormEngineOptions } from './composables/useFormEngine';
+import { useFormEngine } from './composables/useFormEngine';
 import { useStepTexts } from './composables/useStepTexts';
+import { useValuesSync } from './composables/useValuesSync';
 import { useNodeProps } from './composables/useNodeProps';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
@@ -32,35 +25,7 @@ const onFormEvent = (event: FormEvent) => {
   emit('formEvent', event);
   emit('analyticsEvent', event);
 };
-const listening = useListening();
-const engineOptions: UseFormEngineOptions = {
-  get keepValues() {
-    return props.keepValues;
-  },
-  get onFormEvent() {
-    return listening('onFormEvent', 'onAnalyticsEvent') ? onFormEvent : undefined;
-  },
-  validators: props.validators,
-  onWarning: props.onWarning,
-  get messages() {
-    return props.messages;
-  },
-  get onStepValidate() {
-    return props.onStepValidate;
-  },
-  get onBeforeStepChange() {
-    return props.onBeforeStepChange;
-  },
-  get onBeforeSubmit() {
-    return props.onBeforeSubmit;
-  },
-  get onAfterSubmit() {
-    return props.onAfterSubmit;
-  },
-  get onAfterStepChange() {
-    return props.onAfterStepChange;
-  },
-};
+const engineOptions = useEngineOptions(props, onFormEvent);
 
 const form = useFormEngine(
   () => props.definition,
@@ -83,32 +48,7 @@ const {
   submitting,
 } = form;
 
-let stopValues = () => {};
-let emitted: object;
-const watchValues = (engine: typeof form.engine) => {
-  stopValues();
-  applySources(engine, props.initialValues);
-  const changed = () => {
-    if (values.value !== emitted) emit('valuesChange', (emitted = values.value));
-  };
-  stopValues = engine.subscribeValues(changed);
-  changed();
-  engine.start();
-};
-onMounted(() => watchValues(form.engine));
-watch(() => form.engine, watchValues, { flush: 'sync' });
-const resolveSources = () => props.keepValues && applySources(form.engine, form.engine.values);
-watch(() => props.definition, resolveSources, { flush: 'post' });
-onBeforeUnmount(() => stopValues());
-
-let watchMissing: (() => void) | undefined;
-try {
-  if (process.env.NODE_ENV !== 'production') {
-    const warned = new Set<string>();
-    watchMissing = () => watchEffect(() => warnMissingComponents(props.definition, props.components, warned, props.onWarning));
-  }
-} catch {}
-watchMissing?.();
+useValuesSync(form, props, emit);
 
 const {
   update: onFieldUpdate,
