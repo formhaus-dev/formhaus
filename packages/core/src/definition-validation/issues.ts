@@ -14,6 +14,8 @@ export type DefinitionIssueCode =
   | 'invalid-nesting'
   | 'outdated-format-version'
   | 'forward-reference'
+  | 'unknown-recall-field'
+  | 'recall-forward-reference'
   | 'condition-operator-count'
   | 'unknown-operator'
   | 'condition-value-mismatch'

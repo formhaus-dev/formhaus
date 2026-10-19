@@ -1,7 +1,7 @@
-import { errorDomId, fieldDomId } from '@formhaus/core/internal';
+import { errorDomId, fieldDomId, recalled, recalls } from '@formhaus/core/internal';
 import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
 import { memo, useCallback } from 'react';
-import { useFieldSnapshot } from './hooks/useEngineSnapshot';
+import { useFieldSnapshot, useRecallSnapshot } from './hooks/useEngineSnapshot';
 import { FieldResolver } from './FieldResolver';
 import type { FieldComponentMap } from './types';
 
@@ -39,6 +39,7 @@ export const FormFieldController = memo(function FormFieldController({
 }: FormFieldControllerProps) {
   const key = path ?? field.key;
   useFieldSnapshot(engine, key);
+  useRecallSnapshot(engine, recalls(engine, field));
 
   const handleChange = useCallback((value: unknown) => onChange(key, value), [key, onChange]);
   const handleCommit = useCallback((value: unknown) => onCommit(key, value), [key, onCommit]);
@@ -49,7 +50,7 @@ export const FormFieldController = memo(function FormFieldController({
   return (
     <FieldResolver
       id={path ? errorDomId(engine, formId, path) : fieldDomId(formId, key, engine.definition)}
-      field={fieldWithOptions}
+      field={recalled(engine, fieldWithOptions, path)}
       value={item ? item[field.key] : engine.values[key]}
       error={engine.errors[key]}
       loading={engine.fieldLoading[key]}

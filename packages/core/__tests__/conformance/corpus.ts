@@ -19,6 +19,13 @@ export interface ConformanceFixture {
   overlay?: Overlay;
   texts?: Record<string, string>;
   cases?: ConformanceCase[];
+  recall?: RecallCase[];
+}
+
+export interface RecallCase {
+  name: string;
+  values: Record<string, unknown>;
+  texts: { address: string; group?: string; item?: number; text: string }[];
 }
 
 const dir = join(__dirname, '../../fixtures/conformance');
@@ -34,4 +41,8 @@ export const runtime = ({ definition, overlay }: ConformanceFixture) =>
 
 export const cases = valid.flatMap((fixture) =>
   (fixture.cases ?? []).map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const),
+);
+
+export const recalls = corpus.flatMap((fixture) =>
+  (fixture.recall ?? []).map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const),
 );
