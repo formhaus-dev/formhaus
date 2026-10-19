@@ -57,16 +57,31 @@ function substitute(
   if (!recallEnabled(definition)) return params ? formatText(text, params) : text;
   if (!text.includes(params ? '{' : '{{')) return text;
   const resolve = resolver();
-  return text.replace(TOKEN, (token, content?: string, name?: string) => {
+  const replace = (token: string, content?: string, name?: string): string => {
     if (name !== undefined) return params && hasOwn(params, name) ? String(params[name]) : token;
     if (content === undefined) return '{{';
     const key = KEY.exec(content)?.[1];
     return key ? resolve(key) : token;
-  });
+  };
+  let result = '';
+  let last = 0;
+  for (const match of text.matchAll(TOKEN)) {
+    if (result.length > MAX_STRING_LENGTH) break;
+    const [token, content, name] = match;
+    result += text.slice(last, match.index) + replace(token, content, name).slice(0, MAX_STRING_LENGTH + 1);
+    last = match.index + token.length;
+  }
+  return cut(result + text.slice(last));
+}
+
+function cut(text: string): string {
+  if (text.length <= MAX_STRING_LENGTH) return text;
+  const code = text.charCodeAt(MAX_STRING_LENGTH - 1);
+  return text.slice(0, code >= 0xd800 && code <= 0xdbff ? MAX_STRING_LENGTH - 1 : MAX_STRING_LENGTH);
 }
 
 function answer(field: FormField, value: unknown): string | number | string[] | undefined {
-  if (value === undefined || value === null) return undefined;
+  if (value === undefined || value === null || field.type === 'password') return undefined;
   if (isGroup(field)) return Array.isArray(value) ? value.length : undefined;
   if (BOOLEAN_TYPES.includes(field.type)) return value === true ? field.label : undefined;
   const text = (item: unknown) =>
@@ -102,7 +117,7 @@ export function resolveRecall(
         const source = own ? (entry as Record<string, unknown>) : values;
         const field = own ?? fields.find((candidate) => candidate.key === key);
         const value = field && hasOwn(source, key) ? answer(field, source[key]) : undefined;
-        return value === undefined ? '' : format(value, field!, lang || definition.lang || 'en').slice(0, MAX_STRING_LENGTH);
+        return value === undefined ? '' : format(value, field!, lang || definition.lang || 'en');
       };
     },
     params,

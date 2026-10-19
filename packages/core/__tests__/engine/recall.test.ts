@@ -33,6 +33,7 @@ const definition = (formatVersion = '1.5'): FormDefinition => ({
     { key: 'day', type: 'date', label: 'Day' },
     { key: 'cv', type: 'file', label: 'CV' },
     { key: 'ref', type: 'hidden' },
+    { key: 'pw', type: 'password', label: 'Password' },
     { key: 'note', type: 'text', label: 'Note', show: [{ field: 'plan', eq: 'team' }] },
     { key: 'people', type: 'group', label: 'People', fields: [{ key: 'first', type: 'text', label: 'First' }] },
   ],
@@ -82,8 +83,15 @@ describe('recallText', () => {
     expect(recall('{{name}}', { name: '{{plan}}', plan: 'pro' })).toBe('{{plan}}');
   });
 
-  it('caps a recalled value at the string limit', () => {
+  it('cuts the resolved text at the string limit', () => {
     expect(recall('{{name}}', { name: 'x'.repeat(10001) })).toHaveLength(10000);
+    expect(recall('{{name}}'.repeat(2000), { name: 'x'.repeat(10000) })).toHaveLength(10000);
+    expect(recall('ab{{name}}cd', { name: 'x'.repeat(10000) })).toBe(`ab${'x'.repeat(9998)}`);
+    expect(recall('a{{name}}', { name: '\u{1F600}'.repeat(5000) })).toBe(`a${'\u{1F600}'.repeat(4999)}`);
+  });
+
+  it('shows nothing for a password field', () => {
+    expect(recall('[{{pw}}]', { pw: 'hunter2' })).toBe('[]');
   });
 
   it('keeps the text below format 1.5', () => {
