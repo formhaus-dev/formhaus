@@ -71,7 +71,7 @@ export function conditionValues(definition: Entry, key: string): unknown[] {
   return found;
 }
 
-export const quoted = (text: string | undefined, pattern: RegExp) => (text === undefined ? undefined : pattern.exec(text)?.[1]);
+const quoted = (text: string | undefined, pattern: RegExp) => (text === undefined ? undefined : pattern.exec(text)?.[1]);
 export const missingName = (issue: DefinitionIssue) => quoted(issue.message, /missing required property "([^"]+)"/);
 export const suggestedName = (issue: DefinitionIssue) => quoted(issue.hint, /^Did you mean "([^"]+)"\?$/);
 

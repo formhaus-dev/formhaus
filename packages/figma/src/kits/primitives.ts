@@ -2,7 +2,7 @@ import { PLUGIN_NAMESPACE, type TextSlot } from '../config';
 import { iconSvg, type IconName } from '../icons';
 import type { Role } from '../roles';
 
-export const SLOT_PROPERTY: Record<TextSlot, string> = { label: 'Label', value: 'Value', helper: 'Helper' };
+const SLOT_PROPERTY: Record<TextSlot, string> = { label: 'Label', value: 'Value', helper: 'Helper' };
 export const HELPER_VISIBLE_PROPERTY = 'Show helper';
 
 export function hex(value: string): RGB {

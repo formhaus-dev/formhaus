@@ -22,7 +22,7 @@ function valueLabel(form: BuilderForm, row: ConditionRow, scope?: string): strin
   return values.map((value) => options.find((option) => option.value === value)?.label.trim() || value).join(', ');
 }
 
-export function describeRow(form: BuilderForm, row: ConditionRow, scope?: string): string {
+function describeRow(form: BuilderForm, row: ConditionRow, scope?: string): string {
   const name = sourceOf(form, row.field, scope)?.label.trim() || row.field;
   const head = `${name} ${OPERATOR_LABELS[row.operator]}`;
   return takesValue(row.operator) ? `${head} ${valueLabel(form, row, scope) || '…'}` : head;

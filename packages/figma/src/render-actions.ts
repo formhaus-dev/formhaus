@@ -4,8 +4,8 @@ import { stack } from './kits/primitives';
 import type { FormRenderer } from './renderers/types';
 import type { ButtonKind } from './roles';
 
-export type ActionsLayout = 'stacked' | 'inline';
-export type StepsLayout = 'screens' | 'page';
+type ActionsLayout = 'stacked' | 'inline';
+type StepsLayout = 'screens' | 'page';
 
 export interface FormLayout {
   actions: ActionsLayout;

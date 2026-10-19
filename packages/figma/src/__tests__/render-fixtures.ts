@@ -3,7 +3,7 @@ import type { KitTheme } from '../kits/kit';
 import type { FormRenderer } from '../renderers/types';
 
 const font = { family: 'Inter', style: 'Regular' };
-export const TEXT_ADVANCE = 7;
+const TEXT_ADVANCE = 7;
 
 export const theme: KitTheme = {
   fonts: { regular: font, medium: font, semibold: font },

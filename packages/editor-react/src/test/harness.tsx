@@ -1,6 +1,6 @@
 import '../styles/tokens.css';
 import '../styles/base.css';
-import { createForm, type BuilderForm } from '@formhaus/builder';
+import type { BuilderForm } from '@formhaus/builder';
 import { render, screen } from '@testing-library/react';
 import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { EditorHost, Notice, Published } from '../host';
@@ -67,5 +67,3 @@ export function topBar(): HTMLElement {
   if (!node) throw new Error('No editor top bar');
   return node;
 }
-
-export const emptyForm = () => createForm('x', 'Test');

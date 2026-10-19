@@ -12,7 +12,7 @@ import { addPicked } from './presets';
 
 const labelOf = (field: BuilderQuestion) => field.label.trim() || 'Untitled question';
 
-export function ContainerFields({ container, step, actions }: { container: BuilderQuestion; step: string | null; actions: EditorActions }) {
+function ContainerFields({ container, step, actions }: { container: BuilderQuestion; step: string | null; actions: EditorActions }) {
   const form = useForm();
   const readOnly = useReadOnly();
   const focus = useFocusRequests();

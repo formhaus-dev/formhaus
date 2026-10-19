@@ -5,7 +5,7 @@ import { Chevron } from '../Chevron/Chevron';
 import { useFieldControl } from '../Field/context';
 import styles from './Select.module.css';
 
-export interface SelectOption {
+interface SelectOption {
   value: string;
   label: string;
   disabled?: boolean;

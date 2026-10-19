@@ -15,7 +15,7 @@ const LEGACY_NAMESPACE = 'formGenerator';
 const FRAME_GAP = 40;
 export const DEFINITION_KEY = 'definition';
 export const LAYOUT_KEY = 'layout';
-export const STEP_KEY = 'stepId';
+const STEP_KEY = 'stepId';
 const MAX_STORED_DEFINITION = 90_000;
 
 interface RenderableStep extends StepActions {

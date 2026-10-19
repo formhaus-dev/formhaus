@@ -1,7 +1,7 @@
 import { checkDefinition, type FormDefinition, type FormNode } from '@formhaus/core';
 import { childrenOf, isQuestion, toDefinition, type BuilderForm } from '../src';
 
-export const party = (key: string, label: string): FormNode => ({
+const party = (key: string, label: string): FormNode => ({
   key,
   type: 'group',
   label,

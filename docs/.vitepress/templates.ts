@@ -1,6 +1,5 @@
 import type { PageData } from 'vitepress';
-
-const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
+import { plural } from './components/templates/catalog';
 
 function templateDescription({ summary, steps, fields }: { summary: string; steps: number; fields: number }) {
   const counts = `${plural(steps, 'step')}, ${plural(fields, 'field')}.`;

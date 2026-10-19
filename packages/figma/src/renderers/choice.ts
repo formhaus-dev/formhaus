@@ -3,7 +3,7 @@ import type { KitTheme } from '../kits/kit';
 import { fill, solid, stack, text, type TextStyle } from '../kits/primitives';
 import { labelText } from './types';
 
-export function labelStyle(theme: KitTheme): TextStyle {
+function labelStyle(theme: KitTheme): TextStyle {
   return theme.groupLabel ?? { font: theme.fonts.medium, size: theme.captionSize + 2, color: theme.muted };
 }
 

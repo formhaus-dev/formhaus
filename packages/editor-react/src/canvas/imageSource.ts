@@ -53,11 +53,3 @@ export function summarize(src: string, uploaded: boolean): ImageSummary {
     return { title: 'Image link' };
   }
 }
-
-export function imageFrom(data: DataTransfer | null): File | null {
-  if (!data) return null;
-  for (const file of Array.from(data.files)) {
-    if (file.type.startsWith('image/')) return file;
-  }
-  return data.files[0] ?? null;
-}

@@ -22,7 +22,7 @@ interface Provider {
   read(data: ProviderReply | undefined): Reply;
 }
 
-export const PROVIDERS: Record<ProviderId, Provider> = {
+const PROVIDERS: Record<ProviderId, Provider> = {
   anthropic: {
     url: 'https://api.anthropic.com/v1/messages',
     model: 'claude-sonnet-5-5',
