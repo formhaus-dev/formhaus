@@ -57,22 +57,26 @@ function decimalMark(): string {
   return new Intl.NumberFormat().formatToParts(1.1).find((part) => part.type === 'decimal')?.value ?? '.';
 }
 
-function normalize(text: string, mark: string): string {
-  const commas = text.split(',').length - 1;
-  const dots = text.split('.').length - 1;
-  if (commas && dots)
-    return text.lastIndexOf(',') > text.lastIndexOf('.') ? text.replaceAll('.', '').replace(',', '.') : text.replaceAll(',', '');
-  if (commas > 1 || dots > 1) return text.replaceAll(commas > 1 ? ',' : '.', '');
-  if (commas && mark === '.' && /,\d{3}$/.test(text)) return text.replace(',', '');
-  if (dots && mark === ',' && /\.\d{3}$/.test(text)) return text.replace('.', '');
-  return text.replace(',', '.');
+export interface Parsed {
+  value?: number;
+  error?: string;
 }
 
-export function parseNumber(text: string, mark = decimalMark()): number | null | undefined {
-  const compact = text.replace(/[\s'’]/g, '').replace(/^[−–]/, '-');
-  if (!compact) return undefined;
-  const normal = normalize(compact, mark);
-  return /^-?(\d+\.?\d*|\.\d+)$/.test(normal) ? Number(normal) : null;
+export function parseNumber(text: string, mark = decimalMark()): Parsed {
+  const compact = text.trim().replace(/^[−–]/, '-');
+  if (!compact) return {};
+  const match = /^(-?)(\d*)(?:([.,])(\d+))?$/.exec(compact);
+  if (!match || (!match[2] && !match[4])) {
+    return {
+      error: /\d[\s'’.,]\d.*[\s'’.,]/.test(compact) || /\d[\s'’]\d/.test(compact) ? 'Type the number without separators' : 'Enter a number',
+    };
+  }
+  const [, sign, whole = '', separator, fraction] = match;
+  if (separator && separator !== '.' && separator !== mark) return { error: `Use ${mark} as the decimal mark` };
+  if (separator && fraction?.length === 3 && /[1-9]/.test(whole)) {
+    return { error: `Type ${whole}${fraction} or ${whole}${mark}${fraction}0` };
+  }
+  return { value: Number(`${sign}${whole || '0'}${fraction ? `.${fraction}` : ''}`) };
 }
 
 export type Drafts = Partial<Record<Bound, string>>;
@@ -80,8 +84,8 @@ export type Checked = Partial<Record<Bound, { value: number | undefined; error?:
 
 function read(spec: LimitSpec, text: string | undefined, stored: number | undefined): { value: number | undefined; error?: string } {
   if (text === undefined) return { value: stored };
-  const value = parseNumber(text);
-  if (value === null) return { value: undefined, error: spec.whole ? 'Enter a whole number' : 'Enter a number' };
+  const { value, error } = parseNumber(text);
+  if (error) return { value: undefined, error: spec.whole && error === 'Enter a number' ? 'Enter a whole number' : error };
   if (spec.whole && value !== undefined && (!Number.isInteger(value) || value < 0))
     return { value: undefined, error: 'Enter a whole number' };
   return { value };
@@ -100,11 +104,20 @@ export function checkLimits(spec: LimitSpec, drafts: Drafts, rules: FieldValidat
 
 export function limitWrites(spec: LimitSpec, drafts: Drafts, rules: FieldValidation): [RuleName, number | undefined][] {
   const checked = checkLimits(spec, drafts, rules);
-  return [spec.low.rule, spec.high.rule].flatMap((rule): [RuleName, number | undefined][] => {
+  return [spec.low, spec.high].flatMap(({ rule, message }): [RuleName, number | undefined][] => {
     const result = checked[rule];
     if (drafts[rule] === undefined || !result || result.error || result.value === rules[rule]) return [];
-    return [[rule, result.value]];
+    return result.value === undefined && rules[message] !== undefined
+      ? [
+          [rule, undefined],
+          [message, undefined],
+        ]
+      : [[rule, result.value]];
   });
+}
+
+export function storedLimits(spec: LimitSpec, rules: FieldValidation): string {
+  return `${String(rules[spec.low.rule])}|${String(rules[spec.high.rule])}`;
 }
 
 export function patternError(pattern: string): string | undefined {

@@ -60,7 +60,7 @@ describe('field settings in the inspector', () => {
     const min = panel.getByRole('textbox', { name: 'Minimum' });
     const max = panel.getByRole('textbox', { name: 'Maximum' });
     await userEvent.fill(min, '18');
-    await userEvent.fill(max, '99,5');
+    await userEvent.fill(max, '99.5');
     await userEvent.tab();
     await waitFor(() => {
       expect(first(store).validation).toEqual({ min: 18, max: 99.5 });
@@ -84,6 +84,37 @@ describe('field settings in the inspector', () => {
       expect(first(store).validation).toEqual({ min: 120 });
     });
     expect(panel.queryByRole('textbox', { name: 'Error if too low' })).toHaveValue('');
+  });
+
+  it('drops a held limit when undo changes the stored range', async () => {
+    const { store } = renderEditor(fromDefinition(definition([{ key: 'age', type: 'number', label: 'Age', validation: { min: 18 } }])));
+    const panel = await settings('Age');
+    const min = panel.getByRole('textbox', { name: 'Minimum' });
+    await userEvent.fill(panel.getByRole('textbox', { name: 'Maximum' }), '99.5');
+    await userEvent.fill(min, '120');
+    await userEvent.tab();
+    expect(await panel.findByText("Can't be more than 99.5")).toBeVisible();
+    await userEvent.click(min);
+    store.undo();
+    await waitFor(() => {
+      expect(min).toHaveValue('18');
+    });
+    expect(panel.queryByText("Can't be more than 99.5")).toBeNull();
+    expect(first(store).validation).toEqual({ min: 18 });
+  });
+
+  it('removes the custom message with its limit and flags ambiguous numbers', async () => {
+    const field: FormField = { key: 'age', type: 'number', label: 'Age', validation: { min: 18, minMessage: 'Adults only' } };
+    const { store } = renderEditor(fromDefinition(definition([field])));
+    const panel = await settings('Age');
+    await userEvent.fill(panel.getByRole('textbox', { name: 'Maximum' }), '1.000');
+    await userEvent.tab();
+    expect(await panel.findByText('Type 1000 or 1.0000')).toBeVisible();
+    await userEvent.clear(panel.getByRole('textbox', { name: 'Minimum' }));
+    await waitFor(() => {
+      expect(first(store)).not.toHaveProperty('validation');
+    });
+    expect(panel.queryByRole('textbox', { name: 'Error if too low' })).toBeNull();
   });
 
   it('limits characters and checks the pattern of a text field', async () => {

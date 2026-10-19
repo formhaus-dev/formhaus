@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { Field, Input } from '../ui';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
-import { checkLimits, limitWrites, type Drafts, type LimitSide, type LimitSpec } from './limits';
+import { checkLimits, limitWrites, storedLimits, type Drafts, type LimitSide, type LimitSpec } from './limits';
 import { PatternSettings } from './PatternSettings';
 
 interface Props {
@@ -22,6 +22,16 @@ export function LimitSettings({ field, spec, actions, readOnly }: Props) {
     setDrafts(next);
   };
   const [left, setLeft] = useState<Partial<Record<LimitSide['rule'], boolean>>>({});
+  const stored = storedLimits(spec, rules);
+  const [seen, setSeen] = useState(stored);
+  const own = useRef<string | null>(null);
+  if (seen !== stored) {
+    setSeen(stored);
+    if (stored !== own.current) {
+      draft({});
+      setLeft({});
+    }
+  }
   const checked = checkLimits(spec, drafts, rules);
   const change = (rule: LimitSide['rule'], text: string) => {
     const next = { ...latest.current, [rule]: text };
@@ -29,6 +39,7 @@ export function LimitSettings({ field, spec, actions, readOnly }: Props) {
     actions.edit((form) => {
       const current = findField(form, field.uid)?.extra.validation ?? {};
       for (const [name, value] of limitWrites(spec, next, current)) setRule(form, field.uid, name, value);
+      own.current = storedLimits(spec, findField(form, field.uid)?.extra.validation ?? {});
     }, `${field.uid}:${rule}`);
   };
   const settle = (rule: LimitSide['rule']) => {

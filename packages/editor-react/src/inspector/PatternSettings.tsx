@@ -16,6 +16,12 @@ export function PatternSettings({ field, actions, readOnly }: Props) {
   const [open, setOpen] = useState(false);
   const input = useRef<HTMLInputElement>(null);
   const [draft, setDraft] = useState<string | null>(null);
+  const [seen, setSeen] = useState(rules.pattern);
+  const own = useRef<string | undefined>(undefined);
+  if (seen !== rules.pattern) {
+    setSeen(rules.pattern);
+    if (rules.pattern !== own.current) setDraft(null);
+  }
   const pattern = draft ?? rules.pattern ?? '';
   const error = pattern ? patternError(pattern) : undefined;
   useEffect(() => {
@@ -50,8 +56,10 @@ export function PatternSettings({ field, actions, readOnly }: Props) {
             setOpen(true);
             setDraft(next);
             if (next && patternError(next)) return;
+            own.current = next || undefined;
             actions.edit((form) => {
               setRule(form, field.uid, 'pattern', next);
+              if (!next) setRule(form, field.uid, 'patternMessage', undefined);
             }, `${field.uid}:pattern`);
           }}
           onBlur={() => {

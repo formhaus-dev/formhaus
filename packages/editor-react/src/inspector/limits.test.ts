@@ -6,33 +6,31 @@ const text = limitSpec('text')!;
 
 describe('parseNumber', () => {
   it.each([
-    ['', undefined],
-    ['  ', undefined],
-    ['42', 42],
-    ['-3', -3],
-    ['−3', -3],
-    ['1.5', 1.5],
-    ['1,5', 1.5],
-    ['.5', 0.5],
-    ['1 000', 1000],
-    ['1 000', 1000],
-    ['1,000,000', 1000000],
-    ['1.000.000', 1000000],
-    ['1,234.5', 1234.5],
-    ['1.234,5', 1234.5],
-    ["1'000", 1000],
-    ['abc', null],
-    ['1e3', null],
-    ['1-2', null],
-  ])('reads %j as %j', (input, expected) => {
-    expect(parseNumber(input, '.')).toBe(expected);
+    ['', {}],
+    ['  ', {}],
+    ['42', { value: 42 }],
+    ['-3', { value: -3 }],
+    ['−3', { value: -3 }],
+    ['1.5', { value: 1.5 }],
+    ['.5', { value: 0.5 }],
+    ['0.125', { value: 0.125 }],
+    ['abc', { error: 'Enter a number' }],
+    ['1e3', { error: 'Enter a number' }],
+    ['1-2', { error: 'Enter a number' }],
+    ['1 000', { error: 'Type the number without separators' }],
+    ['1,000,000', { error: 'Type the number without separators' }],
+    ['1,234.5', { error: 'Type the number without separators' }],
+    ['1.000', { error: 'Type 1000 or 1.0000' }],
+    ['1,5', { error: 'Use . as the decimal mark' }],
+  ])('reads %j in an English locale', (input, expected) => {
+    expect(parseNumber(input, '.')).toEqual(expected);
   });
 
-  it('follows the decimal mark of the locale for a lone separator before three digits', () => {
-    expect(parseNumber('1,500', '.')).toBe(1500);
-    expect(parseNumber('1,500', ',')).toBe(1.5);
-    expect(parseNumber('1.500', ',')).toBe(1500);
-    expect(parseNumber('1.500', '.')).toBe(1.5);
+  it('accepts the locale decimal comma and the stored dot', () => {
+    expect(parseNumber('1,5', ',')).toEqual({ value: 1.5 });
+    expect(parseNumber('1.5', ',')).toEqual({ value: 1.5 });
+    expect(parseNumber('1,500', ',')).toEqual({ error: 'Type 1500 or 1,5000' });
+    expect(parseNumber('1.000.000', ',')).toEqual({ error: 'Type the number without separators' });
   });
 });
 
@@ -47,7 +45,11 @@ describe('limits per type', () => {
   });
 
   it('writes a valid bound and clears an empty one', () => {
-    expect(limitWrites(number, { min: '1,5' }, {})).toEqual([['min', 1.5]]);
+    expect(limitWrites(number, { min: '1.5' }, {})).toEqual([['min', 1.5]]);
+    expect(limitWrites(number, { min: '' }, { min: 3, minMessage: 'Too small' })).toEqual([
+      ['min', undefined],
+      ['minMessage', undefined],
+    ]);
     expect(limitWrites(number, { min: '' }, { min: 3 })).toEqual([['min', undefined]]);
     expect(limitWrites(number, { min: '3' }, { min: 3 })).toEqual([]);
   });
