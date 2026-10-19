@@ -16,6 +16,7 @@ import type {
   MessageFn,
   MessageKey,
   OptionsProvider,
+  RecallFormatFn,
   SectionView,
   StepValidateFn,
   SubmitFn,
@@ -84,6 +85,8 @@ export interface FormRendererProps {
   keepValues?: boolean;
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: Callback<StepValidateFn>;
+  lang?: string;
+  formatRecall?: Callback<RecallFormatFn>;
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;

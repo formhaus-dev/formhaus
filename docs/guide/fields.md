@@ -537,12 +537,28 @@ A step can greet the user by the name asked on the first step:
 { "id": "more", "title": "Hello, {{name}}!", "description": "A few more questions.", "fields": [] }
 ```
 
-- Tokens work in step and section `title` and `description`, field and group `label` and `helperText`, and `placeholder`.
-- Options show their label from the definition `options`, and a value from `optionsFrom` shows as stored. A multiselect joins labels with `, `, a checkbox or switch shows its label when on, and a group shows its item count.
-- A missing value, a hidden field and an unknown key give an empty text.
-- `checkDefinition()` warns when a token names no field or a field answered later.
+- Tokens work in step and section `title` and `description`, field and group `label` and `helperText`, `placeholder`, and group `itemLabel`, which reads the fields of its own item: `"itemLabel": "Guest {{guest}}"`.
+- Options show their label from the definition `options`, and a value from `optionsFrom` shows as stored. A checkbox or switch shows its label when on, and a group shows its item count.
+- Dates, times, numbers and lists are formatted for the locale: `2027-06-14` shows as `Jun 14, 2027` in `en-US` and a multiselect as `Alpha, Beta, and Gamma`. The locale is the renderer `lang` prop, then the definition `lang`, then `en`.
+- A missing value, a hidden field and an unknown key give an empty text. Put each optional recall on its own line, so an empty one leaves no stray comma.
+- Only a key goes inside the braces. Keys may hold dots, so `{{contact.email}}` works. `{{name|upper}}` shows as written, and `\{{` shows literal braces.
+- `checkDefinition()` warns when a token names no field, a field answered later, or holds more than a key.
 - Inside a group item, `{{key}}` also reads the item's own fields.
 - The [Derived values](/recipes/derived-values#use-a-computed-value-later-in-the-form) recipe fills a `hidden` field from app code and recalls it.
+
+`formatRecall` replaces the formatting. It gets the answer, the field and the locale, and returns the text:
+
+```tsx
+<FormRenderer
+  definition={definition}
+  onSubmit={onSubmit}
+  formatRecall={(value, field, locale) =>
+    field.key === 'budget' ? new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(Number(value)) : String(value)
+  }
+/>
+```
+
+The answer is a text, a number or a list of option labels or file names. The error summary uses the same formatter.
 
 ## Keys and element ids
 

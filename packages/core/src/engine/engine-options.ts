@@ -1,6 +1,7 @@
 import type { DefinitionIssue } from '../definition-validation';
 import type { FormEvent } from '../types/analytics';
 import type { MessageSource, ValidatorFn } from '../validation';
+import type { RecallFormatFn } from './recall-format';
 
 export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
 
@@ -28,4 +29,6 @@ export interface FormEngineOptions {
   onStepValidate?: StepValidateFn;
   onWarning?: (issue: DefinitionIssue) => void;
   onFormEvent?: (event: FormEvent) => void;
+  lang?: string;
+  formatRecall?: RecallFormatFn;
 }

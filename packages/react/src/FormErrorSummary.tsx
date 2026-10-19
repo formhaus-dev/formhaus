@@ -2,7 +2,7 @@ import type { FormEngine } from '@formhaus/core';
 import { errorGroups, labelFor } from '@formhaus/core/internal';
 import { Fragment, useMemo } from 'react';
 import type { FormRendererProps } from './types';
-import { useFormSnapshot } from './hooks/useEngineSnapshot';
+import { useRecallSnapshot } from './hooks/useEngineSnapshot';
 
 interface FormErrorSummaryProps {
   engine: FormEngine;
@@ -12,7 +12,7 @@ interface FormErrorSummaryProps {
 }
 
 export function FormErrorSummary({ engine, formId, onSelect, labels }: FormErrorSummaryProps) {
-  const version = useFormSnapshot(engine);
+  const version = useRecallSnapshot(engine);
   const groups = useMemo(() => errorGroups(engine, formId, labels, engine.definition.labels), [engine, version, formId, labels]);
   if (groups.length === 0) return null;
 

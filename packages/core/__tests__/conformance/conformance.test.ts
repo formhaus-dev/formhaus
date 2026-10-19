@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, recallText, type FormDefinition } from '../../src';
+import { asStored } from '../../src/engine/recall-format';
 import { textSlots } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
 import { cases, corpus, recalls, runtime } from './corpus';
@@ -77,6 +78,7 @@ describe('conformance corpus', () => {
       'recall-groups',
       'recall-inactive',
       'recall-steps',
+      'recall-syntax',
       'recall-translations',
       'recall-values',
       'recall-version',
@@ -122,7 +124,10 @@ describe('conformance corpus', () => {
     const slots = new Map(textSlots(definition).map(({ address, text }) => [address, text]));
     const submitted = new FormEngine(definition, values, { onWarning: () => {} }).getSubmitValues();
     const resolve = ({ address, group, item }: (typeof texts)[number]) =>
-      recallText(definition, slots.get(address)!, submitted, group === undefined ? undefined : { group, index: item! });
+      recallText(definition, slots.get(address)!, submitted, {
+        item: group === undefined ? undefined : { group, index: item! },
+        format: asStored,
+      });
     expect(texts.map((entry) => ({ ...entry, text: resolve(entry) }))).toEqual(texts);
   });
 

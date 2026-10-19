@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { checkDefinition, FormEngine, recallText, type FormDefinition } from '../../src';
-import { translationIssues } from '../../src/i18n';
+import { FormEngine, recallStatic, recallText, type FormDefinition, type FormGroup } from '../../src';
+import { itemTitle } from '../../src/internal';
+import { asStored } from '../../src/engine/recall-format';
 
 const definition = (formatVersion = '1.5'): FormDefinition => ({
   formatVersion,
@@ -38,7 +39,7 @@ const definition = (formatVersion = '1.5'): FormDefinition => ({
 });
 
 const recall = (text: string, values: Record<string, unknown>, item?: { group: string; index: number }, version?: string) =>
-  recallText(definition(version), text, values, item);
+  recallText(definition(version), text, values, { item, format: asStored });
 
 describe('recallText', () => {
   it('shows each value kind', () => {
@@ -93,6 +94,30 @@ describe('recallText', () => {
     expect(recall('{name} {{ }} {{a b}}', { name: 'Ada' })).toBe('{name} {{ }} {{a b}}');
   });
 
+  it('keeps tokens with reserved content as written', () => {
+    const text = '{{name|upper}} {{name?}} {{a:b}} {{f(name)}} {{\'name\'}} {{"name"}} {{name[0]}} {{na me}} {{name}}';
+    expect(recall(text, { name: 'Ada' })).toBe(text.replace(/\{\{name\}\}$/, 'Ada'));
+  });
+
+  it('accepts letters, digits, underscores, dashes and dots in keys', () => {
+    const fields = [
+      { key: 'имя_1-a', type: 'text', label: 'Имя' },
+      { key: 'contact.email', type: 'email', label: 'Email' },
+    ];
+    const values = { 'имя_1-a': 'Ада', 'contact.email': 'a@b.co' };
+    expect(recallText({ ...definition(), fields }, 'Hi {{ имя_1-a }} {{contact.email}}', values)).toBe('Hi Ада a@b.co');
+  });
+
+  it('shows literal braces for an escaped token', () => {
+    expect(recall('\\{{name}} is {{name}}, \\{{ alone', { name: 'Ada' })).toBe('{{name}} is Ada, {{ alone');
+    expect(recall('\\{{name}}', { name: 'Ada' }, undefined, '1.4')).toBe('\\{{name}}');
+  });
+
+  it('resolves the item label inside the item', () => {
+    const values = { people: [{ first: 'Bo' }] };
+    expect(recall('Person {{first}}', values, { group: 'people', index: 0 })).toBe('Person Bo');
+  });
+
   it('reads the values a field hidden by a condition no longer holds', () => {
     const engine = new FormEngine(definition(), { plan: 'pro', note: 'kept' });
     expect(recallText(engine.definition, '[{{note}}]', engine.getSubmitValues())).toBe('[]');
@@ -102,60 +127,57 @@ describe('recallText', () => {
   });
 });
 
-const steps = (formatVersion: string, texts: Record<string, string>): FormDefinition => ({
-  formatVersion,
-  id: 'f',
-  title: 'F',
-  submit: { label: 'Send' },
-  steps: [
-    {
-      id: 'one',
-      title: texts.title ?? 'One',
-      fields: [
-        { key: 'name', type: 'text', label: texts.label ?? 'Name' },
-        { key: 'people', type: 'group', label: 'People', fields: [{ key: 'first', type: 'text', label: texts.item ?? 'First' }] },
-      ],
-    },
-    { id: 'two', title: 'Two', description: texts.description, fields: [{ key: 'email', type: 'email', label: 'Email' }] },
-  ],
+describe('item titles', () => {
+  const title = (itemLabel: string, kid: string) => {
+    const fields = [{ key: 'kids', type: 'group', label: 'Kids', itemLabel, fields: [{ key: 'kid', type: 'text', label: 'Kid' }] }];
+    const engine = new FormEngine({ ...definition(), fields } as FormDefinition, { kids: [{ kid }] });
+    return itemTitle(engine, engine.definition.fields![0] as FormGroup, 0);
+  };
+
+  it('fills parameters and tokens in one pass', () => {
+    expect(title('{{kid}}', '{index} {{index}} {label}')).toBe('{index} {{index}} {label}');
+    expect(title('{label} {index}: {{kid}} \\{{index}} {other}', 'Bo')).toBe('Kids 1: Bo {{index}} {other}');
+  });
+
+  it('reads the group label outside the item', () => {
+    const fields = [
+      { key: 'name', type: 'text', label: 'Name' },
+      {
+        key: 'guests',
+        type: 'group',
+        label: 'Guests of {{name}} [{{guest}}]',
+        itemLabel: '{label} {index}: {{guest}}',
+        fields: [{ key: 'guest', type: 'text', label: 'Guest' }],
+      },
+    ];
+    const engine = new FormEngine({ ...definition(), fields } as FormDefinition, { name: 'Ada', guests: [{ guest: 'Bo' }] });
+    expect(itemTitle(engine, engine.definition.fields![1] as FormGroup, 0)).toBe('Guests of Ada [] 1: Bo');
+  });
+
+  it('fills parameters below format 1.5', () => {
+    const fields = [{ key: 'kids', type: 'group', label: 'Kids', itemLabel: '{label} #{index} {{kid}}', fields: [] }];
+    const engine = new FormEngine({ ...definition('1.4'), fields } as FormDefinition, { kids: [{}] });
+    expect(itemTitle(engine, engine.definition.fields![0] as FormGroup, 0)).toBe('Kids #1 {{kid}}');
+  });
 });
 
-const warnings = (input: FormDefinition) =>
-  checkDefinition(input)
-    .filter(({ severity }) => severity === 'warning')
-    .map(({ code, path }) => ({ code, path }));
-
-describe('recall checks', () => {
-  it('accepts earlier fields, the same step and item fields', () => {
-    expect(warnings(steps('1.5', { description: '{{name}} {{ people }}', item: '{{name}}' }))).toEqual([]);
+describe('recallStatic', () => {
+  it('reads item keys from the given group only', () => {
+    const fields = [
+      { key: 'kids', type: 'group', label: 'Kids', fields: [{ key: 'name', type: 'text', label: 'Kid name' }] },
+      { key: 'pets', type: 'group', label: 'Pets', fields: [{ key: 'name', type: 'text', label: 'Pet name' }] },
+      { key: 'city', type: 'text', label: 'City' },
+    ];
+    const form = { ...definition(), fields } as FormDefinition;
+    expect(recallStatic(form, '{{name}} in {{city}}', 'pets')).toBe('Pet name in City');
+    expect(recallStatic(form, '{{name}} in {{city}}', 'kids')).toBe('Kid name in City');
+    expect(recallStatic(form, '[{{name}}] in {{city}}')).toBe('[] in City');
   });
 
-  it('warns about unknown keys', () => {
-    expect(warnings(steps('1.5', { title: 'Hi {{nmae}}', item: '{{email}} {{name}}' }))).toEqual([
-      { code: 'unknown-recall-field', path: '/steps/0/title' },
-      { code: 'recall-forward-reference', path: '/steps/0/fields/1/fields/0/label' },
-    ]);
-  });
-
-  it('warns about later steps and the same field', () => {
-    expect(warnings(steps('1.5', { label: 'Name {{name}}', title: '{{email}}' }))).toEqual([
-      { code: 'recall-forward-reference', path: '/steps/0/title' },
-      { code: 'recall-forward-reference', path: '/steps/0/fields/0/label' },
-    ]);
-  });
-
-  it('asks for format 1.5 when a text recalls an answer', () => {
-    expect(warnings(steps('1.4', { description: '{{name}}' }))).toEqual([{ code: 'outdated-format-version', path: '/formatVersion' }]);
-    expect(checkDefinition(steps('1.4', { description: '{{name}}' }))[0].message).toContain('needs format 1.5');
-  });
-
-  it('reports a translation that drops or adds a recall token', () => {
-    const source = steps('1.5', { description: 'Thanks {{name}}' });
-    expect(translationIssues(source, { steps: { two: { description: 'Danke' } } }).placeholderMismatch).toEqual(['steps.two.description']);
-    expect(translationIssues(source, { steps: { two: { description: 'Danke {{ name }}' } } }).placeholderMismatch).toEqual([]);
-    expect(translationIssues(source, { steps: { one: { title: 'Eins {{name}}' } } }).placeholderMismatch).toEqual(['steps.one.title']);
-    expect(translationIssues(source, { steps: { two: { description: 'Danke {name}' } } }).placeholderMismatch).toEqual([
-      'steps.two.description',
-    ]);
+  it('names the source field of each token', () => {
+    expect(recallStatic(definition(), 'Hi {{name}}, {{ plan }}, {{first}}, {{ref}}, [{{nope}}], {{a|b}}, \\{{name}}', 'people')).toBe(
+      'Hi Name, Plan, First, ref, [], {{a|b}}, {{name}}',
+    );
+    expect(recallStatic(definition('1.4'), 'Hi {{name}}')).toBe('Hi {{name}}');
   });
 });

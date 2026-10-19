@@ -1,4 +1,4 @@
-import { RECALL_TOKEN } from '../engine/recall-token';
+import { templateTokens } from '../engine/recall';
 import { hasOwn, isEntry } from '../visibility/nodes';
 export type Overlay = { [key: string]: string | Overlay };
 
@@ -28,9 +28,4 @@ export function leaves(overlay: unknown, path: string[] = []): { path: string[];
 
 export const addressKey = (path: string[]) => JSON.stringify(path);
 
-const PLACEHOLDER = new RegExp(`${RECALL_TOKEN.source}|\\{\\w+\\}`, 'g');
-
-export const placeholders = (text: string) =>
-  [
-    ...new Set((text.match(PLACEHOLDER) ?? []).map((token) => (token.startsWith('{{') ? token.replace(/\s/g, '') : token.slice(1, -1)))),
-  ].sort();
+export const placeholders = (text: string) => [...new Set(templateTokens(text))].sort();
