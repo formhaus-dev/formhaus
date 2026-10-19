@@ -22,6 +22,7 @@
   "overlay": {
     "labels": {
       "clear": "Очистить",
+      "done": "Готово",
       "chooseFile": "Выбрать файл",
       "required": "обязательно",
       "skip": "Пропустить",
@@ -31,6 +32,7 @@
   },
   "texts": {
     "labels.clear": "Очистить",
+    "labels.done": "Готово",
     "labels.chooseFile": "Выбрать файл",
     "labels.required": "обязательно",
     "labels.skip": "Пропустить",

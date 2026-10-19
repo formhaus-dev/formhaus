@@ -149,6 +149,9 @@
         "clear": {
           "type": "string"
         },
+        "done": {
+          "type": "string"
+        },
         "chooseFile": {
           "type": "string"
         },

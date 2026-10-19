@@ -141,7 +141,7 @@ Missing or empty strings keep the source text, so an incomplete translation stil
 
 Sections and groups have their own addresses. A section title lives at `sections.<key>.title`, or `steps.<id>.sections.<key>.title` in a multi-step form, and the fields inside keep their usual address. A group keeps `fields.<key>.label` and adds `itemLabel`, `addLabel` and `removeLabel`. Its item fields live under `fields.<key>.fields.<item key>`. The `labels` catalog has `addItem`, `removeItem`, `itemLabel` (`{label} {index}`), `itemAdded`, `itemRemoved` and `removeItemNamed`, `removeItemPrompt` (`{item}`), and `removeItemBody` and `cancel`. A translated `itemLabel` must keep `{index}`. Forms with picture options add `enlargeImage` (`{label}`, the name of the button that opens the image) and `close` (the button that closes it).
 
-The step progress and the action bar read `stepTitle` (`{index}`, the name of a step without a title), `stepErrors` (`{count}`, the error mark of a step), and `skip` and `submit` (the buttons when the action has no label). Native renderers also read `clear`, `chooseFile` and `required`, the word assistive technology announces for a required field. A translation template asks for each of these only when the form uses it.
+The step progress and the action bar read `stepTitle` (`{index}`, the name of a step without a title), `stepErrors` (`{count}`, the error mark of a step), and `skip` and `submit` (the buttons when the action has no label). Native renderers also read `clear`, `done` (the confirm button of a date or time picker), `chooseFile` and `required`, the word assistive technology announces for a required field. A translation template asks for each of these only when the form uses it.
 
 ```json
 {

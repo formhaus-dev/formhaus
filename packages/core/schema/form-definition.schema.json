@@ -35,7 +35,7 @@
     },
     "labels": {
       "$ref": "#/definitions/LabelCatalog",
-      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, chooseFile, required, skip, submit, stepTitle ({index}) and stepErrors ({count})."
+      "description": "Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, done, chooseFile, required, skip, submit, stepTitle ({index}) and stepErrors ({count})."
     },
     "i18n": {
       "$ref": "#/definitions/FormI18n",
@@ -226,6 +226,10 @@
           "minLength": 1
         },
         "clear": {
+          "type": "string",
+          "minLength": 1
+        },
+        "done": {
           "type": "string",
           "minLength": 1
         },
