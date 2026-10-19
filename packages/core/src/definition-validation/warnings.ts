@@ -1,16 +1,16 @@
 import type { FormField } from '../types';
 import { hasOwn } from '../visibility/nodes';
-import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, NUMBER_TYPES, SCALE_TYPES } from '../validation/type-checks';
-import { conditionErrors, missingTarget, OPERATORS } from './conditions';
+import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, NUMBER_TYPES } from '../validation/type-checks';
+import { CONTAINS, conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue, DefinitionIssueCode } from './issues';
 import { closest, oneOf, warning } from './issues';
 import { propertyWarnings } from './properties';
+import { versionWarnings } from './version-warnings';
 import { sourceWarnings } from './sources';
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
-const CONTAINS = ['contains', 'notContains'];
 
 function expectedType(field: FormField): string | undefined {
   if (NUMBER_TYPES.includes(field.type)) return 'number';
@@ -228,32 +228,6 @@ function routeWarnings({ definition }: CheckContext): DefinitionIssue[] {
     }
     return issues;
   });
-}
-
-function versionWarnings({ definition, nodes, conditions }: CheckContext): DefinitionIssue[] {
-  const [major, minor = 0] = String(definition.formatVersion ?? '1.0')
-    .split('.')
-    .map(Number);
-  const list = conditions.find(({ condition }) => CONTAINS.some((operator) => hasOwn(condition, operator)));
-  const scale = nodes.find(({ node }) => SCALE_TYPES.includes(node.type));
-  const container = nodes.find(({ node }) => node.type === 'section' || node.type === 'group');
-  const [problem, needed] =
-    list && minor < 4
-      ? [`${list.path} uses "${CONTAINS.find((operator) => hasOwn(list.condition, operator))}"`, 4]
-      : scale && minor < 3
-        ? [`${scale.path} is a ${scale.node.type}`, 3]
-        : [container && `${container.path} is a ${container.node.type}`, 1];
-  if (!problem || major !== 1 || minor >= needed) return [];
-  return [
-    warning(
-      'outdated-format-version',
-      '/formatVersion',
-      `${problem}, which needs format 1.${needed}`,
-      needed > 1
-        ? `Set "formatVersion": "1.${needed}". Older versions of @formhaus/core ${needed > 3 ? 'reject this operator' : 'treat this type as a custom type and do not validate it'}. Upgrade the server that runs validateSubmission() first`
-        : 'Set "formatVersion": "1.1", so that older versions of @formhaus/core reject the definition instead of skipping the fields inside',
-    ),
-  ];
 }
 
 export function definitionWarnings(context: CheckContext): DefinitionIssue[] {
