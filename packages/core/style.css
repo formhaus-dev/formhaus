@@ -131,7 +131,8 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 :is(.fh-field__radio-label, .fh-field__multiselect-label) { flex: 1 1 auto; cursor: pointer; text-wrap: pretty; }
 :is(.fh-field__radio-label, .fh-field__multiselect-label, .fh-field__checkbox-wrapper .fh-field__label, .fh-field__switch-wrapper .fh-field__label)::before { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 
-.fh-field__option-image { grid-column: 1 / -1; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: calc(var(--fh-radius) - var(--fh-space-1)); background: var(--fh-color-bg-disabled); }
+.fh-field__option-image { position: relative; grid-column: 1 / -1; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: calc(var(--fh-radius) - var(--fh-space-1)); background: var(--fh-color-bg-disabled); }
+.fh-field__option-image::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--fh-color-bg-disabled); }
 .fh-field__option-image ~ label { text-wrap: balance; }
 :is(.fh-field__radio-group, .fh-field__multiselect-group):has(.fh-field__option-image) { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 200px), 1fr)); gap: var(--fh-space-5); }
 :is(.fh-field__radio-group, .fh-field__multiselect-group)[data-columns]:has(.fh-field__option-image) { grid-template-columns: repeat(var(--fh-columns), minmax(0, 1fr)); }

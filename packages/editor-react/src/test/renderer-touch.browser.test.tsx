@@ -137,6 +137,21 @@ describe('picture options', () => {
     expect(Math.round((image.width * 3) / 4)).toBe(Math.round(image.height));
   });
 
+  it('keeps the box and the option name when the image fails to load', async () => {
+    await page.viewport(1280, 800);
+    renderAt(640, { ...room, options: room.options!.map((option) => ({ ...option, image: 'http://127.0.0.1:1/missing.png' })) });
+    const image = document.querySelector('img.fh-field__option-image') as HTMLImageElement;
+    await expect.poll(() => image.complete && image.naturalWidth === 0).toBe(true);
+    const box = image.getBoundingClientRect();
+    expect(Math.round((box.width * 3) / 4)).toBe(Math.round(box.height));
+    const surface = getComputedStyle(image).backgroundColor;
+    const cover = getComputedStyle(image, '::after');
+    expect(cover.backgroundColor).toBe(surface);
+    expect(cover.position).toBe('absolute');
+    expect(image.getAttribute('alt')).toBe('');
+    expect(screen.getByRole('radio', { name: 'sea' })).toBeTruthy();
+  });
+
   it('opens the preview in the form font and theme without selecting the option', async () => {
     await page.viewport(1280, 800);
     renderAt(640, room);
