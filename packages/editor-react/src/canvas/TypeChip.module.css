@@ -35,8 +35,14 @@
 }
 
 @container (width < 420px) {
-  .chip > span,
-  .chipChevron {
-    display: none;
+  .chip {
+    flex: 0 1 auto;
+    min-width: 0;
+  }
+
+  .chip > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }

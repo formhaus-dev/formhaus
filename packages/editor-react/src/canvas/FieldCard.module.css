@@ -196,6 +196,10 @@
     padding-right: 0;
   }
 
+  .head > :last-child {
+    margin-inline-start: auto;
+  }
+
   .handle {
     display: none;
   }
