@@ -9,7 +9,10 @@ export function ScaleField(props: FieldComponentProps) {
   const id = fieldId(props);
   const [min, max] = scaleRange(field);
   const points = Array.from({ length: Math.max(0, max - min + 1) }, (_, index) => min + index);
-  const anchors = (field.options ?? []).slice(0, 3);
+  const roles = [min, Math.floor((min + max) / 2), max];
+  const anchors = roles.map((point, index) =>
+    index === 1 && (point === min || point === max) ? undefined : field.options?.find((option) => option.value === String(point)),
+  );
   const choice = choiceHandlers(props, useRef(false), (key) => {
     const point = key === '0' && min > 0 ? 10 : Number(key);
     return /^\d$/.test(key) && point >= min && point <= max ? point : undefined;
@@ -18,7 +21,7 @@ export function ScaleField(props: FieldComponentProps) {
   return (
     <FieldShell id={id} field={field} error={error} variant={field.type === 'rating' ? 'rating' : 'scale'}>
       {points.map((point) => {
-        const anchor = anchors.findIndex((option) => option.value === String(point));
+        const anchor = roles.findIndex((role, index) => role === point && anchors[index]);
         return (
           <div key={point} className="fh-field__scale-option">
             <input
@@ -38,11 +41,11 @@ export function ScaleField(props: FieldComponentProps) {
           </div>
         );
       })}
-      {anchors.length > 0 && (
+      {anchors.some(Boolean) && (
         <div className="fh-field__scale-anchors" style={{ '--fh-scale-points': points.length } as CSSProperties}>
           {anchors.map((option, index) => (
-            <span key={option.value} id={`${id}-anchor-${index}`} className="fh-field__scale-anchor">
-              {option.label}
+            <span key={index} id={option && `${id}-anchor-${index}`} className="fh-field__scale-anchor">
+              {option?.label}
             </span>
           ))}
         </div>

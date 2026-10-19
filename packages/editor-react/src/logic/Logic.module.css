@@ -36,6 +36,11 @@
   gap: var(--fh-ed-space-1-5);
 }
 
+.points {
+  flex-flow: row wrap;
+  gap: var(--fh-ed-space-1-5) var(--fh-ed-space-3);
+}
+
 .badge {
   display: inline-flex;
   align-items: flex-start;

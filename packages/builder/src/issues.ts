@@ -48,8 +48,8 @@ export function findIssues(form: BuilderForm): Issue[] {
     issues.push({ uid: page.uid, severity: 'error', message: `Step id "${page.id}" is used by another step.` });
   }
   form.blocks.forEach((block, index) => {
-    if (isPage(block) && !isQuestion(form.blocks[index + 1]))
-      issues.push({ uid: block.uid, severity: 'error', message: 'This step has no fields.' });
+    if (isPage(block) && !isQuestion(form.blocks[index + 1]) && !block.title.trim() && !block.extra.description?.trim())
+      issues.push({ uid: block.uid, severity: 'warning', message: 'This step has no fields or text.' });
     for (const condition of conditionsOf(block.extra)) {
       const found = target(condition.field, scope(block));
       const at = found && form.blocks.indexOf(found);

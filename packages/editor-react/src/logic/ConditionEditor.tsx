@@ -1,6 +1,10 @@
 import {
+  anchorsOf,
   hasOptions,
+  isNumeric,
+  isScale,
   OPERATOR_LABELS,
+  scalePoints,
   operatorsFor,
   takesList,
   takesValue,
@@ -8,7 +12,7 @@ import {
   type ConditionRow,
 } from '@formhaus/builder';
 import { X } from 'lucide-react';
-import { Checkbox, IconButton, Input, Select } from '../ui';
+import { Checkbox, cx, IconButton, Input, Select } from '../ui';
 import styles from './Logic.module.css';
 import { defaultRow } from './rows';
 
@@ -18,6 +22,23 @@ interface Props {
   readOnly: boolean;
   onChange: (row: ConditionRow) => void;
   onRemove: () => void;
+}
+
+function choicesOf(source: BuilderQuestion): { value: string; label: string }[] {
+  if (!isScale(source.type)) {
+    return source.options.map((option, index) => ({ value: option.value, label: option.label.trim() || `Option ${String(index + 1)}` }));
+  }
+  const points = scalePoints(source);
+  const anchors = anchorsOf(source);
+  const named = new Map([
+    [points[0], anchors.start],
+    [points[Math.floor((points.length - 1) / 2)], anchors.middle],
+    [points.at(-1), anchors.end],
+  ]);
+  return points.map((point) => {
+    const anchor = named.get(point);
+    return { value: String(point), label: anchor ? `${String(point)} · ${anchor}` : String(point) };
+  });
 }
 
 function Value({
@@ -31,14 +52,15 @@ function Value({
   readOnly: boolean;
   onChange: (row: ConditionRow) => void;
 }) {
-  if (hasOptions(source.type) && takesList(row.operator)) {
+  const choices = hasOptions(source.type) || isScale(source.type) ? choicesOf(source) : null;
+  if (choices && takesList(row.operator)) {
     const picked = Array.isArray(row.value) ? row.value : [];
     return (
-      <div className={styles.values} role="group" aria-label="Values">
-        {source.options.map((option, index) => (
+      <div className={cx(styles.values, isScale(source.type) && styles.points)} role="group" aria-label="Values">
+        {choices.map((option) => (
           <Checkbox
-            key={option.uid}
-            label={option.label.trim() || `Option ${String(index + 1)}`}
+            key={option.value}
+            label={isScale(source.type) ? option.value : option.label}
             checked={picked.includes(option.value)}
             disabled={readOnly}
             onChange={(event) => {
@@ -50,16 +72,13 @@ function Value({
       </div>
     );
   }
-  if (hasOptions(source.type)) {
+  if (choices) {
     return (
       <Select
         aria-label="Value"
         value={typeof row.value === 'string' ? row.value : ''}
         disabled={readOnly}
-        options={source.options.map((option, index) => ({
-          value: option.value,
-          label: option.label.trim() || `Option ${String(index + 1)}`,
-        }))}
+        options={choices}
         onChange={(event) => {
           onChange({ ...row, value: event.target.value });
         }}
@@ -69,8 +88,8 @@ function Value({
   return (
     <Input
       aria-label="Value"
-      type={source.type === 'number' ? 'number' : 'text'}
-      inputMode={source.type === 'number' ? 'decimal' : undefined}
+      type={isNumeric(source.type) ? 'number' : 'text'}
+      inputMode={isNumeric(source.type) ? 'decimal' : undefined}
       value={typeof row.value === 'string' ? row.value : ''}
       readOnly={readOnly}
       onChange={(event) => {
@@ -107,7 +126,8 @@ export function ConditionEditor({ row, sources, readOnly, onChange, onRemove }: 
             options={operatorsFor(source.type).map((operator) => ({ value: operator, label: OPERATOR_LABELS[operator] }))}
             onChange={(event) => {
               const operator = event.target.value as ConditionRow['operator'];
-              onChange({ ...row, operator, value: takesList(operator) ? [] : takesList(row.operator) ? '' : row.value });
+              const reset = takesList(row.operator) || row.value === '';
+              onChange({ ...row, operator, value: takesList(operator) ? [] : reset ? defaultRow(source).value : row.value });
             }}
           />
           {takesValue(row.operator) && <Value row={row} source={source} readOnly={readOnly} onChange={onChange} />}

@@ -21,7 +21,7 @@ Opens at http://localhost:3000. Choose the Team plan and enter `Acme` as the com
 - [app/page.tsx](app/page.tsx) is a server component that passes the definition to the client form.
 - [app/signup-form.tsx](app/signup-form.tsx) posts values and skipped steps to the route handler and passes returned errors to `FormRenderer`.
 - [app/api/submit/route.ts](app/api/submit/route.ts) runs `validateSubmission()` on the posted values and skipped steps and returns `422` with field errors.
-- [form/validators.ts](form/validators.ts) holds the server-only `companyAvailable` validator. `validateSubmission()` ignores named validators, so the route handler runs it on the returned values.
+- [form/validators.ts](form/validators.ts) holds the server-only `companyAvailable` validator. The route handler passes it to `validateSubmission()` in `validators`.
 
 The route handler does not limit the request body size; set a limit in your proxy or hosting platform.
 

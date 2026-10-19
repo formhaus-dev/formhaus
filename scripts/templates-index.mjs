@@ -6,7 +6,8 @@ const directory = fileURLToPath(new URL('../templates/', import.meta.url));
 const indexPath = resolve(directory, 'index.json');
 const SKIP = new Set(['index.json', 'order.json']);
 
-const countFields = ({ fields = [], steps = [] }) => fields.length + steps.reduce((total, step) => total + step.fields.length, 0);
+const countNodes = (nodes) => nodes.reduce((total, node) => total + (node.type === 'section' ? countNodes(node.fields) : 1), 0);
+const countFields = ({ fields = [], steps = [] }) => countNodes(fields) + steps.reduce((total, step) => total + countNodes(step.fields), 0);
 
 export function readOrder() {
   return JSON.parse(readFileSync(resolve(directory, 'order.json'), 'utf8'));

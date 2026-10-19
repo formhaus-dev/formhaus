@@ -1,4 +1,4 @@
-import { hasOptions, inferType, setFieldType } from '@formhaus/builder';
+import { hasOptions, inferType, isMatrix, setFieldType } from '@formhaus/builder';
 import { CircleAlert, Settings2 } from 'lucide-react';
 import { useId, useLayoutEffect, useRef } from 'react';
 import { IconButton, SortableHandle, type SortableHandleProps } from '../ui';
@@ -9,12 +9,13 @@ import settings from '../inspector/Inspector.module.css';
 import { LogicBadge } from '../logic/LogicBadge';
 import { keyHint } from '../shell/keys';
 import { useEditorStore } from '../store/context';
-import { useErrors, useField, useIsExpanded, useIsSelected, useReadOnly } from '../store/hooks';
+import { useErrors, useField, useIsExpanded, useIsMatrixRow, useIsSelected, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
 import suggestionStyles from './TypeSuggestion.module.css';
 import { HelpText, PlaceholderInput } from './FieldDetails';
 import { HiddenValue } from './HiddenValue';
+import { MatrixPreview } from './MatrixPreview';
 import { takesPlaceholder } from './placeholder';
 import { FieldLabel } from './FieldLabel';
 import { FieldMenu } from './FieldMenu';
@@ -43,6 +44,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
   const issuesId = useId();
   const label = useRef<HTMLTextAreaElement>(null);
   const onCardKey = useCardKeys(uid, actions);
+  const row = useIsMatrixRow(uid);
 
   useLayoutEffect(() => {
     const target = focus.take(uid);
@@ -61,7 +63,8 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
   const choice = hasOptions(field.type);
   const container = field.type === 'section' || field.type === 'group';
   const body = () => {
-    if (container) return null;
+    if (container) return isMatrix(field) ? <MatrixPreview field={field} /> : null;
+    if (row && !selected) return null;
     if (selected && choice && !readOnly) return <OptionsEditor field={field} actions={actions} />;
     if (selected && !readOnly && takesPlaceholder(field)) return <PlaceholderInput field={field} actions={actions} readOnly={readOnly} />;
     if (selected && !readOnly && field.type === 'hidden') return <HiddenValue field={field} actions={actions} />;

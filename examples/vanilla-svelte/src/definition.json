@@ -1,5 +1,6 @@
 {
   "id": "basic-form",
+  "formatVersion": "1.3",
   "title": "Contact Information",
   "submit": { "label": "Submit" },
   "fields": [
@@ -41,6 +42,12 @@
         { "value": "IN", "label": "India" }
       ],
       "validation": { "required": true }
+    },
+    {
+      "key": "recommend",
+      "type": "scale",
+      "label": "How likely are you to recommend us?",
+      "validation": { "min": 0, "max": 10 }
     }
   ]
 }

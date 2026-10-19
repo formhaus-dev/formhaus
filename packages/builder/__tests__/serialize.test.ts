@@ -44,7 +44,7 @@ describe('issues', () => {
     addStep(form);
     const messages = findIssues(form).map((issue) => issue.message);
     expect(messages).toContain('Response key "name" is used by another field.');
-    expect(messages).toContain('This step has no fields.');
+    expect(messages).toContain('This step has no fields or text.');
   });
 });
 

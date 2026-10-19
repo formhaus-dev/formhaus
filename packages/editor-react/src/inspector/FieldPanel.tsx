@@ -1,11 +1,24 @@
-import { canBranch, hasOptions, setFieldProp, setRequired, type BuilderQuestion } from '@formhaus/builder';
+import {
+  canAutoAdvance,
+  childrenOf,
+  findField,
+  hasOptions,
+  isMatrix,
+  isScale,
+  setFieldProp,
+  setMatrix,
+  setRequired,
+  type BuilderQuestion,
+} from '@formhaus/builder';
 import type { FormField, FormGroup } from '@formhaus/core';
 import { Field, Input, SegmentedControl, Switch } from '../ui';
 import { LogicSection } from '../logic/LogicSection';
-import { useReadOnly } from '../store/hooks';
+import { useForm, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
+import { PerRow } from './PerRow';
 import { ResponseKey } from './ResponseKey';
+import { ScaleSettings } from './ScaleSettings';
 
 function GroupSettings({ field, actions, readOnly }: { field: BuilderQuestion; actions: EditorActions; readOnly: boolean }) {
   const extra = field.extra as Partial<FormGroup>;
@@ -59,6 +72,11 @@ function GroupSettings({ field, actions, readOnly }: { field: BuilderQuestion; a
 
 export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions: EditorActions }) {
   const readOnly = useReadOnly();
+  const form = useForm();
+  const parent = findField(form, field.parent ?? '');
+  const advances = canAutoAdvance(field.type) && parent?.type !== 'group' && !isMatrix(parent);
+  const choices = hasOptions(field.type) && field.type !== 'select' && !isMatrix(parent);
+  const pictures = choices && field.options.some((option) => option.extra?.image);
   return (
     <div className={styles.panel} role="group" aria-label="Field settings">
       {field.type !== 'section' && (
@@ -74,9 +92,23 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
           }}
         />
       )}
+      {field.type === 'section' && childrenOf(form, field.uid).length > 0 && (
+        <Switch
+          className={styles.toggle}
+          label="Show as matrix"
+          checked={isMatrix(field)}
+          disabled={readOnly}
+          onCheckedChange={(next) => {
+            actions.edit((draft) => {
+              setMatrix(draft, field.uid, next);
+            });
+          }}
+        />
+      )}
       {field.type === 'group' && <GroupSettings field={field} actions={actions} readOnly={readOnly} />}
+      {isScale(field.type) && <ScaleSettings field={field} actions={actions} readOnly={readOnly} />}
       <LogicSection block={field} actions={actions} />
-      {canBranch(field.type) && field.type === 'radio' && (
+      {advances && (
         <Switch
           className={styles.toggle}
           label="Go to the next step when picked"
@@ -89,7 +121,8 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
           }}
         />
       )}
-      {hasOptions(field.type) && field.type !== 'select' && (
+      {pictures && <PerRow field={field} actions={actions} />}
+      {choices && !pictures && (
         <div className={styles.control}>
           <span className={styles.controlLabel}>Option layout</span>
           <SegmentedControl

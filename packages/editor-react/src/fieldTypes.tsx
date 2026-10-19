@@ -8,6 +8,8 @@ import {
   CircleDot,
   Clock,
   EyeOff,
+  Gauge,
+  Grid3x3,
   Hash,
   PanelTop,
   Repeat2,
@@ -15,6 +17,7 @@ import {
   Mail,
   Phone,
   SquareCheck,
+  Star,
   ToggleRight,
   Type,
   type LucideIcon,
@@ -35,6 +38,7 @@ const types: TypeInfo[] = [
   { type: 'switch', label: 'Switch', hint: 'An on or off toggle' },
   { type: 'hidden', label: 'Hidden value', hint: 'Sent with the answers, never shown' },
   { type: 'section', label: 'Section', hint: 'A titled block of fields' },
+  { type: 'matrix', label: 'Matrix', hint: 'Rows that share the same columns' },
   { type: 'group', label: 'Repeatable group', hint: 'Fields people can add again and again' },
 ];
 
@@ -51,15 +55,19 @@ const icons: Record<string, LucideIcon> = {
   multiselect: ListChecks,
   select: ChevronsUpDown,
   checkbox: SquareCheck,
+  rating: Star,
+  scale: Gauge,
   switch: ToggleRight,
   hidden: EyeOff,
   section: PanelTop,
+  matrix: Grid3x3,
   group: Repeat2,
 };
 
 export const TYPE_GROUPS: [string, string[]][] = [
   ['Text', ['text', 'textarea']],
   ['Choice', ['radio', 'multiselect', 'select']],
+  ['Rating & scale', ['rating', 'scale']],
   ['Contact', ['email', 'phone']],
   ['Date & number', ['number', 'date', 'datetime', 'time']],
   ['Other', ['checkbox', 'switch', 'hidden']],

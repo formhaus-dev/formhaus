@@ -1,4 +1,14 @@
-import { findIssues, isPage, isQuestion, stepOf, toDefinition, type BuilderBlock, type BuilderForm, type Issue } from '@formhaus/builder';
+import {
+  findIssues,
+  isPage,
+  isQuestion,
+  matrixOf,
+  stepOf,
+  toDefinition,
+  type BuilderBlock,
+  type BuilderForm,
+  type Issue,
+} from '@formhaus/builder';
 import { useCallback, useDeferredValue, useMemo } from 'react';
 import { useEditor } from './context';
 import type { Selection } from './store';
@@ -50,6 +60,8 @@ export const useStep = (uid: string) =>
 export const useSelection = () => useEditor((state) => state.selection);
 export const useSave = () => useEditor((state) => state.save);
 export const useIsExpanded = (uid: string) => useEditor(useCallback((state) => state.expanded === uid, [uid]));
+export const useIsMatrixRow = (uid: string) => useEditor(useCallback((state) => !!matrixOf(state.form, uid), [uid]));
+export const useShowsPictures = (uid: string) => useEditor(useCallback((state) => state.pictures.includes(uid), [uid]));
 export const useReadOnly = () => useEditor((state) => state.readOnly);
 export const useCanUndo = () => useEditor((state) => state.canUndo);
 export const useCanRedo = () => useEditor((state) => state.canRedo);

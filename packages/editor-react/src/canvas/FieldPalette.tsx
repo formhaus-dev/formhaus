@@ -12,14 +12,15 @@ interface Props {
   anchor?: ReactElement;
   label?: string;
   adding?: boolean;
+  only?: string[];
 }
 
-export function FieldPalette({ open, onOpenChange, onPick, trigger, anchor, label = 'Field types', adding = false }: Props) {
+export function FieldPalette({ open, onOpenChange, onPick, trigger, anchor, label = 'Field types', adding = false, only }: Props) {
   const small = useMedia(phone);
   const picked = useRef<string | null>(null);
   const list = (
     <CommandList
-      items={adding ? addItems : paletteItems}
+      items={adding ? addItems : only ? paletteItems.filter((item) => only.includes(item.id)) : paletteItems}
       label={label}
       layout="grid"
       placeholder="Search field types"

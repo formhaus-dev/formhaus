@@ -18,9 +18,21 @@ export const FIELD_TYPES = [
   'time',
   'textarea',
   'hidden',
+  'scale',
+  'rating',
 ] as const satisfies readonly DefaultFieldType[];
 
 export const OPTION_FIELD_TYPES = ['select', 'autocomplete', 'multiselect', 'radio'] as const satisfies readonly DefaultFieldType[];
+
+export const SCALE_FIELD_TYPES = ['scale', 'rating'] as const satisfies readonly DefaultFieldType[];
+
+export const IMAGE_FIELD_TYPES = ['radio', 'multiselect'] as const satisfies readonly DefaultFieldType[];
+
+export const MATRIX_ROW_TYPES = IMAGE_FIELD_TYPES;
+
+export const AUTO_ADVANCE_TYPES = ['radio', 'scale', 'rating'] as const satisfies readonly DefaultFieldType[];
+
+export const SECTION_LAYOUTS = ['matrix'] as const;
 
 export const CONDITION_OPERATORS = [
   'eq',

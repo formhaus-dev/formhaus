@@ -6,6 +6,7 @@ import localized from '../../../examples/definitions/localized-form.json';
 import multiStep from '../../../examples/definitions/multi-step.json';
 import validation from '../../../examples/definitions/validation.json';
 import registration from '../../../examples/definitions/event-registration.json';
+import survey from '../../../examples/definitions/survey.json';
 
 export interface ExampleSummary {
   id: string;
@@ -23,6 +24,10 @@ const EXAMPLES: { definition: FormDefinition; shows: string }[] = [
   {
     definition: registration as FormDefinition,
     shows: 'Format 1.1 form with a conditional section and a repeatable group of participants.',
+  },
+  {
+    definition: survey as FormDefinition,
+    shows: 'Format 1.3 survey: welcome step, NPS scale with autoAdvance and a numeric condition, rating, picture choice and a matrix.',
   },
 ];
 

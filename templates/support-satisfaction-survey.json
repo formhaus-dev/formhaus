@@ -5,6 +5,7 @@
   "category": "feedback",
   "definition": {
     "id": "support-satisfaction-survey",
+    "formatVersion": "1.3",
     "title": "How did we do?",
     "submit": { "label": "Send feedback" },
     "fields": [
@@ -18,41 +19,24 @@
       },
       {
         "key": "csat",
-        "type": "radio",
+        "type": "rating",
         "label": "How satisfied are you with the help you got?",
-        "layout": "inline",
-        "helperText": "1 means very dissatisfied, 5 means very satisfied.",
-        "options": [
-          { "value": "1", "label": "1" },
-          { "value": "2", "label": "2" },
-          { "value": "3", "label": "3" },
-          { "value": "4", "label": "4" },
-          { "value": "5", "label": "5" }
-        ],
-        "validation": { "required": true }
+        "validation": { "required": true },
+        "options": [{ "value": "1", "label": "Very dissatisfied" }, { "value": "5", "label": "Very satisfied" }]
       },
       {
         "key": "effort",
-        "type": "radio",
+        "type": "scale",
         "label": "We made it easy for you to handle your issue",
-        "layout": "inline",
-        "helperText": "1 means strongly disagree, 7 means strongly agree.",
-        "options": [
-          { "value": "1", "label": "1" },
-          { "value": "2", "label": "2" },
-          { "value": "3", "label": "3" },
-          { "value": "4", "label": "4" },
-          { "value": "5", "label": "5" },
-          { "value": "6", "label": "6" },
-          { "value": "7", "label": "7" }
-        ]
+        "validation": { "max": 7 },
+        "options": [{ "value": "1", "label": "Strongly disagree" }, { "value": "7", "label": "Strongly agree" }]
       },
       {
         "key": "improve",
         "type": "textarea",
         "label": "What could we have done better?",
         "rows": 3,
-        "showAny": [{ "field": "csat", "in": ["1", "2", "3"] }, { "field": "resolved", "in": ["partly", "no"] }]
+        "showAny": [{ "field": "csat", "lte": 3 }, { "field": "resolved", "in": ["partly", "no"] }]
       }
     ]
   }

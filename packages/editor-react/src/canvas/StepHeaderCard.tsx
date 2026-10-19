@@ -112,7 +112,7 @@ export function StepHeaderCard({ uid, position, total, actions }: Props) {
       {!readOnly && stepFields(form, uid).length === 0 && (
         <p className={styles.empty}>
           <Info aria-hidden />
-          Add a field to this step.
+          No fields. This step shows its title, description and button.
         </p>
       )}
       <LogicBadge

@@ -4,6 +4,7 @@ import CheckboxField from './fields/CheckboxField.vue';
 import FileField from './fields/FileField.vue';
 import HiddenField from './fields/HiddenField.vue';
 import RadioField from './fields/RadioField.vue';
+import RatingField from './fields/RatingField.vue';
 import SelectField from './fields/SelectField.vue';
 import SwitchField from './fields/SwitchField.vue';
 import TextField from './fields/TextField.vue';
@@ -23,6 +24,7 @@ export const components: FieldComponentMap = {
   multiselect: SelectField,
   checkbox: CheckboxField,
   radio: RadioField,
+  rating: RatingField,
   switch: SwitchField,
   file: FileField,
   textarea: TextareaField,

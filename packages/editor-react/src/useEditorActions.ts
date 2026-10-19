@@ -3,7 +3,9 @@ import {
   addOption,
   addTrackingFields,
   addOptions,
+  addStatement,
   addStep,
+  childrenOf,
   duplicateField,
   findField,
   isPage,
@@ -17,6 +19,7 @@ import {
   removeField,
   removeOption,
   removeStep,
+  setMatrix,
   splitAt,
   stepOf,
   type BuilderForm,
@@ -69,6 +72,25 @@ export function useEditorActions() {
     };
     return {
       addField: (at: Placement, preset?: FieldPreset) => selectField(store.update((form) => addField(form, at, preset).uid)),
+      addMatrix: (at: Placement) =>
+        selectField(
+          store.update((form) => {
+            const section = addField(form, at, { type: 'section' });
+            const [row] = childrenOf(form, section.uid);
+            if (row) addField(form, { after: row.uid });
+            setMatrix(form, section.uid, true);
+            return section.uid;
+          }),
+        ),
+      addStatement: (at: Placement) => selectField(store.update((form) => addStatement(form, at, { title: '' }).uid)),
+      addWelcome: () => {
+        const page = store.update((form) => addStatement(form, { page: null }, { title: 'Welcome', next: 'Start' }).uid);
+        if (page) store.select({ kind: 'step', uid: page });
+        return page;
+      },
+      showPictures: (uid: string) => {
+        store.showPictures(uid);
+      },
       addTracking: (at: Placement) => {
         const added = store.update((form) => addTrackingFields(form, at)) ?? [];
         if (!added.length) {

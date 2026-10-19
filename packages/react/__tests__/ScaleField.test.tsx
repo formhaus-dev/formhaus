@@ -59,6 +59,14 @@ describe('ScaleField', () => {
     expect(group.getAttribute('aria-describedby')).toBe(`${radio('nps', 0).id.replace(/-0$/, '')}-helper`);
   });
 
+  it('places anchors by role and skips labels on other points', () => {
+    const options = ['1', '2', '5'].map((value) => ({ value, label: `Label ${value}` }));
+    render(<FormRenderer definition={single({ key: 'end', type: 'scale', label: 'End', options })} onSubmit={() => {}} />);
+    const spans = [...document.querySelectorAll('.fh-field__scale-anchor')].map((span) => span.textContent);
+    expect(spans).toEqual(['Label 1', '', 'Label 5']);
+    expect(radio('end', 2).hasAttribute('aria-describedby')).toBe(false);
+  });
+
   it('links each anchor from its point with aria-describedby', () => {
     render(<FormRenderer definition={single(nps)} onSubmit={() => {}} />);
     const first = radio('nps', 0).getAttribute('aria-describedby')!;

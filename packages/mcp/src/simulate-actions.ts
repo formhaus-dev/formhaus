@@ -1,5 +1,5 @@
 import { isActionDisabled, type FormEngine, type FormStep } from '@formhaus/core';
-import { advancingRadios } from './structure';
+import { advancingFields } from './structure';
 
 export type SimulationAction = 'next' | 'back' | 'skip';
 
@@ -28,8 +28,8 @@ function blockedReason(engine: FormEngine, step: FormStep | null, action: Simula
   if (engine.isLastStep) return undefined;
   if (isActionDisabled(step.next, values)) return 'Next is disabled on this step.';
   if (step.next !== false) return undefined;
-  const answered = advancingRadios(step).some((field) => engine.visibleFields.includes(field) && isAnswered(engine.values[field.key]));
-  return answered ? undefined : 'Next is hidden on this step (next: false) and no autoAdvance radio is answered.';
+  const answered = advancingFields(step).some((field) => engine.visibleFields.includes(field) && isAnswered(engine.values[field.key]));
+  return answered ? undefined : 'Next is hidden on this step (next: false) and no autoAdvance radio, scale or rating is answered.';
 }
 
 async function apply(engine: FormEngine, action: SimulationAction): Promise<boolean> {
