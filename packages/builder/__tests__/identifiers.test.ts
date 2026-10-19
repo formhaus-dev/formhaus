@@ -76,6 +76,19 @@ describe('identifiers', () => {
     expect(toDefinition(form).fields?.[1].show).toEqual([{ field: 'plan', eq: 'business' }]);
   });
 
+  it('renames contains values when an unlocked option value follows its label', () => {
+    const form = fromDefinition({
+      ...plan,
+      fields: [
+        { ...plan.fields![0], type: 'multiselect' },
+        { key: 'note', type: 'text', label: 'Note', show: [{ field: 'plan', contains: 'pro' }] },
+      ],
+    });
+    const field = findField(form, form.blocks[0].uid)!;
+    setOptionLabel(form, field.uid, field.options[0].uid, 'Business');
+    expect(toDefinition(form).fields?.[1].show).toEqual([{ field: 'plan', contains: 'business' }]);
+  });
+
   it('locks everything after publish', () => {
     const form = fromDefinition(plan);
     lockIdentifiers(form);
