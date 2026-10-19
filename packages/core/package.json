@@ -40,14 +40,16 @@
     "./schema.json": "./schema/form-definition.schema.json",
     "./translation.schema.json": "./schema/form-translation.schema.json",
     "./fixtures/submissions/*": "./fixtures/submissions/*",
-    "./fixtures/cloud/*": "./fixtures/cloud/*"
+    "./fixtures/cloud/*": "./fixtures/cloud/*",
+    "./tokens/*": "./tokens/*"
   },
   "files": [
     "dist",
     "fixtures/submissions",
     "fixtures/cloud",
     "schema",
-    "style.css"
+    "style.css",
+    "tokens"
   ],
   "scripts": {
     "build": "tsup",
@@ -55,11 +57,13 @@
     "test:watch": "vitest",
     "test:resolve": "node --input-type=module -e \"import('./dist/index.js').then(m => { if (!m.FormEngine) process.exit(1); console.log('ESM resolve OK'); })\"",
     "clean": "rm -rf dist",
-    "schema": "node scripts/schema.mjs"
+    "schema": "node scripts/schema.mjs",
+    "tokens": "node scripts/tokens.mjs"
   },
   "devDependencies": {
     "ajv": "^8.20.0",
     "fast-check": "^4.10.2",
+    "style-dictionary": "4.4.0",
     "ts-json-schema-generator": "^2.9.0",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",

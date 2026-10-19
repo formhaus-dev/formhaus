@@ -8,6 +8,8 @@ strictDepBuilds: true
 allowBuilds:
   esbuild: true
   lefthook: true
+  '@bundled-es-modules/glob': false
+  style-dictionary: false
 trustPolicy: no-downgrade
 trustPolicyExclude:
   - chokidar@4.0.3
