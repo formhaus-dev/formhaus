@@ -1,4 +1,4 @@
-import type { DefaultFieldType } from '@formhaus/core';
+import { fieldComponentsByName, mergeFieldComponents } from '@formhaus/core/internal';
 import type { Component } from 'vue';
 import AutocompleteField from './fields/AutocompleteField.vue';
 import CheckboxField from './fields/CheckboxField.vue';
@@ -16,32 +16,22 @@ import TextareaField from './fields/TextareaField.vue';
 import TimeField from './fields/TimeField.vue';
 import type { FieldComponentMap } from './types';
 
-export const defaultFieldComponents: Record<DefaultFieldType, Component> = {
-  text: TextField,
-  email: TextField,
-  phone: TextField,
-  number: TextField,
-  password: TextField,
-  select: SelectField,
-  autocomplete: AutocompleteField,
-  multiselect: MultiselectField,
-  checkbox: CheckboxField,
-  radio: RadioField,
-  switch: SwitchField,
-  file: FileField,
-  date: DateField,
-  datetime: DateTimeField,
-  time: TimeField,
-  textarea: TextareaField,
-  hidden: HiddenField,
-  scale: ScaleField,
-  rating: ScaleField,
-};
+export const defaultFieldComponents = fieldComponentsByName<Component>({
+  AutocompleteField,
+  CheckboxField,
+  DateField,
+  DateTimeField,
+  FileField,
+  HiddenField,
+  MultiselectField,
+  RadioField,
+  ScaleField,
+  SelectField,
+  SwitchField,
+  TextField,
+  TextareaField,
+  TimeField,
+});
 
-export function withDefaultFields(components?: FieldComponentMap): FieldComponentMap {
-  const merged: FieldComponentMap = { ...defaultFieldComponents };
-  for (const [type, component] of Object.entries(components ?? {})) {
-    if (component) merged[type] = component;
-  }
-  return merged;
-}
+export const withDefaultFields = (components?: FieldComponentMap): FieldComponentMap =>
+  mergeFieldComponents(defaultFieldComponents, components);
