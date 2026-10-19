@@ -5,6 +5,14 @@
   "warnings": [
     {
       "code": "recall-sensitive-field",
+      "path": "/steps/1/fields/2/itemLabel"
+    },
+    {
+      "code": "recall-sensitive-field",
+      "path": "/steps/2/fields/2/itemLabel"
+    },
+    {
+      "code": "recall-sensitive-field",
       "path": "/steps/3/description"
     }
   ],
@@ -67,6 +75,19 @@
                 "label": "Plan A"
               }
             ]
+          },
+          {
+            "key": "people",
+            "type": "group",
+            "label": "People",
+            "itemLabel": "Item [{{secret}}]",
+            "fields": [
+              {
+                "key": "secret",
+                "type": "text",
+                "label": "Credential"
+              }
+            ]
           }
         ],
         "routes": [
@@ -92,6 +113,19 @@
               {
                 "value": "x",
                 "label": "Plan B"
+              }
+            ]
+          },
+          {
+            "key": "people",
+            "type": "group",
+            "label": "People",
+            "itemLabel": "Item [{{secret}}]",
+            "fields": [
+              {
+                "key": "secret",
+                "type": "password",
+                "label": "Credential"
               }
             ]
           }
@@ -131,6 +165,25 @@
         {
           "address": "steps.review.description",
           "text": "[] [Plan A]"
+        }
+      ]
+    },
+    {
+      "name": "a group child that is a password on another branch",
+      "values": {
+        "way": "a",
+        "people": [
+          {
+            "secret": "code"
+          }
+        ]
+      },
+      "texts": [
+        {
+          "address": "steps.a.fields.people.itemLabel",
+          "group": "people",
+          "item": 0,
+          "text": "Item []"
         }
       ]
     }

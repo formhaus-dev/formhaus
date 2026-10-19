@@ -39,7 +39,7 @@ function keyWarnings(
     const target = context.target(key, group?.key);
     if (!target) return [warning('unknown-recall-field', path, `${token} names no field`, 'Use the key of an earlier field')];
     const { field } = target;
-    const fields = target.group ? [field] : shared.get(key)!;
+    const fields = shared.get(`${target.group?.key ?? ''}\n${key}`)!;
     return [
       ...(field === owner || target.step > step
         ? [
@@ -71,7 +71,10 @@ function keyWarnings(
 export function recallWarnings(context: CheckContext): DefinitionIssue[] {
   if (!recallEnabled(context.definition)) return [];
   const shared = new Map<string, FormField[]>();
-  for (const { field, group } of context.entries) if (!group) shared.get(field.key)?.push(field) ?? shared.set(field.key, [field]);
+  for (const { field, group } of context.entries) {
+    const at = `${group?.key ?? ''}\n${field.key}`;
+    shared.get(at)?.push(field) ?? shared.set(at, [field]);
+  }
   return recallTexts(context).flatMap((text) => {
     const issues = [
       ...text.reserved
