@@ -8,6 +8,8 @@
 - `validateSubmission()` converts decimal strings such as `"7"` to numbers for `scale` and `rating`, as it does for `number`.
 - `options` on `scale` and `rating` are anchor labels, not choices. Conditions on these fields compare numbers.
 - New `image` on options of `radio` and `multiselect` fields.
+- Default length messages read "Minimum length is {min}" and "Maximum length is {max}". Item counts read "At least {min} required" and "At most {max} allowed".
+- New labels `enlargeImage` (`Enlarge image: {label}`) and `close` (`Close`) for the picture preview. `textSlots()` lists them for forms with option images.
 - New `columns` on fields sets picture cards per row, from 1 to 4. `checkDefinition()` rejects other values and warns with `columns-not-applicable` when the options have no images.
 - New `layout: "matrix"` on sections.
 - A step or section may have an empty `fields` array, for a welcome screen or a statement.
