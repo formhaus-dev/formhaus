@@ -4,6 +4,7 @@ import type { ComponentPropsWithRef, ReactElement, ReactNode } from 'react';
 import { cx } from '../../lib/cx';
 import { AppLink } from '../AppLink/AppLink';
 import styles from './DropdownMenu.module.css';
+import { layer } from '../../lib/layer';
 
 export function DropdownMenu(props: ComponentPropsWithRef<typeof Menu.Root>) {
   return <Menu.Root modal={false} {...props} />;
@@ -18,7 +19,14 @@ export type DropdownMenuContentProps = ComponentPropsWithRef<typeof Menu.Content
 export function DropdownMenuContent({ className, align = 'end', sideOffset = 6, ...rest }: DropdownMenuContentProps) {
   return (
     <Menu.Portal>
-      <Menu.Content className={cx(styles.content, className)} align={align} sideOffset={sideOffset} collisionPadding={8} {...rest} />
+      <Menu.Content
+        {...layer}
+        className={cx(styles.content, className)}
+        align={align}
+        sideOffset={sideOffset}
+        collisionPadding={8}
+        {...rest}
+      />
     </Menu.Portal>
   );
 }

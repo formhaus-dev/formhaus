@@ -44,6 +44,7 @@ const font = (node: Element) => getComputedStyle(node).fontFamily;
 const root = () => document.querySelector('.fh-editor')!;
 
 function expectEditorFont(node: Element) {
+  expect(node.closest('[data-fh-ed-layer], .fh-editor')).not.toBeNull();
   expect(font(node)).toBe(font(root()));
   const text = [...node.querySelectorAll('span, p, label, [role="option"], [role="menuitem"]')].find((item) => item.textContent?.trim());
   if (text) expect(font(text)).toBe(font(root()));
