@@ -8,6 +8,7 @@ export interface ConformanceCase {
   input: { values: Record<string, unknown>; skippedSteps: string[] };
   expected: { values: Record<string, unknown>; errors: Record<string, string> };
   canSubmit: boolean;
+  serverValues?: Record<string, unknown>;
 }
 
 export interface ConformanceFixture {
