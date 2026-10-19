@@ -22,7 +22,7 @@ describe.skipIf(onWindows)('detection', () => {
     const result = box.run();
     expect(result.code).toBe(0);
     expect(result.out).toContain('No supported coding agent found');
-    expect(result.out).toContain('"npx" and args ["-y","@formhaus/mcp"]');
+    expect(result.text).toContain('"npx" and args ["-y","@formhaus/mcp"]');
   });
 
   it('finds agents by config directory and by binary on PATH', () => {
@@ -31,7 +31,7 @@ describe.skipIf(onWindows)('detection', () => {
     box.fakeBin('cursor');
     box.write(`${DESKTOP}/.keep`, '');
     box.platform = 'darwin';
-    expect(box.run('--dry-run').out).toContain('Found Claude Code, Codex, Cursor, Claude Desktop.');
+    expect(box.run('--dry-run').out).toContain('Formhaus will set up Claude Code, Codex, Cursor and Claude Desktop.');
   });
 
   it('lists agents it cannot configure for manual setup', () => {
@@ -39,7 +39,8 @@ describe.skipIf(onWindows)('detection', () => {
     box.write('.gemini/.keep', '');
     box.fakeBin('code');
     const { out } = box.run();
-    expect(out).toContain('Set up by hand: Gemini CLI, VS Code');
+    expect(out).toMatch(/– Gemini CLI\s+add it by hand: https:\/\/formhaus\.dev\/guide\/mcp/);
+    expect(out).toMatch(/– VS Code\s+add it by hand: https:\/\/formhaus\.dev\/guide\/mcp/);
     expect(box.exists('.gemini/settings.json')).toBe(false);
   });
 });
@@ -58,7 +59,7 @@ describe.skipIf(onWindows)('setup', () => {
     expect(box.read('.codex/config.toml')).toBe('[mcp_servers.formhaus]\ncommand = "npx"\nargs = ["-y", "@formhaus/mcp"]\n');
     expect(JSON.parse(box.read('.cursor/mcp.json'))).toEqual({ mcpServers: { formhaus: SERVER } });
     expect(JSON.parse(box.read(`${DESKTOP}/claude_desktop_config.json`))).toEqual({ mcpServers: { formhaus: SERVER } });
-    expect(result.out).toContain('Done.');
+    expect(result.out).toContain('Formhaus is ready in Claude Code, Codex, Cursor and Claude Desktop.');
   });
 
   it('installs the Cursor rule only inside a project', () => {
@@ -102,8 +103,9 @@ describe.skipIf(onWindows)('setup', () => {
     box.fakeBin('claude', 1);
     const result = box.run();
     expect(result.code).toBe(1);
-    expect(result.out).toContain('claude said no');
-    expect(result.out).toContain('Some steps failed');
+    expect(result.out).toMatch(/✗ Claude Code\s+MCP server failed/);
+    expect(result.text).toContain('claude said no');
+    expect(result.out).toContain('Fix the errors above and run npx formhaus again.');
   });
 });
 
@@ -117,7 +119,7 @@ describe.skipIf(onWindows)('idempotency', () => {
     const before = [box.read('.codex/config.toml'), box.read('.cursor/mcp.json'), box.read(SKILL)];
     const second = box.run();
     expect(second.code).toBe(0);
-    expect(second.out).toContain('Everything is already set up.');
+    expect(second.out).toContain('Formhaus is already set up in Claude Code, Codex and Cursor.');
     expect(second.out).not.toMatch(/\badded\b/);
     expect([box.read('.codex/config.toml'), box.read('.cursor/mcp.json'), box.read(SKILL)]).toEqual(before);
     expect(box.claudeCalls()).toEqual([CLAUDE_ADD]);
@@ -187,7 +189,8 @@ describe.skipIf(onWindows)('dry run', () => {
     const result = box.run('--dry-run');
     expect(result.code).toBe(0);
     expect(result.out).toContain('Dry run: nothing is written.');
-    expect(result.out).toMatch(/Cursor\s+MCP server\s+will add\s+~\/\.cursor\/mcp\.json/);
+    expect(result.out).toMatch(/✓ Cursor\s+will add MCP server/);
+    expect(box.run('--dry-run', '--verbose').out).toContain('      ~/.cursor/mcp.json');
     expect(box.claudeCalls()).toEqual([]);
     expect(box.exists('.codex/config.toml')).toBe(false);
     expect(box.exists(SKILL)).toBe(false);

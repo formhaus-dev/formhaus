@@ -130,10 +130,10 @@ describe.skipIf(onWindows)('backups', () => {
 
   it('mentions the backup only when this run created it', () => {
     box.write('.cursor/mcp.json', '{"theme":"dark"}');
-    expect(box.run().out).toContain('(backup: ~/.cursor/mcp.json.bak)');
+    expect(box.run().out).toContain('Config backups were saved as .bak.');
+    expect(box.run('--verbose').out).toContain('      backup: ~/.cursor/mcp.json.bak');
     box.write('.cursor/mcp.json', '{"theme":"light"}');
     const later = box.run().out;
-    expect(later).toContain('~/.cursor/mcp.json');
     expect(later).not.toContain('backup');
   });
 });
@@ -168,8 +168,8 @@ describe.skipIf(onWindows)('Codex refusals', () => {
     box.write('.codex/config.toml', toml);
     const result = box.run();
     expect(result.code).toBe(1);
-    expect(result.out).toContain(reason);
-    expect(result.out).toContain('Add the formhaus server by hand. The file was not changed.');
+    expect(result.text).toContain(reason);
+    expect(result.text).toContain('Add the formhaus server by hand. The file was not changed.');
     expectUnchanged(toml);
   });
 });
@@ -195,7 +195,7 @@ describe.skipIf(onWindows)('Codex existing servers', () => {
   ])('leaves a different server under %s unchanged', (_, toml) => {
     box.write('.codex/config.toml', toml);
     const result = box.run();
-    expect(result.out).toContain('different server, check it');
+    expect(result.out).toContain('another formhaus server is configured, check it');
     expectUnchanged(toml);
   });
 
