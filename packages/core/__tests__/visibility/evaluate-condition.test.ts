@@ -38,10 +38,9 @@ describe('list operators', () => {
     expect(evaluateCondition({ field: 'x', notContains: 'other' }, { x: [] })).toBe(true);
   });
 
-  it('treats a list of more than 1000 items as blank', () => {
+  it('checks a list of more than 1000 items that no field limits', () => {
     const x = Array.from({ length: 1001 }, () => 'other');
-    expect(evaluateCondition({ field: 'x', contains: 'other' }, { x })).toBe(false);
-    expect(evaluateCondition({ field: 'x', notContains: 'other' }, { x })).toBe(true);
-    expect(evaluateCondition({ field: 'x', contains: 'other' }, { x: x.slice(1) })).toBe(true);
+    expect(evaluateCondition({ field: 'x', contains: 'other' }, { x })).toBe(true);
+    expect(evaluateCondition({ field: 'x', notContains: 'other' }, { x })).toBe(false);
   });
 });
