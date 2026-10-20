@@ -132,6 +132,7 @@ const { errors } = validateSubmission(definition, req.body?.values, { messages: 
 - `pattern` rules run on untrusted input. Bound the execution time of the call, or keep patterns simple.
 - `pattern` regexes run synchronously, with no time limit, in the browser and in self-hosted servers. Avoid patterns prone to catastrophic backtracking. On Formhaus Cloud, server-side validation is time-bounded.
 - `validateSubmission()` does not limit the request body. Set a limit in your framework or proxy.
+- Submitted values and recalled answers are user input. Encode them for each output before use: see [Output safety](/guide/fields#output-safety).
 
 ## Check a definition
 

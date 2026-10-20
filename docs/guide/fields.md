@@ -562,6 +562,29 @@ A step can greet the user by the name asked on the first step:
 
 The answer is a text, a number or a list of option labels or file names. The error summary uses the same formatter.
 
+### Output safety
+
+Recalled answers are user input. Renderers draw them as plain text. Encode them for the output context wherever else you use them: `recallText()`, `recallStatic()`, `validateSubmission()` output and texts your app builds.
+
+| Output | Rule |
+| --- | --- |
+| HTML and email bodies | Escape HTML. Never insert as raw HTML |
+| Email subjects and headers | Strip CR and LF |
+| CSV and spreadsheets | Prefix a cell that starts with `=`, `+`, `-`, `@` or a tab with a single quote |
+| Slack and Telegram messages | Escape the markup characters of the platform |
+| URLs | Encode and validate before building a URL from recalled text |
+| AI agents and prompts | Treat as untrusted data, never as instructions |
+| Any store or send | Bound the length first |
+
+```ts
+import { recallText } from '@formhaus/core';
+
+const escapeHtml = (text: string): string =>
+  text.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+const html = `<p>${escapeHtml(recallText(definition, 'Thanks, {{name}}!', values))}</p>`;
+```
+
 ## Keys and element ids
 
 Submitted values use each field's key exactly as written. A key such as `contact.email` stays one flat key and is never split into nested objects. Errors from `validateSubmission()` and the `errors` prop use the same keys.
