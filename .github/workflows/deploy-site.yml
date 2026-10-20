@@ -22,7 +22,7 @@ jobs:
       url: https://formhaus.dev
 
     env:
-      SITE_HOST: 139.59.128.217
+      SITE_HOSTS: 159.89.88.125 146.190.255.76
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -52,7 +52,9 @@ jobs:
           printf '%s\n' "$SITE_DEPLOY_KEY" > ~/.ssh/site_deploy
           printf '%s\n' "$SITE_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/site_deploy ~/.ssh/known_hosts
-          tar -czf - -C docs/.vitepress/dist . | ssh -i ~/.ssh/site_deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o BatchMode=yes "deploy-site@$SITE_HOST" upload-site
+          for host in $SITE_HOSTS; do
+            tar -czf - -C docs/.vitepress/dist . | ssh -i ~/.ssh/site_deploy -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o BatchMode=yes "deploy-site@$host" upload-site
+          done
           rm -f ~/.ssh/site_deploy
 
       - name: Purge Cloudflare cache
