@@ -44,6 +44,5 @@ export const editorHeight = 480;
 export const entry = '/src/main.ts';
 export const deps: Record<string, string> = {
   ...vendoredVueDeps,
-  vuetify: '3.7.0',
-  '@mdi/font': '7.4.47',
+  vuetify: '3.13.6',
 };
