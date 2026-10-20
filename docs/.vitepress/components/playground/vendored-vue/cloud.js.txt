@@ -1,0 +1,267 @@
+import { Fragment, computed, createBlock, createCommentVNode, createElementBlock, createElementVNode, createVNode, defineComponent, h, mergeProps, normalizeClass, onBeforeUnmount, onMounted, openBlock, ref, renderList, renderSlot, shallowRef, toDisplayString, unref, useSlots, watch } from "vue";
+import { cloudStateFor, createCloudController, focusProblem } from "@formhaus/core/internal";
+import { FormActions, FormRenderer } from "@formhaus/vue";
+import { CloudError, CloudError as CloudError$1 } from "@formhaus/core/cloud";
+//#region src/cloud/CloudNotice.vue?vue&type=script&setup=true&lang.ts
+var _hoisted_1$1 = { key: 0 };
+//#endregion
+//#region src/cloud/CloudNotice.vue
+var CloudNotice_default = /* @__PURE__ */ defineComponent({
+	__name: "CloudNotice",
+	props: { notice: {} },
+	emits: ["action"],
+	setup(__props, { emit: __emit }) {
+		const emit = __emit;
+		const LABELS = {
+			retry: "Try again",
+			reload: "Reload page"
+		};
+		return (_ctx, _cache) => {
+			return __props.notice ? (openBlock(), createElementBlock("div", {
+				key: 0,
+				tabindex: "-1",
+				class: normalizeClass(["fh-form__notice", `fh-form__notice--${__props.notice.tone}`])
+			}, [
+				createElementVNode("p", null, toDisplayString(__props.notice.message), 1),
+				__props.notice.details.length > 0 ? (openBlock(), createElementBlock("ul", _hoisted_1$1, [(openBlock(true), createElementBlock(Fragment, null, renderList(__props.notice.details, (detail) => {
+					return openBlock(), createElementBlock("li", { key: detail }, toDisplayString(detail), 1);
+				}), 128))])) : createCommentVNode("", true),
+				__props.notice.action ? (openBlock(), createElementBlock("button", {
+					key: 1,
+					type: "button",
+					class: "fh-form-actions__button fh-form-actions__button--secondary",
+					onClick: _cache[0] || (_cache[0] = ($event) => emit("action", __props.notice.action))
+				}, toDisplayString(LABELS[__props.notice.action]), 1)) : createCommentVNode("", true)
+			], 2)) : createCommentVNode("", true);
+		};
+	}
+});
+//#endregion
+//#region src/cloud/useCloudForm.ts
+function useCloudForm(options) {
+	const state = shallowRef(cloudStateFor(options.initialForm()));
+	let controller;
+	function boot() {
+		controller?.dispose();
+		state.value = cloudStateFor(options.initialForm());
+		controller = createCloudController({
+			id: options.id(),
+			apiBase: options.apiBase(),
+			initialForm: options.initialForm(),
+			draftStore: options.draftStore(),
+			draftExclude: options.draftExclude(),
+			extraBody: options.extraBody,
+			challengeHost: options.challengeHost
+		}, {
+			onChange: (next) => {
+				state.value = next;
+			},
+			onSuccess: options.onSuccess,
+			onError: (error) => options.onError()?.(error)
+		});
+		controller.start();
+	}
+	onMounted(boot);
+	watch([options.id, options.apiBase], () => controller && boot());
+	onBeforeUnmount(() => controller?.dispose());
+	const submit = (values, skippedSteps) => controller.submit(values, skippedSteps);
+	const retry = () => controller.start();
+	const again = () => controller.again();
+	const saveDraft = (values) => controller?.saveDraft(values);
+	const warm = () => controller?.warm();
+	return {
+		state,
+		submit,
+		retry,
+		again,
+		saveDraft,
+		warm
+	};
+}
+//#endregion
+//#region src/cloud/FormhausForm.vue?vue&type=script&setup=true&lang.ts
+var _hoisted_1 = {
+	key: 0,
+	class: "fh-cloud"
+};
+var _hoisted_2 = {
+	role: "alert",
+	class: "fh-form__error"
+};
+var _hoisted_3 = {
+	key: 1,
+	class: "fh-cloud"
+};
+var _hoisted_4 = {
+	class: "fh-form",
+	"aria-busy": "true"
+};
+var _hoisted_5 = {
+	key: 2,
+	class: "fh-cloud"
+};
+var _hoisted_6 = {
+	role: "status",
+	class: "fh-form__success"
+};
+//#endregion
+//#region src/cloud/FormhausForm.vue
+var FormhausForm_default = /* @__PURE__ */ defineComponent({
+	__name: "FormhausForm",
+	props: {
+		id: {},
+		apiBase: {},
+		initialForm: {},
+		draftStore: {
+			type: [Object, Boolean],
+			default: void 0
+		},
+		draftExclude: {},
+		onBeforeStepChange: {},
+		onAfterStepChange: {},
+		onBeforeSubmit: {},
+		onAfterSubmit: {},
+		onWarning: {},
+		messages: {},
+		onError: {},
+		headingLevel: {},
+		initialValues: {},
+		keepValues: { type: Boolean },
+		validators: {},
+		onStepValidate: {},
+		lang: {},
+		formatRecall: {},
+		labels: {},
+		errorSummary: {
+			type: Boolean,
+			default: true
+		},
+		confirmRemove: {
+			type: Boolean,
+			default: true
+		},
+		stepErrorMarks: { type: Boolean },
+		loading: { type: Boolean },
+		components: {},
+		actionsComponent: {},
+		progressComponent: {},
+		optionsProviders: {}
+	},
+	emits: [
+		"success",
+		"fieldChange",
+		"formEvent"
+	],
+	setup(__props, { emit: __emit }) {
+		const props = __props;
+		const emit = __emit;
+		const root = ref(null);
+		const trap = ref(null);
+		const box = ref(null);
+		const hidden = {
+			position: "absolute",
+			width: "1px",
+			height: "1px",
+			overflow: "hidden",
+			clip: "rect(0 0 0 0)",
+			clipPath: "inset(50%)"
+		};
+		const slots = useSlots();
+		const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
+			id: () => props.id,
+			apiBase: () => props.apiBase,
+			initialForm: () => props.initialForm,
+			draftStore: () => props.draftStore,
+			draftExclude: () => props.draftExclude,
+			extraBody: () => ({ _fh_hp: trap.value?.value ?? "" }),
+			challengeHost: () => box.value,
+			onSuccess: (submission) => emit("success", submission),
+			onError: () => props.onError
+		});
+		const rendererProps = computed(() => {
+			const { id, apiBase, onError, initialValues, initialForm, draftStore, draftExclude, ...rest } = props;
+			return rest;
+		});
+		const ChallengeActions = (_, { attrs }) => [h("div", {
+			ref: box,
+			style: "display:contents"
+		}), h(props.actionsComponent ?? FormActions, attrs)];
+		ChallengeActions.inheritAttrs = false;
+		function handled() {}
+		function act(action) {
+			if (action === "reload") window.location.reload();
+			else root.value?.querySelector("form")?.requestSubmit();
+		}
+		watch(root, (element, _, onCleanup) => {
+			if (!element) return;
+			element.addEventListener("focusin", warm);
+			onCleanup(() => element.removeEventListener("focusin", warm));
+			if (element.contains(document.activeElement)) warm();
+		}, { flush: "post" });
+		let frame = 0;
+		watch(() => state.value.attempt, () => {
+			cancelAnimationFrame(frame);
+			frame = requestAnimationFrame(() => focusProblem(root.value, root.value?.querySelector(":scope > .fh-form__notice") ?? null));
+		}, { flush: "post" });
+		onBeforeUnmount(() => cancelAnimationFrame(frame));
+		watch(() => state.value.done, (done) => {
+			if (done && state.value.settings.redirectUrl && !slots.success) window.location.assign(state.value.settings.redirectUrl);
+		});
+		function onFieldChange(key, value, values) {
+			saveDraft(values);
+			emit("fieldChange", key, value, values);
+		}
+		return (_ctx, _cache) => {
+			return unref(state).loadError ? (openBlock(), createElementBlock("div", _hoisted_1, [createElementVNode("p", _hoisted_2, toDisplayString(unref(state).loadError.message), 1), unref(state).loadError instanceof unref(CloudError$1) && unref(state).loadError.retryable ? (openBlock(), createElementBlock("button", {
+				key: 0,
+				type: "button",
+				class: "fh-form-actions__button fh-form-actions__button--secondary",
+				onClick: _cache[0] || (_cache[0] = (...args) => unref(retry) && unref(retry)(...args))
+			}, " Try again ")) : createCommentVNode("", true)])) : !unref(state).definition ? (openBlock(), createElementBlock("div", _hoisted_3, [createElementVNode("div", _hoisted_4, [renderSlot(_ctx.$slots, "fallback")])])) : unref(state).done ? (openBlock(), createElementBlock("div", _hoisted_5, [renderSlot(_ctx.$slots, "success", {}, () => [createElementVNode("p", _hoisted_6, toDisplayString(unref(state).settings.successMessage ?? "Thank you. Your response was submitted."), 1)]), unref(state).settings.allowAnother ? (openBlock(), createElementBlock("button", {
+				key: 0,
+				type: "button",
+				class: "fh-form-actions__button fh-form-actions__button--secondary",
+				onClick: _cache[1] || (_cache[1] = (...args) => unref(again) && unref(again)(...args))
+			}, " Submit another response ")) : createCommentVNode("", true)])) : (openBlock(), createElementBlock("div", {
+				key: 3,
+				ref_key: "root",
+				ref: root,
+				class: "fh-cloud"
+			}, [
+				createElementVNode("input", {
+					ref_key: "trap",
+					ref: trap,
+					name: "_fh_hp",
+					tabindex: "-1",
+					autocomplete: "off",
+					"aria-hidden": "true",
+					style: hidden
+				}, null, 512),
+				createVNode(CloudNotice_default, {
+					notice: unref(state).notice,
+					onAction: act
+				}, null, 8, ["notice"]),
+				(openBlock(), createBlock(unref(FormRenderer), mergeProps(rendererProps.value, {
+					key: unref(state).revision,
+					definition: unref(state).definition,
+					"initial-values": unref(state).initialValues ?? __props.initialValues,
+					errors: unref(state).errors,
+					"on-submit": unref(submit),
+					"on-error": handled,
+					"actions-component": unref(state).challenge ? ChallengeActions : props.actionsComponent,
+					onFieldChange,
+					onFormEvent: _cache[2] || (_cache[2] = (event) => emit("formEvent", event))
+				}), null, 16, [
+					"definition",
+					"initial-values",
+					"errors",
+					"on-submit",
+					"actions-component"
+				]))
+			], 512));
+		};
+	}
+});
+//#endregion
+export { CloudError, FormhausForm_default as FormhausForm };
+
