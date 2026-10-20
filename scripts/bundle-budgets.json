@@ -4,7 +4,7 @@
   "core#FormEngine:production": 17769,
   "react": 9231,
   "react#useFormEngine:production": 1279,
-  "vue": 12657,
+  "vue": 12728,
   "vue#useFormEngine:production": 1321,
   "core/cloud": 3449,
   "core/internal": 12188,
@@ -12,7 +12,7 @@
   "core/fix": 15070,
   "react/cloud": 1659,
   "react/i18n": 221,
-  "vue/cloud": 2271,
+  "vue/cloud": 2286,
   "vue/i18n": 186,
   "core/style.css": 6590
 }

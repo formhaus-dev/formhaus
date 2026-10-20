@@ -87,6 +87,7 @@ jobs:
       - run: pnpm --filter @formhaus/core --filter @formhaus/react run test:resolve
 
       - run: pnpm check:require
+      - run: pnpm check:es-target
 
       - id: affected
         env:
