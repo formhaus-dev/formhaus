@@ -699,7 +699,7 @@ Fields hidden by conditions, on a skipped step or off the active path are absent
 
 Reopening a draft through `initialValues` starts without last values, so a hidden field the draft omits gets its `defaultValue` when it is shown.
 
-A `file` value in the browser is a `File`, or `null` after clearing. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference. A `file` value that is not a `File`, such as a string or a `file:` URL in the initial values, is a reference the app supplied. The built-in renderers do not show it, link to it or fetch it, the engine submits it as given, and the Cloud uploader sends it without an upload.
+A `file` value in the browser is a `File`, or `null` after clearing. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference. A `file` value that is not a `File`, such as a string or a `file:` URL in the initial values, is a reference the app supplied. The built-in renderers do not show it, link to it or fetch it, the engine submits it as given, and the Cloud uploader sends it without an upload. The fixtures `file-app-reference.json` in the corpus and in `scenarios/` pin this rule.
 
 ## Submit results
 
