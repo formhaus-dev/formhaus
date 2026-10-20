@@ -177,7 +177,7 @@ If you don't pass these props, the built-in components render as before. No brea
 
 ## Headless renderer
 
-`FormRenderer` imports the built-in native fields, actions and step progress. They stay in your bundle even when you replace all of them. If you map every field type you use and pass your own actions and progress components, use `HeadlessFormRenderer`. It takes the same props and events as `FormRenderer`, but it does not import any built-in component. This drops the built-in fields from your bundle.
+`FormRenderer` imports the built-in native fields, actions and step progress. They stay in your bundle even when you replace all of them. See [Choose a renderer](/guide/#choose-a-renderer) for the three paths and [Bundle size](/guide/bundle-size#rendering-paths) for their sizes. If you map every field type you use and pass your own actions and progress components, use `HeadlessFormRenderer`. It takes the same props and events as `FormRenderer`, but it does not import any built-in component. This drops the built-in fields from your bundle.
 
 ::: code-group
 ```vue [Vue]
