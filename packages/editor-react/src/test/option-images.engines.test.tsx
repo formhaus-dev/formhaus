@@ -40,7 +40,8 @@ const room: FormField = {
   options: ['sea', 'garden', 'city', 'loft'].map((value) => ({
     value,
     label: value,
-    image: 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="400" height="300"/%3E',
+    image:
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAEsAQAAAADFzNhvAAAAJklEQVR42u3BMQEAAADCoPVPbQlPoAAAAAAAAAAAAAAAAAAAgKcBO8QAAfyeO9sAAAAASUVORK5CYII=',
   })),
 };
 
