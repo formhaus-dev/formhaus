@@ -19,6 +19,7 @@ export type DefinitionIssueCode =
   | 'recall-syntax'
   | 'recall-sensitive-field'
   | 'recall-query-source'
+  | 'recall-untrusted-source'
   | 'condition-operator-count'
   | 'unknown-operator'
   | 'condition-value-mismatch'

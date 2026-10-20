@@ -64,7 +64,7 @@
   "devDependencies": {
     "ajv": "^8.20.0",
     "fast-check": "^4.10.2",
-    "style-dictionary": "4.4.0",
+    "style-dictionary": "5.4.4",
     "ts-json-schema-generator": "^2.9.0",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",

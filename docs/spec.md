@@ -947,6 +947,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |
 | `recall-sensitive-field` | warning | A `{{key}}` token for a key that is a `password` field on any route branch. It shows nothing |
 | `recall-query-source` | warning | A `{{key}}` token for a `hidden` field with a `query` source, whose text anyone can set in a link |
+| `recall-untrusted-source` | warning | A `{{key}}` token for a `hidden` field with a `referrer` or `pageTitle` source, whose text another site can set |
 | `missing-options` | warning | `select`, `radio` or `multiselect` without `options` or `optionsFrom` |
 | `default-not-in-options` | warning | A `defaultValue` that is not one of the `options` |
 | `unknown-field-type` | warning | A field type that looks like a typo of a built-in type, such as `txt`. A type with `-` or `:` is reported only when it spells a built-in type with separators, such as `multi-select` |

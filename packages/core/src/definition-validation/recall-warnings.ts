@@ -64,6 +64,16 @@ function keyWarnings(
             ),
           ]
         : []),
+      ...(fields.some(({ type, source }) => type === 'hidden' && (source === 'referrer' || source === 'pageTitle'))
+        ? [
+            warning(
+              'recall-untrusted-source',
+              path,
+              `${token} shows the referring page or the page title, which another site can set`,
+              'Recall it only where any text is safe to show',
+            ),
+          ]
+        : []),
     ];
   });
 }

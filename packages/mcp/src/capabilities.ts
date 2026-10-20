@@ -155,7 +155,7 @@ export const capabilities = {
       'Recall answers from earlier steps, such as a review step: "Check your answers: {{name}}, {{email}}, plan {{plan}}". A field on a later step or the field that holds the text is recall-forward-reference; an unknown key is unknown-recall-field.',
       'Option labels, action labels and messages show {{key}} as written. There are no expressions or formats: other content inside {{ }} shows as written and is recall-syntax. Write \\{{ for literal braces.',
       'An optional answer can be empty, so put each optional recall on its own line instead of joining answers with commas.',
-      'Recalling a password field is recall-sensitive-field. Recalling a hidden field with a query source is recall-query-source: anyone can set its text in a link.',
+      'Recalling a password field is recall-sensitive-field. Recalling a hidden field with a query source is recall-query-source: anyone can set its text in a link. Recalling a hidden field with a referrer or pageTitle source is recall-untrusted-source.',
       'Keep the {{key}} tokens in translations.',
     ],
   },

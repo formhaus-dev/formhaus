@@ -71,7 +71,9 @@ export function combinations(modifiers) {
 }
 
 export async function loadDictionary(sources) {
-  return new StyleDictionary(createConfig(sources)).getPlatformTokens('css');
+  const styleDictionary = new StyleDictionary(createConfig(sources));
+  const dictionary = await styleDictionary.getPlatformTokens('css');
+  return { ...dictionary, groups: styleDictionary.tokens };
 }
 
 const hexToRgb = (hex) => [1, 3, 5].map((i) => Number.parseInt(hex.slice(i, i + 2), 16) / 255);
