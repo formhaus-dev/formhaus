@@ -136,9 +136,11 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
   transition: color 0.25s;
 }
 
-.fh-footer__link:hover,
-.fh-footer__github:hover {
-  color: var(--vp-c-brand-1);
+@media (hover: hover) and (pointer: fine) {
+  .fh-footer__link:hover,
+  .fh-footer__github:hover {
+    color: var(--vp-c-brand-1);
+  }
 }
 
 .fh-footer__link:focus-visible,

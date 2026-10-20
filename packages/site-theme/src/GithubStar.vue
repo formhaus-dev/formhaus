@@ -51,8 +51,10 @@ const stars = computed<{ count: number; label: string } | null>(() => {
   border-color: #3f3f46;
 }
 
-.gh-star:hover {
-  background: var(--vp-c-bg-soft);
+@media (hover: hover) and (pointer: fine) {
+  .gh-star:hover {
+    background: var(--vp-c-bg-soft);
+  }
 }
 
 .gh-star__count {

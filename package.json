@@ -13,7 +13,7 @@
     "test:release": "pnpm fuzz && pnpm test:engines && pnpm bench",
     "typecheck": "pnpm -r --if-present run typecheck",
     "clean": "pnpm -r run clean",
-    "lint": "biome check . && stylelint \"**/*.css\" \"docs/.vitepress/**/*.css\"",
+    "lint": "biome check . && stylelint \"**/*.css\" \"docs/.vitepress/**/*.css\" && node scripts/check-hover.mjs packages/site-theme/src",
     "format": "biome format --write .",
     "lint:packages": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp --filter formhaus exec publint",
     "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp exec attw --pack --profile esm-only --exclude-entrypoints ./style.css ./server.iife.js && node scripts/check-consumer-types.mjs",
