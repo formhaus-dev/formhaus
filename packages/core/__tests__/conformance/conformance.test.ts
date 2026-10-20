@@ -79,6 +79,7 @@ describe('conformance corpus', () => {
       'recall-groups',
       'recall-inactive',
       'recall-limit',
+      'recall-no-reexpansion',
       'recall-sensitive',
       'recall-steps',
       'recall-syntax',
