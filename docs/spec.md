@@ -335,7 +335,7 @@ A group is a node with `type: "group"`. Its value is an array of items. Each ite
 | `helperText` | string | Text below the heading. |
 | `itemLabel` | string | Item heading. `{index}` is the item number, starting at 1. `{label}` is the group label. Default: the `itemLabel` [label](#message-and-label-catalogs). |
 | `addLabel`, `removeLabel` | string | Texts of the Add and Remove buttons. Defaults: the `addItem` and `removeItem` labels. |
-| `defaultItems` | integer | Number of items the group starts with, at most `maxLength`, or 100 without `maxLength`. |
+| `defaultItems` | integer | Number of items the group starts with, at most `maxLength`, or 100 without `maxLength`, and never more than 1000. |
 | `show`, `showAny` | [condition](#conditions)[] | Group visibility. |
 | `validation` | `required`, `minLength`, `maxLength`, their messages, `validator` | Item count rules. |
 | `fields` | [field](#fields)[], required | Fields of one item. |
@@ -348,13 +348,13 @@ Rules:
 - A condition or `matchField` of an item field MAY use the other fields of the same item, evaluated per item, and fields outside the group under the rules of field conditions. A condition, `matchField` or `optionsDependsOn` outside the group MUST NOT use item fields (`group-scope`). It MAY test the group itself, such as with `notEmpty`.
 - `required: true` means at least one item. `minLength` and `maxLength` count items, not characters, and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
 
-A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. Built-in renderers hide Add when the group has `maxLength` items, or 100 without `maxLength`, and hide Remove when it has `minLength` items, or 1 when `required`. `defaultItems` creates no more items than this limit: a group with `defaultItems: 1000000` and no `maxLength` starts with 100 items. The same limit applies on construction, `reset()`, Skip, `replaceDefinition()` and in `validateSubmission()`.
+A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. A group holds at most 1000 items, whatever its `maxLength`. Its item limit is `maxLength`, or 100 without `maxLength`, capped at 1000. Built-in renderers hide Add when the group has as many items as its limit, and hide Remove when it has `minLength` items, or 1 when `required`. `defaultItems` creates no more items than the limit: a group with `defaultItems: 1000000` and no `maxLength` starts with 100 items, and a group with `defaultItems` and `maxLength` both 10000000 starts with 1000 items. The same limit applies on construction, `reset()`, Skip, Add, `replaceDefinition()` and in `validateSubmission()`. A `maxLength` or `defaultItems` over 1000 is an `invalid-range` warning.
 
 An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed, and removing an item forgets its own.
 
 A hidden group is cleared like a field. A group that becomes visible again gets back its last items, with the same item ids, or else its [start value](#visibility).
 
-`validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength`, with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
+`validateSubmission()` rejects a group value with more items than `maxLength` with the `maxItems` message, and a value that is not an array of plain objects, or that has more items than its item limit (100 without `maxLength`, at most 1000), with the `value` message. It does so before checking any item and leaves the value out of the returned values. It drops unknown item keys, runs the type checks and rules of every visible item field, and reports item errors by [path](#error-paths).
 
 ### Error paths
 
@@ -930,7 +930,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
 | `duplicate-option-value` | error | An option value that an earlier option of the same field already uses |
-| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, `defaultItems` greater than `maxLength`, or `columns` outside 1 to 4. A warning for `defaultItems` greater than 100 on a group without `maxLength` |
+| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, `defaultItems` greater than `maxLength`, or `columns` outside 1 to 4. A warning for `defaultItems` greater than 100 on a group without `maxLength`, and for a group `maxLength` or `defaultItems` greater than 1000 |
 | `invalid-scale` | error | A `scale` or `rating` whose `min` or `max` is not an integer, or whose range has fewer than 2 or more than 11 points |
 | `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
