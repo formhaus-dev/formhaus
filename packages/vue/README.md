@@ -34,7 +34,7 @@ async function handleSubmit(values: Record<string, unknown>) {
 
 - Built-in field types, sections, repeatable groups and conditional visibility. See [fields](https://formhaus.dev/guide/fields).
 - [Multi-step forms](https://formhaus.dev/guide/steps) with lifecycle hooks, radio `autoAdvance`, async step validation and [branching routes](https://formhaus.dev/guide/steps#route-between-branches).
-- [Custom components](https://formhaus.dev/guide/custom-components) through the `components` prop, plus `HeadlessFormRenderer` to keep the built-in fields out of your bundle. Integrations: [Vuetify, Element Plus](https://formhaus.dev/guide/integrations/vuetify).
+- [Custom components](https://formhaus.dev/guide/custom-components) through the `components` prop, plus `HeadlessFormRenderer` to keep the built-in fields out of your bundle. Integrations: [Vuetify](https://formhaus.dev/guide/integrations/vuetify).
 - Dynamic select options with `optionsFrom` and `optionsProviders`. See [fields](https://formhaus.dev/guide/fields).
 - [Form events](https://formhaus.dev/guide/custom-components#form-events) through `@formEvent`, for analytics.
 - [Translations](https://formhaus.dev/guide/translations): `useLocalizedForm()` from `@formhaus/vue/i18n`.
