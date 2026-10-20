@@ -1,10 +1,10 @@
 # @formhaus/core
 
-## 1.0.0-rc.0
+## 1.0.0
 
 ### Major Changes
 
-- First 1.0 release candidate. No API changes from 0.22.0.
+- First stable release. No API changes from 0.22.0.
 - The public API and definition format 1.5 are stable: no breaking changes in 1.x.
 
 ## 0.22.0
