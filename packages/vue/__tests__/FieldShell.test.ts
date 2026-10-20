@@ -82,7 +82,7 @@ describe('FieldShell', () => {
 
     for (const container of [plain, picture]) {
       const legend = container.querySelector('legend')!;
-      expect(legend.textContent).toBe('What do you need? *');
+      expect(legend.textContent).toContain('required');
       expect(legend.querySelector('.fh-field__required')!.getAttribute('aria-hidden')).toBe('true');
     }
     const frame = (container: Element) => [
@@ -97,5 +97,20 @@ describe('FieldShell', () => {
     const field: FormField = { key: 'kind', type: 'radio', label: 'Kind', options };
     const { container } = render(RadioField, { props: { field, value: '' } });
     expect(container.querySelector('legend')!.textContent).toBe('Kind');
+  });
+
+  it.each([
+    ['radio', RadioField, ''],
+    ['multiselect', MultiselectField, []],
+  ] as const)('names a required %s group as required', (type, Component, value) => {
+    const field: FormField = { key: 'kind', type, label: 'Kind', validation: { required: true }, options };
+    const { getByRole } = render(Component as never, { props: { field, value } } as never);
+    expect(getByRole('group', { name: 'Kind required' })).toBeTruthy();
+  });
+
+  it('leaves an optional group name without the required word', () => {
+    const field: FormField = { key: 'kind', type: 'radio', label: 'Kind', options };
+    const { getByRole } = render(RadioField, { props: { field, value: '' } } as never);
+    expect(getByRole('group', { name: 'Kind' })).toBeTruthy();
   });
 });
