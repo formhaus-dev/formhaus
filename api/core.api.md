@@ -8,6 +8,9 @@
 export type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>;
 
 // @public (undocumented)
+export type AfterSubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>;
+
+// @public (undocumented)
 export type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>;
 
 // @public (undocumented)
@@ -60,7 +63,7 @@ export interface DefinitionIssue {
 }
 
 // @public (undocumented)
-export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'unknown-property' | 'empty-label' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'invalid-range' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-unbound-slot' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length';
+export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length';
 
 // @public (undocumented)
 export function evaluateCondition(condition: ShowCondition, values: Record<string, unknown>): boolean;
@@ -147,7 +150,40 @@ export interface FormAction {
 }
 
 // @public (undocumented)
-export type FormAnalyticsEvent = FormEvent;
+export interface FormActionsView {
+    // (undocumented)
+    backAction?: FormAction | false;
+    // (undocumented)
+    backLabel?: string;
+    // (undocumented)
+    cancelAction?: FormAction;
+    // (undocumented)
+    isFirstStep: boolean;
+    // (undocumented)
+    isLastStep: boolean;
+    // (undocumented)
+    isMultiStep: boolean;
+    // (undocumented)
+    loading?: boolean;
+    // (undocumented)
+    nextAction?: FormAction | false;
+    // (undocumented)
+    primaryLabel?: string;
+    // (undocumented)
+    showBack?: boolean;
+    // (undocumented)
+    showPrimary?: boolean;
+    // (undocumented)
+    showSkip?: boolean;
+    // (undocumented)
+    skipAction?: FormAction;
+    // (undocumented)
+    skipLabel?: string;
+    // (undocumented)
+    submitAction?: FormAction;
+    // (undocumented)
+    values?: Record<string, unknown>;
+}
 
 // @public (undocumented)
 export const FORMAT_VERSION = "1.5";
@@ -300,7 +336,7 @@ export interface FormEngineOptions {
     // (undocumented)
     onAfterStepChange?: AfterStepChangeFn;
     // (undocumented)
-    onAfterSubmit?: SubmitFn;
+    onAfterSubmit?: AfterSubmitFn;
     // (undocumented)
     onBeforeStepChange?: BeforeStepChangeFn;
     // (undocumented)
@@ -352,7 +388,8 @@ export type FormEvent = {
     type: 'form_submit_succeeded';
 } | {
     type: 'form_submit_failed';
-    reason: 'rejected' | 'error';
+    reason: 'validation' | 'rejected' | 'error';
+    status?: number;
 } | {
     type: 'form_reset';
 };
@@ -469,6 +506,8 @@ export interface FormRendererHandle {
     getValues(): Record<string, unknown>;
     // (undocumented)
     setValue(key: string, value: unknown): void;
+    // (undocumented)
+    readonly values: Readonly<Record<string, unknown>>;
 }
 
 // @public (undocumented)
@@ -520,7 +559,7 @@ export interface FormStep {
 }
 
 // @public (undocumented)
-export function getDefaultMessage(rule: ValidationRule | MessageKey, params?: Record<string, unknown>): string;
+export function getDefaultMessage(rule: MessageKey, params?: Record<string, unknown>): string;
 
 // @public (undocumented)
 export interface GroupI18n {
@@ -681,7 +720,7 @@ export type MessageSource = MessageCatalog | MessageFn;
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
 // @public (undocumented)
-export function parseDefinition(input: unknown, _options?: CheckDefinitionOptions): FormDefinition;
+export function parseDefinition(input: unknown): FormDefinition;
 
 // @public (undocumented)
 export type RecallFormatFn = (value: string | number | string[], field: FormField, locale: string) => string;
@@ -794,9 +833,6 @@ export interface StepRoute {
 export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
 
 // @public (undocumented)
-export type SubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>;
-
-// @public (undocumented)
 export type SubmitHandler = (values: Record<string, unknown>, skippedSteps: string[]) => void | SubmitResult | Promise<void | SubmitResult>;
 
 // @public (undocumented)
@@ -809,16 +845,21 @@ export type SubmitResult = {
 };
 
 // @public (undocumented)
-export function validateDefinition(input: unknown): string[];
+export function validateFields(fields: FormNode[], values: Record<string, unknown>, options?: ValidateOptions): Record<string, string>;
 
 // @public (undocumented)
-export function validateFields(fields: FormNode[], values: Record<string, unknown>, validators?: Record<string, ValidatorFn>, messages?: MessageSource): Record<string, string>;
+export function validateFieldValue(field: FormField, input: unknown, allValues: Record<string, unknown>, input2?: ValidateOptions): string | null;
 
 // @public (undocumented)
-export function validateFieldValue(field: FormField, input: unknown, allValues: Record<string, unknown>, validators?: Record<string, ValidatorFn>, messages?: MessageSource): string | null;
+export interface ValidateOptions {
+    // (undocumented)
+    messages?: MessageSource;
+    // (undocumented)
+    validators?: Record<string, ValidatorFn>;
+}
 
 // @public (undocumented)
-export function validateStep(step: FormStep, values: Record<string, unknown>, validators?: Record<string, ValidatorFn>, messages?: MessageSource): Record<string, string>;
+export function validateStep(step: FormStep, values: Record<string, unknown>, options?: ValidateOptions): Record<string, string>;
 
 // @public (undocumented)
 export interface ValidationI18n {
@@ -837,9 +878,6 @@ export interface ValidationI18n {
     // (undocumented)
     required?: string;
 }
-
-// @public (undocumented)
-export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
 
 // @public (undocumented)
 export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) => string | null;

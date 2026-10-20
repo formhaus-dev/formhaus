@@ -5,6 +5,7 @@
 ```ts
 
 import { AfterStepChangeFn } from '@formhaus/core';
+import { AfterSubmitFn } from '@formhaus/core';
 import { BeforeStepChangeFn } from '@formhaus/core';
 import { BeforeSubmitFn } from '@formhaus/core';
 import { Component } from 'vue';
@@ -18,8 +19,7 @@ import { DefinitionIssue } from '@formhaus/core';
 import { ExtractPropTypes } from 'vue';
 import { FieldType } from '@formhaus/core';
 import { FormAction } from '@formhaus/core';
-import { FormActionsView } from '@formhaus/core/internal';
-import { FormAnalyticsEvent } from '@formhaus/core';
+import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEngine } from '@formhaus/core';
 import { FormEngineOptions } from '@formhaus/core';
@@ -27,7 +27,7 @@ import { FormEvent } from '@formhaus/core';
 import { FormField } from '@formhaus/core';
 import { FormGroup } from '@formhaus/core';
 import { FormNode } from '@formhaus/core';
-import { FormRendererHandle as FormRendererHandle_2 } from '@formhaus/core';
+import { FormRendererHandle } from '@formhaus/core';
 import { FormSection } from '@formhaus/core';
 import { FormStep } from '@formhaus/core';
 import { GroupItemView } from '@formhaus/core';
@@ -42,7 +42,6 @@ import { RecallFormatFn } from '@formhaus/core';
 import { SectionView } from '@formhaus/core';
 import { ShallowRef } from 'vue';
 import { StepValidateFn } from '@formhaus/core';
-import { SubmitFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
@@ -113,7 +112,47 @@ export const DefaultGroupItem: typeof __VLS_export_7;
 export const DefaultSection: typeof __VLS_export_8;
 
 // @public (undocumented)
+export const fieldComponentEmits: {
+    'update:modelValue': (_value: unknown) => boolean;
+    commit: (_value: unknown) => boolean;
+    blur: () => boolean;
+    focus: () => boolean;
+};
+
+// @public (undocumented)
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
+
+// @public (undocumented)
+export interface FieldComponentProps {
+    // (undocumented)
+    disabled?: boolean;
+    // (undocumented)
+    error?: string;
+    // (undocumented)
+    field: FormField;
+    // (undocumented)
+    id?: string;
+    // (undocumented)
+    loading?: boolean;
+    // (undocumented)
+    modelValue: unknown;
+}
+
+// @public (undocumented)
+export const fieldComponentProps: {
+    id: StringConstructor;
+    field: {
+        type: PropType<FormField>;
+        required: true;
+    };
+    modelValue: {
+        type: PropType<unknown>;
+        required: true;
+    };
+    error: StringConstructor;
+    loading: BooleanConstructor;
+    disabled: BooleanConstructor;
+};
 
 // @public (undocumented)
 export const FileField: typeof __VLS_export_17;
@@ -125,7 +164,7 @@ export const FormActions: typeof __VLS_export_4;
 export const formActionsEmits: {
     submit: () => boolean;
     next: () => boolean;
-    prev: () => boolean;
+    back: () => boolean;
     cancel: () => boolean;
     skip: () => boolean;
     primary: () => boolean;
@@ -174,50 +213,10 @@ export const formActionsProps: {
 };
 
 // @public (undocumented)
-export const formFieldEmits: {
-    'update:modelValue': (_value: unknown) => boolean;
-    commit: (_value: unknown) => boolean;
-    blur: () => boolean;
-    focus: () => boolean;
-};
-
-// @public (undocumented)
-export interface FormFieldProps {
-    // (undocumented)
-    disabled?: boolean;
-    // (undocumented)
-    error?: string;
-    // (undocumented)
-    field: FormField;
-    // (undocumented)
-    id?: string;
-    // (undocumented)
-    loading?: boolean;
-    // (undocumented)
-    modelValue: unknown;
-}
-
-// @public (undocumented)
-export const formFieldProps: {
-    id: StringConstructor;
-    field: {
-        type: PropType<FormField>;
-        required: true;
-    };
-    modelValue: {
-        type: PropType<unknown>;
-        required: true;
-    };
-    error: StringConstructor;
-    loading: BooleanConstructor;
-    disabled: BooleanConstructor;
-};
-
-// @public (undocumented)
 export const FormhausField: typeof __VLS_export_3;
 
 // @public (undocumented)
-export interface FormhausFieldProps extends FormFieldProps {
+export interface FormhausFieldProps extends FieldComponentProps {
     // (undocumented)
     components?: FieldComponentMap;
 }
@@ -235,15 +234,9 @@ export interface FormRendererEmits {
     (e: 'valuesChange', values: Readonly<Record<string, unknown>>): void;
     // (undocumented)
     (e: 'formEvent', event: FormEvent): void;
-    // (undocumented)
-    (e: 'analyticsEvent', event: FormAnalyticsEvent): void;
 }
 
-// @public (undocumented)
-export interface FormRendererHandle extends FormRendererHandle_2 {
-    // (undocumented)
-    readonly values: Readonly<Record<string, unknown>>;
-}
+export { FormRendererHandle }
 
 // @public (undocumented)
 export interface FormRendererProps {
@@ -278,7 +271,7 @@ export interface FormRendererProps {
     // (undocumented)
     onAfterStepChange?: Callback<AfterStepChangeFn>;
     // (undocumented)
-    onAfterSubmit?: Callback<SubmitFn>;
+    onAfterSubmit?: Callback<AfterSubmitFn>;
     // (undocumented)
     onBeforeStepChange?: Callback<BeforeStepChangeFn>;
     // (undocumented)
@@ -297,8 +290,6 @@ export interface FormRendererProps {
     progressComponent?: Component;
     // (undocumented)
     stepErrorMarks?: boolean;
-    // (undocumented)
-    submitHandler?: SubmitHandler;
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }
