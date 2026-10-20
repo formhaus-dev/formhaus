@@ -1,5 +1,29 @@
 # @formhaus/vue
 
+## 0.22.0
+
+### Minor Changes
+
+- Upgrade guide: [Migrate to 0.22](https://formhaus.dev/migrate/0.22).
+- **Breaking:** `submitHandler` is removed. Use `@submit`.
+- **Breaking:** `@analytics-event` is removed from `FormRenderer`, `HeadlessFormRenderer` and `FormhausForm`. Use `@form-event`.
+- **Breaking:** `FormFieldProps` is renamed to `FieldComponentProps`.
+- **Breaking:** `formFieldProps` and `formFieldEmits` are renamed to `fieldComponentProps` and `fieldComponentEmits`.
+- **Breaking:** a custom actions component emits `back` instead of `prev`.
+- `FormRendererHandle` is the `@formhaus/core` type, which now has `values` and `goToStep()`.
+- The `success` event of `FormhausForm` is typed as `CloudSubmission` and includes `ending`.
+- `FormhausForm` asks before removing a group item with answers, like `FormRenderer`.
+- **Breaking:** `errorSummary` is on by default. Pass `errorSummary={false}` in React or `:error-summary="false"` in Vue to hide the summary.
+- With two or more errors, focus moves to the error summary.
+- **Breaking:** `draftStore` defaults to a `sessionStorage` draft in `FormhausForm`. The draft never holds `password`, `file` or `hidden` values and is deleted after a successful submission. Pass `draftStore={false}` to turn it off.
+- New `draftExclude` prop on `FormhausForm` lists field keys to leave out of the draft.
+
+### Patch Changes
+
+- `verification_failed` and `verification_timeout` errors now have `action: 'retry'` and `retryable: true`, to match their message. `FormhausForm` shows a "Try again" button for them that runs the bot check again.
+- `@formhaus/vue` is built for ES2020, like `@formhaus/core` and `@formhaus/react`. Earlier builds used `||=` and failed to parse in Safari 13 and Chrome 84.
+- Requires `@formhaus/core` 0.22.0.
+
 ## 0.21.2
 
 ### Patch Changes

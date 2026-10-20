@@ -1,5 +1,26 @@
 # @formhaus/react
 
+## 0.22.0
+
+### Minor Changes
+
+- Upgrade guide: [Migrate to 0.22](https://formhaus.dev/migrate/0.22).
+- **Breaking:** `onAnalyticsEvent` is removed. Use `onFormEvent`.
+- **Breaking:** `onPrev` in `FormActionsProps` is renamed to `onBack`.
+- **Breaking:** `ItemComponent` in `GroupComponentProps` is renamed to `itemComponent`.
+- **Breaking:** `useLocalizedForm(definition, source, { key })` replaces the `deps` argument. A new `translate` function no longer rebuilds the form; the definition, `lang`, `prefix`, the overlay or `key` do.
+- New `LocalizedFormOptions` type.
+- The renderer handle has a `values` property with the current values and `goToStep()`.
+- **Breaking:** `errorSummary` is on by default. Pass `errorSummary={false}` in React or `:error-summary="false"` in Vue to hide the summary.
+- With two or more errors, focus moves to the error summary.
+- **Breaking:** `draftStore` defaults to a `sessionStorage` draft in `FormhausForm`. The draft never holds `password`, `file` or `hidden` values and is deleted after a successful submission. Pass `draftStore={false}` to turn it off.
+- New `draftExclude` prop on `FormhausForm` lists field keys to leave out of the draft.
+
+### Patch Changes
+
+- `verification_failed` and `verification_timeout` errors now have `action: 'retry'` and `retryable: true`, to match their message. `FormhausForm` shows a "Try again" button for them that runs the bot check again.
+- Requires `@formhaus/core` 0.22.0.
+
 ## 0.21.2
 
 ### Patch Changes
