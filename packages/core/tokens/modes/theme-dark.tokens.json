@@ -24,12 +24,20 @@
     },
     "input": {
       "border": {
-        "$value": "{palette.graphite.500}",
-        "$description": "Rest border of text inputs, textarea, select, date and time, file fields, scale boxes and the switch track. At least 3:1 against color.bg.default."
+        "$value": "{palette.slate.750}",
+        "$description": "Rest border of text inputs, textarea, select, date and time, file fields, scale boxes and the switch track. About 2:1 against color.bg.default."
       },
       "border-hover": {
+        "$value": "{palette.slate.650}",
+        "$description": "Hover border of the controls that use color.input.border. About 3:1 against color.bg.default."
+      },
+      "border-strong": {
+        "$value": "{palette.graphite.500}",
+        "$description": "Input border under increased contrast. At least 3:1 against color.bg.default."
+      },
+      "border-strong-hover": {
         "$value": "{palette.graphite.350}",
-        "$description": "Hover border of the controls that use color.input.border."
+        "$description": "Input hover border under increased contrast."
       }
     },
     "control": {
