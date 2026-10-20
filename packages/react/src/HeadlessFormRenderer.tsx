@@ -78,6 +78,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       () => ({
         setValue: (key, value) => engine.setValue(key, value),
         getValues: () => ({ ...engine.values }),
+        goToStep: (stepId) => engine.goToStep(stepId),
         get values() {
           return engine.values;
         },

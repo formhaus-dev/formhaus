@@ -113,6 +113,7 @@ const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, 
 defineExpose({
   setValue: (key: string, value: unknown) => form.engine.setValue(key, value),
   getValues: () => ({ ...form.engine.values }),
+  goToStep: (stepId: string) => form.engine.goToStep(stepId),
   values,
 });
 

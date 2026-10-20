@@ -22,6 +22,7 @@ const bind = (instance: unknown) => {
 defineExpose({
   setValue: (key: string, value: unknown) => inner?.setValue(key, value),
   getValues: () => inner?.getValues() ?? {},
+  goToStep: (stepId: string) => inner!.goToStep(stepId),
   values,
 });
 </script>
