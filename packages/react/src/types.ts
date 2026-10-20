@@ -2,6 +2,7 @@ import type {
   ConfirmDialogView,
   DefaultFieldType,
   FieldType,
+  FormActionsView,
   FormDefinition,
   FormEngineOptions,
   FormRendererHandle,
@@ -14,7 +15,6 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { FormActionsView } from '@formhaus/core/internal';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
 export type { FormRendererHandle, OptionsProvider };

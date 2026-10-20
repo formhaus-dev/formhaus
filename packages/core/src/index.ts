@@ -19,6 +19,7 @@ export type {
   SectionView,
   GroupI18n,
   ConfirmDialogView,
+  FormActionsView,
   GroupItemView,
   GroupView,
   GroupValidation,

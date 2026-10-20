@@ -48,6 +48,8 @@ engine.getSubmitValues();
 | `@formhaus/core/style.css` | Optional baseline styles with `--fh-*` theme tokens |
 | `@formhaus/core/schema.json` | JSON Schema of the definition |
 
+`@formhaus/core/internal` holds code shared by `@formhaus/react` and `@formhaus/vue`. It is not a public API and has no semver guarantee: any release can change it. Do not import it.
+
 ## Features
 
 - Field types, validation rules, `show` / `showAny` conditions, sections and [repeatable groups](https://formhaus.dev/guide/groups). See [fields](https://formhaus.dev/guide/fields) and [validation](https://formhaus.dev/guide/validation).

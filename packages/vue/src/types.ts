@@ -6,6 +6,7 @@ import type {
   DefinitionIssue,
   FieldType,
   FormEvent,
+  FormActionsView,
   FormDefinition,
   FormField,
   FormRendererHandle,
@@ -22,7 +23,6 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { FormActionsView } from '@formhaus/core/internal';
 import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;

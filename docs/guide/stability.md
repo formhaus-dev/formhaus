@@ -18,7 +18,7 @@ From 1.0, a breaking change to these parts needs a major version:
 
 Not covered:
 
-- `@formhaus/core/internal`.
+- `@formhaus/core/internal`. It is the shared code of `@formhaus/react` and `@formhaus/vue`, not a public API: any release can change or remove its exports. The adapters pin `@formhaus/core` to the same minor version, such as `^0.22.0`, so they always load the internal code they were built with. Public types never reference it.
 - The editor, builder and Figma plugin.
 - Warning and error message texts, fix titles and patches.
 - DOM structure and CSS class names.
@@ -29,7 +29,7 @@ Before 1.0, a minor version can break these parts and lists each break in the [c
 
 0.22 removed the APIs deprecated in 0.x. See [Migrate to 0.22](/migrate/0.22).
 
-Two rules keep forms stable across minor versions:
+Three rules keep forms stable across minor versions:
 
 - Custom field types named with `-` or `:`, such as `x-rating`, never become built-in types. See [Custom field types](/guide/fields#custom-field-types).
 - `initialValues` is read when the form is created, and a new `definition` object creates a new form. See [Definition and initial values](/guide/#definition-and-initial-values).
