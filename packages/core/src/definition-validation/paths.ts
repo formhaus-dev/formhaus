@@ -14,9 +14,13 @@ function successors(steps: FormStep[], indexes: Map<string, number>, from: numbe
   return from + 1 < steps.length ? [...next, from + 1] : next;
 }
 
-export function reachableSteps(steps: FormStep[]): Set<number>[] {
+export function reachableSteps(steps: FormStep[]): (start: number) => Set<number> | undefined {
   const indexes = new Map(steps.map((step, index) => [step.id, index]));
-  return steps.map((_, start) => {
+  const memo = new Map<number, Set<number>>();
+  return (start) => {
+    if (!steps[start]) return undefined;
+    const known = memo.get(start);
+    if (known) return known;
     const seen = new Set<number>();
     const queue = successors(steps, indexes, start);
     while (queue.length) {
@@ -26,6 +30,7 @@ export function reachableSteps(steps: FormStep[]): Set<number>[] {
       queue.push(...successors(steps, indexes, index));
       if (conditional(steps[index]) && index + 1 < steps.length) queue.push(index + 1);
     }
+    memo.set(start, seen);
     return seen;
-  });
+  };
 }
