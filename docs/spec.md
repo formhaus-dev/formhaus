@@ -749,6 +749,27 @@ Writing the same value again keeps the error. While a client rule fails on a fie
 - The built-in renderers disable fields while a submission runs. When the engine is driven directly and a value changes during the request, a success still runs `onAfterSubmit` with the values that were sent. A rejection skips the errors of fields whose value changed after the request was sent.
 - The engine does not abort a request. A handler that needs to abort uses its own `AbortController`.
 
+### Form events
+
+After `start()`, the engine reports these sequences through `onFormEvent`. `?` marks an event that fires only in that case, `*` one that fires once per field.
+
+| Action | Events in order |
+|---|---|
+| Continue that passes | `step_completed` for the current step, `step_viewed` for the next |
+| Continue that fails | `field_error*` |
+| Back | `step_viewed` |
+| Skip on a step before the last | `step_skipped`, `step_viewed` |
+| Submit that fails validation | `form_submit_failed` with `reason: 'validation'`, `field_error*` |
+| Submit with a successful handler | `step_skipped?` for Skip on the last step, `form_submitted`, `form_submit_succeeded` |
+| Submit with a rejection | `form_submitted`, `form_submit_failed` with `reason: 'rejected'`, `field_error*` for the rejected fields |
+| Submit with a handler that throws | `form_submitted`, `form_submit_failed` with `reason: 'error'` |
+
+The last step never reports `step_completed`: `form_submitted` closes it. A funnel counts the users who left on the last step as `step_viewed` for it without `form_submitted`. `onBeforeSubmit` returning `false` reports nothing.
+
+For `reason: 'error'`, `status` is the numeric `status` of the thrown error when it has one. `CloudError` sets it: `0` without a response, such as a network failure, otherwise the HTTP status.
+
+`form_submitted` fires after `onBeforeSubmit` and right before the handler runs. `form_submit_succeeded` fires before `onAfterSubmit` runs. New event types and new event fields are additive: a minor version can add them, so handle unknown types in a `default` branch.
+
 ## Translations
 
 A definition holds its texts in one language, the source language. Catalogs, translation keys and overlays change texts only. They never change fields, rules, routes or the submit payload.

@@ -295,7 +295,7 @@ Events emitted:
 |-------|------|---------|
 | `form_viewed` | The form is shown. Once per engine: a remount or a new definition reports it again | |
 | `step_viewed` | A step becomes active: on first show and after every step change | `stepId`, `stepIndex` |
-| `step_completed` | User advances past a step | `stepId` |
+| `step_completed` | User advances past a step. The last step reports `form_submitted` instead | `stepId` |
 | `step_skipped` | User skips a step | `stepId` |
 | `field_focused` | User focuses a field | `fieldKey` |
 | `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
@@ -304,10 +304,10 @@ Events emitted:
 | `field_error` | Step validation, form validation or the submit handler fails with field errors | `fieldKey`, `error` |
 | `form_submitted` | Validation and `onBeforeSubmit` pass, right before the submit handler runs | `fieldCount` |
 | `form_submit_succeeded` | The submit handler resolves without `{ ok: false }` | |
-| `form_submit_failed` | The submit handler returns `{ ok: false }` or throws | `reason`: `'rejected'` or `'error'` |
+| `form_submit_failed` | Submit fails validation, or the submit handler returns `{ ok: false }` or throws | `reason`: `'validation'`, `'rejected'` or `'error'`. `status` for `'error'` when the thrown error has a numeric `status`, such as `CloudError` |
 | `form_reset` | `engine.reset()` runs after the form is shown | |
 
-Events carry step ids and field keys, never step titles or labels with [recalled answers](/guide/fields#answer-recall). Group item fields report their path as `fieldKey`, such as `people.0.name`. `field_shown` and `field_hidden` do not fire for step changes, for added or removed group items, or for fields without a condition. A reset during a pending submit is still followed by that submit's `form_submit_succeeded` or `form_submit_failed`. An error thrown by the handler does not stop the form. It is rethrown in a microtask. All events are optional. If you don't pass a handler, nothing fires. The event type is `FormEvent`.
+The order of events is in the [specification](/spec#form-events). Events carry step ids and field keys, never step titles or labels with [recalled answers](/guide/fields#answer-recall). Group item fields report their path as `fieldKey`, such as `people.0.name`. `field_shown` and `field_hidden` do not fire for step changes, for added or removed group items, or for fields without a condition. A reset during a pending submit is still followed by that submit's `form_submit_succeeded` or `form_submit_failed`. An error thrown by the handler does not stop the form. It is rethrown in a microtask. All events are optional. If you don't pass a handler, nothing fires. The event type is `FormEvent`.
 
 `FormEngine` reports the same events, except `field_focused` and `field_blurred`, through the `onFormEvent` option. See [form events](/api/form-engine#form-events).
 

@@ -10,5 +10,5 @@ export type FormEvent =
   | { type: 'step_skipped'; stepId: string }
   | { type: 'form_submitted'; fieldCount: number }
   | { type: 'form_submit_succeeded' }
-  | { type: 'form_submit_failed'; reason: 'rejected' | 'error' }
+  | { type: 'form_submit_failed'; reason: 'validation' | 'rejected' | 'error'; status?: number }
   | { type: 'form_reset' };
