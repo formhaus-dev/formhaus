@@ -32,6 +32,16 @@ pnpm test     # test all packages (core + figma + react + vue)
 
 CI runs on pushes to `main` and on PRs targeting `main`; build and test must pass. A stacked PR based on another branch gets no CI until it is retargeted to `main`.
 
+PR checks stay fast and deterministic: tests count reads, renders and calls, never seconds. Long runs live outside PR CI:
+
+- `pnpm fuzz`: the core property suites at full size (500 lifecycle runs per form, 2000 model runs, 3000 path runs). PR CI runs 50, 200 and 300. `FORMHAUS_FUZZ_SEED` replays a lifecycle seed.
+- `pnpm test:engines`: the editor layout tests in Chromium, Firefox and WebKit. PR CI runs them in Chromium only. Needs `pnpm --filter @formhaus/editor-react exec playwright install chromium firefox webkit`.
+- `pnpm bench`: times `validateSubmission` and `checkDefinition` on oversized input (100,000 group items, 250,000-item lists, 120,000-character patterns). It prints a table and asserts nothing.
+
+The Full checks workflow runs all three every night and on demand from GitHub Actions.
+
+Before a release, run `pnpm build && pnpm test:release`, or start the Full checks workflow and wait for it to pass.
+
 ## Run docs locally
 
 ```bash
