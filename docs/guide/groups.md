@@ -210,7 +210,7 @@ engine.removeItem('participants', 0);
 
 `validateSubmission()` checks groups too:
 
-- The value must be an array of plain objects. More than `maxLength` items, and more than 100, fails with the `value` message.
+- The value must be an array of plain objects. More than `maxLength` items fails with the `maxItems` message. Without `maxLength`, more than 100 items fails with the `value` message.
 - Unknown item keys are dropped.
 - Every visible item field gets its type check and rules. Errors come back by path.
 
