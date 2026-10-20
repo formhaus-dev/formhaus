@@ -1,6 +1,6 @@
 import type { FormField } from '@formhaus/core';
 import type { ReactNode } from 'react';
-import { FieldLabel } from './FieldLabel';
+import { FieldLabel, RequiredMark } from './FieldLabel';
 import { describedBy } from './fieldProps';
 
 interface FieldShellProps {
@@ -28,7 +28,12 @@ export function FieldShell({ id, field, error, variant, children }: FieldShellPr
       aria-invalid={group ? !!error || undefined : undefined}
       aria-describedby={group ? describedBy(field, id, error) : undefined}
     >
-      {group && field.label && <legend className="fh-field__label">{field.label}</legend>}
+      {group && field.label && (
+        <legend className="fh-field__label">
+          {field.label}
+          <RequiredMark field={field} />
+        </legend>
+      )}
       {!variant && <FieldLabel field={field} inputId={id} />}
       {!inline && helper}
       {variant ? (

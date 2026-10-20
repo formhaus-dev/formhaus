@@ -5,16 +5,20 @@ interface FieldLabelProps {
   inputId: string;
 }
 
+export function RequiredMark({ field }: { field: FormField }) {
+  return field.validation?.required ? (
+    <span className="fh-field__required" aria-hidden="true">
+      {' *'}
+    </span>
+  ) : null;
+}
+
 export function FieldLabel({ field, inputId }: FieldLabelProps) {
   if (!field.label) return null;
   return (
     <label className="fh-field__label" htmlFor={inputId}>
       {field.label}
-      {field.validation?.required && (
-        <span className="fh-field__required" aria-hidden="true">
-          {' *'}
-        </span>
-      )}
+      <RequiredMark field={field} />
     </label>
   );
 }
