@@ -196,7 +196,7 @@ An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors
 
 An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host. The image host sees the respondent's IP address. The built-in renderers send no `Referer` header with option images. An `image` that does not start with `https:` or `data:image/` is an `unsafe-image-url` warning. The built-in renderers draw no image for a URL with a scheme other than `https:`, `http:`, `blob:` or a png, jpeg, webp or gif `data:image/`, or with credentials before the host. Relative URLs are drawn. Renderers SHOULD bound the download size and decoding cost of an option image. The web renderers rely on the browser's limits. The native ports fetch at most 10 MB per image and draw no image larger than 4096 pixels on a side.
 
-`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field whose parent container has `layout: "matrix"`. Each card has a button that opens the image at full size.
+`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-columns` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field whose parent container has `layout: "matrix"`. Each card has a button that opens the image at full size.
 
 ### Exclusive options
 
@@ -348,7 +348,7 @@ Rules:
 - A condition or `matchField` of an item field MAY use the other fields of the same item, evaluated per item, and fields outside the group under the rules of field conditions. A condition, `matchField` or `optionsDependsOn` outside the group MUST NOT use item fields (`group-scope`). It MAY test the group itself, such as with `notEmpty`.
 - `required: true` means at least one item. `minLength` and `maxLength` count items, not characters, and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
 
-A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. A group holds at most 1000 items, whatever its `maxLength`. Its item limit is `maxLength`, or 100 without `maxLength`, capped at 1000. Built-in renderers hide Add when the group has as many items as its limit, and hide Remove when it has `minLength` items, or 1 when `required`. `defaultItems` creates no more items than the limit: a group with `defaultItems: 1000000` and no `maxLength` starts with 100 items, and a group with `defaultItems` and `maxLength` both 10000000 starts with 1000 items. The same limit applies on construction, `reset()`, Skip, Add, `replaceDefinition()` and in `validateSubmission()`. A `maxLength` or `defaultItems` over 1000 is an `invalid-range` warning.
+A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. A group holds at most 1000 items, whatever its `maxLength`. Its item limit is `maxLength`, or 100 without `maxLength`, capped at 1000. Built-in renderers hide Add when the group has as many items as its limit, and hide Remove when it has `minLength` items, or 1 when `required`. `defaultItems` creates no more items than the limit: a group with `defaultItems: 1000000` and no `maxLength` starts with 100 items, and a group with `defaultItems` and `maxLength` both 10000000 starts with 1000 items. The same limit applies on construction, `reset()`, Skip, Add, `replaceDefinition()` and in `validateSubmission()`. A `maxLength` or `defaultItems` over 1000 is a `group-item-limit` warning.
 
 An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed, and removing an item forgets its own.
 
@@ -477,7 +477,7 @@ Core evaluates one field as follows and returns the first error:
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 6. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
-Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. A group runs its count rules first, then the rules of the visible fields of every item, with the values of the same item in place of `matchField` and validator values. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
+Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. A group runs its count rules first, then the rules of the visible fields of every item, with the values of the same item in place of `matchField` and validator values. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. After a failed Continue or Submit, built-in renderers focus the invalid field when the error summary lists one error. When it lists two or more, they focus the error summary, which has `tabindex="-1"` and `role="alert"`, and scroll it into view. With `errorSummary` off, they focus the first invalid field.
 
 ## Steps
 
@@ -515,6 +515,20 @@ A step MAY have an empty `fields` array. It then shows only its title, descripti
 A step hidden by conditions is left out of navigation, progress, validation and submission, and its field values are cleared.
 
 Step `show`/`showAny` MUST reference fields of earlier steps. A step condition sees only the values of earlier steps on the path.
+
+### Opening a step by id
+
+`goToStep(stepId)` opens a step for URL routing and browser history. A step is reachable when it is on the active path and every step between the current step and it is valid or skipped. Valid means that the visible fields of the step pass their client rules, as on Continue. A step at or before the current step is always reachable, like Back. `goToStep` does not show errors, does not run `onStepValidate` or the step change hooks, and does not skip or include steps.
+
+When the target is not reachable, the engine opens a fallback step and returns why:
+
+| `reason` | Target | Fallback |
+|---|---|---|
+| `blocked` | A step on the active path behind an invalid step, or any step while a step change or submission is pending | The first invalid step between the current step and the target, or the current step while an action is pending |
+| `not-on-path` | A step of the definition that conditions or routes leave out of the active path | The last reachable step on the active path that comes before the target in the definition |
+| `unknown-step` | An id that no step has, or any id in a form without steps | The current step |
+
+The result is `{ stepId, reached: true }` or `{ stepId, reached: false, reason }`, where `stepId` is the step that is now current, or `null` in a form without steps. When the target is not reached, the engine reports `step_redirected` with `requestedStepId`, `stepId` and `reason`. A step change reports `step_viewed`, not `step_completed`.
 
 ## Actions
 
@@ -726,7 +740,7 @@ A plain object is one whose prototype is `Object.prototype`. A `fetch` `Response
 1. A key of a visible field on the active path, or the path of a visible item field of an existing item, becomes the error of that field. Every other key, including the key of a field hidden by its conditions or a field off the active path, becomes a form-level error. An error on a field of type `hidden` stays under its key and is also listed in `topLevelErrors`. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
 2. The set replaces all previous field errors and form-level errors at once.
 3. In a multi-step form, the engine opens the earliest step on the active path that has a field error. The key order of `errors` does not matter. The step change hooks do not run.
-4. The built-in renderers focus the first invalid field on that step after it renders: the checked option of a group, or its first enabled control.
+4. The built-in renderers apply the focus rule of a failed Submit on that step after it renders: the error summary for two or more errors, otherwise the first invalid field on the step: the checked option of a group, or its first enabled control.
 
 Field errors are kept until one of these events:
 
@@ -748,6 +762,28 @@ Writing the same value again keeps the error. While a client rule fails on a fie
 - A response that arrives after `reset()`, `cancelPendingActions()`, a definition change or an unmount is ignored. It applies no errors, does not navigate and does not run `onAfterSubmit`. `submit()` still resolves to `true` for a success and `false` for a rejection.
 - The built-in renderers disable fields while a submission runs. When the engine is driven directly and a value changes during the request, a success still runs `onAfterSubmit` with the values that were sent. A rejection skips the errors of fields whose value changed after the request was sent.
 - The engine does not abort a request. A handler that needs to abort uses its own `AbortController`.
+
+### Form events
+
+After `start()`, the engine reports these sequences through `onFormEvent`. `?` marks an event that fires only in that case, `*` one that fires once per field.
+
+| Action | Events in order |
+|---|---|
+| Continue that passes | `step_completed` for the current step, `step_viewed` for the next |
+| Continue that fails | `field_error*` |
+| Back | `step_viewed` |
+| `goToStep` | `step_viewed` when the step changes, then `step_redirected` when the target was not reached |
+| Skip on a step before the last | `step_skipped`, `step_viewed` |
+| Submit that fails validation | `form_submit_failed` with `reason: 'validation'`, `field_error*` |
+| Submit with a successful handler | `step_skipped?` for Skip on the last step, `form_submitted`, `form_submit_succeeded` |
+| Submit with a rejection | `form_submitted`, `form_submit_failed` with `reason: 'rejected'`, `field_error*` for the rejected fields |
+| Submit with a handler that throws | `form_submitted`, `form_submit_failed` with `reason: 'error'` |
+
+The last step never reports `step_completed`: `form_submitted` closes it. A funnel counts the users who left on the last step as `step_viewed` for it without `form_submitted`. `onBeforeSubmit` returning `false` reports nothing.
+
+For `reason: 'error'`, `status` is the numeric `status` of the thrown error when it has one. `CloudError` sets it: `0` without a response, such as a network failure, otherwise the HTTP status.
+
+`form_submitted` fires after `onBeforeSubmit` and right before the handler runs. `form_submit_succeeded` fires before `onAfterSubmit` runs. New event types and new event fields are additive: a minor version can add them, so handle unknown types in a `default` branch.
 
 ## Translations
 
@@ -833,7 +869,7 @@ An `i18n` object maps texts of its node to keys of the app dictionary, such as L
 | option, action | `label` |
 | validation | `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `matchField` |
 
-The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-unbound-slot` error. A validation slot MAY bind a rule without a field message. `FormEngine` ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it and throws a `FormDefinitionError` on translation errors.
+The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-key-without-text` error. A validation slot MAY bind a rule without a field message. `FormEngine` ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it and throws a `FormDefinitionError` on translation errors.
 
 ```json
 {
@@ -914,7 +950,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 |---|---|---|
 | `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, the `fields` of a section or a group, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as an `id` that is not a string, `in` that is not an array, `max` that is not a number, a `source` that is not a name or a `{ "query" }` object with a parameter name, or a `formatVersion` that is not a version string |
 | `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
-| `missing-property` | error, warning | A missing `id`, `submit`, step `id` or `fields`, field `key` or `type`, option `value`, route `to` or condition `field`. A missing form or step `title`, field or option `label`, or action `label` is a warning. The path points to the object that lacks the property |
+| `missing-property` | error, warning | A missing `id`, `submit`, step `id` or `fields`, field `key` or `type`, option `value`, route `to` or condition `field`. A missing form, step or section `title` is a warning. The path points to the object that lacks the property |
+| `missing-label` | warning | A field other than `hidden`, an option or an action without `label`, or a field other than `hidden` with an empty or blank `label`. The path points to the `label` property |
 | `unknown-property` | warning | A property the JSON Schema does not define, such as `imd` for `id`. The hint names the closest known property, or the `validation` object for a rule set on a field |
 | `fields-and-steps` | error | Both `fields` and `steps` non-empty |
 | `duplicate-step-id` | error | Two steps with one id |
@@ -930,9 +967,11 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
 | `duplicate-option-value` | error | An option value that an earlier option of the same field already uses |
-| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, `defaultItems` greater than `maxLength`, or `columns` outside 1 to 4. A warning for `defaultItems` greater than 100 on a group without `maxLength`, and for a group `maxLength` or `defaultItems` greater than 1000 |
+| `min-greater-than-max` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
+| `default-items-greater-than-max` | error | A group `defaultItems` greater than its `maxLength` |
+| `group-item-limit` | warning | A group `defaultItems` greater than 100 without `maxLength`, or a group `maxLength` or `defaultItems` greater than 1000 |
+| `invalid-columns` | error | A number `columns` that is not a whole number from 1 to 4 |
 | `invalid-scale` | error | A `scale` or `rating` whose `min` or `max` is not an integer, or whose range has fewer than 2 or more than 11 points |
-| `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `contains-not-list` | warning | `contains` or `notContains` on a built-in field that does not hold a list, or on a group. Only `multiselect` holds a list; custom types are not checked |
@@ -966,7 +1005,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |
-| `i18n-unbound-slot` | error, from `checkTranslations()` | A translation key for a text the node does not have, such as `i18n.placeholder` without `placeholder` |
+| `i18n-key-without-text` | error, from `checkTranslations()` | A translation key for a text the node does not have, such as `i18n.placeholder` without `placeholder` |
 | `unknown-i18n-slot` | warning, from `checkTranslations()` | An `i18n` key for a text the node cannot have, or for a rule that is not set |
 | `unknown-message-key` | warning, from `checkTranslations()` | A `messages` or `i18n.messages` key that is not a message key |
 | `unknown-label-key` | warning, from `checkTranslations()` | A `labels` or `i18n.labels` key that is not a label key |
@@ -997,8 +1036,7 @@ const { definition: repaired, applied, issues: left } = fixAll(definition);
 | `unknown-property` | Rename to the property in the hint, such as `imd` to `id` | yes |
 | `unknown-property` on a rule set on a field | Move the rule into `validation` | no, the rule starts to apply |
 | `missing-property` | Rename a misspelled property when there is one. Otherwise form or step `id` from the title (`my-form` or `step-2` without one), field `key` from the label (`field` without one), option `value` from its label, `submit` with the label `Submit`, step `fields` as an empty list | yes |
-| `missing-property` for a `label` | Field and option `label` from the key or value, action `label` from the default button text | yes, except `next` and `back` labels in a definition with `labels` or `lang`, and `cancel` |
-| `empty-label` | Field `label` from the key, such as `First name` for `firstName` | yes |
+| `missing-label` | Rename a misspelled property when there is one. Otherwise field and option `label` from the key or value, such as `First name` for `firstName`, action `label` from the default button text | yes, except `next` and `back` labels in a definition with `labels` or `lang`, and `cancel` |
 | `duplicate-key` | Rename the later key with `_2`, `_3` | when no condition, `matchField` or `optionsDependsOn` uses the key |
 | `duplicate-option-value` | Change the later value with `_2`, `_3` | when no condition and no `defaultValue` uses the value |
 | `duplicate-step-id` | Rename the later id with `-2`, `-3` | when no route targets the id |
@@ -1006,7 +1044,7 @@ const { definition: repaired, applied, issues: left } = fixAll(definition);
 | `unsupported-format-version` | Set `formatVersion` to the current version | no |
 | `unknown-field`, `route-target` | Use the closest field key or step id the reference may point to | when it is the only name within one edit (insertion, deletion, substitution or swap of adjacent letters, ignoring case) and no other name is within two edits |
 | `unknown-field-type`, `unknown-operator` | Use the closest existing name | no |
-| `invalid-range` | Swap the two bounds | no |
+| `min-greater-than-max` | Swap the two bounds | no |
 
 Other codes, such as `invalid-pattern` and `condition-cycle`, have no fix.
 

@@ -10,7 +10,7 @@ export function useEngineOptions(props: FormRendererProps, onFormEvent: (event: 
       return props.keepValues;
     },
     get onFormEvent() {
-      return listening('onFormEvent', 'onAnalyticsEvent') ? onFormEvent : undefined;
+      return listening('onFormEvent') ? onFormEvent : undefined;
     },
     validators: props.validators,
     onWarning: props.onWarning,

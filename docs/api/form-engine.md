@@ -50,8 +50,7 @@ try {
 | Function | Returns | Description |
 |---|---|---|
 | `checkDefinition(input, { validators? })` | `DefinitionIssue[]` | Never throws. Errors come first. With `validators`, also reports `validator` names missing from it |
-| `parseDefinition(input, { validators? })` | `FormDefinition` | Returns the input typed as `FormDefinition`, or throws `FormDefinitionError` with the errors. Ignores `validators`: a missing validator is a warning, and warnings never throw |
-| `validateDefinition` | `string[]` | Deprecated. The messages of `checkDefinition()`. Removed in 1.0 |
+| `parseDefinition(input)` | `FormDefinition` | Returns the input typed as `FormDefinition`, or throws `FormDefinitionError` with the errors. Warnings never throw |
 
 ```ts
 interface DefinitionIssue {
@@ -140,14 +139,14 @@ The main entry also exports the functions the engine uses for conditions and val
 | `evaluateCondition(condition, values)` | `boolean` | Tests one [condition](/spec#conditions) against `values` |
 | `isVisible(node, values)` | `boolean` | Applies the `show` and `showAny` conditions of a field, section, group or step |
 | `isActionDisabled(action, values)` | `boolean` | Applies the `disabled` conditions of an action |
-| `validateFieldValue(field, value, values, validators?, messages?)` | `string \| null` | The first error of one field, or `null` |
-| `validateFields(nodes, values, validators?, messages?)` | `Record<string, string>` | Errors of the visible fields, sections and groups in `nodes`, by key or item path |
-| `validateStep(step, values, validators?, messages?)` | `Record<string, string>` | `validateFields()` for the fields of one step |
+| `validateFieldValue(field, value, values, { validators?, messages? }?)` | `string \| null` | The first error of one field, or `null` |
+| `validateFields(nodes, values, { validators?, messages? }?)` | `Record<string, string>` | Errors of the visible fields, sections and groups in `nodes`, by key or item path |
+| `validateStep(step, values, { validators?, messages? }?)` | `Record<string, string>` | `validateFields()` for the fields of one step |
 | `recallText(definition, text, values, { item?, lang?, format?, engine? }?)` | `string` | Resolves the [recall tokens](/spec#answer-recall) of a text with the values from `getSubmitValues()`. Pass `engine` to follow its active path |
 | `recallStatic(definition, text, group?)` | `string` | Replaces each recall token with the label of its field, for texts that stand for many submissions |
 | `getDefaultMessage(rule, params?)` | `string` | The built-in English message of a rule or message key, such as `getDefaultMessage('minLength', { min: 3 })` |
 
-`ValidationRule` is the type of the rule names: `required`, `minLength`, `maxLength`, `min`, `max`, `pattern` and `matchField`. `values` is the [active projection](/spec#visibility) the engine passes, such as `getSubmitValues()`.
+`getDefaultMessage` takes a `MessageKey`. `values` is the [active projection](/spec#visibility) the engine passes, such as `getSubmitValues()`.
 
 ## Groups
 
@@ -199,7 +198,7 @@ const engine = new FormEngine(de.definition, {}, { messages: de.messages });
 ```tsx
 import { useLocalizedForm } from '@formhaus/react/i18n';
 
-const form = useLocalizedForm(definition, { overlay, lang: 'ru' }, [extraDependency]);
+const form = useLocalizedForm(definition, { overlay, lang: 'ru' });
 <FormRenderer {...form} onSubmit={save} />
 ```
 
@@ -209,7 +208,7 @@ import { useLocalizedForm } from '@formhaus/vue/i18n';
 const form = useLocalizedForm(() => definition, () => ({ overlay: overlay.value, lang: locale.value }));
 ```
 
-The React hook recomputes when `definition`, `overlay`, `prefix`, `lang` or the extra dependencies change, not when `translate` changes. The Vue composable returns a computed ref and tracks reactive reads. Both return the definition unchanged without a source. A new result recreates the engine and clears the answers.
+The React hook recomputes when `definition`, `overlay`, `translate`, `prefix` or `lang` changes. Keep `translate` stable with `useCallback`. The Vue composable returns a computed ref and tracks reactive reads. Both return the definition unchanged without a source. A new result recreates the engine and clears the answers.
 
 Renderers take `messages` and `labels` props with the same types as the engine option, and set `lang` from the definition on the `<form>` element.
 
@@ -225,6 +224,7 @@ Renderers take `messages` and `labels` props with the same types as the engine o
 | `submit(handler)` | `Promise<boolean>` | Validates every step of the path, runs `onBeforeSubmit`, awaits `handler(values, skippedSteps)` and then `onAfterSubmit`. Resolves to `false` when the handler returns `{ ok: false }` |
 | `isStepSkipped(stepId)` | `boolean` | Whether the step is skipped and left out of validation and submitted values |
 | `goToStepWithField(key)` | `void` | Moves to the visible step containing a field without lifecycle hooks |
+| `goToStep(stepId)` | `GoToStepResult` | Opens a step if the user could reach it. Otherwise opens the previous available step and reports it. See [Opening a step by id](/spec#opening-a-step-by-id) |
 | `start()` | `void` | Reports `form_viewed` and the first `step_viewed`. Call it once the form is on screen. Later calls do nothing |
 
 See [Async step validation](/guide/async-validation#using-the-engine-directly) for an `onStepValidate` example.
@@ -273,7 +273,7 @@ const engine = new FormEngine(definition, {}, { onFormEvent: (event) => console.
 engine.start();
 ```
 
-The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped`, `field_shown`, `field_hidden`, `field_error`, `form_submitted`, `form_submit_succeeded`, `form_submit_failed` and `form_reset`. `step_viewed` fires after `start()` for every change of the current step, including `goToStepWithField`, `reset`, `replaceDefinition` and a step that a condition hides. Before `start()`, `step_viewed`, visibility events and `form_reset` stay silent. The renderers call `start()` on mount and add `field_focused` and `field_blurred`. An error thrown by `onFormEvent` is rethrown in a microtask and does not interrupt the action. See the [event table](/guide/custom-components#form-events).
+The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped`, `step_redirected`, `field_shown`, `field_hidden`, `field_error`, `form_submitted`, `form_submit_succeeded`, `form_submit_failed` and `form_reset`. `step_viewed` fires after `start()` for every change of the current step, including `goToStep`, `goToStepWithField`, `reset`, `replaceDefinition` and a step that a condition hides. Before `start()`, `step_viewed`, visibility events and `form_reset` stay silent. The renderers call `start()` on mount and add `field_focused` and `field_blurred`. An error thrown by `onFormEvent` is rethrown in a microtask and does not interrupt the action. See the [event table](/guide/custom-components#form-events).
 
 ## Navigation and submission lifecycle
 
@@ -309,4 +309,4 @@ type SubmitHandler = (
 | `cancelPendingActions()` | Invalidates pending guards without clearing answers. Cannot undo a dispatched submission. |
 | `submitting` | True while submission and its hooks are pending. |
 
-A cancelled, invalid, rejected or concurrent action resolves to `false`. Exceptions reject. `FormLifecycleError` has `committed: true`, `phase` and `cause` for an after-hook failure: the action already completed. `stepValidating` remains true throughout navigation hooks. `setErrors()`, `goToStepWithField()` and `reset()` do not run the hooks. See [lifecycle ordering, recovery and adapter examples](../guide/steps#lifecycle-hooks).
+A cancelled, invalid, rejected or concurrent action resolves to `false`. Exceptions reject. `FormLifecycleError` has `committed: true`, `phase` and `cause` for an after-hook failure: the action already completed. `stepValidating` remains true throughout navigation hooks. `setErrors()`, `goToStep()`, `goToStepWithField()` and `reset()` do not run the hooks. See [lifecycle ordering, recovery and adapter examples](../guide/steps#lifecycle-hooks).

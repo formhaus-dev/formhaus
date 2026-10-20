@@ -6,7 +6,8 @@ interface CloudFormOptions {
   id: () => string;
   apiBase: () => string | undefined;
   initialForm: () => PublishedForm | undefined;
-  draftStore: () => DraftStore | undefined;
+  draftStore: () => DraftStore | false | undefined;
+  draftExclude: () => string[] | undefined;
   extraBody: () => Record<string, unknown>;
   challengeHost: () => HTMLElement | null;
   onSuccess: (submission: CloudSubmission) => void;
@@ -26,6 +27,7 @@ export function useCloudForm(options: CloudFormOptions) {
         apiBase: options.apiBase(),
         initialForm: options.initialForm(),
         draftStore: options.draftStore(),
+        draftExclude: options.draftExclude(),
         extraBody: options.extraBody,
         challengeHost: options.challengeHost,
       },

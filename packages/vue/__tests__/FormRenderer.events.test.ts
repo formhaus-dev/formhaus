@@ -16,31 +16,20 @@ const definition: FormDefinition = {
   ],
 };
 
-it('emits formEvent and the analyticsEvent alias on mount', () => {
-  const { emitted } = render(FormRenderer, { props: { definition, onFormEvent: () => {}, onAnalyticsEvent: () => {} } });
-  const expected = [[{ type: 'form_viewed' }], [{ type: 'step_viewed', stepId: 'one', stepIndex: 0 }]];
-  expect(emitted().formEvent).toEqual(expected);
-  expect(emitted().analyticsEvent).toEqual(expected);
-});
-
-it('emits only to the listened event', () => {
+it('emits formEvent on mount', () => {
   const { emitted } = render(FormRenderer, { props: { definition, onFormEvent: () => {} } });
-  expect(emitted().formEvent).toHaveLength(2);
-  expect(emitted().analyticsEvent).toBeUndefined();
+  expect(emitted().formEvent).toEqual([[{ type: 'form_viewed' }], [{ type: 'step_viewed', stepId: 'one', stepIndex: 0 }]]);
 });
 
 describe.each([
   ['FormRenderer', FormRenderer],
   ['HeadlessFormRenderer', HeadlessFormRenderer],
 ])('%s once listeners', (_name, component) => {
-  it('calls .once handlers for both events', () => {
+  it('calls a .once handler', () => {
     const onFormEventOnce = vi.fn();
-    const onAnalyticsEventOnce = vi.fn();
-    render(component, { props: { definition, components: { text: TextField }, onFormEventOnce, onAnalyticsEventOnce } });
+    render(component, { props: { definition, components: { text: TextField }, onFormEventOnce } });
     expect(onFormEventOnce).toHaveBeenCalledOnce();
     expect(onFormEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
-    expect(onAnalyticsEventOnce).toHaveBeenCalledOnce();
-    expect(onAnalyticsEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
   });
 });
 

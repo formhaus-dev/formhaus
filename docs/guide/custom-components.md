@@ -52,7 +52,7 @@ Your component receives pre-computed convenience props so you don't need to re-d
 | `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 | `cancelAction` | `FormAction?` | Cancel button config |
 
-In React, call `onPrimary` for the primary action, `onPrev` for back and `onSkip` for skip. In Vue, emit `primary`, `prev` and `skip`.
+In React, call `onPrimary` for the primary action, `onBack` for back and `onSkip` for skip. In Vue, emit `primary`, `back` and `skip`.
 
 ### Vue example
 
@@ -66,7 +66,7 @@ const emit = defineEmits(formActionsEmits)
 
 <template>
   <div class="my-actions">
-    <button v-if="showBack" type="button" :disabled="loading" @click="emit('prev')">{{ backLabel }}</button>
+    <button v-if="showBack" type="button" :disabled="loading" @click="emit('back')">{{ backLabel }}</button>
     <button v-if="showPrimary !== false" type="button" @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
   </div>
 </template>
@@ -79,11 +79,11 @@ import type { FormActionsProps } from '@formhaus/react'
 
 export function MyFormActions({
   primaryLabel, showPrimary = true, showBack, backLabel, loading,
-  onPrimary, onPrev,
+  onPrimary, onBack,
 }: FormActionsProps) {
   return (
     <div className="my-actions">
-      {showBack && <button type="button" disabled={loading} onClick={onPrev}>{backLabel}</button>}
+      {showBack && <button type="button" disabled={loading} onClick={onBack}>{backLabel}</button>}
       {showPrimary && <button type="button" disabled={loading} onClick={onPrimary}>{primaryLabel}</button>}
     </div>
   )
@@ -104,7 +104,7 @@ export function MyFormActions({
 | `isMultiStep` | `boolean` | Whether the form has multiple steps |
 | `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 
-In Vue, you can also emit `submit`, `next`, `prev`, `cancel` events directly. In React, call `onSubmit`, `onNext`, `onPrev`, `onCancel` callbacks.
+In Vue, you can also emit `submit`, `next`, `back`, `cancel` events directly. In React, call `onSubmit`, `onNext`, `onBack`, `onCancel` callbacks.
 
 ## Custom progress component
 
@@ -257,7 +257,7 @@ const props = defineProps(groupItemComponentProps)
 
 | Component | Props | Emits |
 |---|---|---|
-| Field | `formFieldProps` | `formFieldEmits` |
+| Field | `fieldComponentProps` | `fieldComponentEmits` |
 | Actions | `formActionsProps` | `formActionsEmits` |
 | Step progress | `formStepProgressProps` | |
 | Section | `sectionComponentProps` | |
@@ -265,7 +265,7 @@ const props = defineProps(groupItemComponentProps)
 | Group item | `groupItemComponentProps` | |
 | Remove dialog | `confirmDialogComponentProps` | |
 
-Each declares every prop of the matching interface, such as `FormFieldProps` for `formFieldProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2`.
+Each declares every prop of the matching interface, such as `FieldComponentProps` for `fieldComponentProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2`.
 
 ## Form events
 
@@ -295,8 +295,9 @@ Events emitted:
 |-------|------|---------|
 | `form_viewed` | The form is shown. Once per engine: a remount or a new definition reports it again | |
 | `step_viewed` | A step becomes active: on first show and after every step change | `stepId`, `stepIndex` |
-| `step_completed` | User advances past a step | `stepId` |
+| `step_completed` | User advances past a step. The last step reports `form_submitted` instead | `stepId` |
 | `step_skipped` | User skips a step | `stepId` |
+| `step_redirected` | `goToStep()` cannot open the requested step and opens another one | `requestedStepId`, `stepId`, `reason`: `'unknown-step'`, `'not-on-path'` or `'blocked'` |
 | `field_focused` | User focuses a field | `fieldKey` |
 | `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
 | `field_shown` | A field's `show` condition, or its section's, starts to pass. Reports fields on every step, not only the current one, and can fire on `reset()` | `fieldKey` |
@@ -304,14 +305,12 @@ Events emitted:
 | `field_error` | Step validation, form validation or the submit handler fails with field errors | `fieldKey`, `error` |
 | `form_submitted` | Validation and `onBeforeSubmit` pass, right before the submit handler runs | `fieldCount` |
 | `form_submit_succeeded` | The submit handler resolves without `{ ok: false }` | |
-| `form_submit_failed` | The submit handler returns `{ ok: false }` or throws | `reason`: `'rejected'` or `'error'` |
+| `form_submit_failed` | Submit fails validation, or the submit handler returns `{ ok: false }` or throws | `reason`: `'validation'`, `'rejected'` or `'error'`. `status` for `'error'` when the thrown error has a numeric `status`, such as `CloudError` |
 | `form_reset` | `engine.reset()` runs after the form is shown | |
 
-Events carry step ids and field keys, never step titles or labels with [recalled answers](/guide/fields#answer-recall). Group item fields report their path as `fieldKey`, such as `people.0.name`. `field_shown` and `field_hidden` do not fire for step changes, for added or removed group items, or for fields without a condition. A reset during a pending submit is still followed by that submit's `form_submit_succeeded` or `form_submit_failed`. An error thrown by the handler does not stop the form. It is rethrown in a microtask. All events are optional. If you don't pass a handler, nothing fires. The event type is `FormEvent`.
+The order of events is in the [specification](/spec#form-events). Events carry step ids and field keys, never step titles or labels with [recalled answers](/guide/fields#answer-recall). Group item fields report their path as `fieldKey`, such as `people.0.name`. `field_shown` and `field_hidden` do not fire for step changes, for added or removed group items, or for fields without a condition. A reset during a pending submit is still followed by that submit's `form_submit_succeeded` or `form_submit_failed`. An error thrown by the handler does not stop the form. It is rethrown in a microtask. All events are optional. If you don't pass a handler, nothing fires. The event type is `FormEvent`.
 
 `FormEngine` reports the same events, except `field_focused` and `field_blurred`, through the `onFormEvent` option. See [form events](/api/form-engine#form-events).
-
-`onAnalyticsEvent` and `@analyticsEvent` are deprecated and will be removed in 1.0. Until then they receive every event too, and when both are set, both run.
 
 ## Next steps
 

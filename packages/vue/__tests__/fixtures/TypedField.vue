@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { formFieldEmits, formFieldProps } from '@formhaus/vue';
+import { fieldComponentEmits, fieldComponentProps } from '@formhaus/vue';
 
-const props = defineProps(formFieldProps);
-const emit = defineEmits(formFieldEmits);
+const props = defineProps(fieldComponentProps);
+const emit = defineEmits(fieldComponentEmits);
 </script>
 
 <template>

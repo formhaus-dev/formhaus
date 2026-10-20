@@ -21,7 +21,7 @@ export function FormActions({
   values = {},
   onSubmit,
   onNext,
-  onPrev,
+  onBack,
   onCancel,
   onSkip,
   primaryLabel: primaryLabelProp,
@@ -46,7 +46,7 @@ export function FormActions({
     <div className="fh-form-actions">
       <div className="fh-form-actions__secondary">
         {showBack && (
-          <button type="button" className={buttonClass(backAction, 'secondary')} disabled={loading} onClick={onPrev}>
+          <button type="button" className={buttonClass(backAction, 'secondary')} disabled={loading} onClick={onBack}>
             {backLabel}
           </button>
         )}

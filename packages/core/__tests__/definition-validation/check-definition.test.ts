@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkDefinition, validateDefinition } from '../../src';
+import { checkDefinition } from '../../src';
 import type { FormDefinition, FormField } from '../../src/types';
 
 const form = (fields: FormField[]): FormDefinition => ({ id: 'f', title: 'F', submit: { label: 'Submit' }, fields });
@@ -108,11 +108,6 @@ describe('checkDefinition', () => {
   it('suggests the closest key for a condition on an unknown field', () => {
     const definition = form([text('email'), text('name', { show: [{ field: 'emial', notEmpty: true }] })]);
     expect(checkDefinition(definition)[0].message).toBe('/fields/1/show/0/field: "emial" is not a field key. Use "email".');
-  });
-
-  it('keeps validateDefinition as a list of messages', () => {
-    const definition = form([text('code', { validation: { pattern: '(' } })]);
-    expect(validateDefinition(definition)).toEqual(checkDefinition(definition).map((issue) => issue.message));
   });
 
   it('lists errors before warnings', () => {

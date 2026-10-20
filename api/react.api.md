@@ -9,8 +9,7 @@ import { ComponentType } from 'react';
 import { ConfirmDialogView } from '@formhaus/core';
 import { DefaultFieldType } from '@formhaus/core';
 import { FieldType } from '@formhaus/core';
-import { FormActionsView } from '@formhaus/core/internal';
-import { FormAnalyticsEvent } from '@formhaus/core';
+import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEngine } from '@formhaus/core';
 import { FormEngineOptions } from '@formhaus/core';
@@ -97,11 +96,11 @@ export function FormActions(input: FormActionsProps): react.JSX.Element;
 // @public (undocumented)
 export interface FormActionsProps extends FormActionsView {
     // (undocumented)
+    onBack: () => void;
+    // (undocumented)
     onCancel: () => void;
     // (undocumented)
     onNext: () => void;
-    // (undocumented)
-    onPrev: () => void;
     // (undocumented)
     onPrimary?: () => void;
     // (undocumented)
@@ -169,8 +168,6 @@ export interface FormRendererProps extends FormEngineOptions {
     // (undocumented)
     loading?: boolean;
     // (undocumented)
-    onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
-    // (undocumented)
     onCancel?: () => void;
     // (undocumented)
     onError?: (error: unknown) => void;
@@ -228,7 +225,7 @@ export interface FormStepStatus {
 // @public (undocumented)
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
     // (undocumented)
-    ItemComponent: ComponentType<GroupItemComponentProps>;
+    itemComponent: ComponentType<GroupItemComponentProps>;
 }
 
 // @public (undocumented)

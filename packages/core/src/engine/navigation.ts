@@ -6,7 +6,7 @@ import { applyValidationErrors, dropServerErrors, fieldsErrors, getSubmitValues,
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
 import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
-import type { StepChangeContext, SubmitHandler } from './engine-options';
+import type { GoToStepResult, StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 
 function hasStepErrors(engine: EngineInternals): boolean {
@@ -148,4 +148,26 @@ export function goToStepWithField(engine: EngineInternals, fieldKey: string): vo
   const targetIndex = engine.visibility.findStepIndex(fieldKey, engine.values, engine.currentStepIndex);
   if (targetIndex === engine.currentStepIndex) engine.notify();
   else if (targetIndex !== null) moveTo(engine, targetIndex);
+}
+
+export function goToStep(engine: EngineInternals, stepId: string): GoToStepResult {
+  const steps = engine.visibleSteps;
+  const current = engine.currentStepIndex;
+  const order = (id: string) => (engine.definition.steps ?? []).findIndex((step) => step.id === id);
+  const index = steps.findIndex((step) => step.id === stepId);
+  const known = engine.isMultiStep && order(stepId) >= 0;
+  const busy = engine.stepValidating || engine.submitting;
+  let target = !known || busy ? current : index >= 0 ? index : steps.filter(({ id }) => order(id) < order(stepId)).length - 1;
+  for (let at = current; at < target; at++)
+    if (!engine.skipped.has(steps[at].id) && Object.keys(fieldsErrors(engine, steps[at].fields)).length > 0) {
+      target = at;
+      break;
+    }
+  target = Math.max(target, 0);
+  if (target !== current) moveTo(engine, target);
+  const id = steps[target]?.id ?? null;
+  const reason = !known ? 'unknown-step' : busy || (index >= 0 && target !== index) ? 'blocked' : index < 0 ? 'not-on-path' : undefined;
+  if (!reason) return { stepId: id, reached: true };
+  emit(engine, { type: 'step_redirected', requestedStepId: stepId, stepId: id, reason });
+  return { stepId: id, reached: false, reason };
 }

@@ -13,6 +13,7 @@ export function useFormFocus(
   let previousStep = currentStep.value?.id;
   let focusPending = false;
   let focusKey: string | null = null;
+  let focusErrors = false;
   let focusReturn: HTMLElement | null = null;
   let wasBusy = false;
   let handledInvalid = 0;
@@ -21,6 +22,7 @@ export function useFormFocus(
   watch(
     [currentStep, stepValidating, submitting, invalidAttempts, requested],
     async () => {
+      if (invalidAttempts.value !== handledInvalid) focusErrors = true;
       if (currentStep.value?.id !== previousStep || invalidAttempts.value !== handledInvalid || requested.value !== handledRequest)
         focusPending = true;
       previousStep = currentStep.value?.id;
@@ -39,8 +41,10 @@ export function useFormFocus(
       focusPending = false;
       await nextTick();
       const key = focusKey;
+      const afterErrors = focusErrors || (restore && Object.keys(form.engine.errors).length > 0);
       focusKey = null;
-      focusField(formRef.value, key && errorDomId(form.engine, formId, key));
+      focusErrors = false;
+      focusField(formRef.value, key && errorDomId(form.engine, formId, key), afterErrors);
     },
     { flush: 'post' },
   );
@@ -50,7 +54,9 @@ export function useFormFocus(
       focusReturn = event.target as HTMLElement;
     },
     requestFocus() {
-      if (canMoveFocus(formRef.value)) requested.value++;
+      if (!canMoveFocus(formRef.value)) return;
+      focusErrors = true;
+      requested.value++;
     },
     showField(key: string) {
       focusKey = key;

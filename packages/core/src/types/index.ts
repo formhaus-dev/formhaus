@@ -1,5 +1,5 @@
 export type { FormAction } from './action';
-export type { FormAnalyticsEvent, FormEvent } from './analytics';
+export type { FormEvent, StepRedirectReason } from './analytics';
 export type {
   DefaultFieldType,
   FieldOption,
@@ -30,4 +30,4 @@ export type {
   StepI18n,
   ValidationI18n,
 } from './i18n';
-export type { ConfirmDialogView, FormRendererHandle, GroupItemView, GroupView, SectionView } from './views';
+export type { ConfirmDialogView, FormActionsView, FormRendererHandle, GroupItemView, GroupView, SectionView } from './views';

@@ -16,7 +16,7 @@
     "lint": "biome check . && stylelint \"**/*.css\" \"docs/.vitepress/**/*.css\" && node scripts/check-hover.mjs packages/site-theme/src",
     "format": "biome format --write .",
     "lint:packages": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp --filter formhaus exec publint",
-    "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp exec attw --pack --profile esm-only --exclude-entrypoints ./style.css ./server.iife.js && node scripts/check-consumer-types.mjs",
+    "check:types": "pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue --filter @formhaus/mcp exec attw --pack --profile esm-only --exclude-entrypoints ./style.css ./server.iife.js && node scripts/check-consumer-types.mjs && node scripts/check-internal.mjs",
     "check:duplicates": "jscpd --config .jscpd.json",
     "check:source-size": "node scripts/check-source-size.mjs",
     "check:knip": "knip",

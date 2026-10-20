@@ -1,11 +1,11 @@
 import type { ValidatorFn } from '../validation';
 import type { ResolveMessage } from '../validation/default-messages';
 import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
-import type { FormEngineOptions, SubmitHandler } from './engine-options';
+import type { FormEngineOptions, GoToStepResult, SubmitHandler } from './engine-options';
 import { initialState } from './engine-utils';
 import { reportErrors, startEvents, trackChanges } from './form-events';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
-import { changeStep, goToStepWithField, skipStep } from './navigation';
+import { changeStep, goToStep, goToStepWithField, skipStep } from './navigation';
 import type { EngineState } from './runtime-internals';
 import { createSubscriptions, type NotifyOptions } from './subscriptions';
 import { applyValidationErrors, errorKeys, getSubmitValues, resetEngine, validateForm, validateOne } from './validation-state';
@@ -222,6 +222,9 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
   goToStepWithField(key: string): void {
     goToStepWithField(this as never, key);
+  }
+  goToStep(stepId: string): GoToStepResult {
+    return goToStep(this as never, stepId);
   }
   reset(values?: Record<string, unknown>): void {
     resetEngine(this as never, values);

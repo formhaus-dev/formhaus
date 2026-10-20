@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { optionTexts } from '@formhaus/core/internal';
 import { computed, ref } from 'vue';
-import { formFieldProps } from '../props';
+import { fieldComponentProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
 import { useField } from './useField';
 
-const props = defineProps(formFieldProps);
+const props = defineProps(fieldComponentProps);
 const emit = defineEmits<FieldEmits>();
 const { inputId, input } = useField(props, emit);
 const text = ref('');

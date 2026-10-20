@@ -66,14 +66,14 @@ import * as Formhaus from '@formhaus/vue';
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 type Props<T> = ExtractPublicPropTypes<T>;
 export const same: [
-  Same<Props<typeof Formhaus.formFieldProps>, Formhaus.FormFieldProps>,
+  Same<Props<typeof Formhaus.fieldComponentProps>, Formhaus.FieldComponentProps>,
   Same<Props<typeof Formhaus.sectionComponentProps>, Formhaus.SectionComponentProps>,
   Same<Props<typeof Formhaus.groupComponentProps>, Formhaus.GroupComponentProps>,
   Same<Props<typeof Formhaus.groupItemComponentProps>, Formhaus.GroupItemComponentProps>,
   Same<Props<typeof Formhaus.confirmDialogComponentProps>, Formhaus.ConfirmDialogComponentProps>,
   Same<Props<typeof Formhaus.formActionsProps>, Formhaus.FormActionsProps>,
   Same<Props<typeof Formhaus.formStepProgressProps>, Formhaus.FormStepProgressProps>,
-  Same<keyof Props<typeof Formhaus.formFieldProps>, keyof Formhaus.FormFieldProps>,
+  Same<keyof Props<typeof Formhaus.fieldComponentProps>, keyof Formhaus.FieldComponentProps>,
   Same<keyof Props<typeof Formhaus.sectionComponentProps>, keyof Formhaus.SectionComponentProps>,
   Same<keyof Props<typeof Formhaus.groupComponentProps>, keyof Formhaus.GroupComponentProps>,
   Same<keyof Props<typeof Formhaus.groupItemComponentProps>, keyof Formhaus.GroupItemComponentProps>,
@@ -82,8 +82,8 @@ export const same: [
   Same<keyof Props<typeof Formhaus.formStepProgressProps>, keyof Formhaus.FormStepProgressProps>,
 ] = [true, true, true, true, true, true, true, true, true, true, true, true, true, true];
 export const TypedField = defineComponent({
-  props: Formhaus.formFieldProps,
-  emits: Formhaus.formFieldEmits,
+  props: Formhaus.fieldComponentProps,
+  emits: Formhaus.fieldComponentEmits,
   setup(props, { emit }) {
     const key: string = props.field.key;
     const disabled: boolean = props.disabled;
@@ -95,7 +95,7 @@ export const TypedActions = defineComponent({
   emits: Formhaus.formActionsEmits,
   setup(props, { emit }) {
     const back: Formhaus.FormActionsProps['backAction'] = props.backAction;
-    return () => h('button', { 'data-variant': back ? back.variant : undefined, onClick: () => emit('prev') }, props.backLabel);
+    return () => h('button', { 'data-variant': back ? back.variant : undefined, onClick: () => emit('back') }, props.backLabel);
   },
 });
 export const components: Formhaus.FieldComponentMap = { 'x-field': TypedField };
@@ -128,6 +128,8 @@ export const localized = useLocalizedForm(() => definition, () => ({ overlay: { 
 files['src/question-timing.ts'] = readFileSync(join(root, 'docs/recipes/snippets/question-timing.ts'), 'utf8');
 files['src/ssr-cloud-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/ssr-cloud-page.tsx'), 'utf8');
 files['src/use-form-engine.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/use-form-engine.tsx'), 'utf8');
+files['src/steps-in-url.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url.tsx'), 'utf8');
+files['src/steps-in-url-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url-page.tsx'), 'utf8');
 
 const resolutions = { bundler: 'ESNext', node16: 'Node16' };
 for (const [resolution, module] of Object.entries(resolutions)) {
@@ -144,6 +146,7 @@ for (const [resolution, module] of Object.entries(resolutions)) {
       types: [],
     },
     include: ['src'],
+    exclude: resolution === 'bundler' ? [] : ['src/steps-in-url-page.tsx'],
   });
 }
 

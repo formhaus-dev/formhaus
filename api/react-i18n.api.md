@@ -4,7 +4,6 @@
 
 ```ts
 
-import { DependencyList } from 'react';
 import { FormDefinition } from '@formhaus/core';
 import { Localized } from '@formhaus/core/i18n';
 import { LocalizeSource } from '@formhaus/core/i18n';
@@ -13,6 +12,12 @@ import { TranslateFn } from '@formhaus/core/i18n';
 
 export { Localized }
 
+// @public (undocumented)
+export interface LocalizedFormOptions {
+    // (undocumented)
+    key?: unknown;
+}
+
 export { LocalizeSource }
 
 export { Overlay }
@@ -20,7 +25,7 @@ export { Overlay }
 export { TranslateFn }
 
 // @public (undocumented)
-export function useLocalizedForm(definition: FormDefinition, source?: LocalizeSource, deps?: DependencyList): Localized;
+export function useLocalizedForm(definition: FormDefinition, source?: LocalizeSource, input?: LocalizedFormOptions): Localized;
 
 // (No @packageDocumentation comment for this package)
 

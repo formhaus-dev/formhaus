@@ -122,7 +122,7 @@ function dependencies(value: unknown, path: string): DefinitionIssue[] {
 
 function columns(value: unknown, path: string): DefinitionIssue[] {
   if (value === undefined || (Number.isInteger(value) && (value as number) >= 1 && (value as number) <= 4)) return [];
-  return [error(typeof value === 'number' ? 'invalid-range' : 'invalid-type', path, '"columns" must be a whole number from 1 to 4')];
+  return [error(typeof value === 'number' ? 'invalid-columns' : 'invalid-type', path, '"columns" must be a whole number from 1 to 4')];
 }
 
 const field: Check = (value, path) => {

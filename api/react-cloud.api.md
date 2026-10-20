@@ -12,8 +12,7 @@ import { ConfirmDialogView } from '@formhaus/core';
 import { DefaultFieldType } from '@formhaus/core';
 import { DraftStore } from '@formhaus/core/cloud';
 import { FieldType } from '@formhaus/core';
-import { FormActionsView } from '@formhaus/core/internal';
-import { FormAnalyticsEvent } from '@formhaus/core';
+import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEngineOptions } from '@formhaus/core';
 import * as _formhaus_core from '@formhaus/core';
@@ -42,7 +41,9 @@ export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' 
     // (undocumented)
     apiBase?: string;
     // (undocumented)
-    draftStore?: DraftStore;
+    draftExclude?: string[];
+    // (undocumented)
+    draftStore?: DraftStore | false;
     // (undocumented)
     fallback?: ReactNode;
     // (undocumented)

@@ -2,19 +2,18 @@
 import { type FunctionalComponent, computed, h, onBeforeUnmount, ref, useSlots, watch } from 'vue';
 import type { FormEvent } from '@formhaus/core';
 import { FormActions, FormRenderer } from '@formhaus/vue';
-import { CloudError, type CloudAction } from '@formhaus/core/cloud';
+import { CloudError, type CloudAction, type CloudSubmission } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
 import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
-const props = defineProps<FormhausFormProps>();
+const props = withDefaults(defineProps<FormhausFormProps>(), { confirmRemove: true, errorSummary: true, draftStore: undefined });
 defineSlots<{ fallback(): unknown; success(): unknown }>();
 const emit = defineEmits<{
-  success: [submission: { id: string; values: Record<string, unknown> }];
+  success: [submission: CloudSubmission];
   fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
   formEvent: [event: FormEvent];
-  analyticsEvent: [event: FormEvent];
 }>();
 const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
@@ -34,6 +33,7 @@ const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
   apiBase: () => props.apiBase,
   initialForm: () => props.initialForm,
   draftStore: () => props.draftStore,
+  draftExclude: () => props.draftExclude,
   extraBody: () => ({ _fh_hp: trap.value?.value ?? '' }),
   challengeHost: () => box.value,
   onSuccess: (submission) => emit('success', submission),
@@ -41,7 +41,7 @@ const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
 });
 
 const rendererProps = computed(() => {
-  const { id, apiBase, onError, initialValues, initialForm, draftStore, ...rest } = props;
+  const { id, apiBase, onError, initialValues, initialForm, draftStore, draftExclude, ...rest } = props;
   return rest;
 });
 
@@ -134,7 +134,6 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       :actions-component="state.challenge ? ChallengeActions : props.actionsComponent"
       @field-change="onFieldChange"
       @form-event="(event: FormEvent) => emit('formEvent', event)"
-      @analytics-event="(event: FormEvent) => emit('analyticsEvent', event)"
     />
   </div>
 </template>

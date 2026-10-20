@@ -82,6 +82,42 @@ describe('localized forms', () => {
     expect((screen.getByLabelText(/Почта/) as HTMLInputElement).value).toBe('kept@example.com');
   });
 
+  it('keeps the engine when translate is an inline arrow', () => {
+    function Inline({ tick }: { tick: number }) {
+      const localized = useLocalizedForm(definition, {
+        translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }),
+        lang: 'ru',
+      });
+      return (
+        <>
+          <output>{tick}</output>
+          <FormRenderer {...localized} onSubmit={() => {}} />
+        </>
+      );
+    }
+    const { rerender } = render(<Inline tick={0} />);
+    fireEvent.change(screen.getByLabelText(/Почта/), { target: { value: 'kept@example.com' } });
+    rerender(<Inline tick={1} />);
+    expect((screen.getByLabelText(/Почта/) as HTMLInputElement).value).toBe('kept@example.com');
+  });
+
+  it('rebuilds the form when the key or lang changes', () => {
+    function Keyed({ version, lang }: { version: number; lang: string }) {
+      const localized = useLocalizedForm(
+        definition,
+        { translate: (_key, _params, defaultValue) => `${lang}${version}:${defaultValue}`, lang },
+        { key: version },
+      );
+      return <FormRenderer {...localized} onSubmit={() => {}} />;
+    }
+    const { rerender } = render(<Keyed version={1} lang="ru" />);
+    expect(screen.getByRole('heading', { name: 'ru1:Account' })).toBeTruthy();
+    rerender(<Keyed version={2} lang="ru" />);
+    expect(screen.getByRole('heading', { name: 'ru2:Account' })).toBeTruthy();
+    rerender(<Keyed version={2} lang="de" />);
+    expect(screen.getByRole('heading', { name: 'de2:Account' })).toBeTruthy();
+  });
+
   it('formats a standalone step progress and action bar with the default labels', () => {
     render(
       <>
@@ -99,7 +135,7 @@ describe('localized forms', () => {
           isMultiStep
           onSubmit={() => {}}
           onNext={() => {}}
-          onPrev={() => {}}
+          onBack={() => {}}
           onCancel={() => {}}
         />
       </>,

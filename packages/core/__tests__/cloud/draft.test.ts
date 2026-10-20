@@ -45,9 +45,18 @@ describe('drafts', () => {
     expect(draftValues(definition, values)).toEqual({ name: 'Ada', city: 'Oslo', people: [{ email: 'a@x.io' }, { email: 'b@x.io' }] });
   });
 
+  it('never keeps a file value', () => {
+    const files: FormDefinition = { ...definition, fields: [{ key: 'cv', type: 'file', label: 'CV' }] };
+    expect(draftValues(files, { cv: 'upl_1' })).toEqual({});
+  });
+
+  it('leaves out excluded keys, also inside group items', () => {
+    expect(draftValues(definition, values, ['city', 'email'])).toEqual({ name: 'Ada', people: [{}, {}] });
+  });
+
   it('never writes a password inside a group item or a hidden value to storage', () => {
     const storage = memory();
-    const store = sessionDraftStore(undefined, () => storage);
+    const store = sessionDraftStore({ storage: () => storage });
     store.save('d', 1, draftValues(definition, values));
     const saved = [...storage.data.values()].join();
     expect(saved).not.toContain('1234');
@@ -128,6 +137,45 @@ describe('draftValues', () => {
   it('never keeps a key that any password, file or hidden field uses', () => {
     expect(draftValues(branches, { kind: 'a', secret: 'hunter2' })).toEqual({ kind: 'a' });
     expect(draftValues(branches, { kind: 'b', secret: 'hunter2' })).toEqual({ kind: 'b' });
+  });
+
+  it('drops hidden, password and file values inside step sections and step groups', () => {
+    const stepped = {
+      id: 's',
+      title: 'S',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 'one',
+          title: 'One',
+          fields: [
+            {
+              key: 'box',
+              type: 'section',
+              title: 'Box',
+              fields: [
+                { key: 'ref', type: 'hidden' },
+                { key: 'city', type: 'text', label: 'City' },
+              ],
+            },
+            {
+              key: 'crew',
+              type: 'group',
+              label: 'Crew',
+              fields: [
+                { key: 'tag', type: 'hidden' },
+                { key: 'cv', type: 'file', label: 'CV' },
+                { key: 'name', type: 'text', label: 'Name' },
+              ],
+            },
+          ],
+        },
+      ],
+    } as FormDefinition;
+    expect(draftValues(stepped, { ref: 'r', city: 'Oslo', crew: [{ tag: 't', cv: 'upl_1', name: 'Ada' }] })).toEqual({
+      city: 'Oslo',
+      crew: [{ name: 'Ada' }],
+    });
   });
 
   it('drops hidden values', () => {

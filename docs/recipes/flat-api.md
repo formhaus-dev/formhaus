@@ -68,7 +68,6 @@ export function AccountForm({ onOpened }: { onOpened: (email: string) => void })
       definition={definition}
       onSubmit={submitAccount}
       onAfterSubmit={(values) => onOpened(String(values.email))}
-      errorSummary
       stepErrorMarks
     />
   );

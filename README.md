@@ -280,9 +280,9 @@ const components: FieldComponentMap = {
 ```vue
 <!-- MyTextInput.vue -->
 <script setup lang="ts">
-import type { FormFieldProps } from '@formhaus/vue';
+import type { FieldComponentProps } from '@formhaus/vue';
 
-const props = defineProps<FormFieldProps>();
+const props = defineProps<FieldComponentProps>();
 const emit = defineEmits<{ (e: 'update:modelValue', value: unknown): void }>();
 </script>
 

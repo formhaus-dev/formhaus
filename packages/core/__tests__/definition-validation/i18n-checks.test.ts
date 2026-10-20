@@ -75,8 +75,8 @@ describe('i18n definition checks', () => {
       fields: [{ key: 'email', type: 'email', label: 'Email', i18n: { helperText: 'email.help' } }],
     };
     expect(codes(definition)).toEqual([
-      { code: 'i18n-unbound-slot', severity: 'error', path: '/i18n/description' },
-      { code: 'i18n-unbound-slot', severity: 'error', path: '/fields/0/i18n/helperText' },
+      { code: 'i18n-key-without-text', severity: 'error', path: '/i18n/description' },
+      { code: 'i18n-key-without-text', severity: 'error', path: '/fields/0/i18n/helperText' },
     ]);
     expect(() => localize(definition as never, { translate: () => undefined })).toThrow(FormDefinitionError);
     expect(() => new FormEngine(definition as never)).not.toThrow();

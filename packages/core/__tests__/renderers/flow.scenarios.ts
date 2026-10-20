@@ -65,14 +65,14 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
   });
 
   it('advances on an autoAdvance answer', async () => {
-    const onAnalyticsEvent = fn();
-    harness.mount({ definition: wizard, initialValues: { name: 'Ada' }, onSubmit: () => {}, onAnalyticsEvent });
-    expect(onAnalyticsEvent).toHaveBeenCalledWith({ type: 'form_viewed' });
+    const onFormEvent = fn();
+    harness.mount({ definition: wizard, initialValues: { name: 'Ada' }, onSubmit: () => {}, onFormEvent });
+    expect(onFormEvent).toHaveBeenCalledWith({ type: 'form_viewed' });
     await harness.click(button('Continue'));
     await harness.click(await screen.findByRole('radio', { name: 'Plan B' }));
     await screen.findByRole('heading', { name: 'Three' });
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /City/ })));
-    expect(onAnalyticsEvent).toHaveBeenCalledWith({ type: 'step_completed', stepId: 'two' });
+    expect(onFormEvent).toHaveBeenCalledWith({ type: 'step_completed', stepId: 'two' });
   });
 
   it('skips a step and submits without it', async () => {

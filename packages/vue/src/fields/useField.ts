@@ -1,7 +1,7 @@
 import { fieldDomId } from '@formhaus/core/internal';
 import type { FormField } from '@formhaus/core';
 import { computed } from 'vue';
-import type { FieldEmits, FormFieldProps } from '../types';
+import type { FieldEmits, FieldComponentProps } from '../types';
 
 export function fieldIds(field: Pick<FormField, 'key'>, id?: string) {
   const inputId = id ?? fieldDomId(undefined, field.key);
@@ -17,7 +17,7 @@ export function fieldAria(field: Pick<FormField, 'key' | 'helperText'>, id: stri
   };
 }
 
-export function useField(props: FormFieldProps, emit: FieldEmits) {
+export function useField(props: FieldComponentProps, emit: FieldEmits) {
   const inputId = computed(() => fieldIds(props.field, props.id).inputId);
   const control = computed(() => ({
     disabled: props.disabled || props.loading,
@@ -36,7 +36,7 @@ export function useField(props: FormFieldProps, emit: FieldEmits) {
 }
 
 export function useChoice(
-  props: FormFieldProps,
+  props: FieldComponentProps,
   emit: ((event: 'update:modelValue', value: unknown) => void) & ((event: 'commit', value: unknown) => void),
   pick?: (key: string) => unknown,
 ) {

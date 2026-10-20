@@ -72,7 +72,7 @@ describe('translation_template', () => {
   it('returns validation issues for a broken definition', () => {
     const result = translationTemplateTool({ definition: { ...keyed, i18n: { description: 'x' } }, lang: 'ru' });
     expect(result.ok).toBe(false);
-    expect(result.validation.issues.map(({ code }) => code)).toContain('i18n-unbound-slot');
+    expect(result.validation.issues.map(({ code }) => code)).toContain('i18n-key-without-text');
   });
 });
 

@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Ajv from 'ajv';
 import { describe, expect, it } from 'vitest';
-import { FormEngine, validateDefinition } from '../../src';
+import { checkDefinition, FormEngine } from '../../src';
 import { validateSubmission } from '../../src/server';
 import { buildIndex } from '../../../../scripts/templates-index.mjs';
 
@@ -45,7 +45,7 @@ describe('form templates', () => {
 
   it.each(templates)('$file has a valid definition', ({ template }) => {
     expect(validate(template.definition), JSON.stringify(validate.errors)).toBe(true);
-    expect(validateDefinition(template.definition)).toEqual([]);
+    expect(checkDefinition(template.definition).map((issue) => issue.message)).toEqual([]);
     expect(() => new FormEngine(template.definition)).not.toThrow();
   });
 });

@@ -142,3 +142,24 @@ describe('cloud uploads retry limits', () => {
     expect(states.at(-1)?.errors).toEqual({ cv: 'Upload the file again.' });
   });
 });
+
+describe('cloud uploads without a bot check', () => {
+  it('uploads the file again and resends once when Cloud reports file_taken', async () => {
+    const server = api([respond(409, { error: 'file_taken' }), done()]);
+    const { controller, onError } = create(false);
+    await controller.submit({ name: 'Ada', cv: file() });
+    expect(server.tickets()).toBe(2);
+    expect(server.submits().map(({ body }) => body.values.cv)).toEqual(['up-1', 'up-2']);
+    expect(onError).not.toHaveBeenCalled();
+  });
+
+  it('reports file_taken with its own message when the resend fails too', async () => {
+    api([respond(409, { error: 'file_taken' }), respond(409, { error: 'file_taken' })]);
+    const { controller, onError } = create(false);
+    await expect(controller.submit({ name: 'Ada', cv: file() })).rejects.toMatchObject({
+      code: 'file_taken',
+      message: 'A file is no longer available. Upload it again and send.',
+    });
+    expect(onError).toHaveBeenCalledOnce();
+  });
+});

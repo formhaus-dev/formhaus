@@ -216,5 +216,4 @@ it('forwards form events', async () => {
   const { emitted } = render(FormhausForm, { props: { id: 'abc', apiBase: 'https://example.test' } });
   await screen.findByText('Email');
   expect(emitted().formEvent).toContainEqual([{ type: 'form_viewed' }]);
-  expect(emitted().analyticsEvent).toContainEqual([{ type: 'form_viewed' }]);
 });

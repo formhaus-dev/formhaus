@@ -61,16 +61,16 @@ import definition from './signup.json';
 
 export function Signup() {
   const { t, i18n } = useTranslation('forms');
-  const form = useLocalizedForm(definition, {
-    translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }),
-    prefix: false,
-    lang: i18n.language,
-  });
+  const form = useLocalizedForm(
+    definition,
+    { translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }), prefix: false, lang: i18n.language },
+    { key: t },
+  );
   return <FormRenderer {...form} onSubmit={save} />;
 }
 ```
 
-The hook rebuilds the form when `lang` changes. Pass other changes, such as a namespace that finished loading, as the third argument: `useLocalizedForm(definition, source, [ready])`.
+The hook rebuilds the form when the definition, `lang`, `prefix`, the overlay or the `key` option changes. A rebuild clears the answers. A new `translate` function alone does not rebuild the form, so an inline arrow is safe: validation messages and labels call the latest `translate`. `t` from `react-i18next` changes when a namespace finishes loading, so `key: t` makes the form pick up the loaded texts.
 
 Lokalise: export the `forms` namespace as nested JSON with i18next placeholders, so `errors.password.tooShort` can read `Не менее {{min}} символов`.
 

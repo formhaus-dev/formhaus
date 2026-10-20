@@ -38,7 +38,7 @@ const declarations = (entries, value = (entry) => entry.value, name = (entry) =>
 
 const block = (selector, lines, indent = '') =>
   [`${indent}${selector} {`, ...lines.map((line) => (line ? `${indent}  ${line}` : '')), `${indent}}`].join('\n');
-const autoName = (entry) => `fh-auto-${entry.auto}`;
+const autoName = (entry) => `fhi-auto-${entry.auto}`;
 
 const defaults = cssEntries(await load());
 const byName = new Map(defaults.map((entry) => [entry.name, entry]));

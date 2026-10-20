@@ -73,14 +73,14 @@ describe('runtime props objects', () => {
 
   it('compile in an SFC without resolving any imported type', () => {
     const source = `<script setup lang="ts">
-import { formFieldEmits, formFieldProps } from '@formhaus/vue';
-const props = defineProps(formFieldProps);
-const emit = defineEmits(formFieldEmits);
+import { fieldComponentEmits, fieldComponentProps } from '@formhaus/vue';
+const props = defineProps(fieldComponentProps);
+const emit = defineEmits(fieldComponentEmits);
 </script>
 <template><input :id="props.id" @blur="emit('blur')" /></template>`;
     const { descriptor } = parse(source, { filename: '/consumer/src/MyField.vue' });
     const { content } = compileScript(descriptor, { id: 'my-field' });
-    expect(content).toContain('props: formFieldProps');
-    expect(content).toContain('emits: formFieldEmits');
+    expect(content).toContain('props: fieldComponentProps');
+    expect(content).toContain('emits: fieldComponentEmits');
   });
 });

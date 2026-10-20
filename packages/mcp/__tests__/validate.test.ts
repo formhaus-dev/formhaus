@@ -41,7 +41,7 @@ describe('validate_definition', () => {
       'error /: missing required property "title".',
       'error /: missing required property "submit".',
       'error /steps/0: missing required property "title".',
-      'error /steps/0/fields/0: missing required property "label".',
+      'error /steps/0/fields/0/label: missing required property "label".',
       'error /steps/0/fields/0/colour: unknown property "colour". Remove "colour".',
       'error /steps/0/fields/0: missing required property "type".',
     ]);
@@ -63,7 +63,7 @@ describe('validate_definition', () => {
           fixes: [rename],
         },
         {
-          code: 'empty-label',
+          code: 'missing-label',
           severity: 'warning',
           path: '/fields/0/label',
           message: '/fields/0/label: the label of "name" is empty. Add a label so screen readers can name the input.',
@@ -77,8 +77,8 @@ describe('validate_definition', () => {
   it('keeps properties the schema requires as errors', () => {
     const fields = [{ key: 'a', type: 'select', options: [{ value: 'x' }] }];
     expect(messages({ id: 'x', title: 'X', submit: { label: 'Go' }, fields })).toEqual([
-      'error /fields/0: missing required property "label". Add a label so screen readers can name the input.',
-      'error /fields/0/options/0: missing required property "label".',
+      'error /fields/0/label: missing required property "label". Add a label so screen readers can name the input.',
+      'error /fields/0/options/0/label: missing required property "label".',
     ]);
   });
 

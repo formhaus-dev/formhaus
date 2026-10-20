@@ -28,6 +28,7 @@ export type Action =
   | { do: 'validate' }
   | { do: 'validateField'; key: string }
   | { do: 'goToStepWithField'; key: string }
+  | { do: 'goToStep'; stepId: string }
   | { do: 'reset'; values?: Record<string, unknown> }
   | { do: 'replaceDefinition'; definition: FormDefinition }
   | { do: 'resolve'; deferred: string }

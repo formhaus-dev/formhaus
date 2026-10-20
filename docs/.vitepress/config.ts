@@ -82,6 +82,7 @@ export default defineConfig({
           { text: 'Migrate to 0.15', link: '/migrate/0.15' },
           { text: 'Migrate to 0.19', link: '/migrate/0.19' },
           { text: 'Migrate to 0.20', link: '/migrate/0.20' },
+          { text: 'Migrate to 0.22', link: '/migrate/0.22' },
         ],
       },
       {
@@ -99,6 +100,7 @@ export default defineConfig({
           { text: 'Nested sections', link: '/recipes/nested-sections' },
           { text: 'Quiz funnel', link: '/recipes/quiz-funnel' },
           { text: 'Question timing', link: '/recipes/question-timing' },
+          { text: 'Steps in the URL', link: '/recipes/steps-in-url' },
           { text: 'Survey templates', link: '/recipes/survey-templates' },
           { text: 'Headless engine', link: '/recipes/headless-engine' },
           { text: 'Svelte 5', link: '/recipes/svelte' },

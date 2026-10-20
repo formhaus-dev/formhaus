@@ -34,8 +34,8 @@ const steps: FormDefinition = {
 };
 
 describe('FormRenderer focus and keyboard', () => {
-  it('focuses the first invalid field after a failed submit', async () => {
-    render(FormRenderer, { props: { definition: contact } });
+  it('focuses the first invalid field after a failed submit without the error summary', async () => {
+    render(FormRenderer, { props: { definition: contact, errorSummary: false } });
     await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
 
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Email/ })));
@@ -49,15 +49,15 @@ describe('FormRenderer focus and keyboard', () => {
   });
 
   it('shows the step with the error and focuses the field', async () => {
-    const submitHandler = vi.fn();
-    render(FormRenderer, { props: { definition: steps, validators, initialValues: { x: 'filled' }, submitHandler } });
+    const onSubmit = vi.fn();
+    render(FormRenderer, { props: { definition: steps, validators, initialValues: { x: 'filled' }, onSubmit } });
     await fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     await fireEvent.update(await screen.findByRole('textbox', { name: 'Y' }), 'yes');
     await waitFor(() => expect(document.querySelector('form')?.getAttribute('aria-busy')).toBe('false'));
     await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
 
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /X/ })));
-    expect(submitHandler).not.toHaveBeenCalled();
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 
   it('focuses the first invalid field after a failed Continue', async () => {
@@ -92,12 +92,12 @@ describe('FormRenderer focus and keyboard', () => {
   });
 
   it('uses a submit button for the primary action and submits once', async () => {
-    const submitHandler = vi.fn();
-    render(FormRenderer, { props: { definition: contact, initialValues: { email: 'a@b.co', plan: 'a' }, submitHandler } });
+    const onSubmit = vi.fn();
+    render(FormRenderer, { props: { definition: contact, initialValues: { email: 'a@b.co', plan: 'a' }, onSubmit } });
     const button = screen.getByRole('button', { name: 'Send' });
     await fireEvent.click(button);
 
-    await waitFor(() => expect(submitHandler).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
     expect(button.getAttribute('type')).toBe('submit');
   });
 });
