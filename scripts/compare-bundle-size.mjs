@@ -59,6 +59,9 @@ const LIBRARIES = [
   },
   {
     name: `JSON Forms ${v('@jsonforms/core')} (\`@jsonforms/core\` + \`@jsonforms/react\` + \`@jsonforms/vanilla-renderers\`)`,
+    quote: 'jsonforms',
+    quoteText: (size) =>
+      `${size} for \`@jsonforms/core\` + \`@jsonforms/react\` + \`@jsonforms/vanilla-renderers\` ${v('@jsonforms/core')}`,
     external: REACT_EXTERNAL,
     entry: `export { JsonForms } from '@jsonforms/react';\nexport { vanillaRenderers } from '@jsonforms/vanilla-renderers';`,
     features: [
