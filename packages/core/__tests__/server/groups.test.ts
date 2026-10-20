@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { FormEngine } from '../../src';
 import { validateSubmission } from '../../src/server';
 import type { FormDefinition, FormGroup, FormNode } from '../../src/types';
+import { countReads } from './reads';
 
 const group = (validation?: FormGroup['validation']): FormDefinition => ({
   formatVersion: '1.1',
@@ -11,37 +12,30 @@ const group = (validation?: FormGroup['validation']): FormDefinition => ({
   fields: [{ key: 'people', type: 'group', label: 'People', validation, fields: [{ key: 'name', type: 'text', label: 'Name' }] }],
 });
 
-const timed = (run: () => void) => {
-  run();
-  const start = performance.now();
-  run();
-  return performance.now() - start;
-};
-
 describe('validateSubmission with oversized or invalid groups', () => {
-  it('rejects 100,000 items without checking them', () => {
-    const items = Array.from({ length: 100_000 }, () => ({}));
+  it('rejects one item over the limit without reading any item', () => {
     for (const definition of [group({ maxLength: 3 }), group()]) {
-      let result = validateSubmission(definition, { people: items });
-      expect(
-        timed(() => {
-          result = validateSubmission(definition, { people: items });
-        }),
-      ).toBeLessThan(50);
+      const items = countReads(Array.from({ length: 101 }, () => ({})));
+      const result = validateSubmission(definition, { people: items.list });
+      expect(items.reads()).toBe(0);
       expect(result.values).toEqual({});
       expect(Object.keys(result.errors)).toEqual(['people']);
     }
   });
 
-  it('checks 100 items of 50 invalid cells in linear time', () => {
+  it('reads invalid cells a fixed number of times per cell', () => {
     const fields = Array.from({ length: 50 }, (_, index) => ({ key: `t${index}`, type: 'text' as const, label: 'T' }));
     const definition: FormDefinition = { ...group(), fields: [{ key: 'people', type: 'group', label: 'People', fields }] };
-    const items = Array.from({ length: 100 }, () => Object.fromEntries(fields.map(({ key }) => [key, {}])));
-    let result = validateSubmission(definition, { people: items });
-    expect(timed(() => (result = validateSubmission(definition, { people: items })))).toBeLessThan(1000);
-    expect(Object.keys(result.errors)).toHaveLength(5000);
-    expect(result.errors['people.99.t49']).toBe('Must be text');
-    expect(result.values).toEqual({ people: Array.from({ length: 100 }, () => ({})) });
+    const run = (length: number) => {
+      const items = countReads(Array.from({ length }, () => Object.fromEntries(fields.map(({ key }) => [key, {}]))));
+      return { result: validateSubmission(definition, { people: items.entries() }), reads: items.reads() };
+    };
+    const half = run(50);
+    const full = run(100);
+    expect(full.reads).toBe(2 * half.reads);
+    expect(Object.keys(full.result.errors)).toHaveLength(5000);
+    expect(full.result.errors['people.99.t49']).toBe('Must be text');
+    expect(full.result.values).toEqual({ people: Array.from({ length: 100 }, () => ({})) });
   });
 
   it('reports the client message for too many items', () => {
@@ -134,12 +128,12 @@ describe('validateSubmission with a key shared by exclusive branches', () => {
     });
   });
 
-  it('rejects 100,000 items without checking them', () => {
+  it('rejects one item over the limit without reading any item', () => {
     const definition = branches(people(3), text);
-    const items = Array.from({ length: 100_000 }, () => ({}));
     for (const route of ['left', 'right']) {
-      let result = validateSubmission(definition, { route, answer: items });
-      expect(timed(() => (result = validateSubmission(definition, { route, answer: items })))).toBeLessThan(50);
+      const items = countReads(Array.from({ length: 101 }, () => ({})));
+      const result = validateSubmission(definition, { route, answer: items.list });
+      expect(items.reads()).toBe(0);
       expect(result.values).toEqual({ route });
       expect(Object.keys(result.errors)).toEqual(['answer']);
     }
@@ -177,11 +171,11 @@ describe('validateSubmission with an oversized multiselect inside group items', 
     ],
   };
 
-  it('blanks a 250,000-item value in each of 100 items before conditions run', () => {
-    const huge = Array.from({ length: 250_000 }, () => 'x');
-    const items = Array.from({ length: 100 }, () => ({ roles: huge, picked: 'smuggled', t0: 'kept', t1: 'hidden' }));
-    let result = validateSubmission(definition, { people: items });
-    expect(timed(() => (result = validateSubmission(definition, { people: items })))).toBeLessThan(1000);
+  it('blanks a value over the item limit in each of 100 items before conditions read it', () => {
+    const huge = countReads(Array.from({ length: 1001 }, () => 'x'));
+    const items = Array.from({ length: 100 }, () => ({ roles: huge.list, picked: 'smuggled', t0: 'kept', t1: 'hidden' }));
+    const result = validateSubmission(definition, { people: items });
+    expect(huge.reads()).toBe(0);
     expect(Object.keys(result.errors)).toHaveLength(100);
     expect(result.errors['people.99.roles']).toBe('Select one of the available options');
     expect(result.values).toEqual({ people: Array.from({ length: 100 }, () => ({ t0: 'kept' })) });
@@ -191,6 +185,7 @@ describe('validateSubmission with an oversized multiselect inside group items', 
       ...shown.filter((_, index) => index % 2 === 0).map(({ key }) => key),
     ]);
     expect(engine.validate()['people.99.roles']).toBe(result.errors['people.99.roles']);
+    expect(huge.reads()).toBe(0);
   });
 
   it('blanks a string value and keeps the client message', () => {

@@ -65,12 +65,18 @@ describe('checkDefinition', () => {
     ]);
   });
 
-  it('checks a long adversarial pattern in linear time', () => {
-    for (const pattern of ['('.repeat(500) + '+)+'.repeat(500), '((a+)+'.repeat(20_000), `${'(a|'.repeat(300)}b`]) {
-      const start = performance.now();
-      checkDefinition(form([text('code', { validation: { pattern } })]));
-      expect(performance.now() - start).toBeLessThan(200);
+  it('reports adversarial patterns as invalid', () => {
+    for (const pattern of ['('.repeat(500) + '+)+'.repeat(500), '((a+)+'.repeat(1000), `${'(a|'.repeat(300)}b`]) {
+      expect(codes(form([text('code', { validation: { pattern } })]))).toEqual(['error invalid-pattern /fields/0/validation/pattern']);
     }
+  });
+
+  it('scans patterns for nested quantifiers up to 1000 characters', () => {
+    const pattern = (length: number) => `(a+)+${'b'.repeat(length - 5)}`;
+    expect(codes(form([text('code', { validation: { pattern: pattern(1000) } })]))).toEqual([
+      'warning slow-pattern /fields/0/validation/pattern',
+    ]);
+    expect(codes(form([text('code', { validation: { pattern: pattern(1001) } })]))).toEqual([]);
   });
 
   it('handles a deep acyclic dependency chain', () => {

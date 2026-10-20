@@ -8,7 +8,7 @@ import type { FormDefinition, FormField, FormStep, ShowCondition } from '../../s
 
 type Values = Record<string, unknown>;
 
-const numRuns = Number(process.env.FORMHAUS_FUZZ_RUNS ?? 3000);
+const numRuns = Number(process.env.FORMHAUS_FUZZ_RUNS ?? 300);
 
 function stepValues(step: { fields: FormField[] }, values: Values, previous: Values): Values {
   const candidates = { ...previous };

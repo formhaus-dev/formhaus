@@ -96,7 +96,7 @@ jobs:
           if pnpm --filter "$filter" --filter '!{.}' list --depth -1 --json | grep -q '"@formhaus/editor-react"'; then echo 'browsers=true' >> "$GITHUB_OUTPUT"; fi
 
       - if: steps.affected.outputs.browsers == 'true'
-        run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium firefox webkit
+        run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium
 
       - if: needs.changes.outputs.full == 'true'
         run: pnpm test

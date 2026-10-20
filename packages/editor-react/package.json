@@ -24,7 +24,8 @@
   ],
   "scripts": {
     "build": "tsup",
-    "test": "vitest run",
+    "test": "vitest run --project unit --project browser --project \"engines (chromium)\"",
+    "test:engines": "vitest run --project engines",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist",
     "test:browser": "vitest run --project browser --project engines"

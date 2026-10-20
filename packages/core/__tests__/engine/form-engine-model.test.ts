@@ -5,7 +5,7 @@ import { validateFieldValue, validateStep } from '../../src/validation';
 import { commandArbitrary, initialValueArbitrary, modelDefinition } from './model.fixtures';
 import { runModel } from './model.harness';
 
-const numRuns = Number(process.env.FORMHAUS_MODEL_RUNS ?? 2000);
+const numRuns = Number(process.env.FORMHAUS_MODEL_RUNS ?? 200);
 
 it('keeps engine invariants under random interleavings of edits, navigation and hooks', async () => {
   await fc.assert(

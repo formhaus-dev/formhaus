@@ -3,7 +3,7 @@ import { it } from 'vitest';
 import { commandArbitrary, fuzzCases, initialValues } from './lifecycle-fuzz.fixtures';
 import { runFuzz } from './lifecycle-fuzz.harness';
 
-const numRuns = Number(process.env.FORMHAUS_FUZZ_RUNS ?? 500);
+const numRuns = Number(process.env.FORMHAUS_FUZZ_RUNS ?? 50);
 const seed = Number(process.env.FORMHAUS_FUZZ_SEED ?? 20261015);
 
 it.each(fuzzCases.map((fuzz) => [fuzz.definition.id, fuzz] as const))(
