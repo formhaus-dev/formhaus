@@ -64,7 +64,7 @@ describe('failure messages', () => {
     [502, 'unknown', 'Something went wrong', 'retry'],
     [503, 'unavailable', 'Something went wrong', 'retry'],
   ])('%i %s', (status, code, text, action) => {
-    const error = new CloudError(status, code);
+    const error = new CloudError({ status, code });
     expect(error.message).toContain(text);
     expect(error.action).toBe(action);
     expect(error.retryable).toBe(action === 'retry');
@@ -76,7 +76,7 @@ describe('versions', () => {
   it('reads the version header and busts the cache after an update', async () => {
     const fetchMock = vi.fn().mockResolvedValue(reply(200, v2, 2));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchForm({ id: 'abc' }, undefined, 2)).resolves.toEqual({ definition: v2, version: 2, settings: {} });
+    await expect(fetchForm({ id: 'abc', version: 2 })).resolves.toEqual({ definition: v2, version: 2, settings: {} });
     expect(fetchMock.mock.calls[0][0]).toBe(`https://api.formhaus.cc/f/abc/form?core=${__FORMHAUS_CORE_VERSION__}&v=2`);
   });
 

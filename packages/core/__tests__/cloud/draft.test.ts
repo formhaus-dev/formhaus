@@ -47,7 +47,7 @@ describe('drafts', () => {
 
   it('never writes a password inside a group item or a hidden value to storage', () => {
     const storage = memory();
-    const store = sessionDraftStore(undefined, () => storage);
+    const store = sessionDraftStore({ storage: () => storage });
     store.save('d', 1, draftValues(definition, values));
     const saved = [...storage.data.values()].join();
     expect(saved).not.toContain('1234');

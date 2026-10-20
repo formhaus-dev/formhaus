@@ -91,7 +91,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   const challenge = () => {
     if (!state.challenge || !options.challengeHost) return undefined;
     framed = configOf(state.challenge);
-    return (frame ??= createChallengeFrame(state.challenge, options.id, options.challengeHost));
+    return (frame ??= createChallengeFrame({ challenge: state.challenge, formId: options.id, host: options.challengeHost }));
   };
   const update = (patch: Partial<CloudState>) => {
     state = { ...state, ...patch };
@@ -114,9 +114,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   async function refresh(error: CloudError, sent: Record<string, unknown>) {
     const before = state.definition;
     try {
-      const next = await fetchForm(options, controller.signal, error.version);
+      const next = await fetchForm({ ...options, signal: controller.signal, version: error.version });
       if (!alive()) return;
-      if (next.version === undefined || next.version < (error.version ?? 0)) throw new CloudError(409, 'form_updated');
+      if (next.version === undefined || next.version < (error.version ?? 0)) throw new CloudError({ status: 409, code: 'form_updated' });
       const kept = before ? carryValues(sent, next.definition, before) : {};
       submitter = submitterFor(next);
       report({
@@ -151,7 +151,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         initial = undefined;
         return;
       }
-      fetchForm(options, controller.signal).then(
+      fetchForm({ ...options, signal: controller.signal }).then(
         (form) => {
           if (alive()) show(form);
         },
@@ -186,7 +186,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
           if (!alive()) return;
           const token = await check?.token();
           sending = true;
-          const submission = await submitter(sent, skippedSteps, token);
+          const submission = await submitter(sent, { skippedSteps, challengeToken: token });
           check?.spend();
           if (!alive()) return;
           options.draftStore?.clear(options.id);

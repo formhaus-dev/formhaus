@@ -8,18 +8,19 @@ describe('validation rules', () => {
     const validator = vi.fn(() => 'From validator');
     const field = text('code', { validation: { minLength: 5, pattern: '^[0-9]+$', matchField: 'other', validator: 'check' } });
     const validators = { check: validator };
-    expect(validateFieldValue(field, 'ab', { other: 'zz' }, validators)).toBe('Minimum length is 5');
-    expect(validateFieldValue(field, 'abcdef', { other: 'zz' }, validators)).toBe('Invalid format');
-    expect(validateFieldValue(field, '123456', { other: 'zz' }, validators)).toBe('Fields must match');
-    expect(validateFieldValue(field, '123456', { other: '123456' }, validators)).toBe('From validator');
-    expect(validateFieldValue({ ...field, type: 'email' }, 'ab', {}, validators)).toBe('Enter a valid email');
+    expect(validateFieldValue(field, 'ab', { other: 'zz' }, { validators })).toBe('Minimum length is 5');
+    expect(validateFieldValue(field, 'abcdef', { other: 'zz' }, { validators })).toBe('Invalid format');
+    expect(validateFieldValue(field, '123456', { other: 'zz' }, { validators })).toBe('Fields must match');
+    expect(validateFieldValue(field, '123456', { other: '123456' }, { validators })).toBe('From validator');
+    expect(validateFieldValue({ ...field, type: 'email' }, 'ab', {}, { validators })).toBe('Enter a valid email');
   });
 
   it('never passes an empty value to a validator', () => {
     const validator = vi.fn(() => 'bad');
     const field = text('x', { validation: { validator: 'check' } });
-    for (const empty of [undefined, null, '', []]) expect(validateFieldValue(field, empty, {}, { check: validator })).toBeNull();
-    expect(validateFieldValue({ ...field, type: 'checkbox' }, false, {}, { check: validator })).toBeNull();
+    for (const empty of [undefined, null, '', []])
+      expect(validateFieldValue(field, empty, {}, { validators: { check: validator } })).toBeNull();
+    expect(validateFieldValue({ ...field, type: 'checkbox' }, false, {}, { validators: { check: validator } })).toBeNull();
     expect(validator).not.toHaveBeenCalled();
   });
 });

@@ -5,5 +5,5 @@ export {
   type MessageSource,
   type ValidationRule,
 } from './default-messages';
-export { type ValidatorFn, validateFieldValue } from './validate-field';
+export { type ValidateOptions, type ValidatorFn, validateFieldValue } from './validate-field';
 export { validateFields, validateStep } from './validate-step';

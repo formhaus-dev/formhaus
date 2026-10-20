@@ -1,5 +1,29 @@
 export type CloudAction = 'retry' | 'reload' | null;
 
+export type KnownCloudErrorCode =
+  | 'network'
+  | 'timeout'
+  | 'invalid'
+  | 'rate_limited'
+  | 'limit_reached'
+  | 'not_found'
+  | 'paused'
+  | 'expired'
+  | 'body_too_large'
+  | 'idempotency_key_reused'
+  | 'form_updated'
+  | 'client_outdated'
+  | 'verification_failed'
+  | 'verification_timeout'
+  | 'verification_required'
+  | 'malformed_body'
+  | 'unsupported_media_type'
+  | 'invalid_idempotency_key'
+  | 'invalid_response'
+  | 'unavailable'
+  | 'internal'
+  | 'unknown';
+
 export interface CloudFailure {
   message: string;
   action: CloudAction;
@@ -12,7 +36,7 @@ const SERVER: CloudFailure = { message: 'Something went wrong. Try again.', acti
 const GENERIC: CloudFailure = { message: 'Could not send. Try again.', action: 'retry' };
 const BROKEN: CloudFailure = { message: 'Could not send. Reload the page and try again.', action: 'reload' };
 
-const BY_CODE: Record<string, CloudFailure> = {
+const MESSAGES = {
   network: { message: 'Could not reach the form server. Check your connection and try again.', action: 'retry' },
   timeout: { message: 'The form server did not respond. Try again.', action: 'retry' },
   invalid: { message: 'Some answers were not accepted.', action: null },
@@ -34,9 +58,11 @@ const BY_CODE: Record<string, CloudFailure> = {
   invalid_response: SERVER,
   unavailable: SERVER,
   internal: SERVER,
-};
+} satisfies Record<Exclude<KnownCloudErrorCode, 'unknown'>, CloudFailure>;
 
-const CODE_BY_STATUS: Record<number, string> = {
+const BY_CODE: Record<string, CloudFailure | undefined> = MESSAGES;
+
+const CODE_BY_STATUS: Record<number, KnownCloudErrorCode> = {
   0: 'network',
   400: 'malformed_body',
   402: 'limit_reached',

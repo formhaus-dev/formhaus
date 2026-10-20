@@ -63,8 +63,7 @@ export async function runModel(
     for (const [key, message] of Object.entries(engine.errors)) {
       if (!pathFields.has(key)) fail(`error on off-path field ${key}`);
       const field = fields.get(key)!;
-      if (message !== SERVER_ERROR && !api.validateFieldValue(field, engine.values[key], active, {}))
-        fail(`stale error on ${key}: ${message}`);
+      if (message !== SERVER_ERROR && !api.validateFieldValue(field, engine.values[key], active)) fail(`stale error on ${key}: ${message}`);
     }
   };
 
@@ -75,7 +74,7 @@ export async function runModel(
       if (generation !== startGeneration) fail('submission dispatched after reset or cancel');
       if (stepIds(engine) !== startPath) fail('submission dispatched after the path changed');
       for (const step of engine.visibleSteps) {
-        const errors = api.validateStep(step, payload, {});
+        const errors = api.validateStep(step, payload);
         if (!engine.isStepSkipped(step.id) && Object.keys(errors).length > 0) fail(`invalid payload dispatched: ${JSON.stringify(errors)}`);
       }
     };

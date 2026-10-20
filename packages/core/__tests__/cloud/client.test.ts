@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CloudError, createSubmitter, fetchDefinition } from '../../src/cloud';
+import { CloudError, createSubmitter, fetchForm } from '../../src/cloud';
 import { createCloudController, type CloudState } from '../../src/internal';
 import type { FormDefinition } from '../../src';
 
@@ -20,13 +20,13 @@ describe('cloud client', () => {
   it('fetches the definition from the api base', async () => {
     const fetchMock = vi.fn().mockResolvedValue(reply(200, definition));
     vi.stubGlobal('fetch', fetchMock);
-    await expect(fetchDefinition({ id: 'abc', apiBase: 'https://example.test/' })).resolves.toEqual(definition);
+    await expect(fetchForm({ id: 'abc', apiBase: 'https://example.test/' })).resolves.toMatchObject({ definition });
     expect(fetchMock.mock.calls[0][0]).toBe(`https://example.test/f/abc/form?core=${__FORMHAUS_CORE_VERSION__}`);
   });
 
   it('throws a CloudError with the response code', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(reply(410, { error: 'form_closed' })));
-    await expect(fetchDefinition({ id: 'abc' })).rejects.toMatchObject({ status: 410, code: 'form_closed' });
+    await expect(fetchForm({ id: 'abc' })).rejects.toMatchObject({ status: 410, code: 'form_closed' });
   });
 
   it('reuses the idempotency key for the same body and rotates it for a new one', async () => {
@@ -53,9 +53,9 @@ describe('cloud client', () => {
       .mockResolvedValue(reply(201, { id: 's2', values: {} }));
     vi.stubGlobal('fetch', fetchMock);
     const submit = createSubmitter({ id: 'abc' });
-    await expect(submit({ name: 'Ada' }, [], 'token-1')).rejects.toBeInstanceOf(CloudError);
-    await submit({ name: 'Ada' }, [], 'token-2');
-    await submit({ name: 'Grace' }, [], 'token-3');
+    await expect(submit({ name: 'Ada' }, { challengeToken: 'token-1' })).rejects.toBeInstanceOf(CloudError);
+    await submit({ name: 'Ada' }, { challengeToken: 'token-2' });
+    await submit({ name: 'Grace' }, { challengeToken: 'token-3' });
     const keys = fetchMock.mock.calls.map(([, init]) => init.headers['Idempotency-Key']);
     const tokens = fetchMock.mock.calls.map(([, init]) => JSON.parse(init.body)._fh_ts);
     expect(tokens).toEqual(['token-1', 'token-2', 'token-3']);
@@ -118,7 +118,7 @@ describe('cloud client', () => {
     const fetchMock = vi.fn().mockResolvedValue(reply(201, { id: 's1', values: {} }));
     vi.stubGlobal('fetch', fetchMock);
     vi.stubGlobal('crypto', { getRandomValues: (array: Uint8Array) => array.fill(7) });
-    await createSubmitter({ id: 'abc' })({ name: 'Ada' }, ['two']);
+    await createSubmitter({ id: 'abc' })({ name: 'Ada' }, { skippedSteps: ['two'] });
     const [, init] = fetchMock.mock.calls[0];
     expect(JSON.parse(init.body)).toEqual({ attribution: {}, values: { name: 'Ada' }, skippedSteps: ['two'] });
     expect(init.headers['Idempotency-Key']).toMatch(/^[0-9a-f-]{36}$/);

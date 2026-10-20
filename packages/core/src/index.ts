@@ -61,6 +61,7 @@ export {
   type MessageParams,
   type MessageSource,
   type ValidationRule,
+  type ValidateOptions,
   type ValidatorFn,
   getDefaultMessage,
   validateFieldValue,

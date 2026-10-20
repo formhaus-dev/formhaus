@@ -34,7 +34,12 @@ export function draftValues(definition: FormDefinition, values: Record<string, u
 
 const sessionStorageOf = () => (globalThis as { sessionStorage?: DraftStorage }).sessionStorage;
 
-export function sessionDraftStore(maxAge = WEEK, storageOf: () => DraftStorage | undefined = sessionStorageOf): DraftStore {
+export interface SessionDraftStoreOptions {
+  maxAge?: number;
+  storage?: () => DraftStorage | undefined;
+}
+
+export function sessionDraftStore({ maxAge = WEEK, storage: storageOf = sessionStorageOf }: SessionDraftStoreOptions = {}): DraftStore {
   const key = (id: string) => `formhaus:draft:${id}`;
   const attempt = <T>(action: (storage: DraftStorage) => T, fallback: T): T => {
     try {

@@ -59,9 +59,9 @@ export function withEnding(settings: CloudSettings, ending: unknown): CloudSetti
 }
 
 export function parseForm(body: unknown, response: CloudResponse): PublishedForm {
-  if (!isRecord(body)) throw new CloudError(response.status, 'invalid_response');
+  if (!isRecord(body)) throw new CloudError({ status: response.status, code: 'invalid_response' });
   if (!('definition' in body)) return { definition: body as unknown as FormDefinition, version: headerVersion(response), settings: {} };
-  if (!isRecord(body.definition)) throw new CloudError(response.status, 'invalid_response');
+  if (!isRecord(body.definition)) throw new CloudError({ status: response.status, code: 'invalid_response' });
   return {
     definition: body.definition as unknown as FormDefinition,
     version: toVersion(body.version) ?? headerVersion(response),

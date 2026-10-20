@@ -10,8 +10,8 @@ describe('message catalogs', () => {
       calls.push([key, params, field.key]);
       return key === 'minLength' ? `{min} ${String(params.min)}` : undefined;
     };
-    expect(validateFieldValue(password, 'abc', {}, undefined, messages)).toBe('{min} 8');
-    expect(validateFieldValue(password, '', {}, undefined, messages)).toBe('This field is required');
+    expect(validateFieldValue(password, 'abc', {}, { messages })).toBe('{min} 8');
+    expect(validateFieldValue(password, '', {}, { messages })).toBe('This field is required');
     expect(calls).toEqual([
       ['minLength', { min: 8 }, 'password'],
       ['required', {}, 'password'],

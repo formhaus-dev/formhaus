@@ -24,11 +24,11 @@ describe('validateFieldValue', () => {
 
   it('handles invalid regex gracefully', () => {
     const field = makeField({ validation: { pattern: '[invalid(' } });
-    expect(validateFieldValue(field, 'anything', {}, {})).toBeNull();
+    expect(validateFieldValue(field, 'anything', {})).toBeNull();
   });
 
   it('returns error when target field does not exist', () => {
     const field = makeField({ key: 'confirmEmail', validation: { matchField: 'email' } });
-    expect(validateFieldValue(field, 'a@b.com', { confirmEmail: 'a@b.com' }, {})).toBe('Fields must match');
+    expect(validateFieldValue(field, 'a@b.com', { confirmEmail: 'a@b.com' })).toBe('Fields must match');
   });
 });
