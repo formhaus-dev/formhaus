@@ -1,10 +1,12 @@
 import type { FieldOption } from '@formhaus/core';
+import { imageSource } from '@formhaus/core/internal';
 import { useContext, useRef, useState } from 'react';
 import { LabelContext } from '../labels';
 
 let pressed: EventTarget | null = null;
 
-export function OptionImage({ option: { image, label } }: { option: FieldOption }) {
+export function OptionImage({ option: { image: source, label } }: { option: FieldOption }) {
+  const image = imageSource(source);
   const text = useContext(LabelContext);
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);

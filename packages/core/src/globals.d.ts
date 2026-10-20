@@ -50,11 +50,13 @@ declare const process: { env: Record<string, string | undefined> };
 declare const __FORMHAUS_CORE_VERSION__: string;
 
 declare class URL {
-  constructor(url: string);
+  constructor(url: string, base?: string);
   readonly origin: string;
   readonly pathname: string;
   readonly protocol: string;
   readonly hostname: string;
+  readonly username: string;
+  readonly password: string;
 }
 
 declare class URLSearchParams {
