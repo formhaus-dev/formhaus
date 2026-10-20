@@ -1,7 +1,7 @@
 const PATTERN_TOKEN =
   /(\(\?<?[=!])|(\((?:\?<[^>]*>|\?:)?)|(\)|\\(?:x[\da-f]{2}|u[\da-f]{4}|c[a-z]|\d+|[^bB])|\[(?:\\.|[^\]])*]|[^|^$\\])((?:[*+?]|\{\d+(?:,\d*)?\})\??)?|\\?./gis;
 
-const ASCII = Array.from({ length: 128 }, (_, code) => String.fromCharCode(code));
+const ASCII = /* @__PURE__ */ Array.from({ length: 128 }, (_, code) => String.fromCharCode(code));
 
 function samples(atom: string): string[] {
   try {

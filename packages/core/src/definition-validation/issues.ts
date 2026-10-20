@@ -88,8 +88,8 @@ function create(severity: DefinitionIssue['severity']) {
   });
 }
 
-export const error = create('error');
-export const warning = create('warning');
+export const error = /* @__PURE__ */ create('error');
+export const warning = /* @__PURE__ */ create('warning');
 
 export function pointer(key: string): string {
   return key.replace(/~/g, '~0').replace(/\//g, '~1');

@@ -29,7 +29,7 @@ interface FormGroupControllerProps extends ControllerProps {
 
 type Focus = { index: number; added: boolean } | { id: string } | null;
 
-export const FormGroupController = memo(function FormGroupController({
+export const FormGroupController = /* @__PURE__ */ memo(function FormGroupController({
   group,
   disabled,
   options,

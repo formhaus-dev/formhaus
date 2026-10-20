@@ -16,7 +16,7 @@ interface FormFieldsControllerProps extends ControllerProps {
   onItemsChange: (key: string, apply: () => boolean) => boolean;
 }
 
-export const FormFieldsController = memo(function FormFieldsController({
+export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsController({
   loading,
   optionsProviders,
   labels,
