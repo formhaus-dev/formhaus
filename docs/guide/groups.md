@@ -61,7 +61,7 @@ Each item holds the `defaultValue` of its fields, also an item from the initial 
 
 - `required: true` means at least one item.
 - `minLength` and `maxLength` count items. Their default messages are `At least {min} required` and `At most {max} allowed`.
-- Renderers hide Add at `maxLength`, or at 100 items without it. They hide Remove at `minLength`, or at 1 item when `required`.
+- Renderers hide Add at `maxLength`, or at 100 items without it. A group never holds more than 1000 items, whatever `maxLength` says. They hide Remove at `minLength`, or at 1 item when `required`.
 - `validator` receives the whole array, so it can check rules across items.
 
 ## Conditions inside items

@@ -83,3 +83,19 @@ it('creates a new engine when the definition object changes', async () => {
   await rerender({ definition: { ...definition } });
   expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('');
 });
+
+it('keeps a string file value as an app reference without showing or fetching it', async () => {
+  const fetchMock = vi.fn();
+  vi.stubGlobal('fetch', fetchMock);
+  const onSubmit = vi.fn();
+  const reference = 'file:///etc/passwd';
+  const files: FormDefinition = { id: 'files', title: '', submit: { label: 'Send' }, fields: [{ key: 'cv', type: 'file', label: 'CV' }] };
+  const { container } = render(FormRenderer, { props: { definition: files, initialValues: { cv: reference }, onSubmit } });
+  expect((screen.getByLabelText('CV') as HTMLInputElement).value).toBe('');
+  expect(container.querySelectorAll('a, img, iframe, object, embed')).toHaveLength(0);
+  expect(container.innerHTML).not.toContain(reference);
+  await fireEvent.click(screen.getByText('Send'));
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ cv: reference }, []));
+  expect(fetchMock).not.toHaveBeenCalled();
+  vi.unstubAllGlobals();
+});

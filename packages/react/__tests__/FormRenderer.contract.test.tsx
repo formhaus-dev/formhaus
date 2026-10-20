@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
 import { useState } from 'react';
-import { expect, it } from 'vitest';
+import { expect, it, vi } from 'vitest';
 import * as entry from '../src';
 
 const definition: FormDefinition = {
@@ -52,4 +52,20 @@ it('creates a new engine when the definition object changes', () => {
   fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'Ada' } });
   rerender(<entry.FormRenderer definition={{ ...definition }} onSubmit={() => {}} />);
   expect((screen.getByLabelText('Name') as HTMLInputElement).value).toBe('');
+});
+
+it('keeps a string file value as an app reference without showing or fetching it', async () => {
+  const fetchMock = vi.fn();
+  vi.stubGlobal('fetch', fetchMock);
+  const onSubmit = vi.fn();
+  const reference = 'file:///etc/passwd';
+  const files: FormDefinition = { id: 'files', title: '', submit: { label: 'Send' }, fields: [{ key: 'cv', type: 'file', label: 'CV' }] };
+  const { container } = render(<entry.FormRenderer definition={files} initialValues={{ cv: reference }} onSubmit={onSubmit} />);
+  expect((screen.getByLabelText('CV') as HTMLInputElement).value).toBe('');
+  expect(container.querySelectorAll('a, img, iframe, object, embed')).toHaveLength(0);
+  expect(container.innerHTML).not.toContain(reference);
+  fireEvent.click(screen.getByText('Send'));
+  await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ cv: reference }, []));
+  expect(fetchMock).not.toHaveBeenCalled();
+  vi.unstubAllGlobals();
 });

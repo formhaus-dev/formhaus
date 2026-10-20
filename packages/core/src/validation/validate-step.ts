@@ -2,7 +2,7 @@ import type { FormGroup, FormNode, FormStep } from '../types';
 import { isGroup, isVisible } from '../visibility';
 import { itemPath, itemsOf, itemScope, itemView, shownFields, valueFields } from '../visibility/nodes';
 import type { MessageSource } from './default-messages';
-import { type ValidatorFn, validateFieldValue } from './validate-field';
+import { type ValidatorFn, validateFieldValue, withPatternBudget } from './validate-field';
 
 export function validateStep(
   step: FormStep,
@@ -51,15 +51,13 @@ export function validateShown(
   validators?: Record<string, ValidatorFn>,
   messages?: MessageSource,
 ): Record<string, string> {
-  const errors: Record<string, string> = {};
-
-  for (const field of shownFields(fields, scope)) {
-    const error = validateFieldValue(field, values[field.key], values, validators, messages);
-    if (error) {
-      errors[field.key] = error;
+  return withPatternBudget(() => {
+    const errors: Record<string, string> = {};
+    for (const field of shownFields(fields, scope)) {
+      const error = validateFieldValue(field, values[field.key], values, validators, messages);
+      if (error) errors[field.key] = error;
+      if (isGroup(field)) Object.assign(errors, validateItems(field, values, validators, messages, scope));
     }
-    if (isGroup(field)) Object.assign(errors, validateItems(field, values, validators, messages, scope));
-  }
-
-  return errors;
+    return errors;
+  });
 }

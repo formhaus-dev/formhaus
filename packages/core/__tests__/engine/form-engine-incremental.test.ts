@@ -52,7 +52,7 @@ afterEach(() => {
 
 describe('incremental path patch', () => {
   const patch = createPathPatch(indexDefinition(routed));
-  const steps = routed.steps!;
+  const steps = new Map(routed.steps!.map((step, index) => [step, index]));
 
   it('leaves route keys to a full pass', () => {
     expect(patch('kind', { kind: 'biz' }, {}, steps)).toBeUndefined();
