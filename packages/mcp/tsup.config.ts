@@ -10,5 +10,4 @@ export default defineConfig({
   target: 'node20',
   platform: 'node',
   external: ['@formhaus/core', '@modelcontextprotocol/sdk', 'zod', 'ajv'],
-  loader: { '.md': 'text' },
 });

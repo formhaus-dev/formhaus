@@ -59,7 +59,7 @@ describe('challenge frame', () => {
     fake.reply({ error: 'bot check failed: 600010' });
     const error = await token.catch((thrown: unknown) => thrown);
     expect(error).toBeInstanceOf(CloudError);
-    expect(error).toMatchObject({ code: 'verification_failed', action: null });
+    expect(error).toMatchObject({ code: 'verification_failed', action: 'retry' });
   });
 
   it('reuses the token until it is spent or a check fails', async () => {

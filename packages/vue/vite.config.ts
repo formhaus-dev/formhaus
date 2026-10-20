@@ -12,7 +12,9 @@ export default defineConfig({
       tsconfigPath: './tsconfig.json',
     }),
   ],
+  oxc: { target: 'es2020' },
   build: {
+    target: 'es2020',
     sourcemap: true,
     lib: {
       entry: {

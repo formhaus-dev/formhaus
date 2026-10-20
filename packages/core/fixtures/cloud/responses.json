@@ -85,7 +85,7 @@
       "error": {
         "status": 403,
         "code": "verification_failed",
-        "action": null
+        "action": "retry"
       }
     }
   },

@@ -35,9 +35,7 @@ describe('formhaus-mcp over stdio', () => {
       'validate_definition',
     ]);
     const { resources } = await client.listResources();
-    expect(resources.map(({ uri }) => uri)).toEqual(['formhaus://capabilities', 'formhaus://migrate/0.11']);
-    const { contents } = await client.readResource({ uri: 'formhaus://migrate/0.11' });
-    expect('text' in contents[0] && contents[0].text).toContain('# Migrate to 0.11');
+    expect(resources.map(({ uri }) => uri)).toEqual(['formhaus://capabilities']);
   });
 
   it('sends server instructions on initialize', () => {
