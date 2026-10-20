@@ -14,6 +14,26 @@ const room: FormField = {
   ],
 };
 
+const unsafe = [
+  'javascript:alert(1)',
+  ' JaVa\tScript:alert(1)',
+  'vbscript:msgbox(1)',
+  'data:text/html;base64,PHNjcmlwdD4=',
+  'data:image/svg+xml;base64,PHN2Zz4=',
+  'file:///etc/hosts',
+  'https://user:pass@example.com/sea.jpg',
+  '//user@example.com/sea.jpg',
+];
+const safe = [
+  '/assets/sea.png',
+  './sea@2x.png',
+  '//example.com/sea.jpg',
+  'blob:https://example.com/3f1c',
+  'http://localhost:5173/sea.jpg',
+  'https://example.com/a@b.jpg?x=1',
+  'data:image/png;base64,iVBORw0KGgo=',
+];
+
 const single = (...fields: FormField[]): FormDefinition => ({
   formatVersion: '1.3',
   id: 'f',
@@ -136,5 +156,13 @@ describe('picture option preview', () => {
     render(<FormRenderer definition={single({ ...room, options: [{ value: 'a', label: 'A' }] })} onSubmit={() => {}} />);
     expect(document.querySelector('dialog')).toBeNull();
     expect(screen.queryByRole('button', { name: /Enlarge/ })).toBeNull();
+  });
+
+  it('skips images with script, file, non-raster data or credential URLs', () => {
+    const options = [...unsafe, ...safe].map((image, index) => ({ value: String(index), label: `O${index}`, image }));
+    render(<FormRenderer definition={single({ ...room, options })} onSubmit={() => {}} />);
+    const sources = [...document.querySelectorAll('img.fh-field__option-image')].map((img) => img.getAttribute('src'));
+    expect(sources).toEqual(safe);
+    expect(document.querySelectorAll('dialog')).toHaveLength(safe.length);
   });
 });

@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { FieldOption } from '@formhaus/core';
-import { ref } from 'vue';
+import { imageSource } from '@formhaus/core/internal';
+import { computed, ref } from 'vue';
 import { useLabel } from '../composables/useLabel';
 
-defineProps<{ option: FieldOption }>();
+const props = defineProps<{ option: FieldOption }>();
+const image = computed(() => imageSource(props.option.image));
 const text = useLabel();
 const dialog = ref<HTMLDialogElement>();
 const trigger = ref<HTMLButtonElement>();
@@ -12,16 +14,16 @@ let pressed: EventTarget | null = null;
 </script>
 
 <template>
-  <span v-if="option.image && failed === option.image" class="fh-field__option-image" />
-  <template v-else-if="option.image">
+  <span v-if="image && failed === image" class="fh-field__option-image" />
+  <template v-else-if="image">
     <img
       class="fh-field__option-image"
-      :src="option.image"
+      :src="image"
       alt=""
       loading="lazy"
       decoding="async"
       referrerpolicy="no-referrer"
-      @error="failed = option.image"
+      @error="failed = image"
     />
     <button
       ref="trigger"
@@ -44,7 +46,7 @@ let pressed: EventTarget | null = null;
         <p class="fh-dialog__title">{{ option.label }}</p>
         <button type="button" class="fh-dialog__close" :aria-label="text('close')" @click="dialog?.close()" />
       </div>
-      <img class="fh-dialog__image" :src="option.image" alt="" loading="lazy" referrerpolicy="no-referrer" />
+      <img class="fh-dialog__image" :src="image" alt="" loading="lazy" referrerpolicy="no-referrer" />
     </dialog>
   </template>
 </template>

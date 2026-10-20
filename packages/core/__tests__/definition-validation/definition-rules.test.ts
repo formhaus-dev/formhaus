@@ -91,6 +91,22 @@ describe('field rules', () => {
     expect(checkDefinition(definition, { validators: {} }).map((issue) => issue.code)).toEqual(['unknown-validator']);
     expect(checkDefinition(definition, { validators: { luhn: () => null } })).toEqual([]);
   });
+
+  it('warns about adjacent repeated parts that overlap', () => {
+    const slow = ['^\\d*\\d*\\d*\\d*\\d*x$', 'a*a*b', '.*.*x', '\\d+\\w+', '[a-c]+[c-e]*', '(?:a|b)*a{2,}', 'x(?:\\s*\\s+)y'];
+    const fast = ['^\\d+-\\d+$', '[a-z]+@[a-z]+', 'a*b*', '\\d*\\D*', 'a?a?', 'a+(?=a)a+', '\\(a*\\)a*', '^\\d+\\.?\\d*$'];
+    const issues = checkDefinition(form([...slow, ...fast].map((pattern, index) => field(`p${index}`, { validation: { pattern } }))));
+    expect(issues.map((issue) => issue.path)).toEqual(slow.map((_, index) => `/fields/${index}/validation/pattern`));
+    expect(issues[0]).toMatchObject({
+      code: 'slow-pattern',
+      severity: 'warning',
+      message:
+        '/fields/0/validation/pattern: the pattern of "p0" repeats overlapping parts next to each other and can be very slow. Merge the repeated parts into one.',
+    });
+    expect(checkDefinition(form([field('a', { validation: { pattern: '(\\w+\\s?)+' } })]))[0].hint).toBe(
+      'Remove the inner or outer quantifier.',
+    );
+  });
 });
 
 describe('comparison rules', () => {

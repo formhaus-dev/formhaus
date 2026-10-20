@@ -8,6 +8,20 @@ export type OptionSource = [key: string, field: FormField];
 export const dividerBefore = (field: FormField, options: FieldOption[], index: number): boolean =>
   !field.optionsFrom && !!options[index].exclusive && index > 0 && !options[index - 1].exclusive;
 
+export function imageSource(image: string | undefined): string | undefined {
+  try {
+    const { protocol, username, password, pathname } = new URL(image!, 'https://x');
+    return image?.trim() &&
+      !username &&
+      !password &&
+      (/^(?:https?|blob):$/.test(protocol) || (protocol === 'data:' && /^image\/(?:png|jpeg|webp|gif)[;,]/i.test(pathname)))
+      ? image
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 export const optionKey = (group: string, field: string): string => `${group}.${field}`;
 
 const countTexts = (texts: string[]) =>

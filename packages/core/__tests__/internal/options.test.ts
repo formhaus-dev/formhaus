@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { optionTexts } from '../../src/internal';
+import { imageSource, optionTexts } from '../../src/internal';
 
 const unique = (texts: string[]) => new Set(texts).size === texts.length;
 
@@ -49,5 +49,41 @@ describe('optionTexts', () => {
   it('returns unique texts for many identical options', () => {
     const options = Array.from({ length: 5000 }, () => ({ value: 'x', label: 'X' }));
     expect(unique(optionTexts(options))).toBe(true);
+  });
+});
+
+describe('imageSource', () => {
+  it('keeps relative, blob, http, https and raster data images', () => {
+    const allowed = [
+      '/assets/a.png',
+      './a@2x.png',
+      'a.png',
+      '//cdn.example.com/a.png',
+      'blob:https://example.com/3f1c',
+      'http://localhost:5173/a.png',
+      'HTTPS://example.com/a@b.png?x=1',
+      'data:image/png;base64,iVBORw0KGgo=',
+      'data:image/webp,x',
+    ];
+    expect(allowed.map(imageSource)).toEqual(allowed);
+  });
+
+  it('drops script, file, non-raster data and credential URLs', () => {
+    const refused = [
+      undefined,
+      '',
+      ' ',
+      'javascript:alert(1)',
+      ' JaVa\tScRiPt:alert(1)',
+      '\u0001javascript:alert(1)',
+      'vbscript:msgbox(1)',
+      'data:text/html,<script>',
+      'data:image/svg+xml;base64,PHN2Zz4=',
+      'file:///etc/hosts',
+      'https://user:pass@example.com/a.png',
+      'http:user@example.com/a.png',
+      '//user@example.com/a.png',
+    ];
+    expect(refused.map(imageSource)).toEqual(refused.map(() => undefined));
   });
 });

@@ -24,6 +24,7 @@ export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle, type Er
 export { warnMissingComponents } from './missing-components';
 export {
   dividerBefore,
+  imageSource,
   loadOptions,
   optionKey,
   optionSources,
