@@ -5,7 +5,7 @@ import { HeadlessFormRenderer } from './HeadlessFormRenderer';
 import { withDefaultFields } from './defaultFieldComponents';
 import type { FormRendererHandle, FormRendererProps } from './types';
 
-export const FormRenderer = forwardRef<FormRendererHandle, FormRendererProps>(function FormRenderer(
+export const FormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandle, FormRendererProps>(function FormRenderer(
   { components, actionsComponent, progressComponent, ...props },
   ref,
 ) {

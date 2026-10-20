@@ -92,9 +92,42 @@ describe('field rules', () => {
     expect(checkDefinition(definition, { validators: { luhn: () => null } })).toEqual([]);
   });
 
+  it('warns about overlapping repeats split by optional parts or groups', () => {
+    const slow = [
+      '^[0-9]+\\s?[0-9]+\\s?[0-9]+\\s?[0-9]+$',
+      '^(\\d+)(\\d+)(\\d+)(\\d+)x',
+      '^\\w+.?\\w+.?\\w+@',
+      '^(?:\\d+)(?:\\d+)(?:\\d+)x',
+      '^\\d+(?:\\.\\d+)?\\d+$',
+      '^\\d+[a-z]*\\d+',
+      '^\\d+\\d{0,3}\\d+',
+    ];
+    const fast = ['^\\d{5}(-\\d{4})?$', '^0?[0-9]+$', '^\\d+-?[a-z]+$', '^[a-z]+(?:\\.[0-9]+)?$'];
+    const issues = checkDefinition(form([...slow, ...fast].map((pattern, index) => field(`p${index}`, { validation: { pattern } }))));
+    expect(issues.map((issue) => `${issue.code} ${issue.path}`)).toEqual(
+      slow.map((_, index) => `slow-pattern /fields/${index}/validation/pattern`),
+    );
+  });
+
+  it('warns about a number with an optional decimal point, which backtracks quadratically on digits without the point', () => {
+    expect(checkDefinition(form([field('a', { validation: { pattern: '^\\d+\\.?\\d*$' } })])).map((issue) => issue.code)).toEqual([
+      'slow-pattern',
+    ]);
+  });
+
   it('warns about adjacent repeated parts that overlap', () => {
     const slow = ['^\\d*\\d*\\d*\\d*\\d*x$', 'a*a*b', '.*.*x', '\\d+\\w+', '[a-c]+[c-e]*', '(?:a|b)*a{2,}', 'x(?:\\s*\\s+)y'];
-    const fast = ['^\\d+-\\d+$', '[a-z]+@[a-z]+', 'a*b*', '\\d*\\D*', 'a?a?', 'a+(?=a)a+', '\\(a*\\)a*', '^\\d+\\.?\\d*$'];
+    const fast = [
+      '^\\d+-\\d+$',
+      '[a-z]+@[a-z]+',
+      'a*b*',
+      '\\d*\\D*',
+      'a?a?',
+      'a+(?=a)a+',
+      '\\(a*\\)a*',
+      '^\\+?\\d+$',
+      '^\\d+(?:\\.\\d+)?$',
+    ];
     const issues = checkDefinition(form([...slow, ...fast].map((pattern, index) => field(`p${index}`, { validation: { pattern } }))));
     expect(issues.map((issue) => issue.path)).toEqual(slow.map((_, index) => `/fields/${index}/validation/pattern`));
     expect(issues[0]).toMatchObject({

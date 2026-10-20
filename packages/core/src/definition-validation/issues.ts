@@ -19,6 +19,7 @@ export type DefinitionIssueCode =
   | 'recall-syntax'
   | 'recall-sensitive-field'
   | 'recall-query-source'
+  | 'recall-untrusted-source'
   | 'condition-operator-count'
   | 'unknown-operator'
   | 'condition-value-mismatch'
@@ -88,8 +89,8 @@ function create(severity: DefinitionIssue['severity']) {
   });
 }
 
-export const error = create('error');
-export const warning = create('warning');
+export const error = /* @__PURE__ */ create('error');
+export const warning = /* @__PURE__ */ create('warning');
 
 export function pointer(key: string): string {
   return key.replace(/~/g, '~0').replace(/\//g, '~1');

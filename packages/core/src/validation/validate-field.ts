@@ -41,12 +41,12 @@ function patternError(value: unknown, rules: FieldValidation, message: () => str
   if (rules.pattern === undefined) return undefined;
   const pattern = compile(rules.pattern);
   if (!pattern) return undefined;
+  let matches = false;
   try {
     const text = String(value);
-    return text.length <= MAX_STRING_LENGTH && pattern.test(text) ? undefined : (rules.patternMessage ?? message());
-  } catch {
-    return undefined;
-  }
+    matches = text.length <= MAX_STRING_LENGTH && pattern.test(text);
+  } catch {}
+  return matches ? undefined : (rules.patternMessage ?? message());
 }
 
 function sizeError(value: unknown, rules: FieldValidation, field: FormField, resolve: ResolveMessage): string | undefined {
