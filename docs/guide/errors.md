@@ -89,17 +89,17 @@ return { ok: false, formErrors: ['Your account has been temporarily suspended.']
 
 ## Error summary and step marks
 
-`errorSummary` adds a list of every field error below the fields, above the step buttons, in step order. Each entry is a link that opens the step of the field and focuses it. When errors span more than one step, the list groups them under each step's title. A label that ends with `?`, `!`, `:` or `.` is followed by a space instead of `: `. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. Both are off by default.
+The error summary lists every field error below the fields, above the step buttons, in step order. Each entry is a link that opens the step of the field and focuses it. When errors span more than one step, the list groups them under each step's title. A label that ends with `?`, `!`, `:` or `.` is followed by a space instead of `: `. It is on by default; pass `errorSummary={false}` in React or `:error-summary="false"` in Vue to turn it off. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. It is off by default.
 
 The progress header always shows the title of the current step in the error color while that step has errors, with the `stepErrors` label as text for screen readers.
 
 ::: code-group
 ```vue [Vue]
-<FormRenderer :definition="definition" error-summary step-error-marks @submit="onSubmit" />
+<FormRenderer :definition="definition" step-error-marks @submit="onSubmit" />
 ```
 
 ```tsx [React]
-<FormRenderer definition={definition} errorSummary stepErrorMarks onSubmit={onSubmit} />
+<FormRenderer definition={definition} stepErrorMarks onSubmit={onSubmit} />
 ```
 :::
 

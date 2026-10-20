@@ -8,7 +8,7 @@ import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
-const props = defineProps<FormhausFormProps>();
+const props = withDefaults(defineProps<FormhausFormProps>(), { confirmRemove: true, errorSummary: true });
 defineSlots<{ fallback(): unknown; success(): unknown }>();
 const emit = defineEmits<{
   success: [submission: CloudSubmission];

@@ -26,12 +26,18 @@ async function submitFromLastStep() {
 }
 
 describe('Vue error summary and step marks', () => {
-  it('renders neither by default', async () => {
+  it('shows the summary and no step marks by default', async () => {
     render(FormRenderer, { props: { definition, initialValues: valid, onSubmit: reject } });
+    await submitFromLastStep();
+    await screen.findByText('Check these answers');
+    expect(document.querySelector('.fh-step-progress__steps')).toBeNull();
+  });
+
+  it('hides the summary with errorSummary false', async () => {
+    render(FormRenderer, { props: { definition, initialValues: valid, onSubmit: reject, errorSummary: false } });
     await submitFromLastStep();
     await screen.findByText('Taken');
     expect(document.querySelector('.fh-error-summary')).toBeNull();
-    expect(document.querySelector('.fh-step-progress__steps')).toBeNull();
   });
 
   it('lists every field error in step order with links that open the step and focus the field', async () => {

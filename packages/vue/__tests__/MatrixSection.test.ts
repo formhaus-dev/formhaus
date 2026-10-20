@@ -60,6 +60,7 @@ describe('matrix section', async () => {
           ],
         } as unknown as FormField),
         onSubmit: () => {},
+        errorSummary: false,
       },
     });
     await fireEvent.click(screen.getAllByRole('radio', { name: 'Agree' })[0]!);

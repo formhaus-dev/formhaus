@@ -15,7 +15,12 @@ import { useValuesSync } from './composables/useValuesSync';
 import { useNodeProps } from './composables/useNodeProps';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2, confirmRemove: true });
+const props = withDefaults(defineProps<FormRendererProps>(), {
+  loading: false,
+  headingLevel: 2,
+  confirmRemove: true,
+  errorSummary: true,
+});
 
 const emit = defineEmits<FormRendererEmits>();
 

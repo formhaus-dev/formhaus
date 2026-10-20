@@ -8,7 +8,7 @@ import { useListening } from './composables/useListening';
 import type { FormEvent } from '@formhaus/core';
 import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true });
+const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true, errorSummary: true });
 
 const emit = defineEmits<FormRendererEmits>();
 

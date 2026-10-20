@@ -210,7 +210,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             onFocus={handleFieldFocus}
           />
           <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
-          {props.errorSummary && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
+          {props.errorSummary !== false && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
           <FormActionsController
             engine={engine}
             loading={loading}
