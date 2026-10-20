@@ -546,6 +546,8 @@ A step can greet the user by the name asked on the first step:
 - A `password` field shows nothing, and `checkDefinition()` warns about it.
 - A hidden field with a `query` source holds whatever text a link puts in the URL, so `checkDefinition()` warns when a text recalls it. Recall it only where any text is safe to show.
 - Inside a group item, `{{key}}` also reads the item's own fields.
+- Recall runs once. An answer that holds `{{key}}` shows as typed and is never expanded.
+- Resolved texts are for display. Conditions, the payload, errors and [form events](/guide/custom-components#form-events) use field keys, step ids and option values, never the resolved text.
 - The [Derived values](/recipes/derived-values#use-a-computed-value-later-in-the-form) recipe fills a `hidden` field from app code and recalls it.
 
 `formatRecall` replaces the formatting. It gets the answer, the field and the locale, and returns the text:
@@ -564,7 +566,7 @@ The answer is a text, a number or a list of option labels or file names. The err
 
 ### Output safety
 
-Recalled answers are user input. Renderers draw them as plain text. Encode them for the output context wherever else you use them: `recallText()`, `recallStatic()`, `validateSubmission()` output and texts your app builds.
+Recalled answers are user input. Renderers draw them as plain text, never as HTML or Markdown. Encode them for the output context wherever else you use them: `recallText()`, `recallStatic()`, `validateSubmission()` output and texts your app builds.
 
 | Output | Rule |
 | --- | --- |
@@ -584,6 +586,18 @@ const escapeHtml = (text: string): string =>
 
 const html = `<p>${escapeHtml(recallText(definition, 'Thanks, {{name}}!', values))}</p>`;
 ```
+
+### Embedding definitions in template engines
+
+Vue, Angular, Handlebars, Jinja and Liquid also read `{{ }}`. A definition inlined in their templates gets its tokens rendered by the template engine before Formhaus sees them. The delimiters are fixed, so keep the definition out of the template:
+
+- Load the JSON from a file, an import or an API, and pass it as a prop.
+- In Vue, bind it from `<script>` with `:definition="definition"`, or wrap inlined markup in `v-pre`.
+- In Angular, bind it from the component class, or wrap inlined markup in `ngNonBindable`.
+- In Jinja and Liquid, wrap the inlined JSON in `{% raw %}` and `{% endraw %}`.
+- In Handlebars, wrap it in `{{{{raw}}}}` and `{{{{/raw}}}}` with a `raw` block helper that returns its content.
+
+`\{{` is the Formhaus escape for literal braces in a form text. It does not hide a token from a template engine, and Handlebars reads `\{{` as its own escape.
 
 ## Keys and element ids
 
