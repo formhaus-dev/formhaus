@@ -39,6 +39,7 @@ export function scaleRange({ type, validation }: FormField): [number, number] {
 export const MAX_HIDDEN_LENGTH = 2000;
 const MAX_EMAIL_LENGTH = 254;
 const MAX_GROUP_ITEMS = 100;
+export const maxItems = (group: FormField) => group.validation?.maxLength ?? MAX_GROUP_ITEMS;
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 const DATE = '\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])';
@@ -87,7 +88,7 @@ export function normalizeValue(field: FormField, input: unknown): unknown {
 }
 
 function normalizeItems(group: FormGroup, input: unknown): unknown {
-  if (!Array.isArray(input) || input.length > (group.validation?.maxLength ?? MAX_GROUP_ITEMS)) return input;
+  if (!Array.isArray(input) || input.length > maxItems(group)) return input;
   return input.map((item) => {
     if (!isPlainEntry(item)) return item;
     const result: Record<string, unknown> = {};
@@ -149,7 +150,7 @@ function groupError(field: FormField, value: unknown, fail: Fail): string | null
   const max = field.validation?.maxLength;
   if (!Array.isArray(value)) return fail('value');
   if (max !== undefined && value.length > max) return field.validation?.maxLengthMessage ?? fail('maxItems', { max });
-  return value.length > (max ?? MAX_GROUP_ITEMS) || !value.every(isPlainEntry) ? fail('value') : null;
+  return value.length > maxItems(field) || !value.every(isPlainEntry) ? fail('value') : null;
 }
 
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {

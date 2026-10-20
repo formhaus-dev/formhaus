@@ -1,6 +1,6 @@
 import type { FormDefinition, FormField } from '../types';
 import type { EngineState } from './runtime-internals';
-import { isPlainEntry } from '../validation/type-checks';
+import { isPlainEntry, maxItems } from '../validation/type-checks';
 import { hasOwn, isGroup, keepId, topNodes, valueFields } from '../visibility/nodes';
 
 export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
@@ -37,7 +37,7 @@ export function createValues(
     delete values[field.key];
     if (field.defaultValue !== undefined) values[field.key] = field.defaultValue;
     else if (isGroup(field) && field.defaultItems! > 0)
-      values[field.key] = Array.from({ length: field.defaultItems! }, () => createValues(field.fields));
+      values[field.key] = Array.from({ length: Math.min(field.defaultItems!, maxItems(field)) }, () => createValues(field.fields));
   };
   const source = initialValues ?? {};
   for (const field of fields) {
