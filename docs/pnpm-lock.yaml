@@ -9,11 +9,11 @@ importers:
   .:
     devDependencies:
       '@formhaus/core':
-        specifier: ^0.22.0
-        version: 0.22.0
+        specifier: ^1.0.0
+        version: 1.0.0
       '@formhaus/vue':
-        specifier: ^0.22.0
-        version: 0.22.0(@formhaus/core@0.22.0)(vue@3.5.32)
+        specifier: ^1.0.0
+        version: 1.0.0(@formhaus/core@1.0.0)(vue@3.5.32)
       sandpack-vue3:
         specifier: ^3.0.0
         version: 3.1.12(vue@3.5.32)
@@ -320,15 +320,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@formhaus/core@0.22.0':
-    resolution: {integrity: sha512-Gmzi9uzn1id6Lbq24x4FlhjOCOz3POiP/yxgY2LURT+UMTooVD0OOewcJJjl06/OWCd89XvpiUE3Wzji3memRA==}
+  '@formhaus/core@1.0.0':
+    resolution: {integrity: sha512-1cd92SOv9MZNn59TAYASOL71CCzyL7ZLoiX5unh0lIDTPaDCkZZ4HanF4F6ekkPxy1QPe854ejBRdZt7T5OsxQ==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/vue@0.22.0':
-    resolution: {integrity: sha512-vB5mouKmiWjt9uz3aEtF6nBDy/OckVTFLz9H3qzCtTpz4txvnvWpZaOdi+lBvWVObKvvbfuZouMK/sSqUJ+YVw==}
+  '@formhaus/vue@1.0.0':
+    resolution: {integrity: sha512-Oar4zkyzGXRBrm1B02A6a6yXNR5w3XKu0l55hfyiz3X5h7SuVFPNqkiP4fxhSdtdq3f02HAuW1NUWXhrtCuYhQ==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ^0.22.0
+      '@formhaus/core': ~1.0.0
       vue: ^3.3.3
 
   '@iconify-json/simple-icons@1.2.76':
@@ -1559,11 +1559,11 @@ snapshots:
   '@esbuild/win32-x64@0.21.5':
     optional: true
 
-  '@formhaus/core@0.22.0': {}
+  '@formhaus/core@1.0.0': {}
 
-  '@formhaus/vue@0.22.0(@formhaus/core@0.22.0)(vue@3.5.32)':
+  '@formhaus/vue@1.0.0(@formhaus/core@1.0.0)(vue@3.5.32)':
     dependencies:
-      '@formhaus/core': 0.22.0
+      '@formhaus/core': 1.0.0
       vue: 3.5.32
 
   '@iconify-json/simple-icons@1.2.76':
