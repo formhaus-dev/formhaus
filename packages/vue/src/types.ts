@@ -18,7 +18,7 @@ import type {
   RecallFormatFn,
   SectionView,
   StepValidateFn,
-  SubmitFn,
+  AfterSubmitFn,
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
@@ -68,7 +68,7 @@ export interface FormRendererProps {
   onBeforeStepChange?: Callback<BeforeStepChangeFn>;
   onAfterStepChange?: Callback<AfterStepChangeFn>;
   onBeforeSubmit?: Callback<BeforeSubmitFn>;
-  onAfterSubmit?: Callback<SubmitFn>;
+  onAfterSubmit?: Callback<AfterSubmitFn>;
   onWarning?: (issue: DefinitionIssue) => void;
   messages?: Partial<Record<MessageKey, string>> | Callback<MessageFn>;
   onError?: (error: unknown) => void;

@@ -45,7 +45,7 @@ export {
   type BeforeStepChangeFn,
   type AfterStepChangeFn,
   type BeforeSubmitFn,
-  type SubmitFn,
+  type AfterSubmitFn,
   type SubmitHandler,
   type SubmitResult,
 } from './engine';
@@ -60,7 +60,6 @@ export {
   type MessageFn,
   type MessageParams,
   type MessageSource,
-  type ValidationRule,
   type ValidateOptions,
   type ValidatorFn,
   getDefaultMessage,

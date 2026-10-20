@@ -5,7 +5,7 @@ export type {
   BeforeStepChangeFn,
   AfterStepChangeFn,
   BeforeSubmitFn,
-  SubmitFn,
+  AfterSubmitFn,
   SubmitHandler,
   SubmitResult,
 } from './engine-options';

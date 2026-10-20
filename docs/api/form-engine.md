@@ -50,7 +50,7 @@ try {
 | Function | Returns | Description |
 |---|---|---|
 | `checkDefinition(input, { validators? })` | `DefinitionIssue[]` | Never throws. Errors come first. With `validators`, also reports `validator` names missing from it |
-| `parseDefinition(input, { validators? })` | `FormDefinition` | Returns the input typed as `FormDefinition`, or throws `FormDefinitionError` with the errors. Ignores `validators`: a missing validator is a warning, and warnings never throw |
+| `parseDefinition(input)` | `FormDefinition` | Returns the input typed as `FormDefinition`, or throws `FormDefinitionError` with the errors. Warnings never throw |
 
 ```ts
 interface DefinitionIssue {
@@ -146,7 +146,7 @@ The main entry also exports the functions the engine uses for conditions and val
 | `recallStatic(definition, text, group?)` | `string` | Replaces each recall token with the label of its field, for texts that stand for many submissions |
 | `getDefaultMessage(rule, params?)` | `string` | The built-in English message of a rule or message key, such as `getDefaultMessage('minLength', { min: 3 })` |
 
-`ValidationRule` is the type of the rule names: `required`, `minLength`, `maxLength`, `min`, `max`, `pattern` and `matchField`. `values` is the [active projection](/spec#visibility) the engine passes, such as `getSubmitValues()`.
+`getDefaultMessage` takes a `MessageKey`. `values` is the [active projection](/spec#visibility) the engine passes, such as `getSubmitValues()`.
 
 ## Groups
 
