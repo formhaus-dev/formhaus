@@ -15,7 +15,7 @@ const columns = computed(() =>
     :id="id"
     :class="['fh-section', columns && 'fh-section--matrix']"
     :aria-describedby="descriptionId"
-    :style="columns && { '--fh-matrix-columns': columns.length }"
+    :style="columns && { '--fhi-matrix-columns': columns.length }"
   >
     <legend class="fh-section__title">{{ title }}</legend>
     <p v-if="description" :id="descriptionId" class="fh-field__helper fh-section__description">{{ description }}</p>

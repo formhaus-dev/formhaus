@@ -50,7 +50,7 @@ const choice = useChoice(props, emit, (key) => {
       />
       <label :for="`${inputId}-${point}`" class="fh-field__scale-label">{{ point }}</label>
     </div>
-    <div v-if="anchors.some(Boolean)" class="fh-field__scale-anchors" :style="{ '--fh-scale-points': points.length }">
+    <div v-if="anchors.some(Boolean)" class="fh-field__scale-anchors" :style="{ '--fhi-scale-points': points.length }">
       <span v-for="(option, index) in anchors" :id="option && `${inputId}-anchor-${index}`" :key="index" class="fh-field__scale-anchor">{{
         option?.label
       }}</span>

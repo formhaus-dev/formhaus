@@ -15,7 +15,7 @@ From 1.0, a breaking change to these parts needs a major version:
 - The React `useFormEngine` hook and the Vue `useFormEngine` composable.
 - The props a custom field component receives.
 - `checkDefinition()` issue codes and severities.
-- The `--fh-*` custom property names in `style.css` and the class names in [Stable names](/guide/#stable-names). `api/style.api.md` in the repository lists them, and CI fails on a rename.
+- The `--fh-*` variables listed in [Optional baseline styles](/guide/#optional-baseline-styles) and the class names in [Stable names](/guide/#stable-names). Custom properties that start with `--fhi-` are private. `api/style.api.md` in the repository lists them, and CI fails on a rename.
 - `onFormEvent` event types and fields. A minor version can add event types and fields.
 
 Not covered:

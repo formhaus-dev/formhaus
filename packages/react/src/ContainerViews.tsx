@@ -9,7 +9,7 @@ export function DefaultSection({ id, section, title, description, descriptionId,
       id={id}
       className={columns ? 'fh-section fh-section--matrix' : 'fh-section'}
       aria-describedby={descriptionId}
-      style={columns ? ({ '--fh-matrix-columns': columns.length } as CSSProperties) : undefined}
+      style={columns ? ({ '--fhi-matrix-columns': columns.length } as CSSProperties) : undefined}
     >
       <legend className="fh-section__title">{title}</legend>
       {description && (

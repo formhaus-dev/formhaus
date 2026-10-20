@@ -42,7 +42,7 @@ export function ScaleField(props: FieldComponentProps) {
         );
       })}
       {anchors.some(Boolean) && (
-        <div className="fh-field__scale-anchors" style={{ '--fh-scale-points': points.length } as CSSProperties}>
+        <div className="fh-field__scale-anchors" style={{ '--fhi-scale-points': points.length } as CSSProperties}>
           {anchors.map((option, index) => (
             <span key={index} id={option && `${id}-anchor-${index}`} className="fh-field__scale-anchor">
               {option?.label}

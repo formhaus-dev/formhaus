@@ -37,7 +37,7 @@ describe('matrix section', () => {
     );
     const section = screen.getByRole('group', { name: 'Pulse' });
     expect(section.className).toBe('fh-section fh-section--matrix');
-    expect(section.style.getPropertyValue('--fh-matrix-columns')).toBe('2');
+    expect(section.style.getPropertyValue('--fhi-matrix-columns')).toBe('2');
     const header = section.querySelector('.fh-section__matrix-header')!;
     expect(header.getAttribute('aria-hidden')).toBe('true');
     expect(header.textContent).toBe('DisagreeAgree');
