@@ -12,7 +12,7 @@ The source of every `--fh-*` custom property in `style.css`, in the [W3C Design 
 | `modes/theme-light.tokens.json`, `modes/theme-dark.tokens.json` | semantic | All `color.*` tokens per theme |
 | `modes/pointer-fine.tokens.json`, `modes/pointer-coarse.tokens.json` | semantic, component | `font-size.*`, `star.size` |
 | `modes/width-regular.tokens.json`, `modes/width-compact.tokens.json` | component | `card.padding` |
-| `modes/contrast-standard.tokens.json`, `modes/contrast-more.tokens.json` | semantic | Border overrides for increased contrast |
+| `modes/contrast-standard.tokens.json`, `modes/contrast-more.tokens.json` | semantic | Input and border overrides for increased contrast |
 | `formhaus.resolver.json` | | The sets, modifiers and resolution order |
 
 Semantic and component tokens alias primitives (`{palette.zinc.450}`, `{size.10}`) or other semantic tokens (`{color.input.border}`).
@@ -28,7 +28,7 @@ Semantic and component tokens alias primitives (`{palette.zinc.450}`, `{size.10}
 | `width` | `regular`, `compact` | `@media (max-width: 480px)` |
 | `contrast` | `standard`, `more` | `@media (prefers-contrast: more)` |
 
-Contexts combine freely, for example `{ "theme": "dark", "pointer": "coarse", "contrast": "more" }`. `contrast.more` aliases semantic colors, so it gives dark values under `theme.dark`.
+Contexts combine freely, for example `{ "theme": "dark", "pointer": "coarse", "contrast": "more" }`. `contrast.more` only aliases semantic colors, so it gives dark values under `theme.dark`. A color that needs its own value under increased contrast gets a second token in each theme file, and `contrast.more` points at it: `color.input.border` becomes `{color.input.border-strong}`.
 
 Forced colors and reduced motion have no token values. The stylesheet switches to system colors under `forced-colors: active` and turns transitions off under `prefers-reduced-motion: reduce`. Ports use the platform equivalents.
 
@@ -76,12 +76,14 @@ In CSS these tokens are `color-mix()` expressions on the variables, so overridin
 
 ## Input border contrast
 
-`color.input.border` marks text inputs, textarea, select, date and time, file fields, scale boxes and the switch track, whose fill is the page color. It is at least 3:1 against `color.bg.default` (WCAG 1.4.11).
+`color.input.border` marks text inputs, textarea, select, date and time, file fields, scale boxes and the switch track, whose fill is the page color. By default it is a soft slate tint at about 2:1 against `color.bg.default`, and the hover border is about 3:1. Under `contrast.more` both alias `color.input.border-strong` and `color.input.border-strong-hover`, which are at least 3:1 (WCAG 1.4.11).
 
 | | Light on `#ffffff` | Dark on `#18181c` |
 |---|---|---|
-| `color.input.border` | `#84848d`, 3.71:1 | `#73737d`, 3.77:1 |
-| `color.input.border-hover` | `#5f5f68`, 6.32:1 | `#9a9aa5`, 6.36:1 |
+| `color.input.border` | `#b1b8c2`, 2.00:1 | `#444b53`, 2.00:1 |
+| `color.input.border-hover` | `#8e959f`, 3.02:1 | `#5e656d`, 3.00:1 |
+| `color.input.border-strong` | `#84848d`, 3.71:1 | `#73737d`, 3.77:1 |
+| `color.input.border-strong-hover` | `#5f5f68`, 6.32:1 | `#9a9aa5`, 6.36:1 |
 
 Radio and multiselect option cards, including picture cards, use it through `option-card.border` and `option-card.border-hover`. Group cards, dividers, matrix rows, the picture Enlarge button and dialogs keep `color.border.default`.
 
