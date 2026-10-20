@@ -24,6 +24,7 @@ function visit(file, seen, entry) {
     const base = join(dirname(file), specifier.replace(/\.(js|d\.ts)$/, ''));
     const next = [`${base}.d.ts`, join(base, 'index.d.ts')].find(existsSync);
     if (next) visit(next, seen, entry);
+    else failures.push(`${relative(root, file)} (from ${entry}) imports ${specifier}, which has no .d.ts`);
   }
 }
 
@@ -37,7 +38,8 @@ for (const [pkg, entries] of Object.entries(ENTRIES)) {
 
 const core = JSON.parse(readFileSync(join(root, 'packages/core/package.json'), 'utf8')).version;
 const [major, minor] = core.split('.');
-const pinned = major === '0' ? `^0.${minor}.0` : `~${major}.${minor}.0`;
+const floor = core.includes('-') ? core : `${major}.${minor}.0`;
+const pinned = `${major === '0' ? '^' : '~'}${floor}`;
 for (const pkg of ['react', 'vue']) {
   const range = JSON.parse(readFileSync(join(root, 'packages', pkg, 'package.json'), 'utf8')).peerDependencies?.['@formhaus/core'];
   if (range !== pinned)
