@@ -4,6 +4,7 @@ import { HARD_LIMITS, kb, measureEntries } from './measure.mjs';
 const DOC_FILES = [
   'docs/guide/bundle-size.md',
   'docs/compare/index.md',
+  'docs/compare/json-forms.md',
   'docs/compare/react-hook-form.md',
   'docs/compare/react-jsonschema-form.md',
   'docs/compare/surveyjs.md',
