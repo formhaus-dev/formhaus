@@ -149,6 +149,98 @@ async function submit(values: Record<string, unknown>) {
 
 The renderer reads the form definition, renders fields, handles validation, and gives you values on submit.
 
+## Choose a renderer
+
+Three paths render the same definition. Sizes for each are in [Bundle size](/guide/bundle-size#rendering-paths).
+
+| Path | You write | Renderer does |
+|---|---|---|
+| `useFormEngine` | All markup | Nothing. It gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` |
+| `HeadlessFormRenderer` | A component for each field type, actions and progress | Steps, field order, conditions, focus and the error summary, with your components |
+| `FormRenderer` | Nothing, or a component for some types | The same as `HeadlessFormRenderer`, with built-in fields, actions and progress |
+
+`useFormEngine` has no component map. It is the smallest path.
+
+::: code-group
+```tsx [React]
+import { useFormEngine } from '@formhaus/react';
+
+export function ContactForm() {
+  const engine = useFormEngine(definition);
+  return (
+    <form onSubmit={(event) => { event.preventDefault(); engine.submit(send); }}>
+      {engine.visibleFields.map((field) => (
+        <label key={field.key}>
+          {field.label}
+          <input value={String(engine.values[field.key] ?? '')} onChange={(event) => engine.setValue(field.key, event.target.value)} />
+          {engine.errors[field.key]}
+        </label>
+      ))}
+      {!engine.isFirstStep && <button type="button" onClick={() => engine.back()}>Back</button>}
+      {engine.isLastStep ? <button type="submit">Send</button> : <button type="button" onClick={() => engine.next()}>Next</button>}
+    </form>
+  );
+}
+```
+
+```vue [Vue]
+<script setup lang="ts">
+import { useFormEngine } from '@formhaus/vue';
+
+const { engine, visibleFields, values, errors, isFirstStep, isLastStep } = useFormEngine(definition);
+</script>
+
+<template>
+  <form @submit.prevent="engine.submit(send)">
+    <label v-for="field in visibleFields" :key="field.key">
+      {{ field.label }}
+      <input :value="values[field.key] ?? ''" @input="engine.setValue(field.key, ($event.target as HTMLInputElement).value)" />
+      {{ errors[field.key] }}
+    </label>
+    <button v-if="!isFirstStep" type="button" @click="engine.back()">Back</button>
+    <button v-if="isLastStep" type="submit">Send</button>
+    <button v-else type="button" @click="engine.next()">Next</button>
+  </form>
+</template>
+```
+:::
+
+`HeadlessFormRenderer` renders your components for a design system. See [Headless renderer](/guide/custom-components#headless-renderer).
+
+::: code-group
+```tsx [React]
+<HeadlessFormRenderer
+  definition={definition}
+  components={{ text: MyInput, email: MyInput, select: MySelect }}
+  actionsComponent={MyFormActions}
+  progressComponent={MyStepProgress}
+  onSubmit={handleSubmit}
+/>
+```
+
+```vue [Vue]
+<HeadlessFormRenderer
+  :definition="definition"
+  :components="{ text: MyInput, email: MyInput, select: MySelect }"
+  :actions-component="MyFormActions"
+  :progress-component="MyStepProgress"
+  @submit="onSubmit"
+/>
+```
+:::
+
+`FormRenderer` uses the built-in fields. `components` replaces only the types you list. See [Override default components](/guide/fields#override-default-components).
+
+::: code-group
+```tsx [React]
+<FormRenderer definition={definition} components={{ phone: MyPhoneInput }} onSubmit={handleSubmit} />
+```
+
+```vue [Vue]
+<FormRenderer :definition="definition" :components="{ phone: MyPhoneInput }" @submit="onSubmit" />
+```
+:::
+
 ## Definition and initial values
 
 `initialValues` is the starting value of the form, not a controlled value: changing it later does not change the form. A new `definition` object creates a new form and resets its values, even with the same content. Keep the definition in a module constant, `useMemo` or a Vue `computed`, and change `key` to reset the form on purpose:
