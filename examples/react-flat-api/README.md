@@ -4,8 +4,6 @@ A three-step account form that sends one flat request to an existing API. The AP
 
 ## Run
 
-Build the local packages first (see [Dependencies](#dependencies)), then:
-
 ```bash
 pnpm install
 pnpm dev
@@ -27,14 +25,3 @@ The "Force a response" toggles make the server reject a field whatever its value
 - [src/api.ts](src/api.ts) is a deterministic in-memory API. Replace it with your HTTP client.
 - [src/adapter.ts](src/adapter.ts) maps `firstName` to `first_name` on the way out, maps error keys back, and turns the response into a `SubmitResult`.
 - [src/App.tsx](src/App.tsx) renders the form and shows the last request.
-
-## Dependencies
-
-Until `@formhaus/core` and `@formhaus/react` publish submit results, this example installs them from `packages/` in this repository. Build them first:
-
-```bash
-pnpm --dir ../.. install
-pnpm --dir ../.. --filter @formhaus/core --filter @formhaus/react run build
-```
-
-After the release it will install from npm like the other examples.

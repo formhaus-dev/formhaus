@@ -54,7 +54,7 @@ The skill infers field types and validation rules, then asks about steps and con
 
 The generated form definition works with:
 
-- The [Figma plugin](/guide/figma): paste into the Generate tab
+- The [Figma plugin](/guide/figma): paste into **JSON** on the **Form** tab
 - [React adapter](https://github.com/formhaus-dev/formhaus/tree/main/packages/react): pass to `FormRenderer`
 - [Vue adapter](https://github.com/formhaus-dev/formhaus/tree/main/packages/vue): pass to `FormRenderer`
 

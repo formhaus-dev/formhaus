@@ -106,7 +106,7 @@ Set `back` to `false` to hide the Back button on a step:
 }
 ```
 
-The built-in adapters render Continue and Submit as primary buttons, Back as secondary, and Skip and Cancel as text buttons. Set `variant` on `back`, `skip` or `cancel` to change that. `action` is metadata for custom action components.
+The built-in adapters render Continue and Submit as primary buttons, Back as secondary, and Skip and Cancel as text buttons. Set `variant` on `back`, `skip` or `cancel` to change that.
 
 ## Skip a step
 
@@ -249,9 +249,9 @@ This component accepts an application's `save` and `mayLeave` callbacks. `save` 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { FormRenderer } from '@formhaus/vue'
-import type { BeforeStepChangeFn, FormDefinition, StepChangeContext, SubmitFn } from '@formhaus/core'
+import type { BeforeStepChangeFn, FormDefinition, StepChangeContext, SubmitHandler } from '@formhaus/core'
 
-const props = defineProps<{ save: SubmitFn; mayLeave: BeforeStepChangeFn }>()
+const props = defineProps<{ save: SubmitHandler; mayLeave: BeforeStepChangeFn }>()
 const message = ref('')
 const error = ref('')
 const definition: FormDefinition = {

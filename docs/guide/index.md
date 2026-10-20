@@ -91,7 +91,7 @@ Spacing and sizes come from these variables:
 | `--fh-shadow-raised` | `0 2px 8px` `--fh-color-shadow` | Shadow of the picture Enlarge button |
 | `--fh-font-size`, `--fh-font-size-small` | 15px, 13px (17px, 15px on touch screens) | Labels and inputs; helpers, errors and item titles |
 | `--fh-font-size-heading`, `--fh-font-size-title` | font size + 2px, + 5px | Section headings; step titles |
-| `--fh-color-error-soft`, `--fh-color-error-hover` | derived from `--fh-color-error` | Hover of the group item Remove button |
+| `--fh-color-error-soft`, `--fh-color-error-hover` | derived from `--fh-color-error`, #9e2a23 | Hover of the group item Remove button |
 | `--fh-matrix-sticky-top` | 0 | Top offset of the sticky matrix column header, such as the height of a fixed page header |
 
 The stylesheet is light by default. For dark colors add `data-fh-theme="dark"` to the form or any ancestor:
@@ -112,7 +112,7 @@ Action buttons use these classes:
 | `fh-form-actions__button--secondary` | Back |
 | `fh-form-actions__button--text` | Skip, Cancel |
 
-Every button also has `fh-form-actions__button`. A `variant` on the action replaces the role class.
+Every button also has `fh-form-actions__button`. A `variant` on `back`, `skip` or `cancel` replaces the role class.
 
 ### Stable names
 
@@ -338,7 +338,7 @@ Form definition --> FormEngine (TypeScript) --> Adapter --> UI components
                      +-- general, field, and structure subscriptions
 ```
 
-4 published packages:
+5 published packages:
 
 | Package | What it does | Dependencies |
 |---------|-------------|--------------|
@@ -346,6 +346,7 @@ Form definition --> FormEngine (TypeScript) --> Adapter --> UI components
 | `@formhaus/vue` | Vue adapter with default HTML field components | @formhaus/core |
 | `@formhaus/react` | React adapter with default HTML field components | @formhaus/core |
 | `@formhaus/mcp` | MCP server that validates definitions and simulates step paths for AI agents | @formhaus/core, MCP SDK |
+| `formhaus` | CLI that sets up the MCP server and agent instructions in coding agents | None |
 
 The engine is framework-agnostic. It holds form state, runs validation, tracks field visibility, and manages step navigation. Adapters connect the engine to framework-specific reactivity and render UI components.
 

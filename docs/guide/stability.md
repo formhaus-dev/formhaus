@@ -20,7 +20,7 @@ From 1.0, a breaking change to these parts needs a major version:
 
 Not covered:
 
-- `@formhaus/core/internal`. It is the shared code of `@formhaus/react` and `@formhaus/vue`, not a public API: any release can change or remove its exports. The adapters pin `@formhaus/core` to the same minor version, such as `^0.22.0`, so they always load the internal code they were built with. Public types never reference it.
+- `@formhaus/core/internal`. It is the shared code of `@formhaus/react` and `@formhaus/vue`, not a public API: any release can change or remove its exports. The adapters pin `@formhaus/core` to the same minor version, such as `~1.0.0`, so they always load the internal code they were built with. Public types never reference it.
 - The editor, builder and Figma plugin.
 - Warning and error message texts, fix titles and patches.
 - DOM structure and class names other than the stable names.

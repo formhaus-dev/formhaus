@@ -29,7 +29,7 @@ interface FormDefinition {
 }
 ```
 
-`formatVersion` names the [definition format](/spec#versioning). Omit it to use the format of the installed core. `FORMAT_VERSION` exports the format this core reads. `checkDefinition()` reports `unsupported-format-version` for a newer major version, and the `FormEngine` constructor throws on it.
+`formatVersion` names the [definition format](/spec#versioning). Omit it to use the format of the installed core. `{{key}}` recall needs `"1.5"` or newer. `FORMAT_VERSION` exports the format this core reads. `checkDefinition()` reports `unsupported-format-version` for a newer major version, and the `FormEngine` constructor throws on it.
 
 ## FormField
 
@@ -82,7 +82,8 @@ Name custom types with `-` or `:`, such as `x-rating`. These names never become 
 Containers inside a `fields` array. Added in 0.14.0 with format 1.1. See [Sections](/guide/sections) and [Repeatable groups](/guide/groups).
 
 ```ts
-type FormNode = FormField | FormSection | FormGroup;
+type FormNode = FormField | HiddenFormField | FormSection | FormGroup;
+type HiddenFormField = Omit<FormField, 'type' | 'label'> & { type: 'hidden'; label?: string };
 
 interface FormSection {
   key: string;
@@ -152,13 +153,12 @@ Button configuration for submit, cancel, next, back, and skip.
 interface FormAction {
   label: string;
   variant?: 'primary' | 'secondary' | 'text'; // Button class for back, skip and cancel
-  action?: string;              // Identifier for custom actions
   disabled?: ShowCondition[];   // Conditions available to the action renderer
   i18n?: { label?: string };    // Translation key for the label
 }
 ```
 
-The default React and Vue adapters evaluate `disabled` on the top-level `submit` action. Custom action components receive the full action objects and can use `variant`, `action`, and `disabled` for other buttons.
+The default React and Vue adapters evaluate `disabled` on the top-level `submit` action and on the step `next` action. Custom action components receive the full action objects and can use `variant` and `disabled` for other buttons.
 
 ## ShowCondition
 
@@ -227,6 +227,7 @@ Catalogs and translation keys. See [Translations](/guide/translations) and the [
 type MessageKey =
   | 'required' | 'minLength' | 'maxLength' | 'minItems' | 'maxItems' | 'min' | 'max' | 'pattern' | 'matchField'
   | 'email' | 'number' | 'date' | 'datetime' | 'time' | 'option' | 'options' | 'boolean' | 'string' | 'file' | 'value'
+  | 'hidden' // Added in 0.14.0
   | 'exclusive'; // Added in 0.21.0
 type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary'
   | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' // Group labels added in 0.14.0
@@ -348,6 +349,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `{{key}}` answer recall, `exclusive` on options and `autocomplete` on fields, format 1.5 | 0.21.0 |
 | `contains` and `notContains` conditions, format 1.4 | 0.20.0 |
 | `scale` and `rating` types, `image` on options, `columns` on fields, `layout: "matrix"` on sections, format 1.3 | 0.19.0 |
 | `props` on fields, format 1.2 | 0.15.0 |

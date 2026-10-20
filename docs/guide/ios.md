@@ -16,7 +16,7 @@ description: "Render formhaus JSON form definitions natively on iOS and macOS wi
 Add the package with Swift Package Manager:
 
 ```swift
-.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.0")
+.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.1")
 ```
 
 Requires Swift 6.2, iOS 17 or macOS 14. There is no JavaScript runtime.

@@ -49,7 +49,7 @@ shadcn/ui has no multiselect. A group of `Checkbox`es emits the string array a `
 
 ## Next.js
 
-`@formhaus/react` has no `'use client'` directive, and the component map holds functions that cannot cross from a server component. Render `FormRenderer` with the map in a file that starts with `'use client'`, and import that file from the server component. See [Next.js](/guide/integrations/nextjs#client-component).
+The component map holds functions that cannot cross from a server component. Render `FormRenderer` with the map in a file that starts with `'use client'`, and import that file from the server component. See [Next.js](/guide/integrations/nextjs#client-component).
 
 ## Actions and progress
 

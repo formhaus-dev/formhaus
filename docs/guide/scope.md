@@ -23,7 +23,7 @@ What the definition format, the engine and the renderers do, what they leave to 
 | Accessibility | Native inputs, labels and hints tied by `aria-describedby`, `aria-invalid`, `autocomplete` tokens, error summary with focus | [Autofill](/guide/fields#autofill-and-line-breaks), [Error summary](/guide/errors#error-summary-and-step-marks) |
 | Server validation | `validateSubmission()` runs the same rules and type checks on the server as the browser | [Server-side Validation](/guide/server-validation) |
 | Events | `form_viewed`, `step_completed`, `field_error`, `form_submitted` and other lifecycle events | [Form events](/guide/custom-components#form-events) |
-| Hidden fields | Values from the URL, referrer, page, language, time zone, device or host | [Value sources](/guide/fields#value-sources) |
+| Hidden fields | Values from the URL, referrer, page, page title, language, time zone, device or country | [Value sources](/guide/fields#value-sources) |
 | Files | A `File` in the browser, a reference such as an upload id on the server | [File](/guide/fields#file), [Cloud files](/guide/endpoint#files) |
 | Cloud | Optional hosted endpoint, hosted form page and file uploads | [Get an Endpoint](/guide/endpoint) |
 
