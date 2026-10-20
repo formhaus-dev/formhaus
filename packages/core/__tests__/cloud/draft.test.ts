@@ -139,6 +139,45 @@ describe('draftValues', () => {
     expect(draftValues(branches, { kind: 'b', secret: 'hunter2' })).toEqual({ kind: 'b' });
   });
 
+  it('drops hidden, password and file values inside step sections and step groups', () => {
+    const stepped = {
+      id: 's',
+      title: 'S',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 'one',
+          title: 'One',
+          fields: [
+            {
+              key: 'box',
+              type: 'section',
+              title: 'Box',
+              fields: [
+                { key: 'ref', type: 'hidden' },
+                { key: 'city', type: 'text', label: 'City' },
+              ],
+            },
+            {
+              key: 'crew',
+              type: 'group',
+              label: 'Crew',
+              fields: [
+                { key: 'tag', type: 'hidden' },
+                { key: 'cv', type: 'file', label: 'CV' },
+                { key: 'name', type: 'text', label: 'Name' },
+              ],
+            },
+          ],
+        },
+      ],
+    } as FormDefinition;
+    expect(draftValues(stepped, { ref: 'r', city: 'Oslo', crew: [{ tag: 't', cv: 'upl_1', name: 'Ada' }] })).toEqual({
+      city: 'Oslo',
+      crew: [{ name: 'Ada' }],
+    });
+  });
+
   it('drops hidden values', () => {
     const definition = {
       id: 'h',

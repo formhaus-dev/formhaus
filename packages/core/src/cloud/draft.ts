@@ -1,5 +1,6 @@
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { isEntry, isGroup, valueFields } from '../visibility/nodes';
+import { isRecord } from './error';
 
 export interface DraftStorage {
   getItem(key: string): string | null;
@@ -58,15 +59,19 @@ export function sessionDraftStore({ maxAge = WEEK, storage: storageOf = sessionS
   return {
     load: (id, version) =>
       attempt((storage) => {
-        const draft = JSON.parse(storage.getItem(key(id)) ?? 'null') as {
-          version?: number;
-          savedAt: number;
-          values: Record<string, unknown>;
-        } | null;
-        return draft && draft.version === version && Date.now() - draft.savedAt < maxAge ? draft.values : null;
+        const draft: unknown = JSON.parse(storage.getItem(key(id)) ?? 'null');
+        if (!isRecord(draft) || draft.version !== version || !isRecord(draft.values) || typeof draft.savedAt !== 'number') return null;
+        const age = Date.now() - draft.savedAt;
+        return age >= 0 && age < maxAge ? draft.values : null;
       }, null),
     save: (id, version, values) =>
-      attempt((storage) => storage.setItem(key(id), JSON.stringify({ version, savedAt: Date.now(), values })), undefined),
+      attempt((storage) => {
+        try {
+          storage.setItem(key(id), JSON.stringify({ version, savedAt: Date.now(), values }));
+        } catch {
+          storage.removeItem(key(id));
+        }
+      }, undefined),
     clear: (id) => attempt((storage) => storage.removeItem(key(id)), undefined),
   };
 }

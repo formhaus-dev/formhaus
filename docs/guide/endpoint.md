@@ -121,6 +121,8 @@ check?.spend();
 | `body_too_large` | `null` | The submission is too large |
 | `idempotency_key_reused` | `retry` | The values changed during a retry |
 | `form_updated` | `reload` | The form has a new version. `FormhausForm` loads it and keeps the answers |
+| `file_taken` | `null` | An uploaded file is no longer available. `FormhausForm` uploads the file again and resends once |
+| `origin_not_allowed` | `null` | The form owner does not allow the form on this site |
 | `client_outdated` | `null` | The form needs a newer `@formhaus/core` |
 | `verification_failed` | `retry` | The bot check did not pass |
 | `verification_timeout` | `retry` | The bot check did not finish |

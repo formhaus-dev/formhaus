@@ -165,6 +165,56 @@ describe('cloud protocol', () => {
     expect(blocked.load('abc', 5)).toBeNull();
   });
 
+  it('treats a corrupt or tampered draft as untrusted', () => {
+    const backing = storage();
+    const store = sessionDraftStore({ maxAge: 1000, storage: () => backing });
+    const put = (draft: unknown) => backing.setItem('formhaus:draft:abc', typeof draft === 'string' ? draft : JSON.stringify(draft));
+    for (const draft of [
+      '{"version":5,',
+      'null',
+      '"text"',
+      [1, 2],
+      { version: 5, savedAt: Date.now(), values: 'Ada' },
+      { version: 5, savedAt: Date.now(), values: ['Ada'] },
+      { version: 5, savedAt: '1', values: { name: 'Ada' } },
+      { version: 5, savedAt: Date.now() + 60_000, values: { name: 'Ada' } },
+      { version: '5', savedAt: Date.now(), values: { name: 'Ada' } },
+    ]) {
+      put(draft);
+      expect(store.load('abc', 5)).toBeNull();
+    }
+    put(`{"version":5,"savedAt":${Date.now()},"values":{"__proto__":{"polluted":true},"name":"Ada","secret":"x","extra":1}}`);
+    const states: CloudState[] = [];
+    createCloudController({ id: 'abc', initialForm: form, draftStore: store }, { onChange: (state) => states.push(state) }).start();
+    expect(states.at(-1)?.initialValues).toEqual({ name: 'Ada' });
+    expect(Object.getPrototypeOf(states.at(-1)?.initialValues)).toBe(Object.prototype);
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined();
+  });
+
+  it('filters a restored draft through the current definition and draftExclude', () => {
+    const backing = storage();
+    const store = sessionDraftStore({ maxAge: 1000, storage: () => backing });
+    store.save('abc', 5, { name: 'Ada', secret: 'hunter2' });
+    const states: CloudState[] = [];
+    createCloudController(
+      { id: 'abc', initialForm: form, draftStore: store, draftExclude: ['name'] },
+      { onChange: (state) => states.push(state) },
+    ).start();
+    expect(states.at(-1)?.initialValues).toBeNull();
+    expect(states.at(-1)?.revision).toBe(0);
+  });
+
+  it('removes the stored draft when saving fails, such as over the storage quota', () => {
+    const backing = storage();
+    const store = sessionDraftStore({ maxAge: 1000, storage: () => backing });
+    store.save('abc', 5, { name: 'Ada' });
+    backing.setItem = () => {
+      throw new DOMException('quota', 'QuotaExceededError');
+    };
+    expect(() => store.save('abc', 5, { name: 'Ada Lovelace' })).not.toThrow();
+    expect(store.load('abc', 5)).toBeNull();
+  });
+
   it('drops a redirect URL that is not http or https from an initial form', () => {
     const states: CloudState[] = [];
     const controller = createCloudController(

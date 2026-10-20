@@ -4,7 +4,7 @@ import { createChallengeFrame, type ChallengeHost, type CloudChallengeFrame } fr
 import { createFileUploader, createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
 import { draftValues, sessionDraftStore, type DraftStore } from './draft';
 import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
-import { CloudError, networkError } from './error';
+import { CloudError, isRecord, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
 import { uploadGone } from './files';
 
@@ -107,7 +107,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
 
   function show(form: PublishedForm) {
     submitter = submitterFor(form);
-    const draft = drafts?.load(options.id, form.version) ?? null;
+    const saved = drafts?.load(options.id, form.version);
+    const kept = isRecord(saved) ? draftValues(form.definition, saved, options.draftExclude) : {};
+    const draft = Object.keys(kept).length > 0 ? kept : null;
     const next = cloudStateFor(form);
     settings = next.settings;
     update({ ...next, revision: state.revision + (draft ? 1 : 0), attempt: state.attempt, initialValues: draft });
@@ -197,9 +199,11 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         } catch (error) {
           const cloud = error as CloudError;
           if (cloud.code === 'verification_failed') check?.spend();
-          upload.forget(values, Object.keys(cloud.errors ?? {}));
+          const taken = cloud.code === 'file_taken';
+          upload.forget(values, Object.keys((taken ? values : cloud.errors) ?? {}));
           if (!alive()) throw error;
-          if (sending && !retried && cloud.status === 422 && state.definition && uploadGone(state.definition, values, cloud.errors)) {
+          const gone = taken || (cloud.status === 422 && !!state.definition && uploadGone(state.definition, values, cloud.errors));
+          if (sending && !retried && gone) {
             check?.spend();
             return attempt(true);
           }
