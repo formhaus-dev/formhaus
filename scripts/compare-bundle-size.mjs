@@ -1,9 +1,10 @@
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { gzipSync } from 'node:zlib';
-import { build } from 'esbuild';
+import { version as esbuildVersion } from 'esbuild';
+import { formhausBlocks, table, writeBlocks } from './size/docs.mjs';
+import { bundleSize, kb, REACT_EXTERNAL, VUE_EXTERNAL } from './size/measure.mjs';
 
 const VERSIONS = {
   'react-hook-form': '7.90.0',
@@ -15,66 +16,78 @@ const VERSIONS = {
   '@rjsf/validator-ajv8': '6.11.0',
   'survey-core': '3.2.1',
   'survey-react-ui': '3.2.1',
+  '@jsonforms/core': '3.8.0',
+  '@jsonforms/react': '3.8.0',
+  '@jsonforms/vanilla-renderers': '3.8.0',
+  '@tanstack/react-form': '1.33.5',
 };
 
-const REACT = ['react', 'react/*', 'react-dom', 'react-dom/*'];
-const VUE = ['vue'];
+const v = (name) => VERSIONS[name];
 
 const LIBRARIES = [
-  { name: 'react-hook-form', external: REACT, entry: `export { useForm } from 'react-hook-form';` },
   {
-    name: 'formik + yup',
-    external: REACT,
-    entry: `export { useFormik } from 'formik';
-export { object, string } from 'yup';`,
-  },
-  { name: '@formkit/vue', external: VUE, entry: `export { plugin, defaultConfig, FormKit } from '@formkit/vue';` },
-  {
-    name: '@rjsf/core + validator-ajv8',
-    external: REACT,
-    entry: `export { default as Form } from '@rjsf/core';
-export { default as validator } from '@rjsf/validator-ajv8';`,
+    name: `react-hook-form ${v('react-hook-form')}`,
+    quote: 'react-hook-form',
+    quoteText: (size) => `${size} for ${v('react-hook-form')}`,
+    external: REACT_EXTERNAL,
+    entry: `export { useForm } from 'react-hook-form';`,
+    features: ['Yes', 'No', 'No', 'With a schema resolver shared with the server', 'No'],
   },
   {
-    name: 'survey-core + survey-react-ui',
-    external: REACT,
-    entry: `export { Model } from 'survey-core';
-export { Survey } from 'survey-react-ui';`,
+    name: `@tanstack/react-form ${v('@tanstack/react-form')}`,
+    external: REACT_EXTERNAL,
+    entry: `export { useForm } from '@tanstack/react-form';`,
+    features: [
+      'Yes',
+      'No',
+      'No',
+      'A Standard Schema validator shared with the server, or `createServerValidate` in the framework adapters',
+      'No',
+    ],
+  },
+  {
+    name: `formik ${v('formik')} + yup ${v('yup')}`,
+    external: REACT_EXTERNAL,
+    entry: `export { useFormik } from 'formik';\nexport { object, string } from 'yup';`,
+    features: ['Yes', 'No', 'No', 'The Yup schema runs on the server', 'No'],
+  },
+  {
+    name: `@formkit/vue ${v('@formkit/vue')}`,
+    external: VUE_EXTERNAL,
+    entry: `export { plugin, defaultConfig, FormKit } from '@formkit/vue';`,
+    features: ['Yes', 'Yes', 'Plugin in `@formkit/addons`, not counted', 'No', 'FormKit schema'],
+  },
+  {
+    name: `JSON Forms ${v('@jsonforms/core')} (\`@jsonforms/core\` + \`@jsonforms/react\` + \`@jsonforms/vanilla-renderers\`)`,
+    external: REACT_EXTERNAL,
+    entry: `export { JsonForms } from '@jsonforms/react';\nexport { vanillaRenderers } from '@jsonforms/vanilla-renderers';`,
+    features: [
+      'Yes',
+      'Yes',
+      'Categorization layout, shown as a category list in the vanilla renderers',
+      'AJV runs the JSON Schema on the server',
+      'JSON Schema and UI schema',
+    ],
+  },
+  {
+    name: `react-jsonschema-form ${v('@rjsf/core')} (\`@rjsf/core\` + \`@rjsf/validator-ajv8\`)`,
+    quote: 'rjsf',
+    quoteText: (size) => `${size} for \`@rjsf/core\` + \`@rjsf/validator-ajv8\` ${v('@rjsf/core')}`,
+    external: REACT_EXTERNAL,
+    entry: `export { default as Form } from '@rjsf/core';\nexport { default as validator } from '@rjsf/validator-ajv8';`,
+    features: ['Yes', 'Yes', 'No', 'AJV runs the JSON Schema on the server', 'JSON Schema and UI schema'],
+  },
+  {
+    name: `SurveyJS ${v('survey-core')} (\`survey-core\` + \`survey-react-ui\`)`,
+    quote: 'surveyjs',
+    quoteText: (size) => `${size} for \`survey-core\` + \`survey-react-ui\` ${v('survey-core')}`,
+    external: REACT_EXTERNAL,
+    entry: `export { Model } from 'survey-core';\nexport { Survey } from 'survey-react-ui';`,
+    features: ['Yes', 'Yes', 'Yes', '`onServerValidateQuestions` calls your server check', 'Yes'],
   },
 ];
 
-const CORE = './packages/core/dist';
-const REACT_DIST = './packages/react/dist/index.js';
-const VUE_DIST = './packages/vue/dist/index.js';
-
-const FORMHAUS = [
-  { name: '@formhaus/core FormEngine', external: [], entry: `export { FormEngine } from '${CORE}/index.js';` },
-  {
-    name: '@formhaus/core FormEngine + checkDefinition',
-    external: [],
-    entry: `export { FormEngine, checkDefinition } from '${CORE}/index.js';`,
-  },
-  ...['cloud', 'i18n', 'fix'].map((subpath) => ({
-    name: `@formhaus/core FormEngine + /${subpath}`,
-    external: [],
-    entry: `export { FormEngine } from '${CORE}/index.js';\nexport * from '${CORE}/${subpath}.js';`,
-  })),
-  { name: '@formhaus/react useFormEngine', external: REACT, entry: `export { useFormEngine } from '${REACT_DIST}';` },
-  { name: '@formhaus/react HeadlessFormRenderer', external: REACT, entry: `export { HeadlessFormRenderer } from '${REACT_DIST}';` },
-  { name: '@formhaus/react FormRenderer', external: REACT, entry: `export { FormRenderer } from '${REACT_DIST}';` },
-  { name: '@formhaus/core + @formhaus/react', external: REACT, entry: `export * from '${REACT_DIST}';` },
-  { name: '@formhaus/vue useFormEngine', external: VUE, entry: `export { useFormEngine } from '${VUE_DIST}';` },
-  { name: '@formhaus/vue HeadlessFormRenderer', external: VUE, entry: `export { HeadlessFormRenderer } from '${VUE_DIST}';` },
-  { name: '@formhaus/vue FormRenderer', external: VUE, entry: `export { FormRenderer } from '${VUE_DIST}';` },
-  { name: '@formhaus/core + @formhaus/vue', external: VUE, entry: `export * from '${VUE_DIST}';` },
-];
-
-for (const pkg of ['core', 'react', 'vue']) {
-  if (!existsSync(`packages/${pkg}/dist/index.js`)) {
-    console.error(`packages/${pkg}/dist/index.js is missing. Run pnpm build first.`);
-    process.exit(1);
-  }
-}
+const { sizes, blocks } = await formhausBlocks();
 
 const dir = mkdtempSync(join(tmpdir(), 'formhaus-bundle-compare-'));
 try {
@@ -84,28 +97,24 @@ try {
     cwd: dir,
     stdio: 'inherit',
   });
-
-  const rows = [];
-  for (const library of LIBRARIES) rows.push([library.name, await bundleSize(library, dir)]);
-  for (const library of FORMHAUS) rows.push([library.name, await bundleSize(library, process.cwd())]);
-
-  console.log('');
-  for (const [name, size] of rows) console.log(`${name}: ${size} B (${(size / 1024).toFixed(1)} KB) gzipped`);
+  for (const library of LIBRARIES) library.size = await bundleSize(library.entry, { external: library.external, resolveDir: dir });
 } finally {
   rmSync(dir, { recursive: true, force: true });
 }
 
-async function bundleSize({ entry, external }, resolveDir) {
-  const result = await build({
-    stdin: { contents: entry, resolveDir },
-    bundle: true,
-    minify: true,
-    format: 'esm',
-    write: false,
-    logLevel: 'error',
-    loader: { '.css': 'empty' },
-    define: { 'process.env.NODE_ENV': JSON.stringify('production') },
-    external,
-  });
-  return gzipSync(result.outputFiles[0].contents, { level: 9 }).length;
-}
+const date = new Date().toISOString().slice(0, 10);
+const installed = Object.entries(VERSIONS)
+  .map(([name, version]) => `\`${name}@${version}\``)
+  .join(', ');
+const head = ['Library', 'gzip', 'State and validation', 'Rendering', 'Multi-step', 'Same validation on the server', 'JSON definitions'];
+const rows = [...LIBRARIES].sort((a, b) => a.size - b.size).map((library) => [library.name, kb(library.size), ...library.features]);
+const quotes = LIBRARIES.filter((library) => library.quote).map((library) => [library.quote, library.quoteText(kb(library.size))]);
+const competitors = {
+  libraries: `${table(head, rows)}Installed from npm on ${date}: ${installed}. Bundled with esbuild ${esbuildVersion} as in [Method](#method).\n\n`,
+  ...Object.fromEntries(quotes),
+};
+
+writeBlocks({ ...blocks, ...competitors });
+
+for (const library of LIBRARIES) console.log(`${library.name}: ${library.size} B (${kb(library.size)}) gzipped`);
+for (const [name, size] of Object.entries(sizes)) console.log(`@formhaus/${name}: ${size} B (${kb(size)}) gzipped`);

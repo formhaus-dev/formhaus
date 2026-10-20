@@ -202,6 +202,8 @@ jobs:
 
       - run: pnpm build
 
+      - run: pnpm check:size-docs
+
       - run: pnpm docs:build
 
       - run: pnpm check:seo

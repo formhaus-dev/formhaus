@@ -1,26 +1,5 @@
-import { build } from 'esbuild';
 import { readFileSync } from 'node:fs';
-import { gzipSync } from 'node:zlib';
-
-const HARD_LIMITS = {
-  'core + react': 33792,
-  'core + vue': 36864,
-  core: 27648,
-  'core FormEngine': 19456,
-  'core + react useFormEngine': 20480,
-  'core + vue useFormEngine': 20480,
-};
-
-const REACT_EXTERNAL = ['react', 'react-dom', 'react/jsx-runtime'];
-
-const APPS = {
-  'core + react': { pkg: 'react', external: REACT_EXTERNAL },
-  'core + vue': { pkg: 'vue', external: ['vue'] },
-  core: { pkg: 'core', external: [] },
-  'core FormEngine': { pkg: 'core', external: [], only: 'FormEngine' },
-  'core + react useFormEngine': { pkg: 'react', external: REACT_EXTERNAL, only: 'useFormEngine' },
-  'core + vue useFormEngine': { pkg: 'vue', external: ['vue'], only: 'useFormEngine' },
-};
+import { bundleSize, entrySize, gzip, HARD_LIMITS } from './size/measure.mjs';
 
 const PACKAGE_EXTERNALS = [
   '@formhaus/core',
@@ -49,7 +28,7 @@ for (const [name, budget] of Object.entries(BUDGETS)) {
   const file = `./packages/${pkg}/dist/${entry}.js`;
   const size = entry.endsWith('.css')
     ? gzip(readFileSync(`packages/${pkg}/${entry}`))
-    : await bundleSize(only ? `export { ${only} } from '${file}';` : `export * from '${file}';`, mode, PACKAGE_EXTERNALS);
+    : await bundleSize(only ? `export { ${only} } from '${file}';` : `export * from '${file}';`, { mode, external: PACKAGE_EXTERNALS });
   sizes.budgets[name] = size;
   log(`@formhaus/${name}: ${size} B gzipped (budget ${budget} B)`);
   if (size > budget) violations.push(`@formhaus/${name} is ${size - budget} B over budget`);
@@ -57,32 +36,13 @@ for (const [name, budget] of Object.entries(BUDGETS)) {
 
 log('');
 for (const [name, limit] of Object.entries(HARD_LIMITS)) {
-  const { pkg, external, only } = APPS[name];
-  const size = await bundleSize(`export ${only ? `{ ${only} }` : '*'} from './packages/${pkg}/dist/index.js';`, 'production', external);
+  const size = await entrySize(name);
   sizes.apps[name] = size;
   log(`${name}: ${size} B gzipped (hard limit ${limit} B, headroom ${limit - size} B)`);
   if (size > limit) violations.push(`${name} is ${size - limit} B over the hard limit`);
 }
 
 if (json) console.log(JSON.stringify(sizes, null, 2));
-
-async function bundleSize(contents, mode, external) {
-  const result = await build({
-    stdin: { contents, resolveDir: process.cwd() },
-    bundle: true,
-    minify: true,
-    format: 'esm',
-    write: false,
-    logLevel: 'error',
-    define: { 'process.env.NODE_ENV': JSON.stringify(mode) },
-    external,
-  });
-  return gzip(result.outputFiles[0].contents);
-}
-
-function gzip(contents) {
-  return gzipSync(contents, { level: 9 }).length;
-}
 
 if (violations.length > 0) {
   console.error(violations.join('\n'));
