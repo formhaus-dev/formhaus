@@ -1,6 +1,6 @@
 # Vue + Vuetify example
 
-This example maps Formhaus `FieldComponentProps` to [Vuetify 3](https://vuetifyjs.com) inputs through the `components` prop.
+This example maps Formhaus `FormFieldProps` to [Vuetify 3](https://vuetifyjs.com) inputs through the `components` prop.
 
 ## Run
 
