@@ -162,47 +162,9 @@ Three paths render the same definition. Sizes for each are in [Bundle size](/gui
 `useFormEngine` has no component map. It is the smallest path.
 
 ::: code-group
-```tsx [React]
-import { useFormEngine } from '@formhaus/react';
+<<< @/recipes/snippets/use-form-engine.tsx [React]
 
-export function ContactForm() {
-  const engine = useFormEngine(definition);
-  return (
-    <form onSubmit={(event) => { event.preventDefault(); engine.submit(send); }}>
-      {engine.visibleFields.map((field) => (
-        <label key={field.key}>
-          {field.label}
-          <input value={String(engine.values[field.key] ?? '')} onChange={(event) => engine.setValue(field.key, event.target.value)} />
-          {engine.errors[field.key]}
-        </label>
-      ))}
-      {!engine.isFirstStep && <button type="button" onClick={() => engine.back()}>Back</button>}
-      {engine.isLastStep ? <button type="submit">Send</button> : <button type="button" onClick={() => engine.next()}>Next</button>}
-    </form>
-  );
-}
-```
-
-```vue [Vue]
-<script setup lang="ts">
-import { useFormEngine } from '@formhaus/vue';
-
-const { engine, visibleFields, values, errors, isFirstStep, isLastStep } = useFormEngine(definition);
-</script>
-
-<template>
-  <form @submit.prevent="engine.submit(send)">
-    <label v-for="field in visibleFields" :key="field.key">
-      {{ field.label }}
-      <input :value="values[field.key] ?? ''" @input="engine.setValue(field.key, ($event.target as HTMLInputElement).value)" />
-      {{ errors[field.key] }}
-    </label>
-    <button v-if="!isFirstStep" type="button" @click="engine.back()">Back</button>
-    <button v-if="isLastStep" type="submit">Send</button>
-    <button v-else type="button" @click="engine.next()">Next</button>
-  </form>
-</template>
-```
+<<< @/recipes/snippets/use-form-engine.vue [Vue]
 :::
 
 `HeadlessFormRenderer` renders your components for a design system. See [Headless renderer](/guide/custom-components#headless-renderer).

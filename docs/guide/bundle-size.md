@@ -17,9 +17,7 @@ CI fails a pull request that goes over these limits in `scripts/check-bundle-siz
 | Every export of `@formhaus/core` and `@formhaus/react` | 33 KB | 29.5 KB |
 | Every export of `@formhaus/core` and `@formhaus/vue` | 36 KB | 32.9 KB |
 | `FormEngine` from `@formhaus/core` | 19 KB | 17.1 KB |
-| `useFormEngine` from `@formhaus/react` or `@formhaus/vue`, with `FormEngine` | 20 KB | 17.7 KB |
-
-`FormEngine` and each `useFormEngine` have their own budgets in `scripts/bundle-budgets.json`, which the same script checks.
+| `useFormEngine` from `@formhaus/react` or `@formhaus/vue`, with core | 20 KB | 17.7 KB |
 
 ## Rendering paths
 
