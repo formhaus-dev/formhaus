@@ -1,8 +1,7 @@
-import { vendoredVueDeps, vendoredVueFiles } from './vendored-vue';
+import { FORMHAUS_VERSION } from './versions';
 
 export function buildFiles(definitionJson: string) {
   return {
-    ...vendoredVueFiles,
     'src/App.vue':
       `<` +
       `script setup>
@@ -30,5 +29,6 @@ export const activeFile = 'src/App.vue';
 export const visibleFiles = ['src/App.vue'];
 export const editorHeight = 480;
 export const deps: Record<string, string> = {
-  ...vendoredVueDeps,
+  '@formhaus/core': FORMHAUS_VERSION,
+  '@formhaus/vue': FORMHAUS_VERSION,
 };
