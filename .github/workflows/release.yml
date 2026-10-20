@@ -61,7 +61,21 @@ jobs:
 
       - run: pnpm build
 
-      - run: pnpm -r publish --access public --no-git-checks
+      - name: Pick the npm dist-tag
+        run: |
+          tag=latest
+          if [ -f .changeset/pre.json ] && [ "$(jq -r .mode .changeset/pre.json)" = pre ]; then
+            tag=$(jq -r .tag .changeset/pre.json)
+          fi
+          [[ "$tag" =~ ^[a-z]+$ ]] || { echo "::error::Invalid dist-tag $tag"; exit 1; }
+          for dir in packages/*/; do
+            [ "$(jq -r '.private // false' "$dir/package.json")" = true ] && continue
+            version=$(jq -r .version "$dir/package.json")
+            case "$version" in *-*) [ "$tag" != latest ] || { echo "::error::$version would publish as latest"; exit 1; } ;; esac
+          done
+          echo "DIST_TAG=$tag" >> "$GITHUB_ENV"
+
+      - run: pnpm -r publish --access public --no-git-checks --tag "$DIST_TAG"
 
       - name: Tag and push released versions
         env:
@@ -84,9 +98,9 @@ jobs:
           core=$(jq -r .version packages/core/package.json)
           mcp=$(jq -r .version packages/mcp/package.json)
           touch "$RUNNER_TEMP/new-tags"
-          if grep -qx "@formhaus/core@$core" "$RUNNER_TEMP/new-tags"; then
+          if [ "$DIST_TAG" = latest ] && grep -qx "@formhaus/core@$core" "$RUNNER_TEMP/new-tags"; then
             gh workflow run docs-pins.yml -f version="$core"
           fi
-          if grep -qx "@formhaus/mcp@$mcp" "$RUNNER_TEMP/new-tags"; then
+          if [ "$DIST_TAG" = latest ] && grep -qx "@formhaus/mcp@$mcp" "$RUNNER_TEMP/new-tags"; then
             gh workflow run mcp-registry.yml --ref "@formhaus/mcp@$mcp"
           fi
