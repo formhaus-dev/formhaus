@@ -29,7 +29,7 @@ SurveyJS and Formhaus both render forms from JSON. SurveyJS is a full survey pla
 | Definition format | JSON, checked by a [JSON Schema](/api/definition#json-schema) | SurveyJS JSON; linter and self-hosted schema validator ([JSON validation](https://surveyjs.io/form-library/documentation/survey-json-validation)) |
 | Multi-step | Built in: `steps`, per-step validation, progress ([guide](/guide/steps)) | Built in: pages ([multi-page survey](https://surveyjs.io/form-library/documentation/design-survey-create-a-multi-page-survey)) |
 | Branching routes | `routes` on a step pick the next step ([guide](/guide/steps#route-between-branches)) | Page `visibleIf` and the `skip` trigger to a question ([conditional logic](https://surveyjs.io/form-library/documentation/design-survey-conditional-logic#skip)) |
-| Conditional fields | `show` / `showAny` with five operators ([guide](/guide/conditions)) | `visibleIf`, `enableIf`, `requiredIf` expressions ([conditional logic](https://surveyjs.io/form-library/documentation/design-survey-conditional-logic#question-visibility)) |
+| Conditional fields | `show` / `showAny` with eleven operators ([guide](/guide/conditions)) | `visibleIf`, `enableIf`, `requiredIf` expressions ([conditional logic](https://surveyjs.io/form-library/documentation/design-survey-conditional-logic#question-visibility)) |
 | Validation | Declarative rules, named validators, async step validation ([guide](/guide/validation)) | Built-in validators, expression validators, `onServerValidateQuestions` ([data validation](https://surveyjs.io/form-library/documentation/data-validation)) |
 | Custom components | `components` map per field type ([guide](/guide/custom-components)) | Custom question types and third-party components ([integration](https://surveyjs.io/form-library/documentation/customize-question-types-third-party-component-integration-react)) |
 | Figma | Plugin draws the definition ([guide](/guide/figma)) | Figma design kit of SurveyJS components ([FAQ](https://surveyjs.io/faq/customization), [kit](https://www.figma.com/@surveyjs)) |
@@ -118,7 +118,7 @@ export function Signup({ onDone }: { onDone: (values: Record<string, unknown>) =
 }
 ```
 
-`elements` become `fields`, `name` becomes `key`, `title` becomes `label`, `choices` become `options`, and `visibleIf` expressions become `show` conditions. `pages` map to `steps`. Expressions, calculated values and matrix questions have no Formhaus equivalent; keep those forms on SurveyJS.
+`elements` become `fields`, `name` becomes `key`, `title` becomes `label`, `choices` become `options`, and `visibleIf` expressions become `show` conditions. `pages` map to `steps`. A single-choice matrix becomes a section with `"layout": "matrix"`. Expressions and calculated values have no Formhaus equivalent; keep those forms on SurveyJS.
 
 ## Related
 
