@@ -20,7 +20,7 @@ export function hasRule(node: Entry, slot: string): boolean {
   return slot === 'required' ? !!value : value !== undefined && value !== false && value !== '';
 }
 
-export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = Object.freeze({
+export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = /* @__PURE__ */ Object.freeze({
   continue: 'Continue',
   back: 'Back',
   stepOf: 'Step {current} of {total}',

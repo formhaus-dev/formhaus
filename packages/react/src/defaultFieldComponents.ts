@@ -16,7 +16,7 @@ import { TextareaField } from './fields/TextareaField';
 import { TimeField } from './fields/TimeField';
 import type { FieldComponentMap, FieldComponentProps } from './types';
 
-export const defaultFieldComponents = fieldComponentsByName<ComponentType<FieldComponentProps>>({
+export const defaultFieldComponents = /* @__PURE__ */ fieldComponentsByName<ComponentType<FieldComponentProps>>({
   AutocompleteField,
   CheckboxField,
   DateField,

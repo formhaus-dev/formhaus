@@ -16,7 +16,7 @@ import TextareaField from './fields/TextareaField.vue';
 import TimeField from './fields/TimeField.vue';
 import type { FieldComponentMap } from './types';
 
-export const defaultFieldComponents = fieldComponentsByName<Component>({
+export const defaultFieldComponents = /* @__PURE__ */ fieldComponentsByName<Component>({
   AutocompleteField,
   CheckboxField,
   DateField,

@@ -7,7 +7,7 @@ export type MessageFn = (key: MessageKey, params: MessageParams, field: FormFiel
 export type MessageSource = MessageCatalog | MessageFn;
 export type ResolveMessage = (key: MessageKey, params: MessageParams, field: FormField) => string;
 
-export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = Object.freeze({
+export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = /* @__PURE__ */ Object.freeze({
   required: 'This field is required',
   minLength: 'Minimum length is {min}',
   maxLength: 'Maximum length is {max}',

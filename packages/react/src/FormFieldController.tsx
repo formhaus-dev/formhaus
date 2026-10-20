@@ -23,7 +23,7 @@ interface FormFieldControllerProps extends ControllerProps {
   item?: Record<string, unknown>;
 }
 
-export const FormFieldController = memo(function FormFieldController({
+export const FormFieldController = /* @__PURE__ */ memo(function FormFieldController({
   engine,
   formId,
   field,

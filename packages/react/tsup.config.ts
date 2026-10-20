@@ -1,11 +1,16 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { defineConfig } from 'tsup';
 
+const INTERNAL_PROPS = /^(invalidAttempts|onItemsChange|actionError|changeItems|ProgressComponent|ActionsComponent|inputId)$/;
+
 const shared = {
+  esbuildOptions(options: { mangleProps?: RegExp }) {
+    options.mangleProps = INTERNAL_PROPS;
+  },
   format: ['esm' as const],
   dts: true,
   treeshake: true,
-  minify: true,
+  minify: false,
   sourcemap: true,
   target: 'es2020',
 };
