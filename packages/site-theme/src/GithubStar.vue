@@ -13,7 +13,7 @@ const stars = computed<{ count: number; label: string } | null>(() => {
 </script>
 
 <template>
-  <a class="gh-star" :class="{ 'gh-star--count': stars }" :href="repo" aria-label="Star Formhaus on GitHub" target="_blank" rel="noopener" data-umami-event="outbound_click" data-umami-event-dest="github_star" data-umami-event-location="nav">
+  <a class="gh-star" :class="{ 'gh-star--count': stars }" :href="repo" aria-label="Star Formhaus on GitHub" target="_blank" rel="noopener" data-umami-event="outbound-click" data-umami-event-dest="github_star" data-umami-event-location="nav">
     <svg class="gh-star__mark" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
       <path
         fill="currentColor"

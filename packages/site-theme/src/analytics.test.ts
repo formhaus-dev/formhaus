@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { codeLanguage, landingSource, trackingAllowed, withSource } from './analytics';
+import { codeLanguage, installedPackage, landingSource, trackingAllowed, withSource } from './analytics';
 
 describe('landingSource', () => {
   it('keeps campaign parameters and the ref', () => {
@@ -49,5 +49,17 @@ describe('codeLanguage', () => {
     const button = (className: string) => ({ parentElement: { className } }) as unknown as Element;
     expect(codeLanguage(button('language-tsx vp-adaptive-theme active'))).toBe('tsx');
     expect(codeLanguage(button('vp-code'))).toBe('text');
+  });
+});
+
+describe('installedPackage', () => {
+  it('finds the Formhaus package in an install command', () => {
+    expect(installedPackage('npm install @formhaus/core @formhaus/react')).toBe('react');
+    expect(installedPackage('npm i @formhaus/core@^0.20 @formhaus/vue@^0.20')).toBe('vue');
+    expect(installedPackage('npm install @formhaus/core @formhaus/react   # or @formhaus/vue')).toBe('react');
+    expect(installedPackage('npm install @formhaus/core')).toBe('core');
+    expect(installedPackage('$ pnpm add @formhaus/vue')).toBe('vue');
+    expect(installedPackage('npx @formhaus/mcp')).toBeNull();
+    expect(installedPackage("import { FormEngine } from '@formhaus/core';")).toBeNull();
   });
 });
