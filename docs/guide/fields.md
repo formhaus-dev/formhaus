@@ -544,7 +544,7 @@ A step can greet the user by the name asked on the first step:
 - Only a key goes inside the braces. Keys may hold dots, so `{{contact.email}}` works. `{{name|upper}}` shows as written, and `\{{` shows literal braces.
 - `checkDefinition()` warns when a token names no field, a field answered later, or holds more than a key.
 - A `password` field shows nothing, and `checkDefinition()` warns about it.
-- A hidden field with a `query` source holds whatever text a link puts in the URL, so `checkDefinition()` warns when a text recalls it. Recall it only where any text is safe to show.
+- A hidden field with a `query` source holds whatever text a link puts in the URL, so `checkDefinition()` warns with `recall-query-source` when a text recalls it. A `referrer` or `pageTitle` source holds text another site can set, and gives `recall-untrusted-source`. Recall these fields only where any text is safe to show.
 - Inside a group item, `{{key}}` also reads the item's own fields.
 - Recall runs once. An answer that holds `{{key}}` shows as typed and is never expanded.
 - Resolved texts are for display. Conditions, the payload, errors and [form events](/guide/custom-components#form-events) use field keys, step ids and option values, never the resolved text.
