@@ -62,6 +62,7 @@ describe('conformance corpus', () => {
       'disabled-actions',
       'duplicate-options',
       'exclusive-options',
+      'file-app-reference',
       'flat-api-steps',
       'format-version',
       'group-list-answers',
