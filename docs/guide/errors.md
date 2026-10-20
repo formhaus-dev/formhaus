@@ -46,7 +46,7 @@ async function onSubmit(values: Record<string, unknown>): Promise<SubmitResult> 
 After a rejection:
 
 - Every answer stays in the form.
-- All errors apply at once. In a multi-step form the form opens the earliest step with an error, whatever order the keys come in, and focuses the first invalid field.
+- All errors apply at once. In a multi-step form the form opens the earliest step with an error, whatever order the keys come in, and moves focus as after a failed Submit.
 - `onAfterSubmit` does not run. It runs exactly once after a success.
 - An error for a key the form does not have, or for a hidden field, shows above the buttons.
 
@@ -89,7 +89,7 @@ return { ok: false, formErrors: ['Your account has been temporarily suspended.']
 
 ## Error summary and step marks
 
-The error summary lists every field error below the fields, above the step buttons, in step order. Each entry is a link that opens the step of the field and focuses it. When errors span more than one step, the list groups them under each step's title. A label that ends with `?`, `!`, `:` or `.` is followed by a space instead of `: `. It is on by default; pass `errorSummary={false}` in React or `:error-summary="false"` in Vue to turn it off. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. It is off by default.
+The error summary lists every field error below the fields, above the step buttons, in step order. Each entry is a link that opens the step of the field and focuses it. When errors span more than one step, the list groups them under each step's title. A label that ends with `?`, `!`, `:` or `.` is followed by a space instead of `: `. It is on by default; pass `errorSummary={false}` in React or `:error-summary="false"` in Vue to turn it off. After a failed Continue or Submit with two or more errors, focus moves to the summary. With one error, or with the summary off, focus moves to the first invalid field. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. It is off by default.
 
 The progress header always shows the title of the current step in the error color while that step has errors, with the `stepErrors` label as text for screen readers.
 

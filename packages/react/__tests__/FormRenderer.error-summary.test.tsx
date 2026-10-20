@@ -47,7 +47,7 @@ describe('error summary and step marks', () => {
     expect(summary.getAttribute('role')).toBe('alert');
     const links = within(summary).getAllByRole('link');
     expect(links.map((link) => link.textContent)).toEqual(['Email: Taken', 'Account type: Not available', 'Postcode: Unknown postcode']);
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Email/ })));
+    await waitFor(() => expect(document.activeElement).toBe(summary));
 
     fireEvent.click(links[2]);
     await screen.findByRole('heading', { name: 'Address' });
@@ -62,7 +62,7 @@ describe('error summary and step marks', () => {
     const ClickOnCommit = () => {
       useLayoutEffect(() => {
         const link = document.querySelectorAll<HTMLElement>('.fh-error-summary__link')[2];
-        if (clicked || !link || !document.activeElement?.id.endsWith('-email')) return;
+        if (clicked || !link || !document.activeElement?.classList.contains('fh-error-summary')) return;
         clicked = true;
         queueMicrotask(() => fireEvent.click(link));
       });
@@ -177,7 +177,7 @@ it('focuses the field when a summary link is clicked on a single-step form', asy
   );
   fireEvent.click(screen.getByRole('button', { name: 'Send' }));
   const link = await screen.findByRole('link', { name: 'Second: Bad second' });
-  await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /First/ })));
+  await waitFor(() => expect(document.activeElement).toBe(document.querySelector('.fh-error-summary')));
   link.focus();
   fireEvent.click(link);
   await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Second/ })));

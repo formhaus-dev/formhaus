@@ -477,7 +477,7 @@ Core evaluates one field as follows and returns the first error:
 5. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
 6. `validator`: the named function from the `validators` option is called with the value and the values that `matchField` uses. A non-empty string result is the error; `null` or `''` is no error, and `validateField()` returns `null` for both. An unregistered name is ignored at runtime, and the constructor logs a warning for it. The validator never receives an empty value, because step 1 returns first.
 
-Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. A group runs its count rules first, then the rules of the visible fields of every item, with the values of the same item in place of `matchField` and validator values. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. Built-in renderers focus the first invalid field after a failed Continue or Submit.
+Validation runs on Continue for the visible fields of the current step, and on Submit for the visible fields of every non-skipped step on the active path. A group runs its count rules first, then the rules of the visible fields of every item, with the values of the same item in place of `matchField` and validator values. Renderers do not validate on blur. When Submit fails validation, the engine moves to the earliest step with an error. Like `setErrors()`, this move does not run the step change hooks. After a failed Continue or Submit, built-in renderers focus the invalid field when the error summary lists one error. When it lists two or more, they focus the error summary, which has `tabindex="-1"` and `role="alert"`, and scroll it into view. With `errorSummary` off, they focus the first invalid field.
 
 ## Steps
 
@@ -726,7 +726,7 @@ A plain object is one whose prototype is `Object.prototype`. A `fetch` `Response
 1. A key of a visible field on the active path, or the path of a visible item field of an existing item, becomes the error of that field. Every other key, including the key of a field hidden by its conditions or a field off the active path, becomes a form-level error. An error on a field of type `hidden` stays under its key and is also listed in `topLevelErrors`. Form-level errors are the `formErrors` messages, then the unmatched messages in key order. They are exposed as `topLevelErrors`.
 2. The set replaces all previous field errors and form-level errors at once.
 3. In a multi-step form, the engine opens the earliest step on the active path that has a field error. The key order of `errors` does not matter. The step change hooks do not run.
-4. The built-in renderers focus the first invalid field on that step after it renders: the checked option of a group, or its first enabled control.
+4. The built-in renderers apply the focus rule of a failed Submit on that step after it renders: the error summary for two or more errors, otherwise the first invalid field on the step: the checked option of a group, or its first enabled control.
 
 Field errors are kept until one of these events:
 

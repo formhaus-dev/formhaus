@@ -47,7 +47,7 @@ describe('Vue error summary and step marks', () => {
     expect(summary.getAttribute('role')).toBe('alert');
     const links = within(summary).getAllByRole('link');
     expect(links.map((link) => link.textContent)).toEqual(['Email: Taken', 'Account type: Not available', 'Postcode: Unknown postcode']);
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Email/ })));
+    await waitFor(() => expect(document.activeElement).toBe(document.querySelector('.fh-error-summary')));
 
     await fireEvent.click(links[2]);
     await screen.findByRole('heading', { name: 'Address' });

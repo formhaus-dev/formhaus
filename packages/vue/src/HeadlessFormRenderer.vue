@@ -162,7 +162,7 @@ async function onPrimary() {
       <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">{{ error }}</p>
     </div>
 
-    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert">
+    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert" tabindex="-1">
       <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
       <template v-for="group in summaryGroups" :key="group.id">
         <p v-if="summaryGroups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>

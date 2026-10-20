@@ -53,6 +53,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const formRef = useRef<HTMLFormElement>(null);
     const focusPending = useRef(false);
     const focusKey = useRef<string | null>(null);
+    const focusErrors = useRef(false);
     const focusReturn = useRef<HTMLElement | null>(null);
     const [focusRequest, setFocusRequest] = useState(0);
     const requestFocus = () => {
@@ -124,11 +125,15 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       if (!shouldApplyExternalErrors(engine, previous, props.errors)) return;
       appliedErrors.current = { engine, errors: props.errors };
       engine.setErrors(props.errors);
-      if (Object.keys(props.errors).length > 0 && canMoveFocus(formRef.current)) requestFocus();
+      if (Object.keys(props.errors).length > 0 && canMoveFocus(formRef.current)) {
+        focusErrors.current = true;
+        requestFocus();
+      }
     }, [props.errors, engine]);
 
     useEffect(() => {
       if (version !== engine.getSnapshot()) return;
+      if (handledInvalid.current !== actions.invalidAttempts) focusErrors.current = true;
       if (previousStep.current !== engine.currentStep?.id || handledInvalid.current !== actions.invalidAttempts)
         focusPending.current = true;
       previousStep.current = engine.currentStep?.id;
@@ -145,8 +150,10 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       }
       focusPending.current = false;
       const key = focusKey.current;
+      const afterErrors = focusErrors.current || (restore && Object.keys(engine.errors).length > 0);
       focusKey.current = null;
-      focusField(formRef.current, key && errorDomId(engine, formId, key));
+      focusErrors.current = false;
+      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors);
     }, [engine, version, actions.invalidAttempts, focusRequest]);
 
     const handleFieldFocus = useCallback(

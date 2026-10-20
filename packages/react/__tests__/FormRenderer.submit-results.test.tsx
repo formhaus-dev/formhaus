@@ -46,7 +46,7 @@ describe('FormRenderer submit results with a flat API', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Open account' }));
 
     await screen.findByRole('heading', { name: 'About you' });
-    await waitFor(() => expect(document.activeElement).toBe(field('First name')));
+    await waitFor(() => expect(document.activeElement).toBe(document.querySelector('.fh-error-summary')));
     expect(api.requests).toEqual([
       {
         first_name: 'Ada1',
