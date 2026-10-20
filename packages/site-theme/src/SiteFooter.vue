@@ -31,7 +31,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
               <a
                 class="fh-footer__link"
                 :href="link.href"
-                v-bind="link.dest ? { target: '_blank', rel: 'noopener', 'data-umami-event': 'outbound_click', 'data-umami-event-dest': link.dest, 'data-umami-event-location': 'footer' } : {}"
+                v-bind="link.dest ? { target: '_blank', rel: 'noopener', 'data-umami-event': 'outbound-click', 'data-umami-event-dest': link.dest, 'data-umami-event-location': 'footer' } : {}"
               >{{ link.text }}</a>
             </li>
           </ul>
@@ -45,7 +45,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
           aria-label="Formhaus on GitHub"
           target="_blank"
           rel="noopener"
-          data-umami-event="outbound_click"
+          data-umami-event="outbound-click"
           data-umami-event-dest="github"
           data-umami-event-location="footer"
         >
