@@ -36,11 +36,17 @@ function required(value: object, path: string, key: string, hint?: string): Defi
   return (value as Record<string, unknown>)[key] === undefined ? [missing(path, key, hint, warning)] : [];
 }
 
+function labeled(value: object, path: string, hint?: string): DefinitionIssue[] {
+  return (value as Record<string, unknown>).label === undefined
+    ? [warning('missing-label', `${path}/label`, 'missing required property "label"', hint)]
+    : [];
+}
+
 function action(value: unknown, path: string, disables = true): DefinitionIssue[] {
   if (!isEntry(value)) return [];
   const ignored = !disables && value.disabled !== undefined;
   return [
-    ...required(value, path, 'label'),
+    ...labeled(value, path),
     ...unknown(value, path, PROPERTIES.action),
     ...(ignored
       ? [
@@ -62,11 +68,11 @@ function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
   const visible = field.type !== 'hidden';
   const empty = visible && typeof field.label === 'string' && !field.label.trim();
   return [
-    ...(visible ? required(field, path, 'label', LABEL_HINT) : []),
-    ...(empty ? [warning('empty-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
+    ...(visible ? labeled(field, path, LABEL_HINT) : []),
+    ...(empty ? [warning('missing-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
     ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, misplaced),
     ...(field.options ?? []).flatMap((option, index) => [
-      ...required(option, `${path}/options/${index}`, 'label'),
+      ...labeled(option, `${path}/options/${index}`),
       ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
       ...(typeof option.image === 'string' && !/^(https:|data:image\/)/i.test(option.image)
         ? [

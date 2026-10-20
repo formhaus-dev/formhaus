@@ -33,7 +33,7 @@ function translationErrors(definition: FormDefinition): DefinitionIssue[] {
         ...strings(block, `${path}/i18n`, 'translation keys', kind === 'form' ? ['messages', 'labels'] : []),
         ...unbound.map((slot) =>
           error(
-            'i18n-unbound-slot',
+            'i18n-key-without-text',
             `${path}/i18n/${slot}`,
             `"${slot}" has a translation key but no source text`,
             `Add "${slot}" as the fallback text`,

@@ -24,7 +24,9 @@ function hint(instancePath: string, extra: string): string {
 
 function toIssue({ instancePath, message, params }: ErrorObject): Issue {
   if ('missingProperty' in params) {
-    return issue('missing-property', 'error', instancePath, `missing required property "${params.missingProperty}"`);
+    const message = `missing required property "${params.missingProperty}"`;
+    if (params.missingProperty === 'label') return issue('missing-label', 'error', `${instancePath}/label`, message);
+    return issue('missing-property', 'error', instancePath, message);
   }
   if ('additionalProperty' in params) {
     const extra = String(params.additionalProperty);

@@ -196,7 +196,7 @@ An NPS question is a `scale` from 0 to 10 with two anchors. Branch on detractors
 
 An option of a `radio` or `multiselect` field MAY have `image`, the URL of a picture. The built-in renderers show it above the label and place the options in a grid. The label stays required and visible, and it names the option for assistive technology, so the image has an empty `alt`. The value is the option `value`, as for any option. `select` and `autocomplete` ignore `image`. Images load from the URL as given; a strict Content Security Policy needs `img-src` for its host. The image host sees the respondent's IP address. The built-in renderers send no `Referer` header with option images. An `image` that does not start with `https:` or `data:image/` is an `unsafe-image-url` warning. The built-in renderers draw no image for a URL with a scheme other than `https:`, `http:`, `blob:` or a png, jpeg, webp or gif `data:image/`, or with credentials before the host. Relative URLs are drawn. Renderers SHOULD bound the download size and decoding cost of an option image. The web renderers rely on the browser's limits. The native ports fetch at most 10 MB per image and draw no image larger than 4096 pixels on a side.
 
-`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-range` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field whose parent container has `layout: "matrix"`. Each card has a button that opens the image at full size.
+`columns` sets the number of cards per row, from 1 to 4. Without it, the built-in renderers fill the row with cards about 200px wide. On screens narrower than 480px they show at most 2 cards per row. Any other value is an `invalid-type` or `invalid-columns` error. `columns` is a `columns-not-applicable` warning and is ignored on a field whose options have no `image`, on a field type other than `radio` and `multiselect`, and on a field whose parent container has `layout: "matrix"`. Each card has a button that opens the image at full size.
 
 ### Exclusive options
 
@@ -348,7 +348,7 @@ Rules:
 - A condition or `matchField` of an item field MAY use the other fields of the same item, evaluated per item, and fields outside the group under the rules of field conditions. A condition, `matchField` or `optionsDependsOn` outside the group MUST NOT use item fields (`group-scope`). It MAY test the group itself, such as with `notEmpty`.
 - `required: true` means at least one item. `minLength` and `maxLength` count items, not characters, and use the `minItems` and `maxItems` messages. Like other rules, `minLength` does not apply to an empty group.
 
-A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. A group holds at most 1000 items, whatever its `maxLength`. Its item limit is `maxLength`, or 100 without `maxLength`, capped at 1000. Built-in renderers hide Add when the group has as many items as its limit, and hide Remove when it has `minLength` items, or 1 when `required`. `defaultItems` creates no more items than the limit: a group with `defaultItems: 1000000` and no `maxLength` starts with 100 items, and a group with `defaultItems` and `maxLength` both 10000000 starts with 1000 items. The same limit applies on construction, `reset()`, Skip, Add, `replaceDefinition()` and in `validateSubmission()`. A `maxLength` or `defaultItems` over 1000 is an `invalid-range` warning.
+A new item, from `defaultItems` or Add, holds the `defaultValue` of its fields. An item in the initial values or in `reset(values)` gets the `defaultValue` of the fields it does not have, like top-level fields. A group holds at most 1000 items, whatever its `maxLength`. Its item limit is `maxLength`, or 100 without `maxLength`, capped at 1000. Built-in renderers hide Add when the group has as many items as its limit, and hide Remove when it has `minLength` items, or 1 when `required`. `defaultItems` creates no more items than the limit: a group with `defaultItems: 1000000` and no `maxLength` starts with 100 items, and a group with `defaultItems` and `maxLength` both 10000000 starts with 1000 items. The same limit applies on construction, `reset()`, Skip, Add, `replaceDefinition()` and in `validateSubmission()`. A `maxLength` or `defaultItems` over 1000 is a `group-item-limit` warning.
 
 An item field hidden by its conditions is removed from its item, and its error is removed. When it is shown again and holds no value, it gets back its last value in that item, or else the value its item started with. An item starts with the values it has after the initial values or the last `reset()`, defaults included, or with the `defaultValue` of its fields when it comes from `defaultItems`, Add or Skip. Last values are kept per item, so they stay with the item when another item is removed, and removing an item forgets its own.
 
@@ -833,7 +833,7 @@ An `i18n` object maps texts of its node to keys of the app dictionary, such as L
 | option, action | `label` |
 | validation | `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `matchField` |
 
-The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-unbound-slot` error. A validation slot MAY bind a rule without a field message. `FormEngine` ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it and throws a `FormDefinitionError` on translation errors.
+The text of a bound slot MUST exist in the node; it is the fallback wherever the app dictionary is not available. A key without its text is an `i18n-key-without-text` error. A validation slot MAY bind a rule without a field message. `FormEngine` ignores `i18n`; `localize()` from `@formhaus/core/i18n` reads it and throws a `FormDefinitionError` on translation errors.
 
 ```json
 {
@@ -914,7 +914,8 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 |---|---|---|
 | `invalid-type` | error | A definition that is not an object; `fields`, `steps`, `steps[].fields`, the `fields` of a section or a group, `routes`, `options`, `show`, `showAny` or `disabled` that is not an array of objects; or a property of the wrong type, such as an `id` that is not a string, `in` that is not an array, `max` that is not a number, a `source` that is not a name or a `{ "query" }` object with a parameter name, or a `formatVersion` that is not a version string |
 | `unsupported-format-version` | error | A `formatVersion` with a major version newer than this core reads |
-| `missing-property` | error, warning | A missing `id`, `submit`, step `id` or `fields`, field `key` or `type`, option `value`, route `to` or condition `field`. A missing form or step `title`, field or option `label`, or action `label` is a warning. The path points to the object that lacks the property |
+| `missing-property` | error, warning | A missing `id`, `submit`, step `id` or `fields`, field `key` or `type`, option `value`, route `to` or condition `field`. A missing form, step or section `title` is a warning. The path points to the object that lacks the property |
+| `missing-label` | warning | A field other than `hidden`, an option or an action without `label`, or a field other than `hidden` with an empty or blank `label`. The path points to the `label` property |
 | `unknown-property` | warning | A property the JSON Schema does not define, such as `imd` for `id`. The hint names the closest known property, or the `validation` object for a rule set on a field |
 | `fields-and-steps` | error | Both `fields` and `steps` non-empty |
 | `duplicate-step-id` | error | Two steps with one id |
@@ -930,9 +931,11 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `invalid-pattern` | error | A `pattern` that is not a valid regular expression |
 | `duplicate-key` | error | A field or section key that an earlier one on a possible path already uses, an item key that repeats a key of the same group or a key outside it, or a key that starts with a group key and `.` |
 | `duplicate-option-value` | error | An option value that an earlier option of the same field already uses |
-| `invalid-range` | error | `minLength` greater than `maxLength`, `min` greater than `max`, `defaultItems` greater than `maxLength`, or `columns` outside 1 to 4. A warning for `defaultItems` greater than 100 on a group without `maxLength`, and for a group `maxLength` or `defaultItems` greater than 1000 |
+| `min-greater-than-max` | error | `minLength` greater than `maxLength`, or `min` greater than `max` |
+| `default-items-greater-than-max` | error | A group `defaultItems` greater than its `maxLength` |
+| `group-item-limit` | warning | A group `defaultItems` greater than 100 without `maxLength`, or a group `maxLength` or `defaultItems` greater than 1000 |
+| `invalid-columns` | error | A number `columns` that is not a whole number from 1 to 4 |
 | `invalid-scale` | error | A `scale` or `rating` whose `min` or `max` is not an integer, or whose range has fewer than 2 or more than 11 points |
-| `empty-label` | warning | A field other than `hidden` with an empty or blank `label` |
 | `unknown-source` | error | A `source` string that is not a source name |
 | `condition-value-mismatch` | warning | A condition value of the wrong type for the field, a value that is not one of its static `options`, or `eq`, `neq`, `in` or `notIn` on a `multiselect` |
 | `contains-not-list` | warning | `contains` or `notContains` on a built-in field that does not hold a list, or on a group. Only `multiselect` holds a list; custom types are not checked |
@@ -966,7 +969,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |
-| `i18n-unbound-slot` | error, from `checkTranslations()` | A translation key for a text the node does not have, such as `i18n.placeholder` without `placeholder` |
+| `i18n-key-without-text` | error, from `checkTranslations()` | A translation key for a text the node does not have, such as `i18n.placeholder` without `placeholder` |
 | `unknown-i18n-slot` | warning, from `checkTranslations()` | An `i18n` key for a text the node cannot have, or for a rule that is not set |
 | `unknown-message-key` | warning, from `checkTranslations()` | A `messages` or `i18n.messages` key that is not a message key |
 | `unknown-label-key` | warning, from `checkTranslations()` | A `labels` or `i18n.labels` key that is not a label key |
@@ -997,8 +1000,7 @@ const { definition: repaired, applied, issues: left } = fixAll(definition);
 | `unknown-property` | Rename to the property in the hint, such as `imd` to `id` | yes |
 | `unknown-property` on a rule set on a field | Move the rule into `validation` | no, the rule starts to apply |
 | `missing-property` | Rename a misspelled property when there is one. Otherwise form or step `id` from the title (`my-form` or `step-2` without one), field `key` from the label (`field` without one), option `value` from its label, `submit` with the label `Submit`, step `fields` as an empty list | yes |
-| `missing-property` for a `label` | Field and option `label` from the key or value, action `label` from the default button text | yes, except `next` and `back` labels in a definition with `labels` or `lang`, and `cancel` |
-| `empty-label` | Field `label` from the key, such as `First name` for `firstName` | yes |
+| `missing-label` | Rename a misspelled property when there is one. Otherwise field and option `label` from the key or value, such as `First name` for `firstName`, action `label` from the default button text | yes, except `next` and `back` labels in a definition with `labels` or `lang`, and `cancel` |
 | `duplicate-key` | Rename the later key with `_2`, `_3` | when no condition, `matchField` or `optionsDependsOn` uses the key |
 | `duplicate-option-value` | Change the later value with `_2`, `_3` | when no condition and no `defaultValue` uses the value |
 | `duplicate-step-id` | Rename the later id with `-2`, `-3` | when no route targets the id |
@@ -1006,7 +1008,7 @@ const { definition: repaired, applied, issues: left } = fixAll(definition);
 | `unsupported-format-version` | Set `formatVersion` to the current version | no |
 | `unknown-field`, `route-target` | Use the closest field key or step id the reference may point to | when it is the only name within one edit (insertion, deletion, substitution or swap of adjacent letters, ignoring case) and no other name is within two edits |
 | `unknown-field-type`, `unknown-operator` | Use the closest existing name | no |
-| `invalid-range` | Swap the two bounds | no |
+| `min-greater-than-max` | Swap the two bounds | no |
 
 Other codes, such as `invalid-pattern` and `condition-cycle`, have no fix.
 
