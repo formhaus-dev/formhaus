@@ -1,5 +1,12 @@
 # @formhaus/react
 
+## 0.21.1
+
+### Patch Changes
+
+- Option images with a `javascript:`, `data:` (other than png, jpeg, webp or gif), `file:` or credential-bearing URL are not rendered.
+- `checkDefinition()` reports `slow-pattern` for adjacent repeated parts that overlap, such as `\d*\d*x`.
+
 ## 0.21.0
 
 ### Minor Changes
