@@ -67,7 +67,7 @@ describe('recall checks', () => {
     ]);
   });
 
-  it('warns about recalled passwords and query sources', () => {
+  it('warns about recalled passwords, query sources and page sources', () => {
     const input = steps('1.5', { description: '{{pw}} {{utm}} {{ref}}' });
     input.steps![0].fields.push(
       { key: 'pw', type: 'password', label: 'Password' },
@@ -77,7 +77,17 @@ describe('recall checks', () => {
     expect(warnings(input)).toEqual([
       { code: 'recall-sensitive-field', path: '/steps/1/description' },
       { code: 'recall-query-source', path: '/steps/1/description' },
+      { code: 'recall-untrusted-source', path: '/steps/1/description' },
     ]);
+  });
+
+  it('warns about a recalled page title and not about other sources', () => {
+    const input = steps('1.5', { description: '{{title}}' });
+    input.steps![0].fields.push({ key: 'title', type: 'hidden', source: 'pageTitle' });
+    expect(warnings(input)).toEqual([{ code: 'recall-untrusted-source', path: '/steps/1/description' }]);
+    const safe = steps('1.5', { description: '{{lang}} {{zone}}' });
+    safe.steps![0].fields.push({ key: 'lang', type: 'hidden', source: 'language' }, { key: 'zone', type: 'hidden', source: 'timezone' });
+    expect(warnings(safe)).toEqual([]);
   });
 
   it('asks for format 1.5 when a text recalls an answer', () => {
