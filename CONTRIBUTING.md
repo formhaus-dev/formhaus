@@ -38,7 +38,7 @@ PR checks stay fast and deterministic: tests count reads, renders and calls, nev
 - `pnpm test:engines`: the editor layout tests in Chromium, Firefox and WebKit. PR CI runs them in Chromium only. Needs `pnpm --filter @formhaus/editor-react exec playwright install chromium firefox webkit`.
 - `pnpm bench`: times `validateSubmission` and `checkDefinition` on oversized input (100,000 group items, 250,000-item lists, 120,000-character patterns). It prints a table and asserts nothing.
 
-The Full checks workflow runs all three every night and on demand from GitHub Actions.
+The Full checks workflow runs all three every night and on demand from GitHub Actions. It also runs the full build, checks and tests on Node 22.12, and the React and Vue tests against the lowest supported peers (React 18.0.0, Vue 3.3.3).
 
 Before a release, run `pnpm build && pnpm test:release`, or start the Full checks workflow and wait for it to pass.
 
