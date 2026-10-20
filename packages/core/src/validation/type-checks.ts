@@ -42,10 +42,10 @@ const MAX_GROUP_ITEMS = 100;
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 const DATE = '\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])';
-const DATE_ONLY = new RegExp(`^${DATE}$`);
+const DATE_ONLY = /* @__PURE__ */ new RegExp(`^${DATE}$`);
 const HOURS = '(?:[01]\\d|2[0-3]):[0-5]\\d';
-const DATE_TIME = new RegExp(`^${DATE}T${HOURS}(?::[0-5]\\d(?:\\.\\d{1,3})?)?(?:Z|[+-]${HOURS})?$`);
-const TIME = new RegExp(`^${HOURS}(?::[0-5]\\d)?$`);
+const DATE_TIME = /* @__PURE__ */ new RegExp(`^${DATE}T${HOURS}(?::[0-5]\\d(?:\\.\\d{1,3})?)?(?:Z|[+-]${HOURS})?$`);
+const TIME = /* @__PURE__ */ new RegExp(`^${HOURS}(?::[0-5]\\d)?$`);
 const TEXT_TYPES = new Set(['text', 'phone', 'password', 'textarea', 'autocomplete', 'hidden']);
 const FORMATS = new Map<string, [RegExp, MessageKey, number]>([
   ['email', [EMAIL, 'email', MAX_EMAIL_LENGTH]],
