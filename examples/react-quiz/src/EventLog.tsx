@@ -1,6 +1,6 @@
-import type { FormAnalyticsEvent } from '@formhaus/core';
+import type { FormEvent } from '@formhaus/core';
 
-export function describeEvent(event: FormAnalyticsEvent): string {
+export function describeEvent(event: FormEvent): string {
   if ('stepId' in event) return `${event.type} · ${event.stepId}`;
   if ('fieldKey' in event) return `${event.type} · ${event.fieldKey}`;
   return event.type;

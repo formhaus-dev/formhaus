@@ -10,14 +10,14 @@ export function FormActions({
   cancelAction,
   loading,
   onPrimary,
-  onPrev,
+  onBack,
   onCancel,
 }: FormActionsProps) {
   return (
     <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 1, pt: 2 }}>
       <Box sx={{ display: 'flex', gap: 1 }}>
         {showBack && (
-          <Button variant="outlined" disabled={loading} onClick={onPrev}>
+          <Button variant="outlined" disabled={loading} onClick={onBack}>
             {backLabel}
           </Button>
         )}

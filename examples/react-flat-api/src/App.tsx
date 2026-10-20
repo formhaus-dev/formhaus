@@ -70,7 +70,6 @@ export default function App() {
             initialValues={seed.values}
             definition={definition}
             onSubmit={onSubmit}
-            errorSummary
             stepErrorMarks
             onAfterSubmit={(values) => setOpened(String(values.email))}
           />

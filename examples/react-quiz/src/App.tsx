@@ -50,7 +50,7 @@ export default function App() {
               onFieldChange={(_key, _value, values) => setAnswers({ ...values })}
               onAfterStepChange={({ toStepId }) => setStepId(toStepId)}
               onBeforeStepChange={captureLead}
-              onAnalyticsEvent={(event) => setEvents((list) => [...list, describeEvent(event)])}
+              onFormEvent={(event) => setEvents((list) => [...list, describeEvent(event)])}
               onSubmit={bookCall}
             />
           </>
