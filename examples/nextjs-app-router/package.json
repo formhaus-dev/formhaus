@@ -8,8 +8,8 @@
     "start": "next start"
   },
   "dependencies": {
-    "@formhaus/core": "^0.22.0",
-    "@formhaus/react": "^0.22.0",
+    "@formhaus/core": "^1.0.0",
+    "@formhaus/react": "^1.0.0",
     "next": "^16.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
