@@ -1,0 +1,17 @@
+import { computed, toValue } from "vue";
+import { localize } from "@formhaus/core/i18n";
+//#region src/i18n/index.ts
+function useLocalizedForm(definition, source) {
+	return computed(() => {
+		const value = toValue(definition);
+		const active = toValue(source);
+		return active ? localize(value, active) : {
+			definition: value,
+			messages: {},
+			labels: {}
+		};
+	});
+}
+//#endregion
+export { useLocalizedForm };
+
