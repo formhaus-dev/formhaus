@@ -34,8 +34,10 @@ a::before { content: ""; position: absolute; inset: -6px 0; }
 .nav-cta--mobile .nav-label-full { display: inline; }
 .nav-cta--mobile .nav-label-short { display: none; }
 .nav-start { padding: 0 14px; border-radius: 22px; color: var(--vp-button-brand-text); background: var(--vp-button-brand-bg); }
-.nav-start:hover { background: var(--vp-button-brand-hover-bg); color: var(--vp-button-brand-hover-text); }
-.nav-signin:hover { color: var(--vp-c-brand-1); }
+@media (hover: hover) and (pointer: fine) {
+  .nav-start:hover { background: var(--vp-button-brand-hover-bg); color: var(--vp-button-brand-hover-text); }
+  .nav-signin:hover { color: var(--vp-c-brand-1); }
+}
 a:focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 3px; }
 .nav-cta--mobile { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin: 0 0 16px; }
 .nav-cta--mobile a { height: 44px; }

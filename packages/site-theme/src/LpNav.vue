@@ -35,7 +35,8 @@ const items = computed(() => links.map((link) => ({ ...link, active: link.match(
 <style scoped>
 .lp-nav { display: flex; margin-left: auto; font-size: 14px; font-weight: 500; }
 a { display: flex; align-items: center; min-height: 44px; padding: 0 12px; line-height: var(--vp-nav-height); white-space: nowrap; color: var(--vp-c-text-1); cursor: pointer; transition: color 0.25s; }
-a:hover, a.active { color: var(--vp-c-brand-1); }
+a.active { color: var(--vp-c-brand-1); }
+@media (hover: hover) and (pointer: fine) { a:hover { color: var(--vp-c-brand-1); } }
 a:focus-visible { outline: 2px solid var(--vp-c-brand-1); outline-offset: 3px; }
 .lp-nav--mobile { flex-direction: column; gap: 0; padding: 0; margin-left: 0; }
 .lp-nav--mobile a { padding: 8px 0; line-height: 24px; border-bottom: 1px solid var(--vp-c-divider); }
