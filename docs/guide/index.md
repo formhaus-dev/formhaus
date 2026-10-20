@@ -8,6 +8,8 @@ Formhaus keeps fields, validation, visibility, and steps in a JSON definition. T
 
 This guide covers the open-source library: MIT, no account, and `onSubmit` sends the data to your own backend.
 
+The same definition renders natively on iOS and macOS with SwiftUI. See [iOS and macOS](/guide/ios).
+
 ::: tip Hosted form without a backend
 [Formhaus Cloud](/cloud/overview) is a separate, optional service. Run `claude mcp add --transport http formhaus https://api.formhaus.dev/mcp` and ask: "Make me a waitlist form and give me the link." See the [Cloud quickstart](/cloud/quickstart).
 :::
