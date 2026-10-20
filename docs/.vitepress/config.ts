@@ -126,6 +126,7 @@ export default defineConfig({
           { text: 'shadcn/ui', link: '/guide/integrations/shadcn' },
           { text: 'Material UI', link: '/guide/integrations/mui' },
           { text: 'Vuetify', link: '/guide/integrations/vuetify' },
+          { text: 'iOS and macOS', link: '/guide/ios' },
         ],
       },
       {
