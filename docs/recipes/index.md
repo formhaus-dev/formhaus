@@ -16,6 +16,7 @@ Each recipe is a complete JSON definition with framework code for one job. Every
 | How do I put a section inside a section? | [Nested sections](/recipes/nested-sections) |
 | How do I build a quiz or lead-capture funnel? | [Quiz funnel](/recipes/quiz-funnel) |
 | How do I measure time per question? | [Question timing](/recipes/question-timing) |
+| How do I put the current step in the URL? | [Steps in the URL](/recipes/steps-in-url) |
 | How do I pass context to the survey templates and score a usability test? | [Survey templates](/recipes/survey-templates) |
 | How do I use the form engine without React or Vue? | [Headless engine](/recipes/headless-engine) |
 | How do I use Formhaus with Svelte 5? | [Svelte 5](/recipes/svelte) |
