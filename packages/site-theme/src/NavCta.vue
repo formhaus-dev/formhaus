@@ -13,8 +13,8 @@ const closeScreen = inject<() => void>('close-screen');
 
 <template>
   <div v-if="landing" class="nav-cta" :class="{ 'nav-cta--mobile': mobile }">
-    <a class="nav-signin" href="https://app.formhaus.dev/login" @click="closeScreen?.()">Sign in</a>
-    <a class="nav-start" href="https://app.formhaus.dev/login" aria-label="Create a free form" data-umami-event="signup_cta_click" :data-umami-event-location="mobile ? 'nav_mobile' : 'nav'" @click="closeScreen?.()">
+    <a class="nav-signin" href="https://app.formhaus.dev/login" data-umami-event="signin-click" :data-umami-event-location="mobile ? 'nav_mobile' : 'nav'" @click="closeScreen?.()">Sign in</a>
+    <a class="nav-start" href="https://app.formhaus.dev/login" aria-label="Create a free form" data-umami-event="signup-cta-click" :data-umami-event-location="mobile ? 'nav_mobile' : 'nav'" @click="closeScreen?.()">
       <span class="nav-label-full">Create a free form</span>
       <span class="nav-label-short">Start free</span>
     </a>
