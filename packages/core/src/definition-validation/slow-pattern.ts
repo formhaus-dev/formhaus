@@ -12,7 +12,15 @@ function samples(atom: string): string[] {
   }
 }
 
-type PatternGroup = { start: number; look?: string; inner?: boolean; previous?: string[] };
+type PatternGroup = { start: number; look?: string; inner?: boolean; alternated?: boolean; entry?: string[]; previous?: string[] };
+
+function trailing(group: PatternGroup, quantifier: string, source: () => string): string[] | undefined | 'adjacent' {
+  if (/^(?:\?|\{0(?:,\d+)?\})/.test(quantifier)) return group.previous;
+  if (!/^(?:[*+]|\{\d+,\})/.test(quantifier)) return undefined;
+  const repeated = samples(source());
+  if (group.previous?.some((char) => repeated.includes(char))) return 'adjacent';
+  return /^(?:\*|\{0,\})/.test(quantifier) ? [...new Set([...(group.previous ?? []), ...repeated])] : repeated;
+}
 
 export function slowPattern(pattern: string): 'nested' | 'adjacent' | undefined {
   const groups: PatternGroup[] = [{ start: 0 }];
@@ -20,15 +28,16 @@ export function slowPattern(pattern: string): 'nested' | 'adjacent' | undefined 
     const [token, look, open, atom, quantifier = ''] = match;
     let group = groups[groups.length - 1];
     if (look || open) {
-      groups.push({ start: match.index, look });
+      const entry = look ? undefined : group.previous;
+      groups.push({ start: match.index, look, entry, previous: entry });
       continue;
     }
-    if (token === '|') group.inner = true;
+    if (token === '|') group.inner = group.alternated = true;
     if (!atom) {
-      group.previous = undefined;
+      group.previous = token === '|' ? group.entry : undefined;
       continue;
     }
-    let source = atom;
+    let source = () => atom;
     if (atom === ')') {
       if (groups.length < 2) return undefined;
       const closed = groups.pop()!;
@@ -39,12 +48,16 @@ export function slowPattern(pattern: string): 'nested' | 'adjacent' | undefined 
         group.previous = undefined;
         continue;
       }
-      source = pattern.slice(closed.start, match.index + 1);
+      if (!quantifier) {
+        group.previous = closed.alternated ? undefined : closed.previous;
+        continue;
+      }
+      source = () => pattern.slice(closed.start, match.index + 1);
     }
     group.inner ||= !!quantifier;
-    const repeated = /^(?:[*+]|\{\d+,\})/.test(quantifier) ? samples(source) : undefined;
-    if (repeated && group.previous?.some((char) => repeated.includes(char))) return 'adjacent';
-    group.previous = repeated;
+    const next = trailing(group, quantifier, source);
+    if (next === 'adjacent') return next;
+    group.previous = next;
   }
   return undefined;
 }
