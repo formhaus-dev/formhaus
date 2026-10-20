@@ -90,6 +90,36 @@ Action buttons use these classes:
 
 Every button also has `fh-form-actions__button`. A `variant` on the action replaces the role class.
 
+### Stable names
+
+From 1.0, the `--fh-*` custom property names in `style.css` and these class names do not change within a major version. Their values and the look can change in a minor version, and the [changelog](/changelog) lists each change.
+
+| Class | Element |
+|---|---|
+| `fh-form` | The `<form>` |
+| `fh-form__fields` | The list of fields of the current step |
+| `fh-cloud` | The `FormhausForm` wrapper |
+| `fh-section` | A section |
+| `fh-section__title` | A section heading |
+| `fh-section__description` | A section description |
+| `fh-section__body` | The fields of a section |
+| `fh-group` | A group |
+| `fh-group__header` | The header of a group item |
+| `fh-group__title` | The title of a group item |
+| `fh-group__helper` | The helper text of a group |
+| `fh-group__body` | The items of a group |
+| `fh-group__item` | A group item |
+| `fh-group__fields` | The fields of a group item |
+| `fh-group__remove` | The Remove button of a group item |
+| `fh-group__add` | The Add button of a group |
+| `fh-group__status` | The live announcement of a group |
+| `fh-field__label` | A field label |
+| `fh-field__helper` | A field helper text |
+| `fh-form-actions__button` | Every action button |
+| `fh-form-actions__button--primary` | Continue, Submit |
+| `fh-form-actions__button--secondary` | Back |
+| `fh-form-actions__button--text` | Skip, Cancel |
+
 ## Quick start
 
 Save the definition as `contact-form.json`:

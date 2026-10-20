@@ -15,14 +15,16 @@ From 1.0, a breaking change to these parts needs a major version:
 - The React `useFormEngine` hook and the Vue `useFormEngine` composable.
 - The props a custom field component receives.
 - `checkDefinition()` issue codes and severities.
+- The `--fh-*` custom property names in `style.css` and the class names in [Stable names](/guide/#stable-names). `api/style.api.md` in the repository lists them, and CI fails on a rename.
+- `onFormEvent` event types and fields. A minor version can add event types and fields.
 
 Not covered:
 
 - `@formhaus/core/internal`. It is the shared code of `@formhaus/react` and `@formhaus/vue`, not a public API: any release can change or remove its exports. The adapters pin `@formhaus/core` to the same minor version, such as `^0.22.0`, so they always load the internal code they were built with. Public types never reference it.
 - The editor, builder and Figma plugin.
 - Warning and error message texts, fix titles and patches.
-- DOM structure and CSS class names.
-- CSS custom properties (`--fh-*`). A minor version can change them and lists each change in the [changelog](/changelog).
+- DOM structure and class names other than the stable names.
+- CSS values and the look of `style.css` and `tokens/*`. A minor version can change them and lists each change in the [changelog](/changelog).
 - `@formhaus/mcp` and the `formhaus` CLI, which have their own versions.
 
 Before 1.0, a minor version can break these parts and lists each break in the [changelog](/changelog).
