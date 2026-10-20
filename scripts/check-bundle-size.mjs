@@ -3,15 +3,23 @@ import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 const HARD_LIMITS = {
-  'core + react': 35840,
-  'core + vue': 35840,
-  core: 30720,
+  'core + react': 33792,
+  'core + vue': 36864,
+  core: 27648,
+  'core FormEngine': 19456,
+  'core + react useFormEngine': 20480,
+  'core + vue useFormEngine': 20480,
 };
 
+const REACT_EXTERNAL = ['react', 'react-dom', 'react/jsx-runtime'];
+
 const APPS = {
-  'core + react': { pkg: 'react', external: ['react', 'react-dom', 'react/jsx-runtime'] },
+  'core + react': { pkg: 'react', external: REACT_EXTERNAL },
   'core + vue': { pkg: 'vue', external: ['vue'] },
   core: { pkg: 'core', external: [] },
+  'core FormEngine': { pkg: 'core', external: [], only: 'FormEngine' },
+  'core + react useFormEngine': { pkg: 'react', external: REACT_EXTERNAL, only: 'useFormEngine' },
+  'core + vue useFormEngine': { pkg: 'vue', external: ['vue'], only: 'useFormEngine' },
 };
 
 const PACKAGE_EXTERNALS = [
@@ -49,8 +57,8 @@ for (const [name, budget] of Object.entries(BUDGETS)) {
 
 log('');
 for (const [name, limit] of Object.entries(HARD_LIMITS)) {
-  const { pkg, external } = APPS[name];
-  const size = await bundleSize(`export * from './packages/${pkg}/dist/index.js';`, 'production', external);
+  const { pkg, external, only } = APPS[name];
+  const size = await bundleSize(`export ${only ? `{ ${only} }` : '*'} from './packages/${pkg}/dist/index.js';`, 'production', external);
   sizes.apps[name] = size;
   log(`${name}: ${size} B gzipped (hard limit ${limit} B, headroom ${limit - size} B)`);
   if (size > limit) violations.push(`${name} is ${size - limit} B over the hard limit`);

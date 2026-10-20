@@ -7,6 +7,8 @@ import { build } from 'esbuild';
 
 const VERSIONS = {
   'react-hook-form': '7.90.0',
+  formik: '2.4.9',
+  yup: '1.7.1',
   '@formkit/vue': '2.1.2',
   '@rjsf/core': '6.11.0',
   '@rjsf/utils': '6.11.0',
@@ -20,6 +22,12 @@ const VUE = ['vue'];
 
 const LIBRARIES = [
   { name: 'react-hook-form', external: REACT, entry: `export { useForm } from 'react-hook-form';` },
+  {
+    name: 'formik + yup',
+    external: REACT,
+    entry: `export { useFormik } from 'formik';
+export { object, string } from 'yup';`,
+  },
   { name: '@formkit/vue', external: VUE, entry: `export { plugin, defaultConfig, FormKit } from '@formkit/vue';` },
   {
     name: '@rjsf/core + validator-ajv8',
@@ -35,10 +43,30 @@ export { Survey } from 'survey-react-ui';`,
   },
 ];
 
+const CORE = './packages/core/dist';
+const REACT_DIST = './packages/react/dist/index.js';
+const VUE_DIST = './packages/vue/dist/index.js';
+
 const FORMHAUS = [
-  { name: '@formhaus/core FormEngine', external: [], entry: `export { FormEngine } from './packages/core/dist/index.js';` },
-  { name: '@formhaus/core + @formhaus/react', external: REACT, entry: `export * from './packages/react/dist/index.js';` },
-  { name: '@formhaus/core + @formhaus/vue', external: VUE, entry: `export * from './packages/vue/dist/index.js';` },
+  { name: '@formhaus/core FormEngine', external: [], entry: `export { FormEngine } from '${CORE}/index.js';` },
+  {
+    name: '@formhaus/core FormEngine + checkDefinition',
+    external: [],
+    entry: `export { FormEngine, checkDefinition } from '${CORE}/index.js';`,
+  },
+  ...['cloud', 'i18n', 'fix'].map((subpath) => ({
+    name: `@formhaus/core FormEngine + /${subpath}`,
+    external: [],
+    entry: `export { FormEngine } from '${CORE}/index.js';\nexport * from '${CORE}/${subpath}.js';`,
+  })),
+  { name: '@formhaus/react useFormEngine', external: REACT, entry: `export { useFormEngine } from '${REACT_DIST}';` },
+  { name: '@formhaus/react HeadlessFormRenderer', external: REACT, entry: `export { HeadlessFormRenderer } from '${REACT_DIST}';` },
+  { name: '@formhaus/react FormRenderer', external: REACT, entry: `export { FormRenderer } from '${REACT_DIST}';` },
+  { name: '@formhaus/core + @formhaus/react', external: REACT, entry: `export * from '${REACT_DIST}';` },
+  { name: '@formhaus/vue useFormEngine', external: VUE, entry: `export { useFormEngine } from '${VUE_DIST}';` },
+  { name: '@formhaus/vue HeadlessFormRenderer', external: VUE, entry: `export { HeadlessFormRenderer } from '${VUE_DIST}';` },
+  { name: '@formhaus/vue FormRenderer', external: VUE, entry: `export { FormRenderer } from '${VUE_DIST}';` },
+  { name: '@formhaus/core + @formhaus/vue', external: VUE, entry: `export * from '${VUE_DIST}';` },
 ];
 
 for (const pkg of ['core', 'react', 'vue']) {
