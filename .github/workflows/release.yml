@@ -91,6 +91,37 @@ jobs:
             echo "$tag" >> "$RUNNER_TEMP/new-tags"
           done
 
+      - name: Create the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          version=$(jq -r .version packages/core/package.json)
+          tag="@formhaus/core@$version"
+          if gh release view "$tag" > /dev/null 2>&1; then
+            echo "Release $tag already exists"
+            exit 0
+          fi
+          commit=$(git rev-parse HEAD)
+          notes="$RUNNER_TEMP/release-notes.md"
+          awk -v heading="## $version" '$0 == heading { found = 1; next } found && /^## / { exit } found' packages/core/CHANGELOG.md > "$notes"
+          grep -q '[^[:space:]]' "$notes" || { echo "::error::No $version section in packages/core/CHANGELOG.md"; exit 1; }
+          {
+            echo
+            echo "Changes in the adapters: [@formhaus/react](https://github.com/$GH_REPO/blob/$commit/packages/react/CHANGELOG.md), [@formhaus/vue](https://github.com/$GH_REPO/blob/$commit/packages/vue/CHANGELOG.md)."
+            echo
+            echo '```sh'
+            echo "npm install @formhaus/core@$version @formhaus/react@$version"
+            echo "npm install @formhaus/core@$version @formhaus/vue@$version"
+            echo '```'
+          } >> "$notes"
+          if [ "$DIST_TAG" = latest ]; then
+            flags=(--latest)
+          else
+            flags=(--prerelease --latest=false)
+          fi
+          gh release create "$tag" --verify-tag --title "Formhaus $version" --notes-file "$notes" "${flags[@]}"
+
       - name: Start follow-up workflows
         env:
           GH_TOKEN: ${{ github.token }}

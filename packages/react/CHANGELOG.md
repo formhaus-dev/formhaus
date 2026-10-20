@@ -1,18 +1,17 @@
 # @formhaus/react
 
-## 1.0.0-rc.0
+## 1.0.0
 
 ### Major Changes
 
-- First 1.0 release candidate. No API changes from 0.22.0.
+- First stable release. No API changes from 0.22.0.
 - The public API and definition format 1.5 are stable: no breaking changes in 1.x.
-- The `@formhaus/core` peer range is `~1.0.0-rc.0`. Use core from the same minor version.
+- The `@formhaus/core` peer range is `~1.0.0`. Use core from the same minor version.
 
 ### Patch Changes
 
 - Picture option fields show the required marker.
-Required `radio`, `multiselect`, `scale` and `rating` groups announce "required" to screen readers. The word comes from the `required` label.
-- Requires `@formhaus/core` 1.0.0-rc.0.
+- Required `radio`, `multiselect`, `scale` and `rating` groups announce "required" to screen readers. The word comes from the `required` label.
 
 ## 0.22.0
 
