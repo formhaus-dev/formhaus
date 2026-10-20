@@ -1,6 +1,6 @@
 ---
 title: "Compare form libraries"
-description: "How Formhaus compares with react-hook-form, react-jsonschema-form and SurveyJS, with sources, bundle sizes and migration examples."
+description: "How Formhaus compares with react-hook-form, react-jsonschema-form, JSON Forms and SurveyJS, with sources, bundle sizes and migration examples."
 ---
 
 # Compare Formhaus
@@ -11,6 +11,7 @@ Formhaus fits forms that are data: one JSON definition with steps, branching rou
 |---|---|---|---|
 | react-hook-form | React code | A React form written and maintained by developers | [Formhaus vs react-hook-form](/compare/react-hook-form) |
 | react-jsonschema-form | JSON Schema + uiSchema | The data model is already a JSON Schema | [Formhaus vs react-jsonschema-form](/compare/react-jsonschema-form) |
+| JSON Forms | JSON Schema + UI schema | The data model is a JSON Schema and the app is in Angular, React or Vue | [Formhaus vs JSON Forms](/compare/json-forms) |
 | SurveyJS | SurveyJS JSON | Surveys with scoring, matrices and a drag-and-drop builder for non-developers | [Formhaus vs SurveyJS](/compare/surveyjs) |
 
 ## Formhaus at a glance

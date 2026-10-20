@@ -32,7 +32,7 @@ const details = [
   '',
   `Repository: ${repoUrl}`,
   '',
-  `Comparisons with react-hook-form, react-jsonschema-form and SurveyJS: ${siteUrl}/compare/`,
+  `Comparisons with react-hook-form, react-jsonschema-form, JSON Forms and SurveyJS: ${siteUrl}/compare/`,
   '',
   `Formhaus Cloud, the hosted service with Free, Pro and Team plans: submission endpoint, hosted page, embed script, dashboard with workspaces and roles, webhooks, emails, REST API and a remote MCP server at https://api.formhaus.dev/mcp. Docs: ${siteUrl}/cloud/overview`,
   '',
