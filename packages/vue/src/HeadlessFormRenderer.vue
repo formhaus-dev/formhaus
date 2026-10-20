@@ -15,16 +15,18 @@ import { useValuesSync } from './composables/useValuesSync';
 import { useNodeProps } from './composables/useNodeProps';
 import type { FormRendererEmits, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, headingLevel: 2, confirmRemove: true });
+const props = withDefaults(defineProps<FormRendererProps>(), {
+  loading: false,
+  headingLevel: 2,
+  confirmRemove: true,
+  errorSummary: true,
+});
 
 const emit = defineEmits<FormRendererEmits>();
 
 const formId = useFormId();
 const formRef = ref<HTMLFormElement>();
-const onFormEvent = (event: FormEvent) => {
-  emit('formEvent', event);
-  emit('analyticsEvent', event);
-};
+const onFormEvent = (event: FormEvent) => emit('formEvent', event);
 const engineOptions = useEngineOptions(props, onFormEvent);
 
 const form = useFormEngine(
@@ -55,7 +57,7 @@ const {
   changeItems: onItemsChange,
   commit: onFieldCommit,
   next: onNext,
-  prev: onPrev,
+  back: onBack,
   skip: onSkip,
   submit: onSubmit,
   actionError,
@@ -111,6 +113,7 @@ const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, 
 defineExpose({
   setValue: (key: string, value: unknown) => form.engine.setValue(key, value),
   getValues: () => ({ ...form.engine.values }),
+  goToStep: (stepId: string) => form.engine.goToStep(stepId),
   values,
 });
 
@@ -160,7 +163,7 @@ async function onPrimary() {
       <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">{{ error }}</p>
     </div>
 
-    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert">
+    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert" tabindex="-1">
       <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
       <template v-for="group in summaryGroups" :key="group.id">
         <p v-if="summaryGroups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
@@ -178,7 +181,7 @@ async function onPrimary() {
       :values="form.engine.getSubmitValues()"
       @submit="onSubmit"
       @next="onNext"
-      @prev="onPrev"
+      @back="onBack"
       @cancel="onCancel"
       @skip="onSkip"
       @primary="onPrimary"

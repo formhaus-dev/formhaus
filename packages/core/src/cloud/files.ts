@@ -100,7 +100,7 @@ export function createUploader(endpoint: string, send: Send) {
           }
         }),
       );
-      if (Object.keys(errors).length > 0) throw new CloudError(422, 'invalid', errors);
+      if (Object.keys(errors).length > 0) throw new CloudError({ status: 422, code: 'invalid', errors });
       return sent;
     },
     forget(values: Record<string, unknown>, keys: string[]): void {

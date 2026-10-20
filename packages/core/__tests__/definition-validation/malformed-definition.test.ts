@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { checkDefinition, FormDefinitionError, FormEngine, validateDefinition, type FormDefinition } from '../../src';
+import { checkDefinition, FormDefinitionError, FormEngine, type FormDefinition } from '../../src';
 import { checkDefinition as serverCheck, validateSubmission } from '../../src/server';
 
 const base = { id: 'a', title: 'A', submit: { label: 'Go' } };
@@ -164,7 +164,6 @@ describe('malformed definitions', () => {
   it.each(malformed)('checkDefinition reports %s without throwing', (_, input, message) => {
     expect(checkDefinition(input).map((issue) => issue.message)).toEqual(message.split('\n'));
     expect(serverCheck(input)).toEqual(checkDefinition(input));
-    expect(validateDefinition(input)).toEqual(message.split('\n'));
   });
 
   it.each(malformed)('the constructor throws FormDefinitionError for %s', (_, input, message) => {

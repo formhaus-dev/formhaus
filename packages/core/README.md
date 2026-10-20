@@ -48,10 +48,12 @@ engine.getSubmitValues();
 | `@formhaus/core/style.css` | Optional baseline styles with `--fh-*` theme tokens |
 | `@formhaus/core/schema.json` | JSON Schema of the definition |
 
+`@formhaus/core/internal` holds code shared by `@formhaus/react` and `@formhaus/vue`. It is not a public API and has no semver guarantee: any release can change it. Do not import it.
+
 ## Features
 
 - Field types, validation rules, `show` / `showAny` conditions, sections and [repeatable groups](https://formhaus.dev/guide/groups). See [fields](https://formhaus.dev/guide/fields) and [validation](https://formhaus.dev/guide/validation).
-- [Multi-step forms](https://formhaus.dev/guide/steps) with lifecycle hooks, async step validation and [branching routes](https://formhaus.dev/guide/steps#route-between-branches).
+- [Multi-step forms](https://formhaus.dev/guide/steps) with lifecycle hooks, async step validation and [branching routes](https://formhaus.dev/guide/steps#route-between-branches). `goToStep(id)` opens a step for [URL routing](https://formhaus.dev/recipes/steps-in-url): if the step can't be opened, the form opens the previous available step and reports it.
 - [Server-side validation](https://formhaus.dev/guide/server-validation) against the same definition.
 - [Form events](https://formhaus.dev/api/form-engine#form-events): pass `onFormEvent` and call `start()` to get `form_viewed`, `step_viewed`, `field_shown`, `form_submit_succeeded` and more.
 - Granular subscriptions: `subscribe()`, `subscribeField()`, `subscribeStructure()` and `subscribeValues()`.

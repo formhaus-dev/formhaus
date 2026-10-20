@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import Ajv from 'ajv';
 import { describe, expect, it } from 'vitest';
-import { FormEngine, validateDefinition } from '../../src';
+import { checkDefinition, FormEngine } from '../../src';
 import type { FormField, FormStep } from '../../src';
 import { SCHEMA_OUTPUTS } from '../../scripts/schema.mjs';
 
@@ -23,7 +23,7 @@ describe('specification examples', () => {
   it.each(blocks.map((block, index) => [index + 1, block]))('example %i is a valid definition', (_index, block) => {
     const definition = JSON.parse(block);
     expect(validate(definition), JSON.stringify(validate.errors)).toBe(true);
-    expect(validateDefinition(definition)).toEqual([]);
+    expect(checkDefinition(definition).map((issue) => issue.message)).toEqual([]);
     expect(() => new FormEngine(definition)).not.toThrow();
   });
 

@@ -30,11 +30,11 @@ function unsettleOnWrite<T>(engine: EngineInternals, run: () => T): T {
 
 export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values = getSubmitValues(engine)): Record<string, string> {
   const scope = engine.visibility.conditionValues(engine.values);
-  return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, engine.validators, engine.messages));
+  return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, engine));
 }
 
 function fieldError(engine: EngineInternals, field: FormField, value: unknown, values = getSubmitValues(engine)): string | null {
-  return unsettleOnWrite(engine, () => validateFieldValue(field, value, values, engine.validators, engine.messages));
+  return unsettleOnWrite(engine, () => validateFieldValue(field, value, values, engine));
 }
 
 function itemError(engine: EngineInternals, { group, index, field }: ItemField): string | null {

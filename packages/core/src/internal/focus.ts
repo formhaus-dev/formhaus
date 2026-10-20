@@ -39,9 +39,18 @@ function reveal(target: Focusable, scrollTo: Focusable): void {
   target.focus({ preventScroll: true });
 }
 
+const SUMMARY = '.fh-error-summary';
+const SEVERAL = '.fh-error-summary__list > li + li, .fh-error-summary__list ~ .fh-error-summary__list';
+
+function summaryOf(root: Searchable | null | undefined): Found {
+  const summary = root?.querySelector(SUMMARY) as Found;
+  return summary?.querySelector(SEVERAL) ? summary : undefined;
+}
+
 export function focusProblem(root: Searchable | null, notice?: Focusable | null): void {
-  const invalid = notice ?? (root?.querySelector('[aria-invalid="true"]') as Found);
-  if (invalid) reveal(notice ?? firstControl(invalid) ?? invalid, invalid);
+  const target = notice ?? summaryOf(root);
+  const invalid = target ?? (root?.querySelector('[aria-invalid="true"]') as Found);
+  if (invalid) reveal(target ?? firstControl(invalid) ?? invalid, invalid);
 }
 
 export function canMoveFocus(form: FormRoot | null | undefined): boolean {
@@ -55,8 +64,13 @@ export function restoreFocus(form: FormRoot | null | undefined, target: (Focusab
   if (document && document.activeElement === document.body && target?.isConnected) target.focus();
 }
 
-export function focusField(form: FormRoot | null | undefined, id: string | null): void {
+export function focusField(form: FormRoot | null | undefined, id: string | null, afterErrors = false): void {
   const fields = form?.querySelector('.fh-form__fields') as Found;
+  const summary = !id && afterErrors && fields?.querySelector('[aria-invalid="true"]') ? summaryOf(form) : undefined;
+  if (summary) {
+    reveal(summary, summary);
+    return;
+  }
   const chosen = id ? (fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) as Found) : null;
   if (id && !chosen) return;
   const field = (chosen?.closest?.('.fh-field, .fh-group') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) as Found;

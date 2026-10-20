@@ -1,3 +1,4 @@
+import type { GoToStepResult } from './analytics';
 import type { FormAction } from './action';
 import type { FormGroup, FormSection } from './field';
 
@@ -52,7 +53,7 @@ export interface GroupView<TItem extends GroupItemView = GroupItemView> {
   status: string;
 }
 
-export interface FormActionsState {
+export interface FormActionsView {
   submitAction?: FormAction;
   nextAction?: FormAction | false;
   backAction?: FormAction | false;
@@ -61,22 +62,23 @@ export interface FormActionsState {
   isFirstStep: boolean;
   isLastStep: boolean;
   isMultiStep: boolean;
-  primaryLabel: string;
-  showPrimary: boolean;
-  showBack: boolean;
-  backLabel: string;
-  showSkip: boolean;
-  skipLabel: string;
-}
-
-type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'showBack' | 'backLabel' | 'showSkip' | 'skipLabel';
-
-export interface FormActionsView extends Omit<FormActionsState, DerivedActionProps>, Partial<Pick<FormActionsState, DerivedActionProps>> {
+  primaryLabel?: string;
+  showPrimary?: boolean;
+  showBack?: boolean;
+  backLabel?: string;
+  showSkip?: boolean;
+  skipLabel?: string;
   loading?: boolean;
   values?: Record<string, unknown>;
 }
 
+type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'showBack' | 'backLabel' | 'showSkip' | 'skipLabel';
+
+export type FormActionsState = Omit<FormActionsView, 'loading' | 'values'> & Required<Pick<FormActionsView, DerivedActionProps>>;
+
 export interface FormRendererHandle {
   setValue(key: string, value: unknown): void;
   getValues(): Record<string, unknown>;
+  goToStep(stepId: string): GoToStepResult;
+  readonly values: Readonly<Record<string, unknown>>;
 }

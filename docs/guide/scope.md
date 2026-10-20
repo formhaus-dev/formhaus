@@ -36,7 +36,7 @@ What the definition format, the engine and the renderers do, what they leave to 
 | Files inside groups | A group cannot contain a `file` or `hidden` field (`invalid-nesting`). Put the `file` field outside the group, or use a custom field type in the item that uploads the file and stores its reference as text. |
 | Payment card fields | There is no card field type. Use the payment provider's own elements next to the form. Formhaus Cloud refuses hosted forms with `cc-*` autocomplete tokens. |
 | Signatures, rich text, address autocomplete with maps | Write a [custom field type](/guide/fields#custom-field-types) and pass its component through `components`. See also [custom components](/guide/custom-components). |
-| Offline drafts with sync | Save `onValuesChange` values in your own storage, pass them back as `initialValues`, and queue the submit in app code. `FormhausForm` keeps a draft only when you pass `draftStore`. `sessionDraftStore()` from `@formhaus/core/cloud` keeps it in `sessionStorage` of the tab, with no sync. Whether it keeps a draft by default may change before 1.0. |
+| Offline drafts with sync | Save `onValuesChange` values in your own storage, pass them back as `initialValues`, and queue the submit in app code. `FormhausForm` keeps a draft in `sessionStorage` of the tab by default, with no sync. See [Drafts](/guide/endpoint#drafts). |
 | Pixel-unique design | Replace field components through `components`, or use [`HeadlessFormRenderer`](/guide/custom-components#headless-renderer) or [`FormEngine`](/recipes/headless-engine) with your own markup. |
 
 ## When another library fits better

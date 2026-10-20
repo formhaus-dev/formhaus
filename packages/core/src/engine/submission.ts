@@ -35,15 +35,18 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged();
   engine.state.submitting = true;
   engine.notify();
+  const invalid = () => {
+    if (Object.keys(validateForm(engine, true)).length === 0) return false;
+    if (!stale()) emit(engine, { type: 'form_submit_failed', reason: 'validation' });
+    return true;
+  };
   try {
     if (stale()) return false;
-    if (Object.keys(validateForm(engine, true)).length > 0 || stale()) return false;
+    if (invalid() || stale()) return false;
     if (lifecycle.onBeforeSubmit) {
       const allowed = await lifecycle.onBeforeSubmit(values);
       if (stale() || allowed === false) return false;
-    }
-    if (lifecycle.onBeforeSubmit) {
-      if (Object.keys(validateForm(engine, true)).length > 0 || stale()) return false;
+      if (invalid() || stale()) return false;
       values = getSubmitValues(engine);
     }
     engine.sending = operation;
@@ -56,7 +59,8 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
     try {
       result = await submit(values, [...skippedSteps]);
     } catch (error) {
-      emit(engine, { type: 'form_submit_failed', reason: 'error' });
+      const status = (error as { status?: unknown } | null)?.status;
+      emit(engine, { type: 'form_submit_failed', reason: 'error', ...(typeof status === 'number' && { status }) });
       throw error;
     }
     const rejected = isRejection(result);

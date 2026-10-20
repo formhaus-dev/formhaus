@@ -16,10 +16,10 @@ const definition: FormDefinition = {
 };
 
 it.each(['agree', 'alerts', 'plan', 'resume'])('reports field_blurred for %s', async (key) => {
-  const { container, emitted } = render(FormRenderer, { props: { definition, onAnalyticsEvent: () => {} } });
+  const { container, emitted } = render(FormRenderer, { props: { definition, onFormEvent: () => {} } });
   const control = container.querySelector(`[name="${key}"]`)!;
   await fireEvent.focus(control);
   await fireEvent.blur(control);
-  const events = (emitted().analyticsEvent ?? []).map(([event]) => event as { type: string; fieldKey?: string });
+  const events = (emitted().formEvent ?? []).map(([event]) => event as { type: string; fieldKey?: string });
   expect(events).toContainEqual(expect.objectContaining({ type: 'field_blurred', fieldKey: key }));
 });

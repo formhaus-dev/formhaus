@@ -70,13 +70,21 @@ function challengeOrigin(url: string): string | undefined {
   }
 }
 
-export function createChallengeFrame(
-  challenge: CloudChallenge,
-  formId: string,
-  host: () => ChallengeHost | null,
+export interface ChallengeFrameOptions {
+  challenge: CloudChallenge;
+  formId: string;
+  host: () => ChallengeHost | null;
+  timeout?: number;
+  quiet?: number;
+}
+
+export function createChallengeFrame({
+  challenge,
+  formId,
+  host,
   timeout = TIMEOUT,
   quiet = QUIET,
-): CloudChallengeFrame {
+}: ChallengeFrameOptions): CloudChallengeFrame {
   const origin = challengeOrigin(challenge.url);
   let frame: ChallengeElement | undefined;
   let status: ChallengeNode | undefined;
@@ -157,7 +165,7 @@ export function createChallengeFrame(
             unavailable = true;
             return resolve(undefined);
           }
-          reject(new CloudError(0, reply ? 'verification_failed' : 'verification_timeout'));
+          reject(new CloudError({ status: 0, code: reply ? 'verification_failed' : 'verification_timeout' }));
         };
         const timer = setTimeout(() => done(null), timeout);
         const silence = setTimeout(() => done(undefined), quiet);

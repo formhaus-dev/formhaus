@@ -23,6 +23,7 @@ function renderAt(width: number) {
       <FormRenderer
         definition={{ formatVersion: '1.3', id: 'f', title: 'F', submit: { label: 'Send' }, fields: [matrix] }}
         onSubmit={() => {}}
+        errorSummary={false}
       />
     </div>,
   );

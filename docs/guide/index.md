@@ -42,6 +42,27 @@ Theme via CSS custom properties (`--fh-color-primary`, `--fh-radius`, `--fh-gap`
 
 Inputs, textareas, selects, date, time and file fields, scale boxes and the switch track use `--fh-color-input-border`. Radio and multiselect option cards use `--fh-option-card-border`, which is `--fh-color-input-border` by default. Group cards, dividers and dialogs use `--fh-color-border`. The token source is in `@formhaus/core/tokens/`.
 
+Colors come from these variables:
+
+| Variable | Used for |
+|---|---|
+| `--fh-color-text` | Body text |
+| `--fh-color-text-muted` | Helper text, counters and secondary labels |
+| `--fh-color-bg` | Page and control fill |
+| `--fh-color-bg-disabled` | Disabled controls |
+| `--fh-color-primary` | Primary buttons, checked controls and the selected option card border |
+| `--fh-color-primary-text` | Text and icons on `--fh-color-primary` |
+| `--fh-color-primary-soft` | Background of a selected option card |
+| `--fh-color-border` | Group cards, dividers, matrix rows and dialogs |
+| `--fh-color-border-focus` | Focus outline of every control |
+| `--fh-color-input-border` | Inputs, scale boxes and the switch track |
+| `--fh-color-input-border-strong`, `--fh-color-input-border-strong-hover` | Input borders under `prefers-contrast: more` |
+| `--fh-option-card-border` | Radio and multiselect option cards |
+| `--fh-color-secondary-border` | Secondary button and file button border |
+| `--fh-color-error` | Error text and invalid borders |
+| `--fh-color-scrim` | Dialog backdrop |
+| `--fh-color-shadow` | Shadow of raised elements and dialogs |
+
 Hover states apply only on devices with a mouse or trackpad, and transitions turn off under `prefers-reduced-motion`. These variables set the hover colors:
 
 | Variable | Used for |
@@ -69,6 +90,7 @@ Spacing and sizes come from these variables:
 | `--fh-font-size`, `--fh-font-size-small` | 15px, 13px (17px, 15px on touch screens) | Labels and inputs; helpers, errors and item titles |
 | `--fh-font-size-heading`, `--fh-font-size-title` | font size + 2px, + 5px | Section headings; step titles |
 | `--fh-color-error-soft`, `--fh-color-error-hover` | derived from `--fh-color-error` | Hover of the group item Remove button |
+| `--fh-matrix-sticky-top` | 0 | Top offset of the sticky matrix column header, such as the height of a fixed page header |
 
 The stylesheet is light by default. For dark colors add `data-fh-theme="dark"` to the form or any ancestor:
 
@@ -89,6 +111,36 @@ Action buttons use these classes:
 | `fh-form-actions__button--text` | Skip, Cancel |
 
 Every button also has `fh-form-actions__button`. A `variant` on the action replaces the role class.
+
+### Stable names
+
+From 1.0, the `--fh-*` variables in the tables above and these class names do not change within a major version. Other custom properties in `style.css` start with `--fhi-`: they are private and can change in any version. Their values and the look can change in a minor version, and the [changelog](/changelog) lists each change.
+
+| Class | Element |
+|---|---|
+| `fh-form` | The `<form>` |
+| `fh-form__fields` | The list of fields of the current step |
+| `fh-cloud` | The `FormhausForm` wrapper |
+| `fh-section` | A section |
+| `fh-section__title` | A section heading |
+| `fh-section__description` | A section description |
+| `fh-section__body` | The fields of a section |
+| `fh-group` | A group |
+| `fh-group__header` | The header of a group item |
+| `fh-group__title` | The title of a group item |
+| `fh-group__helper` | The helper text of a group |
+| `fh-group__body` | The items of a group |
+| `fh-group__item` | A group item |
+| `fh-group__fields` | The fields of a group item |
+| `fh-group__remove` | The Remove button of a group item |
+| `fh-group__add` | The Add button of a group |
+| `fh-group__status` | The live announcement of a group |
+| `fh-field__label` | A field label |
+| `fh-field__helper` | A field helper text |
+| `fh-form-actions__button` | Every action button |
+| `fh-form-actions__button--primary` | Continue, Submit |
+| `fh-form-actions__button--secondary` | Back |
+| `fh-form-actions__button--text` | Skip, Cancel |
 
 ## Quick start
 

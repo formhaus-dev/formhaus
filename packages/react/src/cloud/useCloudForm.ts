@@ -6,22 +6,33 @@ interface CloudFormOptions {
   id: string;
   apiBase?: string;
   initialForm?: PublishedForm;
-  draftStore?: DraftStore;
+  draftStore?: DraftStore | false;
+  draftExclude?: string[];
   extraBody: () => Record<string, unknown>;
   challengeHost: RefObject<HTMLElement | null>;
   onSuccess?: (submission: CloudSubmission) => void;
   onError?: (error: unknown) => void;
 }
 
-export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, challengeHost, onSuccess, onError }: CloudFormOptions) {
+export function useCloudForm({
+  id,
+  apiBase,
+  initialForm,
+  draftStore,
+  draftExclude,
+  extraBody,
+  challengeHost,
+  onSuccess,
+  onError,
+}: CloudFormOptions) {
   const [state, setState] = useState(() => cloudStateFor(initialForm));
   const controller = useRef<ReturnType<typeof createCloudController> | null>(null);
   const wanted = useRef(false);
-  const callbacks = useRef({ onSuccess, onError, extraBody, initialForm, draftStore });
-  callbacks.current = { onSuccess, onError, extraBody, initialForm, draftStore };
+  const callbacks = useRef({ onSuccess, onError, extraBody, initialForm, draftStore, draftExclude });
+  callbacks.current = { onSuccess, onError, extraBody, initialForm, draftStore, draftExclude };
 
   useEffect(() => {
-    const { initialForm: form, draftStore: store } = callbacks.current;
+    const { initialForm: form, draftStore: store, draftExclude: exclude } = callbacks.current;
     setState(cloudStateFor(form));
     const current = createCloudController(
       {
@@ -29,6 +40,7 @@ export function useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, 
         apiBase,
         initialForm: form,
         draftStore: store,
+        draftExclude: exclude,
         extraBody: () => callbacks.current.extraBody(),
         challengeHost: () => challengeHost.current,
       },

@@ -54,6 +54,13 @@ describe('renderer handle', () => {
     expect(onFieldChange).not.toHaveBeenCalled();
   });
 
+  it('reads the current values from the values property', () => {
+    const handle = createRef<FormRendererHandle>();
+    render(<FormRenderer ref={handle} definition={invoice} onSubmit={() => {}} />);
+    handle.current!.setValue('client', 'Acme');
+    expect(handle.current!.values.client).toBe('Acme');
+  });
+
   it('derives the due date from the issue date until the user edits it', () => {
     const onSubmit = vi.fn();
     render(<Invoice onSubmit={onSubmit} />);

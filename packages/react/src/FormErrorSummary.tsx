@@ -17,7 +17,7 @@ export function FormErrorSummary({ engine, formId, onSelect, labels }: FormError
   if (groups.length === 0) return null;
 
   return (
-    <div className="fh-error-summary" role="alert">
+    <div className="fh-error-summary" role="alert" tabIndex={-1}>
       <strong className="fh-error-summary__title">{labelFor('errorSummary', {}, labels, engine.definition.labels)}</strong>
       {groups.map(({ id, title, entries }) => (
         <Fragment key={id}>

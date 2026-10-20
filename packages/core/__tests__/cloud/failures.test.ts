@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { CloudError, createSubmitter, fetchDefinition } from '../../src/cloud';
+import { CloudError, createSubmitter, fetchForm } from '../../src/cloud';
 import { createCloudController, type CloudState } from '../../src/internal';
 import type { FormDefinition } from '../../src';
 
@@ -42,7 +42,7 @@ describe('cloud failures', () => {
   it('reports a paused form from the definition endpoint', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue(reply(409, { error: 'Form paused' })));
 
-    await expect(fetchDefinition({ id: 'abc' })).rejects.toMatchObject({
+    await expect(fetchForm({ id: 'abc' })).rejects.toMatchObject({
       status: 409,
       code: 'paused',
       message: 'This form is paused.',
@@ -51,7 +51,7 @@ describe('cloud failures', () => {
   });
 
   it.each([
-    ['loading', () => fetchDefinition({ id: 'abc' }), 15_000],
+    ['loading', () => fetchForm({ id: 'abc' }), 15_000],
     ['submitting', () => createSubmitter({ id: 'abc' })({}), 30_000],
   ])('times out while %s', async (_, request, timeout) => {
     vi.useFakeTimers();
@@ -72,7 +72,7 @@ describe('cloud failures', () => {
       .mockResolvedValue(reply(201, { id: 's1', values: {} }));
     vi.stubGlobal('fetch', fetchMock);
 
-    await expect(fetchDefinition({ id: 'abc' })).rejects.toMatchObject({
+    await expect(fetchForm({ id: 'abc' })).rejects.toMatchObject({
       code: 'invalid_response',
       message: 'Something went wrong. Try again.',
     });

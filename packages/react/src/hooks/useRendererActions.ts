@@ -29,7 +29,7 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
       ),
     [run, engine],
   );
-  const prev = useCallback(() => run(() => engine.back()), [run, engine]);
+  const back = useCallback(() => run(() => engine.back()), [run, engine]);
   const update = useCallback(
     (key: string, value: unknown) => {
       if (loading || engine.stepValidating || engine.submitting) return;
@@ -63,5 +63,5 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
   );
   const skip = useCallback(() => run(() => engine.skip(onSubmit)), [run, engine, onSubmit]);
   const actionError = failure?.engine === engine ? failure.message : null;
-  return { next, prev, skip, update, changeItems, commit, submit, actionError, invalidAttempts };
+  return { next, back, skip, update, changeItems, commit, submit, actionError, invalidAttempts };
 }

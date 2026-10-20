@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { type Component, computed } from 'vue';
-import { formFieldEmits } from './props';
+import { fieldComponentEmits } from './props';
 import type { FieldResolverProps } from './types';
 
 const props = defineProps<FieldResolverProps>();
-const emit = defineEmits(formFieldEmits);
+const emit = defineEmits(fieldComponentEmits);
 
 let development = false;
 try {

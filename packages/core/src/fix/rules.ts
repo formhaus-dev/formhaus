@@ -42,9 +42,7 @@ function actionLabel(definition: Entry, owner: string): DefinitionFix[] {
   return label ? [fix(`Set the label to ${quote(label)}`, !catalog, set(`${owner}/label`, label))] : [];
 }
 
-function missing(definition: Entry, issue: DefinitionIssue, issues: readonly DefinitionIssue[]): DefinitionFix[] {
-  const name = missingName(issue);
-  const owner = issue.path;
+function missing(definition: Entry, owner: string, name: string | undefined, issues: readonly DefinitionIssue[]): DefinitionFix[] {
   const target = at(definition, owner);
   if (name === undefined || !isEntry(target)) return [];
   const path = child(owner, name);
@@ -68,11 +66,6 @@ function missing(definition: Entry, issue: DefinitionIssue, issues: readonly Def
   if (ACTION.test(owner)) return actionLabel(definition, owner);
   const source = FIELD.test(owner) ? text(target.key) : OPTION.test(owner) ? text(target.value) : undefined;
   return source ? [fix(`Set the label to ${quote(humanize(source))}`, true, set(path, humanize(source)))] : [];
-}
-
-function emptyLabel(definition: Entry, { path }: DefinitionIssue): DefinitionFix[] {
-  const key = text((at(definition, parent(path)) as Entry | undefined)?.key);
-  return key ? [fix(`Set the label to ${quote(humanize(key))}`, true, set(path, humanize(key)))] : [];
 }
 
 function unknownProperty(definition: Entry, issue: DefinitionIssue): DefinitionFix[] {
@@ -145,11 +138,11 @@ function formatVersion(definition: Entry, future: boolean): DefinitionFix[] {
 export function fixesFor(definition: Entry, issue: DefinitionIssue, issues: readonly DefinitionIssue[]): DefinitionFix[] {
   switch (issue.code) {
     case 'missing-property':
-      return missing(definition, issue, issues);
+      return missing(definition, issue.path, missingName(issue), issues);
+    case 'missing-label':
+      return missing(definition, parent(issue.path), 'label', issues);
     case 'unknown-property':
       return unknownProperty(definition, issue);
-    case 'empty-label':
-      return emptyLabel(definition, issue);
     case 'duplicate-key':
       return duplicateKey(definition, issue);
     case 'duplicate-option-value':
@@ -164,7 +157,7 @@ export function fixesFor(definition: Entry, issue: DefinitionIssue, issues: read
       return closestTo(definition, issue, BUILT_IN_TYPES, 'type');
     case 'unknown-operator':
       return unknownOperator(definition, issue);
-    case 'invalid-range':
+    case 'min-greater-than-max':
       return range(definition, issue);
     case 'unsupported-format-version':
       return formatVersion(definition, true);

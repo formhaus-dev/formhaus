@@ -47,6 +47,26 @@ Props, status codes, `Idempotency-Key` and validation rules are in [Collecting s
 
 `createSubmitter` sends values as they are. Upload files yourself before you call it.
 
+## Drafts
+
+`FormhausForm` keeps the answers in `sessionStorage` while the visitor fills the form, and restores them after a reload in the same tab. The draft is tied to the form version and expires after a week. A successful submission deletes it. Closing the tab ends it.
+
+The draft never holds `password`, `file` or `hidden` values. Other answers stay readable by any script on the page while the tab is open. For forms with sensitive answers, such as health questions or a résumé, leave those fields out or turn drafts off:
+
+::: code-group
+```tsx [React]
+<FormhausForm id="FORM_ID" draftExclude={['diagnosis', 'medication']} />
+<FormhausForm id="FORM_ID" draftStore={false} />
+```
+
+```vue [Vue]
+<FormhausForm id="FORM_ID" :draft-exclude="['diagnosis', 'medication']" />
+<FormhausForm id="FORM_ID" :draft-store="false" />
+```
+:::
+
+`draftExclude` takes field keys. A group key leaves out the whole group, and the key of a field inside a group leaves it out of every item. Pass your own `DraftStore` with `load`, `save` and `clear` as `draftStore` to keep drafts elsewhere.
+
 ## Bot check
 
 When Formhaus Cloud has the bot check on, `FormhausForm` loads `https://formhaus.cc/challenge` in a frame on first focus and sends its token with the submission. The frame stays hidden unless the check needs a click. If your site sets a Content-Security-Policy, add `frame-src https://formhaus.cc`. If the frame cannot load, the form submits without a token and the form's bot check setting decides whether Cloud accepts it. With a self-hosted Cloud, allow your forms host in `frame-src` instead.
@@ -58,8 +78,60 @@ import { createChallengeFrame, createSubmitter, fetchForm } from '@formhaus/core
 
 const form = await fetchForm({ id: 'FORM_ID' });
 const submit = createSubmitter({ id: 'FORM_ID', version: form.version, renderToken: form.renderToken });
-const check = form.challenge && createChallengeFrame(form.challenge, 'FORM_ID', () => document.querySelector('#bot-check'));
+const check =
+  form.challenge &&
+  createChallengeFrame({ challenge: form.challenge, formId: 'FORM_ID', host: () => document.querySelector('#bot-check') });
 
-await submit(values, [], await check?.token());
+await submit(values, { challengeToken: await check?.token() });
 check?.spend();
 ```
+
+## Low-level client
+
+| Function | Options |
+|---|---|
+| `fetchForm(options)` | `id`, `apiBase?`, `signal?`, `version?`: load at least this form version |
+| `createSubmitter(options)` | `id`, `apiBase?`, `version?`, `renderToken?`. Returns `submit(values, { skippedSteps?, challengeToken? })` |
+| `createChallengeFrame(options)` | `challenge`, `formId`, `host`: returns the element that holds the frame, `timeout?`, `quiet?` in ms |
+| `sessionDraftStore(options?)` | `maxAge?` in ms, one week by default, `storage?`: returns the storage, `sessionStorage` by default |
+
+## Errors
+
+`fetchForm`, the submitter and `FormhausForm`'s `onError` reject with `CloudError`:
+
+| Property | Type | Description |
+|---|---|---|
+| `status` | `number` | HTTP status, `0` without a response |
+| `code` | `KnownCloudErrorCode \| (string & {})` | One of the codes below. A new Cloud version can send a new code, so handle unknown codes in a `default` branch |
+| `message` | `string` | A text to show the user |
+| `action` | `'retry' \| 'reload' \| null` | What can fix it. `retryable` is `action === 'retry'` |
+| `errors` | `Record<string, string> \| undefined` | Field errors for `invalid` |
+| `version` | `number \| undefined` | The new form version for `form_updated` |
+
+| `code` | `action` | When |
+|---|---|---|
+| `network` | `retry` | No response |
+| `timeout` | `retry` | No response in 15 s for a load, 30 s for a submission |
+| `invalid` | `null` | Values failed validation. See `errors` |
+| `rate_limited` | `retry` | Too many requests |
+| `limit_reached` | `null` | The plan's response limit is reached |
+| `not_found` | `null` | The form does not exist |
+| `paused` | `null` | The form is paused |
+| `expired` | `null` | The form has expired |
+| `body_too_large` | `null` | The submission is too large |
+| `idempotency_key_reused` | `retry` | The values changed during a retry |
+| `form_updated` | `reload` | The form has a new version. `FormhausForm` loads it and keeps the answers |
+| `file_taken` | `null` | An uploaded file is no longer available. `FormhausForm` uploads the file again and resends once |
+| `origin_not_allowed` | `null` | The form owner does not allow the form on this site |
+| `client_outdated` | `null` | The form needs a newer `@formhaus/core` |
+| `verification_failed` | `retry` | The bot check did not pass |
+| `verification_timeout` | `retry` | The bot check did not finish |
+| `verification_required` | `reload` | The form needs a bot check token |
+| `malformed_body` | `reload` | The request body is not valid |
+| `unsupported_media_type` | `reload` | The request is not JSON |
+| `invalid_idempotency_key` | `reload` | The `Idempotency-Key` header is not valid |
+| `invalid_response` | `retry` | The response is not valid JSON |
+| `unavailable` | `retry` | Cloud is unavailable |
+| `internal` | `retry` | A server error |
+| `unknown` | By status | The response has no error code. The status picks the message and `action` |
+

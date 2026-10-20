@@ -131,7 +131,7 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
   if (items && typeof rules.maxLength === 'number' && rules.maxLength > MAX_GROUP_ITEMS)
     issues.push(
       warning(
-        'invalid-range',
+        'group-item-limit',
         `${path}/validation/maxLength`,
         `maxLength (${rules.maxLength}) is greater than ${limit}`,
         `Lower maxLength to ${MAX_GROUP_ITEMS}`,
@@ -140,7 +140,7 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
   if (typeof defaults === 'number' && defaults > maxItems(field) && !(typeof rules.maxLength === 'number' && defaults > rules.maxLength))
     issues.push(
       warning(
-        'invalid-range',
+        'group-item-limit',
         `${path}/defaultItems`,
         `defaultItems (${defaults}) is greater than ${limit}`,
         rules.maxLength === undefined ? 'Lower defaultItems or set validation.maxLength' : `Lower defaultItems to ${MAX_GROUP_ITEMS}`,

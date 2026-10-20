@@ -47,19 +47,19 @@ describe('fixes for property checks', () => {
   });
 
   it('fills an empty or missing field label from the key', () => {
-    expect(fixesAt(form([text('firstName', { label: ' ' })]), '/fields/0/label', 'empty-label')).toEqual([
+    expect(fixesAt(form([text('firstName', { label: ' ' })]), '/fields/0/label', 'missing-label')).toEqual([
       { title: 'Set the label to "First name"', safe: true, patch: [{ op: 'add', path: '/fields/0/label', value: 'First name' }] },
     ]);
-    expect(repaired(form([{ key: 'work_email', type: 'email' }]), '/fields/0', 'missing-property')).toMatchObject({
+    expect(repaired(form([{ key: 'work_email', type: 'email' }]), '/fields/0/label', 'missing-label')).toMatchObject({
       fields: [{ label: 'Work email' }],
     });
     expect(
-      repaired(form([{ key: 'p', type: 'radio', label: 'P', options: [{ value: 'yes' }] }]), '/fields/0/options/0', 'missing-property'),
+      repaired(form([{ key: 'p', type: 'radio', label: 'P', options: [{ value: 'yes' }] }]), '/fields/0/options/0/label', 'missing-label'),
     ).toMatchObject({ fields: [{ options: [{ value: 'yes', label: 'Yes' }] }] });
   });
 
   it('fills a missing action label with the default text', () => {
-    expect(fixesAt(form([text('a')], { submit: {} }), '/submit', 'missing-property')).toEqual([
+    expect(fixesAt(form([text('a')], { submit: {} }), '/submit/label', 'missing-label')).toEqual([
       { title: 'Set the label to "Submit"', safe: true, patch: [{ op: 'add', path: '/submit/label', value: 'Submit' }] },
     ]);
     const steps = (extra: Definition) => ({
@@ -72,8 +72,11 @@ describe('fixes for property checks', () => {
         { id: 't', title: 'T', fields: [text('b')] },
       ],
     });
-    expect(fixesAt(steps({}), '/steps/0/next', 'missing-property')[0]).toMatchObject({ title: 'Set the label to "Continue"', safe: true });
-    expect(fixesAt(steps({ labels: { continue: 'Weiter' } }), '/steps/0/next', 'missing-property')[0].safe).toBe(false);
+    expect(fixesAt(steps({}), '/steps/0/next/label', 'missing-label')[0]).toMatchObject({
+      title: 'Set the label to "Continue"',
+      safe: true,
+    });
+    expect(fixesAt(steps({ labels: { continue: 'Weiter' } }), '/steps/0/next/label', 'missing-label')[0].safe).toBe(false);
   });
 
   it('adds an empty fields list to a step', () => {

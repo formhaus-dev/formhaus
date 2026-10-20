@@ -45,14 +45,29 @@ it('shows the form success message for another response without an ending', asyn
   expect(screen.queryByText('Sales will call you.')).toBeNull();
 });
 
-it('calls .once handlers for both events', async () => {
+it('calls a .once handler', async () => {
   vi.stubGlobal('fetch', vi.fn());
   const onFormEventOnce = vi.fn();
-  const onAnalyticsEventOnce = vi.fn();
-  render(FormhausForm, { props: { id: 'abc', initialForm: { definition }, onFormEventOnce, onAnalyticsEventOnce } });
+  render(FormhausForm, { props: { id: 'abc', initialForm: { definition }, onFormEventOnce } });
   await screen.findByRole('textbox', { name: 'Email' });
   expect(onFormEventOnce).toHaveBeenCalledOnce();
   expect(onFormEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
-  expect(onAnalyticsEventOnce).toHaveBeenCalledOnce();
-  expect(onAnalyticsEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
+});
+
+it('shows the error summary and asks before removing an answered item by default', async () => {
+  vi.stubGlobal('fetch', vi.fn());
+  const team: FormDefinition = {
+    id: 'team',
+    title: 'Team',
+    submit: { label: 'Send' },
+    fields: [
+      { key: 'email', type: 'text', label: 'Email', validation: { required: true } },
+      { key: 'crew', type: 'group', label: 'Crew', fields: [{ key: 'name', type: 'text', label: 'Name' }] },
+    ],
+  };
+  render(FormhausForm, { props: { id: 'abc', initialForm: { definition: team }, initialValues: { crew: [{ name: 'Ada' }] } } });
+  await fireEvent.click(await screen.findByRole('button', { name: 'Send' }));
+  expect(await screen.findByText('Check these answers')).toBeDefined();
+  await fireEvent.click(screen.getByRole('button', { name: /Remove/ }));
+  expect(await screen.findByRole('dialog')).toBeDefined();
 });

@@ -32,8 +32,6 @@ export const DEFAULT_MESSAGES: Readonly<Record<MessageKey, string>> = /* @__PURE
   hidden: '{label}: {message}',
 });
 
-export type ValidationRule = 'required' | 'minLength' | 'maxLength' | 'min' | 'max' | 'pattern' | 'matchField';
-
 const PARAM = /\{(\w+)\}/g;
 
 export function formatText(template: string, params: Record<string, unknown>): string {
@@ -69,7 +67,7 @@ export function namedResolver(resolve: ResolveMessage): ResolveMessage {
   };
 }
 
-export function getDefaultMessage(rule: ValidationRule | MessageKey, params: Record<string, unknown> = {}): string {
+export function getDefaultMessage(rule: MessageKey, params: Record<string, unknown> = {}): string {
   const template = hasOwn(DEFAULT_MESSAGES, rule) ? DEFAULT_MESSAGES[rule] : DEFAULT_MESSAGES.value;
   const custom = params.unit !== undefined && (rule === 'minLength' || rule === 'maxLength');
   return formatText(custom ? `At ${rule === 'minLength' ? 'least {min}' : 'most {max}'} {unit}` : template, params);

@@ -199,7 +199,7 @@ export function createVisibility(definition: FormDefinition) {
       if (!canGoNextDirty) return cache.canGoNext;
       canGoNextDirty = false;
       if (customSteps.has(step!)) hidden.unsettle();
-      const errors = step ? validateFields(step.fields, path.values(values), validators) : {};
+      const errors = step ? validateFields(step.fields, path.values(values), { validators }) : {};
       return (cache.canGoNext = isMultiStep() && Object.keys(errors).length === 0);
     },
 

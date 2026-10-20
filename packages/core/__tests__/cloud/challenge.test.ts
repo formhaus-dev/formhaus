@@ -12,7 +12,7 @@ function ready(fake: ReturnType<typeof page>) {
 describe('challenge frame', () => {
   it('creates nothing until it warms, then mounts one hidden frame and a status region', () => {
     const fake = page();
-    const frame = createChallengeFrame(challenge, 'abc', () => fake.host);
+    const frame = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host });
     expect(fake.frames).toHaveLength(0);
     frame.warm();
     frame.warm();
@@ -25,7 +25,7 @@ describe('challenge frame', () => {
 
   it('asks for a token after the frame loads, only from the challenge origin', async () => {
     const fake = page();
-    const token = createChallengeFrame(challenge, 'abc', () => fake.host).token();
+    const token = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host }).token();
     await flush();
     expect(fake.requests()).toHaveLength(0);
     await ready(fake);
@@ -39,7 +39,7 @@ describe('challenge frame', () => {
 
   it('ignores messages from another origin, window, form or request', async () => {
     const fake = page();
-    const token = createChallengeFrame(challenge, 'abc', () => fake.host).token();
+    const token = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host }).token();
     await ready(fake);
     fake.send({ type: 'formhaus:challenge', formId: 'abc', token: 'evil' }, 'https://evil.example');
     fake.send({ type: 'formhaus:challenge', formId: 'abc', token: 'evil' }, ORIGIN, {});
@@ -54,7 +54,7 @@ describe('challenge frame', () => {
 
   it('rejects with a verification error when the check fails', async () => {
     const fake = page();
-    const token = createChallengeFrame(challenge, 'abc', () => fake.host).token();
+    const token = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host }).token();
     await ready(fake);
     fake.reply({ error: 'bot check failed: 600010' });
     const error = await token.catch((thrown: unknown) => thrown);
@@ -64,7 +64,7 @@ describe('challenge frame', () => {
 
   it('reuses the token until it is spent or a check fails', async () => {
     const fake = page();
-    const frame = createChallengeFrame(challenge, 'abc', () => fake.host);
+    const frame = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host });
     const first = frame.token();
     await ready(fake);
     fake.reply({ token: 'ts_1' });
@@ -89,7 +89,7 @@ describe('challenge frame', () => {
   it('gives up quietly when the frame never answers and stops asking', async () => {
     vi.useFakeTimers();
     const fake = page();
-    const frame = createChallengeFrame(challenge, 'abc', () => fake.host, 40_000, 1000);
+    const frame = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host, timeout: 40_000, quiet: 1000 });
     const token = frame.token();
     await vi.advanceTimersByTimeAsync(1000);
     await expect(token).resolves.toBeUndefined();
@@ -101,7 +101,7 @@ describe('challenge frame', () => {
     'treats %o as unavailable',
     async (fields) => {
       const fake = page();
-      const token = createChallengeFrame(challenge, 'abc', () => fake.host).token();
+      const token = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host }).token();
       await ready(fake);
       fake.reply(fields);
       await expect(token).resolves.toBeUndefined();
@@ -111,7 +111,7 @@ describe('challenge frame', () => {
   it('waits for the user once the check asks for interaction, up to the timeout', async () => {
     vi.useFakeTimers();
     const fake = page();
-    const token = createChallengeFrame(challenge, 'abc', () => fake.host, 5000, 1000).token();
+    const token = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host, timeout: 5000, quiet: 1000 }).token();
     const settled = token.catch((thrown: unknown) => thrown);
     fake.last().onload!();
     await vi.advanceTimersByTimeAsync(500);
@@ -122,7 +122,7 @@ describe('challenge frame', () => {
 
   it('shows the frame and announces it while Turnstile needs interaction', () => {
     const fake = page();
-    createChallengeFrame(challenge, 'abc', () => fake.host).warm();
+    createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host }).warm();
     fake.reply({ height: 65 });
     expect(fake.last().style.cssText).toContain('height:65px');
     expect(fake.last().style.cssText).toContain('color-scheme:normal');
@@ -138,7 +138,7 @@ describe('challenge frame', () => {
 
   it('settles the pending request when a new one starts or on dispose', async () => {
     const fake = page();
-    const frame = createChallengeFrame(challenge, 'abc', () => fake.host);
+    const frame = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host });
     const first = frame.token();
     const second = frame.token();
     await expect(first).rejects.toMatchObject({ code: 'verification_timeout' });
@@ -151,7 +151,7 @@ describe('challenge frame', () => {
 
   it('mounts a new frame when the old one left the page', () => {
     const fake = page();
-    const frame = createChallengeFrame(challenge, 'abc', () => fake.host);
+    const frame = createChallengeFrame({ challenge, formId: 'abc', host: () => fake.host });
     frame.warm();
     fake.frames[0].remove();
     frame.warm();
@@ -161,7 +161,7 @@ describe('challenge frame', () => {
 
   it.each(['javascript:alert(1)', 'http://formhaus.cc/challenge', 'not a url'])('never loads %s', async (url) => {
     const fake = page();
-    const frame = createChallengeFrame({ ...challenge, url }, 'abc', () => fake.host);
+    const frame = createChallengeFrame({ challenge: { ...challenge, url }, formId: 'abc', host: () => fake.host });
     frame.warm();
     await expect(frame.token()).resolves.toBeUndefined();
     expect(fake.frames).toHaveLength(0);
@@ -169,7 +169,11 @@ describe('challenge frame', () => {
 
   it('allows http for local hosts', () => {
     const fake = page();
-    createChallengeFrame({ ...challenge, url: 'http://forms.localhost:8080/challenge?form=abc' }, 'abc', () => fake.host).warm();
+    createChallengeFrame({
+      challenge: { ...challenge, url: 'http://forms.localhost:8080/challenge?form=abc' },
+      formId: 'abc',
+      host: () => fake.host,
+    }).warm();
     expect(fake.frames).toHaveLength(1);
   });
 });

@@ -79,7 +79,7 @@ export function idScenarios(harness: RendererHarness, { it, expect, waitFor, scr
     });
     expect(links.map((link) => link.getAttribute('href'))).toEqual([`#${work.id}`, `#${home.id}`]);
     expect(document.getElementById(`${home.id}-error`)?.textContent).toContain('required');
-    await waitFor(() => expect(document.activeElement).toBe(work));
+    await waitFor(() => expect(document.activeElement).toBe(document.querySelector('.fh-error-summary')));
     await harness.click(links[1]);
     await waitFor(() => expect(document.activeElement).toBe(home));
   });

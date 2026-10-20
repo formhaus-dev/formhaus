@@ -5,6 +5,20 @@
 ```ts
 
 // @public (undocumented)
+export interface ChallengeFrameOptions {
+    // (undocumented)
+    challenge: CloudChallenge;
+    // (undocumented)
+    formId: string;
+    // (undocumented)
+    host: () => ChallengeHost | null;
+    // (undocumented)
+    quiet?: number;
+    // (undocumented)
+    timeout?: number;
+}
+
+// @public (undocumented)
 export interface ChallengeHost {
     // (undocumented)
     append(...nodes: never[]): void;
@@ -50,13 +64,13 @@ export interface CloudClientOptions {
 
 // @public (undocumented)
 export class CloudError extends Error {
-    constructor(status: number, code: string, errors?: Record<string, string>, version?: number, cause?: unknown);
+    constructor(input: CloudErrorInit);
     // (undocumented)
     readonly action: CloudAction;
     // (undocumented)
     readonly cause?: unknown;
     // (undocumented)
-    readonly code: string;
+    readonly code: KnownCloudErrorCode | (string & {});
     // (undocumented)
     readonly errors?: Record<string, string>;
     // (undocumented)
@@ -65,6 +79,20 @@ export class CloudError extends Error {
     readonly status: number;
     // (undocumented)
     readonly version?: number;
+}
+
+// @public (undocumented)
+export interface CloudErrorInit {
+    // (undocumented)
+    cause?: unknown;
+    // (undocumented)
+    code: KnownCloudErrorCode | (string & {});
+    // (undocumented)
+    errors?: Record<string, string>;
+    // (undocumented)
+    status: number;
+    // (undocumented)
+    version?: number;
 }
 
 // @public (undocumented)
@@ -100,6 +128,17 @@ export interface CloudSubmission {
 }
 
 // @public (undocumented)
+export type CloudSubmitFn = (values: Record<string, unknown>, options?: CloudSubmitOptions) => Promise<CloudSubmission>;
+
+// @public (undocumented)
+export interface CloudSubmitOptions {
+    // (undocumented)
+    challengeToken?: string;
+    // (undocumented)
+    skippedSteps?: string[];
+}
+
+// @public (undocumented)
 export interface CloudSubmitterOptions extends CloudClientOptions {
     // (undocumented)
     extraBody?: () => Record<string, unknown>;
@@ -112,10 +151,10 @@ export interface CloudSubmitterOptions extends CloudClientOptions {
 }
 
 // @public (undocumented)
-export function createChallengeFrame(challenge: CloudChallenge, formId: string, host: () => ChallengeHost | null, timeout?: number, quiet?: number): CloudChallengeFrame;
+export function createChallengeFrame(input: ChallengeFrameOptions): CloudChallengeFrame;
 
 // @public (undocumented)
-export function createSubmitter(options: CloudSubmitterOptions): (values: Record<string, unknown>, skippedSteps?: string[], challengeToken?: string) => Promise<CloudSubmission>;
+export function createSubmitter(options: CloudSubmitterOptions): CloudSubmitFn;
 
 // @public (undocumented)
 export interface DraftStorage {
@@ -138,10 +177,18 @@ export interface DraftStore {
 }
 
 // @public (undocumented)
-export function fetchDefinition(options: CloudClientOptions, signal?: AbortSignal): Promise<FormDefinition>;
+export function fetchForm(options: FetchFormOptions): Promise<PublishedForm>;
 
 // @public (undocumented)
-export function fetchForm(options: CloudClientOptions, signal?: AbortSignal, after?: number): Promise<PublishedForm>;
+export interface FetchFormOptions extends CloudClientOptions {
+    // (undocumented)
+    signal?: AbortSignal;
+    // (undocumented)
+    version?: number;
+}
+
+// @public (undocumented)
+export type KnownCloudErrorCode = 'network' | 'timeout' | 'invalid' | 'rate_limited' | 'limit_reached' | 'not_found' | 'paused' | 'expired' | 'body_too_large' | 'idempotency_key_reused' | 'form_updated' | 'file_taken' | 'origin_not_allowed' | 'client_outdated' | 'verification_failed' | 'verification_timeout' | 'verification_required' | 'malformed_body' | 'unsupported_media_type' | 'invalid_idempotency_key' | 'invalid_response' | 'unavailable' | 'internal' | 'unknown';
 
 // @public (undocumented)
 export interface PublishedForm {
@@ -158,7 +205,15 @@ export interface PublishedForm {
 }
 
 // @public (undocumented)
-export function sessionDraftStore(maxAge?: number, storageOf?: () => DraftStorage | undefined): DraftStore;
+export function sessionDraftStore(input?: SessionDraftStoreOptions): DraftStore;
+
+// @public (undocumented)
+export interface SessionDraftStoreOptions {
+    // (undocumented)
+    maxAge?: number;
+    // (undocumented)
+    storage?: () => DraftStorage | undefined;
+}
 
 // (No @packageDocumentation comment for this package)
 

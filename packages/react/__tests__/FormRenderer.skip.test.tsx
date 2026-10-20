@@ -43,27 +43,27 @@ describe('FormRenderer skip and button roles', () => {
 
   it('skips a step without validating and submits without it', async () => {
     const onSubmit = vi.fn();
-    const onAnalyticsEvent = vi.fn();
-    render(<FormRenderer definition={definition} onSubmit={onSubmit} onAnalyticsEvent={onAnalyticsEvent} />);
+    const onFormEvent = vi.fn();
+    render(<FormRenderer definition={definition} onSubmit={onSubmit} onFormEvent={onFormEvent} />);
     fireEvent.change(screen.getByRole('textbox', { name: /Name/ }), { target: { value: 'Ada' } });
     await next();
     fireEvent.click(button('Not now'));
     await waitFor(() => expect(screen.getByRole('textbox', { name: /Notes/ })).toBeDefined());
-    expect(onAnalyticsEvent).toHaveBeenCalledWith({ type: 'step_skipped', stepId: 'phone' });
+    expect(onFormEvent).toHaveBeenCalledWith({ type: 'step_skipped', stepId: 'phone' });
     fireEvent.click(button('Skip notes'));
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ name: 'Ada' }, expect.any(Array)));
-    expect(onAnalyticsEvent).toHaveBeenCalledWith({ type: 'step_skipped', stepId: 'notes' });
+    expect(onFormEvent).toHaveBeenCalledWith({ type: 'step_skipped', stepId: 'notes' });
   });
 
   it('reports field errors when a skip submit fails validation', async () => {
     let failing = false;
-    const onAnalyticsEvent = vi.fn();
+    const onFormEvent = vi.fn();
     render(
       <FormRenderer
         definition={definition}
         validators={{ flaky: () => (failing ? 'Bad name' : null) }}
         onSubmit={() => {}}
-        onAnalyticsEvent={onAnalyticsEvent}
+        onFormEvent={onFormEvent}
       />,
     );
     fireEvent.change(screen.getByRole('textbox', { name: /Name/ }), { target: { value: 'Ada' } });
@@ -72,7 +72,7 @@ describe('FormRenderer skip and button roles', () => {
     await waitFor(() => expect(screen.getByRole('textbox', { name: /Notes/ })).toBeDefined());
     failing = true;
     fireEvent.click(button('Skip notes'));
-    await waitFor(() => expect(onAnalyticsEvent).toHaveBeenCalledWith({ type: 'field_error', fieldKey: 'name', error: 'Bad name' }));
+    await waitFor(() => expect(onFormEvent).toHaveBeenCalledWith({ type: 'field_error', fieldKey: 'name', error: 'Bad name' }));
   });
 
   it('hides skip on steps with next: false', () => {
@@ -93,7 +93,7 @@ describe('FormRenderer skip and button roles', () => {
         skipAction={{ label: 'Later', variant: 'secondary' }}
         onSubmit={() => {}}
         onNext={() => {}}
-        onPrev={() => {}}
+        onBack={() => {}}
         onCancel={() => {}}
         onSkip={() => {}}
       />,
@@ -110,7 +110,7 @@ describe('FormRenderer skip and button roles', () => {
       skipAction: { label: 'Later' },
       onSubmit: () => {},
       onNext: () => {},
-      onPrev: () => {},
+      onBack: () => {},
       onCancel: () => {},
     };
     const { rerender } = render(<FormActions {...props} />);

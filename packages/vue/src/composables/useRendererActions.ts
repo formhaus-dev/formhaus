@@ -33,7 +33,7 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
       const engine = form.engine;
       return !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, engine.getSubmitValues()) && engine.next();
     });
-  const prev = () => run(() => form.engine.back());
+  const back = () => run(() => form.engine.back());
   const busy = () => props.loading || form.engine.stepValidating || form.engine.submitting;
   function update(key: string, value: unknown) {
     if (busy()) return;
@@ -55,12 +55,12 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     update(key, value);
     if (field.autoAdvance && engine.currentStep?.id === step?.id && !engine.isLastStep) void run(() => autoAdvance(engine));
   }
-  const handler = () => props.onSubmit ?? props.submitHandler ?? (() => {});
+  const handler = () => props.onSubmit ?? (() => {});
   const submit = () =>
     run(async () => {
       const engine = form.engine;
       return !isActionDisabled(engine.definition.submit, engine.getSubmitValues()) && engine.submit(handler());
     });
   const skip = () => run(() => form.engine.skip(handler()));
-  return { update, changeItems, commit, next, prev, skip, submit, actionError, invalidAttempts };
+  return { update, changeItems, commit, next, back, skip, submit, actionError, invalidAttempts };
 }

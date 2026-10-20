@@ -26,7 +26,7 @@ describe('property checks', () => {
         hint: 'Did you mean "id"?',
       },
       {
-        code: 'empty-label',
+        code: 'missing-label',
         severity: 'warning',
         path: '/fields/0/label',
         message: '/fields/0/label: the label of "name" is empty. Add a label so screen readers can name the input.',
@@ -73,7 +73,7 @@ describe('property checks', () => {
       'warning unknown-property /cancel/action: unknown property "action".',
       'warning unknown-property /steps/0/subtitle: unknown property "subtitle".',
       'warning unknown-property /steps/0/routes/0/when: unknown property "when".',
-      'warning missing-property /steps/0/next: missing required property "label".',
+      'warning missing-label /steps/0/next/label: missing required property "label".',
       'warning unknown-property /steps/0/next/lable: unknown property "lable". Did you mean "label"?',
       'warning unknown-property /steps/0/fields/0/Placeholder: unknown property "Placeholder". Did you mean "placeholder"?',
       'warning unknown-property /steps/0/fields/0/validation/requird: unknown property "requird". Did you mean "required"?',
@@ -108,10 +108,10 @@ describe('property checks', () => {
     };
     expect(summary(input)).toEqual([
       'warning missing-property /: missing required property "title". Add a title for host UI and editors.',
-      'warning missing-property /submit: missing required property "label".',
+      'warning missing-label /submit/label: missing required property "label".',
       'warning missing-property /steps/0: missing required property "title".',
-      'warning missing-property /steps/0/fields/0: missing required property "label". Add a label so screen readers can name the input.',
-      'warning missing-property /steps/0/fields/0/options/0: missing required property "label".',
+      'warning missing-label /steps/0/fields/0/label: missing required property "label". Add a label so screen readers can name the input.',
+      'warning missing-label /steps/0/fields/0/options/0/label: missing required property "label".',
     ]);
   });
 
@@ -125,7 +125,7 @@ describe('property checks', () => {
       { key: 'h', type: 'hidden', label: '' },
     ];
     expect(summary({ ...base, fields })).toEqual([
-      'warning empty-label /fields/0/label: the label of "x" is empty. Add a label so screen readers can name the input.',
+      'warning missing-label /fields/0/label: the label of "x" is empty. Add a label so screen readers can name the input.',
     ]);
   });
 

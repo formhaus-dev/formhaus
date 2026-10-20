@@ -162,7 +162,7 @@ function Participants({ id, label, items, canAdd, add }: GroupComponentProps) {
 | `items` | `{ id, index, title, titleId, canRemove, remove, requestRemove, hasContent, removeLabel, removeName, disabled }` per item. React adds `children` with the item fields. Vue adds `fields`, a component that renders them |
 | `canAdd`, `add`, `remove(id)`, `requestRemove(id)` | Item operations within `minLength` and `maxLength`. `requestRemove` asks first when the item has answers |
 | `addLabel`, `removeLabel`, `status`, `disabled` | Button texts, the live announcement and the busy state |
-| `ItemComponent` (React), `itemComponent` (Vue) | The resolved `groupItem` component |
+| `itemComponent` | The resolved `groupItem` component |
 
 Focus after Add and Remove finds its targets by these ids and attributes:
 

@@ -57,7 +57,7 @@ function getBackLabel(): string {
         type="button"
         :class="['fh-form-actions__button', getButtonClass(props.backAction, 'secondary')]"
         :disabled="props.loading"
-        @click="emit('prev')"
+        @click="emit('back')"
       >
         {{ getBackLabel() }}
       </button>

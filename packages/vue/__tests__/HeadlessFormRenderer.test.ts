@@ -187,7 +187,7 @@ describe('FormRenderer built-in fallbacks', () => {
   it('forwards every event from the headless core', async () => {
     const onSubmit = vi.fn();
     const { emitted } = render(FormRenderer, {
-      props: { definition, components: { text: CustomText }, actionsComponent: CustomActions, onSubmit, onAnalyticsEvent: () => {} },
+      props: { definition, components: { text: CustomText }, actionsComponent: CustomActions, onSubmit, onFormEvent: () => {} },
     });
     await fireEvent.update(screen.getByTestId('custom-name'), 'Ann');
     await fireEvent.click(screen.getByText('Send'));
@@ -196,6 +196,6 @@ describe('FormRenderer built-in fallbacks', () => {
     expect(emitted().fieldChange[0]).toEqual(['name', 'Ann', { name: 'Ann' }]);
     expect(onSubmit).toHaveBeenCalledWith({ name: 'Ann' }, []);
     expect(emitted().cancel).toHaveLength(1);
-    expect(emitted().analyticsEvent).toContainEqual([{ type: 'form_submitted', fieldCount: 1 }]);
+    expect(emitted().formEvent).toContainEqual([{ type: 'form_submitted', fieldCount: 1 }]);
   });
 });

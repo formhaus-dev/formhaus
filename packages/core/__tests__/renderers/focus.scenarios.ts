@@ -5,6 +5,8 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
   const active = () => document.activeElement;
   const textbox = (name: string) => screen.getByRole('textbox', { name: new RegExp(name) });
   const button = (name: string) => screen.getByRole('button', { name });
+  const summary = () => document.querySelector('.fh-error-summary');
+  const required: FormDefinition = { ...flat, fields: flat.fields!.map((field) => ({ ...field, validation: { required: true } })) };
   const settle = () =>
     new Promise((done) => {
       setTimeout(done);
@@ -24,9 +26,47 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     await waitFor(() => expect(active()).toBe(textbox('Second')));
   });
 
+  it('focuses the only invalid field after a failed Submit with one error', async () => {
+    harness.mount({ definition: required, initialValues: { first: 'Ada' }, onSubmit: () => {} });
+    await harness.click(button('Send'));
+    await screen.findByText('This field is required');
+    await waitFor(() => expect(active()).toBe(textbox('Second')));
+  });
+
+  it('focuses the error summary after a failed Submit with two errors', async () => {
+    harness.mount({ definition: required, onSubmit: () => {} });
+    await harness.click(button('Send'));
+    await waitFor(() => expect(active()).toBe(summary()));
+    expect(summary()?.getAttribute('tabindex')).toBe('-1');
+    expect(summary()?.getAttribute('role')).toBe('alert');
+  });
+
+  it('focuses the first invalid field after two errors when the error summary is off', async () => {
+    harness.mount({ definition: required, errorSummary: false, onSubmit: () => {} });
+    await harness.click(button('Send'));
+    await screen.findAllByText('This field is required');
+    await waitFor(() => expect(active()).toBe(textbox('First')));
+    expect(summary()).toBeNull();
+  });
+
+  it('opens the step with the first server error and focuses the summary for two errors', async () => {
+    harness.mount({
+      definition: wizard,
+      initialValues: filled,
+      onSubmit: () => ({ ok: false, errors: { city: 'Unknown', name: 'Taken' } }),
+    });
+    await toLastStep();
+    await harness.click(button('Send'));
+    await screen.findByRole('heading', { name: 'One' });
+    await waitFor(() => expect(active()).toBe(summary()));
+    await settle();
+    expect(active()).toBe(summary());
+  });
+
   it('opens the step with the first server error and focuses its field', async () => {
     harness.mount({
       definition: wizard,
+      errorSummary: false,
       initialValues: filled,
       onSubmit: () => ({ ok: false, errors: { city: 'Unknown', name: 'Taken' } }),
     });
@@ -44,7 +84,7 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     });
     await harness.click(button('Send'));
     const link = await screen.findByRole('link', { name: 'Second: Bad second' });
-    await waitFor(() => expect(active()).toBe(textbox('First')));
+    await waitFor(() => expect(active()).toBe(summary()));
     link.focus();
     await harness.click(link);
     await waitFor(() => expect(active()).toBe(textbox('Second')));
@@ -61,7 +101,7 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     await harness.click(button('Send'));
     const link = await screen.findByRole('link', { name: 'City: Unknown' });
     expect(screen.getByRole('link', { name: 'Name: Taken' })).toBeDefined();
-    await waitFor(() => expect(active()).toBe(textbox('Name')));
+    await waitFor(() => expect(active()).toBe(summary()));
     link.focus();
     await harness.click(link);
     await screen.findByRole('heading', { name: 'Three' });

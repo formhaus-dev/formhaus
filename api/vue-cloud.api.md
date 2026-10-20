@@ -5,6 +5,7 @@
 ```ts
 
 import { AfterStepChangeFn } from '@formhaus/core';
+import { AfterSubmitFn } from '@formhaus/core';
 import { BeforeStepChangeFn } from '@formhaus/core';
 import { BeforeSubmitFn } from '@formhaus/core';
 import { CloudError } from '@formhaus/core/cloud';
@@ -26,7 +27,6 @@ import { PublicProps } from 'vue';
 import { PublishedForm } from '@formhaus/core/cloud';
 import { RecallFormatFn } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
-import { SubmitFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
@@ -38,11 +38,13 @@ export { CloudSubmission }
 export const FormhausForm: typeof __VLS_export;
 
 // @public (undocumented)
-export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'submitHandler' | 'errors'> {
+export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors'> {
     // (undocumented)
     apiBase?: string;
     // (undocumented)
-    draftStore?: DraftStore;
+    draftExclude?: string[];
+    // (undocumented)
+    draftStore?: DraftStore | false;
     // (undocumented)
     id: string;
     // (undocumented)

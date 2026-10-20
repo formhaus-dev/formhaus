@@ -2,7 +2,7 @@ import type {
   ConfirmDialogView,
   DefaultFieldType,
   FieldType,
-  FormAnalyticsEvent,
+  FormActionsView,
   FormDefinition,
   FormEngineOptions,
   FormRendererHandle,
@@ -15,7 +15,6 @@ import type {
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { FormActionsView } from '@formhaus/core/internal';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
 export type { FormRendererHandle, OptionsProvider };
@@ -44,7 +43,7 @@ export interface GroupItemComponentProps extends GroupItemView {
 export type ConfirmDialogComponentProps = ConfirmDialogView;
 
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
-  ItemComponent: ComponentType<GroupItemComponentProps>;
+  itemComponent: ComponentType<GroupItemComponentProps>;
 }
 
 interface NodeComponentProps {
@@ -77,7 +76,7 @@ export type FieldComponentMap = {
 export interface FormActionsProps extends FormActionsView {
   onSubmit: () => void;
   onNext: () => void;
-  onPrev: () => void;
+  onBack: () => void;
   onCancel: () => void;
   onSkip?: () => void;
   onPrimary?: () => void;
@@ -124,5 +123,4 @@ export interface FormRendererProps extends FormEngineOptions {
   actionsComponent?: ComponentType<FormActionsProps>;
   progressComponent?: ComponentType<FormStepProgressProps>;
   headingLevel?: HeadingLevel;
-  onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
 }

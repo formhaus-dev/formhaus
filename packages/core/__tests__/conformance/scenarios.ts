@@ -112,6 +112,8 @@ export class ScenarioRun {
         return engine.validateField(action.key);
       case 'goToStepWithField':
         return engine.goToStepWithField(action.key);
+      case 'goToStep':
+        return engine.goToStep(action.stepId);
       case 'reset':
         return engine.reset(action.values);
       case 'replaceDefinition':

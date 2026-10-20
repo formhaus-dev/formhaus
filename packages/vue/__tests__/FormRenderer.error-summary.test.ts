@@ -26,12 +26,18 @@ async function submitFromLastStep() {
 }
 
 describe('Vue error summary and step marks', () => {
-  it('renders neither by default', async () => {
+  it('shows the summary and no step marks by default', async () => {
     render(FormRenderer, { props: { definition, initialValues: valid, onSubmit: reject } });
+    await submitFromLastStep();
+    await screen.findByText('Check these answers');
+    expect(document.querySelector('.fh-step-progress__steps')).toBeNull();
+  });
+
+  it('hides the summary with errorSummary false', async () => {
+    render(FormRenderer, { props: { definition, initialValues: valid, onSubmit: reject, errorSummary: false } });
     await submitFromLastStep();
     await screen.findByText('Taken');
     expect(document.querySelector('.fh-error-summary')).toBeNull();
-    expect(document.querySelector('.fh-step-progress__steps')).toBeNull();
   });
 
   it('lists every field error in step order with links that open the step and focus the field', async () => {
@@ -41,7 +47,7 @@ describe('Vue error summary and step marks', () => {
     expect(summary.getAttribute('role')).toBe('alert');
     const links = within(summary).getAllByRole('link');
     expect(links.map((link) => link.textContent)).toEqual(['Email: Taken', 'Account type: Not available', 'Postcode: Unknown postcode']);
-    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Email/ })));
+    await waitFor(() => expect(document.activeElement).toBe(document.querySelector('.fh-error-summary')));
 
     await fireEvent.click(links[2]);
     await screen.findByRole('heading', { name: 'Address' });

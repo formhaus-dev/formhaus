@@ -11,14 +11,14 @@ import TextField from '../src/fields/TextField.vue';
 const definition = rawDefinition as FormDefinition;
 
 it.each([FormRenderer, HeadlessFormRenderer])('runs routed activation, validation and hooks', async (Renderer) => {
-  const submitHandler = vi.fn();
+  const onSubmit = vi.fn();
   const change = vi.fn();
   render(Renderer, {
     props: {
       definition,
       components: { radio: RadioField, text: TextField },
       actionsComponent: FormActions,
-      submitHandler,
+      onSubmit,
       onAfterStepChange: change,
     },
   });
@@ -42,6 +42,6 @@ it.each([FormRenderer, HeadlessFormRenderer])('runs routed activation, validatio
   const send = await screen.findByText('Create account');
   await waitFor(() => expect((send as HTMLButtonElement).disabled).toBe(false));
   await fireEvent.click(send);
-  expect(submitHandler).toHaveBeenCalledWith({ kind: 'personal', name: 'Ada' }, expect.any(Array));
+  expect(onSubmit).toHaveBeenCalledWith({ kind: 'personal', name: 'Ada' }, expect.any(Array));
   expect(change).toHaveBeenCalledWith(expect.objectContaining({ toStepId: 'personal', reason: 'autoAdvance' }));
 });

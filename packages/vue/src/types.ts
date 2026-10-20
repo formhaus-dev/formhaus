@@ -5,11 +5,11 @@ import type {
   ConfirmDialogView,
   DefinitionIssue,
   FieldType,
-  FormAnalyticsEvent,
   FormEvent,
+  FormActionsView,
   FormDefinition,
   FormField,
-  FormRendererHandle as CoreFormRendererHandle,
+  FormRendererHandle,
   GroupItemView,
   GroupView,
   LabelSource,
@@ -19,11 +19,10 @@ import type {
   RecallFormatFn,
   SectionView,
   StepValidateFn,
-  SubmitFn,
+  AfterSubmitFn,
   SubmitHandler,
   ValidatorFn,
 } from '@formhaus/core';
-import type { FormActionsView } from '@formhaus/core/internal';
 import type { Component } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
@@ -59,11 +58,7 @@ export interface FormStepProgressProps {
   stepErrorCount?: number;
 }
 
-export type { OptionsProvider };
-
-export interface FormRendererHandle extends CoreFormRendererHandle {
-  readonly values: Readonly<Record<string, unknown>>;
-}
+export type { FormRendererHandle, OptionsProvider };
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -73,12 +68,11 @@ export interface FormRendererProps {
   onBeforeStepChange?: Callback<BeforeStepChangeFn>;
   onAfterStepChange?: Callback<AfterStepChangeFn>;
   onBeforeSubmit?: Callback<BeforeSubmitFn>;
-  onAfterSubmit?: Callback<SubmitFn>;
+  onAfterSubmit?: Callback<AfterSubmitFn>;
   onWarning?: (issue: DefinitionIssue) => void;
   messages?: Partial<Record<MessageKey, string>> | Callback<MessageFn>;
   onError?: (error: unknown) => void;
   onSubmit?: SubmitHandler;
-  submitHandler?: SubmitHandler;
   headingLevel?: HeadingLevel;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
@@ -104,10 +98,9 @@ export interface FormRendererEmits {
   (e: 'fieldChange', key: string, value: unknown, allValues: Record<string, unknown>): void;
   (e: 'valuesChange', values: Readonly<Record<string, unknown>>): void;
   (e: 'formEvent', event: FormEvent): void;
-  (e: 'analyticsEvent', event: FormAnalyticsEvent): void;
 }
 
-export interface FormFieldProps {
+export interface FieldComponentProps {
   id?: string;
   field: FormField;
   modelValue: unknown;
@@ -116,7 +109,7 @@ export interface FormFieldProps {
   disabled?: boolean;
 }
 
-export interface FieldResolverProps extends FormFieldProps {
+export interface FieldResolverProps extends FieldComponentProps {
   components?: FieldComponentMap;
 }
 

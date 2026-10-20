@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { formFieldEmits, formFieldProps } from '../props';
+import { fieldComponentEmits, fieldComponentProps } from '../props';
 import { fieldIds } from './useField';
 
-const props = defineProps(formFieldProps);
-defineEmits(formFieldEmits);
+const props = defineProps(fieldComponentProps);
+defineEmits(fieldComponentEmits);
 </script>
 
 <template>

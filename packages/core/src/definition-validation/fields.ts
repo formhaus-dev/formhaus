@@ -10,7 +10,12 @@ function rangeIssue(rules: FieldValidation, path: string, min: 'min' | 'minLengt
   const high = rules[max];
   if (low === undefined || high === undefined || low <= high) return [];
   return [
-    error('invalid-range', `${path}/validation/${min}`, `${min} (${low}) is greater than ${max} (${high})`, `Lower ${min} or raise ${max}`),
+    error(
+      'min-greater-than-max',
+      `${path}/validation/${min}`,
+      `${min} (${low}) is greater than ${max} (${high})`,
+      `Lower ${min} or raise ${max}`,
+    ),
   ];
 }
 
@@ -47,7 +52,7 @@ function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry): 
     ...(items !== undefined && rules.maxLength !== undefined && items > rules.maxLength
       ? [
           error(
-            'invalid-range',
+            'default-items-greater-than-max',
             `${path}/defaultItems`,
             `defaultItems (${items}) is greater than maxLength (${rules.maxLength})`,
             'Lower defaultItems or raise maxLength',

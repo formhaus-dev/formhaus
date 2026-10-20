@@ -76,7 +76,7 @@ Releases are managed with [Changesets](https://github.com/changesets/changesets)
 
 Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 
-`@formhaus/core`, `@formhaus/react`, `@formhaus/vue` and the `formhaus` CLI are versioned together (the `fixed` group in `.changeset/config.json`). `@formhaus/figma` is private and not published.
+`@formhaus/core`, `@formhaus/react` and `@formhaus/vue` are versioned together (the `fixed` group in `.changeset/config.json`). `@formhaus/mcp` and the `formhaus` CLI have their own versions. `@formhaus/figma` is private and not published.
 
 ### Public API snapshot
 

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { scaleRange } from '@formhaus/core/internal';
 import { computed } from 'vue';
-import { formFieldEmits, formFieldProps } from '../props';
+import { fieldComponentEmits, fieldComponentProps } from '../props';
 import FieldShell from './FieldShell.vue';
 import { useChoice, useField } from './useField';
 
-const props = defineProps(formFieldProps);
-const emit = defineEmits(formFieldEmits);
+const props = defineProps(fieldComponentProps);
+const emit = defineEmits(fieldComponentEmits);
 const { inputId, control } = useField(props, emit);
 const range = computed(() => scaleRange(props.field));
 const points = computed(() => {
@@ -50,7 +50,7 @@ const choice = useChoice(props, emit, (key) => {
       />
       <label :for="`${inputId}-${point}`" class="fh-field__scale-label">{{ point }}</label>
     </div>
-    <div v-if="anchors.some(Boolean)" class="fh-field__scale-anchors" :style="{ '--fh-scale-points': points.length }">
+    <div v-if="anchors.some(Boolean)" class="fh-field__scale-anchors" :style="{ '--fhi-scale-points': points.length }">
       <span v-for="(option, index) in anchors" :id="option && `${inputId}-anchor-${index}`" :key="index" class="fh-field__scale-anchor">{{
         option?.label
       }}</span>

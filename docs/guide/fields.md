@@ -726,10 +726,10 @@ export function CustomPhoneInput({ field, value, error, disabled, onChange, onBl
 
 ```vue
 <script setup lang="ts">
-import { formFieldEmits, formFieldProps } from '@formhaus/vue'
+import { fieldComponentEmits, fieldComponentProps } from '@formhaus/vue'
 
-const props = defineProps(formFieldProps)
-const emit = defineEmits(formFieldEmits)
+const props = defineProps(fieldComponentProps)
+const emit = defineEmits(fieldComponentEmits)
 </script>
 
 <template>
@@ -749,7 +749,7 @@ const emit = defineEmits(formFieldEmits)
 </template>
 ```
 
-`formFieldProps` and `formFieldEmits` are runtime declarations with full types, so the SFC compiler does not need to resolve a type from the package. `defineProps<FormFieldProps>()` fails in some setups because the compiler cannot follow the types of `@formhaus/vue` and `@formhaus/core`. See [Runtime props in Vue](/guide/custom-components#runtime-props-in-vue).
+`fieldComponentProps` and `fieldComponentEmits` are runtime declarations with full types, so the SFC compiler does not need to resolve a type from the package. `defineProps<FieldComponentProps>()` fails in some setups because the compiler cannot follow the types of `@formhaus/vue` and `@formhaus/core`. See [Runtime props in Vue](/guide/custom-components#runtime-props-in-vue).
 
 `field` has everything from the definition: `key`, `type`, `label`, `placeholder`, `helperText`, `options`, `validation`. Full type in the [Definition Reference](/api/definition).
 

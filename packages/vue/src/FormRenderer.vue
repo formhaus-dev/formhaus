@@ -8,7 +8,7 @@ import { useListening } from './composables/useListening';
 import type { FormEvent } from '@formhaus/core';
 import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true });
+const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true, errorSummary: true });
 
 const emit = defineEmits<FormRendererEmits>();
 
@@ -22,6 +22,7 @@ const bind = (instance: unknown) => {
 defineExpose({
   setValue: (key: string, value: unknown) => inner?.setValue(key, value),
   getValues: () => inner?.getValues() ?? {},
+  goToStep: (stepId: string) => inner!.goToStep(stepId),
   values,
 });
 </script>
@@ -37,6 +38,5 @@ defineExpose({
     @field-change="(key, value, allValues) => emit('fieldChange', key, value, allValues)"
     @values-change="(next) => emit('valuesChange', (values = next))"
     :onFormEvent="listening('onFormEvent') ? (event: FormEvent) => emit('formEvent', event) : undefined"
-    :onAnalyticsEvent="listening('onAnalyticsEvent') ? (event: FormEvent) => emit('analyticsEvent', event) : undefined"
   />
 </template>

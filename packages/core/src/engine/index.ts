@@ -7,7 +7,8 @@ export {
   type BeforeStepChangeFn,
   type AfterStepChangeFn,
   type BeforeSubmitFn,
-  type SubmitFn,
+  type AfterSubmitFn,
   type SubmitHandler,
   type SubmitResult,
+  type GoToStepResult,
 } from './form-engine';

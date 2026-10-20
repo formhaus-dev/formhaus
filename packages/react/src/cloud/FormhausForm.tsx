@@ -24,6 +24,7 @@ export function FormhausForm({
   apiBase,
   initialForm,
   draftStore,
+  draftExclude,
   onSuccess,
   onError,
   fallback,
@@ -35,7 +36,7 @@ export function FormhausForm({
   const trap = useRef<HTMLInputElement>(null);
   const extraBody = useCallback(() => ({ _fh_hp: trap.current?.value ?? '' }), []);
   const box = useRef<HTMLDivElement>(null);
-  const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, extraBody, challengeHost: box, onSuccess, onError });
+  const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, draftExclude, extraBody, challengeHost: box, onSuccess, onError });
   const actionsComponent = useRef(rendererProps.actionsComponent);
   actionsComponent.current = rendererProps.actionsComponent;
   const actions = useMemo(

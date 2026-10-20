@@ -1,5 +1,31 @@
 export type CloudAction = 'retry' | 'reload' | null;
 
+export type KnownCloudErrorCode =
+  | 'network'
+  | 'timeout'
+  | 'invalid'
+  | 'rate_limited'
+  | 'limit_reached'
+  | 'not_found'
+  | 'paused'
+  | 'expired'
+  | 'body_too_large'
+  | 'idempotency_key_reused'
+  | 'form_updated'
+  | 'file_taken'
+  | 'origin_not_allowed'
+  | 'client_outdated'
+  | 'verification_failed'
+  | 'verification_timeout'
+  | 'verification_required'
+  | 'malformed_body'
+  | 'unsupported_media_type'
+  | 'invalid_idempotency_key'
+  | 'invalid_response'
+  | 'unavailable'
+  | 'internal'
+  | 'unknown';
+
 export interface CloudFailure {
   message: string;
   action: CloudAction;
@@ -12,7 +38,7 @@ const SERVER: CloudFailure = { message: 'Something went wrong. Try again.', acti
 const GENERIC: CloudFailure = { message: 'Could not send. Try again.', action: 'retry' };
 const BROKEN: CloudFailure = { message: 'Could not send. Reload the page and try again.', action: 'reload' };
 
-const BY_CODE: Record<string, CloudFailure> = {
+const MESSAGES = {
   network: { message: 'Could not reach the form server. Check your connection and try again.', action: 'retry' },
   timeout: { message: 'The form server did not respond. Try again.', action: 'retry' },
   invalid: { message: 'Some answers were not accepted.', action: null },
@@ -24,6 +50,8 @@ const BY_CODE: Record<string, CloudFailure> = {
   body_too_large: { message: 'Your answers are too long. Shorten them and try again.', action: null },
   idempotency_key_reused: { message: 'Your answers changed while sending. Try again.', action: 'retry' },
   form_updated: { message: 'This form was updated. Reload the page.', action: 'reload' },
+  file_taken: { message: 'A file is no longer available. Upload it again and send.', action: null },
+  origin_not_allowed: { message: 'This form is not available on this site.', action: null },
   client_outdated: { message: 'This form needs a newer version of this page.', action: null },
   verification_failed: { message: 'The bot check did not pass. Submit again to retry.', action: 'retry' },
   verification_timeout: { message: 'The bot check took too long. Submit again to retry.', action: 'retry' },
@@ -34,9 +62,11 @@ const BY_CODE: Record<string, CloudFailure> = {
   invalid_response: SERVER,
   unavailable: SERVER,
   internal: SERVER,
-};
+} satisfies Record<Exclude<KnownCloudErrorCode, 'unknown'>, CloudFailure>;
 
-const CODE_BY_STATUS: Record<number, string> = {
+const BY_CODE: Record<string, CloudFailure | undefined> = MESSAGES;
+
+const CODE_BY_STATUS: Record<number, KnownCloudErrorCode> = {
   0: 'network',
   400: 'malformed_body',
   402: 'limit_reached',

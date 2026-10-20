@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { formFieldEmits, formFieldProps } from '../props';
+import { fieldComponentEmits, fieldComponentProps } from '../props';
 import FieldShell from './FieldShell.vue';
 import OptionImage from './OptionImage.vue';
 import { useChoice, useField } from './useField';
 
-const props = defineProps(formFieldProps);
-const emit = defineEmits(formFieldEmits);
+const props = defineProps(fieldComponentProps);
+const emit = defineEmits(fieldComponentEmits);
 const { inputId, control } = useField(props, emit);
 const choice = useChoice(props, emit);
 </script>

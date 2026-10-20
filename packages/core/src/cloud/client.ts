@@ -1,4 +1,3 @@
-import type { FormDefinition } from '../types';
 import { networkError, readJson, toCloudError } from './error';
 import { parseForm, type CloudSettings, type PublishedForm } from './envelope';
 import { createUploader } from './files';
@@ -46,15 +45,17 @@ export function createFileUploader(options: CloudClientOptions) {
   return createUploader(`${endpoint(options)}/uploads?${CORE}`, (url, init, timeout, signal) => send(url, timeout, init, signal));
 }
 
-export async function fetchForm(options: CloudClientOptions, signal?: AbortSignal, after?: number): Promise<PublishedForm> {
-  const query = after === undefined ? CORE : `${CORE}&v=${after}`;
+export interface FetchFormOptions extends CloudClientOptions {
+  signal?: AbortSignal;
+  version?: number;
+}
+
+export async function fetchForm(options: FetchFormOptions): Promise<PublishedForm> {
+  const { signal, version } = options;
+  const query = version === undefined ? CORE : `${CORE}&v=${version}`;
   const response = await send(`${endpoint(options)}/form?${query}`, LOAD_TIMEOUT, {}, signal);
   if (!response.ok) throw await toCloudError(response);
   return parseForm(await readJson(response), response);
-}
-
-export async function fetchDefinition(options: CloudClientOptions, signal?: AbortSignal): Promise<FormDefinition> {
-  return (await fetchForm(options, signal)).definition;
 }
 
 export interface CloudSubmitterOptions extends CloudClientOptions {
@@ -77,10 +78,17 @@ function attribution(): Record<string, string> {
   return found;
 }
 
-export function createSubmitter(options: CloudSubmitterOptions) {
+export interface CloudSubmitOptions {
+  skippedSteps?: string[];
+  challengeToken?: string;
+}
+
+export type CloudSubmitFn = (values: Record<string, unknown>, options?: CloudSubmitOptions) => Promise<CloudSubmission>;
+
+export function createSubmitter(options: CloudSubmitterOptions): CloudSubmitFn {
   let pending: { stable: string; key: string } | null = null;
 
-  return async (values: Record<string, unknown>, skippedSteps: string[] = [], challengeToken?: string): Promise<CloudSubmission> => {
+  return async (values, { skippedSteps = [], challengeToken } = {}) => {
     const body = JSON.stringify({
       attribution: attribution(),
       ...options.extraBody?.(),

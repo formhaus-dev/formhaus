@@ -2,9 +2,9 @@ import type { FormDefinition } from '../types';
 import { carryValues, splitErrors, updatedErrors } from './carry';
 import { createChallengeFrame, type ChallengeHost, type CloudChallengeFrame } from './challenge';
 import { createFileUploader, createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
-import { draftValues, type DraftStore } from './draft';
+import { draftValues, sessionDraftStore, type DraftStore } from './draft';
 import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
-import { CloudError, networkError } from './error';
+import { CloudError, isRecord, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
 import { uploadGone } from './files';
 
@@ -38,7 +38,8 @@ export interface CloudCallbacks {
 export interface CloudControllerOptions extends CloudClientOptions {
   initialForm?: PublishedForm;
   extraBody?: () => Record<string, unknown>;
-  draftStore?: DraftStore;
+  draftStore?: DraftStore | false;
+  draftExclude?: readonly string[];
   challengeHost?: () => ChallengeHost | null;
 }
 
@@ -73,6 +74,7 @@ function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
 
 export function createCloudController(options: CloudControllerOptions, callbacks: CloudCallbacks) {
   const controller = new AbortController();
+  const drafts = options.draftStore === false ? undefined : (options.draftStore ?? sessionDraftStore());
   let firstRenderToken: string | undefined;
   const submitterFor = (form: PublishedForm) => {
     firstRenderToken ??= form.renderToken;
@@ -91,7 +93,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   const challenge = () => {
     if (!state.challenge || !options.challengeHost) return undefined;
     framed = configOf(state.challenge);
-    return (frame ??= createChallengeFrame(state.challenge, options.id, options.challengeHost));
+    return (frame ??= createChallengeFrame({ challenge: state.challenge, formId: options.id, host: options.challengeHost }));
   };
   const update = (patch: Partial<CloudState>) => {
     state = { ...state, ...patch };
@@ -105,7 +107,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
 
   function show(form: PublishedForm) {
     submitter = submitterFor(form);
-    const draft = options.draftStore?.load(options.id, form.version) ?? null;
+    const saved = drafts?.load(options.id, form.version);
+    const kept = isRecord(saved) ? draftValues(form.definition, saved, options.draftExclude) : {};
+    const draft = Object.keys(kept).length > 0 ? kept : null;
     const next = cloudStateFor(form);
     settings = next.settings;
     update({ ...next, revision: state.revision + (draft ? 1 : 0), attempt: state.attempt, initialValues: draft });
@@ -114,9 +118,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
   async function refresh(error: CloudError, sent: Record<string, unknown>) {
     const before = state.definition;
     try {
-      const next = await fetchForm(options, controller.signal, error.version);
+      const next = await fetchForm({ ...options, signal: controller.signal, version: error.version });
       if (!alive()) return;
-      if (next.version === undefined || next.version < (error.version ?? 0)) throw new CloudError(409, 'form_updated');
+      if (next.version === undefined || next.version < (error.version ?? 0)) throw new CloudError({ status: 409, code: 'form_updated' });
       const kept = before ? carryValues(sent, next.definition, before) : {};
       submitter = submitterFor(next);
       report({
@@ -151,7 +155,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         initial = undefined;
         return;
       }
-      fetchForm(options, controller.signal).then(
+      fetchForm({ ...options, signal: controller.signal }).then(
         (form) => {
           if (alive()) show(form);
         },
@@ -171,7 +175,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     },
     saveDraft(values: Record<string, unknown>) {
       if (state.definition && !state.done)
-        options.draftStore?.save(options.id, state.version ?? undefined, draftValues(state.definition, values));
+        drafts?.save(options.id, state.version ?? undefined, draftValues(state.definition, values, options.draftExclude));
     },
     again() {
       update({ done: false, settings, errors: {}, notice: null, initialValues: null, revision: state.revision + 1 });
@@ -186,18 +190,20 @@ export function createCloudController(options: CloudControllerOptions, callbacks
           if (!alive()) return;
           const token = await check?.token();
           sending = true;
-          const submission = await submitter(sent, skippedSteps, token);
+          const submission = await submitter(sent, { skippedSteps, challengeToken: token });
           check?.spend();
           if (!alive()) return;
-          options.draftStore?.clear(options.id);
+          drafts?.clear(options.id);
           update({ done: true, settings: withEnding(settings, submission.ending) });
           callbacks.onSuccess?.(submission);
         } catch (error) {
           const cloud = error as CloudError;
           if (cloud.code === 'verification_failed') check?.spend();
-          upload.forget(values, Object.keys(cloud.errors ?? {}));
+          const taken = cloud.code === 'file_taken';
+          upload.forget(values, Object.keys((taken ? values : cloud.errors) ?? {}));
           if (!alive()) throw error;
-          if (sending && !retried && cloud.status === 422 && state.definition && uploadGone(state.definition, values, cloud.errors)) {
+          const gone = taken || (cloud.status === 422 && !!state.definition && uploadGone(state.definition, values, cloud.errors));
+          if (sending && !retried && gone) {
             check?.spend();
             return attempt(true);
           }

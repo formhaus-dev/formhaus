@@ -135,7 +135,7 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
         removeLabel={remove}
         disabled={disabled}
         status={announced.text + (announced.count % 2 ? '\u00a0' : '')}
-        ItemComponent={ItemComponent}
+        itemComponent={ItemComponent}
       />
       {asked >= 0 && (
         <Confirm

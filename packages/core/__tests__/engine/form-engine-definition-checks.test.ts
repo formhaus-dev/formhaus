@@ -119,7 +119,7 @@ describe('runtime consistency', () => {
 
   it('normalises an empty validator result to null', () => {
     const field = text('x', { validation: { validator: 'blank' } });
-    expect(validateFieldValue(field, 'a', {}, { blank: () => '' })).toBeNull();
+    expect(validateFieldValue(field, 'a', {}, { validators: { blank: () => '' } })).toBeNull();
   });
 
   it.each([false, true])('gives skipped step fields no value for matchField (routes: %s)', async (routes) => {

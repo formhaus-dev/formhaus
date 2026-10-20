@@ -34,8 +34,8 @@ const steps: FormDefinition = {
 };
 
 describe('FormRenderer focus and keyboard', () => {
-  it('focuses the first invalid field after a failed submit', async () => {
-    render(<FormRenderer definition={contact} onSubmit={() => {}} />);
+  it('focuses the first invalid field after a failed submit without the error summary', async () => {
+    render(<FormRenderer definition={contact} errorSummary={false} onSubmit={() => {}} />);
     fireEvent.click(screen.getByRole('button', { name: 'Send' }));
 
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Email/ })));
