@@ -71,4 +71,46 @@ describe('FieldShell', () => {
       'fh-field__multiselect-group fh-field__multiselect-group--inline',
     );
   });
+
+  it.each([
+    ['radio', RadioField, ''],
+    ['multiselect', MultiselectField, []],
+  ] as const)('marks a required %s group, with or without picture options', (type, Component, value) => {
+    const base: FormField = { key: 'kind', type, label: 'What do you need?', validation: { required: true }, options };
+    const pictured = { ...base, options: options.map((option) => ({ ...option, image: 'data:image/png;base64,iVBORw0KGgo=' })) };
+    const [plain, picture] = [base, pictured].map((field) => render(Component as never, { props: { field, value } }).container);
+
+    for (const container of [plain, picture]) {
+      const legend = container.querySelector('legend')!;
+      expect(legend.textContent).toContain('required');
+      expect(legend.querySelector('.fh-field__required')!.getAttribute('aria-hidden')).toBe('true');
+    }
+    const frame = (container: Element) => [
+      container.querySelector('fieldset')!.getAttributeNames(),
+      container.querySelector('legend')!.outerHTML,
+      [...container.querySelectorAll('input')].map((input) => input.getAttributeNames().filter((name) => name !== 'id')),
+    ];
+    expect(frame(picture)).toEqual(frame(plain));
+  });
+
+  it('leaves the legend of an optional group unmarked', () => {
+    const field: FormField = { key: 'kind', type: 'radio', label: 'Kind', options };
+    const { container } = render(RadioField, { props: { field, value: '' } });
+    expect(container.querySelector('legend')!.textContent).toBe('Kind');
+  });
+
+  it.each([
+    ['radio', RadioField, ''],
+    ['multiselect', MultiselectField, []],
+  ] as const)('names a required %s group as required', (type, Component, value) => {
+    const field: FormField = { key: 'kind', type, label: 'Kind', validation: { required: true }, options };
+    const { getByRole } = render(Component as never, { props: { field, value } } as never);
+    expect(getByRole('group', { name: 'Kind required' })).toBeTruthy();
+  });
+
+  it('leaves an optional group name without the required word', () => {
+    const field: FormField = { key: 'kind', type: 'radio', label: 'Kind', options };
+    const { getByRole } = render(RadioField, { props: { field, value: '' } } as never);
+    expect(getByRole('group', { name: 'Kind' })).toBeTruthy();
+  });
 });
