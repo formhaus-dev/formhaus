@@ -1,0 +1,32 @@
+---
+"@formhaus/core": minor
+---
+
+- Upgrade guide: [Migrate to 0.22](https://formhaus.dev/migrate/0.22).
+- **Breaking:** `validateDefinition` is removed. Use `checkDefinition()`.
+- **Breaking:** `FormAnalyticsEvent` is removed. Use `FormEvent`.
+- **Breaking:** `SubmitFn` is renamed to `AfterSubmitFn`.
+- **Breaking:** `ValidationRule` is removed. `getDefaultMessage()` takes a `MessageKey`.
+- **Breaking:** `parseDefinition(input)` no longer takes a second argument.
+- **Breaking:** `validateFieldValue(field, value, values, { validators, messages })` takes an options object.
+- **Breaking:** `validateFields(nodes, values, { validators, messages })` takes an options object.
+- **Breaking:** `validateStep(step, values, { validators, messages })` takes an options object.
+- New `ValidateOptions` type.
+- **Breaking:** `form_submit_failed` also fires with `reason: 'validation'` when Submit fails client validation, before the `field_error` events.
+- `form_submit_failed` with `reason: 'error'` carries the numeric `status` of the thrown error. `CloudError` has `status: 0` without a response.
+- The last step reports no `step_completed`. `form_submitted` closes it. The specification lists the order of events.
+- **Breaking:** `invalid-range` is split into `min-greater-than-max`, `default-items-greater-than-max`, `group-item-limit` (warning) and `invalid-columns`.
+- **Breaking:** `missing-label` replaces `empty-label` and the `missing-property` warning for a missing `label`. Its path points to the `label` property.
+- **Breaking:** `i18n-unbound-slot` is renamed to `i18n-key-without-text`.
+- `FormActionsView`, the props of a custom actions component, is exported from `@formhaus/core`.
+- `FormRendererHandle` has a `values` property.
+- **Breaking:** `fetchForm(options, signal, after)` is now `fetchForm({ ...options, signal, version })`.
+- **Breaking:** `fetchDefinition` is removed from `@formhaus/core/cloud`. Use `fetchForm()`.
+- **Breaking:** `createSubmitter(options)` returns `submit(values, { skippedSteps, challengeToken })`.
+- **Breaking:** `createChallengeFrame({ challenge, formId, host, timeout, quiet })` takes one options object.
+- **Breaking:** `sessionDraftStore({ maxAge, storage })` takes an options object.
+- **Breaking:** `new CloudError({ status, code, errors, version, cause })` takes one options object.
+- `CloudError.code` is typed as `KnownCloudErrorCode | (string & {})`. New `KnownCloudErrorCode` lists the codes Cloud sends. A later version can add codes.
+- New `FetchFormOptions`, `CloudSubmitOptions`, `CloudSubmitFn`, `ChallengeFrameOptions`, `SessionDraftStoreOptions` and `CloudErrorInit` types.
+- `@formhaus/core/internal` is documented as private, with no semver guarantee.
+- From 1.0, the `--fh-*` custom property names and the class names listed under Stable names in the theming docs do not change within a major version.

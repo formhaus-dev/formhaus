@@ -82,6 +82,7 @@ export default defineConfig({
           { text: 'Migrate to 0.15', link: '/migrate/0.15' },
           { text: 'Migrate to 0.19', link: '/migrate/0.19' },
           { text: 'Migrate to 0.20', link: '/migrate/0.20' },
+          { text: 'Migrate to 0.22', link: '/migrate/0.22' },
         ],
       },
       {
