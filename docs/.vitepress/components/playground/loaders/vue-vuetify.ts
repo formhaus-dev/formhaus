@@ -13,11 +13,10 @@ import HiddenFieldVue from '../../../../../examples/vue-vuetify/src/fields/Hidde
 import TextareaFieldVue from '../../../../../examples/vue-vuetify/src/fields/TextareaField.vue?raw';
 import FormActionsVue from '../../../../../examples/vue-vuetify/src/actions/FormActions.vue?raw';
 import StepProgressVue from '../../../../../examples/vue-vuetify/src/actions/StepProgress.vue?raw';
-import { vendoredVueDeps, vendoredVueFiles } from './vendored-vue';
+import { FORMHAUS_VERSION } from './versions';
 
 export function buildFiles(definitionJson: string) {
   return {
-    ...vendoredVueFiles,
     'src/App.vue': AppVue,
     'src/component-map.ts': componentMapTs,
     'src/main.ts': mainTs,
@@ -43,6 +42,7 @@ export const visibleFiles = ['src/App.vue', 'src/component-map.ts'];
 export const editorHeight = 480;
 export const entry = '/src/main.ts';
 export const deps: Record<string, string> = {
-  ...vendoredVueDeps,
+  '@formhaus/core': FORMHAUS_VERSION,
+  '@formhaus/vue': FORMHAUS_VERSION,
   vuetify: '3.13.6',
 };
