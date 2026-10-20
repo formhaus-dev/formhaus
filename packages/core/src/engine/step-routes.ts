@@ -66,12 +66,14 @@ export function createActivePath(definition: FormDefinition, index: DefinitionIn
   const changes = createPathPatch(index);
   let source: Record<string, unknown> | null = null;
   let steps: FormStep[] = [];
+  let positions = new Map<FormStep, number>();
   let active: Record<string, unknown> = {};
   let ordered = true;
   const refresh = (values: Record<string, unknown>) => {
     if (source === values) return;
     source = values;
     ({ steps, values: active } = walkPath(definition, values));
+    positions = new Map(steps.map((step, index) => [step, index]));
     ordered = true;
   };
   const reorder = () => {
@@ -86,7 +88,7 @@ export function createActivePath(definition: FormDefinition, index: DefinitionIn
       source = null;
     },
     patch(values: Record<string, unknown>, key: string): boolean {
-      const changed = source === values && changes(key, values, active, steps);
+      const changed = source === values && changes(key, values, active, positions);
       if (!changed) return false;
       for (const [name, shown, value] of changed) {
         if (!shown) delete active[name];
@@ -104,7 +106,7 @@ export function createActivePath(definition: FormDefinition, index: DefinitionIn
     },
     has(values: Record<string, unknown>, step: FormStep): boolean {
       refresh(values);
-      return steps.includes(step);
+      return positions.has(step);
     },
     scope(values: Record<string, unknown>): Record<string, unknown> {
       refresh(values);
