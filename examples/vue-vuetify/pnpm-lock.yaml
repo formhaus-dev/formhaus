@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^0.11.2
-        version: 0.11.2
+        specifier: ^0.22.0
+        version: 0.22.0
       '@formhaus/vue':
-        specifier: ^0.11.2
-        version: 0.11.2(@formhaus/core@0.11.2)(vue@3.5.43(typescript@5.9.3))
+        specifier: ^0.22.0
+        version: 0.22.0(@formhaus/core@0.22.0)(vue@3.5.43(typescript@5.9.3))
       '@mdi/font':
         specifier: ^7.4.47
         version: 7.4.47
@@ -215,15 +215,15 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@formhaus/core@0.11.2':
-    resolution: {integrity: sha512-MiDJBsVIZAdsrBKgHDTrsB0EWUPeuH0xd25MeExcLigmQPg1fdBh6ShIw+JGT0kQ13NBZjh+4oeffpqFZLLRwA==}
-    engines: {node: '>=20'}
+  '@formhaus/core@0.22.0':
+    resolution: {integrity: sha512-Gmzi9uzn1id6Lbq24x4FlhjOCOz3POiP/yxgY2LURT+UMTooVD0OOewcJJjl06/OWCd89XvpiUE3Wzji3memRA==}
+    engines: {node: '>=22.12'}
 
-  '@formhaus/vue@0.11.2':
-    resolution: {integrity: sha512-CIDQNAdUxYl0zbLZlA2q/J0Nwq3HXcKIMAa1ZERbUD1Pqxgnt+Y8G7cRYosvYhb8Tl2DAY21mEUgX6GImx5Weg==}
-    engines: {node: '>=20'}
+  '@formhaus/vue@0.22.0':
+    resolution: {integrity: sha512-vB5mouKmiWjt9uz3aEtF6nBDy/OckVTFLz9H3qzCtTpz4txvnvWpZaOdi+lBvWVObKvvbfuZouMK/sSqUJ+YVw==}
+    engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ^0.11.2
+      '@formhaus/core': ^0.22.0
       vue: ^3.3.3
 
   '@jridgewell/sourcemap-codec@1.6.0':
@@ -725,11 +725,11 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@formhaus/core@0.11.2': {}
+  '@formhaus/core@0.22.0': {}
 
-  '@formhaus/vue@0.11.2(@formhaus/core@0.11.2)(vue@3.5.43(typescript@5.9.3))':
+  '@formhaus/vue@0.22.0(@formhaus/core@0.22.0)(vue@3.5.43(typescript@5.9.3))':
     dependencies:
-      '@formhaus/core': 0.11.2
+      '@formhaus/core': 0.22.0
       vue: 3.5.43(typescript@5.9.3)
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
