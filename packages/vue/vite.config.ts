@@ -16,6 +16,7 @@ export default defineConfig({
   build: {
     target: 'es2020',
     sourcemap: true,
+    minify: false,
     lib: {
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
