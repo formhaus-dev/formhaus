@@ -10,4 +10,5 @@ export {
   type AfterSubmitFn,
   type SubmitHandler,
   type SubmitResult,
+  type GoToStepResult,
 } from './form-engine';

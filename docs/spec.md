@@ -516,6 +516,20 @@ A step hidden by conditions is left out of navigation, progress, validation and 
 
 Step `show`/`showAny` MUST reference fields of earlier steps. A step condition sees only the values of earlier steps on the path.
 
+### Opening a step by id
+
+`goToStep(stepId)` opens a step for URL routing and browser history. A step is reachable when it is on the active path and every step between the current step and it is valid or skipped. Valid means that the visible fields of the step pass their client rules, as on Continue. A step at or before the current step is always reachable, like Back. `goToStep` does not show errors, does not run `onStepValidate` or the step change hooks, and does not skip or include steps.
+
+When the target is not reachable, the engine opens a fallback step and returns why:
+
+| `reason` | Target | Fallback |
+|---|---|---|
+| `blocked` | A step on the active path behind an invalid step, or any step while a step change or submission is pending | The first invalid step between the current step and the target, or the current step while an action is pending |
+| `not-on-path` | A step of the definition that conditions or routes leave out of the active path | The last reachable step on the active path that comes before the target in the definition |
+| `unknown-step` | An id that no step has, or any id in a form without steps | The current step |
+
+The result is `{ stepId, reached: true }` or `{ stepId, reached: false, reason }`, where `stepId` is the step that is now current, or `null` in a form without steps. When the target is not reached, the engine reports `step_redirected` with `requestedStepId`, `stepId` and `reason`. A step change reports `step_viewed`, not `step_completed`.
+
 ## Actions
 
 An action is an object:
@@ -758,6 +772,7 @@ After `start()`, the engine reports these sequences through `onFormEvent`. `?` m
 | Continue that passes | `step_completed` for the current step, `step_viewed` for the next |
 | Continue that fails | `field_error*` |
 | Back | `step_viewed` |
+| `goToStep` | `step_viewed` when the step changes, then `step_redirected` when the target was not reached |
 | Skip on a step before the last | `step_skipped`, `step_viewed` |
 | Submit that fails validation | `form_submit_failed` with `reason: 'validation'`, `field_error*` |
 | Submit with a successful handler | `step_skipped?` for Skip on the last step, `form_submitted`, `form_submit_succeeded` |

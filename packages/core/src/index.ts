@@ -8,6 +8,7 @@ export type {
   FieldValidation,
   FormAction,
   FormEvent,
+  StepRedirectReason,
   FormDefinition,
   FormField,
   HiddenFormField,
@@ -49,6 +50,7 @@ export {
   type AfterSubmitFn,
   type SubmitHandler,
   type SubmitResult,
+  type GoToStepResult,
 } from './engine';
 
 export { recallStatic, type RecallItem, type RecallOptions } from './engine/recall';

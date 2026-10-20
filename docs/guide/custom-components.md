@@ -297,6 +297,7 @@ Events emitted:
 | `step_viewed` | A step becomes active: on first show and after every step change | `stepId`, `stepIndex` |
 | `step_completed` | User advances past a step. The last step reports `form_submitted` instead | `stepId` |
 | `step_skipped` | User skips a step | `stepId` |
+| `step_redirected` | `goToStep()` cannot open the requested step and opens another one | `requestedStepId`, `stepId`, `reason`: `'unknown-step'`, `'not-on-path'` or `'blocked'` |
 | `field_focused` | User focuses a field | `fieldKey` |
 | `field_blurred` | User leaves a field | `fieldKey`, `hasValue` |
 | `field_shown` | A field's `show` condition, or its section's, starts to pass. Reports fields on every step, not only the current one, and can fire on `reset()` | `fieldKey` |
