@@ -11,6 +11,7 @@ import { versionWarnings } from './version-warnings';
 import { recallWarnings } from './recall-warnings';
 import { sourceWarnings } from './sources';
 import { exclusiveWarnings } from './exclusive-warnings';
+import { slowPattern } from './slow-pattern';
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
@@ -106,27 +107,6 @@ function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
   ];
 }
 
-function slowPattern(pattern: string): boolean {
-  const groups: boolean[] = [];
-  let closed = false;
-  for (let index = 0; index < pattern.length && pattern.length <= 1000; index++) {
-    const char = pattern[index];
-    if (closed && '*+{'.includes(char)) return true;
-    closed = false;
-    if (char === '\\') index++;
-    else if (char === '[') {
-      for (index++; index < pattern.length && pattern[index] !== ']'; index++) if (pattern[index] === '\\') index++;
-    } else if (char === '(') {
-      groups.push(false);
-      if (pattern[index + 1] === '?') index++;
-    } else if (char === ')') {
-      closed = !!groups.pop();
-      if (closed && groups.length) groups[groups.length - 1] = true;
-    } else if (groups.length && '*+?|{'.includes(char)) groups[groups.length - 1] = true;
-  }
-  return false;
-}
-
 function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): DefinitionIssue[] {
   const rules = field.validation ?? {};
   const rule = (name: string, problem: string, hint: string) => warning('rule-not-applicable', `${path}/validation/${name}`, problem, hint);
@@ -146,13 +126,14 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
       rule(name, `"${name}" does not apply to ${field.type} fields`, numeric ? 'Use min and max for numbers' : `Remove ${name}`),
     ),
   ];
-  if (typeof rules.pattern === 'string' && slowPattern(rules.pattern)) {
+  const slow = typeof rules.pattern === 'string' ? slowPattern(rules.pattern) : undefined;
+  if (slow) {
     issues.push(
       warning(
         'slow-pattern',
         `${path}/validation/pattern`,
-        `the pattern of "${field.key}" nests quantifiers and can be very slow`,
-        'Remove the inner or outer quantifier',
+        `the pattern of "${field.key}" ${slow === 'nested' ? 'nests quantifiers' : 'repeats overlapping parts next to each other'} and can be very slow`,
+        slow === 'nested' ? 'Remove the inner or outer quantifier' : 'Merge the repeated parts into one',
       ),
     );
   }
