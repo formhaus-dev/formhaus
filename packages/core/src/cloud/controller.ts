@@ -2,7 +2,7 @@ import type { FormDefinition } from '../types';
 import { carryValues, splitErrors, updatedErrors } from './carry';
 import { createChallengeFrame, type ChallengeHost, type CloudChallengeFrame } from './challenge';
 import { createFileUploader, createSubmitter, fetchForm, type CloudClientOptions, type CloudSubmission } from './client';
-import { draftValues, type DraftStore } from './draft';
+import { draftValues, sessionDraftStore, type DraftStore } from './draft';
 import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, networkError } from './error';
 import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
@@ -38,7 +38,8 @@ export interface CloudCallbacks {
 export interface CloudControllerOptions extends CloudClientOptions {
   initialForm?: PublishedForm;
   extraBody?: () => Record<string, unknown>;
-  draftStore?: DraftStore;
+  draftStore?: DraftStore | false;
+  draftExclude?: readonly string[];
   challengeHost?: () => ChallengeHost | null;
 }
 
@@ -73,6 +74,7 @@ function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
 
 export function createCloudController(options: CloudControllerOptions, callbacks: CloudCallbacks) {
   const controller = new AbortController();
+  const drafts = options.draftStore === false ? undefined : (options.draftStore ?? sessionDraftStore());
   let firstRenderToken: string | undefined;
   const submitterFor = (form: PublishedForm) => {
     firstRenderToken ??= form.renderToken;
@@ -105,7 +107,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
 
   function show(form: PublishedForm) {
     submitter = submitterFor(form);
-    const draft = options.draftStore?.load(options.id, form.version) ?? null;
+    const draft = drafts?.load(options.id, form.version) ?? null;
     const next = cloudStateFor(form);
     settings = next.settings;
     update({ ...next, revision: state.revision + (draft ? 1 : 0), attempt: state.attempt, initialValues: draft });
@@ -171,7 +173,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     },
     saveDraft(values: Record<string, unknown>) {
       if (state.definition && !state.done)
-        options.draftStore?.save(options.id, state.version ?? undefined, draftValues(state.definition, values));
+        drafts?.save(options.id, state.version ?? undefined, draftValues(state.definition, values, options.draftExclude));
     },
     again() {
       update({ done: false, settings, errors: {}, notice: null, initialValues: null, revision: state.revision + 1 });
@@ -189,7 +191,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
           const submission = await submitter(sent, { skippedSteps, challengeToken: token });
           check?.spend();
           if (!alive()) return;
-          options.draftStore?.clear(options.id);
+          drafts?.clear(options.id);
           update({ done: true, settings: withEnding(settings, submission.ending) });
           callbacks.onSuccess?.(submission);
         } catch (error) {

@@ -5,5 +5,6 @@ export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' 
   id: string;
   apiBase?: string;
   initialForm?: PublishedForm;
-  draftStore?: DraftStore;
+  draftStore?: DraftStore | false;
+  draftExclude?: string[];
 }

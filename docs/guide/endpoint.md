@@ -47,6 +47,26 @@ Props, status codes, `Idempotency-Key` and validation rules are in [Collecting s
 
 `createSubmitter` sends values as they are. Upload files yourself before you call it.
 
+## Drafts
+
+`FormhausForm` keeps the answers in `sessionStorage` while the visitor fills the form, and restores them after a reload in the same tab. The draft is tied to the form version and expires after a week. A successful submission deletes it. Closing the tab ends it.
+
+The draft never holds `password`, `file` or `hidden` values. Other answers stay readable by any script on the page while the tab is open. For forms with sensitive answers, such as health questions or a résumé, leave those fields out or turn drafts off:
+
+::: code-group
+```tsx [React]
+<FormhausForm id="FORM_ID" draftExclude={['diagnosis', 'medication']} />
+<FormhausForm id="FORM_ID" draftStore={false} />
+```
+
+```vue [Vue]
+<FormhausForm id="FORM_ID" :draft-exclude="['diagnosis', 'medication']" />
+<FormhausForm id="FORM_ID" :draft-store="false" />
+```
+:::
+
+`draftExclude` takes field keys. A group key leaves out the whole group, and the key of a field inside a group leaves it out of every item. Pass your own `DraftStore` with `load`, `save` and `clear` as `draftStore` to keep drafts elsewhere.
+
 ## Bot check
 
 When Formhaus Cloud has the bot check on, `FormhausForm` loads `https://formhaus.cc/challenge` in a frame on first focus and sends its token with the submission. The frame stays hidden unless the check needs a click. If your site sets a Content-Security-Policy, add `frame-src https://formhaus.cc`. If the frame cannot load, the form submits without a token and the form's bot check setting decides whether Cloud accepts it. With a self-hosted Cloud, allow your forms host in `frame-src` instead.

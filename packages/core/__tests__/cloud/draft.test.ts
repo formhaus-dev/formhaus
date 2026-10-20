@@ -45,6 +45,15 @@ describe('drafts', () => {
     expect(draftValues(definition, values)).toEqual({ name: 'Ada', city: 'Oslo', people: [{ email: 'a@x.io' }, { email: 'b@x.io' }] });
   });
 
+  it('never keeps a file value', () => {
+    const files: FormDefinition = { ...definition, fields: [{ key: 'cv', type: 'file', label: 'CV' }] };
+    expect(draftValues(files, { cv: 'upl_1' })).toEqual({});
+  });
+
+  it('leaves out excluded keys, also inside group items', () => {
+    expect(draftValues(definition, values, ['city', 'email'])).toEqual({ name: 'Ada', people: [{}, {}] });
+  });
+
   it('never writes a password inside a group item or a hidden value to storage', () => {
     const storage = memory();
     const store = sessionDraftStore({ storage: () => storage });

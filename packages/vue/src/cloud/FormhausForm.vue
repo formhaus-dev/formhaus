@@ -8,7 +8,7 @@ import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
-const props = withDefaults(defineProps<FormhausFormProps>(), { confirmRemove: true, errorSummary: true });
+const props = withDefaults(defineProps<FormhausFormProps>(), { confirmRemove: true, errorSummary: true, draftStore: undefined });
 defineSlots<{ fallback(): unknown; success(): unknown }>();
 const emit = defineEmits<{
   success: [submission: CloudSubmission];
@@ -33,6 +33,7 @@ const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
   apiBase: () => props.apiBase,
   initialForm: () => props.initialForm,
   draftStore: () => props.draftStore,
+  draftExclude: () => props.draftExclude,
   extraBody: () => ({ _fh_hp: trap.value?.value ?? '' }),
   challengeHost: () => box.value,
   onSuccess: (submission) => emit('success', submission),
@@ -40,7 +41,7 @@ const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
 });
 
 const rendererProps = computed(() => {
-  const { id, apiBase, onError, initialValues, initialForm, draftStore, ...rest } = props;
+  const { id, apiBase, onError, initialValues, initialForm, draftStore, draftExclude, ...rest } = props;
   return rest;
 });
 
