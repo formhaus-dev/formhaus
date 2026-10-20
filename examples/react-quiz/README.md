@@ -19,7 +19,7 @@ Opens at http://localhost:5173. Enter an email that starts with `fail@` to see a
 - [src/App.tsx](src/App.tsx) saves the lead in `onBeforeStepChange` and updates it in `onSubmit` with the same id, so going back and forth never creates a second lead.
 - [src/plan.ts](src/plan.ts) picks the recommended plan from the answers.
 - [src/api.ts](src/api.ts) is an in-memory stand-in for your lead API.
-- [src/EventLog.tsx](src/EventLog.tsx) prints `onAnalyticsEvent` output.
+- [src/EventLog.tsx](src/EventLog.tsx) prints `onFormEvent` output.
 
 ## Use as a starter
 
