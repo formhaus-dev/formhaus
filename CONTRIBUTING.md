@@ -70,6 +70,10 @@ Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 
 `@formhaus/core`, `@formhaus/react`, `@formhaus/vue` and the `formhaus` CLI are versioned together (the `fixed` group in `.changeset/config.json`). `@formhaus/figma` is private and not published.
 
+### Public API snapshot
+
+`api/*.api.md` holds the public types of every published entry of `@formhaus/core`, `@formhaus/react` and `@formhaus/vue`, except `@formhaus/core/internal`. CI runs `pnpm api:check` after the build and fails when the built `.d.ts` files differ from the snapshot. If the change is intended, run `pnpm build && pnpm api:update` and commit the updated files. A removed or changed line in the diff is a breaking change: after 1.0 it needs a major release.
+
 ## What could use help
 
 - Svelte adapter (`@formhaus/svelte`)

@@ -21,6 +21,9 @@ importers:
       '@changesets/cli':
         specifier: ^3.0.3
         version: 3.0.3
+      '@microsoft/api-extractor':
+        specifier: 7.59.4
+        version: 7.59.4(@types/node@20.19.43)
       acorn:
         specifier: 8.16.0
         version: 8.16.0

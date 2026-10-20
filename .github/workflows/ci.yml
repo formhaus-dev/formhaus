@@ -88,6 +88,7 @@ jobs:
 
       - run: pnpm check:require
       - run: pnpm check:es-target
+      - run: pnpm api:check
 
       - id: affected
         env:
