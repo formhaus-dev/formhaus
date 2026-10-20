@@ -17,7 +17,8 @@ const respectGpc = 'window.fhBeforeSend=function(t,p){return navigator.globalPri
 const appHost = 'app.formhaus.dev';
 const signupPaths = ['/login', '/forms/new'];
 const sourceKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'ref'];
-const installCommand = /^\s*(?:\$\s*)?(?:npm|pnpm|yarn|bun)\s+(?:i|install|add)\s[^\n]*?@formhaus\/([a-z-]+)/;
+const installCommand = /^\s*(?:\$\s*)?(?:npm|pnpm|yarn|bun)\s+(?:i|install|add)\s([^\n#]*)/;
+const formhausPackage = /@formhaus\/([a-z-]+)/g;
 
 let landing: Record<string, string> | null = null;
 
@@ -79,7 +80,9 @@ export function codeLanguage(button: Element): string {
 }
 
 export function installedPackage(code: string): string | null {
-  return installCommand.exec(code)?.[1] ?? null;
+  const args = installCommand.exec(code)?.[1] ?? '';
+  const names = Array.from(args.matchAll(formhausPackage), (match) => match[1]);
+  return names.find((name) => name !== 'core') ?? names[0] ?? null;
 }
 
 function trackCopy(button: Element) {

@@ -54,7 +54,10 @@ describe('codeLanguage', () => {
 
 describe('installedPackage', () => {
   it('finds the Formhaus package in an install command', () => {
-    expect(installedPackage('npm install @formhaus/core @formhaus/react')).toBe('core');
+    expect(installedPackage('npm install @formhaus/core @formhaus/react')).toBe('react');
+    expect(installedPackage('npm i @formhaus/core@^0.20 @formhaus/vue@^0.20')).toBe('vue');
+    expect(installedPackage('npm install @formhaus/core @formhaus/react   # or @formhaus/vue')).toBe('react');
+    expect(installedPackage('npm install @formhaus/core')).toBe('core');
     expect(installedPackage('$ pnpm add @formhaus/vue')).toBe('vue');
     expect(installedPackage('npx @formhaus/mcp')).toBeNull();
     expect(installedPackage("import { FormEngine } from '@formhaus/core';")).toBeNull();
