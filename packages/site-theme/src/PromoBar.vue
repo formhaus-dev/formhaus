@@ -55,7 +55,7 @@ watch(variant, sync);
 
 <template>
   <div v-if="item && !dismissed" class="fh-promo" role="region" :aria-label="item.label">
-    <p class="fh-promo__text"><strong class="fh-promo__lead"><span class="fh-promo__long">{{ item.lead }}</span><span class="fh-promo__short">{{ item.leadShort }}</span></strong> <span class="fh-promo__long">{{ item.rest }}</span> <a class="fh-promo__link" :href="item.href" data-umami-event="promo_click" :data-umami-event-variant="variant">{{ item.link }} <span aria-hidden="true">→</span></a></p>
+    <p class="fh-promo__text"><strong class="fh-promo__lead"><span class="fh-promo__long">{{ item.lead }}</span><span class="fh-promo__short">{{ item.leadShort }}</span></strong> <span class="fh-promo__long">{{ item.rest }}</span> <a class="fh-promo__link" :href="item.href" data-umami-event="promo-click" :data-umami-event-variant="variant">{{ item.link }} <span aria-hidden="true">→</span></a></p>
     <button type="button" class="fh-promo__close" aria-label="Close" @click="close">
       <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
     </button>

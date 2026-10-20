@@ -17,6 +17,8 @@ const respectGpc = 'window.fhBeforeSend=function(t,p){return navigator.globalPri
 const appHost = 'app.formhaus.dev';
 const signupPaths = ['/login', '/forms/new'];
 const sourceKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'ref'];
+const installCommand = /^\s*(?:\$\s*)?(?:npm|pnpm|yarn|bun)\s+(?:i|install|add)\s([^\n#]*)/;
+const formhausPackage = /@formhaus\/([a-z-]+)/g;
 
 let landing: Record<string, string> | null = null;
 
@@ -77,10 +79,22 @@ export function codeLanguage(button: Element): string {
   return /(?:^|\s)language-([\w-]+)/.exec(block)?.[1] ?? 'text';
 }
 
+export function installedPackage(code: string): string | null {
+  const args = installCommand.exec(code)?.[1] ?? '';
+  const names = Array.from(args.matchAll(formhausPackage), (match) => match[1]);
+  return names.find((name) => name !== 'core') ?? names[0] ?? null;
+}
+
+function trackCopy(button: Element) {
+  const pkg = installedPackage(button.parentElement?.querySelector('pre code')?.textContent ?? '');
+  if (pkg) track('install-copy', { pkg, location: 'docs' });
+  else track('docs-code-copy', { lang: codeLanguage(button) });
+}
+
 function onClick(event: MouseEvent) {
   const target = event.target instanceof Element ? event.target : null;
   const copy = target?.closest('div[class*="language-"] > button.copy');
-  if (copy) track('docs_code_copy', { lang: codeLanguage(copy) });
+  if (copy) trackCopy(copy);
   const link = target?.closest<HTMLAnchorElement>('a[href]');
   if (!link || !landing || !trackingAllowed(navigator)) return;
   const decorated = withSource(link.href, landing, link.dataset.umamiEventLocation);

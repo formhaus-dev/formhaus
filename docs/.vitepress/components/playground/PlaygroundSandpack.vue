@@ -45,18 +45,18 @@ const variantConfig = computed(() => variants[props.framework]);
 
 function chooseVariant(next: Variant) {
   variant.value = next;
-  track('playground_action', { action: 'library_toggle', framework: props.framework, variant: next });
+  track('playground-action', { action: 'library_toggle', framework: props.framework, variant: next });
 }
 
 function chooseFixture(name: string) {
   selected.value = name;
-  track('playground_action', { action: 'fixture', framework: props.framework, fixture: name });
+  track('playground-action', { action: 'fixture', framework: props.framework, fixture: name });
 }
 
 function watchSandbox(event: MouseEvent) {
   const target = event.target instanceof Element ? event.target : null;
   if (target?.closest('[title="Open in CodeSandbox"]')) {
-    track('playground_action', { action: 'open_codesandbox', framework: props.framework });
+    track('playground-action', { action: 'open_codesandbox', framework: props.framework });
   }
 }
 </script>

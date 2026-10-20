@@ -91,6 +91,35 @@ Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 - **Multiple validators per field** — right now it's `"validator": "checkFormat"`. An array like `["checkFormat", "checkUnique"]` would be more flexible.
 - **Field groups / sections** — if a single step has 15 fields, you want to visually break them into blocks without going multi-step.
 
+## Site analytics events
+
+formhaus.dev and the docs load a cookieless Umami script from `packages/site-theme/src/analytics.ts`. It sends nothing under Do Not Track or Global Privacy Control. The npm packages send nothing. Event names are kebab-case. Properties stay coarse: never emails, form contents or ids that identify a person.
+
+Add an event with `data-umami-event="<name>"` and `data-umami-event-<prop>` on a link or button, or with `track()` from `@formhaus/site-theme` for copy buttons and async actions. Add it to this list in the same change.
+
+| Event | Fires on | Properties |
+|---|---|---|
+| `signup-cta-click` | "Create a free form" and pricing buttons | `location`, `period` on pricing |
+| `signin-click` | "Sign in" in the nav | `location` |
+| `onboarding-open` | "Publish your first form" | `location` |
+| `onboarding-choice` | Path picked in the onboarding dialog | `path` |
+| `library-cta-click` | "Install the library" | `location` |
+| `promo-click` | Promo bar link ("Try the framework", "Try Cloud") | `variant` |
+| `outbound-click` | GitHub, GitHub star, npm and mail links | `dest`, `location` |
+| `install-copy` | Copy of an install command | `pkg`, `location` |
+| `docs-code-copy` | Copy of any other code block in the docs | `lang` |
+| `mcp-copy` | Copy of an MCP setup command or agent prompt | `client`, `location` |
+| `template-action` | Template page: open in Cloud, copy JSON, copy prompt | `action`, `slug` |
+| `template-filter` | Template gallery category | `category` |
+| `playground-action` | Playground: library switch, fixture, open in CodeSandbox | `action`, `framework`, `variant`, `fixture` |
+| `pricing-period` | Monthly or yearly switch on pricing | `period` |
+| `build-open` | Form builder opened | `start` |
+| `build-launch` | Builder draft sent to Cloud | `result`, `start` |
+| `build-json` | Builder JSON copied or downloaded | `action` |
+| `demo-action` | Landing demo: format, copy, reset, restart | `action` |
+
+Page views cover the rest: `/playground`, `/templates/<slug>`, `/guide/`, `/cloud/plans`.
+
 ## Code style
 
 - TypeScript everywhere

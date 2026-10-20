@@ -26,7 +26,7 @@ onMounted(() => {
 
 function choose(id: string) {
   active.value = id;
-  track('template_filter', { category: id });
+  track('template-filter', { category: id });
   const url = new URL(location.href);
   if (id === 'all') url.searchParams.delete('category');
   else url.searchParams.set('category', id);
