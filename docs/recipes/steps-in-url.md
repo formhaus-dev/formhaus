@@ -1,6 +1,6 @@
 ---
-title: "Put form steps in the URL with React, Next.js or Vue Router"
-description: "Sync Formhaus steps with the URL: push a history entry on step_viewed, open steps on Back, Forward and deep links with goToStep, and show a notice when a step is not available."
+title: "Form steps in the URL with Next.js or Vue Router"
+description: "Sync Formhaus steps with the URL: push history on step_viewed, open steps on Back, Forward and deep links with goToStep, and show a notice on a redirect."
 ---
 
 # How do I put the current step in the URL?

@@ -192,7 +192,7 @@ describe('focusProblem', () => {
   it('focuses the notice first, else the control inside the first invalid group', () => {
     const input = { focus: vi.fn(), matches: () => true, querySelector: () => null };
     const group = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: () => input };
-    const root = { querySelector: vi.fn().mockReturnValue(group) };
+    const root = { querySelector: vi.fn((selector: string) => (selector === '.fh-error-summary' ? null : group)) };
     const notice = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: () => null };
     focusProblem(root, notice);
     expect(notice.focus).toHaveBeenCalled();
@@ -200,5 +200,17 @@ describe('focusProblem', () => {
     focusProblem(root, null);
     expect(input.focus).toHaveBeenCalledWith({ preventScroll: true });
     expect(group.scrollIntoView).toHaveBeenCalled();
+  });
+
+  it('focuses an error summary with two or more entries before the first invalid field', () => {
+    const summary = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: vi.fn().mockReturnValue({}) };
+    const field = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => true, querySelector: () => null };
+    const root = { querySelector: (selector: string) => (selector === '.fh-error-summary' ? summary : field) };
+    focusProblem(root, null);
+    expect(summary.focus).toHaveBeenCalledWith({ preventScroll: true });
+    expect(field.focus).not.toHaveBeenCalled();
+    summary.querySelector.mockReturnValue(null);
+    focusProblem(root, null);
+    expect(field.focus).toHaveBeenCalled();
   });
 });

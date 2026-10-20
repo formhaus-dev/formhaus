@@ -1,5 +1,8 @@
 export type StepRedirectReason = 'unknown-step' | 'not-on-path' | 'blocked';
 
+export type GoToStepResult =
+  | { stepId: string | null; reached: true }
+  | { stepId: string | null; reached: false; reason: StepRedirectReason };
 export type FormEvent =
   | { type: 'form_viewed' }
   | { type: 'step_viewed'; stepId: string; stepIndex: number }

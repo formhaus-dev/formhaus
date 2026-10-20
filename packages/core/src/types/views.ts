@@ -1,4 +1,4 @@
-import type { GoToStepResult } from '../engine/engine-options';
+import type { GoToStepResult } from './analytics';
 import type { FormAction } from './action';
 import type { FormGroup, FormSection } from './field';
 

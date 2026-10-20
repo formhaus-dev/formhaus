@@ -1,7 +1,9 @@
 import type { DefinitionIssue } from '../definition-validation';
-import type { FormEvent, StepRedirectReason } from '../types/analytics';
+import type { FormEvent, GoToStepResult } from '../types/analytics';
 import type { MessageSource, ValidatorFn } from '../validation';
 import type { RecallFormatFn } from './recall-format';
+
+export type { GoToStepResult };
 
 export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
 
@@ -16,9 +18,6 @@ export type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void 
 export type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>;
 export type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>;
 export type AfterSubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>;
-export type GoToStepResult =
-  | { stepId: string | null; reached: true }
-  | { stepId: string | null; reached: false; reason: StepRedirectReason };
 export type SubmitResult = { ok: true } | { ok: false; errors?: Record<string, string>; formErrors?: string[] };
 export type SubmitHandler = (values: Record<string, unknown>, skippedSteps: string[]) => void | SubmitResult | Promise<void | SubmitResult>;
 
