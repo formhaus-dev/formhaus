@@ -97,7 +97,7 @@ export function cssEntries(dictionary) {
   for (const token of dictionary.allTokens) {
     if (isPrimitive(token)) continue;
     const parent = token.path.slice(0, -1);
-    const group = shorthandGroup(dictionary.tokens, parent);
+    const group = shorthandGroup(dictionary.groups, parent);
     if (group) {
       if (token.path.at(-1) !== group.shorthand[0]) continue;
       const parts = group.shorthand.map((key) => expression(byPath.get([...parent, key].join('.'))));
