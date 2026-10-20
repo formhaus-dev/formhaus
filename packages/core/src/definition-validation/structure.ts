@@ -40,7 +40,7 @@ function stepIssues({ definition }: CheckContext): DefinitionIssue[] {
 function keyIssues({ definition, nodes }: CheckContext): DefinitionIssue[] {
   const issues: DefinitionIssue[] = [];
   const reachable = reachableSteps(definition.steps ?? []);
-  const exclusive = (a: NodeEntry, b: NodeEntry) => a.step !== b.step && !reachable[a.step]?.has(b.step);
+  const exclusive = (a: NodeEntry, b: NodeEntry) => a.step !== b.step && !reachable(a.step)?.has(b.step);
   const outer = nodes.filter((entry) => !entry.group);
   const groups = outer.filter((entry) => isGroup(entry.node));
   const firstOuter = new Map<string, NodeEntry>();

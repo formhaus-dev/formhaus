@@ -1,6 +1,7 @@
 import { validateFieldValue } from '../validation';
 import { baselineFields, emit } from './form-events';
 import { customRules, validateShown } from '../validation/validate-step';
+import { withPatternBudget } from '../validation/validate-field';
 import { isPlainEntry } from '../validation/type-checks';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
 import type { FormField, FormNode } from '../types';
@@ -128,6 +129,14 @@ function withoutSkipped(engine: EngineInternals, values: Record<string, unknown>
 
 export function validateForm(engine: EngineInternals, navigate = false): Record<string, string> {
   const previousErrors = engine.errors;
+  const errors = withPatternBudget(() => formErrors(engine));
+  engine.state.errors = { ...engine.state.serverErrors, ...errors };
+  const structureChanged = navigate && moveToFirstError(engine, errors);
+  engine.notify({ fieldKeys: getChangedKeys(previousErrors, errors), structureChanged });
+  return errors;
+}
+
+function formErrors(engine: EngineInternals): Record<string, string> {
   const errors: Record<string, string> = {};
   if (engine.isMultiStep) {
     let version = -1;
@@ -143,9 +152,6 @@ export function validateForm(engine: EngineInternals, navigate = false): Record<
   } else {
     Object.assign(errors, fieldsErrors(engine, engine.definition.fields ?? []));
   }
-  engine.state.errors = { ...engine.state.serverErrors, ...errors };
-  const structureChanged = navigate && moveToFirstError(engine, errors);
-  engine.notify({ fieldKeys: getChangedKeys(previousErrors, errors), structureChanged });
   return errors;
 }
 

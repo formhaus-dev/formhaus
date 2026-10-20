@@ -55,7 +55,7 @@
     "build": "tsup",
     "test": "vitest run",
     "test:watch": "vitest",
-    "fuzz": "FORMHAUS_FUZZ_RUNS=500 FORMHAUS_MODEL_RUNS=2000 vitest run __tests__/engine/form-engine-lifecycle-fuzz.test.ts __tests__/engine/form-engine-model.test.ts && FORMHAUS_FUZZ_RUNS=3000 vitest run __tests__/engine/form-engine-path.test.ts",
+    "fuzz": "FORMHAUS_FUZZ_RUNS=500 FORMHAUS_MODEL_RUNS=2000 vitest run __tests__/engine/form-engine-lifecycle-fuzz.test.ts __tests__/engine/form-engine-model.test.ts && FORMHAUS_FUZZ_RUNS=3000 vitest run __tests__/engine/form-engine-path.test.ts __tests__/engine/path-patch-fuzz.test.ts __tests__/engine/path-patch-engine.test.ts",
     "test:resolve": "node --input-type=module -e \"import('./dist/index.js').then(m => { if (!m.FormEngine) process.exit(1); console.log('ESM resolve OK'); })\"",
     "clean": "rm -rf dist",
     "schema": "node scripts/schema.mjs",

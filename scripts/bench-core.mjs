@@ -1,4 +1,4 @@
-import { checkDefinition } from '../packages/core/dist/index.js';
+import { checkDefinition, FormEngine } from '../packages/core/dist/index.js';
 import { validateSubmission } from '../packages/core/dist/server.js';
 
 const RUNS = Number(process.env.BENCH_RUNS ?? 20);
@@ -35,7 +35,40 @@ const pattern = (value) => ({
   fields: [{ key: 'code', type: 'text', label: 'Code', validation: { pattern: value } }],
 });
 
+const LONG = 4000;
+const line = (index, show) => ({
+  key: `f${index}`,
+  type: 'text',
+  label: 'F',
+  ...(show && index ? { show: [{ field: `f${index - 1}`, eq: 'x' }] } : {}),
+});
+const flatFields = Array.from({ length: LONG }, (_, index) => line(index, false));
+const chainFields = Array.from({ length: LONG }, (_, index) => line(index, true));
+const longForm = (fields) => ({ id: 'l', title: 'L', submit: { label: 'Send' }, fields });
+const longSteps = (size, step) => ({
+  id: 'l',
+  title: 'L',
+  submit: { label: 'Send' },
+  steps: Array.from({ length: LONG / size }, (_, index) => ({ id: `s${index}`, title: 'S', ...step(index, size) })),
+});
+const fieldChain = longSteps(10, (index, size) => ({ fields: chainFields.slice(index * size, index * size + size) }));
+const stepChain = longSteps(1, (index) => ({
+  ...(index ? { show: [{ field: `f${index - 1}`, eq: 'x' }] } : {}),
+  fields: [line(index, false)],
+}));
+const answered = Object.fromEntries(flatFields.map(({ key }) => [key, 'x']));
+const unanswered = Object.fromEntries(flatFields.slice(1).map(({ key }) => [key, 'x']));
+const engine = (definition, values) => new FormEngine(definition, values, { onWarning: () => {} });
+
 const cases = [
+  ['validateSubmission: 4,000 fields', longForm(flatFields), answered, validateSubmission],
+  ['validateSubmission: 4,000-field show chain', longForm(chainFields), unanswered, validateSubmission],
+  ['validateSubmission: 4,000-field show chain over 400 steps', fieldChain, unanswered, validateSubmission],
+  ['validateSubmission: 4,000-step show chain', stepChain, unanswered, validateSubmission],
+  ['new FormEngine: 4,000 fields', longForm(flatFields), answered, engine],
+  ['new FormEngine: 4,000-field show chain', longForm(chainFields), unanswered, engine],
+  ['new FormEngine: 4,000-field show chain over 400 steps', fieldChain, unanswered, engine],
+  ['new FormEngine: 4,000-step show chain', stepChain, unanswered, engine],
   [
     'validateSubmission: 100,000 group items over the limit',
     people([{ key: 'name', type: 'text', label: 'Name' }]),

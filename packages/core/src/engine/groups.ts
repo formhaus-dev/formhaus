@@ -5,6 +5,7 @@ import type { EngineInternals } from './runtime-internals';
 import { clearError, clearResolvedMatchErrors } from './validation-state';
 import { writeValue } from './write-value';
 import { exclusiveWrite } from './exclusive';
+import { maxItems } from '../validation/type-checks';
 
 export interface GroupItem {
   id: string;
@@ -18,7 +19,7 @@ function activeGroup(engine: EngineInternals, key: string): FormGroup | undefine
 
 export function itemLimits(group: FormGroup): [number, number] {
   const rules = group.validation ?? {};
-  return [rules.minLength ?? (rules.required ? 1 : 0), rules.maxLength ?? 100];
+  return [rules.minLength ?? (rules.required ? 1 : 0), maxItems(group)];
 }
 
 const within = (index: number, items: unknown[]) => Number.isInteger(index) && index >= 0 && index < items.length;
