@@ -1,5 +1,20 @@
 # @formhaus/core
 
+## 0.21.2
+
+### Patch Changes
+
+- A group starts with at most `maxLength` items, or 100 without `maxLength`, whatever its `defaultItems`.
+- Groups hold at most 1000 items, whatever `maxLength` says.
+- `checkDefinition()` warns with `invalid-range` when `defaultItems` is greater than 100 on a group without `maxLength`, or when a group's `maxLength` or `defaultItems` is greater than 1000.
+- One validation tests at most 10,000 values against patterns. After that, `pattern` fails with its error.
+- `validateSubmission()` and the engine stay linear on forms with thousands of steps or chained show conditions across steps.
+- `checkDefinition()` reports `slow-pattern` for more overlapping repeats, including runs split by optional parts or groups.
+- A pattern whose test throws now fails validation instead of passing.
+- New `recall-untrusted-source` warning for a `{{key}}` token that recalls a `hidden` field with a `referrer` or `pageTitle` source.
+- Importing a single hook or component from `@formhaus/react` no longer pulls in the whole adapter. An app that uses only `useFormEngine` drops from 29.4 KB to 17.7 KB gzipped, and `@formhaus/vue` from 22.9 KB to 17.7 KB.
+- The ES module files in `dist` are no longer minified. Bundlers minify them as before. `server.iife.js` stays minified.
+
 ## 0.21.1
 
 ### Patch Changes
