@@ -117,12 +117,12 @@ Rules move from `register` options to `validation`, the `watch` check becomes a 
 | `minLength`, `maxLength` | `.min(n)`, `.max(n)` on a string | `"minLength"`, `"maxLength"` with `minLengthMessage`, `maxLengthMessage` |
 | `min`, `max` | `z.coerce.number().min(n)` | `"type": "number"` with `"min"`, `"max"` |
 | `pattern: { value: /^\d{5}$/ }` | `.regex(/^\d{5}$/)` | `"pattern": "^\\d{5}$"`, a string. Not anchored: keep `^` and `$`. |
-| `pattern` for email | `.email()` | `"type": "email"` plus a `pattern`. The browser does not check the format. |
+| `pattern` for email | `.email()` | `"type": "email"`. Core checks the format in the browser and on the server. Add a `pattern` for a stricter rule. |
 | Value from a list | `z.enum([...])` | `options` on `select` or `radio` |
 | `validate: (v) => v === true` on a checkbox | `z.literal(true)` | `"required": "Accept the terms"` on a `checkbox` |
 | At least one item | `z.array(z.string()).min(1)` | `"required": true` on a `multiselect`. `minLength` alone skips an empty array. |
 | No rule | `.optional()` | Leave out `required` |
-| `validate: (v, all) => v === all.password` | `.refine((d) => d.confirm === d.password, { path: ['confirm'] })` | `"matchField": "password"` plus `"required"`. `matchField` passes when the confirmation is empty. |
+| `validate: (v, all) => v === all.password` | `.refine((d) => d.confirm === d.password, { path: ['confirm'] })` | `"matchField": "password"` plus `"required"`. Without `required`, an empty confirmation fails only when `password` has a value. |
 | Other `validate` functions | `.refine(fn)`, `.superRefine(fn)` | `"validator": "name"`, and a `name` function in the `validators` prop that takes `(value, values)` and returns a message or `null` |
 | Async `validate` | `.refine(async fn)` | `onStepValidate` on the step. See [Async step validation](/guide/async-validation). |
 | `watch` and conditional render, `shouldUnregister` | `z.discriminatedUnion` | `show` or `showAny`. Hidden fields are not validated or submitted. |

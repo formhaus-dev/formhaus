@@ -4,12 +4,12 @@ These integrations install their own dependencies and can be copied outside the 
 
 | Example | Stack | What it shows |
 |---------|-------|---------------|
-| [`react-mui`](react-mui/) | React 18 + Material UI | `components` prop with MUI Autocomplete, DateTimePicker, Select, etc. |
+| [`react-mui`](react-mui/) | React 18 + Material UI | `components` prop with MUI Autocomplete, Select, TextField, etc. |
 | [`vue-vuetify`](vue-vuetify/) | Vue 3 + Vuetify 3 | `components` prop with Vuetify `<v-autocomplete>`, `<v-text-field>`, etc. |
 | [`vanilla-svelte`](vanilla-svelte/) | Svelte (no adapter) | Using `@formhaus/core` directly without a framework adapter |
 | [`react-quiz`](react-quiz/) | React 18, built-in fields | Quiz funnel with auto-advance, routes, lead capture in lifecycle hooks, and funnel events |
-| [`nextjs-app-router`](nextjs-app-router/) | Next.js 16 App Router | Definition loaded in a server component, route handler re-validates with `FormEngine` |
-| [`nuxt`](nuxt/) | Nuxt 4 | Page with `@formhaus/vue`, server route re-validates with `FormEngine` |
+| [`nextjs-app-router`](nextjs-app-router/) | Next.js 16 App Router | Definition loaded in a server component, route handler re-validates with `validateSubmission()` |
+| [`nuxt`](nuxt/) | Nuxt 4 | Page with `@formhaus/vue`, server route re-validates with `validateSubmission()` |
 | [`react-shadcn`](react-shadcn/) | Vite + React 19 + shadcn/ui | `components` prop with shadcn Input, Select, Checkbox, RadioGroup, and Button |
 | [`react-flat-api`](react-flat-api/) | React 18, built-in fields | Three steps sent as one flat API request, server errors mapped back to fields on any step |
 | [`cloud-waitlist`](cloud-waitlist/) | Plain HTML, React 18 | Formhaus Cloud waitlist form: `embed.js` in a static page and `FormhausForm` in React |

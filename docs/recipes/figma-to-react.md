@@ -17,7 +17,7 @@ Formhaus keeps the form in one JSON definition. The Formhaus Figma plugin draws 
 
 1. Build and import the plugin from `packages/figma/manifest.json`, as described in the [plugin guide](/guide/figma#install).
 2. Run **Plugins > Development > Formhaus**, open **JSON** on the **Form** tab and paste the definition.
-3. Pick **Built-in kit** or **My components** to render with your own design system.
+3. Pick **Material 3 kit** or **iOS-like kit**, or **My components** to render with your own design system.
 4. Click **Generate form**. The plugin creates a frame per step, a flow map with an arrow per route and a prototype.
 
 ## 2. Review the flow and the prototype

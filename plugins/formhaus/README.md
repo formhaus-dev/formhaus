@@ -16,11 +16,11 @@ claude plugin marketplace add formhaus-dev/formhaus && claude plugin install for
 | --- | --- |
 | `/formhaus:formhaus-create-form` | Turns a text description, a table or a screenshot of a form into a definition, then checks it with the MCP tools. |
 | `/formhaus:formhaus-figma-connect` | Finds form components in your Figma libraries through the Figma MCP server and binds them to the Formhaus Figma plugin. |
-| MCP server `@formhaus/mcp` | `validate_definition`, `simulate_path`, `capabilities`, `example_definitions`, `publish_form`, `list_forms` and `get_submissions`. Runs locally with `npx -y @formhaus/mcp`. |
+| MCP server `@formhaus/mcp` | `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities`, `example_definitions`, `publish_form`, `list_forms`, `get_submissions`, `update_form_settings`, `get_webhook` and `reveal_webhook_secret`. Runs locally with `npx -y @formhaus/mcp`. |
 
 ## Data
 
-The MCP server runs locally over stdio. `validate_definition`, `simulate_path`, `capabilities` and `example_definitions` make no network requests. `publish_form`, `list_forms` and `get_submissions` send requests to `https://api.formhaus.dev`; `publish_form` sends the definition you ask it to publish. The Figma skill uses your own Figma MCP connection.
+The MCP server runs locally over stdio. `validate_definition`, `fix_definition`, `simulate_path`, `translation_template`, `capabilities` and `example_definitions` make no network requests. `publish_form`, `list_forms`, `get_submissions`, `update_form_settings`, `get_webhook` and `reveal_webhook_secret` send requests to `https://api.formhaus.dev`; `publish_form` sends the definition you ask it to publish. The Figma skill uses your own Figma MCP connection.
 
 ## Links
 

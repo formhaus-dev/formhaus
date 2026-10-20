@@ -21,9 +21,9 @@ npm install @formhaus/core
 
 ```svelte
 <script lang="ts">
-  import { FormEngine, type FormDefinition, type SubmitFn } from '@formhaus/core';
+  import { FormEngine, type FormDefinition, type SubmitHandler } from '@formhaus/core';
 
-  let { definition, onsubmit }: { definition: FormDefinition; onsubmit: SubmitFn } = $props();
+  let { definition, onsubmit }: { definition: FormDefinition; onsubmit: SubmitHandler } = $props();
 
   const engine = $derived(new FormEngine(definition));
   let version = $state(0);

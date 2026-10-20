@@ -219,7 +219,7 @@ import { HeadlessFormRenderer } from '@formhaus/react'
 
 ## Render one field
 
-`FormhausField` renders a single field with the built-in components as fallbacks. Pass `components` to override some types. Both packages also export every built-in field (`TextField`, `TextareaField`, `SelectField`, `AutocompleteField`, `MultiselectField`, `CheckboxField`, `RadioField`, `SwitchField`, `FileField`, `DateField`, `DateTimeField`) and `defaultFieldComponents`.
+`FormhausField` renders a single field with the built-in components as fallbacks. Pass `components` to override some types. Both packages also export every built-in field (`TextField`, `TextareaField`, `SelectField`, `AutocompleteField`, `MultiselectField`, `CheckboxField`, `RadioField`, `SwitchField`, `FileField`, `DateField`, `DateTimeField`, `TimeField`, `ScaleField`, `HiddenField`) and `defaultFieldComponents`.
 
 ::: code-group
 ```vue [Vue]

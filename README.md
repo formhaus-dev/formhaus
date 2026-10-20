@@ -117,7 +117,7 @@ import definition from './signup.json';
 <FormRenderer definition={definition} onSubmit={save} />;
 ```
 
-[Compare with react-hook-form, TanStack Form, react-jsonschema-form and SurveyJS →](https://formhaus.dev/compare/)
+[Compare with react-hook-form, react-jsonschema-form, JSON Forms and SurveyJS →](https://formhaus.dev/compare/)
 
 ## Packages
 
