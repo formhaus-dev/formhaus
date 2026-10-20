@@ -1,5 +1,11 @@
 # @formhaus/vue
 
+## 1.0.0-rc.1
+
+### Patch Changes
+
+- Fixed a crash when bundlers with older Babel transpile the package, such as CodeSandbox and the docs playground.
+
 ## 1.0.0-rc.0
 
 ### Major Changes

@@ -1,5 +1,9 @@
 # @formhaus/mcp
 
+## 0.10.1-rc.1
+
+No changes in this release.
+
 ## 0.10.1-rc.0
 
 ### Patch Changes
