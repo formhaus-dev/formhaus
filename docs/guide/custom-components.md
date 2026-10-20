@@ -52,7 +52,7 @@ Your component receives pre-computed convenience props so you don't need to re-d
 | `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 | `cancelAction` | `FormAction?` | Cancel button config |
 
-In React, call `onPrimary` for the primary action, `onPrev` for back and `onSkip` for skip. In Vue, emit `primary`, `prev` and `skip`.
+In React, call `onPrimary` for the primary action, `onBack` for back and `onSkip` for skip. In Vue, emit `primary`, `back` and `skip`.
 
 ### Vue example
 
@@ -66,7 +66,7 @@ const emit = defineEmits(formActionsEmits)
 
 <template>
   <div class="my-actions">
-    <button v-if="showBack" type="button" :disabled="loading" @click="emit('prev')">{{ backLabel }}</button>
+    <button v-if="showBack" type="button" :disabled="loading" @click="emit('back')">{{ backLabel }}</button>
     <button v-if="showPrimary !== false" type="button" @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
   </div>
 </template>
@@ -79,11 +79,11 @@ import type { FormActionsProps } from '@formhaus/react'
 
 export function MyFormActions({
   primaryLabel, showPrimary = true, showBack, backLabel, loading,
-  onPrimary, onPrev,
+  onPrimary, onBack,
 }: FormActionsProps) {
   return (
     <div className="my-actions">
-      {showBack && <button type="button" disabled={loading} onClick={onPrev}>{backLabel}</button>}
+      {showBack && <button type="button" disabled={loading} onClick={onBack}>{backLabel}</button>}
       {showPrimary && <button type="button" disabled={loading} onClick={onPrimary}>{primaryLabel}</button>}
     </div>
   )
@@ -104,7 +104,7 @@ export function MyFormActions({
 | `isMultiStep` | `boolean` | Whether the form has multiple steps |
 | `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 
-In Vue, you can also emit `submit`, `next`, `prev`, `cancel` events directly. In React, call `onSubmit`, `onNext`, `onPrev`, `onCancel` callbacks.
+In Vue, you can also emit `submit`, `next`, `back`, `cancel` events directly. In React, call `onSubmit`, `onNext`, `onBack`, `onCancel` callbacks.
 
 ## Custom progress component
 
@@ -257,7 +257,7 @@ const props = defineProps(groupItemComponentProps)
 
 | Component | Props | Emits |
 |---|---|---|
-| Field | `formFieldProps` | `formFieldEmits` |
+| Field | `fieldComponentProps` | `fieldComponentEmits` |
 | Actions | `formActionsProps` | `formActionsEmits` |
 | Step progress | `formStepProgressProps` | |
 | Section | `sectionComponentProps` | |
@@ -265,7 +265,7 @@ const props = defineProps(groupItemComponentProps)
 | Group item | `groupItemComponentProps` | |
 | Remove dialog | `confirmDialogComponentProps` | |
 
-Each declares every prop of the matching interface, such as `FormFieldProps` for `formFieldProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2`.
+Each declares every prop of the matching interface, such as `FieldComponentProps` for `fieldComponentProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2`.
 
 ## Form events
 

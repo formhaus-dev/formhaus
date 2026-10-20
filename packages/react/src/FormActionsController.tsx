@@ -11,7 +11,7 @@ interface FormActionsControllerProps {
   labels?: FormRendererProps['labels'];
   onSubmit: () => void;
   onNext: () => Promise<void>;
-  onPrev: () => void;
+  onBack: () => void;
   onSkip: () => void;
   onCancel: () => void;
 }
@@ -23,7 +23,7 @@ export function FormActionsController({
   labels,
   onSubmit,
   onNext,
-  onPrev,
+  onBack,
   onSkip,
   onCancel,
 }: FormActionsControllerProps) {
@@ -44,7 +44,7 @@ export function FormActionsController({
       values={values}
       onSubmit={onSubmit}
       onNext={onNext}
-      onPrev={onPrev}
+      onBack={onBack}
       onCancel={onCancel}
       onSkip={onSkip}
       onPrimary={handlePrimary}

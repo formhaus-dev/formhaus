@@ -72,9 +72,17 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const version = useFormSnapshot(engine);
     const previousStep = useRef(engine.currentStep?.id);
     const actions = useRendererActions(engine, props);
-    useImperativeHandle(ref, () => ({ setValue: (key, value) => engine.setValue(key, value), getValues: () => ({ ...engine.values }) }), [
-      engine,
-    ]);
+    useImperativeHandle(
+      ref,
+      () => ({
+        setValue: (key, value) => engine.setValue(key, value),
+        getValues: () => ({ ...engine.values }),
+        get values() {
+          return engine.values;
+        },
+      }),
+      [engine],
+    );
     const handledInvalid = useRef(0);
 
     const onValuesChange = useRef(props.onValuesChange);
@@ -210,7 +218,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             ActionsComponent={actionsComponent}
             onSubmit={actions.submit}
             onNext={actions.next}
-            onPrev={actions.prev}
+            onBack={actions.back}
             onSkip={actions.skip}
             onCancel={handleCancel}
           />

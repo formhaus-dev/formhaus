@@ -6,7 +6,7 @@ const required = <T>(type: PropType<T>) => ({ type, required: true as const });
 const any = <T>() => null as unknown as PropType<T>;
 const callback = <T extends (...args: never[]) => unknown>() => required(Function as PropType<T>);
 
-export const formFieldProps = {
+export const fieldComponentProps = {
   id: String,
   field: /* @__PURE__ */ required(Object as PropType<FormField>),
   modelValue: /* @__PURE__ */ required(/* @__PURE__ */ any<unknown>()),
@@ -15,7 +15,7 @@ export const formFieldProps = {
   disabled: Boolean,
 };
 
-export const formFieldEmits = {
+export const fieldComponentEmits = {
   'update:modelValue': (_value: unknown) => true,
   commit: (_value: unknown) => true,
   blur: () => true,
@@ -101,7 +101,7 @@ export const formActionsProps = {
 export const formActionsEmits = {
   submit: () => true,
   next: () => true,
-  prev: () => true,
+  back: () => true,
   cancel: () => true,
   skip: () => true,
   primary: () => true,

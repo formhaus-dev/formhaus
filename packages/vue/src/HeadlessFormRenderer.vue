@@ -52,7 +52,7 @@ const {
   changeItems: onItemsChange,
   commit: onFieldCommit,
   next: onNext,
-  prev: onPrev,
+  back: onBack,
   skip: onSkip,
   submit: onSubmit,
   actionError,
@@ -175,7 +175,7 @@ async function onPrimary() {
       :values="form.engine.getSubmitValues()"
       @submit="onSubmit"
       @next="onNext"
-      @prev="onPrev"
+      @back="onBack"
       @cancel="onCancel"
       @skip="onSkip"
       @primary="onPrimary"

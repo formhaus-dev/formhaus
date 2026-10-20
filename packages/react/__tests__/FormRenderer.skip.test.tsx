@@ -93,7 +93,7 @@ describe('FormRenderer skip and button roles', () => {
         skipAction={{ label: 'Later', variant: 'secondary' }}
         onSubmit={() => {}}
         onNext={() => {}}
-        onPrev={() => {}}
+        onBack={() => {}}
         onCancel={() => {}}
         onSkip={() => {}}
       />,
@@ -110,7 +110,7 @@ describe('FormRenderer skip and button roles', () => {
       skipAction: { label: 'Later' },
       onSubmit: () => {},
       onNext: () => {},
-      onPrev: () => {},
+      onBack: () => {},
       onCancel: () => {},
     };
     const { rerender } = render(<FormActions {...props} />);

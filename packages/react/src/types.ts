@@ -43,7 +43,7 @@ export interface GroupItemComponentProps extends GroupItemView {
 export type ConfirmDialogComponentProps = ConfirmDialogView;
 
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
-  ItemComponent: ComponentType<GroupItemComponentProps>;
+  itemComponent: ComponentType<GroupItemComponentProps>;
 }
 
 interface NodeComponentProps {
@@ -76,7 +76,7 @@ export type FieldComponentMap = {
 export interface FormActionsProps extends FormActionsView {
   onSubmit: () => void;
   onNext: () => void;
-  onPrev: () => void;
+  onBack: () => void;
   onCancel: () => void;
   onSkip?: () => void;
   onPrimary?: () => void;

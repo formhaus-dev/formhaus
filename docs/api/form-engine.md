@@ -198,7 +198,7 @@ const engine = new FormEngine(de.definition, {}, { messages: de.messages });
 ```tsx
 import { useLocalizedForm } from '@formhaus/react/i18n';
 
-const form = useLocalizedForm(definition, { overlay, lang: 'ru' }, [extraDependency]);
+const form = useLocalizedForm(definition, { overlay, lang: 'ru' });
 <FormRenderer {...form} onSubmit={save} />
 ```
 
@@ -208,7 +208,7 @@ import { useLocalizedForm } from '@formhaus/vue/i18n';
 const form = useLocalizedForm(() => definition, () => ({ overlay: overlay.value, lang: locale.value }));
 ```
 
-The React hook recomputes when `definition`, `overlay`, `prefix`, `lang` or the extra dependencies change, not when `translate` changes. The Vue composable returns a computed ref and tracks reactive reads. Both return the definition unchanged without a source. A new result recreates the engine and clears the answers.
+The React hook recomputes when `definition`, `overlay`, `translate`, `prefix` or `lang` changes. Keep `translate` stable with `useCallback`. The Vue composable returns a computed ref and tracks reactive reads. Both return the definition unchanged without a source. A new result recreates the engine and clears the answers.
 
 Renderers take `messages` and `labels` props with the same types as the engine option, and set `lang` from the definition on the `<form>` element.
 

@@ -54,6 +54,7 @@ Texts without a key keep the source text with `prefix: false`. Without it, Formh
 ### React with react-i18next
 
 ```tsx
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormRenderer } from '@formhaus/react';
 import { useLocalizedForm } from '@formhaus/react/i18n';
@@ -61,8 +62,9 @@ import definition from './signup.json';
 
 export function Signup() {
   const { t, i18n } = useTranslation('forms');
+  const translate = useCallback((key, params, defaultValue) => t(key, { ...params, defaultValue }), [t]);
   const form = useLocalizedForm(definition, {
-    translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }),
+    translate,
     prefix: false,
     lang: i18n.language,
   });
@@ -70,7 +72,7 @@ export function Signup() {
 }
 ```
 
-The hook rebuilds the form when `lang` changes. Pass other changes, such as a namespace that finished loading, as the third argument: `useLocalizedForm(definition, source, [ready])`.
+The hook rebuilds the form when `translate` or `lang` changes. Wrap `translate` in `useCallback`: a new function on every render rebuilds the form and clears the answers. `t` from `react-i18next` changes when a namespace finishes loading, so the form picks up the loaded texts.
 
 Lokalise: export the `forms` namespace as nested JSON with i18next placeholders, so `errors.password.tooShort` can read `Не менее {{min}} символов`.
 

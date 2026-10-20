@@ -8,7 +8,7 @@ import type {
   FormEvent,
   FormDefinition,
   FormField,
-  FormRendererHandle as CoreFormRendererHandle,
+  FormRendererHandle,
   GroupItemView,
   GroupView,
   LabelSource,
@@ -58,11 +58,7 @@ export interface FormStepProgressProps {
   stepErrorCount?: number;
 }
 
-export type { OptionsProvider };
-
-export interface FormRendererHandle extends CoreFormRendererHandle {
-  readonly values: Readonly<Record<string, unknown>>;
-}
+export type { FormRendererHandle, OptionsProvider };
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -104,7 +100,7 @@ export interface FormRendererEmits {
   (e: 'formEvent', event: FormEvent): void;
 }
 
-export interface FormFieldProps {
+export interface FieldComponentProps {
   id?: string;
   field: FormField;
   modelValue: unknown;
@@ -113,7 +109,7 @@ export interface FormFieldProps {
   disabled?: boolean;
 }
 
-export interface FieldResolverProps extends FormFieldProps {
+export interface FieldResolverProps extends FieldComponentProps {
   components?: FieldComponentMap;
 }
 

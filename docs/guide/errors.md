@@ -171,10 +171,10 @@ A custom actions component receives `loading` and the resolved `primaryLabel`:
 ```tsx
 import { FormRenderer, type FormActionsProps } from '@formhaus/react';
 
-function SavingActions({ primaryLabel, showPrimary = true, showBack, backLabel, loading, onPrimary, onPrev }: FormActionsProps) {
+function SavingActions({ primaryLabel, showPrimary = true, showBack, backLabel, loading, onPrimary, onBack }: FormActionsProps) {
   return (
     <div className="actions">
-      {showBack && <button type="button" disabled={loading} onClick={onPrev}>{backLabel}</button>}
+      {showBack && <button type="button" disabled={loading} onClick={onBack}>{backLabel}</button>}
       {showPrimary && (
         <button type="button" disabled={loading} aria-busy={loading} onClick={onPrimary}>
           {loading ? 'Saving…' : primaryLabel}

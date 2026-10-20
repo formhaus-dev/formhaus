@@ -79,4 +79,5 @@ export interface FormActionsView extends Omit<FormActionsState, DerivedActionPro
 export interface FormRendererHandle {
   setValue(key: string, value: unknown): void;
   getValues(): Record<string, unknown>;
+  readonly values: Readonly<Record<string, unknown>>;
 }

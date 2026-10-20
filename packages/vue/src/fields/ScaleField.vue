@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { scaleRange } from '@formhaus/core/internal';
 import { computed } from 'vue';
-import { formFieldEmits, formFieldProps } from '../props';
+import { fieldComponentEmits, fieldComponentProps } from '../props';
 import FieldShell from './FieldShell.vue';
 import { useChoice, useField } from './useField';
 
-const props = defineProps(formFieldProps);
-const emit = defineEmits(formFieldEmits);
+const props = defineProps(fieldComponentProps);
+const emit = defineEmits(fieldComponentEmits);
 const { inputId, control } = useField(props, emit);
 const range = computed(() => scaleRange(props.field));
 const points = computed(() => {

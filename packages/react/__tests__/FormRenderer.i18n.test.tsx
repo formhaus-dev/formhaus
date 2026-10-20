@@ -82,6 +82,13 @@ describe('localized forms', () => {
     expect((screen.getByLabelText(/Почта/) as HTMLInputElement).value).toBe('kept@example.com');
   });
 
+  it('rebuilds the form when translate changes', () => {
+    const { rerender } = render(<Signup source={translate} />);
+    expect(screen.getByRole('heading', { name: 'Аккаунт' })).toBeTruthy();
+    rerender(<Signup source={{ translate: (_key, _params, defaultValue) => `~${defaultValue}`, lang: 'ru' }} />);
+    expect(screen.getByRole('heading', { name: '~Account' })).toBeTruthy();
+  });
+
   it('formats a standalone step progress and action bar with the default labels', () => {
     render(
       <>
@@ -99,7 +106,7 @@ describe('localized forms', () => {
           isMultiStep
           onSubmit={() => {}}
           onNext={() => {}}
-          onPrev={() => {}}
+          onBack={() => {}}
           onCancel={() => {}}
         />
       </>,

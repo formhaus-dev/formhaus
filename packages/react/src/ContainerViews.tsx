@@ -139,7 +139,7 @@ export function DefaultGroup({
   addLabel,
   disabled,
   status,
-  ItemComponent,
+  itemComponent: ItemComponent,
 }: GroupComponentProps) {
   return (
     <fieldset id={id} className="fh-group" aria-invalid={!!error || undefined} aria-describedby={describedBy}>

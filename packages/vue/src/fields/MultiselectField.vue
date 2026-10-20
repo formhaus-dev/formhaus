@@ -2,13 +2,13 @@
 import { dividerBefore } from '@formhaus/core/internal';
 import { computed } from 'vue';
 import { useLabel } from '../composables/useLabel';
-import { formFieldProps } from '../props';
+import { fieldComponentProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
 import OptionImage from './OptionImage.vue';
 import { useField } from './useField';
 
-const props = defineProps(formFieldProps);
+const props = defineProps(fieldComponentProps);
 const emit = defineEmits<FieldEmits>();
 const { inputId, control } = useField(props, emit);
 const text = useLabel();
