@@ -49,7 +49,7 @@ describe('matrix layout', () => {
     renderAt(680);
     const header = [...document.querySelectorAll('.fh-section__matrix-header > *')].map(box);
     expect(header).toHaveLength(3);
-    for (const name of ['Friendly', 'Explained the options clearly and did not rush me through the checkout']) {
+    for (const name of ['Friendly required', 'Explained the options clearly and did not rush me through the checkout']) {
       const row = screen.getByRole('group', { name });
       const label = box(row.querySelector('legend')!);
       const cells = [...row.querySelectorAll('.fh-field__radio-option')].map(box);
@@ -71,7 +71,7 @@ describe('matrix layout', () => {
     await page.viewport(390, 900);
     renderAt(358);
     expect(getComputedStyle(document.querySelector('.fh-section__matrix-header')!).display).toBe('none');
-    const row = screen.getByRole('group', { name: 'Friendly' });
+    const row = screen.getByRole('group', { name: 'Friendly required' });
     const label = box(row.querySelector('legend')!);
     for (const cell of row.querySelectorAll('.fh-field__radio-option')) {
       const radio = box(cell.querySelector('input')!);
