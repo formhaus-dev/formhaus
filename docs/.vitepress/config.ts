@@ -161,6 +161,7 @@ export default defineConfig({
       {
         text: 'Meta',
         items: [
+          { text: 'What Formhaus covers', link: '/guide/scope' },
           { text: 'Stable API', link: '/guide/stability' },
           { text: 'Bundle size', link: '/guide/bundle-size' },
           { text: 'Changelog', link: '/changelog' },
