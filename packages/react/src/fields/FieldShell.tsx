@@ -1,6 +1,7 @@
 import type { FormField } from '@formhaus/core';
-import type { ReactNode } from 'react';
-import { FieldLabel } from './FieldLabel';
+import { type ReactNode, useContext } from 'react';
+import { LabelContext } from '../labels';
+import { FieldLabel, RequiredMark } from './FieldLabel';
 import { describedBy } from './fieldProps';
 
 interface FieldShellProps {
@@ -12,6 +13,7 @@ interface FieldShellProps {
 }
 
 export function FieldShell({ id, field, error, variant, children }: FieldShellProps) {
+  const text = useContext(LabelContext);
   const inline = variant === 'checkbox' || variant === 'switch';
   const group = variant && !inline;
   const Root = group ? 'fieldset' : 'div';
@@ -28,7 +30,18 @@ export function FieldShell({ id, field, error, variant, children }: FieldShellPr
       aria-invalid={group ? !!error || undefined : undefined}
       aria-describedby={group ? describedBy(field, id, error) : undefined}
     >
-      {group && field.label && <legend className="fh-field__label">{field.label}</legend>}
+      {group && field.label && (
+        <legend className="fh-field__label">
+          {field.label}
+          <RequiredMark field={field} />
+          {field.validation?.required && (
+            <>
+              {' '}
+              <span className="fh-field__required-text">{text('required')}</span>
+            </>
+          )}
+        </legend>
+      )}
       {!variant && <FieldLabel field={field} inputId={id} />}
       {!inline && helper}
       {variant ? (

@@ -65,11 +65,11 @@ describe('matrix section', async () => {
     });
     await fireEvent.click(screen.getAllByRole('radio', { name: 'Agree' })[0]!);
     await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
-    const heard = screen.getByRole('group', { name: 'Heard' });
+    const heard = screen.getByRole('group', { name: 'Heard required' });
     const error = await screen.findByRole('alert');
     expect(error.parentElement).toBe(heard);
     expect(heard.getAttribute('aria-describedby')).toBe(error.id);
-    expect(screen.getByRole('group', { name: 'Clear' }).getAttribute('aria-invalid')).toBeNull();
+    expect(screen.getByRole('group', { name: 'Clear required' }).getAttribute('aria-invalid')).toBeNull();
     expect(screen.getAllByRole('radio', { name: 'Disagree' })).toHaveLength(2);
   });
 
