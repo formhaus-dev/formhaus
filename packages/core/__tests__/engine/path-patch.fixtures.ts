@@ -1,7 +1,7 @@
 import fc from 'fast-check';
 import type { FormDefinition, FormNode, FormStep, ShowCondition } from '../../src';
 
-export const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
+const keys = ['a', 'b', 'c', 'd', 'e', 'f', 'g'];
 const GATE = 'z';
 
 type Rule = { pick: number; back: boolean; test: 'eq' | 'neq' | 'notEmpty'; value: string };
@@ -112,7 +112,7 @@ export const pathDefinitions = (valid: boolean): fc.Arbitrary<FormDefinition> =>
       fc.shuffledSubarray(keys, { minLength: keys.length, maxLength: keys.length }).map((order) => build(valid, flat, steps, order)),
     );
 
-export const answer = fc.constantFrom<unknown>('x', 'x', 'y', ' x ', '', undefined, [{}]);
+const answer = fc.constantFrom<unknown>('x', 'x', 'y', ' x ', '', undefined, [{}]);
 export const valuesArbitrary = fc.record(
   Object.fromEntries([...keys, GATE].map((key) => [key, answer])) as Record<string, fc.Arbitrary<unknown>>,
 );
