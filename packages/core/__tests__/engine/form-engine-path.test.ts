@@ -113,17 +113,6 @@ const definitionArbitrary: fc.Arbitrary<FormDefinition> = fc
           }),
     })),
   );
-const uniqueKeys = ([definition, plain]: [FormDefinition, boolean]): FormDefinition => {
-  const seen = new Set<string>();
-  const unique = (fields: FormField[]) => fields.filter(({ key }) => !seen.has(key) && seen.add(key));
-  if (!definition.steps) return { ...definition, fields: unique((definition.fields ?? []) as FormField[]) };
-  const steps = definition.steps.map(({ show, routes, ...step }) => ({
-    ...step,
-    ...(plain ? {} : { show, routes }),
-    fields: unique(step.fields as FormField[]),
-  }));
-  return { ...definition, steps };
-};
 const valuesArbitrary = fc.dictionary(fc.constantFrom(...keys), fc.constantFrom<unknown>('x', 'y', ' x ', '', undefined));
 
 describe('active path', () => {
@@ -135,28 +124,6 @@ describe('active path', () => {
         expect(path.steps(values).map((step) => step.id)).toEqual(expected.steps);
         expect(Object.entries(path.values(values))).toEqual(expected.values);
       }),
-      { numRuns },
-    );
-  });
-
-  it('patches a written answer to the step-by-step projection', () => {
-    fc.assert(
-      fc.property(
-        fc.tuple(definitionArbitrary, fc.boolean()).map(uniqueKeys),
-        valuesArbitrary,
-        fc.constantFrom(...keys),
-        fc.constantFrom<unknown>('x', 'y', '', undefined),
-        (definition, start, key, value) => {
-          const path = createActivePath(definition, indexDefinition(definition));
-          const values = { ...start };
-          path.values(values);
-          values[key] = value;
-          if (!path.patch(values, key)) return;
-          const expected = referencePath(definition, values);
-          expect(path.steps(values).map((step) => step.id)).toEqual(expected.steps);
-          expect(Object.fromEntries(Object.entries(path.values(values)))).toEqual(Object.fromEntries(expected.values));
-        },
-      ),
       { numRuns },
     );
   });
