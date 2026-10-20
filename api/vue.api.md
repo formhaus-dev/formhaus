@@ -30,6 +30,7 @@ import { FormNode } from '@formhaus/core';
 import { FormRendererHandle } from '@formhaus/core';
 import { FormSection } from '@formhaus/core';
 import { FormStep } from '@formhaus/core';
+import { GoToStepResult } from '@formhaus/core';
 import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';

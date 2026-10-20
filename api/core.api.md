@@ -257,6 +257,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     // (undocumented)
     getValuesSnapshot(): Readonly<Partial<TValues>>;
     // (undocumented)
+    goToStep(stepId: string): GoToStepResult;
+    // (undocumented)
     goToStepWithField(key: string): void;
     // (undocumented)
     get isFirstStep(): boolean;
@@ -391,6 +393,11 @@ export type FormEvent = {
     reason: 'validation' | 'rejected' | 'error';
     status?: number;
 } | {
+    type: 'step_redirected';
+    requestedStepId: string;
+    stepId: string | null;
+    reason: StepRedirectReason;
+} | {
     type: 'form_reset';
 };
 
@@ -505,6 +512,8 @@ export interface FormRendererHandle {
     // (undocumented)
     getValues(): Record<string, unknown>;
     // (undocumented)
+    goToStep(stepId: string): GoToStepResult;
+    // (undocumented)
     setValue(key: string, value: unknown): void;
     // (undocumented)
     readonly values: Readonly<Record<string, unknown>>;
@@ -560,6 +569,16 @@ export interface FormStep {
 
 // @public (undocumented)
 export function getDefaultMessage(rule: MessageKey, params?: Record<string, unknown>): string;
+
+// @public (undocumented)
+export type GoToStepResult = {
+    stepId: string | null;
+    reached: true;
+} | {
+    stepId: string | null;
+    reached: false;
+    reason: StepRedirectReason;
+};
 
 // @public (undocumented)
 export interface GroupI18n {
@@ -818,6 +837,9 @@ export interface StepI18n {
     // (undocumented)
     title?: string;
 }
+
+// @public (undocumented)
+export type StepRedirectReason = 'unknown-step' | 'not-on-path' | 'blocked';
 
 // @public (undocumented)
 export interface StepRoute {

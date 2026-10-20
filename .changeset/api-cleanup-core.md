@@ -14,7 +14,6 @@
 - New `ValidateOptions` type.
 - **Breaking:** `form_submit_failed` also fires with `reason: 'validation'` when Submit fails client validation, before the `field_error` events.
 - `form_submit_failed` with `reason: 'error'` carries the numeric `status` of the thrown error. `CloudError` has `status: 0` without a response.
-- The last step reports no `step_completed`. `form_submitted` closes it. The specification lists the order of events.
 - **Breaking:** `invalid-range` is split into `min-greater-than-max`, `default-items-greater-than-max`, `group-item-limit` (warning) and `invalid-columns`.
 - **Breaking:** `missing-label` replaces `empty-label` and the `missing-property` warning for a missing `label`. Its path points to the `label` property.
 - **Breaking:** `i18n-unbound-slot` is renamed to `i18n-key-without-text`.
@@ -27,6 +26,13 @@
 - **Breaking:** `sessionDraftStore({ maxAge, storage })` takes an options object.
 - **Breaking:** `new CloudError({ status, code, errors, version, cause })` takes one options object.
 - `CloudError.code` is typed as `KnownCloudErrorCode | (string & {})`. New `KnownCloudErrorCode` lists the codes Cloud sends. A later version can add codes.
+- `file_taken` and `origin_not_allowed` from Cloud get their own messages instead of the paused-form and generic messages.
+- `FormhausForm` uploads a file again and resends once when Cloud reports `file_taken`.
+- A stored draft is read back only when it is a well-formed object for the current form version, and only with the keys of fields that the current definition lets a draft hold.
+- A draft that fails to save, such as over the storage quota, is deleted instead of keeping older answers.
 - New `FetchFormOptions`, `CloudSubmitOptions`, `CloudSubmitFn`, `ChallengeFrameOptions`, `SessionDraftStoreOptions` and `CloudErrorInit` types.
 - `@formhaus/core/internal` is documented as private, with no semver guarantee.
-- From 1.0, the `--fh-*` custom property names and the class names listed under Stable names in the theming docs do not change within a major version.
+- New `engine.goToStep(stepId)` opens a step the user could reach and otherwise opens the previous available step. It returns `GoToStepResult` and reports `step_redirected` when the target was not reached.
+- New `step_redirected` form event, `GoToStepResult` and `StepRedirectReason` types. `FormRendererHandle` has `goToStep()`.
+- From 1.0, the `--fh-*` variables listed in the theming docs and the class names listed under Stable names do not change within a major version.
+- **Breaking:** `--fh-auto-*` and the other private custom properties of `style.css` start with `--fhi-`: `--fh-x`, `--fh-check`, `--fh-plus`, `--fh-zoom`, `--fh-star`, `--fh-star-fill`, `--fh-mask`, `--fh-columns`, `--fh-matrix-columns`, `--fh-matrix-label`, `--fh-matrix-row` and `--fh-scale-points` are renamed.

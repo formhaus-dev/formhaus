@@ -188,7 +188,7 @@ export interface FetchFormOptions extends CloudClientOptions {
 }
 
 // @public (undocumented)
-export type KnownCloudErrorCode = 'network' | 'timeout' | 'invalid' | 'rate_limited' | 'limit_reached' | 'not_found' | 'paused' | 'expired' | 'body_too_large' | 'idempotency_key_reused' | 'form_updated' | 'client_outdated' | 'verification_failed' | 'verification_timeout' | 'verification_required' | 'malformed_body' | 'unsupported_media_type' | 'invalid_idempotency_key' | 'invalid_response' | 'unavailable' | 'internal' | 'unknown';
+export type KnownCloudErrorCode = 'network' | 'timeout' | 'invalid' | 'rate_limited' | 'limit_reached' | 'not_found' | 'paused' | 'expired' | 'body_too_large' | 'idempotency_key_reused' | 'form_updated' | 'file_taken' | 'origin_not_allowed' | 'client_outdated' | 'verification_failed' | 'verification_timeout' | 'verification_required' | 'malformed_body' | 'unsupported_media_type' | 'invalid_idempotency_key' | 'invalid_response' | 'unavailable' | 'internal' | 'unknown';
 
 // @public (undocumented)
 export interface PublishedForm {

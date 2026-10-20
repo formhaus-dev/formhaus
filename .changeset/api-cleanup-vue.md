@@ -8,6 +8,6 @@
 - **Breaking:** `FormFieldProps` is renamed to `FieldComponentProps`.
 - **Breaking:** `formFieldProps` and `formFieldEmits` are renamed to `fieldComponentProps` and `fieldComponentEmits`.
 - **Breaking:** a custom actions component emits `back` instead of `prev`.
-- `FormRendererHandle` is the `@formhaus/core` type, which now has `values`.
+- `FormRendererHandle` is the `@formhaus/core` type, which now has `values` and `goToStep()`.
 - The `success` event of `FormhausForm` is typed as `CloudSubmission` and includes `ending`.
 - `FormhausForm` asks before removing a group item with answers, like `FormRenderer`.
