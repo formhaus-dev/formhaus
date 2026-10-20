@@ -23,6 +23,18 @@ function boundError(
 }
 
 const patterns = new Map<string, RegExp | null>();
+const MAX_PATTERN_TESTS = 10_000;
+let patternTests: number | undefined;
+
+export function withPatternBudget<T>(run: () => T): T {
+  if (patternTests !== undefined) return run();
+  patternTests = 0;
+  try {
+    return run();
+  } finally {
+    patternTests = undefined;
+  }
+}
 
 function compile(source: string): RegExp | null {
   const cached = typeof source === 'string' ? patterns.get(source) : undefined;
@@ -44,7 +56,8 @@ function patternError(value: unknown, rules: FieldValidation, message: () => str
   let matches = false;
   try {
     const text = String(value);
-    matches = text.length <= MAX_STRING_LENGTH && pattern.test(text);
+    const allowed = text.length <= MAX_STRING_LENGTH && (patternTests === undefined || patternTests++ < MAX_PATTERN_TESTS);
+    matches = allowed && pattern.test(text);
   } catch {}
   return matches ? undefined : (rules.patternMessage ?? message());
 }

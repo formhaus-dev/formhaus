@@ -1,0 +1,157 @@
+{
+  "$schema": "./scenario.schema.json",
+  "name": "pattern test limit",
+  "definition": {
+    "formatVersion": "1.4",
+    "id": "codes",
+    "title": "Codes",
+    "submit": {
+      "label": "Send"
+    },
+    "fields": [
+      {
+        "key": "codes",
+        "type": "group",
+        "label": "Codes",
+        "defaultItems": 10001,
+        "validation": {
+          "maxLength": 10001
+        },
+        "fields": [
+          {
+            "key": "code",
+            "type": "text",
+            "label": "Code",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          }
+        ]
+      },
+      {
+        "key": "last",
+        "type": "text",
+        "label": "Last",
+        "defaultValue": "x",
+        "validation": {
+          "pattern": "^x$"
+        }
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "fails pattern checks after 10,000 tests in one validation",
+      "steps": [
+        {
+          "do": "validate",
+          "returns": {
+            "codes.10000.code": "Invalid format",
+            "last": "Invalid format"
+          }
+        }
+      ]
+    },
+    {
+      "name": "runs 10,000 pattern tests in one validation",
+      "definition": {
+        "formatVersion": "1.4",
+        "id": "codes",
+        "title": "Codes",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "codes",
+            "type": "group",
+            "label": "Codes",
+            "defaultItems": 9999,
+            "validation": {
+              "maxLength": 9999
+            },
+            "fields": [
+              {
+                "key": "code",
+                "type": "text",
+                "label": "Code",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              }
+            ]
+          },
+          {
+            "key": "last",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
+    },
+    {
+      "name": "starts a new count on each validation",
+      "definition": {
+        "formatVersion": "1.4",
+        "id": "codes",
+        "title": "Codes",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "codes",
+            "type": "group",
+            "label": "Codes",
+            "defaultItems": 9999,
+            "validation": {
+              "maxLength": 9999
+            },
+            "fields": [
+              {
+                "key": "code",
+                "type": "text",
+                "label": "Code",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              }
+            ]
+          },
+          {
+            "key": "last",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "validate",
+          "returns": {}
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
+    }
+  ]
+}

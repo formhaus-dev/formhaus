@@ -1,5 +1,6 @@
 import type { FormDefinition, FormField } from '../types';
 import type { MessageSource, ValidatorFn } from '../validation';
+import { withPatternBudget } from '../validation/validate-field';
 import { messageResolver, namedResolver, type ResolveMessage } from '../validation/default-messages';
 import { parseDefinition } from '../definition-validation';
 import { getAllFields } from '../engine/engine-utils';
@@ -167,6 +168,10 @@ function withSkipped(source: Record<string, unknown>, { engine, skipped }: Prepa
 }
 
 export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
+  return withPatternBudget(() => validated(definition, values, options));
+}
+
+function validated(definition: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {
   parseDefinition(definition);
   const fields = getAllFields(definition);
   const source = isEntry(values) ? values : {};
