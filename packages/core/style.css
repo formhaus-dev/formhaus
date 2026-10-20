@@ -3,7 +3,7 @@
 :where(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)) {
   --fh-color-border: #d4d4d8; --fh-color-border-hover: #a1a1aa;
   --fh-color-text: #18181b; --fh-color-text-muted: #5f5f68;
-  --fh-color-input-border: #84848d; --fh-color-input-border-hover: #5f5f68;
+  --fh-color-input-border: #b1b8c2; --fh-color-input-border-hover: #8e959f; --fh-color-input-border-strong: #84848d; --fh-color-input-border-strong-hover: #5f5f68;
   --fh-color-control-hover: #71717a;
   --fh-color-error: #c0352d; --fh-color-error-hover: #9e2a23;
   --fh-color-bg: #ffffff; --fh-color-bg-disabled: #f4f4f5; --fh-color-bg-hover: #f6f6f7;
@@ -45,7 +45,7 @@
 
   --fh-color-border: #3a3a41; --fh-color-border-hover: #5a5a63;
   --fh-color-text: #ececee; --fh-color-text-muted: #a8a8b3;
-  --fh-color-input-border: #73737d; --fh-color-input-border-hover: #9a9aa5;
+  --fh-color-input-border: #444b53; --fh-color-input-border-hover: #5e656d; --fh-color-input-border-strong: #73737d; --fh-color-input-border-strong-hover: #9a9aa5;
   --fh-color-control-hover: #80808b;
   --fh-color-error: #f2736a; --fh-color-error-hover: #f6958e;
   --fh-color-bg: #18181c; --fh-color-bg-disabled: #232328; --fh-color-bg-hover: #212126;
@@ -86,6 +86,7 @@
 @media (prefers-contrast: more) {
   :where(.fh-cloud, .fh-form:not(.fh-cloud .fh-form)) {
     --fh-color-border: var(--fh-color-input-border); --fh-color-border-hover: var(--fh-color-input-border-hover);
+    --fh-color-input-border: var(--fh-color-input-border-strong); --fh-color-input-border-hover: var(--fh-color-input-border-strong-hover);
     --fh-color-secondary-border: var(--fh-color-input-border);
   }
 }

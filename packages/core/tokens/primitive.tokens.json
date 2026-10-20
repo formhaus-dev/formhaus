@@ -139,6 +139,36 @@
         }
       }
     },
+    "slate": {
+      "350": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.6941, 0.7216, 0.7608],
+          "hex": "#b1b8c2"
+        }
+      },
+      "450": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.5569, 0.5843, 0.6235],
+          "hex": "#8e959f"
+        }
+      },
+      "650": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.3686, 0.3961, 0.4275],
+          "hex": "#5e656d"
+        }
+      },
+      "750": {
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.2667, 0.2941, 0.3255],
+          "hex": "#444b53"
+        }
+      }
+    },
     "violet": {
       "500": {
         "$value": {
