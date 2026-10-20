@@ -208,7 +208,7 @@ import { useLocalizedForm } from '@formhaus/vue/i18n';
 const form = useLocalizedForm(() => definition, () => ({ overlay: overlay.value, lang: locale.value }));
 ```
 
-The React hook recomputes when `definition`, `overlay`, `translate`, `prefix` or `lang` changes. Keep `translate` stable with `useCallback`. The Vue composable returns a computed ref and tracks reactive reads. Both return the definition unchanged without a source. A new result recreates the engine and clears the answers.
+The React hook recomputes when `definition`, `overlay`, `prefix`, `lang` or the `key` option changes. A new `translate` function does not recompute it: pass `{ key: t }` as the third argument to recompute when the translations change. The Vue composable returns a computed ref and tracks reactive reads. Both return the definition unchanged without a source. A new result recreates the engine and clears the answers.
 
 Renderers take `messages` and `labels` props with the same types as the engine option, and set `lang` from the definition on the `<form>` element.
 
@@ -292,7 +292,7 @@ interface StepChangeContext {
 type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>
 type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>
 type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>
-type SubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>
+type AfterSubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>
 type SubmitResult =
   | { ok: true }
   | { ok: false; errors?: Record<string, string>; formErrors?: string[] }
@@ -302,7 +302,7 @@ type SubmitHandler = (
 ) => void | SubmitResult | Promise<void | SubmitResult>
 ```
 
-`submit(handler)` and `skip(submit)` take a `SubmitHandler`; `onAfterSubmit` is a `SubmitFn`. Every `SubmitFn` is a valid `SubmitHandler`. The [submit results](/spec#submit-results) section of the specification defines success, rejection, the error rules and concurrent submissions. `reason` is `autoAdvance` when a renderer advances after an `autoAdvance` field commits. Callback values are shallow snapshots. For a complete Vue component and React usage, see [lifecycle hooks](/guide/steps#lifecycle-hooks).
+`submit(handler)` and `skip(submit)` take a `SubmitHandler`; `onAfterSubmit` is an `AfterSubmitFn`. Every `AfterSubmitFn` is a valid `SubmitHandler`. The [submit results](/spec#submit-results) section of the specification defines success, rejection, the error rules and concurrent submissions. `reason` is `autoAdvance` when a renderer advances after an `autoAdvance` field commits. Callback values are shallow snapshots. For a complete Vue component and React usage, see [lifecycle hooks](/guide/steps#lifecycle-hooks).
 
 | API | Result |
 | --- | --- |
