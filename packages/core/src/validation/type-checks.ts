@@ -38,8 +38,9 @@ export function scaleRange({ type, validation }: FormField): [number, number] {
 
 export const MAX_HIDDEN_LENGTH = 2000;
 const MAX_EMAIL_LENGTH = 254;
-const MAX_GROUP_ITEMS = 100;
-export const maxItems = (group: FormField) => group.validation?.maxLength ?? MAX_GROUP_ITEMS;
+const DEFAULT_GROUP_ITEMS = 100;
+export const MAX_GROUP_ITEMS = 1000;
+export const maxItems = (group: FormField) => Math.min(group.validation?.maxLength ?? DEFAULT_GROUP_ITEMS, MAX_GROUP_ITEMS);
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 const DATE = '\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])';

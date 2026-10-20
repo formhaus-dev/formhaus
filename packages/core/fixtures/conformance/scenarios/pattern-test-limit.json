@@ -13,15 +13,116 @@
         "key": "codes",
         "type": "group",
         "label": "Codes",
-        "defaultItems": 10001,
+        "defaultItems": 1000,
         "validation": {
-          "maxLength": 10001
+          "maxLength": 1000
         },
         "fields": [
           {
-            "key": "code",
+            "key": "c0",
             "type": "text",
-            "label": "Code",
+            "label": "Code 0",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c1",
+            "type": "text",
+            "label": "Code 1",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c2",
+            "type": "text",
+            "label": "Code 2",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c3",
+            "type": "text",
+            "label": "Code 3",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c4",
+            "type": "text",
+            "label": "Code 4",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c5",
+            "type": "text",
+            "label": "Code 5",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c6",
+            "type": "text",
+            "label": "Code 6",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c7",
+            "type": "text",
+            "label": "Code 7",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c8",
+            "type": "text",
+            "label": "Code 8",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "c9",
+            "type": "text",
+            "label": "Code 9",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          }
+        ]
+      },
+      {
+        "key": "more",
+        "type": "group",
+        "label": "More",
+        "defaultItems": 1,
+        "validation": {
+          "maxLength": 1
+        },
+        "fields": [
+          {
+            "key": "c0",
+            "type": "text",
+            "label": "Code 0",
             "defaultValue": "x",
             "validation": {
               "pattern": "^x$"
@@ -47,7 +148,7 @@
         {
           "do": "validate",
           "returns": {
-            "codes.10000.code": "Invalid format",
+            "more.0.c0": "Invalid format",
             "last": "Invalid format"
           }
         }
@@ -67,15 +168,96 @@
             "key": "codes",
             "type": "group",
             "label": "Codes",
-            "defaultItems": 9999,
+            "defaultItems": 999,
             "validation": {
-              "maxLength": 9999
+              "maxLength": 999
             },
             "fields": [
               {
-                "key": "code",
+                "key": "c0",
                 "type": "text",
-                "label": "Code",
+                "label": "Code 0",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c1",
+                "type": "text",
+                "label": "Code 1",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c2",
+                "type": "text",
+                "label": "Code 2",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c3",
+                "type": "text",
+                "label": "Code 3",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c4",
+                "type": "text",
+                "label": "Code 4",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c5",
+                "type": "text",
+                "label": "Code 5",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c6",
+                "type": "text",
+                "label": "Code 6",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c7",
+                "type": "text",
+                "label": "Code 7",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c8",
+                "type": "text",
+                "label": "Code 8",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c9",
+                "type": "text",
+                "label": "Code 9",
                 "defaultValue": "x",
                 "validation": {
                   "pattern": "^x$"
@@ -84,7 +266,88 @@
             ]
           },
           {
-            "key": "last",
+            "key": "tail",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t0",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t1",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t2",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t3",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t4",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t5",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t6",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t7",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t8",
             "type": "text",
             "label": "Last",
             "defaultValue": "x",
@@ -115,15 +378,96 @@
             "key": "codes",
             "type": "group",
             "label": "Codes",
-            "defaultItems": 9999,
+            "defaultItems": 999,
             "validation": {
-              "maxLength": 9999
+              "maxLength": 999
             },
             "fields": [
               {
-                "key": "code",
+                "key": "c0",
                 "type": "text",
-                "label": "Code",
+                "label": "Code 0",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c1",
+                "type": "text",
+                "label": "Code 1",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c2",
+                "type": "text",
+                "label": "Code 2",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c3",
+                "type": "text",
+                "label": "Code 3",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c4",
+                "type": "text",
+                "label": "Code 4",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c5",
+                "type": "text",
+                "label": "Code 5",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c6",
+                "type": "text",
+                "label": "Code 6",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c7",
+                "type": "text",
+                "label": "Code 7",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c8",
+                "type": "text",
+                "label": "Code 8",
+                "defaultValue": "x",
+                "validation": {
+                  "pattern": "^x$"
+                }
+              },
+              {
+                "key": "c9",
+                "type": "text",
+                "label": "Code 9",
                 "defaultValue": "x",
                 "validation": {
                   "pattern": "^x$"
@@ -132,7 +476,88 @@
             ]
           },
           {
-            "key": "last",
+            "key": "tail",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t0",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t1",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t2",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t3",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t4",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t5",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t6",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t7",
+            "type": "text",
+            "label": "Last",
+            "defaultValue": "x",
+            "validation": {
+              "pattern": "^x$"
+            }
+          },
+          {
+            "key": "t8",
             "type": "text",
             "label": "Last",
             "defaultValue": "x",

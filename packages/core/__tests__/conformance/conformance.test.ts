@@ -41,6 +41,7 @@ describe('conformance corpus', () => {
       'check-escaped-property',
       'check-exclusive',
       'check-field-rules',
+      'check-group-item-ceiling',
       'check-group-scope',
       'check-image-urls',
       'check-matrix',

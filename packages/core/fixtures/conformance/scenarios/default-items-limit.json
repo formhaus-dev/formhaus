@@ -167,6 +167,56 @@
           "returns": false
         }
       ]
+    },
+    {
+      "name": "creates at most 1000 items whatever maxLength says",
+      "definition": {
+        "formatVersion": "1.4",
+        "id": "crew",
+        "title": "Crew",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "crew",
+            "type": "group",
+            "label": "Crew",
+            "defaultItems": 10000000,
+            "validation": {
+              "maxLength": 10000000
+            },
+            "fields": [
+              {
+                "key": "name",
+                "type": "text",
+                "label": "Name"
+              }
+            ]
+          }
+        ]
+      },
+      "steps": [
+        {
+          "expect": {
+            "items": {
+              "crew": 1000
+            }
+          }
+        },
+        {
+          "do": "addItem",
+          "key": "crew",
+          "returns": false
+        },
+        {
+          "expect": {
+            "items": {
+              "crew": 1000
+            }
+          }
+        }
+      ]
     }
   ]
 }

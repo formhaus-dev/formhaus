@@ -55,30 +55,27 @@ describe('work on long chains', () => {
 });
 
 describe('pattern test limit', () => {
-  const codes = (length: number): FormDefinition => ({
-    id: 'codes',
-    title: 'Codes',
-    submit: { label: 'Send' },
-    fields: [
-      {
-        key: 'codes',
-        type: 'group',
-        label: 'Codes',
-        validation: { maxLength: length },
-        fields: [{ key: 'code', type: 'text', label: 'Code', validation: { pattern: '^x$' } }],
-      },
-    ],
+  const group = (key: string) => ({
+    key,
+    type: 'group' as const,
+    label: 'Codes',
+    validation: { maxLength: 1000 },
+    fields: [{ key: 'code', type: 'text' as const, label: 'Code', validation: { pattern: '^x$' } }],
   });
-  const payload = (length: number) => ({ codes: Array.from({ length }, () => ({ code: 'x' })) });
+  const codes = (counts: number[]): [FormDefinition, Record<string, unknown>] => [
+    { id: 'codes', title: 'Codes', submit: { label: 'Send' }, fields: counts.map((_, index) => group(`g${index}`)) },
+    Object.fromEntries(counts.map((count, index) => [`g${index}`, Array.from({ length: count }, () => ({ code: 'x' }))])),
+  ];
+  const tenThousand = Array.from({ length: 10 }, () => 1000);
 
   it('runs 10,000 pattern tests in one submission', () => {
-    expect(validateSubmission(codes(10_000), payload(10_000)).errors).toEqual({});
+    expect(validateSubmission(...codes(tenThousand)).errors).toEqual({});
   });
 
   it('fails every pattern check after 10,000 tests in one submission', () => {
-    expect(validateSubmission(codes(10_002), payload(10_002)).errors).toEqual({
-      'codes.10000.code': 'Invalid format',
-      'codes.10001.code': 'Invalid format',
+    expect(validateSubmission(...codes([...tenThousand, 2])).errors).toEqual({
+      'g10.0.code': 'Invalid format',
+      'g10.1.code': 'Invalid format',
     });
   });
 });

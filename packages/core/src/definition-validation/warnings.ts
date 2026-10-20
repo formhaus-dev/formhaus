@@ -1,6 +1,6 @@
 import type { FormField } from '../types';
 import { hasOwn } from '../visibility/nodes';
-import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, maxItems, NUMBER_TYPES } from '../validation/type-checks';
+import { BOOLEAN_TYPES, BUILT_IN_TYPES, LIST_TYPES, MAX_GROUP_ITEMS, maxItems, NUMBER_TYPES } from '../validation/type-checks';
 import { CONTAINS, conditionErrors, missingTarget, OPERATORS } from './conditions';
 import type { CheckContext, ConditionEntry, FieldEntry } from './context';
 import type { DefinitionIssue, DefinitionIssueCode } from './issues';
@@ -127,13 +127,23 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
     ),
   ];
   const defaults = items ? (field as { defaultItems?: unknown }).defaultItems : undefined;
-  if (rules.maxLength === undefined && typeof defaults === 'number' && defaults > maxItems(field))
+  const limit = `the ${maxItems(field)}-item limit`;
+  if (items && typeof rules.maxLength === 'number' && rules.maxLength > MAX_GROUP_ITEMS)
+    issues.push(
+      warning(
+        'invalid-range',
+        `${path}/validation/maxLength`,
+        `maxLength (${rules.maxLength}) is greater than ${limit}`,
+        `Lower maxLength to ${MAX_GROUP_ITEMS}`,
+      ),
+    );
+  if (typeof defaults === 'number' && defaults > maxItems(field) && !(typeof rules.maxLength === 'number' && defaults > rules.maxLength))
     issues.push(
       warning(
         'invalid-range',
         `${path}/defaultItems`,
-        `defaultItems (${defaults}) is greater than the ${maxItems(field)}-item limit`,
-        'Lower defaultItems or set validation.maxLength',
+        `defaultItems (${defaults}) is greater than ${limit}`,
+        rules.maxLength === undefined ? 'Lower defaultItems or set validation.maxLength' : `Lower defaultItems to ${MAX_GROUP_ITEMS}`,
       ),
     );
   const slow = typeof rules.pattern === 'string' ? slowPattern(rules.pattern) : undefined;
