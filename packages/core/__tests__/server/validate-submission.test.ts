@@ -4,6 +4,7 @@ import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
 import { validateSubmission } from '../../src/server';
 import type { FormDefinition, FormField } from '../../src';
+import { countReads } from './reads';
 
 interface SubmissionCase {
   name: string;
@@ -173,14 +174,10 @@ describe('validateSubmission with an oversized multiselect value', () => {
   });
 
   it('evaluates conditions as if the value were blank', () => {
-    const values = {
-      tags: Array.from({ length: 250000 }, () => 'x'),
-      picked: 'smuggled',
-      other0: 'kept',
-    };
-    const started = performance.now();
+    const list = countReads(Array.from({ length: 1001 }, () => 'x'));
+    const values = { tags: list.list, picked: 'smuggled', other0: 'kept' };
     const result = validateSubmission(definition(tags()), values);
-    expect(performance.now() - started).toBeLessThan(2000);
+    expect(list.reads()).toBe(0);
     expect(result.errors).toEqual({ tags: 'Select one of the available options' });
     expect(result.values).toEqual({ other0: 'kept' });
   });
