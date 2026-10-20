@@ -27,8 +27,8 @@ function button(name: string): HTMLButtonElement {
 
 describe('FormRenderer skip and button roles', () => {
   it('renders button roles, skips without validation and submits without skipped steps', async () => {
-    const submitHandler = vi.fn();
-    const { emitted } = render(FormRenderer, { props: { definition, submitHandler, onAnalyticsEvent: () => {} } });
+    const onSubmit = vi.fn();
+    const { emitted } = render(FormRenderer, { props: { definition, onSubmit, onFormEvent: () => {} } });
     expect(screen.queryByRole('button', { name: 'Not now' })).toBeNull();
     await fireEvent.update(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
     await fireEvent.click(button('Continue'));
@@ -39,16 +39,16 @@ describe('FormRenderer skip and button roles', () => {
     expect(button('Not now').className).toContain('fh-form-actions__button--text');
     await fireEvent.click(button('Not now'));
     await screen.findByRole('textbox', { name: /Notes/ });
-    expect(emitted().analyticsEvent).toContainEqual([{ type: 'step_skipped', stepId: 'phone' }]);
+    expect(emitted().formEvent).toContainEqual([{ type: 'step_skipped', stepId: 'phone' }]);
     await fireEvent.click(button('Skip notes'));
-    await waitFor(() => expect(submitHandler).toHaveBeenCalledWith({ name: 'Ada' }, expect.any(Array)));
-    expect(emitted().analyticsEvent).toContainEqual([{ type: 'step_skipped', stepId: 'notes' }]);
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ name: 'Ada' }, expect.any(Array)));
+    expect(emitted().formEvent).toContainEqual([{ type: 'step_skipped', stepId: 'notes' }]);
   });
 
   it('reports field errors when a skip submit fails validation', async () => {
     let failing = false;
     const { emitted } = render(FormRenderer, {
-      props: { definition, validators: { flaky: () => (failing ? 'Bad name' : null) }, onAnalyticsEvent: () => {} },
+      props: { definition, validators: { flaky: () => (failing ? 'Bad name' : null) }, onFormEvent: () => {} },
     });
     await fireEvent.update(screen.getByRole('textbox', { name: /Name/ }), 'Ada');
     await fireEvent.click(button('Continue'));
@@ -57,7 +57,7 @@ describe('FormRenderer skip and button roles', () => {
     await screen.findByRole('textbox', { name: /Notes/ });
     failing = true;
     await fireEvent.click(button('Skip notes'));
-    await waitFor(() => expect(emitted().analyticsEvent).toContainEqual([{ type: 'field_error', fieldKey: 'name', error: 'Bad name' }]));
+    await waitFor(() => expect(emitted().formEvent).toContainEqual([{ type: 'field_error', fieldKey: 'name', error: 'Bad name' }]));
   });
 
   it('hides skip on steps with next: false', () => {

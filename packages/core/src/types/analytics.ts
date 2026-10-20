@@ -12,5 +12,3 @@ export type FormEvent =
   | { type: 'form_submit_succeeded' }
   | { type: 'form_submit_failed'; reason: 'rejected' | 'error' }
   | { type: 'form_reset' };
-
-export type FormAnalyticsEvent = FormEvent;

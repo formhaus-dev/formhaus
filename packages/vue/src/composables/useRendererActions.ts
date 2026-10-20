@@ -55,7 +55,7 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     update(key, value);
     if (field.autoAdvance && engine.currentStep?.id === step?.id && !engine.isLastStep) void run(() => autoAdvance(engine));
   }
-  const handler = () => props.onSubmit ?? props.submitHandler ?? (() => {});
+  const handler = () => props.onSubmit ?? (() => {});
   const submit = () =>
     run(async () => {
       const engine = form.engine;

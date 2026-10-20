@@ -311,8 +311,6 @@ Events carry step ids and field keys, never step titles or labels with [recalled
 
 `FormEngine` reports the same events, except `field_focused` and `field_blurred`, through the `onFormEvent` option. See [form events](/api/form-engine#form-events).
 
-`onAnalyticsEvent` and `@analyticsEvent` are deprecated and will be removed in 1.0. Until then they receive every event too, and when both are set, both run.
-
 ## Next steps
 
 - [Field Types](/guide/fields): customize field components via the `components` prop

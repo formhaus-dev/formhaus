@@ -1,5 +1,5 @@
 export type { FormAction } from './action';
-export type { FormAnalyticsEvent, FormEvent } from './analytics';
+export type { FormEvent } from './analytics';
 export type {
   DefaultFieldType,
   FieldOption,

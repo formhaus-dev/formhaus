@@ -48,7 +48,6 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     handlers.current = props;
     const onFormEvent = useCallback((event: FormEvent) => {
       handlers.current.onFormEvent?.(event);
-      handlers.current.onAnalyticsEvent?.(event);
     }, []);
     const formId = useId();
     const formRef = useRef<HTMLFormElement>(null);
@@ -63,7 +62,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const wasBusy = useRef(false);
     const engineOptions: FormEngineOptions = {
       ...props,
-      onFormEvent: props.onFormEvent || props.onAnalyticsEvent ? onFormEvent : undefined,
+      onFormEvent: props.onFormEvent ? onFormEvent : undefined,
       onAfterStepChange: async (context) => {
         focusPending.current = true;
         await props.onAfterStepChange?.(context);

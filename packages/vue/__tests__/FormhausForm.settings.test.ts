@@ -45,14 +45,11 @@ it('shows the form success message for another response without an ending', asyn
   expect(screen.queryByText('Sales will call you.')).toBeNull();
 });
 
-it('calls .once handlers for both events', async () => {
+it('calls a .once handler', async () => {
   vi.stubGlobal('fetch', vi.fn());
   const onFormEventOnce = vi.fn();
-  const onAnalyticsEventOnce = vi.fn();
-  render(FormhausForm, { props: { id: 'abc', initialForm: { definition }, onFormEventOnce, onAnalyticsEventOnce } });
+  render(FormhausForm, { props: { id: 'abc', initialForm: { definition }, onFormEventOnce } });
   await screen.findByRole('textbox', { name: 'Email' });
   expect(onFormEventOnce).toHaveBeenCalledOnce();
   expect(onFormEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
-  expect(onAnalyticsEventOnce).toHaveBeenCalledOnce();
-  expect(onAnalyticsEventOnce).toHaveBeenCalledWith({ type: 'form_viewed' });
 });

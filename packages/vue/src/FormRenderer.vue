@@ -37,6 +37,5 @@ defineExpose({
     @field-change="(key, value, allValues) => emit('fieldChange', key, value, allValues)"
     @values-change="(next) => emit('valuesChange', (values = next))"
     :onFormEvent="listening('onFormEvent') ? (event: FormEvent) => emit('formEvent', event) : undefined"
-    :onAnalyticsEvent="listening('onAnalyticsEvent') ? (event: FormEvent) => emit('analyticsEvent', event) : undefined"
   />
 </template>

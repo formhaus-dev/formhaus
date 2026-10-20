@@ -5,7 +5,6 @@ import type {
   ConfirmDialogView,
   DefinitionIssue,
   FieldType,
-  FormAnalyticsEvent,
   FormEvent,
   FormDefinition,
   FormField,
@@ -78,7 +77,6 @@ export interface FormRendererProps {
   messages?: Partial<Record<MessageKey, string>> | Callback<MessageFn>;
   onError?: (error: unknown) => void;
   onSubmit?: SubmitHandler;
-  submitHandler?: SubmitHandler;
   headingLevel?: HeadingLevel;
   definition: FormDefinition;
   initialValues?: Record<string, unknown>;
@@ -104,7 +102,6 @@ export interface FormRendererEmits {
   (e: 'fieldChange', key: string, value: unknown, allValues: Record<string, unknown>): void;
   (e: 'valuesChange', values: Readonly<Record<string, unknown>>): void;
   (e: 'formEvent', event: FormEvent): void;
-  (e: 'analyticsEvent', event: FormAnalyticsEvent): void;
 }
 
 export interface FormFieldProps {

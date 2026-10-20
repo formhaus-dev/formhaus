@@ -27,10 +27,7 @@ Not covered:
 
 Before 1.0, a minor version can break these parts and lists each break in the [changelog](/changelog).
 
-1.0 removes the APIs deprecated in 0.x, as announced in the changelog:
-
-- `validateDefinition` from `@formhaus/core`. Use `checkDefinition()`.
-- The Vue `submitHandler` prop. Use the `@submit` event.
+0.22 removed the APIs deprecated in 0.x. See [Migrate to 0.22](/migrate/0.22).
 
 Two rules keep forms stable across minor versions:
 

@@ -2,7 +2,6 @@ import type {
   ConfirmDialogView,
   DefaultFieldType,
   FieldType,
-  FormAnalyticsEvent,
   FormDefinition,
   FormEngineOptions,
   FormRendererHandle,
@@ -124,5 +123,4 @@ export interface FormRendererProps extends FormEngineOptions {
   actionsComponent?: ComponentType<FormActionsProps>;
   progressComponent?: ComponentType<FormStepProgressProps>;
   headingLevel?: HeadingLevel;
-  onAnalyticsEvent?: (event: FormAnalyticsEvent) => void;
 }

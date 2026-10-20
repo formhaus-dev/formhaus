@@ -21,10 +21,7 @@ const emit = defineEmits<FormRendererEmits>();
 
 const formId = useFormId();
 const formRef = ref<HTMLFormElement>();
-const onFormEvent = (event: FormEvent) => {
-  emit('formEvent', event);
-  emit('analyticsEvent', event);
-};
+const onFormEvent = (event: FormEvent) => emit('formEvent', event);
 const engineOptions = useEngineOptions(props, onFormEvent);
 
 const form = useFormEngine(

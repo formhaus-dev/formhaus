@@ -14,7 +14,6 @@ const emit = defineEmits<{
   success: [submission: { id: string; values: Record<string, unknown> }];
   fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
   formEvent: [event: FormEvent];
-  analyticsEvent: [event: FormEvent];
 }>();
 const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
@@ -134,7 +133,6 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       :actions-component="state.challenge ? ChallengeActions : props.actionsComponent"
       @field-change="onFieldChange"
       @form-event="(event: FormEvent) => emit('formEvent', event)"
-      @analytics-event="(event: FormEvent) => emit('analyticsEvent', event)"
     />
   </div>
 </template>
