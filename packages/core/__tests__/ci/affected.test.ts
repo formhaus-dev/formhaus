@@ -28,7 +28,7 @@ describe('ci affected checks', () => {
 
   it('runs everything for content that package sources import', () => {
     expect(sourceRefs()).toContain('examples/definitions/basic-form.json');
-    expect(sourceRefs()).toContain('docs/migrate/0.11.md');
+    expect(sourceRefs()).toContain('docs/public/schema/form-definition.json');
     expect(classify(['examples/definitions/basic-form.json'])).toEqual(everything);
   });
 

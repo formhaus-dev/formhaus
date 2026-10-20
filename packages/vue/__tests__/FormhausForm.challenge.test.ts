@@ -105,9 +105,7 @@ it('shows a failed check as a notice and runs the check again on retry', async (
   await waitFor(() => expect(post).toHaveBeenCalledTimes(1));
   answer(frame, { token: 'ts_1' });
   expect(await screen.findByText('The bot check did not pass. Submit again to retry.')).toBeDefined();
-  await new Promise((resolve) => setTimeout(resolve));
-  expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
-  await fireEvent.click(screen.getByRole('button', { name: 'Send' }));
+  await fireEvent.click(await screen.findByRole('button', { name: 'Try again' }));
   await waitFor(() => expect(post).toHaveBeenCalledTimes(2));
   answer(frame, { token: 'ts_2' });
   expect(await screen.findByRole('status')).toBeDefined();

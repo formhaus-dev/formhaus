@@ -38,7 +38,7 @@ PR checks stay fast and deterministic: tests count reads, renders and calls, nev
 - `pnpm test:engines`: the editor layout tests in Chromium, Firefox and WebKit. PR CI runs them in Chromium only. Needs `pnpm --filter @formhaus/editor-react exec playwright install chromium firefox webkit`.
 - `pnpm bench`: times `validateSubmission` and `checkDefinition` on oversized input (100,000 group items, 250,000-item lists, 120,000-character patterns). It prints a table and asserts nothing.
 
-The Full checks workflow runs all three every night and on demand from GitHub Actions.
+The Full checks workflow runs all three every night and on demand from GitHub Actions. It also runs the full build, checks and tests on Node 22.12, and the React and Vue tests against the lowest supported peers (React 18.0.0, Vue 3.3.3).
 
 Before a release, run `pnpm build && pnpm test:release`, or start the Full checks workflow and wait for it to pass.
 
@@ -77,6 +77,10 @@ Releases are managed with [Changesets](https://github.com/changesets/changesets)
 Don't edit per-package `CHANGELOG.md` files by hand — they're generated.
 
 `@formhaus/core`, `@formhaus/react`, `@formhaus/vue` and the `formhaus` CLI are versioned together (the `fixed` group in `.changeset/config.json`). `@formhaus/figma` is private and not published.
+
+### Public API snapshot
+
+`api/*.api.md` holds the public types of every published entry of `@formhaus/core`, `@formhaus/react` and `@formhaus/vue`, except `@formhaus/core/internal`. CI runs `pnpm api:check` after the build and fails when the built `.d.ts` files differ from the snapshot. If the change is intended, run `pnpm build && pnpm api:update` and commit the updated files. A removed or changed line in the diff is a breaking change: after 1.0 it needs a major release.
 
 ## What could use help
 

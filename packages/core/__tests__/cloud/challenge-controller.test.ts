@@ -72,7 +72,7 @@ describe('cloud controller with a bot check', () => {
     const first = controller.submit({ name: 'Ada' }, []);
     await answer(fake, { token: 'ts_1' });
     await first.catch(() => undefined);
-    expect(states.at(-1)?.notice).toMatchObject({ message: 'The bot check did not pass. Submit again to retry.', action: null });
+    expect(states.at(-1)?.notice).toMatchObject({ message: 'The bot check did not pass. Submit again to retry.', action: 'retry' });
     const second = controller.submit({ name: 'Ada' }, []);
     await answer(fake, { token: 'ts_2' });
     await second;
@@ -91,7 +91,7 @@ describe('cloud controller with a bot check', () => {
     await answer(fake, { error: 'bot check failed: 600010' });
     await attempt.catch(() => undefined);
     expect(fetchMock).not.toHaveBeenCalled();
-    expect(states.at(-1)?.notice).toMatchObject({ action: null });
+    expect(states.at(-1)?.notice).toMatchObject({ message: 'The bot check did not pass. Submit again to retry.', action: 'retry' });
   });
 
   it('submits without a token when the frame never answers', async () => {
