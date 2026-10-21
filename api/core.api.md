@@ -356,6 +356,8 @@ export interface FormEngineOptions {
     // (undocumented)
     onWarning?: (issue: DefinitionIssue) => void;
     // (undocumented)
+    research?: FormResearch;
+    // (undocumented)
     seed?: string;
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
@@ -527,6 +529,14 @@ export interface FormRendererHandle {
     setValue(key: string, value: unknown): void;
     // (undocumented)
     readonly values: Readonly<Record<string, unknown>>;
+}
+
+// @public (undocumented)
+export interface FormResearch {
+    // (undocumented)
+    order(seed: string, key: string, options: FieldOption[]): FieldOption[];
+    // (undocumented)
+    seed(): string;
 }
 
 // @public (undocumented)

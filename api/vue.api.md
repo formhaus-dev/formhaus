@@ -28,6 +28,7 @@ import { FormField } from '@formhaus/core';
 import { FormGroup } from '@formhaus/core';
 import { FormNode } from '@formhaus/core';
 import { FormRendererHandle } from '@formhaus/core';
+import { FormResearch } from '@formhaus/core';
 import { FormSection } from '@formhaus/core';
 import { FormStep } from '@formhaus/core';
 import { GoToStepResult } from '@formhaus/core';
@@ -289,6 +290,8 @@ export interface FormRendererProps {
     optionsProviders?: Record<string, OptionsProvider>;
     // (undocumented)
     progressComponent?: Component;
+    // (undocumented)
+    research?: FormResearch;
     // (undocumented)
     seed?: string;
     // (undocumented)
