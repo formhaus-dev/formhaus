@@ -5,15 +5,10 @@
 ```ts
 
 // @public (undocumented)
-export interface FormResearch {
-    // (undocumented)
-    order(seed: string, key: string, options: FieldOption[]): FieldOption[];
-    // (undocumented)
-    seed(): string;
-}
-
-// @public (undocumented)
-export const research: FormResearch;
+export const research: {
+    seed: typeof randomSeed;
+    order: (seed: string, key: string, options: FieldOption[]) => FieldOption[];
+};
 
 // (No @packageDocumentation comment for this package)
 
