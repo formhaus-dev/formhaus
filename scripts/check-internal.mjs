@@ -3,7 +3,7 @@ import { dirname, join, relative } from 'node:path';
 
 const root = join(import.meta.dirname, '..');
 const ENTRIES = {
-  core: ['index', 'cloud', 'server', 'i18n', 'fix'],
+  core: ['index', 'cloud', 'server', 'i18n', 'fix', 'research'],
   react: ['index', 'cloud', 'i18n'],
   vue: ['index', 'cloud', 'i18n'],
 };

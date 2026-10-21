@@ -43,6 +43,7 @@ const ADDONS = [
   ['`@formhaus/core/cloud`', 'core FormEngine + /cloud'],
   ['`@formhaus/core/i18n`', 'core FormEngine + /i18n'],
   ['`@formhaus/core/fix`', 'core FormEngine + /fix'],
+  ['`@formhaus/core/research`', 'core FormEngine + /research'],
 ];
 
 const SERVER = '`validateSubmission()`';
