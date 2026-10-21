@@ -58,6 +58,8 @@ export function cleanItems(group: FormGroup, value: unknown, values: Values): un
   });
 }
 
+export const optionKey = (group: string, field: string): string => `${group}.${field}`;
+
 export function itemPath(group: string, index: number, field: string): string {
   return `${group}.${index}.${field}`;
 }

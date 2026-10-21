@@ -1,5 +1,5 @@
 import type { FieldOption, FormField } from '../types';
-import { isGroup } from '../visibility/nodes';
+import { isGroup, optionKey } from '../visibility/nodes';
 
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
@@ -21,8 +21,6 @@ export function imageSource(image: string | undefined): string | undefined {
     return undefined;
   }
 }
-
-export const optionKey = (group: string, field: string): string => `${group}.${field}`;
 
 const countTexts = (texts: string[]) =>
   texts.reduce((counts, text) => counts.set(text, (counts.get(text) ?? 0) + 1), new Map<string, number>());
