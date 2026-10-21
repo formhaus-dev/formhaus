@@ -23,11 +23,13 @@ describe('capabilities', () => {
       'lte',
     ]);
     expect(result.steps.routes.join(' ')).toMatch(/to: null/);
-    expect(result.definition.formatVersion).toBe('1.5');
+    expect(result.definition.formatVersion).toBe('1.6');
     expect(result.recall.syntax).toContain('{{key}}');
     expect(result.definition.formatVersionRule).toContain('Set "1.5" when a text uses {{key}}');
     expect(result.fieldProps.optional).toContain('props');
     expect(result.fieldProps.optional).toContain('autocomplete');
+    expect(result.fieldProps.optional).toContain('randomize');
+    expect(result.definition.formatVersionRule).toContain('Set "1.6" when a field has randomize');
     expect(result.definition.formatVersionRule).toContain('field has autocomplete');
     expect(result.definition.optional).toContain('formatVersion');
     expect(result.adapters.map(({ name }) => name)).toContain('@formhaus/react');

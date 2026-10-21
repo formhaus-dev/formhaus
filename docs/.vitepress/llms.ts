@@ -24,6 +24,8 @@ const details = [
   '',
   `JSON Schema of an overlay: ${siteUrl}/schema/form-translation.json`,
   '',
+  `Random option order: \`"randomize": true\` on radio, multiselect and select fields and \`"pinned": true\` on options need format 1.6 and the opt-in \`research\` module from \`@formhaus/core/research\`, passed as the \`research\` prop or engine option. Without it the options show in written order. Docs: ${siteUrl}/guide/research`,
+  '',
   'Claude Code plugin (skills and MCP server): `claude plugin marketplace add formhaus-dev/formhaus && claude plugin install formhaus@formhaus`',
   '',
   'MCP server only: `claude mcp add formhaus -- npx -y @formhaus/mcp`',

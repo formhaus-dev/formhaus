@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.5 specification"
-description: "Formhaus form definition format 1.5: structure, fields, sections, groups, conditions, validation, steps, routes, answer recall, translations and the payload."
+title: "Form definition 1.6 specification"
+description: "Formhaus form definition format 1.6: fields, sections, groups, conditions, validation, steps, routes, answer recall, option order, translations and the payload."
 ---
 
-# Formhaus form definition 1.5
+# Formhaus form definition 1.6
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,13 +19,13 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.5**. `@formhaus/core` 0.21 and later implement it. Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.6**. `@formhaus/core` 1.1 and later implement it. Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.5"`. Without it, core reads the definition as 1.5, but shows `{{key}}` tokens as written. A minor version newer than 1.5 is also read as 1.5. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.6"`. Without it, core reads the definition as 1.6, but shows `{{key}}` tokens as written. A minor version newer than 1.6 is also read as 1.6. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
@@ -44,6 +44,8 @@ A definition with an [exclusive option](#exclusive-options) SHOULD declare `"for
 ```
 
 A definition with a field `autocomplete` MAY declare `"formatVersion": "1.5"`. Core 0.20 reports `autocomplete` as `unknown-property`, and its renderers do not set the attribute. `checkDefinition()` warns about `autocomplete` without format 1.5.
+
+A definition with a field `randomize` or an option `pinned` MAY declare `"formatVersion": "1.6"`. Core 1.0 and older report them as `unknown-property` and show the written order. `checkDefinition()` warns about `randomize` or `pinned` without format 1.6.
 
 ## Document structure
 
@@ -82,7 +84,8 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `show` | [condition](#conditions)[] | Visible when all conditions match. |
 | `showAny` | [condition](#conditions)[] | Visible when at least one condition matches. |
 | `validation` | [validation](#validation) | Validation rules. |
-| `options` | `{ value: string, label: string, image?: string, exclusive?: boolean }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
+| `options` | `{ value: string, label: string, image?: string, exclusive?: boolean, pinned?: boolean }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
+| `randomize` | boolean | Shows the options in a random order per respondent. See [Option order](#option-order). Added in 1.6. |
 | `layout` | `"stack"` or `"inline"` | Option layout for `radio` and `multiselect`. `stack` (default) lists options vertically. `inline` places short options side by side. |
 | `columns` | integer, 1 to 4 | Cards per row for [picture options](#picture-options). |
 | `optionsFrom` | string | Name of a renderer options provider. |
@@ -96,7 +99,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `props` | object | Settings of a [custom type](#field-types). Core ignores it. Renderers pass it unchanged as `field.props`. Added in 1.2. |
 | `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
 
-An option MAY have `i18n: { label }`, an [`image`](#picture-options) and [`exclusive`](#exclusive-options). `validation` MAY have `i18n` with keys by rule name.
+An option MAY have `i18n: { label }`, an [`image`](#picture-options), [`exclusive`](#exclusive-options) and [`pinned`](#option-order). `validation` MAY have `i18n` with keys by rule name.
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate. Section keys share this namespace.
 
@@ -228,6 +231,56 @@ An option of a `multiselect` field MAY have `"exclusive": true`. It is the only 
 - One exclusive option alone is an answer: it satisfies `required`, and `minLength` does not apply to it. `maxLength`, `contains`, `notContains` and `notEmpty` work as for any list.
 - The built-in renderers show the [`or` label](#message-and-label-catalogs) before the first exclusive option that follows a non-exclusive one. The options stay native checkboxes. In a section with `layout: "matrix"` the divider is hidden.
 - `exclusive` is ignored on other field types and on a field with `optionsFrom`, which reports `exclusive-not-applicable`. An exclusive option followed by a non-exclusive one is an `exclusive-option-position` warning, a `defaultValue` with an exclusive option and other values is `exclusive-default-value`, and `minLength` greater than 1 is `exclusive-with-min-length`.
+
+### Option order
+
+A `radio`, `multiselect` or `select` field MAY have `"randomize": true`. Each respondent then sees its options in their own order, which cancels position bias in surveys. An option with `"pinned": true` keeps its written position, at the start, in the middle or at the end. An exclusive option is always pinned.
+
+```json
+{
+  "formatVersion": "1.6",
+  "id": "tools",
+  "title": "Tools",
+  "submit": { "label": "Send" },
+  "fields": [
+    {
+      "key": "tools",
+      "type": "multiselect",
+      "label": "Which tools did you use last month?",
+      "randomize": true,
+      "options": [
+        { "value": "figma", "label": "Figma" },
+        { "value": "sketch", "label": "Sketch" },
+        { "value": "framer", "label": "Framer" },
+        { "value": "other", "label": "Other", "pinned": true },
+        { "value": "none", "label": "None of these", "exclusive": true }
+      ]
+    }
+  ]
+}
+```
+
+The order depends only on the engine `seed`, the order key, the number of options and which of them are pinned. The order key is the field key, and `<group key>.<field key>` for a field of a group, so all items of a group share one order. Implementations MUST compute the order with integer arithmetic modulo 2^32, as follows:
+
+1. Hash the UTF-16 code units of `seed + "\u001f" + key` with 32-bit FNV-1a. Start with `h = 2166136261`. For each code unit `c`, set `h = ((h XOR c) × 16777619) mod 2^32`.
+2. Seed mulberry32 with `s = h`. Each output `u` is:
+
+   ```
+   s = (s + 0x6D2B79F5) mod 2^32
+   t = ((s XOR (s >> 15)) × (s OR 1)) mod 2^32
+   t = t XOR ((t + ((t XOR (t >> 7)) × (t OR 61))) mod 2^32)
+   u = t XOR (t >> 14)
+   ```
+
+3. Take the indexes of the unpinned options in written order. For `i` from `n - 1` down to `1`, take the next `u`, set `j = u mod (i + 1)` and swap the entries at `i` and `j`. Put the result back into the unpinned positions.
+
+The conformance corpus file `option-order.json` lists vectors of seeds, keys and orders.
+
+- `@formhaus/core` applies the order through the opt-in [research module](/guide/research), `@formhaus/core/research`. Without it, options show in written order.
+- The seed is the `seed` engine option or, without it, 16 random bytes as hex. It does not change for the life of the engine, so the order stays the same across re-renders, Back, `goToStep()`, `reset()`, visibility changes and `replaceDefinition()`. A new engine shows a new order unless the host passes the same seed.
+- Values, defaults, conditions, validation and the submit payload do not change. `validateSubmission()` ignores `randomize`.
+- The order is not applied to other field types, to a field in a section with `layout: "matrix"`, or when fewer than two options are unpinned. `randomize` on another type or in a matrix section, and `pinned` on a field without `randomize`, are `randomize-not-applicable` warnings.
+- The built-in renderers draw the options in the shown order in the DOM, so keyboard and screen reader order match what is seen. A native `select` keeps its placeholder first. Without a `seed` option, they render the written order on the server and during hydration, and the shown order after mount.
 
 ## Sections
 
@@ -980,7 +1033,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5, or `randomize` or `pinned` without 1.6 |
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |
@@ -993,6 +1046,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `custom-type-name` | warning | A custom field type without `-` or `:`, such as `stars`. Not reported when `unknown-field-type` is |
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
+| `missing-research` | warning, from the engine in development | A field with `randomize` and no `research` option, so the options show in written order. Reported once |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-autocomplete-token` | warning | An `autocomplete` that is not a valid [autofill token](#autocomplete) |
 | `autocomplete-not-applicable` | warning | `autocomplete` on a built-in field type other than `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` |
@@ -1002,6 +1056,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `exclusive-option-position` | warning | An exclusive option followed by an option that is not exclusive |
 | `exclusive-default-value` | warning | A `defaultValue` that holds an exclusive option and other values |
 | `exclusive-with-min-length` | warning | `minLength` greater than 1 on a `multiselect` with an exclusive option |
+| `randomize-not-applicable` | warning | `randomize` on a field other than `radio`, `multiselect` and `select` or in a section with `layout: "matrix"`, or `pinned` on an option of a field without `randomize` |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |

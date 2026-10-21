@@ -53,6 +53,8 @@ export function useFormEngineStore(
         return optionsRef.current?.formatRecall;
       },
       onWarning: options?.onWarning,
+      seed: options?.seed,
+      research: options?.research,
     });
   }
 

@@ -1,7 +1,7 @@
 const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.5". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5.',
+    'Format version of the definition, such as "1.6". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
@@ -17,6 +17,8 @@ const DESCRIPTIONS = {
     'Image URL shown above the label on radio and multiselect options. The label stays visible and names the option. Select and autocomplete ignore it.',
   'FieldOption.exclusive':
     'Multiselect only: picking this option clears the other answers, and picking another option clears it. Renderers show an "or" divider before it. Added in format 1.5.',
+  'FieldOption.pinned':
+    'Keeps this option at its written position when the field has randomize. Exclusive options are always pinned. Added in format 1.6.',
   'FormAction.i18n': 'Translation key for the button label.',
   'FieldValidation.i18n': 'Translation keys for the messages of the validation rules, by rule name.',
   'FormDefinition.title': 'Form title for host UI and Figma output. Renderers do not display it.',
@@ -51,6 +53,8 @@ const DESCRIPTIONS = {
   'FormField.validation': 'Validation rules checked on Continue and on submit, not on blur.',
   'FormField.options':
     'Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, anchor labels whose value is a point number: the first, middle and last points show their label.',
+  'FormField.randomize':
+    'Radio, multiselect and select only: shows the options in a random order per respondent. Pinned and exclusive options keep their written position. Not applied in a matrix section. Added in format 1.6.',
   'FormField.layout':
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
   'FormField.columns':

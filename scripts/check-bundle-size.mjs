@@ -7,6 +7,7 @@ const PACKAGE_EXTERNALS = [
   '@formhaus/core/internal',
   '@formhaus/core/i18n',
   '@formhaus/core/fix',
+  '@formhaus/core/research',
   '@formhaus/react',
   '@formhaus/vue',
   'react',

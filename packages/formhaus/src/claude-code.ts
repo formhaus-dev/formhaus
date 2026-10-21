@@ -15,6 +15,7 @@ const SHIPPED_SKILLS = [
   'ede6c4601f398cf8e64569a3426f197fb61138183a9563d17202edef8fa93787',
   'c4e52ae30d4edadf5c2f7354d7144708ccd4283a111efbd81343255bd86a8432',
   'd8723887ee8892d280d89315ddc184c075a1a0ba7b8712a2b2ee3d5ceaa55fb1',
+  '294b831463b121340236234aae4edceaa2276c3102632ac6c6c9f846e6f42db7',
 ];
 const CLAUDE_ADD_ARGS = ['mcp', 'add', '--scope', 'user', SERVER_NAME, '--', SERVER.command, ...SERVER.args];
 

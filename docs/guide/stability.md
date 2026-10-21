@@ -9,7 +9,7 @@ From 1.0, a breaking change to these parts needs a major version:
 
 - The form definition schema and its JSON Schemas (`schema.json`, `translation.schema.json`), including the meaning of built-in field types.
 - The submit payload: values, keys and skipped steps.
-- The `@formhaus/core` entries `.`, `/server`, `/i18n`, `/fix` and `/cloud`: exported functions, classes and types.
+- The `@formhaus/core` entries `.`, `/server`, `/i18n`, `/fix`, `/cloud` and `/research`: exported functions, classes and types.
 - `FormEngine` public methods and properties.
 - React and Vue components, including `/cloud`: props, events and slots.
 - The React `useFormEngine` hook and the Vue `useFormEngine` composable.

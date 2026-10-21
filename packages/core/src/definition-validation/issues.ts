@@ -42,6 +42,7 @@ export type DefinitionIssueCode =
   | 'custom-type-name'
   | 'definition-reset'
   | 'missing-component'
+  | 'missing-research'
   | 'unknown-validator'
   | 'skip-unreachable'
   | 'route-fallthrough'
@@ -60,7 +61,8 @@ export type DefinitionIssueCode =
   | 'exclusive-not-applicable'
   | 'exclusive-option-position'
   | 'exclusive-default-value'
-  | 'exclusive-with-min-length';
+  | 'exclusive-with-min-length'
+  | 'randomize-not-applicable';
 
 export interface DefinitionIssue {
   code: DefinitionIssueCode;

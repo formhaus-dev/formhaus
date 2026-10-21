@@ -35,6 +35,7 @@ export interface EngineInternals {
   shownFields?: Map<string, [string, boolean]>;
   readonly skipped: Map<string, string[]>;
   readonly lifecycle: FormEngineOptions;
+  readonly seed: string;
   readonly validators: Record<string, ValidatorFn>;
   messages: ResolveMessage;
   visibility: VisibilityState;

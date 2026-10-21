@@ -21,7 +21,7 @@ export function createStartValues(groups: FormGroup[], changed: () => void) {
   return {
     seedItems,
 
-    seed(values: Values): void {
+    seedStarts(values: Values): void {
       changed();
       seeds = { ...seeds, ...values };
     },

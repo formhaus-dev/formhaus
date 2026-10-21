@@ -12,6 +12,7 @@ import {
   optionKey,
   autofilled,
   recalled,
+  shownOptions,
 } from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
 import DefaultGroup from './DefaultGroup.vue';
@@ -19,6 +20,7 @@ import DefaultConfirmDialog from './DefaultConfirmDialog.vue';
 import DefaultGroupItem from './DefaultGroupItem.vue';
 import FieldResolver from './FieldResolver.vue';
 import { fieldAria } from './fields/useField';
+import { useMounted } from './composables/useMounted';
 import type { ConfirmDialogComponentProps, FieldComponentMap, GroupComponentProps } from './types';
 
 const props = withDefaults(
@@ -47,6 +49,7 @@ const emit = defineEmits<{
   (e: 'focus', key: string): void;
 }>();
 
+const mounted = useMounted();
 const status = ref('');
 const announcements = ref(0);
 const confirming = ref<string | null>(null);
@@ -60,7 +63,7 @@ const remove = computed(() => props.group.removeLabel ?? label('removeItem'));
 
 function itemProps(index: number, field: FormField) {
   const key = `${props.group.key}.${index}.${field.key}`;
-  const options = props.options[optionKey(props.group.key, field.key)];
+  const options = shownOptions(props.engine, key, field, props.options[optionKey(props.group.key, field.key)], mounted.value);
   const update = (value: unknown) => emit('update', key, value);
   return {
     id: errorDomId(props.engine, props.formId, key),

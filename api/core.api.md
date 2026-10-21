@@ -63,7 +63,7 @@ export interface DefinitionIssue {
 }
 
 // @public (undocumented)
-export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length';
+export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable';
 
 // @public (undocumented)
 export function evaluateCondition(condition: ShowCondition, values: Record<string, unknown>): boolean;
@@ -88,6 +88,8 @@ export interface FieldOption {
     image?: string;
     // (undocumented)
     label: string;
+    // (undocumented)
+    pinned?: boolean;
     // (undocumented)
     value: string;
 }
@@ -186,7 +188,7 @@ export interface FormActionsView {
 }
 
 // @public (undocumented)
-export const FORMAT_VERSION = "1.5";
+export const FORMAT_VERSION = "1.6";
 
 // @public (undocumented)
 export interface FormDefinition {
@@ -273,6 +275,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     // (undocumented)
     next(): Promise<boolean>;
     // (undocumented)
+    orderOptions(key: string, options?: FieldOption[]): FieldOption[];
+    // (undocumented)
     get progress(): {
         current: number;
         total: number;
@@ -283,6 +287,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     replaceDefinition(definition: FormDefinition): void;
     // (undocumented)
     reset(values?: Record<string, unknown>): void;
+    // (undocumented)
+    readonly seed: string;
     // (undocumented)
     setErrors(errors: Record<string, string>): void;
     // (undocumented)
@@ -349,6 +355,10 @@ export interface FormEngineOptions {
     onStepValidate?: StepValidateFn;
     // (undocumented)
     onWarning?: (issue: DefinitionIssue) => void;
+    // (undocumented)
+    research?: FormResearch;
+    // (undocumented)
+    seed?: string;
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }
@@ -438,6 +448,8 @@ export interface FormField {
     // (undocumented)
     props?: Record<string, unknown>;
     // (undocumented)
+    randomize?: boolean;
+    // (undocumented)
     rows?: number;
     // (undocumented)
     show?: ShowCondition[];
@@ -517,6 +529,14 @@ export interface FormRendererHandle {
     setValue(key: string, value: unknown): void;
     // (undocumented)
     readonly values: Readonly<Record<string, unknown>>;
+}
+
+// @public (undocumented)
+export interface FormResearch {
+    // (undocumented)
+    order(seed: string, key: string, options: FieldOption[]): FieldOption[];
+    // (undocumented)
+    seed(): string;
 }
 
 // @public (undocumented)

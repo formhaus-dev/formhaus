@@ -19,6 +19,7 @@ import { DraftStore } from '@formhaus/core/cloud';
 import { FieldType } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEvent } from '@formhaus/core';
+import { FormResearch } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';

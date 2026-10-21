@@ -1,9 +1,13 @@
-import { autofilled, errorDomId, fieldDomId, recalled, recalls } from '@formhaus/core/internal';
+import { autofilled, errorDomId, fieldDomId, recalled, recalls, shownOptions } from '@formhaus/core/internal';
 import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useSyncExternalStore } from 'react';
 import { useFieldSnapshot, useRecallSnapshot } from './hooks/useEngineSnapshot';
 import { FieldResolver } from './FieldResolver';
 import type { FieldComponentMap } from './types';
+
+const subscribeNothing = () => () => {};
+const onClient = () => true;
+const onServer = () => false;
 
 export interface ControllerProps {
   engine: FormEngine;
@@ -45,7 +49,8 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
   const handleCommit = useCallback((value: unknown) => onCommit(key, value), [key, onCommit]);
   const handleBlur = useCallback(() => onBlur(key), [key, onBlur]);
   const handleFocus = useCallback(() => onFocus(key), [key, onFocus]);
-  const fieldWithOptions = { ...field, ...(options && { options }), ...(path && { key: path, autoAdvance: undefined }) };
+  const shown = shownOptions(engine, key, field, options, useSyncExternalStore(subscribeNothing, onClient, onServer));
+  const fieldWithOptions = { ...field, ...(shown && { options: shown }), ...(path && { key: path, autoAdvance: undefined }) };
 
   return (
     <FieldResolver

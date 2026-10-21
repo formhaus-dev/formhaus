@@ -32,6 +32,7 @@ export interface FieldOption {
   label: string;
   image?: string;
   exclusive?: boolean;
+  pinned?: boolean;
   i18n?: LabelI18n;
 }
 
@@ -48,6 +49,7 @@ export interface FormField {
   showAny?: ShowCondition[];
   validation?: FieldValidation;
   options?: FieldOption[];
+  randomize?: boolean;
   layout?: 'stack' | 'inline';
   columns?: number;
   optionsFrom?: string;

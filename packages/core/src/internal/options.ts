@@ -1,5 +1,7 @@
+import type { FormEngine } from '../engine';
+import type { EngineInternals } from '../engine/runtime-internals';
 import type { FieldOption, FormField } from '../types';
-import { isGroup } from '../visibility/nodes';
+import { isGroup, optionKey } from '../visibility/nodes';
 
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
@@ -22,10 +24,17 @@ export function imageSource(image: string | undefined): string | undefined {
   }
 }
 
-export const optionKey = (group: string, field: string): string => `${group}.${field}`;
-
 const countTexts = (texts: string[]) =>
   texts.reduce((counts, text) => counts.set(text, (counts.get(text) ?? 0) + 1), new Map<string, number>());
+
+export const shownOptions = (
+  engine: FormEngine,
+  key: string,
+  field: FormField,
+  options: FieldOption[] | undefined,
+  mounted: boolean,
+): FieldOption[] | undefined =>
+  field.randomize && (mounted || (engine as unknown as EngineInternals).lifecycle.seed) ? engine.orderOptions(key, options) : options;
 
 export function optionTexts(options: FieldOption[]): string[] {
   const labels = countTexts(options.map(({ label }) => label));

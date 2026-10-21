@@ -33,6 +33,28 @@ describe('round trip', () => {
     expect(toDefinition(fromDefinition(definition))).toEqual(definition);
   });
 
+  it('keeps randomize and pinned options', () => {
+    const definition: FormDefinition = {
+      formatVersion: '1.6',
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Send' },
+      fields: [
+        {
+          key: 'tools',
+          type: 'radio',
+          label: 'Tools',
+          randomize: true,
+          options: [
+            { value: 'figma', label: 'Figma' },
+            { value: 'other', label: 'Other', pinned: true },
+          ],
+        },
+      ],
+    };
+    expect(toDefinition(fromDefinition(definition))).toEqual(definition);
+  });
+
   it('covers the example definitions', () => {
     expect(examples.length).toBeGreaterThanOrEqual(14);
   });
