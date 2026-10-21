@@ -1,6 +1,6 @@
 ---
 title: "iOS and macOS"
-description: "Render formhaus JSON form definitions natively on iOS and macOS with SwiftUI. The same engine rules, validation and branching as the web."
+description: "Render Formhaus JSON form definitions natively on iOS and macOS with SwiftUI. The same engine rules, validation and branching as the web."
 ---
 
 # iOS and macOS
@@ -51,11 +51,11 @@ The submit handler returns `.ok` or `.rejected`. A rejected submit shows the ser
 
 ## Choose a look
 
-| formhaus | iOS system | Your own |
+| Formhaus | iOS system | Your own |
 |:---:|:---:|:---:|
-| ![The formhaus set](/media/swift/set-formhaus.png) | ![The native iOS set](/media/swift/set-system.png) | ![A custom brand set](/media/swift/set-kiln.png) |
+| ![The Formhaus set](./media/swift/set-formhaus.png) | ![The native iOS set](./media/swift/set-system.png) | ![A custom brand set](./media/swift/set-kiln.png) |
 
-- The formhaus set matches the web renderers and uses the formhaus design tokens.
+- The Formhaus set matches the web renderers and uses the Formhaus design tokens.
 - `.formhausComponents(.system)` renders a native grouped form, like a Settings screen.
 - Register your own SwiftUI views per field type. Types you leave out keep the built-in views.
 
