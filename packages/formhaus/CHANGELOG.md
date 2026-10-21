@@ -1,5 +1,11 @@
 # formhaus
 
+## 0.21.3
+
+### Patch Changes
+
+- The `formhaus-create-form` skill sets format 1.6 for `randomize` and `pinned`, and describes them.
+
 ## 0.21.2
 
 No changes in this release.
