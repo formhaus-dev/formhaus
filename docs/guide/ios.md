@@ -9,21 +9,20 @@ description: "Render formhaus JSON form definitions natively on iOS and macOS wi
 
 [Source](https://github.com/formhaus-dev/formhaus-swift) · [Demo app](https://github.com/formhaus-dev/formhaus-swift/tree/main/Examples/FormhausDemo) · [Changelog](https://github.com/formhaus-dev/formhaus-swift/blob/main/CHANGELOG.md)
 
-<!-- video: formhaus-swift product video, 1080p mp4 + poster, autoplay muted loop -->
-
 ## Install
 
 Add the package with Swift Package Manager:
 
 ```swift
-.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.1")
+.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.3")
 ```
 
 Requires Swift 6.2, iOS 17 or macOS 14. There is no JavaScript runtime.
 
 | formhaus-swift | @formhaus/core | Format |
 |---|---|---|
-| 0.1.0 | 0.22.0 | 1.5 |
+| 0.1.3 | 1.0.0 | 1.5 |
+| 0.1.0 to 0.1.2 | 0.22.0 | 1.5 |
 
 ## Render a form
 
