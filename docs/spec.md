@@ -1046,6 +1046,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `custom-type-name` | warning | A custom field type without `-` or `:`, such as `stars`. Not reported when `unknown-field-type` is |
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
+| `missing-research` | warning, from the engine in development | A field with `randomize` and no `research` option, so the options show in written order. Reported once |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-autocomplete-token` | warning | An `autocomplete` that is not a valid [autofill token](#autocomplete) |
 | `autocomplete-not-applicable` | warning | `autocomplete` on a built-in field type other than `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` |

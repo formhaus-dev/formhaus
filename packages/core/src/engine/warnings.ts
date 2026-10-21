@@ -21,12 +21,15 @@ export function trustDefinition(definition: FormDefinition): FormDefinition {
   return definition;
 }
 
+const reporter = ({ onWarning }: FormEngineOptions) =>
+  onWarning ?? ((issue: DefinitionIssue) => console.warn(`[formhaus] ${issue.message}`));
+
 export function assertDefinition(definition: FormDefinition, options: FormEngineOptions, validators: Record<string, unknown>): void {
   if (parsed.has(definition)) return;
   const issues = developmentIssues(definition, validators) ?? definitionErrors(definition);
   const errors = issues.filter(isError);
   if (errors.length) throw new FormDefinitionError(errors);
-  const warn = options.onWarning ?? ((issue: DefinitionIssue) => console.warn(`[formhaus] ${issue.message}`));
+  const warn = reporter(options);
   for (const issue of issues) warn(issue);
 }
 
@@ -35,16 +38,22 @@ let unordered = false;
 const randomized = (definition: FormDefinition) =>
   getAllFields(definition).some((field) => field.randomize || (isGroup(field) && field.fields.some((item) => item.randomize)));
 
-export function warnUnordered(definition: FormDefinition, { research }: FormEngineOptions): void {
+export function warnUnordered(definition: FormDefinition, options: FormEngineOptions): void {
   let warn: (() => void) | undefined;
   try {
     if (process.env.NODE_ENV !== 'production')
       warn = () => {
-        if (unordered || research || !randomized(definition)) return;
+        if (unordered || options.research || !randomized(definition)) return;
         unordered = true;
-        console.warn(
-          '[formhaus] "randomize" needs the research module, so the options show in written order. Pass research from @formhaus/core/research.',
-        );
+        const hint = 'Pass research from @formhaus/core/research.';
+        const message = `"randomize" needs the research module, so the options show in written order. ${hint}`;
+        reporter(options)({
+          code: 'missing-research',
+          severity: 'warning',
+          path: '',
+          message,
+          hint,
+        });
       };
   } catch {}
   warn?.();
