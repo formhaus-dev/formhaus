@@ -67,8 +67,8 @@ export const sharedDedupe = ['@formhaus/core', 'vue', 'vitepress'];
 export const sharedNav: DefaultTheme.NavItem[] = [
   { text: 'Guide', link: '/guide/' },
   { text: 'Templates', link: '/templates/', activeMatch: '^/templates/' },
-  { text: 'Cloud', link: '/', activeMatch: '^/(cloud/|$)' },
-  { text: 'Framework', link: '/framework' },
+  { text: 'Framework', link: '/', activeMatch: '^/$' },
+  { text: 'Cloud', link: '/cloud', activeMatch: '^/cloud' },
   { text: 'API', link: '/api/definition' },
   { text: 'Builder', link: '/build' },
   { text: 'Playground', link: '/playground' },

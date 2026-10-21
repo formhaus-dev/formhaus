@@ -10,8 +10,8 @@ const landing = computed(() =>
     .includes('lp-page'),
 );
 const links = [
-  { text: 'Cloud', href: '/', match: (path: string) => path === 'index.md' },
-  { text: 'Framework', href: '/framework', match: (path: string) => path === 'framework.md' },
+  { text: 'Framework', href: '/', match: (path: string) => path === 'index.md' },
+  { text: 'Cloud', href: '/cloud', match: (path: string) => path === 'cloud.md' },
   { text: 'Templates', href: '/templates/', match: (path: string) => path.startsWith('templates/') },
   { text: 'Builder', href: '/build', match: (path: string) => path === 'build.md' },
   { text: 'Docs', href: '/guide/', match: () => false },

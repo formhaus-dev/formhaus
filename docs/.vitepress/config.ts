@@ -87,7 +87,7 @@ export default defineConfig({
       },
       {
         text: 'Cloud',
-        items: [{ text: 'Formhaus Cloud', link: '/' }],
+        items: [{ text: 'Formhaus Cloud', link: '/cloud' }],
       },
       {
         text: 'Recipes',

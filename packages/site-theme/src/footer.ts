@@ -17,8 +17,8 @@ export const footerColumns: FooterColumn[] = [
     id: 'product',
     title: 'Product',
     links: [
-      { text: 'Cloud', href: '/' },
-      { text: 'Pricing', href: '/#pricing' },
+      { text: 'Cloud', href: '/cloud' },
+      { text: 'Pricing', href: '/cloud#pricing' },
       { text: 'Templates', href: '/templates/' },
       { text: 'Examples', href: '/guide/examples' },
     ],
