@@ -48,6 +48,7 @@ interface FormField {
   showAny?: ShowCondition[];      // OR conditions for visibility
   validation?: FieldValidation;   // Validation rules
   options?: FieldOption[];        // For select, radio, multiselect; anchor labels for scale and rating
+  randomize?: boolean;            // Random option order per respondent for select, radio, multiselect. Added in 1.1.0
   layout?: 'stack' | 'inline';    // Radio and multiselect option layout. Added in 0.10.0
   columns?: number;               // Picture cards per row, 1 to 4. Added in 0.19.0
   optionsFrom?: string;           // Dynamic options provider key
@@ -215,6 +216,7 @@ interface FieldOption {
   label: string;
   image?: string;                 // Picture URL for radio and multiselect. Added in 0.19.0
   exclusive?: boolean;            // Multiselect only: the only answer when picked. Added in 0.21.0
+  pinned?: boolean;               // Keeps its written position under randomize. Added in 1.1.0
   i18n?: { label?: string };
 }
 ```
@@ -349,6 +351,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `randomize` on fields and `pinned` on options, format 1.6 | 1.1.0 |
 | `{{key}}` answer recall, `exclusive` on options and `autocomplete` on fields, format 1.5 | 0.21.0 |
 | `contains` and `notContains` conditions, format 1.4 | 0.20.0 |
 | `scale` and `rating` types, `image` on options, `columns` on fields, `layout: "matrix"` on sections, format 1.3 | 0.19.0 |
