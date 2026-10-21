@@ -81,6 +81,7 @@ function attribution(): Record<string, string> {
 export interface CloudSubmitOptions {
   skippedSteps?: string[];
   challengeToken?: string;
+  challengeWait?: number;
 }
 
 export type CloudSubmitFn = (values: Record<string, unknown>, options?: CloudSubmitOptions) => Promise<CloudSubmission>;
@@ -88,7 +89,7 @@ export type CloudSubmitFn = (values: Record<string, unknown>, options?: CloudSub
 export function createSubmitter(options: CloudSubmitterOptions): CloudSubmitFn {
   let pending: { stable: string; key: string } | null = null;
 
-  return async (values, { skippedSteps = [], challengeToken } = {}) => {
+  return async (values, { skippedSteps = [], challengeToken, challengeWait } = {}) => {
     const body = JSON.stringify({
       attribution: attribution(),
       ...options.extraBody?.(),
@@ -98,6 +99,7 @@ export function createSubmitter(options: CloudSubmitterOptions): CloudSubmitFn {
       _fh_rt: options.renderToken,
       ...(options.firstRenderToken && { _fh_rt_first: options.firstRenderToken }),
       ...(challengeToken && { _fh_ts: challengeToken }),
+      ...(challengeWait !== undefined && { _fh_tw: challengeWait }),
     });
     const stable = JSON.stringify([values, skippedSteps]);
     if (pending?.stable !== stable) pending = { stable, key: randomId() };

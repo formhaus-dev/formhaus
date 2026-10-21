@@ -62,6 +62,10 @@ export function FormhausForm({
     },
     [warm],
   );
+  const ready = !!cloud.challenge && !!cloud.definition && !cloud.done;
+  useEffect(() => {
+    if (ready) warm();
+  }, [ready, cloud.revision, warm]);
   const notice = useRef<HTMLDivElement>(null);
   const act = useCallback((action: Exclude<CloudAction, null>) => {
     if (action === 'reload') window.location.reload();

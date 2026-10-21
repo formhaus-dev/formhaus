@@ -188,9 +188,11 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         try {
           const sent = state.definition ? await upload.upload(state.definition, values, controller.signal) : values;
           if (!alive()) return;
+          const started = Date.now();
           const token = await check?.token();
+          const challengeWait = check && Date.now() - started;
           sending = true;
-          const submission = await submitter(sent, { skippedSteps, challengeToken: token });
+          const submission = await submitter(sent, { skippedSteps, challengeToken: token, challengeWait });
           check?.spend();
           if (!alive()) return;
           drafts?.clear(options.id);
