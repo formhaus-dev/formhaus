@@ -21,6 +21,8 @@ export const footerColumns: FooterColumn[] = [
       { text: 'Pricing', href: '/cloud#pricing' },
       { text: 'Templates', href: '/templates/' },
       { text: 'Examples', href: '/guide/examples' },
+      { text: 'Form builder', href: '/build' },
+      { text: 'Playground', href: '/playground' },
     ],
   },
   {
@@ -28,11 +30,8 @@ export const footerColumns: FooterColumn[] = [
     title: 'Developers',
     links: [
       { text: 'Docs', href: '/guide/' },
-      { text: 'Form builder', href: '/build' },
-      { text: 'Playground', href: '/playground' },
       { text: 'API reference', href: '/api/definition' },
       { text: 'MCP server', href: '/guide/mcp' },
-      { text: 'Changelog', href: '/changelog' },
       { text: 'GitHub', href: footerRepo, dest: 'github' },
       { text: 'npm', href: 'https://www.npmjs.com/package/@formhaus/core', dest: 'npm' },
     ],
@@ -41,6 +40,7 @@ export const footerColumns: FooterColumn[] = [
     id: 'company',
     title: 'Company',
     links: [
+      { text: 'Changelog', href: '/changelog' },
       { text: 'Legal', href: '/legal/' },
       { text: 'Privacy', href: '/legal/privacy' },
       { text: 'Terms', href: '/legal/terms' },
