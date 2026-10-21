@@ -56,7 +56,7 @@ The identity formatter makes the expected texts the same on every platform. The 
 
 ## Option order
 
-A vector has `seed`, `key`, `count`, `pinned` and `order`. Build a list of `count` options in which the indexes in `pinned` are pinned, and shuffle it with `seed` and `key` as the specification describes under Option order. `order` lists the written index of the option shown at each position.
+Option order is an opt-in research feature: `@formhaus/core/research` in TypeScript and the FormhausResearch module in the Swift port. The vectors and the `option-order` scenarios run with it. A vector has `seed`, `key`, `count`, `pinned` and `order`. Build a list of `count` options in which the indexes in `pinned` are pinned, and shuffle it with `seed` and `key` as the specification describes under Option order. `order` lists the written index of the option shown at each position.
 
 ```json
 { "seed": "seed", "key": "plan", "count": 4, "pinned": [0], "order": [0, 3, 1, 2] }

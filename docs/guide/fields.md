@@ -318,25 +318,22 @@ Add `image` to the options of a `radio` or `multiselect` field. The options beco
 
 ## Random option order
 
-Set `"randomize": true` on a `radio`, `multiselect` or `select` field to show each respondent the options in their own order. `"pinned": true` keeps an option in its written place, and exclusive options always stay. Requires `"formatVersion": "1.6"` and `@formhaus/core` 1.1.
+Set `"randomize": true` on a `radio`, `multiselect` or `select` field to show each respondent the options in their own order, and `"pinned": true` on an option to keep it in place. The order needs the opt-in [research module](/guide/research). Requires `"formatVersion": "1.6"` and `@formhaus/core` 1.1.
 
 ```json
 {
-  "key": "tools",
-  "type": "multiselect",
-  "label": "Which tools did you use last month?",
+  "key": "plan",
+  "type": "radio",
+  "label": "Which plan fits you best?",
   "randomize": true,
   "options": [
-    { "value": "figma", "label": "Figma" },
-    { "value": "sketch", "label": "Sketch" },
-    { "value": "framer", "label": "Framer" },
-    { "value": "other", "label": "Other", "pinned": true },
-    { "value": "none", "label": "None of these", "exclusive": true }
+    { "value": "free", "label": "Free" },
+    { "value": "pro", "label": "Pro" },
+    { "value": "team", "label": "Team" },
+    { "value": "unsure", "label": "Not sure yet", "pinned": true }
   ]
 }
 ```
-
-The order comes from the engine `seed` and stays the same through Back, re-renders and `reset()`. Pass the `seed` prop to show a returning respondent the same order. `engine.orderOptions(key)` returns the shown order, for example to store it with the answers. Values and validation do not change. Fields in a matrix section keep the written order.
 
 ## Switch
 

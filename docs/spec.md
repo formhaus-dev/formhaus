@@ -276,6 +276,7 @@ The order depends only on the engine `seed`, the order key, the number of option
 
 The conformance corpus file `option-order.json` lists vectors of seeds, keys and orders.
 
+- `@formhaus/core` applies the order through the opt-in [research module](/guide/research), `@formhaus/core/research`. Without it, options show in written order.
 - The seed is the `seed` engine option or, without it, 16 random bytes as hex. It does not change for the life of the engine, so the order stays the same across re-renders, Back, `goToStep()`, `reset()`, visibility changes and `replaceDefinition()`. A new engine shows a new order unless the host passes the same seed.
 - Values, defaults, conditions, validation and the submit payload do not change. `validateSubmission()` ignores `randomize`.
 - The order is not applied to other field types, to a field in a section with `layout: "matrix"`, or when fewer than two options are unpinned. `randomize` on another type or in a matrix section, and `pinned` on a field without `randomize`, are `randomize-not-applicable` warnings.

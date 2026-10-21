@@ -13,7 +13,7 @@ description: "Render Formhaus forms on the server with Next.js App Router or Nux
 - Field ids come from React `useId` and Vue `useId`. On Vue 3.3 and 3.4 the ids come from the component's position in the app, so the server and the client get the same ids.
 - Hidden fields with a `source` render their `defaultValue` on the server. Page values such as the query string, referrer, language and time zone are read after hydration.
 - Focus, the bot check and draft restore run after mount.
-- Fields with [`randomize`](/guide/fields#random-option-order) render the written order on the server and shuffle after hydration. Pass a per-visitor `seed` prop, such as a session id or a cookie value, to render the shown order on the server too.
+- Fields with [`randomize`](/guide/research) render the written order on the server and shuffle after hydration. Pass a per-visitor `seed` prop with `research`, such as a session id or a cookie value, to render the shown order on the server too.
 
 ## Next.js App Router
 

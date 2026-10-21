@@ -24,12 +24,13 @@ const engine = new FormEngine(definition, initialValues, {
   lang,
   formatRecall,
   seed,
+  research,
 });
 ```
 
 `lang` and `formatRecall` control how [recalled answers](/spec#answer-recall) look: `formatRecall(value, field, locale)` returns the text of one answer, and `lang` wins over `definition.lang`. Renderers take both as props.
 
-`seed` sets the [option order](/spec#option-order) of fields with `randomize`. Without it, the engine generates a random one. Pass the same seed, such as a session id, to show a respondent the same order again and to render the same order on the server and the client. Renderers take it as a prop.
+`research` from [`@formhaus/core/research`](/guide/research) turns on the [option order](/spec#option-order) of fields with `randomize`. `seed` sets that order. Without it, the research module generates one. Pass the same seed, such as a session id, to show a respondent the same order again and to render the same order on the server and the client. Renderers take both as props.
 
 `messages` is a [message catalog](/spec#message-and-label-catalogs) or a function `(key, params, field) => string | undefined`. It wins over `definition.messages` and is fixed for the lifetime of the engine. Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
@@ -97,7 +98,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `canGoNext` | `boolean` | Whether current-step validation passes |
 | `progress` | `{ current: number; total: number }` | One-based progress through visible steps on the active path |
 | `isMultiStep` | `boolean` | Whether the definition uses steps |
-| `seed` | `string` | The `seed` option, or the generated seed. Added in 1.1.0 |
+| `seed` | `string` | The `seed` option, the seed the research module generated, or `''` without either. Added in 1.1.0 |
 
 ## Values and validation
 
@@ -110,7 +111,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `validateField(key)` | `string \| null` | Validates one visible field. When it passes, it also removes the field's server error |
 | `getSubmitValues()` | `Partial<TValues>` | Returns visible field values on the active path, excluding inactive branch answers |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
-| `orderOptions(key, options?)` | `FieldOption[]` | The options of a field in [shown order](/spec#option-order). `options` replaces the field's own list, such as a list from an options provider. For a group field, `key` is `group.field` or an item path. Added in 1.1.0 |
+| `orderOptions(key, options?)` | `FieldOption[]` | The options of a field in [shown order](/spec#option-order). `options` replaces the field's own list, such as a list from an options provider. For a group field, `key` is `group.field` or an item path. Without `research`, returns the written order. Added in 1.1.0 |
 | `replaceDefinition(definition)` | `void` | Switches to a new definition and keeps the answers, the step and the errors that still fit. Throws `FormDefinitionError` on an invalid definition and changes nothing |
 
 ::: warning
