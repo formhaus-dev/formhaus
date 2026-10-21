@@ -34,7 +34,7 @@ const engine = new FormEngine(definition, {}, { research, seed: sessionId });
 ```
 :::
 
-`useFormEngine` and `HeadlessFormRenderer` take the same `research` and `seed` options. Without `research`, the bundle stays smaller and options show in written order. In development, a definition with `randomize` then logs one console warning.
+`useFormEngine` and `HeadlessFormRenderer` take the same `research` and `seed` options. Without `research`, the bundle stays smaller and options show in written order. In development, a definition with `randomize` then reports one `missing-research` warning through `onWarning`, or the console without it.
 
 ## Random option order
 
@@ -56,8 +56,8 @@ Set `"randomize": true` on a `radio`, `multiselect` or `select` field. `"pinned"
 }
 ```
 
-- The order comes from `seed`. It stays the same through Back, re-renders, `reset()` and `replaceDefinition()`. Pass the same seed, such as a session id, to show a returning respondent the same order.
-- Without `seed`, the research module generates one per engine. `engine.seed` returns it.
+- The order comes from `seed`. On one engine it stays the same through Back, re-renders, `reset()` and `replaceDefinition()`. A renderer given a new `definition` without `keepValues` builds a new engine, so pass `seed`, such as a session id, to keep the order then and for a returning respondent.
+- Without `seed`, or with an empty one, the research module generates one per engine. `engine.seed` returns it.
 - `engine.orderOptions(key)` returns the options in shown order, so you can store it with the answers. For a group field, pass `group.field`.
 - Values, conditions and validation do not change. Fields in a matrix section keep the written order.
 - On the server without `seed`, the renderers show the written order and shuffle after hydration. Pass a per-visitor `seed` to render the shown order on the server too.
