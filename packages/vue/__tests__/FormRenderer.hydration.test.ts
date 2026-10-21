@@ -9,6 +9,7 @@ import { useLocalizedForm } from '../src/i18n';
 import { definition as localizedDefinition, overlay } from './i18n.fixtures';
 import { choices, choiceValues, conditions, group, groupValues, hidden, plain, questionTypes, questionValues, steps } from './ssr.fixtures';
 import { randomized, shownOrder, toolValues, writtenOrder } from './ssr.fixtures';
+import { research } from '@formhaus/core/research';
 
 const BROWSER_GLOBALS = ['window', 'document', 'localStorage', 'sessionStorage', 'location', 'requestAnimationFrame'] as const;
 const apps: App[] = [];
@@ -138,7 +139,7 @@ describe('FormRenderer hydration', () => {
   });
 
   it('renders the seeded option order on the server and the client', async () => {
-    const { html, container } = await hydrate(form(randomized, { seed: 'visitor-1' }));
+    const { html, container } = await hydrate(form(randomized, { seed: 'visitor-1', research }));
     const order = shownOrder('visitor-1');
     expect(order).not.toEqual(writtenOrder);
     expect(toolValues(serverDom(html))).toEqual(order);
@@ -147,7 +148,7 @@ describe('FormRenderer hydration', () => {
 
   it('renders the written option order on the server and shuffles it after hydration without a seed', async () => {
     vi.stubGlobal('crypto', { getRandomValues: (bytes: Uint8Array) => bytes.fill(7) });
-    const { html, container } = await hydrate(form(randomized));
+    const { html, container } = await hydrate(form(randomized, { research }));
     await nextTick();
     expect(toolValues(serverDom(html))).toEqual(writtenOrder);
     expect(shownOrder('07'.repeat(16))).not.toEqual(writtenOrder);

@@ -1,4 +1,5 @@
 import { FormEngine, type FormDefinition } from '@formhaus/core';
+import { research } from '@formhaus/core/research';
 
 export const plain: FormDefinition = {
   id: 'plain',
@@ -191,6 +192,7 @@ export const randomized: FormDefinition = {
 };
 
 export const writtenOrder = randomized.fields![0].options!.map(({ value }) => value);
-export const shownOrder = (seed: string) => new FormEngine(randomized, {}, { seed }).orderOptions('tools').map(({ value }) => value);
+export const shownOrder = (seed: string) =>
+  new FormEngine(randomized, {}, { seed, research }).orderOptions('tools').map(({ value }) => value);
 export const toolValues = (root: ParentNode) =>
   [...root.querySelectorAll<HTMLInputElement>('input[name="tools"]')].map(({ value }) => value);

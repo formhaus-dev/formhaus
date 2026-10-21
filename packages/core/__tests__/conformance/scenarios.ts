@@ -12,6 +12,7 @@ import {
   type Step,
 } from './scenario-format';
 import { flush, Script } from './scenario-script';
+import { research } from '../../src/research';
 
 export { scenarioFiles } from './scenario-format';
 
@@ -35,6 +36,7 @@ export class ScenarioRun {
       onFormEvent: (event) => this.log.push({ event: plain(event) }),
       onWarning: ({ code, path }) => this.log.push({ warning: { code, path } }),
       seed: this.scenario.seed,
+      research,
     };
     if (hooks.onBeforeStepChange)
       options.onBeforeStepChange = (context) => {

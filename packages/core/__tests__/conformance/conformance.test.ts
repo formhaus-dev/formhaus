@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, recallText, type FormDefinition } from '../../src';
-import { optionOrder } from '../../src/engine/option-order';
+import { optionOrder } from '../../src/research/option-order';
 import { asStored } from '../../src/engine/recall-format';
 import { textSlots } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
