@@ -1,5 +1,12 @@
 # formhaus
 
+## 0.21.4
+
+### Patch Changes
+
+- `capabilities` says Formhaus Cloud hosted pages and embeds shuffle `randomize` options and store the shown order.
+- The `formhaus-create-form` skill says Formhaus Cloud hosted pages shuffle `randomize` options.
+
 ## 0.21.3
 
 ### Patch Changes
