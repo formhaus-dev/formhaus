@@ -11,7 +11,7 @@ Register your own SwiftUI views per field type with `.formhausComponents`. Types
 
 ## Component map
 
-Each `.field` call maps one field type to a view. Start from `.standard`, `.system` or `.headless`:
+Each `.field` call maps one field type to a view. Start from `.standard` (the Formhaus set), `.system` (native iOS) or `.headless` (no built-in views):
 
 ```swift
 import FormhausCore
@@ -36,11 +36,11 @@ struct SignupView: View {
 }
 ```
 
-Switching the components of a running form keeps its values, step and errors.
+The submit handler here returns `.ok` without sending anything. Use your own handler, as in [Render a form](/guide/ios#render-a-form). Switching the components of a running form keeps its values, step and errors.
 
 ## Fields
 
-Every view receives a `FieldContext`:
+Each view registered with `.field` receives a `FieldContext`:
 
 | Member | What it is |
 |---|---|
@@ -49,7 +49,7 @@ Every view receives a `FieldContext`:
 | `textBinding`, `boolBinding` | Bindings for `TextField` and `Toggle` |
 | `setValue(_:)`, `commit(_:)` | Write a value; `commit` also moves to the next step when the field sets `autoAdvance` |
 | `options` | Options of choice fields, each with `value`, `label` and `image` |
-| `error`, `isInvalid` | Message to show under the field |
+| `error`, `isInvalid` | Error message to show under the field, and whether there is one |
 | `isRequired`, `isLocked` | Required flag, and whether the form is busy or the field is disabled |
 | `accessibilityName` | Label with the required marker for VoiceOver |
 | `field` | The full field definition |
@@ -78,7 +78,7 @@ struct AcmeTextField: View {
 }
 ```
 
-`.formhausFocus` moves focus to the first invalid field after a failed submit and keeps the keyboard while the form is busy. `.formhausScrollAnchor` lets the form scroll to the field from the error summary.
+`.formhausFocus` moves focus to the first invalid field after a failed submit. It keeps the keyboard up while the form is busy. `.formhausScrollAnchor` lets the form scroll to the field from the error summary.
 
 A select with the native `Picker`:
 
@@ -150,4 +150,4 @@ FormhausForm(definition: definition) { values, _ in .ok }
 
 ## Theme only
 
-To keep the built-in views and change colours, type and radii, set a `FormhausTheme` with `.formhausTheme` instead. Custom views read the resolved tokens from `@Environment(\.formhausTokens)`. See [Theming](https://github.com/formhaus-dev/formhaus-swift#theming) in the README.
+To keep the built-in views and change colors, fonts and radii, set a `FormhausTheme` with `.formhausTheme` instead. Custom views read the resolved tokens from `@Environment(\.formhausTokens)`. See [Theming](https://github.com/formhaus-dev/formhaus-swift#theming) in the README.
