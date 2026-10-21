@@ -57,7 +57,7 @@ The submit handler returns `.ok` or `.rejected`. A rejected submit shows the ser
 
 - The formhaus set matches the web renderers and uses the formhaus design tokens.
 - `.formhausComponents(.system)` renders a native grouped form, like a Settings screen.
-- Register your own SwiftUI views per field type. Types you leave out keep the built-in views.
+- Register your own SwiftUI views per field type. Types you leave out keep the built-in views. See [SwiftUI components](/guide/integrations/swiftui).
 
 ```swift
 FormhausForm(definition: definition, onSubmit: send)

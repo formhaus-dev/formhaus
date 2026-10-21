@@ -128,6 +128,7 @@ export default defineConfig({
           { text: 'Material UI', link: '/guide/integrations/mui' },
           { text: 'Vuetify', link: '/guide/integrations/vuetify' },
           { text: 'iOS and macOS', link: '/guide/ios' },
+          { text: 'SwiftUI components', link: '/guide/integrations/swiftui' },
         ],
       },
       {
