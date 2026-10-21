@@ -82,8 +82,8 @@ export interface FormRendererProps {
   onStepValidate?: Callback<StepValidateFn>;
   lang?: string;
   formatRecall?: Callback<RecallFormatFn>;
-  seed?: string;
-  research?: FormResearch;
+  seed?: string | undefined;
+  research?: FormResearch | undefined;
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;

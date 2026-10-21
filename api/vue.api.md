@@ -291,9 +291,9 @@ export interface FormRendererProps {
     // (undocumented)
     progressComponent?: Component;
     // (undocumented)
-    research?: FormResearch;
+    research?: FormResearch | undefined;
     // (undocumented)
-    seed?: string;
+    seed?: string | undefined;
     // (undocumented)
     stepErrorMarks?: boolean;
     // (undocumented)
