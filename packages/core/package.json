@@ -35,6 +35,10 @@
       "types": "./dist/fix.d.ts",
       "default": "./dist/fix.js"
     },
+    "./research": {
+      "types": "./dist/research.d.ts",
+      "default": "./dist/research.js"
+    },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
     "./schema.json": "./schema/form-definition.schema.json",

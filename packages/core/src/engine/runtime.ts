@@ -13,7 +13,7 @@ import { submitForm } from './submission';
 import { loadDefinition, replaceDefinition } from './replace-definition';
 import { writeValue } from './write-value';
 import { exclusiveWrite } from './exclusive';
-import { orderOptions, randomSeed } from './option-order';
+import { orderOptions } from './option-target';
 import type { VisibilityState } from './visibility-state';
 
 export class FormEngine<TValues extends object = Record<string, unknown>> {
@@ -39,7 +39,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     options?: FormEngineOptions,
   ) {
     this.lifecycle = options ?? {};
-    this.seed = options?.seed ?? randomSeed();
+    this.seed = options?.seed ?? options?.research?.seed() ?? '';
     this.validators = options?.validators ?? {};
     this.state = initialState({});
     loadDefinition(this as never, definition, () => initialValues as Record<string, unknown> | undefined);

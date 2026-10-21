@@ -1,6 +1,7 @@
 import type { DefinitionIssue } from '../definition-validation';
 import type { FormEvent, GoToStepResult } from '../types/analytics';
 import type { MessageSource, ValidatorFn } from '../validation';
+import type { FieldOption } from '../types';
 import type { RecallFormatFn } from './recall-format';
 
 export type { GoToStepResult };
@@ -21,6 +22,11 @@ export type AfterSubmitFn = (values: Record<string, unknown>, skippedSteps: stri
 export type SubmitResult = { ok: true } | { ok: false; errors?: Record<string, string>; formErrors?: string[] };
 export type SubmitHandler = (values: Record<string, unknown>, skippedSteps: string[]) => void | SubmitResult | Promise<void | SubmitResult>;
 
+export interface FormResearch {
+  seed(): string;
+  order(seed: string, key: string, options: FieldOption[]): FieldOption[];
+}
+
 export interface FormEngineOptions {
   onBeforeStepChange?: BeforeStepChangeFn;
   onAfterStepChange?: AfterStepChangeFn;
@@ -34,4 +40,5 @@ export interface FormEngineOptions {
   lang?: string;
   formatRecall?: RecallFormatFn;
   seed?: string;
+  research?: FormResearch;
 }

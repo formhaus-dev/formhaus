@@ -1,5 +1,6 @@
 export type {
   FormEngineOptions,
+  FormResearch,
   StepValidateFn,
   StepChangeContext,
   BeforeStepChangeFn,
