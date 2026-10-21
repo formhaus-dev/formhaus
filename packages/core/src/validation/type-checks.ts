@@ -31,6 +31,7 @@ export const BUILT_IN_TYPES = [
 export const SCALE_TYPES = ['scale', 'rating'];
 export const NUMBER_TYPES = ['number', ...SCALE_TYPES];
 export const LIST_TYPES = ['multiselect'];
+export const RANDOMIZED_TYPES = ['radio', 'multiselect', 'select'];
 
 export function scaleRange({ type, validation }: FormField): [number, number] {
   return [type === 'rating' ? 1 : (validation?.min ?? 1), validation?.max ?? 5];
