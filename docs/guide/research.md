@@ -32,6 +32,12 @@ import { research } from '@formhaus/core/research';
 
 const engine = new FormEngine(definition, {}, { research, seed: sessionId });
 ```
+
+```swift [Swift]
+import FormhausResearch
+
+FormhausForm(definition: definition, options: FormEngineOptions(seed: sessionId, research: Research()), onSubmit: send)
+```
 :::
 
 In Vue, warnings arrive through the `@warning` event: `<FormRenderer @warning="onWarning" ... />`.
