@@ -19,6 +19,7 @@ export interface ScenarioProps {
   onFieldChange?: (key: string, value: unknown, values: Record<string, unknown>) => void;
   components?: Record<string, unknown>;
   confirmRemove?: boolean;
+  seed?: string;
   optionsProviders?: Record<string, (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>>;
 }
 
