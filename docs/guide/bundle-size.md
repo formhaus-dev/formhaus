@@ -15,14 +15,14 @@ CI fails a pull request that goes over these limits in `scripts/size/measure.mjs
 
 | App imports | Limit | Measured |
 |---|---|---|
-| Every export of `@formhaus/core` | 27 KB | 24.7 KB |
-| Every export of `@formhaus/core` and `@formhaus/react` | 33 KB | 29.8 KB |
-| Every export of `@formhaus/core` and `@formhaus/vue` | 36 KB | 33.2 KB |
-| `FormEngine` from `@formhaus/core` | 19 KB | 17.4 KB |
-| `useFormEngine` from `@formhaus/react`, with core | 20 KB | 18.0 KB |
-| `useFormEngine` from `@formhaus/vue`, with core | 20 KB | 18.0 KB |
-| `FormRenderer` from `@formhaus/react`, with core | 31 KB | 29.6 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 35 KB | 32.9 KB |
+| Every export of `@formhaus/core` | 27 KB | 25.7 KB |
+| Every export of `@formhaus/core` and `@formhaus/react` | 33 KB | 30.9 KB |
+| Every export of `@formhaus/core` and `@formhaus/vue` | 36 KB | 34.3 KB |
+| `FormEngine` from `@formhaus/core` | 19 KB | 18.2 KB |
+| `useFormEngine` from `@formhaus/react`, with core | 20 KB | 18.8 KB |
+| `useFormEngine` from `@formhaus/vue`, with core | 20 KB | 18.8 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 31 KB | 30.6 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 35 KB | 33.9 KB |
 
 <!-- size:limits:end -->
 
@@ -34,10 +34,10 @@ The entry you import sets the size. React and Vue are not counted.
 
 | Entry | You write | React | Vue |
 |---|---|---|---|
-| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 17.4 KB | 17.4 KB |
-| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 18.0 KB | 18.0 KB |
-| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 26.2 KB | 28.0 KB |
-| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 29.6 KB | 32.9 KB |
+| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 18.2 KB | 18.2 KB |
+| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 18.8 KB | 18.8 KB |
+| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 27.2 KB | 29.1 KB |
+| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 30.6 KB | 33.9 KB |
 
 <!-- size:paths:end -->
 
@@ -47,10 +47,10 @@ These cost the same on any path, and only when imported:
 
 | Import | Adds |
 |---|---|
-| `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 5.9 KB |
-| `@formhaus/core/cloud` | 3.1 KB |
+| `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 6.1 KB |
+| `@formhaus/core/cloud` | 3.2 KB |
 | `@formhaus/core/i18n` | 3.8 KB |
-| `@formhaus/core/fix` | 9.4 KB |
+| `@formhaus/core/fix` | 9.6 KB |
 | Engine warnings in development | 0 KB in production |
 
 <!-- size:addons:end -->
@@ -95,9 +95,9 @@ The same entries next to other form libraries. The second table changes only whe
 
 | Formhaus | gzip | State and validation | Rendering | Multi-step | Same validation on the server | JSON definitions |
 |---|---|---|---|---|---|---|
-| `@formhaus/core` `FormEngine` only | 17.4 KB | Yes | No | Yes | `validateSubmission()` | Yes |
-| `@formhaus/core` + `@formhaus/react` | 29.8 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
-| `@formhaus/core` + `@formhaus/vue` | 33.2 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` `FormEngine` only | 18.2 KB | Yes | No | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` + `@formhaus/react` | 30.9 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` + `@formhaus/vue` | 34.3 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
 
 <!-- size:formhaus:end -->
 

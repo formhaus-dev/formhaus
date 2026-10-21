@@ -290,6 +290,8 @@ export interface FormRendererProps {
     // (undocumented)
     progressComponent?: Component;
     // (undocumented)
+    seed?: string;
+    // (undocumented)
     stepErrorMarks?: boolean;
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
