@@ -39,6 +39,13 @@ describe('option order', () => {
     expect(warn.mock.calls[0][0]).toContain('@formhaus/core/research');
   });
 
+  it('treats an empty seed as no seed', () => {
+    const first = new FormEngine(definition, {}, { seed: '', research });
+    expect(first.seed).toMatch(/^[0-9a-f]{32}$/);
+    expect(new FormEngine(definition, {}, { seed: '', research }).seed).not.toBe(first.seed);
+    expect(shownOptions(first, 'tools', definition.fields![0], options, false)).toBe(options);
+  });
+
   it('generates a different 32 digit hex seed for each engine', () => {
     const first = new FormEngine(definition, {}, { research });
     expect(first.seed).toMatch(/^[0-9a-f]{32}$/);

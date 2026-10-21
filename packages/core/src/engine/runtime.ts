@@ -39,7 +39,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     options?: FormEngineOptions,
   ) {
     this.lifecycle = options ?? {};
-    this.seed = options?.seed ?? options?.research?.seed() ?? '';
+    this.seed = options?.seed || options?.research?.seed() || '';
     this.validators = options?.validators ?? {};
     this.state = initialState({});
     loadDefinition(this as never, definition, () => initialValues as Record<string, unknown> | undefined);

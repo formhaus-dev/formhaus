@@ -34,9 +34,7 @@ export const shownOptions = (
   options: FieldOption[] | undefined,
   mounted: boolean,
 ): FieldOption[] | undefined =>
-  field.randomize && (mounted || (engine as unknown as EngineInternals).lifecycle.seed !== undefined)
-    ? engine.orderOptions(key, options)
-    : options;
+  field.randomize && (mounted || (engine as unknown as EngineInternals).lifecycle.seed) ? engine.orderOptions(key, options) : options;
 
 export function optionTexts(options: FieldOption[]): string[] {
   const labels = countTexts(options.map(({ label }) => label));
