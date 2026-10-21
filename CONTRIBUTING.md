@@ -56,7 +56,7 @@ Opens at http://localhost:5173.
 
 `FormEngine` is at 17.4 of 19 KB gzipped. Anything not needed to run a form goes into a subpath entry or a renderer, not into the engine.
 
-- `pnpm size` measures every entry against its budget in `scripts/bundle-budgets.json` and the per-entry hard limits in `scripts/size/measure.mjs`. CI fails over a limit.
+- `pnpm size` measures every entry in `scripts/bundle-entries.json` and checks the hard limits in `scripts/size/measure.mjs`. CI fails over a hard limit.
 - `pnpm size:docs` rewrites the size tables in the docs. CI fails when a cell is more than 0.5 KB off.
 - `pnpm size:compare` installs the other libraries from npm and updates their table in [Bundle size](docs/guide/bundle-size.md). CI does not run it.
 
