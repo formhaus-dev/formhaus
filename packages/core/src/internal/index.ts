@@ -29,6 +29,7 @@ export {
   optionTexts,
   providedOptions,
   sameOptions,
+  shownOptions,
   type OptionSource,
   type OptionsProvider,
 } from './options';
