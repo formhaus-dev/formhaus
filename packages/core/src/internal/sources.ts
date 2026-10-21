@@ -47,6 +47,6 @@ export function applySources(engine: FormEngine, initialValues?: Record<string, 
   const values = resolveSources(engine.definition, browserSources(), initialValues);
   const keys = Object.keys(values);
   if (!keys.length) return;
-  (engine as unknown as EngineInternals).visibility.seed(values);
+  (engine as unknown as EngineInternals).visibility.seedStarts(values);
   for (const key of keys) engine.setValue(key, values[key]);
 }
