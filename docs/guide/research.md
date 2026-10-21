@@ -34,7 +34,9 @@ const engine = new FormEngine(definition, {}, { research, seed: sessionId });
 ```
 :::
 
-`useFormEngine` and `HeadlessFormRenderer` take the same `research` and `seed` options. Without `research`, the bundle stays smaller and options show in written order. In development, a definition with `randomize` then reports one `missing-research` warning through `onWarning`, or the console without it.
+In Vue, warnings arrive through the `@warning` event: `<FormRenderer @warning="onWarning" ... />`.
+
+`useFormEngine` and `HeadlessFormRenderer` take the same `research` and `seed` options. Without `research`, the bundle stays smaller and options show in written order. In development, a definition with `randomize` then reports `missing-research` through `onWarning`, or the console without it. It is reported once per page load (or Node process), not per engine. Formhaus Cloud hosted pages and embeds show the written order for now.
 
 ## Random option order
 

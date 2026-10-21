@@ -39,6 +39,6 @@ export interface FormEngineOptions {
   onFormEvent?: (event: FormEvent) => void;
   lang?: string;
   formatRecall?: RecallFormatFn;
-  seed?: string;
-  research?: FormResearch;
+  seed?: string | undefined;
+  research?: FormResearch | undefined;
 }

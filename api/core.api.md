@@ -356,9 +356,9 @@ export interface FormEngineOptions {
     // (undocumented)
     onWarning?: (issue: DefinitionIssue) => void;
     // (undocumented)
-    research?: FormResearch;
+    research?: FormResearch | undefined;
     // (undocumented)
-    seed?: string;
+    seed?: string | undefined;
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }
