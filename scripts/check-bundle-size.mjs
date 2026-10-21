@@ -14,14 +14,14 @@ const PACKAGE_EXTERNALS = [
   'vue',
 ];
 
-const BUDGETS = JSON.parse(readFileSync(new URL('./bundle-budgets.json', import.meta.url), 'utf8'));
+const ENTRIES = JSON.parse(readFileSync(new URL('./bundle-entries.json', import.meta.url), 'utf8'));
 const json = process.argv.includes('--json');
 const log = json ? () => {} : console.log;
 
 const sizes = { budgets: {}, apps: {} };
 const violations = [];
 
-for (const [name, budget] of Object.entries(BUDGETS)) {
+for (const name of ENTRIES) {
   const [target, mode = 'development'] = name.split(':');
   const [module, only] = target.split('#');
   const [pkg, entry = 'index'] = module.split('/');
@@ -30,8 +30,7 @@ for (const [name, budget] of Object.entries(BUDGETS)) {
     ? gzip(readFileSync(`packages/${pkg}/${entry}`))
     : await bundleSize(only ? `export { ${only} } from '${file}';` : `export * from '${file}';`, { mode, external: PACKAGE_EXTERNALS });
   sizes.budgets[name] = size;
-  log(`@formhaus/${name}: ${size} B gzipped (budget ${budget} B)`);
-  if (size > budget) violations.push(`@formhaus/${name} is ${size - budget} B over budget`);
+  log(`@formhaus/${name}: ${size} B gzipped`);
 }
 
 log('');

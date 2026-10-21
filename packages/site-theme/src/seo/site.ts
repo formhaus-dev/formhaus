@@ -11,8 +11,8 @@ const packageVersion = (name: string): string =>
 export const coreVersion = packageVersion('core');
 export const mcpVersion = packageVersion('mcp');
 
-const budgets = JSON.parse(readFileSync(new URL('../../../../scripts/bundle-budgets.json', import.meta.url), 'utf8'));
-export const coreBudgetKB = Math.ceil(budgets.core / 1024);
+const limits = JSON.parse(readFileSync(new URL('../../../../scripts/size/hard-limits.json', import.meta.url), 'utf8'));
+export const coreBudgetKB = Math.ceil(limits.core / 1024);
 
 export function pageUrl(relativePath: string): string {
   const path = relativePath.replace(/(^|\/)index\.md$/, '$1').replace(/\.md$/, '');
