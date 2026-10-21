@@ -100,7 +100,7 @@ interface FormField {
   showAny?: ShowCondition[];  // field visible when ANY condition true
   validation?: FieldValidation;
   options?: FieldOption[];    // for select, multiselect, radio; anchor labels on the first, middle and last point of scale and rating
-  randomize?: boolean;        // select, multiselect, radio: random option order per respondent (format 1.6); code passes research from @formhaus/core/research; Formhaus Cloud hosted pages and embeds show the written order for now
+  randomize?: boolean;        // select, multiselect, radio: random option order per respondent (format 1.6); code passes research from @formhaus/core/research; Formhaus Cloud hosted pages and embeds shuffle and store the shown order
   layout?: 'stack' | 'inline'; // radio/multiselect; inline only for a few short options
   optionsFrom?: string;       // dynamic options loaded at runtime
   optionsDependsOn?: string[];
