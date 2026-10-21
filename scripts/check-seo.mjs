@@ -106,7 +106,7 @@ for (const page of indexable) {
   if (!page.ogImageAlt) fail(page, 'missing og:image:alt');
   if (page.twitterCard !== 'summary_large_image') fail(page, 'missing twitter:card');
   if (page.twitterImage !== page.ogImage) fail(page, 'twitter:image differs from og:image');
-  if (page.ogType !== (['/', '/framework'].includes(page.path) ? 'website' : 'article')) fail(page, `og:type ${page.ogType}`);
+  if (page.ogType !== (['/', '/cloud'].includes(page.path) ? 'website' : 'article')) fail(page, `og:type ${page.ogType}`);
   const h1 = page.headings.filter((level) => level === 1).length;
   if (h1 !== 1) fail(page, `${h1} h1 elements`);
   page.headings.forEach((level, index) => {

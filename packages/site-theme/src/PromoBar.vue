@@ -14,7 +14,7 @@ const content = {
     leadShort: 'Developer?',
     rest: 'The Formhaus framework is free and open source.',
     link: 'Try the framework',
-    href: '/framework',
+    href: '/',
   },
   framework: {
     label: 'Formhaus Cloud',
@@ -22,7 +22,7 @@ const content = {
     leadShort: 'No backend?',
     rest: 'Formhaus Cloud hosts your forms.',
     link: 'Try Cloud',
-    href: '/',
+    href: '/cloud',
   },
 };
 const item = computed(() => (variant.value ? content[variant.value] : null));

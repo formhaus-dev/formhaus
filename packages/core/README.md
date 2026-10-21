@@ -66,7 +66,7 @@ engine.getSubmitValues();
 ## Docs
 
 - [Guide](https://formhaus.dev/guide/), [API reference](https://formhaus.dev/api/form-engine) and [recipes](https://formhaus.dev/recipes/)
-- [Framework overview](https://formhaus.dev/framework) and [playground](https://formhaus.dev/playground)
+- [Framework overview](https://formhaus.dev/) and [playground](https://formhaus.dev/playground)
 - [Source and issues](https://github.com/formhaus-dev/formhaus)
 
 ## License

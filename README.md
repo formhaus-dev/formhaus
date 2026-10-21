@@ -9,7 +9,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/formhaus-dev/formhaus" alt="MIT license"></a>
 </p>
 
-<p align="center"><strong>The form framework for the AI era.</strong></p>
+<p align="center"><strong>One form definition for your projects.</strong></p>
 
 <p align="center">
   One JSON definition holds fields, validation, conditions, steps and branching.<br>
@@ -22,7 +22,7 @@
   <a href="https://formhaus.dev/guide/">Documentation</a> ·
   <a href="#quick-start">Get started</a> ·
   <a href="https://formhaus.dev/playground">Playground</a> ·
-  <a href="https://formhaus.dev/">Formhaus Cloud</a>
+  <a href="https://formhaus.dev/cloud">Formhaus Cloud</a>
 </p>
 
 <br>
@@ -43,7 +43,7 @@ Two independent ways to use it:
   npm install @formhaus/core   # plus @formhaus/react or @formhaus/vue
   ```
 
-- **Use [Formhaus Cloud](https://formhaus.dev/).** A hosted form backend: a submission endpoint with server validation, a dashboard and webhooks, plus hosted links, embeds and a visual builder. The first form needs no account.
+- **Use [Formhaus Cloud](https://formhaus.dev/cloud).** A hosted form backend: a submission endpoint with server validation, a dashboard and webhooks, plus hosted links, embeds and a visual builder. The first form needs no account.
 
   Build in the browser at [app.formhaus.dev](https://app.formhaus.dev/login), or add the remote MCP server and ask your agent: "Make me a waitlist form and give me the link."
 
@@ -51,7 +51,7 @@ Two independent ways to use it:
   claude mcp add --transport http formhaus https://api.formhaus.dev/mcp
   ```
 
-  [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard) · [Pricing](https://formhaus.dev/#pricing)
+  [Cloud quickstart](https://formhaus.dev/cloud/quickstart) · [Connect Claude](https://formhaus.dev/cloud/connect-claude) · [Dashboard](https://formhaus.dev/cloud/dashboard) · [Pricing](https://formhaus.dev/cloud#pricing)
 
 ![An agent publishes a waitlist form, the hosted form takes a response, and the agent reads it back](docs/public/media/agent-publishes-a-form.gif)
 
