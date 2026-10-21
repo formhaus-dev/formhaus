@@ -14,13 +14,14 @@ description: "Render Formhaus JSON form definitions on iOS and macOS with SwiftU
 In Xcode, add the package URL under Package Dependencies and add `FormhausCore` and `FormhausUI` to your app target. In a `Package.swift` manifest, add this entry to `dependencies`:
 
 ```swift
-.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.3")
+.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.4")
 ```
 
 Requires Swift 6.2 and iOS 17 or macOS 14. The package has no JavaScript runtime.
 
 | formhaus-swift | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.1.4 | 1.1.1 | 1.6 |
 | 0.1.3 | 1.0.0 | 1.5 |
 | 0.1.0 to 0.1.2 | 0.22.0 | 1.5 |
 
@@ -88,6 +89,14 @@ Validate submissions on a Swift server with the same definition:
 
 ```swift
 let result = validateSubmission(definition, try JSONValue(parsing: body))
+```
+
+For [random option order](/guide/research), add the `FormhausResearch` product and pass `Research()`:
+
+```swift
+import FormhausResearch
+
+FormhausForm(definition: definition, options: FormEngineOptions(research: Research()), onSubmit: send)
 ```
 
 ## Accessibility
