@@ -1,8 +1,8 @@
 # @formhaus/core
 
-## 1.2.0
+## 1.1.1
 
-### Minor Changes
+### Patch Changes
 
 - `FormhausForm` loads the bot check as soon as the form shows instead of on first focus.
 - New `challengeWait` option on `CloudSubmitOptions` sends the milliseconds a submission waited for the bot check. `FormhausForm` sets it.
