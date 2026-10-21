@@ -1,5 +1,11 @@
 # @formhaus/core
 
+## 1.0.1
+
+### Patch Changes
+
+- On screens up to 480px wide the primary button comes first and the Back button spans the full width below it.
+
 ## 1.0.0
 
 ### Major Changes
