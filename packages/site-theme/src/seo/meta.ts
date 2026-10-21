@@ -10,7 +10,7 @@ const routes: [string, Section, string?, string?][] = [
   ['compare/', 'compare', 'Compare', '/compare/'],
   ['cloud/', 'cloud'],
   ['legal/', 'legal', 'Legal', '/legal/'],
-  ['index.md', 'cloud'],
+  ['cloud.md', 'cloud'],
   ['api/', 'api'],
   ['spec.md', 'api'],
   ['build.md', 'build'],

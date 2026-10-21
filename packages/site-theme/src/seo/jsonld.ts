@@ -21,14 +21,13 @@ const plans = [
   { name: 'Team', price: '49' },
 ];
 
-export function homeJsonLd(description: string) {
-  const organization = { '@id': `${siteUrl}/#organization` };
+export function siteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@graph': [
       {
         '@type': 'Organization',
-        ...organization,
+        '@id': `${siteUrl}/#organization`,
         name: siteName,
         legalName: 'Fabrique-Futur LLC',
         url: `${siteUrl}/`,
@@ -40,31 +39,35 @@ export function homeJsonLd(description: string) {
         '@id': `${siteUrl}/#website`,
         name: siteName,
         url: `${siteUrl}/`,
-        publisher: organization,
-      },
-      {
-        '@type': 'WebApplication',
-        '@id': `${siteUrl}/#app`,
-        name: `${siteName} Cloud`,
-        description,
-        url: `${siteUrl}/`,
-        applicationCategory: 'BusinessApplication',
-        operatingSystem: 'Any',
-        publisher: organization,
-        offers: plans.map(({ name, price }) => ({
-          '@type': 'Offer',
-          name,
-          price,
-          priceCurrency: 'USD',
-          url: `${siteUrl}/cloud/plans`,
-          ...(price === '0'
-            ? {}
-            : {
-                priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: 'USD', unitText: 'MONTH' },
-              }),
-        })),
+        publisher: { '@id': `${siteUrl}/#organization` },
       },
     ],
+  };
+}
+
+export function cloudJsonLd(description: string, url: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    '@id': `${siteUrl}/#app`,
+    name: `${siteName} Cloud`,
+    description,
+    url,
+    applicationCategory: 'BusinessApplication',
+    operatingSystem: 'Any',
+    publisher: { '@id': `${siteUrl}/#organization` },
+    offers: plans.map(({ name, price }) => ({
+      '@type': 'Offer',
+      name,
+      price,
+      priceCurrency: 'USD',
+      url: `${siteUrl}/cloud/plans`,
+      ...(price === '0'
+        ? {}
+        : {
+            priceSpecification: { '@type': 'UnitPriceSpecification', price, priceCurrency: 'USD', unitText: 'MONTH' },
+          }),
+    })),
   };
 }
 

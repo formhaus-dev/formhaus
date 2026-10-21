@@ -1,5 +1,5 @@
 import type { HeadConfig, TransformContext } from 'vitepress';
-import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, frameworkJsonLd, homeJsonLd } from './jsonld';
+import { articleJsonLd, breadcrumbJsonLd, faqJsonLd, frameworkJsonLd, cloudJsonLd, siteJsonLd } from './jsonld';
 import { breadcrumbs, ogImage } from './meta';
 import { pageUrl, siteName } from './site';
 
@@ -26,8 +26,8 @@ export function transformHead({ pageData, title, description, content }: Transfo
   if (pageData.isNotFound) return [];
   const { relativePath, params } = pageData;
   const home = relativePath === 'index.md';
-  const framework = relativePath === 'framework.md';
-  const landing = home || framework;
+  const cloud = relativePath === 'cloud.md';
+  const landing = home || cloud;
   const url = pageUrl(relativePath);
   const image = ogImage(relativePath, params?.slug ? { slug: params.slug, title: params.title } : undefined);
   const tags: HeadConfig[] = [
@@ -43,8 +43,8 @@ export function transformHead({ pageData, title, description, content }: Transfo
     ['meta', { name: 'twitter:image', content: image.url }],
     ['meta', { name: 'twitter:image:alt', content: image.alt }],
   ];
-  if (home) tags.push(jsonLd(homeJsonLd(description)));
-  else if (framework) tags.push(jsonLd(frameworkJsonLd(description, url)));
+  if (home) tags.push(jsonLd(siteJsonLd()), jsonLd(frameworkJsonLd(description, url)));
+  else if (cloud) tags.push(jsonLd(cloudJsonLd(description, url)));
   else tags.push(jsonLd(breadcrumbJsonLd(breadcrumbs(relativePath, pageData.title, url))));
   const faq = landing ? faqJsonLd(content) : null;
   if (faq) tags.push(jsonLd(faq));
