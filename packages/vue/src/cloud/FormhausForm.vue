@@ -69,6 +69,14 @@ watch(
   { flush: 'post' },
 );
 
+watch(
+  [() => !!state.value.challenge && !!state.value.definition && !state.value.done, () => state.value.revision],
+  ([ready]) => {
+    if (ready) warm();
+  },
+  { flush: 'post', immediate: true },
+);
+
 let frame = 0;
 watch(
   () => state.value.attempt,

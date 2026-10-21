@@ -135,6 +135,8 @@ export interface CloudSubmitOptions {
     // (undocumented)
     challengeToken?: string;
     // (undocumented)
+    challengeWait?: number;
+    // (undocumented)
     skippedSteps?: string[];
 }
 

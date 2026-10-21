@@ -105,6 +105,7 @@ describe('cloud controller with a bot check', () => {
     await attempt;
     vi.useRealTimers();
     expect(sentBody(fetchMock, 0)).not.toHaveProperty('_fh_ts');
+    expect(sentBody(fetchMock, 0)._fh_tw).toBe(10_000);
   });
 
   it('submits without a token when the form has no bot check or no host', async () => {
@@ -124,6 +125,7 @@ describe('cloud controller with a bot check', () => {
     expect(fake.frames).toHaveLength(0);
     expect(sentBody(fetchMock, 0)).not.toHaveProperty('_fh_ts');
     expect(sentBody(fetchMock, 1)).not.toHaveProperty('_fh_ts');
+    expect(sentBody(fetchMock, 1)).not.toHaveProperty('_fh_tw');
   });
   describe('when form_updated changes the bot check', () => {
     const moved = { ...challenge, url: 'https://formhaus.cc/challenge?form=abc&v=2' };
