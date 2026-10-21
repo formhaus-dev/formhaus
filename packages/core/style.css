@@ -315,7 +315,9 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   :is(.fh-field__radio-group, .fh-field__multiselect-group):not([data-columns="1"]):has(.fh-field__option-image) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fh-group__add { justify-content: center; justify-self: stretch; }
   .fh-form-actions__button--primary, .fh-form-actions__secondary { flex: 1 0 100%; }
+  .fh-form-actions__button--primary { order: -1; }
   .fh-form-actions__secondary { justify-content: space-between; }
+  .fh-form-actions__secondary .fh-form-actions__button--secondary { flex: 1; }
 }
 
 @media (pointer: coarse) {
