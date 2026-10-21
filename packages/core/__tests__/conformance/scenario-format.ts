@@ -1,6 +1,6 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import type { FormDefinition } from '../../src';
+import type { FieldOption, FormDefinition } from '../../src';
 import { localize, type Overlay } from '../../src/i18n';
 
 export type Reply = { return?: unknown; throw?: string; defer?: string };
@@ -31,6 +31,7 @@ export type Action =
   | { do: 'goToStep'; stepId: string }
   | { do: 'reset'; values?: Record<string, unknown> }
   | { do: 'replaceDefinition'; definition: FormDefinition }
+  | { do: 'orderOptions'; key: string; options?: FieldOption[] }
   | { do: 'resolve'; deferred: string }
   | { do: 'settle' };
 
@@ -56,6 +57,7 @@ export interface Expectation {
   submitting?: boolean;
   stepValidating?: boolean;
   fieldLoading?: Record<string, boolean>;
+  options?: Record<string, string[]>;
   log?: unknown[];
 }
 
@@ -63,6 +65,7 @@ export interface Scenario {
   name: string;
   definition?: FormDefinition;
   values?: Record<string, unknown>;
+  seed?: string;
   hooks?: Partial<Record<HookName, Reply[]>>;
   validators?: Record<string, ValidatorSpec>;
   messages?: Record<string, string>;
