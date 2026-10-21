@@ -25,14 +25,15 @@ export {
   dividerBefore,
   imageSource,
   loadOptions,
-  optionKey,
   optionSources,
   optionTexts,
   providedOptions,
   sameOptions,
+  shownOptions,
   type OptionSource,
   type OptionsProvider,
 } from './options';
+export { optionKey } from '../visibility/nodes';
 export { applySources } from './sources';
 export { scaleRange } from '../validation/type-checks';
 

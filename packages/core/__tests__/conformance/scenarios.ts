@@ -12,6 +12,7 @@ import {
   type Step,
 } from './scenario-format';
 import { flush, Script } from './scenario-script';
+import { research } from '../../src/research';
 
 export { scenarioFiles } from './scenario-format';
 
@@ -34,6 +35,8 @@ export class ScenarioRun {
     const options: FormEngineOptions = {
       onFormEvent: (event) => this.log.push({ event: plain(event) }),
       onWarning: ({ code, path }) => this.log.push({ warning: { code, path } }),
+      seed: this.scenario.seed,
+      research,
     };
     if (hooks.onBeforeStepChange)
       options.onBeforeStepChange = (context) => {
@@ -118,6 +121,8 @@ export class ScenarioRun {
         return engine.reset(action.values);
       case 'replaceDefinition':
         return engine.replaceDefinition(localized(this.file, structuredClone(action.definition)));
+      case 'orderOptions':
+        return engine.orderOptions(action.key, action.options).map(({ value }) => value);
       case 'resolve':
         return this.script.resolve(action.deferred);
       case 'settle':
@@ -166,6 +171,8 @@ export class ScenarioRun {
       submitting: () => engine.submitting,
       stepValidating: () => engine.stepValidating,
       fieldLoading: () => plain(engine.fieldLoading),
+      options: () =>
+        Object.fromEntries(Object.keys(expectation.options ?? {}).map((key) => [key, engine.orderOptions(key).map(({ value }) => value)])),
       log: () => this.log.splice(0),
     };
     return Object.fromEntries(Object.keys(expectation).map((key) => [key, read[key as keyof Expectation]()]));

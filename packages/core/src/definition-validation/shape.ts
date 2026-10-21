@@ -86,7 +86,7 @@ function action(value: unknown, path: string): DefinitionIssue[] {
 
 const option: Check = (value, path) => [
   ...text(value, 'value', path),
-  ...typed(value, { label: 'string', image: 'string', exclusive: 'boolean' }, path),
+  ...typed(value, { label: 'string', image: 'string', exclusive: 'boolean', pinned: 'boolean' }, path),
 ];
 
 const RULES: Record<string, Kind> = {
@@ -143,6 +143,7 @@ const field: Check = (value, path) => {
         addLabel: 'string',
         removeLabel: 'string',
         defaultItems: 'number',
+        randomize: 'boolean',
       },
       path,
     ),

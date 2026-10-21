@@ -10,6 +10,7 @@
   "core/internal",
   "core/i18n",
   "core/fix",
+  "core/research",
   "react/cloud",
   "react/i18n",
   "vue/cloud",

@@ -36,6 +36,12 @@ describe('pictureOptions', () => {
     expect(labels).toEqual(['Basic', 'Plus', 'Pro']);
   });
 
+  it('draws randomized options in written order', async () => {
+    const pinned = options.map((option, index) => ({ ...option, pinned: index === 2 }));
+    const { labels } = await render({ key: 'plan', type: 'radio', label: 'Plan', randomize: true, options: pinned });
+    expect(labels).toEqual(['Basic', 'Plus', 'Pro']);
+  });
+
   it('follows columns from 1 to 4', async () => {
     const three = await render({ key: 'plan', type: 'multiselect', label: 'Plan', options, columns: 3 });
     expect(rows(three.root)).toEqual([['basic', 'plus', 'pro']]);

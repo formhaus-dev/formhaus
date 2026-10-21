@@ -42,6 +42,20 @@ describe('fixes for property checks', () => {
     ]);
   });
 
+  it('removes randomize and pinned where they do not apply', () => {
+    const definition = form([
+      { key: 'agree', type: 'checkbox', label: 'Agree', randomize: true },
+      { key: 'plan', type: 'radio', label: 'Plan', options: [{ value: 'a', label: 'A', pinned: true }] },
+    ]);
+    expect(fixesAt(definition, '/fields/0/randomize', 'randomize-not-applicable')).toEqual([
+      { title: 'Remove "randomize"', safe: true, patch: [{ op: 'remove', path: '/fields/0/randomize' }] },
+    ]);
+    expect(repaired(definition, '/fields/1/options/0/pinned', 'randomize-not-applicable').fields).toEqual([
+      { key: 'agree', type: 'checkbox', label: 'Agree', randomize: true },
+      { key: 'plan', type: 'radio', label: 'Plan', options: [{ value: 'a', label: 'A' }] },
+    ]);
+  });
+
   it('offers no fix for an unknown property without a close name', () => {
     expect(fixesAt(form([text('a')], { colour: 'red' }), '/colour', 'unknown-property')).toEqual([]);
   });

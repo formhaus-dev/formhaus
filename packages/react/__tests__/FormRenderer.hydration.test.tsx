@@ -10,6 +10,8 @@ import { HeadlessFormRenderer } from '../src/HeadlessFormRenderer';
 import { useLocalizedForm } from '../src/i18n';
 import { definition as localizedDefinition, overlay } from './i18n.fixtures';
 import { choices, choiceValues, conditions, group, groupValues, hidden, plain, questionTypes, questionValues, steps } from './ssr.fixtures';
+import { randomized, shownOrder, toolValues, writtenOrder } from './ssr.fixtures';
+import { research } from '@formhaus/core/research';
 
 const BROWSER_GLOBALS = ['window', 'document', 'localStorage', 'sessionStorage', 'location', 'requestAnimationFrame'] as const;
 const roots: Root[] = [];
@@ -73,6 +75,7 @@ function serverDom(html: string) {
 }
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   for (const root of roots.splice(0)) act(() => root.unmount());
   document.body.innerHTML = '';
 });
@@ -135,6 +138,22 @@ describe('FormRenderer hydration', () => {
     const { html, container } = await hydrate(form(choices));
     expect(serverDom(html).querySelector<HTMLSelectElement>('select[name="color"]')!.selectedIndex).toBe(0);
     expect(container.querySelector<HTMLSelectElement>('select[name="color"]')!.selectedIndex).toBe(0);
+  });
+
+  it('renders the seeded option order on the server and the client', async () => {
+    const { html, container } = await hydrate(form(randomized, { seed: 'visitor-1', research }));
+    const order = shownOrder('visitor-1');
+    expect(order).not.toEqual(writtenOrder);
+    expect(toolValues(serverDom(html))).toEqual(order);
+    expect(toolValues(container)).toEqual(order);
+  });
+
+  it('renders the written option order on the server and shuffles it after hydration without a seed', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: (bytes: Uint8Array) => bytes.fill(7) });
+    const { html, container } = await hydrate(form(randomized, { research }));
+    expect(toolValues(serverDom(html))).toEqual(writtenOrder);
+    expect(shownOrder('07'.repeat(16))).not.toEqual(writtenOrder);
+    expect(toolValues(container)).toEqual(shownOrder('07'.repeat(16)));
   });
 
   it('hydrates a group with items', async () => {

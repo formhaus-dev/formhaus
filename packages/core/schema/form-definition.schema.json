@@ -9,7 +9,7 @@
     },
     "formatVersion": {
       "type": "string",
-      "description": "Format version of the definition, such as \"1.5\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5.",
+      "description": "Format version of the definition, such as \"1.6\". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6.",
       "pattern": "^[1-9]\\d*(\\.\\d+)?$"
     },
     "id": {
@@ -528,6 +528,10 @@
           },
           "description": "Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, anchor labels whose value is a point number: the first, middle and last points show their label."
         },
+        "randomize": {
+          "type": "boolean",
+          "description": "Radio, multiselect and select only: shows the options in a random order per respondent. Pinned and exclusive options keep their written position. Not applied in a matrix section. Added in format 1.6."
+        },
         "layout": {
           "type": "string",
           "enum": [
@@ -780,6 +784,10 @@
         "exclusive": {
           "type": "boolean",
           "description": "Multiselect only: picking this option clears the other answers, and picking another option clears it. Renderers show an \"or\" divider before it. Added in format 1.5."
+        },
+        "pinned": {
+          "type": "boolean",
+          "description": "Keeps this option at its written position when the field has randomize. Exclusive options are always pinned. Added in format 1.6."
         },
         "i18n": {
           "$ref": "#/definitions/LabelI18n",

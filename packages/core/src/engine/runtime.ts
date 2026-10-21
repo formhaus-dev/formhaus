@@ -1,6 +1,6 @@
 import type { ValidatorFn } from '../validation';
 import type { ResolveMessage } from '../validation/default-messages';
-import type { FormDefinition, FormField, FormNode, FormStep } from '../types';
+import type { FieldOption, FormDefinition, FormField, FormNode, FormStep } from '../types';
 import type { FormEngineOptions, GoToStepResult, SubmitHandler } from './engine-options';
 import { initialState } from './engine-utils';
 import { reportErrors, startEvents, trackChanges } from './form-events';
@@ -13,6 +13,7 @@ import { submitForm } from './submission';
 import { loadDefinition, replaceDefinition } from './replace-definition';
 import { writeValue } from './write-value';
 import { exclusiveWrite } from './exclusive';
+import { orderOptions } from './option-target';
 import type { VisibilityState } from './visibility-state';
 
 export class FormEngine<TValues extends object = Record<string, unknown>> {
@@ -24,6 +25,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   private sending?: number;
   private viewedStep?: string | null;
   private readonly lifecycle: FormEngineOptions;
+  readonly seed: string;
 
   private readonly validators: Record<string, ValidatorFn>;
   private messages!: ResolveMessage;
@@ -37,6 +39,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     options?: FormEngineOptions,
   ) {
     this.lifecycle = options ?? {};
+    this.seed = options?.seed || options?.research?.seed() || '';
     this.validators = options?.validators ?? {};
     this.state = initialState({});
     loadDefinition(this as never, definition, () => initialValues as Record<string, unknown> | undefined);
@@ -79,31 +82,24 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   get isMultiStep(): boolean {
     return !!this.definition.steps?.length;
   }
-
   get visibleSteps(): FormStep[] {
     return this.view.visibleSteps;
   }
-
   get currentStep(): FormStep | null {
     return this.view.currentStep;
   }
-
   get visibleFields(): FormField[] {
     return this.view.visibleFields;
   }
-
   get visibleNodes(): FormNode[] {
     return this.view.visibleNodes;
   }
-
   get isFirstStep(): boolean {
     return this.currentStepIndex === 0;
   }
-
   get isLastStep(): boolean {
     return this.currentStepIndex >= this.visibleSteps.length - 1;
   }
-
   get canGoNext(): boolean {
     return this.visibility.getCanGoNext(this.state.values, this.currentStepIndex, this.validators);
   }
@@ -158,6 +154,10 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     const path = this.visibility.parse(key);
     if (path) setItemValue(this as never, ...path, value);
     else writeValue(this as never, key, exclusiveWrite(this.visibility.fieldOf(key, this.state.values), this.state.values[key], value));
+  }
+
+  orderOptions(key: string, options?: FieldOption[]): FieldOption[] {
+    return orderOptions(this as never, key, options);
   }
 
   items(key: string): GroupItem[] {

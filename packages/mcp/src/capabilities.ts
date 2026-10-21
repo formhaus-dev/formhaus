@@ -20,7 +20,7 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options and autocomplete.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. Set "1.6" when a field has randomize or an option is pinned. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options, autocomplete, randomize and pinned.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
@@ -70,6 +70,7 @@ export const capabilities = {
       'showAny',
       'validation',
       'options',
+      'randomize',
       'optionsFrom',
       'optionsDependsOn',
       'accept',
@@ -90,9 +91,11 @@ export const capabilities = {
       'Custom field types only: an object of settings the custom component reads as field.props. Core ignores it. Added in format 1.2.',
     optionFieldTypes: OPTION_FIELD_TYPES,
     options:
-      'Array of { value: string, label: string, image?, exclusive? }. image is an image URL shown above the label on radio and multiselect options (picture choice); the label stays visible and names the option. select and autocomplete ignore image.',
+      'Array of { value: string, label: string, image?, exclusive?, pinned? }. image is an image URL shown above the label on radio and multiselect options (picture choice); the label stays visible and names the option. select and autocomplete ignore image.',
     exclusive:
       'multiselect with static options only: "exclusive": true makes an option such as "None of these" or "Prefer not to say" the only answer. Picking it clears the other answers, picking another option clears it, and several exclusive options also clear each other. Put exclusive options last; renderers show the "or" label before them. A list with an exclusive option and any other value fails the type check with the exclusive message. One exclusive option alone answers required and skips minLength. contains and notContains work as usual. Set "formatVersion": "1.5".',
+    randomize:
+      'radio, multiselect and select only: "randomize": true shows the options in a random order that stays the same for one respondent, as research surveys do against position bias. "pinned": true on an option keeps it at its written position, such as "Other"; exclusive options are always pinned. Values, conditions and validation do not change. Not applied in a matrix section. Another type, a matrix row or pinned without randomize is randomize-not-applicable. Needs "formatVersion": "1.6". In code, the order needs research from @formhaus/core/research, passed to FormRenderer, useFormEngine or FormEngine; without it the options show in written order.',
     imageFieldTypes: IMAGE_FIELD_TYPES,
     anchorFieldTypes: SCALE_FIELD_TYPES,
     anchors:

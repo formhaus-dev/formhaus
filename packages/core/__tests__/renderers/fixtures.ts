@@ -1,5 +1,14 @@
 import type { expect, it, vi } from 'vitest';
-import type { FieldOption, FormEvent, FormDefinition, LabelSource, RecallFormatFn, StepValidateFn, SubmitHandler } from '../../src';
+import type {
+  FieldOption,
+  FormEvent,
+  FormResearch,
+  FormDefinition,
+  LabelSource,
+  RecallFormatFn,
+  StepValidateFn,
+  SubmitHandler,
+} from '../../src';
 
 export interface ScenarioProps {
   definition: FormDefinition;
@@ -19,6 +28,8 @@ export interface ScenarioProps {
   onFieldChange?: (key: string, value: unknown, values: Record<string, unknown>) => void;
   components?: Record<string, unknown>;
   confirmRemove?: boolean;
+  seed?: string;
+  research?: FormResearch;
   optionsProviders?: Record<string, (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>>;
 }
 

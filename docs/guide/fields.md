@@ -316,6 +316,25 @@ Add `image` to the options of a `radio` or `multiselect` field. The options beco
 - `columns` sets the cards per row, from 1 to 4. Without it, cards are about 200px wide and fill the row. Phones show at most 2 per row.
 - The button in the corner of each image opens it at full size. Esc, a click outside or the close button closes it.
 
+## Random option order
+
+Set `"randomize": true` on a `radio`, `multiselect` or `select` field to show each respondent the options in their own order, and `"pinned": true` on an option to keep it in place. The order needs the opt-in [research module](/guide/research). Requires `"formatVersion": "1.6"` and `@formhaus/core` 1.1.
+
+```json
+{
+  "key": "plan",
+  "type": "radio",
+  "label": "Which plan fits you best?",
+  "randomize": true,
+  "options": [
+    { "value": "free", "label": "Free" },
+    { "value": "pro", "label": "Pro" },
+    { "value": "team", "label": "Team" },
+    { "value": "unsure", "label": "Not sure yet", "pinned": true }
+  ]
+}
+```
+
 ## Switch
 
 Boolean toggle, styled as a switch. Same behavior as checkbox but different UI.

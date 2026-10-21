@@ -97,7 +97,7 @@ describe('incremental hidden queue', () => {
     const visibility = createVisibility(flat);
     const values: Values = { a: 'y' };
     visibility.reconcileHidden(values, {}, true);
-    visibility.seed({ b: 'seeded' });
+    visibility.seedStarts({ b: 'seeded' });
     values.c = 'x';
     visibility.reconcileHidden(values, {}, false, 'c');
     expect(values).toEqual({ a: 'y', b: 'seeded', c: 'x' });

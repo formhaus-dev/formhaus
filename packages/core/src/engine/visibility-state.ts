@@ -163,6 +163,7 @@ export function createVisibility(definition: FormDefinition) {
     ...starts,
     allFields,
     groups,
+    sectionOf,
     conditionValues: path.values,
     state,
     activeField,

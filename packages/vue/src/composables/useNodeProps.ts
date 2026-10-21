@@ -1,7 +1,8 @@
 import { isGroup, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
-import { fieldDomId, type OptionSource, optionSources, providedOptions, recalled, recalls } from '@formhaus/core/internal';
+import { fieldDomId, type OptionSource, optionSources, providedOptions, recalled, recalls, shownOptions } from '@formhaus/core/internal';
 import { computed, shallowRef, watch, type Ref } from 'vue';
 import { useFieldOptions } from './useFieldOptions';
+import { useMounted } from './useMounted';
 import type { FormRendererProps } from '../types';
 import type { UseFormEngineReturn } from './useFormEngine';
 
@@ -52,6 +53,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
     () => props.optionsProviders,
   );
   const options = computed(() => providedOptions(sources.value, props.optionsProviders, loaded.value));
+  const mounted = useMounted();
   const groups = new Map<string, GroupMemo>();
   let owner = form.engine;
   const groupState = (key: string): GroupMemo => {
@@ -102,7 +104,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
           onFocus: on.focus,
         };
       }
-      const resolved = options.value[field.key];
+      const resolved = shownOptions(form.engine, field.key, field, options.value[field.key], mounted.value);
       return {
         id: fieldDomId(formId, field.key, form.engine.definition),
         field: recalled(form.engine, resolved ? { ...field, options: resolved } : field),

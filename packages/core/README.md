@@ -45,6 +45,7 @@ engine.getSubmitValues();
 | `@formhaus/core/cloud` | Client for [Formhaus Cloud](https://formhaus.dev/cloud/overview): `fetchForm()`, `createSubmitter()`, `createChallengeFrame()` |
 | `@formhaus/core/i18n` | Message and label catalogs, overlays, translation keys |
 | `@formhaus/core/fix` | `suggestFixes()`, `applyFix()`, `fixAll()` |
+| `@formhaus/core/research` | Opt-in survey features: `research` for random option order |
 | `@formhaus/core/style.css` | Optional baseline styles with `--fh-*` theme tokens |
 | `@formhaus/core/schema.json` | JSON Schema of the definition |
 

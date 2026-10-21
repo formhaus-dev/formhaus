@@ -1,6 +1,6 @@
 import type { FormDefinition } from '@formhaus/core';
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { type App, type Component, createSSRApp, defineComponent, h } from 'vue';
+import { type App, type Component, createSSRApp, defineComponent, h, nextTick } from 'vue';
 import { renderToString } from 'vue/server-renderer';
 import FormhausForm from '../src/cloud/FormhausForm.vue';
 import FormRenderer from '../src/FormRenderer.vue';
@@ -8,6 +8,8 @@ import HeadlessFormRenderer from '../src/HeadlessFormRenderer.vue';
 import { useLocalizedForm } from '../src/i18n';
 import { definition as localizedDefinition, overlay } from './i18n.fixtures';
 import { choices, choiceValues, conditions, group, groupValues, hidden, plain, questionTypes, questionValues, steps } from './ssr.fixtures';
+import { randomized, shownOrder, toolValues, writtenOrder } from './ssr.fixtures';
+import { research } from '@formhaus/core/research';
 
 const BROWSER_GLOBALS = ['window', 'document', 'localStorage', 'sessionStorage', 'location', 'requestAnimationFrame'] as const;
 const apps: App[] = [];
@@ -79,6 +81,7 @@ function serverDom(html: string) {
 }
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   for (const app of apps.splice(0)) app.unmount();
   document.body.innerHTML = '';
 });
@@ -133,6 +136,23 @@ describe('FormRenderer hydration', () => {
     const { html, container } = await hydrate(form(choices));
     expect(serverDom(html).querySelector<HTMLSelectElement>('select[name="color"]')!.selectedIndex).toBe(0);
     expect(container.querySelector<HTMLSelectElement>('select[name="color"]')!.selectedIndex).toBe(0);
+  });
+
+  it('renders the seeded option order on the server and the client', async () => {
+    const { html, container } = await hydrate(form(randomized, { seed: 'visitor-1', research }));
+    const order = shownOrder('visitor-1');
+    expect(order).not.toEqual(writtenOrder);
+    expect(toolValues(serverDom(html))).toEqual(order);
+    expect(toolValues(container)).toEqual(order);
+  });
+
+  it('renders the written option order on the server and shuffles it after hydration without a seed', async () => {
+    vi.stubGlobal('crypto', { getRandomValues: (bytes: Uint8Array) => bytes.fill(7) });
+    const { html, container } = await hydrate(form(randomized, { research }));
+    await nextTick();
+    expect(toolValues(serverDom(html))).toEqual(writtenOrder);
+    expect(shownOrder('07'.repeat(16))).not.toEqual(writtenOrder);
+    expect(toolValues(container)).toEqual(shownOrder('07'.repeat(16)));
   });
 
   it('hydrates a group with items', async () => {

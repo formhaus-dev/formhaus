@@ -6,7 +6,7 @@ import { baselineFields, trackChanges } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
 import { createVisibility } from './visibility-state';
-import { assertDefinition } from './warnings';
+import { assertDefinition, warnUnordered } from './warnings';
 
 export function loadDefinition(
   engine: EngineInternals,
@@ -14,6 +14,7 @@ export function loadDefinition(
   values: (fields: FormField[]) => Record<string, unknown> | undefined,
 ): void {
   assertDefinition(definition, engine.lifecycle, engine.validators);
+  warnUnordered(definition, engine.lifecycle);
   const visibility = createVisibility(definition);
   engine.definition = definition;
   engine.messages = messageResolver(engine.lifecycle.messages, definition.messages);
