@@ -15,6 +15,7 @@ export function useEngineOptions(props: FormRendererProps, onFormEvent: (event: 
     validators: props.validators,
     onWarning: props.onWarning,
     seed: props.seed,
+    research: props.research,
     get messages() {
       return props.messages;
     },

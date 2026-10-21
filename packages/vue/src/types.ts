@@ -10,6 +10,7 @@ import type {
   FormDefinition,
   FormField,
   FormRendererHandle,
+  FormResearch,
   GroupItemView,
   GroupView,
   LabelSource,
@@ -82,6 +83,7 @@ export interface FormRendererProps {
   lang?: string;
   formatRecall?: Callback<RecallFormatFn>;
   seed?: string;
+  research?: FormResearch;
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;
