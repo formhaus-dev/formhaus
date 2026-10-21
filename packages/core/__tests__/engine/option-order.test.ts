@@ -15,6 +15,11 @@ const definition: FormDefinition = {
   ],
 };
 
+const choices: FieldOption[] = [
+  { value: 'a', label: 'A' },
+  { value: 'b', label: 'B' },
+];
+
 const values = (list: FieldOption[] | undefined) => list?.map(({ value }) => value);
 
 describe('option order', () => {
@@ -38,6 +43,33 @@ describe('option order', () => {
     expect(engine.seed).toBe('visitor-1');
     expect(engine.orderOptions('fixed')).toBe(options);
     expect(values(engine.orderOptions('tools'))).toEqual(['penpot', 'framer', 'sketch', 'figma']);
+  });
+
+  it('orders the item field of the group on the active branch', () => {
+    const team = (randomize: boolean) => ({
+      key: 'team',
+      type: 'group' as const,
+      label: 'Team',
+      fields: [{ key: 'role', type: 'radio', label: 'Role', randomize, options }],
+    });
+    const branched: FormDefinition = {
+      formatVersion: '1.6',
+      id: 'f',
+      title: 'F',
+      submit: { label: 'Send' },
+      steps: [
+        {
+          id: 'start',
+          title: 'Start',
+          fields: [{ key: 'kind', type: 'radio', label: 'Kind', options: choices }],
+          routes: [{ to: 'b', show: [{ field: 'kind', eq: 'b' }] }],
+        },
+        { id: 'a', title: 'A', fields: [team(false)], routes: [{ to: null }] },
+        { id: 'b', title: 'B', fields: [team(true)] },
+      ],
+    };
+    const engine = new FormEngine(branched, { kind: 'b' }, { seed: 'visitor-1', onWarning: () => {} });
+    expect(values(engine.orderOptions('team.role'))).toEqual(['framer', 'penpot', 'sketch', 'figma']);
   });
 
   it('shows the written order before mount unless the host passed a seed', () => {

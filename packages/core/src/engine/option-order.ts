@@ -34,7 +34,9 @@ export function orderOptions(engine: EngineInternals, key: string, options?: Fie
   const name = group ? optionKey(group, child!) : key;
   const field =
     visibility.fieldOf(name, values) ??
-    visibility.groups.flatMap(({ key, fields }) => fields.filter((item) => optionKey(key, item.key) === name))[0];
+    visibility.groups.flatMap((owner) =>
+      visibility.fieldOf(owner.key, values) === owner ? owner.fields.filter((item) => optionKey(owner.key, item.key) === name) : [],
+    )[0];
   const source = options ?? field?.options ?? [];
   if (!field?.randomize || !RANDOMIZED_TYPES.includes(field.type) || visibility.sectionOf.get(field)?.layout === 'matrix') return source;
   return optionOrder(
