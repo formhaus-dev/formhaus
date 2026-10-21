@@ -50,12 +50,9 @@ async function focusIn(element: HTMLElement) {
 
 afterEach(() => vi.unstubAllGlobals());
 
-it('loads the bot check on first focus, above the actions, hidden', async () => {
+it('loads the bot check as soon as the form shows, above the actions, hidden', async () => {
   stub(reply(200, envelope));
   render(FormhausForm, { props: { id: 'abc' } });
-  const name = await screen.findByLabelText('Name');
-  expect(document.querySelector('iframe')).toBeNull();
-  await focusIn(name);
   const { frame } = await challengeFrame();
   expect(frame.src).toBe(envelope.challenge.url);
   expect(frame.getAttribute('aria-hidden')).toBe('true');
@@ -80,6 +77,7 @@ it('submits with a token from the challenge frame and ignores spoofed messages',
   expect(await screen.findByRole('status')).toBeDefined();
   expect(fetchMock).toHaveBeenCalledTimes(2);
   expect(sent(fetchMock, 1)._fh_ts).toBe('ts_1');
+  expect(sent(fetchMock, 1)._fh_tw).toBeGreaterThanOrEqual(0);
 });
 
 it('shows the frame when Turnstile needs interaction', async () => {
