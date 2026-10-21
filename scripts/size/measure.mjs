@@ -1,21 +1,12 @@
 import { build } from 'esbuild';
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 export const REACT_EXTERNAL = ['react', 'react/*', 'react-dom', 'react-dom/*'];
 export const VUE_EXTERNAL = ['vue'];
 const EXTERNAL = { core: [], react: REACT_EXTERNAL, vue: VUE_EXTERNAL };
 
-export const HARD_LIMITS = {
-  core: 27648,
-  'core + react': 33792,
-  'core + vue': 36864,
-  'core FormEngine': 19456,
-  'core + react useFormEngine': 20480,
-  'core + vue useFormEngine': 20480,
-  'core + react FormRenderer': 31744,
-  'core + vue FormRenderer': 35840,
-};
+export const HARD_LIMITS = JSON.parse(readFileSync(new URL('./hard-limits.json', import.meta.url), 'utf8'));
 
 const SUBPATHS = ['cloud', 'i18n', 'fix'];
 

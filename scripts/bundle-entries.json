@@ -1,0 +1,18 @@
+[
+  "core",
+  "core:production",
+  "core#FormEngine:production",
+  "react",
+  "react#useFormEngine:production",
+  "vue",
+  "vue#useFormEngine:production",
+  "core/cloud",
+  "core/internal",
+  "core/i18n",
+  "core/fix",
+  "react/cloud",
+  "react/i18n",
+  "vue/cloud",
+  "vue/i18n",
+  "core/style.css"
+]
