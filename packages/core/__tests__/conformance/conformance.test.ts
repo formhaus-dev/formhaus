@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, recallText, type FormDefinition } from '../../src';
+import { optionOrder } from '../../src/engine/option-order';
 import { asStored } from '../../src/engine/recall-format';
 import { textSlots } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
-import { cases, corpus, recalls, runtime } from './corpus';
+import { cases, corpus, orders, recalls, runtime } from './corpus';
 
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const byPathAndCode = (a: { code: string; path: string }, b: { code: string; path: string }) =>
@@ -53,6 +54,9 @@ describe('conformance corpus', () => {
       'check-outdated-version-exclusive',
       'check-outdated-version-missing',
       'check-outdated-version-newer',
+      'check-outdated-version-randomize',
+      'check-randomize',
+      'check-randomize-type',
       'check-scale',
       'check-scale-range',
       'check-section-forward-reference',
@@ -76,6 +80,7 @@ describe('conformance corpus', () => {
       'invalid-messages',
       'localized-catalog',
       'localized-overlay',
+      'option-order',
       'options-from',
       'proto-keys',
       'recall-branches',
@@ -138,6 +143,16 @@ describe('conformance corpus', () => {
         engine,
       });
     expect(texts.map((entry) => ({ ...entry, text: resolve(entry) }))).toEqual(texts);
+  });
+
+  it.each(orders)('%s: option order', (_, { seed, key, count, pinned, order }) => {
+    expect(
+      optionOrder(
+        seed,
+        key,
+        Array.from({ length: count }, (_, index) => pinned.includes(index)),
+      ),
+    ).toEqual(order);
   });
 
   it.each(cases)('%s: server', (_, definition, { input, expected, serverValues }) => {

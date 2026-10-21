@@ -20,6 +20,15 @@ export interface ConformanceFixture {
   texts?: Record<string, string>;
   cases?: ConformanceCase[];
   recall?: RecallCase[];
+  orders?: OrderVector[];
+}
+
+interface OrderVector {
+  seed: string;
+  key: string;
+  count: number;
+  pinned: number[];
+  order: number[];
 }
 
 interface RecallCase {
@@ -45,4 +54,8 @@ export const cases = valid.flatMap((fixture) =>
 
 export const recalls = corpus.flatMap((fixture) =>
   (fixture.recall ?? []).map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const),
+);
+
+export const orders = corpus.flatMap((fixture) =>
+  (fixture.orders ?? []).map((vector, index) => [`${fixture.name}: ${index}`, vector] as const),
 );
