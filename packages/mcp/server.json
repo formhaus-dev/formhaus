@@ -9,12 +9,12 @@
     "source": "github",
     "subfolder": "packages/mcp"
   },
-  "version": "0.11.0",
+  "version": "0.11.1",
   "packages": [
     {
       "registryType": "npm",
       "identifier": "@formhaus/mcp",
-      "version": "0.11.0",
+      "version": "0.11.1",
       "transport": {
         "type": "stdio"
       }
