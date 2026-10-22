@@ -682,16 +682,12 @@ Put the settings of a custom type in `props`. Core ignores them, and the compone
 ```ts
 import type { ValidatorFn } from '@formhaus/core';
 
-type Address = { street?: string; city?: string; zip?: string };
-
-const checkAddress = (value: unknown): string | null => {
-  const { street, city } = value as Address;
-  return street && city ? null : 'Enter a street and a city';
-};
+const checkAddress = (value: unknown): string | null =>
+  typeof value === 'string' && value.split(',').length >= 2 ? null : 'Enter a street and a city';
 
 const validators: Record<string, ValidatorFn> = {
   address: checkAddress,
-  usAddress: (value) => checkAddress(value) ?? (/^\d{5}$/.test((value as Address).zip ?? '') ? null : 'Enter a 5-digit ZIP code'),
+  usAddress: (value) => checkAddress(value) ?? (/\b\d{5}$/.test(value as string) ? null : 'Enter a 5-digit ZIP code'),
 };
 ```
 
@@ -699,7 +695,9 @@ const validators: Record<string, ValidatorFn> = {
 { "key": "shipping", "type": "x-address", "label": "Shipping address", "validation": { "required": true, "validator": "usAddress" } }
 ```
 
-`required` treats only `null`, `""` and `[]` as empty, and validators never run on an empty value. An object such as `{ "street": "" }` passes `required`. Write `null` from the component when the user clears every part, or return the required message from the validator.
+The value of a custom type is a string, a number or a boolean. `validateSubmission()` rejects an object or an array with the `value` message, so a component with several inputs writes one string, such as `"1 Main St, Springfield, 12345"`.
+
+`required` treats only `null`, `""` and `[]` as empty, and validators never run on an empty value. Write `null` or `""` from the component when the user clears every part.
 
 ## Override default components
 
