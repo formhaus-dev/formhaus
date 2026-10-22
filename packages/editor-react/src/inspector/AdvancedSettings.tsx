@@ -7,9 +7,8 @@ import styles from './Inspector.module.css';
 import { ResponseKey } from './ResponseKey';
 
 export function AdvancedSettings({ field, actions, readOnly }: { field: BuilderQuestion; actions: EditorActions; readOnly: boolean }) {
-  const [opened, setOpened] = useState(false);
+  const [open, setOpen] = useState(() => !field.key.trim());
   const body = useId();
-  const open = opened || !field.key.trim();
   return (
     <section className={styles.block} aria-label="Advanced">
       <Button
@@ -19,7 +18,7 @@ export function AdvancedSettings({ field, actions, readOnly }: { field: BuilderQ
         aria-expanded={open}
         aria-controls={body}
         onClick={() => {
-          setOpened(!open);
+          setOpen(!open);
         }}
       >
         Advanced

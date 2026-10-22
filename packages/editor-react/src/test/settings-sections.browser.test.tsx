@@ -117,4 +117,16 @@ describe('field settings sections', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
     expect(panel.getByText('Response key')).toBeVisible();
   });
+
+  it('opens advanced for a field without a key and keeps it open while the label is typed', async () => {
+    renderEditor(fromDefinition(definition([plan, { key: '', type: 'text', label: '' }])));
+    const panel = await settings('Untitled question');
+    const toggle = panel.getByRole('button', { name: 'Advanced' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    const card = within(screen.getByRole('group', { name: 'Untitled question field' }));
+    await userEvent.type(card.getByRole('textbox', { name: 'Field label' }), 'Team');
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
 });
