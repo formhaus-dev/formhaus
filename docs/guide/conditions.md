@@ -16,7 +16,7 @@ Add `show` or `showAny` to any field or step. Visibility re-evaluates on every v
 - Both set: `(all show) AND (any showAny)`.
 - Neither set: field is always visible.
 
-Hidden fields are not validated and not included in submit values.
+Hidden fields are not validated and, by default, not included in submit values. See [Keep hidden values](#keep-hidden-values).
 
 ## Operators
 
@@ -153,11 +153,39 @@ Show a field when country is US AND method is credit or debit:
 
 ## Hidden field cleanup
 
-Hidden field values are removed during engine construction, after `reset()`, and whenever a dependency changes. Hidden values are not submitted.
+By default, hidden field values are removed during engine construction, after `reset()`, and whenever a dependency changes. Hidden values are not submitted.
 
 When a hidden field shows again, it gets back its last value. A value the user cleared stays cleared. A field that never had a value, such as one that starts hidden, gets its initial value or `defaultValue`. Last values live in the engine, so a draft reopened through `initialValues` starts without them. See [Visibility](/spec#visibility).
 
 If field A hides field B, and field B controls field C, the engine checks C next. It continues until no more fields or steps become hidden, with no fixed depth limit.
+
+### Keep hidden values
+
+An editor of a stored record must not drop answers the user hides on the way. Set `hiddenValues` to `'keep'`:
+
+::: code-group
+```tsx [React]
+<FormRenderer definition={definition} initialValues={record} hiddenValues="keep" onSubmit={save} />
+```
+
+```vue [Vue]
+<FormRenderer :definition="definition" :initial-values="record" hidden-values="keep" @submit="save" />
+```
+:::
+
+With `'keep'`, a field hidden by a condition keeps its value in `engine.values` and in the submit payload. The default `'clear'` behaves as described above. `'keep'` changes only where values go:
+
+- Conditions, including `disabled` conditions of actions, still read a hidden field as unanswered. The cascade above runs the same way, and the fields it hides keep their values too.
+- Hidden fields are not validated and never block Continue or Submit. A hidden field loses its error.
+- A field shown again shows its kept value.
+- The same applies to fields of a hidden section, of a step hidden by its conditions, to hidden item fields of a [group](/guide/groups) and to whole hidden groups.
+- Answers on steps off the [active path](/guide/steps#route-between-branches) are sent too.
+- Fields of a skipped step are still left out: Skip resets them.
+- [Recall](/spec#answer-recall) shows nothing for a hidden field.
+- Hooks that receive values (`onBeforeSubmit`, `onAfterSubmit`, the step hooks and `onStepValidate`) get the payload with the kept values. Validators get the values without them.
+- `reset()` and `replaceDefinition()` keep the hidden values they start with.
+
+Pass the same option to [`validateSubmission()`](/guide/server-validation#hidden-values), or the server drops the kept values. The option is read when the engine is created, like `seed`. `useFormEngine` and `HeadlessFormRenderer` take it too. `FormhausForm` does not: Formhaus Cloud validates with the default.
 
 ## Conditional steps
 

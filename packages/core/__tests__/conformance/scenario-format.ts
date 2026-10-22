@@ -66,6 +66,7 @@ export interface Scenario {
   definition?: FormDefinition;
   values?: Record<string, unknown>;
   seed?: string;
+  hiddenValues?: 'clear' | 'keep';
   hooks?: Partial<Record<HookName, Reply[]>>;
   validators?: Record<string, ValidatorSpec>;
   messages?: Record<string, string>;

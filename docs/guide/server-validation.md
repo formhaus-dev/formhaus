@@ -100,6 +100,19 @@ A type error can name a field the user never saw, sent by a stale or tampered cl
 
 For a [repeatable group](/guide/groups), a value with more items than `maxLength` fails with the `maxItems` message, and a value that is not an array of plain objects, or that has more than 100 items without `maxLength` or more than 1000 items in any case, fails with the `value` message. Both are rejected before any item is checked, and the value is left out of `values`. It drops unknown item keys and checks every visible item field. Item errors use paths such as `participants.1.email`, and `values` holds the cleaned arrays. Upgrade the server before the clients: core 0.13 and older pass a group value through without checks.
 
+## Hidden values
+
+A client with [`hiddenValues: 'keep'`](/guide/conditions#keep-hidden-values) sends the values of hidden fields. Pass the same option to the server:
+
+```ts
+const { values, errors } = validateSubmission(definition, req.body?.values, {
+  skippedSteps: req.body?.skippedSteps,
+  hiddenValues: 'keep',
+});
+```
+
+The returned `values` then hold the hidden values as sent, trimmed and converted like visible ones. They are not validated and add no errors. A hidden value that fails its type check is dropped without an error. Fields of skipped steps and unknown keys are dropped as before. Without the option, the server drops hidden values.
+
 ## Custom validators
 
 `validateSubmission()` ignores `validation.validator` unless you pass the function in `validators`:

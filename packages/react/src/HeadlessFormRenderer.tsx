@@ -8,9 +8,10 @@ import {
   labelFor,
   restoreFocus,
   shouldApplyExternalErrors,
+  testIds,
   warnMissingComponents,
 } from '@formhaus/core/internal';
-import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useRef, useState } from 'react';
+import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
@@ -61,6 +62,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       setFocusRequest((request) => request + 1);
     };
     const wasBusy = useRef(false);
+    const testId = useMemo(() => testIds(props.testIds, definition.id), [props.testIds, definition.id]);
     const engineOptions: FormEngineOptions = {
       ...props,
       onFormEvent: props.onFormEvent ? onFormEvent : undefined,
@@ -187,6 +189,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
           focusReturn.current = event.target;
         }}
         className="fh-form"
+        data-testid={testId?.('form')}
         tabIndex={-1}
         aria-busy={engine.stepValidating || engine.submitting || loading}
         onSubmit={(event) => {
@@ -216,14 +219,18 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             onCommit={actions.commit}
             onBlur={handleFieldBlur}
             onFocus={handleFieldFocus}
+            testId={testId}
           />
           <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
-          {props.errorSummary !== false && <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} />}
+          {props.errorSummary !== false && (
+            <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} testId={testId?.('summary')} />
+          )}
           <FormActionsController
             engine={engine}
             loading={loading}
             labels={props.labels}
             ActionsComponent={actionsComponent}
+            testId={testId}
             onSubmit={actions.submit}
             onNext={actions.next}
             onBack={actions.back}

@@ -36,6 +36,7 @@ export type {
   ValidationI18n,
   StepRoute,
   ShowCondition,
+  TestIdTarget,
 } from './types';
 
 export {

@@ -9,10 +9,11 @@ interface FieldShellProps {
   field: FormField;
   error?: string;
   variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
+  testId?: string;
   children: ReactNode;
 }
 
-export function FieldShell({ id, field, error, variant, children }: FieldShellProps) {
+export function FieldShell({ id, field, error, variant, testId, children }: FieldShellProps) {
   const text = useContext(LabelContext);
   const inline = variant === 'checkbox' || variant === 'switch';
   const group = variant && !inline;
@@ -29,6 +30,7 @@ export function FieldShell({ id, field, error, variant, children }: FieldShellPr
       className={variant ? `fh-field fh-field--${variant}` : 'fh-field'}
       aria-invalid={group ? !!error || undefined : undefined}
       aria-describedby={group ? describedBy(field, id, error) : undefined}
+      data-testid={testId}
     >
       {group && field.label && (
         <legend className="fh-field__label">

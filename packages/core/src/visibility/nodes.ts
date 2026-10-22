@@ -45,14 +45,14 @@ export function itemView(group: FormGroup, item: unknown, values: Values): Value
   return withItem(Object.create(values), group, item);
 }
 
-export function cleanItems(group: FormGroup, value: unknown, values: Values): unknown {
+export function cleanItems(group: FormGroup, value: unknown, values: Values, all = false): unknown {
   if (!Array.isArray(value)) return value;
   return value.map((item) => {
     if (!isPlainEntry(item)) return item;
     const scope = itemView(group, item, values);
     const result: Values = {};
     for (const field of group.fields) {
-      if (scope[field.key] !== undefined && isVisible(field, scope)) result[field.key] = scope[field.key];
+      if (scope[field.key] !== undefined && (all || isVisible(field, scope))) result[field.key] = scope[field.key];
     }
     return result;
   });

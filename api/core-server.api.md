@@ -43,6 +43,8 @@ export function parseDefinition(input: unknown): FormDefinition;
 // @public (undocumented)
 export interface SubmissionOptions {
     // (undocumented)
+    hiddenValues?: 'clear' | 'keep';
+    // (undocumented)
     messages?: MessageSource;
     // (undocumented)
     skippedSteps?: string[];

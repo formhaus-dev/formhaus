@@ -31,12 +31,12 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
   if (skipTarget(engine)) return changeStep(engine, 'next', 'skip');
   const step = engine.currentStep;
   if (!submit || !step) return false;
-  const values = engine.values;
+  const values = engine.state.values;
   const errors = { ...engine.errors };
   const serverErrors = { ...engine.state.serverErrors };
   let outcome: boolean | undefined;
   const restore = skipCurrentStep(engine);
-  const skippedValues = engine.values;
+  const skippedValues = engine.state.values;
   const edited = watchValues(engine, skippedValues);
   const written = engine.visibility.watchWrites();
   const submitting = submitForm(
@@ -54,19 +54,19 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
     return await submitting;
   } finally {
     const writes = written();
-    if (outcome !== false && operation === engine.latestOperation && engine.values === skippedValues) {
+    if (outcome !== false && operation === engine.latestOperation && engine.state.values === skippedValues) {
       const steps = engine.visibleSteps;
       const kept = new Set([...edited(), ...writes]);
-      const current = engine.values;
+      const current = engine.state.values;
       baselineFields(engine);
       engine.state.values = { ...values };
       for (const key of kept) {
-        delete engine.values[key];
+        delete engine.state.values[key];
         for (const record of [errors, serverErrors])
           for (const errorKey of Object.keys(record)) if (engine.visibility.owner(errorKey) === key) delete record[errorKey];
-        if (key in current) engine.values[key] = current[key];
+        if (key in current) engine.state.values[key] = current[key];
       }
-      const reverted = getChangedKeys(current, engine.values);
+      const reverted = getChangedKeys(current, engine.state.values);
       if (outcome === undefined) engine.state.serverErrors = serverErrors;
       else dropServerErrors(engine, reverted);
       const fresh = { ...engine.errors };
@@ -74,7 +74,7 @@ export async function skipStep(engine: EngineInternals, submit?: SubmitHandler):
       engine.state.errors = { ...(outcome ? {} : errors), ...fresh };
       engine.skipped.delete(step.id);
       restore(writes);
-      dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
+      dropServerErrors(engine, engine.visibility.reconcileHidden(engine.state.values, engine.errors));
       engine.visibility.markChanged(true, true);
       engine.state.currentStepIndex = reconcileStepIndex(steps, engine.visibleSteps, engine.currentStepIndex);
       pruneOffPathErrors(engine);
@@ -102,7 +102,7 @@ export async function changeStep(
   const toIndex = fromIndex + (direction === 'next' ? 1 : -1);
   const target = skipping ? skipTarget(engine) : engine.visibleSteps[toIndex];
   if (!target) return false;
-  const context: StepChangeContext = { fromStepId: step.id, toStepId: target.id, reason, values: { ...getSubmitValues(engine) } };
+  const context: StepChangeContext = { fromStepId: step.id, toStepId: target.id, reason, values: getSubmitValues(engine, true) };
   const epoch = engine.validationEpoch;
   const operation = (engine.latestOperation = ++engine.operationEpoch);
   const inputsChanged = watchCheckedInputs(engine, context.values);
@@ -145,7 +145,7 @@ export async function changeStep(
 
 export function goToStepWithField(engine: EngineInternals, fieldKey: string): void {
   if (!engine.isMultiStep) return;
-  const targetIndex = engine.visibility.findStepIndex(fieldKey, engine.values, engine.currentStepIndex);
+  const targetIndex = engine.visibility.findStepIndex(fieldKey, engine.state.values, engine.currentStepIndex);
   if (targetIndex === engine.currentStepIndex) engine.notify();
   else if (targetIndex !== null) moveTo(engine, targetIndex);
 }

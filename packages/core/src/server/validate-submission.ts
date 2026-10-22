@@ -16,6 +16,7 @@ export interface SubmissionOptions {
   skippedSteps?: string[];
   validators?: Record<string, ValidatorFn>;
   messages?: MessageSource;
+  hiddenValues?: 'clear' | 'keep';
 }
 
 const BODY_MESSAGE = 'Pass the values object as the second argument, not the request body with "values" and "skippedSteps".';
@@ -78,15 +79,17 @@ function activeValues(
   return result;
 }
 
-function blankItems({ values, active }: ActiveValues, resolve: ResolveMessage): Map<string, string> {
+function blankItems({ values, active }: ActiveValues, fields: FormField[], resolve: ResolveMessage): Map<string, string> {
   const errors = new Map<string, string>();
-  for (const [key, group] of active)
-    if (isGroup(group) && Array.isArray(values[key]))
+  for (const group of fields) {
+    const { key } = group;
+    if (isGroup(group) && (active.get(key) ?? group) === group && Array.isArray(values[key]))
       values[key] = (values[key] as unknown[]).map((item, index) =>
         isEntry(item)
           ? withoutInvalid(item, group.fields, resolve, (field, error) => errors.set(itemPath(key, index, field), error))
           : item,
       );
+  }
   return errors;
 }
 
@@ -135,7 +138,7 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
   const messages = messageResolver(options.messages, definition.messages);
   const resolve = namedResolver(messages);
   const resolved = activeValues(definition, fields, isEntry(values) ? values : {}, resolve);
-  const items = blankItems(resolved, resolve);
+  const items = blankItems(resolved, fields, resolve);
   const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
   const engine = new FormEngine(trustDefinition({ ...definition }), resolved.values, engineOptions);
   loadSubmitted(engine, resolved.values);
@@ -144,25 +147,40 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
   const check = (): SubmissionResult => {
     const errors = engine.validate();
     const submitted: Record<string, unknown> = engine.getSubmitValues();
-    const { visibility } = internals(engine);
+    const { visibility, state } = internals(engine);
     for (const [key, value] of resolved.invalid) {
-      const field = visibility.activeField(key, engine.values);
+      const field = visibility.activeField(key, state.values);
       if (!field || skipped.includes(key)) continue;
       setError(visibility, errors, key, typeError(field, value, resolve) ?? resolve('value', {}, field));
       delete submitted[key];
     }
     for (const [key, error] of items)
-      if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, engine.values)) errors[key] = error;
+      if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, state.values)) errors[key] = error;
+    if (options.hiddenValues === 'keep') keepHidden(fields, resolved.values, submitted, skipped);
     return { values: submitted, errors };
   };
   return { engine, skipped, check };
 }
 
+function keepHidden(fields: FormField[], source: Record<string, unknown>, submitted: Record<string, unknown>, skipped: string[]): void {
+  for (const field of fields) {
+    const { key } = field;
+    const value = source[key];
+    if (value === undefined || skipped.includes(key)) continue;
+    if (!hasOwn(submitted, key)) submitted[key] = value;
+    else if (isGroup(field) && Array.isArray(value) && Array.isArray(submitted[key]))
+      submitted[key] = (submitted[key] as unknown[]).map((item, index) =>
+        isEntry(item) && isEntry(value[index]) ? { ...value[index], ...item } : item,
+      );
+  }
+}
+
 function withSkipped(source: Record<string, unknown>, { engine, skipped }: Prepared): Record<string, unknown> {
+  const { values: current } = internals(engine).state;
   const values = { ...source };
   for (const key of skipped) {
     delete values[key];
-    if (engine.values[key] !== undefined) values[key] = engine.values[key];
+    if (current[key] !== undefined) values[key] = current[key];
   }
   return values;
 }

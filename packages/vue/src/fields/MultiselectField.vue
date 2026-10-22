@@ -22,7 +22,7 @@ function handleToggle(optValue: string) {
 </script>
 
 <template>
-  <FieldShell :id="props.id" :field="props.field" :error="props.error" variant="multiselect">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" variant="multiselect">
     <template v-for="(option, index) in options" :key="String(option.value)">
       <div v-if="dividerBefore(props.field, options, index)" class="fh-field__option-divider">{{ text('or') }}</div>
       <div class="fh-field__multiselect-option">
@@ -31,6 +31,7 @@ function handleToggle(optValue: string) {
           :id="`${inputId}-${index}`"
           :name="props.field.key"
           class="fh-field__checkbox"
+          :data-testid="props.optionTestId?.(String(option.value))"
           type="checkbox"
           :checked="selected.includes(option.value)"
           @change="handleToggle(option.value)"

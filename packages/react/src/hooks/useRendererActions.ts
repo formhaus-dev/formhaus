@@ -1,5 +1,5 @@
 import { isActionDisabled, type FormEngine } from '@formhaus/core';
-import { autoAdvance } from '@formhaus/core/internal';
+import { actionValues, autoAdvance } from '@formhaus/core/internal';
 import { useCallback, useState } from 'react';
 import type { FormRendererProps } from '../types';
 
@@ -24,9 +24,7 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
   );
   const next = useCallback(
     () =>
-      run(
-        async () => !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, engine.getSubmitValues()) && engine.next(),
-      ),
+      run(async () => !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, actionValues(engine)) && engine.next()),
     [run, engine],
   );
   const back = useCallback(() => run(() => engine.back()), [run, engine]);
@@ -58,7 +56,7 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
     [engine, loading, run, update],
   );
   const submit = useCallback(
-    () => run(async () => !isActionDisabled(engine.definition.submit, engine.getSubmitValues()) && engine.submit(onSubmit)),
+    () => run(async () => !isActionDisabled(engine.definition.submit, actionValues(engine)) && engine.submit(onSubmit)),
     [engine, run, onSubmit],
   );
   const skip = useCallback(() => run(() => engine.skip(onSubmit)), [run, engine, onSubmit]);

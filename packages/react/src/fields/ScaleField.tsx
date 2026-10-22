@@ -19,13 +19,13 @@ export function ScaleField(props: FieldComponentProps) {
   });
 
   return (
-    <FieldShell id={id} field={field} error={error} variant={field.type === 'rating' ? 'rating' : 'scale'}>
+    <FieldShell id={id} field={field} error={error} variant={field.type === 'rating' ? 'rating' : 'scale'} testId={props.testId}>
       {points.map((point) => {
         const anchor = roles.findIndex((role, index) => role === point && anchors[index]);
         return (
           <div key={point} className="fh-field__scale-option">
             <input
-              {...optionProps(props)}
+              {...optionProps(props, point)}
               {...choice(point)}
               id={`${id}-${point}`}
               type="radio"

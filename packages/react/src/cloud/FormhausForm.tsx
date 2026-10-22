@@ -125,6 +125,7 @@ export function FormhausForm({
       <CloudNotice notice={cloud.notice} noticeRef={notice} onAction={act} />
       <FormRenderer
         {...rendererProps}
+        hiddenValues={undefined}
         key={cloud.revision}
         definition={cloud.definition}
         initialValues={cloud.initialValues ?? initialValues}

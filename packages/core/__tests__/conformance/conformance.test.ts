@@ -6,13 +6,15 @@ import { textSlots } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
 import { cases, corpus, orders, recalls, runtime } from './corpus';
 
+type Input = (typeof cases)[number][2]['input'];
+
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const byPathAndCode = (a: { code: string; path: string }, b: { code: string; path: string }) =>
   compare(a.path, b.path) || compare(a.code, b.code);
 const project = ({ code, path }: { code: string; path: string }) => ({ code, path });
 
-async function browserCanSubmit(definition: FormDefinition, values: Record<string, unknown>): Promise<boolean> {
-  const engine = new FormEngine(definition, values);
+async function browserCanSubmit(definition: FormDefinition, { values, hiddenValues }: Input): Promise<boolean> {
+  const engine = new FormEngine(definition, values, { hiddenValues });
   while (engine.isMultiStep && !engine.isLastStep) {
     if (isActionDisabled(engine.currentStep?.next, engine.getSubmitValues()) || !(await engine.next())) return false;
   }
@@ -70,6 +72,7 @@ describe('conformance corpus', () => {
       'flat-api-steps',
       'format-version',
       'group-list-answers',
+      'hidden-values',
       'i18n-empty-overlay',
       'i18n-exclusive-branches',
       'i18n-own-properties',
@@ -156,21 +159,23 @@ describe('conformance corpus', () => {
   });
 
   it.each(cases)('%s: server', (_, definition, { input, expected, serverValues }) => {
-    const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps });
+    const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps, hiddenValues: input.hiddenValues });
     expect(result).toEqual({ ...expected, values: serverValues ?? expected.values });
     expect(Object.getPrototypeOf(result.values)).toBe(Object.prototype);
   });
 
   it.each(cases)('%s: browser engine', async (_, definition, { input, expected, canSubmit }) => {
-    const engine = new FormEngine(definition, input.values);
+    const engine = new FormEngine(definition, input.values, { hiddenValues: input.hiddenValues });
     expect(Object.getPrototypeOf(engine.values)).toBe(Object.prototype);
     expect(engine.validate()).toEqual(expected.errors);
     expect(engine.getSubmitValues()).toEqual(expected.values);
-    expect(await browserCanSubmit(definition, input.values)).toBe(canSubmit);
+    expect(await browserCanSubmit(definition, input)).toBe(canSubmit);
   });
 
   it.each(cases)('%s: a payload the browser accepts passes the server', async (_, definition, { input }) => {
-    if (!(await browserCanSubmit(definition, input.values))) return;
-    expect(validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps }).errors).toEqual({});
+    if (!(await browserCanSubmit(definition, input))) return;
+    expect(
+      validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps, hiddenValues: input.hiddenValues }).errors,
+    ).toEqual({});
   });
 });

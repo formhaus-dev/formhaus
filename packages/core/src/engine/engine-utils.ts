@@ -1,7 +1,8 @@
 import type { FormDefinition, FormField } from '../types';
-import type { EngineState } from './runtime-internals';
+import type { EngineInternals, EngineState } from './runtime-internals';
+import type { NotifyOptions } from './subscriptions';
 import { isPlainEntry, maxItems } from '../validation/type-checks';
-import { hasOwn, isGroup, keepId, topNodes, valueFields } from '../visibility/nodes';
+import { hasOwn, isEntry, isGroup, keepId, topNodes, valueFields } from '../visibility/nodes';
 
 export const shownError = (errors: Record<string, string>, field: FormField) => field.type !== 'hidden' && errors[field.key] !== undefined;
 
@@ -65,4 +66,23 @@ export function createValues(
 export function getChangedKeys(previous: Record<string, unknown>, next: Record<string, unknown>): Set<string> {
   const keys = new Set([...Object.keys(previous), ...Object.keys(next)]);
   return new Set([...keys].filter((key) => !Object.is(previous[key], next[key])));
+}
+
+const sameItems = (previous: unknown, next: unknown) =>
+  Array.isArray(previous) &&
+  Array.isArray(next) &&
+  previous.length === next.length &&
+  previous.every(
+    (item, index) => Object.is(item, next[index]) || (isEntry(item) && isEntry(next[index]) && !getChangedKeys(item, next[index]).size),
+  );
+
+export const valuesDiffer = (previous: Record<string, unknown>, next: Record<string, unknown>): boolean =>
+  [...getChangedKeys(previous, next)].some((key) => !sameItems(previous[key], next[key]));
+
+export const keptValues = (engine: EngineInternals): Record<string, unknown> =>
+  engine.visibility.withKept(engine.state.values, [...engine.skipped.values()].flat());
+
+export function keptChanged(engine: EngineInternals & { snapshot?: Record<string, unknown> }, options: NotifyOptions): boolean | undefined {
+  if (engine.visibility.keep && engine.snapshot) options.valuesChanged = valuesDiffer(engine.snapshot, keptValues(engine));
+  return options.valuesChanged;
 }

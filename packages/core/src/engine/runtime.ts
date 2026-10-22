@@ -2,7 +2,7 @@ import type { ValidatorFn } from '../validation';
 import type { ResolveMessage } from '../validation/default-messages';
 import type { FieldOption, FormDefinition, FormField, FormNode, FormStep } from '../types';
 import type { FormEngineOptions, GoToStepResult, SubmitHandler } from './engine-options';
-import { initialState } from './engine-utils';
+import { initialState, keptChanged, keptValues } from './engine-utils';
 import { reportErrors, startEvents, trackChanges } from './form-events';
 import { addItem, groupItems, removeItem, setItemValue, type GroupItem } from './groups';
 import { changeStep, goToStep, goToStepWithField, skipStep } from './navigation';
@@ -46,7 +46,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   get values(): Readonly<Partial<TValues>> {
-    return this.state.values as Partial<TValues>;
+    return (this.visibility.keep ? this.getValuesSnapshot() : this.state.values) as Partial<TValues>;
   }
   get errors(): Readonly<Record<string, string>> {
     return this.state.errors;
@@ -131,7 +131,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   getValuesSnapshot(): Readonly<Partial<TValues>> {
-    return (this.snapshot ??= Object.freeze({ ...this.state.values }) as Partial<TValues>);
+    return (this.snapshot ??= Object.freeze({ ...keptValues(this as never) }) as Partial<TValues>);
   }
 
   subscribeField(key: string, listener: () => void): () => void {
@@ -218,7 +218,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return validateOne(this as never, key);
   }
   getSubmitValues(): Partial<TValues> {
-    return getSubmitValues(this as never) as Partial<TValues>;
+    return getSubmitValues(this as never, true) as Partial<TValues>;
   }
   goToStepWithField(key: string): void {
     goToStepWithField(this as never, key);
@@ -242,7 +242,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   private notify(options: NotifyOptions = {}): void {
-    if (options.valuesChanged) this.snapshot = undefined;
+    if (keptChanged(this as never, options)) this.snapshot = undefined;
     this.visibility.markChanged(!!options.structureChanged, !!options.valuesChanged);
     this.subscriptions.notify(options);
     trackChanges(this as never, options.valuesChanged);
