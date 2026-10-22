@@ -36,6 +36,7 @@ export class ScenarioRun {
       onFormEvent: (event) => this.log.push({ event: plain(event) }),
       onWarning: ({ code, path }) => this.log.push({ warning: { code, path } }),
       seed: this.scenario.seed,
+      hiddenValues: this.scenario.hiddenValues,
       research,
     };
     if (hooks.onBeforeStepChange)
