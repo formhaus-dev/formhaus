@@ -38,7 +38,7 @@ export { CloudSubmission }
 export function FormhausForm(input: FormhausFormProps): react.JSX.Element;
 
 // @public (undocumented)
-export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors'> {
+export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues'> {
     // (undocumented)
     apiBase?: string;
     // (undocumented)

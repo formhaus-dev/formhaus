@@ -40,7 +40,7 @@ export { CloudSubmission }
 export const FormhausForm: typeof __VLS_export;
 
 // @public (undocumented)
-export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors'> {
+export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues'> {
     // (undocumented)
     apiBase?: string;
     // (undocumented)
