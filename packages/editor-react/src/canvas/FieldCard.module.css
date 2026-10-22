@@ -84,23 +84,6 @@
   font-weight: var(--fh-ed-font-weight-medium);
 }
 
-.toggle {
-  padding: 0;
-  border: 0;
-  background: none;
-  line-height: inherit;
-  cursor: pointer;
-}
-
-.toggle:hover,
-.optional:hover {
-  color: var(--fh-ed-fg);
-}
-
-.optional {
-  color: var(--fh-ed-fg-subtle);
-}
-
 .ghost {
   visibility: hidden;
 }

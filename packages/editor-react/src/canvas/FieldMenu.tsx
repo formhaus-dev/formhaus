@@ -1,8 +1,9 @@
-import { isPage, pageTitle, stepOf } from '@formhaus/builder';
-import { ArrowDown, ArrowUp, Copy, CornerDownRight, Ellipsis, Plus, Settings2, SplitSquareVertical, Trash2 } from 'lucide-react';
+import { findField, isPage, pageTitle, setRequired, stepOf } from '@formhaus/builder';
+import { ArrowDown, ArrowUp, Asterisk, Copy, CornerDownRight, Ellipsis, Plus, Settings2, SplitSquareVertical, Trash2 } from 'lucide-react';
 import { useMemo } from 'react';
 import {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
@@ -43,6 +44,8 @@ function FieldMenuItems({ uid, actions, onAddBelow, onSettings }: Props) {
   const index = form.blocks.findIndex((block) => block.uid === uid);
   const first = index <= (isPage(form.blocks[0]) ? 1 : 0);
   const last = index === form.blocks.length - 1;
+  const field = findField(form, uid);
+  const requirable = field && field.type !== 'section' && field.type !== 'hidden' && field.type !== 'group';
   return (
     <>
       <DropdownMenuItem
@@ -57,6 +60,19 @@ function FieldMenuItems({ uid, actions, onAddBelow, onSettings }: Props) {
       <DropdownMenuItem icon={<Settings2 aria-hidden />} hint="." onSelect={onSettings}>
         Field settings
       </DropdownMenuItem>
+      {requirable && (
+        <DropdownMenuCheckboxItem
+          icon={<Asterisk aria-hidden />}
+          checked={field.required}
+          onCheckedChange={(next) => {
+            actions.edit((draft) => {
+              setRequired(draft, uid, next);
+            });
+          }}
+        >
+          Required
+        </DropdownMenuCheckboxItem>
+      )}
       <DropdownMenuItem icon={<Plus aria-hidden />} onSelect={onAddBelow}>
         Add field below
       </DropdownMenuItem>

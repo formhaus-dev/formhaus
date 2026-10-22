@@ -8,6 +8,7 @@ export { ConfirmDialog } from './components/ConfirmDialog/ConfirmDialog';
 export { Dialog, DialogClose } from './components/Dialog/Dialog';
 export {
   DropdownMenu,
+  DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,

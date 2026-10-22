@@ -1,0 +1,15 @@
+.compact {
+  --fh-ed-size-segment: var(--fh-ed-size-badge);
+
+  flex: none;
+  align-self: center;
+  margin-left: var(--fh-ed-space-2);
+}
+
+@media (hover: none), (width < 640px) {
+  .compact {
+    --fh-ed-size-segment: var(--fh-ed-size-touch);
+
+    margin-left: 0;
+  }
+}
