@@ -850,7 +850,7 @@ For `reason: 'error'`, `status` is the numeric `status` of the thrown error when
 
 Native renderers restore a form after the OS ends the app process. The JS core does not implement snapshots; web hosts use `onValuesChange`.
 
-```json
+```jsonc
 {
   "version": 1,
   "definitionId": "contact",
