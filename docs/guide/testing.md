@@ -88,3 +88,7 @@ export function ColorPicker({ field, value, onChange, testId, optionTestId }: Fi
 ```
 
 In Vue, declare both props, such as with `fieldComponentProps`. A component that does not declare them does not get them. A [custom actions component](/guide/custom-components) gets `testIds` with the `submit`, `next` and `back` ids.
+
+## iOS and macOS
+
+The SwiftUI renderer has its own `testIds` option with the same id scheme. See [Test ids](/guide/integrations/swiftui#test-ids).
