@@ -51,11 +51,12 @@
   width: var(--fh-ed-size-switch-thumb);
   height: var(--fh-ed-size-switch-thumb);
   border-radius: var(--fh-ed-radius-full);
-  background: var(--fh-ed-panel);
+  background: var(--fh-ed-knob);
   box-shadow: var(--fh-ed-shadow-raised);
   transition: transform var(--fh-ed-duration-fast) var(--fh-ed-easing-out);
 }
 
 .track[aria-checked='true'] .thumb {
+  background: var(--fh-ed-panel);
   transform: translateX(var(--fh-ed-size-switch-thumb));
 }

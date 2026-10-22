@@ -197,7 +197,6 @@
         "packages/editor-react/src/canvas/MatrixPreview.tsx",
         "packages/editor-react/src/canvas/StepHeaderCard.tsx",
         "packages/editor-react/src/inspector/FieldPanel.tsx",
-        "packages/editor-react/src/inspector/PerRow.tsx",
         "packages/editor-react/src/inspector/ResponseKey.tsx",
         "packages/editor-react/src/inspector/StepPanel.tsx",
         "packages/editor-react/src/logic/LogicSection.tsx",

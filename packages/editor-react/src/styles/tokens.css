@@ -35,6 +35,7 @@
   --fh-ed-font-tracking-tight: -0.01em;
   --fh-ed-font-weight-medium: 500;
   --fh-ed-font-weight-semibold: 600;
+  --fh-ed-knob: light-dark(#ffffff, #a9a9b1);
   --fh-ed-layout-gutter: 16px;
   --fh-ed-layout-sidebar: 300px;
   --fh-ed-layout-target-gap: 0px;

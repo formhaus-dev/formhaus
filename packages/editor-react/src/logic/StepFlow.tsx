@@ -1,4 +1,5 @@
 import { hasCustomRoutes, type BuilderPage } from '@formhaus/builder';
+import { SettingsSection } from '../inspector/SettingsSection';
 import { Field, Select, Text } from '../ui';
 import { useForm, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
@@ -10,16 +11,15 @@ export function StepFlow({ step, actions }: { step: BuilderPage; actions: Editor
   const readOnly = useReadOnly();
   const targets = targetsAfter(form, step.uid);
   const custom = hasCustomRoutes(form, step.uid);
-  const last = !targets.length;
+  if (!custom && !targets.length) return null;
   return (
-    <section className={styles.section} aria-label="Flow">
-      <span className={styles.title}>Flow</span>
-      {custom ? (
-        <Text size="sm" tone="muted">
-          This step uses custom routes.
-        </Text>
-      ) : (
-        !last && (
+    <SettingsSection title="Flow">
+      <div className={styles.section}>
+        {custom ? (
+          <Text size="sm" tone="muted">
+            This step uses custom routes.
+          </Text>
+        ) : (
           <Field label="After this step">
             <Select
               value={step.next ?? ''}
@@ -33,8 +33,8 @@ export function StepFlow({ step, actions }: { step: BuilderPage; actions: Editor
               }}
             />
           </Field>
-        )
-      )}
-    </section>
+        )}
+      </div>
+    </SettingsSection>
   );
 }

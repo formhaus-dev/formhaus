@@ -61,6 +61,19 @@ export function DropdownMenuItem({ icon, hint, checked, tone = 'default', classN
   );
 }
 
+export type DropdownMenuCheckboxItemProps = Omit<ComponentPropsWithRef<typeof Menu.CheckboxItem>, 'children'> &
+  Omit<ItemLook, 'checked' | 'tone'> & { children: ReactNode };
+
+export function DropdownMenuCheckboxItem({ icon, hint, checked, className, children, ...rest }: DropdownMenuCheckboxItemProps) {
+  return (
+    <Menu.CheckboxItem className={cx(styles.item, className)} checked={checked} {...rest}>
+      <ItemBody icon={icon} hint={hint} checked={checked === true}>
+        {children}
+      </ItemBody>
+    </Menu.CheckboxItem>
+  );
+}
+
 export type DropdownMenuLinkProps = ItemLook & { href: string; children: ReactNode };
 
 export function DropdownMenuLink({ href, icon, hint, children }: DropdownMenuLinkProps) {

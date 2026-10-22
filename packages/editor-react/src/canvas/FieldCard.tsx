@@ -22,7 +22,9 @@ import { FieldMenu } from './FieldMenu';
 import { FieldPreview } from './FieldPreview';
 import { focusCard, useFocusRequests } from './focus';
 import { OptionsEditor } from './OptionsEditor';
+import { questionName } from './questionName';
 import { RequiredTag } from './RequiredTag';
+import { takesRequired } from './required';
 import { TypeChip } from './TypeChip';
 import { useCardKeys } from './useCardKeys';
 import { closeSettingsOnEscape, toggleSettings } from './settings';
@@ -77,7 +79,7 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
       className={cx(styles.card, selected && styles.selected, issues.length > 0 && styles.invalid)}
       tabIndex={selected ? 0 : -1}
       role="group"
-      aria-label={`${field.label.trim() || 'Untitled question'} ${container ? typeLabel(field.type).toLowerCase() : 'field'}`}
+      aria-label={`${questionName(field)} ${container ? typeLabel(field.type).toLowerCase() : 'field'}`}
       aria-describedby={issues.length ? issuesId : undefined}
       onClick={select}
       onKeyDown={(event) => {
@@ -97,8 +99,10 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
               onAddBelow={addBelow}
               onCardKey={onCardKey}
             />
-            {field.type !== 'section' && (field.type !== 'hidden' || field.required) && (
+            {takesRequired(field) ? (
               <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />
+            ) : (
+              field.type === 'hidden' && field.required && <RequiredTag field={field} actions={actions} editable={false} reserve={false} />
             )}
           </div>
           <TypeChip field={field} actions={actions} disabled={readOnly || container} />
