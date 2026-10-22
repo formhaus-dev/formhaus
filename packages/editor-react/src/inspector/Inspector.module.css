@@ -11,7 +11,8 @@
   border-top: 0;
 }
 
-.panel {
+.panel,
+.block {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: start;
@@ -19,9 +20,33 @@
 }
 
 @container settings (width >= 560px) {
-  .panel {
+  .panel,
+  .block {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-7);
+}
+
+.heading,
+.disclosure {
+  color: var(--fh-ed-fg);
+  font-size: var(--fh-ed-font-size-md);
+  font-weight: var(--fh-ed-font-weight-semibold);
+}
+
+.disclosure {
+  justify-self: start;
+  height: auto;
+  min-height: 0;
+  padding-block: calc((var(--fh-ed-size-control-md) - 1lh) / 2 - var(--fh-ed-border-thin));
+  margin-block: calc((var(--fh-ed-size-control-md) - 1lh) / -2);
+  margin-inline-start: calc((var(--fh-ed-space-3) + var(--fh-ed-border-thin)) * -1);
+  line-height: var(--fh-ed-font-leading-base);
 }
 
 .wide {
@@ -47,6 +72,13 @@
   min-height: var(--fh-ed-size-control-md);
 }
 
+.hintLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--fh-ed-space-1) var(--fh-ed-space-3);
+}
+
 .settingLabel {
   color: var(--fh-ed-fg-muted);
   font-size: var(--fh-ed-font-size-sm);
@@ -66,6 +98,7 @@
 }
 
 .panel label[for],
+.sections label[for],
 .controlLabel {
   color: var(--fh-ed-fg-muted);
   font-size: var(--fh-ed-font-size-sm);
@@ -85,7 +118,8 @@
 }
 
 @container settings (width < 560px) {
-  .panel {
+  .panel,
+  .sections {
     --fh-ed-size-control-md: var(--fh-ed-size-touch);
     --fh-ed-size-segment: var(--fh-ed-size-touch);
   }

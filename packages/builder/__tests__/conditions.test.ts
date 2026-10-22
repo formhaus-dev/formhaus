@@ -97,7 +97,21 @@ describe('logic', () => {
     removeField(form, plan.uid);
     expect(toDefinition(form).fields?.[2].show).toEqual([{ field: 'seats', notEmpty: true }]);
     setLogic(form, seats.uid, 'all', [{ field: 'company', operator: 'notEmpty', value: '' }]);
-    expect(findIssues(form).some((issue) => issue.uid === seats.uid && issue.severity === 'warning')).toBe(true);
+    expect(findIssues(form)).toContainEqual({
+      uid: seats.uid,
+      severity: 'warning',
+      message: 'The "Shown when" condition uses "company", which comes later.',
+    });
+  });
+
+  it('names a condition on a missing field', () => {
+    const { form, seats } = plans();
+    setLogic(form, seats.uid, 'all', [{ field: 'gone', operator: 'notEmpty', value: '' }]);
+    expect(findIssues(form)).toContainEqual({
+      uid: seats.uid,
+      severity: 'error',
+      message: 'The "Shown when" condition uses "gone", which is not a field.',
+    });
   });
 });
 

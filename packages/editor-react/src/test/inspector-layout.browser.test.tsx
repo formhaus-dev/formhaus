@@ -74,7 +74,8 @@ function measure(card: HTMLElement) {
   const settings = card.querySelector<HTMLElement>('[data-settings]')!;
   const panel = settings.firstElementChild as HTMLElement;
   const left = round(box(panel).left);
-  const style = getComputedStyle(panel);
+  const grid = getComputedStyle(panel).display === 'grid' ? panel : panel.querySelector(':scope > section')!;
+  const style = getComputedStyle(grid);
   const columns = style.gridTemplateColumns.split(' ').map(parseFloat);
   const lines = new Set([left, round(left + (columns[0] ?? 0) + parseFloat(style.columnGap || '0'))]);
   const outside = (node: Element) => !node.closest('[class*="Logic_condition"]');

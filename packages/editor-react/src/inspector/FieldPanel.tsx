@@ -1,177 +1,18 @@
-import {
-  canAutoAdvance,
-  childrenOf,
-  findField,
-  hasOptions,
-  isMatrix,
-  isScale,
-  setFieldProp,
-  setMatrix,
-  setRequired,
-  type BuilderQuestion,
-} from '@formhaus/builder';
-import type { FormField, FormGroup } from '@formhaus/core';
-import { Field, Input, SegmentedControl, Switch } from '../ui';
+import type { BuilderQuestion } from '@formhaus/builder';
 import { LogicSection } from '../logic/LogicSection';
-import { useForm, useReadOnly } from '../store/hooks';
+import { useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
-import { FieldText } from './FieldText';
-import { LimitSettings } from './LimitSettings';
-import { limitSpec } from './limits';
-import { PerRow } from './PerRow';
-import { RandomizeSetting } from './RandomizeSetting';
-import { ResponseKey } from './ResponseKey';
-import { ScaleSettings } from './ScaleSettings';
-
-function GroupSettings({ field, actions, readOnly }: { field: BuilderQuestion; actions: EditorActions; readOnly: boolean }) {
-  const extra = field.extra as Partial<FormGroup>;
-  const text = (prop: 'itemLabel' | 'addLabel', label: string, placeholder: string) => (
-    <Field label={label}>
-      <Input
-        value={extra[prop] ?? ''}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        onChange={(event) => {
-          actions.edit((form) => {
-            setFieldProp(form, field.uid, prop as keyof FormField, event.target.value);
-          }, `${field.uid}:${prop}`);
-        }}
-      />
-    </Field>
-  );
-  const count = (rule: 'minLength' | 'maxLength', label: string) => (
-    <Field label={label}>
-      <Input
-        type="number"
-        inputMode="numeric"
-        min={0}
-        max={100}
-        value={field.extra.validation?.[rule] ?? ''}
-        readOnly={readOnly}
-        onChange={(event) => {
-          const value = Number.parseInt(event.target.value, 10);
-          const { [rule]: _old, ...rules } = field.extra.validation ?? {};
-          actions.edit((form) => {
-            setFieldProp(
-              form,
-              field.uid,
-              'validation',
-              Number.isNaN(value) ? (Object.keys(rules).length ? rules : undefined) : { ...rules, [rule]: value },
-            );
-          }, `${field.uid}:${rule}`);
-        }}
-      />
-    </Field>
-  );
-  return (
-    <>
-      {text('itemLabel', 'Item title', `${field.label.trim() || 'Item'} {index}`)}
-      {text('addLabel', 'Add button', 'Add')}
-      {count('minLength', 'Fewest items')}
-      {count('maxLength', 'Most items')}
-    </>
-  );
-}
+import { AdvancedSettings } from './AdvancedSettings';
+import { AnswerSettings } from './AnswerSettings';
 
 export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions: EditorActions }) {
   const readOnly = useReadOnly();
-  const form = useForm();
-  const parent = findField(form, field.parent ?? '');
-  const advances = canAutoAdvance(field.type) && parent?.type !== 'group' && !isMatrix(parent);
-  const limits = limitSpec(field.type);
-  const shuffles = hasOptions(field.type) && !isMatrix(parent);
-  const choices = shuffles && field.type !== 'select';
-  const pictures = choices && field.options.some((option) => option.extra?.image);
   return (
-    <div className={styles.panel} role="group" aria-label="Field settings">
-      {field.type !== 'section' && (
-        <Switch
-          className={styles.toggle}
-          label={field.type === 'group' ? 'At least one item' : 'Required'}
-          checked={field.required}
-          disabled={readOnly}
-          onCheckedChange={(next) => {
-            actions.edit((form) => {
-              setRequired(form, field.uid, next);
-            });
-          }}
-        />
-      )}
-      {field.type === 'section' && childrenOf(form, field.uid).length > 0 && (
-        <Switch
-          className={styles.toggle}
-          label="Show as matrix"
-          checked={isMatrix(field)}
-          disabled={readOnly}
-          onCheckedChange={(next) => {
-            actions.edit((draft) => {
-              setMatrix(draft, field.uid, next);
-            });
-          }}
-        />
-      )}
-      {field.type !== 'section' && field.type !== 'hidden' && <FieldText field={field} actions={actions} readOnly={readOnly} />}
-      {field.type === 'group' && <GroupSettings field={field} actions={actions} readOnly={readOnly} />}
-      {isScale(field.type) && <ScaleSettings field={field} actions={actions} readOnly={readOnly} />}
-      {limits && <LimitSettings field={field} spec={limits} actions={actions} readOnly={readOnly} />}
-      <div className={styles.wide}>
-        <LogicSection block={field} actions={actions} />
-      </div>
-      {advances && (
-        <Switch
-          className={styles.toggle}
-          label="Go to the next step when picked"
-          checked={field.extra.autoAdvance ?? false}
-          disabled={readOnly}
-          onCheckedChange={(next) => {
-            actions.edit((form) => {
-              setFieldProp(form, field.uid, 'autoAdvance', next || undefined);
-            });
-          }}
-        />
-      )}
-      {shuffles && <RandomizeSetting field={field} actions={actions} readOnly={readOnly} />}
-      {pictures && <PerRow field={field} actions={actions} />}
-      {choices && !pictures && (
-        <div className={styles.control}>
-          <span className={styles.controlLabel}>Option layout</span>
-          <SegmentedControl
-            label="Option layout"
-            options={[
-              { value: 'stack', label: 'Stacked' },
-              { value: 'inline', label: 'In a row' },
-            ]}
-            value={field.extra.layout ?? 'stack'}
-            onValueChange={(value) => {
-              actions.edit((form) => {
-                setFieldProp(form, field.uid, 'layout', value === 'inline' ? 'inline' : undefined);
-              });
-            }}
-          />
-        </div>
-      )}
-      {field.type === 'textarea' && (
-        <Field label="Rows">
-          <Input
-            type="number"
-            inputMode="numeric"
-            min={2}
-            max={20}
-            value={field.extra.rows ?? ''}
-            readOnly={readOnly}
-            onChange={(event) => {
-              const rows = Number.parseInt(event.target.value, 10);
-              actions.edit((form) => {
-                setFieldProp(form, field.uid, 'rows', Number.isNaN(rows) ? undefined : rows);
-              }, `${field.uid}:rows`);
-            }}
-          />
-        </Field>
-      )}
-      <div className={styles.wide}>
-        <ResponseKey field={field} actions={actions} readOnly={readOnly} />
-      </div>
+    <div className={styles.sections} role="group" aria-label="Field settings">
+      <AnswerSettings field={field} actions={actions} readOnly={readOnly} />
+      <LogicSection block={field} actions={actions} />
+      <AdvancedSettings field={field} actions={actions} readOnly={readOnly} />
     </div>
   );
 }

@@ -89,13 +89,13 @@ describe('LogicBadge', () => {
       return field ? <LogicBadge block={field} onOpen={() => undefined} /> : null;
     }
     const view = render(<Badge />, { wrapper: provider(store) });
-    expect(view.getByRole('button')).toHaveTextContent('Shown if Plan');
+    expect(view.getByRole('button')).toHaveTextContent('Shown when Plan');
     act(() => {
       store.update((form) => {
         setLabel(form, first, 'Pricing plan');
       });
     });
-    expect(view.getByRole('button')).toHaveTextContent('Shown if Pricing plan');
+    expect(view.getByRole('button')).toHaveTextContent('Shown when Pricing plan');
     act(() => {
       store.update((form) => {
         setLogic(form, second, 'always', []);

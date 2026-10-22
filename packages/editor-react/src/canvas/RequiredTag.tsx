@@ -1,8 +1,10 @@
 import { setRequired, type BuilderQuestion } from '@formhaus/builder';
-import { Tooltip } from '../ui';
+import { SegmentedControl } from '../ui';
 import { cx } from '../ui/lib/cx';
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
+import { questionName } from './questionName';
+import tag from './RequiredTag.module.css';
 
 interface Props {
   field: BuilderQuestion;
@@ -10,6 +12,11 @@ interface Props {
   editable: boolean;
   reserve: boolean;
 }
+
+const STATES = [
+  { value: 'optional', label: 'Optional' },
+  { value: 'required', label: 'Required' },
+];
 
 export function RequiredTag({ field, actions, editable, reserve }: Props) {
   if (!editable && field.required) return <span className={styles.requiredTag}>Required</span>;
@@ -20,20 +27,19 @@ export function RequiredTag({ field, actions, editable, reserve }: Props) {
       </span>
     ) : null;
   return (
-    <Tooltip content={field.required ? 'Click to make optional' : 'Click to make required'}>
-      <button
-        type="button"
-        className={cx(styles.requiredTag, styles.toggle, !field.required && styles.optional)}
-        aria-label={field.required ? 'Required, click to make optional' : 'Optional, click to make required'}
-        onClick={(event) => {
-          event.stopPropagation();
-          actions.edit((form) => {
-            setRequired(form, field.uid, !field.required);
-          });
-        }}
-      >
-        {field.required ? 'Required' : 'Optional'}
-      </button>
-    </Tooltip>
+    <SegmentedControl
+      label={`Answer for ${questionName(field)}`}
+      className={tag.compact}
+      options={STATES}
+      value={field.required ? 'required' : 'optional'}
+      onClick={(event) => {
+        event.stopPropagation();
+      }}
+      onValueChange={(value) => {
+        actions.edit((form) => {
+          setRequired(form, field.uid, value === 'required');
+        });
+      }}
+    />
   );
 }

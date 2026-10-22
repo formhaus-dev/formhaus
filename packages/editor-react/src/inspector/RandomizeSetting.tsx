@@ -1,23 +1,23 @@
 import { setRandomize, type BuilderQuestion } from '@formhaus/builder';
 import { useId } from 'react';
-import { Stack, Switch, Text } from '../ui';
+import { Stack, Text } from '../ui';
 import type { EditorActions } from '../useEditorActions';
 import styles from './Inspector.module.css';
+import { SettingSwitch } from './SettingSwitch';
 
 export function RandomizeSetting({ field, actions, readOnly }: { field: BuilderQuestion; actions: EditorActions; readOnly: boolean }) {
   const hint = useId();
   const on = field.extra.randomize ?? false;
   return (
     <Stack gap="1" align="start" className={styles.wide}>
-      <Switch
+      <SettingSwitch
         label="Randomize option order"
         checked={on}
-        disabled={readOnly}
+        actions={actions}
+        readOnly={readOnly}
         aria-describedby={on ? hint : undefined}
-        onCheckedChange={(next) => {
-          actions.edit((form) => {
-            setRandomize(form, field.uid, next);
-          });
+        onChange={(form, next) => {
+          setRandomize(form, field.uid, next);
         }}
       />
       {on && (

@@ -38,7 +38,7 @@ describe('editor canvas in a browser', () => {
     await pause();
     await userEvent.keyboard('Pro');
     await userEvent.click(screen.getByRole('button', { name: 'Field settings' }));
-    await userEvent.click(within(await screen.findByRole('group', { name: 'Field settings' })).getByRole('switch', { name: 'Required' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Required' }));
     const field = toDefinition(store.getState().form).fields?.[0] as { options?: { value: string }[] } | undefined;
     expect(field).toMatchObject({ key: 'plan', type: 'radio', validation: { required: true } });
     expect(field?.options?.map((option) => option.value)).toEqual(['free', 'pro', 'option-3']);
@@ -141,11 +141,11 @@ describe('editor canvas in a browser', () => {
     const { store } = renderEditor();
     await userEvent.click(fieldLabel(0));
     await userEvent.keyboard('Source');
-    await userEvent.click(screen.getByRole('button', { name: 'Optional, click to make required' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Required' }));
     await userEvent.click(screen.getByRole('button', { name: /Field type: Short text/ }));
     await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Hidden value/ }));
     expect(screen.queryByRole('textbox', { name: 'Help text' })).toBeNull();
-    expect(screen.queryByRole('button', { name: /click to make (required|optional)/ })).toBeNull();
+    expect(screen.queryByRole('radiogroup', { name: /^Answer for / })).toBeNull();
     await userEvent.click(screen.getByRole('textbox', { name: 'Value' }));
     await userEvent.keyboard('newsletter');
     await waitFor(() => {
