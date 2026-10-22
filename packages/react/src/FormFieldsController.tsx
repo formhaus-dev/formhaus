@@ -31,7 +31,6 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
   const sources = useMemo(() => optionSources(fields), [fields]);
   const loaded = useFieldOptions(sources, engine, optionsProviders);
   const resolvedOptions = useMemo(() => providedOptions(sources, optionsProviders, loaded), [sources, optionsProviders, loaded]);
-  const disabled = loading || engine.stepValidating || engine.submitting;
 
   const render = (node: FormNode) => {
     if (isGroup(node))
@@ -40,7 +39,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
           key={node.key}
           {...props}
           group={node}
-          disabled={disabled}
+          disabled={loading}
           options={resolvedOptions}
           labels={labels}
           confirmRemove={confirmRemove}
@@ -54,7 +53,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
           {...props}
           field={node as FormField}
           options={resolvedOptions[node.key] ?? node.options}
-          disabled={disabled}
+          disabled={loading}
         />
       );
     const id = fieldDomId(formId, node.key, engine.definition);

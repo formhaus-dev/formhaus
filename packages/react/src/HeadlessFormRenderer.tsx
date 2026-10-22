@@ -171,6 +171,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       },
       [engine, onFormEvent],
     );
+    const busy = engine.stepValidating || engine.submitting || loading;
     const handleCancel = useCallback(() => props.onCancel?.(), [props.onCancel]);
     const showField = useCallback(
       (key: string) => {
@@ -191,7 +192,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
         className="fh-form"
         data-testid={testId?.('form')}
         tabIndex={-1}
-        aria-busy={engine.stepValidating || engine.submitting || loading}
+        aria-busy={busy}
         onSubmit={(event) => {
           event.preventDefault();
           void (engine.isLastStep ? actions.submit() : actions.next());
@@ -203,13 +204,12 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             ProgressComponent={progressComponent}
             headingLevel={headingLevel}
             marks={props.stepErrorMarks}
-            labels={props.labels}
           />
           <FormFieldsController
             key={engineKey(engine)}
             engine={engine}
             formId={formId}
-            loading={loading}
+            loading={busy}
             components={components}
             optionsProviders={optionsProviders}
             labels={props.labels}
@@ -227,7 +227,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
           )}
           <FormActionsController
             engine={engine}
-            loading={loading}
+            loading={busy}
             labels={props.labels}
             ActionsComponent={actionsComponent}
             testId={testId}

@@ -1,4 +1,4 @@
-import { autofilled, errorDomId, fieldDomId, recalled, recalls, shownOptions, type TestId } from '@formhaus/core/internal';
+import { autofilled, errorDomId, fieldDomId, fieldTestIds, recalled, recalls, shownOptions, type TestId } from '@formhaus/core/internal';
 import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
 import { memo, useCallback, useSyncExternalStore } from 'react';
 import { useFieldSnapshot, useRecallSnapshot } from './hooks/useEngineSnapshot';
@@ -56,6 +56,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
 
   return (
     <FieldResolver
+      {...fieldTestIds(testId, key)}
       id={path ? errorDomId(engine, formId, path) : fieldDomId(formId, key, engine.definition)}
       field={autofilled(engine, recalled(engine, fieldWithOptions, path), path)}
       value={item ? item[field.key] : engine.values[key]}
@@ -67,8 +68,6 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
       onCommit={handleCommit}
       onBlur={handleBlur}
       onFocus={handleFocus}
-      testId={testId?.('field', key)}
-      optionTestId={testId && ((value) => testId('option', key, value))}
     />
   );
 });

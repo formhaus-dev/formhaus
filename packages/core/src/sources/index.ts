@@ -1,6 +1,7 @@
 import { getAllFields } from '../engine/engine-utils';
 import type { FieldSourceName, FormDefinition, FormField } from '../types';
 import { MAX_HIDDEN_LENGTH, MAX_STRING_LENGTH } from '../validation/type-checks';
+import { hasOwn } from '../visibility/nodes';
 
 export const SOURCE_NAMES: readonly FieldSourceName[] = ['referrer', 'page', 'pageTitle', 'language', 'timezone', 'device', 'country'];
 
@@ -38,13 +39,7 @@ export function resolveSources(
   const values: Record<string, string> = {};
   for (const field of getAllFields(definition)) {
     const { key } = field;
-    if (
-      field.type !== 'hidden' ||
-      field.source === undefined ||
-      (initialValues?.[key] ?? '') !== '' ||
-      Object.prototype.hasOwnProperty.call(values, key)
-    )
-      continue;
+    if (field.type !== 'hidden' || field.source === undefined || (initialValues?.[key] ?? '') !== '' || hasOwn(values, key)) continue;
     const value = attempt(field, context);
     if (value !== undefined) values[key] = value;
   }

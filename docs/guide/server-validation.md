@@ -111,7 +111,11 @@ const { values, errors } = validateSubmission(definition, req.body?.values, {
 });
 ```
 
-The returned `values` then hold the hidden values as sent, trimmed and converted like visible ones. They are not validated and add no errors. A hidden value that fails its type check is dropped without an error. Fields of skipped steps and unknown keys are dropped as before. Without the option, the server drops hidden values.
+The returned `values` then hold the hidden values, trimmed and converted like visible ones. Each hidden value is checked against the same rules as a visible one except `required`, including `validators` you pass. A hidden value that fails is dropped without an error. Fields of skipped steps and unknown keys are dropped as before. Without the option, the server drops hidden values.
+
+::: warning
+The client decides which fields are hidden: it answers the fields their conditions read. Treat a kept hidden value as you would any other submitted value.
+:::
 
 ## Custom validators
 
