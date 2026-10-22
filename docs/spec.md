@@ -846,6 +846,32 @@ For `reason: 'error'`, `status` is the numeric `status` of the thrown error when
 
 `form_submitted` fires after `onBeforeSubmit` and right before the handler runs. `form_submit_succeeded` fires before `onAfterSubmit` runs. New event types and new event fields are additive: a minor version can add them, so handle unknown types in a `default` branch.
 
+## Form snapshot (native ports)
+
+Native renderers restore a form after the OS ends the app process. The JS core does not implement snapshots; web hosts use `onValuesChange`.
+
+```json
+{
+  "version": 1,
+  "definitionId": "contact",
+  "values": { "email": "ann@example.com" },
+  "step": "details",
+  "skipped": ["intro"],
+  "seed": "9f2c41d07a3b88e1"
+}
+```
+
+`definitionId` is the definition's `id`, or `null` when it has none. `step` is the current step id, or `null` for a form without steps. `skipped` lists the skipped step ids. `seed` is the [option-order](#option-order) seed.
+
+- The engine restores values, current step, skipped steps and seed directly. It does not walk the steps and does not validate.
+- The engine MUST start fresh, report the warning `snapshot-mismatch` and never throw when `version` is not 1, `definitionId` differs from the definition's `id`, `step` or an id in `skipped` is not a step of the definition, or the JSON is malformed.
+- The renderer MUST report a new snapshot after each change of values, step or skip, coalesced, and MUST NOT report one during restore.
+- After a successful submit, the renderer MUST report a cleared snapshot (`null`) so the host drops its draft.
+- The host stores the snapshot. Values can hold personal data.
+- A snapshot MUST NOT contain values of `password` fields, including `password` fields inside group items. `snapshot()` leaves them out and on restore they stay empty, so `required` catches them again. Snapshots may be written to disk. No other values are excluded: hidden fields keep their values according to [`hiddenValues`](#kept-hidden-values).
+- On restore, a file value inside the renderer's own upload storage is re-adopted if the file still exists and becomes `null` otherwise. Other values are untouched.
+- When the form view goes away during a submit, a submit that already reached the submit handler MUST run to completion, including the after-submit callbacks.
+
 ## Translations
 
 A definition holds its texts in one language, the source language. Catalogs, translation keys and overlays change texts only. They never change fields, rules, routes or the submit payload.
@@ -1065,6 +1091,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `exclusive-default-value` | warning | A `defaultValue` that holds an exclusive option and other values |
 | `exclusive-with-min-length` | warning | `minLength` greater than 1 on a `multiselect` with an exclusive option |
 | `randomize-not-applicable` | warning | `randomize` on a field other than `radio`, `multiselect` and `select` or in a section with `layout: "matrix"`, or `pinned` on an option of a field without `randomize` |
+| `snapshot-mismatch` | warning | A native port restored a form from a [snapshot](#form-snapshot-native-ports) it could not use, so the form started fresh |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |
