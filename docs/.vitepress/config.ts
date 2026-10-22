@@ -124,6 +124,7 @@ export default defineConfig({
           { text: 'Vuetify', link: '/guide/integrations/vuetify' },
           { text: 'iOS and macOS', link: '/guide/ios' },
           { text: 'SwiftUI components', link: '/guide/integrations/swiftui' },
+          { text: 'Android and JVM', link: '/guide/android' },
         ],
       },
       {
