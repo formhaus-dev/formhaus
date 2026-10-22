@@ -99,7 +99,11 @@ export function FieldCard({ uid, handleProps, actions }: Props) {
               onAddBelow={addBelow}
               onCardKey={onCardKey}
             />
-            {takesRequired(field) && <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />}
+            {takesRequired(field) ? (
+              <RequiredTag field={field} actions={actions} editable={selected && !readOnly} reserve={!readOnly} />
+            ) : (
+              field.type === 'hidden' && field.required && <RequiredTag field={field} actions={actions} editable={false} reserve={false} />
+            )}
           </div>
           <TypeChip field={field} actions={actions} disabled={readOnly || container} />
           {!readOnly && (
