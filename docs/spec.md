@@ -864,9 +864,9 @@ Native renderers restore a form after the OS ends the app process. The JS core d
 `definitionId` is the definition's `id`, or `null` when it has none. `step` is the current step id, or `null` for a form without steps. `skipped` lists the skipped step ids. `seed` is the [option-order](#option-order) seed.
 
 - The engine restores values, current step, skipped steps and seed directly. It does not walk the steps and does not validate.
-- The engine MUST start fresh, report the warning `snapshot-mismatch` and never throw when `version` is not 1, `definitionId` differs from the definition's `id`, `step` or an id in `skipped` is not a step of the definition, an id in `skipped` names a step without a `skip` action, or the JSON is malformed.
+- The engine MUST start fresh, report the warning `snapshot-mismatch` and never throw when `version` is not 1, the definition has an `id` and `definitionId` is missing, `null` or different, the definition has no `id` and `definitionId` is not `null`, `step` or an id in `skipped` is not a step of the definition, an id in `skipped` names a step without a `skip` action, or the JSON is malformed.
 - The renderer MUST report a new snapshot after each change of values, step or skip, coalesced, and MUST NOT report one during restore.
-- After a successful submit, the renderer MUST report a cleared snapshot (`null`) so the host drops its draft.
+- After a successful submit, including a Skip on the last step that submits, the renderer MUST report a cleared snapshot (`null`) so the host drops its draft. This holds when the form view went away while the submit was sending.
 - The host stores the snapshot. Values can hold personal data.
 - A snapshot MUST NOT contain values of `password` fields, including `password` fields inside group items. `snapshot()` leaves them out and on restore they stay empty, so `required` catches them again. Snapshots may be written to disk. No other values are excluded: hidden fields keep their values according to [`hiddenValues`](#kept-hidden-values).
 - On restore, a file value inside the renderer's own upload storage is re-adopted if the file still exists and becomes `null` otherwise. Other values are untouched.
