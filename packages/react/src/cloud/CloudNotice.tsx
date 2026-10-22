@@ -1,20 +1,9 @@
-import type { CloudAction, CloudNotice as Notice } from '@formhaus/core/cloud';
-import type { Ref } from 'react';
+import type { CloudLabelSource, CloudNotice as Notice, CloudNoticeActionFn } from '@formhaus/core/cloud';
+import { cloudLabel } from '@formhaus/core/internal';
 
-const LABELS = { retry: 'Try again', reload: 'Reload page' };
-
-export function CloudNotice({
-  notice,
-  noticeRef,
-  onAction,
-}: {
-  notice: Notice | null;
-  noticeRef: Ref<HTMLDivElement>;
-  onAction: (action: Exclude<CloudAction, null>) => void;
-}) {
-  if (!notice) return null;
+export function CloudNotice({ notice, labels, onAction }: { notice: Notice; labels?: CloudLabelSource; onAction: CloudNoticeActionFn }) {
   return (
-    <div ref={noticeRef} tabIndex={-1} className={`fh-form__notice fh-form__notice--${notice.tone}`}>
+    <div tabIndex={-1} className={`fh-form__notice fh-form__notice--${notice.tone}`}>
       <p>{notice.message}</p>
       {notice.details.length > 0 && (
         <ul>
@@ -29,7 +18,7 @@ export function CloudNotice({
           className="fh-form-actions__button fh-form-actions__button--secondary"
           onClick={() => onAction(notice.action!)}
         >
-          {LABELS[notice.action]}
+          {cloudLabel(labels, notice.action)}
         </button>
       )}
     </div>
