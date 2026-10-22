@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { FieldComponentProps } from '../src';
 import type { FormDefinition, TestIdTarget } from '@formhaus/core';
+import { FormActions } from '../src/FormActions';
 import { FormRenderer } from '../src/FormRenderer';
 
 const definition: FormDefinition = {
@@ -64,5 +65,11 @@ describe('FormRenderer testIds', () => {
     expect(screen.getByTestId('f:email').textContent).toBe('email-x');
     expect(name).toHaveBeenCalledWith(expect.objectContaining({ kind: 'field', definitionId: 'signup', key: 'people.0.name' }));
     expect(screen.getByTestId('form').tagName).toBe('FORM');
+  });
+
+  it('renders FormActions without test ids when testIds is null', () => {
+    const { container } = render(<FormActions isFirstStep isLastStep isMultiStep={false} testIds={null as never} />);
+    expect(container.querySelector('button')).not.toBeNull();
+    expect(container.querySelector('[data-testid]')).toBeNull();
   });
 });
