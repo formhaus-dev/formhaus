@@ -11,6 +11,10 @@ const dialog = ref<HTMLDialogElement>();
 const trigger = ref<HTMLButtonElement>();
 const failed = ref<string>();
 let pressed: EventTarget | null = null;
+const press = (event: Event) => {
+  pressed = event.target;
+};
+const closeOnBackdrop = (event: Event) => pressed === event.target && dialog.value?.close();
 </script>
 
 <template>
@@ -38,8 +42,8 @@ let pressed: EventTarget | null = null;
       class="fh-dialog fh-dialog--image"
       :aria-label="option.label"
       @close="trigger?.focus()"
-      @pointerdown="pressed = $event.target"
-      @click.self="pressed === $event.target && dialog?.close()"
+      @pointerdown="press"
+      @click.self="closeOnBackdrop"
       @keydown.stop="dialog?.removeAttribute('data-pointer')"
     >
       <div class="fh-dialog__header">

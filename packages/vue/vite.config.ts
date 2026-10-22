@@ -10,6 +10,9 @@ export default defineConfig({
       include: ['src/**/*.ts', 'src/**/*.vue'],
       bundleTypes: true,
       tsconfigPath: './tsconfig.json',
+      afterDiagnostic(diagnostics) {
+        if (diagnostics.length) throw new Error('@formhaus/vue has type errors');
+      },
     }),
   ],
   oxc: { target: 'es2020' },
