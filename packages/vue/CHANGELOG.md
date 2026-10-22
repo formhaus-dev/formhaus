@@ -1,5 +1,33 @@
 # @formhaus/vue
 
+## 1.2.0
+
+### Minor Changes
+
+- New `noticeComponent` prop on the React `FormhausForm` and `notice` slot on the Vue one replace the error notice. Both get `notice` and `onAction`.
+- New `noticePlacement` prop on `FormhausForm`, `'top'` (default) or `'actions'`. With `'actions'` the notice shows just above the buttons.
+- A custom `actionsComponent` of `FormhausForm` receives the notice. In React it gets `notice` and `onNoticeAction`. In Vue it gets `notice` and emits `noticeAction` when it declares a `notice` prop.
+- After a failed submission, `FormhausForm` focuses the first element with `data-fh-notice`, else the error summary or the first invalid field.
+- New `code` property on `CloudNotice`: a known `CloudError` code, or `form_refreshed` after a new form version loads.
+- New `cloudLabels` prop on `FormhausForm` translates the notices by code and the `retry`, `reload`, `submitted` and `submitAnother` texts. It takes a catalog or a function.
+- New `CloudNoticeCode`, `CloudNoticeActionFn`, `CloudLabelKey`, `CloudLabelSource`, `FormhausFormActionsProps` and `FormhausFormNoticeProps` types.
+- Fixed `FormhausForm` dropping errors thrown by its step and submit hooks before they reached `onError`.
+- New `hiddenValues` engine option, `'clear'` (default) or `'keep'`. With `'keep'`, fields hidden by conditions keep their values in `engine.values` and in submitted values.
+- With `'keep'`, conditions, validation and recall still treat hidden fields as unanswered, and hidden fields never block Continue or Submit.
+- With `'keep'`, submitted values also hold the answers on steps off the active path. Fields of skipped steps stay out.
+- `validateSubmission()` takes the same `hiddenValues` option. With `'keep'`, it checks hidden values like visible ones except `required`, and drops one that fails without an error.
+- New `hiddenValues` prop on `FormRenderer` and `HeadlessFormRenderer`, and option of `useFormEngine`.
+- `capabilities` in `@formhaus/mcp` describes `hiddenValues`.
+- New `testIds` prop on `FormRenderer` and `HeadlessFormRenderer` adds `data-testid` attributes. It is off by default.
+- `testIds={true}` names elements after the definition id: `signup.form`, `signup.email`, `signup.plan.pro`, `signup.people.0.name`, `signup.submit`, `signup.next`, `signup.back` and `signup.summary`.
+- A `testIds` function receives a `TestIdTarget` and returns the id.
+- New `TestIdTarget` type.
+- Custom field components receive `testId` and `optionTestId`. Custom actions components receive `testIds`.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.2.0.
+
 ## 1.1.1
 
 ### Patch Changes
