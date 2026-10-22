@@ -1,4 +1,12 @@
-import { conditionSources, logicOf, setLogic, type BuilderBlock, type ConditionMode, type ConditionRow } from '@formhaus/builder';
+import {
+  conditionSources,
+  logicOf,
+  setLogic,
+  type BuilderBlock,
+  type BuilderForm,
+  type ConditionMode,
+  type ConditionRow,
+} from '@formhaus/builder';
 import { SettingsSection } from '../inspector/SettingsSection';
 import { AddRow, SegmentedControl, Text } from '../ui';
 import { useForm, useReadOnly } from '../store/hooks';
@@ -11,6 +19,11 @@ const MATCH = [
   { value: 'all', label: 'all' },
   { value: 'any', label: 'any' },
 ];
+
+function hintOf(form: BuilderForm, block: BuilderBlock): string {
+  if (block.kind !== 'page') return 'Add a field above to use logic.';
+  return form.blocks.indexOf(block) > 0 ? 'Add a field to an earlier step to use logic.' : 'Add a step before this one to use logic.';
+}
 
 export function LogicSection({ block, actions }: { block: BuilderBlock; actions: EditorActions }) {
   const form = useForm();
@@ -28,6 +41,7 @@ export function LogicSection({ block, actions }: { block: BuilderBlock; actions:
     return source ? [defaultRow(source)] : [];
   };
   const shown = logic.mode === 'always' || !logic.rows.length;
+  if (logic.editable && shown && !sources.length && readOnly) return null;
   return (
     <SettingsSection title="Logic">
       <div className={styles.section}>
@@ -37,7 +51,7 @@ export function LogicSection({ block, actions }: { block: BuilderBlock; actions:
           </Text>
         ) : shown && !sources.length ? (
           <Text as="p" size="sm" tone="muted">
-            {block.kind === 'page' ? 'Add a step before this one to use logic.' : 'Add a field above to use logic.'}
+            {hintOf(form, block)}
           </Text>
         ) : shown ? (
           <AddRow

@@ -11,7 +11,7 @@ export function StepFlow({ step, actions }: { step: BuilderPage; actions: Editor
   const readOnly = useReadOnly();
   const targets = targetsAfter(form, step.uid);
   const custom = hasCustomRoutes(form, step.uid);
-  const last = !targets.length;
+  if (!custom && !targets.length) return null;
   return (
     <SettingsSection title="Flow">
       <div className={styles.section}>
@@ -20,21 +20,19 @@ export function StepFlow({ step, actions }: { step: BuilderPage; actions: Editor
             This step uses custom routes.
           </Text>
         ) : (
-          !last && (
-            <Field label="After this step">
-              <Select
-                value={step.next ?? ''}
-                disabled={readOnly}
-                options={targets}
-                onChange={(event) => {
-                  const target = event.target.value;
-                  actions.edit((draft) => {
-                    setNext(draft, step.uid, target);
-                  });
-                }}
-              />
-            </Field>
-          )
+          <Field label="After this step">
+            <Select
+              value={step.next ?? ''}
+              disabled={readOnly}
+              options={targets}
+              onChange={(event) => {
+                const target = event.target.value;
+                actions.edit((draft) => {
+                  setNext(draft, step.uid, target);
+                });
+              }}
+            />
+          </Field>
         )}
       </div>
     </SettingsSection>

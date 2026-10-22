@@ -96,7 +96,21 @@ describe('field settings sections', () => {
     await waitFor(() => {
       expect(companyOf(store)).not.toHaveProperty('showAny');
     });
-    expect(logic.getByRole('button', { name: 'Add condition' })).toBeVisible();
+    expect(companyOf(store)).not.toHaveProperty('show');
+    await userEvent.click(logic.getByRole('button', { name: 'Add condition' }));
+    await waitFor(() => {
+      expect(companyOf(store).show).toEqual([{ field: 'plan', eq: 'free' }]);
+    });
+    expect(companyOf(store)).not.toHaveProperty('showAny');
+  });
+
+  it('points to the JSON tab for conditions the editor cannot show in a read-only form', async () => {
+    const mixed: FormField = { ...company, show: [{ field: 'plan', eq: 'pro' }], showAny: [{ field: 'plan', eq: 'free' }] };
+    renderEditor(fromDefinition(definition([plan, mixed])), { readOnly: true });
+    await userEvent.click(screen.getByRole('button', { name: 'Shown on custom conditions' }));
+    const logic = within(screen.getByRole('region', { name: 'Logic' }));
+    expect(logic.getByText('This field uses conditions the editor cannot show. Edit them in the JSON tab.')).toBeVisible();
+    expect(logic.queryByRole('button', { name: 'Add condition' })).toBeNull();
   });
 
   it('asks for a field above instead of offering logic on the first field', async () => {
