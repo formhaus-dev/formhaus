@@ -73,15 +73,37 @@ describe('describeLogic', () => {
       ).toBe('Shown when Company size is 1-10 or 51+');
     });
 
-    it('names the field once for consecutive values joined by and', () => {
+    it('names the field once for consecutive any-of lists', () => {
       expect(
         summary({
-          show: [
+          showAny: [
+            { field: 'size', in: ['small'] },
+            { field: 'size', in: ['large'] },
+          ],
+        }),
+      ).toBe('Shown when Company size is any of 1-10 or 51+');
+    });
+
+    it('keeps the field name for negated values joined by or', () => {
+      expect(
+        summary({
+          showAny: [
             { field: 'size', neq: 'small' },
             { field: 'size', neq: 'large' },
           ],
         }),
-      ).toBe('Shown when Company size is not 1-10 and 51+');
+      ).toBe('Shown when Company size is not 1-10 or Company size is not 51+');
+    });
+
+    it('keeps the field name for negated values joined by and', () => {
+      expect(
+        summary({
+          show: [
+            { field: 'size', notIn: ['small'] },
+            { field: 'size', notIn: ['large'] },
+          ],
+        }),
+      ).toBe('Shown when Company size is none of 1-10 and Company size is none of 51+');
     });
 
     it('keeps the field name when the operator changes', () => {

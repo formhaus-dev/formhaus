@@ -6,8 +6,11 @@ import {
   type BuilderQuestion,
   type ConditionRow,
   type Logic,
+  type Operator,
   type Resolver,
 } from '@formhaus/builder';
+
+const COLLAPSIBLE = new Set<Operator>(['eq', 'in', 'contains']);
 
 const resolvers = new WeakMap<BuilderForm, Resolver>();
 
@@ -29,7 +32,7 @@ function describeRow(form: BuilderForm, row: ConditionRow, scope?: string): stri
 }
 
 function repeats(row: ConditionRow, previous: ConditionRow | undefined): boolean {
-  return previous !== undefined && takesValue(row.operator) && previous.field === row.field && previous.operator === row.operator;
+  return previous !== undefined && COLLAPSIBLE.has(row.operator) && previous.field === row.field && previous.operator === row.operator;
 }
 
 export function describeLogic(form: BuilderForm, logic: Logic, scope?: string): string | null {
