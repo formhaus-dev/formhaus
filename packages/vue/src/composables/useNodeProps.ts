@@ -72,6 +72,13 @@ export function useNodeProps(
   const options = computed(() => providedOptions(sources.value, props.optionsProviders, loaded.value));
   const mounted = useMounted();
   const groups = new Map<string, GroupMemo>();
+  const ids = new Map<string, ReturnType<typeof fieldTestIds>>();
+  let idsOwner = testId.value;
+  const idsOf = (key: string) => {
+    if (idsOwner !== testId.value) ids.clear();
+    idsOwner = testId.value;
+    return ids.get(key) ?? ids.set(key, fieldTestIds(testId.value, key)).get(key)!;
+  };
   let owner = form.engine;
   const groupState = (key: string): GroupMemo => {
     if (owner !== form.engine) groups.clear();
@@ -131,7 +138,7 @@ export function useNodeProps(
         loading: fieldLoading.value[field.key],
         disabled: disabled.value,
         components: props.components,
-        ...fieldTestIds(testId.value, field.key),
+        ...idsOf(field.key),
         'onUpdate:modelValue': (value: unknown) => on.update(field.key, value),
         onCommit: (value: unknown) => on.commit(field.key, value),
         onBlur: () => on.blur(field.key),
