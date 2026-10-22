@@ -1092,6 +1092,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `exclusive-with-min-length` | warning | `minLength` greater than 1 on a `multiselect` with an exclusive option |
 | `randomize-not-applicable` | warning | `randomize` on a field other than `radio`, `multiselect` and `select` or in a section with `layout: "matrix"`, or `pinned` on an option of a field without `randomize` |
 | `snapshot-mismatch` | warning | A native port restored a form from a [snapshot](#form-snapshot-native-ports) it could not use, so the form started fresh |
+| `snapshot-too-large` | warning | A native renderer did not persist a [snapshot](#form-snapshot-native-ports) because it exceeded the platform's size limit |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |
 | `skip-unreachable` | warning | `skip` on a step with `next: false`, or in a form with one step |
 | `route-fallthrough` | warning | A branch that falls through into a sibling branch |
