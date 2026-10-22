@@ -84,6 +84,7 @@ export interface FormRendererProps {
   formatRecall?: Callback<RecallFormatFn>;
   seed?: string | undefined;
   research?: FormResearch | undefined;
+  hiddenValues?: 'clear' | 'keep' | undefined;
   errors?: Record<string, string>;
   labels?: LabelSource;
   errorSummary?: boolean;

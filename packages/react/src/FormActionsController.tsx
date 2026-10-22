@@ -1,5 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
-import { actionsView } from '@formhaus/core/internal';
+import { actionValues, actionsView } from '@formhaus/core/internal';
 import { useCallback, useMemo } from 'react';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
@@ -28,7 +28,7 @@ export function FormActionsController({
   onCancel,
 }: FormActionsControllerProps) {
   const version = useFormSnapshot(engine);
-  const values = useMemo(() => engine.getSubmitValues(), [engine, version]);
+  const values = useMemo(() => actionValues(engine), [engine, version]);
   const view = actionsView(engine, labels);
   const handlePrimary = useCallback(async () => {
     if (view.isLastStep) onSubmit();

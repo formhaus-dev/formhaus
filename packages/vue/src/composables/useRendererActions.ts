@@ -1,5 +1,5 @@
 import { isActionDisabled } from '@formhaus/core';
-import { autoAdvance } from '@formhaus/core/internal';
+import { actionValues, autoAdvance } from '@formhaus/core/internal';
 import { ref, watch } from 'vue';
 import type { FormRendererEmits, FormRendererProps } from '../types';
 import type { UseFormEngineReturn } from './useFormEngine';
@@ -31,7 +31,7 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
   const next = () =>
     run(async () => {
       const engine = form.engine;
-      return !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, engine.getSubmitValues()) && engine.next();
+      return !isActionDisabled(engine.isLastStep ? undefined : engine.currentStep?.next, actionValues(engine)) && engine.next();
     });
   const back = () => run(() => form.engine.back());
   const busy = () => props.loading || form.engine.stepValidating || form.engine.submitting;
@@ -59,7 +59,7 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
   const submit = () =>
     run(async () => {
       const engine = form.engine;
-      return !isActionDisabled(engine.definition.submit, engine.getSubmitValues()) && engine.submit(handler());
+      return !isActionDisabled(engine.definition.submit, actionValues(engine)) && engine.submit(handler());
     });
   const skip = () => run(() => form.engine.skip(handler()));
   return { update, changeItems, commit, next, back, skip, submit, actionError, invalidAttempts };

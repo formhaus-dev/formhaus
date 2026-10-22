@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
-import { actionsView, errorGroups, hasValue, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import { actionValues, actionsView, errorGroups, hasValue, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
 import { computed, provide, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
@@ -178,7 +178,7 @@ async function onPrimary() {
       v-if="props.actionsComponent"
       v-bind="actions"
       :loading="disabled"
-      :values="form.engine.getSubmitValues()"
+      :values="actionValues(form.engine)"
       @submit="onSubmit"
       @next="onNext"
       @back="onBack"

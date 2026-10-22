@@ -259,6 +259,8 @@ export interface FormRendererProps {
     // (undocumented)
     headingLevel?: HeadingLevel;
     // (undocumented)
+    hiddenValues?: 'clear' | 'keep' | undefined;
+    // (undocumented)
     initialValues?: Record<string, unknown>;
     // (undocumented)
     keepValues?: boolean;
