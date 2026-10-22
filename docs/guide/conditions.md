@@ -185,7 +185,7 @@ With `'keep'`, a field hidden by a condition keeps its value in `engine.values` 
 - Hooks that receive values (`onBeforeSubmit`, `onAfterSubmit`, the step hooks and `onStepValidate`) get the payload with the kept values. Validators get the values without them.
 - `reset()` and `replaceDefinition()` keep the hidden values they start with.
 
-Pass the same option to [`validateSubmission()`](/guide/server-validation#hidden-values), or the server drops the kept values. The option is read when the engine is created, like `seed`. `useFormEngine` and `HeadlessFormRenderer` take it too.
+Pass the same option to [`validateSubmission()`](/guide/server-validation#hidden-values), or the server drops the kept values. The option is read when the engine is created, like `seed`. `useFormEngine` and `HeadlessFormRenderer` take it too. `FormhausForm` does not: Formhaus Cloud validates with the default.
 
 ## Conditional steps
 

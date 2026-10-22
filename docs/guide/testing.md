@@ -35,6 +35,8 @@ With `testIds` set to `true`, each id starts with the definition `id`:
 | The Back button | `<id>.back` | `signup.back` |
 | The error summary | `<id>.summary` | `signup.summary` |
 
+Default ids can collide. A field with the key `form`, `submit`, `next`, `back` or `summary` gets the same id as that element, and dots in keys or option values blur the parts: the option `a.b` of `plan` and the option `b` of a field `plan.a` both get `signup.plan.a.b`. For such forms, pass a function that builds unique ids, as below.
+
 The options of a native `select` have no ids. Pick them by value, such as `selectOptions(screen.getByTestId('signup.country'), 'CA')`.
 
 ```ts
