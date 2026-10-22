@@ -70,11 +70,20 @@ export interface FormActionsView {
   skipLabel?: string;
   loading?: boolean;
   values?: Record<string, unknown>;
+  testIds?: Partial<Record<TestIdAction, string>>;
 }
+
+type TestIdAction = 'submit' | 'next' | 'back';
+
+export type TestIdTarget =
+  | { kind: 'form' | 'summary' | TestIdAction; definitionId: string }
+  | { kind: 'field'; definitionId: string; key: string }
+  | { kind: 'option'; definitionId: string; key: string; value: string };
 
 type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'showBack' | 'backLabel' | 'showSkip' | 'skipLabel';
 
-export type FormActionsState = Omit<FormActionsView, 'loading' | 'values'> & Required<Pick<FormActionsView, DerivedActionProps>>;
+export type FormActionsState = Omit<FormActionsView, 'loading' | 'values' | 'testIds'> &
+  Required<Pick<FormActionsView, DerivedActionProps>>;
 
 export interface FormRendererHandle {
   setValue(key: string, value: unknown): void;

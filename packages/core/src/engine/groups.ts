@@ -13,7 +13,7 @@ export interface GroupItem {
 }
 
 function activeGroup(engine: EngineInternals, key: string): FormGroup | undefined {
-  const field = engine.visibility.activeField(key, engine.values);
+  const field = engine.visibility.activeField(key, engine.state.values);
   return field && isGroup(field) ? field : undefined;
 }
 
@@ -27,15 +27,15 @@ const within = (index: number, items: unknown[]) => Number.isInteger(index) && i
 export function groupItems(engine: EngineInternals, key: string): GroupItem[] {
   const group = activeGroup(engine, key);
   if (!group) return [];
-  return itemsOf(engine.values[key]).map((item, index) => ({
+  return itemsOf(engine.state.values[key]).map((item, index) => ({
     id: itemId(item, index),
-    fields: engine.visibility.itemFields(group, item, engine.values),
+    fields: engine.visibility.itemFields(group, item, engine.state.values),
   }));
 }
 
 export function addItem(engine: EngineInternals, key: string): boolean {
   const group = activeGroup(engine, key);
-  const items = itemsOf(engine.values[key]);
+  const items = itemsOf(engine.state.values[key]);
   if (!group || items.length >= itemLimits(group)[1]) return false;
   const item = createValues(group.fields);
   engine.visibility.seedItems([item]);
@@ -56,7 +56,7 @@ function shift(errors: Record<string, string>, key: string, removed: number): vo
 
 export function removeItem(engine: EngineInternals, key: string, index: number): boolean {
   const group = activeGroup(engine, key);
-  const items = itemsOf(engine.values[key]);
+  const items = itemsOf(engine.state.values[key]);
   if (!group || !within(index, items) || items.length <= itemLimits(group)[0]) return false;
   const previous = { ...engine.errors };
   engine.visibility.dropItem(items[index]);
@@ -75,7 +75,7 @@ export function removeItem(engine: EngineInternals, key: string, index: number):
 
 export function setItemValue(engine: EngineInternals, key: string, index: number, fieldKey: string, input: unknown): void {
   const group = activeGroup(engine, key);
-  const items = itemsOf(engine.values[key]);
+  const items = itemsOf(engine.state.values[key]);
   const field = group?.fields.find((candidate) => candidate.key === fieldKey);
   if (!group || !field || !within(index, items)) return;
   const current = items[index];

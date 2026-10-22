@@ -1,4 +1,4 @@
-import { autofilled, errorDomId, fieldDomId, recalled, recalls, shownOptions } from '@formhaus/core/internal';
+import { autofilled, errorDomId, fieldDomId, recalled, recalls, shownOptions, type TestId } from '@formhaus/core/internal';
 import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
 import { memo, useCallback, useSyncExternalStore } from 'react';
 import { useFieldSnapshot, useRecallSnapshot } from './hooks/useEngineSnapshot';
@@ -17,6 +17,7 @@ export interface ControllerProps {
   onCommit: (key: string, value: unknown) => void;
   onBlur: (key: string) => void;
   onFocus: (key: string) => void;
+  testId?: TestId;
 }
 
 interface FormFieldControllerProps extends ControllerProps {
@@ -40,6 +41,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
   onCommit,
   onBlur,
   onFocus,
+  testId,
 }: FormFieldControllerProps) {
   const key = path ?? field.key;
   useFieldSnapshot(engine, key);
@@ -65,6 +67,8 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
       onCommit={handleCommit}
       onBlur={handleBlur}
       onFocus={handleFocus}
+      testId={testId?.('field', key)}
+      optionTestId={testId && ((value) => testId('option', key, value))}
     />
   );
 });

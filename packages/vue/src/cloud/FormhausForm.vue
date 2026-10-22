@@ -133,6 +133,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
     <CloudNotice :notice="state.notice" @action="act" />
     <FormRenderer
       v-bind="rendererProps"
+      :hidden-values="undefined"
       :key="state.revision"
       :definition="state.definition"
       :initial-values="state.initialValues ?? initialValues"

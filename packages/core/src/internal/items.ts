@@ -12,7 +12,8 @@ import { recallTemplate, recalled } from './recall';
 
 export { itemLimits };
 
-const visibility = (engine: FormEngine) => (engine as unknown as EngineInternals).visibility;
+const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
+const visibility = (engine: FormEngine) => internals(engine).visibility;
 
 export function itemTitle(engine: FormEngine, group: FormGroup, index: number, ...labels: (LabelSource | undefined)[]): string {
   const item = { group: group.key, index };
@@ -38,7 +39,8 @@ export interface ErrorGroup {
 }
 
 export function errorGroups(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorGroup[] {
-  const { errors, values } = engine;
+  const { errors } = engine;
+  const { values } = internals(engine).state;
   return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap((source, index) => {
     const { id, title } = recalled(engine, source);
     const { fields = [] } = source;
@@ -58,7 +60,7 @@ export function errorGroups(engine: FormEngine, formId: string, ...labels: (Labe
 
 export function itemHasContent(engine: FormEngine, key: string, index: number): boolean {
   const group = visibility(engine).groups.find((candidate) => candidate.key === key);
-  const item = itemsOf(engine.values[key as never])[index];
+  const item = itemsOf(internals(engine).state.values[key])[index];
   if (!group || !isEntry(item)) return false;
   return group.fields.some(({ key: name, defaultValue }) => {
     const value = typeof item[name] === 'string' ? (item[name] as string).trim() : item[name];

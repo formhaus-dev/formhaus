@@ -9,13 +9,13 @@ export function RadioField(props: FieldComponentProps) {
   const choice = choiceHandlers(props, useRef(false));
 
   return (
-    <FieldShell id={fieldId(props)} field={field} error={error} variant="radio">
+    <FieldShell id={fieldId(props)} field={field} error={error} variant="radio" testId={props.testId}>
       {(field.options ?? []).map((opt, index) => {
         const optionId = `${fieldId(props)}-${index}`;
         return (
           <div key={opt.value} className="fh-field__radio-option">
             <input
-              {...optionProps(props)}
+              {...optionProps(props, opt.value)}
               {...choice(opt.value)}
               autoComplete={field.autocomplete}
               id={optionId}

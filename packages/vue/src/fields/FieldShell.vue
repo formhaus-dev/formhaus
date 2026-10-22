@@ -9,6 +9,7 @@ const props = defineProps<{
   field: FormField;
   error?: string;
   variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
+  testId?: string;
 }>();
 
 const text = useLabel();
@@ -40,6 +41,7 @@ const Helper = () =>
     :is="group ? 'fieldset' : 'div'"
     :class="['fh-field', props.variant && `fh-field--${props.variant}`]"
     v-bind="group ? fieldAria(props.field, props.id, props.error) : {}"
+    :data-testid="props.testId"
   >
     <Legend v-if="group" />
     <Label v-if="!props.variant" />

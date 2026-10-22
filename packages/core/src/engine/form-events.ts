@@ -19,14 +19,14 @@ function trackStep(engine: EngineInternals): void {
 
 function trackFields(engine: EngineInternals): void {
   const previous = engine.shownFields;
-  engine.shownFields = engine.visibility.conditionResults(engine.values);
+  engine.shownFields = engine.visibility.conditionResults(engine.state.values);
   for (const [id, [fieldKey, shown]] of engine.shownFields)
     if (previous?.get(id)?.[1] === !shown) emit(engine, { type: shown ? 'field_shown' : 'field_hidden', fieldKey });
 }
 
 export function baselineFields(engine: EngineInternals): void {
   if (!engine.lifecycle.onFormEvent) engine.shownFields = undefined;
-  else if (engine.viewedStep !== undefined) engine.shownFields ??= engine.visibility.conditionResults(engine.values);
+  else if (engine.viewedStep !== undefined) engine.shownFields ??= engine.visibility.conditionResults(engine.state.values);
 }
 
 export function startEvents(engine: EngineInternals): void {

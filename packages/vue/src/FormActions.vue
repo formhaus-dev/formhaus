@@ -57,6 +57,7 @@ function getBackLabel(): string {
         type="button"
         :class="['fh-form-actions__button', getButtonClass(props.backAction, 'secondary')]"
         :disabled="props.loading"
+        :data-testid="props.testIds?.back"
         @click="emit('back')"
       >
         {{ getBackLabel() }}
@@ -86,6 +87,7 @@ function getBackLabel(): string {
       class="fh-form-actions__button fh-form-actions__button--primary"
       :disabled="isPrimaryDisabled()"
       :aria-busy="props.loading"
+      :data-testid="props.testIds?.[props.isMultiStep && !props.isLastStep ? 'next' : 'submit']"
       @click.prevent="onPrimaryClick"
     >
       {{ getPrimaryLabel() }}

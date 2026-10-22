@@ -2,6 +2,7 @@ import type { FormEngine } from '../engine';
 import { RECALL_SLOTS, type RecallItem, recallEnabled, resolveRecall } from '../engine/recall';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { engineField } from '../engine/engine-field';
+import { getSubmitValues } from '../engine/validation-state';
 
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 
@@ -30,7 +31,7 @@ export function refreshRecall(engine: FormEngine): void {
 
 function resolver(engine: FormEngine, item?: RecallItem) {
   const { lifecycle } = internals(engine);
-  const values = engine.getSubmitValues();
+  const values = getSubmitValues(internals(engine));
   return (text: string, params?: Record<string, unknown>) =>
     resolveRecall(
       engine.definition,

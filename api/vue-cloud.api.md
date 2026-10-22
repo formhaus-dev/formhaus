@@ -29,6 +29,7 @@ import { PublishedForm } from '@formhaus/core/cloud';
 import { RecallFormatFn } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
+import { TestIdTarget } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 export { CloudError }
@@ -39,7 +40,7 @@ export { CloudSubmission }
 export const FormhausForm: typeof __VLS_export;
 
 // @public (undocumented)
-export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors'> {
+export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues'> {
     // (undocumented)
     apiBase?: string;
     // (undocumented)

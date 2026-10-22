@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
-import { actionsView, errorGroups, hasValue, labelFor, shouldApplyExternalErrors } from '@formhaus/core/internal';
+import {
+  actionTestIds,
+  actionValues,
+  actionsView,
+  errorGroups,
+  hasValue,
+  labelFor,
+  shouldApplyExternalErrors,
+  testIds,
+} from '@formhaus/core/internal';
 import { computed, provide, ref, watch } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
@@ -101,8 +110,9 @@ function onCancel() {
 }
 
 const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
+const testId = computed(() => testIds(props.testIds, props.definition.id));
 
-const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, {
+const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, testId, {
   update: onFieldUpdate,
   commit: onFieldCommit,
   changeItems: onItemsChange,
@@ -136,7 +146,7 @@ async function onPrimary() {
 </script>
 
 <template>
-  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" @submit.prevent="onPrimary">
+  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
     <component
       :is="props.progressComponent"
       v-if="isMultiStep && props.progressComponent"
@@ -163,7 +173,7 @@ async function onPrimary() {
       <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">{{ error }}</p>
     </div>
 
-    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert" tabindex="-1">
+    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert" tabindex="-1" :data-testid="testId?.('summary')">
       <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
       <template v-for="group in summaryGroups" :key="group.id">
         <p v-if="summaryGroups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
@@ -178,7 +188,8 @@ async function onPrimary() {
       v-if="props.actionsComponent"
       v-bind="actions"
       :loading="disabled"
-      :values="form.engine.getSubmitValues()"
+      :values="actionValues(form.engine)"
+      :test-ids="actionTestIds(testId)"
       @submit="onSubmit"
       @next="onNext"
       @back="onBack"

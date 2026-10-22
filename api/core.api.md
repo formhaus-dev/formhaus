@@ -184,6 +184,8 @@ export interface FormActionsView {
     // (undocumented)
     submitAction?: FormAction;
     // (undocumented)
+    testIds?: Partial<Record<TestIdAction, string>>;
+    // (undocumented)
     values?: Record<string, unknown>;
 }
 
@@ -337,6 +339,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
 export interface FormEngineOptions {
     // (undocumented)
     formatRecall?: RecallFormatFn;
+    // (undocumented)
+    hiddenValues?: 'clear' | 'keep' | undefined;
     // (undocumented)
     lang?: string;
     // (undocumented)
@@ -884,6 +888,21 @@ export type SubmitResult = {
     ok: false;
     errors?: Record<string, string>;
     formErrors?: string[];
+};
+
+// @public (undocumented)
+export type TestIdTarget = {
+    kind: 'form' | 'summary' | TestIdAction;
+    definitionId: string;
+} | {
+    kind: 'field';
+    definitionId: string;
+    key: string;
+} | {
+    kind: 'option';
+    definitionId: string;
+    key: string;
+    value: string;
 };
 
 // @public (undocumented)

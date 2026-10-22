@@ -17,7 +17,7 @@ function applyRejection(engine: EngineInternals, result: Rejection, sent: Record
   const source = typeof result.errors === 'object' && result.errors ? result.errors : {};
   for (const [key, value] of Object.entries(source)) {
     const message: unknown = Array.isArray(value) ? value.join(' ') : value;
-    if (typeof message === 'string' && Object.is(engine.values[engine.visibility.owner(key)], sent[engine.visibility.owner(key)]))
+    if (typeof message === 'string' && Object.is(engine.state.values[engine.visibility.owner(key)], sent[engine.visibility.owner(key)]))
       errors[key] = message;
   }
   const formErrors = Array.isArray(result.formErrors) ? result.formErrors.filter((message) => typeof message === 'string') : [];
@@ -30,7 +30,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   const lifecycle = { ...engine.lifecycle };
   const epoch = engine.validationEpoch;
   const operation = (engine.latestOperation = ++engine.operationEpoch);
-  let values = getSubmitValues(engine);
+  let values = getSubmitValues(engine, true);
   const inputsChanged = watchCheckedInputs(engine, values);
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged();
   engine.state.submitting = true;
@@ -47,11 +47,11 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
       const allowed = await lifecycle.onBeforeSubmit(values);
       if (stale() || allowed === false) return false;
       if (invalid() || stale()) return false;
-      values = getSubmitValues(engine);
+      values = getSubmitValues(engine, true);
     }
     engine.sending = operation;
     const skippedSteps = [...engine.skipped.keys()];
-    const sent = { ...engine.values };
+    const sent = { ...engine.state.values };
     const serverErrors = engine.state.serverErrors;
     if (keepSkipped) emit(engine, { type: 'step_skipped', stepId: engine.currentStep!.id });
     emit(engine, { type: 'form_submitted', fieldCount: Object.keys(values).length });

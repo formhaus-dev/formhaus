@@ -11,7 +11,7 @@ const choice = useChoice(props, emit);
 </script>
 
 <template>
-  <FieldShell :id="props.id" :field="props.field" :error="props.error" variant="radio">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" variant="radio">
     <div
       v-for="(option, index) in (props.field.options ?? [])"
       :key="String(option.value)"
@@ -22,6 +22,7 @@ const choice = useChoice(props, emit);
         :autocomplete="props.field.autocomplete"
         :id="`${inputId}-${index}`"
         class="fh-field__radio"
+        :data-testid="props.optionTestId?.(String(option.value))"
         type="radio"
         :name="props.field.key"
         :value="option.value"

@@ -18,7 +18,7 @@ export function MultiselectField(props: FieldComponentProps) {
   }
 
   return (
-    <FieldShell id={fieldId(props)} field={field} error={error} variant="multiselect">
+    <FieldShell id={fieldId(props)} field={field} error={error} variant="multiselect" testId={props.testId}>
       {options.map((opt, index) => {
         const optionId = `${fieldId(props)}-${index}`;
         return (
@@ -26,7 +26,7 @@ export function MultiselectField(props: FieldComponentProps) {
             {dividerBefore(field, options, index) && <div className="fh-field__option-divider">{text('or')}</div>}
             <div className="fh-field__multiselect-option">
               <input
-                {...optionProps(props)}
+                {...optionProps(props, opt.value)}
                 id={optionId}
                 name={field.key}
                 type="checkbox"

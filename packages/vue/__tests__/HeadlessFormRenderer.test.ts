@@ -149,6 +149,7 @@ describe('HeadlessFormRenderer', () => {
       'skip-action',
       'skip-label',
       'submit-action',
+      'test-ids',
       'values',
     ]);
     expect(attrs).toMatchObject({

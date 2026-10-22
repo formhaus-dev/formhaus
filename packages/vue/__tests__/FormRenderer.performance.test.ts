@@ -59,7 +59,7 @@ describe('group props memo', () => {
     const props = scope.run(() => {
       const form = useFormEngine(() => current.value);
       const noop = () => {};
-      return useNodeProps(form, { definition } as FormRendererProps, 'form', ref(false), {
+      return useNodeProps(form, { definition } as FormRendererProps, 'form', ref(false), ref(undefined), {
         update: noop,
         commit: noop,
         changeItems: () => true,

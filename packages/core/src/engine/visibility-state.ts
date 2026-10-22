@@ -39,7 +39,7 @@ export interface ItemField {
 
 export type VisibilityState = ReturnType<typeof createVisibility>;
 
-export function createVisibility(definition: FormDefinition) {
+export function createVisibility(definition: FormDefinition, keep = false) {
   const index = indexDefinition(definition);
   const { allFields, fieldsByKey, routeFields, fieldDependents, stepDependents, stepOfField, sectionOf } = index;
   const path = createActivePath(definition, index);
@@ -147,6 +147,23 @@ export function createVisibility(definition: FormDefinition) {
     if (replaced) path.invalidate();
   }
 
+  function withKept(values: Values, skipped: string[]): Values {
+    if (!keep) return values;
+    const result = { ...values };
+    const fill = (target: Values, key: string, value: unknown) => target[key] === undefined && value !== undefined && (target[key] = value);
+    for (const [key, [field]] of fieldsByKey)
+      if (!activeField(key, values) && !skipped.includes(key)) fill(result, key, starts.startValue(field));
+    for (const group of groups)
+      if (Array.isArray(result[group.key]) && !skipped.includes(group.key))
+        result[group.key] = (result[group.key] as unknown[]).map((item) => {
+          if (!isEntry(item)) return item;
+          const entry = { ...item };
+          for (const { key } of group.fields) fill(entry, key, starts.itemStartValue(item, key));
+          return keepId(item, entry);
+        });
+    return result;
+  }
+
   const hidden = createHiddenQueue(index, {
     path,
     starts,
@@ -173,6 +190,8 @@ export function createVisibility(definition: FormDefinition) {
     owner,
     parse,
     unsettle: hidden.unsettle,
+    keep,
+    withKept,
 
     conditionResults(values: Values): Map<string, [string, boolean]> {
       const results = new Map<string, [string, boolean]>();

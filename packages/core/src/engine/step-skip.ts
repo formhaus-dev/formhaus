@@ -8,7 +8,7 @@ import { dropServerErrors, pruneOffPathErrors } from './validation-state';
 
 function resetValues(engine: EngineInternals): Record<string, unknown> {
   const fields = valueFields(engine.currentStep?.fields ?? []);
-  const values = { ...engine.values };
+  const values = { ...engine.state.values };
   for (const { key } of fields) delete values[key];
   return Object.assign(values, createValues(fields));
 }
@@ -22,12 +22,12 @@ export function skipCurrentStep(engine: EngineInternals): (kept: Set<string>) =>
   const fieldKeys = valueFields(step.fields).map(({ key }) => key);
   baselineFields(engine);
   engine.state.values = resetValues(engine);
-  const restore = engine.visibility.reseed(fieldKeys, engine.values);
+  const restore = engine.visibility.reseed(fieldKeys, engine.state.values);
   const owned = Object.keys(engine.errors).filter((key) => fieldKeys.includes(engine.visibility.owner(key)));
   for (const key of owned) delete engine.errors[key];
   dropServerErrors(engine, fieldKeys);
   engine.skipped.set(step.id, fieldKeys);
-  dropServerErrors(engine, engine.visibility.reconcileHidden(engine.values, engine.errors));
+  dropServerErrors(engine, engine.visibility.reconcileHidden(engine.state.values, engine.errors));
   engine.visibility.markChanged(true, true);
   const pruned = pruneOffPathErrors(engine);
   engine.notify({ fieldKeys: [...fieldKeys, ...owned, ...pruned], structureChanged: true, valuesChanged: true });

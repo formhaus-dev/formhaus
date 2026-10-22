@@ -10,7 +10,7 @@ interface Fixture {
   overlay?: unknown;
   cases?: {
     name: string;
-    input: { values: Record<string, unknown> };
+    input: { values: Record<string, unknown>; hiddenValues?: string };
     expected: { values: Record<string, unknown>; errors: Record<string, string> };
     canSubmit: boolean;
   }[];
@@ -23,7 +23,7 @@ const corpus: Fixture[] = readdirSync(dir)
 const cases = corpus
   .filter(({ name, issues }) => !issues.length && !name.startsWith('check-'))
   .flatMap(({ name, definition, overlay, cases }) =>
-    (cases ?? []).map((item) => [`${name}: ${item.name}`, definition, overlay, item] as const),
+    (cases ?? []).filter(({ input }) => !input.hiddenValues).map((item) => [`${name}: ${item.name}`, definition, overlay, item] as const),
   );
 
 describe('conformance corpus in simulate_path', () => {

@@ -26,6 +26,7 @@ import { ReactNode } from 'react';
 import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
+import { TestIdTarget } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 // @public (undocumented)
@@ -84,6 +85,10 @@ export interface FieldComponentProps {
     // (undocumented)
     onFocus?: () => void;
     // (undocumented)
+    optionTestId?: (value: string) => string | undefined;
+    // (undocumented)
+    testId?: string;
+    // (undocumented)
     value: unknown;
 }
 
@@ -135,6 +140,10 @@ export interface FormhausFieldProps {
     // (undocumented)
     onFocus?: () => void;
     // (undocumented)
+    optionTestId?: (value: string) => string | undefined;
+    // (undocumented)
+    testId?: string;
+    // (undocumented)
     value: unknown;
 }
 
@@ -185,6 +194,8 @@ export interface FormRendererProps extends FormEngineOptions {
     progressComponent?: ComponentType<FormStepProgressProps>;
     // (undocumented)
     stepErrorMarks?: boolean;
+    // (undocumented)
+    testIds?: boolean | ((target: TestIdTarget) => string | undefined);
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }

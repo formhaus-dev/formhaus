@@ -479,6 +479,14 @@ In a form with [routes](#routes), fields on steps that are off the active path k
 
 Fields hidden by conditions are not validated and not submitted. For groups, see [Groups](#groups).
 
+### Kept hidden values
+
+The engine option `hiddenValues` is `"clear"` (default) or `"keep"`. With `"keep"`, the engine clears and restores values internally as above, and adds back to `engine.values` the value each field hidden by conditions would get when shown again: its last value or start value. The same applies to item fields hidden in their item and to fields of hidden groups, sections and steps. The submit payload then also holds these values, trimmed, and the values of fields off the active path. It still leaves out fields of skipped steps and keys that are not field keys.
+
+Conditions, validation, validators and recall see the same values as with `"clear"`: a hidden field is unanswered and has no error. Hooks that receive the payload, such as the submit handler, `onBeforeSubmit`, `onAfterSubmit`, the step change hooks and `onStepValidate`, get it with the kept values.
+
+`validateSubmission()` takes the same option. With `"keep"`, it returns the values of hidden fields and of fields off the active path as sent, after trimming and number conversion. It does not validate them and reports no error for them. It drops one that fails its type check. The scenarios in `hidden-values.json` and the corpus file `hidden-values.json` pin this rule.
+
 ## Defaults and initial values
 
 When the engine is constructed or reset, values are built in this order:
@@ -602,7 +610,7 @@ The five action slots are:
 - `skip` shows a Skip action on that step.
 - `cancel` shows a Cancel action that calls the renderer's cancel handler. Core has no cancel operation.
 
-Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` on `submit` and on `next`, against `getSubmitValues()`. They ignore `disabled` on `back`, `skip` and `cancel`, and `checkDefinition()` warns about it with `disabled-not-applicable`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. The `continue` and `back` [labels](#message-and-label-catalogs) replace the Continue and Back defaults. In built-in renderers, Enter in a single-line input runs the primary action.
+Built-in renderers draw Continue and Submit as primary, Back as secondary, and Skip and Cancel as text buttons. `variant` changes the style of `back`, `skip` and `cancel`; built-in renderers ignore it on `submit` and `next`. Built-in renderers evaluate `disabled` on `submit` and on `next`, against `getSubmitValues()`. With [`hiddenValues: "keep"`](#kept-hidden-values), they leave the kept values out. They ignore `disabled` on `back`, `skip` and `cancel`, and `checkDefinition()` warns about it with `disabled-not-applicable`. Values of fields off the active path and of skipped steps do not count. An empty `disabled` array never disables. Default labels are `Continue`, `Back`, `Skip` and `Submit`. The `continue` and `back` [labels](#message-and-label-catalogs) replace the Continue and Back defaults. In built-in renderers, Enter in a single-line input runs the primary action.
 
 ## Routes
 
@@ -748,7 +756,7 @@ Translations keep the tokens. Recall resolves the translated text, and option la
 
 - every visible field with a value other than `undefined`, on every step of the active path, or every visible field of a single-step form;
 - `null`, `''`, `false` and `[]` values included;
-- fields of skipped steps, fields hidden by conditions, fields off the active path and keys that are not field keys excluded.
+- fields of skipped steps, fields hidden by conditions, fields off the active path and keys that are not field keys excluded. With [`hiddenValues: "keep"`](#kept-hidden-values), fields hidden by conditions and fields off the active path are included.
 
 Keys are field keys as written. The payload is not nested and not type-converted. Section fields are top-level keys. A group value is an array of item objects: each holds the visible item fields with a value other than `undefined`, trimmed like top-level values, and no other keys.
 

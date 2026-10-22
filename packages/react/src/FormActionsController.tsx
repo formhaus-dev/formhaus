@@ -1,5 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
-import { actionsView } from '@formhaus/core/internal';
+import { actionValues, actionsView, type TestId } from '@formhaus/core/internal';
 import { useCallback, useMemo } from 'react';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
@@ -14,6 +14,7 @@ interface FormActionsControllerProps {
   onBack: () => void;
   onSkip: () => void;
   onCancel: () => void;
+  testId?: TestId;
 }
 
 export function FormActionsController({
@@ -26,9 +27,10 @@ export function FormActionsController({
   onBack,
   onSkip,
   onCancel,
+  testId,
 }: FormActionsControllerProps) {
   const version = useFormSnapshot(engine);
-  const values = useMemo(() => engine.getSubmitValues(), [engine, version]);
+  const values = useMemo(() => actionValues(engine), [engine, version]);
   const view = actionsView(engine, labels);
   const handlePrimary = useCallback(async () => {
     if (view.isLastStep) onSubmit();
@@ -48,6 +50,7 @@ export function FormActionsController({
       onCancel={onCancel}
       onSkip={onSkip}
       onPrimary={handlePrimary}
+      testIds={testId && Object.fromEntries((['submit', 'next', 'back'] as const).map((kind) => [kind, testId(kind)]))}
     />
   );
 }

@@ -5,7 +5,7 @@ import { localize, type Overlay } from '../../src/i18n';
 
 interface ConformanceCase {
   name: string;
-  input: { values: Record<string, unknown>; skippedSteps: string[] };
+  input: { values: Record<string, unknown>; skippedSteps: string[]; hiddenValues?: 'clear' | 'keep' };
   expected: { values: Record<string, unknown>; errors: Record<string, string> };
   canSubmit: boolean;
   serverValues?: Record<string, unknown>;

@@ -13,6 +13,7 @@ import type {
   SectionView,
   StepValidateFn,
   SubmitHandler,
+  TestIdTarget,
   ValidatorFn,
 } from '@formhaus/core';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
@@ -30,6 +31,8 @@ export interface FieldComponentProps {
   onCommit?: (value: unknown) => void;
   onBlur: () => void;
   onFocus?: () => void;
+  testId?: string;
+  optionTestId?: (value: string) => string | undefined;
 }
 
 export interface SectionComponentProps extends SectionView {
@@ -123,4 +126,5 @@ export interface FormRendererProps extends FormEngineOptions {
   actionsComponent?: ComponentType<FormActionsProps>;
   progressComponent?: ComponentType<FormStepProgressProps>;
   headingLevel?: HeadingLevel;
+  testIds?: boolean | ((target: TestIdTarget) => string | undefined);
 }

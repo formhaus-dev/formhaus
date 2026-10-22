@@ -675,6 +675,32 @@ Put the settings of a custom type in `props`. Core ignores them, and the compone
 }
 ```
 
+### Validate a custom type
+
+`validation.validator` names one validator. To add a rule for one field on top of the check of its type, write a validator that runs the type check first:
+
+```ts
+import type { ValidatorFn } from '@formhaus/core';
+
+type Address = { street?: string; city?: string; zip?: string };
+
+const checkAddress = (value: unknown): string | null => {
+  const { street, city } = value as Address;
+  return street && city ? null : 'Enter a street and a city';
+};
+
+const validators: Record<string, ValidatorFn> = {
+  address: checkAddress,
+  usAddress: (value) => checkAddress(value) ?? (/^\d{5}$/.test((value as Address).zip ?? '') ? null : 'Enter a 5-digit ZIP code'),
+};
+```
+
+```json
+{ "key": "shipping", "type": "x-address", "label": "Shipping address", "validation": { "required": true, "validator": "usAddress" } }
+```
+
+`required` treats only `null`, `""` and `[]` as empty, and validators never run on an empty value. An object such as `{ "street": "" }` passes `required`. Write `null` from the component when the user clears every part, or return the required message from the validator.
+
 ## Override default components
 
 Override any built-in field type by passing a `components` prop:
@@ -708,6 +734,8 @@ Each custom component gets the field descriptor, the current value, and validati
 | `error` | `string?` | Validation error, if any |
 | `loading` | `boolean?` | Field loading state set through `FormEngine.setFieldLoading()` |
 | `disabled` | `boolean?` | Form is disabled |
+| `testId` | `string?` | Test id of the field when the renderer has [`testIds`](/guide/testing). Put it on the control as `data-testid` |
+| `optionTestId` | `((value: string) => string \| undefined)?` | Test id of one option of a choice field, with `testIds` on |
 
 Put the `id` prop on the control, so the label and error messages stay linked. In React, call `onChange(value)` and `onBlur()`. In Vue, read `modelValue` and emit `update:modelValue` and `blur`, so `v-model` works on the component.
 

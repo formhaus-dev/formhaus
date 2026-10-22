@@ -41,4 +41,5 @@ export interface FormEngineOptions {
   formatRecall?: RecallFormatFn;
   seed?: string | undefined;
   research?: FormResearch | undefined;
+  hiddenValues?: 'clear' | 'keep' | undefined;
 }

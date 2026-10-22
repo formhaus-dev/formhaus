@@ -55,6 +55,7 @@ export function useFormEngineStore(
       onWarning: options?.onWarning,
       seed: options?.seed,
       research: options?.research,
+      hiddenValues: options?.hiddenValues,
     });
   }
 

@@ -1,7 +1,7 @@
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
-import { createValues, getChangedKeys } from './engine-utils';
+import { createValues, keptValues, valuesDiffer } from './engine-utils';
 import { baselineFields, trackChanges } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
@@ -15,7 +15,7 @@ export function loadDefinition(
 ): void {
   assertDefinition(definition, engine.lifecycle, engine.validators);
   warnUnordered(definition, engine.lifecycle);
-  const visibility = createVisibility(definition);
+  const visibility = createVisibility(definition, engine.lifecycle.hiddenValues === 'keep');
   engine.definition = definition;
   engine.messages = messageResolver(engine.lifecycle.messages, definition.messages);
   engine.visibility = visibility;
@@ -24,14 +24,6 @@ export function loadDefinition(
 }
 
 const kept = (fields?: FormField[], field?: FormField) => !!fields?.some(({ key, type }) => key === field?.key && type === field.type);
-
-const sameItems = (previous: unknown, next: unknown) =>
-  Array.isArray(previous) &&
-  Array.isArray(next) &&
-  previous.length === next.length &&
-  previous.every(
-    (item, index) => Object.is(item, next[index]) || (isEntry(item) && isEntry(next[index]) && !getChangedKeys(item, next[index]).size),
-  );
 
 export function replaceDefinition(engine: EngineInternals, definition: FormDefinition): void {
   const { state, skipped, values, currentStepIndex, visibility: previous } = engine;
@@ -64,7 +56,7 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
   if (engine.sending !== engine.latestOperation) state.submitting = false;
   for (const key in state.errors) {
     const [group, , child] = visibility.parse(key) ?? [];
-    const field = visibility.activeField(group ?? key, engine.values);
+    const field = visibility.activeField(group ?? key, engine.state.values);
     if (
       !kept(previous.allFields, field) ||
       (group &&
@@ -86,7 +78,7 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
       );
     else skipped.delete(id);
   });
-  const valuesChanged = [...getChangedKeys(values, engine.values)].some((key) => !sameItems(values[key], engine.values[key]));
+  const valuesChanged = valuesDiffer(values, keptValues(engine));
   engine.notify({
     fieldKeys: [...previous.allFields.map(({ key }) => key), ...visibility.allFields.map(({ key }) => key), ...errors],
     structureChanged: true,

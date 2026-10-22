@@ -136,7 +136,7 @@ export const capabilities = {
     scope:
       'Conditions see only answers that come before them: a field condition may use fields of the same or an earlier step, a step or route condition fields of earlier steps (routes: the same step too). A condition on a later step or an unknown key is an error.',
     hiddenValues:
-      'Fields hidden by conditions are cleared at once and left out of submitted values. A field shown again gets back its last value, or else its initial value or defaultValue.',
+      'Fields hidden by conditions are cleared at once and left out of submitted values. A field shown again gets back its last value, or else its initial value or defaultValue. The engine option hiddenValues: "keep" (renderer prop of the same name) keeps hidden values in engine values and in submitted values, for editing a stored record; conditions, validation and recall still treat them as unanswered. Pass hiddenValues: "keep" to validateSubmission too, or the server drops them.',
   },
   recall: {
     syntax:
