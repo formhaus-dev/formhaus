@@ -86,7 +86,10 @@ describe('randomized options', () => {
     await settings('Channels');
     expect(screen.getByRole('button', { name: 'Pin “Other” in place' })).toBeVisible();
     expect(screen.queryByRole('button', { name: 'Pin “None of the above” in place' })).toBeNull();
-    expect(screen.getByRole('button', { name: 'Never shuffled' })).toHaveAttribute('aria-disabled', 'true');
+    const exclusive = screen.getByRole('button', { name: '“None of the above” is never shuffled' });
+    expect(exclusive).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.hover(exclusive);
+    expect(await screen.findByRole('tooltip')).toHaveTextContent('Never shuffled');
   });
 
   it('offers randomize on a select', async () => {

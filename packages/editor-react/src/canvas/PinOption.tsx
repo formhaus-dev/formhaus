@@ -13,7 +13,16 @@ interface Props {
 }
 
 export function PinOption({ fieldUid, option, name, actions, readOnly }: Props) {
-  if (option.extra?.exclusive) return <IconButton label="Never shuffled" icon={<Pin aria-hidden />} aria-disabled className={styles.pin} />;
+  if (option.extra?.exclusive)
+    return (
+      <IconButton
+        label={`“${name}” is never shuffled`}
+        tooltip="Never shuffled"
+        icon={<Pin aria-hidden />}
+        aria-disabled
+        className={styles.pin}
+      />
+    );
   const pinned = option.extra?.pinned ?? false;
   return (
     <IconButton
