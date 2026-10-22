@@ -21,6 +21,7 @@ export function loadDefinition(
   engine.visibility = visibility;
   engine.state.values = createValues(visibility.allFields, values(visibility.allFields), visibility.activeField);
   visibility.reconcileHidden(engine.state.values, engine.state.errors, true);
+  if (visibility.keep) engine.values;
 }
 
 const kept = (fields?: FormField[], field?: FormField) => !!fields?.some(({ key, type }) => key === field?.key && type === field.type);

@@ -242,9 +242,9 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   private notify(options: NotifyOptions = {}): void {
-    if (keptChanged(this as never, options)) this.snapshot = undefined;
+    const valuesChanged = keptChanged(this as never, options.valuesChanged);
     this.visibility.markChanged(!!options.structureChanged, !!options.valuesChanged);
-    this.subscriptions.notify(options);
+    this.subscriptions.notify(options, valuesChanged);
     trackChanges(this as never, options.valuesChanged);
   }
 }

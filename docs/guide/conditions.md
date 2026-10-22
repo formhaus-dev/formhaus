@@ -183,6 +183,7 @@ With `'keep'`, a field hidden by a condition keeps its value in `engine.values` 
 - Fields of a skipped step are still left out: Skip resets them.
 - [Recall](/spec#answer-recall) shows nothing for a hidden field.
 - Hooks that receive values (`onBeforeSubmit`, `onAfterSubmit`, the step hooks and `onStepValidate`) get the payload with the kept values. Validators get the values without them.
+- The `fieldCount` of the [`form_submitted` event](/guide/custom-components#form-events) counts the kept values.
 - `reset()` and `replaceDefinition()` keep the hidden values they start with.
 
 Pass the same option to [`validateSubmission()`](/guide/server-validation#hidden-values), or the server drops the kept values. The option is read when the engine is created, like `seed`. `useFormEngine` and `HeadlessFormRenderer` take it too. `FormhausForm` does not: Formhaus Cloud validates with the default.

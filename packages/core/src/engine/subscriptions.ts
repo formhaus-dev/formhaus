@@ -38,7 +38,7 @@ export function createSubscriptions() {
       };
     },
 
-    notify({ fieldKeys = [], structureChanged = false, valuesChanged = false }: NotifyOptions = {}): void {
+    notify({ fieldKeys = [], structureChanged = false }: NotifyOptions, values?: boolean): void {
       for (const key of new Set(fieldKeys)) {
         fieldVersions.set(key, (fieldVersions.get(key) ?? 0) + 1);
         for (const listener of fieldListeners.get(key) ?? []) listener();
@@ -49,7 +49,7 @@ export function createSubscriptions() {
       }
       version++;
       for (const listener of listeners) listener();
-      if (valuesChanged) for (const listener of valueListeners) listener();
+      if (values) for (const listener of valueListeners) listener();
     },
   };
 }

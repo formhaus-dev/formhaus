@@ -122,4 +122,22 @@ describe('hiddenValues: keep', () => {
     const next = new FormEngine(translated, { ...engine.values, type: 'business' }, { hiddenValues: 'keep' });
     expect(next.values).toMatchObject({ type: 'business', company: 'Initech' });
   });
+
+  it('reports a values change when a write drops a kept value before any snapshot', () => {
+    const engine = new FormEngine(definition, { type: 'personal', company: 'Acme' }, { hiddenValues: 'keep' });
+    const listener = vi.fn();
+    engine.subscribeValues(listener);
+    engine.setValue('company', undefined);
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(engine.values.company).toBeUndefined();
+    expect(engine.getSubmitValues()).toEqual({ type: 'personal' });
+  });
+
+  it('leaves the options passed to notify unchanged', () => {
+    const engine = new FormEngine(definition, business, { hiddenValues: 'keep' });
+    expect(engine.values).toMatchObject(business);
+    const options = { valuesChanged: true };
+    (engine as unknown as { notify(options: object): void }).notify(options);
+    expect(options).toEqual({ valuesChanged: true });
+  });
 });

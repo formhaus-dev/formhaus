@@ -87,4 +87,4 @@ export function ColorPicker({ field, value, onChange, testId, optionTestId }: Fi
 }
 ```
 
-In Vue, declare both props, such as with `fieldComponentProps`. Vue adds undeclared props to the root element as attributes. A [custom actions component](/guide/custom-components) gets `testIds` with the `submit`, `next` and `back` ids.
+In Vue, declare both props, such as with `fieldComponentProps`. A component that does not declare them does not get them. A [custom actions component](/guide/custom-components) gets `testIds` with the `submit`, `next` and `back` ids.

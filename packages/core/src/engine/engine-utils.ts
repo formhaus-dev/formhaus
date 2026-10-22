@@ -1,6 +1,5 @@
 import type { FormDefinition, FormField } from '../types';
 import type { EngineInternals, EngineState } from './runtime-internals';
-import type { NotifyOptions } from './subscriptions';
 import { isPlainEntry, maxItems } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, keepId, topNodes, valueFields } from '../visibility/nodes';
 
@@ -82,7 +81,9 @@ export const valuesDiffer = (previous: Record<string, unknown>, next: Record<str
 export const keptValues = (engine: EngineInternals): Record<string, unknown> =>
   engine.visibility.withKept(engine.state.values, [...engine.skipped.values()].flat());
 
-export function keptChanged(engine: EngineInternals & { snapshot?: Record<string, unknown> }, options: NotifyOptions): boolean | undefined {
-  if (engine.visibility.keep && engine.snapshot) options.valuesChanged = valuesDiffer(engine.snapshot, keptValues(engine));
-  return options.valuesChanged;
+export function keptChanged(engine: EngineInternals & { snapshot?: object }, changed?: boolean): boolean | undefined {
+  const next = engine.visibility.keep && keptValues(engine);
+  if (next) changed = valuesDiffer(engine.values, next);
+  if (changed) engine.snapshot = next ? Object.freeze(next) : undefined;
+  return changed;
 }
