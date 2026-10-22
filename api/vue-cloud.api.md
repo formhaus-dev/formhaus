@@ -9,6 +9,9 @@ import { AfterSubmitFn } from '@formhaus/core';
 import { BeforeStepChangeFn } from '@formhaus/core';
 import { BeforeSubmitFn } from '@formhaus/core';
 import { CloudError } from '@formhaus/core/cloud';
+import { CloudLabelSource } from '@formhaus/core/cloud';
+import { CloudNotice } from '@formhaus/core/cloud';
+import { CloudNoticeActionFn } from '@formhaus/core/cloud';
 import { CloudSubmission } from '@formhaus/core/cloud';
 import { Component } from 'vue';
 import { ComponentOptionsMixin } from 'vue';
@@ -34,6 +37,12 @@ import { ValidatorFn } from '@formhaus/core';
 
 export { CloudError }
 
+export { CloudLabelSource }
+
+export { CloudNotice }
+
+export { CloudNoticeActionFn }
+
 export { CloudSubmission }
 
 // @public (undocumented)
@@ -44,6 +53,8 @@ export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' 
     // (undocumented)
     apiBase?: string;
     // (undocumented)
+    cloudLabels?: CloudLabelSource;
+    // (undocumented)
     draftExclude?: string[];
     // (undocumented)
     draftStore?: DraftStore | false;
@@ -51,6 +62,8 @@ export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' 
     id: string;
     // (undocumented)
     initialForm?: PublishedForm;
+    // (undocumented)
+    noticePlacement?: 'top' | 'actions';
 }
 
 // (No @packageDocumentation comment for this package)
