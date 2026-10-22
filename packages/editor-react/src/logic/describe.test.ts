@@ -38,4 +38,73 @@ describe('describeLogic', () => {
     const other = form.blocks.find((block) => isQuestion(block) && block.key === 'other')!;
     expect(describeLogic(form, logicOf(form, other))).toBe('Shown when Interests includes Other');
   });
+
+  describe('repeated sources', () => {
+    const size: FormNode = {
+      key: 'size',
+      type: 'radio',
+      label: 'Company size',
+      options: [
+        { value: 'small', label: '1-10' },
+        { value: 'mid', label: '11-50' },
+        { value: 'large', label: '51+' },
+      ],
+    };
+    const role: FormNode = { key: 'role', type: 'text', label: 'Role' };
+    const summary = (conditions: Record<string, unknown>) => {
+      const form = fromDefinition({
+        id: 'survey',
+        title: 'Survey',
+        submit: { label: 'Send' },
+        fields: [size, role, { key: 'source', type: 'text', label: 'Source', ...conditions } as FormNode],
+      });
+      const source = form.blocks.find((block) => isQuestion(block) && block.key === 'source')!;
+      return describeLogic(form, logicOf(form, source));
+    };
+
+    it('names the field once for consecutive values joined by or', () => {
+      expect(
+        summary({
+          showAny: [
+            { field: 'size', eq: 'small' },
+            { field: 'size', eq: 'large' },
+          ],
+        }),
+      ).toBe('Shown when Company size is 1-10 or 51+');
+    });
+
+    it('names the field once for consecutive values joined by and', () => {
+      expect(
+        summary({
+          show: [
+            { field: 'size', neq: 'small' },
+            { field: 'size', neq: 'large' },
+          ],
+        }),
+      ).toBe('Shown when Company size is not 1-10 and 51+');
+    });
+
+    it('keeps the field name when the operator changes', () => {
+      expect(
+        summary({
+          showAny: [
+            { field: 'size', eq: 'small' },
+            { field: 'size', neq: 'large' },
+          ],
+        }),
+      ).toBe('Shown when Company size is 1-10 or Company size is not 51+');
+    });
+
+    it('keeps the field name when another field comes between', () => {
+      expect(
+        summary({
+          showAny: [
+            { field: 'size', eq: 'small' },
+            { field: 'role', eq: 'Owner' },
+            { field: 'size', eq: 'large' },
+          ],
+        }),
+      ).toBe('Shown when Company size is 1-10 or Role is Owner or Company size is 51+');
+    });
+  });
 });

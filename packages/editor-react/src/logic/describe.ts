@@ -28,8 +28,16 @@ function describeRow(form: BuilderForm, row: ConditionRow, scope?: string): stri
   return takesValue(row.operator) ? `${head} ${valueLabel(form, row, scope) || '…'}` : head;
 }
 
+function repeats(row: ConditionRow, previous: ConditionRow | undefined): boolean {
+  return previous !== undefined && takesValue(row.operator) && previous.field === row.field && previous.operator === row.operator;
+}
+
 export function describeLogic(form: BuilderForm, logic: Logic, scope?: string): string | null {
   if (logic.mode === 'always') return null;
   if (!logic.editable) return 'Shown on custom conditions';
-  return `Shown when ${logic.rows.map((row) => describeRow(form, row, scope)).join(logic.mode === 'any' ? ' or ' : ' and ')}`;
+  const joiner = logic.mode === 'any' ? ' or ' : ' and ';
+  const text = logic.rows
+    .map((row, index) => (repeats(row, logic.rows[index - 1]) ? valueLabel(form, row, scope) || '…' : describeRow(form, row, scope)))
+    .join(joiner);
+  return `Shown when ${text}`;
 }
