@@ -107,4 +107,19 @@ describe('hiddenValues: keep', () => {
     expect(listener).not.toHaveBeenCalled();
     expect(engine.getValuesSnapshot()).toBe(snapshot);
   });
+
+  it('adds no key for a hidden field without a value', () => {
+    const engine = new FormEngine(definition, { type: 'personal' }, { hiddenValues: 'keep' });
+    expect(Object.hasOwn(engine.values, 'company')).toBe(false);
+    const translated: FormDefinition = {
+      ...definition,
+      steps: definition.steps!.map((step, index) =>
+        index
+          ? step
+          : { ...step, fields: step.fields.map((field) => (field.key === 'company' ? { ...field, defaultValue: 'Initech' } : field)) },
+      ),
+    };
+    const next = new FormEngine(translated, { ...engine.values, type: 'business' }, { hiddenValues: 'keep' });
+    expect(next.values).toMatchObject({ type: 'business', company: 'Initech' });
+  });
 });
