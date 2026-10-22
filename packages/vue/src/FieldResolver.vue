@@ -11,6 +11,10 @@ try {
   if (process.env.NODE_ENV !== 'production') development = true;
 } catch {}
 const fieldComponent = computed<Component | null>(() => props.components?.[props.field.type] ?? null);
+const declares = (name: string) => {
+  const declared = (fieldComponent.value as { props?: string[] | Record<string, unknown> } | null)?.props;
+  return Array.isArray(declared) ? declared.includes(name) : !!declared && name in declared;
+};
 </script>
 
 <template>
@@ -23,8 +27,8 @@ const fieldComponent = computed<Component | null>(() => props.components?.[props
     :error="props.error"
     :loading="props.loading"
     :disabled="props.disabled"
-    :test-id="props.testId"
-    :option-test-id="props.optionTestId"
+    :test-id="declares('testId') ? props.testId : undefined"
+    :option-test-id="declares('optionTestId') ? props.optionTestId : undefined"
     @update:model-value="(v: unknown) => emit('update:modelValue', v)"
     @commit="(v: unknown) => emit('commit', v)"
     @blur="emit('blur')"
