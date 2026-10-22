@@ -147,25 +147,19 @@ export function createVisibility(definition: FormDefinition, keep = false) {
     if (replaced) path.invalidate();
   }
 
-  function withKept(values: Values): Values {
+  function withKept(values: Values, skipped: string[]): Values {
     if (!keep) return values;
     const result = { ...values };
-    for (const [key, [field]] of fieldsByKey) {
-      const value = values[key] === undefined && !activeField(key, values) ? starts.startValue(field) : undefined;
-      if (value !== undefined) result[key] = value;
-    }
-    for (const group of groups) {
-      if (!Array.isArray(result[group.key])) continue;
-      result[group.key] = (result[group.key] as unknown[]).map((item) => {
-        if (!isEntry(item)) return item;
-        const restored: Values = {};
-        for (const { key } of group.fields) {
-          const value = item[key] === undefined ? starts.itemStartValue(item, key) : undefined;
-          if (value !== undefined) restored[key] = value;
-        }
-        return Object.keys(restored).length ? keepId(item, { ...item, ...restored }) : item;
-      });
-    }
+    for (const [key, [field]] of fieldsByKey)
+      if (!activeField(key, values) && !skipped.includes(key)) result[key] ??= starts.startValue(field);
+    for (const group of groups)
+      if (Array.isArray(result[group.key]) && !skipped.includes(group.key))
+        result[group.key] = (result[group.key] as unknown[]).map((item) => {
+          if (!isEntry(item)) return item;
+          const entry = { ...item };
+          for (const { key } of group.fields) entry[key] ??= starts.itemStartValue(item, key);
+          return keepId(item, entry);
+        });
     return result;
   }
 
@@ -195,6 +189,7 @@ export function createVisibility(definition: FormDefinition, keep = false) {
     owner,
     parse,
     unsettle: hidden.unsettle,
+    keep,
     withKept,
 
     conditionResults(values: Values): Map<string, [string, boolean]> {

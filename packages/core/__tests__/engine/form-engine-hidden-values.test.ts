@@ -83,4 +83,28 @@ describe('hiddenValues: keep', () => {
       errors: {},
     });
   });
+
+  it('reports a values change after reset drops a kept value', () => {
+    const engine = new FormEngine(definition, { type: 'business' }, { hiddenValues: 'keep' });
+    engine.setValue('company', 'Acme');
+    engine.setValue('type', 'personal');
+    engine.getValuesSnapshot();
+    const listener = vi.fn();
+    engine.subscribeValues(listener);
+    engine.reset({ type: 'personal' });
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(engine.values).toEqual({ type: 'personal' });
+    expect(engine.getSubmitValues()).toEqual({ type: 'personal' });
+  });
+
+  it('reports no values change when a write leaves the kept values the same', () => {
+    const engine = new FormEngine(definition, business, { hiddenValues: 'keep' });
+    engine.setValue('type', 'personal');
+    const snapshot = engine.getValuesSnapshot();
+    const listener = vi.fn();
+    engine.subscribeValues(listener);
+    engine.setValue('company', 'Acme');
+    expect(listener).not.toHaveBeenCalled();
+    expect(engine.getValuesSnapshot()).toBe(snapshot);
+  });
 });

@@ -3,9 +3,9 @@ import { baselineFields, emit } from './form-events';
 import { customRules, validateShown } from '../validation/validate-step';
 import { withPatternBudget } from '../validation/validate-field';
 import { isPlainEntry, trimValue } from '../validation/type-checks';
-import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
+import { createValues, getChangedKeys, initialState, keptValues, shownError } from './engine-utils';
 import type { FormField, FormNode } from '../types';
-import { cleanItems, hasOwn, isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
+import { cleanItems, isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
 import type { EngineInternals } from './runtime-internals';
 import type { ItemField } from './visibility-state';
 
@@ -172,12 +172,11 @@ export function validateOne(engine: EngineInternals, key: string): string | null
 export function getSubmitValues(engine: EngineInternals, payload = false): Record<string, unknown> {
   const { visibility, state } = engine;
   const values = { ...visibility.conditionValues(state.values) };
-  const kept = payload && engine.lifecycle.hiddenValues === 'keep' && engine.values;
+  const kept = payload && engine.visibility.keep && keptValues(engine);
   if (kept)
     for (const { key } of visibility.allFields) {
       const field = visibility.fieldOf(key, state.values)!;
-      if (kept[key] !== undefined && (!hasOwn(values, key) || isGroup(field)))
-        values[key] = isGroup(field) ? cleanItems(field, kept[key], {}, true) : trimValue(field, kept[key]);
+      if (kept[key] !== undefined) values[key] = isGroup(field) ? cleanItems(field, kept[key], {}, true) : trimValue(field, kept[key]);
     }
   for (const { key } of engine.visibility.groups) {
     const items = values[key];

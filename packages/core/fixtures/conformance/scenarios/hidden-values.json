@@ -929,6 +929,255 @@
           }
         }
       ]
+    },
+    {
+      "name": "reset forgets a kept value the new values do not hold",
+      "definition": {
+        "formatVersion": "1.4",
+        "id": "toggle",
+        "title": "Toggle",
+        "submit": {
+          "label": "Save"
+        },
+        "fields": [
+          {
+            "key": "a",
+            "type": "checkbox",
+            "label": "A"
+          },
+          {
+            "key": "b",
+            "type": "text",
+            "label": "B",
+            "show": [
+              {
+                "field": "a",
+                "eq": true
+              }
+            ]
+          }
+        ]
+      },
+      "hiddenValues": "keep",
+      "values": {
+        "a": false
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "a",
+          "value": true
+        },
+        {
+          "do": "setValue",
+          "key": "b",
+          "value": "hi"
+        },
+        {
+          "do": "setValue",
+          "key": "a",
+          "value": false
+        },
+        {
+          "expect": {
+            "values": {
+              "a": false,
+              "b": "hi"
+            }
+          }
+        },
+        {
+          "do": "reset",
+          "values": {
+            "a": false
+          }
+        },
+        {
+          "expect": {
+            "values": {
+              "a": false
+            },
+            "submitValues": {
+              "a": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "replaceDefinition shows the default of a new field",
+      "definition": {
+        "formatVersion": "1.4",
+        "id": "toggle",
+        "title": "Toggle",
+        "submit": {
+          "label": "Save"
+        },
+        "fields": [
+          {
+            "key": "a",
+            "type": "checkbox",
+            "label": "A"
+          },
+          {
+            "key": "b",
+            "type": "text",
+            "label": "B",
+            "show": [
+              {
+                "field": "a",
+                "eq": true
+              }
+            ]
+          }
+        ]
+      },
+      "hiddenValues": "keep",
+      "values": {
+        "a": false,
+        "b": "hi"
+      },
+      "steps": [
+        {
+          "do": "replaceDefinition",
+          "definition": {
+            "formatVersion": "1.4",
+            "id": "toggle",
+            "title": "Toggle",
+            "submit": {
+              "label": "Save"
+            },
+            "fields": [
+              {
+                "key": "a",
+                "type": "checkbox",
+                "label": "A"
+              },
+              {
+                "key": "b",
+                "type": "text",
+                "label": "B",
+                "show": [
+                  {
+                    "field": "a",
+                    "eq": true
+                  }
+                ]
+              },
+              {
+                "key": "c",
+                "type": "text",
+                "label": "C",
+                "defaultValue": "x"
+              }
+            ]
+          }
+        },
+        {
+          "expect": {
+            "values": {
+              "a": false,
+              "b": "hi",
+              "c": "x"
+            },
+            "submitValues": {
+              "a": false,
+              "b": "hi",
+              "c": "x"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "leaves kept values of a skipped step out of values",
+      "definition": {
+        "formatVersion": "1.4",
+        "id": "skip",
+        "title": "Skip",
+        "submit": {
+          "label": "Save"
+        },
+        "steps": [
+          {
+            "id": "one",
+            "title": "One",
+            "fields": [
+              {
+                "key": "a",
+                "type": "checkbox",
+                "label": "A"
+              }
+            ]
+          },
+          {
+            "id": "two",
+            "title": "Two",
+            "skip": {
+              "label": "Skip"
+            },
+            "fields": [
+              {
+                "key": "n",
+                "type": "text",
+                "label": "N",
+                "defaultValue": "d",
+                "show": [
+                  {
+                    "field": "a",
+                    "eq": true
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "three",
+            "title": "Three",
+            "fields": [
+              {
+                "key": "z",
+                "type": "text",
+                "label": "Z"
+              }
+            ]
+          }
+        ]
+      },
+      "hiddenValues": "keep",
+      "values": {
+        "a": false
+      },
+      "steps": [
+        {
+          "expect": {
+            "values": {
+              "a": false,
+              "n": "d"
+            }
+          }
+        },
+        {
+          "do": "next",
+          "returns": true
+        },
+        {
+          "do": "skip",
+          "returns": true
+        },
+        {
+          "expect": {
+            "step": "three",
+            "skipped": ["two"],
+            "values": {
+              "a": false
+            },
+            "submitValues": {
+              "a": false
+            }
+          }
+        }
+      ]
     }
   ]
 }

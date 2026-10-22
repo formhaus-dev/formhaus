@@ -1,7 +1,7 @@
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
-import { createValues, getChangedKeys } from './engine-utils';
+import { createValues, keptValues, valuesDiffer } from './engine-utils';
 import { baselineFields, trackChanges } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
@@ -24,14 +24,6 @@ export function loadDefinition(
 }
 
 const kept = (fields?: FormField[], field?: FormField) => !!fields?.some(({ key, type }) => key === field?.key && type === field.type);
-
-const sameItems = (previous: unknown, next: unknown) =>
-  Array.isArray(previous) &&
-  Array.isArray(next) &&
-  previous.length === next.length &&
-  previous.every(
-    (item, index) => Object.is(item, next[index]) || (isEntry(item) && isEntry(next[index]) && !getChangedKeys(item, next[index]).size),
-  );
 
 export function replaceDefinition(engine: EngineInternals, definition: FormDefinition): void {
   const { state, skipped, values, currentStepIndex, visibility: previous } = engine;
@@ -86,8 +78,7 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
       );
     else skipped.delete(id);
   });
-  const next = engine.values;
-  const valuesChanged = [...getChangedKeys(values, next)].some((key) => !sameItems(values[key], next[key]));
+  const valuesChanged = valuesDiffer(values, keptValues(engine));
   engine.notify({
     fieldKeys: [...previous.allFields.map(({ key }) => key), ...visibility.allFields.map(({ key }) => key), ...errors],
     structureChanged: true,
