@@ -31,7 +31,7 @@ describe('field logic in a browser', () => {
     const { store } = renderEditor(fromDefinition(definition([plan, company])));
     await userEvent.click(within(card('Company')).getByRole('button', { name: 'Field settings' }));
     const logic = screen.getByRole('region', { name: 'Logic' });
-    await userEvent.click(within(logic).getByRole('button', { name: 'Show only if…' }));
+    await userEvent.click(within(logic).getByRole('button', { name: 'Add condition' }));
     await userEvent.selectOptions(within(logic).getByRole('combobox', { name: 'Value' }), 'pro');
     await waitFor(() => {
       expect(toDefinition(store.getState().form).fields?.[1]?.show).toEqual([{ field: 'plan', eq: 'pro' }]);
@@ -53,7 +53,7 @@ describe('field logic in a browser', () => {
     const { store } = renderEditor(fromDefinition(definition([sources, company])));
     await userEvent.click(within(card('Company')).getByRole('button', { name: 'Field settings' }));
     const logic = screen.getByRole('region', { name: 'Logic' });
-    await userEvent.click(within(logic).getByRole('button', { name: 'Show only if…' }));
+    await userEvent.click(within(logic).getByRole('button', { name: 'Add condition' }));
     const operator = within(logic).getByRole('combobox', { name: 'Operator' });
     expect([...operator.querySelectorAll('option')].map((option) => option.textContent)).toEqual([
       'includes',

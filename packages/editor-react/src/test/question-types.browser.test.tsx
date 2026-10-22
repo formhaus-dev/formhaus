@@ -153,7 +153,7 @@ describe('question types in the editor', () => {
     const card = screen.getByRole('group', { name: 'Love field' });
     await userEvent.click(within(card).getByRole('button', { name: 'Field settings' }));
     const logic = screen.getByRole('region', { name: 'Logic' });
-    await userEvent.click(within(logic).getByRole('button', { name: 'Show only if…' }));
+    await userEvent.click(within(logic).getByRole('button', { name: 'Add condition' }));
     await userEvent.selectOptions(within(logic).getByRole('combobox', { name: 'Operator' }), 'gte');
     await userEvent.selectOptions(within(logic).getByRole('combobox', { name: 'Value' }), '9');
     await waitFor(() => {

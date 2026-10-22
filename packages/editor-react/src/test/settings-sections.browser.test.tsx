@@ -78,8 +78,8 @@ describe('field settings sections', () => {
     const { store } = renderEditor(fromDefinition(definition([plan, company])));
     const panel = await settings('Company');
     const logic = within(panel.getByRole('region', { name: 'Logic' }));
-    expect(logic.getByText('Always shown')).toBeVisible();
-    await userEvent.click(logic.getByRole('button', { name: 'Show only if…' }));
+    expect(logic.getByRole('button', { name: 'Add condition' })).toBeVisible();
+    await userEvent.click(logic.getByRole('button', { name: 'Add condition' }));
     await waitFor(() => {
       expect(companyOf(store).show).toEqual([{ field: 'plan', eq: 'free' }]);
     });
@@ -96,15 +96,15 @@ describe('field settings sections', () => {
     await waitFor(() => {
       expect(companyOf(store)).not.toHaveProperty('showAny');
     });
-    expect(logic.getByText('Always shown')).toBeVisible();
+    expect(logic.getByRole('button', { name: 'Add condition' })).toBeVisible();
   });
 
-  it('disables the logic button on the first field and says why', async () => {
+  it('asks for a field above instead of offering logic on the first field', async () => {
     renderEditor(fromDefinition(definition([plan, company])));
     const panel = await settings('Plan');
-    const button = panel.getByRole('button', { name: 'Show only if…' });
-    expect(button).toBeDisabled();
-    expect(button).toHaveAccessibleDescription('No fields above');
+    const logic = within(panel.getByRole('region', { name: 'Logic' }));
+    expect(logic.getByText('Add a field above to use logic.')).toBeVisible();
+    expect(logic.queryByRole('button', { name: 'Add condition' })).toBeNull();
   });
 
   it('keeps the response key under a collapsed advanced section', async () => {

@@ -141,7 +141,7 @@ describe('overlays inherit the editor font on a serif host page', () => {
       'condition select',
       async () => {
         await userEvent.click(within(card('Age')).getByRole('button', { name: 'Field settings' }));
-        await userEvent.click(within(card('Age')).getByRole('button', { name: 'Show only if…' }));
+        await userEvent.click(within(card('Age')).getByRole('button', { name: 'Add condition' }));
         return within(card('Age')).getByRole('combobox', { name: 'Question' });
       },
     ],

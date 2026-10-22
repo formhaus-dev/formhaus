@@ -1,8 +1,6 @@
 import { conditionSources, logicOf, setLogic, type BuilderBlock, type ConditionMode, type ConditionRow } from '@formhaus/builder';
-import { Eye } from 'lucide-react';
-import { useId } from 'react';
 import { SettingsSection } from '../inspector/SettingsSection';
-import { AddRow, Button, SegmentedControl, Text } from '../ui';
+import { AddRow, SegmentedControl, Text } from '../ui';
 import { useForm, useReadOnly } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import { ConditionEditor } from './ConditionEditor';
@@ -17,7 +15,6 @@ const MATCH = [
 export function LogicSection({ block, actions }: { block: BuilderBlock; actions: EditorActions }) {
   const form = useForm();
   const readOnly = useReadOnly();
-  const hint = useId();
   const logic = logicOf(form, block);
   const sources = conditionSources(form, block.uid);
   const noun = block.kind === 'page' ? 'step' : 'field';
@@ -38,30 +35,19 @@ export function LogicSection({ block, actions }: { block: BuilderBlock; actions:
           <Text size="sm" tone="muted">
             This {noun} uses conditions the editor cannot show. Edit them in the JSON tab.
           </Text>
+        ) : shown && !sources.length ? (
+          <Text as="p" size="sm" tone="muted">
+            {block.kind === 'page' ? 'Add a step before this one to use logic.' : 'Add a field above to use logic.'}
+          </Text>
         ) : shown ? (
-          <>
-            <div className={styles.entry}>
-              <Text size="sm" tone="muted">
-                Always shown
-              </Text>
-              <Button
-                variant={sources.length ? 'secondary' : 'ghost'}
-                icon={<Eye aria-hidden />}
-                disabled={readOnly || !sources.length}
-                aria-describedby={sources.length ? undefined : hint}
-                onClick={() => {
-                  write('all', fresh());
-                }}
-              >
-                Show only if…
-              </Button>
-            </div>
-            {!sources.length && (
-              <Text as="p" id={hint} size="sm" tone="muted">
-                {block.kind === 'page' ? 'No earlier steps' : 'No fields above'}
-              </Text>
-            )}
-          </>
+          <AddRow
+            label="Add condition"
+            inset="flush"
+            disabled={readOnly}
+            onClick={() => {
+              write('all', fresh());
+            }}
+          />
         ) : (
           <>
             <div className={styles.entry}>
