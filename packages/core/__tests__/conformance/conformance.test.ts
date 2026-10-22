@@ -72,6 +72,7 @@ describe('conformance corpus', () => {
       'flat-api-steps',
       'format-version',
       'group-list-answers',
+      'group-over-limit',
       'hidden-values',
       'i18n-empty-overlay',
       'i18n-exclusive-branches',

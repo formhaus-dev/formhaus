@@ -46,6 +46,22 @@ describe('validateSubmission with oversized or invalid groups', () => {
     expect(engine.validate()).toEqual({ people: 'At most 3 allowed' });
   });
 
+  it('validates no item of a group with too many items or a non-object item', () => {
+    const name = { key: 'name', type: 'text' as const, label: 'Name', validation: { required: true } };
+    for (const [validation, items, error] of [
+      [{ maxLength: 2 }, [{}, {}, {}], 'At most 2 allowed'],
+      [undefined, Array.from({ length: 101 }, () => ({})), 'Invalid value'],
+      [undefined, [{}, 5], 'Invalid value'],
+    ] as const) {
+      const definition: FormDefinition = {
+        ...group(),
+        fields: [{ key: 'people', type: 'group', label: 'People', validation, fields: [name] }],
+      };
+      expect(validateSubmission(definition, { people: items })).toEqual({ values: {}, errors: { people: error } });
+      expect(new FormEngine(definition, { people: items }).validate()).toEqual({ people: error });
+    }
+  });
+
   it('rejects repeated options in an item multiselect', () => {
     const roles = {
       key: 'roles',
