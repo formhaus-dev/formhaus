@@ -11,11 +11,7 @@ export function ResponseKey({ field, actions, readOnly }: { field: BuilderQuesti
     (entry) => entry.key === field.key,
   );
   const [renaming, setRenaming] = useState(false);
-  const hint = live
-    ? 'Responses, exports and webhooks use this key.'
-    : field.keyLocked
-      ? 'Custom key. It no longer follows the label.'
-      : 'Follows the label until the form is published.';
+  const hint = live ? 'Used in responses' : field.keyLocked ? 'Custom key' : 'Follows the label';
   if (renaming || (!live && field.keyLocked && !readOnly)) {
     return (
       <div className={styles.pair}>
@@ -35,7 +31,7 @@ export function ResponseKey({ field, actions, readOnly }: { field: BuilderQuesti
                     });
                   }}
                 >
-                  Match the label
+                  Use label
                 </Button>
               </>
             )

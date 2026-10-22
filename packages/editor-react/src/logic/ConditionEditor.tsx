@@ -18,6 +18,7 @@ import { defaultRow } from './rows';
 
 interface Props {
   row: ConditionRow;
+  index: number;
   sources: BuilderQuestion[];
   readOnly: boolean;
   onChange: (row: ConditionRow) => void;
@@ -99,12 +100,12 @@ function Value({
   );
 }
 
-export function ConditionEditor({ row, sources, readOnly, onChange, onRemove }: Props) {
+export function ConditionEditor({ row, index, sources, readOnly, onChange, onRemove }: Props) {
   const source = sources.find((item) => item.key === row.field);
   return (
     <div className={styles.condition}>
       <Select
-        aria-label="Field"
+        aria-label="Question"
         className={styles.source}
         value={row.field}
         disabled={readOnly}
@@ -114,7 +115,9 @@ export function ConditionEditor({ row, sources, readOnly, onChange, onRemove }: 
           if (next) onChange(defaultRow(next));
         }}
       />
-      {!readOnly && <IconButton label="Remove condition" className={styles.remove} icon={<X aria-hidden />} onClick={onRemove} />}
+      {!readOnly && (
+        <IconButton label={`Remove condition ${String(index + 1)}`} className={styles.remove} icon={<X aria-hidden />} onClick={onRemove} />
+      )}
       {source && (
         <>
           <Select
@@ -130,7 +133,7 @@ export function ConditionEditor({ row, sources, readOnly, onChange, onRemove }: 
             }}
           />
           {takesValue(row.operator) && (
-            <div className={styles.value}>
+            <div className={cx(styles.value, takesList(row.operator) && styles.list)}>
               <Value row={row} source={source} readOnly={readOnly} onChange={onChange} />
             </div>
           )}

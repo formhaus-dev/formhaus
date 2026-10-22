@@ -1,0 +1,120 @@
+import { fromDefinition, toDefinition } from '@formhaus/builder';
+import type { FormDefinition, FormField } from '@formhaus/core';
+import { cleanup, screen, waitFor, within } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { page, userEvent } from 'vitest/browser';
+import { renderEditor } from './harness';
+
+type Store = ReturnType<typeof renderEditor>['store'];
+
+const plan: FormField = {
+  key: 'plan',
+  type: 'radio',
+  label: 'Plan',
+  options: [
+    { value: 'free', label: 'Free' },
+    { value: 'pro', label: 'Pro' },
+  ],
+};
+const company: FormField = { key: 'company', type: 'text', label: 'Company' };
+const definition = (fields: FormField[]): FormDefinition => ({ id: 'plans', title: 'Plans', submit: { label: 'Send' }, fields });
+const sections = (label: string) =>
+  [...within(screen.getByRole('group', { name: `${label} field` })).getByRole('group', { name: 'Field settings' }).children].map((node) =>
+    node.getAttribute('aria-label'),
+  );
+const companyOf = (store: Store) => (toDefinition(store.getState().form).fields ?? [])[1] as FormField;
+
+async function settings(label: string) {
+  const card = screen.getByRole('group', { name: `${label} field` });
+  await userEvent.click(within(card).getByRole('button', { name: 'Field settings' }));
+  return within(within(card).getByRole('group', { name: 'Field settings' }));
+}
+
+describe('field settings sections', () => {
+  beforeEach(async () => {
+    await page.viewport(1440, 1000);
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it('groups a choice field into options, logic and advanced without a required switch', async () => {
+    renderEditor(fromDefinition(definition([plan, company])));
+    const panel = await settings('Plan');
+    expect(sections('Plan')).toEqual(['Options', 'Logic', 'Advanced']);
+    expect(panel.queryByRole('switch', { name: 'Required' })).toBeNull();
+    await settings('Company');
+    expect(sections('Company')).toEqual(['Answer', 'Logic', 'Advanced']);
+  });
+
+  it('toggles required from the card head with the keyboard', async () => {
+    const { store } = renderEditor(fromDefinition(definition([plan, company])));
+    await settings('Company');
+    const answer = within(screen.getByRole('radiogroup', { name: 'Answer' }));
+    answer.getByRole('radio', { name: 'Optional' }).focus();
+    await userEvent.keyboard('{ArrowRight}');
+    await waitFor(() => {
+      expect(companyOf(store).validation).toEqual({ required: true });
+    });
+    expect(answer.getByRole('radio', { name: 'Required' })).toBeChecked();
+  });
+
+  it('toggles required from the field menu', async () => {
+    const { store } = renderEditor(fromDefinition(definition([plan, company])));
+    const card = within(screen.getByRole('group', { name: 'Company field' }));
+    await userEvent.click(card.getByRole('button', { name: 'Field actions' }));
+    const item = await screen.findByRole('menuitemcheckbox', { name: 'Required' });
+    expect(item).toHaveAttribute('aria-checked', 'false');
+    await userEvent.click(item);
+    await waitFor(() => {
+      expect(companyOf(store).validation).toEqual({ required: true });
+    });
+    await userEvent.click(card.getByRole('button', { name: 'Field actions' }));
+    expect(await screen.findByRole('menuitemcheckbox', { name: 'Required' })).toHaveAttribute('aria-checked', 'true');
+  });
+
+  it('starts logic from the button and shows match only with two conditions', async () => {
+    const { store } = renderEditor(fromDefinition(definition([plan, company])));
+    const panel = await settings('Company');
+    const logic = within(panel.getByRole('region', { name: 'Logic' }));
+    expect(logic.getByText('Always shown')).toBeVisible();
+    await userEvent.click(logic.getByRole('button', { name: 'Show only if…' }));
+    await waitFor(() => {
+      expect(companyOf(store).show).toEqual([{ field: 'plan', eq: 'free' }]);
+    });
+    const top = (name: string) => Math.round(logic.getByRole('combobox', { name }).getBoundingClientRect().top);
+    expect(new Set([top('Question'), top('Operator'), top('Value')]).size).toBe(1);
+    expect(logic.queryByRole('radiogroup', { name: 'Match' })).toBeNull();
+    await userEvent.click(logic.getByRole('button', { name: 'Add condition' }));
+    await userEvent.click(logic.getByRole('radio', { name: 'any' }));
+    await waitFor(() => {
+      expect(companyOf(store).showAny).toHaveLength(2);
+    });
+    await userEvent.click(logic.getByRole('button', { name: 'Remove condition 2' }));
+    await userEvent.click(logic.getByRole('button', { name: 'Remove condition 1' }));
+    await waitFor(() => {
+      expect(companyOf(store)).not.toHaveProperty('showAny');
+    });
+    expect(logic.getByText('Always shown')).toBeVisible();
+  });
+
+  it('disables the logic button on the first field and says why', async () => {
+    renderEditor(fromDefinition(definition([plan, company])));
+    const panel = await settings('Plan');
+    const button = panel.getByRole('button', { name: 'Show only if…' });
+    expect(button).toBeDisabled();
+    expect(button).toHaveAccessibleDescription('No fields above');
+  });
+
+  it('keeps the response key under a collapsed advanced section', async () => {
+    renderEditor(fromDefinition(definition([plan, company])));
+    const panel = await settings('Company');
+    const toggle = panel.getByRole('button', { name: 'Advanced' });
+    expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    expect(panel.queryByText('Response key')).toBeNull();
+    await userEvent.click(toggle);
+    expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    expect(panel.getByText('Response key')).toBeVisible();
+  });
+});

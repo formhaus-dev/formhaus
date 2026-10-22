@@ -22,7 +22,7 @@ describe('describeLogic', () => {
       fields: [party('billing', 'Company'), party('shipping', 'Firm')],
     });
     const [, second] = form.blocks.filter((block) => isQuestion(block) && block.key === 'detail');
-    expect(describeLogic(form, logicOf(form, second!), scopeOf(form, second))).toBe('Shown if Kind is Firm');
+    expect(describeLogic(form, logicOf(form, second!), scopeOf(form, second))).toBe('Shown when Kind is Firm');
   });
 
   it('describes a contains condition with the option label', () => {
@@ -36,6 +36,6 @@ describe('describeLogic', () => {
       ],
     });
     const other = form.blocks.find((block) => isQuestion(block) && block.key === 'other')!;
-    expect(describeLogic(form, logicOf(form, other))).toBe('Shown if Interests includes Other');
+    expect(describeLogic(form, logicOf(form, other))).toBe('Shown when Interests includes Other');
   });
 });

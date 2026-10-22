@@ -31,5 +31,5 @@ function describeRow(form: BuilderForm, row: ConditionRow, scope?: string): stri
 export function describeLogic(form: BuilderForm, logic: Logic, scope?: string): string | null {
   if (logic.mode === 'always') return null;
   if (!logic.editable) return 'Shown on custom conditions';
-  return `Shown if ${logic.rows.map((row) => describeRow(form, row, scope)).join(logic.mode === 'any' ? ' or ' : ' and ')}`;
+  return `Shown when ${logic.rows.map((row) => describeRow(form, row, scope)).join(logic.mode === 'any' ? ' or ' : ' and ')}`;
 }
