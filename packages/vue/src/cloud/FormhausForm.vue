@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { type FunctionalComponent, computed, h, onBeforeUnmount, ref, useSlots, watch } from 'vue';
+import { type Component, type FunctionalComponent, computed, h, onBeforeUnmount, ref, useSlots, watch } from 'vue';
 import type { FormEvent } from '@formhaus/core';
 import { FormActions, FormRenderer } from '@formhaus/vue';
-import { CloudError, type CloudAction, type CloudSubmission } from '@formhaus/core/cloud';
-import { focusProblem } from '@formhaus/core/internal';
+import { CloudError, type CloudNotice as Notice, type CloudNoticeActionFn, type CloudSubmission } from '@formhaus/core/cloud';
+import { CLOUD_NOTICE, cloudLabel, focusProblem, loadMessage, localNotice } from '@formhaus/core/internal';
 import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
 const props = withDefaults(defineProps<FormhausFormProps>(), { confirmRemove: true, errorSummary: true, draftStore: undefined });
-defineSlots<{ fallback(): unknown; success(): unknown }>();
+defineSlots<{ fallback(): unknown; success(): unknown; notice(props: { notice: Notice; onAction: CloudNoticeActionFn }): unknown }>();
 const emit = defineEmits<{
   success: [submission: CloudSubmission];
   fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
@@ -28,7 +28,7 @@ const hidden = {
 } as const;
 const slots = useSlots();
 
-const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
+const { state, submit, retry, again, relay, saveDraft, warm } = useCloudForm({
   id: () => props.id,
   apiBase: () => props.apiBase,
   initialForm: () => props.initialForm,
@@ -41,22 +41,36 @@ const { state, submit, retry, again, saveDraft, warm } = useCloudForm({
 });
 
 const rendererProps = computed(() => {
-  const { id, apiBase, onError, initialValues, initialForm, draftStore, draftExclude, ...rest } = props;
+  const { id, apiBase, onError, initialValues, initialForm, draftStore, draftExclude, cloudLabels, noticePlacement, ...rest } = props;
   return rest;
 });
 
-const ChallengeActions: FunctionalComponent = (_, { attrs }) => [
-  h('div', { ref: box, style: 'display:contents' }),
-  h(props.actionsComponent ?? FormActions, attrs),
-];
-ChallengeActions.inheritAttrs = false;
+const notice = computed(() => localNotice(state.value.notice, props.cloudLabels));
 
-function handled() {}
-
-function act(action: Exclude<CloudAction, null>) {
+const act: CloudNoticeActionFn = (action) => {
   if (action === 'reload') window.location.reload();
   else root.value?.querySelector('form')?.requestSubmit();
+};
+
+const NoticeView: FunctionalComponent = () =>
+  notice.value &&
+  (slots.notice?.({ notice: notice.value, onAction: act }) ??
+    h(CloudNotice, { notice: notice.value, labels: props.cloudLabels, onAction: act }));
+
+function takesNotice(component: Component): boolean {
+  const declared = (component as { props?: unknown }).props;
+  return Array.isArray(declared) ? declared.includes('notice') : !!declared && typeof declared === 'object' && 'notice' in declared;
 }
+
+const CloudActions: FunctionalComponent = (_, { attrs }) => {
+  const actions = props.actionsComponent ?? FormActions;
+  return [
+    state.value.challenge && h('div', { ref: box, style: 'display:contents' }),
+    props.noticePlacement === 'actions' && h(NoticeView),
+    h(actions, takesNotice(actions) ? { ...attrs, notice: notice.value, onNoticeAction: act } : attrs),
+  ];
+};
+CloudActions.inheritAttrs = false;
 
 watch(
   root,
@@ -82,9 +96,7 @@ watch(
   () => state.value.attempt,
   () => {
     cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() =>
-      focusProblem(root.value, root.value?.querySelector<HTMLDivElement>(':scope > .fh-form__notice') ?? null),
-    );
+    frame = requestAnimationFrame(() => focusProblem(root.value, root.value?.querySelector<HTMLElement>(CLOUD_NOTICE) ?? null));
   },
   { flush: 'post' },
 );
@@ -104,20 +116,20 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
 
 <template>
   <div v-if="state.loadError" class="fh-cloud">
-    <p role="alert" class="fh-form__error">{{ state.loadError.message }}</p>
+    <p role="alert" class="fh-form__error">{{ loadMessage(state.loadError, cloudLabels) }}</p>
     <button
       v-if="state.loadError instanceof CloudError && state.loadError.retryable"
       type="button"
       class="fh-form-actions__button fh-form-actions__button--secondary"
       @click="retry"
     >
-      Try again
+      {{ cloudLabel(cloudLabels, 'retry') }}
     </button>
   </div>
   <div v-else-if="!state.definition" class="fh-cloud"><div class="fh-form" aria-busy="true"><slot name="fallback" /></div></div>
   <div v-else-if="state.done" class="fh-cloud">
     <slot name="success">
-      <p role="status" class="fh-form__success">{{ state.settings.successMessage ?? 'Thank you. Your response was submitted.' }}</p>
+      <p role="status" class="fh-form__success">{{ state.settings.successMessage ?? cloudLabel(cloudLabels, 'submitted') }}</p>
     </slot>
     <button
       v-if="state.settings.allowAnother"
@@ -125,12 +137,12 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       class="fh-form-actions__button fh-form-actions__button--secondary"
       @click="again"
     >
-      Submit another response
+      {{ cloudLabel(cloudLabels, 'submitAnother') }}
     </button>
   </div>
   <div v-else ref="root" class="fh-cloud">
     <input ref="trap" name="_fh_hp" tabindex="-1" autocomplete="off" aria-hidden="true" :style="hidden" />
-    <CloudNotice :notice="state.notice" @action="act" />
+    <NoticeView v-if="noticePlacement !== 'actions'" />
     <FormRenderer
       v-bind="rendererProps"
       :hidden-values="undefined"
@@ -139,8 +151,8 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       :initial-values="state.initialValues ?? initialValues"
       :errors="state.errors"
       :on-submit="submit"
-      :on-error="handled"
-      :actions-component="state.challenge ? ChallengeActions : props.actionsComponent"
+      :on-error="relay"
+      :actions-component="CloudActions"
       @field-change="onFieldChange"
       @form-event="(event: FormEvent) => emit('formEvent', event)"
     />

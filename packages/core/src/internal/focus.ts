@@ -47,8 +47,10 @@ function summaryOf(root: Searchable | null | undefined): Found {
   return summary?.querySelector(SEVERAL) ? summary : undefined;
 }
 
-export function focusProblem(root: Searchable | null, notice?: Focusable | null): void {
-  const target = notice ?? summaryOf(root);
+export function focusProblem(root: Searchable | null, notice?: (Focusable & { ownerDocument?: { activeElement: unknown } }) | null): void {
+  if (notice) reveal(notice, notice);
+  if (notice && notice.ownerDocument?.activeElement === notice) return;
+  const target = summaryOf(root);
   const invalid = target ?? (root?.querySelector('[aria-invalid="true"]') as Found);
   if (invalid) reveal(target ?? firstControl(invalid) ?? invalid, invalid);
 }
