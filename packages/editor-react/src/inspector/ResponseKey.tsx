@@ -21,8 +21,8 @@ export function ResponseKey({ field, actions, readOnly }: { field: BuilderQuesti
             live ? (
               hint
             ) : (
-              <>
-                {hint}{' '}
+              <span className={styles.hintLine}>
+                {hint}
                 <Button
                   variant="link"
                   onClick={() => {
@@ -33,7 +33,7 @@ export function ResponseKey({ field, actions, readOnly }: { field: BuilderQuesti
                 >
                   Use label
                 </Button>
-              </>
+              </span>
             )
           }
         >

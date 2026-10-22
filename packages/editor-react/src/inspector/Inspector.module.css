@@ -41,7 +41,12 @@
 
 .disclosure {
   justify-self: start;
-  margin-inline-start: calc(var(--fh-ed-space-3) * -1);
+  height: auto;
+  min-height: 0;
+  padding-block: calc((var(--fh-ed-size-control-md) - 1lh) / 2 - var(--fh-ed-border-thin));
+  margin-block: calc((var(--fh-ed-size-control-md) - 1lh) / -2);
+  margin-inline-start: calc((var(--fh-ed-space-3) + var(--fh-ed-border-thin)) * -1);
+  line-height: var(--fh-ed-font-leading-base);
 }
 
 .wide {
@@ -65,6 +70,13 @@
   align-items: center;
   gap: var(--fh-ed-space-1) var(--fh-ed-space-3);
   min-height: var(--fh-ed-size-control-md);
+}
+
+.hintLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--fh-ed-space-1) var(--fh-ed-space-3);
 }
 
 .settingLabel {
