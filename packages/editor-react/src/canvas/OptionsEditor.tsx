@@ -8,6 +8,7 @@ import { useForm, useReadOnly, useShowsPictures } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
 import { GoTo } from './GoTo';
 import { OptionImage } from './OptionImage';
+import { PinOption } from './PinOption';
 import styles from './OptionsEditor.module.css';
 
 interface Props {
@@ -24,6 +25,8 @@ export function OptionsEditor({ field, actions }: Props) {
   const targets = canBranch(field.type) && !row ? branchTargets(form, field.uid) : [];
   const requested = useShowsPictures(field.uid);
   const pictures = field.type !== 'select' && !row && (requested || field.options.some((option) => option.extra?.image !== undefined));
+  const pins = field.extra.randomize && !row;
+  const removable = field.options.length > 1 && !readOnly;
   const root = useRef<HTMLDivElement>(null);
   const pending = useRef<string | null>(null);
 
@@ -118,7 +121,10 @@ export function OptionsEditor({ field, actions }: Props) {
                   }}
                 />
               )}
-              {field.options.length > 1 && !readOnly && (
+              {pins && (
+                <PinOption fieldUid={field.uid} option={option} name={optionLabel(option, index)} actions={actions} readOnly={readOnly} />
+              )}
+              {removable ? (
                 <IconButton
                   label={`Remove ${optionLabel(option, index)}`}
                   icon={<X aria-hidden />}
@@ -128,6 +134,8 @@ export function OptionsEditor({ field, actions }: Props) {
                     actions.removeOption(field.uid, option.uid);
                   }}
                 />
+              ) : (
+                pins && <span className={styles.slot} aria-hidden />
               )}
             </div>
           );

@@ -109,8 +109,27 @@
   align-self: center;
 }
 
-.remove {
+.remove,
+.pin {
   flex: none;
+}
+
+.pinned {
+  color: var(--fh-ed-accent);
+}
+
+.pin[aria-disabled='true'] {
+  color: var(--fh-ed-fg-subtle);
+  opacity: var(--fh-ed-opacity-disabled);
+}
+
+.pinned svg {
+  fill: currentColor;
+}
+
+.slot {
+  flex: none;
+  width: var(--fh-ed-size-control-md);
 }
 
 .goTo {
