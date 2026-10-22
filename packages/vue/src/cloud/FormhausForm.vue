@@ -2,19 +2,15 @@
 import { type Component, type FunctionalComponent, computed, h, onBeforeUnmount, ref, useSlots, watch } from 'vue';
 import type { FormEvent } from '@formhaus/core';
 import { FormActions, FormRenderer } from '@formhaus/vue';
-import { CloudError, type CloudNotice as Notice, type CloudNoticeActionFn, type CloudSubmission } from '@formhaus/core/cloud';
+import { CloudError, type CloudNoticeActionFn } from '@formhaus/core/cloud';
 import { CLOUD_NOTICE, cloudLabel, focusProblem, loadMessage, localNotice } from '@formhaus/core/internal';
 import CloudNotice from './CloudNotice.vue';
-import type { FormhausFormProps } from './types';
+import type { FormhausFormEvents, FormhausFormProps, FormhausFormSlots } from './types';
 import { useCloudForm } from './useCloudForm';
 
 const props = withDefaults(defineProps<FormhausFormProps>(), { confirmRemove: true, errorSummary: true, draftStore: undefined });
-defineSlots<{ fallback(): unknown; success(): unknown; notice(props: { notice: Notice; onAction: CloudNoticeActionFn }): unknown }>();
-const emit = defineEmits<{
-  success: [submission: CloudSubmission];
-  fieldChange: [key: string, value: unknown, values: Record<string, unknown>];
-  formEvent: [event: FormEvent];
-}>();
+defineSlots<FormhausFormSlots>();
+const emit = defineEmits<FormhausFormEvents>();
 const root = ref<HTMLDivElement | null>(null);
 const trap = ref<HTMLInputElement | null>(null);
 const box = ref<HTMLDivElement | null>(null);

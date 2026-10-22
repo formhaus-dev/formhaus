@@ -155,15 +155,17 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - run: pnpm build
+
       - run: pnpm --filter @formhaus/react add -D react@18.0.0 react-dom@18.0.0
 
       - run: pnpm --filter @formhaus/vue add -D vue@3.3.3
 
-      - run: pnpm build
-
       - run: pnpm --filter @formhaus/react --filter @formhaus/vue test
         env:
           FORMHAUS_REACT_VERSION: 18.0.0
+
+      - run: node scripts/check-consumer-types.mjs
 
       - run: pnpm --filter @formhaus/react add -D react@18.3.1 react-dom@18.3.1
 
