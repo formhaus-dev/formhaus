@@ -25,7 +25,7 @@ import type {
   TestIdTarget,
   ValidatorFn,
 } from '@formhaus/core';
-import type { Component } from 'vue';
+import type { Component, ComponentOptionsMixin, DefineComponent, EmitsOptions } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType, Component>>;
 
@@ -126,3 +126,22 @@ export interface FieldEmits {
   (e: 'blur'): void;
   (e: 'focus'): void;
 }
+
+type Empty = Record<never, never>;
+
+export type TypedComponent<Props, Emits extends EmitsOptions = Empty, Exposed = Empty> = DefineComponent<
+  Props,
+  Exposed,
+  Empty,
+  Empty,
+  Empty,
+  ComponentOptionsMixin,
+  ComponentOptionsMixin,
+  Emits
+>;
+
+export type WithSlots<T, Slots> = T & (new () => { $slots: Slots });
+
+export type EmitsOf<T extends Record<string, unknown[] | ((...args: never[]) => unknown)>> = {
+  [K in keyof T]: (...args: T[K] extends unknown[] ? T[K] : T[K] extends (...args: infer A) => unknown ? A : never) => void;
+};
