@@ -30,7 +30,7 @@ export function FormActions({
   showSkip: showSkipProp,
   skipLabel: skipLabelProp,
   onPrimary: onPrimaryProp,
-  testIds = {},
+  testIds,
 }: FormActionsProps) {
   const text = useContext(LabelContext);
   const showBack = showBackProp ?? (isMultiStep && !isFirstStep && backAction !== false);
@@ -53,7 +53,7 @@ export function FormActions({
             className={buttonClass(backAction, 'secondary')}
             disabled={loading}
             onClick={onBack}
-            data-testid={testIds.back}
+            data-testid={testIds?.back}
           >
             {backLabel}
           </button>
@@ -75,7 +75,7 @@ export function FormActions({
           className="fh-form-actions__button fh-form-actions__button--primary"
           disabled={primaryDisabled}
           aria-busy={loading}
-          data-testid={testIds[next ? 'next' : 'submit']}
+          data-testid={testIds?.[next ? 'next' : 'submit']}
           onClick={(event) => {
             event.preventDefault();
             handlePrimary();

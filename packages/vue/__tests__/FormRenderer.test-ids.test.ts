@@ -69,4 +69,12 @@ describe('FormRenderer testIds', () => {
     expect(name).toHaveBeenCalledWith(expect.objectContaining({ kind: 'field', definitionId: 'signup', key: 'people.0.name' }));
     expect(screen.getByTestId('form').tagName).toBe('FORM');
   });
+
+  it('keeps test id props off custom components that do not declare them', () => {
+    const Custom = defineComponent({ props: ['field'], setup: () => () => h('span', { class: 'custom' }) });
+    const { container } = render(FormRenderer, { props: { definition, testIds: true, components: { email: Custom }, onSubmit: () => {} } });
+    const custom = container.querySelector('.custom');
+    expect(custom?.hasAttribute('test-id')).toBe(false);
+    expect(custom?.hasAttribute('option-test-id')).toBe(false);
+  });
 });
