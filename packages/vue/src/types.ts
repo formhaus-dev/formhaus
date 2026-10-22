@@ -22,6 +22,7 @@ import type {
   StepValidateFn,
   AfterSubmitFn,
   SubmitHandler,
+  TestIdTarget,
   ValidatorFn,
 } from '@formhaus/core';
 import type { Component } from 'vue';
@@ -95,6 +96,7 @@ export interface FormRendererProps {
   actionsComponent?: Component;
   progressComponent?: Component;
   optionsProviders?: Record<string, OptionsProvider>;
+  testIds?: boolean | ((target: TestIdTarget) => string | undefined);
 }
 
 export interface FormRendererEmits {
@@ -111,6 +113,8 @@ export interface FieldComponentProps {
   error?: string;
   loading?: boolean;
   disabled?: boolean;
+  testId?: string;
+  optionTestId?: (value: string) => string | undefined;
 }
 
 export interface FieldResolverProps extends FieldComponentProps {

@@ -27,6 +27,7 @@ import { ReactNode } from 'react';
 import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
+import { TestIdTarget } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 export { CloudError }

@@ -9,15 +9,16 @@ interface FormErrorSummaryProps {
   formId: string;
   onSelect: (key: string) => void;
   labels?: FormRendererProps['labels'];
+  testId?: string;
 }
 
-export function FormErrorSummary({ engine, formId, onSelect, labels }: FormErrorSummaryProps) {
+export function FormErrorSummary({ engine, formId, onSelect, labels, testId }: FormErrorSummaryProps) {
   const version = useRecallSnapshot(engine);
   const groups = useMemo(() => errorGroups(engine, formId, labels, engine.definition.labels), [engine, version, formId, labels]);
   if (groups.length === 0) return null;
 
   return (
-    <div className="fh-error-summary" role="alert" tabIndex={-1}>
+    <div className="fh-error-summary" role="alert" tabIndex={-1} data-testid={testId}>
       <strong className="fh-error-summary__title">{labelFor('errorSummary', {}, labels, engine.definition.labels)}</strong>
       {groups.map(({ id, title, entries }) => (
         <Fragment key={id}>

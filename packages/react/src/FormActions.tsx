@@ -30,23 +30,31 @@ export function FormActions({
   showSkip: showSkipProp,
   skipLabel: skipLabelProp,
   onPrimary: onPrimaryProp,
+  testIds = {},
 }: FormActionsProps) {
   const text = useContext(LabelContext);
   const showBack = showBackProp ?? (isMultiStep && !isFirstStep && backAction !== false);
   const backLabel = backLabelProp ?? (backAction || undefined)?.label ?? text('back');
   const showSkip = showSkipProp ?? (isMultiStep && !!skipAction);
   const skipLabel = skipLabelProp ?? skipAction?.label ?? text('skip');
-  const primaryLabel = primaryLabelProp ?? (isMultiStep && !isLastStep ? text('continue') : (submitAction?.label ?? text('submit')));
+  const next = isMultiStep && !isLastStep;
+  const primaryLabel = primaryLabelProp ?? (next ? text('continue') : (submitAction?.label ?? text('submit')));
 
-  const primaryDisabled = !!loading || isActionDisabled(isMultiStep && !isLastStep ? nextAction : submitAction, values);
+  const primaryDisabled = !!loading || isActionDisabled(next ? nextAction : submitAction, values);
 
-  const handlePrimary = onPrimaryProp ?? (isMultiStep && !isLastStep ? onNext : onSubmit);
+  const handlePrimary = onPrimaryProp ?? (next ? onNext : onSubmit);
 
   return (
     <div className="fh-form-actions">
       <div className="fh-form-actions__secondary">
         {showBack && (
-          <button type="button" className={buttonClass(backAction, 'secondary')} disabled={loading} onClick={onBack}>
+          <button
+            type="button"
+            className={buttonClass(backAction, 'secondary')}
+            disabled={loading}
+            onClick={onBack}
+            data-testid={testIds.back}
+          >
             {backLabel}
           </button>
         )}
@@ -67,6 +75,7 @@ export function FormActions({
           className="fh-form-actions__button fh-form-actions__button--primary"
           disabled={primaryDisabled}
           aria-busy={loading}
+          data-testid={testIds[next ? 'next' : 'submit']}
           onClick={(event) => {
             event.preventDefault();
             handlePrimary();

@@ -1,4 +1,4 @@
-import type { FormAction, FormField, FormGroup, FormSection } from '@formhaus/core';
+import type { FormAction, FormActionsView, FormField, FormGroup, FormSection } from '@formhaus/core';
 import type { Component, PropType } from 'vue';
 import type { FormStepStatus, GroupItemComponentProps, HeadingLevel } from './types';
 
@@ -13,6 +13,8 @@ export const fieldComponentProps = {
   error: String,
   loading: Boolean,
   disabled: Boolean,
+  testId: String,
+  optionTestId: Function as PropType<(value: string) => string | undefined>,
 };
 
 export const fieldComponentEmits = {
@@ -96,6 +98,7 @@ export const formActionsProps = {
   backLabel: String,
   showSkip: optionalBoolean,
   skipLabel: String,
+  testIds: Object as PropType<FormActionsView['testIds']>,
 };
 
 export const formActionsEmits = {

@@ -36,12 +36,13 @@ const choice = useChoice(props, emit, (key) => {
 </script>
 
 <template>
-  <FieldShell :id="props.id" :field="props.field" :error="props.error" :variant="props.field.type === 'rating' ? 'rating' : 'scale'">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" :variant="props.field.type === 'rating' ? 'rating' : 'scale'">
     <div v-for="point in points" :key="point" class="fh-field__scale-option">
       <input
         v-bind="{ ...control, ...choice(point) }"
         :id="`${inputId}-${point}`"
         class="fh-field__scale-input"
+        :data-testid="props.optionTestId?.(String(point))"
         type="radio"
         :name="props.field.key"
         :value="point"

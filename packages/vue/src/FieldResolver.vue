@@ -23,6 +23,8 @@ const fieldComponent = computed<Component | null>(() => props.components?.[props
     :error="props.error"
     :loading="props.loading"
     :disabled="props.disabled"
+    :test-id="props.testId"
+    :option-test-id="props.optionTestId"
     @update:model-value="(v: unknown) => emit('update:modelValue', v)"
     @commit="(v: unknown) => emit('commit', v)"
     @blur="emit('blur')"

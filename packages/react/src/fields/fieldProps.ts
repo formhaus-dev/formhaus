@@ -11,8 +11,8 @@ export function describedBy(field: Pick<FormField, 'helperText'>, id: string, er
   return [field.helperText && `${id}-helper`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
 }
 
-export function optionProps({ disabled, loading, onBlur, onFocus }: FieldComponentProps) {
-  return { disabled: disabled || loading, onBlur, onFocus };
+export function optionProps({ disabled, loading, onBlur, onFocus, optionTestId }: FieldComponentProps, value?: unknown) {
+  return { disabled: disabled || loading, onBlur, onFocus, 'data-testid': optionTestId?.(String(value)) };
 }
 
 export function inputProps(props: FieldComponentProps) {
@@ -25,6 +25,7 @@ export function inputProps(props: FieldComponentProps) {
     'aria-invalid': !!props.error,
     'aria-required': !!props.field.validation?.required || undefined,
     'aria-describedby': describedBy(props.field, id, props.error),
+    'data-testid': props.testId,
   };
 }
 

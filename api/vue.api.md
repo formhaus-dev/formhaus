@@ -45,6 +45,7 @@ import { SectionView } from '@formhaus/core';
 import { ShallowRef } from 'vue';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
+import { TestIdTarget } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 // @public (undocumented)
@@ -138,6 +139,10 @@ export interface FieldComponentProps {
     loading?: boolean;
     // (undocumented)
     modelValue: unknown;
+    // (undocumented)
+    optionTestId?: (value: string) => string | undefined;
+    // (undocumented)
+    testId?: string;
 }
 
 // @public (undocumented)
@@ -154,6 +159,8 @@ export const fieldComponentProps: {
     error: StringConstructor;
     loading: BooleanConstructor;
     disabled: BooleanConstructor;
+    testId: StringConstructor;
+    optionTestId: PropType<(value: string) => string | undefined>;
 };
 
 // @public (undocumented)
@@ -212,6 +219,7 @@ export const formActionsProps: {
         default: undefined;
     };
     skipLabel: StringConstructor;
+    testIds: PropType<FormActionsView["testIds"]>;
 };
 
 // @public (undocumented)
@@ -298,6 +306,8 @@ export interface FormRendererProps {
     seed?: string | undefined;
     // (undocumented)
     stepErrorMarks?: boolean;
+    // (undocumented)
+    testIds?: boolean | ((target: TestIdTarget) => string | undefined);
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }

@@ -13,6 +13,8 @@ import {
   autofilled,
   recalled,
   shownOptions,
+  fieldTestIds,
+  type TestId,
 } from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
 import DefaultGroup from './DefaultGroup.vue';
@@ -39,6 +41,7 @@ const props = withDefaults(
     confirmRemove?: boolean;
     onItemsChange: (key: string, apply: () => boolean) => boolean;
     recall?: unknown;
+    testId?: TestId;
   }>(),
   { confirmRemove: true },
 );
@@ -77,6 +80,7 @@ function itemProps(index: number, field: FormField) {
     loading: props.fieldLoading[key],
     disabled: props.disabled,
     components: props.components,
+    ...fieldTestIds(props.testId, key),
     'onUpdate:modelValue': update,
     onCommit: update,
     onBlur: () => emit('blur', key),

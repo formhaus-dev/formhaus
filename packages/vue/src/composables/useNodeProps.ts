@@ -1,5 +1,15 @@
 import { isGroup, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
-import { fieldDomId, type OptionSource, optionSources, providedOptions, recalled, recalls, shownOptions } from '@formhaus/core/internal';
+import {
+  fieldDomId,
+  fieldTestIds,
+  type OptionSource,
+  optionSources,
+  providedOptions,
+  recalled,
+  recalls,
+  shownOptions,
+  type TestId,
+} from '@formhaus/core/internal';
 import { computed, shallowRef, watch, type Ref } from 'vue';
 import { useFieldOptions } from './useFieldOptions';
 import { useMounted } from './useMounted';
@@ -37,7 +47,14 @@ function owned<T>(record: Readonly<Record<string, T>>, key: string, previous?: R
   return same ? previous : next;
 }
 
-export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps, formId: string, disabled: Ref<boolean>, on: Handlers) {
+export function useNodeProps(
+  form: UseFormEngineReturn,
+  props: FormRendererProps,
+  formId: string,
+  disabled: Ref<boolean>,
+  testId: Ref<TestId | undefined>,
+  on: Handlers,
+) {
   const { values, errors, fieldLoading, visibleFields } = form;
   const sources = shallowRef<OptionSource[]>([]);
   watch(
@@ -98,6 +115,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
           labels: props.labels,
           confirmRemove: props.confirmRemove,
           options: options.value,
+          testId: testId.value,
           onItemsChange: on.changeItems,
           onUpdate: on.update,
           onBlur: on.blur,
@@ -113,6 +131,7 @@ export function useNodeProps(form: UseFormEngineReturn, props: FormRendererProps
         loading: fieldLoading.value[field.key],
         disabled: disabled.value,
         components: props.components,
+        ...fieldTestIds(testId.value, field.key),
         'onUpdate:modelValue': (value: unknown) => on.update(field.key, value),
         onCommit: (value: unknown) => on.commit(field.key, value),
         onBlur: () => on.blur(field.key),

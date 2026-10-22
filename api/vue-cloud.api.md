@@ -29,6 +29,7 @@ import { PublishedForm } from '@formhaus/core/cloud';
 import { RecallFormatFn } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
+import { TestIdTarget } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 export { CloudError }

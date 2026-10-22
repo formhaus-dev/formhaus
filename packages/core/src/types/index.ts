@@ -30,4 +30,4 @@ export type {
   StepI18n,
   ValidationI18n,
 } from './i18n';
-export type { ConfirmDialogView, FormActionsView, FormRendererHandle, GroupItemView, GroupView, SectionView } from './views';
+export type { ConfirmDialogView, FormActionsView, FormRendererHandle, GroupItemView, GroupView, SectionView, TestIdTarget } from './views';
