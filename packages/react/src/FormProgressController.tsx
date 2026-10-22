@@ -1,6 +1,7 @@
 import type { FormEngine } from '@formhaus/core';
-import { labelFor, recalled } from '@formhaus/core/internal';
-import { useMemo } from 'react';
+import { recalled } from '@formhaus/core/internal';
+import { useContext, useMemo } from 'react';
+import { LabelContext } from './labels';
 import { useRecallSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
 
@@ -9,11 +10,11 @@ interface FormProgressControllerProps {
   ProgressComponent: FormRendererProps['progressComponent'];
   headingLevel: FormRendererProps['headingLevel'];
   marks?: boolean;
-  labels?: FormRendererProps['labels'];
 }
 
-export function FormProgressController({ engine, ProgressComponent, headingLevel, marks, labels }: FormProgressControllerProps) {
+export function FormProgressController({ engine, ProgressComponent, headingLevel, marks }: FormProgressControllerProps) {
   const version = useRecallSnapshot(engine);
+  const text = useContext(LabelContext);
   const errors = useMemo(() => (ProgressComponent && engine.isMultiStep ? engine.stepErrors : {}), [engine, version, ProgressComponent]);
   if (!engine.isMultiStep || !ProgressComponent) return null;
   const { current, total } = engine.progress;
@@ -23,7 +24,7 @@ export function FormProgressController({ engine, ProgressComponent, headingLevel
     <ProgressComponent
       current={current}
       total={total}
-      counterLabel={labelFor('stepOf', { current, total }, labels, engine.definition.labels)}
+      counterLabel={text('stepOf', { current, total })}
       stepTitle={step?.title}
       stepDescription={step?.description}
       headingLevel={headingLevel}

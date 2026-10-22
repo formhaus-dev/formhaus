@@ -1,6 +1,7 @@
 import type { FormEngine } from '@formhaus/core';
-import { errorGroups, labelFor } from '@formhaus/core/internal';
-import { Fragment, useMemo } from 'react';
+import { errorGroups } from '@formhaus/core/internal';
+import { Fragment, useContext, useMemo } from 'react';
+import { LabelContext } from './labels';
 import type { FormRendererProps } from './types';
 import { useRecallSnapshot } from './hooks/useEngineSnapshot';
 
@@ -14,12 +15,13 @@ interface FormErrorSummaryProps {
 
 export function FormErrorSummary({ engine, formId, onSelect, labels, testId }: FormErrorSummaryProps) {
   const version = useRecallSnapshot(engine);
+  const text = useContext(LabelContext);
   const groups = useMemo(() => errorGroups(engine, formId, labels, engine.definition.labels), [engine, version, formId, labels]);
   if (groups.length === 0) return null;
 
   return (
     <div className="fh-error-summary" role="alert" tabIndex={-1} data-testid={testId}>
-      <strong className="fh-error-summary__title">{labelFor('errorSummary', {}, labels, engine.definition.labels)}</strong>
+      <strong className="fh-error-summary__title">{text('errorSummary')}</strong>
       {groups.map(({ id, title, entries }) => (
         <Fragment key={id}>
           {groups.length > 1 && <p className="fh-error-summary__step">{title}</p>}
