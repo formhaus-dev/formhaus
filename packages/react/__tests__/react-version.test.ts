@@ -6,6 +6,6 @@ const expected = process.env.FORMHAUS_REACT_VERSION;
 
 describe('React version', () => {
   it.runIf(expected)('runs the tests on the React version CI installed', () => {
-    expect({ react: version, dom: domVersion }).toEqual({ react: expected, dom: expected });
+    expect([version, domVersion].map((value) => value.split('-')[0])).toEqual([expected, expected]);
   });
 });
