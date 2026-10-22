@@ -10,13 +10,12 @@ import { BeforeStepChangeFn } from '@formhaus/core';
 import { BeforeSubmitFn } from '@formhaus/core';
 import { Component } from 'vue';
 import { ComponentOptionsMixin } from 'vue';
-import { ComponentProvideOptions } from 'vue';
 import { ComputedRef } from 'vue';
 import { ConfirmDialogView } from '@formhaus/core';
 import { DefaultFieldType } from '@formhaus/core';
 import { DefineComponent } from 'vue';
 import { DefinitionIssue } from '@formhaus/core';
-import { ExtractPropTypes } from 'vue';
+import { EmitsOptions } from 'vue';
 import { FieldType } from '@formhaus/core';
 import { FormAction } from '@formhaus/core';
 import { FormActionsView } from '@formhaus/core';
@@ -31,7 +30,6 @@ import { FormRendererHandle } from '@formhaus/core';
 import { FormResearch } from '@formhaus/core';
 import { FormSection } from '@formhaus/core';
 import { FormStep } from '@formhaus/core';
-import { GoToStepResult } from '@formhaus/core';
 import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
@@ -39,20 +37,19 @@ import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
 import { PropType } from 'vue';
-import { PublicProps } from 'vue';
 import { RecallFormatFn } from '@formhaus/core';
+import { Ref } from 'vue';
 import { SectionView } from '@formhaus/core';
-import { ShallowRef } from 'vue';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
 import { TestIdTarget } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 // @public (undocumented)
-export const AutocompleteField: typeof __VLS_export_22;
+export const AutocompleteField: FieldComponent;
 
 // @public (undocumented)
-export const CheckboxField: typeof __VLS_export_13;
+export const CheckboxField: FieldComponent;
 
 // @public (undocumented)
 export type ConfirmDialogComponentProps = ConfirmDialogView;
@@ -94,25 +91,27 @@ export const confirmDialogComponentProps: {
 };
 
 // @public (undocumented)
-export const DateField: typeof __VLS_export_18;
+export const DateField: FieldComponent;
 
 // @public (undocumented)
-export const DateTimeField: typeof __VLS_export_19;
+export const DateTimeField: FieldComponent;
 
 // @public (undocumented)
-export const DefaultConfirmDialog: typeof __VLS_export_5;
+export const DefaultConfirmDialog: TypedComponent<typeof confirmDialogComponentProps>;
 
 // @public (undocumented)
 export const defaultFieldComponents: Record< DefaultFieldType, Component>;
 
 // @public (undocumented)
-export const DefaultGroup: typeof __VLS_export_6;
+export const DefaultGroup: TypedComponent<typeof groupComponentProps>;
 
 // @public (undocumented)
-export const DefaultGroupItem: typeof __VLS_export_7;
+export const DefaultGroupItem: TypedComponent<typeof groupItemComponentProps>;
 
 // @public (undocumented)
-export const DefaultSection: typeof __VLS_export_8;
+export const DefaultSection: WithSlots<TypedComponent<typeof sectionComponentProps>, {
+    default(): unknown;
+}>;
 
 // @public (undocumented)
 export const fieldComponentEmits: {
@@ -164,10 +163,10 @@ export const fieldComponentProps: {
 };
 
 // @public (undocumented)
-export const FileField: typeof __VLS_export_17;
+export const FileField: FieldComponent;
 
 // @public (undocumented)
-export const FormActions: typeof __VLS_export_4;
+export const FormActions: TypedComponent<typeof formActionsProps, EmitsOf<typeof formActionsEmits>>;
 
 // @public (undocumented)
 export const formActionsEmits: {
@@ -223,7 +222,7 @@ export const formActionsProps: {
 };
 
 // @public (undocumented)
-export const FormhausField: typeof __VLS_export_3;
+export const FormhausField: TypedComponent<FormhausFieldProps, FieldComponentEmits>;
 
 // @public (undocumented)
 export interface FormhausFieldProps extends FieldComponentProps {
@@ -232,7 +231,7 @@ export interface FormhausFieldProps extends FieldComponentProps {
 }
 
 // @public (undocumented)
-export const FormRenderer: typeof __VLS_export;
+export const FormRenderer: RendererComponent;
 
 // @public (undocumented)
 export interface FormRendererEmits {
@@ -313,7 +312,7 @@ export interface FormRendererProps {
 }
 
 // @public (undocumented)
-export const FormStepProgress: typeof __VLS_export_9;
+export const FormStepProgress: TypedComponent<typeof formStepProgressProps>;
 
 // @public (undocumented)
 export interface FormStepProgressProps {
@@ -487,21 +486,21 @@ export const groupItemComponentProps: {
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
 // @public (undocumented)
-export const HeadlessFormRenderer: typeof __VLS_export_2;
+export const HeadlessFormRenderer: RendererComponent;
 
 // @public (undocumented)
-export const HiddenField: typeof __VLS_export_21;
+export const HiddenField: CommitFieldComponent;
 
 // @public (undocumented)
-export const MultiselectField: typeof __VLS_export_23;
+export const MultiselectField: FieldComponent;
 
 export { OptionsProvider }
 
 // @public (undocumented)
-export const RadioField: typeof __VLS_export_14;
+export const RadioField: CommitFieldComponent;
 
 // @public (undocumented)
-export const ScaleField: typeof __VLS_export_15;
+export const ScaleField: CommitFieldComponent;
 
 // @public (undocumented)
 export type SectionComponentProps = SectionView;
@@ -525,19 +524,19 @@ export const sectionComponentProps: {
 };
 
 // @public (undocumented)
-export const SelectField: typeof __VLS_export_12;
+export const SelectField: FieldComponent;
 
 // @public (undocumented)
-export const SwitchField: typeof __VLS_export_16;
+export const SwitchField: FieldComponent;
 
 // @public (undocumented)
-export const TextareaField: typeof __VLS_export_11;
+export const TextareaField: FieldComponent;
 
 // @public (undocumented)
-export const TextField: typeof __VLS_export_10;
+export const TextField: FieldComponent;
 
 // @public (undocumented)
-export const TimeField: typeof __VLS_export_20;
+export const TimeField: FieldComponent;
 
 // @public (undocumented)
 export function useFormEngine(definitionOrGetter: FormDefinition | (() => FormDefinition), initialValues?: Record<string, unknown> | (() => Record<string, unknown> | undefined), options?: UseFormEngineOptions): UseFormEngineReturn;
