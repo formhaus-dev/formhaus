@@ -86,6 +86,83 @@ await submit(values, { challengeToken: await check?.token() });
 check?.spend();
 ```
 
+## Notices
+
+`FormhausForm` shows a notice above the form when a submission fails or the form gets a new version. The notice is a `CloudNotice`:
+
+| Property | Type | Description |
+|---|---|---|
+| `tone` | `'error' \| 'info'` | `info` after a new form version loads, `error` otherwise |
+| `code` | `CloudNoticeCode` | A known [`CloudError` code](#errors), or `form_refreshed` after a new form version loads. Another code takes the code of its HTTP status, else `unknown` |
+| `message` | `string` | The text, from `cloudLabels` or the English default |
+| `action` | `'retry' \| 'reload' \| null` | The button the notice offers |
+| `details` | `string[]` | Messages for keys the form does not render |
+
+`noticePlacement="actions"` moves the notice from above the form to just above the buttons. `noticeComponent` in React and the `notice` slot in Vue replace it. Both get `notice` and `onAction`. Call `onAction(notice.action)` to retry or reload.
+
+::: code-group
+
+```tsx [React]
+<FormhausForm
+  id="FORM_ID"
+  noticePlacement="actions"
+  noticeComponent={({ notice, onAction }) => (
+    <Alert data-fh-notice tabIndex={-1} tone={notice.tone}>
+      {notice.message}
+      {notice.action && <Button onClick={() => onAction(notice.action!)}>{notice.action}</Button>}
+    </Alert>
+  )}
+/>
+```
+
+```vue [Vue]
+<FormhausForm id="FORM_ID" notice-placement="actions">
+  <template #notice="{ notice, onAction }">
+    <Alert data-fh-notice tabindex="-1" :tone="notice.tone">
+      {{ notice.message }}
+      <Button v-if="notice.action" @click="onAction(notice.action)">{{ notice.action }}</Button>
+    </Alert>
+  </template>
+</FormhausForm>
+```
+
+:::
+
+After a failed submission `FormhausForm` focuses the first element with `data-fh-notice` or the `fh-form__notice` class. Without one, or when that element cannot take focus, it focuses the error summary or the first invalid field. Give a custom notice `tabindex="-1"` so it can take focus.
+
+A custom `actionsComponent` receives the notice too. In React it gets `notice` and `onNoticeAction(action)` props, typed by `FormhausFormActionsProps`. In Vue it gets the `notice` prop and emits `noticeAction` when the component declares `notice` in its own `props`. A prop from `extends`, a mixin or an async component is not detected.
+
+`FormhausForm` still renders its notice next to such a component. When the actions component shows the notice itself, pass a `noticeComponent` that returns `null` in React or an empty `notice` slot in Vue, so the notice does not show twice.
+
+### Translate notices
+
+`cloudLabels` translates every text `FormhausForm` shows outside the form: notices by `code`, the `retry` and `reload` buttons, the `submitted` message and the `submitAnother` button. Pass a catalog or a function `(key) => string | undefined`. Missing keys keep the English text. The form's own texts use [`messages` and `labels`](/spec#message-and-label-catalogs).
+
+::: code-group
+
+```tsx [React]
+<FormhausForm
+  id="FORM_ID"
+  cloudLabels={{
+    network: 'Keine Verbindung zum Server. Prüfen Sie Ihre Verbindung.',
+    verification_failed: 'Die Prüfung ist fehlgeschlagen. Bitte erneut senden.',
+    form_refreshed: 'Das Formular wurde aktualisiert. Bitte prüfen Sie Ihre Antworten.',
+    retry: 'Erneut versuchen',
+    reload: 'Seite neu laden',
+    submitted: 'Danke, Ihre Antwort ist angekommen.',
+    submitAnother: 'Weitere Antwort senden',
+  }}
+/>
+```
+
+```vue [Vue]
+<FormhausForm id="FORM_ID" :cloud-labels="(key) => (te(`cloud.${key}`) ? t(`cloud.${key}`) : undefined)" />
+```
+
+:::
+
+A function gets every key, so return `undefined` for keys you have not translated. Some i18n libraries return the key itself for a missing translation.
+
 ## Low-level client
 
 | Function | Options |
@@ -96,6 +173,8 @@ check?.spend();
 | `sessionDraftStore(options?)` | `maxAge?` in ms, one week by default, `storage?`: returns the storage, `sessionStorage` by default |
 
 ## Errors
+
+`FormhausForm` calls `onError` for every failed load and submission. A resend after a lost file upload is silent. Errors thrown by its step and submit hooks, such as `onBeforeSubmit` and `onStepValidate`, reach `onError` too. Without `onError` they are not shown.
 
 `fetchForm`, the submitter and `FormhausForm`'s `onError` reject with `CloudError`:
 
