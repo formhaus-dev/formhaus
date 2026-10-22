@@ -1,11 +1,5 @@
 # @formhaus/vue
 
-## 1.2.2
-
-### Patch Changes
-
-- Fixed type errors with `skipLibCheck: false` on Vue 3.3 and 3.4.
-
 ## 1.2.1
 
 ### Patch Changes
