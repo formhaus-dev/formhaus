@@ -148,6 +148,87 @@ FormhausForm(definition: definition) { values, _ in .ok }
 
 `.progress`, `.section`, `.group`, `.groupItem` and `.confirmDialog` replace the other containers the same way.
 
+## Test ids
+
+`FormRendererOptions(testIds: .automatic)` sets accessibility identifiers for UI tests. It is `.off` by default.
+
+```swift
+FormhausForm(definition: definition, renderer: FormRendererOptions(testIds: .automatic)) { values, _ in .ok }
+```
+
+Ids start with the definition `id`: `signup.form`, `signup.email`, `signup.plan.pro`, `signup.people.0.name`, `signup.submit`, `signup.next`, `signup.back`, `signup.cancel` and `signup.summary`. Field rows of the `.system` set are accessibility containers, so query inputs with a descendant query:
+
+```swift
+let app = XCUIApplication()
+app.descendants(matching: .any)["signup.email"].tap()
+app.descendants(matching: .any)["signup.plan.pro"].tap()
+app.buttons["signup.next"].tap()
+```
+
+Name the ids yourself with `.custom`. It gets a `TestIdTarget` and returns the id, or `nil` for none:
+
+```swift
+let testIds = TestIds.custom { target in
+    switch target.kind {
+    case .field: "field-\(target.key ?? "")"
+    case .option: "field-\(target.key ?? "")-\(target.value ?? "")"
+    default: "form-\(target.kind.rawValue)"
+    }
+}
+
+FormhausForm(definition: definition, renderer: FormRendererOptions(testIds: testIds)) { values, _ in .ok }
+```
+
+A custom field view reads `context.testId` and `context.optionTestId(_:)`. A custom actions view reads `context.testIds`. See [Testing](/guide/testing) for the web ids.
+
+## Keep hidden values
+
+By default a field hidden by a condition loses its value. `hiddenValues: .keep` in `FormEngineOptions` keeps it in `engine.values` and in the submitted values:
+
+```swift
+FormhausForm(definition: definition, initialValues: record, options: FormEngineOptions(hiddenValues: .keep)) { values, _ in .ok }
+```
+
+Hidden fields still count as unanswered for conditions and validation, so they never block Continue or Submit. Pass `SubmissionOptions(hiddenValues: .keep)` to `validateSubmission` on the server.
+
+## Navigation title
+
+`FormBehavior.titleDisplayMode` sets how the `.system` set shows the definition title. `.automatic` leaves the mode to your screen. `.inline` and `.large` set it, and `.off` sets no title:
+
+```swift
+FormhausForm(definition: definition) { values, _ in .ok }
+    .formhausComponents(.system)
+    .formhausBehavior(FormBehavior(titleDisplayMode: .large))
+```
+
+## Tint
+
+The `.system` set uses the tint of your app for Continue and Back, checkmarks, scale dots, stars, picture selection and the date row. Set `.tint(...)` around the form:
+
+```swift
+FormhausForm(definition: definition) { values, _ in .ok }
+    .formhausComponents(.system)
+    .tint(.indigo)
+```
+
+The Formhaus set still uses the theme primary.
+
+## Missing translations
+
+`missingKeys(messages:labels:)` lists the built-in message and label keys that a catalog lacks. Use it in a unit test:
+
+```swift
+let missing = missingKeys(messages: .catalog(messages), labels: .catalog(labels))
+#expect(missing.messages.isEmpty)
+#expect(missing.labels.isEmpty)
+```
+
+In debug builds, a form with a `messages` or `labels` catalog reports `missing-message-key` or `missing-label-key` through `onWarning` when a shown text is in neither the catalog nor the definition. Each key is reported once per process:
+
+```swift
+let options = FormEngineOptions(onWarning: { issue in print(issue.code, issue.message) }, messages: .catalog(messages))
+```
+
 ## Theme only
 
 To keep the built-in views and change colors, fonts and radii, set a `FormhausTheme` with `.formhausTheme` instead. Custom views read the resolved tokens from `@Environment(\.formhausTokens)`. See [Theming](https://github.com/formhaus-dev/formhaus-swift#theming) in the README.
