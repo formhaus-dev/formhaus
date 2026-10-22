@@ -1,28 +1,28 @@
-import type { FormEvent, FormRendererHandle } from '@formhaus/core';
+import type { FormRendererHandle } from '@formhaus/core';
 import type { Ref } from 'vue';
+import FormRendererComponent from './FormRenderer.vue';
+import HeadlessFormRendererComponent from './HeadlessFormRenderer.vue';
+import FormhausFieldComponent from './FormhausField.vue';
+import FormActionsComponent from './FormActions.vue';
 import DefaultConfirmDialogComponent from './DefaultConfirmDialog.vue';
 import DefaultGroupComponent from './DefaultGroup.vue';
 import DefaultGroupItemComponent from './DefaultGroupItem.vue';
 import DefaultSectionComponent from './DefaultSection.vue';
-import FormActionsComponent from './FormActions.vue';
-import FormhausFieldComponent from './FormhausField.vue';
-import FormRendererComponent from './FormRenderer.vue';
 import FormStepProgressComponent from './FormStepProgress.vue';
-import HeadlessFormRendererComponent from './HeadlessFormRenderer.vue';
-import AutocompleteFieldComponent from './fields/AutocompleteField.vue';
+import TextFieldComponent from './fields/TextField.vue';
+import TextareaFieldComponent from './fields/TextareaField.vue';
+import SelectFieldComponent from './fields/SelectField.vue';
 import CheckboxFieldComponent from './fields/CheckboxField.vue';
-import DateFieldComponent from './fields/DateField.vue';
-import DateTimeFieldComponent from './fields/DateTimeField.vue';
-import FileFieldComponent from './fields/FileField.vue';
-import HiddenFieldComponent from './fields/HiddenField.vue';
-import MultiselectFieldComponent from './fields/MultiselectField.vue';
 import RadioFieldComponent from './fields/RadioField.vue';
 import ScaleFieldComponent from './fields/ScaleField.vue';
-import SelectFieldComponent from './fields/SelectField.vue';
 import SwitchFieldComponent from './fields/SwitchField.vue';
-import TextareaFieldComponent from './fields/TextareaField.vue';
-import TextFieldComponent from './fields/TextField.vue';
+import FileFieldComponent from './fields/FileField.vue';
+import DateFieldComponent from './fields/DateField.vue';
+import DateTimeFieldComponent from './fields/DateTimeField.vue';
 import TimeFieldComponent from './fields/TimeField.vue';
+import HiddenFieldComponent from './fields/HiddenField.vue';
+import AutocompleteFieldComponent from './fields/AutocompleteField.vue';
+import MultiselectFieldComponent from './fields/MultiselectField.vue';
 import type {
   confirmDialogComponentProps,
   fieldComponentEmits,
@@ -34,16 +34,11 @@ import type {
   groupItemComponentProps,
   sectionComponentProps,
 } from './props';
-import type { EmitsOf, FieldResolverProps, FormRendererProps, TypedComponent, WithSlots } from './types';
+import type { EmitsOf, FieldResolverProps, FormRendererEvents, FormRendererProps, TypedComponent, WithSlots } from './types';
 
 type RendererComponent = TypedComponent<
   FormRendererProps,
-  EmitsOf<{
-    cancel: [];
-    fieldChange: [key: string, value: unknown, allValues: Record<string, unknown>];
-    valuesChange: [values: Readonly<Record<string, unknown>>];
-    formEvent: [event: FormEvent];
-  }>,
+  EmitsOf<FormRendererEvents>,
   Omit<FormRendererHandle, 'values'> & { values: Readonly<Ref<FormRendererHandle['values']>> }
 >;
 

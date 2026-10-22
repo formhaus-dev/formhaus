@@ -106,6 +106,13 @@ export interface FormRendererEmits {
   (e: 'formEvent', event: FormEvent): void;
 }
 
+export type FormRendererEvents = {
+  cancel: [];
+  fieldChange: [key: string, value: unknown, allValues: Record<string, unknown>];
+  valuesChange: [values: Readonly<Record<string, unknown>>];
+  formEvent: [event: FormEvent];
+};
+
 export interface FieldComponentProps {
   id?: string;
   field: FormField;
