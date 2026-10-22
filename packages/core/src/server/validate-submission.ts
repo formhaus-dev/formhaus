@@ -1,6 +1,6 @@
-import type { FormDefinition, FormField } from '../types';
+import type { FormDefinition, FormField, FormGroup } from '../types';
 import type { MessageSource, ValidatorFn } from '../validation';
-import { withPatternBudget } from '../validation/validate-field';
+import { validateFieldValue, withPatternBudget } from '../validation/validate-field';
 import { messageResolver, namedResolver, type ResolveMessage } from '../validation/default-messages';
 import { parseDefinition } from '../definition-validation';
 import { getAllFields } from '../engine/engine-utils';
@@ -10,7 +10,7 @@ import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { trustDefinition } from '../engine/warnings';
 import { normalizeValue, typeError } from '../validation/type-checks';
-import { hasOwn, isEntry, isGroup, itemPath, keepId } from '../visibility/nodes';
+import { hasOwn, isEntry, isGroup, itemPath, itemScope, keepId } from '../visibility/nodes';
 
 export interface SubmissionOptions {
   skippedSteps?: string[];
@@ -139,7 +139,8 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
   const resolve = namedResolver(messages);
   const resolved = activeValues(definition, fields, isEntry(values) ? values : {}, resolve);
   const items = blankItems(resolved, fields, resolve);
-  const engineOptions = { validators: ignoredValidators(fields, options.validators), messages, onWarning: () => {} };
+  const validators = ignoredValidators(fields, options.validators);
+  const engineOptions = { validators, messages, onWarning: () => {} };
   const engine = new FormEngine(trustDefinition({ ...definition }), resolved.values, engineOptions);
   loadSubmitted(engine, resolved.values);
   applySkips(engine, options.skippedSteps);
@@ -156,22 +157,41 @@ function prepare(definition: FormDefinition, fields: FormField[], values: unknow
     }
     for (const [key, error] of items)
       if (hasOwn(submitted, visibility.owner(key)) && visibility.activeItem(key, state.values)) errors[key] = error;
-    if (options.hiddenValues === 'keep') keepHidden(fields, resolved.values, submitted, skipped);
+    if (options.hiddenValues === 'keep') keepHidden(fields, resolved, submitted, skipped, validators);
     return { values: submitted, errors };
   };
   return { engine, skipped, check };
 }
 
-function keepHidden(fields: FormField[], source: Record<string, unknown>, submitted: Record<string, unknown>, skipped: string[]): void {
-  for (const field of fields) {
-    const { key } = field;
+function keepHidden(
+  fields: FormField[],
+  { values: source, active }: ActiveValues,
+  submitted: Record<string, unknown>,
+  skipped: string[],
+  validators: Record<string, ValidatorFn>,
+): void {
+  const scope = { ...source, ...submitted };
+  const valid = (field: FormField, value: unknown, values: Record<string, unknown>) =>
+    !validateFieldValue({ ...field, validation: { ...field.validation, required: undefined } }, value, values, { validators });
+  const items = (group: FormGroup, value: unknown[], kept: unknown[]) =>
+    kept.map((item, index) => {
+      const from = value[index];
+      if (!isEntry(item) || !isEntry(from)) return item;
+      const entry = { ...item };
+      const own = itemScope(group, from, scope);
+      for (const field of group.fields)
+        if (hasOwn(from, field.key) && !hasOwn(item, field.key) && valid(field, from[field.key], own)) entry[field.key] = from[field.key];
+      return entry;
+    });
+  for (const key of new Set(fields.map((field) => field.key))) {
     const value = source[key];
     if (value === undefined || skipped.includes(key)) continue;
-    if (!hasOwn(submitted, key)) submitted[key] = value;
-    else if (isGroup(field) && Array.isArray(value) && Array.isArray(submitted[key]))
-      submitted[key] = (submitted[key] as unknown[]).map((item, index) =>
-        isEntry(item) && isEntry(value[index]) ? { ...value[index], ...item } : item,
-      );
+    const field = active.get(key) ?? fields.find(({ key: name }) => name === key)!;
+    const shown = hasOwn(submitted, key);
+    if (!shown && !valid(field, value, scope)) continue;
+    const kept = shown ? submitted[key] : value;
+    submitted[key] =
+      isGroup(field) && Array.isArray(value) && Array.isArray(kept) ? items(field, value, shown ? kept : value.map(() => ({}))) : kept;
   }
 }
 

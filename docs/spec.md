@@ -477,7 +477,7 @@ A field of type `hidden` always gets back its start value, never its last value.
 
 In a form with [routes](#routes), fields on steps that are off the active path keep their values. See [Routes](#routes).
 
-Fields hidden by conditions are not validated and not submitted. For groups, see [Groups](#groups).
+Fields hidden by conditions are not validated and not submitted, unless `hiddenValues` is `"keep"` (see [Kept hidden values](#kept-hidden-values)). For groups, see [Groups](#groups).
 
 ### Kept hidden values
 
@@ -485,7 +485,7 @@ The engine option `hiddenValues` is `"clear"` (default) or `"keep"`. With `"keep
 
 Conditions, validation, validators and recall see the same values as with `"clear"`: a hidden field is unanswered and has no error. Hooks that receive the payload, such as the submit handler, `onBeforeSubmit`, `onAfterSubmit`, the step change hooks and `onStepValidate`, get it with the kept values.
 
-`validateSubmission()` takes the same option. With `"keep"`, it returns the values of hidden fields and of fields off the active path as sent, after trimming and number conversion. It does not validate them and reports no error for them. It drops one that fails its type check. The scenarios in `hidden-values.json` and the corpus file `hidden-values.json` pin this rule.
+`validateSubmission()` takes the same option. With `"keep"`, it returns the values of hidden fields and of fields off the active path, after trimming and number conversion. It checks each of them against every rule of its field except `required`, as for a visible field, and drops one that fails without an error. For a group, it checks the group and each item field. The client decides which fields are hidden, so a kept value is as untrusted as a visible one. The scenarios in `hidden-values.json` and the corpus file `hidden-values.json` pin this rule.
 
 ## Defaults and initial values
 
