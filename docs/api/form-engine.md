@@ -25,14 +25,17 @@ const engine = new FormEngine(definition, initialValues, {
   formatRecall,
   seed,
   research,
+  hiddenValues,
 });
 ```
+
+`hiddenValues` is `'clear'` (default) or `'keep'`. With `'keep'`, fields hidden by conditions keep their values in `values` and in `getSubmitValues()`. Conditions, validation and recall still treat them as unanswered. See [Keep hidden values](/guide/conditions#keep-hidden-values). Renderers take it as a prop. Added in 1.2.0.
 
 `lang` and `formatRecall` control how [recalled answers](/spec#answer-recall) look: `formatRecall(value, field, locale)` returns the text of one answer, and `lang` wins over `definition.lang`. Renderers take both as props.
 
 `research` from [`@formhaus/core/research`](/guide/research) turns on the [option order](/spec#option-order) of fields with `randomize`. `seed` sets that order. Without it, the research module generates one. Pass the same seed, such as a session id, to show a respondent the same order again and to render the same order on the server and the client. Renderers take both as props.
 
-`messages` is a [message catalog](/spec#message-and-label-catalogs) or a function `(key, params, field) => string | undefined`. It wins over `definition.messages` and is fixed for the lifetime of the engine. Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
+`messages` is a [message catalog](/spec#message-and-label-catalogs) or a function `(key, params, field) => string | undefined`. It wins over `definition.messages` and is fixed for the lifetime of the engine. Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction, unless `hiddenValues` is `'keep'`. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
 ## Definition checks
 
@@ -109,7 +112,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `setFieldLoading(key, loading)` | `void` | Updates loading state for one field |
 | `validate()` | `Record<string, string>` | Validates visible fields on the active path and returns the client errors. Unresolved server errors stay in `errors` |
 | `validateField(key)` | `string \| null` | Validates one visible field. When it passes, it also removes the field's server error |
-| `getSubmitValues()` | `Partial<TValues>` | Returns visible field values on the active path, excluding inactive branch answers |
+| `getSubmitValues()` | `Partial<TValues>` | Returns visible field values on the active path, excluding inactive branch answers. With `hiddenValues: 'keep'`, also the kept values |
 | `reset(values?)` | `void` | Resets values, errors, loading state, validation state, and navigation |
 | `orderOptions(key, options?)` | `FieldOption[]` | The options of a field in [shown order](/spec#option-order). `options` replaces the field's own list, such as a list from an options provider. For a group field, `key` is `group.field` or an item path. Without `research`, returns the written order. Added in 1.1.0 |
 | `replaceDefinition(definition)` | `void` | Switches to a new definition and keeps the answers, the step and the errors that still fit. Throws `FormDefinitionError` on an invalid definition and changes nothing |

@@ -51,6 +51,7 @@ Your component receives pre-computed convenience props so you don't need to re-d
 | `skipLabel` | `string?` | Label for the skip button, defaults to the `skip` label or "Skip" |
 | `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 | `cancelAction` | `FormAction?` | Cancel button config |
+| `testIds` | `{ submit?, next?, back? }` | [Test ids](/guide/testing) of the buttons, when the renderer has `testIds` |
 
 In React, call `onPrimary` for the primary action, `onBack` for back and `onSkip` for skip. In Vue, emit `primary`, `back` and `skip`.
 
