@@ -10,10 +10,9 @@ import {
   type BuilderQuestion,
 } from '@formhaus/builder';
 import { takesPlaceholder } from '../canvas/placeholder';
-import { Field, Input, SegmentedControl, Text } from '../ui';
+import { Field, Input } from '../ui';
 import { useForm } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
-import styles from './Inspector.module.css';
 import { FieldText } from './FieldText';
 import { GroupSettings } from './GroupSettings';
 import { LimitSettings } from './LimitSettings';
@@ -21,6 +20,7 @@ import { limitSpec } from './limits';
 import { PerRow } from './PerRow';
 import { RandomizeSetting } from './RandomizeSetting';
 import { ScaleSettings } from './ScaleSettings';
+import { SegmentedSetting } from './SegmentedSetting';
 import { SettingsSection } from './SettingsSection';
 import { SettingSwitch } from './SettingSwitch';
 
@@ -34,24 +34,19 @@ const titleOf = (field: BuilderQuestion) => (hasOptions(field.type) ? 'Options' 
 
 function OptionLayout({ field, actions }: Omit<Props, 'readOnly'>) {
   return (
-    <div className={styles.control}>
-      <Text size="sm" tone="muted" weight="medium">
-        Option layout
-      </Text>
-      <SegmentedControl
-        label="Option layout"
-        options={[
-          { value: 'stack', label: 'Stacked' },
-          { value: 'inline', label: 'In a row' },
-        ]}
-        value={field.extra.layout ?? 'stack'}
-        onValueChange={(value) => {
-          actions.edit((form) => {
-            setFieldProp(form, field.uid, 'layout', value === 'inline' ? 'inline' : undefined);
-          });
-        }}
-      />
-    </div>
+    <SegmentedSetting
+      label="Option layout"
+      options={[
+        { value: 'stack', label: 'Stacked' },
+        { value: 'inline', label: 'In a row' },
+      ]}
+      value={field.extra.layout ?? 'stack'}
+      onValueChange={(value) => {
+        actions.edit((form) => {
+          setFieldProp(form, field.uid, 'layout', value === 'inline' ? 'inline' : undefined);
+        });
+      }}
+    />
   );
 }
 
