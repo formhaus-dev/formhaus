@@ -125,6 +125,7 @@ export default defineConfig({
           { text: 'iOS and macOS', link: '/guide/ios' },
           { text: 'SwiftUI components', link: '/guide/integrations/swiftui' },
           { text: 'Android and JVM', link: '/guide/android' },
+          { text: 'Compose components', link: '/guide/integrations/compose' },
         ],
       },
       {

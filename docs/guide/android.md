@@ -5,7 +5,7 @@ description: "Run Formhaus JSON form definitions on Android and the JVM with the
 
 # Android and JVM
 
-`formhaus-kotlin` runs Formhaus JSON form definitions on Android and the JVM. `formhaus-core` is the engine, in pure Kotlin with no JavaScript runtime.
+`formhaus-kotlin` runs Formhaus JSON form definitions on Android and the JVM. `formhaus-core` is the engine, in pure Kotlin with no JavaScript runtime. `formhaus-compose` renders forms with [Jetpack Compose](/guide/integrations/compose).
 
 [Source](https://github.com/formhaus-dev/formhaus-kotlin) · [Changelog](https://github.com/formhaus-dev/formhaus-kotlin/blob/main/CHANGELOG.md)
 
@@ -16,24 +16,34 @@ Releases are served from JitPack. Add the repository in `settings.gradle.kts`:
 ```kotlin
 dependencyResolutionManagement {
     repositories {
+        google()
         mavenCentral()
         maven("https://jitpack.io")
     }
 }
 ```
 
-Add the dependency:
+Add the packages you need:
 
 ```kotlin
 dependencies {
-    implementation("com.github.formhaus-dev:formhaus-kotlin:v0.1.0")
+    implementation("com.github.formhaus-dev.formhaus-kotlin:formhaus-core:v0.2.0")
+    implementation("com.github.formhaus-dev.formhaus-kotlin:formhaus-compose:v0.2.0")
+    implementation("com.github.formhaus-dev.formhaus-kotlin:formhaus-research:v0.2.0")
 }
 ```
 
-Requires JDK 17 or later, or Android with `minSdk` 26 or later. The only dependency is `kotlinx-coroutines-core`.
+| Package | Add it for |
+|---|---|
+| `formhaus-core` | The engine, validation and `validateSubmission`. Pure Kotlin for the JVM and Android. |
+| `formhaus-compose` | The Jetpack Compose renderer. See [Compose components](/guide/integrations/compose). |
+| `formhaus-research` | [Random option order](#random-option-order) for `randomize` fields. |
+
+`formhaus-compose` and `formhaus-research` depend on `formhaus-core`. Requires JDK 17 or later, or Android with `minSdk` 26 or later. The only dependency of `formhaus-core` is `kotlinx-coroutines-core`.
 
 | formhaus-kotlin | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.2.0 | 1.2.2 | 1.6 |
 | 0.1.0 | 1.2.2 | 1.6 |
 
 ## Run a form
@@ -124,7 +134,7 @@ val problems = checkDefinition(definition).filter { it.isError }
 
 ## Random option order
 
-For [random option order](/guide/research), pass `Research()` and an optional seed:
+For [random option order](/guide/research), add `formhaus-research` and pass `Research()` and an optional seed:
 
 ```kotlin
 import dev.formhaus.core.engine.FormEngineOptions
@@ -137,6 +147,24 @@ val engine = FormEngine(
 ```
 
 The same seed gives the same order.
+
+## Saving progress
+
+A form restores its values, step and skipped steps after process death. `FormhausForm(definition)` saves them to a `SavedStateHandle` automatically.
+
+For your own drafts, `onSnapshotChange` hands you a `FormSnapshot` after each change, and `null` after a successful submit. Store `snapshot.toJson()` and pass it back as `restoring`:
+
+```kotlin
+import dev.formhaus.core.engine.FormSnapshot
+
+FormhausForm(
+    definition,
+    restoring = saved?.let(FormSnapshot::fromJson),
+    onSnapshotChange = { snapshot -> store(snapshot?.toJson()) },
+) { values, _ -> send(values) }
+```
+
+`FormEngine` has `snapshot()` and takes `restoring`. A snapshot never holds `password` values. See the [snapshot spec](/spec#form-snapshot-native-ports) and [Compose components](/guide/integrations/compose#save-progress).
 
 ## Translations
 
