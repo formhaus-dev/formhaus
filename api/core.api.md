@@ -338,6 +338,8 @@ export interface FormEngineOptions {
     // (undocumented)
     formatRecall?: RecallFormatFn;
     // (undocumented)
+    hiddenValues?: 'clear' | 'keep' | undefined;
+    // (undocumented)
     lang?: string;
     // (undocumented)
     messages?: MessageSource;

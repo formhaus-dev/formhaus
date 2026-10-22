@@ -1,5 +1,6 @@
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
+import { getSubmitValues } from '../engine/validation-state';
 export { autofilled } from './autofill';
 export { recalled, recalls, recallVersion, refreshRecall, subscribeRecall } from './recall';
 export { recallEnabled, recallKeys } from '../engine/recall';
@@ -39,7 +40,11 @@ export { scaleRange } from '../validation/type-checks';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;
-  return internals.visibility.conditionValues(internals.values);
+  return internals.visibility.conditionValues(internals.state.values);
+}
+
+export function actionValues(engine: FormEngine): Record<string, unknown> {
+  return getSubmitValues(engine as unknown as EngineInternals);
 }
 
 export function autoAdvance(engine: FormEngine): Promise<boolean> {
@@ -49,6 +54,8 @@ export function autoAdvance(engine: FormEngine): Promise<boolean> {
 export function hasValue(engine: FormEngine, key: string): boolean {
   const internals = engine as unknown as EngineInternals;
   const path = internals.visibility.parse(key);
-  const value = path ? (internals.values[path[0]] as Record<string, unknown>[] | undefined)?.[path[1]]?.[path[2]] : internals.values[key];
+  const value = path
+    ? (internals.state.values[path[0]] as Record<string, unknown>[] | undefined)?.[path[1]]?.[path[2]]
+    : internals.state.values[key];
   return value !== undefined && value !== '';
 }

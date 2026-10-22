@@ -2,10 +2,10 @@ import { validateFieldValue } from '../validation';
 import { baselineFields, emit } from './form-events';
 import { customRules, validateShown } from '../validation/validate-step';
 import { withPatternBudget } from '../validation/validate-field';
-import { isPlainEntry } from '../validation/type-checks';
+import { isPlainEntry, trimValue } from '../validation/type-checks';
 import { createValues, getChangedKeys, initialState, shownError } from './engine-utils';
 import type { FormField, FormNode } from '../types';
-import { isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
+import { cleanItems, hasOwn, isGroup, itemPath, itemsOf, itemScope, valueFields } from '../visibility/nodes';
 import type { EngineInternals } from './runtime-internals';
 import type { ItemField } from './visibility-state';
 
@@ -29,7 +29,7 @@ function unsettleOnWrite<T>(engine: EngineInternals, run: () => T): T {
 }
 
 export function fieldsErrors(engine: EngineInternals, nodes: FormNode[], values = getSubmitValues(engine)): Record<string, string> {
-  const scope = engine.visibility.conditionValues(engine.values);
+  const scope = engine.visibility.conditionValues(engine.state.values);
   return unsettleOnWrite(engine, () => validateShown(nodes, values, scope, engine));
 }
 
@@ -54,7 +54,8 @@ export function applyValidationErrors(
   const bound: Record<string, string> = {};
   const general = [...formErrors];
   for (const [key, message] of Object.entries(errors)) {
-    if (engine.visibility.activeField(key, engine.values) || engine.visibility.activeItem(key, engine.values)) bound[key] = message;
+    if (engine.visibility.activeField(key, engine.state.values) || engine.visibility.activeItem(key, engine.state.values))
+      bound[key] = message;
     else general.push(message);
   }
   if (server) {
@@ -68,7 +69,7 @@ export function applyValidationErrors(
 }
 
 function moveToFirstError(engine: EngineInternals, errors: Record<string, string>): boolean {
-  const targetIndex = engine.visibleSteps.findIndex((step) => errorKeys(step.fields, errors, engine.values).length > 0);
+  const targetIndex = engine.visibleSteps.findIndex((step) => errorKeys(step.fields, errors, engine.state.values).length > 0);
   if (targetIndex < 0 || targetIndex === engine.currentStepIndex) return false;
   engine.state.currentStepIndex = targetIndex;
   return true;
@@ -94,7 +95,7 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string, i
     : engine.visibility.allFields.map((field) => [field.key, field]);
   for (const [path, field] of fields) {
     if (field.validation?.matchField !== key || engine.errors[path] === undefined) continue;
-    const error = item ? itemError(engine, { ...item, field }) : fieldError(engine, field, engine.values[field.key]);
+    const error = item ? itemError(engine, { ...item, field }) : fieldError(engine, field, engine.state.values[field.key]);
     if (error) continue;
     clearError(engine, path);
     cleared.push(path);
@@ -102,11 +103,11 @@ export function clearResolvedMatchErrors(engine: EngineInternals, key: string, i
   if (!item) {
     for (const group of engine.visibility.groups) {
       if (
-        engine.visibility.activeField(group.key, engine.values) !== group ||
+        engine.visibility.activeField(group.key, engine.state.values) !== group ||
         !group.fields.some((field) => field.validation?.matchField === key)
       )
         continue;
-      itemsOf(engine.values[group.key]).forEach((_, index) => {
+      itemsOf(engine.state.values[group.key]).forEach((_, index) => {
         cleared.push(...clearResolvedMatchErrors(engine, key, { group, index, field: group.fields[0] }));
       });
     }
@@ -156,11 +157,11 @@ function formErrors(engine: EngineInternals): Record<string, string> {
 }
 
 export function validateOne(engine: EngineInternals, key: string): string | null {
-  const field = engine.visibility.activeField(key, engine.values);
-  const item = !field && engine.visibility.activeItem(key, engine.values);
+  const field = engine.visibility.activeField(key, engine.state.values);
+  const item = !field && engine.visibility.activeItem(key, engine.state.values);
   if (!field && !item) return null;
   const previousError = engine.errors[key];
-  const error = item ? itemError(engine, item) : fieldError(engine, field!, engine.values[key]);
+  const error = item ? itemError(engine, item) : fieldError(engine, field!, engine.state.values[key]);
   if (error) engine.errors[key] = error;
   else clearError(engine, key, true);
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];
@@ -168,8 +169,16 @@ export function validateOne(engine: EngineInternals, key: string): string | null
   return error;
 }
 
-export function getSubmitValues(engine: EngineInternals): Record<string, unknown> {
-  const values = { ...engine.visibility.conditionValues(engine.values) };
+export function getSubmitValues(engine: EngineInternals, payload = false): Record<string, unknown> {
+  const { visibility, state } = engine;
+  const values = { ...visibility.conditionValues(state.values) };
+  const kept = payload && engine.lifecycle.hiddenValues === 'keep' && engine.values;
+  if (kept)
+    for (const { key } of visibility.allFields) {
+      const field = visibility.fieldOf(key, state.values)!;
+      if (kept[key] !== undefined && (!hasOwn(values, key) || isGroup(field)))
+        values[key] = isGroup(field) ? cleanItems(field, kept[key], {}, true) : trimValue(field, kept[key]);
+    }
   for (const { key } of engine.visibility.groups) {
     const items = values[key];
     if (Array.isArray(items)) values[key] = items.map((item) => (isPlainEntry(item) ? { ...item } : item));
@@ -178,7 +187,7 @@ export function getSubmitValues(engine: EngineInternals): Record<string, unknown
 }
 
 export function resetEngine(engine: EngineInternals, values?: Record<string, unknown>): void {
-  const previousValues = engine.values;
+  const previousValues = engine.state.values;
   const previousErrors = engine.errors;
   const loadingFields = Object.keys(engine.fieldLoading);
   baselineFields(engine);
@@ -186,12 +195,12 @@ export function resetEngine(engine: EngineInternals, values?: Record<string, unk
   engine.operationEpoch++;
   Object.assign(engine.state, initialState(createValues(engine.visibility.allFields, values, engine.visibility.activeField)));
   engine.skipped.clear();
-  engine.visibility.reconcileHidden(engine.values, engine.errors, true);
+  engine.visibility.reconcileHidden(engine.state.values, engine.errors, true);
   if (engine.viewedStep !== undefined) {
     emit(engine, { type: 'form_reset' });
     engine.viewedStep = null;
   }
-  const changedValues = getChangedKeys(previousValues, engine.values);
+  const changedValues = getChangedKeys(previousValues, engine.state.values);
   const changedFields = new Set([...changedValues, ...getChangedKeys(previousErrors, engine.errors), ...loadingFields]);
   engine.notify({
     fieldKeys: changedFields,

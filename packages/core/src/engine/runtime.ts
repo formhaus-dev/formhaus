@@ -46,7 +46,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   get values(): Readonly<Partial<TValues>> {
-    return this.state.values as Partial<TValues>;
+    return this.visibility.withKept(this.state.values) as Partial<TValues>;
   }
   get errors(): Readonly<Record<string, string>> {
     return this.state.errors;
@@ -131,7 +131,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
   }
 
   getValuesSnapshot(): Readonly<Partial<TValues>> {
-    return (this.snapshot ??= Object.freeze({ ...this.state.values }) as Partial<TValues>);
+    return (this.snapshot ??= Object.freeze({ ...this.values }) as Partial<TValues>);
   }
 
   subscribeField(key: string, listener: () => void): () => void {
@@ -218,7 +218,7 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     return validateOne(this as never, key);
   }
   getSubmitValues(): Partial<TValues> {
-    return getSubmitValues(this as never) as Partial<TValues>;
+    return getSubmitValues(this as never, true) as Partial<TValues>;
   }
   goToStepWithField(key: string): void {
     goToStepWithField(this as never, key);

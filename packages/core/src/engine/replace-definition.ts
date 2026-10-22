@@ -15,7 +15,7 @@ export function loadDefinition(
 ): void {
   assertDefinition(definition, engine.lifecycle, engine.validators);
   warnUnordered(definition, engine.lifecycle);
-  const visibility = createVisibility(definition);
+  const visibility = createVisibility(definition, engine.lifecycle.hiddenValues === 'keep');
   engine.definition = definition;
   engine.messages = messageResolver(engine.lifecycle.messages, definition.messages);
   engine.visibility = visibility;
@@ -64,7 +64,7 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
   if (engine.sending !== engine.latestOperation) state.submitting = false;
   for (const key in state.errors) {
     const [group, , child] = visibility.parse(key) ?? [];
-    const field = visibility.activeField(group ?? key, engine.values);
+    const field = visibility.activeField(group ?? key, engine.state.values);
     if (
       !kept(previous.allFields, field) ||
       (group &&
@@ -86,7 +86,8 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
       );
     else skipped.delete(id);
   });
-  const valuesChanged = [...getChangedKeys(values, engine.values)].some((key) => !sameItems(values[key], engine.values[key]));
+  const next = engine.values;
+  const valuesChanged = [...getChangedKeys(values, next)].some((key) => !sameItems(values[key], next[key]));
   engine.notify({
     fieldKeys: [...previous.allFields.map(({ key }) => key), ...visibility.allFields.map(({ key }) => key), ...errors],
     structureChanged: true,

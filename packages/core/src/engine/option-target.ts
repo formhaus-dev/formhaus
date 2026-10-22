@@ -4,7 +4,8 @@ import { optionKey } from '../visibility/nodes';
 import type { EngineInternals } from './runtime-internals';
 
 export function orderOptions(engine: EngineInternals, key: string, options?: FieldOption[]): FieldOption[] {
-  const { visibility, values, seed, lifecycle } = engine;
+  const { visibility, state, seed, lifecycle } = engine;
+  const { values } = state;
   const [group, , child] = visibility.parse(key) ?? [];
   const name = group ? optionKey(group, child!) : key;
   const field =
