@@ -1,5 +1,5 @@
 import { syncIdentifiers } from '../identifiers';
-import { clone, newOption, setType, uid, type BuilderForm, type BuilderQuestion } from '../model';
+import { clone, dropOrder, newOption, setType, uid, type BuilderForm, type BuilderQuestion } from '../model';
 import { bindReferences } from '../references';
 import { childrenOf, findField } from './locate';
 
@@ -24,7 +24,10 @@ export function syncMatrix(form: BuilderForm, sectionUid: string, sourceUid?: st
   const section = findField(form, sectionUid);
   if (!isMatrix(section)) return;
   const rows = childrenOf(form, section.uid);
-  for (const row of rows) delete row.extra.columns;
+  for (const row of rows) {
+    delete row.extra.columns;
+    dropOrder(row);
+  }
   const source = rows.find((row) => row.uid === sourceUid && isRow(row)) ?? rows.find(isRow);
   if (!source) return;
   const restore = bindReferences(form);

@@ -136,7 +136,8 @@
   cursor: not-allowed;
 }
 
-.ghost:disabled:not([aria-busy='true']) {
+.ghost:disabled:not([aria-busy='true']),
+.ghost[aria-disabled='true'] {
   border-color: transparent;
   background: transparent;
 }

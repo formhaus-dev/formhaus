@@ -6,6 +6,7 @@ import { Tooltip, type TooltipProps } from '../Tooltip/Tooltip';
 export type IconButtonProps = Omit<ComponentPropsWithRef<'button'>, 'children' | 'aria-label'> &
   Pick<ButtonVariants, 'variant' | 'size'> & {
     label: string;
+    tooltip?: string;
     icon: ReactNode;
     tooltipSide?: TooltipProps['side'];
     shortcut?: string;
@@ -13,6 +14,7 @@ export type IconButtonProps = Omit<ComponentPropsWithRef<'button'>, 'children' |
 
 export function IconButton({
   label,
+  tooltip = label,
   icon,
   variant = 'ghost',
   size,
@@ -27,10 +29,10 @@ export function IconButton({
       content={
         shortcut ? (
           <>
-            {label} <Kbd>{shortcut}</Kbd>
+            {tooltip} <Kbd>{shortcut}</Kbd>
           </>
         ) : (
-          label
+          tooltip
         )
       }
       side={tooltipSide}
