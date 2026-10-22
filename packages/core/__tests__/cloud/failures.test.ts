@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CloudError, createSubmitter, fetchForm } from '../../src/cloud';
-import { createCloudController, type CloudState } from '../../src/internal';
+import { cloudLabel, createCloudController, loadMessage, localNotice, type CloudState } from '../../src/internal';
+import { failureFor } from '../../src/cloud/failures';
 import type { FormDefinition } from '../../src';
 
 const definition: FormDefinition = {
@@ -95,5 +96,47 @@ describe('cloud failures', () => {
 
     await vi.waitFor(() => expect(states.at(-1)?.definition).toEqual(definition));
     expect(states.at(-1)?.loadError).toBeNull();
+  });
+});
+
+describe('cloud labels', () => {
+  it.each([
+    [409, 'unknown', 'paused'],
+    [404, '', 'not_found'],
+    [0, 'unknown', 'network'],
+    [502, 'unknown', 'unknown'],
+    [418, 'brand_new', 'unknown'],
+    [403, 'verification_failed', 'verification_failed'],
+  ])('codes %i %s as %s', (status, code, expected) => {
+    expect(failureFor(status, code).code).toBe(expected);
+  });
+
+  const notice = { tone: 'error' as const, code: 'network' as const, message: 'English', action: 'retry' as const, details: [] };
+
+  it('translates notices, load errors and buttons from a catalog or a function and falls back to English', () => {
+    expect(localNotice(notice, { network: 'Offline' })).toEqual({ ...notice, message: 'Offline' });
+    expect(localNotice(notice, () => undefined)).toEqual(notice);
+    expect(localNotice(null, { network: 'Offline' })).toBeNull();
+    expect(loadMessage(new CloudError({ status: 404, code: 'unknown' }), (key) => (key === 'not_found' ? 'Weg' : undefined))).toBe('Weg');
+    expect(loadMessage(new Error('Broken'), { unknown: 'Fehler' })).toBe('Broken');
+    expect(cloudLabel(undefined, 'reload')).toBe('Reload page');
+    expect(cloudLabel({ retry: '' }, 'retry')).toBe('Try again');
+    expect(cloudLabel({ submitAnother: 'Noch eine' }, 'submitAnother')).toBe('Noch eine');
+  });
+
+  it('relays errors to onError unless a failed submission already reported them', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(reply(409, { error: 'paused' })));
+    const onError = vi.fn();
+    const controller = createCloudController(
+      { id: 'abc', initialForm: { definition }, draftStore: false },
+      { onChange: () => {}, onError },
+    );
+    controller.start();
+    const failure = await controller.submit({ name: 'Ada' }).catch((error: unknown) => error);
+    controller.relay(failure);
+    expect(onError).toHaveBeenCalledTimes(1);
+    const own = new Error('hook');
+    controller.relay(own);
+    expect(onError).toHaveBeenLastCalledWith(own);
   });
 });

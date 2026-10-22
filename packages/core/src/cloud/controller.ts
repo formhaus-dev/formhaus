@@ -5,11 +5,12 @@ import { createFileUploader, createSubmitter, fetchForm, type CloudClientOptions
 import { draftValues, sessionDraftStore, type DraftStore } from './draft';
 import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, isRecord, networkError } from './error';
-import { FORM_UPDATED_MESSAGE, failureFor, type CloudAction } from './failures';
+import { FORM_UPDATED_MESSAGE, cloudLabel, failureFor, type CloudAction, type CloudLabelSource, type CloudNoticeCode } from './failures';
 import { uploadGone } from './files';
 
 export interface CloudNotice {
   tone: 'error' | 'info';
+  code: CloudNoticeCode;
   message: string;
   action: CloudAction;
   details: string[];
@@ -69,7 +70,15 @@ export function cloudStateFor(form?: PublishedForm): CloudState {
 }
 
 function errorNotice(error: CloudError, details: string[] = []): CloudNotice {
-  return { tone: 'error', message: error.message, action: error.action, details };
+  return { tone: 'error', ...failureFor(error.status, error.code), details };
+}
+
+export function localNotice(notice: CloudNotice | null, labels?: CloudLabelSource): CloudNotice | null {
+  return notice && { ...notice, message: cloudLabel(labels, notice.code, notice.message) };
+}
+
+export function loadMessage(error: Error, labels?: CloudLabelSource): string {
+  return error instanceof CloudError ? cloudLabel(labels, failureFor(error.status, error.code).code, error.message) : error.message;
 }
 
 export function createCloudController(options: CloudControllerOptions, callbacks: CloudCallbacks) {
@@ -82,6 +91,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     return createSubmitter({ ...options, version: form.version, renderToken: form.renderToken, firstRenderToken: first });
   };
   let submitter = createSubmitter(options);
+  let reported: unknown;
   const upload = createFileUploader(options);
   let initial = options.initialForm;
   const alive = () => !controller.signal.aborted;
@@ -131,10 +141,10 @@ export function createCloudController(options: CloudControllerOptions, callbacks
         initialValues: kept,
         revision: state.revision + 1,
         errors: updatedErrors(next.definition, sent, kept, error.errors ?? {}),
-        notice: { tone: 'info', message: FORM_UPDATED_MESSAGE, action: null, details: [] },
+        notice: { tone: 'info', code: 'form_refreshed', message: FORM_UPDATED_MESSAGE, action: null, details: [] },
       });
     } catch {
-      if (alive()) report({ notice: { tone: 'error', ...failureFor(409, 'form_updated'), details: [] } });
+      if (alive()) report({ notice: errorNotice(new CloudError({ status: 409, code: 'form_updated' })) });
     }
   }
 
@@ -173,6 +183,9 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     warm() {
       challenge()?.warm();
     },
+    relay(error: unknown) {
+      if (error !== reported) callbacks.onError?.(error);
+    },
     saveDraft(values: Record<string, unknown>) {
       if (state.definition && !state.done)
         drafts?.save(options.id, state.version ?? undefined, draftValues(state.definition, values, options.draftExclude));
@@ -199,6 +212,7 @@ export function createCloudController(options: CloudControllerOptions, callbacks
           update({ done: true, settings: withEnding(settings, submission.ending) });
           callbacks.onSuccess?.(submission);
         } catch (error) {
+          reported = error;
           const cloud = error as CloudError;
           if (cloud.code === 'verification_failed') check?.spend();
           const taken = cloud.code === 'file_taken';

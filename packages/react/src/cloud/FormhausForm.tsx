@@ -1,9 +1,9 @@
 import { FormActions, type FormActionsProps, FormRenderer } from '@formhaus/react';
-import { CloudError, type CloudAction } from '@formhaus/core/cloud';
-import { focusProblem } from '@formhaus/core/internal';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { CloudError, type CloudNotice as CloudNoticeData, type CloudNoticeActionFn } from '@formhaus/core/cloud';
+import { CLOUD_NOTICE, cloudLabel, focusProblem, loadMessage, localNotice } from '@formhaus/core/internal';
+import { type ComponentType, createContext, type ReactNode, type RefObject, useCallback, useContext, useEffect, useRef } from 'react';
 import { CloudNotice } from './CloudNotice';
-import type { FormhausFormProps } from './types';
+import type { FormhausFormActionsProps, FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
 
 const HIDDEN = {
@@ -17,7 +17,26 @@ const HIDDEN = {
 
 const CONTENTS = { display: 'contents' } as const;
 
-function handled() {}
+interface ActionsSlot {
+  Actions: ComponentType<FormhausFormActionsProps>;
+  box: RefObject<HTMLDivElement | null> | null;
+  notice: CloudNoticeData | null;
+  view: ReactNode;
+  act: CloudNoticeActionFn;
+}
+
+const ActionsContext = createContext<ActionsSlot | null>(null);
+
+function CloudActions(props: FormActionsProps) {
+  const { Actions, box, notice, view, act } = useContext(ActionsContext)!;
+  return (
+    <>
+      {box && <div ref={box} style={CONTENTS} />}
+      {view}
+      <Actions {...props} notice={notice} onNoticeAction={act} />
+    </>
+  );
+}
 
 export function FormhausForm({
   id,
@@ -31,27 +50,16 @@ export function FormhausForm({
   success,
   initialValues,
   onFieldChange,
+  actionsComponent,
+  cloudLabels,
+  noticePlacement,
+  noticeComponent: Notice,
   ...rendererProps
 }: FormhausFormProps) {
   const trap = useRef<HTMLInputElement>(null);
   const extraBody = useCallback(() => ({ _fh_hp: trap.current?.value ?? '' }), []);
   const box = useRef<HTMLDivElement>(null);
   const cloud = useCloudForm({ id, apiBase, initialForm, draftStore, draftExclude, extraBody, challengeHost: box, onSuccess, onError });
-  const actionsComponent = useRef(rendererProps.actionsComponent);
-  actionsComponent.current = rendererProps.actionsComponent;
-  const actions = useMemo(
-    () =>
-      function ChallengeActions(props: FormActionsProps) {
-        const Actions = actionsComponent.current ?? FormActions;
-        return (
-          <>
-            <div ref={box} style={CONTENTS} />
-            <Actions {...props} />
-          </>
-        );
-      },
-    [],
-  );
   const root = useRef<HTMLDivElement | null>(null);
   const { warm } = cloud;
   const attach = useCallback(
@@ -66,8 +74,7 @@ export function FormhausForm({
   useEffect(() => {
     if (ready) warm();
   }, [ready, cloud.revision, warm]);
-  const notice = useRef<HTMLDivElement>(null);
-  const act = useCallback((action: Exclude<CloudAction, null>) => {
+  const act = useCallback<CloudNoticeActionFn>((action) => {
     if (action === 'reload') window.location.reload();
     else root.current?.querySelector('form')?.requestSubmit();
   }, []);
@@ -75,7 +82,7 @@ export function FormhausForm({
 
   useEffect(() => {
     if (cloud.attempt === 0) return;
-    const frame = requestAnimationFrame(() => focusProblem(root.current, notice.current));
+    const frame = requestAnimationFrame(() => focusProblem(root.current, root.current?.querySelector<HTMLElement>(CLOUD_NOTICE)));
     return () => cancelAnimationFrame(frame);
   }, [cloud.attempt]);
 
@@ -87,11 +94,11 @@ export function FormhausForm({
     return (
       <div className="fh-cloud">
         <p role="alert" className="fh-form__error">
-          {cloud.loadError.message}
+          {loadMessage(cloud.loadError, cloudLabels)}
         </p>
         {cloud.loadError instanceof CloudError && cloud.loadError.retryable && (
           <button type="button" className="fh-form-actions__button fh-form-actions__button--secondary" onClick={cloud.retry}>
-            Try again
+            {cloudLabel(cloudLabels, 'retry')}
           </button>
         )}
       </div>
@@ -109,35 +116,43 @@ export function FormhausForm({
       <div className="fh-cloud">
         {success ?? (
           <p role="status" className="fh-form__success">
-            {successMessage ?? 'Thank you. Your response was submitted.'}
+            {successMessage ?? cloudLabel(cloudLabels, 'submitted')}
           </p>
         )}
         {allowAnother && (
           <button type="button" className="fh-form-actions__button fh-form-actions__button--secondary" onClick={cloud.again}>
-            Submit another response
+            {cloudLabel(cloudLabels, 'submitAnother')}
           </button>
         )}
       </div>
     );
+  const notice = localNotice(cloud.notice, cloudLabels);
+  const view =
+    notice && (Notice ? <Notice notice={notice} onAction={act} /> : <CloudNotice notice={notice} labels={cloudLabels} onAction={act} />);
+  const top = noticePlacement !== 'actions';
   return (
     <div ref={attach} className="fh-cloud">
       <input ref={trap} name="_fh_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={HIDDEN} defaultValue="" />
-      <CloudNotice notice={cloud.notice} noticeRef={notice} onAction={act} />
-      <FormRenderer
-        {...rendererProps}
-        hiddenValues={undefined}
-        key={cloud.revision}
-        definition={cloud.definition}
-        initialValues={cloud.initialValues ?? initialValues}
-        errors={cloud.errors}
-        onSubmit={cloud.submit}
-        onError={handled}
-        actionsComponent={cloud.challenge ? actions : rendererProps.actionsComponent}
-        onFieldChange={(key, value, values) => {
-          cloud.saveDraft(values);
-          onFieldChange?.(key, value, values);
-        }}
-      />
+      {top && view}
+      <ActionsContext.Provider
+        value={{ Actions: actionsComponent ?? FormActions, box: cloud.challenge ? box : null, notice, view: top ? null : view, act }}
+      >
+        <FormRenderer
+          {...rendererProps}
+          hiddenValues={undefined}
+          key={cloud.revision}
+          definition={cloud.definition}
+          initialValues={cloud.initialValues ?? initialValues}
+          errors={cloud.errors}
+          onSubmit={cloud.submit}
+          onError={cloud.relay}
+          actionsComponent={CloudActions}
+          onFieldChange={(key, value, values) => {
+            cloud.saveDraft(values);
+            onFieldChange?.(key, value, values);
+          }}
+        />
+      </ActionsContext.Provider>
     </div>
   );
 }

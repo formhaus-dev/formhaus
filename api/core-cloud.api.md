@@ -96,9 +96,17 @@ export interface CloudErrorInit {
 }
 
 // @public (undocumented)
+export type CloudLabelKey = CloudNoticeCode | 'retry' | 'reload' | 'submitAnother' | 'submitted';
+
+// @public (undocumented)
+export type CloudLabelSource = Partial<Record<CloudLabelKey, string>> | ((key: CloudLabelKey) => string | undefined);
+
+// @public (undocumented)
 export interface CloudNotice {
     // (undocumented)
     action: CloudAction;
+    // (undocumented)
+    code: CloudNoticeCode;
     // (undocumented)
     details: string[];
     // (undocumented)
@@ -106,6 +114,12 @@ export interface CloudNotice {
     // (undocumented)
     tone: 'error' | 'info';
 }
+
+// @public (undocumented)
+export type CloudNoticeActionFn = (action: NonNullable<CloudAction>) => void;
+
+// @public (undocumented)
+export type CloudNoticeCode = KnownCloudErrorCode | 'form_refreshed';
 
 // @public (undocumented)
 export interface CloudSettings {

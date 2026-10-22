@@ -9,10 +9,13 @@ export {
   cloudStateFor,
   createCloudController,
   initialCloudState,
+  loadMessage,
+  localNotice,
   type CloudCallbacks,
   type CloudControllerOptions,
   type CloudState,
 } from '../cloud/controller';
+export { CLOUD_NOTICE, cloudLabel } from '../cloud/failures';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { labelFor } from '../i18n/labels';
 export { actionsView } from './actions';

@@ -62,11 +62,12 @@ export function useCloudForm({
   );
   const retry = useCallback(() => controller.current!.start(), []);
   const again = useCallback(() => controller.current!.again(), []);
+  const relay = useCallback((error: unknown) => controller.current?.relay(error), []);
   const saveDraft = useCallback((values: Record<string, unknown>) => controller.current?.saveDraft(values), []);
   const warm = useCallback(() => {
     wanted.current = true;
     controller.current?.warm();
   }, []);
 
-  return { ...state, submit, retry, again, saveDraft, warm };
+  return { ...state, submit, retry, again, relay, saveDraft, warm };
 }

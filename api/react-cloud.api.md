@@ -5,6 +5,9 @@
 ```ts
 
 import { CloudError } from '@formhaus/core/cloud';
+import { CloudLabelSource } from '@formhaus/core/cloud';
+import { CloudNotice } from '@formhaus/core/cloud';
+import { CloudNoticeActionFn } from '@formhaus/core/cloud';
 import { CloudSubmission } from '@formhaus/core/cloud';
 import { ComponentClass } from 'react';
 import { ComponentType } from 'react';
@@ -32,15 +35,41 @@ import { ValidatorFn } from '@formhaus/core';
 
 export { CloudError }
 
+export { CloudLabelSource }
+
+export { CloudNotice }
+
+export { CloudNoticeActionFn }
+
 export { CloudSubmission }
 
 // @public (undocumented)
 export function FormhausForm(input: FormhausFormProps): react.JSX.Element;
 
 // @public (undocumented)
-export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues'> {
+export interface FormhausFormActionsProps extends FormActionsProps {
+    // (undocumented)
+    notice?: CloudNotice | null;
+    // (undocumented)
+    onNoticeAction?: CloudNoticeActionFn;
+}
+
+// @public (undocumented)
+export interface FormhausFormNoticeProps {
+    // (undocumented)
+    notice: CloudNotice;
+    // (undocumented)
+    onAction: CloudNoticeActionFn;
+}
+
+// @public (undocumented)
+export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues' | 'actionsComponent'> {
+    // (undocumented)
+    actionsComponent?: ComponentType<FormhausFormActionsProps>;
     // (undocumented)
     apiBase?: string;
+    // (undocumented)
+    cloudLabels?: CloudLabelSource;
     // (undocumented)
     draftExclude?: string[];
     // (undocumented)
@@ -51,6 +80,10 @@ export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' 
     id: string;
     // (undocumented)
     initialForm?: PublishedForm;
+    // (undocumented)
+    noticeComponent?: ComponentType<FormhausFormNoticeProps>;
+    // (undocumented)
+    noticePlacement?: 'top' | 'actions';
     // (undocumented)
     onSuccess?: (submission: CloudSubmission) => void;
     // (undocumented)

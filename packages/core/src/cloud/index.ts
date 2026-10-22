@@ -1,6 +1,6 @@
 export { createChallengeFrame, type ChallengeFrameOptions, type ChallengeHost, type CloudChallengeFrame } from './challenge';
 export { CloudError, type CloudErrorInit } from './error';
-export type { CloudAction, KnownCloudErrorCode } from './failures';
+export type { CloudAction, CloudLabelKey, CloudLabelSource, CloudNoticeActionFn, CloudNoticeCode, KnownCloudErrorCode } from './failures';
 export {
   createSubmitter,
   fetchForm,

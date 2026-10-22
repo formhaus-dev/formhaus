@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import type { CloudAction, CloudNotice } from '@formhaus/core/cloud';
+import type { CloudAction, CloudLabelSource, CloudNotice } from '@formhaus/core/cloud';
+import { cloudLabel } from '@formhaus/core/internal';
 
-defineProps<{ notice: CloudNotice | null }>();
-const emit = defineEmits<{ action: [action: Exclude<CloudAction, null>] }>();
-const LABELS = { retry: 'Try again', reload: 'Reload page' };
+defineProps<{ notice: CloudNotice; labels?: CloudLabelSource }>();
+const emit = defineEmits<{ action: [action: NonNullable<CloudAction>] }>();
 </script>
 
 <template>
-  <div v-if="notice" tabindex="-1" :class="['fh-form__notice', `fh-form__notice--${notice.tone}`]">
+  <div tabindex="-1" :class="['fh-form__notice', `fh-form__notice--${notice.tone}`]">
     <p>{{ notice.message }}</p>
     <ul v-if="notice.details.length > 0">
       <li v-for="detail in notice.details" :key="detail">{{ detail }}</li>
@@ -18,7 +18,7 @@ const LABELS = { retry: 'Try again', reload: 'Reload page' };
       class="fh-form-actions__button fh-form-actions__button--secondary"
       @click="emit('action', notice.action!)"
     >
-      {{ LABELS[notice.action] }}
+      {{ cloudLabel(labels, notice.action) }}
     </button>
   </div>
 </template>
