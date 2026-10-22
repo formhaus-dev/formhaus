@@ -1,4 +1,4 @@
-import type { DraftStore, PublishedForm } from '@formhaus/core/cloud';
+import type { CloudLabelSource, DraftStore, PublishedForm } from '@formhaus/core/cloud';
 import type { FormRendererProps } from '../types';
 
 export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues'> {
@@ -7,4 +7,6 @@ export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' 
   initialForm?: PublishedForm;
   draftStore?: DraftStore | false;
   draftExclude?: string[];
+  cloudLabels?: CloudLabelSource;
+  noticePlacement?: 'top' | 'actions';
 }

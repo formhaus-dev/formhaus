@@ -49,7 +49,8 @@ export function useCloudForm(options: CloudFormOptions) {
   const submit = (values: Record<string, unknown>, skippedSteps?: string[]) => controller!.submit(values, skippedSteps);
   const retry = () => controller!.start();
   const again = () => controller!.again();
+  const relay = (error: unknown) => controller?.relay(error);
   const saveDraft = (values: Record<string, unknown>) => controller?.saveDraft(values);
   const warm = () => controller?.warm();
-  return { state, submit, retry, again, saveDraft, warm };
+  return { state, submit, retry, again, relay, saveDraft, warm };
 }
