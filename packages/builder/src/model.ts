@@ -148,10 +148,24 @@ function dropScale(question: BuilderQuestion, keepRange: boolean): void {
   else delete question.extra.validation;
 }
 
+type OptionExtra = NonNullable<BuilderOption['extra']>;
+
+export function setOptionExtra<K extends keyof OptionExtra>(option: BuilderOption, key: K, value: OptionExtra[K] | undefined): void {
+  const { [key]: _old, ...rest } = option.extra ?? {};
+  option.extra = value === undefined ? rest : { ...rest, [key]: value };
+  if (!Object.keys(option.extra).length) delete option.extra;
+}
+
+export function dropOrder(question: BuilderQuestion): void {
+  delete question.extra.randomize;
+  for (const option of question.options) if (option.extra?.pinned !== undefined) setOptionExtra(option, 'pinned', undefined);
+}
+
 export function setType(form: BuilderForm, question: BuilderQuestion, type: FieldType): void {
   if (isScale(question.type) && question.type !== type) dropScale(question, isScale(type));
   if (!canAutoAdvance(type)) delete question.extra.autoAdvance;
   if (type !== 'radio' && type !== 'multiselect') delete question.extra.columns;
+  if (!hasOptions(type)) dropOrder(question);
   question.type = type;
   if (type === 'hidden') question.required = false;
   else delete question.extra.source;

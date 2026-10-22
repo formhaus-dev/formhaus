@@ -1,7 +1,8 @@
 import { syncIdentifiers } from '../identifiers';
 import { bindReferences } from '../references';
-import { newOption, type BuilderForm, type BuilderOption, type BuilderQuestion } from '../model';
+import { dropOrder, newOption, setOptionExtra, type BuilderForm, type BuilderOption, type BuilderQuestion } from '../model';
 import { moveItem } from './blocks';
+import { requireFormat } from './form';
 import { findField } from './locate';
 import { syncRow } from './matrix';
 
@@ -74,9 +75,24 @@ export function setOptionImage(form: BuilderForm, fieldUid: string, optionUid: s
   const item = findField(form, fieldUid);
   const entry = item?.options.find((candidate) => candidate.uid === optionUid);
   if (!item || !entry) return;
-  const { image: _old, ...extra } = entry.extra ?? {};
-  const url = image.trim();
-  entry.extra = url ? { ...extra, image: url } : extra;
-  if (!Object.keys(entry.extra).length) delete entry.extra;
+  setOptionExtra(entry, 'image', image.trim() || undefined);
   dropColumns(item);
+}
+
+export function setRandomize(form: BuilderForm, fieldUid: string, on: boolean): void {
+  const item = findField(form, fieldUid);
+  if (!item) return;
+  if (!on) {
+    dropOrder(item);
+    return;
+  }
+  item.extra.randomize = true;
+  requireFormat(form, '1.6');
+}
+
+export function setOptionPinned(form: BuilderForm, fieldUid: string, optionUid: string, pinned: boolean): void {
+  const entry = option(form, fieldUid, optionUid);
+  if (!entry) return;
+  setOptionExtra(entry, 'pinned', pinned || undefined);
+  if (pinned) requireFormat(form, '1.6');
 }

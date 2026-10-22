@@ -20,6 +20,7 @@ import { FieldText } from './FieldText';
 import { LimitSettings } from './LimitSettings';
 import { limitSpec } from './limits';
 import { PerRow } from './PerRow';
+import { RandomizeSetting } from './RandomizeSetting';
 import { ResponseKey } from './ResponseKey';
 import { ScaleSettings } from './ScaleSettings';
 
@@ -79,7 +80,8 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
   const parent = findField(form, field.parent ?? '');
   const advances = canAutoAdvance(field.type) && parent?.type !== 'group' && !isMatrix(parent);
   const limits = limitSpec(field.type);
-  const choices = hasOptions(field.type) && field.type !== 'select' && !isMatrix(parent);
+  const shuffles = hasOptions(field.type) && !isMatrix(parent);
+  const choices = shuffles && field.type !== 'select';
   const pictures = choices && field.options.some((option) => option.extra?.image);
   return (
     <div className={styles.panel} role="group" aria-label="Field settings">
@@ -129,6 +131,7 @@ export function FieldPanel({ field, actions }: { field: BuilderQuestion; actions
           }}
         />
       )}
+      {shuffles && <RandomizeSetting field={field} actions={actions} readOnly={readOnly} />}
       {pictures && <PerRow field={field} actions={actions} />}
       {choices && !pictures && (
         <div className={styles.control}>
