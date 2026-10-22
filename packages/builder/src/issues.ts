@@ -66,9 +66,17 @@ export function findIssues(form: BuilderForm): Issue[] {
       const found = target(condition.field, scope(block));
       const at = found && form.blocks.indexOf(found);
       if (at === undefined)
-        issues.push({ uid: block.uid, severity: 'error', message: `Shown if uses "${condition.field}", which is not a field.` });
+        issues.push({
+          uid: block.uid,
+          severity: 'error',
+          message: `The "Shown when" condition uses "${condition.field}", which is not a field.`,
+        });
       else if (at >= index)
-        issues.push({ uid: block.uid, severity: 'warning', message: `Shown if uses "${condition.field}", which comes later.` });
+        issues.push({
+          uid: block.uid,
+          severity: 'warning',
+          message: `The "Shown when" condition uses "${condition.field}", which comes later.`,
+        });
     }
   });
   return issues;
