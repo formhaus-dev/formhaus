@@ -125,7 +125,7 @@ describe('controller', () => {
       revision: 1,
       initialValues: { name: 'Ada' },
       errors: { name: 'Too long', topic: 'Please answer again.' },
-      notice: { tone: 'info', message: 'This form was updated. Please review your answers and submit again.' },
+      notice: { tone: 'info', code: 'form_refreshed', message: 'This form was updated. Please review your answers and submit again.' },
     });
   });
 
@@ -161,7 +161,7 @@ describe('controller', () => {
     const { controller, last } = setup(reply(200, v1, 1), reply(409, { error: 'form_updated', version: 3, errors: {} }), reply(200, v2, 2));
     await vi.waitFor(() => expect(last().version).toBe(1));
     await expect(controller.submit({ name: 'Ada' })).rejects.toBeInstanceOf(CloudError);
-    expect(last()).toMatchObject({ definition: v1, revision: 0, notice: { tone: 'error', action: 'reload' } });
+    expect(last()).toMatchObject({ definition: v1, revision: 0, notice: { tone: 'error', code: 'form_updated', action: 'reload' } });
   });
 
   it('asks for a reload when the new definition cannot be loaded', async () => {
@@ -175,14 +175,23 @@ describe('controller', () => {
     const { controller, last } = setup(reply(200, v1, 1), reply(422, { errors: { name: 'Taken', ghost: 'Unknown' } }));
     await vi.waitFor(() => expect(last().definition).toEqual(v1));
     await expect(controller.submit({ name: 'Ada' })).rejects.toBeInstanceOf(CloudError);
-    expect(last()).toMatchObject({ errors: { name: 'Taken' }, notice: { tone: 'error', details: ['Unknown'] }, attempt: 1 });
+    expect(last()).toMatchObject({
+      errors: { name: 'Taken' },
+      notice: { tone: 'error', code: 'invalid', details: ['Unknown'] },
+      attempt: 1,
+    });
   });
 
   it('shows a notice for every other failure and clears it on the next submit', async () => {
     const { controller, last } = setup(reply(200, v1, 1), reply(429, { error: 'rate_limited' }), reply(201, { id: 's', values: {} }));
     await vi.waitFor(() => expect(last().definition).toEqual(v1));
     await expect(controller.submit({ name: 'Ada' })).rejects.toBeInstanceOf(CloudError);
-    expect(last().notice).toMatchObject({ tone: 'error', action: 'retry', message: 'Too many attempts. Wait a minute and try again.' });
+    expect(last().notice).toMatchObject({
+      tone: 'error',
+      code: 'rate_limited',
+      action: 'retry',
+      message: 'Too many attempts. Wait a minute and try again.',
+    });
     await controller.submit({ name: 'Ada' });
     expect(last()).toMatchObject({ notice: null, done: true });
   });
@@ -193,13 +202,32 @@ describe('focusProblem', () => {
     const input = { focus: vi.fn(), matches: () => true, querySelector: () => null };
     const group = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: () => input };
     const root = { querySelector: vi.fn((selector: string) => (selector === '.fh-error-summary' ? null : group)) };
-    const notice = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: () => null };
+    const document = { activeElement: null as unknown };
+    const notice = {
+      focus: vi.fn(() => {
+        document.activeElement = notice;
+      }),
+      scrollIntoView: vi.fn(),
+      matches: () => false,
+      querySelector: () => null,
+      ownerDocument: document,
+    };
     focusProblem(root, notice);
     expect(notice.focus).toHaveBeenCalled();
     expect(input.focus).not.toHaveBeenCalled();
     focusProblem(root, null);
     expect(input.focus).toHaveBeenCalledWith({ preventScroll: true });
     expect(group.scrollIntoView).toHaveBeenCalled();
+  });
+
+  it('falls back to the first invalid field when the notice does not take focus', () => {
+    const input = { focus: vi.fn(), matches: () => true, querySelector: () => null };
+    const group = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: () => input };
+    const root = { querySelector: (selector: string) => (selector === '.fh-error-summary' ? null : group) };
+    const notice = { focus: vi.fn(), matches: () => false, querySelector: () => null, ownerDocument: { activeElement: null } };
+    focusProblem(root, notice);
+    expect(notice.focus).toHaveBeenCalled();
+    expect(input.focus).toHaveBeenCalledWith({ preventScroll: true });
   });
 
   it('focuses an error summary with two or more entries before the first invalid field', () => {
