@@ -3,6 +3,7 @@ import { SegmentedControl } from '../ui';
 import { cx } from '../ui/lib/cx';
 import type { EditorActions } from '../useEditorActions';
 import styles from './FieldCard.module.css';
+import { questionName } from './questionName';
 import tag from './RequiredTag.module.css';
 
 interface Props {
@@ -27,7 +28,7 @@ export function RequiredTag({ field, actions, editable, reserve }: Props) {
     ) : null;
   return (
     <SegmentedControl
-      label="Answer"
+      label={`Answer for ${questionName(field)}`}
       className={tag.compact}
       options={STATES}
       value={field.required ? 'required' : 'optional'}

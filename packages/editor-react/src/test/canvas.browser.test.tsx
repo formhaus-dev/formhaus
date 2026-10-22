@@ -145,7 +145,7 @@ describe('editor canvas in a browser', () => {
     await userEvent.click(screen.getByRole('button', { name: /Field type: Short text/ }));
     await userEvent.click(within(await screen.findByRole('listbox')).getByRole('option', { name: /Hidden value/ }));
     expect(screen.queryByRole('textbox', { name: 'Help text' })).toBeNull();
-    expect(screen.queryByRole('radiogroup', { name: 'Answer' })).toBeNull();
+    expect(screen.queryByRole('radiogroup', { name: /^Answer for / })).toBeNull();
     await userEvent.click(screen.getByRole('textbox', { name: 'Value' }));
     await userEvent.keyboard('newsletter');
     await waitFor(() => {

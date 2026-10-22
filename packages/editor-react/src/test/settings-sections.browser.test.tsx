@@ -1,5 +1,5 @@
 import { fromDefinition, toDefinition } from '@formhaus/builder';
-import type { FormDefinition, FormField } from '@formhaus/core';
+import type { FormDefinition, FormField, FormNode } from '@formhaus/core';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { page, userEvent } from 'vitest/browser';
@@ -17,7 +17,7 @@ const plan: FormField = {
   ],
 };
 const company: FormField = { key: 'company', type: 'text', label: 'Company' };
-const definition = (fields: FormField[]): FormDefinition => ({ id: 'plans', title: 'Plans', submit: { label: 'Send' }, fields });
+const definition = (fields: FormNode[]): FormDefinition => ({ id: 'plans', title: 'Plans', submit: { label: 'Send' }, fields });
 const sections = (label: string) =>
   [...within(screen.getByRole('group', { name: `${label} field` })).getByRole('group', { name: 'Field settings' }).children].map((node) =>
     node.getAttribute('aria-label'),
@@ -51,7 +51,7 @@ describe('field settings sections', () => {
   it('toggles required from the card head with the keyboard', async () => {
     const { store } = renderEditor(fromDefinition(definition([plan, company])));
     await settings('Company');
-    const answer = within(screen.getByRole('radiogroup', { name: 'Answer' }));
+    const answer = within(screen.getByRole('radiogroup', { name: 'Answer for Company' }));
     answer.getByRole('radio', { name: 'Optional' }).focus();
     await userEvent.keyboard('{ArrowRight}');
     await waitFor(() => {
@@ -128,5 +128,19 @@ describe('field settings sections', () => {
     expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await userEvent.click(toggle);
     expect(toggle).toHaveAttribute('aria-expanded', 'false');
+  });
+
+  it('leaves the required control off a repeatable group', async () => {
+    renderEditor(
+      fromDefinition(
+        definition([plan, { key: 'people', type: 'group', label: 'People', fields: [{ key: 'name', type: 'text', label: 'Name' }] }]),
+      ),
+    );
+    const card = screen.getByRole('group', { name: 'People repeatable group' });
+    await userEvent.click(within(card).getByRole('button', { name: 'Field settings' }));
+    expect(screen.queryByRole('radiogroup', { name: 'Answer for People' })).toBeNull();
+    await userEvent.click(within(card).getAllByRole('button', { name: 'Field actions' })[0]!);
+    expect(await screen.findByRole('menuitem', { name: /^Duplicate/ })).toBeVisible();
+    expect(screen.queryByRole('menuitemcheckbox', { name: 'Required' })).toBeNull();
   });
 });

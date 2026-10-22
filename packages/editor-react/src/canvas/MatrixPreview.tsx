@@ -3,6 +3,7 @@ import type { CSSProperties } from 'react';
 import { useForm } from '../store/hooks';
 import { cx } from '../ui/lib/cx';
 import styles from './MatrixPreview.module.css';
+import { questionName } from './questionName';
 
 export function MatrixPreview({ field }: { field: BuilderQuestion }) {
   const rows = childrenOf(useForm(), field.uid).filter((row) => hasOptions(row.type));
@@ -20,7 +21,7 @@ export function MatrixPreview({ field }: { field: BuilderQuestion }) {
       </div>
       {rows.map((row) => (
         <div key={row.uid} className={styles.row}>
-          <span className={cx(styles.label, !row.label.trim() && styles.placeholder)}>{row.label.trim() || 'Untitled question'}</span>
+          <span className={cx(styles.label, !row.label.trim() && styles.placeholder)}>{questionName(row)}</span>
           <div className={styles.cells}>
             {columns.map((column) => (
               <span key={column.uid} className={styles.cell}>

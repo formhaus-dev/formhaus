@@ -13,6 +13,7 @@ import {
 } from '../ui';
 import { useForm } from '../store/hooks';
 import type { EditorActions } from '../useEditorActions';
+import { takesRequired } from './required';
 
 interface Props {
   uid: string;
@@ -45,7 +46,7 @@ function FieldMenuItems({ uid, actions, onAddBelow, onSettings }: Props) {
   const first = index <= (isPage(form.blocks[0]) ? 1 : 0);
   const last = index === form.blocks.length - 1;
   const field = findField(form, uid);
-  const requirable = field && field.type !== 'section' && field.type !== 'hidden' && field.type !== 'group';
+  const requirable = field && takesRequired(field);
   return (
     <>
       <DropdownMenuItem
