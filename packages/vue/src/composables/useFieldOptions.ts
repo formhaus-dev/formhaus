@@ -1,5 +1,5 @@
 import type { FieldOption, FormEngine } from '@formhaus/core';
-import { loadOptions, type OptionSource, sameOptions } from '@formhaus/core/internal';
+import { type OptionSource, sameOptions, watchOptions } from '@formhaus/core/internal';
 import { type Ref, ref, watch } from 'vue';
 import type { OptionsProvider } from '../types';
 
@@ -7,9 +7,9 @@ export function useFieldOptions(
   optionSources: Ref<OptionSource[]>,
   getEngine: () => FormEngine,
   getProviders: () => Record<string, OptionsProvider> | undefined,
-): Ref<Record<string, FieldOption[]>> {
+): [Ref<Record<string, FieldOption[]>>, Ref<Record<string, boolean>>] {
   const resolved = ref<Record<string, FieldOption[]>>({});
-  const requestVersions = new Map<string, number>();
+  const busy = ref<Record<string, boolean>>({});
   let current: FormEngine | undefined;
 
   watch(
@@ -20,31 +20,22 @@ export function useFieldOptions(
         current = engine;
       }
       if (!providers) return;
-      let active = true;
-      const unsubscribers: Array<() => void> = [];
-
-      const commit = (key: string, options: FieldOption[]) => {
-        if (!active || sameOptions(resolved.value[key], options)) return;
-        resolved.value = { ...resolved.value, [key]: options };
-      };
-
-      for (const [key, field] of sources) {
-        const provider = field.optionsFrom && providers[field.optionsFrom];
-        if (!provider) continue;
-        const resolve = () => loadOptions(key, provider, engine.values, requestVersions, commit);
-        resolve();
-        for (const dependency of new Set(field.optionsDependsOn ?? [])) {
-          unsubscribers.push(engine.subscribeField(dependency, resolve));
-        }
-      }
-
-      onCleanup(() => {
-        active = false;
-        for (const unsubscribe of unsubscribers) unsubscribe();
-      });
+      onCleanup(
+        watchOptions(
+          engine,
+          sources,
+          providers,
+          (key, options) => {
+            if (!sameOptions(resolved.value[key], options)) resolved.value = { ...resolved.value, [key]: options };
+          },
+          (key, loading) => {
+            if (!busy.value[key] !== !loading) busy.value = { ...busy.value, [key]: loading };
+          },
+        ),
+      );
     },
     { immediate: true },
   );
 
-  return resolved;
+  return [resolved, busy];
 }

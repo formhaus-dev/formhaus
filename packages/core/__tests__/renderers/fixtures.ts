@@ -43,6 +43,7 @@ export interface RendererHarness {
   type(element: Element, value: string): Promise<void>;
   submit(form: HTMLFormElement): Promise<void>;
   containers?: Record<string, unknown>;
+  controls?: Record<string, unknown>;
 }
 
 type Query = (role: string, options?: { name?: string | RegExp }) => HTMLElement;
