@@ -16,6 +16,7 @@ const engine = new FormEngine(definition, initialValues, {
   validators,
   messages,
   onStepValidate,
+  onValidate,
   onBeforeStepChange,
   onAfterStepChange,
   onBeforeSubmit,
@@ -227,16 +228,16 @@ Renderers take `messages` and `labels` props with the same types as the engine o
 
 | Method | Returns | Description |
 |---|---|---|
-| `next()` | `Promise<boolean>` | Validates the current step, awaits `onStepValidate` and the step hooks, then advances |
+| `next()` | `Promise<boolean>` | Validates the current step, awaits `onStepValidate`, `onValidate` and the step hooks, then advances |
 | `back()` | `Promise<boolean>` | Runs the step hooks and moves to the previous step of the path without validation |
 | `skip(submit?)` | `Promise<boolean>` | Runs the step hooks with `reason: 'skip'` and the pre-skip values, then resets the step and advances. When no step follows, it submits through `submit` without the step |
-| `submit(handler)` | `Promise<boolean>` | Validates every step of the path, runs `onBeforeSubmit`, awaits `handler(values, skippedSteps)` and then `onAfterSubmit`. Resolves to `false` when the handler returns `{ ok: false }` |
+| `submit(handler)` | `Promise<boolean>` | Validates every step of the path, runs `onValidate` and `onBeforeSubmit`, awaits `handler(values, skippedSteps)` and then `onAfterSubmit`. Resolves to `false` when the handler returns `{ ok: false }` |
 | `isStepSkipped(stepId)` | `boolean` | Whether the step is skipped and left out of validation and submitted values |
 | `goToStepWithField(key)` | `void` | Moves to the visible step containing a field without lifecycle hooks |
 | `goToStep(stepId)` | `GoToStepResult` | Opens a step if the user could reach it. Otherwise opens the previous available step and reports it. See [Opening a step by id](/spec#opening-a-step-by-id) |
 | `start()` | `void` | Reports `form_viewed` and the first `step_viewed`. Call it once the form is on screen. Later calls do nothing |
 
-See [Async step validation](/guide/async-validation#using-the-engine-directly) for an `onStepValidate` example.
+See [Async step validation](/guide/async-validation#using-the-engine-directly) for an `onStepValidate` example and [Schema validation](/guide/schema-validation) for `onValidate`.
 
 ## Subscriptions
 
