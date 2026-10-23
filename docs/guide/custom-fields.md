@@ -372,6 +372,18 @@ const props = defineProps(groupItemComponentProps)
 
 A field in a [`layout: "matrix"` section](/guide/sections) gets `matrix`: `{ columns, row }`. `columns` are the options of the first row, and `row` is the index of the field among the visible fields of the section. Draw the cells under the column headers of your `section`. Outside a matrix, `matrix` is `undefined`. In Vue, the field gets `matrix` only when it declares the prop, as `fieldComponentProps` does.
 
+## Fully custom layout
+
+Build the whole form on `useFormEngine` and read the error summary with `errorSummary` from `@formhaus/core`.
+
+::: code-group
+<<< @/recipes/snippets/custom-layout.tsx [React]
+
+<<< @/recipes/snippets/custom-layout.vue [Vue]
+:::
+
+`errorSummary(engine, { idPrefix?, labels? })` returns `{ groups, topLevelErrors, count }`. `groups` and `count` are the ones the `errorSummary` slot gets. `topLevelErrors` are the errors that belong to no field. Each entry `id` is `<idPrefix>-<key>`, or `fh-<key>` without a prefix; a key with characters other than letters, digits, `_` and `-` gets a cleaned id. `labels` overrides the definition `labels` for step and item titles.
+
 ## Next steps
 
 - [Field Types](/guide/fields): built-in fields and their settings
