@@ -1,3 +1,4 @@
+import type { FieldOption, FormField, FormSection, RootProps } from '../types';
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { getSubmitValues } from '../engine/validation-state';
@@ -24,7 +25,7 @@ export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from 
 export { builtInFields, fieldComponentsByName, mergeFieldComponents } from './field-components';
 export { fieldDomId, itemDomId } from './ids';
 export { actionTestIds, fieldTestIds, testIds, type TestId, type TestIdOption } from './test-ids';
-export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle, type ErrorEntry, type ErrorGroup } from './items';
+export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle } from './items';
 export { warnMissingComponents } from './missing-components';
 export {
   dividerBefore,
@@ -64,3 +65,19 @@ export function hasValue(engine: FormEngine, key: string): boolean {
     : internals.state.values[key];
   return value !== undefined && value !== '';
 }
+
+export function matrixColumns(section: FormSection): FieldOption[] | undefined {
+  return section.layout === 'matrix' ? (section.fields[0] as FormField | undefined)?.options : undefined;
+}
+
+export const ROOT_PROPS = {
+  fields: { 'data-fh': 'fields' },
+  errorSummary: { 'data-fh': 'error-summary', role: 'alert', tabIndex: -1 },
+  formErrors: { 'data-fh': 'form-errors', role: 'alert' },
+  progress: { 'data-fh': 'progress' },
+  actions: { 'data-fh': 'actions' },
+} satisfies Record<string, RootProps>;
+
+const noop = () => {};
+
+export const CLOSED_DIALOG = { open: false, description: '', confirm: noop, cancel: noop };
