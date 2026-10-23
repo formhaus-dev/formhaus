@@ -21,7 +21,7 @@ export { labelFor } from '../i18n/labels';
 export { actionsView } from './actions';
 export { warnDefinitionReset } from './definition-reset';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
-export { fieldComponentsByName, mergeFieldComponents } from './field-components';
+export { builtInFields, fieldComponentsByName, mergeFieldComponents } from './field-components';
 export { fieldDomId, itemDomId } from './ids';
 export { actionTestIds, fieldTestIds, testIds, type TestId, type TestIdOption } from './test-ids';
 export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle, type ErrorEntry, type ErrorGroup } from './items';
@@ -35,6 +35,7 @@ export {
   providedOptions,
   sameOptions,
   shownOptions,
+  watchOptions,
   type OptionSource,
   type OptionsProvider,
 } from './options';

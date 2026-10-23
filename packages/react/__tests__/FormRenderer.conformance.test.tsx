@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import type { RendererHarness, ScenarioProps, TestKit } from '../../core/__tests__/renderers/fixtures';
+import { controlScenarios } from '../../core/__tests__/renderers/controls.scenarios';
 import { containerScenarios } from '../../core/__tests__/renderers/containers.scenarios';
 import { definitionScenarios } from '../../core/__tests__/renderers/definition.scenarios';
 import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
@@ -17,7 +18,26 @@ import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenario
 import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
-import type { ConfirmDialogComponentProps, GroupComponentProps, SectionComponentProps } from '../src/types';
+import type { ConfirmDialogComponentProps, FieldComponentProps, GroupComponentProps, SectionComponentProps } from '../src/types';
+
+const controls = {
+  'x-knob': ({ id, field, error, loading }: FieldComponentProps) => (
+    <div
+      id={id}
+      role="listbox"
+      tabIndex={0}
+      aria-label={field.label}
+      aria-invalid={!!error || undefined}
+      data-loading={loading || undefined}
+    />
+  ),
+  'x-dial': ({ id, field, error }: FieldComponentProps) => (
+    <div id={id} role="group" aria-invalid={!!error || undefined}>
+      <span role="button" tabIndex={0} aria-disabled="true" aria-label="Locked" />
+      <div role="slider" tabIndex={0} aria-label={field.label} aria-valuemin={0} aria-valuemax={10} aria-valuenow={0} />
+    </div>
+  ),
+};
 
 const containers = {
   section: ({ title, children }: SectionComponentProps) => (
@@ -78,6 +98,7 @@ const harness: RendererHarness = {
     fireEvent.submit(form);
   },
   containers,
+  controls,
 };
 
 const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
@@ -94,6 +115,7 @@ describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: exclusive options', () => exclusiveScenarios(harness, kit));
 describe('renderer conformance: randomized options', () => randomizeScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
+describe('renderer conformance: custom controls', () => controlScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
 describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
 describe('renderer conformance: definition changes', () => definitionScenarios(harness, kit));

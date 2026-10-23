@@ -1,6 +1,7 @@
 import type { FormField } from '@formhaus/core';
 import { type ReactNode, useContext } from 'react';
 import { LabelContext } from '../labels';
+import { OptionsBusy } from '../optionsBusy';
 import { FieldLabel, RequiredMark } from './FieldLabel';
 import { describedBy } from './fieldProps';
 
@@ -30,6 +31,7 @@ export function FieldShell({ id, field, error, variant, testId, children }: Fiel
       className={variant ? `fh-field fh-field--${variant}` : 'fh-field'}
       aria-invalid={group ? !!error || undefined : undefined}
       aria-describedby={group ? describedBy(field, id, error) : undefined}
+      aria-busy={useContext(OptionsBusy) || undefined}
       data-testid={testId}
     >
       {group && field.label && (

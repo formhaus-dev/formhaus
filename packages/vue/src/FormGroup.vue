@@ -38,6 +38,7 @@ const props = withDefaults(
     components?: FieldComponentMap;
     labels?: LabelSource;
     options: Record<string, FieldOption[]>;
+    busy: Record<string, boolean>;
     confirmRemove?: boolean;
     onItemsChange: (key: string, apply: () => boolean) => boolean;
     recall?: unknown;
@@ -78,6 +79,7 @@ function itemProps(index: number, field: FormField) {
     modelValue: values.value[index]?.[field.key],
     error: props.errors[key],
     loading: props.fieldLoading[key],
+    busy: props.busy[optionKey(props.group.key, field.key)],
     disabled: props.disabled,
     components: props.components,
     ...fieldTestIds(props.testId, key),

@@ -115,7 +115,12 @@ export const components: Formhaus.FieldComponentMap = {
   text: (props: { modelValue?: unknown }) => h('input', { value: String(props.modelValue ?? '') }),
   rating: Formhaus.TextField,
   section: (_props, { slots }) => h('fieldset', slots.default?.()),
+  group: Formhaus.TextField,
+  groupItem: (_props, { slots }) => h('div', slots.default?.()),
+  confirmDialog: () => h('dialog'),
 };
+type Named<T> = keyof { [K in keyof T as string extends K ? never : K]: T[K] };
+export const nodeKeys: Named<Formhaus.FieldComponentMap>[] = ['section', 'group', 'groupItem', 'confirmDialog'];
 export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definition }), h(FormhausForm, { id: 'abc' })] })
   .component('FormRenderer', Formhaus.FormRenderer)
   .component('TextField', Formhaus.TextField)

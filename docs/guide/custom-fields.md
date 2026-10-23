@@ -22,7 +22,7 @@ The same map overrides a built-in type, such as `{ date: MyDatePicker }`. See [C
 ## Contract
 
 - The component renders its own label, helper text and error message. The renderer adds no wrapper around it.
-- Put the `id` prop on the focusable control. The error summary links to it, and focus after a failed Continue or Submit looks it up. When the element with the `id` is not an `input`, `select`, `textarea` or `button`, focus goes to the first of those inside it.
+- Put the `id` prop on the focusable control. The error summary links to it, and focus after a failed Continue or Submit looks it up. When the element with the `id` is not an `input`, `select`, `textarea`, `button` or an element with `tabindex`, focus goes to the first of those inside it. Focus skips `tabindex="-1"` and `aria-disabled="true"`.
 - Give the error message the `id` plus `-error` as its id, and set `aria-invalid` on the control while `error` is set.
 - Emit every change: `onChange(value)` in React, `update:modelValue` in Vue.
 - Emit `commit` only for a discrete pick, such as a click on an option, and only when `field.autoAdvance` is set. `onCommit(value)` in React, `commit` in Vue. It saves the value and advances the step, so do not also emit a change for that pick.
@@ -35,7 +35,7 @@ The same map overrides a built-in type, such as `{ date: MyDatePicker }`. See [C
 | Field from the definition | `field` | `field` |
 | Current value | `value` | `modelValue` |
 | Error message | `error` | `error` |
-| Loading state from `FormEngine.setFieldLoading()` | `loading` | `loading` |
+| Loading state from `FormEngine.setFieldLoading()` or a running `optionsFrom` provider | `loading` | `loading` |
 | Form is busy or disabled | `disabled` | `disabled` |
 | [Test ids](/guide/testing) | `testId`, `optionTestId` | `testId`, `optionTestId` |
 | Change | `onChange(value)` | `update:modelValue` |

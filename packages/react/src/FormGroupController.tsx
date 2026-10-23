@@ -22,6 +22,7 @@ interface FormGroupControllerProps extends ControllerProps {
   group: FormGroup;
   disabled?: boolean;
   options: Record<string, FieldOption[]>;
+  busy: Record<string, boolean>;
   labels?: FormRendererProps['labels'];
   confirmRemove?: boolean;
   onItemsChange: (key: string, apply: () => boolean) => boolean;
@@ -33,6 +34,7 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
   group,
   disabled,
   options,
+  busy,
   labels,
   confirmRemove = true,
   onItemsChange,
@@ -107,6 +109,7 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
           {...props}
           field={field}
           options={options[optionKey(group.key, field.key)]}
+          busy={busy[optionKey(group.key, field.key)]}
           disabled={disabled}
           path={`${group.key}.${index}.${field.key}`}
           item={values[index]}

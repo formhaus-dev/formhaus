@@ -64,7 +64,7 @@ export function useNodeProps(
     },
     { immediate: true },
   );
-  const loaded = useFieldOptions(
+  const [loaded, busy] = useFieldOptions(
     sources,
     () => form.engine,
     () => props.optionsProviders,
@@ -122,6 +122,7 @@ export function useNodeProps(
           labels: props.labels,
           confirmRemove: props.confirmRemove,
           options: options.value,
+          busy: busy.value,
           testId: testId.value,
           onItemsChange: on.changeItems,
           onUpdate: on.update,
@@ -136,6 +137,7 @@ export function useNodeProps(
         modelValue: values.value[field.key],
         error: errors.value[field.key],
         loading: fieldLoading.value[field.key],
+        busy: busy.value[field.key],
         disabled: disabled.value,
         components: props.components,
         ...idsOf(field.key),

@@ -100,6 +100,11 @@ describe('matrix lint', () => {
     expect(summary([matrix([row('a', ['No', 'Yes']), row('b', ['No', 'Yes']), { key: 'h', type: 'hidden' }])])).toEqual([]);
   });
 
+  it('accepts rows that load their options from a provider', () => {
+    const remote = (key: string) => ({ key, type: 'radio', label: key, optionsFrom: 'scale' });
+    expect(summary([matrix([row('a', ['No', 'Yes']), remote('b')]), { ...matrix([remote('c'), row('d', ['No'])]), key: 'n' }])).toEqual([]);
+  });
+
   it('reports rows whose options differ', () => {
     expect(summary([matrix([row('a', ['No', 'Yes']), row('b', ['No', 'Maybe', 'Yes'])])])).toEqual([
       'warning matrix-options-mismatch /fields/0/fields/1/options',
