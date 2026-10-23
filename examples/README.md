@@ -17,6 +17,9 @@ These integrations install their own dependencies and can be copied outside the 
 | [`react-mantine`](react-mantine/) | Vite + React 19 + Mantine 9 | Every field type and every `layout` slot with Mantine, including `@mantine/dates` |
 | [`react-chakra`](react-chakra/) | Vite + React 19 + Chakra UI 3 | Every field type and every `layout` slot with Chakra, including `DatePicker` and `Combobox` |
 | [`react-carbon`](react-carbon/) | Vite + React 19 + IBM Carbon | Every field type and every `layout` slot with `@carbon/react`, light and dark themes |
+| [`vue-primevue`](vue-primevue/) | Vite + Vue 3 + PrimeVue 4 | Every field type and layout slot with PrimeVue, light and dark Aura theme |
+| [`vue-element-plus`](vue-element-plus/) | Vite + Vue 3 + Element Plus | Every field type and layout slot with Element Plus, light and dark |
+| [`react-uswds`](react-uswds/) | Vite + React 19 + USWDS | U.S. Web Design System markup and error summary as small React components |
 | [`react-flat-api`](react-flat-api/) | React 18, built-in fields | Three steps sent as one flat API request, server errors mapped back to fields on any step |
 | [`cloud-waitlist`](cloud-waitlist/) | Plain HTML, React 18 | Formhaus Cloud waitlist form: `embed.js` in a static page and `FormhausForm` in React |
 

@@ -227,7 +227,7 @@ jobs:
 
     strategy:
       matrix:
-        example: [react-default, react-mui, react-antd, react-govuk, vue-vuetify, vanilla-svelte, react-quiz, react-flat-api, nextjs-app-router, nuxt, react-shadcn, cloud-waitlist/react]
+        example: [react-default, react-mui, react-antd, react-govuk, react-mantine, react-chakra, react-carbon, react-uswds, vue-vuetify, vue-primevue, vue-element-plus, vanilla-svelte, react-quiz, react-flat-api, nextjs-app-router, nuxt, react-shadcn, cloud-waitlist/react]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

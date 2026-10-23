@@ -131,6 +131,88 @@
   box-shadow: 0 1px 2px var(--fh-c-card-shadow), 0 0 0 1px var(--vp-c-divider);
 }
 
+.play-more {
+  position: relative;
+}
+
+.play-more__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--fh-site-space-1-5);
+  height: 30px;
+  padding: 0 var(--fh-site-space-2-5) 0 var(--fh-site-space-3);
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--vp-c-text-2);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.play-more__toggle[data-active] {
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  box-shadow: 0 1px 2px var(--fh-c-card-shadow), 0 0 0 1px var(--vp-c-divider);
+}
+
+.play-more__toggle .lucide {
+  color: var(--vp-c-text-3);
+}
+
+.play-menu {
+  position: absolute;
+  top: calc(100% + var(--fh-site-space-2));
+  right: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 240px;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  padding: var(--fh-site-space-1-5);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: 10px;
+  background: var(--vp-c-bg-elv);
+  box-shadow: var(--vp-shadow-3);
+}
+
+.play-menu__group {
+  margin: 0;
+  padding: var(--fh-site-space-2) var(--fh-site-space-2-5) var(--fh-site-space-1);
+  font-size: var(--fh-site-font-size-xs);
+  font-weight: 600;
+  color: var(--vp-c-text-3);
+}
+
+.play-seg .play-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fh-site-space-3);
+  height: 34px;
+  padding: 0 var(--fh-site-space-2-5);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--vp-c-text-1);
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+}
+
+.play-seg .play-menu__item .play-seg__tag {
+  margin-left: var(--fh-site-space-1-5);
+}
+
+.play-seg .play-menu__item[aria-checked='true'] {
+  background: var(--vp-c-default-soft);
+  box-shadow: none;
+}
+
+.play-menu__item .lucide {
+  color: var(--vp-c-brand-1);
+}
+
 .play-seg__tag {
   font-size: var(--fh-site-font-size-xs);
   color: var(--vp-c-text-3);
@@ -192,8 +274,13 @@
     background: var(--vp-c-brand-2);
   }
 
-  .play-issues button:hover {
+  .play-issues button:hover,
+  .play-seg .play-menu__item:hover {
     background: var(--vp-c-default-soft);
+  }
+
+  .play-more__toggle:hover {
+    color: var(--vp-c-text-1);
   }
 }
 

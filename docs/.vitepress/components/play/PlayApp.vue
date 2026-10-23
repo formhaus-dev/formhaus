@@ -8,6 +8,7 @@ import {
   appUrl,
   type Code,
   codeUrl,
+  designGroups,
   designs,
   issueMarks,
   issueText,
@@ -52,6 +53,18 @@ let media: MediaQueryList | undefined;
 let presetText = '';
 
 const design = computed(() => designs.find((entry) => entry.id === designId.value) ?? designs[0]!);
+const inlineDesigns = designs.filter((entry) => entry.inline);
+const moreOpen = ref(false);
+const moreRoot = ref<HTMLElement>();
+
+function closeMore(event: Event) {
+  if (event instanceof KeyboardEvent ? event.key === 'Escape' : !moreRoot.value?.contains(event.target as Node)) moreOpen.value = false;
+}
+
+function pickMore(id: string) {
+  moreOpen.value = false;
+  chooseDesign(id);
+}
 const errors = computed(() => (parseError.value ? 1 : issues.value.filter((issue) => issue.severity === 'error').length));
 const warnings = computed(() => issues.value.filter((issue) => issue.severity === 'warning').length);
 const outView = computed(() => (mobile.value ? (tab.value === 'code' ? 'code' : 'preview') : view.value));
@@ -241,6 +254,8 @@ watch(tab, async (next) => {
 });
 
 onMounted(async () => {
+  document.addEventListener('pointerdown', closeMore);
+  document.addEventListener('keydown', closeMore);
   media = window.matchMedia('(max-width: 860px)');
   mobile.value = media.matches;
   media.addEventListener('change', (event) => (mobile.value = event.matches));
@@ -256,6 +271,8 @@ onMounted(async () => {
 });
 
 onBeforeUnmount(() => {
+  document.removeEventListener('pointerdown', closeMore);
+  document.removeEventListener('keydown', closeMore);
   window.removeEventListener('message', onMessage);
   editor?.destroy();
 });
@@ -279,7 +296,7 @@ onBeforeUnmount(() => {
       <div class="play-bar__spacer" />
       <div class="play-seg play-seg--designs" role="radiogroup" aria-label="Design system">
         <button
-          v-for="entry in designs"
+          v-for="entry in inlineDesigns"
           :key="entry.id"
           type="button"
           role="radio"
@@ -288,11 +305,44 @@ onBeforeUnmount(() => {
         >
           {{ entry.label }}<span class="play-seg__tag">{{ entry.framework }}</span>
         </button>
+        <div ref="moreRoot" class="play-more">
+          <button
+            type="button"
+            class="play-more__toggle"
+            aria-haspopup="menu"
+            :aria-expanded="moreOpen"
+            :data-active="!design.inline || undefined"
+            @click="moreOpen = !moreOpen"
+          >
+            <template v-if="design.inline">More</template>
+            <template v-else>{{ design.label }}<span class="play-seg__tag">{{ design.framework }}</span></template>
+            <LucideIcon name="chevron-down" />
+          </button>
+          <div v-if="moreOpen" class="play-menu" role="menu" aria-label="More design systems">
+            <template v-for="section in designGroups" :key="section.group">
+              <p class="play-menu__group">{{ section.group }}</p>
+              <button
+                v-for="entry in section.entries"
+                :key="entry.id"
+                type="button"
+                role="menuitemradio"
+                :aria-checked="entry.id === designId"
+                class="play-menu__item"
+                @click="pickMore(entry.id)"
+              >
+                <span>{{ entry.label }}<span class="play-seg__tag">{{ entry.lightOnly ? 'Light only' : entry.framework }}</span></span>
+                <LucideIcon v-if="entry.id === designId" name="check" />
+              </button>
+            </template>
+          </div>
+        </div>
       </div>
       <label class="play-select play-select--designs">
         <span class="play-sr">Design system</span>
         <select :value="designId" @change="chooseDesign(($event.target as HTMLSelectElement).value)">
-          <option v-for="entry in designs" :key="entry.id" :value="entry.id">{{ entry.label }} · {{ entry.framework }}</option>
+          <optgroup v-for="section in designGroups" :key="section.group" :label="section.group">
+            <option v-for="entry in section.entries" :key="entry.id" :value="entry.id">{{ entry.label }} · {{ entry.framework }}</option>
+          </optgroup>
         </select>
         <LucideIcon name="chevron-down" />
       </label>

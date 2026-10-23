@@ -6,17 +6,30 @@ export interface Design {
   label: string;
   framework: string;
   dir: string;
+  group: 'React' | 'Vue' | 'Government';
+  inline?: boolean;
   lightOnly?: boolean;
 }
 
 export const designs: Design[] = [
-  { id: 'react', label: 'Default', framework: 'React', dir: 'react-default' },
-  { id: 'shadcn', label: 'shadcn/ui', framework: 'React', dir: 'react-shadcn' },
-  { id: 'mui', label: 'MUI', framework: 'React', dir: 'react-mui' },
-  { id: 'antd', label: 'Ant Design', framework: 'React', dir: 'react-antd' },
-  { id: 'vuetify', label: 'Vuetify', framework: 'Vue', dir: 'vue-vuetify' },
-  { id: 'govuk', label: 'GOV.UK', framework: 'React', dir: 'react-govuk', lightOnly: true },
+  { id: 'react', label: 'Default', framework: 'React', dir: 'react-default', group: 'React', inline: true },
+  { id: 'shadcn', label: 'shadcn/ui', framework: 'React', dir: 'react-shadcn', group: 'React', inline: true },
+  { id: 'mui', label: 'MUI', framework: 'React', dir: 'react-mui', group: 'React', inline: true },
+  { id: 'antd', label: 'Ant Design', framework: 'React', dir: 'react-antd', group: 'React', inline: true },
+  { id: 'mantine', label: 'Mantine', framework: 'React', dir: 'react-mantine', group: 'React' },
+  { id: 'chakra', label: 'Chakra UI', framework: 'React', dir: 'react-chakra', group: 'React' },
+  { id: 'carbon', label: 'Carbon', framework: 'React', dir: 'react-carbon', group: 'React' },
+  { id: 'vuetify', label: 'Vuetify', framework: 'Vue', dir: 'vue-vuetify', group: 'Vue', inline: true },
+  { id: 'primevue', label: 'PrimeVue', framework: 'Vue', dir: 'vue-primevue', group: 'Vue' },
+  { id: 'element-plus', label: 'Element Plus', framework: 'Vue', dir: 'vue-element-plus', group: 'Vue' },
+  { id: 'govuk', label: 'GOV.UK', framework: 'React', dir: 'react-govuk', group: 'Government', lightOnly: true },
+  { id: 'uswds', label: 'USWDS', framework: 'React', dir: 'react-uswds', group: 'Government', lightOnly: true },
 ];
+
+export const designGroups = (['React', 'Vue', 'Government'] as const).map((group) => ({
+  group,
+  entries: designs.filter((entry) => entry.group === group),
+}));
 
 export const widths = [
   { id: 'phone', label: 'Phone', icon: 'smartphone', px: 390 },
@@ -27,7 +40,7 @@ export const widths = [
 export type WidthId = (typeof widths)[number]['id'];
 
 const loaders = import.meta.glob<object>(
-  '../../../../examples/definitions/{multi-step,conditional-fields,validation,survey,branching-form}.json',
+  '../../../../examples/definitions/{multi-step,conditional-fields,validation,survey,branching-form,event-registration}.json',
   {
     import: 'default',
   },
@@ -40,6 +53,7 @@ export const presets = [
   { id: 'validation', label: 'Validation', load: load('validation') },
   { id: 'survey', label: 'Survey with matrix', load: load('survey') },
   { id: 'branching', label: 'Branching', load: load('branching-form') },
+  { id: 'event', label: 'Event registration', load: load('event-registration') },
 ];
 
 export const appUrl = (design: Design) => `/play/apps/${design.id}/index.html`;
