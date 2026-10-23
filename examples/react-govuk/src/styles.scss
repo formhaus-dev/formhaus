@@ -1,0 +1,24 @@
+@use "../node_modules/govuk-frontend/dist/govuk" with (
+  $govuk-font-family: (arial, sans-serif),
+  $govuk-assets-path: "../node_modules/govuk-frontend/dist/govuk/assets/"
+);
+
+.app-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-form [data-fh="error-summary"] {
+  order: -1;
+}
+
+.govuk-template {
+  background-color: #ffffff;
+}
+
+.app-link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
