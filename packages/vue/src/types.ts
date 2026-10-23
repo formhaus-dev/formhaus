@@ -4,12 +4,17 @@ import type {
   BeforeSubmitFn,
   ConfirmDialogView,
   DefinitionIssue,
+  ErrorSummaryView,
+  FieldOption,
   FieldType,
   FormEvent,
   FormActionsView,
   FormDefinition,
+  FormErrorsView,
   FormField,
   FormRendererHandle,
+  FormStepProgressView,
+  FormStepStatus,
   FormResearch,
   GroupItemView,
   GroupView,
@@ -18,6 +23,7 @@ import type {
   MessageKey,
   OptionsProvider,
   RecallFormatFn,
+  RootProps,
   SectionView,
   StepValidateFn,
   AfterSubmitFn,
@@ -41,26 +47,33 @@ export interface GroupComponentProps extends GroupView<GroupItemComponentProps> 
   itemComponent: Component;
 }
 
-export interface FormActionsProps extends FormActionsView {}
+export type ErrorSummaryComponentProps = ErrorSummaryView;
 
-export interface FormStepStatus {
-  id: string;
-  title?: string;
-  errorCount: number;
+export type FormErrorsComponentProps = FormErrorsView;
+
+export interface FieldsContainerProps {
+  rootProps: RootProps;
 }
 
-export interface FormStepProgressProps {
-  current: number;
-  total: number;
-  stepTitle?: string;
-  stepDescription?: string;
-  headingLevel?: HeadingLevel;
-  steps?: FormStepStatus[];
-  counterLabel?: string;
-  stepErrorCount?: number;
+export interface FormActionsProps extends FormActionsView {
+  rootProps?: RootProps;
 }
 
-export type { FormRendererHandle, OptionsProvider };
+export type FormStepProgressProps = FormStepProgressView;
+
+export interface LayoutComponentMap {
+  fields?: Component;
+  section?: Component;
+  group?: Component;
+  groupItem?: Component;
+  confirmDialog?: Component;
+  errorSummary?: Component;
+  formErrors?: Component;
+  progress?: Component;
+  actions?: Component;
+}
+
+export type { FormRendererHandle, FormStepStatus, OptionsProvider, RootProps };
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
@@ -93,6 +106,7 @@ export interface FormRendererProps {
   stepErrorMarks?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;
+  layout?: LayoutComponentMap;
   actionsComponent?: Component;
   progressComponent?: Component;
   optionsProviders?: Record<string, OptionsProvider>;
@@ -122,6 +136,7 @@ export interface FieldComponentProps {
   disabled?: boolean;
   testId?: string;
   optionTestId?: (value: string) => string | undefined;
+  matrix?: { columns: FieldOption[]; row: number };
 }
 
 export interface FieldResolverProps extends FieldComponentProps {

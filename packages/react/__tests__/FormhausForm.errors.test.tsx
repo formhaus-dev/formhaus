@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import type { FormDefinition } from '@formhaus/core';
 import { afterEach, expect, it, vi } from 'vitest';
+import type { ErrorSummaryComponentProps } from '../src';
 import { FormhausForm } from '../src/cloud';
 
 const v1: FormDefinition = {
@@ -114,4 +115,14 @@ it('lists messages for keys the form does not render without the key and focuses
   expect(await screen.findByText('Unknown code')).toBeDefined();
   expect(screen.queryByText(/referral/)).toBeNull();
   await waitFor(() => expect(document.activeElement?.className).toContain('fh-form__notice'));
+});
+
+it('focuses a custom error summary after several server errors', async () => {
+  stub(reply(200, v1, 1), reply(422, { errors: { name: 'Taken', topic: 'Pick another' } }));
+  const errorSummary = ({ rootProps, count }: ErrorSummaryComponentProps) => <div {...rootProps}>{`${count} errors`}</div>;
+  render(<FormhausForm id="abc" layout={{ errorSummary }} />);
+  await fillAndSend();
+  const summary = await screen.findByText('2 errors');
+  await new Promise((done) => requestAnimationFrame(done));
+  await waitFor(() => expect(document.activeElement).toBe(summary));
 });

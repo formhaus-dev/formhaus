@@ -1,10 +1,11 @@
-import type { FormAction, FormActionsView, FormField, FormGroup, FormSection } from '@formhaus/core';
+import type { ErrorSummaryGroup, FormAction, FormActionsView, FormField, FormGroup, FormSection, RootProps } from '@formhaus/core';
 import type { Component, PropType } from 'vue';
-import type { FormStepStatus, GroupItemComponentProps, HeadingLevel } from './types';
+import type { FieldComponentProps, FormStepStatus, GroupItemComponentProps, HeadingLevel } from './types';
 
 const required = <T>(type: PropType<T>) => ({ type, required: true as const });
 const any = <T>() => null as unknown as PropType<T>;
 const callback = <T extends (...args: never[]) => unknown>() => required(Function as PropType<T>);
+const rootProps = Object as PropType<RootProps>;
 
 export const fieldComponentProps = {
   id: String,
@@ -15,6 +16,7 @@ export const fieldComponentProps = {
   disabled: Boolean,
   testId: String,
   optionTestId: Function as PropType<(value: string) => string | undefined>,
+  matrix: Object as PropType<FieldComponentProps['matrix']>,
 };
 
 export const fieldComponentEmits = {
@@ -99,6 +101,7 @@ export const formActionsProps = {
   showSkip: optionalBoolean,
   skipLabel: String,
   testIds: Object as PropType<FormActionsView['testIds']>,
+  rootProps,
 };
 
 export const formActionsEmits = {
@@ -119,4 +122,23 @@ export const formStepProgressProps = {
   steps: Array as PropType<FormStepStatus[]>,
   counterLabel: String,
   stepErrorCount: Number,
+  marks: { type: Boolean, default: true },
+  rootProps,
+};
+
+export const fieldsContainerProps = {
+  rootProps: /* @__PURE__ */ required(rootProps),
+};
+
+export const errorSummaryComponentProps = {
+  rootProps: /* @__PURE__ */ required(rootProps),
+  title: /* @__PURE__ */ required(String),
+  groups: /* @__PURE__ */ required(Array as PropType<ErrorSummaryGroup[]>),
+  count: /* @__PURE__ */ required(Number),
+  showField: /* @__PURE__ */ callback<(key: string) => void>(),
+};
+
+export const formErrorsComponentProps = {
+  rootProps: /* @__PURE__ */ required(rootProps),
+  errors: /* @__PURE__ */ required(Array as PropType<readonly string[]>),
 };

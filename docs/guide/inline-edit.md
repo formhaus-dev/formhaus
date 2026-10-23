@@ -85,7 +85,7 @@ Each row gets validation, error display and automatic busy state while React `on
 
 ## Inline button layout
 
-If the default actions footer is too heavy for a settings row, swap it via `actionsComponent`:
+If the default actions footer is too heavy for a settings row, swap it via `layout.actions`:
 
 ::: code-group
 ```tsx [React]
@@ -104,7 +104,7 @@ function InlineSaveActions({ onSubmit, loading }: FormActionsProps) {
   definition={definition}
   initialValues={{ name: user.name }}
   onSubmit={onSave}
-  actionsComponent={InlineSaveActions}
+  layout={{ actions: InlineSaveActions }}
 />;
 ```
 :::

@@ -50,7 +50,7 @@ function getBackLabel(): string {
 </script>
 
 <template>
-  <div class="fh-form-actions">
+  <div class="fh-form-actions" v-bind="props.rootProps">
     <div class="fh-form-actions__secondary">
       <button
         v-if="getShouldShowBack()"

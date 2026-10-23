@@ -228,8 +228,7 @@ Three paths render the same definition. Sizes for each are in [Bundle size](/gui
 <HeadlessFormRenderer
   definition={definition}
   components={{ text: MyInput, email: MyInput, select: MySelect }}
-  actionsComponent={MyFormActions}
-  progressComponent={MyStepProgress}
+  layout={{ actions: MyFormActions, progress: MyStepProgress }}
   onSubmit={handleSubmit}
 />
 ```
@@ -238,8 +237,7 @@ Three paths render the same definition. Sizes for each are in [Bundle size](/gui
 <HeadlessFormRenderer
   :definition="definition"
   :components="{ text: MyInput, email: MyInput, select: MySelect }"
-  :actions-component="MyFormActions"
-  :progress-component="MyStepProgress"
+  :layout="{ actions: MyFormActions, progress: MyStepProgress }"
   @submit="onSubmit"
 />
 ```
