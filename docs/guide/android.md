@@ -11,25 +11,13 @@ description: "Run Formhaus JSON form definitions on Android and the JVM with the
 
 ## Install
 
-Releases are served from JitPack. Add the repository in `settings.gradle.kts`:
-
-```kotlin
-dependencyResolutionManagement {
-    repositories {
-        google()
-        mavenCentral()
-        maven("https://jitpack.io")
-    }
-}
-```
-
-Add the packages you need:
+Releases are published to Maven Central. Add the packages you need:
 
 ```kotlin
 dependencies {
-    implementation("com.github.formhaus-dev.formhaus-kotlin:formhaus-core:v0.2.0")
-    implementation("com.github.formhaus-dev.formhaus-kotlin:formhaus-compose:v0.2.0")
-    implementation("com.github.formhaus-dev.formhaus-kotlin:formhaus-research:v0.2.0")
+    implementation("dev.formhaus:formhaus-core:0.2.1")
+    implementation("dev.formhaus:formhaus-compose:0.2.1")
+    implementation("dev.formhaus:formhaus-research:0.2.1")
 }
 ```
 
@@ -43,6 +31,7 @@ dependencies {
 
 | formhaus-kotlin | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.2.1 | 1.2.2 | 1.6 |
 | 0.2.0 | 1.2.2 | 1.6 |
 | 0.1.0 | 1.2.2 | 1.6 |
 
