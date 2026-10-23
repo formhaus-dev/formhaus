@@ -1,20 +1,16 @@
-import { fieldDomId } from '@formhaus/core/internal';
-import type { FormField } from '@formhaus/core';
+import { fieldAria as coreAria, fieldId } from '@formhaus/core/fields';
+import type { FormField, FormGroup } from '@formhaus/core';
 import { computed } from 'vue';
 import type { FieldEmits, FieldComponentProps } from '../types';
 
-export function fieldIds(field: Pick<FormField, 'key'>, id?: string) {
-  const inputId = id ?? fieldDomId(undefined, field.key);
+export function fieldIds(field: FormField | FormGroup, id?: string) {
+  const inputId = fieldId({ id, field });
   return { inputId, helperId: `${inputId}-helper`, errorId: `${inputId}-error` };
 }
 
-export function fieldAria(field: Pick<FormField, 'key' | 'helperText'>, id: string | undefined, error?: string) {
-  const { helperId, errorId } = fieldIds(field, id);
-  const ids = [field.helperText && helperId, error && errorId].filter(Boolean);
-  return {
-    'aria-invalid': !!error || undefined,
-    'aria-describedby': ids.length ? ids.join(' ') : undefined,
-  };
+export function fieldAria(field: FormField | FormGroup, id: string | undefined, error?: string) {
+  const aria = coreAria({ id, field, error });
+  return { 'aria-invalid': aria['aria-invalid'], 'aria-describedby': aria['aria-describedby'] };
 }
 
 export function useField(props: FieldComponentProps, emit: FieldEmits) {
@@ -29,8 +25,7 @@ export function useField(props: FieldComponentProps, emit: FieldEmits) {
     name: props.field.key,
     autocomplete: props.field.autocomplete,
     ...control.value,
-    ...fieldAria(props.field, props.id, props.error),
-    'aria-required': !!props.field.validation?.required || undefined,
+    ...coreAria(props),
     'data-testid': props.testId,
   }));
   return { inputId, control, input };

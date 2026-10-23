@@ -85,12 +85,23 @@ describe('HeadlessFormRenderer', () => {
   });
 
   it('renders the unsupported fallback for an unmapped type', () => {
+    const onWarning = vi.fn();
     const { container } = render(HeadlessFormRenderer, {
-      props: { definition, components: { text: CustomText } },
+      props: { definition, components: { text: CustomText }, onWarning },
     });
     expect(screen.getByText('Unsupported field type: email')).toBeDefined();
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'missing-component', message: expect.stringContaining('"email"') }),
+    );
     expect(container.querySelectorAll('input')).toHaveLength(1);
     expect(container.querySelector('.fh-field__input')).toBeNull();
+  });
+
+  it('passes class and other attributes through to the form element', () => {
+    const { container } = render(FormRenderer, { props: { definition }, attrs: { class: 'usa-form', 'aria-label': 'Contact' } });
+    const form = container.querySelector('form')!;
+    expect(form.className).toBe('fh-form usa-form');
+    expect(form.getAttribute('aria-label')).toBe('Contact');
   });
 
   it('renders no actions or progress when none are passed', () => {

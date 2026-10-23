@@ -57,8 +57,8 @@ const layout: LayoutComponentMap = {
       {children}
     </div>
   ),
-  section: ({ id, title, children }: SectionComponentProps) => (
-    <fieldset id={id} className="ds-section">
+  section: ({ id, title, columns, children }: SectionComponentProps) => (
+    <fieldset id={id} className="ds-section" data-columns={columns?.map((column) => column.label).join()}>
       <legend>{title}</legend>
       {children}
     </fieldset>
@@ -126,17 +126,19 @@ const layout: LayoutComponentMap = {
       ))}
     </div>
   ),
-  progress: ({ rootProps, current, total, steps }: FormStepProgressProps) => (
-    <div {...rootProps} className="ds-progress">
+  progress: ({ rootProps, current, total, steps, stepErrorsLabel }: FormStepProgressProps) => (
+    <div {...rootProps} className="ds-progress" data-errors={stepErrorsLabel}>
       <span>{`${current}/${total}`}</span>
       <ol>
         {steps?.map((step) => (
-          <li key={step.id}>{step.title}</li>
+          <li key={step.id} data-errors={step.errorsLabel}>
+            {step.title}
+          </li>
         ))}
       </ol>
     </div>
   ),
-  actions: ({ rootProps, isFirstStep, primaryLabel, onBack, onPrimary }: FormActionsProps) => (
+  actions: ({ rootProps, isFirstStep, primaryLabel, primaryDisabled, onBack, onPrimary }: FormActionsProps) => (
     <div {...rootProps} className="ds-actions">
       {!isFirstStep && (
         <button type="button" onClick={onBack}>
@@ -145,6 +147,7 @@ const layout: LayoutComponentMap = {
       )}
       <button
         type="submit"
+        data-disabled={primaryDisabled}
         onClick={(event) => {
           event.preventDefault();
           onPrimary?.();

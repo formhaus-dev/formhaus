@@ -1,14 +1,12 @@
-import { fieldDomId } from '@formhaus/core/internal';
-import type { FormField } from '@formhaus/core';
+import { fieldAria, fieldId } from '@formhaus/core/fields';
+import type { FormField, FormGroup } from '@formhaus/core';
 import type { KeyboardEvent, MouseEvent } from 'react';
 import type { FieldComponentProps } from '../types';
 
-export function fieldId(props: Pick<FieldComponentProps, 'id' | 'field'>): string {
-  return props.id ?? fieldDomId(undefined, props.field.key);
-}
+export { fieldId };
 
-export function describedBy(field: Pick<FormField, 'helperText'>, id: string, error?: string) {
-  return [field.helperText && `${id}-helper`, error && `${id}-error`].filter(Boolean).join(' ') || undefined;
+export function describedBy(field: FormField | FormGroup, id: string, error?: string) {
+  return fieldAria({ id, field, error })['aria-describedby'];
 }
 
 export function optionProps({ disabled, loading, onBlur, onFocus, optionTestId }: FieldComponentProps, value?: unknown) {
@@ -22,9 +20,8 @@ export function inputProps(props: FieldComponentProps) {
     name: props.field.key,
     autoComplete: props.field.autocomplete,
     ...optionProps(props),
+    ...fieldAria(props),
     'aria-invalid': !!props.error,
-    'aria-required': !!props.field.validation?.required || undefined,
-    'aria-describedby': describedBy(props.field, id, props.error),
     'data-testid': props.testId,
   };
 }

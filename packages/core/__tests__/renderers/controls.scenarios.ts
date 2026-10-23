@@ -35,10 +35,62 @@ const grouped = (control: FormField): FormDefinition => ({
   ],
 });
 
-export function controlScenarios(harness: RendererHarness, { it, expect, waitFor, screen }: TestKit): void {
+export function controlScenarios(harness: RendererHarness, { it, expect, fn, waitFor, screen }: TestKit): void {
   const components = harness.controls;
   const active = () => document.activeElement;
   const controls = (label: string) => [...document.querySelectorAll(`[aria-label="${label}"]`)];
+
+  it('runs a custom field built on the field helpers: ids, aria, number values and autoAdvance', async () => {
+    const onSubmit = fn();
+    harness.mount({
+      definition: {
+        id: 'helpers',
+        title: '',
+        submit: { label: 'Send' },
+        steps: [
+          {
+            id: 'one',
+            title: 'One',
+            fields: [
+              {
+                key: 'plan',
+                type: 'x-pick',
+                label: 'Plan',
+                autoAdvance: true,
+                options: [
+                  { value: 'basic', label: 'Basic' },
+                  { value: 'pro', label: 'Pro' },
+                ],
+              },
+            ],
+          },
+          {
+            id: 'two',
+            title: 'Two',
+            fields: [{ key: 'age', type: 'number', label: 'Age', helperText: 'Years', validation: { required: true } }],
+          },
+        ],
+      },
+      components: { 'x-pick': components!['x-pick'], number: components!['x-text'] },
+      onSubmit,
+    });
+    const [basic, pro] = screen.getAllByRole('radio');
+    expect([basic.id.endsWith('-plan'), pro.id === `${basic.id}-1`, pro.getAttribute('name')]).toEqual([true, true, 'plan']);
+    await harness.click(pro);
+    const age = await screen.findByRole('textbox', { name: 'Age' });
+    expect([age.id, age.getAttribute('name'), age.getAttribute('aria-required'), age.getAttribute('aria-describedby')]).toEqual([
+      expect.stringMatching(/-age$/),
+      'age',
+      'true',
+      `${age.id}-helper`,
+    ]);
+    await harness.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(age.getAttribute('aria-describedby')).toBe(`${age.id}-helper ${age.id}-error`));
+    expect(age.getAttribute('aria-invalid')).toBe('true');
+    await harness.type(age, '42');
+    await harness.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ plan: 'pro', age: 42 }, []));
+  });
   const knob = custom('x-knob', 'Knob');
   const dial = custom('x-dial', 'Dial');
   const city = custom('select', 'City', { optionsFrom: 'cities' });

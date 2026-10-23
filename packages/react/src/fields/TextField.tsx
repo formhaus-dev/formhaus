@@ -1,3 +1,4 @@
+import { inputType } from '@formhaus/core/fields';
 import { useState } from 'react';
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
@@ -16,22 +17,11 @@ export function TextField(props: FieldComponentProps) {
 
   const text = isNumber && draft && Object.is(Number(draft), value) ? draft : String(value ?? '');
 
-  const inputType =
-    field.type === 'email'
-      ? 'email'
-      : field.type === 'phone'
-        ? 'tel'
-        : isNumber
-          ? 'number'
-          : field.type === 'password'
-            ? 'password'
-            : 'text';
-
   return (
     <FieldShell id={fieldId(props)} field={field} error={error}>
       <input
         {...inputProps(props)}
-        type={inputType}
+        type={inputType(field)}
         className="fh-field__input"
         value={text}
         placeholder={field.placeholder ?? field.mask}

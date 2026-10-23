@@ -3,6 +3,7 @@ export { HeadlessFormRenderer } from './HeadlessFormRenderer';
 export { FormActions } from './FormActions';
 export { DefaultConfirmDialog, DefaultGroup, DefaultGroupItem, DefaultSection } from './ContainerViews';
 export { FormhausField } from './FormhausField';
+export { fieldProps, type FieldAttrs, type FieldProps } from './fieldProps';
 export type { FieldResolverProps as FormhausFieldProps } from './FieldResolver';
 export { defaultFieldComponents } from './defaultFieldComponents';
 export { AutocompleteField } from './fields/AutocompleteField';

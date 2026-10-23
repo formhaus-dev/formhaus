@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { optionText, optionValue } from '@formhaus/core/fields';
 import { optionTexts } from '@formhaus/core/internal';
 import { computed, ref } from 'vue';
 import { fieldComponentProps } from '../props';
@@ -11,11 +12,10 @@ const emit = defineEmits<FieldEmits>();
 const { inputId, input } = useField(props, emit);
 const text = ref('');
 const texts = computed(() => optionTexts(props.field.options ?? []));
-const toValue = (value: string) => props.field.options?.[texts.value.indexOf(value)]?.value ?? value;
+const toValue = (value: string) => optionValue(props.field.options ?? [], value);
 const shown = computed(() => {
   const stored = (props.modelValue as string) ?? '';
-  const index = props.field.options?.findIndex((opt) => opt.value === stored) ?? -1;
-  return toValue(text.value) === stored ? text.value : index < 0 ? stored : texts.value[index];
+  return toValue(text.value) === stored ? text.value : optionText(props.field.options ?? [], stored);
 });
 function onInput(event: Event) {
   text.value = (event.target as HTMLInputElement).value;

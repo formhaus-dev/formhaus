@@ -47,7 +47,10 @@ const layout: Record<string, Component> = {
     setup:
       (props, { slots }) =>
       () =>
-        h('fieldset', { id: props.id, class: 'ds-section' }, [h('legend', props.title), slots.default?.()]),
+        h('fieldset', { id: props.id, class: 'ds-section', 'data-columns': props.columns?.map((column) => column.label).join() }, [
+          h('legend', props.title),
+          slots.default?.(),
+        ]),
   }),
   group: defineComponent({
     props: groupComponentProps,
@@ -116,11 +119,11 @@ const layout: Record<string, Component> = {
   progress: defineComponent({
     props: formStepProgressProps,
     setup: (props) => () =>
-      h('div', { ...props.rootProps, class: 'ds-progress' }, [
+      h('div', { ...props.rootProps, class: 'ds-progress', 'data-errors': props.stepErrorsLabel }, [
         h('span', `${props.current}/${props.total}`),
         h(
           'ol',
-          props.steps?.map((step) => h('li', { key: step.id }, step.title)),
+          props.steps?.map((step) => h('li', { key: step.id, 'data-errors': step.errorsLabel }, step.title)),
         ),
       ]),
   }),
@@ -136,6 +139,7 @@ const layout: Record<string, Component> = {
             'button',
             {
               type: 'submit',
+              'data-disabled': props.primaryDisabled,
               onClick: (event: Event) => {
                 event.preventDefault();
                 emit('primary');
