@@ -14,13 +14,14 @@ description: "Render Formhaus JSON form definitions on iOS and macOS with SwiftU
 In Xcode, add the package URL under Package Dependencies and add `FormhausCore` and `FormhausUI` to your app target. In a `Package.swift` manifest, add this entry to `dependencies`:
 
 ```swift
-.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.5")
+.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.6")
 ```
 
 Requires Swift 6.2 and iOS 17 or macOS 14. The package has no JavaScript runtime.
 
 | formhaus-swift | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.1.6 | 1.2.2 | 1.6 |
 | 0.1.5 | 1.2.0 | 1.6 |
 | 0.1.4 | 1.1.1 | 1.6 |
 | 0.1.3 | 1.0.0 | 1.5 |
@@ -67,6 +68,54 @@ The handler returns a `SubmitResult`. `SubmitResult(json:)` reads the response b
 
 The form shows these messages on the fields. Any other body counts as success.
 
+## Restore after the app is closed
+
+The system can end the app while it is in the background. Save the form's snapshot and pass it back to `restoring:` to bring back the answers, the current step and the skipped steps. Keep the draft in a store that outlives the form view, so the `nil` sent after a submit is saved too:
+
+```swift
+@MainActor
+final class SignupDraft {
+    private let key = "signup.draft"
+    private(set) var snapshot: FormSnapshot?
+
+    init() {
+        snapshot = UserDefaults.standard.data(forKey: key).flatMap { FormSnapshot.decode($0) }
+    }
+
+    func save(_ next: FormSnapshot?) {
+        snapshot = next
+        UserDefaults.standard.set(try? next.map { try JSONEncoder().encode($0) }, forKey: key)
+    }
+}
+
+@main
+struct SignupApp: App {
+    @State private var draft = SignupDraft()
+
+    var body: some Scene {
+        WindowGroup { SignupView(draft: draft) }
+    }
+}
+
+struct SignupView: View {
+    let draft: SignupDraft
+
+    var body: some View {
+        FormhausForm(
+            definition: signup,
+            renderer: FormRendererOptions(onSnapshotChange: draft.save),
+            restoring: draft.snapshot
+        ) { values, _ in
+            try await send(values)
+        }
+    }
+}
+```
+
+`onSnapshotChange` gets a new snapshot at most once per run loop turn, and `nil` after a successful submit so the draft goes away. A snapshot saved for another form, or for a step the definition no longer has, starts the form fresh and reports `snapshot-mismatch` through `onWarning`. Password values are never in a snapshot. A picked file comes back while its copy still exists. The format is in the [spec](/spec#form-snapshot-native-ports).
+
+Snapshot values can hold personal data. User defaults are not encrypted, so for such forms store the snapshot in the Keychain or in a file with data protection, and delete it when the user signs out.
+
 ## Choose a look
 
 | Formhaus | iOS system | Your own |
@@ -106,4 +155,4 @@ The built-in sets label every control for VoiceOver. After a failed submit, Voic
 
 ## Differences
 
-The Swift package has no draft saving and no Formhaus Cloud client. See the [README](https://github.com/formhaus-dev/formhaus-swift#differences-from-typescript) for the full list.
+The Swift package does not store drafts itself, the app stores the snapshot. It has no Formhaus Cloud client. See the [README](https://github.com/formhaus-dev/formhaus-swift#differences-from-typescript) for the full list.
