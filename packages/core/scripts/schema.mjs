@@ -105,7 +105,7 @@ export function buildTranslationSchema(definitionSchema = buildSchema()) {
     $id: 'https://formhaus.dev/schema/form-translation.json',
     title: 'Formhaus translation overlay',
     description:
-      'Translated texts of one form in one language, keyed by step id, section key, field key and option value. Every leaf is a string; empty strings fall back to the source text.',
+      'Translated texts of one form in one language, keyed by step id, section key, field key and option value. In a multi-step form, top-level fields.<key> also applies and steps.<id>.fields.<key> wins over it. Every leaf is a string; empty strings fall back to the source text.',
     ...overlay,
     definitions: { field, step },
   };

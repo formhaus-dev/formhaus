@@ -12,6 +12,7 @@
   "core/fix",
   "core/research",
   "core/schema",
+  "core/locales/ru",
   "react/cloud",
   "react/i18n",
   "vue/cloud",
