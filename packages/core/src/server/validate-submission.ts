@@ -10,6 +10,7 @@ import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { trustDefinition } from '../engine/warnings';
 import { normalizeValue, typeError } from '../validation/type-checks';
+import { refuseSlowPatterns } from './slow-patterns';
 import { hasOwn, isEntry, isGroup, itemPath, itemScope, keepId } from '../visibility/nodes';
 
 export interface SubmissionOptions {
@@ -211,6 +212,7 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
 
 function validated(definition: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {
   validDefinition(definition);
+  refuseSlowPatterns(definition);
   const fields = getAllFields(definition);
   const source = isEntry(values) ? values : {};
   let prepared = prepare(definition, fields, source, options);

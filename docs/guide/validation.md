@@ -39,9 +39,27 @@ All rules are optional. Combine them freely.
 
 `pattern` is not anchored: `[0-9]{5}` accepts `abc12345x`. Add `^` and `$` to match the whole value.
 
-`pattern` regexes run synchronously, with no time limit, in the browser and in self-hosted servers. Avoid patterns prone to catastrophic backtracking; `checkDefinition()` warns about nested quantifiers such as `(a+)+` and overlapping repeated parts such as `\d*\d*` with `slow-pattern`. A value longer than 10,000 characters fails `pattern` without being matched. On Formhaus Cloud, server-side validation is time-bounded.
-
 Length, range, pattern, and matching rules have a corresponding `...Message` field. For `required`, pass the message directly: `required: "Please enter your name"`.
+
+### Pattern safety
+
+`pattern` regexes run synchronously, with no time limit. Some patterns backtrack: on a value that almost matches, `^(a+)+$` takes seconds for 30 characters and doubles with each extra one. `checkDefinition()` warns about these with `slow-pattern`:
+
+- a repeated group with a quantifier or an alternation inside, such as `(a+)+`, `(\w+\s?)+` or `(a|aa)+`
+- overlapping repeated parts next to each other, such as `\d*\d*`, `\d+\.?\d*` or `(ab)+(ab)+`
+- a pattern longer than 1000 characters, which the check does not scan
+
+A repeated group that starts or ends with a character nothing else in it matches is safe and gets no warning, such as `([a-z]+\.)+` or `(,\s*[a-z]+)*`.
+
+| Slow | Safe |
+|------|------|
+| `^(\w+\s?)+$` | `^\w+( \w+)*$` |
+| `^\d+\.?\d*$` | `^\d+(\.\d*)?$` |
+| `^([a-z]+\.?)+$` | `^[a-z]+(\.[a-z]+)*$` |
+
+The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) does not run it: it throws a `FormDefinitionError` with a `slow-pattern` error. A definition that passed `validateSubmission()` before can throw now, so run `checkDefinition()` on your definitions before you upgrade the server. A value longer than 10,000 characters fails `pattern` without being matched.
+
+The check does not find every slow pattern. Separate wildcards such as `^.*x.*y.*z$` take 80 ms on 1,000 characters and 3 s on 4,000, and each extra `.*` makes this worse. If the people who write your definitions are not trusted, run `validateSubmission()` in a worker thread with a timeout.
 
 ## matchField
 

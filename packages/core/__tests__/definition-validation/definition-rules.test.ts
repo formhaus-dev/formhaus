@@ -140,6 +140,13 @@ describe('field rules', () => {
       'Remove the inner or outer quantifier.',
     );
   });
+
+  it('does not warn about a repeated group that starts or ends with a character nothing else in it matches', () => {
+    const slow = ['(a+\\.a+)+', '(\\.?[a-z]+\\.)+', '(.+\\.)+', '([a-z]+\\.|x)+', '(a+a)+', '(\\d+\\.+)+', '([a-z.]+\\.)+', '(a+\\1)+'];
+    const fast = ['([\\w-]+\\.)+', '(?:,\\s*[a-z]+)*', '( [A-Za-z]+)*', '((a+)\\.)+', '([^,]+,)+', '(?:[a-z]+\\.){2,}'];
+    const issues = checkDefinition(form([...slow, ...fast].map((pattern, index) => field(`p${index}`, { validation: { pattern } }))));
+    expect(issues.map((issue) => issue.path)).toEqual(slow.map((_, index) => `/fields/${index}/validation/pattern`));
+  });
 });
 
 describe('comparison rules', () => {

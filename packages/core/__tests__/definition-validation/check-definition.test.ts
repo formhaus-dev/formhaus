@@ -67,16 +67,20 @@ describe('checkDefinition', () => {
 
   it('reports adversarial patterns as invalid', () => {
     for (const pattern of ['('.repeat(500) + '+)+'.repeat(500), '((a+)+'.repeat(1000), `${'(a|'.repeat(300)}b`]) {
-      expect(codes(form([text('code', { validation: { pattern } })]))).toEqual(['error invalid-pattern /fields/0/validation/pattern']);
+      expect(codes(form([text('code', { validation: { pattern } })])).filter((code) => code.startsWith('error'))).toEqual([
+        'error invalid-pattern /fields/0/validation/pattern',
+      ]);
     }
   });
 
-  it('scans patterns for nested quantifiers up to 1000 characters', () => {
+  it('scans patterns for nested quantifiers up to 1000 characters and reports longer ones', () => {
     const pattern = (length: number) => `(a+)+${'b'.repeat(length - 5)}`;
     expect(codes(form([text('code', { validation: { pattern: pattern(1000) } })]))).toEqual([
       'warning slow-pattern /fields/0/validation/pattern',
     ]);
-    expect(codes(form([text('code', { validation: { pattern: pattern(1001) } })]))).toEqual([]);
+    expect(codes(form([text('code', { validation: { pattern: pattern(1001) } })]))).toEqual([
+      'warning slow-pattern /fields/0/validation/pattern',
+    ]);
   });
 
   it('handles a deep acyclic dependency chain', () => {
