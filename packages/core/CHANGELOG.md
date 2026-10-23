@@ -1,5 +1,29 @@
 # @formhaus/core
 
+## 1.3.0
+
+### Minor Changes
+
+- New `errorSummary(engine, { idPrefix?, labels? })` returns the engine's field errors grouped by step, its top-level errors and the field error count.
+- New types `ErrorSummary` and `ErrorSummaryOptions`.
+- `FormRendererHandle` declares `showField(key)` and `getErrors()`.
+- New types `RootProps`, `ErrorSummaryView`, `ErrorSummaryGroup`, `FormErrorsView`, `FormStepProgressView` and `FormStepStatus` for renderer layout slots.
+- New `legacy-layout` warning code.
+- New `locale` option on `FormEngine` takes a `LocaleCatalog` or a list of them. Per key, `messages` wins over `definition.messages`, which wins over the catalogs in array order, which win over the built-in English.
+- A catalog text can be an object of plural forms, picked by `Intl.PluralRules` for the catalog locale on `{count}`, `{min}` or `{max}`. That number is formatted with `Intl.NumberFormat` for the same locale.
+- Message and label catalogs for `es`, `fr`, `fr-CA`, `de`, `pt-BR`, `it`, `ja`, `zh-CN`, `ru` and `uk`, plus `en`, at `@formhaus/core/locales/<tag>` (typed) and `@formhaus/core/locales/<tag>.json`.
+- New `localeChain(tag)` and `checkCatalog(catalog)` in `@formhaus/core/i18n`. `localeChain` adds the likely region, so `zh-Hans-CN` also tries `zh-CN`.
+- New types `LocaleCatalog`, `LocaleText` and `PluralForms`.
+- A multi-step overlay also accepts `fields.<key>` at the top level. `steps.<id>.fields.<key>` wins when both are set, and `translationIssues()` no longer reports these addresses as unknown.
+- A translate function that returns the built-in English text for a message or label key leaves that key to the locale catalogs.
+- New `onValidate` engine option runs after the definition rules pass, on Continue after `onStepValidate` and on Submit before `onBeforeSubmit`. It gets the values and `{ stepId, fields, submit }`, where `fields` lists the visible field paths in scope, and returns errors keyed by field path. Keys outside `fields` show as top-level errors.
+- An `onValidate` error on another step opens that step on Submit.
+- New types `ValidateFn` and `ValidateContext`.
+- New `@formhaus/core/schema` entry with `schemaValidate(schema)`, which turns a Standard Schema such as Zod, Valibot or ArkType into an `onValidate` function, and the `StandardSchemaV1` type.
+- Form errors from `onStepValidate` and `onValidate` clear on the next Continue, Back, Skip or Submit. Form errors from the submit handler and from `setErrors` stay.
+- New `process.env.FORMHAUS_TRUSTED` define. Set to `"1"`, it drops the production structure check from the bundle: `FormEngine` goes from 18.8 KB to 14.0 KB gzipped, `FormRenderer` with core about 4.5 KB less. An invalid definition then fails with a plain runtime error instead of `FormDefinitionError`. Development builds still run `checkDefinition()`.
+- In production, `FormEngine` and `replaceDefinition()` skip the structure check for a definition returned by `parseDefinition()`.
+
 ## 1.2.3
 
 ### Patch Changes
