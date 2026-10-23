@@ -1,8 +1,8 @@
 import type { FormEngine } from '@formhaus/core';
-import { errorGroups } from '@formhaus/core/internal';
+import { errorGroups, ROOT_PROPS } from '@formhaus/core/internal';
 import { Fragment, useContext, useMemo } from 'react';
 import { LabelContext } from './labels';
-import type { FormRendererProps } from './types';
+import type { ErrorSummaryComponentProps, FormRendererProps, LayoutComponentMap } from './types';
 import { useRecallSnapshot } from './hooks/useEngineSnapshot';
 
 interface FormErrorSummaryProps {
@@ -10,21 +10,17 @@ interface FormErrorSummaryProps {
   formId: string;
   onSelect: (key: string) => void;
   labels?: FormRendererProps['labels'];
+  layout?: LayoutComponentMap;
   testId?: string;
 }
 
-export function FormErrorSummary({ engine, formId, onSelect, labels, testId }: FormErrorSummaryProps) {
-  const version = useRecallSnapshot(engine);
-  const text = useContext(LabelContext);
-  const groups = useMemo(() => errorGroups(engine, formId, labels, engine.definition.labels), [engine, version, formId, labels]);
-  if (groups.length === 0) return null;
-
+function DefaultErrorSummary({ rootProps, title, groups, showField }: ErrorSummaryComponentProps) {
   return (
-    <div className="fh-error-summary" role="alert" tabIndex={-1} data-testid={testId}>
-      <strong className="fh-error-summary__title">{text('errorSummary')}</strong>
-      {groups.map(({ id, title, entries }) => (
+    <div className="fh-error-summary" {...rootProps}>
+      <strong className="fh-error-summary__title">{title}</strong>
+      {groups.map(({ id, title: step, entries }) => (
         <Fragment key={id}>
-          {groups.length > 1 && <p className="fh-error-summary__step">{title}</p>}
+          {groups.length > 1 && <p className="fh-error-summary__step">{step}</p>}
           <ul className="fh-error-summary__list">
             {entries.map(({ key, id: target, text }) => (
               <li key={key}>
@@ -33,7 +29,7 @@ export function FormErrorSummary({ engine, formId, onSelect, labels, testId }: F
                   href={`#${target}`}
                   onClick={(event) => {
                     event.preventDefault();
-                    onSelect(key);
+                    showField(key);
                   }}
                 >
                   {text}
@@ -44,5 +40,23 @@ export function FormErrorSummary({ engine, formId, onSelect, labels, testId }: F
         </Fragment>
       ))}
     </div>
+  );
+}
+
+export function FormErrorSummary({ engine, formId, onSelect, labels, layout, testId }: FormErrorSummaryProps) {
+  const version = useRecallSnapshot(engine);
+  const text = useContext(LabelContext);
+  const groups = useMemo(() => errorGroups(engine, formId, labels, engine.definition.labels), [engine, version, formId, labels]);
+  const count = groups.reduce((total, group) => total + group.entries.length, 0);
+  if (count === 0) return null;
+  const Summary = layout?.errorSummary ?? DefaultErrorSummary;
+  return (
+    <Summary
+      rootProps={{ ...ROOT_PROPS.errorSummary, 'data-testid': testId }}
+      title={text('errorSummary')}
+      groups={groups}
+      count={count}
+      showField={onSelect}
+    />
   );
 }

@@ -3,13 +3,13 @@ import {
   applySources,
   canMoveFocus,
   errorDomId,
+  errorGroups,
   focusField,
   hasValue,
   labelFor,
   restoreFocus,
   shouldApplyExternalErrors,
   testIds,
-  warnMissingComponents,
 } from '@formhaus/core/internal';
 import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
@@ -18,6 +18,7 @@ import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
 import { FormTopLevelErrors } from './FormTopLevelErrors';
 import { LabelContext } from './labels';
+import { useComponentWarnings } from './hooks/useComponentWarnings';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import { useRendererActions } from './hooks/useRendererActions';
@@ -40,6 +41,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       initialValues,
       loading = false,
       components,
+      layout,
       optionsProviders,
       actionsComponent,
       progressComponent,
@@ -112,14 +114,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       return unsubscribe;
     }, [engine, definition]);
 
-    const [warned] = useState(() => new Set<string>());
-    useEffect(() => {
-      let warn: (() => void) | undefined;
-      try {
-        if (process.env.NODE_ENV !== 'production') warn = () => warnMissingComponents(definition, components, warned, props.onWarning);
-      } catch {}
-      warn?.();
-    }, [definition, components]);
+    useComponentWarnings(props);
 
     const appliedErrors = useRef<{ engine: typeof engine; errors: Record<string, string> } | null>(null);
     useEffect(() => {
@@ -156,7 +151,8 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       const afterErrors = focusErrors.current || (restore && Object.keys(engine.errors).length > 0);
       focusKey.current = null;
       focusErrors.current = false;
-      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors);
+      const several = () => errorGroups(engine, formId).flatMap((group) => group.entries).length > 1;
+      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors, several);
     }, [engine, version, actions.invalidAttempts, focusRequest]);
 
     const handleFieldFocus = useCallback(
@@ -201,7 +197,8 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
         <LabelContext.Provider value={(key, params = {}) => labelFor(key, params, props.labels, engine.definition.labels)}>
           <FormProgressController
             engine={engine}
-            ProgressComponent={progressComponent}
+            ProgressComponent={layout?.progress ?? progressComponent}
+            slot={!!layout?.progress}
             headingLevel={headingLevel}
             marks={props.stepErrorMarks}
           />
@@ -214,6 +211,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             optionsProviders={optionsProviders}
             labels={props.labels}
             confirmRemove={props.confirmRemove}
+            layout={layout}
             onChange={actions.update}
             onItemsChange={actions.changeItems}
             onCommit={actions.commit}
@@ -221,15 +219,23 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             onFocus={handleFieldFocus}
             testId={testId}
           />
-          <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
+          <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />
           {props.errorSummary !== false && (
-            <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} testId={testId?.('summary')} />
+            <FormErrorSummary
+              engine={engine}
+              formId={formId}
+              onSelect={showField}
+              labels={props.labels}
+              layout={layout}
+              testId={testId?.('summary')}
+            />
           )}
           <FormActionsController
             engine={engine}
             loading={busy}
             labels={props.labels}
-            ActionsComponent={actionsComponent}
+            ActionsComponent={layout?.actions ?? actionsComponent}
+            slot={!!layout?.actions}
             testId={testId}
             onSubmit={actions.submit}
             onNext={actions.next}
