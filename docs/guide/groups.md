@@ -132,7 +132,7 @@ The Add and Remove buttons reuse the action button classes, so theme tokens appl
 
 ## Custom markup
 
-Pass `group` and `groupItem` in `components` to own the markup. Field components inside items still come from the same map.
+Pass `group` and `groupItem` in [`layout`](/guide/custom-fields#layout-slots) to own the markup. Field components inside items still come from `components`.
 
 ```tsx
 import type { GroupComponentProps } from '@formhaus/react';
@@ -153,7 +153,7 @@ function Participants({ id, label, items, canAdd, add }: GroupComponentProps) {
   );
 }
 
-<FormRenderer definition={definition} components={{ group: Participants }} onSubmit={send} />;
+<FormRenderer definition={definition} layout={{ group: Participants }} onSubmit={send} />;
 ```
 
 | Prop | Meaning |
@@ -176,7 +176,7 @@ Focus after Add and Remove finds its targets by these ids and attributes:
 
 Add focuses the first field inside the new item wrapper, or its title when the item has no field. Remove focuses the title of the next item, or the Add button. The `fh-group__item` and `fh-group__add` classes work in place of the attributes. `DefaultGroup` and `DefaultGroupItem` are exported for wrapping.
 
-The `confirmDialog` entry replaces the remove dialog. It renders while a removal waits for an answer and gets `id`, `open`, `title`, `description`, `confirmLabel`, `cancelLabel`, `confirm()` and `cancel()`. `DefaultConfirmDialog` is a native `<dialog>` opened with `showModal()`.
+`layout.confirmDialog` replaces the remove dialog. It stays mounted and opens while a removal waits for an answer, see [Remove dialog](/guide/custom-fields#remove-dialog). `DefaultConfirmDialog` is a native `<dialog>` opened with `showModal()`.
 
 In Vue, render the item fields with `<component :is="item.fields" />`, and declare props with `defineProps(groupComponentProps)` and `defineProps(groupItemComponentProps)`. See [Runtime props in Vue](/guide/custom-components#runtime-props-in-vue).
 

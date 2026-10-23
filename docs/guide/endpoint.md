@@ -130,7 +130,7 @@ check?.spend();
 
 After a failed submission `FormhausForm` focuses the first element with `data-fh-notice` or the `fh-form__notice` class. Without one, or when that element cannot take focus, it focuses the error summary or the first invalid field. Give a custom notice `tabindex="-1"` so it can take focus.
 
-A custom `actionsComponent` receives the notice too. In React it gets `notice` and `onNoticeAction(action)` props, typed by `FormhausFormActionsProps`. In Vue it gets the `notice` prop and emits `noticeAction` when the component declares `notice` in its own `props`. A prop from `extends`, a mixin or an async component is not detected.
+A custom `layout.actions` or `actionsComponent` receives the notice too. In React it gets `notice` and `onNoticeAction(action)` props, typed by `FormhausFormActionsProps`. In Vue it gets the `notice` prop and emits `noticeAction` when the component declares `notice` in its own `props`. A prop from `extends`, a mixin or an async component is not detected.
 
 `FormhausForm` still renders its notice next to such a component. When the actions component shows the notice itself, pass a `noticeComponent` that returns `null` in React or an empty `notice` slot in Vue, so the notice does not show twice.
 
