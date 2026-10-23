@@ -61,6 +61,16 @@ These cost the same on any path, and only when imported:
 
 <!-- size:addons:end -->
 
+[`mapControls`](/guide/design-systems) adds to `FormRenderer` or `HeadlessFormRenderer`:
+
+<!-- size:controls:start -->
+
+| Import | React | Vue |
+|---|---|---|
+| `mapControls` from `/controls`, over `FormRenderer` | 2.4 KB | 2.6 KB |
+
+<!-- size:controls:end -->
+
 `pnpm size:docs` writes these tables from the build. CI fails when a cell is more than 0.5 KB off. 1 KB is 1024 bytes.
 
 `useFormEngine`: you render everything.
