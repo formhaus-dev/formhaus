@@ -109,6 +109,8 @@ Use it when every definition passed `checkDefinition()` or `parseDefinition()` i
 
 In production the engine does not check a definition returned by `parseDefinition()` again. Parse it again after you change it in place. `validateSubmission()` always checks the definition, with or without the define.
 
+Set it only as a build-time define for code that renders your own definitions. Unbundled Node reads `process.env` at runtime, so never set `FORMHAUS_TRUSTED` in a server environment that builds a `FormEngine` from definitions you did not check.
+
 Rollup needs two terser passes to drop the check.
 
 ::: code-group
