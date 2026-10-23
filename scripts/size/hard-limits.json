@@ -1,10 +1,10 @@
 {
-  "core": 28160,
+  "core": 28416,
   "core + react": 33792,
-  "core + vue": 37120,
+  "core + vue": 37376,
   "core FormEngine": 19456,
   "core + react useFormEngine": 20480,
   "core + vue useFormEngine": 20480,
-  "core + react FormRenderer": 33024,
-  "core + vue FormRenderer": 36608
+  "core + react FormRenderer": 33280,
+  "core + vue FormRenderer": 36864
 }

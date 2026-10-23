@@ -1,6 +1,6 @@
 ---
 title: "Translations"
-description: "Translate Formhaus forms: message and label catalogs, translation keys from Lokalise with i18next or vue-i18n, and per-language overlay files."
+description: "Translate Formhaus forms: ready-made language catalogs, message and label codes, i18next or vue-i18n keys, and per-language overlay files."
 ---
 
 # Translations
@@ -13,7 +13,23 @@ npm install @formhaus/core @formhaus/react   # or @formhaus/vue
 
 ## Messages and labels
 
-`messages` and `labels` replace the built-in English texts. `{min}`, `{max}`, `{current}`, `{total}`, `{index}` and `{count}` are filled in.
+Validation messages and renderer labels have fixed codes. Map them to your own texts with the `messages` and `labels` props, as an object or as a function of `(code, params, field)`. A function that returns `undefined` leaves the code to the next source.
+
+```tsx
+import { useTranslation } from 'react-i18next';
+
+const { t, i18n } = useTranslation('forms');
+const text = (prefix: string) => (code: string, params: Record<string, unknown>) =>
+  i18n.exists(`${prefix}.${code}`) ? t(`${prefix}.${code}`, params) : undefined;
+
+<FormRenderer definition={definition} messages={text('errors')} labels={text('labels')} onSubmit={save} />
+```
+
+Message codes: `required`, `minLength` and `minItems` (`{min}`), `maxLength` and `maxItems` (`{max}`), `min` (`{min}`), `max` (`{max}`), `pattern`, `matchField`, `email`, `number`, `date`, `datetime`, `time`, `option`, `options`, `exclusive` (`{option}`), `boolean`, `string`, `file`, `value` and `hidden` (`{label}`, `{message}`).
+
+Label codes: `continue`, `back`, `stepOf` (`{current}`, `{total}`), `errorSummary`, `addItem`, `removeItem`, `itemLabel` (`{label}`, `{index}`), `itemAdded`, `itemRemoved` and `removeItemPrompt` (`{item}`), `removeItemNamed` (`{label}`, `{item}`), `removeItemBody` (`{item}`), `cancel`, `enlargeImage` (`{label}`), `close`, `clear`, `done`, `chooseFile`, `required`, `skip`, `submit`, `stepTitle` (`{index}`), `stepErrors` (`{count}`), `or` and `select`.
+
+A definition can carry its own `messages` and `labels`:
 
 ```json
 {
@@ -28,6 +44,84 @@ npm install @formhaus/core @formhaus/react   # or @formhaus/vue
 ```
 
 Field messages such as `minLengthMessage` win over `messages`. All keys are in the [specification](/spec#message-and-label-catalogs).
+
+## Languages
+
+Ready-made catalogs translate the message and label codes into `es`, `fr`, `fr-CA`, `de`, `pt-BR`, `it`, `ja`, `zh-CN`, `ru` and `uk`. They ship with `@formhaus/core`, one file per language. `en` is the built-in English as a catalog, for overrides.
+
+```tsx
+import ru from '@formhaus/core/locales/ru';
+
+<FormRenderer definition={definition} locale={ru} onSubmit={save} />
+```
+
+```vue
+<FormRenderer :definition="definition" :locale="ru" @submit="save" />
+```
+
+`@formhaus/core/locales/ru` is typed. `@formhaus/core/locales/ru.json` is the same catalog as plain JSON. `FormEngine` takes `locale` as an option.
+
+### Load the user's language
+
+`localeChain(tag)` lists the tags to try, from the most specific one to `en`: `fr-CA` gives `['fr-CA', 'fr', 'en']`. It adds the likely region, so `zh-Hans-CN` also tries `zh-CN` and `pt` tries `pt-BR`. Load the catalogs that exist and pass them all. Each catalog is a separate chunk, and English needs none.
+
+<<< @/recipes/snippets/locale-catalogs.ts
+
+<<< @/recipes/snippets/locale-catalogs-page.tsx
+
+Labels switch as soon as the catalogs arrive. Shown errors switch on the next validation.
+
+### Precedence
+
+For each key, the first source that has it wins:
+
+1. `messages` and `labels` props.
+2. `messages` and `labels` of the definition, and translations from an overlay or a translate function.
+3. `locale` catalogs, in array order.
+4. Built-in English.
+
+Field messages such as `minLengthMessage` win over all of them. A translate function that returns the English default for a key leaves the key to the catalogs.
+
+Put your own catalog first to change a few texts:
+
+```ts
+import de from '@formhaus/core/locales/de';
+
+const locale = [{ locale: 'de', messages: {}, labels: { submit: 'Senden' } }, de];
+```
+
+### Plurals
+
+A text can be an object of plural forms. `Intl.PluralRules` for the catalog `locale` picks the form by `{count}`, `{min}` or `{max}`, and `other` is required. That number is formatted with `Intl.NumberFormat` for the same locale.
+
+```json
+{
+  "locale": "ru",
+  "messages": {
+    "minLength": {
+      "one": "Не менее {min} символа",
+      "few": "Не менее {min} символов",
+      "many": "Не менее {min} символов",
+      "other": "Не менее {min} символа"
+    }
+  },
+  "labels": {}
+}
+```
+
+### Check a catalog
+
+```ts
+import { checkCatalog } from '@formhaus/core/i18n';
+
+const { missing, unknown } = checkCatalog(catalog);
+```
+
+`missing` lists keys without a text, such as `messages.minLength` or `messages.minLength.other`. `unknown` lists keys Formhaus does not read. The MCP tool `translation_template` takes a `catalog` and leaves the texts it covers out of the overlay.
+
+### Add a language
+
+Add `packages/core/locales/<tag>.json` to the [repository](https://github.com/formhaus-dev/formhaus) with every key of `en.json`. Keep the `{placeholders}` and give plural texts exactly the forms `Intl.PluralRules` reports for the language. `pnpm --filter @formhaus/core test locales` checks the file.
 
 ## Translation keys
 
@@ -137,7 +231,7 @@ async function loadOverlay(lang: string): Promise<Overlay | undefined> {
 }
 ```
 
-Field texts live at `fields.<key>` in a single-step form and at `steps.<id>.fields.<key>` in a multi-step form. Missing or empty strings keep the source text, so an incomplete translation still works. A field message in the definition, such as `required: "Enter your email"`, wins over `messages` of the overlay; translate it at the field address. The same file loads into i18next with `i18n.addResourceBundle('ru', 'forms', { signup: overlay })`, and derived keys then resolve through `t`.
+Field texts live at `fields.<key>`. In a multi-step form they can also live at `steps.<id>.fields.<key>`, which wins when both are set. Missing or empty strings keep the source text, so an incomplete translation still works. A field message in the definition, such as `required: "Enter your email"`, wins over `messages` of the overlay; translate it at the field address. The same file loads into i18next with `i18n.addResourceBundle('ru', 'forms', { signup: overlay })`, and derived keys then resolve through `t`.
 
 Sections and groups have their own addresses. A section title lives at `sections.<key>.title`, or `steps.<id>.sections.<key>.title` in a multi-step form, and the fields inside keep their usual address. A group keeps `fields.<key>.label` and adds `itemLabel`, `addLabel` and `removeLabel`. Its item fields live under `fields.<key>.fields.<item key>`. The `labels` catalog has `addItem`, `removeItem`, `itemLabel` (`{label} {index}`), `itemAdded`, `itemRemoved` and `removeItemNamed`, `removeItemPrompt` (`{item}`), and `removeItemBody` and `cancel`. A translated `itemLabel` must keep `{index}`. Forms with picture options add `enlargeImage` (`{label}`, the name of the button that opens the image) and `close` (the button that closes it). Forms with [exclusive options](/guide/fields#none-of-these) add `or`, the divider before them.
 
@@ -198,6 +292,6 @@ The MCP tool `translation_template` returns the overlay skeleton and the slot li
 
 - The language is set when the form is created. A new language recreates the form and clears its answers.
 - Options from `optionsFrom` and messages from custom validators are not translated here; translate them in the provider or the validator.
-- Templates have no plural forms. A translate function can choose the plural itself.
+- Definition catalogs and overlays have no plural forms. Use a [locale catalog](#plurals), or choose the plural in a translate function.
 - `lang` does not set `dir` or right-to-left layout.
 - `localize()` and `useLocalizedForm()` throw on the errors of `checkTranslations()`, such as an `i18n` key for a text the definition does not have. The same definition renders without translations.

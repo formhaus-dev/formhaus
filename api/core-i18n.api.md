@@ -5,6 +5,17 @@
 ```ts
 
 // @public (undocumented)
+export interface CatalogIssues {
+    // (undocumented)
+    missing: string[];
+    // (undocumented)
+    unknown: string[];
+}
+
+// @public (undocumented)
+export function checkCatalog(catalog: unknown): CatalogIssues;
+
+// @public (undocumented)
 export function checkTranslations(definition: FormDefinition): DefinitionIssue[];
 
 // @public (undocumented)
@@ -12,6 +23,22 @@ export const defaultLabels: Readonly<Record<LabelKey, string>>;
 
 // @public (undocumented)
 export const defaultMessages: Readonly<Record<MessageKey, string>>;
+
+// @public (undocumented)
+export interface LocaleCatalog {
+    // (undocumented)
+    labels: Partial<Record<LabelKey, LocaleText>>;
+    // (undocumented)
+    locale: string;
+    // (undocumented)
+    messages: Partial<Record<MessageKey, LocaleText>>;
+}
+
+// @public (undocumented)
+export function localeChain(tag: string): string[];
+
+// @public (undocumented)
+export type LocaleText = string | PluralForms;
 
 // @public (undocumented)
 export function localize(input: FormDefinition, source: LocalizeSource): Localized;
@@ -40,6 +67,22 @@ export interface OverlaySource {
     lang?: string;
     // (undocumented)
     overlay: Overlay;
+}
+
+// @public (undocumented)
+export interface PluralForms {
+    // (undocumented)
+    few?: string;
+    // (undocumented)
+    many?: string;
+    // (undocumented)
+    one?: string;
+    // (undocumented)
+    other: string;
+    // (undocumented)
+    two?: string;
+    // (undocumented)
+    zero?: string;
 }
 
 // @public (undocumented)

@@ -112,6 +112,7 @@ import { FormhausForm, CloudError } from '@formhaus/vue/cloud';
 import { useLocalizedForm } from '@formhaus/vue/i18n';
 import type { FormDefinition } from '@formhaus/core';
 import { onValidate } from './on-validate.js';
+import ru from '@formhaus/core/locales/ru';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
 export const components: Formhaus.FieldComponentMap = {
@@ -124,7 +125,7 @@ export const components: Formhaus.FieldComponentMap = {
 };
 type Named<T> = keyof { [K in keyof T as string extends K ? never : K]: T[K] };
 export const nodeKeys: Named<Formhaus.FieldComponentMap>[] = ['section', 'group', 'groupItem', 'confirmDialog'];
-export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definition, onValidate }), h(FormhausForm, { id: 'abc' })] })
+export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definition, onValidate, locale: [ru] }), h(FormhausForm, { id: 'abc' })] })
   .component('FormRenderer', Formhaus.FormRenderer)
   .component('TextField', Formhaus.TextField)
   .component('FormhausForm', FormhausForm);
@@ -139,8 +140,9 @@ files['src/use-form-engine.tsx'] = readFileSync(join(root, 'docs/recipes/snippet
 files['src/custom-layout.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/custom-layout.tsx'), 'utf8');
 files['src/steps-in-url.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url.tsx'), 'utf8');
 files['src/steps-in-url-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url-page.tsx'), 'utf8');
-for (const name of ['on-validate', 'schema-zod', 'schema-valibot', 'schema-arktype', 'schema-server-check'])
+for (const name of ['on-validate', 'schema-zod', 'schema-valibot', 'schema-arktype', 'schema-server-check', 'locale-catalogs'])
   files[`src/${name}.ts`] = readFileSync(join(root, `docs/recipes/snippets/${name}.ts`), 'utf8');
+files['src/locale-catalogs-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/locale-catalogs-page.tsx'), 'utf8');
 
 const arktype = 'src/schema-arktype.ts';
 const checks = {

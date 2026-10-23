@@ -1,4 +1,5 @@
 import type { LabelKey } from '../types';
+import { DEFAULT_MESSAGES } from '../validation/default-messages';
 
 export type NodeKind = 'form' | 'step' | 'section' | 'field' | 'group' | 'option' | 'action' | 'validation';
 
@@ -47,3 +48,5 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = /* @__PURE__ *
   or: 'or',
   select: 'Select',
 });
+
+export const CATALOGS = { messages: DEFAULT_MESSAGES, labels: DEFAULT_LABELS };

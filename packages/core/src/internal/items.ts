@@ -2,7 +2,7 @@ import type { FormEngine } from '../engine';
 import { errorKeys } from '../engine/validation-state';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
-import { labelFor } from '../i18n/labels';
+import { engineLabel } from '../i18n/labels';
 import { cut } from '../validation/bounded-text';
 import type { ErrorSummary, ErrorSummaryGroup, ErrorSummaryOptions, FormGroup, FormStep, LabelSource } from '../types';
 import { isBlank } from '../visibility/evaluate-condition';
@@ -15,10 +15,10 @@ export { itemLimits };
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 const visibility = (engine: FormEngine) => internals(engine).visibility;
 
-export function itemTitle(engine: FormEngine, group: FormGroup, index: number, ...labels: (LabelSource | undefined)[]): string {
+export function itemTitle(engine: FormEngine, group: FormGroup, index: number, labels?: LabelSource): string {
   const item = { group: group.key, index };
   const params = { label: recalled(engine, group).label, index: index + 1 };
-  return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : cut(labelFor('itemLabel', params, ...labels));
+  return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : cut(engineLabel(engine, 'itemLabel', params, labels));
 }
 
 export function errorDomId(engine: FormEngine, formId: string | undefined, key: string): string {
@@ -26,7 +26,7 @@ export function errorDomId(engine: FormEngine, formId: string | undefined, key: 
   return path ? itemDomId(formId, ...path, engine.definition) : fieldDomId(formId, key, engine.definition);
 }
 
-function errorGroups(engine: FormEngine, formId: string | undefined, ...labels: (LabelSource | undefined)[]): ErrorSummaryGroup[] {
+function errorGroups(engine: FormEngine, formId: string | undefined, labels?: LabelSource): ErrorSummaryGroup[] {
   const { errors } = engine;
   const { values } = internals(engine).state;
   return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap((source, index) => {
@@ -37,17 +37,17 @@ function errorGroups(engine: FormEngine, formId: string | undefined, ...labels: 
       const raw = item?.field ?? visibility(engine).activeField(key, values);
       if (!raw) return [];
       const field = recalled(engine, raw, item ? key : undefined);
-      const label = item ? `${field.label} (${itemTitle(engine, item.group, item.index, ...labels)})` : field.label;
+      const label = item ? `${field.label} (${itemTitle(engine, item.group, item.index, labels)})` : field.label;
       return [
         { key, id: errorDomId(engine, formId, key), text: label + (/[?!:.。]$/.test(label.normalize('NFKC')) ? ' ' : ': ') + errors[key] },
       ];
     });
-    return entries[0] ? [{ id, title: title || labelFor('stepTitle', { index: index + 1 }, ...labels), entries }] : [];
+    return entries[0] ? [{ id, title: title || engineLabel(engine, 'stepTitle', { index: index + 1 }, labels), entries }] : [];
   });
 }
 
 export function errorSummary(engine: FormEngine, options: ErrorSummaryOptions = {}): ErrorSummary {
-  const groups = errorGroups(engine, options.idPrefix, options.labels, engine.definition.labels);
+  const groups = errorGroups(engine, options.idPrefix, options.labels);
   return { groups, topLevelErrors: engine.topLevelErrors, count: groups.reduce((total, group) => total + group.entries.length, 0) };
 }
 

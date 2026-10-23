@@ -3,7 +3,7 @@ import { isGroup } from '../visibility/nodes';
 import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
 import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
 import { LIST_TYPES, typeMessageKeys } from '../validation/type-checks';
-import { DEFAULT_LABELS, hasRule, SLOTS, type Entry } from './nodes';
+import { CATALOGS, hasRule, SLOTS, type Entry } from './nodes';
 import { slotAddress, textNodes, type TextNode } from './walk';
 
 type SlotKind = 'text' | 'rule' | 'message' | 'label';
@@ -84,7 +84,7 @@ function nodeSlots(definition: FormDefinition, { kind, node, address, field }: T
 }
 
 function catalogSlots(definition: FormDefinition, name: 'messages' | 'labels', used: Set<string>): Slot[] {
-  const defaults: Record<string, string> = name === 'messages' ? DEFAULT_MESSAGES : DEFAULT_LABELS;
+  const defaults: Record<string, string> = CATALOGS[name];
   const keys = (definition.i18n?.[name] ?? {}) as Record<string, string>;
   return Object.keys(defaults).map((item) => {
     const source = (definition[name] as Record<string, string> | undefined)?.[item] ?? defaults[item];

@@ -18,7 +18,7 @@ export {
 } from '../cloud/controller';
 export { CLOUD_NOTICE, cloudLabel } from '../cloud/failures';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
-export { labelFor } from '../i18n/labels';
+export { engineLabel, labelFor } from '../i18n/labels';
 export { actionsView } from './actions';
 export { warnDefinitionReset } from './definition-reset';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';

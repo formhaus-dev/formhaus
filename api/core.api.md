@@ -393,6 +393,8 @@ export interface FormEngineOptions {
     // (undocumented)
     lang?: string;
     // (undocumented)
+    locale?: LocaleCatalog | LocaleCatalog[];
+    // (undocumented)
     messages?: MessageSource;
     // (undocumented)
     onAfterStepChange?: AfterStepChangeFn;
@@ -842,6 +844,19 @@ export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addIte
 export type LabelSource = LabelCatalog | LabelFn;
 
 // @public (undocumented)
+export interface LocaleCatalog {
+    // (undocumented)
+    labels: Partial<Record<LabelKey, LocaleText>>;
+    // (undocumented)
+    locale: string;
+    // (undocumented)
+    messages: Partial<Record<MessageKey, LocaleText>>;
+}
+
+// @public (undocumented)
+export type LocaleText = string | PluralForms;
+
+// @public (undocumented)
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 
 // @public (undocumented)
@@ -861,6 +876,22 @@ export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[]
 
 // @public (undocumented)
 export function parseDefinition(input: unknown): FormDefinition;
+
+// @public (undocumented)
+export interface PluralForms {
+    // (undocumented)
+    few?: string;
+    // (undocumented)
+    many?: string;
+    // (undocumented)
+    one?: string;
+    // (undocumented)
+    other: string;
+    // (undocumented)
+    two?: string;
+    // (undocumented)
+    zero?: string;
+}
 
 // @public (undocumented)
 export type RecallFormatFn = (value: string | number | string[], field: FormField, locale: string) => string;
