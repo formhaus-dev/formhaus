@@ -25,8 +25,11 @@ export type {
   LabelI18n,
   LabelKey,
   LabelSource,
+  LocaleCatalog,
+  LocaleText,
   MessageCatalog,
   MessageKey,
+  PluralForms,
   StepI18n,
   ValidationI18n,
 } from './i18n';

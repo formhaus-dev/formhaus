@@ -7,6 +7,7 @@ import type {
   FormDefinition,
   FormRendererHandle,
   LabelSource,
+  LocaleCatalog,
   RecallFormatFn,
   StepValidateFn,
   SubmitHandler,
@@ -23,6 +24,7 @@ export interface ScenarioProps {
   loading?: boolean;
   stepErrorMarks?: boolean;
   labels?: LabelSource;
+  locale?: LocaleCatalog | LocaleCatalog[];
   onStepValidate?: StepValidateFn;
   onValidate?: ValidateFn;
   lang?: string;

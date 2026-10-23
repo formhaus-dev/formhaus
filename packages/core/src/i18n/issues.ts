@@ -1,7 +1,7 @@
 import { hasOwn, isEntry } from '../visibility/nodes';
 import type { FormDefinition } from '../types';
 import { textNodes } from './walk';
-import { addressKey, leaves, lookup, placeholders } from './overlay';
+import { addresses, addressKey, leaves, lookup, placeholders } from './overlay';
 import { definitionSlots, type Slot } from './slots';
 import { describeSlot } from './template';
 
@@ -29,7 +29,7 @@ function mismatch(slot: Slot, text: string): boolean {
 
 export function translationIssues(definition: FormDefinition, overlay: unknown, meta?: TranslationMeta): TranslationIssues {
   const slots = definitionSlots(definition);
-  const known = new Set(slots.map((slot) => addressKey(slot.address)));
+  const known = new Set(slots.flatMap((slot) => addresses(slot.address).map(addressKey)));
   const found = isEntry(overlay) ? leaves(overlay) : [{ path: [], value: null }];
   const translated = slots.filter((slot) => lookup(overlay, slot.address) !== undefined);
   const result: TranslationIssues = {

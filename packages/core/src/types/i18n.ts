@@ -52,6 +52,23 @@ export type LabelKey =
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 export type LabelCatalog = Partial<Record<LabelKey, string>>;
 
+export interface PluralForms {
+  zero?: string;
+  one?: string;
+  two?: string;
+  few?: string;
+  many?: string;
+  other: string;
+}
+
+export type LocaleText = string | PluralForms;
+
+export interface LocaleCatalog {
+  locale: string;
+  messages: Partial<Record<MessageKey, LocaleText>>;
+  labels: Partial<Record<LabelKey, LocaleText>>;
+}
+
 export interface FormI18n {
   title?: string;
   description?: string;

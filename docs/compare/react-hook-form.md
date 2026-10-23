@@ -34,7 +34,7 @@ react-hook-form is a hook for forms you write in React code; Formhaus is a JSON 
 | Figma | Plugin draws the definition ([guide](/guide/figma)) | Not documented |
 | AI tooling | JSON Schema, [MCP server](/guide/mcp), Claude Code plugin | Forms are code; a web [Form Builder](https://react-hook-form.com/form-builder) generates React code |
 | Frameworks | React 18 and 19, Vue 3.3.3+, headless engine | React ([npm](https://www.npmjs.com/package/react-hook-form)) |
-| Bundle size (gzipped) | <!-- size:react:start -->32.3 KB<!-- size:react:end --> core + React | <!-- size:react-hook-form:start -->11.5 KB for 7.90.0<!-- size:react-hook-form:end -->, no UI ([how it's measured](/guide/bundle-size)) |
+| Bundle size (gzipped) | <!-- size:react:start -->32.5 KB<!-- size:react:end --> core + React | <!-- size:react-hook-form:start -->11.5 KB for 7.90.0<!-- size:react-hook-form:end -->, no UI ([how it's measured](/guide/bundle-size)) |
 | License | MIT | MIT ([npm](https://www.npmjs.com/package/react-hook-form)) |
 
 Sizes measured on 2026-10-09. See [how Formhaus sizes are measured](/compare/#formhaus-at-a-glance).

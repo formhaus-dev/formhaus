@@ -69,6 +69,23 @@ describe('translation_template', () => {
     expect(result.slots.filter(({ key }) => key).map(({ key }) => key)).toEqual(['signup.name', 'signup.email', 'errors.required']);
   });
 
+  it('leaves out the texts a locale catalog covers and lists its gaps', () => {
+    const catalog = {
+      locale: 'ru',
+      messages: { required: 'Обязательное поле', email: 'Введите email' },
+      labels: { back: 'Назад' },
+      tone: 'x',
+    };
+    const result = translationTemplateTool({ definition: { ...keyed, messages: { email: 'Bad email' } }, lang: 'ru', catalog });
+    if (!result.ok) throw new Error('expected a template');
+    expect(result.overlay.messages).toEqual({ maxLength: 'Maximum length is {max}', email: 'Bad email', string: 'Must be text' });
+    expect(result.overlay.labels).not.toHaveProperty('back');
+    expect(result.slots.map(({ address }) => address)).not.toContain('messages.required');
+    expect(result.catalog?.unknown).toEqual(['tone']);
+    expect(result.catalog?.missing).toContain('messages.minLength');
+    expect(result.catalog?.missing).not.toContain('messages.required');
+  });
+
   it('returns validation issues for a broken definition', () => {
     const result = translationTemplateTool({ definition: { ...keyed, i18n: { description: 'x' } }, lang: 'ru' });
     expect(result.ok).toBe(false);

@@ -1,9 +1,18 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
 const root = join(import.meta.dirname, '..');
 const ENTRIES = {
-  core: ['index', 'cloud', 'server', 'i18n', 'fix', 'research', 'schema'],
+  core: [
+    'index',
+    'cloud',
+    'server',
+    'i18n',
+    'fix',
+    'research',
+    'schema',
+    ...readdirSync(join(root, 'packages/core/locales')).map((file) => `locales/${file.replace('.json', '')}`),
+  ],
   react: ['index', 'cloud', 'i18n'],
   vue: ['index', 'cloud', 'i18n'],
 };

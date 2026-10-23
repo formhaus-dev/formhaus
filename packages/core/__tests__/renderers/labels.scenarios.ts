@@ -1,4 +1,5 @@
-import type { FormDefinition } from '../../src';
+import type { FormDefinition, LocaleCatalog } from '../../src';
+import ru from '../../locales/ru.json';
 import { filled, wizard, type RendererHarness, type TestKit } from './fixtures';
 
 export function labelScenarios(harness: RendererHarness, { it, expect, screen }: TestKit): void {
@@ -87,5 +88,42 @@ export function labelScenarios(harness: RendererHarness, { it, expect, screen }:
     await mounted.update({ labels: undefined });
     expect(marks()[0].textContent?.trim()).toBe('Teil 1');
     expect(button('Weiter so')).toBeDefined();
+  });
+
+  it('localizes validation messages with plural forms and labels from a locale catalog', async () => {
+    const [one, ...rest] = wizard.steps!;
+    const definition = {
+      ...wizard,
+      steps: [{ ...one, fields: [{ ...one.fields[0], validation: { required: true, minLength: 3 } }] }, ...rest],
+    } as FormDefinition;
+    const mounted = harness.mount({ definition, locale: ru as LocaleCatalog, onSubmit: () => {} });
+    expect(document.querySelector('.fh-step-progress__counter')?.textContent?.trim()).toBe('Шаг 1 из 3');
+    await harness.type(screen.getByRole('textbox', { name: /Name/ }), 'Ad');
+    await harness.click(button('Далее'));
+    await screen.findByText('Не менее 3 символов');
+    await mounted.update({ locale: [{ locale: 'de', messages: {}, labels: { continue: 'Weiter' } }, ru as LocaleCatalog] });
+    expect(button('Weiter')).toBeDefined();
+  });
+
+  it('switches group labels and the next validation messages when the locale changes', async () => {
+    const definition: FormDefinition = {
+      id: 'crew',
+      title: '',
+      submit: { label: 'Send' },
+      fields: [
+        { key: 'name', type: 'text', label: 'Name', validation: { minLength: 3 } },
+        { key: 'kids', type: 'group', label: 'Kids', defaultItems: 1, fields: [{ key: 'kid', type: 'text', label: 'Kid name' }] },
+      ],
+    };
+    const mounted = harness.mount({ definition, onSubmit: () => {} });
+    await harness.type(screen.getByRole('textbox', { name: /^Name/ }), 'Ad');
+    await harness.click(button('Send'));
+    await screen.findByText('Minimum length is 3');
+    expect(button('Add')).toBeDefined();
+    await mounted.update({ locale: ru as LocaleCatalog });
+    expect(button('Добавить')).toBeDefined();
+    expect(button('Удалить «Kids 1»')).toBeDefined();
+    await harness.click(button('Send'));
+    await screen.findByText('Не менее 3 символов');
   });
 }

@@ -1,5 +1,4 @@
-import { DEFAULT_MESSAGES } from '../validation/default-messages';
-import { DEFAULT_LABELS, hasRule, SLOTS } from './nodes';
+import { CATALOGS, hasRule, SLOTS } from './nodes';
 import type { CheckContext } from '../definition-validation/context';
 import type { DefinitionIssue, DefinitionIssueCode } from '../definition-validation/issues';
 import { oneOf, pointer, warning } from '../definition-validation/issues';
@@ -23,8 +22,8 @@ export function i18nWarnings({ definition, entries, nodes }: CheckContext): Defi
     keyed = true;
     unknown(value.i18n, `${path}/i18n`, [...slots], 'unknown-i18n-slot', 'a translatable text here');
   };
-  const messages = Object.keys(DEFAULT_MESSAGES);
-  const labels = Object.keys(DEFAULT_LABELS);
+  const messages = Object.keys(CATALOGS.messages);
+  const labels = Object.keys(CATALOGS.labels);
   unknown(definition.messages, '/messages', messages, 'unknown-message-key', 'a message key');
   unknown(definition.labels, '/labels', labels, 'unknown-label-key', 'a label key');
   unknown(definition.i18n?.messages, '/i18n/messages', messages, 'unknown-message-key', 'a message key');

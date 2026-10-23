@@ -1,5 +1,5 @@
 import type { FormEngine } from '../engine';
-import { labelFor } from '../i18n/labels';
+import { engineLabel } from '../i18n/labels';
 import type { LabelKey, LabelSource } from '../types';
 import type { FormActionsState } from '../types/views';
 
@@ -7,7 +7,7 @@ export function actionsView(engine: FormEngine, labels?: LabelSource): FormActio
   const { definition, isMultiStep, isFirstStep } = engine;
   const step = engine.currentStep;
   const isLastStep = engine.isLastStep || !isMultiStep;
-  const label = (key: LabelKey) => labelFor(key, {}, labels, definition.labels);
+  const label = (key: LabelKey) => engineLabel(engine, key, {}, labels);
   return {
     submitAction: definition.submit,
     nextAction: step?.next,

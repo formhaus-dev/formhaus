@@ -115,6 +115,10 @@ export const templateOutput = {
   slots: z
     .array(z.object({ address: z.string(), key: z.string().optional(), text: z.string(), params: z.array(z.string()), hash: z.string() }))
     .optional(),
+  catalog: z
+    .object({ missing: z.array(z.string()), unknown: z.array(z.string()) })
+    .optional()
+    .describe('Keys the given catalog lacks or does not know. Messages and labels it covers are left out of overlay and slots.'),
 };
 
 const cloudFields = {

@@ -97,6 +97,12 @@ export function createServer(): McpServer {
           .describe(
             'Prefix of derived translation keys, such as "signup" for keys like signup.title. Defaults to the form id. Pass false to list only the explicit keys from i18n objects.',
           ),
+        catalog: z
+          .record(z.string(), z.unknown())
+          .optional()
+          .describe(
+            'Locale catalog the app passes as locale, such as the contents of @formhaus/core/locales/ru.json. Its messages and labels are left out of the overlay; catalog in the result lists its missing and unknown keys.',
+          ),
       },
       outputSchema: templateOutput,
       annotations: { readOnlyHint: true },

@@ -60,10 +60,16 @@ function fromTranslate(definition: FormDefinition, { translate, prefix = definit
     const text = ask(slot.key, slot.address, slot.params, slot.fallback);
     if (text !== undefined && (slot.source !== undefined || text !== slot.fallback)) slot.apply(text);
   }
-  const messages: MessageFn = (key, params) =>
-    ask(keys.messages?.[key], ['messages', key], params, formatText(source.messages[key] ?? DEFAULT_MESSAGES[key], params));
-  const labels: LabelFn = (key, params) =>
-    ask(keys.labels?.[key], ['labels', key], params, formatText(source.labels[key] ?? DEFAULT_LABELS[key], params));
+  const catalog =
+    <K extends string>(name: 'messages' | 'labels', defaults: Record<K, string>) =>
+    (key: K, params: Record<string, unknown>) => {
+      const own = (source[name] as Partial<Record<K, string>>)[key];
+      const fallback = formatText(own ?? defaults[key], params);
+      const text = ask((keys[name] as Partial<Record<K, string>> | undefined)?.[key], [name, key], params, fallback);
+      return own === undefined && text === fallback ? undefined : text;
+    };
+  const messages: MessageFn = catalog('messages', DEFAULT_MESSAGES);
+  const labels: LabelFn = catalog('labels', DEFAULT_LABELS);
   return { definition, messages, labels };
 }
 

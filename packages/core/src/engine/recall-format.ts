@@ -3,13 +3,11 @@ import { matchesFormat, NUMBER_TYPES } from '../validation/type-checks';
 
 export type RecallFormatFn = (value: string | number | string[], field: FormField, locale: string) => string;
 
-type Formatter = { format(value: never): string };
-
 const STAMP_TYPES = ['date', 'time', 'datetime'];
 const CACHE_SIZE = 32;
-const formatters = new Map<string, Formatter>();
+const formatters = new Map<string, unknown>();
 
-function supported(locale: string): string {
+export function supported(locale: string): string {
   try {
     const [tag] = Intl.getCanonicalLocales(locale);
     return Intl.DateTimeFormat.supportedLocalesOf(tag)[0] ? tag : 'en';
@@ -18,7 +16,7 @@ function supported(locale: string): string {
   }
 }
 
-function formatter<T extends Formatter>(kind: string, locale: string, create: () => T): T {
+export function formatter<T>(kind: string, locale: string, create: () => T): T {
   const key = `${kind} ${locale}`;
   const cached = formatters.get(key) ?? create();
   formatters.delete(key);
@@ -26,6 +24,9 @@ function formatter<T extends Formatter>(kind: string, locale: string, create: ()
   if (formatters.size > CACHE_SIZE) formatters.delete(formatters.keys().next().value!);
   return cached as T;
 }
+
+export const numberFormat = (locale: string) =>
+  formatter('number', locale, () => new Intl.NumberFormat(locale, { maximumSignificantDigits: 21 }));
 
 function stamp(type: string, value: string): Date {
   const parts = value.match(/\d+/g)!.map(Number);
@@ -39,9 +40,7 @@ function stamp(type: string, value: string): Date {
 function localized(value: string | number | string[], type: string, locale: string): string | undefined {
   if (Array.isArray(value)) return formatter('list', locale, () => new Intl.ListFormat(locale, { type: 'conjunction' })).format(value);
   if (typeof value === 'number')
-    return [...NUMBER_TYPES, 'group'].includes(type) && !String(value).includes('e')
-      ? formatter('number', locale, () => new Intl.NumberFormat(locale, { maximumSignificantDigits: 21 })).format(value + 0)
-      : undefined;
+    return [...NUMBER_TYPES, 'group'].includes(type) && !String(value).includes('e') ? numberFormat(locale).format(value + 0) : undefined;
   if (!STAMP_TYPES.includes(type) || !matchesFormat(type, value)) return undefined;
   const options: Intl.DateTimeFormatOptions = {
     dateStyle: type === 'time' ? undefined : 'medium',

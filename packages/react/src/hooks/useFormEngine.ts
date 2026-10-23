@@ -52,6 +52,9 @@ export function useFormEngineStore(
       get lang() {
         return optionsRef.current?.lang;
       },
+      get locale() {
+        return optionsRef.current?.locale;
+      },
       get formatRecall() {
         return optionsRef.current?.formatRecall;
       },
