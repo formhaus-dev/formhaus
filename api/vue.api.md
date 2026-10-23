@@ -122,7 +122,7 @@ export const fieldComponentEmits: {
 };
 
 // @public (undocumented)
-export type FieldComponentMap = Partial<Record<FieldType, Component>>;
+export type FieldComponentMap = Partial<Record<FieldType | 'section' | 'group' | 'groupItem' | 'confirmDialog', Component>>;
 
 // @public (undocumented)
 export interface FieldComponentProps {
