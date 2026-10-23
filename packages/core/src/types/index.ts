@@ -32,7 +32,9 @@ export type {
 } from './i18n';
 export type {
   ConfirmDialogView,
+  ErrorSummary,
   ErrorSummaryGroup,
+  ErrorSummaryOptions,
   ErrorSummaryView,
   FormActionsView,
   FormErrorsView,

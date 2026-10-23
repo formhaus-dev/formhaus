@@ -4,7 +4,7 @@ import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
 import { labelFor } from '../i18n/labels';
 import { cut } from '../validation/bounded-text';
-import type { ErrorSummaryGroup, FormGroup, FormStep, LabelSource } from '../types';
+import type { ErrorSummary, ErrorSummaryGroup, ErrorSummaryOptions, FormGroup, FormStep, LabelSource } from '../types';
 import { isBlank } from '../visibility/evaluate-condition';
 import { isEntry, itemsOf } from '../visibility/nodes';
 import { fieldDomId, itemDomId } from './ids';
@@ -21,12 +21,12 @@ export function itemTitle(engine: FormEngine, group: FormGroup, index: number, .
   return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : cut(labelFor('itemLabel', params, ...labels));
 }
 
-export function errorDomId(engine: FormEngine, formId: string, key: string): string {
+export function errorDomId(engine: FormEngine, formId: string | undefined, key: string): string {
   const path = visibility(engine).parse(key);
   return path ? itemDomId(formId, ...path, engine.definition) : fieldDomId(formId, key, engine.definition);
 }
 
-export function errorGroups(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorSummaryGroup[] {
+function errorGroups(engine: FormEngine, formId: string | undefined, ...labels: (LabelSource | undefined)[]): ErrorSummaryGroup[] {
   const { errors } = engine;
   const { values } = internals(engine).state;
   return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap((source, index) => {
@@ -44,6 +44,11 @@ export function errorGroups(engine: FormEngine, formId: string, ...labels: (Labe
     });
     return entries[0] ? [{ id, title: title || labelFor('stepTitle', { index: index + 1 }, ...labels), entries }] : [];
   });
+}
+
+export function errorSummary(engine: FormEngine, options: ErrorSummaryOptions = {}): ErrorSummary {
+  const groups = errorGroups(engine, options.idPrefix, options.labels, engine.definition.labels);
+  return { groups, topLevelErrors: engine.topLevelErrors, count: groups.reduce((total, group) => total + group.entries.length, 0) };
 }
 
 export function itemHasContent(engine: FormEngine, key: string, index: number): boolean {

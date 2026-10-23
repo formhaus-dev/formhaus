@@ -1,6 +1,5 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { FormEngine, recallText, type FormDefinition, type FormEngineOptions, type RecallFormatFn } from '../../src';
-import { errorGroups } from '../../src/internal';
+import { errorSummary, FormEngine, recallText, type FormDefinition, type FormEngineOptions, type RecallFormatFn } from '../../src';
 
 const definition = (lang?: string): FormDefinition => ({
   formatVersion: '1.5',
@@ -196,7 +195,7 @@ describe('recall formatting', () => {
       options,
     );
     engine.validate();
-    return errorGroups(engine, 'f')[0].entries[0].text;
+    return errorSummary(engine).groups[0].entries[0].text;
   };
 
   it('uses the engine formatter and locale in the error summary', () => {

@@ -1,6 +1,7 @@
 import type { GoToStepResult } from './analytics';
 import type { FormAction } from './action';
 import type { FormGroup, FormSection } from './field';
+import type { LabelSource } from './i18n';
 
 export interface SectionView {
   id: string;
@@ -46,6 +47,17 @@ export interface ErrorSummaryGroup {
   id: string;
   title: string;
   entries: { key: string; id: string; text: string }[];
+}
+
+export interface ErrorSummary {
+  groups: ErrorSummaryGroup[];
+  topLevelErrors: readonly string[];
+  count: number;
+}
+
+export interface ErrorSummaryOptions {
+  idPrefix?: string;
+  labels?: LabelSource;
 }
 
 export interface ErrorSummaryView {
@@ -134,5 +146,7 @@ export interface FormRendererHandle {
   setValue(key: string, value: unknown): void;
   getValues(): Record<string, unknown>;
   goToStep(stepId: string): GoToStepResult;
+  showField(key: string): void;
+  getErrors(): ErrorSummary;
   readonly values: Readonly<Record<string, unknown>>;
 }
