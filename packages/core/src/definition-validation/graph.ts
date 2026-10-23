@@ -57,12 +57,5 @@ function findCycles(graph: Map<string, string[]>): string[][] {
 
 export function graphIssues(context: CheckContext): DefinitionIssue[] {
   const paths = new Map(context.entries.map((entry) => [nodeId(entry), entry.path]));
-  return findCycles(dependencyGraph(context)).map((cycle) =>
-    error(
-      'condition-cycle',
-      paths.get(cycle[0])!,
-      `show conditions form a cycle: ${cycle.join(' -> ')}`,
-      'Remove one of the conditions in the cycle',
-    ),
-  );
+  return findCycles(dependencyGraph(context)).map((cycle) => error('condition-cycle', paths.get(cycle[0])!, cycle));
 }
