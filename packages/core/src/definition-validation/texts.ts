@@ -116,6 +116,10 @@ export const ISSUE_TEXTS = {
     `${JSON.stringify(pattern)} is not a valid regular expression`,
     'Fix the pattern or escape special characters with a backslash',
   ],
+  'slow-pattern': (key: string): IssueText => [
+    `the pattern of "${key}" can take very long on some values, so the server does not run it`,
+    'Rewrite it without nested or overlapping repeats, in 1000 characters or less',
+  ],
   'invalid-scale': (): IssueText => ['a scale needs 2 to 11 whole-number points'],
   'default-items-greater-than-max': (items: number, max: number): IssueText => [
     `defaultItems (${items}) is greater than maxLength (${max})`,
