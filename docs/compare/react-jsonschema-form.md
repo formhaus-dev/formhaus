@@ -34,7 +34,7 @@ react-jsonschema-form (rjsf) builds a React form from a JSON Schema that describ
 | Figma | Plugin draws the definition ([guide](/guide/figma)) | Not documented |
 | AI tooling | JSON Schema, [MCP server](/guide/mcp), Claude Code plugin | Input is standard JSON Schema ([docs](https://rjsf-team.github.io/react-jsonschema-form/docs/)); no AI tooling documented |
 | Frameworks | React 18 and 19, Vue 3.3.3+, headless engine | React 18+ ([npm](https://www.npmjs.com/package/@rjsf/core)) |
-| Bundle size (gzipped) | <!-- size:react:start -->32.1 KB<!-- size:react:end --> core + React | <!-- size:rjsf:start -->125.3 KB for `@rjsf/core` + `@rjsf/validator-ajv8` 6.11.0<!-- size:rjsf:end -->; other themes are separate packages ([how it's measured](/guide/bundle-size)) |
+| Bundle size (gzipped) | <!-- size:react:start -->32.3 KB<!-- size:react:end --> core + React | <!-- size:rjsf:start -->125.3 KB for `@rjsf/core` + `@rjsf/validator-ajv8` 6.11.0<!-- size:rjsf:end -->; other themes are separate packages ([how it's measured](/guide/bundle-size)) |
 | License | MIT | Apache-2.0 ([docs](https://rjsf-team.github.io/react-jsonschema-form/docs/)) |
 
 Sizes measured on 2026-10-09. See [how Formhaus sizes are measured](/compare/#formhaus-at-a-glance).

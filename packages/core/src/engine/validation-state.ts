@@ -48,6 +48,7 @@ export function applyValidationErrors(
   errors: Record<string, string>,
   server = false,
   formErrors: string[] = [],
+  navigate = server,
 ): void {
   const { state } = engine;
   const previousErrors = engine.errors;
@@ -64,7 +65,7 @@ export function applyValidationErrors(
   }
   state.errors = { ...state.serverErrors, ...bound };
   state.topLevelErrors = server ? general : [...state.serverFormErrors, ...general];
-  const structureChanged = server && moveToFirstError(engine, bound);
+  const structureChanged = navigate && moveToFirstError(engine, bound);
   engine.notify({ fieldKeys: getChangedKeys(previousErrors, engine.errors), structureChanged });
 }
 
@@ -73,6 +74,10 @@ function moveToFirstError(engine: EngineInternals, errors: Record<string, string
   if (targetIndex < 0 || targetIndex === engine.currentStepIndex) return false;
   engine.state.currentStepIndex = targetIndex;
   return true;
+}
+
+export function clearFormErrors(engine: EngineInternals): void {
+  engine.state.topLevelErrors = [...engine.state.serverFormErrors];
 }
 
 export function clearError(engine: EngineInternals, key: string, server = false): void {

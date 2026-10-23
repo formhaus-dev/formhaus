@@ -26,6 +26,7 @@ import type {
   RootProps,
   SectionView,
   StepValidateFn,
+  ValidateFn,
   AfterSubmitFn,
   SubmitHandler,
   TestIdTarget,
@@ -94,6 +95,7 @@ export interface FormRendererProps {
   keepValues?: boolean;
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: Callback<StepValidateFn>;
+  onValidate?: Callback<ValidateFn>;
   lang?: string;
   formatRecall?: Callback<RecallFormatFn>;
   seed?: string | undefined;

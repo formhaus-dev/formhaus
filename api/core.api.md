@@ -407,6 +407,8 @@ export interface FormEngineOptions {
     // (undocumented)
     onStepValidate?: StepValidateFn;
     // (undocumented)
+    onValidate?: ValidateFn;
+    // (undocumented)
     onWarning?: (issue: DefinitionIssue) => void;
     // (undocumented)
     research?: FormResearch | undefined;
@@ -1013,10 +1015,23 @@ export type TestIdTarget = {
 };
 
 // @public (undocumented)
+export interface ValidateContext {
+    // (undocumented)
+    fields: string[];
+    // (undocumented)
+    stepId?: string;
+    // (undocumented)
+    submit: boolean;
+}
+
+// @public (undocumented)
 export function validateFields(fields: FormNode[], values: Record<string, unknown>, options?: ValidateOptions): Record<string, string>;
 
 // @public (undocumented)
 export function validateFieldValue(field: FormField, input: unknown, allValues: Record<string, unknown>, input2?: ValidateOptions): string | null;
+
+// @public (undocumented)
+export type ValidateFn = (values: Record<string, unknown>, context: ValidateContext) => Record<string, string> | null | void | Promise<Record<string, string> | null | void>;
 
 // @public (undocumented)
 export interface ValidateOptions {

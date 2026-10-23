@@ -50,6 +50,7 @@ import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
 import { TestIdTarget } from '@formhaus/core';
+import { ValidateFn } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 // @public (undocumented)
@@ -367,6 +368,8 @@ export interface FormRendererProps {
     onStepValidate?: Callback<StepValidateFn>;
     // (undocumented)
     onSubmit?: SubmitHandler;
+    // (undocumented)
+    onValidate?: Callback<ValidateFn>;
     // (undocumented)
     onWarning?: (issue: DefinitionIssue) => void;
     // (undocumented)

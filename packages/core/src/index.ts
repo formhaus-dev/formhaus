@@ -53,6 +53,8 @@ export {
   type FormResearch,
   type GroupItem,
   type StepValidateFn,
+  type ValidateFn,
+  type ValidateContext,
   type StepChangeContext,
   type BeforeStepChangeFn,
   type AfterStepChangeFn,

@@ -31,6 +31,9 @@ export function useFormEngineStore(
       get onStepValidate() {
         return optionsRef.current?.onStepValidate;
       },
+      get onValidate() {
+        return optionsRef.current?.onValidate;
+      },
       get onBeforeStepChange() {
         return optionsRef.current?.onBeforeStepChange;
       },
