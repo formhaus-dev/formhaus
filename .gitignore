@@ -17,3 +17,4 @@ examples/*/.nuxt/
 examples/*/.output/
 .vitest-attachments/
 .vitest/
+docs/public/play/apps/
