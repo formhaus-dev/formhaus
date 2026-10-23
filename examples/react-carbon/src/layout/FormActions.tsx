@@ -1,5 +1,6 @@
 import { isActionDisabled } from '@formhaus/core';
 import type { FormActionsProps } from '@formhaus/react';
+import { ArrowRight } from '@carbon/icons-react';
 import { Button, ButtonSet } from '@carbon/react';
 
 export function FormActions({
@@ -25,7 +26,7 @@ export function FormActions({
   const primaryDisabled = !!loading || isActionDisabled(isMultiStep && !isLastStep ? nextAction : submitAction, values);
 
   return (
-    <ButtonSet style={{ marginBlockStart: '2rem' }} {...rootProps}>
+    <ButtonSet style={{ marginBlockStart: '2rem', justifyContent: isMultiStep ? 'flex-end' : undefined }} {...rootProps}>
       {cancelAction && (
         <Button kind="ghost" disabled={loading} onClick={onCancel}>
           {cancelAction.label}
@@ -45,6 +46,7 @@ export function FormActions({
         <Button
           type="submit"
           kind="primary"
+          renderIcon={ArrowRight}
           disabled={primaryDisabled}
           onClick={(event) => {
             event.preventDefault();
