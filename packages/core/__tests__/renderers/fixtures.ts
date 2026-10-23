@@ -1,13 +1,17 @@
 import type { expect, it, vi } from 'vitest';
 import type {
+  DefinitionIssue,
   FieldOption,
   FormEvent,
   FormResearch,
   FormDefinition,
+  FormRendererHandle,
   LabelSource,
+  LocaleCatalog,
   RecallFormatFn,
   StepValidateFn,
   SubmitHandler,
+  ValidateFn,
 } from '../../src';
 
 export interface ScenarioProps {
@@ -20,13 +24,20 @@ export interface ScenarioProps {
   loading?: boolean;
   stepErrorMarks?: boolean;
   labels?: LabelSource;
+  locale?: LocaleCatalog | LocaleCatalog[];
   onStepValidate?: StepValidateFn;
+  onValidate?: ValidateFn;
   lang?: string;
   formatRecall?: RecallFormatFn;
   onFormEvent?: (event: FormEvent) => void;
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, values: Record<string, unknown>) => void;
   components?: Record<string, unknown>;
+  layout?: Record<string, unknown>;
+  actionsComponent?: unknown;
+  progressComponent?: unknown;
+  testIds?: boolean;
+  onWarning?: (issue: DefinitionIssue) => void;
   confirmRemove?: boolean;
   seed?: string;
   research?: FormResearch;
@@ -35,6 +46,7 @@ export interface ScenarioProps {
 
 interface Mounted {
   update(props: Partial<ScenarioProps>): Promise<void>;
+  handle(): Pick<FormRendererHandle, 'showField' | 'getErrors'>;
 }
 
 export interface RendererHarness {
@@ -43,6 +55,8 @@ export interface RendererHarness {
   type(element: Element, value: string): Promise<void>;
   submit(form: HTMLFormElement): Promise<void>;
   containers?: Record<string, unknown>;
+  controls?: Record<string, unknown>;
+  design?: { components: Record<string, unknown>; layout: Record<string, unknown> };
 }
 
 type Query = (role: string, options?: { name?: string | RegExp }) => HTMLElement;
@@ -100,6 +114,18 @@ export const wizard: FormDefinition = {
 };
 
 export const filled = { name: 'Ada', plan: 'a', city: 'Oslo' };
+
+export const signup: FormDefinition = {
+  id: 'signup',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    { id: 'one', title: 'One', fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }] },
+    { id: 'two', title: 'Two', fields: [{ key: 'city', type: 'text', label: 'City' }] },
+  ],
+};
+
+export const signupErrors: SubmitHandler = () => ({ ok: false, errors: { name: 'Taken', city: 'Unknown', coupon: 'Server down' } });
 
 export function deferred<T>() {
   let resolve!: (value: T) => void;

@@ -327,7 +327,7 @@ A section MAY have an empty `fields` array. It then shows only its title and des
 
 ### Matrix
 
-`layout: "matrix"` draws a section as a grid, also called a Likert table. Each field of the section is a row, and the options of the first field are the column headers. Use `radio` rows, or `multiselect` rows for several answers per row, with the same options in the same order. Values stay flat: each row writes its own key, and conditions, rules and the payload treat a row like any other field. Do not set `autoAdvance` on a row: answering one row would leave the step. A renderer that does not know `layout` draws a plain section of the same fields.
+`layout: "matrix"` draws a section as a grid, also called a Likert table. Each field of the section is a row, and the options of the first field are the column headers. Use `radio` rows, or `multiselect` rows for several answers per row, with the same options in the same order. A row whose option values differ is a `matrix-options-mismatch` warning. Values stay flat: each row writes its own key, and conditions, rules and the payload treat a row like any other field. Do not set `autoAdvance` on a row: answering one row would leave the step. A renderer that does not know `layout` draws a plain section of the same fields.
 
 ```json
 {
@@ -1080,6 +1080,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `custom-type-name` | warning | A custom field type without `-` or `:`, such as `stars`. Not reported when `unknown-field-type` is |
 | `definition-reset` | warning, from the React and Vue renderers in development | A new `definition` object with the same content as the previous one, which resets the form |
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
+| `legacy-layout` | warning, from the React and Vue renderers in development | `components.section`, `components.group`, `components.groupItem`, `components.confirmDialog`, `actionsComponent` or `progressComponent`, which `layout` replaces. Reported once per key |
 | `missing-research` | warning, from the engine in development | A field with `randomize` and no `research` option, so the options show in written order. Reported once |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-autocomplete-token` | warning | An `autocomplete` that is not a valid [autofill token](#autocomplete) |
@@ -1091,6 +1092,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `exclusive-default-value` | warning | A `defaultValue` that holds an exclusive option and other values |
 | `exclusive-with-min-length` | warning | `minLength` greater than 1 on a `multiselect` with an exclusive option |
 | `randomize-not-applicable` | warning | `randomize` on a field other than `radio`, `multiselect` and `select` or in a section with `layout: "matrix"`, or `pinned` on an option of a field without `randomize` |
+| `matrix-options-mismatch` | warning | A `radio` or `multiselect` row of a section with `layout: "matrix"` whose option values differ from those of the first field, in content or order |
 | `snapshot-mismatch` | warning | A native port restored a form from a [snapshot](#form-snapshot-native-ports) it could not use, so the form started fresh |
 | `snapshot-too-large` | warning | A native renderer did not persist a [snapshot](#form-snapshot-native-ports) because it exceeded the platform's size limit |
 | `unknown-validator` | warning | A `validator` name missing from the `validators` option. Reported only when validators are passed |

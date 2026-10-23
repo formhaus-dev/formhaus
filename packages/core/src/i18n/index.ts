@@ -5,3 +5,5 @@ export type { Overlay } from './overlay';
 export { checkTranslations } from './check';
 export { DEFAULT_LABELS as defaultLabels } from './nodes';
 export { DEFAULT_MESSAGES as defaultMessages } from '../validation/default-messages';
+export { checkCatalog, localeChain, type CatalogIssues } from './locale';
+export type { LocaleCatalog, LocaleText, PluralForms } from '../types';

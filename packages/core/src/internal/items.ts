@@ -2,9 +2,9 @@ import type { FormEngine } from '../engine';
 import { errorKeys } from '../engine/validation-state';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
-import { labelFor } from '../i18n/labels';
+import { engineLabel } from '../i18n/labels';
 import { cut } from '../validation/bounded-text';
-import type { FormGroup, FormStep, LabelSource } from '../types';
+import type { ErrorSummary, ErrorSummaryGroup, ErrorSummaryOptions, FormGroup, FormStep, LabelSource } from '../types';
 import { isBlank } from '../visibility/evaluate-condition';
 import { isEntry, itemsOf } from '../visibility/nodes';
 import { fieldDomId, itemDomId } from './ids';
@@ -15,30 +15,18 @@ export { itemLimits };
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 const visibility = (engine: FormEngine) => internals(engine).visibility;
 
-export function itemTitle(engine: FormEngine, group: FormGroup, index: number, ...labels: (LabelSource | undefined)[]): string {
+export function itemTitle(engine: FormEngine, group: FormGroup, index: number, labels?: LabelSource): string {
   const item = { group: group.key, index };
   const params = { label: recalled(engine, group).label, index: index + 1 };
-  return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : cut(labelFor('itemLabel', params, ...labels));
+  return group.itemLabel ? recallTemplate(engine, group.itemLabel, item, params) : cut(engineLabel(engine, 'itemLabel', params, labels));
 }
 
-export function errorDomId(engine: FormEngine, formId: string, key: string): string {
+export function errorDomId(engine: FormEngine, formId: string | undefined, key: string): string {
   const path = visibility(engine).parse(key);
   return path ? itemDomId(formId, ...path, engine.definition) : fieldDomId(formId, key, engine.definition);
 }
 
-export interface ErrorEntry {
-  key: string;
-  id: string;
-  text: string;
-}
-
-export interface ErrorGroup {
-  id: string;
-  title: string;
-  entries: ErrorEntry[];
-}
-
-export function errorGroups(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorGroup[] {
+function errorGroups(engine: FormEngine, formId: string | undefined, labels?: LabelSource): ErrorSummaryGroup[] {
   const { errors } = engine;
   const { values } = internals(engine).state;
   return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap((source, index) => {
@@ -49,13 +37,18 @@ export function errorGroups(engine: FormEngine, formId: string, ...labels: (Labe
       const raw = item?.field ?? visibility(engine).activeField(key, values);
       if (!raw) return [];
       const field = recalled(engine, raw, item ? key : undefined);
-      const label = item ? `${field.label} (${itemTitle(engine, item.group, item.index, ...labels)})` : field.label;
+      const label = item ? `${field.label} (${itemTitle(engine, item.group, item.index, labels)})` : field.label;
       return [
         { key, id: errorDomId(engine, formId, key), text: label + (/[?!:.。]$/.test(label.normalize('NFKC')) ? ' ' : ': ') + errors[key] },
       ];
     });
-    return entries[0] ? [{ id, title: title || labelFor('stepTitle', { index: index + 1 }, ...labels), entries }] : [];
+    return entries[0] ? [{ id, title: title || engineLabel(engine, 'stepTitle', { index: index + 1 }, labels), entries }] : [];
   });
+}
+
+export function errorSummary(engine: FormEngine, options: ErrorSummaryOptions = {}): ErrorSummary {
+  const groups = errorGroups(engine, options.idPrefix, options.labels);
+  return { groups, topLevelErrors: engine.topLevelErrors, count: groups.reduce((total, group) => total + group.entries.length, 0) };
 }
 
 export function itemHasContent(engine: FormEngine, key: string, index: number): boolean {

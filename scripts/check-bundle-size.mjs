@@ -8,6 +8,7 @@ const PACKAGE_EXTERNALS = [
   '@formhaus/core/i18n',
   '@formhaus/core/fix',
   '@formhaus/core/research',
+  '@formhaus/core/schema',
   '@formhaus/react',
   '@formhaus/vue',
   'react',
@@ -25,11 +26,13 @@ const violations = [];
 for (const name of ENTRIES) {
   const [target, mode = 'development'] = name.split(':');
   const [module, only] = target.split('#');
-  const [pkg, entry = 'index'] = module.split('/');
+  const [pkg, ...path] = module.split('/');
+  const entry = path.join('/') || 'index';
   const file = `./packages/${pkg}/dist/${entry}.js`;
+  const exported = only ? `{ ${only} }` : entry.startsWith('locales/') ? '{ default }' : '*';
   const size = entry.endsWith('.css')
     ? gzip(readFileSync(`packages/${pkg}/${entry}`))
-    : await bundleSize(only ? `export { ${only} } from '${file}';` : `export * from '${file}';`, { mode, external: PACKAGE_EXTERNALS });
+    : await bundleSize(`export ${exported} from '${file}';`, { mode, external: PACKAGE_EXTERNALS });
   sizes.budgets[name] = size;
   log(`@formhaus/${name}: ${size} B gzipped`);
 }

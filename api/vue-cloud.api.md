@@ -24,6 +24,7 @@ import { FormDefinition } from '@formhaus/core';
 import { FormEvent } from '@formhaus/core';
 import { FormResearch } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
+import { LocaleCatalog } from '@formhaus/core';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
@@ -32,6 +33,7 @@ import { RecallFormatFn } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
 import { TestIdTarget } from '@formhaus/core';
+import { ValidateFn } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 export { CloudError }

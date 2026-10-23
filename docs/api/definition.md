@@ -277,6 +277,17 @@ type ValidatorFn = (
 ) => string | null;
 ```
 
+## ValidateFn
+
+Form-level validator for Continue and Submit. See [Schema Validation](/guide/schema-validation).
+
+```ts
+type ValidateFn = (
+  values: Record<string, unknown>,
+  context: { stepId?: string; fields: string[]; submit: boolean },
+) => Record<string, string> | null | void | Promise<Record<string, string> | null | void>;
+```
+
 ## StepValidateFn
 
 Async step-level validator. See [Async Step Validation](/guide/async-validation) for the full guide.

@@ -1,23 +1,22 @@
-import type { FormEngineOptions, FormEvent } from '@formhaus/core';
+import { errorSummary, type FormEngineOptions, type FormEvent } from '@formhaus/core';
 import {
   applySources,
   canMoveFocus,
   errorDomId,
   focusField,
   hasValue,
-  labelFor,
   restoreFocus,
   shouldApplyExternalErrors,
   testIds,
-  warnMissingComponents,
 } from '@formhaus/core/internal';
 import { forwardRef, useCallback, useEffect, useId, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
-import { FormTopLevelErrors } from './FormTopLevelErrors';
-import { LabelContext } from './labels';
+import { FormTopLevelErrors, shownFormErrors } from './FormTopLevelErrors';
+import { LabelContext, useEngineLabel } from './labels';
+import { useComponentWarnings } from './hooks/useComponentWarnings';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import { useRendererActions } from './hooks/useRendererActions';
@@ -40,6 +39,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       initialValues,
       loading = false,
       components,
+      layout,
       optionsProviders,
       actionsComponent,
       progressComponent,
@@ -72,21 +72,10 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       },
     };
     const engine = useFormEngineStore(definition, initialValues, engineOptions);
+    const label = useEngineLabel(engine, props.labels, props.locale);
     const version = useFormSnapshot(engine);
     const previousStep = useRef(engine.currentStep?.id);
     const actions = useRendererActions(engine, props);
-    useImperativeHandle(
-      ref,
-      () => ({
-        setValue: (key, value) => engine.setValue(key, value),
-        getValues: () => ({ ...engine.values }),
-        goToStep: (stepId) => engine.goToStep(stepId),
-        get values() {
-          return engine.values;
-        },
-      }),
-      [engine],
-    );
     const handledInvalid = useRef(0);
 
     const onValuesChange = useRef(props.onValuesChange);
@@ -112,14 +101,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       return unsubscribe;
     }, [engine, definition]);
 
-    const [warned] = useState(() => new Set<string>());
-    useEffect(() => {
-      let warn: (() => void) | undefined;
-      try {
-        if (process.env.NODE_ENV !== 'production') warn = () => warnMissingComponents(definition, components, warned, props.onWarning);
-      } catch {}
-      warn?.();
-    }, [definition, components]);
+    useComponentWarnings(props);
 
     const appliedErrors = useRef<{ engine: typeof engine; errors: Record<string, string> } | null>(null);
     useEffect(() => {
@@ -156,15 +138,10 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       const afterErrors = focusErrors.current || (restore && Object.keys(engine.errors).length > 0);
       focusKey.current = null;
       focusErrors.current = false;
-      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors);
+      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors, () => errorSummary(engine).count > 1);
     }, [engine, version, actions.invalidAttempts, focusRequest]);
 
-    const handleFieldFocus = useCallback(
-      (key: string) => {
-        onFormEvent({ type: 'field_focused', fieldKey: key });
-      },
-      [onFormEvent],
-    );
+    const handleFieldFocus = useCallback((key: string) => onFormEvent({ type: 'field_focused', fieldKey: key }), [onFormEvent]);
     const handleFieldBlur = useCallback(
       (key: string) => {
         onFormEvent({ type: 'field_blurred', fieldKey: key, hasValue: hasValue(engine, key) });
@@ -175,11 +152,29 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const handleCancel = useCallback(() => props.onCancel?.(), [props.onCancel]);
     const showField = useCallback(
       (key: string) => {
+        if (engine.stepValidating || engine.submitting) return;
         focusKey.current = key;
         requestFocus();
         engine.goToStepWithField(key);
       },
       [engine],
+    );
+    useImperativeHandle(
+      ref,
+      () => ({
+        setValue: (key, value) => engine.setValue(key, value),
+        getValues: () => ({ ...engine.values }),
+        goToStep: (stepId) => engine.goToStep(stepId),
+        showField,
+        getErrors: () => ({
+          ...errorSummary(engine, { idPrefix: formId, labels: handlers.current.labels }),
+          topLevelErrors: shownFormErrors(engine, actions.actionError),
+        }),
+        get values() {
+          return engine.values;
+        },
+      }),
+      [engine, showField, formId, actions.actionError],
     );
 
     return (
@@ -198,10 +193,11 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
           void (engine.isLastStep ? actions.submit() : actions.next());
         }}
       >
-        <LabelContext.Provider value={(key, params = {}) => labelFor(key, params, props.labels, engine.definition.labels)}>
+        <LabelContext.Provider value={label}>
           <FormProgressController
             engine={engine}
-            ProgressComponent={progressComponent}
+            ProgressComponent={layout?.progress ?? progressComponent}
+            slot={!!layout?.progress}
             headingLevel={headingLevel}
             marks={props.stepErrorMarks}
           />
@@ -214,6 +210,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             optionsProviders={optionsProviders}
             labels={props.labels}
             confirmRemove={props.confirmRemove}
+            layout={layout}
             onChange={actions.update}
             onItemsChange={actions.changeItems}
             onCommit={actions.commit}
@@ -221,15 +218,23 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             onFocus={handleFieldFocus}
             testId={testId}
           />
-          <FormTopLevelErrors engine={engine} actionError={actions.actionError} />
+          <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />
           {props.errorSummary !== false && (
-            <FormErrorSummary engine={engine} formId={formId} onSelect={showField} labels={props.labels} testId={testId?.('summary')} />
+            <FormErrorSummary
+              engine={engine}
+              formId={formId}
+              onSelect={showField}
+              labels={props.labels}
+              layout={layout}
+              testId={testId?.('summary')}
+            />
           )}
           <FormActionsController
             engine={engine}
             loading={busy}
             labels={props.labels}
-            ActionsComponent={actionsComponent}
+            ActionsComponent={layout?.actions ?? actionsComponent}
+            slot={!!layout?.actions}
             testId={testId}
             onSubmit={actions.submit}
             onNext={actions.next}

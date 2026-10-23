@@ -37,7 +37,19 @@ const { state, submit, retry, again, relay, saveDraft, warm } = useCloudForm({
 });
 
 const rendererProps = computed(() => {
-  const { id, apiBase, onError, initialValues, initialForm, draftStore, draftExclude, cloudLabels, noticePlacement, ...rest } = props;
+  const {
+    id,
+    apiBase,
+    onError,
+    initialValues,
+    initialForm,
+    draftStore,
+    draftExclude,
+    cloudLabels,
+    noticePlacement,
+    actionsComponent,
+    ...rest
+  } = props;
   return rest;
 });
 
@@ -58,8 +70,10 @@ function takesNotice(component: Component): boolean {
   return Array.isArray(declared) ? declared.includes('notice') : !!declared && typeof declared === 'object' && 'notice' in declared;
 }
 
-const CloudActions: FunctionalComponent = (_, { attrs }) => {
-  const actions = props.actionsComponent ?? FormActions;
+const CloudActions: FunctionalComponent = (_, context) => {
+  const actions = props.layout?.actions ?? props.actionsComponent ?? FormActions;
+  const { rootProps, ...rest } = context.attrs;
+  const attrs = actions === props.layout?.actions || actions === FormActions ? context.attrs : rest;
   return [
     state.value.challenge && h('div', { ref: box, style: 'display:contents' }),
     props.noticePlacement === 'actions' && h(NoticeView),
@@ -67,6 +81,18 @@ const CloudActions: FunctionalComponent = (_, { attrs }) => {
   ];
 };
 CloudActions.inheritAttrs = false;
+
+let summaryCount = 0;
+const CloudSummary: FunctionalComponent = (_, { attrs }) => {
+  summaryCount = attrs.count as number;
+  return h(props.layout!.errorSummary!, attrs);
+};
+CloudSummary.inheritAttrs = false;
+const layoutSlots = computed(() => ({
+  ...props.layout,
+  actions: CloudActions,
+  errorSummary: props.layout?.errorSummary && CloudSummary,
+}));
 
 watch(
   root,
@@ -92,7 +118,8 @@ watch(
   () => state.value.attempt,
   () => {
     cancelAnimationFrame(frame);
-    frame = requestAnimationFrame(() => focusProblem(root.value, root.value?.querySelector<HTMLElement>(CLOUD_NOTICE) ?? null));
+    const several = props.layout?.errorSummary && (() => summaryCount > 1);
+    frame = requestAnimationFrame(() => focusProblem(root.value, root.value?.querySelector<HTMLElement>(CLOUD_NOTICE) ?? null, several));
   },
   { flush: 'post' },
 );
@@ -148,7 +175,7 @@ function onFieldChange(key: string, value: unknown, values: Record<string, unkno
       :errors="state.errors"
       :on-submit="submit"
       :on-error="relay"
-      :actions-component="CloudActions"
+      :layout="layoutSlots"
       @field-change="onFieldChange"
       @form-event="(event: FormEvent) => emit('formEvent', event)"
     />

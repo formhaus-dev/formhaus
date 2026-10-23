@@ -24,7 +24,10 @@ const DEFAULT_FIELD_COMPONENT_NAMES = {
 
 type DefaultFieldComponentName = (typeof DEFAULT_FIELD_COMPONENT_NAMES)[DefaultFieldType];
 
-export function fieldComponentsByName<T>(byName: Record<DefaultFieldComponentName, T>): Record<DefaultFieldType, T> {
+export const builtInFields = new WeakSet<object>();
+
+export function fieldComponentsByName<T extends object>(byName: Record<DefaultFieldComponentName, T>): Record<DefaultFieldType, T> {
+  for (const component of Object.values(byName)) builtInFields.add(component);
   return Object.fromEntries(Object.entries(DEFAULT_FIELD_COMPONENT_NAMES).map(([type, name]) => [type, byName[name]])) as Record<
     DefaultFieldType,
     T

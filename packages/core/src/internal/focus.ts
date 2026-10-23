@@ -21,15 +21,22 @@ interface Active {
 interface FormRoot extends Focusable {
   ownerDocument: { activeElement: unknown; body: unknown };
   contains(node: never): boolean;
+  querySelectorAll(selector: string): ArrayLike<unknown>;
 }
 
 type Found = Focusable | null | undefined;
 
-const CONTROLS = 'input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
+const ENABLED = ':not(:disabled):not([tabindex="-1"]):not([aria-disabled=true])';
+const FIELD_CONTROLS = ['input:not([type=hidden])', 'select', 'textarea', '[tabindex]'].map((control) => control + ENABLED).join();
+const CONTROLS = `${FIELD_CONTROLS},button${ENABLED}`;
 const GROUP_ITEM = '[data-fh-group-item], .fh-group__item';
 const GROUP_ADD = '[data-fh-group-add], .fh-group__add';
+const GROUP = '[data-fh="group"], .fh-group';
+const FIELD = `[data-fh="field"], ${GROUP}, .fh-field`;
+const SUMMARY = '[data-fh="error-summary"], .fh-error-summary';
+const OUTSIDE = '[data-fh="progress"], [data-fh="actions"], [data-fh="error-summary"]';
 
-function firstControl(root: Found, group = root?.matches('.fh-group')): Found {
+function firstControl(root: Found, group = root?.matches(GROUP)): Found {
   if (root && group) return (root.querySelector(GROUP_ADD) as Found) ?? (root.querySelector(CONTROLS) as Found);
   return root?.matches(CONTROLS) ? root : (root?.querySelector(CONTROLS) as Found);
 }
@@ -39,18 +46,34 @@ function reveal(target: Focusable, scrollTo: Focusable): void {
   target.focus({ preventScroll: true });
 }
 
-const SUMMARY = '.fh-error-summary';
 const SEVERAL = '.fh-error-summary__list > li + li, .fh-error-summary__list ~ .fh-error-summary__list';
 
-function summaryOf(root: Searchable | null | undefined): Found {
+function summaryOf(root: Searchable | null | undefined, several?: () => boolean): Found {
   const summary = root?.querySelector(SUMMARY) as Found;
-  return summary?.querySelector(SEVERAL) ? summary : undefined;
+  return summary && (several ? several() : summary.querySelector(SEVERAL)) ? summary : undefined;
 }
 
-export function focusProblem(root: Searchable | null, notice?: (Focusable & { ownerDocument?: { activeElement: unknown } }) | null): void {
+function fieldsOf(form: FormRoot | null | undefined): Found {
+  const fields = form?.querySelector('[data-fh="fields"], .fh-form__fields') as Found;
+  return (
+    fields ??
+    (form &&
+      ({
+        querySelector: (selector: string) =>
+          Array.from(form.querySelectorAll(selector)).find((node) => !(node as Focusable).closest!(OUTSIDE)),
+        matches: () => false,
+      } as unknown as Focusable))
+  );
+}
+
+export function focusProblem(
+  root: Searchable | null,
+  notice?: (Focusable & { ownerDocument?: { activeElement: unknown } }) | null,
+  several?: () => boolean,
+): void {
   if (notice) reveal(notice, notice);
   if (notice && notice.ownerDocument?.activeElement === notice) return;
-  const target = summaryOf(root);
+  const target = summaryOf(root, several);
   const invalid = target ?? (root?.querySelector('[aria-invalid="true"]') as Found);
   if (invalid) reveal(target ?? firstControl(invalid) ?? invalid, invalid);
 }
@@ -66,17 +89,17 @@ export function restoreFocus(form: FormRoot | null | undefined, target: (Focusab
   if (document && document.activeElement === document.body && target?.isConnected) target.focus();
 }
 
-export function focusField(form: FormRoot | null | undefined, id: string | null, afterErrors = false): void {
-  const fields = form?.querySelector('.fh-form__fields') as Found;
-  const summary = !id && afterErrors && fields?.querySelector('[aria-invalid="true"]') ? summaryOf(form) : undefined;
+export function focusField(form: FormRoot | null | undefined, id: string | null, afterErrors = false, several?: () => boolean): void {
+  const fields = fieldsOf(form);
+  const summary = !id && afterErrors && fields?.querySelector('[aria-invalid="true"]') ? summaryOf(form, several) : undefined;
   if (summary) {
     reveal(summary, summary);
     return;
   }
   const chosen = id ? (fields?.querySelector(`[id="${id}"], [id="${id}-error"]`) as Found) : null;
   if (id && !chosen) return;
-  const field = (chosen?.closest?.('.fh-field, .fh-group') ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) as Found;
-  const group = !!field && (field.matches('.fh-group') || !!field.querySelector(GROUP_ADD));
+  const field = (chosen?.closest?.(FIELD) ?? chosen ?? fields?.querySelector('[aria-invalid="true"]')) as Found;
+  const group = !!field && (field.matches(GROUP) || !!field.querySelector(GROUP_ADD));
   const target =
     (!group && (field?.querySelector('input:checked:not(:disabled)') as Found)) || firstControl(field, group) || firstControl(fields);
   (target ?? form)?.focus();
@@ -93,7 +116,7 @@ export function focusItem(
 ): void {
   const item = document.getElementById(itemDomId(formId, group, index, undefined, definition)) as Focusable | null;
   const next = (
-    added ? ((item?.closest?.(GROUP_ITEM) as Searchable | null | undefined)?.querySelector('input, select, textarea') ?? item) : item
+    added ? ((item?.closest?.(GROUP_ITEM) as Searchable | null | undefined)?.querySelector(FIELD_CONTROLS) ?? item) : item
   ) as Found;
   (
     next ??

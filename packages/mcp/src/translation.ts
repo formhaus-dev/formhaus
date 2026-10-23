@@ -1,11 +1,13 @@
 import type { FieldI18n, FormDefinition, FormI18n, GroupI18n, LabelI18n, StepI18n, ValidationI18n } from '@formhaus/core';
 import {
+  checkCatalog,
   defaultLabels,
   defaultMessages,
   localize,
   textSlots,
   translationIssues,
   translationTemplate,
+  type CatalogIssues,
   type Overlay,
   type TextSlot,
 } from '@formhaus/core/i18n';
@@ -16,23 +18,49 @@ export interface TemplateInput {
   definition: unknown;
   lang: string;
   prefix?: string | false;
+  catalog?: unknown;
 }
 
 export type TemplateResult =
   | { ok: false; validation: ValidationReport }
-  | { ok: true; validation: ValidationReport; lang: string; file: string; overlay: Overlay; slots: TextSlot[] };
+  | {
+      ok: true;
+      validation: ValidationReport;
+      lang: string;
+      file: string;
+      overlay: Overlay;
+      slots: TextSlot[];
+      catalog?: CatalogIssues;
+    };
 
-export function translationTemplateTool({ definition: input, lang, prefix }: TemplateInput): TemplateResult {
+function withoutCatalog(definition: FormDefinition, overlay: Overlay, slots: TextSlot[], issues: CatalogIssues) {
+  const covered = (address: string) => {
+    const [part, key, ...rest] = address.split('.');
+    return (
+      (part === 'messages' || part === 'labels') &&
+      !rest.length &&
+      definition[part]?.[key as never] === undefined &&
+      !issues.missing.some((missing) => missing === address || missing.startsWith(`${address}.`))
+    );
+  };
+  for (const part of ['messages', 'labels'] as const) {
+    const texts = overlay[part];
+    if (typeof texts !== 'object') continue;
+    for (const key of Object.keys(texts)) if (covered(`${part}.${key}`)) delete texts[key];
+    if (!Object.keys(texts).length) delete overlay[part];
+  }
+  return slots.filter(({ address }) => !covered(address));
+}
+
+export function translationTemplateTool({ definition: input, lang, prefix, catalog }: TemplateInput): TemplateResult {
   const { report, definition } = inspectDefinition(input);
   if (!definition) return { ok: false, validation: report };
-  return {
-    ok: true,
-    validation: report,
-    lang,
-    file: `${definition.id}.${lang}.json`,
-    overlay: translationTemplate(definition),
-    slots: textSlots(definition, { prefix }),
-  };
+  const overlay = translationTemplate(definition);
+  const slots = textSlots(definition, { prefix });
+  const file = `${definition.id}.${lang}.json`;
+  if (catalog === undefined) return { ok: true, validation: report, lang, file, overlay, slots };
+  const issues = checkCatalog(catalog);
+  return { ok: true, validation: report, lang, file, overlay, slots: withoutCatalog(definition, overlay, slots, issues), catalog: issues };
 }
 
 export function withOverlay(input: unknown, overlay: unknown): { definition: unknown; issues: string[] } {
@@ -96,6 +124,6 @@ export const i18nCapabilities = {
       'fields.<group>.label | helperText | itemLabel | addLabel | removeLabel',
       'fields.<group>.fields.<key>...',
     ],
-    rule: 'A translation is a separate JSON file, such as signup.ru.json, with string leaves nested by these addresses. Missing or empty strings fall back to the source. Keep nesting, identifiers and {placeholders}. Get a skeleton from translation_template.',
+    rule: 'A translation is a separate JSON file, such as signup.ru.json, with string leaves nested by these addresses. Missing or empty strings fall back to the source. In a multi-step form, fields.<key> also works at the top level and steps.<id>.fields.<key> wins. Keep nesting, identifiers and {placeholders}. Get a skeleton from translation_template.',
   },
 };

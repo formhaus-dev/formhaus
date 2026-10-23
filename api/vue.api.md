@@ -16,12 +16,16 @@ import { DefaultFieldType } from '@formhaus/core';
 import { DefineComponent } from 'vue';
 import { DefinitionIssue } from '@formhaus/core';
 import { EmitsOptions } from 'vue';
+import { ErrorSummaryGroup } from '@formhaus/core';
+import { ErrorSummaryView } from '@formhaus/core';
+import { FieldOption } from '@formhaus/core';
 import { FieldType } from '@formhaus/core';
 import { FormAction } from '@formhaus/core';
 import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEngine } from '@formhaus/core';
 import { FormEngineOptions } from '@formhaus/core';
+import { FormErrorsView } from '@formhaus/core';
 import { FormEvent } from '@formhaus/core';
 import { FormField } from '@formhaus/core';
 import { FormGroup } from '@formhaus/core';
@@ -30,19 +34,24 @@ import { FormRendererHandle } from '@formhaus/core';
 import { FormResearch } from '@formhaus/core';
 import { FormSection } from '@formhaus/core';
 import { FormStep } from '@formhaus/core';
+import { FormStepProgressView } from '@formhaus/core';
+import { FormStepStatus } from '@formhaus/core';
 import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
+import { LocaleCatalog } from '@formhaus/core';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
 import { PropType } from 'vue';
 import { RecallFormatFn } from '@formhaus/core';
 import { Ref } from 'vue';
+import { RootProps } from '@formhaus/core';
 import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
 import { TestIdTarget } from '@formhaus/core';
+import { ValidateFn } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
 // @public (undocumented)
@@ -114,6 +123,33 @@ export const DefaultSection: WithSlots<TypedComponent<typeof sectionComponentPro
 }>;
 
 // @public (undocumented)
+export type ErrorSummaryComponentProps = ErrorSummaryView;
+
+// @public (undocumented)
+export const errorSummaryComponentProps: {
+    rootProps: {
+        type: PropType<RootProps>;
+        required: true;
+    };
+    title: {
+        type: PropType<string>;
+        required: true;
+    };
+    groups: {
+        type: PropType<ErrorSummaryGroup[]>;
+        required: true;
+    };
+    count: {
+        type: PropType<number>;
+        required: true;
+    };
+    showField: {
+        type: PropType<(key: string) => void>;
+        required: true;
+    };
+};
+
+// @public (undocumented)
 export const fieldComponentEmits: {
     'update:modelValue': (_value: unknown) => boolean;
     commit: (_value: unknown) => boolean;
@@ -122,7 +158,7 @@ export const fieldComponentEmits: {
 };
 
 // @public (undocumented)
-export type FieldComponentMap = Partial<Record<FieldType, Component>>;
+export type FieldComponentMap = Partial<Record<FieldType | 'section' | 'group' | 'groupItem' | 'confirmDialog', Component>>;
 
 // @public (undocumented)
 export interface FieldComponentProps {
@@ -136,6 +172,11 @@ export interface FieldComponentProps {
     id?: string;
     // (undocumented)
     loading?: boolean;
+    // (undocumented)
+    matrix?: {
+        columns: FieldOption[];
+        row: number;
+    };
     // (undocumented)
     modelValue: unknown;
     // (undocumented)
@@ -160,6 +201,21 @@ export const fieldComponentProps: {
     disabled: BooleanConstructor;
     testId: StringConstructor;
     optionTestId: PropType<(value: string) => string | undefined>;
+    matrix: PropType<FieldComponentProps["matrix"]>;
+};
+
+// @public (undocumented)
+export interface FieldsContainerProps {
+    // (undocumented)
+    rootProps: RootProps;
+}
+
+// @public (undocumented)
+export const fieldsContainerProps: {
+    rootProps: {
+        type: PropType<RootProps>;
+        required: true;
+    };
 };
 
 // @public (undocumented)
@@ -180,6 +236,8 @@ export const formActionsEmits: {
 
 // @public (undocumented)
 export interface FormActionsProps extends FormActionsView {
+    // (undocumented)
+    rootProps?: RootProps;
 }
 
 // @public (undocumented)
@@ -219,6 +277,22 @@ export const formActionsProps: {
     };
     skipLabel: StringConstructor;
     testIds: PropType<FormActionsView["testIds"]>;
+    rootProps: PropType<RootProps>;
+};
+
+// @public (undocumented)
+export type FormErrorsComponentProps = FormErrorsView;
+
+// @public (undocumented)
+export const formErrorsComponentProps: {
+    rootProps: {
+        type: PropType<RootProps>;
+        required: true;
+    };
+    errors: {
+        type: PropType<readonly string[]>;
+        required: true;
+    };
 };
 
 // @public (undocumented)
@@ -276,7 +350,11 @@ export interface FormRendererProps {
     // (undocumented)
     lang?: string;
     // (undocumented)
+    layout?: LayoutComponentMap;
+    // (undocumented)
     loading?: boolean;
+    // (undocumented)
+    locale?: LocaleCatalog | LocaleCatalog[];
     // (undocumented)
     messages?: Partial<Record<MessageKey, string>> | Callback<MessageFn>;
     // (undocumented)
@@ -293,6 +371,8 @@ export interface FormRendererProps {
     onStepValidate?: Callback<StepValidateFn>;
     // (undocumented)
     onSubmit?: SubmitHandler;
+    // (undocumented)
+    onValidate?: Callback<ValidateFn>;
     // (undocumented)
     onWarning?: (issue: DefinitionIssue) => void;
     // (undocumented)
@@ -315,24 +395,7 @@ export interface FormRendererProps {
 export const FormStepProgress: TypedComponent<typeof formStepProgressProps>;
 
 // @public (undocumented)
-export interface FormStepProgressProps {
-    // (undocumented)
-    counterLabel?: string;
-    // (undocumented)
-    current: number;
-    // (undocumented)
-    headingLevel?: HeadingLevel;
-    // (undocumented)
-    stepDescription?: string;
-    // (undocumented)
-    stepErrorCount?: number;
-    // (undocumented)
-    steps?: FormStepStatus[];
-    // (undocumented)
-    stepTitle?: string;
-    // (undocumented)
-    total: number;
-}
+export type FormStepProgressProps = FormStepProgressView;
 
 // @public (undocumented)
 export const formStepProgressProps: {
@@ -353,17 +416,14 @@ export const formStepProgressProps: {
     steps: PropType<FormStepStatus[]>;
     counterLabel: StringConstructor;
     stepErrorCount: NumberConstructor;
+    marks: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    rootProps: PropType<RootProps>;
 };
 
-// @public (undocumented)
-export interface FormStepStatus {
-    // (undocumented)
-    errorCount: number;
-    // (undocumented)
-    id: string;
-    // (undocumented)
-    title?: string;
-}
+export { FormStepStatus }
 
 // @public (undocumented)
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
@@ -492,12 +552,36 @@ export const HeadlessFormRenderer: RendererComponent;
 export const HiddenField: CommitFieldComponent;
 
 // @public (undocumented)
+export interface LayoutComponentMap {
+    // (undocumented)
+    actions?: Component;
+    // (undocumented)
+    confirmDialog?: Component;
+    // (undocumented)
+    errorSummary?: Component;
+    // (undocumented)
+    fields?: Component;
+    // (undocumented)
+    formErrors?: Component;
+    // (undocumented)
+    group?: Component;
+    // (undocumented)
+    groupItem?: Component;
+    // (undocumented)
+    progress?: Component;
+    // (undocumented)
+    section?: Component;
+}
+
+// @public (undocumented)
 export const MultiselectField: FieldComponent;
 
 export { OptionsProvider }
 
 // @public (undocumented)
 export const RadioField: CommitFieldComponent;
+
+export { RootProps }
 
 // @public (undocumented)
 export const ScaleField: CommitFieldComponent;

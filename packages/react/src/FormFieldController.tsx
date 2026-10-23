@@ -23,9 +23,12 @@ export interface ControllerProps {
 interface FormFieldControllerProps extends ControllerProps {
   field: FormFieldType;
   options?: FieldOption[];
+  busy?: boolean;
   disabled?: boolean;
   path?: string;
   item?: Record<string, unknown>;
+  columns?: FieldOption[];
+  row?: number;
 }
 
 export const FormFieldController = /* @__PURE__ */ memo(function FormFieldController({
@@ -33,10 +36,13 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
   formId,
   field,
   options,
+  busy,
   disabled,
   components,
   path,
   item,
+  columns,
+  row,
   onChange,
   onCommit,
   onBlur,
@@ -62,8 +68,10 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
       value={item ? item[field.key] : engine.values[key]}
       error={engine.errors[key]}
       loading={engine.fieldLoading[key]}
+      busy={busy}
       disabled={disabled}
       components={components}
+      matrix={columns && { columns, row: row! }}
       onChange={handleChange}
       onCommit={handleCommit}
       onBlur={handleBlur}

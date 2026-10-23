@@ -1,4 +1,4 @@
-import { isGroup, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
+import { isGroup, type FieldOption, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
 import {
   fieldDomId,
   fieldTestIds,
@@ -64,7 +64,7 @@ export function useNodeProps(
     },
     { immediate: true },
   );
-  const loaded = useFieldOptions(
+  const [loaded, busy] = useFieldOptions(
     sources,
     () => form.engine,
     () => props.optionsProviders,
@@ -105,7 +105,7 @@ export function useNodeProps(
         descriptionId: description ? `${id}-description` : undefined,
       };
     },
-    nodeProps(field: FormField) {
+    nodeProps(field: FormField, columns?: FieldOption[], row?: number) {
       if (isGroup(field)) {
         const state = groupState(field.key);
         return {
@@ -119,9 +119,11 @@ export function useNodeProps(
           fieldLoading: state.loading,
           disabled: disabled.value,
           components: props.components,
+          layout: props.layout,
           labels: props.labels,
           confirmRemove: props.confirmRemove,
           options: options.value,
+          busy: busy.value,
           testId: testId.value,
           onItemsChange: on.changeItems,
           onUpdate: on.update,
@@ -136,8 +138,10 @@ export function useNodeProps(
         modelValue: values.value[field.key],
         error: errors.value[field.key],
         loading: fieldLoading.value[field.key],
+        busy: busy.value[field.key],
         disabled: disabled.value,
         components: props.components,
+        matrix: columns && { columns, row: row! },
         ...idsOf(field.key),
         'onUpdate:modelValue': (value: unknown) => on.update(field.key, value),
         onCommit: (value: unknown) => on.commit(field.key, value),

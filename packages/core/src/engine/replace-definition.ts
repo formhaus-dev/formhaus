@@ -1,3 +1,4 @@
+import { localeSource } from '../i18n/catalog';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
@@ -17,7 +18,7 @@ export function loadDefinition(
   warnUnordered(definition, engine.lifecycle);
   const visibility = createVisibility(definition, engine.lifecycle.hiddenValues === 'keep');
   engine.definition = definition;
-  engine.messages = messageResolver(engine.lifecycle.messages, definition.messages);
+  engine.messages = messageResolver(engine.lifecycle.messages, definition.messages, localeSource(engine, 'messages'));
   engine.visibility = visibility;
   engine.state.values = createValues(visibility.allFields, values(visibility.allFields), visibility.activeField);
   visibility.reconcileHidden(engine.state.values, engine.state.errors, true);

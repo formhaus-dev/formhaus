@@ -1,12 +1,23 @@
 import type { DefinitionIssue } from '../definition-validation';
 import type { FormEvent, GoToStepResult } from '../types/analytics';
 import type { MessageSource, ValidatorFn } from '../validation';
-import type { FieldOption } from '../types';
+import type { FieldOption, LocaleCatalog } from '../types';
 import type { RecallFormatFn } from './recall-format';
 
 export type { GoToStepResult };
 
 export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
+
+export interface ValidateContext {
+  stepId?: string;
+  fields: string[];
+  submit: boolean;
+}
+
+export type ValidateFn = (
+  values: Record<string, unknown>,
+  context: ValidateContext,
+) => Record<string, string> | null | void | Promise<Record<string, string> | null | void>;
 
 export interface StepChangeContext {
   fromStepId: string;
@@ -34,7 +45,9 @@ export interface FormEngineOptions {
   onAfterSubmit?: AfterSubmitFn;
   validators?: Record<string, ValidatorFn>;
   messages?: MessageSource;
+  locale?: LocaleCatalog | LocaleCatalog[];
   onStepValidate?: StepValidateFn;
+  onValidate?: ValidateFn;
   onWarning?: (issue: DefinitionIssue) => void;
   onFormEvent?: (event: FormEvent) => void;
   lang?: string;

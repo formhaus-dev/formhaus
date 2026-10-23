@@ -26,7 +26,7 @@ export function useValuesSync(form: UseFormEngineReturn, props: FormRendererProp
   try {
     if (process.env.NODE_ENV !== 'production') {
       const warned = new Set<string>();
-      watchMissing = () => watchEffect(() => warnMissingComponents(props.definition, props.components, warned, props.onWarning));
+      watchMissing = () => watchEffect(() => warnMissingComponents(props.definition, props, warned, props.onWarning));
     }
   } catch {}
   watchMissing?.();

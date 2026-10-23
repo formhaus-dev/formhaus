@@ -1,6 +1,7 @@
 import type { GoToStepResult } from './analytics';
 import type { FormAction } from './action';
 import type { FormGroup, FormSection } from './field';
+import type { LabelSource } from './i18n';
 
 export interface SectionView {
   id: string;
@@ -33,6 +34,62 @@ export interface ConfirmDialogView {
   cancelLabel: string;
   confirm: () => void;
   cancel: () => void;
+}
+
+export interface RootProps {
+  'data-fh': string;
+  role?: string;
+  tabIndex?: number;
+  'data-testid'?: string;
+}
+
+export interface ErrorSummaryGroup {
+  id: string;
+  title: string;
+  entries: { key: string; id: string; text: string }[];
+}
+
+export interface ErrorSummary {
+  groups: ErrorSummaryGroup[];
+  topLevelErrors: readonly string[];
+  count: number;
+}
+
+export interface ErrorSummaryOptions {
+  idPrefix?: string;
+  labels?: LabelSource;
+}
+
+export interface ErrorSummaryView {
+  rootProps: RootProps;
+  title: string;
+  groups: ErrorSummaryGroup[];
+  count: number;
+  showField: (key: string) => void;
+}
+
+export interface FormErrorsView {
+  rootProps: RootProps;
+  errors: readonly string[];
+}
+
+export interface FormStepStatus {
+  id: string;
+  title?: string;
+  errorCount: number;
+}
+
+export interface FormStepProgressView {
+  current: number;
+  total: number;
+  stepTitle?: string;
+  stepDescription?: string;
+  headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+  steps?: FormStepStatus[];
+  counterLabel?: string;
+  stepErrorCount?: number;
+  marks?: boolean;
+  rootProps?: RootProps;
 }
 
 export interface GroupView<TItem extends GroupItemView = GroupItemView> {
@@ -89,5 +146,7 @@ export interface FormRendererHandle {
   setValue(key: string, value: unknown): void;
   getValues(): Record<string, unknown>;
   goToStep(stepId: string): GoToStepResult;
+  showField(key: string): void;
+  getErrors(): ErrorSummary;
   readonly values: Readonly<Record<string, unknown>>;
 }

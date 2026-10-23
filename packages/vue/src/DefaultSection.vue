@@ -1,13 +1,11 @@
 <script setup lang="ts">
-import type { FormField } from '@formhaus/core';
+import { matrixColumns } from '@formhaus/core/internal';
 import { computed } from 'vue';
 import { sectionComponentProps } from './props';
 
 const props = defineProps(sectionComponentProps);
 defineSlots<{ default(): unknown }>();
-const columns = computed(() =>
-  props.section.layout === 'matrix' ? (props.section.fields[0] as FormField | undefined)?.options : undefined,
-);
+const columns = computed(() => matrixColumns(props.section));
 </script>
 
 <template>

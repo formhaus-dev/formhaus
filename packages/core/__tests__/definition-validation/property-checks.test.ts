@@ -129,6 +129,40 @@ describe('property checks', () => {
     ]);
   });
 
+  it('warns about matrix rows whose option values differ from the first row', () => {
+    const row = (key: string, values: string[]) => ({
+      key,
+      type: 'radio',
+      label: key,
+      options: values.map((value) => ({ value, label: value.toUpperCase() })),
+    });
+    const fields = [
+      {
+        key: 'grid',
+        type: 'section',
+        layout: 'matrix',
+        title: 'Grid',
+        fields: [
+          row('a', ['1', '2']),
+          {
+            ...row('b', ['1', '2']),
+            options: [
+              { value: '1', label: 'One' },
+              { value: '2', label: 'Two' },
+            ],
+          },
+          row('c', ['2', '1']),
+          row('d', ['1', '2', '3']),
+        ],
+      },
+      { key: 'plain', type: 'section', title: 'Plain', fields: [row('e', ['1', '2']), row('f', ['3'])] },
+    ];
+    expect(summary({ ...base, formatVersion: '1.3', fields })).toEqual([
+      'warning matrix-options-mismatch /fields/0/fields/2/options: the option values of "c" differ from the columns of the matrix "grid". Use the options of the first field in every row.',
+      'warning matrix-options-mismatch /fields/0/fields/3/options: the option values of "d" differ from the columns of the matrix "grid". Use the options of the first field in every row.',
+    ]);
+  });
+
   it('keeps unknown properties out of the errors', () => {
     const definition = { ...base, colour: 'red', fields: [{ ...field, tooltip: 'x' }] } as FormDefinition;
     expect(() => parseDefinition(definition)).not.toThrow();

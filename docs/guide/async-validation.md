@@ -124,7 +124,7 @@ async function validateStep(stepId, values) {
 
 **Back while validating.** Renderers disable Back while an async action is pending. If low-level core navigation changes the step during a pending guard, its result is discarded.
 
-**Last step.** The renderer Submit action does not invoke `onStepValidate`. Perform final server validation in the submit handler before saving.
+**Last step.** The renderer Submit action does not invoke `onStepValidate`. Use [`onValidate`](/guide/schema-validation), which runs on Continue and Submit, or check in the submit handler before saving.
 
 `next()` returns `false` on the final step without running validation or navigation hooks. Use `onBeforeSubmit` for cancellable checks before submission; see [lifecycle hooks](/guide/steps#lifecycle-hooks).
 

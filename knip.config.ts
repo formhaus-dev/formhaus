@@ -26,7 +26,7 @@ const config: KnipConfig = {
     docs: {
       entry: ['**/*.md', 'templates/[[]slug].paths.ts', 'recipes/snippets/*.{ts,tsx,vue}'],
       project: [sources],
-      ignoreDependencies: ['vue', 'vite', 'react', 'vue-router'],
+      ignoreDependencies: ['vue', 'vite', 'react', 'vue-router', 'zod', 'valibot', 'arktype'],
     },
     'packages/*': {
       project: [sources],

@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/core",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "JSON form definition engine: validation, conditional visibility, multi-step and branching routes. Zero dependencies, works in React, Vue, Svelte or vanilla.",
   "type": "module",
   "sideEffects": [
@@ -39,6 +39,15 @@
       "types": "./dist/research.d.ts",
       "default": "./dist/research.js"
     },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "default": "./dist/schema.js"
+    },
+    "./locales/*.json": "./locales/*.json",
+    "./locales/*": {
+      "types": "./dist/locales/*.d.ts",
+      "default": "./dist/locales/*.js"
+    },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
     "./schema.json": "./schema/form-definition.schema.json",
@@ -51,12 +60,13 @@
     "dist",
     "fixtures/submissions",
     "fixtures/cloud",
+    "locales",
     "schema",
     "style.css",
     "tokens"
   ],
   "scripts": {
-    "build": "tsup",
+    "build": "tsup && node scripts/locales.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "fuzz": "FORMHAUS_FUZZ_RUNS=500 FORMHAUS_MODEL_RUNS=2000 vitest run __tests__/engine/form-engine-lifecycle-fuzz.test.ts __tests__/engine/form-engine-model.test.ts && FORMHAUS_FUZZ_RUNS=3000 vitest run __tests__/engine/form-engine-path.test.ts __tests__/engine/path-patch-fuzz.test.ts __tests__/engine/path-patch-engine.test.ts",
@@ -67,12 +77,15 @@
   },
   "devDependencies": {
     "ajv": "^8.20.0",
+    "arktype": "^2.2.8",
     "fast-check": "^4.10.2",
     "style-dictionary": "5.4.4",
     "ts-json-schema-generator": "^2.9.0",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",
-    "vitest": "^5.0.3"
+    "valibot": "^1.5.0",
+    "vitest": "^5.0.3",
+    "zod": "^4.6.6"
   },
   "license": "MIT",
   "homepage": "https://formhaus.dev",

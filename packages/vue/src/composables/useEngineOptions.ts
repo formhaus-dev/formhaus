@@ -23,8 +23,14 @@ export function useEngineOptions(props: FormRendererProps, onFormEvent: (event: 
     get onStepValidate() {
       return props.onStepValidate;
     },
+    get onValidate() {
+      return props.onValidate;
+    },
     get lang() {
       return props.lang;
+    },
+    get locale() {
+      return props.locale;
     },
     get formatRecall() {
       return props.formatRecall;

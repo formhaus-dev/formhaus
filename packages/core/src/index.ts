@@ -20,7 +20,14 @@ export type {
   SectionView,
   GroupI18n,
   ConfirmDialogView,
+  ErrorSummary,
+  ErrorSummaryGroup,
+  ErrorSummaryOptions,
+  ErrorSummaryView,
   FormActionsView,
+  FormErrorsView,
+  FormStepProgressView,
+  FormStepStatus,
   GroupItemView,
   GroupView,
   GroupValidation,
@@ -30,11 +37,15 @@ export type {
   LabelI18n,
   LabelKey,
   LabelSource,
+  LocaleCatalog,
+  LocaleText,
   MessageCatalog,
   MessageKey,
+  PluralForms,
   StepI18n,
   ValidationI18n,
   StepRoute,
+  RootProps,
   ShowCondition,
   TestIdTarget,
 } from './types';
@@ -45,6 +56,8 @@ export {
   type FormResearch,
   type GroupItem,
   type StepValidateFn,
+  type ValidateFn,
+  type ValidateContext,
   type StepChangeContext,
   type BeforeStepChangeFn,
   type AfterStepChangeFn,
@@ -83,6 +96,7 @@ export {
   type DefinitionIssueCode,
 } from './definition-validation';
 
+export { errorSummary } from './internal/items';
 export type { OptionsProvider } from './internal/options';
 
 export { resolveSources, type SourceContext } from './sources';

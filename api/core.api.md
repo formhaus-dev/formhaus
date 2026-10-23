@@ -63,7 +63,56 @@ export interface DefinitionIssue {
 }
 
 // @public (undocumented)
-export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable';
+export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'matrix-options-mismatch';
+
+// @public (undocumented)
+export interface ErrorSummary {
+    // (undocumented)
+    count: number;
+    // (undocumented)
+    groups: ErrorSummaryGroup[];
+    // (undocumented)
+    topLevelErrors: readonly string[];
+}
+
+// @public (undocumented)
+export function errorSummary(engine: FormEngine, options?: ErrorSummaryOptions): ErrorSummary;
+
+// @public (undocumented)
+export interface ErrorSummaryGroup {
+    // (undocumented)
+    entries: {
+        key: string;
+        id: string;
+        text: string;
+    }[];
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    title: string;
+}
+
+// @public (undocumented)
+export interface ErrorSummaryOptions {
+    // (undocumented)
+    idPrefix?: string;
+    // (undocumented)
+    labels?: LabelSource;
+}
+
+// @public (undocumented)
+export interface ErrorSummaryView {
+    // (undocumented)
+    count: number;
+    // (undocumented)
+    groups: ErrorSummaryGroup[];
+    // (undocumented)
+    rootProps: RootProps;
+    // (undocumented)
+    showField: (key: string) => void;
+    // (undocumented)
+    title: string;
+}
 
 // @public (undocumented)
 export function evaluateCondition(condition: ShowCondition, values: Record<string, unknown>): boolean;
@@ -344,6 +393,8 @@ export interface FormEngineOptions {
     // (undocumented)
     lang?: string;
     // (undocumented)
+    locale?: LocaleCatalog | LocaleCatalog[];
+    // (undocumented)
     messages?: MessageSource;
     // (undocumented)
     onAfterStepChange?: AfterStepChangeFn;
@@ -358,6 +409,8 @@ export interface FormEngineOptions {
     // (undocumented)
     onStepValidate?: StepValidateFn;
     // (undocumented)
+    onValidate?: ValidateFn;
+    // (undocumented)
     onWarning?: (issue: DefinitionIssue) => void;
     // (undocumented)
     research?: FormResearch | undefined;
@@ -365,6 +418,14 @@ export interface FormEngineOptions {
     seed?: string | undefined;
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
+}
+
+// @public (undocumented)
+export interface FormErrorsView {
+    // (undocumented)
+    errors: readonly string[];
+    // (undocumented)
+    rootProps: RootProps;
 }
 
 // @public (undocumented)
@@ -526,11 +587,15 @@ export type FormNode = FormField | HiddenFormField | FormSection | FormGroup;
 // @public (undocumented)
 export interface FormRendererHandle {
     // (undocumented)
+    getErrors(): ErrorSummary;
+    // (undocumented)
     getValues(): Record<string, unknown>;
     // (undocumented)
     goToStep(stepId: string): GoToStepResult;
     // (undocumented)
     setValue(key: string, value: unknown): void;
+    // (undocumented)
+    showField(key: string): void;
     // (undocumented)
     readonly values: Readonly<Record<string, unknown>>;
 }
@@ -589,6 +654,40 @@ export interface FormStep {
     skip?: FormAction;
     // (undocumented)
     title: string;
+}
+
+// @public (undocumented)
+export interface FormStepProgressView {
+    // (undocumented)
+    counterLabel?: string;
+    // (undocumented)
+    current: number;
+    // (undocumented)
+    headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+    // (undocumented)
+    marks?: boolean;
+    // (undocumented)
+    rootProps?: RootProps;
+    // (undocumented)
+    stepDescription?: string;
+    // (undocumented)
+    stepErrorCount?: number;
+    // (undocumented)
+    steps?: FormStepStatus[];
+    // (undocumented)
+    stepTitle?: string;
+    // (undocumented)
+    total: number;
+}
+
+// @public (undocumented)
+export interface FormStepStatus {
+    // (undocumented)
+    errorCount: number;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    title?: string;
 }
 
 // @public (undocumented)
@@ -745,6 +844,19 @@ export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addIte
 export type LabelSource = LabelCatalog | LabelFn;
 
 // @public (undocumented)
+export interface LocaleCatalog {
+    // (undocumented)
+    labels: Partial<Record<LabelKey, LocaleText>>;
+    // (undocumented)
+    locale: string;
+    // (undocumented)
+    messages: Partial<Record<MessageKey, LocaleText>>;
+}
+
+// @public (undocumented)
+export type LocaleText = string | PluralForms;
+
+// @public (undocumented)
 export type MessageCatalog = Partial<Record<MessageKey, string>>;
 
 // @public (undocumented)
@@ -764,6 +876,22 @@ export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[]
 
 // @public (undocumented)
 export function parseDefinition(input: unknown): FormDefinition;
+
+// @public (undocumented)
+export interface PluralForms {
+    // (undocumented)
+    few?: string;
+    // (undocumented)
+    many?: string;
+    // (undocumented)
+    one?: string;
+    // (undocumented)
+    other: string;
+    // (undocumented)
+    two?: string;
+    // (undocumented)
+    zero?: string;
+}
 
 // @public (undocumented)
 export type RecallFormatFn = (value: string | number | string[], field: FormField, locale: string) => string;
@@ -796,6 +924,18 @@ export function recallText(definition: FormDefinition, text: string, values: Rec
 
 // @public (undocumented)
 export function resolveSources(definition: FormDefinition, context: SourceContext, initialValues?: Record<string, unknown>): Record<string, string>;
+
+// @public (undocumented)
+export interface RootProps {
+    // (undocumented)
+    'data-fh': string;
+    // (undocumented)
+    'data-testid'?: string;
+    // (undocumented)
+    role?: string;
+    // (undocumented)
+    tabIndex?: number;
+}
 
 // @public (undocumented)
 export interface SectionView {
@@ -906,10 +1046,23 @@ export type TestIdTarget = {
 };
 
 // @public (undocumented)
+export interface ValidateContext {
+    // (undocumented)
+    fields: string[];
+    // (undocumented)
+    stepId?: string;
+    // (undocumented)
+    submit: boolean;
+}
+
+// @public (undocumented)
 export function validateFields(fields: FormNode[], values: Record<string, unknown>, options?: ValidateOptions): Record<string, string>;
 
 // @public (undocumented)
 export function validateFieldValue(field: FormField, input: unknown, allValues: Record<string, unknown>, input2?: ValidateOptions): string | null;
+
+// @public (undocumented)
+export type ValidateFn = (values: Record<string, unknown>, context: ValidateContext) => Record<string, string> | null | void | Promise<Record<string, string> | null | void>;
 
 // @public (undocumented)
 export interface ValidateOptions {

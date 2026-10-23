@@ -105,6 +105,54 @@ The progress header always shows the title of the current step in the error colo
 
 A custom progress component receives the error count of the current step as `stepErrorCount`, and the step list as `steps` when `stepErrorMarks` is on. Headless code reads `engine.stepErrors`.
 
+## Errors in app code
+
+The renderer handle reads the errors and opens a field from outside the form.
+
+::: code-group
+```vue [Vue]
+<script setup lang="ts">
+import { FormRenderer, type FormRendererHandle } from '@formhaus/vue';
+import { ref } from 'vue';
+
+const form = ref<FormRendererHandle>();
+
+function showFirstError() {
+  const first = form.value?.getErrors().groups[0]?.entries[0];
+  if (first) form.value?.showField(first.key);
+}
+</script>
+
+<template>
+  <FormRenderer ref="form" :definition="definition" @submit="onSubmit" />
+  <button type="button" @click="showFirstError">Show the first error</button>
+</template>
+```
+
+```tsx [React]
+import { FormRenderer, type FormRendererHandle } from '@formhaus/react';
+import { useRef } from 'react';
+
+export function Checkout() {
+  const form = useRef<FormRendererHandle>(null);
+  const showFirstError = () => {
+    const first = form.current?.getErrors().groups[0]?.entries[0];
+    if (first) form.current?.showField(first.key);
+  };
+  return (
+    <>
+      <FormRenderer ref={form} definition={definition} onSubmit={handleSubmit} />
+      <button type="button" onClick={showFirstError}>
+        Show the first error
+      </button>
+    </>
+  );
+}
+```
+:::
+
+`getErrors()` returns `{ groups, topLevelErrors, count }`, the errors on screen: the summary groups, and the top-level errors plus the message of a failed `onSubmit`. `showField(key)` opens the step of the field and focuses it, as a summary link does. `showField` does nothing while a step check or a submit is pending, and for keys of hidden or unknown fields. For a form without `FormRenderer`, see [Fully custom layout](/guide/custom-fields#fully-custom-layout).
+
 ## Async step validation errors
 
 See [Async Step Validation](/guide/async-validation#error-handling) for how `onStepValidate` errors display and how to handle network failures.
@@ -184,7 +232,7 @@ function SavingActions({ primaryLabel, showPrimary = true, showBack, backLabel, 
   );
 }
 
-<FormRenderer definition={definition} onSubmit={save} actionsComponent={SavingActions} />
+<FormRenderer definition={definition} onSubmit={save} layout={{ actions: SavingActions }} />
 ```
 
 `loading` is `true` while `onSubmit`, `onStepValidate` or a lifecycle hook runs. All props, and the Vue version, are in [Custom Actions & Progress](/guide/custom-components).

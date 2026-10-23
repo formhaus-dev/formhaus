@@ -7,6 +7,7 @@ export function useFormFocus(
   formRef: Ref<HTMLFormElement | undefined>,
   formId: string,
   invalidAttempts: Ref<number>,
+  several: () => boolean,
 ) {
   const { currentStep, stepValidating, submitting } = form;
   const requested = ref(0);
@@ -44,7 +45,7 @@ export function useFormFocus(
       const afterErrors = focusErrors || (restore && Object.keys(form.engine.errors).length > 0);
       focusKey = null;
       focusErrors = false;
-      focusField(formRef.value, key && errorDomId(form.engine, formId, key), afterErrors);
+      focusField(formRef.value, key && errorDomId(form.engine, formId, key), afterErrors, several);
     },
     { flush: 'post' },
   );
@@ -59,6 +60,7 @@ export function useFormFocus(
       requested.value++;
     },
     showField(key: string) {
+      if (stepValidating.value || submitting.value) return;
       focusKey = key;
       requested.value++;
       form.engine.goToStepWithField(key);

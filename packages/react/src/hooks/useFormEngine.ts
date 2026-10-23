@@ -31,6 +31,9 @@ export function useFormEngineStore(
       get onStepValidate() {
         return optionsRef.current?.onStepValidate;
       },
+      get onValidate() {
+        return optionsRef.current?.onValidate;
+      },
       get onBeforeStepChange() {
         return optionsRef.current?.onBeforeStepChange;
       },
@@ -48,6 +51,9 @@ export function useFormEngineStore(
       },
       get lang() {
         return optionsRef.current?.lang;
+      },
+      get locale() {
+        return optionsRef.current?.locale;
       },
       get formatRecall() {
         return optionsRef.current?.formatRecall;

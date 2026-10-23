@@ -1,16 +1,17 @@
 <script setup lang="ts">
-import { isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
+import { errorSummary, isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
 import {
   actionTestIds,
   actionValues,
   actionsView,
-  errorGroups,
   hasValue,
-  labelFor,
+  engineLabel,
+  matrixColumns,
+  ROOT_PROPS,
   shouldApplyExternalErrors,
   testIds,
 } from '@formhaus/core/internal';
-import { computed, provide, ref, watch } from 'vue';
+import { computed, h, provide, ref, watch, type FunctionalComponent } from 'vue';
 import FieldResolver from './FieldResolver.vue';
 import FormGroup from './FormGroup.vue';
 import DefaultSection from './DefaultSection.vue';
@@ -22,7 +23,7 @@ import { useFormEngine } from './composables/useFormEngine';
 import { useStepTexts } from './composables/useStepTexts';
 import { useValuesSync } from './composables/useValuesSync';
 import { useNodeProps } from './composables/useNodeProps';
-import type { FormRendererEmits, FormRendererProps } from './types';
+import type { FieldsContainerProps, FormRendererEmits, FormRendererProps } from './types';
 
 const props = withDefaults(defineProps<FormRendererProps>(), {
   loading: false,
@@ -74,7 +75,14 @@ const {
 } = useRendererActions(form, props, emit);
 const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
 
-const { rememberFocus, showField, requestFocus } = useFormFocus(form, formRef, formId, invalidAttempts);
+const getErrors = () => errorSummary(form.engine, { idPrefix: formId, labels: props.labels });
+const errorView = computed(() => {
+  void [errors.value, progress.value, values.value];
+  return getErrors();
+});
+const errorCount = computed(() => errorView.value.count);
+
+const { rememberFocus, showField, requestFocus } = useFormFocus(form, formRef, formId, invalidAttempts, () => errorCount.value > 1);
 
 watch(
   [() => props.errors, () => form.engine],
@@ -87,15 +95,11 @@ watch(
   { immediate: true },
 );
 
-const summaryGroups = computed(() => {
-  void [errors.value, progress.value, values.value];
-  return errorGroups(form.engine, formId, props.labels, props.definition.labels);
-});
 const stepErrors = computed(() => {
   void [errors.value, progress.value];
   return form.engine.stepErrors;
 });
-const { step, stepStatuses } = useStepTexts(form, stepErrors, () => props.stepErrorMarks);
+const { step, stepStatuses } = useStepTexts(form, stepErrors);
 
 function onFieldFocus(key: string) {
   onFormEvent({ type: 'field_focused', fieldKey: key });
@@ -124,11 +128,31 @@ defineExpose({
   setValue: (key: string, value: unknown) => form.engine.setValue(key, value),
   getValues: () => ({ ...form.engine.values }),
   goToStep: (stepId: string) => form.engine.goToStep(stepId),
+  showField,
+  getErrors: () => ({ ...getErrors(), topLevelErrors: formErrors.value }),
   values,
 });
 
-const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.definition.labels);
+const label = (key: LabelKey, params: Record<string, unknown> = {}) => engineLabel(form.engine, key, params, props.labels);
 provide('fhLabel', label);
+
+const DefaultFields: FunctionalComponent<FieldsContainerProps> = (fields, { slots }) =>
+  h('div', { class: 'fh-form__fields', ...fields.rootProps }, slots.default?.());
+DefaultFields.props = ['rootProps'];
+const progressComponent = computed(() => props.layout?.progress ?? props.progressComponent);
+const actionsComponent = computed(() => props.layout?.actions ?? props.actionsComponent);
+const progressSlot = computed(() =>
+  props.layout?.progress
+    ? { rootProps: ROOT_PROPS.progress, marks: !!props.stepErrorMarks, steps: stepStatuses.value }
+    : { steps: props.stepErrorMarks ? stepStatuses.value : undefined },
+);
+const summary = computed(() => ({
+  rootProps: { ...ROOT_PROPS.errorSummary, 'data-testid': testId.value?.('summary') },
+  title: label('errorSummary'),
+  groups: errorView.value.groups,
+  count: errorCount.value,
+  showField,
+}));
 
 const actions = computed(() => {
   void [currentStep.value, isFirstStep.value, isLastStep.value, isMultiStep.value];
@@ -148,45 +172,56 @@ async function onPrimary() {
 <template>
   <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
     <component
-      :is="props.progressComponent"
-      v-if="isMultiStep && props.progressComponent"
+      :is="progressComponent"
+      v-if="isMultiStep && progressComponent"
+      v-bind="progressSlot"
       :current="progress.current"
       :total="progress.total"
       :step-title="step?.title"
       :step-description="step?.description"
       :heading-level="props.headingLevel"
-      :steps="stepStatuses"
       :step-error-count="stepErrors[currentStep?.id as string]?.length"
       :counter-label="label('stepOf', progress)"
     />
 
-    <div class="fh-form__fields">
+    <component :is="props.layout?.fields ?? DefaultFields" :root-props="ROOT_PROPS.fields">
       <template v-for="node in visibleNodes" :key="node.key">
-        <component :is="props.components?.section ?? DefaultSection" v-if="isSection(node)" v-bind="sectionProps(node)">
-          <component :is="child.type === 'group' ? FormGroup : FieldResolver" v-for="child in node.fields" :key="child.key" v-bind="nodeProps(child as FormField)" />
+        <component :is="props.layout?.section ?? props.components?.section ?? DefaultSection" v-if="isSection(node)" v-bind="sectionProps(node)">
+          <component
+            :is="child.type === 'group' ? FormGroup : FieldResolver"
+            v-for="(child, row) in node.fields"
+            :key="child.key"
+            v-bind="nodeProps(child as FormField, matrixColumns(node), row)"
+          />
         </component>
         <component :is="node.type === 'group' ? FormGroup : FieldResolver" v-else v-bind="nodeProps(node as FormField)" />
       </template>
-    </div>
+    </component>
 
-    <div v-if="formErrors.length > 0" class="fh-form__top-errors" role="alert">
-      <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">{{ error }}</p>
-    </div>
+    <template v-if="formErrors.length > 0">
+      <component :is="props.layout.formErrors" v-if="props.layout?.formErrors" :root-props="ROOT_PROPS.formErrors" :errors="formErrors" />
+      <div v-else class="fh-form__top-errors" v-bind="ROOT_PROPS.formErrors">
+        <p v-for="(error, i) in formErrors" :key="i" class="fh-form__top-error">{{ error }}</p>
+      </div>
+    </template>
 
-    <div v-if="props.errorSummary && summaryGroups.length > 0" class="fh-error-summary" role="alert" tabindex="-1" :data-testid="testId?.('summary')">
-      <strong class="fh-error-summary__title">{{ label('errorSummary') }}</strong>
-      <template v-for="group in summaryGroups" :key="group.id">
-        <p v-if="summaryGroups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
-        <ul class="fh-error-summary__list">
-          <li v-for="entry in group.entries" :key="entry.key"><a class="fh-error-summary__link" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.text }}</a></li>
-        </ul>
-      </template>
-    </div>
+    <template v-if="props.errorSummary && errorCount > 0">
+      <component :is="props.layout.errorSummary" v-if="props.layout?.errorSummary" v-bind="summary" />
+      <div v-else class="fh-error-summary" v-bind="summary.rootProps">
+        <strong class="fh-error-summary__title">{{ summary.title }}</strong>
+        <template v-for="group in summary.groups" :key="group.id">
+          <p v-if="summary.groups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
+          <ul class="fh-error-summary__list">
+            <li v-for="entry in group.entries" :key="entry.key"><a class="fh-error-summary__link" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.text }}</a></li>
+          </ul>
+        </template>
+      </div>
+    </template>
 
     <component
-      :is="props.actionsComponent"
-      v-if="props.actionsComponent"
-      v-bind="actions"
+      :is="actionsComponent"
+      v-if="actionsComponent"
+      v-bind="props.layout?.actions ? { ...actions, rootProps: ROOT_PROPS.actions } : actions"
       :loading="disabled"
       :values="actionValues(form.engine)"
       :test-ids="actionTestIds(testId)"

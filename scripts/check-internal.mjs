@@ -1,9 +1,18 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 
 const root = join(import.meta.dirname, '..');
 const ENTRIES = {
-  core: ['index', 'cloud', 'server', 'i18n', 'fix', 'research'],
+  core: [
+    'index',
+    'cloud',
+    'server',
+    'i18n',
+    'fix',
+    'research',
+    'schema',
+    ...readdirSync(join(root, 'packages/core/locales')).map((file) => `locales/${file.replace('.json', '')}`),
+  ],
   react: ['index', 'cloud', 'i18n'],
   vue: ['index', 'cloud', 'i18n'],
 };
@@ -37,9 +46,7 @@ for (const [pkg, entries] of Object.entries(ENTRIES)) {
 }
 
 const core = JSON.parse(readFileSync(join(root, 'packages/core/package.json'), 'utf8')).version;
-const [major, minor] = core.split('.');
-const floor = core.includes('-') ? core : `${major}.${minor}.0`;
-const pinned = `${major === '0' ? '^' : '~'}${floor}`;
+const pinned = `${core.startsWith('0.') ? '^' : '~'}${core}`;
 for (const pkg of ['react', 'vue']) {
   const range = JSON.parse(readFileSync(join(root, 'packages', pkg, 'package.json'), 'utf8')).peerDependencies?.['@formhaus/core'];
   if (range !== pinned)
