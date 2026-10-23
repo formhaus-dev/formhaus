@@ -28,7 +28,7 @@ export type ControlAdapter<C extends Component> = (keyof PropsOf<C> & string) | 
 });
 
 // @public (undocumented)
-export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C>];
+export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?];
 
 export { ControlKind }
 
@@ -37,12 +37,16 @@ export type ControlMap = {
     [Type in FieldType | 'input']?: ControlEntryOf<Component, FieldProps>;
 };
 
+export { ControlOption }
+
 // @public (undocumented)
 export interface ControlRootProps extends ControlRoot {
     // (undocumented)
     onClick: (event: ControlClickEvent) => void;
     // (undocumented)
     onKeydown: (event: ControlKeyEvent) => void;
+    // (undocumented)
+    onKeydownCapture: (event: ControlKeyEvent) => void;
     // (undocumented)
     onKeyup: (event: ControlKeyEvent) => void;
     // (undocumented)

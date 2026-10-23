@@ -63,12 +63,20 @@ function Shell({ f, rootProps, children }: ControlShellProps) {
 function Input({ id, value, size }: { id?: string; value?: string; size?: 'small' | 'large'; onChange?: (event: unknown) => void }) {
   return <input id={id} value={value} data-size={size} readOnly />;
 }
+function Picker({ value, onValueChange }: { value?: string; onValueChange?: (value: string) => void }) {
+  return <button type="button" value={value} onClick={() => onValueChange?.('a')} />;
+}
 export const mapped: FieldComponentMap = {
   ...mapControls({
     shell: { input: Shell, group: null },
     labels: (f) => ({ label: f.label }),
     kinds: { multiselect: 'input' },
-    controls: { input: Input, textarea: [Input, () => ({ size: 'large' })], select: [Input, (f, options) => ({ value: f.text + options.length })] },
+    controls: {
+      input: Input,
+      textarea: [Input, () => ({ size: 'large' })],
+      select: [Input, (f, options) => ({ value: f.text + options.length })],
+      radio: [Picker, null, 'onValueChange'],
+    },
   }),
   rating: components.rating,
 };

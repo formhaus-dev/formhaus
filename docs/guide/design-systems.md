@@ -42,6 +42,8 @@ const components = mapControls({
 
 The result is a plain `components` map. Mix it with hand-written fields: `{ ...mapControls(config), file: FileField }`. Types you leave out keep the built-in fields in `FormRenderer`.
 
+Call `mapControls` once at module level. Each call creates new components, so a call inside a render function remounts every field and loses focus.
+
 ## Kinds
 
 Each type has a kind. The kind decides what the shell renders and how the control gets its value.
@@ -90,7 +92,7 @@ export function Shell({ kind, f, rootProps, children }: ControlShellProps) {
 }
 ```
 
-- Spread `rootProps` on the root: `{...rootProps}` in React, `v-bind="rootProps"` in Vue. It carries `data-fh="field"` for [focus](/guide/custom-fields#field-focus), the keyboard handlers of [autoAdvance](#autoadvance), and on a group the test id, `aria-invalid` and `aria-describedby`.
+- Spread `rootProps` on the root: `{...rootProps}` in React, `v-bind="rootProps"` in Vue. It carries `data-fh="field"` for [focus](/guide/custom-fields#field-focus), the keyboard handlers of [autoAdvance](#autoadvance), and on a group the test id. A group shell also gets `aria-invalid` and `aria-describedby` for its `<fieldset>`.
 - Give the helper the id `f.helperId` and the error the id `f.errorId`. The control points at them with `aria-describedby`.
 - In Vue, declare the props with `controlShellProps` from `@formhaus/vue/controls`.
 
@@ -118,7 +120,7 @@ Every control gets these props:
 | `value` or `checked` (React), `modelValue` (Vue) | The value in the shape of the [kind](#kinds): text as a string, `''` when empty, a list for `multiselect`, a boolean for `checkbox` and `switch` |
 | `onChange` (React), `onUpdate:modelValue` (Vue) | Saves the value. See below |
 | `disabled` | `disabled` or `loading` is set |
-| `placeholder`, `inputMode`, `autoComplete` (Vue: `autocomplete`) | From the field, when set |
+| `placeholder`, `inputMode`, `autoComplete` (Vue: `autocomplete`) | From the field, when set, on `input` controls only |
 | `aria-invalid`, `aria-required` | While `error` is set, and when `validation.required` is set |
 | `aria-describedby` | With a shell, on `input` and `inline` controls |
 | `data-testid` | The [test id](/guide/testing) on `input` and `inline` controls, on the root of a group |
@@ -153,9 +155,46 @@ controls: {
 
 React types the adapter with the props of the component, and Vue with its `$props`. A wrong prop name in a string adapter, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
 
+Inside the `mapControls` call the adapter parameters get their types. When you declare `controls` in a separate constant, annotate them: `(f: FieldProps, options: ControlOption[]) => ...`. `ControlOption` comes from the `/controls` entry.
+
+### Change prop
+
+A component that reports changes in another prop names it third. The value then goes through the same `onChange` rules and [autoAdvance](#autoadvance) handling. Pass `null` when there is no adapter. shadcn/ui, on Radix:
+
+```tsx
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Switch } from '@/components/ui/switch'
+
+const radios = (f: FieldProps, options: ControlOption[]) => ({
+  value: f.text,
+  children: options.map((option, index) => (
+    <div key={option.value} className="flex items-center gap-2">
+      <RadioGroupItem id={`${f.id}-${index}`} value={String(option.value)} />
+      <Label htmlFor={`${f.id}-${index}`}>{option.label}</Label>
+    </div>
+  )),
+})
+
+const components = mapControls({
+  shell: Shell,
+  controls: {
+    input: Input,
+    textarea: Textarea,
+    checkbox: [Checkbox, null, 'onCheckedChange'],
+    switch: [Switch, null, 'onCheckedChange'],
+    radio: [RadioGroup, radios, 'onValueChange'],
+    scale: [RadioGroup, radios, 'onValueChange'],
+  },
+})
+```
+
+Radix compares string values, so `value: f.text` passes a scale point as text. In Vue, name the event listener, such as `'onUpdate:value'`.
+
 ## autoAdvance
 
-For `radio`, `scale` and `rating` with `autoAdvance`, `rootProps` wire the same keys as the built-in fields: a click, Enter or Space commits the pick and goes to the next step, arrow keys only change the value. Native radios inside the control work as they are. See [autoAdvance](/guide/custom-fields#autoadvance).
+For `radio`, `scale` and `rating` with `autoAdvance`, `rootProps` wire the same keys as the built-in fields: a click, Enter or Space commits the pick and goes to the next step, arrow keys only change the value. Native radios work as they are, and so do components that pick an option on focus or on their own Space or Enter handler, such as Radix: each press commits once. A click commits only on an option: a native radio, an element with `role="radio"` or `role="option"`, or a button with a `value`. A clear button inside a rating does not commit. See [autoAdvance](/guide/custom-fields#autoadvance).
 
 ## MUI
 
@@ -171,7 +210,11 @@ const labels = (f: FieldProps) => ({
   helperText: f.error ?? f.helperText,
   fullWidth: true,
   margin: 'normal',
-  slotProps: { inputLabel: { shrink: f.inputType.includes('date') || f.inputType === 'time' || undefined } },
+  'data-testid': undefined,
+  slotProps: {
+    inputLabel: { shrink: f.inputType.includes('date') || f.inputType === 'time' || undefined },
+    htmlInput: { 'data-testid': f.testId },
+  },
 })
 
 const menu = (options: ControlOption[]) =>
@@ -207,7 +250,7 @@ export const components: FieldComponentMap = {
 }
 ```
 
-`TextField` renders its own label, helper and error, so the `input` kind has no shell. MUI `Checkbox` and `Switch` put unknown props on their root, so `inputProps` moves the ARIA to the input. The shells use `FormControl`:
+`TextField` renders its own label, helper and error, so the `input` kind has no shell. It puts unknown props such as `data-testid` on its root, so `labels` moves the [test id](/guide/testing) to the input with `slotProps.htmlInput`. MUI `Checkbox` and `Switch` put unknown props on their root, so `inputProps` moves the ARIA to the input. The shells use `FormControl`:
 
 ```tsx
 import { scaleView } from '@formhaus/core/fields'

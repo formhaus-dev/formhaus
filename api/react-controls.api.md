@@ -29,7 +29,7 @@ import { ReactNode } from 'react';
 export type ControlAdapter<C extends Control> = (keyof PropsOf<C> & string) | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>>);
 
 // @public (undocumented)
-export type ControlEntry<C extends Control = Control> = C | readonly [C, ControlAdapter<C>];
+export type ControlEntry<C extends Control = Control> = C | readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?];
 
 export { ControlKind }
 
@@ -38,12 +38,16 @@ export type ControlMap = {
     [Type in FieldType | 'input']?: ControlEntryOf<Control, FieldProps>;
 };
 
+export { ControlOption }
+
 // @public (undocumented)
 export interface ControlRootProps extends ControlRoot {
     // (undocumented)
     onClick: (event: ControlClickEvent) => void;
     // (undocumented)
     onKeyDown: (event: ControlKeyEvent) => void;
+    // (undocumented)
+    onKeyDownCapture: (event: ControlKeyEvent) => void;
     // (undocumented)
     onKeyUp: (event: ControlKeyEvent) => void;
     // (undocumented)

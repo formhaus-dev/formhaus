@@ -9,6 +9,7 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
     pick(value: unknown): void;
     stop(): void;
     pointerDown(): void;
+    keyDownCapture(event: ControlKeyEvent): void;
     keyDown(event: ControlKeyEvent): void;
     keyUp(event: ControlKeyEvent): void;
     click(input: ControlClickEvent): void;
@@ -35,7 +36,7 @@ export interface ControlClickEvent {
 }
 
 // @public (undocumented)
-export type ControlEntryOf<Component, View> = Component | readonly [Component, string | ((f: View, options: ControlOption[]) => object)];
+export type ControlEntryOf<Component, View> = Component | readonly [Component, string | ((f: View, options: ControlOption[]) => object) | null, string?];
 
 // @public (undocumented)
 export interface ControlKeyEvent {
