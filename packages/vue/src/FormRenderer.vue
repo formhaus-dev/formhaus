@@ -28,6 +28,8 @@ defineExpose({
   setValue: (key: string, value: unknown) => inner?.setValue(key, value),
   getValues: () => inner?.getValues() ?? {},
   goToStep: (stepId: string) => inner!.goToStep(stepId),
+  showField: (key: string) => inner?.showField(key),
+  getErrors: () => inner!.getErrors(),
   values,
 });
 </script>

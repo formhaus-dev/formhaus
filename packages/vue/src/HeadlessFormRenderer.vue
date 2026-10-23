@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
+import { errorSummary, isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
 import {
   actionTestIds,
   actionValues,
   actionsView,
-  errorGroups,
   hasValue,
   labelFor,
   matrixColumns,
@@ -76,11 +75,12 @@ const {
 } = useRendererActions(form, props, emit);
 const formErrors = computed(() => (actionError.value ? [...topLevelErrors.value, actionError.value] : topLevelErrors.value));
 
-const summaryGroups = computed(() => {
+const getErrors = () => errorSummary(form.engine, { idPrefix: formId, labels: props.labels });
+const errorView = computed(() => {
   void [errors.value, progress.value, values.value];
-  return errorGroups(form.engine, formId, props.labels, props.definition.labels);
+  return getErrors();
 });
-const errorCount = computed(() => summaryGroups.value.reduce((total, group) => total + group.entries.length, 0));
+const errorCount = computed(() => errorView.value.count);
 
 const { rememberFocus, showField, requestFocus } = useFormFocus(form, formRef, formId, invalidAttempts, () => errorCount.value > 1);
 
@@ -128,6 +128,8 @@ defineExpose({
   setValue: (key: string, value: unknown) => form.engine.setValue(key, value),
   getValues: () => ({ ...form.engine.values }),
   goToStep: (stepId: string) => form.engine.goToStep(stepId),
+  showField,
+  getErrors,
   values,
 });
 
@@ -147,7 +149,7 @@ const progressSlot = computed(() =>
 const summary = computed(() => ({
   rootProps: { ...ROOT_PROPS.errorSummary, 'data-testid': testId.value?.('summary') },
   title: label('errorSummary'),
-  groups: summaryGroups.value,
+  groups: errorView.value.groups,
   count: errorCount.value,
   showField,
 }));
@@ -207,8 +209,8 @@ async function onPrimary() {
       <component :is="props.layout.errorSummary" v-if="props.layout?.errorSummary" v-bind="summary" />
       <div v-else class="fh-error-summary" v-bind="summary.rootProps">
         <strong class="fh-error-summary__title">{{ summary.title }}</strong>
-        <template v-for="group in summaryGroups" :key="group.id">
-          <p v-if="summaryGroups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
+        <template v-for="group in summary.groups" :key="group.id">
+          <p v-if="summary.groups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
           <ul class="fh-error-summary__list">
             <li v-for="entry in group.entries" :key="entry.key"><a class="fh-error-summary__link" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.text }}</a></li>
           </ul>

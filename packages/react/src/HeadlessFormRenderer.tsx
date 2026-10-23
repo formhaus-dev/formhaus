@@ -1,9 +1,8 @@
-import type { FormEngineOptions, FormEvent } from '@formhaus/core';
+import { errorSummary, type FormEngineOptions, type FormEvent } from '@formhaus/core';
 import {
   applySources,
   canMoveFocus,
   errorDomId,
-  errorGroups,
   focusField,
   hasValue,
   labelFor,
@@ -77,18 +76,6 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const version = useFormSnapshot(engine);
     const previousStep = useRef(engine.currentStep?.id);
     const actions = useRendererActions(engine, props);
-    useImperativeHandle(
-      ref,
-      () => ({
-        setValue: (key, value) => engine.setValue(key, value),
-        getValues: () => ({ ...engine.values }),
-        goToStep: (stepId) => engine.goToStep(stepId),
-        get values() {
-          return engine.values;
-        },
-      }),
-      [engine],
-    );
     const handledInvalid = useRef(0);
 
     const onValuesChange = useRef(props.onValuesChange);
@@ -151,8 +138,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       const afterErrors = focusErrors.current || (restore && Object.keys(engine.errors).length > 0);
       focusKey.current = null;
       focusErrors.current = false;
-      const several = () => errorGroups(engine, formId).flatMap((group) => group.entries).length > 1;
-      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors, several);
+      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors, () => errorSummary(engine).count > 1);
     }, [engine, version, actions.invalidAttempts, focusRequest]);
 
     const handleFieldFocus = useCallback(
@@ -176,6 +162,20 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
         engine.goToStepWithField(key);
       },
       [engine],
+    );
+    useImperativeHandle(
+      ref,
+      () => ({
+        setValue: (key, value) => engine.setValue(key, value),
+        getValues: () => ({ ...engine.values }),
+        goToStep: (stepId) => engine.goToStep(stepId),
+        showField,
+        getErrors: () => errorSummary(engine, { idPrefix: formId, labels: handlers.current.labels }),
+        get values() {
+          return engine.values;
+        },
+      }),
+      [engine, showField, formId],
     );
 
     return (

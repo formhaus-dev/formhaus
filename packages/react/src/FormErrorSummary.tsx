@@ -1,5 +1,5 @@
-import type { FormEngine } from '@formhaus/core';
-import { errorGroups, ROOT_PROPS } from '@formhaus/core/internal';
+import { errorSummary, type FormEngine } from '@formhaus/core';
+import { ROOT_PROPS } from '@formhaus/core/internal';
 import { Fragment, useContext, useMemo } from 'react';
 import { LabelContext } from './labels';
 import type { ErrorSummaryComponentProps, FormRendererProps, LayoutComponentMap } from './types';
@@ -46,8 +46,7 @@ function DefaultErrorSummary({ rootProps, title, groups, showField }: ErrorSumma
 export function FormErrorSummary({ engine, formId, onSelect, labels, layout, testId }: FormErrorSummaryProps) {
   const version = useRecallSnapshot(engine);
   const text = useContext(LabelContext);
-  const groups = useMemo(() => errorGroups(engine, formId, labels, engine.definition.labels), [engine, version, formId, labels]);
-  const count = groups.reduce((total, group) => total + group.entries.length, 0);
+  const { groups, count } = useMemo(() => errorSummary(engine, { idPrefix: formId, labels }), [engine, version, formId, labels]);
   if (count === 0) return null;
   const Summary = layout?.errorSummary ?? DefaultErrorSummary;
   return (
