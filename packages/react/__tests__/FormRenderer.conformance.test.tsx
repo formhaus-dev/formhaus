@@ -23,6 +23,7 @@ import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios'
 import { validateScenarios } from '../../core/__tests__/renderers/validate.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
 import { design } from './fixtures/design';
+import { fieldProps } from '../src/fieldProps';
 import type {
   ConfirmDialogComponentProps,
   FieldComponentProps,
@@ -32,6 +33,33 @@ import type {
 } from '../src/types';
 
 const controls = {
+  'x-text': (props: FieldComponentProps) => {
+    const f = fieldProps(props);
+    return (
+      <div>
+        <label htmlFor={f.id}>{f.label}</label>
+        <input {...f.attrs} value={f.text} onChange={f.onInput} />
+        {f.helperText && <p id={f.helperId}>{f.helperText}</p>}
+        {f.error && <p id={f.errorId}>{f.error}</p>}
+      </div>
+    );
+  },
+  'x-pick': (props: FieldComponentProps) => {
+    const f = fieldProps(props);
+    return (
+      <div data-fh="field" role="radiogroup" aria-label={f.label} {...f.aria}>
+        {f.options.map((option, index) => (
+          <input
+            key={option.value}
+            type="radio"
+            aria-label={option.label}
+            {...f.option(option, index)}
+            onChange={() => f.commit(option.value)}
+          />
+        ))}
+      </div>
+    );
+  },
   'x-wrapped': ({ id, field, error }: FieldComponentProps) => (
     <div data-fh="field">
       <input aria-label={field.label} aria-invalid={!!error || undefined} />

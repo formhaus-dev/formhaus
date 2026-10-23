@@ -105,7 +105,7 @@ export interface FormRendererProps {
   hiddenValues?: 'clear' | 'keep' | undefined;
   errors?: Record<string, string>;
   labels?: LabelSource;
-  errorSummary?: boolean;
+  errorSummary?: boolean | 'top' | 'bottom';
   confirmRemove?: boolean;
   stepErrorMarks?: boolean;
   loading?: boolean;

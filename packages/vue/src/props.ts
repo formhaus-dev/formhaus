@@ -1,4 +1,13 @@
-import type { ErrorSummaryGroup, FormAction, FormActionsView, FormField, FormGroup, FormSection, RootProps } from '@formhaus/core';
+import type {
+  ErrorSummaryGroup,
+  FieldOption,
+  FormAction,
+  FormActionsView,
+  FormField,
+  FormGroup,
+  FormSection,
+  RootProps,
+} from '@formhaus/core';
 import type { Component, PropType } from 'vue';
 import type { FieldComponentProps, FormStepStatus, GroupItemComponentProps, HeadingLevel } from './types';
 
@@ -32,6 +41,7 @@ export const sectionComponentProps = {
   title: /* @__PURE__ */ required(String),
   description: String,
   descriptionId: String,
+  columns: Array as PropType<FieldOption[]>,
 };
 
 export const groupItemComponentProps = {
@@ -96,6 +106,7 @@ export const formActionsProps = {
   values: Object as PropType<Record<string, unknown>>,
   primaryLabel: String,
   showPrimary: optionalBoolean,
+  primaryDisabled: optionalBoolean,
   showBack: optionalBoolean,
   backLabel: String,
   showSkip: optionalBoolean,
@@ -122,6 +133,7 @@ export const formStepProgressProps = {
   steps: Array as PropType<FormStepStatus[]>,
   counterLabel: String,
   stepErrorCount: Number,
+  stepErrorsLabel: String,
   marks: { type: Boolean, default: true },
   rootProps,
 };

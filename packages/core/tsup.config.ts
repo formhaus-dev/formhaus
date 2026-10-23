@@ -27,6 +27,7 @@ export default defineConfig([
       i18n: 'src/i18n/index.ts',
       fix: 'src/fix/index.ts',
       research: 'src/research/index.ts',
+      fields: 'src/fields/index.ts',
       schema: 'src/schema/index.ts',
     },
     format: ['esm'],

@@ -23,7 +23,8 @@ import { validateScenarios } from '../../core/__tests__/renderers/validate.scena
 import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import { design } from './fixtures/design';
-import { fieldComponentProps } from '../src/props';
+import { fieldComponentEmits, fieldComponentProps } from '../src/props';
+import { useFieldProps } from '../src/composables/useFieldProps';
 import type { FormRendererHandle, GroupItemComponentProps } from '../src/types';
 
 const containers = {
@@ -62,6 +63,45 @@ const containers = {
 };
 
 const controls = {
+  'x-text': defineComponent({
+    props: fieldComponentProps,
+    emits: fieldComponentEmits,
+    setup(props, { emit }) {
+      const f = useFieldProps(props, emit);
+      return () =>
+        h('div', [
+          h('label', { for: f.id }, f.label),
+          h('input', {
+            ...f.attrs,
+            value: f.text,
+            onInput: f.onInput,
+          }),
+          f.helperText && h('p', { id: f.helperId }, f.helperText),
+          f.error && h('p', { id: f.errorId }, f.error),
+        ]);
+    },
+  }),
+  'x-pick': defineComponent({
+    props: fieldComponentProps,
+    emits: fieldComponentEmits,
+    setup(props, { emit }) {
+      const f = useFieldProps(props, emit);
+      return () =>
+        h(
+          'div',
+          { 'data-fh': 'field', role: 'radiogroup', 'aria-label': f.label, ...f.aria },
+          f.options.map((option, index) =>
+            h('input', {
+              key: option.value,
+              type: 'radio',
+              'aria-label': option.label,
+              ...f.option(option, index),
+              onChange: () => f.commit(option.value),
+            }),
+          ),
+        );
+    },
+  }),
   'x-wrapped': defineComponent({
     props: fieldComponentProps,
     setup: (props) => () =>

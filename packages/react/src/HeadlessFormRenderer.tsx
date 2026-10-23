@@ -177,6 +177,10 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       [engine, showField, formId, actions.actionError],
     );
 
+    const shared = { engine, formId, labels: props.labels, layout };
+    const summary = props.errorSummary !== false && <FormErrorSummary {...shared} onSelect={showField} testId={testId?.('summary')} />;
+    const top = props.errorSummary === 'top';
+
     return (
       <form
         ref={formRef}
@@ -184,7 +188,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
         onFocusCapture={(event) => {
           focusReturn.current = event.target;
         }}
-        className="fh-form"
+        className={props.className ? `fh-form ${props.className}` : 'fh-form'}
         data-testid={testId?.('form')}
         tabIndex={-1}
         aria-busy={busy}
@@ -194,6 +198,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
         }}
       >
         <LabelContext.Provider value={label}>
+          {top && summary}
           <FormProgressController
             engine={engine}
             ProgressComponent={layout?.progress ?? progressComponent}
@@ -202,15 +207,12 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             marks={props.stepErrorMarks}
           />
           <FormFieldsController
+            {...shared}
             key={engineKey(engine)}
-            engine={engine}
-            formId={formId}
             loading={busy}
             components={components}
             optionsProviders={optionsProviders}
-            labels={props.labels}
             confirmRemove={props.confirmRemove}
-            layout={layout}
             onChange={actions.update}
             onItemsChange={actions.changeItems}
             onCommit={actions.commit}
@@ -219,16 +221,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             testId={testId}
           />
           <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />
-          {props.errorSummary !== false && (
-            <FormErrorSummary
-              engine={engine}
-              formId={formId}
-              onSelect={showField}
-              labels={props.labels}
-              layout={layout}
-              testId={testId?.('summary')}
-            />
-          )}
+          {!top && summary}
           <FormActionsController
             engine={engine}
             loading={busy}

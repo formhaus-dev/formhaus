@@ -20,7 +20,7 @@ export interface ScenarioProps {
   initialValues?: Record<string, unknown>;
   keepValues?: boolean;
   errors?: Record<string, string>;
-  errorSummary?: boolean;
+  errorSummary?: boolean | 'top' | 'bottom';
   loading?: boolean;
   stepErrorMarks?: boolean;
   labels?: LabelSource;

@@ -1,3 +1,4 @@
+import { toggleOption } from '@formhaus/core/fields';
 import { dividerBefore } from '@formhaus/core/internal';
 import { Fragment, useContext } from 'react';
 import { LabelContext } from '../labels';
@@ -11,11 +12,6 @@ export function MultiselectField(props: FieldComponentProps) {
   const text = useContext(LabelContext);
   const options = field.options ?? [];
   const selected = Array.isArray(value) ? (value as (string | number)[]) : [];
-
-  function handleToggle(optValue: string) {
-    const next = selected.includes(optValue) ? selected.filter((v) => v !== optValue) : [...selected, optValue];
-    onChange(next);
-  }
 
   return (
     <FieldShell id={fieldId(props)} field={field} error={error} variant="multiselect" testId={props.testId}>
@@ -32,7 +28,7 @@ export function MultiselectField(props: FieldComponentProps) {
                 type="checkbox"
                 className="fh-field__checkbox"
                 checked={selected.includes(opt.value)}
-                onChange={() => handleToggle(opt.value)}
+                onChange={() => onChange(toggleOption(value, opt.value))}
               />
               <label className="fh-field__multiselect-label" htmlFor={optionId}>
                 {opt.label}

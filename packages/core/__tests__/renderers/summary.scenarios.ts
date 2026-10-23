@@ -19,6 +19,39 @@ export function summaryScenarios(harness: RendererHarness, { it, expect, waitFor
     await waitFor(() => expect(document.querySelector('.fh-step-progress__status')).toBeNull());
   });
 
+  it('puts the summary before the progress and the fields with errorSummary top and still focuses it', async () => {
+    harness.mount({
+      definition: {
+        ...wizard,
+        steps: [
+          {
+            ...wizard.steps![0],
+            fields: [...wizard.steps![0].fields, { key: 'town', type: 'text', label: 'Town', validation: { required: true } }],
+          },
+          ...wizard.steps!.slice(1),
+        ],
+      },
+      errorSummary: 'top',
+      onSubmit: () => {},
+    });
+    await harness.click(button('Continue'));
+    const summary = (await screen.findByRole('link', { name: 'Name: This field is required' })).closest('.fh-error-summary')!;
+    expect(summary.parentElement?.firstElementChild).toBe(summary);
+    expect(summary.compareDocumentPosition(document.querySelector('.fh-step-progress')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(summary.compareDocumentPosition(document.querySelector('.fh-form__fields')!) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(document.querySelectorAll('.fh-error-summary')).toHaveLength(1);
+    await waitFor(() => expect(document.activeElement).toBe(summary));
+    await harness.click(screen.getByRole('link', { name: 'Town: This field is required' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Town/ })));
+  });
+
+  it('keeps the summary after the fields with errorSummary bottom', async () => {
+    harness.mount({ definition: wizard, errorSummary: 'bottom', onSubmit: () => {} });
+    await harness.click(button('Continue'));
+    const summary = (await screen.findByRole('link', { name: 'Name: This field is required' })).closest('.fh-error-summary')!;
+    expect(document.querySelector('.fh-form__fields')!.compareDocumentPosition(summary) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  });
+
   it('groups summary errors from other steps under the step name', async () => {
     harness.mount({
       definition: wizard,

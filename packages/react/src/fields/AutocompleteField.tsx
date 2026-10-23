@@ -1,3 +1,4 @@
+import { optionText, optionValue } from '@formhaus/core/fields';
 import { optionTexts } from '@formhaus/core/internal';
 import { useMemo, useState } from 'react';
 import type { FieldComponentProps } from '../types';
@@ -10,9 +11,8 @@ export function AutocompleteField(props: FieldComponentProps) {
   const options = field.options ?? [];
   const [text, setText] = useState('');
   const texts = useMemo(() => optionTexts(options), [field.options]);
-  const toValue = (input: string) => options[texts.indexOf(input)]?.value ?? input;
+  const toValue = (input: string) => optionValue(options, input);
   const stored = (value as string) ?? '';
-  const index = options.findIndex((opt) => opt.value === stored);
 
   return (
     <FieldShell id={fieldId(props)} field={field} error={error}>
@@ -21,7 +21,7 @@ export function AutocompleteField(props: FieldComponentProps) {
         type="text"
         list={listId}
         className="fh-field__input fh-field__input--autocomplete"
-        value={toValue(text) === stored ? text : index < 0 ? stored : texts[index]}
+        value={toValue(text) === stored ? text : optionText(options, stored)}
         placeholder={field.placeholder}
         autoComplete={field.autocomplete ?? 'off'}
         onChange={(e) => {

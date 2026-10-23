@@ -24,7 +24,7 @@ export default defineConfig([
     ...shared,
     entry: { index: 'src/index.ts' },
     onSuccess: () => useClient('dist/index.js'),
-    external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/internal'],
+    external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/internal', '@formhaus/core/fields'],
   },
   {
     ...shared,
@@ -36,6 +36,14 @@ export default defineConfig([
     ...shared,
     entry: { cloud: 'src/cloud/index.ts' },
     onSuccess: () => useClient('dist/cloud.js'),
-    external: ['react', 'react-dom', '@formhaus/core', '@formhaus/core/cloud', '@formhaus/core/internal', '@formhaus/react'],
+    external: [
+      'react',
+      'react-dom',
+      '@formhaus/core',
+      '@formhaus/core/cloud',
+      '@formhaus/core/internal',
+      '@formhaus/core/fields',
+      '@formhaus/react',
+    ],
   },
 ]);

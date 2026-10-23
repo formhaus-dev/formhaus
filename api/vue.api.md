@@ -18,8 +18,11 @@ import { DefinitionIssue } from '@formhaus/core';
 import { EmitsOptions } from 'vue';
 import { ErrorSummaryGroup } from '@formhaus/core';
 import { ErrorSummaryView } from '@formhaus/core';
+import { FieldAria } from '@formhaus/core/fields';
+import { FieldControl } from '@formhaus/core/fields';
 import { FieldOption } from '@formhaus/core';
 import { FieldType } from '@formhaus/core';
+import { FieldView } from '@formhaus/core/fields';
 import { FormAction } from '@formhaus/core';
 import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
@@ -150,6 +153,12 @@ export const errorSummaryComponentProps: {
 };
 
 // @public (undocumented)
+export interface FieldAttrs extends FieldControl {
+    // (undocumented)
+    autocomplete?: string;
+}
+
+// @public (undocumented)
 export const fieldComponentEmits: {
     'update:modelValue': (_value: unknown) => boolean;
     commit: (_value: unknown) => boolean;
@@ -203,6 +212,20 @@ export const fieldComponentProps: {
     optionTestId: PropType<(value: string) => string | undefined>;
     matrix: PropType<FieldComponentProps["matrix"]>;
 };
+
+// @public (undocumented)
+export type FieldEmit = ((event: 'update:modelValue', value: unknown) => void) & ((event: 'commit', value: unknown) => void) & ((event: 'blur') => void) & ((event: 'focus') => void);
+
+// @public (undocumented)
+export interface FieldProps extends FieldView<FieldAttrs> {
+    // (undocumented)
+    input: FieldAttrs & Omit<FieldAria, 'aria-describedby'> & {
+        modelValue: unknown;
+        'onUpdate:modelValue': (value: unknown) => void;
+    };
+    // (undocumented)
+    onInput: (event: Event) => void;
+}
 
 // @public (undocumented)
 export interface FieldsContainerProps {
@@ -263,6 +286,10 @@ export const formActionsProps: {
     values: PropType<Record<string, unknown>>;
     primaryLabel: StringConstructor;
     showPrimary: {
+        type: BooleanConstructor;
+        default: undefined;
+    };
+    primaryDisabled: {
         type: BooleanConstructor;
         default: undefined;
     };
@@ -334,7 +361,7 @@ export interface FormRendererProps {
     // (undocumented)
     errors?: Record<string, string>;
     // (undocumented)
-    errorSummary?: boolean;
+    errorSummary?: boolean | 'top' | 'bottom';
     // (undocumented)
     formatRecall?: Callback<RecallFormatFn>;
     // (undocumented)
@@ -416,6 +443,7 @@ export const formStepProgressProps: {
     steps: PropType<FormStepStatus[]>;
     counterLabel: StringConstructor;
     stepErrorCount: NumberConstructor;
+    stepErrorsLabel: StringConstructor;
     marks: {
         type: BooleanConstructor;
         default: boolean;
@@ -605,6 +633,7 @@ export const sectionComponentProps: {
     };
     description: StringConstructor;
     descriptionId: StringConstructor;
+    columns: PropType<FieldOption[]>;
 };
 
 // @public (undocumented)
@@ -621,6 +650,9 @@ export const TextField: FieldComponent;
 
 // @public (undocumented)
 export const TimeField: FieldComponent;
+
+// @public (undocumented)
+export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Readonly<FieldProps>;
 
 // @public (undocumented)
 export function useFormEngine(definitionOrGetter: FormDefinition | (() => FormDefinition), initialValues?: Record<string, unknown> | (() => Record<string, unknown> | undefined), options?: UseFormEngineOptions): UseFormEngineReturn;

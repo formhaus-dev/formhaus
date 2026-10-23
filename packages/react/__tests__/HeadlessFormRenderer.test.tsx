@@ -71,10 +71,21 @@ describe('HeadlessFormRenderer', () => {
   });
 
   it('renders the unsupported fallback for an unmapped type', () => {
-    const { container } = render(<HeadlessFormRenderer definition={definition} components={{ text: CustomText }} onSubmit={() => {}} />);
+    const onWarning = vi.fn();
+    const { container } = render(
+      <HeadlessFormRenderer definition={definition} components={{ text: CustomText }} onWarning={onWarning} onSubmit={() => {}} />,
+    );
     expect(screen.getByText('Unsupported field type: email')).toBeDefined();
+    expect(onWarning).toHaveBeenCalledWith(
+      expect.objectContaining({ code: 'missing-component', message: expect.stringContaining('"email"') }),
+    );
     expect(container.querySelectorAll('input')).toHaveLength(1);
     expect(container.querySelector('.fh-field__input')).toBeNull();
+  });
+
+  it('adds className to the form element', () => {
+    const { container } = render(<FormRenderer definition={definition} className="usa-form" onSubmit={() => {}} />);
+    expect(container.querySelector('form')?.className).toBe('fh-form usa-form');
   });
 
   it('renders no actions or progress when none are passed', () => {

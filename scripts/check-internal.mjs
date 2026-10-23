@@ -10,6 +10,7 @@ const ENTRIES = {
     'i18n',
     'fix',
     'research',
+    'fields',
     'schema',
     ...readdirSync(join(root, 'packages/core/locales')).map((file) => `locales/${file.replace('.json', '')}`),
   ],

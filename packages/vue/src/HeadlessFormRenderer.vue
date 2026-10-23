@@ -5,8 +5,8 @@ import {
   actionValues,
   actionsView,
   hasValue,
-  engineLabel,
   matrixColumns,
+  engineLabel,
   ROOT_PROPS,
   shouldApplyExternalErrors,
   testIds,
@@ -24,6 +24,7 @@ import { useStepTexts } from './composables/useStepTexts';
 import { useValuesSync } from './composables/useValuesSync';
 import { useNodeProps } from './composables/useNodeProps';
 import type { FieldsContainerProps, FormRendererEmits, FormRendererProps } from './types';
+import { DefaultSummary } from './DefaultSummary';
 
 const props = withDefaults(defineProps<FormRendererProps>(), {
   loading: false,
@@ -99,7 +100,7 @@ const stepErrors = computed(() => {
   void [errors.value, progress.value];
   return form.engine.stepErrors;
 });
-const { step, stepStatuses } = useStepTexts(form, stepErrors);
+const { step, stepStatuses, errorsLabel } = useStepTexts(form, stepErrors, (key, params) => label(key, params));
 
 function onFieldFocus(key: string) {
   onFormEvent({ type: 'field_focused', fieldKey: key });
@@ -143,8 +144,16 @@ const progressComponent = computed(() => props.layout?.progress ?? props.progres
 const actionsComponent = computed(() => props.layout?.actions ?? props.actionsComponent);
 const progressSlot = computed(() =>
   props.layout?.progress
-    ? { rootProps: ROOT_PROPS.progress, marks: !!props.stepErrorMarks, steps: stepStatuses.value }
+    ? {
+        rootProps: ROOT_PROPS.progress,
+        marks: !!props.stepErrorMarks,
+        steps: stepStatuses.value,
+        stepErrorsLabel: errorsLabel(stepErrors.value[currentStep.value?.id as string]?.length),
+      }
     : { steps: props.stepErrorMarks ? stepStatuses.value : undefined },
+);
+const summaryAt = computed(() =>
+  props.errorSummary && errorCount.value > 0 ? (props.errorSummary === 'top' ? 'top' : 'bottom') : undefined,
 );
 const summary = computed(() => ({
   rootProps: { ...ROOT_PROPS.errorSummary, 'data-testid': testId.value?.('summary') },
@@ -155,9 +164,13 @@ const summary = computed(() => ({
 }));
 
 const actions = computed(() => {
-  void [currentStep.value, isFirstStep.value, isLastStep.value, isMultiStep.value];
-  const view = actionsView(form.engine, props.labels);
-  return Object.fromEntries(Object.entries(view).map(([key, value]) => [key.replace(/[A-Z]/g, '-$&').toLowerCase(), value]));
+  void [currentStep.value, isFirstStep.value, isLastStep.value, isMultiStep.value, values.value];
+  const view = actionsView(form.engine, props.labels, actionValues(form.engine));
+  return Object.fromEntries(
+    Object.entries(view)
+      .filter(([key]) => props.layout?.actions || key !== 'primaryDisabled')
+      .map(([key, value]) => [key.replace(/[A-Z]/g, '-$&').toLowerCase(), value]),
+  );
 });
 
 async function onPrimary() {
@@ -171,6 +184,8 @@ async function onPrimary() {
 
 <template>
   <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
+    <component :is="props.layout?.errorSummary ?? DefaultSummary" v-if="summaryAt === 'top'" v-bind="summary" />
+
     <component
       :is="progressComponent"
       v-if="isMultiStep && progressComponent"
@@ -205,18 +220,7 @@ async function onPrimary() {
       </div>
     </template>
 
-    <template v-if="props.errorSummary && errorCount > 0">
-      <component :is="props.layout.errorSummary" v-if="props.layout?.errorSummary" v-bind="summary" />
-      <div v-else class="fh-error-summary" v-bind="summary.rootProps">
-        <strong class="fh-error-summary__title">{{ summary.title }}</strong>
-        <template v-for="group in summary.groups" :key="group.id">
-          <p v-if="summary.groups.length > 1" class="fh-error-summary__step">{{ group.title }}</p>
-          <ul class="fh-error-summary__list">
-            <li v-for="entry in group.entries" :key="entry.key"><a class="fh-error-summary__link" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.text }}</a></li>
-          </ul>
-        </template>
-      </div>
-    </template>
+    <component :is="props.layout?.errorSummary ?? DefaultSummary" v-if="summaryAt === 'bottom'" v-bind="summary" />
 
     <component
       :is="actionsComponent"

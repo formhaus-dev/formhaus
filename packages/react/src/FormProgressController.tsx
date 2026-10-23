@@ -20,22 +20,27 @@ export function FormProgressController({ engine, ProgressComponent, headingLevel
   if (!engine.isMultiStep || !ProgressComponent) return null;
   const { current, total } = engine.progress;
   const step = engine.currentStep && recalled(engine, engine.currentStep);
+  const errorsLabel = (count = 0) => (count ? text('stepErrors', { count }) : undefined);
   const steps = engine.visibleSteps.map((item) => ({
     id: item.id,
     title: recalled(engine, item).title,
     errorCount: errors[item.id]?.length ?? 0,
+    errorsLabel: errorsLabel(errors[item.id]?.length),
   }));
+  const stepErrorCount = errors[engine.currentStep?.id ?? '']?.length ?? 0;
 
   return (
     <ProgressComponent
-      {...(slot ? { rootProps: ROOT_PROPS.progress, marks: !!marks, steps } : { steps: marks ? steps : undefined })}
+      {...(slot
+        ? { rootProps: ROOT_PROPS.progress, marks: !!marks, steps, stepErrorsLabel: errorsLabel(stepErrorCount) }
+        : { steps: marks ? steps : undefined })}
       current={current}
       total={total}
       counterLabel={text('stepOf', { current, total })}
       stepTitle={step?.title}
       stepDescription={step?.description}
       headingLevel={headingLevel}
-      stepErrorCount={errors[engine.currentStep?.id ?? '']?.length ?? 0}
+      stepErrorCount={stepErrorCount}
     />
   );
 }

@@ -154,7 +154,7 @@ const Section = ({ title, description, children }: SectionComponentProps) => (
 <FormRenderer definition={definition} layout={{ section: Section }} onSubmit={send} />;
 ```
 
-It receives `id`, `section`, `title`, `description` and `descriptionId`, and the visible fields as `children` (React) or the default slot (Vue). Count fields with `section.fields`: each child stays wrapped in a renderer component. Rows of a matrix get its [columns](/guide/custom-fields#matrix-rows). In Vue, declare the props with `defineProps(sectionComponentProps)`. `DefaultSection` is exported for wrapping.
+It receives `id`, `section`, `title`, `description`, `descriptionId` and `columns`, and the visible fields as `children` (React) or the default slot (Vue). Count fields with `section.fields`: each child stays wrapped in a renderer component. In a matrix, `columns` holds the column options and each row gets them too. See [Matrix rows](/guide/custom-fields#matrix-rows). In Vue, declare the props with `defineProps(sectionComponentProps)`. `DefaultSection` is exported for wrapping.
 
 ## Translations
 

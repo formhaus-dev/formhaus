@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { checkDefinition, type FormDefinition, type FormField } from '../../src';
-import { scaleRange, sameOptions } from '../../src/internal';
+import { checkDefinition, type FormDefinition, type FormField, type FormSection } from '../../src';
+import { scalePoints, scaleRange } from '../../src/validation/type-checks';
+import { matrixColumns, sameOptions } from '../../src/internal';
 import { definitionSlots } from '../../src/i18n/slots';
 
 const field = (overrides: Partial<FormField>): FormField => ({ key: 'a', type: 'scale', label: 'A', ...overrides });
@@ -23,6 +24,42 @@ describe('scaleRange', () => {
 
   it('starts a rating at 1 whatever min says', () => {
     expect(scaleRange(field({ type: 'rating', validation: { min: 3, max: 10 } }))).toEqual([1, 10]);
+  });
+});
+
+describe('scalePoints', () => {
+  it('lists every point of the range', () => {
+    expect(scalePoints(field({}))).toEqual([1, 2, 3, 4, 5]);
+    expect(scalePoints(field({ validation: { min: 0, max: 10 } }))).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
+    expect(scalePoints(field({ type: 'rating', validation: { min: 3, max: 4 } }))).toEqual([1, 2, 3, 4]);
+  });
+
+  it('stops at 11 points and gives none for an inverted range', () => {
+    expect(scalePoints(field({ validation: { min: 0, max: 20 } }))).toHaveLength(11);
+    expect(scalePoints(field({ validation: { min: 5, max: 1 } }))).toEqual([]);
+  });
+});
+
+describe('matrixColumns', () => {
+  const options = [
+    { value: '1', label: 'Disagree' },
+    { value: '2', label: 'Agree' },
+  ];
+  const section = (layout?: 'matrix'): FormSection => ({
+    key: 's',
+    type: 'section',
+    title: 'S',
+    layout,
+    fields: [{ key: 'goals', type: 'radio', label: 'Goals', options }],
+  });
+
+  it('reads the columns from the options of the first row of a matrix', () => {
+    expect(matrixColumns(section('matrix'))).toEqual(options);
+  });
+
+  it('gives no columns for a plain section or an empty matrix', () => {
+    expect(matrixColumns(section())).toBeUndefined();
+    expect(matrixColumns({ ...section('matrix'), fields: [] })).toBeUndefined();
   });
 });
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { toggleOption } from '@formhaus/core/fields';
 import { dividerBefore } from '@formhaus/core/internal';
 import { computed } from 'vue';
 import { useLabel } from '../composables/useLabel';
@@ -14,11 +15,6 @@ const { inputId, control } = useField(props, emit);
 const text = useLabel();
 const options = computed(() => props.field.options ?? []);
 const selected = computed(() => (Array.isArray(props.modelValue) ? (props.modelValue as (string | number)[]) : []));
-
-function handleToggle(optValue: string) {
-  const next = selected.value.includes(optValue) ? selected.value.filter((v) => v !== optValue) : [...selected.value, optValue];
-  emit('update:modelValue', next);
-}
 </script>
 
 <template>
@@ -34,7 +30,7 @@ function handleToggle(optValue: string) {
           :data-testid="props.optionTestId?.(String(option.value))"
           type="checkbox"
           :checked="selected.includes(option.value)"
-          @change="handleToggle(option.value)"
+          @change="emit('update:modelValue', toggleOption(props.modelValue, option.value))"
         />
         <label :for="`${inputId}-${index}`" class="fh-field__multiselect-label">
           {{ option.label }}

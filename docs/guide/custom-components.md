@@ -47,6 +47,7 @@ Your component receives pre-computed convenience props so you don't need to re-d
 |------|------|-------------|
 | `primaryLabel` | `string?` | Resolved label for the primary button: the `continue` [label](/guide/translations), the submit label or the `submit` label |
 | `showPrimary` | `boolean?` | False when the current step hides Next with `next: false`; final Submit remains visible |
+| `primaryDisabled` | `boolean?` | True while the `disabled` conditions of the primary action match. Only a `layout.actions` gets it. Disable the button while `primaryDisabled` or `loading` is set |
 | `showBack` | `boolean?` | Whether the back button should be shown |
 | `backLabel` | `string?` | Resolved label for the back button |
 | `showSkip` | `boolean?` | Whether the skip button should be shown |
@@ -145,10 +146,11 @@ Your component receives these props:
 | `stepTitle` | `string?` | Title of the current step |
 | `stepDescription` | `string?` | Description of the current step |
 | `headingLevel` | `1` to `6`, optional | Heading level for the step title, from the renderer's `headingLevel` prop. The built-in progress renders `<h2>` by default |
-| `steps` | `FormStepStatus[]?` | Steps of the active path as `{ id, title, errorCount }` |
-| `marks` | `boolean?` | `true` when the renderer has `stepErrorMarks` |
+| `steps` | `FormStepStatus[]?` | Steps of the active path as `{ id, title, errorCount, errorsLabel }`. `errorsLabel` is the `stepErrors` label when the step has errors. A `layout.progress` always gets them, a `progressComponent` only with `stepErrorMarks` |
+| `marks` | `boolean?` | `true` when the renderer has `stepErrorMarks`, else `false`. Only a `layout.progress` gets it |
 | `counterLabel` | `string?` | Step counter text from the `stepOf` [label](/guide/translations), such as `Step 2 of 3` |
 | `stepErrorCount` | `number?` | Number of field errors on the current step |
+| `stepErrorsLabel` | `string?` | The `stepErrors` [label](/guide/translations) for the current step, such as `Errors: 2`, when it has errors. Only a `layout.progress` gets it |
 | `rootProps` | `{ 'data-fh': 'progress' }` | Spread on the root element, so focus after an error never lands on a step button |
 
 The progress component only renders for multi-step forms. The built-in `FormStepProgress` draws the step list only when `marks` is `true`. Rendered on its own, it draws `steps` unless `marks` is `false`.

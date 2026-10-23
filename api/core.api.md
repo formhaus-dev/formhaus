@@ -219,6 +219,8 @@ export interface FormActionsView {
     // (undocumented)
     nextAction?: FormAction | false;
     // (undocumented)
+    primaryDisabled?: boolean;
+    // (undocumented)
     primaryLabel?: string;
     // (undocumented)
     showBack?: boolean;
@@ -673,6 +675,8 @@ export interface FormStepProgressView {
     // (undocumented)
     stepErrorCount?: number;
     // (undocumented)
+    stepErrorsLabel?: string;
+    // (undocumented)
     steps?: FormStepStatus[];
     // (undocumented)
     stepTitle?: string;
@@ -684,6 +688,8 @@ export interface FormStepProgressView {
 export interface FormStepStatus {
     // (undocumented)
     errorCount: number;
+    // (undocumented)
+    errorsLabel?: string;
     // (undocumented)
     id: string;
     // (undocumented)
@@ -939,6 +945,8 @@ export interface RootProps {
 
 // @public (undocumented)
 export interface SectionView {
+    // (undocumented)
+    columns?: FieldOption[];
     // (undocumented)
     description?: string;
     // (undocumented)

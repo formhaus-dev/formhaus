@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { scaleRange } from '@formhaus/core/internal';
+import { scaleView } from '@formhaus/core/fields';
 import { computed } from 'vue';
 import { fieldComponentEmits, fieldComponentProps } from '../props';
 import FieldShell from './FieldShell.vue';
@@ -8,28 +8,15 @@ import { useChoice, useField } from './useField';
 const props = defineProps(fieldComponentProps);
 const emit = defineEmits(fieldComponentEmits);
 const { inputId, control } = useField(props, emit);
-const range = computed(() => scaleRange(props.field));
-const points = computed(() => {
-  const [min, max] = range.value;
-  return Array.from({ length: Math.min(11, Math.max(0, max - min + 1)) }, (_, index) => min + index);
-});
-const roles = computed(() => {
-  const [min, max] = range.value;
-  return [min, Math.floor((min + max) / 2), max];
-});
-const anchors = computed(() =>
-  roles.value.map((point, index) =>
-    index === 1 && (point === roles.value[0] || point === roles.value[2])
-      ? undefined
-      : props.field.options?.find((option) => option.value === String(point)),
-  ),
-);
+const view = computed(() => scaleView(props.field));
+const points = computed(() => view.value.points);
+const anchors = computed(() => view.value.anchors);
 const anchorId = (point: number) => {
-  const index = roles.value.findIndex((role, slot) => role === point && anchors.value[slot]);
+  const index = anchors.value.findIndex((anchor) => anchor?.point === point);
   return index < 0 ? undefined : `${inputId.value}-anchor-${index}`;
 };
 const choice = useChoice(props, emit, (key) => {
-  const [min, max] = range.value;
+  const { min, max } = view.value;
   const point = key === '0' && min > 0 ? 10 : Number(key);
   return /^\d$/.test(key) && point >= min && point <= max ? point : undefined;
 });

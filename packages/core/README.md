@@ -45,6 +45,7 @@ engine.getSubmitValues();
 | `@formhaus/core/cloud` | Client for [Formhaus Cloud](https://formhaus.dev/cloud/overview): `fetchForm()`, `createSubmitter()`, `createChallengeFrame()` |
 | `@formhaus/core/i18n` | Message and label catalogs, overlays, translation keys |
 | `@formhaus/core/fix` | `suggestFixes()`, `applyFix()`, `fixAll()` |
+| `@formhaus/core/fields` | Helpers for custom field components: `fieldState()`, `scaleView()`, `fromDate()`, `toDate()` and others |
 | `@formhaus/core/research` | Opt-in survey features: `research` for random option order |
 | `@formhaus/core/schema` | `schemaValidate()` for Zod, Valibot, ArkType and other Standard Schema libraries |
 | `@formhaus/core/style.css` | Optional baseline styles with `--fh-*` theme tokens |

@@ -1,4 +1,4 @@
-import { scaleRange } from '@formhaus/core/internal';
+import { scaleView } from '@formhaus/core/fields';
 import { type CSSProperties, useRef } from 'react';
 import type { FieldComponentProps } from '../types';
 import { FieldShell } from './FieldShell';
@@ -7,12 +7,7 @@ import { choiceHandlers, fieldId, optionProps } from './fieldProps';
 export function ScaleField(props: FieldComponentProps) {
   const { field, value, error } = props;
   const id = fieldId(props);
-  const [min, max] = scaleRange(field);
-  const points = Array.from({ length: Math.min(11, Math.max(0, max - min + 1)) }, (_, index) => min + index);
-  const roles = [min, Math.floor((min + max) / 2), max];
-  const anchors = roles.map((point, index) =>
-    index === 1 && (point === min || point === max) ? undefined : field.options?.find((option) => option.value === String(point)),
-  );
+  const { points, min, max, anchors } = scaleView(field);
   const choice = choiceHandlers(props, useRef(false), (key) => {
     const point = key === '0' && min > 0 ? 10 : Number(key);
     return /^\d$/.test(key) && point >= min && point <= max ? point : undefined;
@@ -21,7 +16,7 @@ export function ScaleField(props: FieldComponentProps) {
   return (
     <FieldShell id={id} field={field} error={error} variant={field.type === 'rating' ? 'rating' : 'scale'} testId={props.testId}>
       {points.map((point) => {
-        const anchor = roles.findIndex((role, index) => role === point && anchors[index]);
+        const anchor = anchors.findIndex((item) => item?.point === point);
         return (
           <div key={point} className="fh-field__scale-option">
             <input

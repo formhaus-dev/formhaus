@@ -1,7 +1,6 @@
 import type { FieldOption, FormField, FormSection, RootProps } from '../types';
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
-import { getSubmitValues } from '../engine/validation-state';
 export { autofilled } from './autofill';
 export { recalled, recalls, recallVersion, refreshRecall, subscribeRecall } from './recall';
 export { recallEnabled, recallKeys } from '../engine/recall';
@@ -19,7 +18,7 @@ export {
 export { CLOUD_NOTICE, cloudLabel } from '../cloud/failures';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { engineLabel, labelFor } from '../i18n/labels';
-export { actionsView } from './actions';
+export { actionsView, actionValues } from './actions';
 export { warnDefinitionReset } from './definition-reset';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
 export { builtInFields, fieldComponentsByName, mergeFieldComponents } from './field-components';
@@ -42,15 +41,10 @@ export {
 } from './options';
 export { optionKey } from '../visibility/nodes';
 export { applySources } from './sources';
-export { scaleRange } from '../validation/type-checks';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;
   return internals.visibility.conditionValues(internals.state.values);
-}
-
-export function actionValues(engine: FormEngine): Record<string, unknown> {
-  return getSubmitValues(engine as unknown as EngineInternals);
 }
 
 export function autoAdvance(engine: FormEngine): Promise<boolean> {

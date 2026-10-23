@@ -1,10 +1,9 @@
 import type { FormField } from '@formhaus/core';
-import { scaleRange } from '@formhaus/core/internal';
+import { scaleView } from '@formhaus/core/fields';
 import type { KitTheme } from '../kits/kit';
 import { icon, solid, stack, text } from '../kits/primitives';
 import { appendFill, captionStyle, choiceGroup, hairline, spacer } from './choice';
 
-const MAX_POINTS = 11;
 const POINT_GAP = 6;
 const STAR_SIZE = 40;
 const STAR_INSET = 4;
@@ -12,19 +11,6 @@ const SCALE_NARROW = 444;
 const SCALE_MEDIUM = 544;
 const RATING_NARROW = 440;
 const ANCHORS = ['Start', 'Middle', 'End'] as const;
-
-function scalePoints(field: FormField): number[] {
-  const [min, max] = scaleRange(field);
-  return Array.from({ length: Math.min(MAX_POINTS, Math.max(0, max - min + 1)) }, (_, index) => min + index);
-}
-
-function anchorLabels(field: FormField, points: number[]): (string | undefined)[] {
-  const min = points[0];
-  const max = points[points.length - 1];
-  return [min, Math.floor((min + max) / 2), max].map((point, index) =>
-    index === 1 && (point === min || point === max) ? undefined : field.options?.find((option) => option.value === String(point))?.label,
-  );
-}
 
 function anchors(labels: (string | undefined)[], theme: KitTheme): FrameNode | null {
   if (!labels.some(Boolean)) return null;
@@ -95,9 +81,13 @@ function star(value: number, filled: boolean, size: number, theme: KitTheme): Fr
 
 export function scaleField(field: FormField, theme: KitTheme): FrameNode {
   const group = choiceGroup(field, theme);
-  const points = scalePoints(field);
+  const view = scaleView(field);
+  const points = view.points;
   const selected = typeof field.defaultValue === 'number' ? field.defaultValue : Number.NaN;
-  const labels = anchors(anchorLabels(field, points), theme);
+  const labels = anchors(
+    view.anchors.map((anchor) => anchor?.label),
+    theme,
+  );
   const width = theme.card.width - 2 * theme.card.padding;
   if (field.type === 'rating') {
     const size = Math.max(STAR_SIZE + STAR_INSET, theme.control.target);
