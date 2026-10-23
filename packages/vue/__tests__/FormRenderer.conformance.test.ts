@@ -7,6 +7,7 @@ import { definitionScenarios } from '../../core/__tests__/renderers/definition.s
 import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
 import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
+import { layoutScenarios } from '../../core/__tests__/renderers/layout.scenarios';
 import { recallScenarios } from '../../core/__tests__/renderers/recall.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
 import { labelScenarios } from '../../core/__tests__/renderers/labels.scenarios';
@@ -19,6 +20,7 @@ import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenari
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
+import { design } from './fixtures/design';
 import { fieldComponentProps } from '../src/props';
 import type { GroupItemComponentProps } from '../src/types';
 
@@ -58,6 +60,14 @@ const containers = {
 };
 
 const controls = {
+  'x-wrapped': defineComponent({
+    props: fieldComponentProps,
+    setup: (props) => () =>
+      h('div', { 'data-fh': 'field' }, [
+        h('input', { 'aria-label': props.field.label, 'aria-invalid': !!props.error || undefined }),
+        props.error && h('p', { id: `${props.id}-error` }, props.error),
+      ]),
+  }),
   'x-knob': defineComponent({
     props: fieldComponentProps,
     setup: (props) => () =>
@@ -103,6 +113,7 @@ const harness: RendererHarness = {
   },
   containers,
   controls,
+  design,
 };
 
 const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
@@ -123,3 +134,4 @@ describe('renderer conformance: custom controls', () => controlScenarios(harness
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
 describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
 describe('renderer conformance: definition changes', () => definitionScenarios(harness, kit));
+describe('renderer conformance: layout slots', () => layoutScenarios(harness, kit));

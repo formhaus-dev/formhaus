@@ -1,9 +1,9 @@
-import type { FormField } from '@formhaus/core';
+import { matrixColumns } from '@formhaus/core/internal';
 import { type CSSProperties, useEffect, useRef } from 'react';
 import type { ConfirmDialogComponentProps, GroupComponentProps, GroupItemComponentProps, SectionComponentProps } from './types';
 
 export function DefaultSection({ id, section, title, description, descriptionId, children }: SectionComponentProps) {
-  const columns = section.layout === 'matrix' && (section.fields[0] as FormField | undefined)?.options;
+  const columns = matrixColumns(section);
   return (
     <fieldset
       id={id}

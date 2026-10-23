@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey, LabelSource } from '@formhaus/core';
 import {
+  CLOSED_DIALOG,
   errorDomId,
   fieldDomId,
   focusItem,
@@ -23,7 +24,7 @@ import DefaultGroupItem from './DefaultGroupItem.vue';
 import FieldResolver from './FieldResolver.vue';
 import { fieldAria } from './fields/useField';
 import { useMounted } from './composables/useMounted';
-import type { ConfirmDialogComponentProps, FieldComponentMap, GroupComponentProps } from './types';
+import type { ConfirmDialogComponentProps, FieldComponentMap, GroupComponentProps, LayoutComponentMap } from './types';
 
 const props = withDefaults(
   defineProps<{
@@ -36,6 +37,7 @@ const props = withDefaults(
     fieldLoading: Readonly<Record<string, boolean>>;
     disabled?: boolean;
     components?: FieldComponentMap;
+    layout?: LayoutComponentMap;
     labels?: LabelSource;
     options: Record<string, FieldOption[]>;
     busy: Record<string, boolean>;
@@ -178,15 +180,16 @@ const groupProps = computed((): GroupComponentProps => {
     removeLabel: remove.value,
     disabled: props.disabled,
     status: status.value + (announcements.value % 2 ? '\u00a0' : ''),
-    itemComponent: (props.components?.groupItem ?? DefaultGroupItem) as Component,
+    itemComponent: (props.layout?.groupItem ?? props.components?.groupItem ?? DefaultGroupItem) as Component,
   };
 });
 
-const dialogProps = computed((): ConfirmDialogComponentProps | null => {
+const dialogProps = computed((): ConfirmDialogComponentProps => {
   const index = props.items.findIndex((item) => item.id === confirming.value);
-  if (index < 0) return null;
+  const dialogId = `${id.value}-confirm`;
+  if (index < 0) return { ...CLOSED_DIALOG, id: dialogId, title: remove.value, confirmLabel: remove.value, cancelLabel: label('cancel') };
   return {
-    id: `${id.value}-confirm`,
+    id: dialogId,
     open: true,
     title: label('removeItemPrompt', { item: title(index) }),
     description: label('removeItemBody', { item: title(index) }),
@@ -199,6 +202,7 @@ const dialogProps = computed((): ConfirmDialogComponentProps | null => {
 </script>
 
 <template>
-  <component :is="props.components?.group ?? DefaultGroup" v-bind="groupProps" />
-  <component :is="props.components?.confirmDialog ?? DefaultConfirmDialog" v-if="dialogProps" v-bind="dialogProps" />
+  <component :is="props.layout?.group ?? props.components?.group ?? DefaultGroup" v-bind="groupProps" />
+  <component :is="props.layout.confirmDialog" v-if="props.layout?.confirmDialog" v-bind="dialogProps" />
+  <component :is="props.components?.confirmDialog ?? DefaultConfirmDialog" v-else-if="dialogProps.open" v-bind="dialogProps" />
 </template>

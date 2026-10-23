@@ -1,5 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
-import { actionTestIds, actionValues, actionsView, type TestId } from '@formhaus/core/internal';
+import { actionTestIds, actionValues, actionsView, ROOT_PROPS, type TestId } from '@formhaus/core/internal';
 import { useCallback, useMemo } from 'react';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
 import type { FormRendererProps } from './types';
@@ -8,6 +8,7 @@ interface FormActionsControllerProps {
   engine: FormEngine;
   loading: boolean;
   ActionsComponent: FormRendererProps['actionsComponent'];
+  slot: boolean;
   labels?: FormRendererProps['labels'];
   onSubmit: () => void;
   onNext: () => Promise<void>;
@@ -21,6 +22,7 @@ export function FormActionsController({
   engine,
   loading,
   ActionsComponent,
+  slot,
   labels,
   onSubmit,
   onNext,
@@ -41,6 +43,7 @@ export function FormActionsController({
 
   return (
     <ActionsComponent
+      {...(slot && { rootProps: ROOT_PROPS.actions })}
       {...view}
       loading={loading}
       values={values}

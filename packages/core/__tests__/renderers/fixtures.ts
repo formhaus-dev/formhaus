@@ -1,5 +1,6 @@
 import type { expect, it, vi } from 'vitest';
 import type {
+  DefinitionIssue,
   FieldOption,
   FormEvent,
   FormResearch,
@@ -27,6 +28,11 @@ export interface ScenarioProps {
   onCancel?: () => void;
   onFieldChange?: (key: string, value: unknown, values: Record<string, unknown>) => void;
   components?: Record<string, unknown>;
+  layout?: Record<string, unknown>;
+  actionsComponent?: unknown;
+  progressComponent?: unknown;
+  testIds?: boolean;
+  onWarning?: (issue: DefinitionIssue) => void;
   confirmRemove?: boolean;
   seed?: string;
   research?: FormResearch;
@@ -44,6 +50,7 @@ export interface RendererHarness {
   submit(form: HTMLFormElement): Promise<void>;
   containers?: Record<string, unknown>;
   controls?: Record<string, unknown>;
+  design?: { components: Record<string, unknown>; layout: Record<string, unknown> };
 }
 
 type Query = (role: string, options?: { name?: string | RegExp }) => HTMLElement;

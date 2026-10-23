@@ -32,6 +32,7 @@ const declares = (name: string) => {
     :disabled="props.disabled"
     :test-id="declares('testId') ? props.testId : undefined"
     :option-test-id="declares('optionTestId') ? props.optionTestId : undefined"
+    :matrix="declares('matrix') ? props.matrix : undefined"
     @update:model-value="(v: unknown) => emit('update:modelValue', v)"
     @commit="(v: unknown) => emit('commit', v)"
     @blur="emit('blur')"

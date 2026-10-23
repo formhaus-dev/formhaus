@@ -1,6 +1,6 @@
 ---
 title: "Custom field components"
-description: "The contract of a custom Formhaus field in React and Vue: label and error markup, the id, change and commit events, value types and layout components."
+description: "The contract of a custom Formhaus field in React and Vue: label and error markup, the id, change and commit events, value types and layout slots."
 ---
 
 # Custom Fields
@@ -41,6 +41,7 @@ The same map overrides a built-in type, such as `{ date: MyDatePicker }`. See [C
 | Change | `onChange(value)` | `update:modelValue` |
 | Discrete pick with `autoAdvance` | `onCommit(value)`, optional | `commit` |
 | Blur and focus | `onBlur()`, `onFocus()` | `blur`, `focus` |
+| [Matrix row](#matrix-rows) context | `matrix` | `matrix` |
 
 ## Value types
 
@@ -207,21 +208,136 @@ function scalePoints(field: FormField) {
 
 `rating` always starts at 1. See [Scale](/guide/fields#scale) and [Rating](/guide/fields#rating).
 
-## Layout components
+## Layout slots
 
-`components` also takes four layout keys. Field types use every other key.
+`layout` replaces the parts of the form around the fields. A key you leave out keeps the built-in markup.
+
+::: code-group
+```vue [Vue]
+<FormRenderer :definition="definition" :components="fields" :layout="{ section: MySection, errorSummary: MySummary }" @submit="onSubmit" />
+```
+
+```tsx [React]
+<FormRenderer definition={definition} components={fields} layout={{ section: MySection, errorSummary: MySummary }} onSubmit={handleSubmit} />
+```
+:::
 
 | Key | Renders | React props | Vue props |
 |---|---|---|---|
+| `fields` | The container around the fields | `FieldsContainerProps` | `fieldsContainerProps` |
 | `section` | A [section](/guide/sections) | `SectionComponentProps` | `sectionComponentProps` |
 | `group` | A [repeatable group](/guide/groups) | `GroupComponentProps` | `groupComponentProps` |
 | `groupItem` | One item of a group | `GroupItemComponentProps` | `groupItemComponentProps` |
 | `confirmDialog` | The dialog before an item with answers is removed | `ConfirmDialogComponentProps` | `confirmDialogComponentProps` |
+| `errorSummary` | The [error summary](/guide/errors) | `ErrorSummaryComponentProps` | `errorSummaryComponentProps` |
+| `formErrors` | Errors that belong to no field | `FormErrorsComponentProps` | `formErrorsComponentProps` |
+| `progress` | The [step progress](/guide/custom-components#custom-progress-component) | `FormStepProgressProps` | `formStepProgressProps` |
+| `actions` | The [buttons](/guide/custom-components#custom-actions-component) | `FormActionsProps` | `formActionsProps` |
 
-- `section` gets `id`, `section`, `title`, `description` and `descriptionId`. Its fields come as `children` in React and as the default slot in Vue.
+`LayoutComponentMap` types the whole map. The `<form class="fh-form">` element stays.
+
+`components.section`, `components.group`, `components.groupItem`, `components.confirmDialog`, `actionsComponent` and `progressComponent` keep working until 2.0. `layout` wins when both are set. In development the renderer warns once per old key with the code `legacy-layout`.
+
+### Slot props
+
+- `fields` gets `rootProps`. The fields come as `children` in React and as the default slot in Vue.
+- `section` gets `id`, `section`, `title`, `description` and `descriptionId`. Its fields come as `children` in React and as the default slot in Vue. Each child stays wrapped in the renderer component that keeps its value and errors current, so count fields with `section.fields`, not with the children.
 - `group` gets the group texts, `items`, `canAdd`, `add`, `remove(id)`, `requestRemove(id)`, `addLabel`, `removeLabel`, `status`, `disabled` and `itemComponent`. Render each item with `itemComponent`.
 - `groupItem` gets `id`, `index`, `title`, `titleId`, `canRemove`, `remove`, `requestRemove`, `hasContent`, `removeLabel`, `removeName` and `disabled`. Its fields come as `children` in React. In Vue, `fields` is a component: render it with `<component :is="fields" />`.
-- `confirmDialog` gets `id`, `open`, `title`, `description`, `confirmLabel`, `cancelLabel`, `confirm()` and `cancel()`. It mounts only while a removal waits for an answer, so `open` is always `true`.
+- `confirmDialog` gets `id`, `open`, `title`, `description`, `confirmLabel`, `cancelLabel`, `confirm()` and `cancel()`. See [Remove dialog](#remove-dialog).
+- `errorSummary` gets `rootProps`, `title`, `groups`, `count` and `showField(key)`. `title` is the `errorSummary` [label](/guide/translations). `groups` has one `{ id, title, entries }` per step with errors, and each entry is `{ key, id, text }` with the DOM id of the field. `showField` opens the step of the field and focuses it. The summary renders when the `errorSummary` prop is not `false` and `count` is above 0.
+- `formErrors` gets `rootProps` and `errors`: the `formErrors` of a `{ ok: false }` [submit result](/guide/errors) and the message of a failed action. It renders when `errors` is not empty.
+- `progress` and `actions` get the props in [Custom Actions & Progress](/guide/custom-components), plus `rootProps`.
+
+### Root props
+
+`rootProps` carries the attributes that focus and screen readers depend on. Spread it on the root element: `{...rootProps}` in React, `v-bind="rootProps"` in Vue. A Vue component must declare `rootProps`, for example with the exported props object, or the object falls through as an attribute and focus does not find the root.
+
+| Slot | `rootProps` |
+|---|---|
+| `fields` | `{ 'data-fh': 'fields' }` |
+| `errorSummary` | `{ 'data-fh': 'error-summary', role: 'alert', tabIndex: -1 }` |
+| `formErrors` | `{ 'data-fh': 'form-errors', role: 'alert' }` |
+| `progress` | `{ 'data-fh': 'progress' }` |
+| `actions` | `{ 'data-fh': 'actions' }` |
+
+`RootProps` is the type. When the renderer has [`testIds`](/guide/testing), the `rootProps` of `errorSummary` also carry its `data-testid`.
+
+An error summary in React:
+
+```tsx
+import type { ErrorSummaryComponentProps } from '@formhaus/react'
+
+export function ErrorSummary({ rootProps, title, groups, showField }: ErrorSummaryComponentProps) {
+  return (
+    <div {...rootProps} className="my-summary">
+      <strong>{title}</strong>
+      <ul>
+        {groups.flatMap((group) => group.entries).map((entry) => (
+          <li key={entry.key}>
+            <a
+              href={`#${entry.id}`}
+              onClick={(event) => {
+                event.preventDefault()
+                showField(entry.key)
+              }}
+            >
+              {entry.text}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+```
+
+A fields container in Vue:
+
+```vue
+<script setup lang="ts">
+import { fieldsContainerProps } from '@formhaus/vue'
+
+defineProps(fieldsContainerProps)
+</script>
+
+<template>
+  <div v-bind="rootProps" class="my-stack">
+    <slot />
+  </div>
+</template>
+```
+
+### Focus
+
+Focus finds its targets by ids and `data-fh` attributes. A design system that spreads `rootProps` and puts the `id` prop on its controls gets the built-in focus:
+
+- After a failed Continue or Submit with one error, focus goes to the first invalid control inside `[data-fh="fields"]`. With several errors, it goes to `[data-fh="error-summary"]`.
+- Without `[data-fh="fields"]`, focus searches the whole form except the `progress`, `actions` and `errorSummary` roots.
+- `showField(key)` focuses the element with the id of the field, or the first control inside it.
+- When only the error message carries the id (`id` plus `-error`), mark the root of the field with `data-fh="field"`, or of a group with `data-fh="group"`. Focus then goes to the first control inside that root.
+- Focus after Add and Remove depends on the ids and attributes in [Groups: Custom markup](/guide/groups#custom-markup).
+
+The `fh-form__fields`, `fh-field`, `fh-group` and `fh-error-summary` classes work in place of the attributes until 2.0.
+
+### Remove dialog
+
+A `layout.confirmDialog` stays mounted with its group, so it can animate. Show it while `open` is `true`. While it is closed, `title` and `confirmLabel` hold the remove label, `cancelLabel` the cancel label, `description` is `''`, and `confirm` and `cancel` do nothing. A `components.confirmDialog` mounts only while a removal waits for an answer, so `open` is always `true` there.
+
+```tsx
+import type { ConfirmDialogComponentProps } from '@formhaus/react'
+
+export function RemoveDialog({ id, open, title, description, confirmLabel, cancelLabel, confirm, cancel }: ConfirmDialogComponentProps) {
+  return (
+    <div id={id} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`} hidden={!open}>
+      <h2 id={`${id}-title`}>{title}</h2>
+      <p id={`${id}-description`}>{description}</p>
+      <button type="button" onClick={cancel}>{cancelLabel}</button>
+      <button type="button" onClick={confirm}>{confirmLabel}</button>
+    </div>
+  )
+}
+```
 
 A group item in Vue:
 
@@ -250,24 +366,11 @@ const props = defineProps(groupItemComponentProps)
 </template>
 ```
 
-A remove dialog in React:
+`DefaultSection`, `DefaultGroup`, `DefaultGroupItem` and `DefaultConfirmDialog` are exported for wrapping.
 
-```tsx
-import type { ConfirmDialogComponentProps } from '@formhaus/react'
+### Matrix rows
 
-export function RemoveDialog({ id, title, description, confirmLabel, cancelLabel, confirm, cancel }: ConfirmDialogComponentProps) {
-  return (
-    <div id={id} role="alertdialog" aria-modal="true" aria-labelledby={`${id}-title`} aria-describedby={`${id}-description`}>
-      <h2 id={`${id}-title`}>{title}</h2>
-      <p id={`${id}-description`}>{description}</p>
-      <button type="button" onClick={cancel} autoFocus>{cancelLabel}</button>
-      <button type="button" onClick={confirm}>{confirmLabel}</button>
-    </div>
-  )
-}
-```
-
-Focus after Add and Remove depends on the ids and attributes in [Groups: Custom markup](/guide/groups#custom-markup). `DefaultSection`, `DefaultGroup`, `DefaultGroupItem` and `DefaultConfirmDialog` are exported for wrapping.
+A field in a [`layout: "matrix"` section](/guide/sections) gets `matrix`: `{ columns, row }`. `columns` are the options of the first row, and `row` is the index of the field among the visible fields of the section. Draw the cells under the column headers of your `section`. Outside a matrix, `matrix` is `undefined`. In Vue, the field gets `matrix` only when it declares the prop, as `fieldComponentProps` does.
 
 ## Next steps
 

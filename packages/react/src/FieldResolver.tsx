@@ -20,6 +20,7 @@ export interface FieldResolverProps {
   onFocus?: () => void;
   testId?: string;
   optionTestId?: (value: string) => string | undefined;
+  matrix?: FieldComponentProps['matrix'];
 }
 
 export function FieldResolver({ components, onBlur, busy = false, ...props }: FieldResolverProps & { busy?: boolean }) {

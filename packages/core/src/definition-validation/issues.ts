@@ -42,6 +42,7 @@ export type DefinitionIssueCode =
   | 'custom-type-name'
   | 'definition-reset'
   | 'missing-component'
+  | 'legacy-layout'
   | 'missing-research'
   | 'unknown-validator'
   | 'skip-unreachable'
