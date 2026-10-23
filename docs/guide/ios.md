@@ -14,13 +14,14 @@ description: "Render Formhaus JSON form definitions on iOS and macOS with SwiftU
 In Xcode, add the package URL under Package Dependencies and add `FormhausCore` and `FormhausUI` to your app target. In a `Package.swift` manifest, add this entry to `dependencies`:
 
 ```swift
-.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.5")
+.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.1.6")
 ```
 
 Requires Swift 6.2 and iOS 17 or macOS 14. The package has no JavaScript runtime.
 
 | formhaus-swift | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.1.6 | 1.2.2 | 1.6 |
 | 0.1.5 | 1.2.0 | 1.6 |
 | 0.1.4 | 1.1.1 | 1.6 |
 | 0.1.3 | 1.0.0 | 1.5 |
@@ -66,6 +67,46 @@ The handler returns a `SubmitResult`. `SubmitResult(json:)` reads the response b
 ```
 
 The form shows these messages on the fields. Any other body counts as success.
+
+## Restore after the app is closed
+
+The system can end the app while it is in the background. Save the form's `FormSnapshot` and pass it back to `restoring:` to bring back the answers, the current step and the skipped steps:
+
+```swift
+struct SignupView: View {
+    let definition: FormDefinition
+    @SceneStorage("signup.draft") private var draft: Data?
+
+    var body: some View {
+        FormhausForm(
+            definition: definition,
+            renderer: FormRendererOptions(onSnapshotChange: { snapshot in
+                draft = try? snapshot.map { try JSONEncoder().encode($0) }
+            }),
+            restoring: draft.flatMap { FormSnapshot.decode($0) }
+        ) { values, _ in
+            try await send(values)
+        }
+    }
+}
+```
+
+`onSnapshotChange` gets a new snapshot at most once per run loop turn, and `nil` after a successful submit so the draft goes away. To keep the draft after the view is gone, write it to a store that outlives the view:
+
+```swift
+FormhausForm(
+    definition: definition,
+    renderer: FormRendererOptions(onSnapshotChange: { snapshot in
+        let data = try? snapshot.map { try JSONEncoder().encode($0) }
+        UserDefaults.standard.set(data, forKey: "signup.draft")
+    }),
+    restoring: UserDefaults.standard.data(forKey: "signup.draft").flatMap { FormSnapshot.decode($0) }
+) { values, _ in .ok }
+```
+
+A snapshot saved for another form, or for a step the definition no longer has, starts the form fresh and reports `snapshot-mismatch` through `onWarning`. Password values are never in a snapshot. A picked file comes back while its copy still exists. The format is in the [spec](/spec#form-snapshot-native-ports).
+
+Snapshot values can hold personal data. For such forms store the snapshot in the Keychain or in a file with data protection instead of scene storage or `UserDefaults`, and delete it when the user signs out.
 
 ## Choose a look
 
