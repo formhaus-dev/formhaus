@@ -13,6 +13,12 @@ import { sourceWarnings } from './sources';
 import { exclusiveWarnings } from './exclusive-warnings';
 import { slowPattern } from './slow-pattern';
 
+const SLOW_PATTERNS = {
+  nested: ['nests quantifiers', 'Remove the inner or outer quantifier'],
+  adjacent: ['repeats overlapping parts next to each other', 'Merge the repeated parts into one'],
+  long: ['is longer than 1000 characters', 'Shorten it to 1000 characters or less'],
+};
+
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
 
@@ -148,13 +154,9 @@ function ruleWarnings(context: CheckContext, { field, path }: FieldEntry): Defin
     );
   const slow = typeof rules.pattern === 'string' ? slowPattern(rules.pattern) : undefined;
   if (slow) {
+    const [problem, hint] = SLOW_PATTERNS[slow];
     issues.push(
-      warning(
-        'slow-pattern',
-        `${path}/validation/pattern`,
-        `the pattern of "${field.key}" ${slow === 'nested' ? 'nests quantifiers' : 'repeats overlapping parts next to each other'} and can be very slow`,
-        slow === 'nested' ? 'Remove the inner or outer quantifier' : 'Merge the repeated parts into one',
-      ),
+      warning('slow-pattern', `${path}/validation/pattern`, `the pattern of "${field.key}" ${problem} and can be very slow`, hint),
     );
   }
   const { validators } = context;
