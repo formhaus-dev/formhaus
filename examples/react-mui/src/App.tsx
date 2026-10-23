@@ -6,6 +6,8 @@ import { StepProgress } from './actions/StepProgress';
 import { components } from './component-map';
 import json from './definition.json';
 
+const layout = { actions: FormActions, progress: StepProgress };
+
 const definition = parseDefinition(json);
 const theme = createTheme();
 
@@ -17,8 +19,7 @@ export default function App() {
         <FormRenderer
           definition={definition}
           components={components}
-          actionsComponent={FormActions}
-          progressComponent={StepProgress}
+          layout={layout}
           onSubmit={(values) => console.log('Submitted:', values)}
         />
       </Container>
