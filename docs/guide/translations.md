@@ -1,6 +1,6 @@
 ---
 title: "Translations"
-description: "Translate Formhaus forms: ready-made language catalogs, message and label catalogs, translation keys from Lokalise with i18next or vue-i18n, and per-language overlay files."
+description: "Translate Formhaus forms: ready-made language catalogs, message and label codes, i18next or vue-i18n keys, and per-language overlay files."
 ---
 
 # Translations
