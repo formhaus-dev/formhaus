@@ -201,7 +201,7 @@ describe('focusProblem', () => {
   it('focuses the notice first, else the control inside the first invalid group', () => {
     const input = { focus: vi.fn(), matches: () => true, querySelector: () => null };
     const group = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: () => input };
-    const root = { querySelector: vi.fn((selector: string) => (selector === '.fh-error-summary' ? null : group)) };
+    const root = { querySelector: vi.fn((selector: string) => (selector.includes('.fh-error-summary') ? null : group)) };
     const document = { activeElement: null as unknown };
     const notice = {
       focus: vi.fn(() => {
@@ -223,7 +223,7 @@ describe('focusProblem', () => {
   it('falls back to the first invalid field when the notice does not take focus', () => {
     const input = { focus: vi.fn(), matches: () => true, querySelector: () => null };
     const group = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: () => input };
-    const root = { querySelector: (selector: string) => (selector === '.fh-error-summary' ? null : group) };
+    const root = { querySelector: (selector: string) => (selector.includes('.fh-error-summary') ? null : group) };
     const notice = { focus: vi.fn(), matches: () => false, querySelector: () => null, ownerDocument: { activeElement: null } };
     focusProblem(root, notice);
     expect(notice.focus).toHaveBeenCalled();
@@ -233,7 +233,7 @@ describe('focusProblem', () => {
   it('focuses an error summary with two or more entries before the first invalid field', () => {
     const summary = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => false, querySelector: vi.fn().mockReturnValue({}) };
     const field = { focus: vi.fn(), scrollIntoView: vi.fn(), matches: () => true, querySelector: () => null };
-    const root = { querySelector: (selector: string) => (selector === '.fh-error-summary' ? summary : field) };
+    const root = { querySelector: (selector: string) => (selector.includes('.fh-error-summary') ? summary : field) };
     focusProblem(root, null);
     expect(summary.focus).toHaveBeenCalledWith({ preventScroll: true });
     expect(field.focus).not.toHaveBeenCalled();

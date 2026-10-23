@@ -11,20 +11,22 @@ export function FormStepProgress({
   steps,
   counterLabel,
   stepErrorCount = 0,
+  marks = true,
+  rootProps,
 }: FormStepProgressProps) {
   const text = useContext(LabelContext);
   const Heading = `h${headingLevel}` as const;
   const percent = (current / total) * 100;
 
   return (
-    <div className="fh-step-progress">
+    <div className="fh-step-progress" {...rootProps}>
       <div className="fh-step-progress__bar">
         <div className="fh-step-progress__fill" style={{ width: `${percent}%` }} />
       </div>
       <div className="fh-step-progress__info">
         <span className="fh-step-progress__counter">{counterLabel ?? text('stepOf', { current, total })}</span>
       </div>
-      {steps && (
+      {marks && steps && (
         <ol className="fh-step-progress__steps">
           {steps.map((step, index) => {
             const label = step.title || text('stepTitle', { index: index + 1 });

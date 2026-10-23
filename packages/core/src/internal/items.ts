@@ -4,7 +4,7 @@ import type { EngineInternals } from '../engine/runtime-internals';
 import { itemLimits } from '../engine/groups';
 import { labelFor } from '../i18n/labels';
 import { cut } from '../validation/bounded-text';
-import type { FormGroup, FormStep, LabelSource } from '../types';
+import type { ErrorSummaryGroup, FormGroup, FormStep, LabelSource } from '../types';
 import { isBlank } from '../visibility/evaluate-condition';
 import { isEntry, itemsOf } from '../visibility/nodes';
 import { fieldDomId, itemDomId } from './ids';
@@ -26,19 +26,7 @@ export function errorDomId(engine: FormEngine, formId: string, key: string): str
   return path ? itemDomId(formId, ...path, engine.definition) : fieldDomId(formId, key, engine.definition);
 }
 
-export interface ErrorEntry {
-  key: string;
-  id: string;
-  text: string;
-}
-
-export interface ErrorGroup {
-  id: string;
-  title: string;
-  entries: ErrorEntry[];
-}
-
-export function errorGroups(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorGroup[] {
+export function errorGroups(engine: FormEngine, formId: string, ...labels: (LabelSource | undefined)[]): ErrorSummaryGroup[] {
   const { errors } = engine;
   const { values } = internals(engine).state;
   return (engine.isMultiStep ? engine.visibleSteps : [engine.definition as FormStep]).flatMap((source, index) => {

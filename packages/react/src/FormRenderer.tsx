@@ -6,18 +6,19 @@ import { withDefaultFields } from './defaultFieldComponents';
 import type { FormRendererHandle, FormRendererProps } from './types';
 
 export const FormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandle, FormRendererProps>(function FormRenderer(
-  { components, actionsComponent, progressComponent, ...props },
+  { components, layout, ...props },
   ref,
 ) {
+  const { actionsComponent, progressComponent } = props;
   const fieldComponents = useMemo(() => withDefaultFields(components), [components]);
-
-  return (
-    <HeadlessFormRenderer
-      {...props}
-      ref={ref}
-      components={fieldComponents}
-      actionsComponent={actionsComponent ?? FormActions}
-      progressComponent={progressComponent ?? FormStepProgress}
-    />
+  const slots = useMemo(
+    () => ({
+      ...layout,
+      actions: layout?.actions ?? (actionsComponent ? undefined : FormActions),
+      progress: layout?.progress ?? (progressComponent ? undefined : FormStepProgress),
+    }),
+    [layout, actionsComponent, progressComponent],
   );
+
+  return <HeadlessFormRenderer {...props} ref={ref} components={fieldComponents} layout={slots} />;
 });

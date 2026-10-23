@@ -1,5 +1,6 @@
 import type { FieldOption, FormGroup, LabelKey } from '@formhaus/core';
 import {
+  CLOSED_DIALOG,
   fieldDomId,
   focusItem,
   itemDomId,
@@ -16,7 +17,7 @@ import { DefaultConfirmDialog, DefaultGroup, DefaultGroupItem } from './Containe
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { describedBy } from './fields/fieldProps';
 import { useFieldSnapshot, useRecallSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
-import type { FormRendererProps, GroupItemComponentProps } from './types';
+import type { ConfirmDialogComponentProps, FormRendererProps, GroupItemComponentProps, LayoutComponentMap } from './types';
 
 interface FormGroupControllerProps extends ControllerProps {
   group: FormGroup;
@@ -25,6 +26,7 @@ interface FormGroupControllerProps extends ControllerProps {
   busy: Record<string, boolean>;
   labels?: FormRendererProps['labels'];
   confirmRemove?: boolean;
+  layout?: LayoutComponentMap;
   onItemsChange: (key: string, apply: () => boolean) => boolean;
 }
 
@@ -37,6 +39,7 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
   busy,
   labels,
   confirmRemove = true,
+  layout,
   onItemsChange,
   ...props
 }: FormGroupControllerProps) {
@@ -88,8 +91,8 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
   };
 
   const { components } = props;
-  const Group = components?.group ?? DefaultGroup;
-  const ItemComponent = components?.groupItem ?? DefaultGroupItem;
+  const Group = layout?.group ?? components?.group ?? DefaultGroup;
+  const ItemComponent = layout?.groupItem ?? components?.groupItem ?? DefaultGroupItem;
   const entries = items.map(
     (item, index): GroupItemComponentProps => ({
       id: item.id,
@@ -119,7 +122,19 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
   );
 
   const asked = items.findIndex((item) => item.id === confirming);
-  const Confirm = components?.confirmDialog ?? DefaultConfirmDialog;
+  const dialog: Omit<ConfirmDialogComponentProps, 'id'> =
+    asked < 0
+      ? { ...CLOSED_DIALOG, title: remove, confirmLabel: remove, cancelLabel: label('cancel') }
+      : {
+          open: true,
+          title: label('removeItemPrompt', { item: title(asked) }),
+          description: label('removeItemBody', { item: title(asked) }),
+          confirmLabel: label('removeItemNamed', { label: remove, item: title(asked) }),
+          cancelLabel: label('cancel'),
+          confirm: () => drop(asked),
+          cancel: () => keep(asked),
+        };
+  const Confirm = layout?.confirmDialog ?? (asked >= 0 ? (components?.confirmDialog ?? DefaultConfirmDialog) : null);
   return (
     <>
       <Group
@@ -140,18 +155,7 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
         status={announced.text + (announced.count % 2 ? '\u00a0' : '')}
         itemComponent={ItemComponent}
       />
-      {asked >= 0 && (
-        <Confirm
-          id={`${id}-confirm`}
-          open
-          title={label('removeItemPrompt', { item: title(asked) })}
-          description={label('removeItemBody', { item: title(asked) })}
-          confirmLabel={label('removeItemNamed', { label: remove, item: title(asked) })}
-          cancelLabel={label('cancel')}
-          confirm={() => drop(asked)}
-          cancel={() => keep(asked)}
-        />
-      )}
+      {Confirm && <Confirm {...dialog} id={`${id}-confirm`} />}
     </>
   );
 });

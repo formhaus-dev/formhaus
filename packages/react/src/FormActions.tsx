@@ -31,6 +31,7 @@ export function FormActions({
   skipLabel: skipLabelProp,
   onPrimary: onPrimaryProp,
   testIds,
+  rootProps,
 }: FormActionsProps) {
   const text = useContext(LabelContext);
   const showBack = showBackProp ?? (isMultiStep && !isFirstStep && backAction !== false);
@@ -45,7 +46,7 @@ export function FormActions({
   const handlePrimary = onPrimaryProp ?? (next ? onNext : onSubmit);
 
   return (
-    <div className="fh-form-actions">
+    <div className="fh-form-actions" {...rootProps}>
       <div className="fh-form-actions__secondary">
         {showBack && (
           <button

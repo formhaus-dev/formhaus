@@ -14,6 +14,11 @@ const emit = defineEmits<FormRendererEmits>();
 
 const listening = useListening();
 const components = computed(() => withDefaultFields(props.components));
+const layout = computed(() => ({
+  ...props.layout,
+  actions: props.layout?.actions ?? (props.actionsComponent ? undefined : FormActions),
+  progress: props.layout?.progress ?? (props.progressComponent ? undefined : FormStepProgress),
+}));
 let inner: FormRendererHandle | null = null;
 const values = shallowRef<Readonly<Record<string, unknown>>>({});
 const bind = (instance: unknown) => {
@@ -32,8 +37,7 @@ defineExpose({
     :ref="bind"
     v-bind="props"
     :components="components"
-    :actions-component="props.actionsComponent ?? FormActions"
-    :progress-component="props.progressComponent ?? FormStepProgress"
+    :layout="layout"
     @cancel="emit('cancel')"
     @field-change="(key, value, allValues) => emit('fieldChange', key, value, allValues)"
     @values-change="(next) => emit('valuesChange', (values = next))"

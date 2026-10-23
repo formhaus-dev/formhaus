@@ -5,6 +5,6 @@
   "core FormEngine": 19456,
   "core + react useFormEngine": 20480,
   "core + vue useFormEngine": 20480,
-  "core + react FormRenderer": 32256,
-  "core + vue FormRenderer": 35840
+  "core + react FormRenderer": 32768,
+  "core + vue FormRenderer": 36352
 }

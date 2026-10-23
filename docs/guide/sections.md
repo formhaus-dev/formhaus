@@ -138,7 +138,7 @@ For a whole screen of text, such as a welcome screen, use a [step without fields
 
 ## Custom markup
 
-Pass `section` in `components` to own the markup:
+Pass `section` in [`layout`](/guide/custom-fields#layout-slots) to own the markup:
 
 ```tsx
 import type { SectionComponentProps } from '@formhaus/react';
@@ -151,10 +151,10 @@ const Section = ({ title, description, children }: SectionComponentProps) => (
   </section>
 );
 
-<FormRenderer definition={definition} components={{ section: Section }} onSubmit={send} />;
+<FormRenderer definition={definition} layout={{ section: Section }} onSubmit={send} />;
 ```
 
-It receives `id`, `section`, `title`, `description` and `descriptionId`, and the visible fields as `children` (React) or the default slot (Vue). In Vue, declare the props with `defineProps(sectionComponentProps)`. `DefaultSection` is exported for wrapping.
+It receives `id`, `section`, `title`, `description` and `descriptionId`, and the visible fields as `children` (React) or the default slot (Vue). Count fields with `section.fields`: each child stays wrapped in a renderer component. Rows of a matrix get its [columns](/guide/custom-fields#matrix-rows). In Vue, declare the props with `defineProps(sectionComponentProps)`. `DefaultSection` is exported for wrapping.
 
 ## Translations
 

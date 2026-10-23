@@ -4,10 +4,13 @@ export type { UseFormEngineOptions, UseFormEngineReturn } from './composables/us
 export { defaultFieldComponents } from './constants';
 export {
   confirmDialogComponentProps,
+  errorSummaryComponentProps,
+  fieldsContainerProps,
   formActionsEmits,
   formActionsProps,
   fieldComponentEmits,
   fieldComponentProps,
+  formErrorsComponentProps,
   formStepProgressProps,
   groupComponentProps,
   groupItemComponentProps,
@@ -24,9 +27,14 @@ export type {
   FormStepProgressProps,
   FormStepStatus,
   ConfirmDialogComponentProps,
+  ErrorSummaryComponentProps,
+  FieldsContainerProps,
+  FormErrorsComponentProps,
   GroupComponentProps,
   GroupItemComponentProps,
   SectionComponentProps,
   HeadingLevel,
+  LayoutComponentMap,
   OptionsProvider,
+  RootProps,
 } from './types';

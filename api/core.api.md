@@ -63,7 +63,35 @@ export interface DefinitionIssue {
 }
 
 // @public (undocumented)
-export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'matrix-options-mismatch';
+export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'matrix-options-mismatch';
+
+// @public (undocumented)
+export interface ErrorSummaryGroup {
+    // (undocumented)
+    entries: {
+        key: string;
+        id: string;
+        text: string;
+    }[];
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    title: string;
+}
+
+// @public (undocumented)
+export interface ErrorSummaryView {
+    // (undocumented)
+    count: number;
+    // (undocumented)
+    groups: ErrorSummaryGroup[];
+    // (undocumented)
+    rootProps: RootProps;
+    // (undocumented)
+    showField: (key: string) => void;
+    // (undocumented)
+    title: string;
+}
 
 // @public (undocumented)
 export function evaluateCondition(condition: ShowCondition, values: Record<string, unknown>): boolean;
@@ -368,6 +396,14 @@ export interface FormEngineOptions {
 }
 
 // @public (undocumented)
+export interface FormErrorsView {
+    // (undocumented)
+    errors: readonly string[];
+    // (undocumented)
+    rootProps: RootProps;
+}
+
+// @public (undocumented)
 export type FormEvent = {
     type: 'form_viewed';
 } | {
@@ -592,6 +628,40 @@ export interface FormStep {
 }
 
 // @public (undocumented)
+export interface FormStepProgressView {
+    // (undocumented)
+    counterLabel?: string;
+    // (undocumented)
+    current: number;
+    // (undocumented)
+    headingLevel?: 1 | 2 | 3 | 4 | 5 | 6;
+    // (undocumented)
+    marks?: boolean;
+    // (undocumented)
+    rootProps?: RootProps;
+    // (undocumented)
+    stepDescription?: string;
+    // (undocumented)
+    stepErrorCount?: number;
+    // (undocumented)
+    steps?: FormStepStatus[];
+    // (undocumented)
+    stepTitle?: string;
+    // (undocumented)
+    total: number;
+}
+
+// @public (undocumented)
+export interface FormStepStatus {
+    // (undocumented)
+    errorCount: number;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    title?: string;
+}
+
+// @public (undocumented)
 export function getDefaultMessage(rule: MessageKey, params?: Record<string, unknown>): string;
 
 // @public (undocumented)
@@ -796,6 +866,18 @@ export function recallText(definition: FormDefinition, text: string, values: Rec
 
 // @public (undocumented)
 export function resolveSources(definition: FormDefinition, context: SourceContext, initialValues?: Record<string, unknown>): Record<string, string>;
+
+// @public (undocumented)
+export interface RootProps {
+    // (undocumented)
+    'data-fh': string;
+    // (undocumented)
+    'data-testid'?: string;
+    // (undocumented)
+    role?: string;
+    // (undocumented)
+    tabIndex?: number;
+}
 
 // @public (undocumented)
 export interface SectionView {

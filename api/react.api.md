@@ -8,14 +8,19 @@ import { ComponentClass } from 'react';
 import { ComponentType } from 'react';
 import { ConfirmDialogView } from '@formhaus/core';
 import { DefaultFieldType } from '@formhaus/core';
+import { ErrorSummaryView } from '@formhaus/core';
+import { FieldOption } from '@formhaus/core';
 import { FieldType } from '@formhaus/core';
 import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEngine } from '@formhaus/core';
 import { FormEngineOptions } from '@formhaus/core';
+import { FormErrorsView } from '@formhaus/core';
 import { FormField } from '@formhaus/core';
 import * as _formhaus_core from '@formhaus/core';
 import { FormRendererHandle } from '@formhaus/core';
+import { FormStepProgressView } from '@formhaus/core';
+import { FormStepStatus } from '@formhaus/core';
 import { FunctionComponent } from 'react';
 import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
@@ -23,6 +28,7 @@ import { LabelSource } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
 import * as react from 'react';
 import { ReactNode } from 'react';
+import { RootProps } from '@formhaus/core';
 import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
@@ -60,6 +66,9 @@ export function DefaultGroupItem(input: GroupItemComponentProps): react.JSX.Elem
 export function DefaultSection(input: SectionComponentProps): react.JSX.Element;
 
 // @public (undocumented)
+export type ErrorSummaryComponentProps = ErrorSummaryView;
+
+// @public (undocumented)
 export type FieldComponentMap = {
     [K in FieldType | keyof NodeComponentProps]?: K extends keyof NodeComponentProps ? ComponentType<NodeComponentProps[K]> : K extends DefaultFieldType ? ComponentType<FieldComponentProps> : AnyComponent;
 };
@@ -77,6 +86,11 @@ export interface FieldComponentProps {
     // (undocumented)
     loading?: boolean;
     // (undocumented)
+    matrix?: {
+        columns: FieldOption[];
+        row: number;
+    };
+    // (undocumented)
     onBlur: () => void;
     // (undocumented)
     onChange: (value: unknown) => void;
@@ -90,6 +104,14 @@ export interface FieldComponentProps {
     testId?: string;
     // (undocumented)
     value: unknown;
+}
+
+// @public (undocumented)
+export interface FieldsContainerProps {
+    // (undocumented)
+    children: ReactNode;
+    // (undocumented)
+    rootProps: RootProps;
 }
 
 // @public (undocumented)
@@ -112,7 +134,12 @@ export interface FormActionsProps extends FormActionsView {
     onSkip?: () => void;
     // (undocumented)
     onSubmit: () => void;
+    // (undocumented)
+    rootProps?: RootProps;
 }
+
+// @public (undocumented)
+export type FormErrorsComponentProps = FormErrorsView;
 
 // @public (undocumented)
 export function FormhausField(input: FormhausFieldProps): react.JSX.Element;
@@ -131,6 +158,8 @@ export interface FormhausFieldProps {
     id?: string;
     // (undocumented)
     loading?: boolean;
+    // (undocumented)
+    matrix?: FieldComponentProps['matrix'];
     // (undocumented)
     onBlur?: () => void;
     // (undocumented)
@@ -175,6 +204,8 @@ export interface FormRendererProps extends FormEngineOptions {
     // (undocumented)
     labels?: LabelSource;
     // (undocumented)
+    layout?: LayoutComponentMap;
+    // (undocumented)
     loading?: boolean;
     // (undocumented)
     onCancel?: () => void;
@@ -204,34 +235,9 @@ export interface FormRendererProps extends FormEngineOptions {
 export function FormStepProgress(input: FormStepProgressProps): react.JSX.Element;
 
 // @public (undocumented)
-export interface FormStepProgressProps {
-    // (undocumented)
-    counterLabel?: string;
-    // (undocumented)
-    current: number;
-    // (undocumented)
-    headingLevel?: HeadingLevel;
-    // (undocumented)
-    stepDescription?: string;
-    // (undocumented)
-    stepErrorCount?: number;
-    // (undocumented)
-    steps?: FormStepStatus[];
-    // (undocumented)
-    stepTitle?: string;
-    // (undocumented)
-    total: number;
-}
+export type FormStepProgressProps = FormStepProgressView;
 
-// @public (undocumented)
-export interface FormStepStatus {
-    // (undocumented)
-    errorCount: number;
-    // (undocumented)
-    id: string;
-    // (undocumented)
-    title?: string;
-}
+export { FormStepStatus }
 
 // @public (undocumented)
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
@@ -255,12 +261,36 @@ export const HeadlessFormRenderer: react.ForwardRefExoticComponent<FormRendererP
 export function HiddenField(props: FieldComponentProps): react.JSX.Element;
 
 // @public (undocumented)
+export interface LayoutComponentMap {
+    // (undocumented)
+    actions?: ComponentType<FormActionsProps>;
+    // (undocumented)
+    confirmDialog?: ComponentType<ConfirmDialogComponentProps>;
+    // (undocumented)
+    errorSummary?: ComponentType<ErrorSummaryComponentProps>;
+    // (undocumented)
+    fields?: ComponentType<FieldsContainerProps>;
+    // (undocumented)
+    formErrors?: ComponentType<FormErrorsComponentProps>;
+    // (undocumented)
+    group?: ComponentType<GroupComponentProps>;
+    // (undocumented)
+    groupItem?: ComponentType<GroupItemComponentProps>;
+    // (undocumented)
+    progress?: ComponentType<FormStepProgressProps>;
+    // (undocumented)
+    section?: ComponentType<SectionComponentProps>;
+}
+
+// @public (undocumented)
 export function MultiselectField(props: FieldComponentProps): react.JSX.Element;
 
 export { OptionsProvider }
 
 // @public (undocumented)
 export function RadioField(props: FieldComponentProps): react.JSX.Element;
+
+export { RootProps }
 
 // @public (undocumented)
 export function ScaleField(props: FieldComponentProps): react.JSX.Element;

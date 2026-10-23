@@ -1,7 +1,17 @@
-import { FormActions, type FormActionsProps, FormRenderer } from '@formhaus/react';
+import { type ErrorSummaryComponentProps, FormActions, type FormActionsProps, FormRenderer } from '@formhaus/react';
 import { CloudError, type CloudNotice as CloudNoticeData, type CloudNoticeActionFn } from '@formhaus/core/cloud';
 import { CLOUD_NOTICE, cloudLabel, focusProblem, loadMessage, localNotice } from '@formhaus/core/internal';
-import { type ComponentType, createContext, type ReactNode, type RefObject, useCallback, useContext, useEffect, useRef } from 'react';
+import {
+  type ComponentType,
+  createContext,
+  type ReactNode,
+  type RefObject,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from 'react';
 import { CloudNotice } from './CloudNotice';
 import type { FormhausFormActionsProps, FormhausFormProps } from './types';
 import { useCloudForm } from './useCloudForm';
@@ -23,17 +33,18 @@ interface ActionsSlot {
   notice: CloudNoticeData | null;
   view: ReactNode;
   act: CloudNoticeActionFn;
+  legacy: boolean;
 }
 
 const ActionsContext = createContext<ActionsSlot | null>(null);
 
-function CloudActions(props: FormActionsProps) {
-  const { Actions, box, notice, view, act } = useContext(ActionsContext)!;
+function CloudActions({ rootProps, ...props }: FormActionsProps) {
+  const { Actions, box, notice, view, act, legacy } = useContext(ActionsContext)!;
   return (
     <>
       {box && <div ref={box} style={CONTENTS} />}
       {view}
-      <Actions {...props} notice={notice} onNoticeAction={act} />
+      <Actions {...props} {...(!legacy && { rootProps })} notice={notice} onNoticeAction={act} />
     </>
   );
 }
@@ -51,6 +62,7 @@ export function FormhausForm({
   initialValues,
   onFieldChange,
   actionsComponent,
+  layout,
   cloudLabels,
   noticePlacement,
   noticeComponent: Notice,
@@ -79,10 +91,22 @@ export function FormhausForm({
     else root.current?.querySelector('form')?.requestSubmit();
   }, []);
   const { redirectUrl, successMessage, allowAnother } = cloud.settings;
+  const summaryCount = useRef(0);
+  const slots = useMemo(() => {
+    const Summary = layout?.errorSummary;
+    const errorSummary =
+      Summary &&
+      ((props: ErrorSummaryComponentProps) => {
+        summaryCount.current = props.count;
+        return <Summary {...props} />;
+      });
+    return { ...layout, actions: CloudActions, errorSummary };
+  }, [layout]);
 
   useEffect(() => {
     if (cloud.attempt === 0) return;
-    const frame = requestAnimationFrame(() => focusProblem(root.current, root.current?.querySelector<HTMLElement>(CLOUD_NOTICE)));
+    const several = layout?.errorSummary && (() => summaryCount.current > 1);
+    const frame = requestAnimationFrame(() => focusProblem(root.current, root.current?.querySelector<HTMLElement>(CLOUD_NOTICE), several));
     return () => cancelAnimationFrame(frame);
   }, [cloud.attempt]);
 
@@ -135,7 +159,14 @@ export function FormhausForm({
       <input ref={trap} name="_fh_hp" tabIndex={-1} autoComplete="off" aria-hidden="true" style={HIDDEN} defaultValue="" />
       {top && view}
       <ActionsContext.Provider
-        value={{ Actions: actionsComponent ?? FormActions, box: cloud.challenge ? box : null, notice, view: top ? null : view, act }}
+        value={{
+          Actions: layout?.actions ?? actionsComponent ?? FormActions,
+          legacy: !layout?.actions && !!actionsComponent,
+          box: cloud.challenge ? box : null,
+          notice,
+          view: top ? null : view,
+          act,
+        }}
       >
         <FormRenderer
           {...rendererProps}
@@ -146,7 +177,7 @@ export function FormhausForm({
           errors={cloud.errors}
           onSubmit={cloud.submit}
           onError={cloud.relay}
-          actionsComponent={CloudActions}
+          layout={slots}
           onFieldChange={(key, value, values) => {
             cloud.saveDraft(values);
             onFieldChange?.(key, value, values);

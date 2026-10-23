@@ -90,7 +90,7 @@ function Section(props: SectionComponentProps) {
   );
 }
 
-<FormRenderer definition={definition} components={{ section: Section }} onSubmit={send} />;
+<FormRenderer definition={definition} layout={{ section: Section }} onSubmit={send} />;
 ```
 
 - Style `.subsection` with an indent and no top margin, so it reads as part of Shipping.
@@ -165,7 +165,7 @@ function Group(props: GroupComponentProps) {
   );
 }
 
-<FormRenderer definition={definition} components={{ group: Group }} onSubmit={send} />;
+<FormRenderer definition={definition} layout={{ group: Group }} onSubmit={send} />;
 ```
 
 Keep the error and the Add button. With `address: []` in `initialValues` the group starts empty, Submit shows the group error and Add creates the item.

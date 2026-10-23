@@ -184,7 +184,7 @@ function SavingActions({ primaryLabel, showPrimary = true, showBack, backLabel, 
   );
 }
 
-<FormRenderer definition={definition} onSubmit={save} actionsComponent={SavingActions} />
+<FormRenderer definition={definition} onSubmit={save} layout={{ actions: SavingActions }} />
 ```
 
 `loading` is `true` while `onSubmit`, `onStepValidate` or a lifecycle hook runs. All props, and the Vue version, are in [Custom Actions & Progress](/guide/custom-components).

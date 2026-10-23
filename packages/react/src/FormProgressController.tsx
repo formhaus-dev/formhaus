@@ -1,5 +1,5 @@
 import type { FormEngine } from '@formhaus/core';
-import { recalled } from '@formhaus/core/internal';
+import { recalled, ROOT_PROPS } from '@formhaus/core/internal';
 import { useContext, useMemo } from 'react';
 import { LabelContext } from './labels';
 import { useRecallSnapshot } from './hooks/useEngineSnapshot';
@@ -10,18 +10,25 @@ interface FormProgressControllerProps {
   ProgressComponent: FormRendererProps['progressComponent'];
   headingLevel: FormRendererProps['headingLevel'];
   marks?: boolean;
+  slot: boolean;
 }
 
-export function FormProgressController({ engine, ProgressComponent, headingLevel, marks }: FormProgressControllerProps) {
+export function FormProgressController({ engine, ProgressComponent, headingLevel, marks, slot }: FormProgressControllerProps) {
   const version = useRecallSnapshot(engine);
   const text = useContext(LabelContext);
   const errors = useMemo(() => (ProgressComponent && engine.isMultiStep ? engine.stepErrors : {}), [engine, version, ProgressComponent]);
   if (!engine.isMultiStep || !ProgressComponent) return null;
   const { current, total } = engine.progress;
   const step = engine.currentStep && recalled(engine, engine.currentStep);
+  const steps = engine.visibleSteps.map((item) => ({
+    id: item.id,
+    title: recalled(engine, item).title,
+    errorCount: errors[item.id]?.length ?? 0,
+  }));
 
   return (
     <ProgressComponent
+      {...(slot ? { rootProps: ROOT_PROPS.progress, marks: !!marks, steps } : { steps: marks ? steps : undefined })}
       current={current}
       total={total}
       counterLabel={text('stepOf', { current, total })}
@@ -29,15 +36,6 @@ export function FormProgressController({ engine, ProgressComponent, headingLevel
       stepDescription={step?.description}
       headingLevel={headingLevel}
       stepErrorCount={errors[engine.currentStep?.id ?? '']?.length ?? 0}
-      steps={
-        marks
-          ? engine.visibleSteps.map((item) => ({
-              id: item.id,
-              title: recalled(engine, item).title,
-              errorCount: errors[item.id]?.length ?? 0,
-            }))
-          : undefined
-      }
     />
   );
 }

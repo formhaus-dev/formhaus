@@ -5,11 +5,11 @@ description: "Replace Formhaus buttons and the step progress bar with design sys
 
 # Custom Actions & Progress
 
-Replace the built-in form buttons and step progress bar with your own components. Useful when your project has a design system and the default unstyled HTML doesn't fit. For fields, sections, groups and the remove dialog, see [Custom Fields](/guide/custom-fields).
+Replace the built-in form buttons and step progress bar with your own components. Useful when your project has a design system and the default unstyled HTML doesn't fit. Both are keys of the `layout` prop. For fields and the other [layout slots](/guide/custom-fields#layout-slots), see [Custom Fields](/guide/custom-fields).
 
 ## Custom actions component
 
-Pass your component via the `actionsComponent` prop:
+Pass your component as `layout.actions`:
 
 ::: code-group
 ```vue [Vue]
@@ -21,7 +21,7 @@ import MyFormActions from './MyFormActions.vue'
 <template>
   <FormRenderer
     :definition="definition"
-    :actions-component="MyFormActions"
+    :layout="{ actions: MyFormActions }"
     @submit="onSubmit"
   />
 </template>
@@ -33,11 +33,13 @@ import { MyFormActions } from './MyFormActions'
 
 <FormRenderer
   definition={definition}
-  actionsComponent={MyFormActions}
+  layout={{ actions: MyFormActions }}
   onSubmit={handleSubmit}
 />
 ```
 :::
+
+The `actionsComponent` prop still works until 2.0 and warns once in development. Its component gets the props below without `rootProps`. `FormhausForm` takes its own `actionsComponent` without the warning.
 
 Your component receives pre-computed convenience props so you don't need to re-derive button labels or visibility:
 
@@ -52,6 +54,7 @@ Your component receives pre-computed convenience props so you don't need to re-d
 | `loading` | `boolean?` | Parent loading state or pending navigation/submission, including hooks |
 | `cancelAction` | `FormAction?` | Cancel button config |
 | `testIds` | `{ submit?, next?, back? }` | [Test ids](/guide/testing) of the buttons, when the renderer has `testIds` |
+| `rootProps` | `{ 'data-fh': 'actions' }` | Spread on the root element, so focus after an error never lands on a button. See [Root props](/guide/custom-fields#root-props) |
 
 In React, call `onPrimary` for the primary action, `onBack` for back and `onSkip` for skip. In Vue, emit `primary`, `back` and `skip`.
 
@@ -66,7 +69,7 @@ const emit = defineEmits(formActionsEmits)
 </script>
 
 <template>
-  <div class="my-actions">
+  <div v-bind="rootProps" class="my-actions">
     <button v-if="showBack" type="button" :disabled="loading" @click="emit('back')">{{ backLabel }}</button>
     <button v-if="showPrimary !== false" type="button" @click="emit('primary')" :disabled="loading">{{ primaryLabel }}</button>
   </div>
@@ -80,10 +83,10 @@ import type { FormActionsProps } from '@formhaus/react'
 
 export function MyFormActions({
   primaryLabel, showPrimary = true, showBack, backLabel, loading,
-  onPrimary, onBack,
+  onPrimary, onBack, rootProps,
 }: FormActionsProps) {
   return (
-    <div className="my-actions">
+    <div {...rootProps} className="my-actions">
       {showBack && <button type="button" disabled={loading} onClick={onBack}>{backLabel}</button>}
       {showPrimary && <button type="button" disabled={loading} onClick={onPrimary}>{primaryLabel}</button>}
     </div>
@@ -109,14 +112,14 @@ In Vue, you can also emit `submit`, `next`, `back`, `cancel` events directly. In
 
 ## Custom progress component
 
-Pass your component via the `progressComponent` prop:
+Pass your component as `layout.progress`:
 
 ::: code-group
 ```vue [Vue]
 <template>
   <FormRenderer
     :definition="definition"
-    :progress-component="MyStepProgress"
+    :layout="{ progress: MyStepProgress }"
     @submit="onSubmit"
   />
 </template>
@@ -125,11 +128,13 @@ Pass your component via the `progressComponent` prop:
 ```tsx [React]
 <FormRenderer
   definition={definition}
-  progressComponent={MyStepProgress}
+  layout={{ progress: MyStepProgress }}
   onSubmit={handleSubmit}
 />
 ```
 :::
+
+The `progressComponent` prop still works until 2.0 and warns once in development. Its component gets no `rootProps` and no `marks`, and gets `steps` only when the renderer has `stepErrorMarks`.
 
 Your component receives these props:
 
@@ -140,15 +145,17 @@ Your component receives these props:
 | `stepTitle` | `string?` | Title of the current step |
 | `stepDescription` | `string?` | Description of the current step |
 | `headingLevel` | `1` to `6`, optional | Heading level for the step title, from the renderer's `headingLevel` prop. The built-in progress renders `<h2>` by default |
-| `steps` | `FormStepStatus[]?` | Steps of the active path as `{ id, title, errorCount }`. Passed only when the renderer has `stepErrorMarks` |
+| `steps` | `FormStepStatus[]?` | Steps of the active path as `{ id, title, errorCount }` |
+| `marks` | `boolean?` | `true` when the renderer has `stepErrorMarks` |
 | `counterLabel` | `string?` | Step counter text from the `stepOf` [label](/guide/translations), such as `Step 2 of 3` |
 | `stepErrorCount` | `number?` | Number of field errors on the current step |
+| `rootProps` | `{ 'data-fh': 'progress' }` | Spread on the root element, so focus after an error never lands on a step button |
 
-The progress component only renders for multi-step forms.
+The progress component only renders for multi-step forms. The built-in `FormStepProgress` draws the step list only when `marks` is `true`. Rendered on its own, it draws `steps` unless `marks` is `false`.
 
 ## Combining both
 
-Use all custom component props together:
+Field types go to `components`, everything around them to `layout`:
 
 ::: code-group
 ```vue [Vue]
@@ -156,8 +163,7 @@ Use all custom component props together:
   <FormRenderer
     :definition="definition"
     :components="{ phone: CustomPhoneInput }"
-    :actions-component="MyFormActions"
-    :progress-component="MyStepProgress"
+    :layout="{ actions: MyFormActions, progress: MyStepProgress }"
     @submit="onSubmit"
   />
 </template>
@@ -167,14 +173,13 @@ Use all custom component props together:
 <FormRenderer
   definition={definition}
   components={{ phone: CustomPhoneInput }}
-  actionsComponent={MyFormActions}
-  progressComponent={MyStepProgress}
+  layout={{ actions: MyFormActions, progress: MyStepProgress }}
   onSubmit={handleSubmit}
 />
 ```
 :::
 
-If you don't pass these props, the built-in components render as before. No breaking changes.
+A key you leave out keeps the built-in component.
 
 ## Headless renderer
 
@@ -190,8 +195,7 @@ import { HeadlessFormRenderer } from '@formhaus/vue'
   <HeadlessFormRenderer
     :definition="definition"
     :components="{ text: MyInput, email: MyInput, select: MySelect }"
-    :actions-component="MyFormActions"
-    :progress-component="MyStepProgress"
+    :layout="{ actions: MyFormActions, progress: MyStepProgress }"
     @submit="onSubmit"
   />
 </template>
@@ -203,8 +207,7 @@ import { HeadlessFormRenderer } from '@formhaus/react'
 <HeadlessFormRenderer
   definition={definition}
   components={{ text: MyInput, email: MyInput, select: MySelect }}
-  actionsComponent={MyFormActions}
-  progressComponent={MyStepProgress}
+  layout={{ actions: MyFormActions, progress: MyStepProgress }}
   onSubmit={handleSubmit}
 />
 ```
@@ -215,8 +218,9 @@ import { HeadlessFormRenderer } from '@formhaus/react'
 `HeadlessFormRenderer` has no fallbacks:
 
 - A field type with no mapped component renders an "Unsupported field type" placeholder. In development the renderer also warns with `missing-component`.
-- Without an actions component, the form renders no buttons.
-- Without a progress component, a multi-step form renders no progress bar.
+- Without `layout.actions`, the form renders no buttons.
+- Without `layout.progress`, a multi-step form renders no progress bar.
+- The other layout slots keep the built-in markup when left out.
 
 ## Render one field
 
@@ -238,10 +242,10 @@ Import the prop interfaces to type your custom components:
 
 ```ts
 // Vue
-import type { FormActionsProps, FormStepProgressProps } from '@formhaus/vue'
+import type { FormActionsProps, FormStepProgressProps, LayoutComponentMap, RootProps } from '@formhaus/vue'
 
 // React
-import type { FormActionsProps, FormStepProgressProps } from '@formhaus/react'
+import type { FormActionsProps, FormStepProgressProps, LayoutComponentMap, RootProps } from '@formhaus/react'
 ```
 
 ## Runtime props in Vue
@@ -261,12 +265,15 @@ const props = defineProps(groupItemComponentProps)
 | Field | `fieldComponentProps` | `fieldComponentEmits` |
 | Actions | `formActionsProps` | `formActionsEmits` |
 | Step progress | `formStepProgressProps` | |
+| Fields container | `fieldsContainerProps` | |
 | Section | `sectionComponentProps` | |
 | Group | `groupComponentProps` | |
 | Group item | `groupItemComponentProps` | |
 | Remove dialog | `confirmDialogComponentProps` | |
+| Error summary | `errorSummaryComponentProps` | |
+| Form errors | `formErrorsComponentProps` | |
 
-Each declares every prop of the matching interface, such as `FieldComponentProps` for `fieldComponentProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2`.
+Each declares every prop of the matching interface, such as `FieldComponentProps` for `fieldComponentProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2` and `marks` to `true`.
 
 ## Form events
 
@@ -315,7 +322,7 @@ The order of events is in the [specification](/spec#form-events). Events carry s
 
 ## Next steps
 
-- [Custom Fields](/guide/custom-fields): the field component contract and layout components
+- [Custom Fields](/guide/custom-fields): the field component contract and layout slots
 - [Field Types](/guide/fields): customize field components via the `components` prop
 - [Multi-Step Forms](/guide/steps): step navigation, conditional steps, progress
 - [Examples](/guide/examples): full form patterns

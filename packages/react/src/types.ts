@@ -1,15 +1,21 @@
 import type {
   ConfirmDialogView,
   DefaultFieldType,
+  ErrorSummaryView,
+  FieldOption,
   FieldType,
   FormActionsView,
   FormDefinition,
   FormEngineOptions,
+  FormErrorsView,
   FormRendererHandle,
+  FormStepProgressView,
+  FormStepStatus,
   GroupItemView,
   GroupView,
   LabelSource,
   OptionsProvider,
+  RootProps,
   SectionView,
   StepValidateFn,
   SubmitHandler,
@@ -18,7 +24,7 @@ import type {
 } from '@formhaus/core';
 import type { ComponentClass, ComponentType, FunctionComponent, ReactNode } from 'react';
 
-export type { FormRendererHandle, OptionsProvider };
+export type { FormRendererHandle, FormStepStatus, OptionsProvider, RootProps };
 
 export interface FieldComponentProps {
   id?: string;
@@ -33,6 +39,7 @@ export interface FieldComponentProps {
   onFocus?: () => void;
   testId?: string;
   optionTestId?: (value: string) => string | undefined;
+  matrix?: { columns: FieldOption[]; row: number };
 }
 
 export interface SectionComponentProps extends SectionView {
@@ -47,6 +54,15 @@ export type ConfirmDialogComponentProps = ConfirmDialogView;
 
 export interface GroupComponentProps extends GroupView<GroupItemComponentProps> {
   itemComponent: ComponentType<GroupItemComponentProps>;
+}
+
+export type ErrorSummaryComponentProps = ErrorSummaryView;
+
+export type FormErrorsComponentProps = FormErrorsView;
+
+export interface FieldsContainerProps {
+  rootProps: RootProps;
+  children: ReactNode;
 }
 
 interface NodeComponentProps {
@@ -83,25 +99,23 @@ export interface FormActionsProps extends FormActionsView {
   onCancel: () => void;
   onSkip?: () => void;
   onPrimary?: () => void;
+  rootProps?: RootProps;
 }
 
 export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
 
-export interface FormStepStatus {
-  id: string;
-  title?: string;
-  errorCount: number;
-}
+export type FormStepProgressProps = FormStepProgressView;
 
-export interface FormStepProgressProps {
-  current: number;
-  total: number;
-  stepTitle?: string;
-  stepDescription?: string;
-  headingLevel?: HeadingLevel;
-  steps?: FormStepStatus[];
-  counterLabel?: string;
-  stepErrorCount?: number;
+export interface LayoutComponentMap {
+  fields?: ComponentType<FieldsContainerProps>;
+  section?: ComponentType<SectionComponentProps>;
+  group?: ComponentType<GroupComponentProps>;
+  groupItem?: ComponentType<GroupItemComponentProps>;
+  confirmDialog?: ComponentType<ConfirmDialogComponentProps>;
+  errorSummary?: ComponentType<ErrorSummaryComponentProps>;
+  formErrors?: ComponentType<FormErrorsComponentProps>;
+  progress?: ComponentType<FormStepProgressProps>;
+  actions?: ComponentType<FormActionsProps>;
 }
 
 export interface FormRendererProps extends FormEngineOptions {
@@ -122,6 +136,7 @@ export interface FormRendererProps extends FormEngineOptions {
   stepErrorMarks?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;
+  layout?: LayoutComponentMap;
   optionsProviders?: Record<string, OptionsProvider>;
   actionsComponent?: ComponentType<FormActionsProps>;
   progressComponent?: ComponentType<FormStepProgressProps>;
