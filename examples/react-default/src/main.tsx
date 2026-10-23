@@ -18,4 +18,9 @@ function render(definition?: FormDefinition) {
 }
 
 render();
-listenToPlayground(render);
+listenToPlayground({
+  definition: render,
+  theme: (theme) => {
+    document.documentElement.dataset.fhTheme = theme;
+  },
+});

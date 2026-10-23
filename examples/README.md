@@ -4,7 +4,10 @@ These integrations install their own dependencies and can be copied outside the 
 
 | Example | Stack | What it shows |
 |---------|-------|---------------|
+| [`react-default`](react-default/) | Vite + React 19, built-in fields | `FormRenderer` with the default fields and stylesheet |
 | [`react-mui`](react-mui/) | React 18 + Material UI | `components` prop with MUI Autocomplete, Select, TextField, etc. |
+| [`react-antd`](react-antd/) | Vite + React 19 + Ant Design 6 | Every field type and layout slot mapped to Ant Design |
+| [`react-govuk`](react-govuk/) | Vite + React 19 + govuk-frontend | GOV.UK markup and error summary, written as small React components |
 | [`vue-vuetify`](vue-vuetify/) | Vue 3 + Vuetify 3 | `components` prop with Vuetify `<v-autocomplete>`, `<v-text-field>`, etc. |
 | [`vanilla-svelte`](vanilla-svelte/) | Svelte (no adapter) | Using `@formhaus/core` directly without a framework adapter |
 | [`react-quiz`](react-quiz/) | React 18, built-in fields | Quiz funnel with auto-advance, routes, lead capture in lifecycle hooks, and funnel events |

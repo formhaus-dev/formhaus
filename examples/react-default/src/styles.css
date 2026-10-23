@@ -3,6 +3,11 @@ body {
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
+:root[data-fh-theme='dark'] {
+  color-scheme: dark;
+  background: #18181c;
+}
+
 .page {
   max-width: 560px;
   margin: 0 auto;
