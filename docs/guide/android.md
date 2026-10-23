@@ -15,9 +15,9 @@ Releases are published to Maven Central. Add the packages you need:
 
 ```kotlin
 dependencies {
-    implementation("dev.formhaus:formhaus-core:0.3.0")
-    implementation("dev.formhaus:formhaus-compose:0.3.0")
-    implementation("dev.formhaus:formhaus-research:0.3.0")
+    implementation("dev.formhaus:formhaus-core:0.4.0")
+    implementation("dev.formhaus:formhaus-compose:0.4.0")
+    implementation("dev.formhaus:formhaus-research:0.4.0")
 }
 ```
 
@@ -31,6 +31,7 @@ dependencies {
 
 | formhaus-kotlin | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.4.0 | 1.3.0 | 1.6 |
 | 0.3.0 | 1.3.0 | 1.6 |
 | 0.2.1 | 1.2.2 | 1.6 |
 | 0.2.0 | 1.2.2 | 1.6 |
@@ -174,6 +175,22 @@ val engine = FormEngine(
 )
 val missing = missingKeys(messages = MessageSource.Catalog(localized.messages))
 ```
+
+### Built-in languages
+
+`formhaus-core` ships message and label catalogs for `en`, `es`, `fr`, `fr-CA`, `de`, `pt-BR`, `it`, `ja`, `zh-CN`, `ru` and `uk`. Pass them as `locale`:
+
+```kotlin
+import dev.formhaus.core.i18n.LocaleCatalog
+import dev.formhaus.core.i18n.localeChain
+import java.util.Locale
+
+val catalogs = localeChain(Locale.getDefault().toLanguageTag()).mapNotNull(LocaleCatalog::bundled)
+
+FormhausForm(definition, engineOptions = FormEngineOptions(locale = catalogs)) { values, _ -> send(values) }
+```
+
+Per key, `messages` wins over the definition's `messages`, which wins over the catalogs in list order, which win over the built-in English. `FormhausForm` relabels an open form when `locale` changes.
 
 ## Threading
 

@@ -15,8 +15,8 @@ Releases are published to Maven Central. Add the packages you need:
 
 ```kotlin
 dependencies {
-    implementation("dev.formhaus:formhaus-core:0.3.0")
-    implementation("dev.formhaus:formhaus-compose:0.3.0")
+    implementation("dev.formhaus:formhaus-core:0.4.0")
+    implementation("dev.formhaus:formhaus-compose:0.4.0")
 }
 ```
 
