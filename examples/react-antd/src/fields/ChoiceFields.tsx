@@ -52,9 +52,21 @@ export function RadioField({ id, field, value, error, loading, disabled, onChang
       <Radio.Group
         id={id}
         value={value ?? null}
-        vertical
+        vertical={!field.options?.some((option) => option.image)}
+        className={field.options?.some((option) => option.image) ? 'image-options' : undefined}
         disabled={disabled || loading}
-        options={(field.options ?? []).map((option) => ({ value: option.value, label: option.label }))}
+        options={(field.options ?? []).map((option) => ({
+          value: option.value,
+          className: option.image ? 'image-option' : undefined,
+          label: option.image ? (
+            <>
+              <img src={option.image} alt="" className="image-option__image" />
+              <span>{option.label}</span>
+            </>
+          ) : (
+            option.label
+          ),
+        }))}
         onChange={(event) => onChange(event.target.value)}
       />
     </FieldItem>

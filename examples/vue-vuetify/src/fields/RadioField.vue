@@ -49,11 +49,34 @@ const emit = defineEmits(['update:modelValue', 'blur', 'focus']);
     @blur="emit('blur')"
     @focus="emit('focus')"
   >
-    <v-radio
-      v-for="opt in (field.options ?? [])"
-      :key="opt.value"
-      :label="opt.label"
-      :value="opt.value"
-    />
+    <div v-if="(field.options ?? []).some((opt) => opt.image)" class="image-options">
+      <v-card
+        v-for="opt in field.options"
+        :key="opt.value"
+        variant="outlined"
+        :color="modelValue === opt.value ? 'primary' : undefined"
+        class="image-option"
+        @click="emit('update:modelValue', opt.value)"
+      >
+        <v-img v-if="opt.image" :src="opt.image" alt="" aspect-ratio="1.333" cover />
+        <v-radio :label="opt.label" :value="opt.value" class="px-1" @click.stop />
+      </v-card>
+    </div>
+    <template v-else>
+      <v-radio v-for="opt in (field.options ?? [])" :key="opt.value" :label="opt.label" :value="opt.value" />
+    </template>
   </v-radio-group>
 </template>
+
+<style scoped>
+.image-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+.image-option {
+  cursor: pointer;
+}
+</style>

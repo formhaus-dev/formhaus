@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { FieldShell } from './FieldShell';
 
 export function RadioField({ id, field, value, error, loading, disabled, onChange, onBlur, matrix }: FieldComponentProps) {
+  const tiles = field.options?.some((option) => option.image);
   const group = {
     'aria-labelledby': `${id}-label`,
     value: typeof value === 'string' ? value : null,
@@ -34,13 +35,26 @@ export function RadioField({ id, field, value, error, loading, disabled, onChang
 
   return (
     <FieldShell id={id} field={field} error={error} group>
-      <RadioGroup id={id} {...group}>
-        {(field.options ?? []).map((option) => (
-          <Label key={option.value} className="font-normal">
-            <RadioGroupItem value={option.value} />
-            {option.label}
-          </Label>
-        ))}
+      <RadioGroup id={id} {...group} className={tiles ? 'grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-3' : undefined}>
+        {(field.options ?? []).map((option) =>
+          tiles ? (
+            <Label
+              key={option.value}
+              className="flex-col items-stretch gap-2 rounded-lg border p-2 font-normal has-[[data-checked]]:border-primary has-[[data-checked]]:ring-1 has-[[data-checked]]:ring-primary"
+            >
+              {option.image && <img src={option.image} alt="" className="aspect-[4/3] w-full rounded-md object-cover" />}
+              <span className="flex items-center gap-2">
+                <RadioGroupItem value={option.value} />
+                {option.label}
+              </span>
+            </Label>
+          ) : (
+            <Label key={option.value} className="font-normal">
+              <RadioGroupItem value={option.value} />
+              {option.label}
+            </Label>
+          ),
+        )}
       </RadioGroup>
     </FieldShell>
   );
