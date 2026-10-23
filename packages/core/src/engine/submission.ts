@@ -3,8 +3,9 @@ import { emit } from './form-events';
 import { watchCheckedInputs } from './pending-inputs';
 import type { SubmitHandler, SubmitResult } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
-import { applyValidationErrors, getSubmitValues, validateForm } from './validation-state';
+import { applyValidationErrors, clearFormErrors, getSubmitValues, validateForm } from './validation-state';
 import { includeCurrentStep } from './step-skip';
+import { passesValidate } from './validate-hook';
 
 type Rejection = Extract<SubmitResult, { ok: false }>;
 
@@ -27,6 +28,7 @@ function applyRejection(engine: EngineInternals, result: Rejection, sent: Record
 export async function submitForm(engine: EngineInternals, submit: SubmitHandler, keepSkipped = false): Promise<boolean> {
   if (engine.submitting || engine.stepValidating) return false;
   if (!keepSkipped) includeCurrentStep(engine);
+  clearFormErrors(engine);
   const lifecycle = { ...engine.lifecycle };
   const epoch = engine.validationEpoch;
   const operation = (engine.latestOperation = ++engine.operationEpoch);
@@ -43,6 +45,10 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   try {
     if (stale()) return false;
     if (invalid() || stale()) return false;
+    if (lifecycle.onValidate && !(await passesValidate(engine, lifecycle.onValidate, values, stale, true))) {
+      if (!stale()) emit(engine, { type: 'form_submit_failed', reason: 'validation' });
+      return false;
+    }
     if (lifecycle.onBeforeSubmit) {
       const allowed = await lifecycle.onBeforeSubmit(values);
       if (stale() || allowed === false) return false;

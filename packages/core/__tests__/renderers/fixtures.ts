@@ -10,6 +10,7 @@ import type {
   RecallFormatFn,
   StepValidateFn,
   SubmitHandler,
+  ValidateFn,
 } from '../../src';
 
 export interface ScenarioProps {
@@ -23,6 +24,7 @@ export interface ScenarioProps {
   stepErrorMarks?: boolean;
   labels?: LabelSource;
   onStepValidate?: StepValidateFn;
+  onValidate?: ValidateFn;
   lang?: string;
   formatRecall?: RecallFormatFn;
   onFormEvent?: (event: FormEvent) => void;

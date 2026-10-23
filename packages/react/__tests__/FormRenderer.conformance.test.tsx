@@ -20,6 +20,7 @@ import { optionScenarios } from '../../core/__tests__/renderers/options.scenario
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
+import { validateScenarios } from '../../core/__tests__/renderers/validate.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
 import { design } from './fixtures/design';
 import type {
@@ -140,3 +141,4 @@ describe('renderer conformance: remove dialog', () => dialogScenarios(harness, k
 describe('renderer conformance: definition changes', () => definitionScenarios(harness, kit));
 describe('renderer conformance: layout slots', () => layoutScenarios(harness, kit));
 describe('renderer conformance: handle', () => handleScenarios(harness, kit));
+describe('renderer conformance: onValidate', () => validateScenarios(harness, kit));
