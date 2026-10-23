@@ -77,6 +77,7 @@ export default defineConfig({
           { text: 'Server Rendering', link: '/guide/ssr' },
           { text: 'Research', link: '/guide/research' },
           { text: 'Custom Fields', link: '/guide/custom-fields' },
+          { text: 'Design Systems', link: '/guide/design-systems' },
           { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
           { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
           { text: 'Examples', link: '/guide/examples' },
