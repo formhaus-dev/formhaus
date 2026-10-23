@@ -67,11 +67,13 @@ export function StepProgress({
           }))}
         />
       ) : (
-        <Progress percent={Math.round((current / total) * 100)} showInfo={false} />
+        <>
+          <Progress percent={Math.round((current / total) * 100)} showInfo={false} />
+          <Typography.Text type="secondary" className="counter">
+            {counterLabel ?? `Step ${current} of ${total}`}
+          </Typography.Text>
+        </>
       )}
-      <Typography.Text type="secondary" className="counter">
-        {counterLabel ?? `Step ${current} of ${total}`}
-      </Typography.Text>
       {stepTitle && (
         <Typography.Title level={level} style={{ fontSize: 20, margin: '4px 0 0' }}>
           {stepTitle}

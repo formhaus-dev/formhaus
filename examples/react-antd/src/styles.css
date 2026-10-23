@@ -8,7 +8,7 @@ body {
 }
 
 :root[data-theme='dark'] body {
-  background: #000;
+  background: #121212;
 }
 
 .page {
@@ -23,8 +23,11 @@ body {
 
 .counter {
   display: block;
-  margin-top: 12px;
   font-size: 12px;
+}
+
+.slot .ant-steps {
+  margin-bottom: 16px;
 }
 
 .actions {
