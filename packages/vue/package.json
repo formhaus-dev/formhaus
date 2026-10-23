@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/vue",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Render multi-step, conditional and branching forms in Vue 3 from a JSON form definition. Native inputs or your own components.",
   "type": "module",
   "sideEffects": false,
@@ -30,7 +30,7 @@
     "clean": "rm -rf dist"
   },
   "peerDependencies": {
-    "@formhaus/core": "~1.2.0",
+    "@formhaus/core": "~1.2.3",
     "vue": "^3.3.3"
   },
   "devDependencies": {

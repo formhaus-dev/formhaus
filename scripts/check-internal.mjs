@@ -37,9 +37,7 @@ for (const [pkg, entries] of Object.entries(ENTRIES)) {
 }
 
 const core = JSON.parse(readFileSync(join(root, 'packages/core/package.json'), 'utf8')).version;
-const [major, minor] = core.split('.');
-const floor = core.includes('-') ? core : `${major}.${minor}.0`;
-const pinned = `${major === '0' ? '^' : '~'}${floor}`;
+const pinned = `${core.startsWith('0.') ? '^' : '~'}${core}`;
 for (const pkg of ['react', 'vue']) {
   const range = JSON.parse(readFileSync(join(root, 'packages', pkg, 'package.json'), 'utf8')).peerDependencies?.['@formhaus/core'];
   if (range !== pinned)

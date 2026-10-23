@@ -1,5 +1,12 @@
 # @formhaus/mcp
 
+## 0.11.5
+
+### Patch Changes
+
+- `validate_definition` no longer reports `matrix-options-mismatch` for matrix rows that use `optionsFrom`.
+- Requires `@formhaus/core` 1.2.3.
+
 ## 0.11.4
 
 ### Patch Changes
