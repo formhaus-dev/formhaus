@@ -75,6 +75,7 @@ export default defineConfig({
           { text: 'Translations', link: '/guide/translations' },
           { text: 'Server Rendering', link: '/guide/ssr' },
           { text: 'Research', link: '/guide/research' },
+          { text: 'Custom Fields', link: '/guide/custom-fields' },
           { text: 'Custom Actions & Progress', link: '/guide/custom-components' },
           { text: 'Inline Edit Pattern', link: '/guide/inline-edit' },
           { text: 'Examples', link: '/guide/examples' },
