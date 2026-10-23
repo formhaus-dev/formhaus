@@ -25,7 +25,7 @@ export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from 
 export { builtInFields, fieldComponentsByName, mergeFieldComponents } from './field-components';
 export { fieldDomId, itemDomId } from './ids';
 export { actionTestIds, fieldTestIds, testIds, type TestId, type TestIdOption } from './test-ids';
-export { errorDomId, errorGroups, itemHasContent, itemLimits, itemTitle } from './items';
+export { errorDomId, itemHasContent, itemLimits, itemTitle } from './items';
 export { warnMissingComponents } from './missing-components';
 export {
   dividerBefore,

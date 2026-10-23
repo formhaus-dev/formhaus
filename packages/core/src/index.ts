@@ -20,7 +20,9 @@ export type {
   SectionView,
   GroupI18n,
   ConfirmDialogView,
+  ErrorSummary,
   ErrorSummaryGroup,
+  ErrorSummaryOptions,
   ErrorSummaryView,
   FormActionsView,
   FormErrorsView,
@@ -89,6 +91,7 @@ export {
   type DefinitionIssueCode,
 } from './definition-validation';
 
+export { errorSummary } from './internal/items';
 export type { OptionsProvider } from './internal/options';
 
 export { resolveSources, type SourceContext } from './sources';

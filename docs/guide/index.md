@@ -321,7 +321,7 @@ async function changed(key: string, value: unknown) {
 
 A field keeps its value when the new definition has a field with the same key and type. New fields start from their defaults. The user stays on the same step when it still exists, and steps added before it are checked on submit. Without `keepValues`, a new definition resets the form as before. The `useFormEngine` hook and composable take `keepValues` in their options, and `engine.replaceDefinition()` does the same on a bare engine. See [Replacing the definition](/spec#replacing-the-definition).
 
-To change a value after the form mounts, put a ref on the renderer. `FormRenderer` and `HeadlessFormRenderer` expose `setValue(key, value)` and `getValues()`, typed as `FormRendererHandle`. `setValue` does not call `onFieldChange` (React) or emit `fieldChange` (Vue).
+To change a value after the form mounts, put a ref on the renderer. `FormRenderer` and `HeadlessFormRenderer` expose `setValue(key, value)`, `getValues()`, `goToStep(stepId)`, `showField(key)` and `getErrors()`, typed as `FormRendererHandle`. See [Errors in app code](/guide/errors#errors-in-app-code) for the last two. `setValue` does not call `onFieldChange` (React) or emit `fieldChange` (Vue).
 
 `onValuesChange` (React) and `valuesChange` (Vue) fire on mount and on every value-changing operation, with a frozen copy of the values. In Vue, the handle also has a reactive `values`. See [Derived values](/recipes/derived-values).
 

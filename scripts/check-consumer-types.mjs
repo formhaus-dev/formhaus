@@ -133,6 +133,7 @@ export const localized = useLocalizedForm(() => definition, () => ({ overlay: { 
 files['src/question-timing.ts'] = readFileSync(join(root, 'docs/recipes/snippets/question-timing.ts'), 'utf8');
 files['src/ssr-cloud-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/ssr-cloud-page.tsx'), 'utf8');
 files['src/use-form-engine.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/use-form-engine.tsx'), 'utf8');
+files['src/custom-layout.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/custom-layout.tsx'), 'utf8');
 files['src/steps-in-url.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url.tsx'), 'utf8');
 files['src/steps-in-url-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url-page.tsx'), 'utf8');
 

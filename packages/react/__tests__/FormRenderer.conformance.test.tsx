@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { createRef } from 'react';
 import { describe, expect, it, vi } from 'vitest';
 import type { RendererHarness, ScenarioProps, TestKit } from '../../core/__tests__/renderers/fixtures';
 import { controlScenarios } from '../../core/__tests__/renderers/controls.scenarios';
@@ -7,6 +8,7 @@ import { definitionScenarios } from '../../core/__tests__/renderers/definition.s
 import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
 import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
+import { handleScenarios } from '../../core/__tests__/renderers/handle.scenarios';
 import { layoutScenarios } from '../../core/__tests__/renderers/layout.scenarios';
 import { recallScenarios } from '../../core/__tests__/renderers/recall.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
@@ -20,7 +22,13 @@ import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenari
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
 import { design } from './fixtures/design';
-import type { ConfirmDialogComponentProps, FieldComponentProps, GroupComponentProps, SectionComponentProps } from '../src/types';
+import type {
+  ConfirmDialogComponentProps,
+  FieldComponentProps,
+  FormRendererHandle,
+  GroupComponentProps,
+  SectionComponentProps,
+} from '../src/types';
 
 const controls = {
   'x-wrapped': ({ id, field, error }: FieldComponentProps) => (
@@ -88,12 +96,14 @@ const containers = {
 const harness: RendererHarness = {
   mount(props) {
     let current: ScenarioProps = props;
-    const { rerender } = render(<FormRenderer {...current} />);
+    const ref = createRef<FormRendererHandle>();
+    const { rerender } = render(<FormRenderer ref={ref} {...current} />);
     return {
       async update(next) {
         current = { ...current, ...next };
-        rerender(<FormRenderer {...current} />);
+        rerender(<FormRenderer ref={ref} {...current} />);
       },
+      handle: () => ref.current!,
     };
   },
   async click(element) {
@@ -129,3 +139,4 @@ describe('renderer conformance: sections and groups', () => containerScenarios(h
 describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
 describe('renderer conformance: definition changes', () => definitionScenarios(harness, kit));
 describe('renderer conformance: layout slots', () => layoutScenarios(harness, kit));
+describe('renderer conformance: handle', () => handleScenarios(harness, kit));

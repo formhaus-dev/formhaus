@@ -4,7 +4,10 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   plugins: [vue()],
-  resolve: { alias: { '@formhaus/vue': fileURLToPath(new URL('./src/index.ts', import.meta.url)) } },
+  resolve: {
+    alias: { '@formhaus/vue': fileURLToPath(new URL('./src/index.ts', import.meta.url)) },
+    dedupe: ['vue', '@formhaus/core'],
+  },
   test: {
     environment: 'jsdom',
     globals: true,

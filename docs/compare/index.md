@@ -27,7 +27,7 @@ Formhaus fits forms that are data: one JSON definition with steps, branching rou
 | Figma | Plugin draws the same definition with your design system ([guide](/guide/figma)) |
 | AI tooling | JSON Schema, `@formhaus/mcp` server, Claude Code plugin ([guide](/guide/mcp)) |
 | Frameworks | React 18 and 19, Vue 3.3.3+, framework-agnostic engine |
-| Bundle size | <!-- size:react:start -->32.0 KB<!-- size:react:end --> `@formhaus/core` + `@formhaus/react`, <!-- size:vue:start -->35.8 KB<!-- size:vue:end --> `@formhaus/core` + `@formhaus/vue`, gzipped ([how it's measured](/guide/bundle-size)) |
+| Bundle size | <!-- size:react:start -->32.1 KB<!-- size:react:end --> `@formhaus/core` + `@formhaus/react`, <!-- size:vue:start -->35.9 KB<!-- size:vue:end --> `@formhaus/core` + `@formhaus/vue`, gzipped ([how it's measured](/guide/bundle-size)) |
 | License | MIT |
 
 All sizes on these pages come from [Bundle size](/guide/bundle-size), with one method for every library.

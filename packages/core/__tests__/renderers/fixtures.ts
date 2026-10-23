@@ -5,6 +5,7 @@ import type {
   FormEvent,
   FormResearch,
   FormDefinition,
+  FormRendererHandle,
   LabelSource,
   RecallFormatFn,
   StepValidateFn,
@@ -41,6 +42,7 @@ export interface ScenarioProps {
 
 interface Mounted {
   update(props: Partial<ScenarioProps>): Promise<void>;
+  handle(): Pick<FormRendererHandle, 'showField' | 'getErrors'>;
 }
 
 export interface RendererHarness {
@@ -108,6 +110,18 @@ export const wizard: FormDefinition = {
 };
 
 export const filled = { name: 'Ada', plan: 'a', city: 'Oslo' };
+
+export const signup: FormDefinition = {
+  id: 'signup',
+  title: '',
+  submit: { label: 'Send' },
+  steps: [
+    { id: 'one', title: 'One', fields: [{ key: 'name', type: 'text', label: 'Name', validation: { required: true } }] },
+    { id: 'two', title: 'Two', fields: [{ key: 'city', type: 'text', label: 'City' }] },
+  ],
+};
+
+export const signupErrors: SubmitHandler = () => ({ ok: false, errors: { name: 'Taken', city: 'Unknown', coupon: 'Server down' } });
 
 export function deferred<T>() {
   let resolve!: (value: T) => void;
