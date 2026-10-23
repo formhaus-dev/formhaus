@@ -1,4 +1,4 @@
-import { parseDefinition } from '@formhaus/core';
+import { parseDefinition, type FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,9 +9,9 @@ import { StepProgress } from './StepProgress';
 
 const layout = { actions: FormActions, progress: StepProgress };
 
-const definition = parseDefinition(json);
+const initial = parseDefinition(json);
 
-export function App() {
+export function App({ definition = initial }: { definition?: FormDefinition }) {
   const [submitted, setSubmitted] = useState<Record<string, unknown> | null>(null);
 
   return (
