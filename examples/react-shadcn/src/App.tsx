@@ -6,10 +6,19 @@ import { components } from './component-map';
 import json from './definition.json';
 import { FormActions } from './FormActions';
 import { ErrorSummary } from './ErrorSummary';
+import { ConfirmDialog, Group, GroupItem } from './Groups';
 import { Section } from './Section';
 import { StepProgress } from './StepProgress';
 
-const layout = { actions: FormActions, progress: StepProgress, section: Section, errorSummary: ErrorSummary };
+const layout = {
+  actions: FormActions,
+  progress: StepProgress,
+  section: Section,
+  errorSummary: ErrorSummary,
+  group: Group,
+  groupItem: GroupItem,
+  confirmDialog: ConfirmDialog,
+};
 
 const initial = parseDefinition(json);
 

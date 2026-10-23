@@ -5,12 +5,22 @@ import { useMemo } from 'react';
 import { FormActions } from './actions/FormActions';
 import { ErrorSummary } from './actions/ErrorSummary';
 import { Fields } from './actions/Fields';
+import { ConfirmDialog, Group, GroupItem } from './actions/Groups';
 import { Section } from './actions/Section';
 import { StepProgress } from './actions/StepProgress';
 import { components } from './component-map';
 import json from './definition.json';
 
-const layout = { actions: FormActions, progress: StepProgress, section: Section, errorSummary: ErrorSummary, fields: Fields };
+const layout = {
+  actions: FormActions,
+  progress: StepProgress,
+  section: Section,
+  errorSummary: ErrorSummary,
+  fields: Fields,
+  group: Group,
+  groupItem: GroupItem,
+  confirmDialog: ConfirmDialog,
+};
 
 const initial = parseDefinition(json);
 
