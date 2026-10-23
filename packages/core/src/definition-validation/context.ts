@@ -36,7 +36,6 @@ export interface CheckContext {
   scopes: Map<string, Map<string, FieldEntry>>;
   conditions: ConditionEntry[];
   validators?: Record<string, unknown>;
-  suggest: (value: string, candidates: string[]) => string | undefined;
   target: (key: string, group?: string) => FieldEntry | undefined;
 }
 
@@ -58,11 +57,7 @@ function collect(
   }
 }
 
-export function createContext(
-  definition: FormDefinition,
-  validators?: Record<string, unknown>,
-  suggest: CheckContext['suggest'] = () => undefined,
-): CheckContext {
+export function createContext(definition: FormDefinition, validators?: Record<string, unknown>): CheckContext {
   const steps = definition.steps ?? [];
   const nodes: NodeEntry[] = [];
   const visit = (items: FormNode[], path: string, step: number, parent?: FormNode, group?: FormGroup) =>
@@ -106,7 +101,6 @@ export function createContext(
     scopes,
     conditions,
     validators,
-    suggest,
     target: (key, group) => (group !== undefined && scopes.get(group)?.get(key)) || keys.get(key),
   };
 }
