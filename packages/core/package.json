@@ -39,6 +39,10 @@
       "types": "./dist/research.d.ts",
       "default": "./dist/research.js"
     },
+    "./schema": {
+      "types": "./dist/schema.d.ts",
+      "default": "./dist/schema.js"
+    },
     "./server.iife.js": "./dist/server.iife.js",
     "./style.css": "./style.css",
     "./schema.json": "./schema/form-definition.schema.json",
@@ -67,12 +71,15 @@
   },
   "devDependencies": {
     "ajv": "^8.20.0",
+    "arktype": "^2.2.8",
     "fast-check": "^4.10.2",
     "style-dictionary": "5.4.4",
     "ts-json-schema-generator": "^2.9.0",
     "tsup": "^8.5.1",
     "typescript": "^5.7.3",
-    "vitest": "^5.0.3"
+    "valibot": "^1.5.0",
+    "vitest": "^5.0.3",
+    "zod": "^4.6.6"
   },
   "license": "MIT",
   "homepage": "https://formhaus.dev",
