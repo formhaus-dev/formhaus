@@ -14,6 +14,9 @@ These integrations install their own dependencies and can be copied outside the 
 | [`nextjs-app-router`](nextjs-app-router/) | Next.js 16 App Router | Definition loaded in a server component, route handler re-validates with `validateSubmission()` |
 | [`nuxt`](nuxt/) | Nuxt 4 | Page with `@formhaus/vue`, server route re-validates with `validateSubmission()` |
 | [`react-shadcn`](react-shadcn/) | Vite + React 19 + shadcn/ui | `components` prop with shadcn Input, Select, Checkbox, RadioGroup, and Button |
+| [`react-mantine`](react-mantine/) | Vite + React 19 + Mantine 9 | Every field type and every `layout` slot with Mantine, including `@mantine/dates` |
+| [`react-chakra`](react-chakra/) | Vite + React 19 + Chakra UI 3 | Every field type and every `layout` slot with Chakra, including `DatePicker` and `Combobox` |
+| [`react-carbon`](react-carbon/) | Vite + React 19 + IBM Carbon | Every field type and every `layout` slot with `@carbon/react`, light and dark themes |
 | [`react-flat-api`](react-flat-api/) | React 18, built-in fields | Three steps sent as one flat API request, server errors mapped back to fields on any step |
 | [`cloud-waitlist`](cloud-waitlist/) | Plain HTML, React 18 | Formhaus Cloud waitlist form: `embed.js` in a static page and `FormhausForm` in React |
 
