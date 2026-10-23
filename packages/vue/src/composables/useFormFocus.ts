@@ -60,6 +60,7 @@ export function useFormFocus(
       requested.value++;
     },
     showField(key: string) {
+      if (stepValidating.value || submitting.value) return;
       focusKey = key;
       requested.value++;
       form.engine.goToStepWithField(key);

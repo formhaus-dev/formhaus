@@ -7,6 +7,7 @@ import { definitionScenarios } from '../../core/__tests__/renderers/definition.s
 import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
 import { fieldScenarios } from '../../core/__tests__/renderers/fields.scenarios';
 import { flowScenarios } from '../../core/__tests__/renderers/flow.scenarios';
+import { handleScenarios } from '../../core/__tests__/renderers/handle.scenarios';
 import { layoutScenarios } from '../../core/__tests__/renderers/layout.scenarios';
 import { recallScenarios } from '../../core/__tests__/renderers/recall.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
@@ -22,7 +23,7 @@ import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import { design } from './fixtures/design';
 import { fieldComponentProps } from '../src/props';
-import type { GroupItemComponentProps } from '../src/types';
+import type { FormRendererHandle, GroupItemComponentProps } from '../src/types';
 
 const containers = {
   section: defineComponent({
@@ -99,8 +100,21 @@ const controls = {
 
 const harness: RendererHarness = {
   mount(props) {
-    const { rerender } = render(FormRenderer, { props });
-    return { update: (next) => rerender(next) };
+    let handle: FormRendererHandle | null = null;
+    const Mounted = defineComponent({
+      inheritAttrs: false,
+      setup:
+        (_, { attrs }) =>
+        () =>
+          h(FormRenderer, {
+            ...attrs,
+            ref: (instance: unknown) => {
+              handle = instance as FormRendererHandle | null;
+            },
+          }),
+    });
+    const { rerender } = render(Mounted, { props });
+    return { update: (next) => rerender(next), handle: () => handle! };
   },
   async click(element) {
     await fireEvent.click(element);
@@ -135,3 +149,4 @@ describe('renderer conformance: sections and groups', () => containerScenarios(h
 describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
 describe('renderer conformance: definition changes', () => definitionScenarios(harness, kit));
 describe('renderer conformance: layout slots', () => layoutScenarios(harness, kit));
+describe('renderer conformance: handle', () => handleScenarios(harness, kit));
