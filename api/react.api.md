@@ -4,13 +4,17 @@
 
 ```ts
 
+import { ChangeEvent } from 'react';
 import { ComponentClass } from 'react';
 import { ComponentType } from 'react';
 import { ConfirmDialogView } from '@formhaus/core';
 import { DefaultFieldType } from '@formhaus/core';
 import { ErrorSummaryView } from '@formhaus/core';
+import { FieldAria } from '@formhaus/core/fields';
+import { FieldControl } from '@formhaus/core/fields';
 import { FieldOption } from '@formhaus/core';
 import { FieldType } from '@formhaus/core';
+import { FieldView } from '@formhaus/core/fields';
 import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEngine } from '@formhaus/core';
@@ -69,6 +73,12 @@ export function DefaultSection(input: SectionComponentProps): react.JSX.Element;
 export type ErrorSummaryComponentProps = ErrorSummaryView;
 
 // @public (undocumented)
+export interface FieldAttrs extends FieldControl {
+    // (undocumented)
+    autoComplete?: string;
+}
+
+// @public (undocumented)
 export type FieldComponentMap = {
     [K in FieldType | keyof NodeComponentProps]?: K extends keyof NodeComponentProps ? ComponentType<NodeComponentProps[K]> : K extends DefaultFieldType ? ComponentType<FieldComponentProps> : AnyComponent;
 };
@@ -105,6 +115,20 @@ export interface FieldComponentProps {
     // (undocumented)
     value: unknown;
 }
+
+// @public (undocumented)
+export interface FieldProps extends FieldView<FieldAttrs> {
+    // (undocumented)
+    input: FieldAttrs & Omit<FieldAria, 'aria-describedby'> & {
+        value: string;
+        onChange: (event: InputEvent_2) => void;
+    };
+    // (undocumented)
+    onInput: (event: InputEvent_2) => void;
+}
+
+// @public (undocumented)
+export function fieldProps(props: FieldComponentProps): FieldProps;
 
 // @public (undocumented)
 export interface FieldsContainerProps {
@@ -186,6 +210,8 @@ export interface FormRendererProps extends FormEngineOptions {
     // (undocumented)
     actionsComponent?: ComponentType<FormActionsProps>;
     // (undocumented)
+    className?: string;
+    // (undocumented)
     components?: FieldComponentMap;
     // (undocumented)
     confirmRemove?: boolean;
@@ -194,7 +220,7 @@ export interface FormRendererProps extends FormEngineOptions {
     // (undocumented)
     errors?: Record<string, string>;
     // (undocumented)
-    errorSummary?: boolean;
+    errorSummary?: boolean | 'top' | 'bottom';
     // (undocumented)
     headingLevel?: HeadingLevel;
     // (undocumented)

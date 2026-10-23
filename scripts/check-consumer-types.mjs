@@ -31,6 +31,7 @@ import { useLocalizedForm } from '@formhaus/react/i18n';
 import { localize, type Overlay } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
+import { fromDate, scaleView } from '@formhaus/core/fields';
 import { questionTimer } from './question-timing.js';
 import { onValidate } from './schema-zod.js';
 
@@ -40,11 +41,13 @@ export const views = [
   <FormRenderer definition={definition} onSubmit={async () => {}} />,
   <HeadlessFormRenderer definition={definition} onSubmit={async () => {}} />,
   <FormRenderer ref={handle} definition={definition} onSubmit={async () => {}} />,
+  <FormRenderer definition={definition} onSubmit={async () => {}} errorSummary="top" className="usa-form" />,
   <FormhausForm id="abc" />,
   <FormRenderer definition={definition} onSubmit={async () => {}} onValidate={onValidate} />,
   <FormRenderer definition={definition} onSubmit={async () => {}} onFormEvent={questionTimer((time) => console.log(time.stepId, time.fieldKey, time.ms)).onEvent} />,
 ];
 export const extras = [TextField, CloudError];
+export const helpers = [fromDate(new Date(), 'time'), scaleView({ key: 'score', type: 'scale', label: 'Score' }).points];
 export const components: FieldComponentMap = {
   text: ({ field, value, onChange }) => <input aria-label={field.label.trim()} value={String(value ?? '')} onChange={(event) => onChange(event.target.value)} />,
   rating: ({ value, onChange }) => <button type="button" onClick={() => onChange(Number(value) + 1)} />,
@@ -138,6 +141,8 @@ files['src/question-timing.ts'] = readFileSync(join(root, 'docs/recipes/snippets
 files['src/ssr-cloud-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/ssr-cloud-page.tsx'), 'utf8');
 files['src/use-form-engine.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/use-form-engine.tsx'), 'utf8');
 files['src/custom-layout.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/custom-layout.tsx'), 'utf8');
+files['src/matrix-row.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/matrix-row.tsx'), 'utf8');
+files['src/field-helpers.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/field-helpers.tsx'), 'utf8');
 files['src/steps-in-url.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url.tsx'), 'utf8');
 files['src/steps-in-url-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url-page.tsx'), 'utf8');
 for (const name of ['on-validate', 'schema-zod', 'schema-valibot', 'schema-arktype', 'schema-server-check', 'locale-catalogs'])
