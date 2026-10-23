@@ -7,9 +7,5 @@ export function formatIssues({ formatVersion: version }: Record<string, unknown>
   if (version === undefined) return [];
   const valid = typeof version === 'string' && /^[1-9]\d*(\.\d+)?$/.test(version);
   if (valid && parseInt(version, 10) <= parseInt(FORMAT_VERSION, 10)) return [];
-  return [
-    valid
-      ? error('unsupported-format-version', '/formatVersion', `format ${version} is not supported`, 'Upgrade @formhaus/core')
-      : error('invalid-type', '/formatVersion', 'must be a version string', `Use "${FORMAT_VERSION}"`),
-  ];
+  return [valid ? error('unsupported-format-version', '/formatVersion', version) : error('invalid-type', '/formatVersion', 'version')];
 }

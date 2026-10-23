@@ -1031,7 +1031,7 @@ Texts, options, action labels and field messages are translated once. For a rule
 
 `checkDefinition(definition)` never throws. It returns a list of issues. Each issue has a `code`, a `severity` (`error` or `warning`), a JSON pointer `path` to the node, a `message` of the form `<path>: <what is wrong>. <how to fix>.`, and an optional `hint` with the fix. Errors come before warnings.
 
-The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionError` with the errors in `issues`, and passes each warning to the `onWarning` option. Without `onWarning`, it logs warnings with `console.warn`. When `process.env.NODE_ENV` is `production`, or `process` is not defined, the constructor runs only the error checks: it reports no warnings, and its errors have no typo suggestions. `validateSubmission()` does not log warnings.
+The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionError` with the errors in `issues`, and passes each warning to the `onWarning` option. Without `onWarning`, it logs warnings with `console.warn`. When `process.env.NODE_ENV` is `production`, or `process` is not defined, the constructor runs only the error checks and reports no warnings. Each of its errors, and each error from `replaceDefinition()`, has the `message` `<path>: <code>` and no `hint`. `checkDefinition()`, `parseDefinition()` and development builds give the full message. `validateSubmission()` does not log warnings.
 
 | Code | Severity | Reported for |
 |---|---|---|

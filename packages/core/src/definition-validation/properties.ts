@@ -2,8 +2,9 @@ import type { FormField, FormSection } from '../types';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { closest, pointer, warning } from './issues';
-import { isEntry, missing } from './shape';
+import { isEntry } from './shape';
 import { RANDOMIZED_TYPES } from '../validation/type-checks';
+import { missingProperty } from './texts';
 
 export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
@@ -33,14 +34,15 @@ function unknown(value: object, path: string, list: string, hint: (key: string) 
     });
 }
 
+const absent = (code: 'missing-property' | 'missing-label', path: string, key: string, hint?: string) =>
+  warning(code, path, missingProperty(key), hint);
+
 function required(value: object, path: string, key: string, hint?: string): DefinitionIssue[] {
-  return (value as Record<string, unknown>)[key] === undefined ? [missing(path, key, hint, warning)] : [];
+  return (value as Record<string, unknown>)[key] === undefined ? [absent('missing-property', path, key, hint)] : [];
 }
 
 function labeled(value: object, path: string, hint?: string): DefinitionIssue[] {
-  return (value as Record<string, unknown>).label === undefined
-    ? [warning('missing-label', `${path}/label`, 'missing required property "label"', hint)]
-    : [];
+  return (value as Record<string, unknown>).label === undefined ? [absent('missing-label', `${path}/label`, 'label', hint)] : [];
 }
 
 function action(value: unknown, path: string, disables = true): DefinitionIssue[] {

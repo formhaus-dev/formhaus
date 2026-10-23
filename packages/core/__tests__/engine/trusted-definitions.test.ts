@@ -97,6 +97,6 @@ describe('trusted definitions', () => {
     const contents = "export { FormEngine } from './src/index.ts';";
     const checked = await bundleSize(contents, options);
     const trusted = await bundleSize(contents, { ...options, define: TRUSTED });
-    expect(checked - trusted).toBeGreaterThan(4096);
+    expect(checked - trusted).toBeGreaterThan(3584);
   });
 });

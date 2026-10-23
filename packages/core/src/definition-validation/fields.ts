@@ -9,14 +9,7 @@ function rangeIssue(rules: FieldValidation, path: string, min: 'min' | 'minLengt
   const low = rules[min];
   const high = rules[max];
   if (low === undefined || high === undefined || low <= high) return [];
-  return [
-    error(
-      'min-greater-than-max',
-      `${path}/validation/${min}`,
-      `${min} (${low}) is greater than ${max} (${high})`,
-      `Lower ${min} or raise ${max}`,
-    ),
-  ];
+  return [error('min-greater-than-max', `${path}/validation/${min}`, min, low, max, high)];
 }
 
 function patternIssue(pattern: string | undefined, path: string): DefinitionIssue[] {
@@ -25,14 +18,7 @@ function patternIssue(pattern: string | undefined, path: string): DefinitionIssu
     new RegExp(pattern);
     return [];
   } catch {
-    return [
-      error(
-        'invalid-pattern',
-        `${path}/validation/pattern`,
-        `${JSON.stringify(pattern)} is not a valid regular expression`,
-        'Fix the pattern or escape special characters with a backslash',
-      ),
-    ];
+    return [error('invalid-pattern', `${path}/validation/pattern`, pattern)];
   }
 }
 
@@ -46,18 +32,11 @@ function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry): 
     ...rangeIssue(rules, path, 'min', 'max'),
     ...patternIssue(rules.pattern, path),
     ...(SCALE_TYPES.includes(field.type) && !([min, max].every(Number.isInteger) && max > min && max - min < 11)
-      ? [error('invalid-scale', `${path}/validation`, 'a scale needs 2 to 11 whole-number points')]
+      ? [error('invalid-scale', `${path}/validation`)]
       : []),
     ...(match === undefined ? [] : missingTarget(context, match, `${path}/validation/matchField`, group?.key)),
     ...(items !== undefined && rules.maxLength !== undefined && items > rules.maxLength
-      ? [
-          error(
-            'default-items-greater-than-max',
-            `${path}/defaultItems`,
-            `defaultItems (${items}) is greater than maxLength (${rules.maxLength})`,
-            'Lower defaultItems or raise maxLength',
-          ),
-        ]
+      ? [error('default-items-greater-than-max', `${path}/defaultItems`, items, rules.maxLength)]
       : []),
   ];
 }
@@ -65,9 +44,7 @@ function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry): 
 function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
   const values = (field.options ?? []).map((option) => option.value);
   return values.flatMap((value, index) =>
-    values.indexOf(value) < index
-      ? [error('duplicate-option-value', `${path}/options/${index}/value`, `"${value}" is already an option value`)]
-      : [],
+    values.indexOf(value) < index ? [error('duplicate-option-value', `${path}/options/${index}/value`, value)] : [],
   );
 }
 

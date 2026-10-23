@@ -1,3 +1,5 @@
+import type { IssueTexts } from './texts';
+
 export type DefinitionIssueCode =
   | 'invalid-type'
   | 'missing-property'
@@ -84,20 +86,48 @@ export class FormDefinitionError extends Error {
   }
 }
 
+export type IssueText = readonly [problem: string, hint?: string];
+
+let active: IssueTexts | undefined;
+
+export function withTexts<T>(texts: IssueTexts, run: () => T): T {
+  const previous = active;
+  active = texts;
+  try {
+    return run();
+  } finally {
+    active = previous;
+  }
+}
+
 const sentence = (text: string) => (text.endsWith('?') ? text : `${text}.`);
 
-function create(severity: DefinitionIssue['severity']) {
-  return (code: DefinitionIssueCode, path: string, problem: string, hint?: string): DefinitionIssue => ({
+function issue(
+  code: DefinitionIssueCode,
+  severity: DefinitionIssue['severity'],
+  path: string,
+  problem: string,
+  hint?: string,
+): DefinitionIssue {
+  return {
     code,
     severity,
     path,
     message: `${path || '/'}: ${problem}.${hint ? ` ${sentence(hint)}` : ''}`,
     ...(hint && { hint: sentence(hint) }),
-  });
+  };
 }
 
-export const error = /* @__PURE__ */ create('error');
-export const warning = /* @__PURE__ */ create('warning');
+export function error<C extends keyof IssueTexts>(code: C, path: string, ...params: Parameters<IssueTexts[C]>): DefinitionIssue {
+  const describe = active?.[code] as ((...params: unknown[]) => IssueText) | undefined;
+  return describe
+    ? issue(code, 'error', path, ...describe(...params))
+    : { code, severity: 'error', path, message: `${path || '/'}: ${code}` };
+}
+
+export function warning(code: DefinitionIssueCode, path: string, problem: string, hint?: string): DefinitionIssue {
+  return issue(code, 'warning', path, problem, hint);
+}
 
 export function pointer(key: string): string {
   return key.replace(/~/g, '~0').replace(/\//g, '~1');
