@@ -17,10 +17,40 @@ const apps = [
     show: [
       'src/App.tsx',
       'src/component-map.ts',
+      'src/Section.tsx',
+      'src/ErrorSummary.tsx',
+      'src/fields/ScaleField.tsx',
+      'src/fields/RadioField.tsx',
       'src/FormActions.tsx',
       'src/StepProgress.tsx',
-      'src/fields/TextField.tsx',
-      'src/fields/SelectField.tsx',
+    ],
+  },
+  {
+    id: 'mui',
+    dir: 'react-mui',
+    show: [
+      'src/App.tsx',
+      'src/component-map.ts',
+      'src/actions/Section.tsx',
+      'src/actions/ErrorSummary.tsx',
+      'src/fields/ScaleField.tsx',
+      'src/fields/RadioField.tsx',
+      'src/actions/FormActions.tsx',
+      'src/main.tsx',
+    ],
+  },
+  {
+    id: 'antd',
+    dir: 'react-antd',
+    show: [
+      'src/App.tsx',
+      'src/component-map.ts',
+      'src/fields/ChoiceFields.tsx',
+      'src/fields/InputFields.tsx',
+      'src/fields/PickerFields.tsx',
+      'src/layout/Feedback.tsx',
+      'src/layout/Containers.tsx',
+      'src/main.tsx',
     ],
   },
   {
@@ -35,10 +65,26 @@ const apps = [
       'src/fields/TextField.vue',
     ],
   },
+  {
+    id: 'govuk',
+    dir: 'react-govuk',
+    show: [
+      'src/App.tsx',
+      'src/component-map.ts',
+      'src/fields/FormGroup.tsx',
+      'src/fields/InputField.tsx',
+      'src/fields/RadioField.tsx',
+      'src/fields/DateField.tsx',
+      'src/layout/ErrorSummary.tsx',
+      'src/layout/FormActions.tsx',
+      'src/layout/StepProgress.tsx',
+      'src/styles.scss',
+    ],
+  },
 ];
 
 const skip = new Set(['node_modules', 'dist', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', '.npmrc', 'README.md']);
-const langs = { '.tsx': 'tsx', '.ts': 'ts', '.vue': 'vue', '.css': 'css', '.json': 'json', '.html': 'html' };
+const langs = { '.tsx': 'tsx', '.ts': 'ts', '.vue': 'vue', '.css': 'css', '.scss': 'scss', '.json': 'json', '.html': 'html' };
 
 function walk(dir, base = dir) {
   return readdirSync(dir).flatMap((name) => {

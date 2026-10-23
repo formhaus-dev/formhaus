@@ -6,12 +6,16 @@ export interface Design {
   label: string;
   framework: string;
   dir: string;
+  lightOnly?: boolean;
 }
 
 export const designs: Design[] = [
   { id: 'react', label: 'Default', framework: 'React', dir: 'react-default' },
   { id: 'shadcn', label: 'shadcn/ui', framework: 'React', dir: 'react-shadcn' },
+  { id: 'mui', label: 'MUI', framework: 'React', dir: 'react-mui' },
+  { id: 'antd', label: 'Ant Design', framework: 'React', dir: 'react-antd' },
   { id: 'vuetify', label: 'Vuetify', framework: 'Vue', dir: 'vue-vuetify' },
+  { id: 'govuk', label: 'GOV.UK', framework: 'React', dir: 'react-govuk', lightOnly: true },
 ];
 
 export const widths = [
@@ -41,7 +45,7 @@ export const presets = [
 export const appUrl = (design: Design) => `/play/apps/${design.id}/index.html`;
 export const codeUrl = (design: Design) => `/play/apps/${design.id}/code.json`;
 
-export interface CodeFile {
+interface CodeFile {
   path: string;
   lang: string;
   source: string;
@@ -193,7 +197,7 @@ export const issueText = (message: string) => message.replace(/^\/[^:\s]*:\s*/, 
 export function stackblitz(code: Code, definition: string, title: string) {
   const form = document.createElement('form');
   form.method = 'POST';
-  form.action = 'https://stackblitz.com/run?file=src%2FApp.' + (code.files[0]!.path.endsWith('.vue') ? 'vue' : 'tsx');
+  form.action = `https://stackblitz.com/run?file=${encodeURIComponent(code.files[0]!.path)}`;
   form.target = '_blank';
   const files = { ...code.project, 'src/definition.json': `${definition.trim()}\n` };
   const fields: Record<string, string> = {

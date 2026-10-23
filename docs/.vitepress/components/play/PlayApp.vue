@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { checkDefinition, type DefinitionIssue } from '@formhaus/core';
+import { useData } from 'vitepress';
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, shallowRef, watch } from 'vue';
 import LucideIcon from '../landing/LucideIcon.vue';
 import { mountJsonEditor, type JsonEditor } from './json-editor';
@@ -74,6 +75,12 @@ const statusKind = computed(() => (errors.value ? 'error' : warnings.value ? 'wa
 const listed = computed<Issue[]>(() =>
   parseError.value ? [{ path: '', message: parseError.value.message, severity: 'error' }] : issues.value,
 );
+
+const { isDark } = useData();
+
+function sendTheme(id: string) {
+  frames.get(id)?.contentWindow?.postMessage({ type: 'formhaus:theme', theme: isDark.value ? 'dark' : 'light' }, location.origin);
+}
 
 function send(id: string) {
   const frame = frames.get(id);
@@ -203,6 +210,7 @@ function onMessage(event: MessageEvent) {
   const data = event.data as { type?: string; issues?: Issue[] };
   if (data.type === 'formhaus:ready') {
     ready.add(id);
+    sendTheme(id);
     send(id);
   } else if (data.type === 'formhaus:rendered') {
     previewIssues.delete(id);
@@ -223,6 +231,10 @@ function jump(issue: Issue) {
   if (mark) editor?.select(mark.from, mark.to);
   if (mobile.value) tab.value = 'json';
 }
+
+watch(isDark, () => {
+  for (const id of ready) sendTheme(id);
+});
 
 watch(tab, async (next) => {
   if (next === 'code') loadCode();
@@ -284,6 +296,15 @@ onBeforeUnmount(() => {
         </select>
         <LucideIcon name="chevron-down" />
       </label>
+      <button
+        type="button"
+        class="play-button play-button--icon"
+        :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+        :title="isDark ? 'Light theme' : 'Dark theme'"
+        @click="isDark = !isDark"
+      >
+        <LucideIcon :name="isDark ? 'sun' : 'moon'" />
+      </button>
       <button type="button" class="play-button" @click="copyLink">
         <LucideIcon :name="copied === 'link' ? 'check' : 'link'" /><span>{{ copied === 'link' ? 'Copied' : 'Share' }}</span>
       </button>
@@ -322,7 +343,10 @@ onBeforeUnmount(() => {
             <button type="button" role="tab" :aria-selected="view === 'preview'" @click="view = 'preview'">Preview</button>
             <button type="button" role="tab" :aria-selected="view === 'code'" @click="showCode">Code</button>
           </div>
-          <span class="play-pane__label">{{ design.label }} <span class="play-pane__muted">· {{ design.framework }}</span></span>
+          <span class="play-pane__label">
+            {{ design.label }} <span class="play-pane__muted">· {{ design.framework }}</span>
+            <span v-if="design.lightOnly && isDark" class="play-note" title="This design system has no dark mode">Light only</span>
+          </span>
           <div v-if="outView === 'preview'" class="play-seg play-seg--icons" role="radiogroup" aria-label="Width">
             <button
               v-for="entry in widths"
@@ -344,7 +368,7 @@ onBeforeUnmount(() => {
             <LucideIcon name="circle-alert" />
             Fix {{ blocking }} {{ blocking === 1 ? 'error' : 'errors' }} to update. Showing the last valid form.
           </p>
-          <div class="play-device" :style="frameWidth ? { width: `${frameWidth}px` } : undefined">
+          <div class="play-device" :class="{ 'play-device--light': design.lightOnly }" :style="frameWidth ? { width: `${frameWidth}px` } : undefined">
             <template v-for="entry in designs" :key="entry.id">
               <iframe
                 v-if="loaded.has(entry.id)"

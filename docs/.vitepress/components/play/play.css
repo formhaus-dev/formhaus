@@ -369,9 +369,33 @@
   overflow: hidden;
   border: 1px solid var(--vp-c-divider);
   border-radius: 12px;
-  background: var(--vp-c-white);
+  background: var(--vp-c-bg);
   box-shadow: 0 1px 3px var(--fh-c-card-shadow);
   transition: width 0.2s ease;
+}
+
+.play-device--light {
+  background: var(--vp-c-white);
+}
+
+.dark .play-stage:not([data-width='phone']) .play-device--light {
+  max-width: 760px;
+}
+
+.play-note {
+  margin-left: var(--fh-site-space-2);
+  padding: var(--fh-site-space-0-5) var(--fh-site-space-2);
+  border-radius: 999px;
+  background: var(--vp-c-default-soft);
+  color: var(--vp-c-text-2);
+  font-size: var(--fh-site-font-size-xs);
+  font-weight: 500;
+}
+
+.play-button--icon {
+  width: 34px;
+  justify-content: center;
+  padding: 0;
 }
 
 .play-stage[data-width='phone'] .play-device {
@@ -398,7 +422,7 @@
   gap: var(--fh-site-space-2);
   margin: 0;
   color: var(--vp-c-text-3);
-  background: var(--vp-c-white);
+  background: var(--vp-c-bg);
 }
 
 .play-loading[data-kind='error'] {
@@ -487,6 +511,22 @@
 
 .dark .play-code__src span {
   color: var(--shiki-dark);
+}
+
+@media (max-width: 1399px) {
+  .play-seg--designs .play-seg__tag {
+    display: none;
+  }
+}
+
+@media (max-width: 1179px) {
+  .play-seg--designs {
+    display: none;
+  }
+
+  .play-select--designs {
+    display: inline-flex;
+  }
 }
 
 @media (max-width: 860px) {
