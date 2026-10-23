@@ -42,8 +42,16 @@ export function checkDefinition(input: unknown, options: CheckDefinitionOptions 
   return issues(input, { validators: options.validators, suggest, warnings: definitionWarnings });
 }
 
-export function parseDefinition(input: unknown): FormDefinition {
+export const parsed = new WeakMap<object, boolean>();
+
+export function validDefinition(input: unknown): FormDefinition {
   const errors = issues(input, { suggest });
   if (errors.length) throw new FormDefinitionError(errors);
   return input as FormDefinition;
+}
+
+export function parseDefinition(input: unknown): FormDefinition {
+  const definition = validDefinition(input);
+  parsed.set(definition, false);
+  return definition;
 }
