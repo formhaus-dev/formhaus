@@ -1,0 +1,10 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+.page {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 32px 16px;
+}
