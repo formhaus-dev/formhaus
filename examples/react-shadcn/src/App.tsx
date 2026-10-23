@@ -7,6 +7,8 @@ import json from './definition.json';
 import { FormActions } from './FormActions';
 import { StepProgress } from './StepProgress';
 
+const layout = { actions: FormActions, progress: StepProgress };
+
 const definition = parseDefinition(json);
 
 export function App() {
@@ -22,13 +24,7 @@ export function App() {
           {submitted ? (
             <pre className="text-sm">{JSON.stringify(submitted, null, 2)}</pre>
           ) : (
-            <FormRenderer
-              definition={definition}
-              components={components}
-              actionsComponent={FormActions}
-              progressComponent={StepProgress}
-              onSubmit={setSubmitted}
-            />
+            <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
           )}
         </CardContent>
       </Card>
