@@ -53,6 +53,7 @@ const ADDONS = [
   ['`@formhaus/core/i18n`', 'core FormEngine + /i18n'],
   ['`@formhaus/core/fix`', 'core FormEngine + /fix'],
   ['`@formhaus/core/research`', 'core FormEngine + /research'],
+  ['`@formhaus/core/fields`', 'core FormEngine + /fields'],
   ['`@formhaus/core/schema`', 'core FormEngine + /schema'],
 ];
 

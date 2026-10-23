@@ -11,6 +11,7 @@
   "core/i18n",
   "core/fix",
   "core/research",
+  "core/fields",
   "core/schema",
   "core/locales/ru",
   "react/cloud",

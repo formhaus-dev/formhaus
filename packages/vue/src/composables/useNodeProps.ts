@@ -2,6 +2,7 @@ import { isGroup, type FieldOption, type FormField, type FormSection, type Group
 import {
   fieldDomId,
   fieldTestIds,
+  matrixColumns,
   type OptionSource,
   optionSources,
   providedOptions,
@@ -103,6 +104,7 @@ export function useNodeProps(
         title,
         description,
         descriptionId: description ? `${id}-description` : undefined,
+        columns: props.layout?.section || !props.components?.section ? matrixColumns(section) : undefined,
       };
     },
     nodeProps(field: FormField, columns?: FieldOption[], row?: number) {

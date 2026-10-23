@@ -2,6 +2,7 @@ import type { FormDefinition, FormField } from '@formhaus/core';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { FormRenderer } from '../src/FormRenderer';
+import type { SectionComponentProps } from '../src/types';
 
 const single = (...fields: FormField[]): FormDefinition => ({
   formatVersion: '1.3',
@@ -84,5 +85,25 @@ describe('matrix section', () => {
     expect(section.className).toBe('fh-section');
     const body = section.querySelector('.fh-section__body')!;
     expect([body.children.length, body.textContent]).toEqual([0, '']);
+  });
+
+  it('gives the matrix columns to layout.section only, not to an old components.section', () => {
+    const seen: Record<string, unknown> = {};
+    const spy =
+      (name: string) =>
+      ({ columns, children }: SectionComponentProps) => {
+        seen[name] = columns;
+        return <fieldset>{children}</fieldset>;
+      };
+    const definition = single({
+      key: 'pulse',
+      type: 'section',
+      layout: 'matrix',
+      title: 'Pulse',
+      fields: [{ key: 'q', type: 'radio', label: 'Q', options: agree }],
+    });
+    render(<FormRenderer definition={definition} layout={{ section: spy('layout') }} onSubmit={() => {}} />);
+    render(<FormRenderer definition={definition} components={{ section: spy('legacy') }} onSubmit={() => {}} />);
+    expect(seen).toStrictEqual({ layout: agree, legacy: undefined });
   });
 });

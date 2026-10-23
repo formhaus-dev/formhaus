@@ -8,7 +8,7 @@ const EXTERNAL = { core: [], react: REACT_EXTERNAL, vue: VUE_EXTERNAL };
 
 export const HARD_LIMITS = JSON.parse(readFileSync(new URL('./hard-limits.json', import.meta.url), 'utf8'));
 
-const SUBPATHS = ['cloud', 'i18n', 'fix', 'research', 'schema'];
+const SUBPATHS = ['cloud', 'i18n', 'fix', 'research', 'schema', 'fields'];
 
 const ENTRIES = {
   core: { pkg: 'core' },

@@ -102,6 +102,27 @@ export function layoutScenarios(harness: RendererHarness, { it, expect, fn, wait
     expect(stray()).toEqual([]);
   });
 
+  it('gives the slots the matrix columns, the step error texts and the primary disabled state', async () => {
+    const definition: FormDefinition = {
+      ...survey,
+      submit: { label: 'Send', disabled: [{ field: 'phone', neq: '555' }] },
+    };
+    harness.mount({ definition, ...design, onSubmit: () => {} });
+    expect(document.querySelector('.ds-section')?.getAttribute('data-columns')).toBe('A,B');
+    expect(document.querySelector('.ds-progress')?.hasAttribute('data-errors')).toBe(false);
+    await harness.click(screen.getByRole('button', { name: 'Continue' }));
+    await waitFor(() => expect(document.querySelector('.ds-progress')?.getAttribute('data-errors')).toBe('Errors: 2'));
+    expect([...document.querySelectorAll('.ds-progress li')].map((item) => item.getAttribute('data-errors'))).toEqual(['Errors: 2', null]);
+    expect(screen.getByRole('button', { name: 'Continue' }).getAttribute('data-disabled')).toBe('false');
+    await harness.type(input('Name'), 'Ada');
+    await harness.type(input('Email'), 'ada@example.com');
+    await harness.click(screen.getByRole('button', { name: 'Continue' }));
+    await screen.findByRole('textbox', { name: 'phone' });
+    expect(screen.getByRole('button', { name: 'Send' }).getAttribute('data-disabled')).toBe('true');
+    await harness.type(screen.getByRole('textbox', { name: 'phone' }), '555');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Send' }).getAttribute('data-disabled')).toBe('false'));
+  });
+
   it('focuses the first invalid custom control after a failed submit with one error', async () => {
     harness.mount({ definition: single, ...design, testIds: true, onSubmit: () => {} });
     await harness.click(screen.getByRole('button', { name: 'Send' }));

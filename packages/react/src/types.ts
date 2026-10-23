@@ -131,7 +131,7 @@ export interface FormRendererProps extends FormEngineOptions {
   onStepValidate?: StepValidateFn;
   errors?: Record<string, string>;
   labels?: LabelSource;
-  errorSummary?: boolean;
+  errorSummary?: boolean | 'top' | 'bottom';
   confirmRemove?: boolean;
   stepErrorMarks?: boolean;
   loading?: boolean;
@@ -142,4 +142,5 @@ export interface FormRendererProps extends FormEngineOptions {
   progressComponent?: ComponentType<FormStepProgressProps>;
   headingLevel?: HeadingLevel;
   testIds?: boolean | ((target: TestIdTarget) => string | undefined);
+  className?: string;
 }

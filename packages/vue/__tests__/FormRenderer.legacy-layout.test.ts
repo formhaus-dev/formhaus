@@ -49,3 +49,23 @@ it('passes steps to an old progress component only with stepErrorMarks', () => {
   render(FormRenderer, { props: { definition, stepErrorMarks: true, progressComponent: plain('progress') } });
   expect(attributes('progress')).toEqual([...progress, 'steps'].sort());
 });
+
+it('passes an old section component in a matrix no columns attribute', () => {
+  const matrix: FormDefinition = {
+    formatVersion: '1.3',
+    id: 'matrix',
+    title: '',
+    submit: { label: 'Send' },
+    fields: [
+      {
+        key: 'rates',
+        type: 'section',
+        title: 'Rates',
+        layout: 'matrix',
+        fields: [{ key: 'speed', type: 'radio', label: 'Speed', options: [{ value: 'a', label: 'A' }] }],
+      },
+    ],
+  };
+  render(FormRenderer, { props: { definition: matrix, components: { section: plain('section') } } });
+  expect(attributes('section')).toEqual(['id', 'section', 'title']);
+});

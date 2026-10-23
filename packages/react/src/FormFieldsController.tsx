@@ -83,6 +83,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
         title={title}
         description={description}
         descriptionId={description ? `${id}-description` : undefined}
+        columns={layout?.section || !props.components?.section ? matrix : undefined}
       >
         {node.fields.map((child, index) => render(child, matrix, index))}
       </Section>

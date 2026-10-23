@@ -33,7 +33,7 @@ export function FormActionsController({
 }: FormActionsControllerProps) {
   const version = useFormSnapshot(engine);
   const values = useMemo(() => actionValues(engine), [engine, version]);
-  const view = actionsView(engine, labels);
+  const { primaryDisabled, ...view } = actionsView(engine, labels, values);
   const handlePrimary = useCallback(async () => {
     if (view.isLastStep) onSubmit();
     else await onNext();
@@ -43,7 +43,7 @@ export function FormActionsController({
 
   return (
     <ActionsComponent
-      {...(slot && { rootProps: ROOT_PROPS.actions })}
+      {...(slot && { rootProps: ROOT_PROPS.actions, primaryDisabled })}
       {...view}
       loading={loading}
       values={values}

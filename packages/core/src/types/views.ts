@@ -1,6 +1,6 @@
 import type { GoToStepResult } from './analytics';
 import type { FormAction } from './action';
-import type { FormGroup, FormSection } from './field';
+import type { FieldOption, FormGroup, FormSection } from './field';
 import type { LabelSource } from './i18n';
 
 export interface SectionView {
@@ -9,6 +9,7 @@ export interface SectionView {
   title: string;
   description?: string;
   descriptionId?: string;
+  columns?: FieldOption[];
 }
 
 export interface GroupItemView {
@@ -77,6 +78,7 @@ export interface FormStepStatus {
   id: string;
   title?: string;
   errorCount: number;
+  errorsLabel?: string;
 }
 
 export interface FormStepProgressView {
@@ -88,6 +90,7 @@ export interface FormStepProgressView {
   steps?: FormStepStatus[];
   counterLabel?: string;
   stepErrorCount?: number;
+  stepErrorsLabel?: string;
   marks?: boolean;
   rootProps?: RootProps;
 }
@@ -121,6 +124,7 @@ export interface FormActionsView {
   isMultiStep: boolean;
   primaryLabel?: string;
   showPrimary?: boolean;
+  primaryDisabled?: boolean;
   showBack?: boolean;
   backLabel?: string;
   showSkip?: boolean;
@@ -137,7 +141,7 @@ export type TestIdTarget =
   | { kind: 'field'; definitionId: string; key: string }
   | { kind: 'option'; definitionId: string; key: string; value: string };
 
-type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'showBack' | 'backLabel' | 'showSkip' | 'skipLabel';
+type DerivedActionProps = 'primaryLabel' | 'showPrimary' | 'primaryDisabled' | 'showBack' | 'backLabel' | 'showSkip' | 'skipLabel';
 
 export type FormActionsState = Omit<FormActionsView, 'loading' | 'values' | 'testIds'> &
   Required<Pick<FormActionsView, DerivedActionProps>>;
