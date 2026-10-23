@@ -15,6 +15,9 @@ function DefaultFormErrors({ rootProps, errors }: FormErrorsComponentProps) {
   );
 }
 
+export const shownFormErrors = (engine: FormEngine, actionError?: string | null): readonly string[] =>
+  actionError ? [...engine.topLevelErrors, actionError] : engine.topLevelErrors;
+
 export function FormTopLevelErrors({
   engine,
   actionError,
@@ -25,7 +28,7 @@ export function FormTopLevelErrors({
   layout?: LayoutComponentMap;
 }) {
   useFormSnapshot(engine);
-  const errors = actionError ? [...engine.topLevelErrors, actionError] : engine.topLevelErrors;
+  const errors = shownFormErrors(engine, actionError);
   if (errors.length === 0) return null;
   const Errors = layout?.formErrors ?? DefaultFormErrors;
   return <Errors rootProps={ROOT_PROPS.formErrors} errors={errors} />;

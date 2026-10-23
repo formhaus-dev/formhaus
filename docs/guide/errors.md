@@ -151,7 +151,7 @@ export function Checkout() {
 ```
 :::
 
-`getErrors()` returns `{ groups, topLevelErrors, count }`, the same data as the summary. `showField(key)` opens the step of the field and focuses it, as a summary link does. For a form without `FormRenderer`, see [Fully custom layout](/guide/custom-fields#fully-custom-layout).
+`getErrors()` returns `{ groups, topLevelErrors, count }`, the errors on screen: the summary groups, and the top-level errors plus the message of a failed `onSubmit`. `showField(key)` opens the step of the field and focuses it, as a summary link does. `showField` does nothing while a step check or a submit is pending, and for keys of hidden or unknown fields. For a form without `FormRenderer`, see [Fully custom layout](/guide/custom-fields#fully-custom-layout).
 
 ## Async step validation errors
 

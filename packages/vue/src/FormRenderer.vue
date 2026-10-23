@@ -29,7 +29,7 @@ defineExpose({
   getValues: () => inner?.getValues() ?? {},
   goToStep: (stepId: string) => inner!.goToStep(stepId),
   showField: (key: string) => inner?.showField(key),
-  getErrors: () => inner!.getErrors(),
+  getErrors: () => inner?.getErrors() ?? { groups: [], topLevelErrors: [], count: 0 },
   values,
 });
 </script>

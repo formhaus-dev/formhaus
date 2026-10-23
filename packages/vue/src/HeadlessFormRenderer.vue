@@ -129,7 +129,7 @@ defineExpose({
   getValues: () => ({ ...form.engine.values }),
   goToStep: (stepId: string) => form.engine.goToStep(stepId),
   showField,
-  getErrors,
+  getErrors: () => ({ ...getErrors(), topLevelErrors: formErrors.value }),
   values,
 });
 

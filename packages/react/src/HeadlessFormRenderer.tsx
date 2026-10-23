@@ -15,7 +15,7 @@ import { FormActionsController } from './FormActionsController';
 import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
-import { FormTopLevelErrors } from './FormTopLevelErrors';
+import { FormTopLevelErrors, shownFormErrors } from './FormTopLevelErrors';
 import { LabelContext } from './labels';
 import { useComponentWarnings } from './hooks/useComponentWarnings';
 import { useFormEngineStore } from './hooks/useFormEngine';
@@ -141,12 +141,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors, () => errorSummary(engine).count > 1);
     }, [engine, version, actions.invalidAttempts, focusRequest]);
 
-    const handleFieldFocus = useCallback(
-      (key: string) => {
-        onFormEvent({ type: 'field_focused', fieldKey: key });
-      },
-      [onFormEvent],
-    );
+    const handleFieldFocus = useCallback((key: string) => onFormEvent({ type: 'field_focused', fieldKey: key }), [onFormEvent]);
     const handleFieldBlur = useCallback(
       (key: string) => {
         onFormEvent({ type: 'field_blurred', fieldKey: key, hasValue: hasValue(engine, key) });
@@ -157,6 +152,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     const handleCancel = useCallback(() => props.onCancel?.(), [props.onCancel]);
     const showField = useCallback(
       (key: string) => {
+        if (engine.stepValidating || engine.submitting) return;
         focusKey.current = key;
         requestFocus();
         engine.goToStepWithField(key);
@@ -170,12 +166,15 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
         getValues: () => ({ ...engine.values }),
         goToStep: (stepId) => engine.goToStep(stepId),
         showField,
-        getErrors: () => errorSummary(engine, { idPrefix: formId, labels: handlers.current.labels }),
+        getErrors: () => ({
+          ...errorSummary(engine, { idPrefix: formId, labels: handlers.current.labels }),
+          topLevelErrors: shownFormErrors(engine, actions.actionError),
+        }),
         get values() {
           return engine.values;
         },
       }),
-      [engine, showField, formId],
+      [engine, showField, formId, actions.actionError],
     );
 
     return (
