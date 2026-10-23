@@ -5,6 +5,7 @@ import { FileField } from './fields/FileField';
 import { HiddenField } from './fields/HiddenField';
 import { RadioField } from './fields/RadioField';
 import { RatingField } from './fields/RatingField';
+import { ScaleField } from './fields/ScaleField';
 import { SelectField } from './fields/SelectField';
 import { SwitchField } from './fields/SwitchField';
 import { TextField } from './fields/TextField';
@@ -25,6 +26,7 @@ export const components: FieldComponentMap = {
   checkbox: CheckboxField,
   radio: RadioField,
   rating: RatingField,
+  scale: ScaleField,
   switch: SwitchField,
   file: FileField,
   textarea: TextareaField,

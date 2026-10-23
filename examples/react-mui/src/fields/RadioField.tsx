@@ -5,8 +5,33 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
-export function RadioField({ id, field, value, error, loading, disabled, onChange }: FieldComponentProps) {
+export function RadioField({ id, field, value, error, loading, disabled, onChange, matrix }: FieldComponentProps) {
+  if (matrix) {
+    return (
+      <TableRow role="radiogroup" aria-labelledby={`${id}-label`}>
+        <TableCell component="th" scope="row" id={`${id}-label`}>
+          {field.label}
+          {error && <FormHelperText error>{error}</FormHelperText>}
+        </TableCell>
+        {matrix.columns.map((column) => (
+          <TableCell key={column.value} align="center" padding="checkbox">
+            <Radio
+              name={id}
+              value={column.value}
+              checked={value === column.value}
+              disabled={disabled || loading}
+              inputProps={{ 'aria-label': column.label }}
+              onChange={() => onChange(column.value)}
+            />
+          </TableCell>
+        ))}
+      </TableRow>
+    );
+  }
+
   return (
     <FormControl error={!!error} disabled={disabled || loading} sx={{ mt: 1, mb: 0.5 }}>
       <FormLabel id={`${id}-label`}>{field.label}</FormLabel>
