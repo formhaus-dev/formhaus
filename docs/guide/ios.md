@@ -70,20 +70,41 @@ The form shows these messages on the fields. Any other body counts as success.
 
 ## Restore after the app is closed
 
-The system can end the app while it is in the background. Save the form's `FormSnapshot` and pass it back to `restoring:` to bring back the answers, the current step and the skipped steps:
+The system can end the app while it is in the background. Save the form's snapshot and pass it back to `restoring:` to bring back the answers, the current step and the skipped steps. Keep the draft in a store that outlives the form view, so the `nil` sent after a submit is saved too:
 
 ```swift
+@MainActor
+final class SignupDraft {
+    private let key = "signup.draft"
+    private(set) var snapshot: FormSnapshot?
+
+    init() {
+        snapshot = UserDefaults.standard.data(forKey: key).flatMap { FormSnapshot.decode($0) }
+    }
+
+    func save(_ next: FormSnapshot?) {
+        snapshot = next
+        UserDefaults.standard.set(try? next.map { try JSONEncoder().encode($0) }, forKey: key)
+    }
+}
+
+@main
+struct SignupApp: App {
+    @State private var draft = SignupDraft()
+
+    var body: some Scene {
+        WindowGroup { SignupView(draft: draft) }
+    }
+}
+
 struct SignupView: View {
-    let definition: FormDefinition
-    @SceneStorage("signup.draft") private var draft: Data?
+    let draft: SignupDraft
 
     var body: some View {
         FormhausForm(
-            definition: definition,
-            renderer: FormRendererOptions(onSnapshotChange: { snapshot in
-                draft = try? snapshot.map { try JSONEncoder().encode($0) }
-            }),
-            restoring: draft.flatMap { FormSnapshot.decode($0) }
+            definition: signup,
+            renderer: FormRendererOptions(onSnapshotChange: draft.save),
+            restoring: draft.snapshot
         ) { values, _ in
             try await send(values)
         }
@@ -91,22 +112,9 @@ struct SignupView: View {
 }
 ```
 
-`onSnapshotChange` gets a new snapshot at most once per run loop turn, and `nil` after a successful submit so the draft goes away. To keep the draft after the view is gone, write it to a store that outlives the view:
+`onSnapshotChange` gets a new snapshot at most once per run loop turn, and `nil` after a successful submit so the draft goes away. A snapshot saved for another form, or for a step the definition no longer has, starts the form fresh and reports `snapshot-mismatch` through `onWarning`. Password values are never in a snapshot. A picked file comes back while its copy still exists. The format is in the [spec](/spec#form-snapshot-native-ports).
 
-```swift
-FormhausForm(
-    definition: definition,
-    renderer: FormRendererOptions(onSnapshotChange: { snapshot in
-        let data = try? snapshot.map { try JSONEncoder().encode($0) }
-        UserDefaults.standard.set(data, forKey: "signup.draft")
-    }),
-    restoring: UserDefaults.standard.data(forKey: "signup.draft").flatMap { FormSnapshot.decode($0) }
-) { values, _ in .ok }
-```
-
-A snapshot saved for another form, or for a step the definition no longer has, starts the form fresh and reports `snapshot-mismatch` through `onWarning`. Password values are never in a snapshot. A picked file comes back while its copy still exists. The format is in the [spec](/spec#form-snapshot-native-ports).
-
-Snapshot values can hold personal data. For such forms store the snapshot in the Keychain or in a file with data protection instead of scene storage or `UserDefaults`, and delete it when the user signs out.
+Snapshot values can hold personal data. User defaults are not encrypted, so for such forms store the snapshot in the Keychain or in a file with data protection, and delete it when the user signs out.
 
 ## Choose a look
 
@@ -147,4 +155,4 @@ The built-in sets label every control for VoiceOver. After a failed submit, Voic
 
 ## Differences
 
-The Swift package has no draft saving and no Formhaus Cloud client. See the [README](https://github.com/formhaus-dev/formhaus-swift#differences-from-typescript) for the full list.
+The Swift package does not store drafts itself, the app stores the snapshot. It has no Formhaus Cloud client. See the [README](https://github.com/formhaus-dev/formhaus-swift#differences-from-typescript) for the full list.
