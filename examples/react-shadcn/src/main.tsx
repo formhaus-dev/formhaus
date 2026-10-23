@@ -1,7 +1,6 @@
 import type { FormDefinition } from '@formhaus/core';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@formhaus/core/style.css';
 import { App } from './App';
 import { listenToPlayground } from './playground';
 import './index.css';
@@ -18,4 +17,7 @@ function render(definition?: FormDefinition) {
 }
 
 render();
-listenToPlayground(render);
+listenToPlayground({
+  definition: render,
+  theme: (theme) => document.documentElement.classList.toggle('dark', theme === 'dark'),
+});
