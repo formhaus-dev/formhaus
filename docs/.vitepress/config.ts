@@ -69,6 +69,7 @@ export default defineConfig({
           { text: 'Validation', link: '/guide/validation' },
           { text: 'Multi-Step Forms', link: '/guide/steps' },
           { text: 'Async Step Validation', link: '/guide/async-validation' },
+          { text: 'Schema Validation', link: '/guide/schema-validation' },
           { text: 'Server-side Validation', link: '/guide/server-validation' },
           { text: 'Error Handling', link: '/guide/errors' },
           { text: 'Testing', link: '/guide/testing' },

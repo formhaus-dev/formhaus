@@ -2,10 +2,18 @@ import { getChangedKeys } from './engine-utils';
 import { baselineFields, emit } from './form-events';
 import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs, watchValues } from './pending-inputs';
-import { applyValidationErrors, dropServerErrors, fieldsErrors, getSubmitValues, pruneOffPathErrors } from './validation-state';
+import {
+  applyValidationErrors,
+  clearFormErrors,
+  dropServerErrors,
+  fieldsErrors,
+  getSubmitValues,
+  pruneOffPathErrors,
+} from './validation-state';
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
 import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
+import { passesValidate } from './validate-hook';
 import type { GoToStepResult, StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 
@@ -92,6 +100,7 @@ export async function changeStep(
   if (!engine.isMultiStep || engine.stepValidating || engine.submitting) return false;
   if (!skipping && (direction === 'next' ? engine.isLastStep : engine.isFirstStep)) return false;
   const step = engine.currentStep!;
+  clearFormErrors(engine);
   const validating = direction === 'next' && !skipping;
   if (validating) includeCurrentStep(engine);
   if (validating && hasStepErrors(engine)) return false;
@@ -120,6 +129,8 @@ export async function changeStep(
         return false;
       }
     }
+    if (validating && lifecycle.onValidate && !(await passesValidate(engine, lifecycle.onValidate, context.values, stale, false)))
+      return false;
     if (lifecycle.onBeforeStepChange) {
       const allowed = await lifecycle.onBeforeStepChange(context);
       if (stale() || allowed === false) return false;

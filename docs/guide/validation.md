@@ -130,13 +130,14 @@ Each field returns its first error. Core runs the rules in this order:
 
 A message set in the definition, such as a string `required` or `patternMessage`, and a validator result are shown as written. The [`messages` catalog](/guide/translations#messages-and-labels) applies only to built-in messages.
 
-`ValidatorFn` is synchronous: it returns a string or `null`, never a Promise. Run server checks in [`onStepValidate`](/guide/async-validation) or in the submit handler.
+`ValidatorFn` is synchronous: it returns a string or `null`, never a Promise. Run server checks in [`onValidate`](/guide/schema-validation), [`onStepValidate`](/guide/async-validation) or the submit handler.
 
 ## When validation runs
 
 - **On Continue.** Visible fields on the current step are validated.
 - **On Submit.** Visible fields across all visible steps are validated, or all visible fields in a single-step form.
 - **Async step validation.** If `onStepValidate` is provided, it runs after sync validation passes but before the step transition. See [Async Step Validation](/guide/async-validation).
+- **Schema validation.** If `onValidate` is provided, it runs after the definition rules pass on Continue and on Submit. See [Schema Validation](/guide/schema-validation).
 - **Never on blur.** No errors while the user is still typing.
 - **Hidden fields are skipped.** If a `show` condition hides a field, it's not validated.
 - **Empty non-required fields are skipped.** `minLength`, `pattern`, etc. only run on non-empty values.
@@ -144,6 +145,7 @@ A message set in the definition, such as a string `required` or `patternMessage`
 
 ## Next steps
 
+- [Schema Validation](/guide/schema-validation): Zod, Valibot and ArkType through `onValidate`
 - [Server-side Validation](/guide/server-validation): validate untrusted submissions
 - [Error Handling](/guide/errors): display errors and handle loading states
 - [Multi-Step Forms](/guide/steps): validate across multiple steps

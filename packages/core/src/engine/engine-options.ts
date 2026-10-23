@@ -8,6 +8,17 @@ export type { GoToStepResult };
 
 export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
 
+export interface ValidateContext {
+  stepId?: string;
+  fields: string[];
+  submit: boolean;
+}
+
+export type ValidateFn = (
+  values: Record<string, unknown>,
+  context: ValidateContext,
+) => Record<string, string> | null | void | Promise<Record<string, string> | null | void>;
+
 export interface StepChangeContext {
   fromStepId: string;
   toStepId: string;
@@ -35,6 +46,7 @@ export interface FormEngineOptions {
   validators?: Record<string, ValidatorFn>;
   messages?: MessageSource;
   onStepValidate?: StepValidateFn;
+  onValidate?: ValidateFn;
   onWarning?: (issue: DefinitionIssue) => void;
   onFormEvent?: (event: FormEvent) => void;
   lang?: string;

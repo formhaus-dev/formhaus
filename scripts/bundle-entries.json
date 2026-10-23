@@ -11,6 +11,7 @@
   "core/i18n",
   "core/fix",
   "core/research",
+  "core/schema",
   "react/cloud",
   "react/i18n",
   "vue/cloud",

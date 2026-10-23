@@ -32,6 +32,7 @@ import { localize, type Overlay } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
 import { questionTimer } from './question-timing.js';
+import { onValidate } from './schema-zod.js';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }, { key: 'utm', type: 'hidden' }], submit: { label: 'Send' } };
 export const handle = createRef<FormRendererHandle>();
@@ -40,6 +41,7 @@ export const views = [
   <HeadlessFormRenderer definition={definition} onSubmit={async () => {}} />,
   <FormRenderer ref={handle} definition={definition} onSubmit={async () => {}} />,
   <FormhausForm id="abc" />,
+  <FormRenderer definition={definition} onSubmit={async () => {}} onValidate={onValidate} />,
   <FormRenderer definition={definition} onSubmit={async () => {}} onFormEvent={questionTimer((time) => console.log(time.stepId, time.fieldKey, time.ms)).onEvent} />,
 ];
 export const extras = [TextField, CloudError];
@@ -109,6 +111,7 @@ import * as Formhaus from '@formhaus/vue';
 import { FormhausForm, CloudError } from '@formhaus/vue/cloud';
 import { useLocalizedForm } from '@formhaus/vue/i18n';
 import type { FormDefinition } from '@formhaus/core';
+import { onValidate } from './on-validate.js';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
 export const components: Formhaus.FieldComponentMap = {
@@ -121,7 +124,7 @@ export const components: Formhaus.FieldComponentMap = {
 };
 type Named<T> = keyof { [K in keyof T as string extends K ? never : K]: T[K] };
 export const nodeKeys: Named<Formhaus.FieldComponentMap>[] = ['section', 'group', 'groupItem', 'confirmDialog'];
-export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definition }), h(FormhausForm, { id: 'abc' })] })
+export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definition, onValidate }), h(FormhausForm, { id: 'abc' })] })
   .component('FormRenderer', Formhaus.FormRenderer)
   .component('TextField', Formhaus.TextField)
   .component('FormhausForm', FormhausForm);
@@ -136,25 +139,33 @@ files['src/use-form-engine.tsx'] = readFileSync(join(root, 'docs/recipes/snippet
 files['src/custom-layout.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/custom-layout.tsx'), 'utf8');
 files['src/steps-in-url.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url.tsx'), 'utf8');
 files['src/steps-in-url-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url-page.tsx'), 'utf8');
+for (const name of ['on-validate', 'schema-zod', 'schema-valibot', 'schema-arktype', 'schema-server-check'])
+  files[`src/${name}.ts`] = readFileSync(join(root, `docs/recipes/snippets/${name}.ts`), 'utf8');
 
-const resolutions = { bundler: 'ESNext', node16: 'Node16' };
-for (const [resolution, module] of Object.entries(resolutions)) {
-  files[`tsconfig.${resolution}.json`] = JSON.stringify({
+const arktype = 'src/schema-arktype.ts';
+const checks = {
+  bundler: { module: 'ESNext', exclude: [arktype] },
+  node16: { module: 'Node16', exclude: ['src/steps-in-url-page.tsx', arktype] },
+  'bundler, ArkType without its lib check': { module: 'ESNext', include: [arktype], skipLibCheck: true },
+};
+const configs = Object.keys(checks).map((_, index) => `tsconfig.${index}.json`);
+Object.values(checks).forEach(({ module, include = ['src'], exclude = [], skipLibCheck = false }, index) => {
+  files[configs[index]] = JSON.stringify({
     compilerOptions: {
       target: 'ES2022',
       module,
-      moduleResolution: resolution,
+      moduleResolution: module === 'ESNext' ? 'bundler' : 'node16',
       strict: true,
-      skipLibCheck: false,
+      skipLibCheck,
       noEmit: true,
       jsx: 'react-jsx',
       lib: ['ES2022', 'DOM'],
       types: [],
     },
-    include: ['src'],
-    exclude: resolution === 'bundler' ? [] : ['src/steps-in-url-page.tsx'],
+    include,
+    exclude,
   });
-}
+});
 
 let failed = false;
 try {
@@ -162,20 +173,21 @@ try {
   link('vue', 'vue');
   link('react', 'react');
   link('@types/react', 'react');
+  for (const name of ['zod', 'valibot', 'arktype']) link(name, 'core');
   for (const [path, source] of Object.entries(files)) {
     mkdirSync(dirname(join(work, path)), { recursive: true });
     writeFileSync(join(work, path), source);
   }
   const tsc = join(root, 'packages/react/node_modules/typescript/bin/tsc');
-  for (const resolution of Object.keys(resolutions)) {
+  Object.keys(checks).forEach((check, index) => {
     try {
-      execFileSync(process.execPath, [tsc, '-p', `tsconfig.${resolution}.json`], { cwd: work, encoding: 'utf8' });
-      console.log(`consumer types ok (moduleResolution ${resolution})`);
+      execFileSync(process.execPath, [tsc, '-p', configs[index]], { cwd: work, encoding: 'utf8' });
+      console.log(`consumer types ok (moduleResolution ${check})`);
     } catch (error) {
       failed = true;
-      console.error(`consumer types failed (moduleResolution ${resolution}):\n${error.stdout}${error.stderr}`);
+      console.error(`consumer types failed (moduleResolution ${check}):\n${error.stdout}${error.stderr}`);
     }
-  }
+  });
 } finally {
   rmSync(work, { recursive: true, force: true });
 }
