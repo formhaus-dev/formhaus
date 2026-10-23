@@ -16,13 +16,16 @@ CI fails a pull request that goes over these limits in `scripts/size/measure.mjs
 | App imports | Limit | Measured |
 |---|---|---|
 | Every export of `@formhaus/core` | 27.75 KB | 27.6 KB |
-| Every export of `@formhaus/core` and `@formhaus/react` | 33 KB | 32.5 KB |
+| Every export of `@formhaus/core` and `@formhaus/react` | 33 KB | 32.6 KB |
 | Every export of `@formhaus/core` and `@formhaus/vue` | 36.5 KB | 36.4 KB |
-| `FormEngine` from `@formhaus/core` | 19 KB | 18.7 KB |
-| `useFormEngine` from `@formhaus/react`, with core | 20 KB | 19.5 KB |
-| `useFormEngine` from `@formhaus/vue`, with core | 20 KB | 19.3 KB |
-| `FormRenderer` from `@formhaus/react`, with core | 32.5 KB | 32.3 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 36 KB | 35.8 KB |
+| `FormEngine` from `@formhaus/core` | 19 KB | 18.8 KB |
+| `useFormEngine` from `@formhaus/react`, with core | 20 KB | 19.6 KB |
+| `useFormEngine` from `@formhaus/vue`, with core | 20 KB | 19.4 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 32.5 KB | 32.4 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 36 KB | 35.9 KB |
+| `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 14.25 KB | 14.0 KB |
+| `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 28 KB | 27.8 KB |
+| `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 31.5 KB | 31.3 KB |
 
 <!-- size:limits:end -->
 
@@ -34,10 +37,10 @@ The entry you import sets the size. React and Vue are not counted.
 
 | Entry | You write | React | Vue |
 |---|---|---|---|
-| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 18.7 KB | 18.7 KB |
-| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 19.5 KB | 19.3 KB |
+| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 18.8 KB | 18.8 KB |
+| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 19.6 KB | 19.4 KB |
 | `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 28.8 KB | 30.8 KB |
-| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 32.3 KB | 35.8 KB |
+| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 32.4 KB | 35.9 KB |
 
 <!-- size:paths:end -->
 
@@ -88,6 +91,63 @@ return engine.visibleFields.map((field) => (
 
 Vue examples and the full props are in [Choose a renderer](/guide/#choose-a-renderer).
 
+## Trusted definitions
+
+Define `process.env.FORMHAUS_TRUSTED` as `"1"` in the bundler to drop the structure check from production builds.
+
+<!-- size:trusted:start -->
+
+| App imports | Checked | Trusted |
+|---|---|---|
+| `FormEngine` from `@formhaus/core` | 18.8 KB | 14.0 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 32.4 KB | 27.8 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 35.9 KB | 31.3 KB |
+
+<!-- size:trusted:end -->
+
+Use it when every definition passed `checkDefinition()` or `parseDefinition()` in CI, or comes from Formhaus Cloud. An invalid definition then fails with a plain runtime error or renders wrong, without a `FormDefinitionError`. Development builds still run `checkDefinition()`. Without the define nothing changes.
+
+In production the engine does not check a definition returned by `parseDefinition()` again. Parse it again after you change it in place. `validateSubmission()` always checks the definition, with or without the define.
+
+Rollup needs two terser passes to drop the check.
+
+::: code-group
+
+```ts [Vite]
+export default defineConfig({
+  define: { 'process.env.FORMHAUS_TRUSTED': JSON.stringify('1') },
+});
+```
+
+```ts [esbuild]
+await build({
+  define: { 'process.env.FORMHAUS_TRUSTED': JSON.stringify('1') },
+});
+```
+
+```js [webpack]
+plugins: [new webpack.DefinePlugin({ 'process.env.FORMHAUS_TRUSTED': JSON.stringify('1') })],
+```
+
+```js [Rollup]
+plugins: [
+  replace({ preventAssignment: true, values: { 'process.env.FORMHAUS_TRUSTED': JSON.stringify('1') } }),
+  terser({ compress: { passes: 2 } }),
+],
+```
+
+```js [Next.js]
+export default { env: { FORMHAUS_TRUSTED: '1' } };
+```
+
+```ts [Nuxt]
+export default defineNuxtConfig({
+  vite: { define: { 'process.env.FORMHAUS_TRUSTED': JSON.stringify('1') } },
+});
+```
+
+:::
+
 ## Other libraries
 
 The same entries next to other form libraries. The second table changes only when `pnpm size:compare` runs.
@@ -96,8 +156,8 @@ The same entries next to other form libraries. The second table changes only whe
 
 | Formhaus | gzip | State and validation | Rendering | Multi-step | Same validation on the server | JSON definitions |
 |---|---|---|---|---|---|---|
-| `@formhaus/core` `FormEngine` only | 18.7 KB | Yes | No | Yes | `validateSubmission()` | Yes |
-| `@formhaus/core` + `@formhaus/react` | 32.5 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` `FormEngine` only | 18.8 KB | Yes | No | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` + `@formhaus/react` | 32.6 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
 | `@formhaus/core` + `@formhaus/vue` | 36.4 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
 
 <!-- size:formhaus:end -->
@@ -140,7 +200,7 @@ Installed from npm on 2026-10-20: `react-hook-form@7.90.0`, `formik@2.4.9`, `yup
 Each entry is bundled with esbuild:
 
 - `bundle`, `minify`, `format: 'esm'`
-- `process.env.NODE_ENV` set to `"production"`
+- `process.env.NODE_ENV` set to `"production"`, and `process.env.FORMHAUS_TRUSTED` set to `"1"` for the trusted entries
 - `react`, `react-dom` and `vue` are external
 - CSS is not counted
 - the output is gzipped at level 9

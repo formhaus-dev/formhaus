@@ -23,7 +23,16 @@ const LIMIT_LABELS = {
   'core + vue useFormEngine': '`useFormEngine` from `@formhaus/vue`, with core',
   'core + react FormRenderer': '`FormRenderer` from `@formhaus/react`, with core',
   'core + vue FormRenderer': '`FormRenderer` from `@formhaus/vue`, with core',
+  'core FormEngine (trusted)': '`FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED`',
+  'core + react FormRenderer (trusted)': '`FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED`',
+  'core + vue FormRenderer (trusted)': '`FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED`',
 };
+
+const TRUSTED = [
+  ['`FormEngine` from `@formhaus/core`', 'core FormEngine'],
+  ['`FormRenderer` from `@formhaus/react`, with core', 'core + react FormRenderer'],
+  ['`FormRenderer` from `@formhaus/vue`, with core', 'core + vue FormRenderer'],
+];
 
 const PATHS = [
   ['FormEngine', 'All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check'],
@@ -72,6 +81,10 @@ export async function formhausBlocks() {
       addons: table(
         ['Import', 'Adds'],
         [...ADDONS.map(([label, name]) => [label, kb(sizes[name] - engine)]), ['Engine warnings in development', '0 KB in production']],
+      ),
+      trusted: table(
+        ['App imports', 'Checked', 'Trusted'],
+        TRUSTED.map(([label, name]) => [label, kb(sizes[name]), kb(sizes[`${name} (trusted)`])]),
       ),
       formhaus: table(
         ['Formhaus', 'gzip', 'State and validation', 'Rendering', 'Multi-step', 'Same validation on the server', 'JSON definitions'],
