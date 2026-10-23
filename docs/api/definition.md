@@ -31,6 +31,22 @@ interface FormDefinition {
 
 `formatVersion` names the [definition format](/spec#versioning). Omit it to use the format of the installed core. `{{key}}` recall needs `"1.5"` or newer. `FORMAT_VERSION` exports the format this core reads. `checkDefinition()` reports `unsupported-format-version` for a newer major version, and the `FormEngine` constructor throws on it.
 
+The format each node type and property needs:
+
+| Feature | Format | `checkDefinition()` warns without it |
+|---|---|---|
+| `section` and `group` nodes | 1.1 | yes |
+| Field `props` | 1.2 | no |
+| `scale` and `rating` fields | 1.3 | yes |
+| Option `image`, field `columns`, section `layout` | 1.3 | no |
+| `contains` and `notContains` conditions | 1.4 | yes |
+| `{{key}}` answer recall | 1.5 | yes |
+| Option `exclusive` | 1.5 | yes |
+| Field `autocomplete` | 1.5 | yes |
+| Field `randomize`, option `pinned` | 1.6 | yes |
+
+Other built-in field types and properties need no `formatVersion`. The warning is `outdated-format-version` and names the highest format the definition needs. Recall is the only feature the current core turns off below its format: the text shows `{{key}}` as written. The [specification](/spec#versioning) lists what older cores do with each feature.
+
 ## FormField
 
 A single form field. `type` determines which UI component renders.

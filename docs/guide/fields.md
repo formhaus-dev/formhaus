@@ -421,7 +421,7 @@ The browser and `validateSubmission()` accept `00:00` to `23:59:59` and reject a
 
 ## File
 
-File upload. Uses native file input. Set `accept` to restrict file types. With [Formhaus Cloud](/guide/endpoint#files), `FormhausForm` uploads the file and submits its id.
+File upload. Uses native file input. Set `accept` to restrict file types. The value is one `File`, or `null`; use one `file` field per file. With [Formhaus Cloud](/guide/endpoint#files), `FormhausForm` uploads the file and submits its id.
 
 ```json
 {
@@ -735,7 +735,7 @@ Each custom component gets the field descriptor, the current value, and validati
 | `testId` | `string?` | Test id of the field when the renderer has [`testIds`](/guide/testing). Put it on the control as `data-testid` |
 | `optionTestId` | `((value: string) => string \| undefined)?` | Test id of one option of a choice field, with `testIds` on |
 
-Put the `id` prop on the control, so the label and error messages stay linked. In React, call `onChange(value)` and `onBlur()`. In Vue, read `modelValue` and emit `update:modelValue` and `blur`, so `v-model` works on the component.
+See [Custom Fields](/guide/custom-fields) for the full contract and the value each type expects. Put the `id` prop on the control, so the label and error messages stay linked. In React, call `onChange(value)` and `onBlur()`. In Vue, read `modelValue` and emit `update:modelValue` and `blur`, so `v-model` works on the component.
 
 ### Explicit field activation
 

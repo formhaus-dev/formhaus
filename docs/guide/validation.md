@@ -117,6 +117,21 @@ Reference the validator by name in the definition:
 }
 ```
 
+## Rule order
+
+Each field returns its first error. Core runs the rules in this order:
+
+1. `required`. An empty value stops here, so no other rule sees it. `matchField` still fails when the other field has a value.
+2. The type check of a built-in type, such as a valid `date` or a number in the range of a `scale`.
+3. `minLength` and `maxLength`, or `min` and `max` for a number.
+4. `pattern`.
+5. `matchField`.
+6. The custom `validator`. It runs only on a non-empty value that passed every rule above.
+
+A message set in the definition, such as a string `required` or `patternMessage`, and a validator result are shown as written. The [`messages` catalog](/guide/translations#messages-and-labels) applies only to built-in messages.
+
+`ValidatorFn` is synchronous: it returns a string or `null`, never a Promise. Run server checks in [`onStepValidate`](/guide/async-validation) or in the submit handler.
+
 ## When validation runs
 
 - **On Continue.** Visible fields on the current step are validated.

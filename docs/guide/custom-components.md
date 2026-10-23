@@ -5,7 +5,7 @@ description: "Replace Formhaus buttons and the step progress bar with design sys
 
 # Custom Actions & Progress
 
-Replace the built-in form buttons and step progress bar with your own components. Useful when your project has a design system and the default unstyled HTML doesn't fit.
+Replace the built-in form buttons and step progress bar with your own components. Useful when your project has a design system and the default unstyled HTML doesn't fit. For fields, sections, groups and the remove dialog, see [Custom Fields](/guide/custom-fields).
 
 ## Custom actions component
 
@@ -315,6 +315,7 @@ The order of events is in the [specification](/spec#form-events). Events carry s
 
 ## Next steps
 
+- [Custom Fields](/guide/custom-fields): the field component contract and layout components
 - [Field Types](/guide/fields): customize field components via the `components` prop
 - [Multi-Step Forms](/guide/steps): step navigation, conditional steps, progress
 - [Examples](/guide/examples): full form patterns
