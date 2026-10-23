@@ -2,7 +2,7 @@ import type { FormDefinition, FormField, FormGroup } from '../types';
 import type { MessageSource, ValidatorFn } from '../validation';
 import { validateFieldValue, withPatternBudget } from '../validation/validate-field';
 import { messageResolver, namedResolver, type ResolveMessage } from '../validation/default-messages';
-import { parseDefinition } from '../definition-validation';
+import { validDefinition } from '../definition-validation/check-definition';
 import { getAllFields } from '../engine/engine-utils';
 import type { EngineInternals } from '../engine/runtime-internals';
 import { FormEngine } from '../engine/runtime';
@@ -210,7 +210,7 @@ export function validateSubmission(definition: FormDefinition, values: unknown, 
 }
 
 function validated(definition: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {
-  parseDefinition(definition);
+  validDefinition(definition);
   const fields = getAllFields(definition);
   const source = isEntry(values) ? values : {};
   let prepared = prepare(definition, fields, source, options);
