@@ -5,7 +5,7 @@ import {
   actionValues,
   actionsView,
   hasValue,
-  labelFor,
+  engineLabel,
   matrixColumns,
   ROOT_PROPS,
   shouldApplyExternalErrors,
@@ -133,7 +133,7 @@ defineExpose({
   values,
 });
 
-const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.definition.labels);
+const label = (key: LabelKey, params: Record<string, unknown> = {}) => engineLabel(form.engine, key, params, props.labels);
 provide('fhLabel', label);
 
 const DefaultFields: FunctionalComponent<FieldsContainerProps> = (fields, { slots }) =>

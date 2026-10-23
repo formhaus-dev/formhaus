@@ -29,6 +29,9 @@ export function useEngineOptions(props: FormRendererProps, onFormEvent: (event: 
     get lang() {
       return props.lang;
     },
+    get locale() {
+      return props.locale;
+    },
     get formatRecall() {
       return props.formatRecall;
     },

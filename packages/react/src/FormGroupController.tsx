@@ -1,4 +1,4 @@
-import type { FieldOption, FormGroup, LabelKey } from '@formhaus/core';
+import type { FieldOption, FormGroup } from '@formhaus/core';
 import {
   CLOSED_DIALOG,
   fieldDomId,
@@ -7,16 +7,16 @@ import {
   itemHasContent,
   itemLimits,
   itemTitle,
-  labelFor,
   optionKey,
   recalled,
   recalls,
 } from '@formhaus/core/internal';
-import { memo, useEffect, useRef, useState } from 'react';
+import { memo, useContext, useEffect, useRef, useState } from 'react';
 import { DefaultConfirmDialog, DefaultGroup, DefaultGroupItem } from './ContainerViews';
 import { type ControllerProps, FormFieldController } from './FormFieldController';
 import { describedBy } from './fields/fieldProps';
 import { useFieldSnapshot, useRecallSnapshot, useStructureSnapshot } from './hooks/useEngineSnapshot';
+import { LabelContext } from './labels';
 import type { ConfirmDialogComponentProps, FormRendererProps, GroupItemComponentProps, LayoutComponentMap } from './types';
 
 interface FormGroupControllerProps extends ControllerProps {
@@ -51,13 +51,13 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
   const setStatus = (text: string) => setAnnounced((previous) => ({ text, count: previous.count + 1 }));
   const [confirming, setConfirming] = useState<string | null>(null);
   const focus = useRef<Focus>(null);
-  const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, labels, engine.definition.labels);
+  const label = useContext(LabelContext);
   const items = engine.items(group.key);
   const values = (engine.values[group.key] ?? []) as Record<string, unknown>[];
   const [min, max] = itemLimits(group);
   const id = fieldDomId(formId, group.key, engine.definition);
   const error = engine.errors[group.key];
-  const title = (index: number) => itemTitle(engine, group, index, labels, engine.definition.labels);
+  const title = (index: number) => itemTitle(engine, group, index, labels);
   const remove = group.removeLabel ?? label('removeItem');
   const texts = recalled(engine, group);
 

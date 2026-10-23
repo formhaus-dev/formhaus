@@ -2,6 +2,7 @@
 import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey, LabelSource } from '@formhaus/core';
 import {
   CLOSED_DIALOG,
+  engineLabel,
   errorDomId,
   fieldDomId,
   focusItem,
@@ -9,7 +10,6 @@ import {
   itemHasContent,
   itemLimits,
   itemTitle,
-  labelFor,
   optionKey,
   autofilled,
   recalled,
@@ -63,8 +63,8 @@ const id = computed(() => fieldDomId(props.formId, props.group.key, props.engine
 const limits = computed(() => itemLimits(props.group));
 const error = computed(() => props.errors[props.group.key]);
 const values = computed(() => (Array.isArray(props.value) ? props.value : []) as Record<string, unknown>[]);
-const label = (key: LabelKey, params: Record<string, unknown> = {}) => labelFor(key, params, props.labels, props.engine.definition.labels);
-const title = (index: number) => itemTitle(props.engine, props.group, index, props.labels, props.engine.definition.labels);
+const label = (key: LabelKey, params: Record<string, unknown> = {}) => engineLabel(props.engine, key, params, props.labels);
+const title = (index: number) => itemTitle(props.engine, props.group, index, props.labels);
 const remove = computed(() => props.group.removeLabel ?? label('removeItem'));
 
 function itemProps(index: number, field: FormField) {

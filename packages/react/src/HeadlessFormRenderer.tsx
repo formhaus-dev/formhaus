@@ -5,7 +5,6 @@ import {
   errorDomId,
   focusField,
   hasValue,
-  labelFor,
   restoreFocus,
   shouldApplyExternalErrors,
   testIds,
@@ -16,7 +15,7 @@ import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
 import { FormTopLevelErrors, shownFormErrors } from './FormTopLevelErrors';
-import { LabelContext } from './labels';
+import { LabelContext, useEngineLabel } from './labels';
 import { useComponentWarnings } from './hooks/useComponentWarnings';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
@@ -73,6 +72,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       },
     };
     const engine = useFormEngineStore(definition, initialValues, engineOptions);
+    const label = useEngineLabel(engine, props.labels, props.locale);
     const version = useFormSnapshot(engine);
     const previousStep = useRef(engine.currentStep?.id);
     const actions = useRendererActions(engine, props);
@@ -193,7 +193,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
           void (engine.isLastStep ? actions.submit() : actions.next());
         }}
       >
-        <LabelContext.Provider value={(key, params = {}) => labelFor(key, params, props.labels, engine.definition.labels)}>
+        <LabelContext.Provider value={label}>
           <FormProgressController
             engine={engine}
             ProgressComponent={layout?.progress ?? progressComponent}
