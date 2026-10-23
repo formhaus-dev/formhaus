@@ -1,5 +1,5 @@
 import { useEffect, useSyncExternalStore } from 'react';
-import type { Scheme } from './playground';
+import type { Theme as Scheme } from './playground';
 
 const query = window.matchMedia('(prefers-color-scheme: dark)');
 const subscribe = (notify: () => void) => {

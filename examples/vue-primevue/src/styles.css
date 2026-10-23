@@ -14,7 +14,7 @@ body {
 }
 
 .app-dark body {
-  background: var(--p-surface-950);
+  background: #121212;
 }
 
 .page {

@@ -6,7 +6,7 @@ import { useColorMode } from './color-mode';
 import { components } from './component-map';
 import json from './definition.json';
 import { layout } from './layout';
-import type { Scheme } from './playground';
+import type { Theme as Scheme } from './playground';
 
 const initial = parseDefinition(json);
 const show = (_: string, value: unknown) => (value instanceof File ? `File: ${value.name}` : value);

@@ -19,4 +19,4 @@ function render(definition: FormDefinition) {
 }
 
 render(json as FormDefinition);
-listenToPlayground(render);
+listenToPlayground({ definition: render });

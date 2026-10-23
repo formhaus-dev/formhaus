@@ -2,7 +2,8 @@ import type { FormDefinition } from '@formhaus/core';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
-import { listenToPlayground, type Scheme } from './playground';
+import './styles.css';
+import { listenToPlayground, type Theme as Scheme } from './playground';
 
 const root = createRoot(document.getElementById('root')!);
 let version = 0;
@@ -18,14 +19,14 @@ function render() {
 }
 
 render();
-listenToPlayground(
-  (next) => {
+listenToPlayground({
+  definition: (next) => {
     definition = next;
     version++;
     render();
   },
-  (next) => {
+  theme: (next) => {
     scheme = next;
     render();
   },
-);
+});

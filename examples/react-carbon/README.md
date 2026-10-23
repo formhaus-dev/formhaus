@@ -16,7 +16,7 @@ Opens at http://localhost:5173. The theme follows the system setting: `g10` in l
 ## Files
 
 - [src/App.tsx](src/App.tsx) wraps the form in Carbon `Theme` and shows the submitted values.
-- [src/styles.scss](src/styles.scss) compiles only the Carbon component styles the example uses. IBM Plex comes from Google Fonts in [index.html](index.html).
+- [src/styles.scss](src/styles.scss) compiles only the Carbon component styles the example uses. IBM Plex Sans and Mono are self-hosted from the `@ibm/plex-sans` and `@ibm/plex-mono` packages, Latin subsets only.
 - [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a Carbon renderer.
 - [src/fields/DateField.tsx](src/fields/DateField.tsx) uses `DatePicker` and converts to `YYYY-MM-DD`. [DateTimeField.tsx](src/fields/DateTimeField.tsx) pairs `DatePicker` with `TimePicker` for `YYYY-MM-DDTHH:mm`, and [TimeField.tsx](src/fields/TimeField.tsx) uses `TimePicker` in 24-hour `HH:mm`.
 - [src/fields/MultiselectField.tsx](src/fields/MultiselectField.tsx) uses `FilterableMultiSelect`, and [AutocompleteField.tsx](src/fields/AutocompleteField.tsx) uses `ComboBox` with free text.

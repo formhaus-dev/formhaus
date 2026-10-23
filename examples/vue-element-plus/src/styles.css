@@ -13,6 +13,10 @@ body {
   color: var(--el-text-color-primary);
 }
 
+:root.dark body {
+  background: #121212;
+}
+
 .page {
   max-width: 40rem;
   margin: 0 auto;

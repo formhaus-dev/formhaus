@@ -1,6 +1,10 @@
 @use '@carbon/react/scss/config' with (
-  $css--font-face: false
+  $css--font-face: false,
+  $font-path: '../node_modules/@ibm/plex',
+  $use-per-family-plex: true
 );
+@use '@carbon/react/scss/fonts/sans';
+@use '@carbon/react/scss/fonts/mono';
 @use '@carbon/react/scss/reset';
 @use '@carbon/react/scss/layer';
 @use '@carbon/react/scss/layout';
@@ -34,3 +38,7 @@
 @use '@carbon/react/scss/components/tooltip';
 
 @include type.type-classes;
+
+@include sans.regular((normal), (Latin1, Latin2, Pi));
+@include sans.semibold((normal), (Latin1, Latin2, Pi));
+@include mono.regular((normal), (Latin1, Pi));
