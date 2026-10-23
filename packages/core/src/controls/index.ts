@@ -181,14 +181,16 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
     }, 0);
     commit(value);
   };
+  const optionAt = (target: unknown) => (target as { closest?: (selector: string) => unknown } | null)?.closest?.(OPTION);
   const pressed = (event: ControlKeyEvent, key: string) => {
-    if (event.key !== key || !active()) return;
+    const element = optionAt(event.target);
+    if (event.key !== key || !active() || !element) return;
     event.preventDefault();
-    if (pending) finish(optionOf(event.target) ?? read().value);
+    if (pending) finish(optionOf(element) ?? read().value);
   };
   return {
     pick(value: unknown) {
-      if (!active() || arrow) change(value);
+      if (!active() || arrow || empty(value)) change(value);
       else finish(value);
     },
     stop() {
@@ -198,11 +200,11 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
       arrow = false;
     },
     keyDownCapture(event: ControlKeyEvent) {
-      arrow = event.key.startsWith('Arrow');
-      pending = !event.repeat && (event.key === ' ' || event.key === 'Enter');
+      arrow = event.key.startsWith('Arrow') || event.key === 'Home' || event.key === 'End';
+      if (!event.repeat) pending = event.key === ' ' || event.key === 'Enter';
     },
     keyDown(event: ControlKeyEvent) {
-      if (event.key === ' ' && active()) event.preventDefault();
+      if (event.key === ' ' && active() && optionAt(event.target)) event.preventDefault();
       pressed(event, 'Enter');
     },
     keyUp(event: ControlKeyEvent) {
@@ -210,10 +212,10 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
       pressed(event, ' ');
     },
     click({ detail, target }: ControlClickEvent) {
-      const element = target as { closest?: (selector: string) => unknown } | null;
-      if (!active() || arrow || fresh || detail > 1 || !element?.closest?.(OPTION)) return;
+      const element = optionAt(target);
+      if (!active() || arrow || fresh || detail > 1 || !element) return;
       const value = read().value;
-      const picked = optionOf(element.closest(OPTION));
+      const picked = optionOf(element);
       clearTimeout(timer);
       if (picked === undefined || String(picked) === String(value))
         timer = setTimeout(() => {

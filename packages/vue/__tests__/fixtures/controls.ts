@@ -109,7 +109,7 @@ const Stars = control((props, emit) =>
           onClick: () => emit('update:modelValue', star),
         }),
       )
-      .concat(h('button', { type: 'button' }, 'Clear')),
+      .concat(h('button', { type: 'button', onClick: () => emit('update:modelValue', 0) }, 'Clear'), h('input', { 'aria-label': 'Note' })),
   ),
 );
 
@@ -129,9 +129,16 @@ const Picker = control((props, emit) => {
           value: String(option.value),
           'aria-checked': String(props.modelValue) === String(option.value),
           onKeydown: (event: KeyboardEvent) => {
-            if (event.key === 'ArrowDown') {
+            const current = event.currentTarget as HTMLElement;
+            const target =
+              event.key === 'ArrowDown'
+                ? current.nextElementSibling
+                : event.key === 'Home'
+                  ? current.parentElement?.firstElementChild
+                  : null;
+            if (target) {
               arrow = true;
-              ((event.currentTarget as HTMLElement).nextElementSibling as HTMLElement | null)?.focus();
+              (target as HTMLElement).focus();
               arrow = false;
             }
             if (event.key === ' ' || event.key === 'Enter') {

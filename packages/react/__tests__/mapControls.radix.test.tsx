@@ -100,6 +100,19 @@ describe('mapControls with Radix RadioGroup', () => {
     expect(values()).toEqual(['b', 'b']);
   });
 
+  it('moves focus on Home and End without a commit', async () => {
+    const values = mount();
+    radio('Plan b').focus();
+    fireEvent.keyDown(radio('Plan b'), { key: 'End' });
+    await tick();
+    fireEvent.keyUp(document.activeElement!, { key: 'End' });
+    fireEvent.keyDown(radio('Plan c'), { key: 'Home' });
+    await tick();
+    fireEvent.keyUp(document.activeElement!, { key: 'Home' });
+    await tick();
+    expect([values(), document.activeElement, screen.queryByRole('heading', { name: 'Two' })]).toEqual([[], radio('Plan a'), null]);
+  });
+
   it('commits Space on the picked option once', async () => {
     const values = mount({ plan: 'c' });
     radio('Plan c').focus();

@@ -110,7 +110,10 @@ function Stars({ id, value, onChange }: { id?: string; value?: unknown; onChange
           onKeyDown={() => {}}
         />
       ))}
-      <button type="button">Clear</button>
+      <button type="button" onClick={() => onChange(0)}>
+        Clear
+      </button>
+      <input aria-label="Note" />
     </div>
   );
 }
@@ -125,9 +128,15 @@ interface PickerProps {
 function Picker({ id, value, options, onValueChange }: PickerProps) {
   const arrow = useRef(false);
   const keyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
-    if (event.key === 'ArrowDown') {
+    const target =
+      event.key === 'ArrowDown'
+        ? event.currentTarget.nextElementSibling
+        : event.key === 'Home'
+          ? event.currentTarget.parentElement?.firstElementChild
+          : null;
+    if (target) {
       arrow.current = true;
-      (event.currentTarget.nextElementSibling as HTMLElement | null)?.focus();
+      (target as HTMLElement).focus();
       arrow.current = false;
     }
     if (event.key === ' ' || event.key === 'Enter') {

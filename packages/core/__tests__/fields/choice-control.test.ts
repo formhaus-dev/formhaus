@@ -55,22 +55,22 @@ describe('choiceControl', () => {
 
   it('commits the focused option on Enter, not on a held key', () => {
     const { commit, choice } = setup();
-    const held = key('Enter', { value: 'b' }, true);
+    const held = key('Enter', option('b'), true);
     down(choice, held);
-    down(choice, key('Enter', { value: 'b' }));
+    down(choice, key('Enter', option('b')));
     expect([commit.mock.calls, held.preventDefault.mock.calls.length]).toEqual([[['b']], 1]);
   });
 
   it('commits the focused option on Space key up and blocks the native toggle', () => {
     const { commit, choice } = setup({}, 'a');
-    const pressed = key(' ', { value: 'b' });
+    const pressed = key(' ', option('b'));
     down(choice, pressed);
     expect(commit).not.toHaveBeenCalled();
-    const up = key(' ', { value: 'b' });
+    const up = key(' ', option('b'));
     choice.keyUp(up);
-    choice.keyUp(key(' ', {}));
-    down(choice, key(' ', {}));
-    choice.keyUp(key(' ', {}));
+    choice.keyUp(key(' ', option()));
+    down(choice, key(' ', option()));
+    choice.keyUp(key(' ', option()));
     expect([commit.mock.calls, pressed.preventDefault.mock.calls.length, up.preventDefault.mock.calls.length]).toEqual([
       [['b'], ['a']],
       1,
@@ -78,12 +78,39 @@ describe('choiceControl', () => {
     ]);
   });
 
+  it('commits a held Space once on release', () => {
+    const { commit, choice } = setup();
+    down(choice, key(' ', option('b')));
+    down(choice, key(' ', option('b'), true));
+    choice.keyUp(key(' ', option('b')));
+    expect(commit.mock.calls).toEqual([['b']]);
+  });
+
+  it('leaves keys on elements that are not options alone', () => {
+    const { commit, choice } = setup({}, 'a');
+    const outside = { value: 'typed', closest: () => null };
+    const space = key(' ', outside);
+    const enter = key('Enter', outside);
+    down(choice, space);
+    choice.keyUp(key(' ', outside));
+    down(choice, enter);
+    expect([commit.mock.calls, space.preventDefault.mock.calls.length, enter.preventDefault.mock.calls.length]).toEqual([[], 0, 0]);
+  });
+
+  it('treats Home and End like arrow keys', () => {
+    const { change, commit, choice } = setup();
+    down(choice, key('Home', option('a')), () => choice.pick('a'));
+    choice.keyUp(key('Home', option('a')));
+    down(choice, key('End', option('b')), () => choice.pick('b'));
+    expect([change.mock.calls, commit.mock.calls]).toEqual([[['a'], ['b']], []]);
+  });
+
   it('commits once when the control selects on its own key down', () => {
     const { commit, choice } = setup();
-    down(choice, key(' ', { value: 'a' }), () => choice.pick('a'));
-    choice.keyUp(key(' ', { value: 'a' }));
-    down(choice, key('Enter', { value: 'b' }), () => choice.pick('b'));
-    choice.keyUp(key('Enter', { value: 'b' }));
+    down(choice, key(' ', option('a')), () => choice.pick('a'));
+    choice.keyUp(key(' ', option('a')));
+    down(choice, key('Enter', option('b')), () => choice.pick('b'));
+    choice.keyUp(key('Enter', option('b')));
     expect(commit.mock.calls).toEqual([['a'], ['b']]);
   });
 
@@ -117,7 +144,7 @@ describe('choiceControl', () => {
   it('ignores types without autoAdvance support and empty picks', () => {
     const select = setup({ type: 'select' });
     select.choice.pick('a');
-    down(select.choice, key('Enter', { value: 'a' }));
+    down(select.choice, key('Enter', option('a')));
     const empty = setup();
     empty.choice.pick(null);
     vi.runAllTimers();

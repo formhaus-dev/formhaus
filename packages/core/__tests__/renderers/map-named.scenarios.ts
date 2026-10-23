@@ -65,16 +65,59 @@ export function mapNamedScenarios(harness: RendererHarness, { it, expect, fn, sc
     expect(values(onFieldChange)).toEqual(['b', 'c']);
   });
 
-  it('does not commit a click on a button without an option value', async () => {
-    const rating = { key: 'stars', type: 'rating', label: 'Stars', autoAdvance: true, validation: { max: 3 } };
-    const onFieldChange = mount(last(rating), mapped.shell, { stars: 2 });
+  const rating: FormField = { key: 'stars', type: 'rating', label: 'Stars', autoAdvance: true, validation: { max: 3 } };
+  const send = (target: Element, type: 'keydown' | 'keyup', name: string, repeat = false) => {
+    const event = new KeyboardEvent(type, { key: name, bubbles: true, cancelable: true, repeat });
+    target.dispatchEvent(event);
+    return event.defaultPrevented;
+  };
+
+  it('clears on a button without an option value and does not commit', async () => {
+    const onFieldChange = mount(steps(rating), mapped.shell, { stars: 2 });
     const clear = screen.getByRole('button', { name: 'Clear' });
+    clear.focus();
+    expect([send(clear, 'keydown', ' '), send(clear, 'keyup', ' '), send(clear, 'keydown', 'Enter')]).toEqual([false, false, false]);
+    await tick();
+    expect(onFieldChange).not.toHaveBeenCalled();
     clear.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true }));
     await harness.click(clear);
     await tick();
-    expect(onFieldChange).not.toHaveBeenCalled();
+    expect([values(onFieldChange), screen.queryByRole('heading', { name: 'Last' })]).toEqual([[null], null]);
     await harness.click(screen.getByRole('radio', { name: '2 stars' }));
+    await screen.findByRole('heading', { name: 'Last' });
+    expect(values(onFieldChange)).toEqual([null, 2]);
+  });
+
+  it('leaves Space and Enter to a text input inside the group', async () => {
+    const onFieldChange = mount(steps(rating), mapped.shell, { stars: 2 });
+    const note = screen.getByRole('textbox', { name: 'Note' });
+    note.focus();
+    expect([send(note, 'keydown', ' '), send(note, 'keyup', ' '), send(note, 'keydown', 'Enter')]).toEqual([false, false, false]);
     await tick();
-    expect(values(onFieldChange)).toEqual([2]);
+    expect([onFieldChange.mock.calls.length, screen.queryByRole('heading', { name: 'Last' })]).toEqual([0, null]);
+  });
+
+  it('commits a held Space once on release', async () => {
+    const onFieldChange = mount(steps(plan), mapped.shell);
+    const radio = option('Plan b');
+    radio.focus();
+    send(radio, 'keydown', ' ');
+    send(radio, 'keydown', ' ', true);
+    send(radio, 'keydown', ' ', true);
+    expect(send(radio, 'keyup', ' ')).toBe(true);
+    await screen.findByRole('heading', { name: 'Last' });
+    expect(values(onFieldChange)).toEqual(['b']);
+  });
+
+  it('only changes on Home and End', async () => {
+    const onFieldChange = mount(steps(plan));
+    option('Plan c').focus();
+    await key(option('Plan c'), 'keydown', 'Home');
+    await key(option('Plan a'), 'keyup', 'Home');
+    expect([values(onFieldChange), document.activeElement, screen.queryByRole('heading', { name: 'Last' })]).toEqual([
+      ['a'],
+      option('Plan a'),
+      null,
+    ]);
   });
 }

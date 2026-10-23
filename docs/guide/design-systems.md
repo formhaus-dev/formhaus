@@ -194,7 +194,7 @@ Radix compares string values, so `value: f.text` passes a scale point as text. I
 
 ## autoAdvance
 
-For `radio`, `scale` and `rating` with `autoAdvance`, `rootProps` wire the same keys as the built-in fields: a click, Enter or Space commits the pick and goes to the next step, arrow keys only change the value. Native radios work as they are, and so do components that pick an option on focus or on their own Space or Enter handler, such as Radix: each press commits once. A click commits only on an option: a native radio, an element with `role="radio"` or `role="option"`, or a button with a `value`. A clear button inside a rating does not commit. See [autoAdvance](/guide/custom-fields#autoadvance).
+For `radio`, `scale` and `rating` with `autoAdvance`, `rootProps` wire the same keys as the built-in fields: a click, Enter or Space commits the pick and goes to the next step, arrow keys, Home and End only change the value. A held Space commits once on release. Native radios work as they are, and so do components that pick an option on focus or on their own Space or Enter handler, such as Radix: each press commits once. Clicks, Space and Enter commit only on an option: a native radio, an element with `role="radio"` or `role="option"`, or a button with a `value`. A clear button or a text input inside the group keeps its own keys and does not commit. See [autoAdvance](/guide/custom-fields#autoadvance).
 
 ## MUI
 
