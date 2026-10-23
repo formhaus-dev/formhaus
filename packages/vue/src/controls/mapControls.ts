@@ -23,6 +23,7 @@ import { type Component, defineComponent, h, onBeforeUnmount, onMounted, type Pr
 
 export interface ControlRootProps extends ControlRoot {
   onPointerdown: () => void;
+  onKeydownCapture: (event: ControlKeyEvent) => void;
   onKeydown: (event: ControlKeyEvent) => void;
   onKeyup: (event: ControlKeyEvent) => void;
   onClick: (event: ControlClickEvent) => void;
@@ -51,11 +52,11 @@ export type ControlAdapter<C extends Component> =
   | (keyof PropsOf<C> & string)
   | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>> & { children?: Slot });
 
-export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C>];
+export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?];
 
 type Checked<Controls> = {
-  [Type in keyof Controls]: Controls[Type] extends readonly [infer C extends Component, unknown]
-    ? readonly [C, ControlAdapter<C>]
+  [Type in keyof Controls]: Controls[Type] extends readonly [infer C extends Component, unknown, ...unknown[]]
+    ? readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?]
     : Controls[Type];
 };
 
@@ -64,14 +65,18 @@ export type ControlMap = { [Type in FieldType | 'input']?: ControlEntryOf<Compon
 export type MapControlsConfig<Controls = ControlMap> = MapControlsOptions<Component, FieldProps, Component, Controls>;
 
 function mapped(entry: ControlEntryOf<Component, FieldProps>, input: boolean, config: MapControlsConfig): Component {
-  const [Control, adapter] = (Array.isArray(entry) ? entry : [entry]) as unknown as [Component, ControlAdapter<Component>?];
+  const [Control, adapter, changeProp = 'onUpdate:modelValue'] = (Array.isArray(entry) ? entry : [entry]) as unknown as [
+    Component,
+    ControlAdapter<Component>?,
+    string?,
+  ];
   return defineComponent({
     name: 'MappedControl',
     props: fieldComponentProps,
     emits: fieldComponentEmits,
     setup(props, { emit }) {
       const f = useFieldProps(props, emit);
-      const { pick, stop, pointerDown, keyDown, keyUp, click } = choiceControl(
+      const { pick, stop, pointerDown, keyDownCapture, keyDown, keyUp, click } = choiceControl(
         () => ({ field: props.field, value: props.modelValue, options: f.options, disabled: f.disabled }),
         f.change,
         f.commit,
@@ -103,13 +108,20 @@ function mapped(entry: ControlEntryOf<Component, FieldProps>, input: boolean, co
           Control,
           {
             ...control,
-            'onUpdate:modelValue': (value: unknown) => pick(fromControl(field, value)),
+            [changeProp]: (value: unknown) => pick(fromControl(field, value)),
             ...(Shell ? undefined : config.labels?.(f)),
             ...adapted,
           },
           children === undefined ? undefined : { default: typeof children === 'function' ? children : () => children },
         );
-        const rootProps: ControlRootProps = { ...root, onPointerdown: pointerDown, onKeydown: keyDown, onKeyup: keyUp, onClick: click };
+        const rootProps: ControlRootProps = {
+          ...root,
+          onPointerdown: pointerDown,
+          onKeydownCapture: keyDownCapture,
+          onKeydown: keyDown,
+          onKeyup: keyUp,
+          onClick: click,
+        };
         return Shell ? h(Shell, { kind, field, f, rootProps }, { default: () => element }) : h('div', rootProps, [element]);
       };
     },

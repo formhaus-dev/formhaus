@@ -156,7 +156,7 @@ describe('controlOptions and controlProps', () => {
         kind: 'group',
         shell: true,
         input: false,
-        attrs: { modelValue: 'old' },
+        attrs: { modelValue: 'old', placeholder: 'Pick', inputMode: 'numeric', autocomplete: 'off', 'onUpdate:modelValue': () => {} },
         valueKey: 'modelValue',
       },
     );
@@ -164,5 +164,17 @@ describe('controlOptions and controlProps', () => {
       control: { modelValue: 'a' },
       root: { 'data-fh': 'field', 'data-testid': 'plan', 'aria-invalid': true, 'aria-describedby': 'f-radio-error' },
     });
+    const bare = controlProps(
+      radio,
+      { ...fieldState({ id: 'f-radio', field: radio, error: 'Bad' }), value: 'a' },
+      {
+        kind: 'group',
+        shell: false,
+        input: false,
+        attrs: { 'aria-invalid': true },
+        valueKey: 'value',
+      },
+    );
+    expect(bare).toEqual({ control: { 'aria-invalid': true, value: 'a' }, root: { 'data-fh': 'field' } });
   });
 });

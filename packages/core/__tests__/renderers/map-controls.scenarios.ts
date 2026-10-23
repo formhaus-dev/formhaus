@@ -114,8 +114,8 @@ export function mapControlScenarios(harness: RendererHarness, { it, expect, fn, 
     expect(root(plan).tagName).toBe('DIV');
     expect(labelsFor(screen.getByRole('checkbox', { name: 'Agree' }).id)).toBe(1);
     await send();
-    await waitFor(() => expect(root(plan).getAttribute('aria-invalid')).toBe('true'));
-    expect(root(plan).hasAttribute('aria-describedby')).toBe(false);
+    await waitFor(() => expect(screen.getByRole('textbox', { name: 'Name' }).getAttribute('aria-invalid')).toBe('true'));
+    expect([root(plan).hasAttribute('aria-invalid'), root(plan).hasAttribute('aria-describedby')]).toEqual([false, false]);
   });
 
   it('takes a shell per kind and treats a missing kind as null', () => {

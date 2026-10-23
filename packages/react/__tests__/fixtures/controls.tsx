@@ -1,4 +1,4 @@
-import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
+import { type ChangeEvent, type InputHTMLAttributes, type KeyboardEvent, type ReactNode, useRef } from 'react';
 import { type ControlShellProps, mapControls } from '../../src/controls';
 import type { FieldProps } from '../../src/fieldProps';
 import type { FieldComponentProps } from '../../src/types';
@@ -110,6 +110,47 @@ function Stars({ id, value, onChange }: { id?: string; value?: unknown; onChange
           onKeyDown={() => {}}
         />
       ))}
+      <button type="button">Clear</button>
+    </div>
+  );
+}
+
+interface PickerProps {
+  id?: string;
+  value?: unknown;
+  options: { value: string | number; label: string }[];
+  onValueChange: (value: string) => void;
+}
+
+function Picker({ id, value, options, onValueChange }: PickerProps) {
+  const arrow = useRef(false);
+  const keyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'ArrowDown') {
+      arrow.current = true;
+      (event.currentTarget.nextElementSibling as HTMLElement | null)?.focus();
+      arrow.current = false;
+    }
+    if (event.key === ' ' || event.key === 'Enter') {
+      event.preventDefault();
+      onValueChange(event.currentTarget.value);
+    }
+  };
+  return (
+    <div id={id} role="radiogroup">
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          role="radio"
+          value={String(option.value)}
+          aria-checked={String(value) === String(option.value)}
+          onKeyDown={keyDown}
+          onFocus={(event) => arrow.current && onValueChange(event.currentTarget.value)}
+          onClick={(event) => onValueChange(event.currentTarget.value)}
+        >
+          {option.label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -157,6 +198,7 @@ const controls = {
 } as const;
 
 export const mapped = {
+  named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onValueChange'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
   bare: mapControls({ shell: null, labels: (f: FieldProps) => ({ label: f.label }), kinds: { multiselect: 'input' }, controls }),
   mixed: mapControls({ shell: { group: Shell }, labels: (f: FieldProps) => ({ label: f.label }), controls }),

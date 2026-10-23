@@ -23,6 +23,7 @@ import { type ComponentType, createElement, isValidElement, type ReactElement, t
 
 export interface ControlRootProps extends ControlRoot {
   onPointerDown: () => void;
+  onKeyDownCapture: (event: ControlKeyEvent) => void;
   onKeyDown: (event: ControlKeyEvent) => void;
   onKeyUp: (event: ControlKeyEvent) => void;
   onClick: (event: ControlClickEvent) => void;
@@ -44,11 +45,11 @@ export type ControlAdapter<C extends Control> =
   | (keyof PropsOf<C> & string)
   | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>>);
 
-export type ControlEntry<C extends Control = Control> = C | readonly [C, ControlAdapter<C>];
+export type ControlEntry<C extends Control = Control> = C | readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?];
 
 type Checked<Controls> = {
-  [Type in keyof Controls]: Controls[Type] extends readonly [infer C extends Control, unknown]
-    ? readonly [C, ControlAdapter<C>]
+  [Type in keyof Controls]: Controls[Type] extends readonly [infer C extends Control, unknown, ...unknown[]]
+    ? readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?]
     : Controls[Type];
 };
 
@@ -64,9 +65,10 @@ export type MapControlsConfig<Controls = ControlMap> = MapControlsOptions<
 export type MappedControl = (props: FieldComponentProps) => ReactElement;
 
 function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, config: MapControlsConfig): MappedControl {
-  const [Control, adapter] = (Array.isArray(entry) ? entry : [entry]) as unknown as [
+  const [Control, adapter, changeProp = 'onChange'] = (Array.isArray(entry) ? entry : [entry]) as unknown as [
     ComponentType<Record<string, unknown>>,
     ControlAdapter<Control>?,
+    string?,
   ];
   return function MappedControl(props: FieldComponentProps) {
     const f = fieldProps(props);
@@ -83,7 +85,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, conf
       (value) => latest.current.f.change(value),
       (value) => latest.current.f.commit(value),
     );
-    const { pick, stop, pointerDown, keyDown, keyUp, click } = choice.current;
+    const { pick, stop, pointerDown, keyDownCapture, keyDown, keyUp, click } = choice.current;
     useEffect(() => stop, []);
     useEffect(() => {
       try {
@@ -99,11 +101,18 @@ function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, conf
     const { control, root } = controlProps(field, f, { kind, shell: !!Shell, input, attrs: f.input, valueKey });
     const element = createElement(Control, {
       ...control,
-      onChange: (value: unknown, detail?: unknown) => pick(fromControl(field, value, isValidElement(detail) ? undefined : detail)),
+      [changeProp]: (value: unknown, detail?: unknown) => pick(fromControl(field, value, isValidElement(detail) ? undefined : detail)),
       ...(Shell ? undefined : config.labels?.(f)),
       ...(typeof adapter === 'string' ? { [adapter]: options } : adapter?.(f, options)),
     });
-    const rootProps: ControlRootProps = { ...root, onPointerDown: pointerDown, onKeyDown: keyDown, onKeyUp: keyUp, onClick: click };
+    const rootProps: ControlRootProps = {
+      ...root,
+      onPointerDown: pointerDown,
+      onKeyDownCapture: keyDownCapture,
+      onKeyDown: keyDown,
+      onKeyUp: keyUp,
+      onClick: click,
+    };
     return Shell ? (
       <Shell kind={kind} field={field} f={f} rootProps={rootProps}>
         {element}

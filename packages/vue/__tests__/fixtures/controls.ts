@@ -3,13 +3,13 @@ import { controlShellProps, mapControls } from '../../src/controls';
 import type { FieldProps } from '../../src/composables/useFieldProps';
 import { fieldComponentProps } from '../../src/props';
 
-type Emit = (event: 'update:modelValue', value: unknown) => void;
+type Emit = (event: 'update:modelValue' | 'update:value', value: unknown) => void;
 
 const control = (render: (props: Record<string, unknown>, emit: Emit, attrs: Record<string, unknown>) => unknown) =>
   defineComponent({
     inheritAttrs: false,
     props: { id: String, label: String, modelValue: null, options: Array as PropType<{ value: string | number; label: string }[]> },
-    emits: ['update:modelValue'],
+    emits: ['update:modelValue', 'update:value'],
     setup:
       (props, { emit, attrs }) =>
       () =>
@@ -98,18 +98,55 @@ const Stars = control((props, emit) =>
   h(
     'div',
     { id: props.id, role: 'radiogroup' },
-    [1, 2, 3].map((star) =>
-      h('span', {
-        key: star,
-        role: 'radio',
-        tabindex: 0,
-        'aria-label': `${star} stars`,
-        'aria-checked': props.modelValue === star,
-        onClick: () => emit('update:modelValue', star),
-      }),
-    ),
+    [1, 2, 3]
+      .map((star) =>
+        h('span', {
+          key: star,
+          role: 'radio',
+          tabindex: 0,
+          'aria-label': `${star} stars`,
+          'aria-checked': props.modelValue === star,
+          onClick: () => emit('update:modelValue', star),
+        }),
+      )
+      .concat(h('button', { type: 'button' }, 'Clear')),
   ),
 );
+
+const Picker = control((props, emit) => {
+  let arrow = false;
+  const pick = (event: Event) => emit('update:value', (event.currentTarget as HTMLButtonElement).value);
+  return h(
+    'div',
+    { id: props.id, role: 'radiogroup' },
+    (props.options as { value: string | number; label: string }[]).map((option) =>
+      h(
+        'button',
+        {
+          key: option.value,
+          type: 'button',
+          role: 'radio',
+          value: String(option.value),
+          'aria-checked': String(props.modelValue) === String(option.value),
+          onKeydown: (event: KeyboardEvent) => {
+            if (event.key === 'ArrowDown') {
+              arrow = true;
+              ((event.currentTarget as HTMLElement).nextElementSibling as HTMLElement | null)?.focus();
+              arrow = false;
+            }
+            if (event.key === ' ' || event.key === 'Enter') {
+              event.preventDefault();
+              pick(event);
+            }
+          },
+          onFocus: (event: Event) => arrow && pick(event),
+          onClick: pick,
+        },
+        option.label,
+      ),
+    ),
+  );
+});
 
 const Shell = defineComponent({
   props: controlShellProps,
@@ -151,6 +188,7 @@ const controls = {
 const labels = (f: FieldProps) => ({ label: f.label });
 
 export const mapped = {
+  named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onUpdate:value'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
   bare: mapControls({ shell: null, labels, kinds: { multiselect: 'input' }, controls }),
   mixed: mapControls({ shell: { group: Shell }, labels, controls }),

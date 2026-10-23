@@ -23,6 +23,7 @@ import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios'
 import { validateScenarios } from '../../core/__tests__/renderers/validate.scenarios';
 import { mapCommitScenarios } from '../../core/__tests__/renderers/map-commit.scenarios';
 import { mapControlScenarios } from '../../core/__tests__/renderers/map-controls.scenarios';
+import { mapNamedScenarios } from '../../core/__tests__/renderers/map-named.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
 import { design } from './fixtures/design';
 import { mapped } from './fixtures/controls';
@@ -176,3 +177,4 @@ describe('renderer conformance: handle', () => handleScenarios(harness, kit));
 describe('renderer conformance: onValidate', () => validateScenarios(harness, kit));
 describe('renderer conformance: mapControls', () => mapControlScenarios(harness, kit));
 describe('renderer conformance: mapControls commit', () => mapCommitScenarios(harness, kit));
+describe('renderer conformance: mapControls change props', () => mapNamedScenarios(harness, kit));

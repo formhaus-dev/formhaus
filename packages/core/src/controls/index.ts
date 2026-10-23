@@ -1,31 +1,17 @@
 import { type DateType, type FieldState, fieldValue, fromDate, numberValue, scaleView } from '@formhaus/core/fields';
-import type { FieldOption, FieldType, FormField } from '../types';
+import type { FieldOption, FormField } from '../types';
+import type { ControlKind, ControlOption, ControlShells, ControlTextType, MappedTypes } from './types';
 
-export type ControlKind = 'input' | 'inline' | 'group';
-
-export type ControlShells<Shell> = Shell | null | Partial<Record<ControlKind, Shell | null>>;
-
-export type ControlTextType = 'text' | 'email' | 'phone' | 'number' | 'password' | 'date' | 'time' | 'datetime';
-
-export type ControlOption = Omit<FieldOption, 'value'> & { value: string | number };
-
-export type ControlEntryOf<Component, View> = Component | readonly [Component, string | ((f: View, options: ControlOption[]) => object)];
-
-type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T;
-
-type LooseValue<T> = T extends (...args: never) => unknown ? T : T extends object ? { [Key in keyof T]?: Widen<T[Key]> } : Widen<T>;
-
-export type LooseProps<T> = { [Key in keyof T]?: LooseValue<T[Key]> };
-
-export type MappedTypes<Controls> = Exclude<keyof Controls, 'input'> | ('input' extends keyof Controls ? ControlTextType : never);
-
-export interface MapControlsOptions<Shell, View, Matrix, Controls> {
-  shell: ControlShells<Shell>;
-  labels?: (f: View) => object;
-  kinds?: Partial<Record<FieldType, ControlKind>>;
-  matrix?: Matrix;
-  controls: Controls;
-}
+export type {
+  ControlEntryOf,
+  ControlKind,
+  ControlOption,
+  ControlShells,
+  ControlTextType,
+  LooseProps,
+  MapControlsOptions,
+  MappedTypes,
+} from './types';
 
 export interface ControlRoot {
   'data-fh': 'field';
@@ -65,7 +51,8 @@ const TEXT_TYPES: ControlTextType[] = ['text', 'email', 'phone', 'number', 'pass
 const STRING_TYPES = ['text', 'email', 'phone', 'number', 'password', 'date', 'time', 'datetime', 'textarea', 'select', 'autocomplete'];
 const POINT_TYPES = ['scale', 'rating'];
 const COMMIT_TYPES = ['radio', 'scale', 'rating'];
-const OPTION = 'input, label, button, [role=radio], [role=option]';
+const OPTION = 'input[type=radio], button[value], [role=radio], [role=option]';
+const INPUT_ONLY = ['placeholder', 'inputMode', 'autoComplete', 'autocomplete'];
 
 export const controlKind = (type: string, kinds?: Partial<Record<string, ControlKind>>): ControlKind =>
   kinds?.[type] ?? KINDS[type] ?? 'input';
@@ -147,19 +134,23 @@ export function controlProps(field: FormField, state: FieldState & { value: unkn
     ...preset.attrs,
     value: undefined,
     modelValue: undefined,
+    onChange: undefined,
+    'onUpdate:modelValue': undefined,
     'aria-describedby': preset.shell && !group ? state.describedBy : undefined,
     'data-testid': group ? undefined : state.testId,
     type: preset.input ? state.inputType : undefined,
     [preset.valueKey]: toControl(field, state.value),
   };
-  for (const key of Object.keys(control)) if (control[key] === undefined) delete control[key];
+  for (const key of Object.keys(control))
+    if (control[key] === undefined || (preset.kind !== 'input' && INPUT_ONLY.includes(key))) delete control[key];
+  const shellGroup = group && preset.shell;
   return {
     control,
     root: {
       'data-fh': 'field',
       'data-testid': group ? state.testId : undefined,
-      'aria-invalid': group ? state.aria['aria-invalid'] : undefined,
-      'aria-describedby': group && preset.shell ? state.describedBy : undefined,
+      'aria-invalid': shellGroup ? state.aria['aria-invalid'] : undefined,
+      'aria-describedby': shellGroup ? state.describedBy : undefined,
     } as ControlRoot,
   };
 }
@@ -168,6 +159,7 @@ const empty = (value: unknown) => value == null || value === '' || (Array.isArra
 
 export function choiceControl(read: () => ChoiceInput, change: (value: unknown) => void, commit: (value: unknown) => void) {
   let arrow = false;
+  let pending = false;
   let fresh = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const active = () => {
@@ -179,20 +171,20 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
     const text = (target as { value?: unknown } | null)?.value;
     return controlOptions(field, options).find((option) => typeof text === 'string' && String(option.value) === text)?.value;
   };
-  const pressed = (event: ControlKeyEvent, key: string) => {
-    if (event.key !== key || !active()) return false;
-    event.preventDefault();
-    return !event.repeat;
-  };
-  const focused = (event: ControlKeyEvent) => finish(optionOf(event.target) ?? read().value);
   const finish = (value: unknown) => {
     clearTimeout(timer);
+    pending = false;
     if (empty(value)) return;
     fresh = true;
     setTimeout(() => {
       fresh = false;
     }, 0);
     commit(value);
+  };
+  const pressed = (event: ControlKeyEvent, key: string) => {
+    if (event.key !== key || !active()) return;
+    event.preventDefault();
+    if (pending) finish(optionOf(event.target) ?? read().value);
   };
   return {
     pick(value: unknown) {
@@ -205,20 +197,23 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
     pointerDown() {
       arrow = false;
     },
-    keyDown(event: ControlKeyEvent) {
+    keyDownCapture(event: ControlKeyEvent) {
       arrow = event.key.startsWith('Arrow');
-      pressed(event, ' ');
-      if (pressed(event, 'Enter')) focused(event);
+      pending = !event.repeat && (event.key === ' ' || event.key === 'Enter');
+    },
+    keyDown(event: ControlKeyEvent) {
+      if (event.key === ' ' && active()) event.preventDefault();
+      pressed(event, 'Enter');
     },
     keyUp(event: ControlKeyEvent) {
       arrow = false;
-      if (pressed(event, ' ')) focused(event);
+      pressed(event, ' ');
     },
     click({ detail, target }: ControlClickEvent) {
       const element = target as { closest?: (selector: string) => unknown } | null;
       if (!active() || arrow || fresh || detail > 1 || !element?.closest?.(OPTION)) return;
       const value = read().value;
-      const picked = optionOf(target);
+      const picked = optionOf(element.closest(OPTION));
       clearTimeout(timer);
       if (picked === undefined || String(picked) === String(value))
         timer = setTimeout(() => {
