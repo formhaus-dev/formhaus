@@ -1,5 +1,15 @@
 # @formhaus/mcp
 
+## 0.12.0
+
+### Minor Changes
+
+- `translation_template` takes an optional `catalog`. Messages and labels it covers are left out of the overlay, and the result lists its missing and unknown keys.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.3.0.
+
 ## 0.11.5
 
 ### Patch Changes
