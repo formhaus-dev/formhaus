@@ -20,9 +20,12 @@ import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenario
 import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { validateScenarios } from '../../core/__tests__/renderers/validate.scenarios';
+import { mapCommitScenarios } from '../../core/__tests__/renderers/map-commit.scenarios';
+import { mapControlScenarios } from '../../core/__tests__/renderers/map-controls.scenarios';
 import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import { design } from './fixtures/design';
+import { mapped } from './fixtures/controls';
 import { fieldComponentEmits, fieldComponentProps } from '../src/props';
 import { useFieldProps } from '../src/composables/useFieldProps';
 import type { FormRendererHandle, GroupItemComponentProps } from '../src/types';
@@ -168,6 +171,7 @@ const harness: RendererHarness = {
   },
   containers,
   controls,
+  mapped,
   design,
 };
 
@@ -192,3 +196,5 @@ describe('renderer conformance: definition changes', () => definitionScenarios(h
 describe('renderer conformance: layout slots', () => layoutScenarios(harness, kit));
 describe('renderer conformance: handle', () => handleScenarios(harness, kit));
 describe('renderer conformance: onValidate', () => validateScenarios(harness, kit));
+describe('renderer conformance: mapControls', () => mapControlScenarios(harness, kit));
+describe('renderer conformance: mapControls commit', () => mapCommitScenarios(harness, kit));

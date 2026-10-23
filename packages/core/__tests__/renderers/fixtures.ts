@@ -56,6 +56,7 @@ export interface RendererHarness {
   submit(form: HTMLFormElement): Promise<void>;
   containers?: Record<string, unknown>;
   controls?: Record<string, unknown>;
+  mapped?: Record<'shell' | 'bare' | 'mixed' | 'doubled', Record<string, unknown>>;
   design?: { components: Record<string, unknown>; layout: Record<string, unknown> };
 }
 
