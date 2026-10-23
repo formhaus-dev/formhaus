@@ -1,0 +1,23 @@
+{
+  "name": "@formhaus-examples/vue-primevue",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@formhaus/core": "^1.3.0",
+    "@formhaus/vue": "^1.3.0",
+    "@primeuix/themes": "^2.0.3",
+    "primevue": "^4.5.5",
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "~5.9.3",
+    "vite": "^8.3.4",
+    "vue-tsc": "^3.1.0"
+  }
+}
