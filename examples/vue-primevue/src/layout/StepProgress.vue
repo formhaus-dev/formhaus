@@ -20,7 +20,7 @@ defineProps(formStepProgressProps);
       </StepList>
     </Stepper>
     <ProgressBar v-else :value="(current / total) * 100" :show-value="false" class="progress__bar" />
-    <span class="progress__counter">{{ counterLabel ?? `Step ${current} of ${total}` }}</span>
+    <span v-if="!steps" class="progress__counter">{{ counterLabel ?? `Step ${current} of ${total}` }}</span>
     <component :is="`h${headingLevel}`" v-if="stepTitle" class="progress__title">{{ stepTitle }}</component>
     <p v-if="stepDescription" class="progress__description">{{ stepDescription }}</p>
   </div>

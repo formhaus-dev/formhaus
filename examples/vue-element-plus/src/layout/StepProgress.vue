@@ -18,7 +18,7 @@ defineProps(formStepProgressProps);
       />
     </ElSteps>
     <ElProgress v-else :percentage="(current / total) * 100" :show-text="false" />
-    <ElText type="info" class="progress__counter">{{ counterLabel ?? `Step ${current} of ${total}` }}</ElText>
+    <ElText v-if="!steps" type="info" class="progress__counter">{{ counterLabel ?? `Step ${current} of ${total}` }}</ElText>
     <component :is="`h${headingLevel}`" v-if="stepTitle" class="progress__title">{{ stepTitle }}</component>
     <ElText v-if="stepDescription" tag="p" type="info" class="progress__description">{{ stepDescription }}</ElText>
   </div>
