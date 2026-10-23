@@ -23,6 +23,7 @@ export interface ControllerProps {
 interface FormFieldControllerProps extends ControllerProps {
   field: FormFieldType;
   options?: FieldOption[];
+  busy?: boolean;
   disabled?: boolean;
   path?: string;
   item?: Record<string, unknown>;
@@ -33,6 +34,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
   formId,
   field,
   options,
+  busy,
   disabled,
   components,
   path,
@@ -62,6 +64,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
       value={item ? item[field.key] : engine.values[key]}
       error={engine.errors[key]}
       loading={engine.fieldLoading[key]}
+      busy={busy}
       disabled={disabled}
       components={components}
       onChange={handleChange}

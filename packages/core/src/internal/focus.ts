@@ -25,7 +25,9 @@ interface FormRoot extends Focusable {
 
 type Found = Focusable | null | undefined;
 
-const CONTROLS = 'input:not([type="hidden"]):not(:disabled), select:not(:disabled), textarea:not(:disabled), button:not(:disabled)';
+const ENABLED = ':not(:disabled):not([tabindex="-1"]):not([aria-disabled=true])';
+const FIELD_CONTROLS = ['input:not([type=hidden])', 'select', 'textarea', '[tabindex]'].map((control) => control + ENABLED).join();
+const CONTROLS = `${FIELD_CONTROLS},button${ENABLED}`;
 const GROUP_ITEM = '[data-fh-group-item], .fh-group__item';
 const GROUP_ADD = '[data-fh-group-add], .fh-group__add';
 
@@ -93,7 +95,7 @@ export function focusItem(
 ): void {
   const item = document.getElementById(itemDomId(formId, group, index, undefined, definition)) as Focusable | null;
   const next = (
-    added ? ((item?.closest?.(GROUP_ITEM) as Searchable | null | undefined)?.querySelector('input, select, textarea') ?? item) : item
+    added ? ((item?.closest?.(GROUP_ITEM) as Searchable | null | undefined)?.querySelector(FIELD_CONTROLS) ?? item) : item
   ) as Found;
   (
     next ??

@@ -1,4 +1,4 @@
-import type { FormSection } from '../types';
+import type { FormField, FormSection } from '../types';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { closest, pointer, warning } from './issues';
@@ -65,9 +65,14 @@ function action(value: unknown, path: string, disables = true): DefinitionIssue[
 const misplaced = (key: string) =>
   key !== 'i18n' && PROPERTIES.validation.split(' ').includes(key) ? `Move "${key}" into "validation": { "${key}": ... }` : undefined;
 
+const optionValues = ({ options, optionsFrom }: Partial<FormField>) =>
+  !optionsFrom && Array.isArray(options) ? JSON.stringify(options.map((option) => option?.value)) : undefined;
+
 function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
   const visible = field.type !== 'hidden';
   const matrix = (parent as FormSection | undefined)?.layout === 'matrix';
+  const choice = /^(radio|multiselect)$/.test(field.type);
+  const columns = matrix ? optionValues((parent as FormSection).fields[0] as Partial<FormField>) : undefined;
   const empty = visible && typeof field.label === 'string' && !field.label.trim();
   return [
     ...(visible ? labeled(field, path, LABEL_HINT) : []),
@@ -107,9 +112,18 @@ function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
           ),
         ]
       : []),
+    ...(columns && choice && (optionValues(field) ?? columns) !== columns
+      ? [
+          warning(
+            'matrix-options-mismatch',
+            `${path}/options`,
+            `the option values of "${field.key}" differ from the columns of the matrix "${parent!.key}"`,
+            'Use the options of the first field in every row',
+          ),
+        ]
+      : []),
     ...(isEntry(field.validation) ? unknown(field.validation, `${path}/validation`, PROPERTIES.validation) : []),
-    ...(field.columns !== undefined &&
-    (!/^(radio|multiselect)$/.test(field.type) || matrix || !field.options?.some((option) => option.image))
+    ...(field.columns !== undefined && (!choice || matrix || !field.options?.some((option) => option.image))
       ? [
           warning(
             'columns-not-applicable',

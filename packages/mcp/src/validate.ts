@@ -44,7 +44,10 @@ export function inspectDefinition(input: unknown, values?: Record<string, unknow
   const schema = found.filter(
     (item) => !core.some((other) => same(item, other)) && !nested.some((node) => item.path === node || item.path.startsWith(`${node}/`)),
   );
-  const report = finish([...schema, ...core, ...(schema.length ? [] : structureIssues(definition))]);
+  const lint = schema.length
+    ? []
+    : structureIssues(definition).filter((item) => !core.some(({ code, path }) => code === item.code && path === item.path));
+  const report = finish([...schema, ...core, ...lint]);
   if (!report.valid) return { report };
   const engine = createEngine(definition, values);
   if (!engine.ok) return { report: finish([...report.issues, ...fromCore(engine.issues)]) };

@@ -27,7 +27,7 @@ import type {
 } from '@formhaus/core';
 import type { Component, ComponentOptionsMixin, DefineComponent, EmitsOptions } from 'vue';
 
-export type FieldComponentMap = Partial<Record<FieldType, Component>>;
+export type FieldComponentMap = Partial<Record<FieldType | 'section' | 'group' | 'groupItem' | 'confirmDialog', Component>>;
 
 export type SectionComponentProps = SectionView;
 

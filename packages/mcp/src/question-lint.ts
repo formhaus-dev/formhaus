@@ -120,7 +120,7 @@ export function matrixIssues(section: FormSection, path: string): Issue[] {
   const first = choices[0];
   if (!first) return issues;
   for (const { node, at } of choices.slice(1)) {
-    if (signature(node) === signature(first.node)) continue;
+    if (first.node.optionsFrom || node.optionsFrom || signature(node) === signature(first.node)) continue;
     issues.push(
       issue(
         'matrix-options-mismatch',

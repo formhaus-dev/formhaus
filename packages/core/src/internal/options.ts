@@ -81,19 +81,52 @@ export function loadOptions(
   values: Record<string, unknown>,
   versions: Map<string, number>,
   commit: (key: string, options: FieldOption[]) => void,
+  busy?: (key: string, loading: boolean) => void,
 ): void {
   const version = (versions.get(key) ?? 0) + 1;
   versions.set(key, version);
+  const settle = (options?: FieldOption[]) => {
+    if (versions.get(key) !== version) return;
+    busy?.(key, false);
+    if (options) commit(key, options);
+  };
   try {
     const result = provider(values);
-    if (Array.isArray(result)) {
-      commit(key, result);
-      return;
+    if (Array.isArray(result)) settle(result);
+    else {
+      busy?.(key, true);
+      result.then(settle).catch(() => settle());
     }
-    result
-      .then((options) => {
-        if (versions.get(key) === version) commit(key, options);
-      })
-      .catch(() => {});
-  } catch {}
+  } catch {
+    settle();
+  }
+}
+
+export function watchOptions(
+  engine: FormEngine,
+  sources: OptionSource[],
+  providers: Record<string, OptionsProvider>,
+  commit: (key: string, options: FieldOption[]) => void,
+  busy: (key: string, loading: boolean) => void,
+): () => void {
+  const versions = new Map<string, number>();
+  const pending = new Set<string>();
+  const track = (key: string, loading: boolean) => {
+    if (loading) pending.add(key);
+    else pending.delete(key);
+    busy(key, loading);
+  };
+  const unsubscribers = sources.flatMap(([key, field]) => {
+    const provider = field.optionsFrom && providers[field.optionsFrom];
+    if (!provider) return [];
+    const resolve = () => loadOptions(key, provider, engine.values, versions, commit, track);
+    resolve();
+    return [...new Set(field.optionsDependsOn ?? [])].map((dependency) => engine.subscribeField(dependency, resolve));
+  });
+  return () => {
+    for (const unsubscribe of unsubscribers) unsubscribe();
+    versions.clear();
+    for (const key of pending) busy(key, false);
+    pending.clear();
+  };
 }

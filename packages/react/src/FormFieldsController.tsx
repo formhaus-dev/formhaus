@@ -29,7 +29,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
   useRecallSnapshot(engine);
   const fields = engine.visibleFields;
   const sources = useMemo(() => optionSources(fields), [fields]);
-  const loaded = useFieldOptions(sources, engine, optionsProviders);
+  const [loaded, busy] = useFieldOptions(sources, engine, optionsProviders);
   const resolvedOptions = useMemo(() => providedOptions(sources, optionsProviders, loaded), [sources, optionsProviders, loaded]);
 
   const render = (node: FormNode) => {
@@ -41,6 +41,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
           group={node}
           disabled={loading}
           options={resolvedOptions}
+          busy={busy}
           labels={labels}
           confirmRemove={confirmRemove}
           onItemsChange={onItemsChange}
@@ -53,6 +54,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
           {...props}
           field={node as FormField}
           options={resolvedOptions[node.key] ?? node.options}
+          busy={busy[node.key]}
           disabled={loading}
         />
       );

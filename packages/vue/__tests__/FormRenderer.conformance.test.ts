@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue';
 import { describe, expect, it, vi } from 'vitest';
 import type { RendererHarness, TestKit } from '../../core/__tests__/renderers/fixtures';
+import { controlScenarios } from '../../core/__tests__/renderers/controls.scenarios';
 import { containerScenarios } from '../../core/__tests__/renderers/containers.scenarios';
 import { definitionScenarios } from '../../core/__tests__/renderers/definition.scenarios';
 import { dialogScenarios } from '../../core/__tests__/renderers/dialog.scenarios';
@@ -18,6 +19,7 @@ import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenari
 import { stateScenarios } from '../../core/__tests__/renderers/states.scenarios';
 import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
+import { fieldComponentProps } from '../src/props';
 import type { GroupItemComponentProps } from '../src/types';
 
 const containers = {
@@ -55,6 +57,36 @@ const containers = {
   }),
 };
 
+const controls = {
+  'x-knob': defineComponent({
+    props: fieldComponentProps,
+    setup: (props) => () =>
+      h('div', {
+        id: props.id,
+        role: 'listbox',
+        tabindex: 0,
+        'aria-label': props.field.label,
+        'aria-invalid': !!props.error || undefined,
+        'data-loading': props.loading || undefined,
+      }),
+  }),
+  'x-dial': defineComponent({
+    props: fieldComponentProps,
+    setup: (props) => () =>
+      h('div', { id: props.id, role: 'group', 'aria-invalid': !!props.error || undefined }, [
+        h('span', { role: 'button', tabindex: 0, 'aria-disabled': 'true', 'aria-label': 'Locked' }),
+        h('div', {
+          role: 'slider',
+          tabindex: 0,
+          'aria-label': props.field.label,
+          'aria-valuemin': 0,
+          'aria-valuemax': 10,
+          'aria-valuenow': 0,
+        }),
+      ]),
+  }),
+};
+
 const harness: RendererHarness = {
   mount(props) {
     const { rerender } = render(FormRenderer, { props });
@@ -70,6 +102,7 @@ const harness: RendererHarness = {
     await fireEvent.submit(form);
   },
   containers,
+  controls,
 };
 
 const kit: TestKit = { it, expect, fn: vi.fn, waitFor, screen };
@@ -86,6 +119,7 @@ describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: exclusive options', () => exclusiveScenarios(harness, kit));
 describe('renderer conformance: randomized options', () => randomizeScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
+describe('renderer conformance: custom controls', () => controlScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));
 describe('renderer conformance: remove dialog', () => dialogScenarios(harness, kit));
 describe('renderer conformance: definition changes', () => definitionScenarios(harness, kit));
