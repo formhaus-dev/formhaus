@@ -17,4 +17,7 @@ function mount(definition?: FormDefinition) {
 }
 
 mount();
-listenToPlayground(mount);
+listenToPlayground({
+  definition: mount,
+  theme: (theme) => vuetify.theme.change(theme),
+});

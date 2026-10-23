@@ -3,11 +3,13 @@ import { FormRenderer } from '@formhaus/vue';
 import { components } from './component-map';
 import FormActions from './actions/FormActions.vue';
 import StepProgress from './actions/StepProgress.vue';
+import ErrorSummary from './actions/ErrorSummary.vue';
+import FormSection from './actions/FormSection.vue';
 import json from './definition.json';
 
 defineProps({ definition: { type: Object, default: () => json } });
 
-const layout = { actions: FormActions, progress: StepProgress };
+const layout = { actions: FormActions, progress: StepProgress, section: FormSection, errorSummary: ErrorSummary };
 
 function onSubmit(values) {
   console.log('Submitted:', values);
