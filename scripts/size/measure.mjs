@@ -22,13 +22,18 @@ const ENTRIES = {
       ['useFormEngine', 'HeadlessFormRenderer', 'FormRenderer'].map((only) => [`core + ${pkg} ${only}`, { pkg, only }]),
     ),
   ),
+  'core FormEngine (trusted)': { pkg: 'core', only: 'FormEngine', trusted: true },
+  'core + react FormRenderer (trusted)': { pkg: 'react', only: 'FormRenderer', trusted: true },
+  'core + vue FormRenderer (trusted)': { pkg: 'vue', only: 'FormRenderer', trusted: true },
 };
+
+export const TRUSTED = { 'process.env.FORMHAUS_TRUSTED': JSON.stringify('1') };
 
 export function gzip(contents) {
   return gzipSync(contents, { level: 9 }).length;
 }
 
-export async function bundleSize(contents, { external = [], mode = 'production', resolveDir = process.cwd() } = {}) {
+export async function bundleSize(contents, { external = [], mode = 'production', resolveDir = process.cwd(), define = {} } = {}) {
   const result = await build({
     stdin: { contents, resolveDir },
     bundle: true,
@@ -37,18 +42,18 @@ export async function bundleSize(contents, { external = [], mode = 'production',
     write: false,
     logLevel: 'error',
     loader: { '.css': 'empty' },
-    define: { 'process.env.NODE_ENV': JSON.stringify(mode) },
+    define: { 'process.env.NODE_ENV': JSON.stringify(mode), ...define },
     external,
   });
   return gzip(result.outputFiles[0].contents);
 }
 
 export function entrySize(name) {
-  const { pkg, only, subpath } = ENTRIES[name];
+  const { pkg, only, subpath, trusted } = ENTRIES[name];
   const dist = `./packages/${pkg}/dist`;
   const lines = [`export ${only ? `{ ${only} }` : '*'} from '${dist}/index.js';`];
   if (subpath) lines.push(`export * from '${dist}/${subpath}.js';`);
-  return bundleSize(lines.join('\n'), { external: EXTERNAL[pkg] });
+  return bundleSize(lines.join('\n'), { external: EXTERNAL[pkg], define: trusted ? TRUSTED : {} });
 }
 
 export async function measureEntries() {

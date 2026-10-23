@@ -1,4 +1,4 @@
-import { parseDefinition } from '../definition-validation/check-definition';
+import { validDefinition } from '../definition-validation/check-definition';
 import { FormDefinitionError, isError } from '../definition-validation/issues';
 import { checkTranslations } from './check';
 import type { FormDefinition, LabelFn, LabelSource } from '../types';
@@ -74,7 +74,7 @@ function fromTranslate(definition: FormDefinition, { translate, prefix = definit
 }
 
 export function localize(input: FormDefinition, source: LocalizeSource): Localized {
-  const errors = checkTranslations(parseDefinition(input)).filter(isError);
+  const errors = checkTranslations(validDefinition(input)).filter(isError);
   if (errors.length) throw new FormDefinitionError(errors);
   const definition: FormDefinition = JSON.parse(JSON.stringify(input));
   if (source.lang) definition.lang = source.lang;

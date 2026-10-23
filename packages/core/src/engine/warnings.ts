@@ -1,23 +1,24 @@
 import { checkDefinition, FormDefinitionError, type DefinitionIssue } from '../definition-validation';
-import { definitionErrors } from '../definition-validation/check-definition';
+import { definitionErrors, parsed } from '../definition-validation/check-definition';
 import { isError } from '../definition-validation/issues';
 import type { FormDefinition } from '../types';
 import { isGroup } from '../visibility/nodes';
 import { getAllFields } from './engine-utils';
 import type { FormEngineOptions } from './engine-options';
 
-function developmentIssues(definition: FormDefinition, validators: Record<string, unknown>): DefinitionIssue[] | undefined {
+function definitionIssues(definition: FormDefinition, validators: Record<string, unknown>): DefinitionIssue[] {
   let check: (() => DefinitionIssue[]) | undefined;
   try {
     if (process.env.NODE_ENV !== 'production') check = () => checkDefinition(definition, { validators });
-  } catch {}
-  return check?.();
+    else if (process.env.FORMHAUS_TRUSTED !== '1') throw definition;
+  } catch {
+    if (!parsed.has(definition)) return definitionErrors(definition);
+  }
+  return check?.() ?? [];
 }
 
-const parsed = new WeakSet<FormDefinition>();
-
 export function trustDefinition(definition: FormDefinition): FormDefinition {
-  parsed.add(definition);
+  parsed.set(definition, true);
   return definition;
 }
 
@@ -25,8 +26,8 @@ const reporter = ({ onWarning }: FormEngineOptions) =>
   onWarning ?? ((issue: DefinitionIssue) => console.warn(`[formhaus] ${issue.message}`));
 
 export function assertDefinition(definition: FormDefinition, options: FormEngineOptions, validators: Record<string, unknown>): void {
-  if (parsed.has(definition)) return;
-  const issues = developmentIssues(definition, validators) ?? definitionErrors(definition);
+  if (parsed.get(definition)) return;
+  const issues = definitionIssues(definition, validators);
   const errors = issues.filter(isError);
   if (errors.length) throw new FormDefinitionError(errors);
   const warn = reporter(options);
