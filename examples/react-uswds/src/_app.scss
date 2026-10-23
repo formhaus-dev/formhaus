@@ -1,0 +1,123 @@
+@use "uswds-core" as *;
+
+.app {
+  padding-top: units(4);
+  padding-bottom: units(6);
+}
+
+.app__title {
+  margin: 0 0 units(3);
+}
+
+.app .fh-form {
+  max-width: units("tablet");
+}
+
+.progress {
+  margin-bottom: units(3);
+}
+
+.progress__description {
+  margin: units(1) 0 0;
+}
+
+.progress__errors {
+  color: color("secondary-dark");
+}
+
+.summary {
+  margin-top: units(4);
+}
+
+.summary__step {
+  font-weight: font-weight("bold");
+}
+
+.actions {
+  margin-top: units(4);
+}
+
+.section {
+  margin-top: units(4);
+}
+
+.section__title {
+  @include u-font("sans", "lg");
+  margin-top: 0;
+  font-weight: font-weight("bold");
+}
+
+.group__items {
+  margin-top: units(2);
+  margin-left: 0;
+  flex-direction: column;
+}
+
+.group__item {
+  margin-bottom: units(2);
+}
+
+.group__item .usa-card__body > .usa-form-group:first-child {
+  margin-top: 0;
+}
+
+.choice__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin-bottom: units(1);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(units("card"), 1fr));
+  gap: units(1);
+}
+
+.inline,
+.scale {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 units(3);
+}
+
+.scale__anchors {
+  display: flex;
+  justify-content: space-between;
+  gap: units(2);
+  margin-top: units(1);
+}
+
+.matrix__row {
+  display: grid;
+  grid-template-columns: minmax(units("card"), 1fr) repeat(var(--matrix-columns), minmax(units(7), units(10)));
+  align-items: center;
+  gap: units(1);
+  margin-top: units(2);
+}
+
+.matrix__header {
+  @include u-font("sans", "2xs");
+  color: color("base");
+}
+
+.matrix__cell {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.matrix__cell .usa-radio__label {
+  height: units(3);
+  margin-top: 0;
+  padding-left: units(3);
+}
+
+.matrix__cell .usa-radio__label::before {
+  margin-top: 0;
+}
+
+.matrix__error {
+  grid-column: 1 / -1;
+}
