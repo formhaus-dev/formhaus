@@ -62,6 +62,39 @@ The `email` type checks the format in the browser and in `validateSubmission()` 
 
 It works on `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` fields, such as `country` on a select. In a group item the renderers prefix `section-<group key>-<index>`, so each item is filled on its own. The `autocomplete` field type sets `off` when the field has no `autocomplete`. `checkDefinition()` reports an unknown token as `unknown-autocomplete-token` and another field type as `autocomplete-not-applicable`.
 
+### Sign-in and sign-up forms
+
+Set `username` on the sign-in identifier and `current-password` on the password:
+
+```json
+[
+  { "key": "email", "type": "email", "label": "Email", "autocomplete": "username", "validation": { "required": true } },
+  { "key": "password", "type": "password", "label": "Password", "autocomplete": "current-password", "validation": { "required": true } }
+]
+```
+
+On sign-up, use `new-password` on the password and on the repeat field, and check the repeat with `matchField`:
+
+```json
+[
+  { "key": "email", "type": "email", "label": "Email", "autocomplete": "username", "validation": { "required": true } },
+  { "key": "password", "type": "password", "label": "Password", "autocomplete": "new-password", "validation": { "required": true, "minLength": 12 } },
+  {
+    "key": "confirmPassword",
+    "type": "password",
+    "label": "Repeat password",
+    "autocomplete": "new-password",
+    "validation": { "required": true, "matchField": "password", "matchFieldMessage": "Passwords must match" }
+  }
+]
+```
+
+The renderers set `name` to the field key, an `id`, a `<label>` linked to the input and the `autocomplete` attribute, so password managers can fill the form and offer to save the password.
+
+For a two-step sign-in, put the identifier on step 1 and the password on step 2. Keep `autocomplete: "username"` on the identifier. Browsers and password managers handle this best when the form submits at the end. We have not tested it with every password manager.
+
+Formhaus Cloud does not accept `password` fields. Use your own backend or sign-in provider for passwords.
+
 A `\n` in a step or section `description` or in `helperText` starts a new line. The text stays plain; HTML and Markdown are not rendered.
 
 ## Select
