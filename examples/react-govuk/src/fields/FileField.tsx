@@ -1,21 +1,17 @@
-import type { FieldComponentProps } from '@formhaus/react';
-import { describedBy, FormGroup } from './FormGroup';
+import { type FieldComponentProps, fieldProps } from '@formhaus/react';
+import { Shell } from './Shell';
 
-export function FileField({ id, field, error, loading, disabled, onChange, onBlur, onFocus }: FieldComponentProps) {
+export function FileField(props: FieldComponentProps) {
+  const f = fieldProps(props);
   return (
-    <FormGroup id={id} field={field} error={error}>
+    <Shell kind="input" field={props.field} f={f} rootProps={{ 'data-fh': 'field' }}>
       <input
-        id={id}
-        name={field.key}
+        {...f.attrs}
         type="file"
-        accept={field.accept}
-        className={error ? 'govuk-file-upload govuk-file-upload--error' : 'govuk-file-upload'}
-        disabled={disabled || loading}
-        aria-describedby={describedBy(id, field, error)}
-        onChange={(event) => onChange(event.target.files?.[0] ?? null)}
-        onBlur={onBlur}
-        onFocus={onFocus}
+        accept={props.field.accept}
+        className={f.invalid ? 'govuk-file-upload govuk-file-upload--error' : 'govuk-file-upload'}
+        onChange={(event) => f.change(event.target.files?.[0] ?? null)}
       />
-    </FormGroup>
+    </Shell>
   );
 }

@@ -83,7 +83,12 @@ export function GroupItem({
         {canRemove && (
           <ul className="govuk-summary-card__actions">
             <li className="govuk-summary-card__action">
-              <button type="button" className="govuk-link govuk-body govuk-!-margin-0" disabled={disabled} onClick={requestRemove}>
+              <button
+                type="button"
+                className="govuk-link govuk-body govuk-!-margin-0 app-link-button"
+                disabled={disabled}
+                onClick={requestRemove}
+              >
                 {removeLabel}
                 <span className="govuk-visually-hidden"> {removeName}</span>
               </button>
