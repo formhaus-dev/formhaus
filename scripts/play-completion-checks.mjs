@@ -40,8 +40,8 @@ export function completionChecks({ open, rendered, edit }) {
   async function submit(page, view, definition, fields) {
     const done = view.getByText('Response submitted', { exact: true }).filter({ visible: true });
     const button = view
-      .getByRole('button', { name: primaryButton(definition) })
-      .filter({ visible: true })
+      .locator('button')
+      .filter({ hasText: primaryButton(definition), visible: true })
       .last();
     const text = () => view.locator('body').innerText();
     let review = false;
@@ -83,8 +83,8 @@ export function completionChecks({ open, rendered, edit }) {
             const lines = String(error).split('\n');
             const shown = await page
               .frameLocator(`iframe[src*="/play/apps/${app.id}/"]`)
-              .locator('button')
-              .evaluateAll((buttons) => buttons.map((button) => button.outerHTML.slice(0, 160)).join(' '), null, { timeout: 2000 })
+              .locator('body')
+              .innerText({ timeout: 2000 })
               .catch(() => '');
             problems.push(
               `${app.id} ${form.hash}: threw ${lines[0]} | ${lines.slice(-6).join(' ').replace(/\s+/g, ' ')} | preview: ${shown.replace(/\s+/g, ' ').slice(0, 300)}`,
