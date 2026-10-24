@@ -22,7 +22,7 @@ export const footerColumns: FooterColumn[] = [
       { text: 'Templates', href: '/templates/' },
       { text: 'Examples', href: '/guide/examples' },
       { text: 'Form builder', href: '/build' },
-      { text: 'Playground', href: '/playground' },
+      { text: 'Playground', href: '/play' },
     ],
   },
   {

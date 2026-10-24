@@ -13,7 +13,6 @@ const config: KnipConfig = {
   compilers: { '.md': pageScripts, '.vue': scripts },
   ignoreFiles: ['packages/**/*.md'],
   ignoreIssues: {
-    'docs/.vitepress/components/playground/loaders/*.ts': ['exports'],
     'packages/editor-react/src/store/store.ts': ['types'],
   },
   workspaces: {

@@ -71,7 +71,7 @@ export const sharedNav: DefaultTheme.NavItem[] = [
   { text: 'Cloud', link: '/cloud', activeMatch: '^/cloud' },
   { text: 'API', link: '/api/definition' },
   { text: 'Builder', link: '/build' },
-  { text: 'Playground', link: '/playground' },
+  { text: 'Playground', link: '/play', activeMatch: '^/play' },
 ];
 
 export async function sharedThemeConfig() {

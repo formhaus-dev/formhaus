@@ -111,7 +111,7 @@ const label = engine.isLastStep ? definition.submit.label : 'Continue';
 
 ## Svelte
 
-See [Svelte 5](/recipes/svelte) for a runes component. The [Svelte 4 example](https://github.com/formhaus-dev/formhaus/tree/main/examples/vanilla-svelte) runs in the [playground](/playground#svelte).
+See [Svelte 5](/recipes/svelte) for a runes component and the [Svelte 4 example](https://github.com/formhaus-dev/formhaus/tree/main/examples/vanilla-svelte) for the older syntax.
 
 ## Related
 
