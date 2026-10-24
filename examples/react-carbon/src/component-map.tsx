@@ -1,4 +1,4 @@
-import type { FieldComponentMap, FieldComponentProps, FieldProps } from '@formhaus/react';
+import type { FieldComponentMap, FieldProps } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
 import {
   Checkbox,
@@ -13,7 +13,7 @@ import {
   TimePicker,
   Toggle,
 } from '@carbon/react';
-import { Choices } from './fields/Choices';
+import { Choices, GroupShell } from './fields/Choices';
 import { DateInput } from './fields/DateInput';
 import { DateTimeField } from './fields/DateTimeField';
 import { FileField } from './fields/FileField';
@@ -33,45 +33,45 @@ const group = (f: FieldProps, options: ControlOption[]) => ({
   options,
 });
 
-const base = { shell: { input: null, inline: InlineShell, group: null }, matrix: MatrixRow };
-
-const radio = (orientation: 'horizontal' | 'vertical') =>
-  mapControls({ ...base, controls: { radio: [Choices, (f, options) => ({ ...group(f, options), orientation })] } }).radio;
+const counted = (f: FieldProps) => ({ ...labels(f), ...(f.maxLength && { enableCounter: true, maxCount: f.maxLength }) });
 
 const checkbox = mapControls({
   shell: { input: null, inline: null, group: null },
   controls: {
-    checkbox: [Checkbox, (f) => ({ ...labels(f), onChange: (_: unknown, { checked }: { checked: boolean }) => f.change(checked) })],
+    checkbox: {
+      component: Checkbox,
+      props: (f) => ({ ...labels(f), onChange: (_: unknown, { checked }: { checked: boolean }) => f.change(checked) }),
+    },
   },
 }).checkbox;
 
-const InlineRadio = radio('horizontal');
-const StackedRadio = radio('vertical');
-
 export const components: FieldComponentMap = {
   ...mapControls({
-    ...base,
+    shell: { input: null, inline: InlineShell, group: GroupShell },
+    matrix: MatrixRow,
     freeText: true,
     kinds: { multiselect: 'input' },
+    conditionalReveal: ['radio'],
     controls: {
-      input: [TextInput, labels],
-      password: [PasswordInput, labels],
-      number: [NumberInput, (f) => ({ label: label(f), ...texts(f), allowEmpty: true })],
-      textarea: [TextArea, labels],
-      date: [DateInput, labels],
-      time: [
-        TimePicker,
-        (f) => ({
+      input: { component: TextInput, props: counted },
+      password: { component: PasswordInput, props: labels },
+      number: { component: NumberInput, props: (f) => ({ label: label(f), ...texts(f), allowEmpty: true }) },
+      textarea: { component: TextArea, props: counted },
+      date: { component: DateInput, props: labels },
+      radio: { component: Choices, props: group },
+      time: {
+        component: TimePicker,
+        props: (f) => ({
           labelText: label(f),
           invalid: f.invalid,
           invalidText: f.error,
           placeholder: 'hh:mm',
           pattern: '([01]\\d|2[0-3]):[0-5]\\d',
         }),
-      ],
-      select: [
-        Select,
-        (f, options) => ({
+      },
+      select: {
+        component: Select,
+        props: (f, options) => ({
           ...labels(f),
           children: (
             <>
@@ -82,10 +82,10 @@ export const components: FieldComponentMap = {
             </>
           ),
         }),
-      ],
-      autocomplete: [
-        ComboBox<ControlOption>,
-        (f, options) => ({
+      },
+      autocomplete: {
+        component: ComboBox<ControlOption>,
+        props: (f, options) => ({
           ...texts(f),
           titleText: label(f),
           items: options,
@@ -95,11 +95,11 @@ export const components: FieldComponentMap = {
           shouldFilterItem: matches,
           onChange: () => {},
         }),
-        'onInputChange',
-      ],
-      multiselect: [
-        FilterableMultiSelect<ControlOption>,
-        (f, options) => ({
+        changeProp: 'onInputChange',
+      },
+      multiselect: {
+        component: FilterableMultiSelect<ControlOption>,
+        props: (f, options) => ({
           ...texts(f),
           titleText: label(f),
           items: options,
@@ -108,19 +108,19 @@ export const components: FieldComponentMap = {
           onChange: ({ selectedItems }: { selectedItems: ControlOption[] | null }) =>
             f.change((selectedItems ?? []).map((option) => option.value)),
         }),
-      ],
-      switch: [Toggle, (f) => ({ labelText: label(f), toggled: f.value === true }), 'onToggle'],
-      scale: [
-        Choices,
-        (f, options) => ({
+      },
+      switch: { component: Toggle, props: (f) => ({ labelText: label(f), toggled: f.value === true }), changeProp: 'onToggle' },
+      scale: {
+        component: Choices,
+        props: (f, options) => ({
           ...group(f, options),
+          orientation: 'horizontal',
           helperText: [f.helperText, f.options.map((option) => `${option.value}: ${option.label}`).join(', ')].filter(Boolean).join('. '),
         }),
-      ],
-      rating: [Rating, group],
+      },
+      rating: { component: Rating, props: group },
     },
   }),
-  radio: (props: FieldComponentProps) => (props.field.layout === 'inline' ? <InlineRadio {...props} /> : <StackedRadio {...props} />),
   checkbox,
   datetime: DateTimeField,
   file: FileField,

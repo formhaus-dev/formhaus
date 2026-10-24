@@ -1,9 +1,10 @@
 import type { ControlOption } from '@formhaus/react/controls';
 import { HStack, Image, RadioCard, RadioGroup, SimpleGrid, Stack } from '@chakra-ui/react';
+import { Fragment, useContext } from 'react';
+import { Inline } from './Shell';
 
 interface ChoicesProps extends Omit<RadioGroup.RootProps, 'size'> {
   options: ControlOption[];
-  inline: boolean;
 }
 
 export const optionIds = (id: string | undefined, options: ControlOption[]) => ({
@@ -14,8 +15,9 @@ export const optionIds = (id: string | undefined, options: ControlOption[]) => (
   },
 });
 
-export function Choices({ options, inline, ...props }: ChoicesProps) {
+export function Choices({ options, ...props }: ChoicesProps) {
   const ids = optionIds(props.id, options);
+  const inline = useContext(Inline);
   if (options.some((option) => option.image))
     return (
       <RadioCard.Root {...props} ids={ids}>
@@ -40,11 +42,27 @@ export function Choices({ options, inline, ...props }: ChoicesProps) {
     <RadioGroup.Root {...props} ids={ids}>
       <Options gap={inline ? '6' : '2'} wrap="wrap">
         {options.map((option) => (
-          <RadioGroup.Item key={option.value} value={String(option.value)}>
-            <RadioGroup.ItemHiddenInput />
-            <RadioGroup.ItemIndicator />
-            <RadioGroup.ItemText>{option.label}</RadioGroup.ItemText>
-          </RadioGroup.Item>
+          <Fragment key={option.value}>
+            <RadioGroup.Item value={String(option.value)}>
+              <RadioGroup.ItemHiddenInput aria-controls={option.reveal?.id} />
+              <RadioGroup.ItemIndicator />
+              <RadioGroup.ItemText>{option.label}</RadioGroup.ItemText>
+            </RadioGroup.Item>
+            {option.reveal && (
+              <Stack
+                id={option.reveal.id}
+                data-fh="reveal"
+                hidden={!option.reveal.open}
+                gap="6"
+                ms="2"
+                ps="5"
+                borderStartWidth="2px"
+                borderColor="border"
+              >
+                {option.reveal.children}
+              </Stack>
+            )}
+          </Fragment>
         ))}
       </Options>
     </RadioGroup.Root>

@@ -15,55 +15,74 @@ function prefill(definition) {
   return { ...definition, ...(steps ? { steps } : { fields: definition.fields.map(fill) }) };
 }
 
-export function completionChecks({ open, rendered, frameOf, edit }) {
-  async function listed(frame, fields) {
-    const shown = await Promise.all(fields.map((field) => frame.getByText(field.label, { exact: true }).filter({ visible: true }).count()));
-    const inputs = await frame.locator('input:not([type=hidden]), textarea, select').filter({ visible: true }).count();
+export function primaryButton(definition) {
+  const labels = ['Continue', definition.submit.label, ...(definition.steps ?? []).flatMap((step) => step.next?.label ?? [])];
+  return new RegExp(`^\\s*(${labels.map(literal).join('|')})\\s*$`);
+}
+
+const settle = (promise) =>
+  promise.then(
+    () => true,
+    () => false,
+  );
+
+export function completionChecks({ open, rendered, edit }) {
+  async function listed(view, fields) {
+    const shown = await Promise.all(fields.map((field) => view.getByText(field.label, { exact: true }).filter({ visible: true }).count()));
+    const inputs = await view.locator('input:not([type=hidden]), textarea, select').filter({ visible: true }).count();
     return !inputs && shown.every(Boolean);
   }
 
-  async function submit(frame, definition, fields) {
-    const labels = ['Continue', definition.submit.label, ...(definition.steps ?? []).flatMap((step) => step.next?.label ?? [])];
-    const primary = new RegExp(`^\\s*(${labels.map(literal).join('|')})\\s*$`);
-    const done = frame.getByText('Response submitted', { exact: true }).filter({ visible: true });
+  async function until(page, check) {
+    for (let attempt = 0; attempt < 300 && !(await check()); attempt += 1) await page.waitForTimeout(100);
+  }
+
+  async function submit(page, view, definition, fields) {
+    const done = view.getByText('Response submitted', { exact: true }).filter({ visible: true });
+    const button = view
+      .getByRole('button', { name: primaryButton(definition) })
+      .filter({ visible: true })
+      .last();
+    const text = () => view.locator('body').innerText();
     let review = false;
-    for (let turn = 0; turn <= (definition.steps?.length ?? 1) && !(await done.count()); turn += 1) {
-      review = await listed(frame, fields);
-      await frame.getByRole('button', { name: primary }).filter({ visible: true }).last().click();
-      await done.waitFor({ timeout: 1500 }).catch(() => {});
+    for (let turn = 0; turn <= (definition.steps?.length ?? 1); turn += 1) {
+      await until(page, async () => (await done.count()) > 0 || (await button.isEnabled().catch(() => false)));
+      if (await done.count()) break;
+      review = await listed(view, fields);
+      const before = await text();
+      await button.click({ timeout: 30000 });
+      await until(page, async () => (await text()) !== before);
     }
-    return (await done.count()) ? { answers: review || (await listed(frame, fields)) } : null;
+    await settle(done.waitFor({ timeout: 5000 }));
+    return (await done.count()) ? { answers: review || (await listed(view, fields)) } : null;
+  }
+
+  async function complete(page, app, { hash, definition }, problems) {
+    const name = `${app.id} ${hash}`;
+    await open(page, `/play#ds=${app.id}&${hash}`);
+    await edit(page, JSON.stringify(prefill(definition), null, 2));
+    await rendered(page);
+    const view = page.frameLocator(`iframe[src*="/play/apps/${app.id}/"]`);
+    const fields = (definition.steps?.[0].fields ?? definition.fields).slice(0, 2);
+    const first = view.getByLabel(fields[0].label, { exact: false }).first();
+    const expected = String(samples[fields[0].type] ?? 'Alex Morgan');
+    await until(page, async () => (await first.inputValue().catch(() => '')) === expected);
+    const result = await submit(page, view, definition, fields);
+    if (!result) return problems.push(`${name}: no completion screen after submit`);
+    if (!result.answers) problems.push(`${name}: the answers are not listed on the completion or review screen`);
+    if (/[{}]/.test(await view.locator('body').innerText())) problems.push(`${name}: the completion screen shows raw JSON`);
+    await view.getByRole('button', { name: 'Submit another response' }).click();
+    if (!(await settle(first.waitFor({ timeout: 5000 })))) problems.push(`${name}: "Submit another response" did not bring the form back`);
   }
 
   return {
     async completion(page, problems) {
       for (const app of apps)
-        for (const { hash, definition } of forms) {
-          const name = `${app.id} ${hash}`;
-          await open(page, `/play#ds=${app.id}&${hash}`);
-          await edit(page, JSON.stringify(prefill(definition), null, 2));
-          await rendered(page);
-          const frame = frameOf(page, app.id);
-          const fields = (definition.steps?.[0].fields ?? definition.fields).slice(0, 2);
-          const result = await submit(frame, definition, fields);
-          if (!result) {
-            problems.push(`${name}: no completion screen after submit`);
-            continue;
-          }
-          if (!result.answers) problems.push(`${name}: the answers are not listed on the completion or review screen`);
-          const text = await frame.evaluate(() => document.body.innerText);
-          if (/[{}]/.test(text)) problems.push(`${name}: the completion screen shows raw JSON`);
-          await frame.getByRole('button', { name: 'Submit another response' }).click();
-          const back = await frame
-            .getByLabel(fields[0].label, { exact: false })
-            .first()
-            .waitFor({ timeout: 5000 })
-            .then(
-              () => true,
-              () => false,
-            );
-          if (!back) problems.push(`${name}: "Submit another response" did not bring the form back`);
-        }
+        for (const form of forms)
+          await complete(page, app, form, problems).catch((error) => {
+            const lines = String(error).split('\n');
+            problems.push(`${app.id} ${form.hash}: threw ${lines[0]} ${lines.find((line) => line.includes('waiting for')) ?? ''}`);
+          });
     },
   };
 }

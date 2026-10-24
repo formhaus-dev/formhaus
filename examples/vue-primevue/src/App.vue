@@ -25,7 +25,7 @@ function onSubmit(values: Record<string, unknown>) {
       </template>
       <template #content>
         <FormCompletion v-if="submitted" :definition="definition" :values="submitted" @restart="submitted = null" />
-        <HeadlessFormRenderer v-else :definition="definition" :components="components" :layout="layout" @submit="onSubmit" />
+        <HeadlessFormRenderer v-else :definition="definition" :components="components" :layout="layout" conditional-reveal @submit="onSubmit" />
       </template>
     </Card>
   </main>

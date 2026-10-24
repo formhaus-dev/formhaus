@@ -1,7 +1,9 @@
 import { Radio } from '@base-ui/react/radio';
+import { toggleOption } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
 import { Star } from 'lucide-react';
+import { Fragment } from 'react';
 import { buttonVariants } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -10,15 +12,52 @@ import { cn } from '@/lib/utils';
 
 export const native = () => ({ nativeButton: true, render: <button type="button" /> });
 
-export const checkboxes = (f: FieldProps, options: ControlOption[]) => ({
-  className: 'grid gap-2',
-  children: options.map((option) => (
-    <Label key={option.value} className="font-normal">
-      <Checkbox value={String(option.value)} aria-invalid={f.invalid || undefined} />
-      {option.label}
-    </Label>
-  )),
-});
+function Reveal({ reveal }: Pick<ControlOption, 'reveal'>) {
+  return reveal ? (
+    <div
+      id={reveal.id}
+      data-fh="reveal"
+      role="group"
+      hidden={!reveal.open}
+      className="ml-1.5 grid gap-5 border-l-2 pl-4"
+      onKeyDown={(event) => event.stopPropagation()}
+    >
+      {reveal.children}
+    </div>
+  ) : null;
+}
+
+interface CheckboxListProps {
+  f: FieldProps;
+  options: ControlOption[];
+  value: unknown;
+  onChange: (value: unknown) => void;
+}
+
+export function CheckboxList({ f, options, value, onChange }: CheckboxListProps) {
+  return (
+    <div className="grid gap-2">
+      {options.map((option, index) => {
+        const { checked, value: picked } = f.option({ ...option, value: String(option.value) }, index);
+        return (
+          <Fragment key={option.value}>
+            <Label className="font-normal">
+              <Checkbox
+                checked={checked}
+                onCheckedChange={() => onChange(toggleOption(value, picked))}
+                aria-invalid={f.invalid || undefined}
+                aria-controls={option.reveal?.id}
+                aria-expanded={option.reveal?.open}
+              />
+              {option.label}
+            </Label>
+            <Reveal reveal={option.reveal} />
+          </Fragment>
+        );
+      })}
+    </div>
+  );
+}
 
 const tile =
   'flex-col items-stretch gap-2 rounded-lg border p-2 font-normal has-[[data-checked]]:border-primary has-[[data-checked]]:ring-1 has-[[data-checked]]:ring-primary';
@@ -37,10 +76,13 @@ export const radios = (f: FieldProps, options: ControlOption[]) => {
           </span>
         </Label>
       ) : (
-        <Label key={option.value} className="font-normal">
-          <RadioGroupItem value={option.value} aria-invalid={f.invalid || undefined} />
-          {option.label}
-        </Label>
+        <Fragment key={option.value}>
+          <Label className="font-normal">
+            <RadioGroupItem value={option.value} aria-invalid={f.invalid || undefined} aria-controls={option.reveal?.id} />
+            {option.label}
+          </Label>
+          <Reveal reveal={option.reveal} />
+        </Fragment>
       ),
     ),
   };

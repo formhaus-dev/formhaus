@@ -27,7 +27,7 @@ export function App({ definition = initial }: { definition?: FormDefinition }) {
   const [submitted, setSubmitted] = useState<Record<string, unknown> | null>(null);
 
   return (
-    <main className="mx-auto max-w-md px-4 py-8">
+    <main className="mx-auto max-w-166 px-4 py-8">
       {submitted ? (
         <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
       ) : (
@@ -36,7 +36,7 @@ export function App({ definition = initial }: { definition?: FormDefinition }) {
             <CardTitle>{definition.title}</CardTitle>
           </CardHeader>
           <CardContent>
-            <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
+            <FormRenderer definition={definition} components={components} layout={layout} conditionalReveal onSubmit={setSubmitted} />
           </CardContent>
         </Card>
       )}

@@ -35,6 +35,7 @@ export function App({ definition }: { definition: FormDefinition }) {
             components={components}
             layout={layout}
             errorSummary="top"
+            conditionalReveal
             onSubmit={setSubmitted}
           />
         </>

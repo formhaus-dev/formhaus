@@ -10,11 +10,23 @@ import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { type InputHTMLAttributes, type ReactElement, useState } from 'react';
 
+const helper = (f: FieldProps) =>
+  f.maxLength ? (
+    <Box component="span" sx={{ display: 'flex', justifyContent: 'space-between', gap: 2 }}>
+      <span>{f.error ?? f.helperText}</span>
+      <span>
+        {f.text.length}/{f.maxLength}
+      </span>
+    </Box>
+  ) : (
+    (f.error ?? f.helperText)
+  );
+
 export const labels = (f: FieldProps) => ({
   label: f.label,
   required: f.required,
   error: f.invalid,
-  helperText: f.error ?? f.helperText,
+  helperText: helper(f),
   fullWidth: true,
   margin: 'normal' as const,
   'data-testid': undefined,

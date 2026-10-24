@@ -24,7 +24,7 @@ function onSubmit(values: Record<string, unknown>) {
         <h1 class="page__title">{{ definition.title }}</h1>
       </template>
       <FormCompletion v-if="submitted" :definition="definition" :values="submitted" @restart="submitted = null" />
-      <HeadlessFormRenderer v-else :definition="definition" :components="components" :layout="layout" @submit="onSubmit" />
+      <HeadlessFormRenderer v-else :definition="definition" :components="components" :layout="layout" conditional-reveal @submit="onSubmit" />
     </ElCard>
   </main>
 </template>

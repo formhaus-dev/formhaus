@@ -1,12 +1,21 @@
 import { completionChecks } from './play-completion-checks.mjs';
 import { entryChecks } from './play-entry-checks.mjs';
 import { playPage } from './play-page.mjs';
+import { phoneChecks } from './play-phone-checks.mjs';
+import { revealChecks } from './play-reveal-checks.mjs';
 import { apps, playwright, previewServer, watchErrors } from './play-server.mjs';
 import { schemaChecks } from './schema-play-checks.mjs';
+import { widthChecks } from './play-width-checks.mjs';
 
-const browsers = process.argv.slice(2).length ? process.argv.slice(2) : ['chromium'];
+const args = process.argv.slice(2);
+const named = args.filter((arg) => !arg.startsWith('--'));
+const browsers = named.length ? named : ['chromium'];
+const only = args
+  .find((arg) => arg.startsWith('--only='))
+  ?.slice(7)
+  .split(',');
 const widths = [320, 390, 768, 861, 1024, 1180, 1280, 1440, 1920];
-const { base, ready, stop } = previewServer();
+const { base, ready, stop } = await previewServer();
 
 const play = playPage(base);
 const { open, rendered, frameOf, edit, tone } = play;
@@ -15,6 +24,9 @@ const checks = {
   ...entryChecks(base, frameOf),
   ...schemaChecks(base),
   ...completionChecks(play),
+  ...revealChecks(play),
+  ...phoneChecks(play),
+  ...widthChecks(base, play),
 
   async systems(page, problems) {
     await open(page);
@@ -173,7 +185,7 @@ try {
   await ready();
   for (const name of browsers) {
     const browser = await playwright[name].launch({ headless: true });
-    for (const [check, run] of Object.entries(checks)) {
+    for (const [check, run] of Object.entries(checks).filter(([check]) => !only || only.includes(check))) {
       const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' });
       await context.addInitScript(() => {
         try {
