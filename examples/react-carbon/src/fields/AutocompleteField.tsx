@@ -1,27 +1,28 @@
 import type { FieldOption } from '@formhaus/core';
-import type { FieldComponentProps } from '@formhaus/react';
+import { optionValue } from '@formhaus/core/fields';
+import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { ComboBox } from '@carbon/react';
-import { inputProps } from './shared';
+import { label, texts } from './labels';
 
 export function AutocompleteField(props: FieldComponentProps) {
-  const { field, value, onChange } = props;
-  const { labelText, name: _name, ...rest } = inputProps(props);
-  const options = field.options ?? [];
-  const stored = (value as string) ?? '';
-  const selected = options.find((option) => option.value === stored) ?? null;
+  const f = fieldProps(props);
 
   return (
     <ComboBox<FieldOption>
-      {...rest}
-      titleText={labelText}
-      placeholder={field.placeholder}
-      items={options}
+      {...texts(f)}
+      id={f.id}
+      titleText={label(f)}
+      placeholder={f.placeholder}
+      disabled={f.disabled}
+      items={f.options}
       itemToString={(option) => option?.label ?? ''}
       allowCustomValue
-      selectedItem={selected}
+      selectedItem={f.options.find((option) => option.value === f.value) ?? null}
       shouldFilterItem={({ item, inputValue }) => !inputValue || item.label.toLowerCase().includes(inputValue.toLowerCase())}
-      onInputChange={(text) => onChange(options.find((option) => option.label === text)?.value ?? text)}
-      onChange={({ selectedItem }) => selectedItem && onChange(selectedItem.value)}
+      onInputChange={(text) => f.change(optionValue(f.options, text))}
+      onChange={({ selectedItem }) => selectedItem && f.change(selectedItem.value)}
+      onBlur={f.blur}
+      onFocus={f.focus}
     />
   );
 }

@@ -1,7 +1,7 @@
 import type { GroupComponentProps, GroupItemComponentProps } from '@formhaus/react';
-import { Button, FormGroup, Stack, Tile } from '@carbon/react';
+import { Button, FormGroup, Layer, Stack, Tile } from '@carbon/react';
 import { Add, TrashCan } from '@carbon/icons-react';
-import { GroupMessage } from '../fields/GroupMessage';
+import { Texts } from '../fields/GroupMessage';
 
 export function Group({
   id,
@@ -20,12 +20,7 @@ export function Group({
   return (
     <FormGroup id={id} legendText={label} invalid={!!error} aria-describedby={describedBy}>
       <Stack gap={5}>
-        {helperText && <GroupMessage id={`${id}-helper`} helper={helperText} />}
-        {error && (
-          <div role="alert">
-            <GroupMessage id={`${id}-error`} error={error} />
-          </div>
-        )}
+        <Texts id={id} helperText={helperText} error={error} role="alert" />
         {items.map((item) => (
           <Item key={item.id} {...item} />
         ))}
@@ -56,27 +51,29 @@ export function GroupItem({
 }: GroupItemComponentProps) {
   return (
     <Tile role="group" aria-labelledby={titleId} data-fh-group-item>
-      <Stack gap={5}>
-        <Stack orientation="horizontal" gap={5}>
-          <h3 id={titleId} tabIndex={-1} className="cds--type-heading-compact-02">
-            {title}
-          </h3>
-          {canRemove && (
-            <Button
-              id={`${titleId}-remove`}
-              kind="danger--ghost"
-              size="sm"
-              renderIcon={TrashCan}
-              aria-label={removeName}
-              disabled={disabled}
-              onClick={requestRemove}
-            >
-              {removeLabel}
-            </Button>
-          )}
+      <Layer>
+        <Stack gap={5}>
+          <Stack orientation="horizontal" gap={5}>
+            <h3 id={titleId} tabIndex={-1} className="cds--type-heading-compact-02">
+              {title}
+            </h3>
+            {canRemove && (
+              <Button
+                id={`${titleId}-remove`}
+                kind="danger--ghost"
+                size="sm"
+                renderIcon={TrashCan}
+                aria-label={removeName}
+                disabled={disabled}
+                onClick={requestRemove}
+              >
+                {removeLabel}
+              </Button>
+            )}
+          </Stack>
+          {children}
         </Stack>
-        {children}
-      </Stack>
+      </Layer>
     </Tile>
   );
 }

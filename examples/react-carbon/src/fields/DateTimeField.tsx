@@ -1,48 +1,48 @@
-import type { FieldComponentProps } from '@formhaus/react';
-import { DatePicker, DatePickerInput, FormGroup, Stack, TimePicker } from '@carbon/react';
-import { fromIsoDate, groupProps, inputProps, toIsoDate } from './shared';
-import { GroupMessage } from './GroupMessage';
+import { type FieldComponentProps, fieldProps } from '@formhaus/react';
+import { FormGroup, Stack, TimePicker } from '@carbon/react';
+import { DateInput } from './DateInput';
+import { Texts } from './GroupMessage';
+import { label } from './labels';
 
 export function DateTimeField(props: FieldComponentProps) {
-  const { value, onChange } = props;
-  const { id, invalid, invalidText, disabled, onBlur, onFocus } = inputProps(props);
-  const [date = '', time = ''] = String(value ?? '').split('T');
-  const write = (nextDate: string, nextTime: string) => onChange(nextDate || nextTime ? `${nextDate}T${nextTime}` : '');
+  const f = fieldProps(props);
+  const [date = '', time = ''] = f.text.split('T');
+  const write = (nextDate: string, nextTime: string) => f.change(nextDate || nextTime ? `${nextDate}T${nextTime}` : '');
+  const dateInvalid = f.invalid && !date;
+  const error = <span id={f.errorId}>{f.error}</span>;
 
   return (
-    <FormGroup {...groupProps(props)}>
+    <FormGroup legendText={label(f)} invalid={f.invalid} data-fh="field">
       <Stack orientation="horizontal" gap={5}>
-        <DatePicker
-          datePickerType="single"
-          dateFormat="m/d/Y"
-          value={date ? fromIsoDate(date) : ''}
-          onChange={([picked]) => write(picked ? toIsoDate(picked) : '', time)}
-        >
-          <DatePickerInput
-            id={id}
-            labelText="Date"
-            placeholder="mm/dd/yyyy"
-            invalid={invalid && !date}
-            invalidText={invalidText}
-            disabled={disabled}
-            onBlur={onBlur}
-            onFocus={onFocus}
-          />
-        </DatePicker>
+        <DateInput
+          id={f.id}
+          labelText="Date"
+          aria-label={`${f.label} date`}
+          aria-describedby={f.describedBy}
+          invalid={dateInvalid}
+          invalidText={dateInvalid && error}
+          disabled={f.disabled}
+          value={date}
+          onChange={(next) => write(next, time)}
+          onBlur={f.blur}
+          onFocus={f.focus}
+        />
         <TimePicker
-          id={`${id}-time`}
+          id={`${f.id}-time`}
           labelText="Time"
+          aria-label={`${f.label} time`}
+          aria-describedby={f.describedBy}
           placeholder="hh:mm"
           pattern="([01]\d|2[0-3]):[0-5]\d"
-          invalid={invalid && (!time || !!date)}
-          invalidText={invalidText}
-          disabled={disabled}
+          invalid={f.invalid && !dateInvalid}
+          invalidText={!dateInvalid && error}
+          disabled={f.disabled}
           value={time}
           onChange={(event) => write(date, event.currentTarget.value)}
-          onBlur={onBlur}
+          onBlur={f.blur}
         />
       </Stack>
-      <GroupMessage helper={props.field.helperText} />
+      <Texts id={f.id} helperText={f.helperText} />
     </FormGroup>
   );
 }
