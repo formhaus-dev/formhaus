@@ -1,32 +1,32 @@
 <script setup lang="ts">
-import type { FormField } from '@formhaus/core';
+import { scaleView } from '@formhaus/core/fields';
+import { controlShellProps } from '@formhaus/vue/controls';
 import Message from 'primevue/message';
-import type { PropType } from 'vue';
-import { describedBy } from './field';
+import { computed } from 'vue';
 
-defineProps({
-  id: { type: String, required: true },
-  field: { type: Object as PropType<FormField>, required: true },
-  error: String,
-  kind: { type: String as PropType<'label' | 'inline' | 'fieldset'>, default: 'label' },
-});
+const props = defineProps(controlShellProps);
+const anchors = computed(() => (props.field.type === 'scale' ? scaleView(props.field).anchors : []));
 </script>
 
 <template>
-  <fieldset v-if="kind === 'fieldset'" class="field" data-fh="field" :aria-describedby="describedBy(id, field, error)">
-    <legend class="field__label">{{ field.label }}</legend>
-    <slot />
-    <Message v-if="field.helperText" :pt="{ root: { id: `${id}-helper`, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">{{ field.helperText }}</Message>
-    <Message v-if="error" :pt="{ root: { id: `${id}-error` } }" size="small" severity="error" variant="simple">{{ error }}</Message>
-  </fieldset>
-  <div v-else class="field" data-fh="field">
-    <label v-if="kind === 'label'" :for="id" class="field__label">{{ field.label }}</label>
-    <div v-else class="field__inline">
+  <component :is="kind === 'group' ? 'fieldset' : 'div'" v-bind="rootProps" :class="['field', { 'field--inline': field.layout === 'inline' }]">
+    <legend v-if="kind === 'group'" class="field__label">
+      {{ f.label }}<span v-if="f.required" aria-hidden="true"> *</span>
+    </legend>
+    <label v-if="kind === 'input'" :id="`${f.id}-label`" :for="f.id" class="field__label">
+      {{ f.label }}<span v-if="f.required" aria-hidden="true"> *</span>
+    </label>
+    <div v-if="kind === 'inline'" class="field__inline">
       <slot />
-      <label :for="id">{{ field.label }}</label>
+      <label :for="f.id">{{ f.label }}<span v-if="f.required" aria-hidden="true"> *</span></label>
     </div>
-    <slot v-if="kind === 'label'" />
-    <Message v-if="field.helperText" :pt="{ root: { id: `${id}-helper`, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">{{ field.helperText }}</Message>
-    <Message v-if="error" :pt="{ root: { id: `${id}-error` } }" size="small" severity="error" variant="simple">{{ error }}</Message>
-  </div>
+    <slot v-else />
+    <div v-if="anchors.some(Boolean)" class="scale__anchors" aria-hidden="true">
+      <span v-for="(anchor, index) in anchors" :key="index">{{ anchor?.label }}</span>
+    </div>
+    <Message v-if="f.helperText" :pt="{ root: { id: f.helperId, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">
+      {{ f.helperText }}
+    </Message>
+    <Message v-if="f.error" :pt="{ root: { id: f.errorId } }" size="small" severity="error" variant="simple">{{ f.error }}</Message>
+  </component>
 </template>

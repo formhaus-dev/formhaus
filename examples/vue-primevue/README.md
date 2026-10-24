@@ -16,11 +16,11 @@ Opens at http://localhost:5173. The page follows the system color scheme.
 ## Files
 
 - [src/App.vue](src/App.vue) renders `HeadlessFormRenderer` inside a PrimeVue `Card`.
-- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a PrimeVue field.
+- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a PrimeVue component with `mapControls`.
 - [src/layout/index.ts](src/layout/index.ts) maps the layout slots: `Stepper` for progress, `Message` for the error summary, `Fieldset` and `Panel` for sections and groups, `Dialog` for the remove dialog, `Button` for actions.
-- [src/fields/FieldShell.vue](src/fields/FieldShell.vue) draws the label, helper text and error under each field.
-- [src/fields/DateField.vue](src/fields/DateField.vue) handles `date`, `datetime` and `time` with `DatePicker` and converts its `Date` to `YYYY-MM-DD`, `YYYY-MM-DDTHH:mm` and `HH:mm`.
-- [src/fields/RadioField.vue](src/fields/RadioField.vue) also draws matrix rows and image options.
+- [src/fields/FieldShell.vue](src/fields/FieldShell.vue) draws the label, helper text and error around each control.
+- [src/fields/AutocompleteControl.vue](src/fields/AutocompleteControl.vue) filters the `AutoComplete` suggestions.
+- [src/fields/FileField.vue](src/fields/FileField.vue) and [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) are the file picker and the matrix rows.
 - [src/definition.json](src/definition.json) is a three-step form with every field type.
 
 | Formhaus type | PrimeVue component |
@@ -32,12 +32,12 @@ Opens at http://localhost:5173. The page follows the system color scheme.
 | `select` | `Select` |
 | `multiselect` | `MultiSelect` |
 | `autocomplete` | `AutoComplete` |
-| `radio` | `RadioButton` |
+| `radio` | `RadioButtonGroup` with `RadioButton` |
 | `checkbox` | `Checkbox` |
 | `switch` | `ToggleSwitch` |
 | `date`, `datetime`, `time` | `DatePicker` |
 | `file` | `FileUpload` in basic mode |
-| `scale` | `SelectButton` |
+| `scale` | `RadioButtonGroup` styled as a button bar |
 | `rating` | `Rating` |
 
 ## Use as a starter
