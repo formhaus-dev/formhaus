@@ -66,6 +66,10 @@
     {
       "code": "slow-pattern",
       "path": "/fields/25/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/26/validation/pattern"
     }
   ],
   "definition": {
@@ -281,6 +285,14 @@
         "label": "code25",
         "validation": {
           "pattern": "(?<s>-)(?:a*\\k<s>*-)+$"
+        }
+      },
+      {
+        "key": "code26",
+        "type": "text",
+        "label": "code26",
+        "validation": {
+          "pattern": "(?<s>a)a*\\k<s>*$"
         }
       }
     ]

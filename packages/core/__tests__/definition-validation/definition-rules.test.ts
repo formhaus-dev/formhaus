@@ -153,6 +153,7 @@ describe('field rules', () => {
       '(a+\\1)+',
       '(-)(?:a*\\1*-)+$',
       '(?<s>-)(?:a*\\k<s>*-)+$',
+      '(?<s>a)a*\\k<s>*$',
     ];
     const fast = ['([\\w-]+\\.)+', '(?:,\\s*[a-z]+)*', '( [A-Za-z]+)*', '((a+)\\.)+', '([^,]+,)+', '(?:[a-z]+\\.){2,}'];
     const issues = checkDefinition(form([...slow, ...fast].map((pattern, index) => field(`p${index}`, { validation: { pattern } }))));

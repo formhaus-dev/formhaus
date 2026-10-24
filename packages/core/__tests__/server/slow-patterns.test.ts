@@ -85,9 +85,9 @@ describe('slow patterns on the server', () => {
   it('refuses a repeated group with a backreference to its separator', () => {
     const value = `${'-'.repeat(40)}!`;
     const test = tests();
-    const issues = refused(form('(-)(?:a*\\1*-)+$', '(?<s>-)(?:a*\\k<s>*-)+$'), { p0: value, p1: value });
+    const issues = refused(form('(-)(?:a*\\1*-)+$', '(?<s>-)(?:a*\\k<s>*-)+$', '(?<s>a)a*\\k<s>*$'), { p0: value, p1: value, p2: value });
     expect(test.mock.calls.some(([input]) => input === value)).toBe(false);
-    expect(issues.map(({ path }) => path)).toEqual(['/fields/0/validation/pattern', '/fields/1/validation/pattern']);
+    expect(issues.map(({ path }) => path)).toEqual([0, 1, 2].map((index) => `/fields/${index}/validation/pattern`));
   });
 
   it('does not cache a pattern over 1000 characters', () => {
