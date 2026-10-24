@@ -60,7 +60,7 @@ The `input` key covers `text`, `email`, `phone`, `number`, `password`, `date`, `
 
 ## Shell
 
-The shell renders the label, the helper and the error around one control. It gets `kind`, `field`, `f` (the object from [field helpers](/guide/custom-fields#field-helpers)), `rootProps` and the control as `children` in React or the default slot in Vue.
+The shell renders the label, the helper and the error around one control. It gets `kind`, `field`, `f` (the object from [field helpers](/guide/custom-fields#field-helpers)), `rootProps`, `anchors` and the control as `children` in React or the default slot in Vue.
 
 ```tsx
 import type { ControlShellProps } from '@formhaus/react/controls'
@@ -95,6 +95,7 @@ export function Shell({ kind, f, rootProps, children }: ControlShellProps) {
 - Spread `rootProps` on the root: `{...rootProps}` in React, `v-bind="rootProps"` in Vue. It carries `data-fh="field"` for [focus](/guide/custom-fields#field-focus), the keyboard handlers of [autoAdvance](#autoadvance), and on a group the test id. A group shell also gets `aria-invalid` and `aria-describedby` for its `<fieldset>`.
 - Give the helper the id `f.helperId` and the error the id `f.errorId`. The control points at them with `aria-describedby`.
 - In Vue, declare the props with `controlShellProps` from `@formhaus/vue/controls`.
+- `anchors` holds the labels of a `scale` at its first, middle and last point, and is empty for other types.
 
 `shell` takes one component, one per kind such as `{ inline: InlineShell, group: GroupShell }`, or `null`. A kind without a shell renders the control in a `<div>` with `rootProps`. The control then gets the props from `labels(f)`, for a component that renders its own label, helper and error:
 
@@ -125,12 +126,15 @@ Every control gets these props:
 | `aria-describedby` | With a shell, on `input` and `inline` controls |
 | `data-testid` | The [test id](/guide/testing) on `input` and `inline` controls, on the root of a group |
 | `type` | Only for the `input` key |
+| `rows` | From the field, on `textarea` controls |
+| `accept` | From the field, on `file` controls |
 | `onBlur`, `onFocus` | Report blur and focus |
 
 `onChange` takes what the component sends and writes the value core checks:
 
-- An event: `event.target.value`, `event.target.checked` for `checkbox` and `switch`, the first file for `file`. With a second argument, such as MUI `(event, value)`, the second argument.
+- An event: `event.target.value`, `event.target.checked` for `checkbox` and `switch`, the first file of `event.target.files` for `file`. With a second argument, such as MUI `(event, value)`, the second argument.
 - A bare value, such as Ant Design `Select`.
+- A `File`, or a list of files such as Vuetify `VFileInput` sends: the first file.
 - An option object `{ value, label }`, or a list of them: the option values.
 - A `Date`, or a date library object with `toDate()` such as dayjs, for `date`, `time` and `datetime`: the [value format](/guide/custom-fields#value-types) of the type.
 - For `number`, decimal text becomes a number and empty text `null`. For `scale` and `rating`, text becomes a number, and a `rating` of `0` becomes `null`.
@@ -191,6 +195,22 @@ const components = mapControls({
 ```
 
 Radix compares string values, so `value: f.text` passes a scale point as text. In Vue, name the event listener, such as `'onUpdate:value'`.
+
+### Free text
+
+An autocomplete that takes typed text, such as Mantine `Autocomplete`, needs `freeText`:
+
+```tsx
+mapControls({
+  shell: Shell,
+  freeText: true,
+  controls: {
+    autocomplete: [Autocomplete, (_, options) => ({ data: options.map((option) => option.label) })],
+  },
+})
+```
+
+The control gets the typed text as its value. Text that matches an option label saves the option value, other text saves as typed. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do.
 
 ## autoAdvance
 
@@ -253,7 +273,6 @@ export const components: FieldComponentMap = {
 `TextField` renders its own label, helper and error, so the `input` kind has no shell. It puts unknown props such as `data-testid` on its root, so `labels` moves the [test id](/guide/testing) to the input with `slotProps.htmlInput`. MUI `Checkbox` and `Switch` put unknown props on their root, so `inputProps` moves the ARIA to the input. The shells use `FormControl`:
 
 ```tsx
-import { scaleView } from '@formhaus/core/fields'
 import type { ControlShellProps } from '@formhaus/react/controls'
 import { Box, FormControl, FormControlLabel, FormHelperText, FormLabel, Typography } from '@mui/material'
 import type { ReactElement } from 'react'
@@ -276,8 +295,7 @@ export function InlineShell({ f, rootProps, children }: ControlShellProps) {
   )
 }
 
-export function GroupShell({ field, f, rootProps, children }: ControlShellProps) {
-  const anchors = field.type === 'scale' ? scaleView(field).anchors : []
+export function GroupShell({ f, rootProps, anchors, children }: ControlShellProps) {
   return (
     <FormControl {...rootProps} component="fieldset" error={f.invalid} fullWidth>
       <FormLabel component="legend" required={f.required}>
@@ -343,12 +361,10 @@ export const components: FieldComponentMap = {
 The pickers send a dayjs object, which `onChange` writes as the value of the type. The shell wraps `Form.Item`; a group gets a `<fieldset>`:
 
 ```tsx
-import { scaleView } from '@formhaus/core/fields'
 import type { ControlShellProps } from '@formhaus/react/controls'
 import { Form, Typography } from 'antd'
 
-export function Shell({ kind, field, f, rootProps, children }: ControlShellProps) {
-  const anchors = field.type === 'scale' ? scaleView(field).anchors : []
+export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
   const help = (f.helperText || f.error) && (
     <>
       {f.helperText && <div id={f.helperId}>{f.helperText}</div>}
@@ -433,12 +449,9 @@ Vuetify inputs render their own label and messages, so only groups have a shell:
 
 ```vue
 <script setup lang="ts">
-import { scaleView } from '@formhaus/core/fields'
 import { controlShellProps } from '@formhaus/vue/controls'
-import { computed } from 'vue'
 
 const props = defineProps(controlShellProps)
-const anchors = computed(() => (props.field.type === 'scale' ? scaleView(props.field).anchors : []))
 </script>
 
 <template>
@@ -447,8 +460,8 @@ const anchors = computed(() => (props.field.type === 'scale' ? scaleView(props.f
       {{ props.f.label }}<span v-if="props.f.required" aria-hidden="true"> *</span>
     </legend>
     <slot />
-    <div v-if="anchors.some(Boolean)" class="group__anchors text-caption">
-      <span v-for="(anchor, index) in anchors" :key="index">{{ anchor?.label }}</span>
+    <div v-if="props.anchors.some(Boolean)" class="group__anchors text-caption">
+      <span v-for="(anchor, index) in props.anchors" :key="index">{{ anchor?.label }}</span>
     </div>
     <div v-if="props.f.helperText" :id="props.f.helperId" class="text-caption">{{ props.f.helperText }}</div>
     <div v-if="props.f.error" :id="props.f.errorId" class="text-caption text-error">{{ props.f.error }}</div>

@@ -53,7 +53,7 @@ These cost the same on any path, and only when imported:
 | `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 8.0 KB |
 | `@formhaus/core/cloud` | 3.3 KB |
 | `@formhaus/core/i18n` | 5.9 KB |
-| `@formhaus/core/fix` | 11.5 KB |
+| `@formhaus/core/fix` | 11.6 KB |
 | `@formhaus/core/research` | 0.3 KB |
 | `@formhaus/core/fields` | 1.7 KB |
 | `@formhaus/core/schema` | 0.2 KB |
@@ -67,7 +67,7 @@ These cost the same on any path, and only when imported:
 
 | Import | React | Vue |
 |---|---|---|
-| `mapControls` from `/controls`, over `FormRenderer` | 2.5 KB | 2.8 KB |
+| `mapControls` from `/controls`, over `FormRenderer` | 2.8 KB | 3.0 KB |
 
 <!-- size:controls:end -->
 
