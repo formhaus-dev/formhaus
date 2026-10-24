@@ -266,6 +266,62 @@ jobs:
         working-directory: examples/${{ matrix.example }}
         run: pnpm build
 
+  size-growth:
+    needs: changes
+    if: github.event_name == 'pull_request' && needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue build
+
+      - run: node scripts/size-growth.mjs measure > "$RUNNER_TEMP/head.json"
+
+      - name: Build the base commit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          git worktree add "$RUNNER_TEMP/base" "$BASE_SHA"
+          cd "$RUNNER_TEMP/base"
+          pnpm install --frozen-lockfile
+          pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue build
+          node "$GITHUB_WORKSPACE/scripts/size-growth.mjs" measure > "$RUNNER_TEMP/base.json"
+
+      - id: report
+        run: node scripts/size-growth.mjs report "$RUNNER_TEMP/base.json" "$RUNNER_TEMP/head.json" "$RUNNER_TEMP/comment.md"
+
+      - name: Update the pull request comment
+        if: github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXCEEDED: ${{ steps.report.outputs.exceeded }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" --jq '.[] | select(.body | startswith("<!-- size-growth -->")) | .id' | head -n 1)
+          if [ -n "$id" ]; then
+            gh api --method PATCH "repos/$REPO/issues/comments/$id" --field body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          elif [ "$EXCEEDED" = true ]; then
+            gh api --method POST "repos/$REPO/issues/$PR/comments" --field body=@"$RUNNER_TEMP/comment.md" > /dev/null
+          fi
+
   ci-ok:
     needs: [changes, check, content, lowest-peers, audit, docs, examples]
     if: always()
