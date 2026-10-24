@@ -1,5 +1,6 @@
 import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import FormHelperText from '@mui/material/FormHelperText';
+import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
@@ -15,10 +16,16 @@ export function MatrixRow(props: FieldComponentProps) {
       aria-invalid={f.aria['aria-invalid']}
     >
       <TableCell component="th" scope="row">
-        <span id={`${f.id}-label`}>{f.label}</span>
-        {f.helperText && <FormHelperText id={f.helperId}>{f.helperText}</FormHelperText>}
+        <FormLabel component="span" id={`${f.id}-label`} required={f.required} sx={{ color: 'text.primary' }}>
+          {f.label}
+        </FormLabel>
+        {f.helperText && (
+          <FormHelperText id={f.helperId} variant="standard">
+            {f.helperText}
+          </FormHelperText>
+        )}
         {f.error && (
-          <FormHelperText id={f.errorId} error>
+          <FormHelperText id={f.errorId} variant="standard" error>
             {f.error}
           </FormHelperText>
         )}

@@ -1,7 +1,8 @@
 import { parseDefinition, type FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
-import { App as AntApp, Card, ConfigProvider, Form, theme } from 'antd';
+import { App as AntApp, Card, ConfigProvider, Form, Layout, theme } from 'antd';
 import { useState } from 'react';
+import { FormCompletion } from './FormCompletion';
 import { components, layout } from './component-map';
 import json from './definition.json';
 
@@ -17,17 +18,19 @@ export function App({ definition = initial, mode = 'light' }: AppProps) {
 
   return (
     <ConfigProvider theme={{ algorithm: mode === 'dark' ? theme.darkAlgorithm : theme.defaultAlgorithm }}>
-      <AntApp className="page">
-        <Card title={definition.title} className="form-card">
-          {submitted ? (
-            <pre>{JSON.stringify(submitted, null, 2)}</pre>
-          ) : (
-            <Form layout="vertical" component={false}>
-              <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
-            </Form>
-          )}
-        </Card>
-      </AntApp>
+      <Layout className="layout">
+        <AntApp className="page">
+          <Card title={definition.title} className="form-card">
+            {submitted ? (
+              <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
+            ) : (
+              <Form layout="vertical" component={false}>
+                <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
+              </Form>
+            )}
+          </Card>
+        </AntApp>
+      </Layout>
     </ConfigProvider>
   );
 }

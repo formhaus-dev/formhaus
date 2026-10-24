@@ -1,5 +1,7 @@
 import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { RadioButton, TableCell, TableRow } from '@carbon/react';
+import { GroupMessage } from './GroupMessage';
+import { label } from './labels';
 
 export function MatrixRow(props: FieldComponentProps) {
   const f = fieldProps(props);
@@ -7,17 +9,9 @@ export function MatrixRow(props: FieldComponentProps) {
   return (
     <TableRow data-fh="field" role="radiogroup" aria-labelledby={`${f.id}-label`} {...f.aria}>
       <TableCell>
-        <span id={`${f.id}-label`}>{f.label}</span>
-        {f.helperText && (
-          <div id={f.helperId} className="cds--form__helper-text">
-            {f.helperText}
-          </div>
-        )}
-        {f.error && (
-          <div id={f.errorId} className="cds--form-requirement">
-            {f.error}
-          </div>
-        )}
+        <span id={`${f.id}-label`}>{label(f)}</span>
+        <GroupMessage id={f.helperId} helper={f.helperText} />
+        <GroupMessage id={f.errorId} error={f.error} />
       </TableCell>
       {f.options.map((column, index) => (
         <TableCell key={column.value}>

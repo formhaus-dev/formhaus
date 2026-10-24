@@ -1,5 +1,5 @@
 import type { GroupComponentProps, GroupItemComponentProps } from '@formhaus/react';
-import { Button, Card, Fieldset, Group as Row, Stack, Text, VisuallyHidden } from '@mantine/core';
+import { Button, Card, Fieldset, Group as Row, Input, Stack, Text, VisuallyHidden } from '@mantine/core';
 
 export function Group({
   id,
@@ -24,9 +24,9 @@ export function Group({
           </Text>
         )}
         {error && (
-          <Text id={`${id}-error`} size="sm" c="red" role="alert">
+          <Input.Error id={`${id}-error`} size="sm" role="alert">
             {error}
-          </Text>
+          </Input.Error>
         )}
         {items.map((item) => (
           <Item key={item.id} {...item} />

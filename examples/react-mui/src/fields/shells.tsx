@@ -7,7 +7,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import Typography from '@mui/material/Typography';
-import { type InputHTMLAttributes, type ReactElement, useRef } from 'react';
+import { styled } from '@mui/material/styles';
+import { type InputHTMLAttributes, type ReactElement, useState } from 'react';
 
 export const labels = (f: FieldProps) => ({
   label: f.label,
@@ -23,27 +24,34 @@ export const labels = (f: FieldProps) => ({
   },
 });
 
+export const describedBy = (f: FieldProps) => (f.error ? f.errorId : f.helperText ? f.helperId : undefined);
+
 export function Texts({ f }: Pick<ControlShellProps, 'f'>) {
-  return (
-    <>
-      {f.helperText && <FormHelperText id={f.helperId}>{f.helperText}</FormHelperText>}
-      {f.error && <FormHelperText id={f.errorId}>{f.error}</FormHelperText>}
-    </>
-  );
+  const text = f.error ?? f.helperText;
+  return text ? <FormHelperText id={f.error ? f.errorId : f.helperId}>{text}</FormHelperText> : null;
 }
 
 export function InlineShell({ f, rootProps, children }: ControlShellProps) {
   return (
-    <FormControl {...rootProps} error={f.invalid} sx={{ mt: 1, mb: 0.5 }}>
+    <FormControl {...rootProps} variant="standard" error={f.invalid} sx={{ mt: 1, mb: 0.5 }}>
       <FormControlLabel control={children as ReactElement} label={f.label} required={f.required} />
       <Texts f={f} />
     </FormControl>
   );
 }
 
-export function GroupShell({ f, rootProps, anchors, children }: ControlShellProps) {
+export function GroupShell({ field, f, rootProps, anchors, children }: ControlShellProps) {
+  const inline = field.layout === 'inline' && { '& > .MuiFormGroup-root': { flexDirection: 'row', flexWrap: 'wrap' } };
   return (
-    <FormControl {...rootProps} component="fieldset" error={f.invalid} fullWidth sx={{ mt: 1, mb: 0.5 }}>
+    <FormControl
+      {...rootProps}
+      aria-describedby={describedBy(f)}
+      component="fieldset"
+      variant="standard"
+      error={f.invalid}
+      fullWidth
+      sx={{ mt: 1, mb: 0.5, ...inline }}
+    >
       <FormLabel component="legend" required={f.required} sx={{ mb: 0.5 }}>
         {f.label}
       </FormLabel>
@@ -64,7 +72,7 @@ export function GroupShell({ f, rootProps, anchors, children }: ControlShellProp
 
 export function FileShell({ f, rootProps, children }: ControlShellProps) {
   return (
-    <FormControl {...rootProps} error={f.invalid} margin="normal">
+    <FormControl {...rootProps} variant="standard" error={f.invalid} margin="normal">
       <FormLabel id={`${f.id}-label`} required={f.required} sx={{ mb: 0.5 }}>
         {f.label}
       </FormLabel>
@@ -74,17 +82,56 @@ export function FileShell({ f, rootProps, children }: ControlShellProps) {
   );
 }
 
-type FilePickerProps = ButtonProps &
-  Pick<InputHTMLAttributes<HTMLInputElement>, 'accept' | 'onChange'> & { 'aria-required'?: boolean; 'data-testid'?: string };
+const HiddenInput = styled('input')({
+  clip: 'rect(0 0 0 0)',
+  clipPath: 'inset(50%)',
+  height: 1,
+  overflow: 'hidden',
+  position: 'absolute',
+  bottom: 0,
+  left: 0,
+  whiteSpace: 'nowrap',
+  width: 1,
+});
 
-export function FilePicker({ name, accept, onChange, 'aria-required': _, 'data-testid': testId, ...button }: FilePickerProps) {
-  const input = useRef<HTMLInputElement>(null);
+type FilePickerProps = ButtonProps<'label'> &
+  Pick<InputHTMLAttributes<HTMLInputElement>, 'name' | 'accept' | 'onChange'> & {
+    'aria-required'?: boolean;
+    'aria-invalid'?: boolean;
+    'aria-describedby'?: string;
+    'data-testid'?: string;
+  };
+
+export function FilePicker({ id, name, accept, onChange, disabled, 'data-testid': testId, ...aria }: FilePickerProps) {
+  const [file, setFile] = useState('');
   return (
-    <>
-      <Button {...button} variant="outlined" onClick={() => input.current?.click()} sx={{ alignSelf: 'flex-start' }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
+      <Button
+        component="label"
+        id={`${id}-button`}
+        variant="outlined"
+        disabled={disabled}
+        sx={{ '&:focus-within': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 } }}
+      >
         Choose file
+        <HiddenInput
+          id={id}
+          type="file"
+          name={name}
+          accept={accept}
+          disabled={disabled}
+          data-testid={testId}
+          aria-labelledby={aria['aria-labelledby']}
+          aria-describedby={aria['aria-describedby']}
+          aria-invalid={aria['aria-invalid']}
+          aria-required={aria['aria-required']}
+          onChange={(event) => {
+            setFile(event.target.files?.[0]?.name ?? '');
+            onChange?.(event);
+          }}
+        />
       </Button>
-      <input ref={input} type="file" hidden name={name} accept={accept} onChange={onChange} data-testid={testId} />
-    </>
+      {file && <Typography variant="body2">{file}</Typography>}
+    </Box>
   );
 }

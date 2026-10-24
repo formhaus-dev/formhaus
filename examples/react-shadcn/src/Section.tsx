@@ -1,15 +1,12 @@
 import type { SectionComponentProps } from '@formhaus/react';
 import type { CSSProperties } from 'react';
+import { FieldDescription, FieldLegend, FieldSet } from '@/components/ui/field';
 
 export function Section({ id, title, description, descriptionId, columns, children }: SectionComponentProps) {
   return (
-    <fieldset id={id} aria-describedby={descriptionId} className="grid gap-3">
-      <legend className="mb-3 text-sm font-medium">{title}</legend>
-      {description && (
-        <p id={descriptionId} className="text-sm text-muted-foreground">
-          {description}
-        </p>
-      )}
+    <FieldSet id={id} aria-describedby={descriptionId} className="gap-3">
+      <FieldLegend>{title}</FieldLegend>
+      {description && <FieldDescription id={descriptionId}>{description}</FieldDescription>}
       {columns ? (
         <div
           className="overflow-x-auto rounded-lg border"
@@ -31,6 +28,6 @@ export function Section({ id, title, description, descriptionId, columns, childr
       ) : (
         children
       )}
-    </fieldset>
+    </FieldSet>
   );
 }

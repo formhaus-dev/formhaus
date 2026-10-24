@@ -1,7 +1,17 @@
-import { AlertDialog } from '@base-ui/react/alert-dialog';
 import type { ConfirmDialogComponentProps, GroupComponentProps, GroupItemComponentProps } from '@formhaus/react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FieldDescription, FieldError, FieldLegend, FieldSet } from '@/components/ui/field';
 
 export function Group({
   id,
@@ -18,18 +28,18 @@ export function Group({
   itemComponent: Item,
 }: GroupComponentProps) {
   return (
-    <fieldset id={id} aria-describedby={describedBy} aria-invalid={!!error || undefined} className="grid gap-3">
-      <legend className="mb-1 text-sm font-medium">{label}</legend>
-      {helperText && (
-        <p id={`${id}-helper`} className="text-sm text-muted-foreground">
-          {helperText}
-        </p>
-      )}
-      {error && (
-        <p id={`${id}-error`} className="text-sm text-destructive">
-          {error}
-        </p>
-      )}
+    <FieldSet
+      id={id}
+      aria-describedby={describedBy}
+      aria-invalid={!!error || undefined}
+      data-invalid={!!error || undefined}
+      className="gap-3"
+    >
+      <FieldLegend variant="label" className={error ? 'text-destructive' : undefined}>
+        {label}
+      </FieldLegend>
+      {helperText && <FieldDescription id={`${id}-helper`}>{helperText}</FieldDescription>}
+      {error && <FieldError id={`${id}-error`}>{error}</FieldError>}
       {items.map((item) => (
         <Item key={item.id} {...item} />
       ))}
@@ -41,7 +51,7 @@ export function Group({
       <p className="sr-only" role="status">
         {status}
       </p>
-    </fieldset>
+    </FieldSet>
   );
 }
 
@@ -82,25 +92,19 @@ export function GroupItem({
 
 export function ConfirmDialog({ id, open, title, description, confirmLabel, cancelLabel, confirm, cancel }: ConfirmDialogComponentProps) {
   return (
-    <AlertDialog.Root open={open} onOpenChange={(next) => !next && cancel()}>
-      <AlertDialog.Portal>
-        <AlertDialog.Backdrop className="fixed inset-0 bg-black/40" />
-        <AlertDialog.Popup
-          id={id}
-          className="fixed top-1/2 left-1/2 grid w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 gap-3 rounded-xl border bg-background p-6 text-foreground shadow-lg"
-        >
-          <AlertDialog.Title className="text-lg font-semibold">{title}</AlertDialog.Title>
-          <AlertDialog.Description className="text-sm text-muted-foreground">{description}</AlertDialog.Description>
-          <div className="mt-2 flex justify-end gap-2">
-            <Button type="button" variant="outline" onClick={cancel}>
-              {cancelLabel}
-            </Button>
-            <Button type="button" variant="destructive" onClick={confirm}>
-              {confirmLabel}
-            </Button>
-          </div>
-        </AlertDialog.Popup>
-      </AlertDialog.Portal>
-    </AlertDialog.Root>
+    <AlertDialog open={open} onOpenChange={(next) => !next && cancel()}>
+      <AlertDialogContent id={id}>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel onClick={cancel}>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={confirm}>
+            {confirmLabel}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
