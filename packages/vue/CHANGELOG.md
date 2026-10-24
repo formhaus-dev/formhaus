@@ -1,5 +1,26 @@
 # @formhaus/vue
 
+## 1.6.0
+
+### Minor Changes
+
+- New `conditionalReveal` prop draws a field shown by a `radio` or `multiselect` option under that option, indented, with `aria-controls` on the option input and `aria-expanded` on a checkbox option. It is off by default.
+- With `conditionalReveal`, the error of a choice field with revealed fields shows above its options.
+- New `conditionalReveal` option in `mapControls` lists the types whose `props` draw `option.reveal`. Other custom field components keep the fields after the group.
+- Built-in and mapped field components get `reveals`.
+- `ControlOption` from `/controls` types `reveal` with React nodes or Vue nodes.
+- Error summary entries have `message`, the field message without the label, next to `text`. `errorSummary()`, `getErrors()` and the `errorSummary` layout slot return it.
+- `fieldState()` and the field props of custom and mapped fields have `minLength` and `maxLength` of text fields, for character counters.
+- `mapControls` accepts an object entry `{ component, props, optionsProp, changeProp }` wherever it accepts a tuple.
+- `optionsProp`, `changeProp` and the props returned by `props` are type checked against the component props, as in the tuple.
+- `/controls` exports the `ControlSpec` type.
+- New `stepFocus` prop. `'heading'` focuses the step title after a step change instead of the first field of the new step. The default `'field'` keeps the current behaviour.
+
+### Patch Changes
+
+- Fixed focus after Continue, Back or Skip landing on the first option of a radio group when another option is checked.
+- Requires `@formhaus/core` 1.6.0.
+
 ## 1.5.0
 
 ### Minor Changes
