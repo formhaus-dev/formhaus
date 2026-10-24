@@ -8,7 +8,7 @@ import {
   type ControlKind,
   type ControlOption as CoreControlOption,
   type ControlRoot,
-  controlEntry,
+  type ControlSpecKey,
   controlKind,
   controlOptions,
   controlProps,
@@ -16,10 +16,10 @@ import {
   type LooseProps,
   type MapControlsOptions,
   type MappedTypes,
-  type ControlSpecKey,
   mapControlTypes,
   warnDoubleLabel,
 } from '@formhaus/core/controls';
+import { controlEntry } from '@formhaus/core/internal';
 import { type FieldComponentProps, type FieldProps, fieldProps } from '@formhaus/react';
 import { type ComponentType, createElement, isValidElement, type ReactElement, type ReactNode, useEffect, useRef, useState } from 'react';
 

@@ -8,7 +8,7 @@ import {
   type ControlKind,
   type ControlOption as CoreControlOption,
   type ControlRoot,
-  controlEntry,
+  type ControlSpecKey,
   controlKind,
   controlOptions,
   controlProps,
@@ -16,10 +16,10 @@ import {
   type LooseProps,
   type MapControlsOptions,
   type MappedTypes,
-  type ControlSpecKey,
   mapControlTypes,
   warnDoubleLabel,
 } from '@formhaus/core/controls';
+import { controlEntry } from '@formhaus/core/internal';
 import { type FieldProps, fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
 import { type Component, defineComponent, h, onBeforeUnmount, onMounted, type PropType, ref, type VNode, type VNodeChild } from 'vue';
 
