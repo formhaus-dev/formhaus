@@ -1,4 +1,5 @@
 import type { ValidateContext } from '../engine/engine-options';
+import { isPlainEntry } from '../validation/type-checks';
 import { hasOwn } from '../visibility/nodes';
 
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
@@ -38,6 +39,10 @@ export declare namespace StandardSchemaV1 {
   type InferOutput<Schema extends StandardSchemaV1> = NonNullable<Schema['~standard']['types']>['output'];
 }
 
+export interface SchemaValidateOptions {
+  emptyStrings?: 'keep' | 'omit';
+}
+
 const segmentKey = (segment: PropertyKey | StandardSchemaV1.PathSegment): PropertyKey =>
   typeof segment === 'object' && segment !== null && 'key' in segment ? segment.key : segment;
 
@@ -50,11 +55,22 @@ function fieldOf(keys: PropertyKey[], fields: string[]): string | undefined {
   return undefined;
 }
 
+function withoutEmpty(values: Record<string, unknown>): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(values)) {
+    if (value === '') continue;
+    result[key] = Array.isArray(value) ? value.map((item) => (isPlainEntry(item) ? withoutEmpty(item) : item)) : value;
+  }
+  return result;
+}
+
 export function schemaValidate(
   schema: StandardSchemaV1,
+  options: SchemaValidateOptions = {},
 ): (values: Record<string, unknown>, context?: ValidateContext) => Promise<Record<string, string>> {
   return async (values, context) => {
-    const { issues = [] } = await schema['~standard'].validate(values);
+    const input = options.emptyStrings === 'omit' ? withoutEmpty(values) : values;
+    const { issues = [] } = await schema['~standard'].validate(input);
     const errors: Record<string, string> = {};
     for (const { message, path } of issues) {
       const keys = Array.from(path ?? [], segmentKey);

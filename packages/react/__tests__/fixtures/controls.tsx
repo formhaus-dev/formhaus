@@ -1,4 +1,4 @@
-import { type ChangeEvent, type InputHTMLAttributes, type KeyboardEvent, type ReactNode, useRef } from 'react';
+import { type ChangeEvent, type InputHTMLAttributes, type KeyboardEvent, type ReactNode, type TextareaHTMLAttributes, useRef } from 'react';
 import { type ControlShellProps, mapControls } from '../../src/controls';
 import type { FieldProps } from '../../src/fieldProps';
 import type { FieldComponentProps } from '../../src/types';
@@ -17,6 +17,18 @@ function TextInput({ label, helper, ...props }: InputProps) {
 
 function Plain({ value, onChange, ...props }: Omit<InputProps, 'onChange'> & { onChange: (value: string) => void }) {
   return <input {...props} value={value} onChange={(event) => onChange(event.target.value)} />;
+}
+
+function Area({
+  value,
+  onChange,
+  ...props
+}: Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'onChange'> & { onChange: (value: string) => void }) {
+  return <textarea {...props} value={value} onChange={(event) => onChange(event.target.value)} />;
+}
+
+function Upload(props: InputHTMLAttributes<HTMLInputElement>) {
+  return <input {...props} type="file" />;
 }
 
 function DatePick({ value, onChange, ...props }: Omit<InputProps, 'onChange'> & { onChange: (value: { toDate(): Date } | null) => void }) {
@@ -164,7 +176,7 @@ function Picker({ id, value, options, onValueChange }: PickerProps) {
   );
 }
 
-function Shell({ kind, f, rootProps, children }: ControlShellProps) {
+function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
   const texts = (
     <>
       {f.helperText && <p id={f.helperId}>{f.helperText}</p>}
@@ -173,7 +185,7 @@ function Shell({ kind, f, rootProps, children }: ControlShellProps) {
   );
   if (kind === 'group')
     return (
-      <fieldset {...rootProps} data-kind={kind}>
+      <fieldset {...rootProps} data-kind={kind} data-anchors={anchors.map((anchor) => anchor?.label).join('|') || undefined}>
         <legend>{f.label}</legend>
         {children}
         {texts}
@@ -206,7 +218,11 @@ const controls = {
   multiselect: [Picks, 'options'],
 } as const;
 
+const free = { autocomplete: Plain, textarea: Area, file: Upload, scale: [Choices, 'options'] } as const;
+
 export const mapped = {
+  typed: mapControls({ shell: Shell, freeText: true, controls: free }),
+  plain: mapControls({ shell: Shell, controls: free }),
   named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onValueChange'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
   bare: mapControls({ shell: null, labels: (f: FieldProps) => ({ label: f.label }), kinds: { multiselect: 'input' }, controls }),
