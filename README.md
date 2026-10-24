@@ -21,7 +21,7 @@
 <p align="center">
   <a href="https://formhaus.dev/guide/">Documentation</a> ·
   <a href="#quick-start">Get started</a> ·
-  <a href="https://formhaus.dev/playground">Playground</a> ·
+  <a href="https://formhaus.dev/play">Playground</a> ·
   <a href="https://formhaus.dev/cloud">Formhaus Cloud</a>
 </p>
 
@@ -130,7 +130,7 @@ import definition from './signup.json';
 
 `@formhaus/figma` generates form mockups on the Figma canvas. It is not on Figma Community yet; build it locally, then import `packages/figma/manifest.json`.
 
-Svelte, Solid, or anything else: use `@formhaus/core` directly. The [playground](https://formhaus.dev/playground.html) has a Svelte example.
+Svelte, Solid, or anything else: use `@formhaus/core` directly. See the [Svelte recipe](https://formhaus.dev/recipes/svelte).
 
 ## Install
 
@@ -145,7 +145,7 @@ npm install @formhaus/core @formhaus/react   # React
 npm install @formhaus/core @formhaus/vue     # Vue
 ```
 
-Or use `@formhaus/core` directly with any framework. See the [Svelte example](https://formhaus.dev/playground.html).
+Or use `@formhaus/core` directly with any framework. See the [Svelte recipe](https://formhaus.dev/recipes/svelte).
 
 ## Quick start
 

@@ -1,0 +1,25 @@
+{
+  "name": "@formhaus-examples/react-uswds",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@formhaus/core": "^1.4.0",
+    "@formhaus/react": "^1.4.0",
+    "@uswds/uswds": "^3.14.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "sass-embedded": "^1.80.0",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.4"
+  }
+}

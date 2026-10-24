@@ -5,7 +5,7 @@ description: "Render Formhaus JSON forms with Material UI: map TextField, Select
 
 # Material UI
 
-Map Material UI inputs to Formhaus field types through the `components` prop of `FormRenderer`.
+Map Material UI inputs to Formhaus field types with `mapControls` and pass the map to the `components` prop of `FormRenderer`.
 
 [Open in StackBlitz](https://stackblitz.com/github/formhaus-dev/formhaus/tree/main/examples/react-mui) · [Source](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui)
 
@@ -17,19 +17,27 @@ npm install @formhaus/core @formhaus/react @mui/material @emotion/react @emotion
 
 ## Component map
 
-<<< @/../examples/react-mui/src/component-map.ts
+[`mapControls`](/guide/design-systems) maps one MUI control per field type. MUI `TextField` renders its own label, helper and error, so text inputs have no shell:
 
-## Text field
+<<< @/../examples/react-mui/src/component-map.tsx
 
-One renderer covers text, email, phone, number, password, date, datetime and time fields:
+## Shells
 
-<<< @/../examples/react-mui/src/fields/TextField.tsx
+Checkbox, switch and the choice groups get a `FormControl` shell:
+
+<<< @/../examples/react-mui/src/fields/shells.tsx
+
+## Custom fields
+
+MUI `Autocomplete` needs `renderInput`, so it stays a field written with [field helpers](/guide/custom-fields#field-helpers):
+
+<<< @/../examples/react-mui/src/fields/AutocompleteField.tsx
 
 ## App
 
 <<< @/../examples/react-mui/src/App.tsx
 
-The other renderers are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/fields) and [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/actions).
+The option tiles, the file picker and the matrix row are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/fields), the layout slots in [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/actions).
 
 ## Server validation
 

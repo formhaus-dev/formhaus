@@ -9,6 +9,8 @@ const SKIP = new Set(['index.json', 'order.json']);
 const countNodes = (nodes) => nodes.reduce((total, node) => total + (node.type === 'section' ? countNodes(node.fields) : 1), 0);
 const countFields = ({ fields = [], steps = [] }) => countNodes(fields) + steps.reduce((total, step) => total + countNodes(step.fields), 0);
 
+export const countsOf = (definition) => ({ steps: definition.steps?.length || 1, fields: countFields(definition) });
+
 export function readOrder() {
   return JSON.parse(readFileSync(resolve(directory, 'order.json'), 'utf8'));
 }
@@ -23,8 +25,7 @@ export function buildIndex(templates, order = readOrder()) {
       title,
       summary,
       category,
-      steps: definition.steps?.length || 1,
-      fields: countFields(definition),
+      ...countsOf(definition),
     }))
     .sort((a, b) => rank.get(a.slug) - rank.get(b.slug));
 }

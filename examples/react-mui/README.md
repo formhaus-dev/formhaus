@@ -15,11 +15,10 @@ Opens at http://localhost:5173.
 
 ## Files
 
-- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to an MUI renderer.
-- [src/fields/AutocompleteField.tsx](src/fields/AutocompleteField.tsx) filters by `label`, unlike the default `<datalist>`, which filters by `value`.
-- [src/fields/SelectField.tsx](src/fields/SelectField.tsx) handles both `select` and `multiselect`.
-- [src/fields/TextField.tsx](src/fields/TextField.tsx) handles text, email, phone, number, password, date, datetime, and time fields with MUI's `<TextField>`.
-- [src/fields/HiddenField.tsx](src/fields/HiddenField.tsx) renders `hidden` fields as `<input type="hidden">`.
+- [src/component-map.tsx](src/component-map.tsx) maps the field types to MUI controls with `mapControls`, one entry per type. `TextField` covers the text inputs, `select` and `multiselect`; `Checkbox`, `Switch`, `RadioGroup` and `Rating` cover the rest.
+- [src/fields/shells.tsx](src/fields/shells.tsx) holds the shells that draw the label, helper text and error around checkboxes and option groups.
+- [src/fields/options.tsx](src/fields/options.tsx) draws image tiles and scale segments. [MatrixRow.tsx](src/fields/MatrixRow.tsx) is a table row inside a matrix section.
+- [src/fields/AutocompleteField.tsx](src/fields/AutocompleteField.tsx) uses MUI `Autocomplete`, which filters by `label`. [FileField.tsx](src/fields/FileField.tsx) opens a file input from a `Button`.
 - [src/definition.json](src/definition.json) is the contact form used by the example.
 
 ## Use as a starter

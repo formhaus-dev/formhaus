@@ -8,6 +8,7 @@ export const docsSections = [
   'changelog',
   'templates',
   'playground',
+  'play',
   'schema',
   'figma',
   'assets',

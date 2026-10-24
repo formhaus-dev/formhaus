@@ -13,7 +13,6 @@ const config: KnipConfig = {
   compilers: { '.md': pageScripts, '.vue': scripts },
   ignoreFiles: ['packages/**/*.md'],
   ignoreIssues: {
-    'docs/.vitepress/components/playground/loaders/*.ts': ['exports'],
     'packages/editor-react/src/store/store.ts': ['types'],
   },
   workspaces: {
@@ -24,7 +23,7 @@ const config: KnipConfig = {
       ignoreBinaries: ['tokens', 'vitepress'],
     },
     docs: {
-      entry: ['**/*.md', 'templates/[[]slug].paths.ts', 'recipes/snippets/*.{ts,tsx,vue}'],
+      entry: ['**/*.md', '.vitepress/components/**/*.data.ts', 'templates/[[]slug].paths.ts', 'recipes/snippets/*.{ts,tsx,vue}'],
       project: [sources],
       ignoreDependencies: ['vue', 'vite', 'react', 'vue-router', 'zod', 'valibot', 'arktype'],
     },

@@ -1,0 +1,46 @@
+@use "../node_modules/govuk-frontend/dist/govuk" with (
+  $govuk-font-family: (arial, sans-serif),
+  $govuk-assets-path: "../node_modules/govuk-frontend/dist/govuk/assets/"
+);
+
+.app-form form {
+  display: flex;
+  flex-direction: column;
+}
+
+.app-form [data-fh="error-summary"] {
+  order: -1;
+}
+
+.govuk-template {
+  background-color: #ffffff;
+}
+
+.app-link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.app-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 15px;
+}
+
+.app-tiles .govuk-radios__label {
+  display: block;
+}
+
+.app-tile__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  margin-bottom: 5px;
+}
+
+.app-tiles .govuk-radios__item {
+  margin-bottom: 0;
+}

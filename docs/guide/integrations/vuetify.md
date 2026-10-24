@@ -17,17 +17,19 @@ npm install @formhaus/core @formhaus/vue vuetify
 
 ## Component map
 
+[`mapControls`](/guide/design-systems) maps one Vuetify control per field type. Vuetify inputs render their own label and messages, so only the choice groups have a shell:
+
 <<< @/../examples/vue-vuetify/src/component-map.ts
 
-## Text field
+## Group shell
 
-<<< @/../examples/vue-vuetify/src/fields/TextField.vue
+<<< @/../examples/vue-vuetify/src/fields/GroupShell.vue
 
 ## App
 
 <<< @/../examples/vue-vuetify/src/App.vue
 
-The other renderers are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/vue-vuetify/src/fields) and [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/vue-vuetify/src/actions).
+The option tiles and the matrix row are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/vue-vuetify/src/fields), the layout slots in [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/vue-vuetify/src/actions).
 
 ## Server validation
 

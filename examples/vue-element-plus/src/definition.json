@@ -1,0 +1,147 @@
+{
+  "id": "conference-application",
+  "formatVersion": "1.4",
+  "title": "Conference application",
+  "submit": { "label": "Send application" },
+  "steps": [
+    {
+      "id": "about",
+      "title": "About you",
+      "description": "We use these details for your badge.",
+      "fields": [
+        { "key": "name", "type": "text", "label": "Full name", "validation": { "required": true } },
+        { "key": "email", "type": "email", "label": "Email", "helperText": "We send the ticket here", "validation": { "required": true } },
+        { "key": "phone", "type": "phone", "label": "Phone" },
+        { "key": "password", "type": "password", "label": "Account password", "validation": { "required": true, "minLength": 8 } },
+        { "key": "age", "type": "number", "label": "Age", "validation": { "min": 16, "max": 120 } },
+        {
+          "key": "country",
+          "type": "autocomplete",
+          "label": "Country",
+          "placeholder": "Type to filter",
+          "options": [
+            { "value": "US", "label": "United States" },
+            { "value": "CA", "label": "Canada" },
+            { "value": "MX", "label": "Mexico" },
+            { "value": "GB", "label": "United Kingdom" }
+          ]
+        },
+        { "key": "ref", "type": "hidden", "defaultValue": "example" }
+      ]
+    },
+    {
+      "id": "visit",
+      "title": "Your visit",
+      "fields": [
+        {
+          "key": "ticket",
+          "type": "select",
+          "label": "Ticket",
+          "validation": { "required": true },
+          "options": [
+            { "value": "day", "label": "One day" },
+            { "value": "full", "label": "Full conference" },
+            { "value": "online", "label": "Online only" }
+          ]
+        },
+        {
+          "key": "topics",
+          "type": "multiselect",
+          "label": "Topics",
+          "helperText": "Pick all that apply",
+          "options": [
+            { "value": "design", "label": "Design" },
+            { "value": "frontend", "label": "Frontend" },
+            { "value": "research", "label": "Research" }
+          ]
+        },
+        {
+          "key": "seat",
+          "type": "radio",
+          "label": "Seating",
+          "validation": { "required": true },
+          "options": [
+            { "value": "front", "label": "Front rows" },
+            { "value": "middle", "label": "Middle" },
+            { "value": "back", "label": "Back" }
+          ]
+        },
+        { "key": "arrival", "type": "date", "label": "Arrival date", "validation": { "required": true } },
+        { "key": "talk", "type": "datetime", "label": "Preferred talk slot" },
+        { "key": "pickup", "type": "time", "label": "Airport pickup time" },
+        { "key": "cv", "type": "file", "label": "Speaker CV", "accept": ".pdf", "helperText": "PDF, one file" },
+        { "key": "notes", "type": "textarea", "label": "Notes", "rows": 3 },
+        { "key": "updates", "type": "switch", "label": "Send me schedule updates" },
+        {
+          "key": "terms",
+          "type": "checkbox",
+          "label": "I accept the code of conduct",
+          "validation": { "required": "Accept the code of conduct to continue" }
+        }
+      ]
+    },
+    {
+      "id": "team",
+      "title": "Team and feedback",
+      "fields": [
+        {
+          "key": "guests",
+          "type": "group",
+          "label": "Guests",
+          "helperText": "Up to 3 guests",
+          "itemLabel": "Guest {index}",
+          "addLabel": "Add guest",
+          "removeLabel": "Remove",
+          "validation": { "maxLength": 3 },
+          "fields": [
+            { "key": "guestName", "type": "text", "label": "Guest name", "validation": { "required": true } },
+            { "key": "guestEmail", "type": "email", "label": "Guest email" }
+          ]
+        },
+        {
+          "key": "venue",
+          "type": "section",
+          "title": "Venue",
+          "description": "Tell us what you need on site.",
+          "fields": [{ "key": "access", "type": "text", "label": "Accessibility needs" }]
+        },
+        {
+          "key": "nps",
+          "type": "scale",
+          "label": "How likely are you to recommend the conference?",
+          "validation": { "min": 0, "max": 10 },
+          "options": [{ "value": "0", "label": "Not likely" }, { "value": "10", "label": "Very likely" }]
+        },
+        { "key": "stars", "type": "rating", "label": "Rate last year's event" },
+        {
+          "key": "agree",
+          "type": "section",
+          "layout": "matrix",
+          "title": "How much do you agree?",
+          "fields": [
+            {
+              "key": "talks",
+              "type": "radio",
+              "label": "The talks were useful",
+              "options": [
+                { "value": "disagree", "label": "Disagree" },
+                { "value": "neutral", "label": "Neutral" },
+                { "value": "agree", "label": "Agree" }
+              ]
+            },
+            {
+              "key": "venueGood",
+              "type": "radio",
+              "label": "The venue was easy to reach",
+              "options": [
+                { "value": "disagree", "label": "Disagree" },
+                { "value": "neutral", "label": "Neutral" },
+                { "value": "agree", "label": "Agree" }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

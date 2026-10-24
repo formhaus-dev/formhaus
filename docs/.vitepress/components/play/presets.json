@@ -1,0 +1,8 @@
+[
+  { "id": "multi-step", "label": "Multi-step", "file": "multi-step" },
+  { "id": "conditional", "label": "Conditional fields", "file": "conditional-fields" },
+  { "id": "validation", "label": "Validation", "file": "validation" },
+  { "id": "survey", "label": "Survey with matrix", "file": "survey" },
+  { "id": "branching", "label": "Branching", "file": "branching-form" },
+  { "id": "event", "label": "Event registration", "file": "event-registration" }
+]

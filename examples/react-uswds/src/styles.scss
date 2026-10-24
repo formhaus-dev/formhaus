@@ -1,0 +1,42 @@
+@use "uswds-core" with (
+  $theme-font-path: "../node_modules/@uswds/uswds/dist/fonts",
+  $theme-image-path: "../node_modules/@uswds/uswds/dist/img",
+  $theme-show-notifications: false,
+  $theme-show-compile-warnings: false,
+  $theme-font-type-sans: "public-sans",
+  $theme-font-type-serif: false,
+  $theme-font-type-mono: false,
+  $theme-font-role-heading: "sans",
+  $theme-font-role-alt: "sans",
+  $theme-font-role-code: "sans",
+  $theme-font-weight-light: false,
+  $theme-style-body-element: true
+);
+@forward "uswds-global";
+@forward "uswds-typography";
+@forward "usa-alert/src/styles";
+@forward "usa-button/src/styles";
+@forward "usa-button-group/src/styles";
+@forward "usa-card/src/styles";
+@forward "usa-icon/src/styles";
+@forward "usa-layout-grid/src/styles";
+@forward "usa-modal/src/styles";
+@forward "usa-step-indicator/src/styles";
+@forward "usa-table/src/styles";
+@forward "usa-checkbox";
+@forward "usa-combo-box";
+@forward "usa-error-message";
+@forward "usa-fieldset";
+@forward "usa-file-input";
+@forward "usa-form-group";
+@forward "usa-form";
+@forward "usa-hint";
+@forward "usa-input";
+@forward "usa-label";
+@forward "usa-legend";
+@forward "usa-memorable-date";
+@forward "usa-radio";
+@forward "usa-select";
+@forward "usa-textarea";
+@forward "usa-time-picker";
+@forward "app";

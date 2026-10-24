@@ -48,6 +48,6 @@ export const llms = llmstxt({
   details,
   ignoreFiles: ['templates/!(index).md'],
   ignoreFilesPerOutput: {
-    llmsFullTxt: ['playground.md', 'changelog.md'],
+    llmsFullTxt: ['play.md', 'changelog.md'],
   },
 });

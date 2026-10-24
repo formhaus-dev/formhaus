@@ -30,7 +30,7 @@ npm install @formhaus/core
 ```
 :::
 
-Install `@formhaus/core` next to the adapter: the stylesheet and the `FormDefinition` type come from it. With any other framework, use `@formhaus/core` directly. See the [Svelte example in the playground](/playground#svelte).
+Install `@formhaus/core` next to the adapter: the stylesheet and the `FormDefinition` type come from it. With any other framework, use `@formhaus/core` directly. See the [Svelte recipe](/recipes/svelte).
 
 ### Optional baseline styles
 

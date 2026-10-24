@@ -1,0 +1,212 @@
+[
+  {
+    "id": "react",
+    "label": "Default",
+    "framework": "React",
+    "dir": "react-default",
+    "group": "React",
+    "inline": true,
+    "show": ["src/App.tsx", "src/main.tsx", "src/styles.css"]
+  },
+  {
+    "id": "shadcn",
+    "label": "shadcn/ui",
+    "framework": "React",
+    "dir": "react-shadcn",
+    "group": "React",
+    "inline": true,
+    "show": [
+      "src/App.tsx",
+      "src/component-map.tsx",
+      "src/fields/Shell.tsx",
+      "src/fields/choices.tsx",
+      "src/fields/SelectControl.tsx",
+      "src/fields/MatrixRow.tsx",
+      "src/Section.tsx",
+      "src/ErrorSummary.tsx"
+    ]
+  },
+  {
+    "id": "mui",
+    "label": "MUI",
+    "framework": "React",
+    "dir": "react-mui",
+    "group": "React",
+    "inline": true,
+    "show": [
+      "src/App.tsx",
+      "src/component-map.tsx",
+      "src/fields/shells.tsx",
+      "src/fields/options.tsx",
+      "src/fields/AutocompleteField.tsx",
+      "src/fields/MatrixRow.tsx",
+      "src/actions/Section.tsx",
+      "src/actions/ErrorSummary.tsx"
+    ]
+  },
+  {
+    "id": "antd",
+    "label": "Ant Design",
+    "framework": "React",
+    "dir": "react-antd",
+    "group": "React",
+    "inline": true,
+    "show": [
+      "src/App.tsx",
+      "src/component-map.tsx",
+      "src/fields/Shell.tsx",
+      "src/fields/MatrixRow.tsx",
+      "src/fields/FileField.tsx",
+      "src/layout/Feedback.tsx",
+      "src/layout/Containers.tsx",
+      "src/main.tsx"
+    ]
+  },
+  {
+    "id": "mantine",
+    "label": "Mantine",
+    "framework": "React",
+    "dir": "react-mantine",
+    "group": "React",
+    "show": [
+      "src/App.tsx",
+      "src/component-map.tsx",
+      "src/fields/labels.tsx",
+      "src/fields/GroupShell.tsx",
+      "src/fields/MatrixRow.tsx",
+      "src/fields/AutocompleteField.tsx",
+      "src/layout/index.ts",
+      "src/layout/StepProgress.tsx",
+      "src/layout/ErrorSummary.tsx"
+    ]
+  },
+  {
+    "id": "chakra",
+    "label": "Chakra UI",
+    "framework": "React",
+    "dir": "react-chakra",
+    "group": "React",
+    "show": [
+      "src/App.tsx",
+      "src/component-map.tsx",
+      "src/fields/Shell.tsx",
+      "src/fields/select.tsx",
+      "src/fields/Choices.tsx",
+      "src/fields/MatrixRow.tsx",
+      "src/layout/StepProgress.tsx",
+      "src/layout/ErrorSummary.tsx"
+    ]
+  },
+  {
+    "id": "carbon",
+    "label": "Carbon",
+    "framework": "React",
+    "dir": "react-carbon",
+    "group": "React",
+    "show": [
+      "src/App.tsx",
+      "src/component-map.tsx",
+      "src/fields/labels.ts",
+      "src/fields/Choices.tsx",
+      "src/fields/Rating.tsx",
+      "src/fields/DateTimeField.tsx",
+      "src/layout/StepProgress.tsx",
+      "src/layout/ErrorSummary.tsx"
+    ]
+  },
+  {
+    "id": "vuetify",
+    "label": "Vuetify",
+    "framework": "Vue",
+    "dir": "vue-vuetify",
+    "group": "Vue",
+    "inline": true,
+    "show": [
+      "src/App.vue",
+      "src/main.ts",
+      "src/component-map.ts",
+      "src/fields/GroupShell.vue",
+      "src/fields/OptionTiles.vue",
+      "src/fields/FileField.vue",
+      "src/fields/MatrixRow.vue",
+      "src/actions/FormActions.vue",
+      "src/actions/GroupItem.vue"
+    ]
+  },
+  {
+    "id": "primevue",
+    "label": "PrimeVue",
+    "framework": "Vue",
+    "dir": "vue-primevue",
+    "group": "Vue",
+    "show": [
+      "src/App.vue",
+      "src/main.ts",
+      "src/component-map.ts",
+      "src/fields/FieldShell.vue",
+      "src/fields/AutocompleteControl.vue",
+      "src/fields/FileField.vue",
+      "src/fields/MatrixRow.vue",
+      "src/layout/index.ts",
+      "src/layout/StepProgress.vue"
+    ]
+  },
+  {
+    "id": "element-plus",
+    "label": "Element Plus",
+    "framework": "Vue",
+    "dir": "vue-element-plus",
+    "group": "Vue",
+    "show": [
+      "src/App.vue",
+      "src/main.ts",
+      "src/component-map.ts",
+      "src/fields/FieldShell.vue",
+      "src/fields/FileField.vue",
+      "src/fields/MatrixRow.vue",
+      "src/layout/index.ts",
+      "src/layout/StepProgress.vue"
+    ]
+  },
+  {
+    "id": "govuk",
+    "label": "GOV.UK",
+    "framework": "React",
+    "dir": "react-govuk",
+    "group": "Government",
+    "lightOnly": true,
+    "show": [
+      "src/App.tsx",
+      "src/component-map.tsx",
+      "src/fields/Shell.tsx",
+      "src/fields/controls.tsx",
+      "src/fields/DateInput.tsx",
+      "src/fields/FileField.tsx",
+      "src/layout/ErrorSummary.tsx",
+      "src/layout/FormActions.tsx",
+      "src/layout/StepProgress.tsx",
+      "src/styles.scss"
+    ]
+  },
+  {
+    "id": "uswds",
+    "label": "USWDS",
+    "framework": "React",
+    "dir": "react-uswds",
+    "group": "Government",
+    "lightOnly": true,
+    "show": [
+      "src/App.tsx",
+      "src/main.tsx",
+      "src/component-map.tsx",
+      "src/layout/index.ts",
+      "src/fields/Shell.tsx",
+      "src/fields/controls.tsx",
+      "src/fields/ComboBox.tsx",
+      "src/fields/DateFields.tsx",
+      "src/fields/MatrixRow.tsx",
+      "src/layout/StepProgress.tsx",
+      "src/styles.scss"
+    ]
+  }
+]

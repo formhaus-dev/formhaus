@@ -30,10 +30,6 @@ for (const name of PACKAGES) {
 }
 
 const pins = [];
-const playground = await readFile('docs/.vitepress/components/playground/loaders/versions.ts', 'utf8');
-const pinned = playground.match(/FORMHAUS_VERSION = '([^']+)'/)?.[1];
-for (const name of packages.keys()) pins.push({ where: 'docs playground FORMHAUS_VERSION', name, version: pinned });
-
 const docs = JSON.parse(await readFile('docs/package.json', 'utf8'));
 const lock = await readFile('docs/pnpm-lock.yaml', 'utf8');
 const importer = lock.slice(lock.indexOf('importers:'), lock.indexOf('\npackages:'));
@@ -54,10 +50,9 @@ for (const { where, name, version, raw = version } of pins) {
     stale.push(`${where}: ${name} ${version} is older than ${published} on npm`);
 }
 
-if (stale.length)
-  console.warn(`Warning: bump the docs and playground pins after the release:\n${stale.map((line) => `  ${line}`).join('\n')}`);
+if (stale.length) console.warn(`Warning: bump the docs pins after the release:\n${stale.map((line) => `  ${line}`).join('\n')}`);
 if (problems.length) {
-  console.error(`Docs and playground pins are invalid:\n${problems.map((problem) => `  ${problem}`).join('\n')}`);
+  console.error(`Docs pins are invalid:\n${problems.map((problem) => `  ${problem}`).join('\n')}`);
   process.exit(1);
 }
-console.log(`Checked ${pins.length} docs and playground pins.`);
+console.log(`Checked ${pins.length} docs pins.`);
