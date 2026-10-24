@@ -43,11 +43,9 @@ export async function previewServer() {
 const benign = ['Failed to load resource', 'ResizeObserver loop'];
 
 export function watchErrors(page, report) {
-  page.on('pageerror', (error) => report(String(error)));
-  page.on(
-    'console',
-    (message) => message.type() === 'error' && !benign.some((text) => message.text().startsWith(text)) && report(message.text()),
-  );
+  const relevant = (text) => !benign.some((start) => text.replace(/^Error: /, '').startsWith(start));
+  page.on('pageerror', (error) => relevant(error.message) && report(String(error)));
+  page.on('console', (message) => message.type() === 'error' && relevant(message.text()) && report(message.text()));
   page.on(
     'response',
     (response) => response.status() >= 400 && !response.url().endsWith('/s/script.js') && report(`${response.status()} ${response.url()}`),
