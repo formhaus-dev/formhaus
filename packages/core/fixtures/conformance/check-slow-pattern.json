@@ -82,6 +82,10 @@
     {
       "code": "slow-pattern",
       "path": "/fields/29/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/30/validation/pattern"
     }
   ],
   "definition": {
@@ -329,6 +333,14 @@
         "label": "code29",
         "validation": {
           "pattern": "(?<ä>a)a*\\k<ä>*$"
+        }
+      },
+      {
+        "key": "code30",
+        "type": "text",
+        "label": "code30",
+        "validation": {
+          "pattern": "(?<s>a)a*\\k<\\u{73}>*$"
         }
       }
     ]
