@@ -11,6 +11,8 @@ body {
 }
 
 .page {
+  box-sizing: border-box;
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
   padding: 32px 16px;
@@ -191,4 +193,15 @@ body {
 .result-title {
   margin: 0;
   font: inherit;
+}
+
+.reveal {
+  margin-inline-start: var(--ant-margin-xs);
+  padding-inline-start: var(--ant-padding-sm);
+  padding-block-end: var(--ant-padding-xs);
+  border-inline-start: var(--ant-line-width-bold) var(--ant-line-type) var(--ant-color-border-secondary);
+}
+
+.reveal > :last-child > .ant-form-item {
+  margin-bottom: 0;
 }
