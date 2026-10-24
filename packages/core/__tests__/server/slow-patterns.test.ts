@@ -51,30 +51,61 @@ describe('slow patterns on the server', () => {
     expect(refused(definition).map(({ path }) => path)).toEqual(slow.map(({ path }) => path));
   });
 
-  it('runs an anchored pattern with two overlapping repeats', () => {
-    const definition = form('^\\d+\\.?\\d*$', '^[0-9]+\\s?[0-9]+$', '^\\+?\\d+[\\d\\s-]*$', '^(\\d+)\\.?(\\d*)$');
-    expect(checkDefinition(definition).map(({ code }) => code)).toEqual(Array(4).fill('slow-pattern'));
-    expect(validateSubmission(definition, { p0: '12.5', p1: '555 0100', p2: '+1 555-0100', p3: '3.25' }).errors).toEqual({});
-    const digits = `${'1'.repeat(9999)}x`;
-    expect(Object.keys(validateSubmission(definition, { p0: digits, p1: digits, p2: digits, p3: '1.2.3' }).errors)).toEqual([
-      'p0',
-      'p1',
-      'p2',
-      'p3',
-    ]);
+  it('runs an anchored pattern with one pair of overlapping repeats', () => {
+    const quadratic = [
+      '^\\d+\\.?\\d*$',
+      '^\\d*\\.?\\d*$',
+      '^-?\\d+\\.?\\d*$',
+      '^[0-9]+[.,]?[0-9]*$',
+      '^[0-9]+\\s?[0-9]+$',
+      '^\\+?\\d+[\\d\\s-]*$',
+      '^[a-zA-Z]+[a-zA-Z ]*$',
+      '^[A-Za-z]+\\s?[A-Za-z]*$',
+      '^\\w+.?\\w+@\\w+\\.\\w+$',
+      '^(\\d+)\\.?(\\d*)$',
+    ];
+    const definition = form(...quadratic);
+    expect(checkDefinition(definition).map(({ code }) => code)).toEqual(quadratic.map(() => 'slow-pattern'));
+    expect(refused(definition)).toEqual([]);
+    const values = ['12.5', '.5', '-3.25', '1,5', '555 0100', '+1 555-0100', 'Ada Lovelace', 'Ada Lovelace', 'ada.b@mail.com', '3.25'];
+    const valid = Object.fromEntries(values.map((value, index) => [`p${index}`, value]));
+    expect(validateSubmission(definition, valid).errors).toEqual({});
+    expect(Object.keys(validateSubmission(form(quadratic[0]), { p0: '1.2.3' }).errors)).toEqual(['p0']);
   });
 
-  it('refuses three overlapping repeats in a row', () => {
+  it('gives a value over 1000 characters the pattern error of a quadratic pattern without matching it', () => {
+    const definition = form('^\\d+\\.?\\d*$', '^\\d+(\\.\\d*)?$');
+    const long = '1'.repeat(1001);
+    const test = tests();
+    expect(validateSubmission(definition, { p0: long, p1: long }).errors).toEqual({ p0: 'Invalid format' });
+    expect(test.mock.calls.filter(([input]) => input === long)).toHaveLength(1);
+    expect(validateSubmission(definition, { p0: long.slice(1) }).errors).toEqual({});
+    const engine = new FormEngine(definition, { p0: long }, { onWarning: () => {} });
+    expect(engine.validate()).toEqual({});
+  });
+
+  it('refuses overlapping repeats that a lookaround, an alternation, an optional group or a backreference can multiply', () => {
     const value = `${'1'.repeat(40)}x`;
     const test = tests();
-    const issues = refused(form('^\\d+-?\\d+-?\\d+$', '^[ab]+[bc]+[ac]+$', '^(ab)+(ab)+(ab)+$', '^\\d+\\.?\\d*(a+)+$'), {
-      p0: value,
-      p1: value,
-      p2: value,
-      p3: value,
-    });
+    const patterns = [
+      '^\\d+-?\\d+-?\\d+$',
+      '^[ab]+[bc]+[ac]+$',
+      '^(ab)+(ab)+(ab)+$',
+      '^\\d+\\.?\\d*(a+)+$',
+      '^\\d+(?:a|\\d*)\\d*$',
+      '^\\d+(?:-?\\d+)?\\d*$',
+      '^(?:\\d+\\d+)?\\d+$',
+      '^\\d+\\d+x\\d+\\d+$',
+      '^\\d*(?=\\d+\\d+$)',
+      '^\\d+\\d*1\\d*$',
+      '^\\d+\\d*\\d{1,999}\\d*$',
+      '^\\d+\\d?\\d?\\d*$',
+      '^\\d+\\d{0,999}\\d*$',
+      '^(\\d)\\d*\\1*$',
+    ];
+    const issues = refused(form(...patterns), Object.fromEntries(patterns.map((_, index) => [`p${index}`, value])));
     expect(test.mock.calls.some(([input]) => input === value)).toBe(false);
-    expect(issues.map(({ path }) => path)).toEqual([0, 1, 2, 3].map((index) => `/fields/${index}/validation/pattern`));
+    expect(issues.map(({ path }) => path)).toEqual(patterns.map((_, index) => `/fields/${index}/validation/pattern`));
   });
 
   it('refuses a slow pattern inside a group', () => {

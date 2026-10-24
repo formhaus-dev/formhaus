@@ -10,7 +10,7 @@ import { skipStepAt } from '../engine/step-skip';
 import { createVisibility } from '../engine/visibility-state';
 import { trustDefinition } from '../engine/warnings';
 import { normalizeValue, typeError } from '../validation/type-checks';
-import { refuseSlowPatterns } from './slow-patterns';
+import { quadraticLimit, refuseSlowPatterns } from './slow-patterns';
 import { hasOwn, isEntry, isGroup, itemPath, itemScope, keepId } from '../visibility/nodes';
 
 export interface SubmissionOptions {
@@ -207,7 +207,7 @@ function withSkipped(source: Record<string, unknown>, { engine, skipped }: Prepa
 }
 
 export function validateSubmission(definition: FormDefinition, values: unknown, options: SubmissionOptions = {}): SubmissionResult {
-  return withPatternBudget(() => validated(definition, values, options));
+  return withPatternBudget(() => validated(definition, values, options), quadraticLimit);
 }
 
 function validated(definition: FormDefinition, values: unknown, options: SubmissionOptions): SubmissionResult {

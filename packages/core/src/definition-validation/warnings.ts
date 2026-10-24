@@ -11,7 +11,13 @@ import { versionWarnings } from './version-warnings';
 import { recallWarnings } from './recall-warnings';
 import { sourceWarnings } from './sources';
 import { exclusiveWarnings } from './exclusive-warnings';
-import { SLOW_PATTERNS, slowPattern } from './slow-pattern';
+import { slowPattern } from './slow-pattern';
+
+const SLOW_PATTERNS = {
+  nested: ['nests quantifiers', 'Remove the inner or outer quantifier'],
+  adjacent: ['repeats overlapping parts next to each other', 'Merge the repeated parts into one'],
+  long: ['is longer than 1000 characters', 'Shorten it to 1000 characters or less'],
+};
 
 const LIST_OPERATORS = ['in', 'notIn'];
 const COMPARISONS = ['gt', 'gte', 'lt', 'lte'];
