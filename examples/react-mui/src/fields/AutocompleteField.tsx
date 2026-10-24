@@ -1,26 +1,40 @@
-import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import Autocomplete from '@mui/material/Autocomplete';
-import TextField from '@mui/material/TextField';
-import { labels } from './shells';
+import TextField, { type TextFieldProps } from '@mui/material/TextField';
+import type { SyntheticEvent } from 'react';
 
-export function AutocompleteField(props: FieldComponentProps) {
-  const f = fieldProps(props);
+type AutocompleteFieldProps = TextFieldProps & {
+  options: string[];
+  value: string;
+  onInputChange: (event: SyntheticEvent, value: string) => void;
+};
+
+export function AutocompleteField({
+  id,
+  options,
+  value,
+  onInputChange,
+  onBlur,
+  onFocus,
+  disabled,
+  slotProps,
+  ...field
+}: AutocompleteFieldProps) {
   return (
     <Autocomplete
-      id={f.id}
-      options={f.options}
-      value={f.options.find((option) => option.value === f.value) ?? null}
-      onChange={(_, option) => f.change(option?.value ?? '')}
-      onBlur={f.blur}
-      onFocus={f.focus}
-      disabled={f.disabled}
+      freeSolo
+      forcePopupIcon
       fullWidth
+      id={id}
+      options={options}
+      value={value}
+      inputValue={value}
+      onInputChange={onInputChange}
+      disabled={disabled}
       renderInput={({ inputProps, InputProps, InputLabelProps, ...params }) => (
         <TextField
           {...params}
-          {...labels(f)}
-          placeholder={f.placeholder}
-          slotProps={{ input: InputProps, inputLabel: InputLabelProps, htmlInput: { ...inputProps, 'data-testid': f.testId } }}
+          {...field}
+          slotProps={{ input: InputProps, inputLabel: InputLabelProps, htmlInput: { ...inputProps, ...slotProps?.htmlInput } }}
         />
       )}
     />

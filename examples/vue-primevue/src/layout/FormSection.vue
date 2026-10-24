@@ -1,13 +1,8 @@
 <script setup lang="ts">
-import type { FieldOption } from '@formhaus/core';
 import { sectionComponentProps } from '@formhaus/vue';
 import Fieldset from 'primevue/fieldset';
-import { computed } from 'vue';
 
-const props = defineProps(sectionComponentProps);
-const columns = computed(() =>
-  props.section.layout === 'matrix' ? ((props.section.fields[0] as { options?: FieldOption[] } | undefined)?.options ?? []) : undefined,
-);
+defineProps(sectionComponentProps);
 </script>
 
 <template>

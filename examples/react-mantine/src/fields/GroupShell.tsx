@@ -1,10 +1,8 @@
-import { scaleView } from '@formhaus/core/fields';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import { Group, Input, Stack, Text } from '@mantine/core';
 import { labels } from './labels';
 
-export function GroupShell({ field, f, rootProps, children }: ControlShellProps) {
-  const anchors = field.type === 'scale' ? scaleView(field).anchors : [];
+export function GroupShell({ f, rootProps, anchors, children }: ControlShellProps) {
   return (
     <Input.Wrapper
       {...rootProps}

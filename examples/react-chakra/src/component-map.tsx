@@ -1,9 +1,22 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/react';
 import { mapControls } from '@formhaus/react/controls';
-import { Checkbox, Field, Input, NumberInput, RatingGroup, SegmentGroup, Select, Switch, Textarea } from '@chakra-ui/react';
+import {
+  Button,
+  Checkbox,
+  Field,
+  FileUpload,
+  HStack,
+  Input,
+  NumberInput,
+  RatingGroup,
+  SegmentGroup,
+  Select,
+  Switch,
+  Text,
+  Textarea,
+} from '@chakra-ui/react';
 import { Autocomplete } from './fields/Autocomplete';
 import { Choices, optionIds } from './fields/Choices';
-import { FileField } from './fields/FileField';
 import { MatrixRow } from './fields/MatrixRow';
 import { select } from './fields/select';
 import { Shell } from './fields/Shell';
@@ -21,14 +34,38 @@ const toggle = (Part: typeof Checkbox | typeof Switch) => (f: FieldProps) => ({
   ),
 });
 
+const upload = (f: FieldProps) => ({
+  'aria-describedby': undefined,
+  'aria-invalid': undefined,
+  'aria-required': undefined,
+  maxFiles: 1,
+  ids: { hiddenInput: `${f.id}-input` },
+  children: (
+    <>
+      <FileUpload.HiddenInput />
+      <HStack gap="3">
+        <FileUpload.Trigger asChild>
+          <Button id={f.id} variant="outline" size="sm" aria-describedby={f.describedBy}>
+            {f.placeholder ?? 'Choose a file'}
+          </Button>
+        </FileUpload.Trigger>
+        <Text textStyle="sm" color="fg.muted">
+          {f.value instanceof File ? f.value.name : 'No file chosen'}
+        </Text>
+      </HStack>
+    </>
+  ),
+});
+
 export const components: FieldComponentMap = {
   ...mapControls({
     shell: Shell,
+    freeText: true,
     kinds: { multiselect: 'input' },
     matrix: MatrixRow,
     controls: {
       input: Input,
-      textarea: [Textarea, () => ({ rows: 3, autoresize: true })],
+      textarea: [Textarea, () => ({ autoresize: true })],
       number: [
         NumberInput.Root,
         (f) => ({
@@ -79,7 +116,7 @@ export const components: FieldComponentMap = {
         }),
         'onValueChange',
       ],
+      file: [FileUpload.Root, upload],
     },
   }),
-  file: FileField,
 };

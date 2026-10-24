@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import { scaleView } from '@formhaus/core/fields';
 import { controlShellProps } from '@formhaus/vue/controls';
-import { computed } from 'vue';
 
 const props = defineProps(controlShellProps);
-const anchors = computed(() => (props.field.type === 'scale' ? scaleView(props.field).anchors : []));
 </script>
 
 <template>
@@ -13,8 +10,8 @@ const anchors = computed(() => (props.field.type === 'scale' ? scaleView(props.f
       {{ props.f.label }}<span v-if="props.f.required" aria-hidden="true"> *</span>
     </legend>
     <slot />
-    <div v-if="anchors.some(Boolean)" class="group__anchors text-caption">
-      <span v-for="(anchor, index) in anchors" :key="index">{{ anchor?.label }}</span>
+    <div v-if="props.anchors.some(Boolean)" class="group__anchors text-caption">
+      <span v-for="(anchor, index) in props.anchors" :key="index">{{ anchor?.label }}</span>
     </div>
     <div v-if="props.f.helperText" :id="props.f.helperId" class="text-caption">{{ props.f.helperText }}</div>
     <div v-if="props.f.error" :id="props.f.errorId" class="text-caption text-error">{{ props.f.error }}</div>

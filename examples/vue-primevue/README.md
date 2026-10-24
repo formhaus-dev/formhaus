@@ -20,7 +20,8 @@ Opens at http://localhost:5173. The page follows the system color scheme.
 - [src/layout/index.ts](src/layout/index.ts) maps the layout slots: `Stepper` for progress, `Message` for the error summary, `Fieldset` and `Panel` for sections and groups, `Dialog` for the remove dialog, `Button` for actions.
 - [src/fields/FieldShell.vue](src/fields/FieldShell.vue) draws the label, helper text and error around each control.
 - [src/fields/AutocompleteControl.vue](src/fields/AutocompleteControl.vue) filters the `AutoComplete` suggestions.
-- [src/fields/FileField.vue](src/fields/FileField.vue) and [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) are the file picker and the matrix rows.
+- [src/fields/FileField.vue](src/fields/FileField.vue) is the file picker with a remove button.
+- [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) renders a matrix row around a `RadioButtonGroup` of cells.
 - [src/definition.json](src/definition.json) is a three-step form with every field type.
 
 | Formhaus type | PrimeVue component |

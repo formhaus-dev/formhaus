@@ -9,10 +9,9 @@ import Rating from '@mui/material/Rating';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
 import { AutocompleteField } from './fields/AutocompleteField';
-import { FileField } from './fields/FileField';
 import { MatrixRow } from './fields/MatrixRow';
 import { ImageTiles, Segment } from './fields/options';
-import { GroupShell, InlineShell, labels } from './fields/shells';
+import { FilePicker, FileShell, GroupShell, InlineShell, labels } from './fields/shells';
 
 const menu = (options: ControlOption[]) =>
   options.map((option) => (
@@ -49,9 +48,10 @@ export const components: FieldComponentMap = {
     labels,
     kinds: { multiselect: 'input' },
     matrix: MatrixRow,
+    freeText: true,
     controls: {
       input: TextField,
-      textarea: [TextField, () => ({ multiline: true, minRows: 3 })],
+      textarea: [TextField, () => ({ multiline: true })],
       select: [TextField, (_, options) => ({ select: true, children: menu(options) })],
       multiselect: [
         TextField,
@@ -62,8 +62,8 @@ export const components: FieldComponentMap = {
       radio: [RadioGroup, radios],
       scale: [RadioGroup, (_, options) => ({ row: true, sx: { flexWrap: 'nowrap' }, children: points(options) })],
       rating: [Rating, (_, options) => ({ max: options.length, size: 'large' })],
+      autocomplete: [AutocompleteField, (_, options) => ({ options: options.map((option) => option.label) }), 'onInputChange'],
     },
   }),
-  autocomplete: AutocompleteField,
-  file: FileField,
+  ...mapControls({ shell: FileShell, controls: { file: [FilePicker, (f) => ({ 'aria-labelledby': `${f.id}-label ${f.id}` })] } }),
 };

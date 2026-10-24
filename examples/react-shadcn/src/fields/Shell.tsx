@@ -1,8 +1,7 @@
-import { scaleView } from '@formhaus/core/fields';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import { Label } from '@/components/ui/label';
 
-export function Shell({ kind, field, f, rootProps, children }: ControlShellProps) {
+export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
   const text = (
     <span>
       {f.label}
@@ -13,7 +12,6 @@ export function Shell({ kind, field, f, rootProps, children }: ControlShellProps
       )}
     </span>
   );
-  const anchors = field.type === 'scale' ? scaleView(field).anchors : [];
   const texts = (
     <>
       {anchors.some(Boolean) && (

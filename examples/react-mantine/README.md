@@ -19,7 +19,6 @@ Opens at http://localhost:5173. The color scheme follows the system setting.
 - [src/component-map.tsx](src/component-map.tsx) maps field types to Mantine controls with `mapControls`, one line per type. Mantine inputs render their own label, description and error from [src/fields/labels.tsx](src/fields/labels.tsx).
 - [src/fields/GroupShell.tsx](src/fields/GroupShell.tsx) labels radio, scale and rating groups.
 - [src/fields/MatrixRow.tsx](src/fields/MatrixRow.tsx) renders a table row inside a matrix section.
-- [src/fields/AutocompleteField.tsx](src/fields/AutocompleteField.tsx) and [FileField.tsx](src/fields/FileField.tsx) wrap `Autocomplete` and `FileInput`.
 - [src/layout](src/layout) holds the `layout` slots: `Stepper` progress, `Button` actions, `Alert` error summary, `Fieldset` sections with a `Table` for matrix sections, `Card` group items and a `Modal` remove dialog.
 - [src/definition.json](src/definition.json) is a three-step account form.
 

@@ -23,7 +23,7 @@ The project was created with `shadcn init --template vite --base base --preset n
 
 - [src/component-map.tsx](src/component-map.tsx) maps the field types to shadcn components with `mapControls`, one entry per type: `Input`, `Textarea`, `Checkbox`, `Switch` and `RadioGroup`, plus a checkbox group for `multiselect`.
 - [src/fields/Shell.tsx](src/fields/Shell.tsx) draws the label, helper text and error around each control.
-- [src/fields/choices.tsx](src/fields/choices.tsx) builds the radio, checkbox, scale and star options. [SelectControl.tsx](src/fields/SelectControl.tsx) wraps `Select`, [AutocompleteInput.tsx](src/fields/AutocompleteInput.tsx) is an `Input` with a `<datalist>`, and [MatrixRow.tsx](src/fields/MatrixRow.tsx) is a row inside a matrix section.
+- [src/fields/choices.tsx](src/fields/choices.tsx) builds the radio, checkbox, scale and star options. [SelectControl.tsx](src/fields/SelectControl.tsx) wraps `Select`, [AutocompleteInput.tsx](src/fields/AutocompleteInput.tsx) is an `Input` with a `<datalist>` that keeps typed text, and [MatrixRow.tsx](src/fields/MatrixRow.tsx) renders a matrix row with the same `RadioGroup` as radio fields.
 - [src/FormActions.tsx](src/FormActions.tsx) renders Back and Continue with `Button`.
 - [src/definition.json](src/definition.json) is a branching form: the Team plan routes to company details, the Personal plan to a name step.
 

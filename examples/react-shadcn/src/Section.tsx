@@ -1,10 +1,7 @@
 import type { SectionComponentProps } from '@formhaus/react';
 import type { CSSProperties } from 'react';
 
-export function Section({ id, section, title, description, descriptionId, children }: SectionComponentProps) {
-  const first = section.fields[0];
-  const columns = section.layout === 'matrix' && first && 'options' in first ? (first.options ?? []) : null;
-
+export function Section({ id, title, description, descriptionId, columns, children }: SectionComponentProps) {
   return (
     <fieldset id={id} aria-describedby={descriptionId} className="grid gap-3">
       <legend className="mb-3 text-sm font-medium">{title}</legend>
