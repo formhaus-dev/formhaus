@@ -1,6 +1,8 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine, type FormDefinition, type FormField } from '../../src';
 import { validateSubmission } from '../../src/server';
+import { quadraticLimit } from '../../src/server/slow-patterns';
+import corpus from './real-world-patterns.json';
 
 const form = (...patterns: string[]): FormDefinition => ({
   id: 'slow',
@@ -61,13 +63,13 @@ describe('slow patterns on the server', () => {
       '^\\+?\\d+[\\d\\s-]*$',
       '^[a-zA-Z]+[a-zA-Z ]*$',
       '^[A-Za-z]+\\s?[A-Za-z]*$',
-      '^\\w+.?\\w+@\\w+\\.\\w+$',
+      '^\\d+,?\\d*$',
       '^(\\d+)\\.?(\\d*)$',
     ];
     const definition = form(...quadratic);
     expect(checkDefinition(definition).map(({ code }) => code)).toEqual(quadratic.map(() => 'slow-pattern'));
     expect(refused(definition)).toEqual([]);
-    const values = ['12.5', '.5', '-3.25', '1,5', '555 0100', '+1 555-0100', 'Ada Lovelace', 'Ada Lovelace', 'ada.b@mail.com', '3.25'];
+    const values = ['12.5', '.5', '-3.25', '1,5', '555 0100', '+1 555-0100', 'Ada Lovelace', 'Ada Lovelace', '1,5', '3.25'];
     const valid = Object.fromEntries(values.map((value, index) => [`p${index}`, value]));
     expect(validateSubmission(definition, valid).errors).toEqual({});
     expect(Object.keys(validateSubmission(form(quadratic[0]), { p0: '1.2.3' }).errors)).toEqual(['p0']);
@@ -102,10 +104,56 @@ describe('slow patterns on the server', () => {
       '^\\d+\\d?\\d?\\d*$',
       '^\\d+\\d{0,999}\\d*$',
       '^(\\d)\\d*\\1*$',
+      '^\\d+\\B\\d+\\B\\d+\\d+$',
+      '^\\d+\\B\\d+\\d+$',
+      '^\\d{1,1000}\\d{1,1000}\\d+\\d+$',
+      '^\\d{1,1000}\\d+\\d+$',
+      '^[^\\x00-\\x2f]+[^\\x30-\\x7f]+[^\\x00-\\x2f]+[^\\x00-\\x2f]+$',
     ];
     const issues = refused(form(...patterns), Object.fromEntries(patterns.map((_, index) => [`p${index}`, value])));
     expect(test.mock.calls.some(([input]) => input === value)).toBe(false);
     expect(issues.map(({ path }) => path)).toEqual(patterns.map((_, index) => `/fields/${index}/validation/pattern`));
+  });
+
+  it('refuses a pattern outside the grammar it runs quadratic patterns for', () => {
+    const patterns = [
+      '^\\w+.?\\w+@\\w+\\.\\w+$',
+      '^\\d+\\D?\\d*$',
+      '^[^a-z]+\\.?[^a-z]*$',
+      '^\\d+\\x2e?\\d*$',
+      '^\\d+é?\\d*$',
+      '^\\d+\\.{0,1}\\d*$',
+      '^\\d+?\\.?\\d*$',
+      '^(\\d+\\.?\\d*)$|^$',
+      '^(?:x)?\\d+\\d*$',
+      '^((\\d+))\\.?\\d*$',
+      '^\\d+\\.?\\d*[\\b]?$',
+    ];
+    const definition = form(...patterns);
+    expect(checkDefinition(definition).map(({ code }) => code)).toEqual(patterns.map(() => 'slow-pattern'));
+    expect(refused(definition).map(({ path }) => path)).toEqual(patterns.map((_, index) => `/fields/${index}/validation/pattern`));
+  });
+
+  it('refuses overlapping repeats split by a modifier group', () => {
+    for (const pattern of ['^\\d+(?i:)\\d+(?i:)\\d+\\d+$', '^\\d+(?i:)\\d+\\d+$'])
+      expect(() => validateSubmission(form(pattern), {})).toThrow(FormDefinitionError);
+  });
+
+  it('gives no pattern of a refused definition a value to match', () => {
+    expect(quadraticLimit('^\\d*\\d*\\d*$')).toBe(0);
+    expect(quadraticLimit('^\\d+\\.?\\d*$')).toBe(1000);
+    expect(quadraticLimit('^\\d+$')).toBeUndefined();
+  });
+
+  it('classifies a corpus of real-world patterns', () => {
+    const verdict = (pattern: string) => {
+      const definition = form(pattern);
+      if (!checkDefinition(definition).length) return 'runs';
+      return refused(definition).length ? 'refused' : 'quadratic';
+    };
+    expect(corpus.map(({ pattern }) => ({ pattern, server: verdict(pattern) }))).toEqual(
+      corpus.map(({ pattern, server }) => ({ pattern, server })),
+    );
   });
 
   it('refuses a slow pattern inside a group', () => {

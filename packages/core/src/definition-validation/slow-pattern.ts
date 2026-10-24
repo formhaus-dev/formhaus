@@ -27,29 +27,17 @@ type PatternGroup = {
 
 type Chars = () => string[];
 
-export type SlowPattern = 'nested' | 'adjacent' | 'long';
-
-export interface PatternScan {
-  slow?: SlowPattern;
-  overlaps: number;
-  optionalOverlaps: number;
-  fixedOverlaps: number;
-}
-
-const OPTIONAL = /^(?:\?|\{0(?:,\d+)?\})/;
-const UNBOUNDED = /^(?:[*+]|\{\d+,\})/;
-
-function following(group: PatternGroup, quantifier: string, last: Chars): string[] | undefined {
-  if (OPTIONAL.test(quantifier)) return group.previous;
-  if (!UNBOUNDED.test(quantifier)) return undefined;
+function trailing(group: PatternGroup, quantifier: string, first: Chars, last = first): string[] | undefined | 'adjacent' {
+  if (/^(?:\?|\{0(?:,\d+)?\})/.test(quantifier)) return group.previous;
+  if (!/^(?:[*+]|\{\d+,\})/.test(quantifier)) return undefined;
+  const leading = first();
+  if (group.previous?.some((char) => leading.includes(char))) return 'adjacent';
   const repeated = last();
   return /^(?:\*|\{0,\})/.test(quantifier) ? [...new Set([...(group.previous ?? []), ...repeated])] : repeated;
 }
 
-export function scanPattern(pattern: string): PatternScan {
-  const scan: PatternScan = { overlaps: 0, optionalOverlaps: 0, fixedOverlaps: 0 };
-  if (pattern.length > 1000) return { ...scan, slow: 'long' };
-  const done = (): PatternScan => (scan.overlaps ? { ...scan, slow: 'adjacent' } : scan);
+export function slowPattern(pattern: string): 'nested' | 'adjacent' | 'long' | undefined {
+  if (pattern.length > 1000) return 'long';
   const groups: PatternGroup[] = [{ start: 0, chars: '' }];
   for (const match of pattern.matchAll(PATTERN_TOKEN)) {
     const [token, look, open, atom, quantifier = ''] = match;
@@ -71,10 +59,10 @@ export function scanPattern(pattern: string): PatternScan {
     const separator = !quantifier && chars.length === 1 && /^\\?\W$/.test(atom) ? chars : '';
     const closed = atom === ')' ? groups.pop() : undefined;
     if (closed) {
-      if (!groups.length) return done();
+      if (!groups.length) return undefined;
       group = groups[groups.length - 1];
       const separated = closed.alternated ? '' : [closed.lead, closed.tail].find((char) => char && closed.chars.split(char).length === 2);
-      if (closed.inner && !separated && /^[*+{]/.test(quantifier)) return { ...scan, slow: 'nested' };
+      if (closed.inner && !separated && /^[*+{]/.test(quantifier)) return 'nested';
       const all = () => [...closed.chars];
       first = separated && separated === closed.lead ? () => [separated] : all;
       last = separated && separated === closed.tail ? () => [separated] : all;
@@ -95,15 +83,9 @@ export function scanPattern(pattern: string): PatternScan {
       }
     }
     group.inner ||= !!quantifier;
-    const leading = first();
-    if (group.previous?.some((char) => leading.includes(char))) {
-      if (UNBOUNDED.test(quantifier)) scan.overlaps++;
-      else if (/^\?\??$/.test(quantifier)) scan.optionalOverlaps++;
-      else scan.fixedOverlaps++;
-    }
-    group.previous = following(group, quantifier, last);
+    const next = trailing(group, quantifier, first, last);
+    if (next === 'adjacent') return next;
+    group.previous = next;
   }
-  return done();
+  return undefined;
 }
-
-export const slowPattern = (pattern: string): SlowPattern | undefined => scanPattern(pattern).slow;
