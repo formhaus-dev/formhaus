@@ -86,7 +86,9 @@ export function completionChecks({ open, rendered, edit }) {
               .locator('body')
               .innerText({ timeout: 2000 })
               .catch(() => '');
-            problems.push(`${app.id} ${form.hash}: threw ${lines[0]} | preview: ${shown.replace(/\s+/g, ' ').slice(0, 400)}`);
+            problems.push(
+              `${app.id} ${form.hash}: threw ${lines[0]} | ${lines.slice(-6).join(' ').replace(/\s+/g, ' ')} | preview: ${shown.replace(/\s+/g, ' ').slice(0, 300)}`,
+            );
           });
     },
   };
