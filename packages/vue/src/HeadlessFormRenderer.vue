@@ -83,7 +83,14 @@ const errorView = computed(() => {
 });
 const errorCount = computed(() => errorView.value.count);
 
-const { rememberFocus, showField, requestFocus } = useFormFocus(form, formRef, formId, invalidAttempts, () => errorCount.value > 1);
+const { rememberFocus, showField, requestFocus } = useFormFocus(
+  form,
+  formRef,
+  formId,
+  invalidAttempts,
+  () => errorCount.value > 1,
+  () => props.stepFocus === 'heading',
+);
 
 watch(
   [() => props.errors, () => form.engine],

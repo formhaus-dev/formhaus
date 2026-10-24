@@ -159,6 +159,21 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     await waitFor(() => expect(active()).toBe(screen.getByRole('radio', { name: 'Plan A' })));
   });
 
+  it('focuses the step title instead of a field of the next step with stepFocus heading', async () => {
+    harness.mount({ definition: wizard, initialValues: filled, stepFocus: 'heading', onSubmit: () => {} });
+    await harness.click(button('Continue'));
+    await screen.findByRole('heading', { name: 'Two' });
+    await waitFor(() => expect(active()).toBe(screen.getByRole('heading', { name: 'Two' })));
+    expect(active()?.getAttribute('tabindex')).toBe('-1');
+  });
+
+  it('still focuses the invalid field after a failed Continue with stepFocus heading', async () => {
+    harness.mount({ definition: wizard, stepFocus: 'heading', onSubmit: () => {} });
+    await harness.click(button('Continue'));
+    await screen.findByText('This field is required');
+    await waitFor(() => expect(active()).toBe(textbox('Name')));
+  });
+
   it('focuses Add in custom group markup from a count error summary link', async () => {
     const crew = { key: 'crew', type: 'group', label: 'Crew', validation: { minLength: 2 }, fields: [flat.fields![0]] };
     const definition: FormDefinition = { ...flat, fields: [crew] };

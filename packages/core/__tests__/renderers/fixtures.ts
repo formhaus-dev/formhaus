@@ -23,6 +23,7 @@ export interface ScenarioProps {
   errorSummary?: boolean | 'top' | 'bottom';
   loading?: boolean;
   stepErrorMarks?: boolean;
+  stepFocus?: 'field' | 'heading';
   labels?: LabelSource;
   locale?: LocaleCatalog | LocaleCatalog[];
   onStepValidate?: StepValidateFn;

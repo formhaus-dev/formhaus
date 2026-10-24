@@ -413,6 +413,8 @@ export interface FormRendererProps {
     // (undocumented)
     stepErrorMarks?: boolean;
     // (undocumented)
+    stepFocus?: 'field' | 'heading';
+    // (undocumented)
     testIds?: boolean | ((target: TestIdTarget) => string | undefined);
     // (undocumented)
     validators?: Record<string, ValidatorFn>;

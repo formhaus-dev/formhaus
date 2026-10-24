@@ -134,6 +134,7 @@ export interface FormRendererProps extends FormEngineOptions {
   errorSummary?: boolean | 'top' | 'bottom';
   confirmRemove?: boolean;
   stepErrorMarks?: boolean;
+  stepFocus?: 'field' | 'heading';
   loading?: boolean;
   components?: FieldComponentMap;
   layout?: LayoutComponentMap;
