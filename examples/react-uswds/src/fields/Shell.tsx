@@ -1,5 +1,6 @@
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
+import { CharacterCount } from './CharacterCount';
 
 export function Label({ f }: { f: FieldProps }) {
   return (
@@ -77,13 +78,20 @@ export function Shell({ kind, field, f, rootProps, anchors, children }: ControlS
       </div>
     );
 
-  return (
-    <div {...rootProps} className={className}>
+  const group = (
+    <div {...(f.maxLength ? undefined : rootProps)} className={className}>
       <label className={f.invalid ? 'usa-label usa-label--error' : 'usa-label'} htmlFor={f.id}>
         <Label f={f} />
       </label>
       <Notes f={f} />
       {children}
     </div>
+  );
+  return f.maxLength ? (
+    <CharacterCount f={f} max={f.maxLength} rootProps={rootProps}>
+      {group}
+    </CharacterCount>
+  ) : (
+    group
   );
 }

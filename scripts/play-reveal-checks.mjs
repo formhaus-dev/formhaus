@@ -87,7 +87,7 @@ function placement(frame, role, name, next) {
         [...field.querySelectorAll(`[role=${kind}], input[type=${kind}]`)].find(
           (node) => node.getAttribute('aria-label') === nextName || node.labels?.[0]?.textContent?.trim() === nextName,
         );
-      const content = block?.querySelector('input, textarea, select, label');
+      const content = block?.querySelector('label') ?? block?.querySelector('input, textarea, select');
       return {
         block: !!block && block.dataset.fh === 'reveal',
         expanded: input.getAttribute('aria-expanded'),

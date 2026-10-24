@@ -166,3 +166,10 @@
   overflow-wrap: anywhere;
   white-space: pre-line;
 }
+
+.reveal {
+  margin-bottom: units(1);
+  margin-left: units(1);
+  padding-left: units(2.5);
+  border-left: units(0.5) solid color("base-lighter");
+}
