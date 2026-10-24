@@ -86,7 +86,9 @@ const Choices = control((props, emit, attrs) =>
           }),
           option.label,
         ]),
-        option.reveal ? h('div', { id: option.reveal.id, hidden: !option.reveal.open }, [option.reveal.children]) : null,
+        option.reveal
+          ? h('div', { id: option.reveal.id, 'data-fh': 'reveal', hidden: !option.reveal.open }, [option.reveal.children])
+          : null,
       ]),
     ),
   ),

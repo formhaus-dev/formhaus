@@ -48,6 +48,15 @@ describe('choiceControl', () => {
     expect(commit.mock.calls).toEqual([['a']]);
   });
 
+  it('commits from an option whose id merely looks like a reveal block', () => {
+    const { commit, choice } = setup({}, 'a');
+    const root = { contains: () => true };
+    const own = { value: 'a', closest: (selector: string) => (selector === '[data-fh="reveal"]' ? null : own) };
+    choice.click({ detail: 1, target: own, currentTarget: root });
+    vi.runAllTimers();
+    expect(commit.mock.calls).toEqual([['a']]);
+  });
+
   it('changes without autoAdvance and commits with it', () => {
     const plain = setup({ autoAdvance: false });
     plain.choice.pick('a');

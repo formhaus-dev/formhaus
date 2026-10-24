@@ -79,7 +79,7 @@ function Choices({ id, name, value, disabled, label, options, onChange }: Choice
             {option.label}
           </label>
           {option.reveal && (
-            <div id={option.reveal.id} hidden={!option.reveal.open}>
+            <div id={option.reveal.id} data-fh="reveal" hidden={!option.reveal.open}>
               {option.reveal.children}
             </div>
           )}

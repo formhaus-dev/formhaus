@@ -3,6 +3,7 @@ import { isGroup, isSection, topNodes } from '../visibility/nodes';
 import { fnv1a } from './hash';
 
 const clean = (value: string) => value.replace(/[^\w-]/g, '-');
+const base = (key: string) => clean(key).replace(/-{2,}reveal/g, '-reveal');
 const cache = new WeakMap<FormDefinition, Map<string, Map<string, string>>>();
 
 function assign(names: Set<string>, groups = new Set<string>()): Map<string, string> {
@@ -10,12 +11,12 @@ function assign(names: Set<string>, groups = new Set<string>()): Map<string, str
   const taken = new Set<string>();
   const keys = [...names].sort(
     (a, b) =>
-      +groups.has(a) - +groups.has(b) || (groups.has(a) ? (a < b ? 1 : -1) : +(clean(b) === b) - +(clean(a) === a) || (a < b ? -1 : 1)),
+      +groups.has(a) - +groups.has(b) || (groups.has(a) ? (a < b ? 1 : -1) : +(base(b) === b) - +(base(a) === a) || (a < b ? -1 : 1)),
   );
   const prefixes = (id: string) => [...taken].some((other) => other.startsWith(`${id}--`));
   for (const key of keys) {
-    let id = clean(key);
-    for (let seed = key; taken.has(id) || (groups.has(key) && prefixes(id)); seed = id) id = `${clean(key)}-${fnv1a(seed).toString(36)}`;
+    let id = base(key);
+    for (let seed = key; taken.has(id) || (groups.has(key) && prefixes(id)); seed = id) id = `${base(key)}-${fnv1a(seed).toString(36)}`;
     taken.add(id);
     ids.set(key, id);
   }
@@ -40,7 +41,7 @@ function idsOf(definition: FormDefinition): Map<string, Map<string, string>> {
 }
 
 const nodeId = (key: string, scope: string, definition?: FormDefinition) =>
-  (definition && idsOf(definition).get(scope)?.get(key)) ?? clean(key);
+  (definition && idsOf(definition).get(scope)?.get(key)) ?? base(key);
 
 export function fieldDomId(formId: string | undefined, key: string, definition?: FormDefinition): string {
   return `${formId ? clean(formId) : 'fh'}-${nodeId(key, '', definition)}`;

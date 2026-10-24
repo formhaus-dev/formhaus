@@ -24,7 +24,7 @@ export interface ChoiceInput {
 
 const COMMIT_TYPES = ['radio', 'scale', 'rating'];
 const OPTION = 'input[type=radio], button[value], [role=radio], [role=option]';
-const REVEAL = '[data-fh="reveal"], [id*="--reveal-"]';
+const REVEAL = '[data-fh="reveal"]';
 
 interface Closest {
   closest?: (selector: string) => unknown;

@@ -441,7 +441,7 @@ Build the whole form on `useFormEngine` and read the error summary with `errorSu
 <<< @/recipes/snippets/custom-layout.vue [Vue]
 :::
 
-`errorSummary(engine, { idPrefix?, labels? })` returns `{ groups, topLevelErrors, count }`. It reads the engine errors only: `groups` and `count` are the ones the `errorSummary` slot gets, and `topLevelErrors` is `engine.topLevelErrors`, without the message of a failed `onSubmit`. Each entry `id` is the DOM id the Formhaus renderers give the control of that field, with `idPrefix` as the form id (`fh` without one). For a top-level key made of letters, digits, `_` and `-` that is `<idPrefix>-<key>`, as in the snippet; group items and other keys get derived ids. `labels` overrides the definition `labels` for step and item titles.
+`errorSummary(engine, { idPrefix?, labels? })` returns `{ groups, topLevelErrors, count }`. It reads the engine errors only: `groups` and `count` are the ones the `errorSummary` slot gets, and `topLevelErrors` is `engine.topLevelErrors`, without the message of a failed `onSubmit`. Each entry `id` is the DOM id the Formhaus renderers give the control of that field, with `idPrefix` as the form id (`fh` without one). For a top-level key made of letters, digits, `_` and `-` that is `<idPrefix>-<key>`, as in the snippet, except that a run of dashes before `reveal` becomes one dash; group items and other keys get derived ids. `labels` overrides the definition `labels` for step and item titles.
 
 ## Next steps
 

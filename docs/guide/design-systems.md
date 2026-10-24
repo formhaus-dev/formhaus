@@ -215,7 +215,7 @@ The control gets the typed text as its value. Text that matches an option label 
 
 ## Conditional reveal
 
-With [`conditionalReveal`](/guide/conditions#show-a-field-under-its-option) on the renderer, list the types whose adapter draws revealed fields under the options. Each option the adapter gets then has `reveal`: `{ id, open, children }`. Put `children` in a block with that `id` under the option, hide the block while `open` is `false`, and give the option input `aria-controls={option.reveal.id}`. Give a checkbox option `aria-expanded={option.reveal.open}` too.
+With [`conditionalReveal`](/guide/conditions#show-a-field-under-its-option) on the renderer, list the types whose adapter draws revealed fields under the options. Each option the adapter gets then has `reveal`: `{ id, open, children }`. Put `children` in a block with that `id` and `data-fh="reveal"` under the option, hide the block while `open` is `false`, and give the option input `aria-controls={option.reveal.id}`. Give a checkbox option `aria-expanded={option.reveal.open}` too.
 
 ```tsx
 const radios = (f: FieldProps, options: ControlOption[]) => ({
@@ -223,7 +223,7 @@ const radios = (f: FieldProps, options: ControlOption[]) => ({
     <Fragment key={option.value}>
       <FormControlLabel value={option.value} label={option.label} control={<Radio inputProps={{ 'aria-controls': option.reveal?.id }} />} />
       {option.reveal && (
-        <Box id={option.reveal.id} hidden={!option.reveal.open} sx={{ ml: 1.5, pl: 3, borderLeft: 4, borderColor: 'divider' }}>
+        <Box id={option.reveal.id} data-fh="reveal" hidden={!option.reveal.open} sx={{ ml: 1.5, pl: 3, borderLeft: 4, borderColor: 'divider' }}>
           {option.reveal.children}
         </Box>
       )}
@@ -234,7 +234,7 @@ const radios = (f: FieldProps, options: ControlOption[]) => ({
 mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { radio: [RadioGroup, radios] } })
 ```
 
-A type that is not listed keeps the revealed fields after the group, so list a type only when its adapter draws `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent, as long as the block has the `id` of `option.reveal`.
+A type that is not listed keeps the revealed fields after the group, so list a type only when its adapter draws `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent, as long as the block has `data-fh="reveal"`.
 
 ## autoAdvance
 
