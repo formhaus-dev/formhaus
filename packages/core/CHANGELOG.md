@@ -1,5 +1,20 @@
 # @formhaus/core
 
+## 1.5.0
+
+### Minor Changes
+
+- `controlProps` returns `anchors` and a `save` function that converts what a control sends.
+- `controlProps` takes `text` and `setText` for free-text autocomplete controls.
+- New `freeText` option in `mapControls`.
+- With `freeText`, the `autocomplete` control gets the typed text as its value, and text that matches an option label saves the option value.
+- New `emptyStrings` option for `schemaValidate()`. `'omit'` drops empty strings from the values the schema sees, at the top level and in group items, so a cleared field passes `.optional()` like an untouched one. The default `'keep'` passes them as before.
+- Exposes the `SchemaValidateOptions` type.
+
+### Patch Changes
+
+- Fixed mapped `textarea` controls ignoring `rows` and mapped `file` controls ignoring `accept`.
+
 ## 1.4.2
 
 ### Patch Changes
