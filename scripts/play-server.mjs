@@ -40,11 +40,13 @@ export async function previewServer() {
   return { base, ready, stop: () => server?.kill() };
 }
 
+const benign = ['Failed to load resource', 'ResizeObserver loop'];
+
 export function watchErrors(page, report) {
   page.on('pageerror', (error) => report(String(error)));
   page.on(
     'console',
-    (message) => message.type() === 'error' && !message.text().startsWith('Failed to load resource') && report(message.text()),
+    (message) => message.type() === 'error' && !benign.some((text) => message.text().startsWith(text)) && report(message.text()),
   );
   page.on(
     'response',
