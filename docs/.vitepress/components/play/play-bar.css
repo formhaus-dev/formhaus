@@ -8,11 +8,21 @@
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
+.play-logo,
+.play-bar .play-button {
+  flex: none;
+}
+
 @media (min-width: 1180px) {
-  .play-logo,
   .play-bar__title,
   .play-bar .play-select {
     flex: none;
+  }
+}
+
+@media (max-width: 1179px) {
+  .play-bar__title {
+    display: none;
   }
 }
 
