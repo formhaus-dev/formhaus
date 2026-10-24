@@ -70,6 +70,18 @@
     {
       "code": "slow-pattern",
       "path": "/fields/26/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/27/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/28/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/29/validation/pattern"
     }
   ],
   "definition": {
@@ -293,6 +305,30 @@
         "label": "code26",
         "validation": {
           "pattern": "(?<s>a)a*\\k<s>*$"
+        }
+      },
+      {
+        "key": "code27",
+        "type": "text",
+        "label": "code27",
+        "validation": {
+          "pattern": "\\k<(a+)+>"
+        }
+      },
+      {
+        "key": "code28",
+        "type": "text",
+        "label": "code28",
+        "validation": {
+          "pattern": "\\k<(a|a)+>"
+        }
+      },
+      {
+        "key": "code29",
+        "type": "text",
+        "label": "code29",
+        "validation": {
+          "pattern": "(?<ä>a)a*\\k<ä>*$"
         }
       }
     ]
