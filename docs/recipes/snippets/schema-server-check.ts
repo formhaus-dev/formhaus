@@ -1,9 +1,16 @@
 import { schemaValidate } from '@formhaus/core/schema';
 import { z } from 'zod';
 
-async function isFree(email: string): Promise<boolean> {
-  const response = await fetch(`/api/emails/${encodeURIComponent(email)}`);
-  return response.status === 404;
+const checked = new Map<string, Promise<boolean>>();
+
+function isFree(email: string): Promise<boolean> {
+  let free = checked.get(email);
+  if (!free) {
+    free = fetch(`/api/emails/${encodeURIComponent(email)}`).then((response) => response.status === 404);
+    free.catch(() => checked.delete(email));
+    checked.set(email, free);
+  }
+  return free;
 }
 
 export const onValidate = schemaValidate(
