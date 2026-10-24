@@ -1,5 +1,24 @@
 # @formhaus/vue
 
+## 1.4.0
+
+### Minor Changes
+
+- New `useFieldProps(props, emit)` returns a reactive object with the ids, ARIA attributes, flags, value and handlers of a custom field: `attrs` for a native control, `input` for a `v-model` component, `option(option, index)` for radios and checkboxes, `inputType`, `onInput` and `commit` for `autoAdvance` picks.
+- `errorSummary` takes `"top"` to render the error summary first in the form, before the progress and the fields. `"bottom"` and `true` keep it above the buttons.
+- `layout.section` gets `columns` in a matrix section. `components.section` gets the same props as before.
+- `layout.actions` gets `primaryDisabled` while the `disabled` conditions of the primary action match.
+- `layout.progress` gets `stepErrorsLabel`, and each step in `steps` gets `errorsLabel`, from the `stepErrors` label. A `progressComponent` with `stepErrorMarks` gets `errorsLabel` in its `steps` too.
+- New `@formhaus/vue/controls` entry with `mapControls({ shell, labels, kinds, matrix, controls })` and `controlShellProps`. It returns a `components` map from one control per field type and one shell for the label, helper and error. Controls get the id, ARIA, `modelValue` and an `onUpdate:modelValue` that takes a value, an event, an option object or a `Date`. An adapter `children` becomes the default slot.
+- Mapped radio, scale and rating fields commit `autoAdvance` on a click, Enter or Space. Arrow keys only change the value.
+- A third entry in a control tuple names the change event listener, such as `'onUpdate:value'`.
+- Development builds warn with `double-label` when a mapped control has two `<label for>` elements.
+
+### Patch Changes
+
+- Components carry their names only in development builds. `FormRenderer` with core is 0.14 KB smaller gzipped. In production, `KeepAlive` `include` and `exclude` no longer match Formhaus components by name.
+- Requires `@formhaus/core` 1.4.0.
+
 ## 1.3.0
 
 ### Minor Changes
