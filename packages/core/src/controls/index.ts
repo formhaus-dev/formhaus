@@ -149,7 +149,7 @@ export function controlProps(
       const next = fromControl(field, input, detail);
       if (!typed) return next;
       const typedText = String(next ?? '');
-      preset.setText!(typedText);
+      preset.setText?.(typedText);
       return labelValue(typedText);
     },
     root: {

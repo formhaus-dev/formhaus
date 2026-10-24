@@ -210,7 +210,7 @@ mapControls({
 })
 ```
 
-The control gets the typed text as its value. Text that matches an option label saves the option value, other text saves as typed. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do.
+The control gets the typed text as its value. Text that matches an option label saves the option value, other text saves as typed. With two options of the same label, the first one wins. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do.
 
 ## autoAdvance
 
