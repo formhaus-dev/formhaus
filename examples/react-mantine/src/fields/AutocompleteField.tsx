@@ -1,25 +1,22 @@
-import type { FieldComponentProps } from '@formhaus/react';
+import { optionText, optionValue } from '@formhaus/core/fields';
+import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { Autocomplete } from '@mantine/core';
 import { useState } from 'react';
-import { inputProps } from './shared';
+import { labels } from './labels';
 
 export function AutocompleteField(props: FieldComponentProps) {
-  const { field, value, onChange } = props;
-  const options = field.options ?? [];
-  const toValue = (text: string) => options.find((option) => option.label === text)?.value ?? text;
-  const toText = (stored: string) => options.find((option) => option.value === stored)?.label ?? stored;
-  const stored = (value as string) ?? '';
-  const [text, setText] = useState(toText(stored));
-
+  const f = fieldProps(props);
+  const [text, setText] = useState(optionText(f.options, f.value));
   return (
     <Autocomplete
-      {...inputProps(props)}
-      data={options.map((option) => option.label)}
-      value={toValue(text) === stored ? text : toText(stored)}
-      autoComplete={field.autocomplete ?? 'off'}
+      {...f.input}
+      {...labels(f)}
+      data={f.options.map((option) => option.label)}
+      value={optionValue(f.options, text) === f.text ? text : optionText(f.options, f.value)}
+      comboboxProps={{ keepMounted: false }}
       onChange={(next) => {
         setText(next);
-        onChange(toValue(next));
+        f.change(optionValue(f.options, next));
       }}
     />
   );
