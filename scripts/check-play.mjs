@@ -15,7 +15,7 @@ const only = args
   ?.slice(7)
   .split(',');
 const widths = [320, 390, 768, 861, 1024, 1180, 1280, 1440, 1920];
-const { base, ready, stop } = previewServer();
+const { base, ready, stop } = await previewServer();
 
 const play = playPage(base);
 const { open, rendered, frameOf, edit, tone } = play;
