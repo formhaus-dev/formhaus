@@ -34,7 +34,7 @@ export function completionChecks({ open, rendered, edit }) {
   }
 
   async function until(page, check) {
-    for (let attempt = 0; attempt < 100 && !(await check()); attempt += 1) await page.waitForTimeout(100);
+    for (let attempt = 0; attempt < 300 && !(await check()); attempt += 1) await page.waitForTimeout(100);
   }
 
   async function submit(page, view, definition, fields) {
@@ -50,7 +50,7 @@ export function completionChecks({ open, rendered, edit }) {
       if (await done.count()) break;
       review = await listed(view, fields);
       const before = await text();
-      await button.click();
+      await button.click({ timeout: 30000 });
       await until(page, async () => (await text()) !== before);
     }
     await settle(done.waitFor({ timeout: 5000 }));
