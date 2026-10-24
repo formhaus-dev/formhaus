@@ -54,8 +54,10 @@ const COMMIT_TYPES = ['radio', 'scale', 'rating'];
 const OPTION = 'input[type=radio], button[value], [role=radio], [role=option]';
 const INPUT_ONLY = ['placeholder', 'inputMode', 'autoComplete', 'autocomplete'];
 
-export const controlKind = (type: string, kinds?: Partial<Record<string, ControlKind>>): ControlKind =>
-  kinds?.[type] ?? KINDS[type] ?? 'input';
+export const controlKind = (type: string, kinds?: Partial<Record<string, ControlKind>>): ControlKind => {
+  const kind = kinds?.[type] ?? KINDS[type];
+  return kind === 'inline' || kind === 'group' ? kind : 'input';
+};
 
 export function controlShell<Shell>(shells: ControlShells<Shell>, kind: ControlKind): Shell | null {
   const map = shells as Partial<Record<ControlKind, Shell | null>> | null;

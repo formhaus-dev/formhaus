@@ -17,6 +17,14 @@ describe('controlKind and controlShell', () => {
     expect(controlKind('multiselect', { multiselect: 'input' })).toBe('input');
   });
 
+  it('does not read inherited properties for a type', () => {
+    const types = ['constructor', '__proto__', 'toString'];
+    expect(types.map((type) => controlKind(type))).toEqual(['input', 'input', 'input']);
+    expect(types.map((type) => controlKind(type, {}))).toEqual(['input', 'input', 'input']);
+    expect(types.map((type) => toControl(field(type), 'x'))).toEqual(['x', 'x', 'x']);
+    expect(types.map((type) => fromControl(field(type), event({ value: 'x', checked: true })))).toEqual(['x', 'x', 'x']);
+  });
+
   it('reads one shell, a shell per kind, or null', () => {
     const one = () => null;
     expect(controlShell(one, 'group')).toBe(one);
