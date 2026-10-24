@@ -39,7 +39,7 @@ body {
   padding-left: 18px;
 }
 
-.switch-label {
+.inline-label {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -158,4 +158,25 @@ body {
 
 .image-option.ant-radio-wrapper::after {
   display: none;
+}
+
+.choice-group {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choice-group > legend {
+  padding: 0 0 8px;
+  line-height: 22px;
+}
+
+.field-help {
+  color: var(--ant-color-text-description);
+}
+
+.required-mark {
+  margin-inline-end: 4px;
+  color: var(--ant-color-error);
 }
