@@ -8,6 +8,7 @@ import {
   type ControlKind,
   type ControlOption as CoreControlOption,
   type ControlRoot,
+  controlEntry,
   controlKind,
   controlOptions,
   controlProps,
@@ -15,6 +16,7 @@ import {
   type LooseProps,
   type MapControlsOptions,
   type MappedTypes,
+  type ControlSpecKey,
   mapControlTypes,
   warnDoubleLabel,
 } from '@formhaus/core/controls';
@@ -51,16 +53,29 @@ type Slot = VNodeChild | (() => VNodeChild);
 
 export type ControlOption = CoreControlOption<VNode>;
 
-export type ControlAdapter<C extends Component> =
-  | (keyof PropsOf<C> & string)
-  | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>> & { children?: Slot });
+type PropName<C> = keyof PropsOf<C> & string;
 
-export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?];
+type ControlProps<C extends Component> = (f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>> & { children?: Slot };
+
+export type ControlAdapter<C extends Component> = PropName<C> | ControlProps<C>;
+
+export interface ControlSpec<C extends Component = Component> {
+  component: C;
+  props?: ControlProps<C>;
+  optionsProp?: PropName<C>;
+  changeProp?: PropName<C>;
+}
+
+export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C> | null, PropName<C>?] | ControlSpec<C>;
 
 type Checked<Controls> = {
   [Type in keyof Controls]: Controls[Type] extends readonly [infer C extends Component, unknown, ...unknown[]]
-    ? readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?]
-    : Controls[Type];
+    ? readonly [C, ControlAdapter<C> | null, PropName<C>?]
+    : [ControlSpecKey<Controls[Type]>] extends [never]
+      ? Controls[Type]
+      : Controls[Type][ControlSpecKey<Controls[Type]>] extends infer C extends Component
+        ? ControlSpec<C>
+        : never;
 };
 
 export type ControlMap = { [Type in FieldType | 'input']?: ControlEntryOf<Component, FieldProps, ControlOption> };
@@ -68,11 +83,8 @@ export type ControlMap = { [Type in FieldType | 'input']?: ControlEntryOf<Compon
 export type MapControlsConfig<Controls = ControlMap> = MapControlsOptions<Component, FieldProps, Component, Controls>;
 
 function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, input: boolean, config: MapControlsConfig): Component {
-  const [Control, adapter, changeProp = 'onUpdate:modelValue'] = (Array.isArray(entry) ? entry : [entry]) as unknown as [
-    Component,
-    ControlAdapter<Component>?,
-    string?,
-  ];
+  const { component, changeProp, props: adapt } = controlEntry(entry, 'onUpdate:modelValue');
+  const Control = component as Component;
   return defineComponent({
     name: 'MappedControl',
     props: fieldComponentProps,
@@ -115,9 +127,7 @@ function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, inp
           },
         });
         const options = controlOptions(field, f.options, props.reveals);
-        const { children, ...adapted } = (typeof adapter === 'string' ? { [adapter]: options } : (adapter?.(f, options) ?? {})) as {
-          children?: Slot;
-        };
+        const { children, ...adapted } = adapt(f, options) as { children?: Slot };
         const element = h(
           Control,
           {
