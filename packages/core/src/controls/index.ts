@@ -12,6 +12,8 @@ export type {
   ControlKind,
   ControlOption,
   ControlShells,
+  ControlSpecKey,
+  ControlSpecOf,
   ControlTextType,
   LooseProps,
   MapControlsOptions,

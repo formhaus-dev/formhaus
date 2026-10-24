@@ -3,7 +3,7 @@ import type { RendererHarness, TestKit } from './fixtures';
 
 const options = (...values: string[]) => values.map((value) => ({ value, label: value.toUpperCase() }));
 
-const allTypes: FormDefinition = {
+export const allTypes: FormDefinition = {
   id: 'all',
   title: '',
   submit: { label: 'Send' },

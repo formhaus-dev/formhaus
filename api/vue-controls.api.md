@@ -11,6 +11,7 @@ import { ControlKeyEvent } from '@formhaus/core/controls';
 import { ControlKind } from '@formhaus/core/controls';
 import { ControlOption as ControlOption_2 } from '@formhaus/core/controls';
 import { ControlRoot } from '@formhaus/core/controls';
+import { ControlSpecKey } from '@formhaus/core/controls';
 import { FieldAria } from '@formhaus/core/fields';
 import { FieldControl } from '@formhaus/core/fields';
 import { FieldType } from '@formhaus/core';
@@ -25,12 +26,10 @@ import { VNode } from 'vue';
 import { VNodeChild } from 'vue';
 
 // @public (undocumented)
-export type ControlAdapter<C extends Component> = (keyof PropsOf<C> & string) | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>> & {
-    children?: Slot;
-});
+export type ControlAdapter<C extends Component> = PropName<C> | ControlProps<C>;
 
 // @public (undocumented)
-export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?];
+export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C> | null, PropName<C>?] | ControlSpec<C>;
 
 export { ControlKind }
 
@@ -79,6 +78,18 @@ export const controlShellProps: {
         required: true;
     };
 };
+
+// @public (undocumented)
+export interface ControlSpec<C extends Component = Component> {
+    // (undocumented)
+    changeProp?: PropName<C>;
+    // (undocumented)
+    component: C;
+    // (undocumented)
+    optionsProp?: PropName<C>;
+    // (undocumented)
+    props?: ControlProps<C>;
+}
 
 // @public (undocumented)
 export function mapControls<const Controls extends ControlMap>(config: MapControlsConfig<Checked<Controls>>): {

@@ -2,10 +2,47 @@ import { describe, expect, it, vi } from 'vitest';
 import type { FormField } from '../../src';
 import { controlKind, controlOptions, controlProps, controlShell, fromControl, mapControlTypes, toControl } from '../../src/controls';
 import { fieldState } from '../../src/fields';
+import { controlEntry } from '../../src/internal';
 import { validateFieldValue } from '../../src';
 
 const field = (type: string, overrides: Partial<FormField> = {}): FormField => ({ key: type, type, label: type, ...overrides });
 const event = (target: Record<string, unknown>) => ({ target, preventDefault() {} });
+
+describe('controlEntry', () => {
+  const Control = () => null;
+  const options = [{ value: 'a', label: 'A' }];
+  const plan = (entry: Parameters<typeof controlEntry>[0]) => {
+    const { component, changeProp, props } = controlEntry(entry, 'onChange');
+    return { component, changeProp, props: props({ id: 'x' }, options) };
+  };
+
+  it('reads a bare component, a tuple and an object the same way', () => {
+    const adapt = (f: unknown, list: unknown[]) => ({ f, size: list.length });
+    expect(plan(Control)).toEqual({ component: Control, changeProp: 'onChange', props: {} });
+    expect(plan([Control, 'items'])).toEqual(plan({ component: Control, optionsProp: 'items' }));
+    expect(plan([Control, adapt, 'onValueChange'])).toEqual(plan({ component: Control, props: adapt, changeProp: 'onValueChange' }));
+    expect(plan([Control, null, 'onValueChange'])).toEqual({ component: Control, changeProp: 'onValueChange', props: {} });
+    expect(plan({ component: Control, props: adapt })).toEqual({
+      component: Control,
+      changeProp: 'onChange',
+      props: { f: { id: 'x' }, size: 1 },
+    });
+  });
+
+  it('merges optionsProp with props, and props win', () => {
+    expect(plan({ component: Control, optionsProp: 'items', props: () => ({ size: 'large' }) }).props).toEqual({
+      items: options,
+      size: 'large',
+    });
+    expect(plan({ component: Control, optionsProp: 'items', props: () => ({ items: [] }) }).props).toEqual({ items: [] });
+  });
+
+  it('keeps a component object without a component key as the component', () => {
+    const Options = { name: 'Options', props: {}, setup: () => null };
+    const Memo = { $$typeof: Symbol.for('react.memo'), type: Control, compare: null };
+    expect([plan(Options).component, plan(Memo).component]).toEqual([Options, Memo]);
+  });
+});
 
 describe('controlKind and controlShell', () => {
   it('maps types to kinds and lets kinds override them', () => {

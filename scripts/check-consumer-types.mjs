@@ -168,6 +168,8 @@ export const localized = useLocalizedForm(() => definition, () => ({ overlay: { 
 `,
 };
 
+files['src/map-controls.tsx'] = readFileSync(join(root, 'scripts/consumer-types/map-controls.tsx'), 'utf8');
+files['src/map-controls-vue.ts'] = readFileSync(join(root, 'scripts/consumer-types/map-controls-vue.ts'), 'utf8');
 files['src/question-timing.ts'] = readFileSync(join(root, 'docs/recipes/snippets/question-timing.ts'), 'utf8');
 files['src/ssr-cloud-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/ssr-cloud-page.tsx'), 'utf8');
 files['src/use-form-engine.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/use-form-engine.tsx'), 'utf8');

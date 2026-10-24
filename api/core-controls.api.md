@@ -38,7 +38,7 @@ export interface ControlClickEvent {
 }
 
 // @public (undocumented)
-export type ControlEntryOf<Component, View, Option = ControlOption> = Component | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?];
+export type ControlEntryOf<Component, View, Option = ControlOption> = Component | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?] | ControlSpecOf<Component, View, Option>;
 
 // @public (undocumented)
 export interface ControlKeyEvent {
@@ -116,6 +116,21 @@ export function controlShell<Shell>(shells: ControlShells<Shell>, kind: ControlK
 
 // @public (undocumented)
 export type ControlShells<Shell> = Shell | null | Partial<Record<ControlKind, Shell | null>>;
+
+// @public (undocumented)
+export type ControlSpecKey<Entry> = string extends keyof Entry ? never : 'component' & keyof Entry;
+
+// @public (undocumented)
+export interface ControlSpecOf<Component, View, Option = ControlOption> {
+    // (undocumented)
+    changeProp?: string;
+    // (undocumented)
+    component: Component;
+    // (undocumented)
+    optionsProp?: string;
+    // (undocumented)
+    props?: (f: View, options: Option[]) => object;
+}
 
 // @public (undocumented)
 export type ControlTextType = 'text' | 'email' | 'phone' | 'number' | 'password' | 'date' | 'time' | 'datetime';
