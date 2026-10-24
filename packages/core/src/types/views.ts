@@ -47,7 +47,7 @@ export interface RootProps {
 export interface ErrorSummaryGroup {
   id: string;
   title: string;
-  entries: { key: string; id: string; text: string }[];
+  entries: { key: string; id: string; text: string; message: string }[];
 }
 
 export interface ErrorSummary {
