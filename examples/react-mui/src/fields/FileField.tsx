@@ -1,24 +1,39 @@
-import type { FieldComponentProps } from '@formhaus/react';
+import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import Button from '@mui/material/Button';
-import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import { useRef } from 'react';
+import { Texts } from './shells';
 
-export function FileField({ id, field, error, loading, disabled, onChange }: FieldComponentProps) {
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const files = e.target.files;
-    onChange(files && files.length > 0 ? files[0] : null);
-  }
-
+export function FileField(props: FieldComponentProps) {
+  const f = fieldProps(props);
+  const input = useRef<HTMLInputElement>(null);
+  const { id, 'aria-describedby': describedBy, ...attrs } = f.attrs;
   return (
-    <div style={{ marginTop: 16, marginBottom: 8 }}>
-      <label htmlFor={id} style={{ display: 'block', marginBottom: 4, fontSize: 14, color: 'rgba(0,0,0,0.6)' }}>
-        {field.label}
-      </label>
-      <Button variant="outlined" component="label" disabled={disabled || loading}>
+    <FormControl data-fh="field" error={f.invalid} margin="normal">
+      <FormLabel id={`${id}-label`} required={f.required} sx={{ mb: 0.5 }}>
+        {f.label}
+      </FormLabel>
+      <Button
+        id={id}
+        variant="outlined"
+        disabled={f.disabled}
+        aria-labelledby={`${id}-label ${id}`}
+        aria-describedby={describedBy}
+        onClick={() => input.current?.click()}
+        sx={{ alignSelf: 'flex-start' }}
+      >
         Choose file
-        <input id={id} type="file" accept={field.accept} hidden onChange={handleChange} />
       </Button>
-      {error && <FormHelperText error>{error}</FormHelperText>}
-      {!error && field.helperText && <FormHelperText>{field.helperText}</FormHelperText>}
-    </div>
+      <input
+        {...attrs}
+        ref={input}
+        type="file"
+        accept={props.field.accept}
+        hidden
+        onChange={(event) => f.change(event.target.files?.[0] ?? null)}
+      />
+      <Texts f={f} />
+    </FormControl>
   );
 }
