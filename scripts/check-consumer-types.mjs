@@ -32,6 +32,7 @@ import { localize, type Overlay } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
 import { fromDate, scaleView } from '@formhaus/core/fields';
+import { mapControls, type ControlShellProps } from '@formhaus/react/controls';
 import { questionTimer } from './question-timing.js';
 import { onValidate } from './schema-zod.js';
 
@@ -56,6 +57,29 @@ export const components: FieldComponentMap = {
   groupItem: ({ title, children }) => <div title={title}>{children}</div>,
   confirmDialog: ({ open, confirm }) => (open ? <button type="button" onClick={confirm} /> : null),
 };
+function Shell({ f, rootProps, children }: ControlShellProps) {
+  return <div {...rootProps}><label htmlFor={f.id}>{f.label}</label>{children}</div>;
+}
+function Input({ id, value, size }: { id?: string; value?: string; size?: 'small' | 'large'; onChange?: (event: unknown) => void }) {
+  return <input id={id} value={value} data-size={size} readOnly />;
+}
+function Picker({ value, onValueChange }: { value?: string; onValueChange?: (value: string) => void }) {
+  return <button type="button" value={value} onClick={() => onValueChange?.('a')} />;
+}
+export const mapped: FieldComponentMap = {
+  ...mapControls({
+    shell: { input: Shell, group: null },
+    labels: (f) => ({ label: f.label }),
+    kinds: { multiselect: 'input' },
+    controls: {
+      input: Input,
+      textarea: [Input, () => ({ size: 'large' })],
+      select: [Input, (f, options) => ({ value: f.text + options.length })],
+      radio: [Picker, null, 'onValueChange'],
+    },
+  }),
+  rating: components.rating,
+};
 const overlay: Overlay = { title: 'Kontakt' };
 export const localized = localize(definition, { overlay, lang: 'de' });
 const fixes: DefinitionFix[] = suggestFixes(definition).flatMap((issue) => issue.fixes ?? []);
@@ -65,8 +89,9 @@ export function Localized() {
   return <FormRenderer {...form} onSubmit={() => {}} />;
 }
 `,
-  'src/vue-props.ts': `import { defineComponent, h, type ExtractPublicPropTypes } from 'vue';
+  'src/vue-props.ts': `import { defineComponent, h, type ExtractPublicPropTypes, type PropType } from 'vue';
 import * as Formhaus from '@formhaus/vue';
+import { controlShellProps, mapControls } from '@formhaus/vue/controls';
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 type Props<T> = ExtractPublicPropTypes<T>;
@@ -104,6 +129,12 @@ export const TypedActions = defineComponent({
   },
 });
 export const components: Formhaus.FieldComponentMap = { 'x-field': TypedField };
+const Shell = defineComponent({ props: controlShellProps, setup: (props, { slots }) => () => h('div', props.rootProps, [h('label', { for: props.f.id }, props.f.label), slots.default?.()]) });
+const Input = defineComponent({ props: { modelValue: String, size: String as PropType<'small' | 'large'> }, setup: (props) => () => h('input', { value: props.modelValue }) });
+export const mapped: Formhaus.FieldComponentMap = {
+  ...mapControls({ shell: Shell, controls: { input: Input, textarea: [Input, () => ({ size: 'large' })], select: [Input, (f) => ({ modelValue: f.text, children: () => f.label })] } }),
+  'x-field': TypedField,
+};
 export const handles: Formhaus.FormRendererHandle[] = [
   {} as InstanceType<typeof Formhaus.FormRenderer>,
   {} as InstanceType<typeof Formhaus.HeadlessFormRenderer>,

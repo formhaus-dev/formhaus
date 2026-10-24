@@ -21,6 +21,8 @@ The same map overrides a built-in type, such as `{ date: MyDatePicker }`. See [C
 
 Field types go in `components`. Sections, groups, the error summary, the progress, the buttons and every other part around the fields go in [`layout`](#layout-slots). `components.section`, `components.group`, `components.groupItem` and `components.confirmDialog` still work, and warn once in development with the code `legacy-layout`.
 
+To plug in a whole design system, start with [Design systems](/guide/design-systems): `mapControls` maps one control per type and one shell for the label, helper and error.
+
 Before you write a component, read [Value types](#value-types): each built-in type expects one value shape, and a `scale` reads its points from `validation`, not from `options`. See [Scale](#scale).
 
 ## Field helpers

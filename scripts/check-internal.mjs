@@ -11,11 +11,12 @@ const ENTRIES = {
     'fix',
     'research',
     'fields',
+    'controls',
     'schema',
     ...readdirSync(join(root, 'packages/core/locales')).map((file) => `locales/${file.replace('.json', '')}`),
   ],
-  react: ['index', 'cloud', 'i18n'],
-  vue: ['index', 'cloud', 'i18n'],
+  react: ['index', 'cloud', 'controls', 'i18n'],
+  vue: ['index', 'cloud', 'controls', 'i18n'],
 };
 const IMPORT = /(?:from|import)\s*\(?\s*['"]([^'"]+)['"]/g;
 const failures = [];

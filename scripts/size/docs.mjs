@@ -83,6 +83,15 @@ export async function formhausBlocks() {
         ['Import', 'Adds'],
         [...ADDONS.map(([label, name]) => [label, kb(sizes[name] - engine)]), ['Engine warnings in development', '0 KB in production']],
       ),
+      controls: table(
+        ['Import', 'React', 'Vue'],
+        [
+          [
+            '`mapControls` from `/controls`, over `FormRenderer`',
+            ...['react', 'vue'].map((pkg) => kb(sizes[`core + ${pkg} FormRenderer + /controls`] - sizes[`core + ${pkg} FormRenderer`])),
+          ],
+        ],
+      ),
       trusted: table(
         ['App imports', 'Checked', 'Trusted'],
         TRUSTED.map(([label, name]) => [label, kb(sizes[name]), kb(sizes[`${name} (trusted)`])]),
