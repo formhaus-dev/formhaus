@@ -4,7 +4,7 @@
     "warns about a pattern that repeats a group with a quantifier or alternation",
     "warns about overlapping repeats split by optional parts or groups",
     "warns about a repeated group with a backreference to a separator",
-    "runs a pattern on the server when only one pair of repeats overlaps"
+    "runs a pattern on the server when it is a flat sequence with one pair of overlapping repeats"
   ],
   "issues": [],
   "warnings": [
@@ -155,6 +155,34 @@
     {
       "code": "slow-pattern",
       "path": "/fields/47/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/48/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/49/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/50/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/51/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/52/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/53/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/54/validation/pattern"
     }
   ],
   "refused": [
@@ -173,6 +201,10 @@
     {
       "code": "slow-pattern",
       "path": "/fields/3/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/16/validation/pattern"
     },
     {
       "code": "slow-pattern",
@@ -240,6 +272,10 @@
     },
     {
       "code": "slow-pattern",
+      "path": "/fields/36/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
       "path": "/fields/38/validation/pattern"
     },
     {
@@ -277,6 +313,34 @@
     {
       "code": "slow-pattern",
       "path": "/fields/47/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/48/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/49/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/50/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/51/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/52/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/53/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/54/validation/pattern"
     }
   ],
   "definition": {
@@ -668,6 +732,62 @@
         "label": "code47",
         "validation": {
           "pattern": "^(\\d)\\d*\\1*$"
+        }
+      },
+      {
+        "key": "code48",
+        "type": "text",
+        "label": "code48",
+        "validation": {
+          "pattern": "^\\d+\\B\\d+\\B\\d+\\d+$"
+        }
+      },
+      {
+        "key": "code49",
+        "type": "text",
+        "label": "code49",
+        "validation": {
+          "pattern": "^\\d+\\B\\d+\\d+$"
+        }
+      },
+      {
+        "key": "code50",
+        "type": "text",
+        "label": "code50",
+        "validation": {
+          "pattern": "^\\d{1,1000}\\d{1,1000}\\d+\\d+$"
+        }
+      },
+      {
+        "key": "code51",
+        "type": "text",
+        "label": "code51",
+        "validation": {
+          "pattern": "^\\d{1,1000}\\d+\\d+$"
+        }
+      },
+      {
+        "key": "code52",
+        "type": "text",
+        "label": "code52",
+        "validation": {
+          "pattern": "^[^\\x00-\\x2f]+[^\\x30-\\x7f]+[^\\x00-\\x2f]+[^\\x00-\\x2f]+$"
+        }
+      },
+      {
+        "key": "code53",
+        "type": "text",
+        "label": "code53",
+        "validation": {
+          "pattern": "^\\d+\\D?\\d*$"
+        }
+      },
+      {
+        "key": "code54",
+        "type": "text",
+        "label": "code54",
+        "validation": {
+          "pattern": "^\\d+é?\\d*$"
         }
       }
     ]
