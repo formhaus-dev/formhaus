@@ -1,13 +1,17 @@
 import type { DefinitionIssue } from '@formhaus/core';
-import type { Mark } from './json-editor';
+import type { Mark } from './editor';
 
 export interface Shared {
   design?: string;
   width?: string;
   preset?: string;
   template?: string;
+  library?: string;
   text?: string;
+  code?: string;
 }
+
+const packed = { text: 'd', code: 's' } as const;
 
 const toBase64Url = (bytes: Uint8Array) => {
   let binary = '';
@@ -26,12 +30,16 @@ export function shareParams(state: Shared) {
   if (state.width && state.width !== 'desktop') params.set('w', state.width);
   if (state.template) params.set('t', state.template);
   else if (state.preset) params.set('p', state.preset);
+  if (state.library) params.set('lib', state.library);
   return params;
 }
 
 export async function writeHash(state: Shared): Promise<string> {
   const params = shareParams(state);
-  if (state.text) params.set('d', toBase64Url(await pipe(new TextEncoder().encode(state.text), new CompressionStream('deflate-raw'))));
+  for (const [field, name] of Object.entries(packed)) {
+    const value = state[field as keyof typeof packed];
+    if (value) params.set(name, toBase64Url(await pipe(new TextEncoder().encode(value), new CompressionStream('deflate-raw'))));
+  }
   return `#${params}`;
 }
 
@@ -42,13 +50,17 @@ export async function readHash(hash: string): Promise<Shared> {
     width: params.get('w') ?? undefined,
     preset: params.get('p') ?? undefined,
     template: params.get('t') ?? undefined,
+    library: params.get('lib') ?? undefined,
   };
-  const packed = params.get('d');
-  if (packed) {
+  for (const [field, name] of Object.entries(packed)) {
+    const value = params.get(name);
+    if (!value) continue;
     try {
-      shared.text = new TextDecoder().decode(await pipe(fromBase64Url(packed), new DecompressionStream('deflate-raw')));
+      shared[field as keyof typeof packed] = new TextDecoder().decode(
+        await pipe(fromBase64Url(value), new DecompressionStream('deflate-raw')),
+      );
     } catch {
-      shared.text = undefined;
+      shared[field as keyof typeof packed] = undefined;
     }
   }
   return shared;

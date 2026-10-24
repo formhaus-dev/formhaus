@@ -1,0 +1,18 @@
+{
+  "formatVersion": "1.1",
+  "id": "team-sign-up",
+  "title": "Team sign-up",
+  "submit": { "label": "Register team" },
+  "fields": [
+    { "key": "email", "type": "text", "label": "Email", "validation": { "required": true } },
+    {
+      "key": "players",
+      "type": "group",
+      "label": "Players",
+      "itemLabel": "Player {index}",
+      "addLabel": "Add player",
+      "defaultItems": 2,
+      "fields": [{ "key": "name", "type": "text", "label": "Name", "validation": { "required": true } }]
+    }
+  ]
+}
