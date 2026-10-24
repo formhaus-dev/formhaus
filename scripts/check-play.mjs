@@ -1,6 +1,7 @@
 import { entryChecks } from './play-entry-checks.mjs';
 import { playPage } from './play-page.mjs';
 import { apps, playwright, previewServer, watchErrors } from './play-server.mjs';
+import { schemaChecks } from './schema-play-checks.mjs';
 
 const browsers = process.argv.slice(2).length ? process.argv.slice(2) : ['chromium'];
 const widths = [320, 390, 768, 861, 1024, 1180, 1280, 1440, 1920];
@@ -10,6 +11,7 @@ const { open, rendered, frameOf, edit, tone } = playPage(base);
 
 const checks = {
   ...entryChecks(base, frameOf),
+  ...schemaChecks(base),
 
   async systems(page, problems) {
     await open(page);
@@ -170,7 +172,11 @@ try {
     const browser = await playwright[name].launch({ headless: true });
     for (const [check, run] of Object.entries(checks)) {
       const context = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' });
-      await context.addInitScript(() => localStorage.setItem('vitepress-theme-appearance', 'light'));
+      await context.addInitScript(() => {
+        try {
+          localStorage.setItem('vitepress-theme-appearance', 'light');
+        } catch {}
+      });
       const page = await context.newPage();
       page.setDefaultTimeout(10000);
       const problems = [];

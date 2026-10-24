@@ -9,6 +9,7 @@
   },
   "devDependencies": {
     "@codemirror/commands": "6.11.1",
+    "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/lang-json": "^6.0.2",
     "@codemirror/language": "6.13.1",
     "@codemirror/lint": "6.9.5",
@@ -17,8 +18,13 @@
     "@formhaus/core": "^1.5.0",
     "@formhaus/vue": "^1.5.0",
     "@lezer/highlight": "1.2.5",
+    "arktype": "^2.2.8",
+    "esbuild": "0.21.5",
+    "sucrase": "^3.35.1",
+    "valibot": "^1.5.0",
     "vitepress": "^1.6.4",
     "vitepress-plugin-llms": "^1.14.0",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "zod": "^4.6.7"
   }
 }
