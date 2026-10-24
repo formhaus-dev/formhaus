@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vitepress dev",
     "build": "vitepress build",
-    "preview": "vitepress preview"
+    "preview": "vitepress preview",
+    "test": "vitest run"
   },
   "devDependencies": {
     "@codemirror/commands": "6.11.1",
@@ -16,8 +17,8 @@
     "@formhaus/core": "^1.4.0",
     "@formhaus/vue": "^1.4.0",
     "@lezer/highlight": "1.2.5",
-    "sandpack-vue3": "^3.0.0",
     "vitepress": "^1.6.4",
-    "vitepress-plugin-llms": "^1.14.0"
+    "vitepress-plugin-llms": "^1.14.0",
+    "vitest": "^3.2.4"
   }
 }
