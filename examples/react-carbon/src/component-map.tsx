@@ -1,4 +1,4 @@
-import type { FieldComponentMap, FieldProps } from '@formhaus/react';
+import type { FieldComponentMap, FieldComponentProps, FieldProps } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
 import {
   Checkbox,
@@ -33,12 +33,26 @@ const group = (f: FieldProps, options: ControlOption[]) => ({
   options,
 });
 
+const base = { shell: { input: null, inline: InlineShell, group: null }, matrix: MatrixRow };
+
+const radio = (orientation: 'horizontal' | 'vertical') =>
+  mapControls({ ...base, controls: { radio: [Choices, (f, options) => ({ ...group(f, options), orientation })] } }).radio;
+
+const checkbox = mapControls({
+  shell: { input: null, inline: null, group: null },
+  controls: {
+    checkbox: [Checkbox, (f) => ({ ...labels(f), onChange: (_: unknown, { checked }: { checked: boolean }) => f.change(checked) })],
+  },
+}).checkbox;
+
+const InlineRadio = radio('horizontal');
+const StackedRadio = radio('vertical');
+
 export const components: FieldComponentMap = {
   ...mapControls({
-    shell: { input: null, inline: InlineShell, group: null },
+    ...base,
     freeText: true,
     kinds: { multiselect: 'input' },
-    matrix: MatrixRow,
     controls: {
       input: [TextInput, labels],
       password: [PasswordInput, labels],
@@ -95,12 +109,7 @@ export const components: FieldComponentMap = {
             f.change((selectedItems ?? []).map((option) => option.value)),
         }),
       ],
-      checkbox: [
-        Checkbox,
-        (f) => ({ labelText: label(f), onChange: (_: unknown, { checked }: { checked: boolean }) => f.change(checked) }),
-      ],
       switch: [Toggle, (f) => ({ labelText: label(f), toggled: f.value === true }), 'onToggle'],
-      radio: [Choices, (f, options) => ({ ...group(f, options), orientation: 'vertical' })],
       scale: [
         Choices,
         (f, options) => ({
@@ -111,6 +120,8 @@ export const components: FieldComponentMap = {
       rating: [Rating, group],
     },
   }),
+  radio: (props: FieldComponentProps) => (props.field.layout === 'inline' ? <InlineRadio {...props} /> : <StackedRadio {...props} />),
+  checkbox,
   datetime: DateTimeField,
   file: FileField,
 };
