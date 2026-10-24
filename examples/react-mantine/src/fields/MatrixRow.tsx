@@ -1,21 +1,24 @@
 import { type FieldComponentProps, fieldProps } from '@formhaus/react';
-import { Radio, Table, Text } from '@mantine/core';
+import { Input, Radio, Table, Text } from '@mantine/core';
+import { Label } from './labels';
 
 export function MatrixRow(props: FieldComponentProps) {
   const f = fieldProps(props);
   return (
     <Table.Tr data-fh="field">
       <Table.Th scope="row" fw={400}>
-        <Text size="sm">{f.label}</Text>
+        <Text size="sm">
+          <Label f={f} />
+        </Text>
         {f.helperText && (
-          <Text size="xs" c="dimmed" id={f.helperId}>
+          <Input.Description size="xs" id={f.helperId}>
             {f.helperText}
-          </Text>
+          </Input.Description>
         )}
         {f.error && (
-          <Text size="xs" c="red" id={f.errorId}>
+          <Input.Error size="xs" id={f.errorId}>
             {f.error}
-          </Text>
+          </Input.Error>
         )}
       </Table.Th>
       {f.options.map((column, index) => (
