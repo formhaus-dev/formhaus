@@ -38,6 +38,13 @@
   color: var(--vp-c-text-2);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .play .play-bar .play-back:hover {
+    background: var(--vp-c-default-soft);
+    color: var(--vp-c-text-1);
+  }
+}
+
 .play-logo {
   display: flex;
   align-items: center;
