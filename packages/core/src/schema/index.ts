@@ -56,12 +56,11 @@ function fieldOf(keys: PropertyKey[], fields: string[]): string | undefined {
 }
 
 function withoutEmpty(values: Record<string, unknown>): Record<string, unknown> {
-  const result: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(values)) {
-    if (value === '') continue;
-    result[key] = Array.isArray(value) ? value.map((item) => (isPlainEntry(item) ? withoutEmpty(item) : item)) : value;
-  }
-  return result;
+  return Object.fromEntries(
+    Object.entries(values)
+      .filter(([, value]) => value !== '')
+      .map(([key, value]) => [key, Array.isArray(value) ? value.map((item) => (isPlainEntry(item) ? withoutEmpty(item) : item)) : value]),
+  );
 }
 
 export function schemaValidate(
