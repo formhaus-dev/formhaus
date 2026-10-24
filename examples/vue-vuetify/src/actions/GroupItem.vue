@@ -11,6 +11,7 @@ defineProps({
   removeLabel: { type: String, required: true },
   removeName: { type: String, required: true },
   disabled: { type: Boolean, default: false },
+  fields: { type: [Object, Function], required: true },
 });
 </script>
 
@@ -32,7 +33,7 @@ defineProps({
       </v-btn>
     </div>
     <v-card-text>
-      <slot />
+      <component :is="fields" />
     </v-card-text>
   </v-card>
 </template>

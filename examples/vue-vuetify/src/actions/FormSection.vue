@@ -1,15 +1,12 @@
 <script setup>
-import { computed } from 'vue';
-
-const props = defineProps({
+defineProps({
   id: { type: String, required: true },
   section: { type: Object, required: true },
   title: { type: String, required: true },
   description: { type: String, default: undefined },
   descriptionId: { type: String, default: undefined },
+  columns: { type: Array, default: undefined },
 });
-
-const columns = computed(() => (props.section.layout === 'matrix' ? (props.section.fields[0]?.options ?? null) : null));
 </script>
 
 <template>

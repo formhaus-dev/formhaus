@@ -1,6 +1,6 @@
 # Vue + Vuetify example
 
-This example maps Formhaus `FieldComponentProps` to [Vuetify 3](https://vuetifyjs.com) inputs through the `components` prop.
+This example renders Formhaus forms with [Vuetify 3](https://vuetifyjs.com) components through the `components` prop.
 
 ## Run
 
@@ -15,11 +15,11 @@ Opens at http://localhost:5173.
 
 ## Files
 
-- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a Vuetify renderer.
-- [src/fields/AutocompleteField.vue](src/fields/AutocompleteField.vue) filters by `label`, unlike the default `<datalist>`, which filters by `value`.
-- [src/fields/SelectField.vue](src/fields/SelectField.vue) handles both `select` and `multiselect`.
-- [src/fields/TextField.vue](src/fields/TextField.vue) handles text, email, phone, number, password, date, datetime, and time fields with Vuetify's `<v-text-field>`.
-- [src/fields/HiddenField.vue](src/fields/HiddenField.vue) renders `hidden` fields as `<input type="hidden">`.
+- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a Vuetify component with `mapControls`. Simple types are one line each, and Vuetify draws their label, hint and error.
+- [src/fields/GroupShell.vue](src/fields/GroupShell.vue) wraps radio, scale and rating groups in a `fieldset` with a legend, the scale anchors, the helper text and the error.
+- [src/fields/OptionTiles.vue](src/fields/OptionTiles.vue) renders radio options with images as `v-card` tiles.
+- [src/fields/FileField.vue](src/fields/FileField.vue) and [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) are the file picker and the matrix rows.
+- [src/actions/](src/actions/) holds the layout slots: progress, error summary, sections, groups, the remove dialog and the actions.
 - [src/definition.json](src/definition.json) is the contact form used by the example.
 
 ## Use as a starter
