@@ -5,7 +5,6 @@ import { POINT_TYPES } from './options';
 import type { ControlKind, ControlShells, ControlTextType, MappedTypes } from './types';
 
 export { choiceControl, type ChoiceInput, type ControlClickEvent, type ControlKeyEvent } from './choice';
-export { type ControlPlan, controlEntry } from './entry';
 export { controlOptions } from './options';
 
 export type {
@@ -13,12 +12,12 @@ export type {
   ControlKind,
   ControlOption,
   ControlShells,
+  ControlSpecKey,
   ControlSpecOf,
   ControlTextType,
   LooseProps,
   MapControlsOptions,
   MappedTypes,
-  ControlSpecKey,
 } from './types';
 
 export interface ControlRoot {

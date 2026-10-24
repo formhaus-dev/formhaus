@@ -1,4 +1,4 @@
-import type { ControlEntryOf, ControlSpecOf } from './types';
+import type { ControlEntryOf, ControlSpecOf } from '../controls/types';
 
 export interface ControlPlan<Component, View, Option> {
   component: Component;

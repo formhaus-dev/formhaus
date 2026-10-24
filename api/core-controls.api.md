@@ -38,9 +38,6 @@ export interface ControlClickEvent {
 }
 
 // @public (undocumented)
-export function controlEntry<Component, View, Option>(entry: ControlEntryOf<Component, View, Option>, defaultChange: string): ControlPlan<Component, View, Option>;
-
-// @public (undocumented)
 export type ControlEntryOf<Component, View, Option = ControlOption> = Component | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?] | ControlSpecOf<Component, View, Option>;
 
 // @public (undocumented)
@@ -71,16 +68,6 @@ export type ControlOption<Children = unknown> = Omit<FieldOption, 'value'> & {
 
 // @public (undocumented)
 export function controlOptions<Children = unknown>(field: FormField, options: FieldOption[], reveals?: RevealView<Children>[]): ControlOption<Children>[];
-
-// @public (undocumented)
-export interface ControlPlan<Component, View, Option> {
-    // (undocumented)
-    changeProp: string;
-    // (undocumented)
-    component: Component;
-    // (undocumented)
-    props: (f: View, options: Option[]) => Record<string, unknown>;
-}
 
 // @public (undocumented)
 export interface ControlPreset {

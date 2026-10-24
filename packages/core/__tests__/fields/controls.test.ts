@@ -1,16 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { FormField } from '../../src';
-import {
-  controlEntry,
-  controlKind,
-  controlOptions,
-  controlProps,
-  controlShell,
-  fromControl,
-  mapControlTypes,
-  toControl,
-} from '../../src/controls';
+import { controlKind, controlOptions, controlProps, controlShell, fromControl, mapControlTypes, toControl } from '../../src/controls';
 import { fieldState } from '../../src/fields';
+import { controlEntry } from '../../src/internal';
 import { validateFieldValue } from '../../src';
 
 const field = (type: string, overrides: Partial<FormField> = {}): FormField => ({ key: type, type, label: type, ...overrides });
@@ -47,7 +39,8 @@ describe('controlEntry', () => {
 
   it('keeps a component object without a component key as the component', () => {
     const Options = { name: 'Options', props: {}, setup: () => null };
-    expect(plan(Options).component).toBe(Options);
+    const Memo = { $$typeof: Symbol.for('react.memo'), type: Control, compare: null };
+    expect([plan(Options).component, plan(Memo).component]).toEqual([Options, Memo]);
   });
 });
 
