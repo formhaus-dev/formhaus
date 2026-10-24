@@ -35,7 +35,7 @@ function onSubmit(values) {
   <v-app>
     <v-container style="max-width: 600px">
       <FormCompletion v-if="submitted" :definition="definition" :values="submitted" @restart="submitted = null" />
-      <FormRenderer v-else :definition="definition" :components="components" :layout="layout" @submit="onSubmit" />
+      <FormRenderer v-else :definition="definition" :components="components" :layout="layout" conditional-reveal @submit="onSubmit" />
     </v-container>
   </v-app>
 </template>
