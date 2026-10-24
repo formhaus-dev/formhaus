@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { computed, inject } from 'vue';
 import { useData } from 'vitepress';
+import { useGatedLinks } from './gated';
 defineProps<{ mobile?: boolean }>();
 const { page, frontmatter } = useData();
+const gated = useGatedLinks();
 const closeScreen = inject<() => void>('close-screen');
 const landing = computed(() =>
   String(frontmatter.value.pageClass || '')
@@ -16,8 +18,9 @@ const links = [
   { text: 'Builder', href: '/build', match: (path: string) => path === 'build.md' },
   { text: 'Playground', href: '/playground', match: (path: string) => path === 'playground.md' },
   { text: 'Docs', href: '/guide/', match: () => false },
+  { text: 'Blog', href: '/blog/', match: (path: string) => path.startsWith('blog/'), blog: true },
 ];
-const items = computed(() => links.map((link) => ({ ...link, active: link.match(page.value.relativePath) })));
+const items = computed(() => gated(links).map((link) => ({ ...link, active: link.match(page.value.relativePath) })));
 </script>
 
 <template>

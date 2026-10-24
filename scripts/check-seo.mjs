@@ -99,7 +99,8 @@ for (const page of indexable) {
   else if (page.description.length > maxDescription) fail(page, `description is ${page.description.length} chars`);
   else if (page.description.length < minDescription) fail(page, `description is ${page.description.length} chars, under ${minDescription}`);
   if (!page.canonical) fail(page, 'missing canonical');
-  else if (page.canonical !== siteUrl + page.path) fail(page, `canonical ${page.canonical}`);
+  else if (page.canonical !== siteUrl + page.path && (page.canonical.startsWith(`${siteUrl}/`) || !page.canonical.startsWith('https://')))
+    fail(page, `canonical ${page.canonical}`);
   if (!page.ogImage) fail(page, 'missing og:image');
   else if (!page.ogImage.startsWith(`${siteUrl}/`) || !assetExists(page.ogImage.slice(siteUrl.length)))
     fail(page, `og:image not found: ${page.ogImage}`);

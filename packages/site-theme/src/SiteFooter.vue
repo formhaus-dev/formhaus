@@ -3,6 +3,7 @@ import { computed } from 'vue';
 import { useData } from 'vitepress';
 import { VPImage, useSidebar } from 'vitepress/theme';
 import { footerColumns, footerRepo } from './footer';
+import { useGatedLinks } from './gated';
 
 const { frontmatter } = useData();
 const { hasSidebar } = useSidebar();
@@ -11,6 +12,8 @@ const landing = computed(() =>
     .split(/\s+/)
     .includes('lp-page'),
 );
+const gated = useGatedLinks();
+const columns = computed(() => footerColumns.map((column) => ({ ...column, links: gated(column.links) })));
 const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg', alt: 'Formhaus' };
 </script>
 
@@ -24,7 +27,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
           </a>
           <p class="fh-footer__tagline">The simple way to collect responses.</p>
         </div>
-        <nav v-for="column in footerColumns" :key="column.title" class="fh-footer__column" :aria-labelledby="`fh-footer-${column.id}`">
+        <nav v-for="column in columns" :key="column.title" class="fh-footer__column" :aria-labelledby="`fh-footer-${column.id}`">
           <h2 :id="`fh-footer-${column.id}`" class="fh-footer__title">{{ column.title }}</h2>
           <ul class="fh-footer__links">
             <li v-for="link in column.links" :key="link.text">
