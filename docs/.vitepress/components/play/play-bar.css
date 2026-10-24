@@ -8,6 +8,18 @@
   border-bottom: 1px solid var(--vp-c-divider);
 }
 
+@media (min-width: 1180px) {
+  .play-logo,
+  .play-bar__title,
+  .play-bar .play-select {
+    flex: none;
+  }
+}
+
+.play-more__toggle .play-seg__tag {
+  display: none;
+}
+
 .play-logo {
   display: flex;
   align-items: center;

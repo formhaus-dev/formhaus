@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { useData } from 'vitepress';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import LucideIcon from '../landing/LucideIcon.vue';
 import { designGroups, designs } from './play-state';
 import { roving } from './roving';
 
+const { isDark } = useData();
 const props = defineProps<{ designId: string }>();
 const emit = defineEmits<{ choose: [id: string] }>();
 
@@ -111,7 +113,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', onPointer));
             tabindex="-1"
             @click="pick(entry.id)"
           >
-            <span>{{ entry.label }}<span class="play-seg__tag">{{ entry.lightOnly ? 'Light only' : entry.framework }}</span></span>
+            <span>{{ entry.label }}<span class="play-seg__tag">{{ entry.framework }}</span><span v-if="entry.lightOnly && isDark" class="play-note">Light only</span></span>
             <LucideIcon v-if="entry.id === designId" name="check" />
           </button>
         </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { errorOffset, issueMarks, readHash, syntaxError, writeHash } from './play-share';
+import { errorOffset, issueMarks, issueText, readHash, syntaxError, writeHash } from './play-share';
 
 const errorOf = (text: string) => {
   try {
@@ -90,5 +90,15 @@ describe('issue marks', () => {
     const text = '{ "fields": [] }';
     const [mark] = issueMarks(text, [{ path: '/fields/3/key', message: 'missing', severity: 'error' }]);
     expect(text.slice(mark!.from, mark!.from + 8)).toBe('"fields"');
+  });
+});
+
+describe('issue text', () => {
+  it('maps an unexpected end of input to a plain message', () => {
+    expect(issueText('Unexpected EOF')).toBe('Unexpected end of JSON');
+  });
+
+  it('strips a leading pointer', () => {
+    expect(issueText('/steps/0: must be an array')).toBe('must be an array');
   });
 });

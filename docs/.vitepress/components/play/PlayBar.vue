@@ -7,6 +7,9 @@ import { designGroups } from './play-state';
 defineProps<{ presetId: string; sources: { id: string; label: string }[]; designId: string; copied: boolean }>();
 const emit = defineEmits<{ preset: [id: string]; design: [id: string]; share: []; stackblitz: [] }>();
 const { isDark } = useData();
+const isTemplate = (entry: { id: string }) => entry.id.startsWith('template:');
+const examples = (list: { id: string; label: string }[]) => list.filter((entry) => !isTemplate(entry));
+const templatesOf = (list: { id: string; label: string }[]) => list.filter(isTemplate);
 const value = (event: Event) => (event.target as HTMLSelectElement).value;
 </script>
 
@@ -20,7 +23,12 @@ const value = (event: Event) => (event.target as HTMLSelectElement).value;
     <label class="play-select">
       <span class="play-sr">Example</span>
       <select :value="presetId" @change="emit('preset', value($event))">
-        <option v-for="preset in sources" :key="preset.id" :value="preset.id">{{ preset.label }}</option>
+        <optgroup label="Examples">
+          <option v-for="preset in examples(sources)" :key="preset.id" :value="preset.id">{{ preset.label }}</option>
+        </optgroup>
+        <optgroup v-if="templatesOf(sources).length" label="Templates">
+          <option v-for="preset in templatesOf(sources)" :key="preset.id" :value="preset.id">{{ preset.label }}</option>
+        </optgroup>
       </select>
       <LucideIcon name="chevron-down" />
     </label>

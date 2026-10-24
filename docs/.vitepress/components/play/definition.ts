@@ -1,7 +1,7 @@
 import { checkDefinition, type DefinitionIssue } from '@formhaus/core';
 import { computed, ref, shallowRef } from 'vue';
 import type { JsonEditor } from './json-editor';
-import { issueMarks, type JsonError, syntaxError } from './play-share';
+import { issueMarks, issueText, type JsonError, syntaxError } from './play-share';
 import { presets } from './play-state';
 
 export type Issue = Pick<DefinitionIssue, 'path' | 'message' | 'severity'>;
@@ -22,9 +22,11 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
   const warnings = computed(() => issues.value.filter((issue) => issue.severity === 'warning').length);
   const status = computed(() => {
     if (parseError.value) return `JSON error on line ${parseError.value.line}`;
-    if (errors.value) return `${errors.value} ${errors.value === 1 ? 'error' : 'errors'}`;
-    if (warnings.value) return `${warnings.value} ${warnings.value === 1 ? 'warning' : 'warnings'}`;
-    return 'Valid';
+    const counts = [
+      errors.value && `${errors.value} ${errors.value === 1 ? 'error' : 'errors'}`,
+      warnings.value && `${warnings.value} ${warnings.value === 1 ? 'warning' : 'warnings'}`,
+    ].filter(Boolean);
+    return counts.length ? counts.join(', ') : 'Valid';
   });
   const statusKind = computed(() => (errors.value ? 'error' : warnings.value ? 'warning' : 'ok'));
   const listed = computed<Issue[]>(() =>
@@ -44,7 +46,7 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
       parseError.value = syntaxError(source, error);
       issues.value = [];
       const { from, message } = parseError.value;
-      editor()?.setMarks([{ from, to: from + 1, message, severity: 'error' }]);
+      editor()?.setMarks([{ from, to: from + 1, message: issueText(message), severity: 'error' }]);
       return;
     }
     parseError.value = null;
@@ -65,7 +67,7 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
       const { definition: loaded } = entry;
       if (!loaded) return;
       const title = typeof entry.title === 'string' ? entry.title : slug;
-      template.value = { id: `${templatePrefix}${slug}`, label: `Template: ${title}`, load: async () => loaded };
+      template.value = { id: `${templatePrefix}${slug}`, label: title, load: async () => loaded };
     } catch {
       template.value = null;
     }

@@ -161,8 +161,8 @@ const checks = {
     const label = await page
       .locator('.play-bar select')
       .first()
-      .evaluate((select) => select.selectedOptions[0]?.textContent);
-    if (!label?.startsWith('Template:')) problems.push(`template option "${label}"`);
+      .evaluate((select) => `${select.selectedOptions[0]?.parentElement?.label}/${select.selectedOptions[0]?.textContent}`);
+    if (!label?.startsWith('Templates/')) problems.push(`template option "${label}"`);
     const text = await page.evaluate(() => document.querySelector('.cm-content')?.innerText);
     if (!text?.includes('"contact-form"')) problems.push('the template definition did not load');
     await page.evaluate(() => {

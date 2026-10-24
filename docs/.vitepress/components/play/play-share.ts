@@ -184,7 +184,11 @@ function spans(text: string): Spans {
   return found;
 }
 
-export const issueText = (message: string) => message.replace(/^\/[^:\s]*:\s*/, '').replace(/^\/:\s*/, '');
+export const issueText = (message: string) =>
+  message
+    .replace(/^\/[^:\s]*:\s*/, '')
+    .replace(/^\/:\s*/, '')
+    .replace(/^Unexpected EOF$/, 'Unexpected end of JSON');
 
 export function issueMarks(text: string, issues: Pick<DefinitionIssue, 'path' | 'message' | 'severity'>[]): Mark[] {
   if (!issues.length) return [];

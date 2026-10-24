@@ -47,6 +47,11 @@
   transition: border-color 0.15s, background-color 0.15s;
 }
 
+.play-button:not(.play-button--icon) {
+  justify-content: center;
+  min-width: 96px;
+}
+
 .play-button--primary {
   border-color: var(--vp-c-brand-3);
   background: var(--vp-c-brand-3);
@@ -106,7 +111,7 @@
 .play-main {
   display: grid;
   flex: 1;
-  grid-template-columns: minmax(380px, 40%) minmax(0, 1fr);
+  grid-template-columns: minmax(380px, min(40%, 720px)) minmax(0, 1fr);
   min-height: 0;
 }
 

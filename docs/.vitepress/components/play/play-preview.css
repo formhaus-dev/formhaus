@@ -42,17 +42,10 @@
   background: var(--vp-c-white);
 }
 
-.dark .play-stage:not([data-width='phone']) .play-device--light {
-  max-width: 760px;
-}
 
-.dark .play-device--light {
-  border-color: var(--vp-c-divider);
-  background: var(--vp-c-bg-soft);
-}
-
-.dark .play-device--light .play-frame {
-  filter: brightness(0.82);
+.play-stage:not([data-width]) .play-device,
+.play-stage[data-width='desktop'] .play-device {
+  max-width: 1040px;
 }
 
 .play-note {
@@ -176,6 +169,7 @@
   font-family: var(--vp-font-family-mono);
   font-size: var(--fh-site-font-size-xs);
   line-height: 1.7;
+  white-space: pre-wrap;
 }
 
 .play-code__src span {
