@@ -176,7 +176,16 @@ files['src/matrix-row.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/mat
 files['src/field-helpers.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/field-helpers.tsx'), 'utf8');
 files['src/steps-in-url.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url.tsx'), 'utf8');
 files['src/steps-in-url-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url-page.tsx'), 'utf8');
-for (const name of ['on-validate', 'schema-zod', 'schema-valibot', 'schema-arktype', 'schema-server-check', 'locale-catalogs'])
+for (const name of [
+  'on-validate',
+  'schema-zod',
+  'schema-valibot',
+  'schema-arktype',
+  'schema-server-check',
+  'schema-confirm',
+  'schema-empty',
+  'locale-catalogs',
+])
   files[`src/${name}.ts`] = readFileSync(join(root, `docs/recipes/snippets/${name}.ts`), 'utf8');
 files['src/locale-catalogs-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/locale-catalogs-page.tsx'), 'utf8');
 
