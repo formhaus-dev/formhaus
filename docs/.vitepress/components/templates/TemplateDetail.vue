@@ -58,6 +58,15 @@ async function copy(kind: 'JSON' | 'Prompt') {
       <button type="button" class="tpl-button tpl-button--secondary" @click="copy('JSON')">
         <LucideIcon :name="copied === 'JSON' ? 'check' : 'copy'" /> Copy JSON for React or Vue
       </button>
+      <a
+        class="tpl-button tpl-button--secondary"
+        :href="withBase(`/play#t=${template.slug}`)"
+        data-umami-event="template-action"
+        data-umami-event-action="playground"
+        :data-umami-event-slug="template.slug"
+      >
+        <LucideIcon name="play" /> Open in playground
+      </a>
       <span class="tpl-sr-only" role="status">{{ copied ? `${copied} copied` : '' }}</span>
     </div>
 
