@@ -156,12 +156,14 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 @supports selector(:has(*)) { :is(.fh-field__radio-option, .fh-field__multiselect-option) input:focus-visible { outline: none; } }
 :is(.fh-field__radio-label, .fh-field__multiselect-label) { flex: 1 1 auto; cursor: pointer; text-wrap: pretty; }
 .fh-field__option-divider { grid-column: 1 / -1; place-self: center; color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); line-height: 1.3; text-align: center; }
+.fh-field__reveal { display: grid; grid-template-columns: 100%; gap: var(--fh-space-10); margin-inline-start: calc(var(--fh-space-6) + var(--fh-space-2)); padding-block: var(--fh-space-3); padding-inline-start: var(--fh-space-10); border-inline-start: 4px solid var(--fh-color-border); }
+.fh-field__reveal[hidden] { display: none; }
 .fh-field__multiselect-group--inline > .fh-field__option-divider { display: grid; box-sizing: border-box; flex-basis: 100%; grid-template-columns: 18px; justify-items: center; padding-inline-start: calc(1px + var(--fh-space-6)); }
 :is(.fh-field__radio-label, .fh-field__multiselect-label, .fh-field__checkbox-wrapper .fh-field__label, .fh-field__switch-wrapper .fh-field__label)::before { content: ""; position: absolute; inset: 0; border-radius: inherit; }
 
 .fh-field__option-image { grid-area: 1 / 1 / 2 / -1; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: calc(var(--fh-radius) - var(--fh-space-1)); background: var(--fh-color-bg-disabled); }
-:is(.fh-field__radio-group, .fh-field__multiselect-group):has(.fh-field__option-image) { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--fh-option-image-width)), 1fr)); gap: var(--fh-space-5); }
-:is(.fh-field__radio-group, .fh-field__multiselect-group)[data-columns]:has(.fh-field__option-image) { grid-template-columns: repeat(var(--fhi-columns), minmax(0, 1fr)); }
+:is(.fh-field__radio-group, .fh-field__multiselect-group):has(> * > .fh-field__option-image) { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--fh-option-image-width)), 1fr)); gap: var(--fh-space-5); }
+:is(.fh-field__radio-group, .fh-field__multiselect-group)[data-columns]:has(> * > .fh-field__option-image) { grid-template-columns: repeat(var(--fhi-columns), minmax(0, 1fr)); }
 .fh-field > [data-columns="1"] { --fhi-columns: 1; }
 .fh-field > [data-columns="2"] { --fhi-columns: 2; }
 .fh-field > [data-columns="3"] { --fhi-columns: 3; }
@@ -248,7 +250,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   .fh-field__option-zoom:hover { border-color: var(--fh-color-border-hover); }
 }
 
-.fh-field__input[aria-invalid="true"], .fh-field__checkbox[aria-invalid="true"], .fh-field[aria-invalid="true"] :is(.fh-field__radio-option, .fh-field__multiselect-option), .fh-field--scale[aria-invalid="true"] .fh-field__scale-input:not(:checked) { border-color: var(--fh-color-error); }
+.fh-field__input[aria-invalid="true"], .fh-field__checkbox[aria-invalid="true"], .fh-field[aria-invalid="true"] > * > :is(.fh-field__radio-option, .fh-field__multiselect-option), .fh-field--scale[aria-invalid="true"] .fh-field__scale-input:not(:checked) { border-color: var(--fh-color-error); }
 .fh-field--rating[aria-invalid="true"] .fh-field__scale-label { background: var(--fh-color-error); }
 .fh-section--matrix .fh-section__body { gap: 0; container-type: inline-size; }
 .fh-section__matrix-header { display: none; }
@@ -318,7 +320,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   .fh-dialog__header { padding-inline-start: var(--fh-space-7); }
   .fh-dialog__footer { flex-direction: column-reverse; padding-inline: var(--fh-space-7); }
   .fh-group__item { padding-top: var(--fh-space-5); }
-  :is(.fh-field__radio-group, .fh-field__multiselect-group):not([data-columns="1"]):has(.fh-field__option-image) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  :is(.fh-field__radio-group, .fh-field__multiselect-group):not([data-columns="1"]):has(> * > .fh-field__option-image) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .fh-group__add { justify-content: center; justify-self: stretch; }
   .fh-form-actions__button--primary, .fh-form-actions__secondary { flex: 1 0 100%; }
   .fh-form-actions__button--primary { order: -1; }

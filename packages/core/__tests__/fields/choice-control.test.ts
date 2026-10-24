@@ -34,6 +34,19 @@ describe('choiceControl', () => {
     choice.keyDown(event);
   };
 
+  it('ignores Enter and clicks from a nested field inside its root', () => {
+    const { commit, choice } = setup({}, 'a');
+    const root = {};
+    const nested = { value: 'a', closest: (selector: string) => (selector.includes('data-fh') ? {} : nested) };
+    down(choice, { ...key('Enter', nested), currentTarget: root });
+    choice.click({ detail: 1, target: nested, currentTarget: root });
+    vi.runAllTimers();
+    const own = { value: 'a', closest: (selector: string) => (selector.includes('data-fh') ? root : own) };
+    choice.click({ detail: 1, target: own, currentTarget: root });
+    vi.runAllTimers();
+    expect(commit.mock.calls).toEqual([['a']]);
+  });
+
   it('changes without autoAdvance and commits with it', () => {
     const plain = setup({ autoAdvance: false });
     plain.choice.pick('a');

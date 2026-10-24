@@ -933,6 +933,29 @@ export function recallText(definition: FormDefinition, text: string, values: Rec
 export function resolveSources(definition: FormDefinition, context: SourceContext, initialValues?: Record<string, unknown>): Record<string, string>;
 
 // @public (undocumented)
+export interface RevealTarget {
+    // (undocumented)
+    option: number;
+    // (undocumented)
+    parent: number;
+}
+
+// @public (undocumented)
+export function revealTargets(nodes: readonly FormNode[]): (RevealTarget | null)[];
+
+// @public (undocumented)
+export interface RevealView<Children> {
+    // (undocumented)
+    children: Children;
+    // (undocumented)
+    id: string;
+    // (undocumented)
+    open: boolean;
+    // (undocumented)
+    value: string;
+}
+
+// @public (undocumented)
 export interface RootProps {
     // (undocumented)
     'data-fh': string;

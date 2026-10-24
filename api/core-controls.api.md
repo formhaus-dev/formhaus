@@ -30,16 +30,20 @@ export interface ChoiceInput {
 // @public (undocumented)
 export interface ControlClickEvent {
     // (undocumented)
+    currentTarget?: unknown;
+    // (undocumented)
     detail: number;
     // (undocumented)
     target: unknown;
 }
 
 // @public (undocumented)
-export type ControlEntryOf<Component, View> = Component | readonly [Component, string | ((f: View, options: ControlOption[]) => object) | null, string?];
+export type ControlEntryOf<Component, View, Option = ControlOption> = Component | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?];
 
 // @public (undocumented)
 export interface ControlKeyEvent {
+    // (undocumented)
+    currentTarget?: unknown;
     // (undocumented)
     key: string;
     // (undocumented)
@@ -57,12 +61,13 @@ export type ControlKind = 'input' | 'inline' | 'group';
 export const controlKind: (type: string, kinds?: Partial<Record<string, ControlKind>>) => ControlKind;
 
 // @public (undocumented)
-export type ControlOption = Omit<FieldOption, 'value'> & {
+export type ControlOption<Children = never> = Omit<FieldOption, 'value'> & {
     value: string | number;
+    reveal?: RevealView<Children>;
 };
 
 // @public (undocumented)
-export function controlOptions(field: FormField, options: FieldOption[]): ControlOption[];
+export function controlOptions<Children = never>(field: FormField, options: FieldOption[], reveals?: RevealView<Children>[]): ControlOption<Children>[];
 
 // @public (undocumented)
 export interface ControlPreset {
@@ -126,6 +131,8 @@ export type LooseProps<T> = {
 // @public (undocumented)
 export interface MapControlsOptions<Shell, View, Matrix, Controls> {
     // (undocumented)
+    conditionalReveal?: readonly ('radio' | 'multiselect')[];
+    // (undocumented)
     controls: Controls;
     // (undocumented)
     freeText?: boolean;
@@ -140,7 +147,7 @@ export interface MapControlsOptions<Shell, View, Matrix, Controls> {
 }
 
 // @public (undocumented)
-export function mapControlTypes<Controls extends object, Component>(controls: Controls, make: (entry: NonNullable<Controls[keyof Controls]>, input: boolean) => Component): {
+export function mapControlTypes<Controls extends object, Component>(controls: Controls, make: (entry: NonNullable<Controls[keyof Controls]>, input: boolean) => Component, reveal?: readonly string[]): {
     [Type in MappedTypes<Controls>]: Component;
 };
 

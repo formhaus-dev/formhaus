@@ -23,6 +23,7 @@ export interface ConformanceFixture {
   cases?: ConformanceCase[];
   recall?: RecallCase[];
   orders?: OrderVector[];
+  reveals?: Record<string, { parent: string; option: number }>;
 }
 
 interface OrderVector {

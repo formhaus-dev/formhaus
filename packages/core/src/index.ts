@@ -45,6 +45,7 @@ export type {
   StepI18n,
   ValidationI18n,
   StepRoute,
+  RevealView,
   RootProps,
   ShowCondition,
   TestIdTarget,
@@ -72,7 +73,7 @@ export { recallStatic, type RecallItem, type RecallOptions } from './engine/reca
 export { recallText } from './engine/recall-text';
 export type { RecallFormatFn } from './engine/recall-format';
 
-export { evaluateCondition, isActionDisabled, isGroup, isSection, isVisible } from './visibility';
+export { evaluateCondition, isActionDisabled, isGroup, isSection, isVisible, revealTargets, type RevealTarget } from './visibility';
 
 export {
   type MessageFn,

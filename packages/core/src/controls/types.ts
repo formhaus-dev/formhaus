@@ -1,4 +1,4 @@
-import type { FieldOption, FieldType } from '../types';
+import type { FieldOption, FieldType, RevealView } from '../types';
 
 export type ControlKind = 'input' | 'inline' | 'group';
 
@@ -6,11 +6,11 @@ export type ControlShells<Shell> = Shell | null | Partial<Record<ControlKind, Sh
 
 export type ControlTextType = 'text' | 'email' | 'phone' | 'number' | 'password' | 'date' | 'time' | 'datetime';
 
-export type ControlOption = Omit<FieldOption, 'value'> & { value: string | number };
+export type ControlOption<Children = never> = Omit<FieldOption, 'value'> & { value: string | number; reveal?: RevealView<Children> };
 
-export type ControlEntryOf<Component, View> =
+export type ControlEntryOf<Component, View, Option = ControlOption> =
   | Component
-  | readonly [Component, string | ((f: View, options: ControlOption[]) => object) | null, string?];
+  | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?];
 
 type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T;
 
@@ -26,5 +26,6 @@ export interface MapControlsOptions<Shell, View, Matrix, Controls> {
   kinds?: Partial<Record<FieldType, ControlKind>>;
   matrix?: Matrix;
   freeText?: boolean;
+  conditionalReveal?: readonly ('radio' | 'multiselect')[];
   controls: Controls;
 }

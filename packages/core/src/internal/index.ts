@@ -41,6 +41,8 @@ export {
 } from './options';
 export { optionKey } from '../visibility/nodes';
 export { applySources } from './sources';
+export { revealable, revealLayout, revealViews, type RevealSlot } from './reveal';
+export { withReveals } from '../controls/options';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;

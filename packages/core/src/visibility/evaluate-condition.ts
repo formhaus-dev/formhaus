@@ -34,8 +34,10 @@ const TESTS: { [K in keyof Operands]: (value: unknown, operand: Operands[K]) => 
   lte: (value, operand) => toNumber(value)! <= operand,
 };
 
+export const conditionOperator = (condition: ShowCondition) => CONDITION_OPERATORS.find((name) => condition[name] !== undefined);
+
 export function evaluateCondition(condition: ShowCondition, values: Record<string, unknown>): boolean {
   const value = values[condition.field];
-  const operator = CONDITION_OPERATORS.find((name) => condition[name] !== undefined);
+  const operator = conditionOperator(condition);
   return !!operator && (TESTS[operator] as (value: unknown, operand: unknown) => boolean)(value, condition[operator]);
 }
