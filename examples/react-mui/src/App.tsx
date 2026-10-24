@@ -32,7 +32,7 @@ export default function App({ definition = initial, mode = 'light' }: { definiti
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline enableColorScheme />
-      <Container maxWidth="sm" sx={{ py: 4 }}>
+      <Container maxWidth={false} sx={{ maxWidth: 648, py: 4 }}>
         {submitted ? (
           <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
         ) : (

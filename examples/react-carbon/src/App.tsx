@@ -22,7 +22,7 @@ export function App({ definition = initial, scheme }: { definition?: FormDefinit
 
   return (
     <Theme theme={theme}>
-      <main style={{ maxWidth: 640, margin: '0 auto', padding: '3rem 1rem' }}>
+      <main style={{ maxWidth: 632, margin: '0 auto', padding: '3rem 1rem' }}>
         {submitted ? (
           <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
         ) : (

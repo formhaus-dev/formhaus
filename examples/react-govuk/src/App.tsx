@@ -38,7 +38,7 @@ export function App({ definition = initial }: { definition?: FormDefinition }) {
         <div ref={setBackLink} />
         <main className="govuk-main-wrapper" id="main-content">
           <div className="govuk-grid-row">
-            <div className="govuk-grid-column-two-thirds">
+            <div className="govuk-grid-column-full app-form-column">
               {view.name === 'done' && <FormCompletion onRestart={() => setView({ name: 'form' })} />}
               {view.name === 'check' && (
                 <CheckAnswers

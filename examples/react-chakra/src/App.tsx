@@ -24,7 +24,7 @@ export function App({ definition = initial, scheme }: { definition?: FormDefinit
 
   return (
     <ChakraProvider value={system}>
-      <Container maxW="2xl" py="10">
+      <Container maxW="632px" px="4" py="10">
         {submitted ? (
           <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
         ) : (
