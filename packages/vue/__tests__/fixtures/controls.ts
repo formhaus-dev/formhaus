@@ -32,6 +32,19 @@ const Plain = control((props, emit, attrs) =>
   }),
 );
 
+const Area = control((props, emit, attrs) =>
+  h('textarea', {
+    ...attrs,
+    id: props.id,
+    value: props.modelValue,
+    onInput: (event: Event) => emit('update:modelValue', target(event).value),
+  }),
+);
+
+const Upload = control((props, emit, attrs) =>
+  h('input', { ...attrs, type: 'file', id: props.id, onChange: (event: Event) => emit('update:modelValue', event) }),
+);
+
 const DatePick = control((props, emit, attrs) =>
   h('input', {
     ...attrs,
@@ -160,9 +173,15 @@ const Shell = defineComponent({
   setup:
     (props, { slots }) =>
     () => {
-      const { kind, f, rootProps } = props;
+      const { kind, f, rootProps, anchors } = props;
       const texts = [f.helperText ? h('p', { id: f.helperId }, f.helperText) : null, f.error ? h('p', { id: f.errorId }, f.error) : null];
-      if (kind === 'group') return h('fieldset', { ...rootProps, 'data-kind': kind }, [h('legend', f.label), slots.default?.(), ...texts]);
+      const shown = anchors.map((anchor) => anchor?.label).join('|') || undefined;
+      if (kind === 'group')
+        return h('fieldset', { ...rootProps, 'data-kind': kind, 'data-anchors': shown }, [
+          h('legend', f.label),
+          slots.default?.(),
+          ...texts,
+        ]);
       const label = h('label', { for: f.id }, f.label);
       return h('div', { ...rootProps, 'data-kind': kind }, [
         kind === 'input' ? label : null,
@@ -194,7 +213,11 @@ const controls = {
 
 const labels = (f: FieldProps) => ({ label: f.label });
 
+const free = { autocomplete: Plain, textarea: Area, file: Upload, scale: [Choices, 'options'] } as const;
+
 export const mapped = {
+  typed: mapControls({ shell: Shell, freeText: true, controls: free }),
+  plain: mapControls({ shell: Shell, controls: free }),
   named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onUpdate:value'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
   bare: mapControls({ shell: null, labels, kinds: { multiselect: 'input' }, controls }),

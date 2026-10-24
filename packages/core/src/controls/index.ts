@@ -1,6 +1,10 @@
 import { type DateType, type FieldState, fieldValue, fromDate, numberValue, scaleView } from '@formhaus/core/fields';
 import type { FieldOption, FormField } from '../types';
-import type { ControlKind, ControlOption, ControlShells, ControlTextType, MappedTypes } from './types';
+import { POINT_TYPES } from './options';
+import type { ControlKind, ControlShells, ControlTextType, MappedTypes } from './types';
+
+export { choiceControl, type ChoiceInput, type ControlClickEvent, type ControlKeyEvent } from './choice';
+export { controlOptions } from './options';
 
 export type {
   ControlEntryOf,
@@ -20,25 +24,6 @@ export interface ControlRoot {
   'aria-describedby'?: string;
 }
 
-export interface ControlKeyEvent {
-  key: string;
-  repeat: boolean;
-  target: unknown;
-  preventDefault(): void;
-}
-
-export interface ControlClickEvent {
-  detail: number;
-  target: unknown;
-}
-
-export interface ChoiceInput {
-  field: FormField;
-  value: unknown;
-  options: FieldOption[];
-  disabled: boolean;
-}
-
 const KINDS: Record<string, ControlKind> = {
   checkbox: 'inline',
   switch: 'inline',
@@ -49,9 +34,6 @@ const KINDS: Record<string, ControlKind> = {
 };
 const TEXT_TYPES: ControlTextType[] = ['text', 'email', 'phone', 'number', 'password', 'date', 'time', 'datetime'];
 const STRING_TYPES = ['text', 'email', 'phone', 'number', 'password', 'date', 'time', 'datetime', 'textarea', 'select', 'autocomplete'];
-const POINT_TYPES = ['scale', 'rating'];
-const COMMIT_TYPES = ['radio', 'scale', 'rating'];
-const OPTION = 'input[type=radio], button[value], [role=radio], [role=option]';
 const INPUT_ONLY = ['placeholder', 'inputMode', 'autoComplete', 'autocomplete'];
 
 export const controlKind = (type: string, kinds?: Partial<Record<string, ControlKind>>): ControlKind => {
@@ -78,10 +60,6 @@ export function mapControlTypes<Controls extends object, Component>(
     for (const type of key === 'input' ? TEXT_TYPES.filter((type) => !entries[type]) : [key]) map[type] = component;
   }
   return map as { [Type in MappedTypes<Controls>]: Component };
-}
-
-export function controlOptions(field: FormField, options: FieldOption[]): ControlOption[] {
-  return POINT_TYPES.includes(field.type) ? scaleView(field).points.map((point) => ({ value: point, label: String(point) })) : options;
 }
 
 export function toControl(field: FormField, value: unknown): unknown {
@@ -128,9 +106,21 @@ export interface ControlPreset {
   input: boolean;
   attrs: object;
   valueKey: string;
+  text?: string;
+  setText?: (text: string) => void;
 }
 
-export function controlProps(field: FormField, state: FieldState & { value: unknown; testId?: string }, preset: ControlPreset) {
+export function controlProps(
+  field: FormField,
+  state: FieldState & { value: unknown; testId?: string; options?: FieldOption[] },
+  preset: ControlPreset,
+) {
+  const { type } = field;
+  const { value, options = [] } = state;
+  const { text } = preset;
+  const typed = text !== undefined && type === 'autocomplete';
+  const shown = toControl(field, value);
+  const labelValue = (label: string) => options.find((option) => option.label === label)?.value ?? label;
   const group = preset.kind === 'group';
   const control: Record<string, unknown> = {
     ...preset.attrs,
@@ -141,89 +131,33 @@ export function controlProps(field: FormField, state: FieldState & { value: unkn
     'aria-describedby': preset.shell && !group ? state.describedBy : undefined,
     'data-testid': group ? undefined : state.testId,
     type: preset.input ? state.inputType : undefined,
-    [preset.valueKey]: toControl(field, state.value),
+    rows: type === 'textarea' ? field.rows : undefined,
+    accept: type === 'file' ? field.accept : undefined,
+    [preset.valueKey]: !typed
+      ? shown
+      : labelValue(text) === shown
+        ? text
+        : (options.find((option) => option.value === value)?.label ?? shown),
   };
   for (const key of Object.keys(control))
     if (control[key] === undefined || (preset.kind !== 'input' && INPUT_ONLY.includes(key))) delete control[key];
   const shellGroup = group && preset.shell;
   return {
     control,
+    anchors: type === 'scale' ? scaleView(field).anchors : [],
+    save(input: unknown, detail?: unknown): unknown {
+      const next = fromControl(field, input, detail);
+      if (!typed) return next;
+      const typedText = String(next ?? '');
+      preset.setText?.(typedText);
+      return labelValue(typedText);
+    },
     root: {
       'data-fh': 'field',
       'data-testid': group ? state.testId : undefined,
       'aria-invalid': shellGroup ? state.aria['aria-invalid'] : undefined,
       'aria-describedby': shellGroup ? state.describedBy : undefined,
     } as ControlRoot,
-  };
-}
-
-const empty = (value: unknown) => value == null || value === '' || (Array.isArray(value) && !value.length);
-
-export function choiceControl(read: () => ChoiceInput, change: (value: unknown) => void, commit: (value: unknown) => void) {
-  let arrow = false;
-  let pending = false;
-  let fresh = false;
-  let timer: ReturnType<typeof setTimeout> | undefined;
-  const active = () => {
-    const { field, disabled } = read();
-    return !!field.autoAdvance && COMMIT_TYPES.includes(field.type) && !disabled;
-  };
-  const optionOf = (target: unknown) => {
-    const { field, options } = read();
-    const text = (target as { value?: unknown } | null)?.value;
-    return controlOptions(field, options).find((option) => typeof text === 'string' && String(option.value) === text)?.value;
-  };
-  const finish = (value: unknown) => {
-    clearTimeout(timer);
-    pending = false;
-    if (empty(value)) return;
-    fresh = true;
-    setTimeout(() => {
-      fresh = false;
-    }, 0);
-    commit(value);
-  };
-  const optionAt = (target: unknown) => (target as { closest?: (selector: string) => unknown } | null)?.closest?.(OPTION);
-  const pressed = (event: ControlKeyEvent, key: string) => {
-    const element = optionAt(event.target);
-    if (event.key !== key || !active() || !element) return;
-    event.preventDefault();
-    if (pending) finish(optionOf(element) ?? read().value);
-  };
-  return {
-    pick(value: unknown) {
-      if (!active() || arrow || empty(value)) change(value);
-      else finish(value);
-    },
-    stop() {
-      clearTimeout(timer);
-    },
-    pointerDown() {
-      arrow = false;
-    },
-    keyDownCapture(event: ControlKeyEvent) {
-      arrow = event.key.startsWith('Arrow') || event.key === 'Home' || event.key === 'End';
-      if (!event.repeat) pending = event.key === ' ' || event.key === 'Enter';
-    },
-    keyDown(event: ControlKeyEvent) {
-      if (event.key === ' ' && active() && optionAt(event.target)) event.preventDefault();
-      pressed(event, 'Enter');
-    },
-    keyUp(event: ControlKeyEvent) {
-      arrow = false;
-      pressed(event, ' ');
-    },
-    click({ detail, target }: ControlClickEvent) {
-      const element = optionAt(target);
-      if (!active() || arrow || fresh || detail > 1 || !element) return;
-      const value = read().value;
-      const picked = optionOf(element);
-      clearTimeout(timer);
-      if (picked === undefined || String(picked) === String(value))
-        timer = setTimeout(() => {
-          if (!fresh) finish(read().value);
-        }, 0);
-    },
   };
 }
 

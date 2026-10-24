@@ -24,6 +24,7 @@ import { MapControlsOptions } from '@formhaus/core/controls';
 import { MappedTypes } from '@formhaus/core/controls';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { ScaleAnchor } from '@formhaus/core/fields';
 
 // @public (undocumented)
 export type ControlAdapter<C extends Control> = (keyof PropsOf<C> & string) | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>>);
@@ -56,6 +57,8 @@ export interface ControlRootProps extends ControlRoot {
 
 // @public (undocumented)
 export interface ControlShellProps {
+    // (undocumented)
+    anchors: (ScaleAnchor | undefined)[];
     // (undocumented)
     children: ReactNode;
     // (undocumented)

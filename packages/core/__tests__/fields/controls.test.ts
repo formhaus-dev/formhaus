@@ -113,6 +113,9 @@ describe('fromControl', () => {
       fromControl(field('file'), file),
     ]).toEqual([file, file, file]);
     expect([fromControl(field('file'), event({ files: [] })), fromControl(field('file'), undefined)]).toEqual([null, null]);
+    const other = { name: 'photo.png' };
+    expect([fromControl(field('file'), [file, other]), fromControl(field('file'), event({ files: [file, other] }))]).toEqual([file, file]);
+    expect([fromControl(field('file'), []), fromControl(field('file'), null)]).toEqual([null, null]);
   });
 
   it('writes values that pass validation', () => {
@@ -168,10 +171,12 @@ describe('controlOptions and controlProps', () => {
         valueKey: 'modelValue',
       },
     );
-    expect(group).toEqual({
+    expect(group).toMatchObject({
       control: { modelValue: 'a' },
+      anchors: [],
       root: { 'data-fh': 'field', 'data-testid': 'plan', 'aria-invalid': true, 'aria-describedby': 'f-radio-error' },
     });
+    expect(Object.keys(group.control)).toEqual(['modelValue']);
     const bare = controlProps(
       radio,
       { ...fieldState({ id: 'f-radio', field: radio, error: 'Bad' }), value: 'a' },
@@ -183,6 +188,6 @@ describe('controlOptions and controlProps', () => {
         valueKey: 'value',
       },
     );
-    expect(bare).toEqual({ control: { 'aria-invalid': true, value: 'a' }, root: { 'data-fh': 'field' } });
+    expect([bare.control, bare.root]).toEqual([{ 'aria-invalid': true, value: 'a' }, { 'data-fh': 'field' }]);
   });
 });

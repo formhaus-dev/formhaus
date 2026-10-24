@@ -73,7 +73,11 @@ export interface ControlPreset {
     // (undocumented)
     kind: ControlKind;
     // (undocumented)
+    setText?: (text: string) => void;
+    // (undocumented)
     shell: boolean;
+    // (undocumented)
+    text?: string;
     // (undocumented)
     valueKey: string;
 }
@@ -82,8 +86,11 @@ export interface ControlPreset {
 export function controlProps(field: FormField, state: FieldState & {
     value: unknown;
     testId?: string;
+    options?: FieldOption[];
 }, preset: ControlPreset): {
     control: Record<string, unknown>;
+    anchors: (_formhaus_core_fields.ScaleAnchor | undefined)[];
+    save(input: unknown, detail?: unknown): unknown;
     root: ControlRoot;
 };
 
@@ -120,6 +127,8 @@ export type LooseProps<T> = {
 export interface MapControlsOptions<Shell, View, Matrix, Controls> {
     // (undocumented)
     controls: Controls;
+    // (undocumented)
+    freeText?: boolean;
     // (undocumented)
     kinds?: Partial<Record<FieldType, ControlKind>>;
     // (undocumented)

@@ -23,6 +23,7 @@ import { validateScenarios } from '../../core/__tests__/renderers/validate.scena
 import { mapCommitScenarios } from '../../core/__tests__/renderers/map-commit.scenarios';
 import { mapControlScenarios } from '../../core/__tests__/renderers/map-controls.scenarios';
 import { mapNamedScenarios } from '../../core/__tests__/renderers/map-named.scenarios';
+import { mapPropsScenarios } from '../../core/__tests__/renderers/map-props.scenarios';
 import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import { design } from './fixtures/design';
@@ -200,3 +201,4 @@ describe('renderer conformance: onValidate', () => validateScenarios(harness, ki
 describe('renderer conformance: mapControls', () => mapControlScenarios(harness, kit));
 describe('renderer conformance: mapControls commit', () => mapCommitScenarios(harness, kit));
 describe('renderer conformance: mapControls change props', () => mapNamedScenarios(harness, kit));
+describe('renderer conformance: mapControls field props', () => mapPropsScenarios(harness, kit));
