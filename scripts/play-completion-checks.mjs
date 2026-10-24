@@ -83,8 +83,8 @@ export function completionChecks({ open, rendered, edit }) {
             const lines = String(error).split('\n');
             const shown = await page
               .frameLocator(`iframe[src*="/play/apps/${app.id}/"]`)
-              .locator('body')
-              .innerText({ timeout: 2000 })
+              .locator('button')
+              .evaluateAll((buttons) => buttons.map((button) => button.outerHTML.slice(0, 160)).join(' '), null, { timeout: 2000 })
               .catch(() => '');
             problems.push(
               `${app.id} ${form.hash}: threw ${lines[0]} | ${lines.slice(-6).join(' ').replace(/\s+/g, ' ')} | preview: ${shown.replace(/\s+/g, ' ').slice(0, 300)}`,
