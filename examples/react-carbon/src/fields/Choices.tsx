@@ -1,6 +1,21 @@
-import type { ControlOption } from '@formhaus/react/controls';
+import type { ControlOption, ControlShellProps } from '@formhaus/react/controls';
 import { FormGroup, RadioButton, RadioButtonGroup, type RadioButtonGroupProps, RadioTile, Stack } from '@carbon/react';
+import { createContext, useContext } from 'react';
 import { Texts } from './GroupMessage';
+
+const Inline = createContext(false);
+
+export function GroupShell({
+  field,
+  rootProps: { 'aria-invalid': _invalid, 'aria-describedby': _describedBy, ...root },
+  children,
+}: ControlShellProps) {
+  return (
+    <div {...root}>
+      <Inline value={field.layout === 'inline'}>{children}</Inline>
+    </div>
+  );
+}
 
 interface ChoicesProps extends Omit<RadioButtonGroupProps, 'name' | 'value' | 'onChange' | 'legendText' | 'helperText' | 'required'> {
   'aria-required'?: boolean;
@@ -18,6 +33,7 @@ interface ChoicesProps extends Omit<RadioButtonGroupProps, 'name' | 'value' | 'o
 const optionId = (id: string, index: number) => (index ? `${id}-${index}` : id);
 
 export function Choices({ id, value, options, error, describedBy, onChange, 'aria-required': _required, ...group }: ChoicesProps) {
+  const inline = useContext(Inline);
   const selected = value == null ? undefined : String(value);
   if (options.some((option) => option.image))
     return (
@@ -47,15 +63,27 @@ export function Choices({ id, value, options, error, describedBy, onChange, 'ari
   return (
     <RadioButtonGroup
       {...group}
+      orientation={group.orientation ?? (inline ? 'horizontal' : 'vertical')}
       {...(error && { 'aria-describedby': `${id}-error` })}
       invalid={!!error}
       invalidText={<span id={`${id}-error`}>{error}</span>}
       valueSelected={selected}
       onChange={onChange}
     >
-      {options.map((option, index) => (
-        <RadioButton key={option.value} id={optionId(id, index)} value={String(option.value)} labelText={option.label} />
-      ))}
+      {options.flatMap((option, index) => [
+        <RadioButton
+          key={option.value}
+          id={optionId(id, index)}
+          value={String(option.value)}
+          labelText={option.label}
+          aria-controls={option.reveal?.id}
+        />,
+        option.reveal && (
+          <div key={option.reveal.id} id={option.reveal.id} data-fh="reveal" hidden={!option.reveal.open} className="reveal">
+            <Stack gap={7}>{option.reveal.children}</Stack>
+          </div>
+        ),
+      ])}
     </RadioButtonGroup>
   );
 }
