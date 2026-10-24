@@ -24,6 +24,7 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
   const parseError = ref<JsonError | null>(null);
   const issues = ref<Issue[]>([]);
   const definition = shallowRef<object | null>(null);
+  const loading = ref(true);
   let presetText = '';
 
   const errors = computed(() => (parseError.value ? 1 : issues.value.filter((issue) => issue.severity === 'error').length));
@@ -68,9 +69,11 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
 
   async function applyPreset(id: string, source?: string) {
     const preset = sources.find((entry) => entry.id === id) ?? presets[0]!;
-    const loaded = await preset.load().catch(() => null);
-    if (!loaded && preset !== presets[0]) return applyPreset(presets[0]!.id, source);
     presetId.value = preset.id;
+    loading.value = true;
+    const loaded = await preset.load().catch(() => null);
+    loading.value = false;
+    if (!loaded && preset !== presets[0]) return applyPreset(presets[0]!.id, source);
     presetText = `${JSON.stringify(loaded, null, 2)}\n`;
     text.value = source ?? presetText;
     editor()?.setDoc(text.value);
@@ -94,6 +97,7 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
     presetId,
     text,
     definition,
+    loading,
     errors,
     status,
     statusKind,

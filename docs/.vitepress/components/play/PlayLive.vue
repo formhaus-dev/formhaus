@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useData } from 'vitepress';
-import { onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
+import PlaySkeleton from './PlaySkeleton.vue';
 import { formDefinition, type PlayForm, playForms } from './play-catalog';
 import { appUrl, designs } from './play-state';
 import { usePreviews } from './previews';
@@ -10,28 +11,36 @@ const { isDark } = useData();
 const definition = shallowRef<object | null>(null);
 const busy = ref(false);
 const settled = ref(false);
+const fetching = ref(false);
 const stage = ref<HTMLElement>();
 const previews = usePreviews(definition, isDark, (id) => {
   if (id !== props.system) return;
   busy.value = false;
   settled.value = true;
 });
-let started = false;
+const started = ref(false);
+const loading = computed(
+  () => started.value && (fetching.value || (!previews.rendered.has(props.system) && !previews.issues.has(props.system))),
+);
+const label = computed(() => `Loading the ${designs.find((entry) => entry.id === props.system)?.label} preview`);
 let token = 0;
 let observer: IntersectionObserver | undefined;
 
 async function sync() {
   const mine = ++token;
-  previews.loaded.add(props.system);
-  const value = await formDefinition(props.form);
+  previews.open(props.system);
+  fetching.value = true;
+  const value = await formDefinition(props.form).catch(() => null);
   if (mine !== token) return;
+  fetching.value = false;
+  if (!value) return;
   definition.value = value;
   busy.value = previews.send(props.system);
 }
 
 function start() {
-  if (started) return;
-  started = true;
+  if (started.value) return;
+  started.value = true;
   observer?.disconnect();
   sync();
 }
@@ -40,7 +49,7 @@ watch(
   () => [props.system, props.form.key],
   () => {
     if (props.system !== designs[0]!.id || props.form.key !== playForms[0]!.key) settled.value = true;
-    if (started) sync();
+    if (started.value) sync();
   },
 );
 
@@ -71,5 +80,6 @@ onBeforeUnmount(() => observer?.disconnect());
       />
     </template>
     <div class="lv-busy" />
+    <PlaySkeleton v-if="loading && settled" :label="label" />
   </div>
 </template>

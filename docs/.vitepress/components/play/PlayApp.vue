@@ -8,6 +8,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } 
 import LucideIcon from '../landing/LucideIcon.vue';
 import PlayBar from './PlayBar.vue';
 import PlayCode from './PlayCode.vue';
+import PlaySkeleton from './PlaySkeleton.vue';
 import { templateId, useDefinition } from './definition';
 import { mountJsonEditor, type JsonEditor } from './json-editor';
 import { templateSlug } from './play-catalog';
@@ -35,7 +36,7 @@ const form = useDefinition(
   () => previews.send(designId.value),
 );
 const previews = usePreviews(form.definition, isDark);
-const { text, presetId, status, statusKind, listed } = form;
+const { text, presetId, status, statusKind, listed, loading } = form;
 
 const design = computed(() => designs.find((entry) => entry.id === designId.value) ?? designs[0]!);
 const outView = computed(() => (mobile.value ? (tab.value === 'code' ? 'code' : 'preview') : view.value));
@@ -65,7 +66,7 @@ async function choosePreset(id: string) {
 
 function chooseDesign(id: string) {
   designId.value = id;
-  previews.loaded.add(id);
+  previews.open(id);
   previews.send(id);
   if (outView.value === 'code') loadCode();
   scheduleHash();
@@ -112,7 +113,7 @@ async function restore() {
   const shared = await readHash(location.hash);
   if (shared.design && designs.some((entry) => entry.id === shared.design)) designId.value = shared.design;
   if (shared.width && widths.some((entry) => entry.id === shared.width)) width.value = shared.width as WidthId;
-  previews.loaded.add(designId.value);
+  previews.open(designId.value);
   await form.applyPreset(shared.template ? templateId(templateSlug(shared.template)) : (shared.preset ?? presets[0]!.id), shared.text);
   if (outView.value === 'code') loadCode();
 }
@@ -156,7 +157,7 @@ onBeforeUnmount(() => {
       <section class="play-pane play-pane--json" aria-label="Definition">
         <div class="play-pane__head">
           <span class="play-file">definition.json</span>
-          <span class="play-status" :data-kind="statusKind">{{ status }}</span>
+          <span v-if="!loading" class="play-status" :data-kind="statusKind">{{ status }}</span>
         </div>
         <div ref="editorHost" class="play-editor" />
         <ul v-if="listed.length" class="play-issues">
@@ -217,12 +218,10 @@ onBeforeUnmount(() => {
                 :class="{ 'play-frame--waiting': !previews.rendered.has(entry.id) }"
               />
             </template>
-            <div v-if="!previews.rendered.has(designId)" class="play-loading" :data-kind="blocking ? 'error' : 'loading'">
-              <template v-if="blocking">
-                <LucideIcon name="circle-alert" />Fix {{ blocking }} {{ blocking === 1 ? 'error' : 'errors' }} to see the preview
-              </template>
-              <template v-else>Loading {{ design.label }}</template>
-            </div>
+            <p v-if="blocking && !previews.rendered.has(designId)" class="play-loading" data-kind="error">
+              <LucideIcon name="circle-alert" />Fix {{ blocking }} {{ blocking === 1 ? 'error' : 'errors' }} to see the preview
+            </p>
+            <PlaySkeleton v-else-if="loading || !previews.rendered.has(designId)" :label="`Loading the ${design.label} preview`" />
           </div>
         </div>
 
