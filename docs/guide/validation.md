@@ -57,7 +57,16 @@ A repeated group that starts or ends with a character nothing else in it matches
 | `^\d+\.?\d*$` | `^\d+(\.\d*)?$` |
 | `^([a-z]+\.?)+$` | `^[a-z]+(\.[a-z]+)*$` |
 
-The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) does not run it: it throws a `FormDefinitionError` with a `slow-pattern` error. A definition that passed `validateSubmission()` before can throw now, so run `checkDefinition()` on your definitions before you upgrade the server. A value longer than 10,000 characters fails `pattern` without being matched.
+The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) runs a slow pattern only when it starts with `^`, has no `|` outside a group, and no more than two overlapping repeats in a row can share the same characters, as in `^\d+\.?\d*$` or `^[0-9]+\s?[0-9]+$`. Such a pattern takes about 40 ms on a 10,000-character value, and 0.5 ms on 1,000. Set `maxLength` to keep it short. For any other slow pattern, `validateSubmission()` throws a `FormDefinitionError` with a `slow-pattern` error and runs nothing:
+
+| Pattern | 10,000 characters | `validateSubmission()` |
+|---------|-------------------|------------------------|
+| `^\d+\.?\d*$` | 40 ms | runs |
+| `\d+\.?\d*$` | 2 min | throws |
+| `^\d*\d*\d*$` | 2 min | throws |
+| `^(a+)+$` | years | throws |
+
+A value longer than 10,000 characters fails `pattern` without being matched.
 
 The check does not find every slow pattern. Separate wildcards such as `^.*x.*y.*z$` take 80 ms on 1,000 characters and 3 s on 4,000, and each extra `.*` makes this worse. If the people who write your definitions are not trusted, run `validateSubmission()` in a worker thread with a timeout.
 
