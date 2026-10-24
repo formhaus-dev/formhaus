@@ -54,9 +54,17 @@ export const templateCount = templates.length;
 
 export const templateSlug = (slug: string) => aliases[slug as keyof typeof aliases] ?? slug;
 
-export async function templateDefinition(slug: string) {
-  const entry = (await (await fetch(`/templates/${slug}.json`)).json()) as { definition: object };
-  return entry.definition;
+const fetched = new Map<string, Promise<object>>();
+
+export function templateDefinition(slug: string) {
+  const cached = fetched.get(slug);
+  if (cached) return cached;
+  const request = fetch(`/templates/${slug}.json`)
+    .then((response) => (response.ok ? response.json() : Promise.reject(new Error(`${response.status} ${slug}`))))
+    .then((entry: { definition: object }) => entry.definition);
+  fetched.set(slug, request);
+  request.catch(() => fetched.delete(slug));
+  return request;
 }
 
 export const formDefinition = (form: PlayForm) =>

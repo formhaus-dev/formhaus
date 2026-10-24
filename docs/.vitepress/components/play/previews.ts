@@ -1,6 +1,8 @@
 import { onBeforeUnmount, onMounted, reactive, type Ref, watch } from 'vue';
 import type { Issue } from './definition';
 
+const kept = 3;
+
 export function usePreviews(definition: Ref<object | null>, dark: Ref<boolean>, onSettled?: (id: string) => void) {
   const loaded = reactive(new Set<string>());
   const ready = reactive(new Set<string>());
@@ -24,6 +26,14 @@ export function usePreviews(definition: Ref<object | null>, dark: Ref<boolean>, 
     sent.set(id, payload);
     post(id, { type: 'formhaus:definition', definition: definition.value });
     return true;
+  }
+
+  function open(id: string) {
+    loaded.delete(id);
+    loaded.add(id);
+    for (const old of [...loaded].slice(0, -kept)) {
+      for (const state of [loaded, ready, rendered, issues, frames, sent]) state.delete(old);
+    }
   }
 
   function bind(id: string, element: unknown) {
@@ -58,5 +68,5 @@ export function usePreviews(definition: Ref<object | null>, dark: Ref<boolean>, 
   onMounted(() => window.addEventListener('message', onMessage));
   onBeforeUnmount(() => window.removeEventListener('message', onMessage));
 
-  return { loaded, rendered, issues, bind, send };
+  return { loaded, rendered, issues, open, bind, send };
 }

@@ -1,4 +1,5 @@
 import apps from './apps.json';
+import presetList from './presets.json';
 
 export interface Design {
   id: string;
@@ -25,24 +26,9 @@ export const widths = [
 
 export type WidthId = (typeof widths)[number]['id'];
 
-const loaders = import.meta.glob<object>(
-  '../../../../examples/definitions/{multi-step,conditional-fields,validation,survey,branching-form,event-registration}.json',
-  {
-    import: 'default',
-  },
-);
-const load = (name: string) => loaders[`../../../../examples/definitions/${name}.json`]!;
+const loaders = import.meta.glob<object>('../../../../examples/definitions/*.json', { import: 'default' });
 
-const preset = (id: string, label: string, file: string) => ({ id, label, file, load: load(file) });
-
-export const presets = [
-  preset('multi-step', 'Multi-step', 'multi-step'),
-  preset('conditional', 'Conditional fields', 'conditional-fields'),
-  preset('validation', 'Validation', 'validation'),
-  preset('survey', 'Survey with matrix', 'survey'),
-  preset('branching', 'Branching', 'branching-form'),
-  preset('event', 'Event registration', 'event-registration'),
-];
+export const presets = presetList.map((entry) => ({ ...entry, load: loaders[`../../../../examples/definitions/${entry.file}.json`]! }));
 
 let entryVisit = false;
 export const markEntryVisit = () => {
