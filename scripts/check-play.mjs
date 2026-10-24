@@ -1,6 +1,7 @@
 import { spawn } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { entryChecks } from './play-entry-checks.mjs';
 import { playPage } from './play-page.mjs';
 
 const require = createRequire(new URL('../packages/editor-react/package.json', import.meta.url));
@@ -31,6 +32,8 @@ async function ready() {
 const { open, rendered, frameOf, edit, tone } = playPage(base);
 
 const checks = {
+  ...entryChecks(base, frameOf),
+
   async systems(page, problems) {
     await open(page);
     for (const app of apps) {
@@ -162,7 +165,7 @@ const checks = {
       .locator('.play-bar select')
       .first()
       .evaluate((select) => `${select.selectedOptions[0]?.parentElement?.label}/${select.selectedOptions[0]?.textContent}`);
-    if (!label?.startsWith('Templates/')) problems.push(`template option "${label}"`);
+    if (!label?.startsWith('Lead generation/')) problems.push(`template option "${label}"`);
     const text = await page.evaluate(() => document.querySelector('.cm-content')?.innerText);
     if (!text?.includes('"contact-form"')) problems.push('the template definition did not load');
     await page.evaluate(() => {
@@ -178,8 +181,8 @@ const checks = {
         () => false,
       );
     if (preset !== 'survey' || !survey) problems.push(`a pasted hash did not switch the preset and design (${preset})`);
-    await page.goto(`${base}/playground`);
-    await page.waitForURL(/\/play(#.*)?$/, { timeout: 10000 }).catch(() => problems.push(`/playground stayed at ${page.url()}`));
+    const options = await page.locator('.play-bar select').first().locator('option').count();
+    if (options < 56) problems.push(`the example select lists ${options} options`);
   },
 };
 
