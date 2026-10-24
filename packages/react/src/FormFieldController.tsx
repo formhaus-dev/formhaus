@@ -1,6 +1,6 @@
 import { autofilled, errorDomId, fieldDomId, fieldTestIds, recalled, recalls, shownOptions, type TestId } from '@formhaus/core/internal';
-import type { FieldOption, FormEngine, FormField as FormFieldType } from '@formhaus/core';
-import { memo, useCallback, useSyncExternalStore } from 'react';
+import type { FieldOption, FormEngine, FormField as FormFieldType, RevealView } from '@formhaus/core';
+import { memo, type ReactNode, useCallback, useSyncExternalStore } from 'react';
 import { useFieldSnapshot, useRecallSnapshot } from './hooks/useEngineSnapshot';
 import { FieldResolver } from './FieldResolver';
 import type { FieldComponentMap } from './types';
@@ -29,6 +29,7 @@ interface FormFieldControllerProps extends ControllerProps {
   item?: Record<string, unknown>;
   columns?: FieldOption[];
   row?: number;
+  reveals?: RevealView<ReactNode>[];
 }
 
 export const FormFieldController = /* @__PURE__ */ memo(function FormFieldController({
@@ -43,6 +44,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
   item,
   columns,
   row,
+  reveals,
   onChange,
   onCommit,
   onBlur,
@@ -72,6 +74,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
       disabled={disabled}
       components={components}
       matrix={columns && { columns, row: row! }}
+      reveals={reveals}
       onChange={handleChange}
       onCommit={handleCommit}
       onBlur={handleBlur}

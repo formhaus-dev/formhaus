@@ -8,10 +8,13 @@ import {
   providedOptions,
   recalled,
   recalls,
+  revealable,
   shownOptions,
   type TestId,
 } from '@formhaus/core/internal';
-import { computed, shallowRef, watch, type Ref } from 'vue';
+import { computed, shallowRef, toRaw, watch, type Ref } from 'vue';
+import DefaultSection from '../DefaultSection.vue';
+import { nodeLayout } from '../FormNodeView';
 import { useFieldOptions } from './useFieldOptions';
 import { useMounted } from './useMounted';
 import type { FormRendererProps } from '../types';
@@ -94,7 +97,14 @@ export function useNodeProps(
     groups.set(key, next);
     return next;
   };
-  return {
+  const context = {
+    formId,
+    definition: () => form.engine.definition,
+    section: () => props.layout?.section ?? props.components?.section ?? DefaultSection,
+    can: (field: FormField) => {
+      const component = props.components?.[field.type];
+      return !!props.conditionalReveal && !!component && revealable.has(toRaw(component));
+    },
     sectionProps(section: FormSection) {
       const id = fieldDomId(formId, section.key, form.engine.definition);
       const { title, description } = recalled(form.engine, section);
@@ -152,4 +162,5 @@ export function useNodeProps(
       };
     },
   };
+  return { ...context, shown: computed(() => nodeLayout(context, form.visibleNodes.value)) };
 }

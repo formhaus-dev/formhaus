@@ -31,6 +31,7 @@ import { OptionsProvider } from '@formhaus/core';
 import { PublishedForm } from '@formhaus/core/cloud';
 import * as react from 'react';
 import { ReactNode } from 'react';
+import { RevealView } from '@formhaus/core';
 import { RootProps } from '@formhaus/core';
 import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';

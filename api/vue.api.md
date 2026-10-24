@@ -49,6 +49,7 @@ import { OptionsProvider } from '@formhaus/core';
 import { PropType } from 'vue';
 import { RecallFormatFn } from '@formhaus/core';
 import { Ref } from 'vue';
+import { RevealView } from '@formhaus/core';
 import { RootProps } from '@formhaus/core';
 import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
@@ -56,6 +57,7 @@ import { SubmitHandler } from '@formhaus/core';
 import { TestIdTarget } from '@formhaus/core';
 import { ValidateFn } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
+import { VNode } from 'vue';
 
 // @public (undocumented)
 export const AutocompleteField: FieldComponent;
@@ -191,6 +193,8 @@ export interface FieldComponentProps {
     // (undocumented)
     optionTestId?: (value: string) => string | undefined;
     // (undocumented)
+    reveals?: RevealView<VNode>[];
+    // (undocumented)
     testId?: string;
 }
 
@@ -211,6 +215,7 @@ export const fieldComponentProps: {
     testId: StringConstructor;
     optionTestId: PropType<(value: string) => string | undefined>;
     matrix: PropType<FieldComponentProps["matrix"]>;
+    reveals: PropType<RevealView<VNode>[]>;
 };
 
 // @public (undocumented)
@@ -354,6 +359,8 @@ export interface FormRendererProps {
     actionsComponent?: Component;
     // (undocumented)
     components?: FieldComponentMap;
+    // (undocumented)
+    conditionalReveal?: boolean;
     // (undocumented)
     confirmRemove?: boolean;
     // (undocumented)

@@ -1,5 +1,5 @@
 import { defineComponent, h, type PropType } from 'vue';
-import { controlShellProps, mapControls } from '../../src/controls';
+import { type ControlOption, controlShellProps, mapControls } from '../../src/controls';
 import type { FieldProps } from '../../src/composables/useFieldProps';
 import { fieldComponentProps } from '../../src/props';
 
@@ -72,17 +72,21 @@ const Choices = control((props, emit, attrs) =>
   h(
     'div',
     { role: 'radiogroup', id: props.id, 'aria-label': props.label },
-    (props.options as { value: string | number; label: string }[]).map((option) =>
-      h('label', { key: option.value }, [
-        h('input', {
-          type: 'radio',
-          name: attrs.name,
-          value: option.value,
-          disabled: attrs.disabled,
-          checked: String(props.modelValue) === String(option.value),
-          onChange: (event: Event) => emit('update:modelValue', target(event).value),
-        }),
-        option.label,
+    (props.options as ControlOption[]).map((option) =>
+      h('div', { key: option.value }, [
+        h('label', [
+          h('input', {
+            type: 'radio',
+            name: attrs.name,
+            value: option.value,
+            disabled: attrs.disabled,
+            checked: String(props.modelValue) === String(option.value),
+            'aria-controls': option.reveal?.id,
+            onChange: (event: Event) => emit('update:modelValue', target(event).value),
+          }),
+          option.label,
+        ]),
+        option.reveal ? h('div', { id: option.reveal.id, hidden: !option.reveal.open }, [option.reveal.children]) : null,
       ]),
     ),
   ),
@@ -218,6 +222,7 @@ const free = { autocomplete: Plain, textarea: Area, file: Upload, scale: [Choice
 export const mapped = {
   typed: mapControls({ shell: Shell, freeText: true, controls: free }),
   plain: mapControls({ shell: Shell, controls: free }),
+  revealed: mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { input: TextInput, radio: [Choices, 'options'] } }),
   named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onUpdate:value'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
   bare: mapControls({ shell: null, labels, kinds: { multiselect: 'input' }, controls }),

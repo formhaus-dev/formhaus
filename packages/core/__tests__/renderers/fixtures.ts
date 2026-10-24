@@ -24,6 +24,7 @@ export interface ScenarioProps {
   loading?: boolean;
   stepErrorMarks?: boolean;
   stepFocus?: 'field' | 'heading';
+  conditionalReveal?: boolean;
   labels?: LabelSource;
   locale?: LocaleCatalog | LocaleCatalog[];
   onStepValidate?: StepValidateFn;
@@ -57,7 +58,7 @@ export interface RendererHarness {
   submit(form: HTMLFormElement): Promise<void>;
   containers?: Record<string, unknown>;
   controls?: Record<string, unknown>;
-  mapped?: Record<'shell' | 'bare' | 'mixed' | 'doubled' | 'named' | 'typed' | 'plain', Record<string, unknown>>;
+  mapped?: Record<'shell' | 'bare' | 'mixed' | 'doubled' | 'named' | 'typed' | 'plain' | 'revealed', Record<string, unknown>>;
   design?: { components: Record<string, unknown>; layout: Record<string, unknown> };
 }
 

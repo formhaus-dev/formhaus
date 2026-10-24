@@ -15,6 +15,7 @@ import type {
   GroupView,
   LabelSource,
   OptionsProvider,
+  RevealView,
   RootProps,
   SectionView,
   StepValidateFn,
@@ -40,6 +41,7 @@ export interface FieldComponentProps {
   testId?: string;
   optionTestId?: (value: string) => string | undefined;
   matrix?: { columns: FieldOption[]; row: number };
+  reveals?: RevealView<ReactNode>[];
 }
 
 export interface SectionComponentProps extends SectionView {
@@ -135,6 +137,7 @@ export interface FormRendererProps extends FormEngineOptions {
   confirmRemove?: boolean;
   stepErrorMarks?: boolean;
   stepFocus?: 'field' | 'heading';
+  conditionalReveal?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;
   layout?: LayoutComponentMap;

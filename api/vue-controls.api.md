@@ -9,7 +9,7 @@ import { ControlClickEvent } from '@formhaus/core/controls';
 import { ControlEntryOf } from '@formhaus/core/controls';
 import { ControlKeyEvent } from '@formhaus/core/controls';
 import { ControlKind } from '@formhaus/core/controls';
-import { ControlOption } from '@formhaus/core/controls';
+import { ControlOption as ControlOption_2 } from '@formhaus/core/controls';
 import { ControlRoot } from '@formhaus/core/controls';
 import { FieldAria } from '@formhaus/core/fields';
 import { FieldControl } from '@formhaus/core/fields';
@@ -21,6 +21,7 @@ import { MapControlsOptions } from '@formhaus/core/controls';
 import { MappedTypes } from '@formhaus/core/controls';
 import { PropType } from 'vue';
 import { ScaleAnchor } from '@formhaus/core/fields';
+import { VNode } from 'vue';
 import { VNodeChild } from 'vue';
 
 // @public (undocumented)
@@ -35,10 +36,11 @@ export { ControlKind }
 
 // @public (undocumented)
 export type ControlMap = {
-    [Type in FieldType | 'input']?: ControlEntryOf<Component, FieldProps>;
+    [Type in FieldType | 'input']?: ControlEntryOf<Component, FieldProps, ControlOption>;
 };
 
-export { ControlOption }
+// @public (undocumented)
+export type ControlOption = ControlOption_2<VNode>;
 
 // @public (undocumented)
 export interface ControlRootProps extends ControlRoot {

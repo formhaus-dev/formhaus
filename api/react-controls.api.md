@@ -10,7 +10,7 @@ import { ControlClickEvent } from '@formhaus/core/controls';
 import { ControlEntryOf } from '@formhaus/core/controls';
 import { ControlKeyEvent } from '@formhaus/core/controls';
 import { ControlKind } from '@formhaus/core/controls';
-import { ControlOption } from '@formhaus/core/controls';
+import { ControlOption as ControlOption_2 } from '@formhaus/core/controls';
 import { ControlRoot } from '@formhaus/core/controls';
 import { FieldAria } from '@formhaus/core/fields';
 import { FieldControl } from '@formhaus/core/fields';
@@ -24,6 +24,7 @@ import { MapControlsOptions } from '@formhaus/core/controls';
 import { MappedTypes } from '@formhaus/core/controls';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
+import { RevealView } from '@formhaus/core';
 import { ScaleAnchor } from '@formhaus/core/fields';
 
 // @public (undocumented)
@@ -36,10 +37,11 @@ export { ControlKind }
 
 // @public (undocumented)
 export type ControlMap = {
-    [Type in FieldType | 'input']?: ControlEntryOf<Control, FieldProps>;
+    [Type in FieldType | 'input']?: ControlEntryOf<Control, FieldProps, ControlOption>;
 };
 
-export { ControlOption }
+// @public (undocumented)
+export type ControlOption = ControlOption_2<ReactNode>;
 
 // @public (undocumented)
 export interface ControlRootProps extends ControlRoot {

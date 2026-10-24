@@ -219,6 +219,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             components={components}
             optionsProviders={optionsProviders}
             confirmRemove={props.confirmRemove}
+            conditionalReveal={props.conditionalReveal}
             onChange={actions.update}
             onItemsChange={actions.changeItems}
             onCommit={actions.commit}
