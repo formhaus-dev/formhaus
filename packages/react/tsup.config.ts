@@ -34,6 +34,12 @@ export default defineConfig([
   },
   {
     ...shared,
+    entry: { controls: 'src/controls/index.ts' },
+    onSuccess: () => useClient('dist/controls.js'),
+    external: ['react', '@formhaus/core/controls', '@formhaus/react'],
+  },
+  {
+    ...shared,
     entry: { cloud: 'src/cloud/index.ts' },
     onSuccess: () => useClient('dist/cloud.js'),
     external: [

@@ -22,6 +22,9 @@ const ENTRIES = {
       ['useFormEngine', 'HeadlessFormRenderer', 'FormRenderer'].map((only) => [`core + ${pkg} ${only}`, { pkg, only }]),
     ),
   ),
+  ...Object.fromEntries(
+    ['react', 'vue'].map((pkg) => [`core + ${pkg} FormRenderer + /controls`, { pkg, only: 'FormRenderer', subpath: 'controls' }]),
+  ),
   'core FormEngine (trusted)': { pkg: 'core', only: 'FormEngine', trusted: true },
   'core + react FormRenderer (trusted)': { pkg: 'react', only: 'FormRenderer', trusted: true },
   'core + vue FormRenderer (trusted)': { pkg: 'vue', only: 'FormRenderer', trusted: true },
@@ -32,6 +35,8 @@ export const TRUSTED = { 'process.env.FORMHAUS_TRUSTED': JSON.stringify('1') };
 export function gzip(contents) {
   return gzipSync(contents, { level: 9 }).length;
 }
+
+const SELF = Object.fromEntries(['react', 'vue'].map((pkg) => [`@formhaus/${pkg}`, `./packages/${pkg}/dist/index.js`]));
 
 export async function bundleSize(contents, { external = [], mode = 'production', resolveDir = process.cwd(), define = {} } = {}) {
   const result = await build({
@@ -44,6 +49,7 @@ export async function bundleSize(contents, { external = [], mode = 'production',
     loader: { '.css': 'empty' },
     define: { 'process.env.NODE_ENV': JSON.stringify(mode), ...define },
     external,
+    alias: Object.fromEntries(Object.entries(SELF).filter(([name]) => !external.includes(name))),
   });
   return gzip(result.outputFiles[0].contents);
 }

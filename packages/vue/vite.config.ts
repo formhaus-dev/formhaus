@@ -42,6 +42,7 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         cloud: resolve(__dirname, 'src/cloud/index.ts'),
+        controls: resolve(__dirname, 'src/controls/index.ts'),
         i18n: resolve(__dirname, 'src/i18n/index.ts'),
       },
       formats: ['es'],
@@ -54,6 +55,7 @@ export default defineConfig({
         '@formhaus/core/cloud',
         '@formhaus/core/internal',
         '@formhaus/core/fields',
+        '@formhaus/core/controls',
         '@formhaus/core/i18n',
         '@formhaus/vue',
       ],

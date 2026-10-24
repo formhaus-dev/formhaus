@@ -11,9 +11,9 @@ const temp = mkdtempSync(join(tmpdir(), 'formhaus-api-'));
 mkdirSync(reportFolder, { recursive: true });
 
 const ENTRIES = {
-  core: ['index', 'cloud', 'server', 'i18n', 'fix', 'research', 'schema', 'fields'],
-  react: ['index', 'cloud', 'i18n'],
-  vue: ['index', 'cloud', 'i18n'],
+  core: ['index', 'cloud', 'server', 'i18n', 'fix', 'research', 'schema', 'fields', 'controls'],
+  react: ['index', 'cloud', 'controls', 'i18n'],
+  vue: ['index', 'cloud', 'controls', 'i18n'],
 };
 
 const SILENT = { logLevel: ExtractorLogLevel.None };

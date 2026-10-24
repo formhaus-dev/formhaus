@@ -13,7 +13,8 @@
     "declaration": true,
     "declarationMap": true,
     "outDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": { "@formhaus/core/fields": ["./src/fields/index.ts"] }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["__tests__", "node_modules", "dist"]
