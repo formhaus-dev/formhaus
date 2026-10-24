@@ -19,6 +19,8 @@ In Xcode, add the package URL under Package Dependencies and add `FormhausCore` 
 
 Requires Swift 6.2 and iOS 17 or macOS 14. The package has no JavaScript runtime.
 
+Both ports are 0.x previews. The [compatibility table](/guide/stability#native-ports) lists the core version of every port release.
+
 | formhaus-swift | @formhaus/core | formatVersion |
 |---|---|---|
 | 0.2.0 | 1.3.0 | 1.6 |

@@ -29,6 +29,8 @@ dependencies {
 
 `formhaus-compose` and `formhaus-research` depend on `formhaus-core`. Requires JDK 17 or later, or Android with `minSdk` 26 or later. The only dependency of `formhaus-core` is `kotlinx-coroutines-core`.
 
+Both ports are 0.x previews. The [compatibility table](/guide/stability#native-ports) lists the core version of every port release.
+
 | formhaus-kotlin | @formhaus/core | formatVersion |
 |---|---|---|
 | 0.4.0 | 1.3.0 | 1.6 |

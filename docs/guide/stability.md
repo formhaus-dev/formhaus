@@ -44,3 +44,18 @@ Three rules keep forms stable across minor versions:
 - TypeScript 5.4 or later. The `.d.ts` files use `NoInfer`.
 - `@formhaus/react` needs React `^18.0.0 || ^19.0.0`.
 - `@formhaus/vue` needs Vue `^3.3.3`.
+
+## Native ports
+
+`formhaus-swift` and `formhaus-kotlin` are 0.x previews. Their APIs can change in any release. Each release passes the conformance fixtures of one `@formhaus/core` version, and a daily check in both repositories opens an issue when a newer core release is out.
+
+| @formhaus/core | formatVersion | formhaus-swift | formhaus-kotlin |
+|---|---|---|---|
+| 1.3.0 | 1.6 | 0.1.7 to 0.2.0 | 0.3.0 to 0.4.0 |
+| 1.2.2 | 1.6 | 0.1.6 | 0.1.0 to 0.2.1 |
+| 1.2.0 | 1.6 | 0.1.5 | none |
+| 1.1.1 | 1.6 | 0.1.4 | none |
+| 1.0.0 | 1.5 | 0.1.3 | none |
+| 0.22.0 | 1.5 | 0.1.0 to 0.1.2 | none |
+
+A core release newer than the first row has no port release yet. See [iOS and macOS](/guide/ios) and [Android and JVM](/guide/android).
