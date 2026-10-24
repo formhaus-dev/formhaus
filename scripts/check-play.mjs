@@ -5,6 +5,7 @@ import { phoneChecks } from './play-phone-checks.mjs';
 import { revealChecks } from './play-reveal-checks.mjs';
 import { apps, playwright, previewServer, watchErrors } from './play-server.mjs';
 import { schemaChecks } from './schema-play-checks.mjs';
+import { widthChecks } from './play-width-checks.mjs';
 
 const args = process.argv.slice(2);
 const named = args.filter((arg) => !arg.startsWith('--'));
@@ -25,6 +26,7 @@ const checks = {
   ...completionChecks(play),
   ...revealChecks(play),
   ...phoneChecks(play),
+  ...widthChecks(base, play),
 
   async systems(page, problems) {
     await open(page);
