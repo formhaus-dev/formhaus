@@ -4,6 +4,7 @@ const PATTERN_TOKEN =
 const ASCII = /* @__PURE__ */ Array.from({ length: 128 }, (_, code) => String.fromCharCode(code));
 
 function samples(atom: string): string[] {
+  if (/^\\[1-9k]/.test(atom)) return ASCII;
   try {
     const regex = new RegExp(`^(?:${atom})$`);
     return ASCII.filter((char) => regex.test(char));
