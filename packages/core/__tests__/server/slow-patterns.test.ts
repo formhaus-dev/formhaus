@@ -43,12 +43,38 @@ describe('slow patterns on the server', () => {
     ]);
   });
 
-  it('refuses every pattern that checkDefinition reports as slow', () => {
+  it('refuses every slow pattern that is not quadratic', () => {
     const long = `^(?:${'a'.repeat(995)})$`;
-    const definition = form('^\\d+$', '(a|aa)+', '^\\d*\\d*\\d*$', '^[a-z]+$', '^\\d+\\.?\\d*$', long, long.slice(1));
+    const definition = form('^\\d+$', '(a|aa)+', '^\\d*\\d*\\d*$', '^[a-z]+$', '\\d+\\.?\\d*$', long, long.slice(1), '^\\d+\\.?\\d*$|^x$');
     const slow = checkDefinition(definition).filter(({ code }) => code === 'slow-pattern');
-    expect(slow.map(({ path }) => path)).toEqual([1, 2, 4, 5].map((index) => `/fields/${index}/validation/pattern`));
+    expect(slow.map(({ path }) => path)).toEqual([1, 2, 4, 5, 7].map((index) => `/fields/${index}/validation/pattern`));
     expect(refused(definition).map(({ path }) => path)).toEqual(slow.map(({ path }) => path));
+  });
+
+  it('runs an anchored pattern with two overlapping repeats', () => {
+    const definition = form('^\\d+\\.?\\d*$', '^[0-9]+\\s?[0-9]+$', '^\\+?\\d+[\\d\\s-]*$', '^(\\d+)\\.?(\\d*)$');
+    expect(checkDefinition(definition).map(({ code }) => code)).toEqual(Array(4).fill('slow-pattern'));
+    expect(validateSubmission(definition, { p0: '12.5', p1: '555 0100', p2: '+1 555-0100', p3: '3.25' }).errors).toEqual({});
+    const digits = `${'1'.repeat(9999)}x`;
+    expect(Object.keys(validateSubmission(definition, { p0: digits, p1: digits, p2: digits, p3: '1.2.3' }).errors)).toEqual([
+      'p0',
+      'p1',
+      'p2',
+      'p3',
+    ]);
+  });
+
+  it('refuses three overlapping repeats in a row', () => {
+    const value = `${'1'.repeat(40)}x`;
+    const test = tests();
+    const issues = refused(form('^\\d+-?\\d+-?\\d+$', '^[ab]+[bc]+[ac]+$', '^(ab)+(ab)+(ab)+$', '^\\d+\\.?\\d*(a+)+$'), {
+      p0: value,
+      p1: value,
+      p2: value,
+      p3: value,
+    });
+    expect(test.mock.calls.some(([input]) => input === value)).toBe(false);
+    expect(issues.map(({ path }) => path)).toEqual([0, 1, 2, 3].map((index) => `/fields/${index}/validation/pattern`));
   });
 
   it('refuses a slow pattern inside a group', () => {

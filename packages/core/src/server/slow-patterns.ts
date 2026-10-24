@@ -10,7 +10,8 @@ function isSlow(pattern: string): boolean {
   if (pattern.length > 1000) return true;
   const cached = checked.get(pattern);
   if (cached !== undefined) return cached;
-  const slow = !!slowPattern(pattern);
+  const kind = slowPattern(pattern);
+  const slow = !!kind && kind !== 'quadratic';
   if (checked.size >= 256) checked.clear();
   checked.set(pattern, slow);
   return slow;

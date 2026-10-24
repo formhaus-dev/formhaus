@@ -18,26 +18,37 @@ type PatternGroup = {
   look?: string;
   inner?: boolean;
   alternated?: boolean;
-  entry?: string[];
-  previous?: string[];
+  entry?: Runs;
+  previous?: Runs;
   chars: string;
   lead?: string;
   tail?: string;
 };
 
-type Chars = () => string[];
+const OVERLAPPING = ['repeats overlapping parts next to each other', 'Merge the repeated parts into one'];
 
-function trailing(group: PatternGroup, quantifier: string, first: Chars, last = first): string[] | undefined | 'adjacent' {
-  if (/^(?:\?|\{0(?:,\d+)?\})/.test(quantifier)) return group.previous;
+export const SLOW_PATTERNS = {
+  nested: ['nests quantifiers', 'Remove the inner or outer quantifier'],
+  adjacent: OVERLAPPING,
+  quadratic: OVERLAPPING,
+  long: ['is longer than 1000 characters', 'Shorten it to 1000 characters or less'],
+};
+
+type Chars = () => string[];
+type Runs = Map<string, number>;
+
+function trailing({ previous }: PatternGroup, quantifier: string, first: Chars, last = first): Runs | undefined {
+  if (/^(?:\?|\{0(?:,\d+)?\})/.test(quantifier)) return previous;
   if (!/^(?:[*+]|\{\d+,\})/.test(quantifier)) return undefined;
-  const leading = first();
-  if (group.previous?.some((char) => leading.includes(char))) return 'adjacent';
-  const repeated = last();
-  return /^(?:\*|\{0,\})/.test(quantifier) ? [...new Set([...(group.previous ?? []), ...repeated])] : repeated;
+  const runs = new Map(/^(?:\*|\{0,\})/.test(quantifier) ? previous : undefined);
+  const depth = Math.max(...first().map((char) => previous?.get(char) ?? 0)) + 1;
+  for (const char of last()) runs.set(char, Math.max(runs.get(char) ?? 0, depth));
+  return runs;
 }
 
-export function slowPattern(pattern: string): 'nested' | 'adjacent' | 'long' | undefined {
+export function slowPattern(pattern: string): 'nested' | 'adjacent' | 'quadratic' | 'long' | undefined {
   if (pattern.length > 1000) return 'long';
+  let depth = 1;
   const groups: PatternGroup[] = [{ start: 0, chars: '' }];
   for (const match of pattern.matchAll(PATTERN_TOKEN)) {
     const [token, look, open, atom, quantifier = ''] = match;
@@ -84,8 +95,9 @@ export function slowPattern(pattern: string): 'nested' | 'adjacent' | 'long' | u
     }
     group.inner ||= !!quantifier;
     const next = trailing(group, quantifier, first, last);
-    if (next === 'adjacent') return next;
+    depth = Math.max(depth, ...(next?.values() ?? []));
     group.previous = next;
   }
+  if (depth > 1) return depth < 3 && pattern[0] === '^' && !groups[0].alternated ? 'quadratic' : 'adjacent';
   return undefined;
 }
