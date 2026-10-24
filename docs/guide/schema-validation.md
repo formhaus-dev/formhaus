@@ -49,6 +49,25 @@ An async refinement runs on Continue and Submit, never on each keystroke. The fo
 
 <<< @/recipes/snippets/schema-server-check.ts
 
+## On the server
+
+Call the function with the values alone. Each issue maps to the top-level key of its path, so `['players', 1, 'name']` shows on `players`, and an issue without a path comes back under the empty key `''`. Run it on the `values` that [`validateSubmission()`](/guide/server-validation) returns, which hold only the fields on the active path:
+
+```ts
+import { validateSubmission } from '@formhaus/core/server';
+
+app.post('/api/submit', async (req, res) => {
+  const { values, errors } = validateSubmission(definition, req.body?.values, {
+    skippedSteps: req.body?.skippedSteps,
+  });
+  const allErrors = { ...(await onValidate(values)), ...errors };
+  if (Object.keys(allErrors).length > 0) return res.status(422).json({ errors: allErrors });
+  res.json({ values });
+});
+```
+
+With a context, only issues on the paths in `fields` and issues without a path count. `fields: []` keeps only the issues without a path.
+
 ## onValidate without a schema
 
 `onValidate` gets the values and the field paths in scope. It returns errors keyed by field path, or `null` to pass. It may be async.
