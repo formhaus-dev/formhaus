@@ -172,7 +172,7 @@ controls: {
 
 React types `props`, `optionsProp` and `changeProp` with the props of the component, and Vue with its `$props`. A wrong prop name, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
 
-Inside the `mapControls` call the parameters of `props` get their types. When you declare `controls` in a separate constant, annotate them: `(f: FieldProps, options: ControlOption[]) => ...`. `ControlOption` comes from the `/controls` entry.
+Inside the `mapControls` call the parameters of `props` get their types. When you declare an entry outside the call, type it with `ControlSpec` from the `/controls` entry: `const select: ControlSpec<typeof Select> = { component: Select, optionsProp: 'options' }`. Then `optionsProp` and `changeProp` stay checked and `props` gets typed parameters. A `props` function declared on its own takes `(f: FieldProps, options: ControlOption[]) => ...`.
 
 ### Tuple shorthand
 
