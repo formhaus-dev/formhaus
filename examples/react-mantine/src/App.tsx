@@ -20,7 +20,14 @@ export function App({ definition = initial, scheme }: { definition?: FormDefinit
         {submitted ? (
           <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
         ) : (
-          <FormRenderer definition={definition} components={components} layout={layout} stepErrorMarks onSubmit={setSubmitted} />
+          <FormRenderer
+            definition={definition}
+            components={components}
+            layout={layout}
+            stepErrorMarks
+            conditionalReveal
+            onSubmit={setSubmitted}
+          />
         )}
       </Container>
     </MantineProvider>
