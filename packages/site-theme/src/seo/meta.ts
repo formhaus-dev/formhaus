@@ -15,6 +15,7 @@ const routes: [string, Section, string?, string?][] = [
   ['spec.md', 'api'],
   ['build.md', 'build'],
   ['playground.md', 'playground'],
+  ['play.md', 'playground'],
 ];
 
 const route = (relativePath: string) => routes.find(([prefix]) => relativePath.startsWith(prefix));

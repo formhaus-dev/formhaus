@@ -161,7 +161,7 @@ export default defineConfig({
         text: 'Interactive',
         items: [
           { text: 'Builder', link: '/build' },
-          { text: 'Playground', link: '/play' },
+          { text: 'Playground', link: '/playground' },
         ],
       },
       {

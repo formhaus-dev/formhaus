@@ -1,5 +1,5 @@
 ---
-title: Playground
+title: Playground editor
 description: "Edit a Formhaus form definition and watch it render live in twelve React and Vue design systems, with the example source code next to the preview."
 layout: false
 ---
