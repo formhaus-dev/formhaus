@@ -41,6 +41,7 @@
     "check:editor-guard": "node scripts/check-editor-guard.mjs",
     "check:docs-bundle": "node scripts/check-docs-bundle.mjs",
     "check:play": "node scripts/check-play.mjs",
+    "check:play-matrix": "node scripts/check-play-matrix.mjs",
     "play:apps": "node scripts/play-apps.mjs",
     "check:docs-versions": "node scripts/check-docs-versions.mjs",
     "check:template-aliases": "node scripts/check-template-aliases.mjs",
