@@ -1,20 +1,17 @@
 <script setup lang="ts">
-import { errorSummary, isSection, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
+import { errorSummary, type FormEvent, type LabelKey } from '@formhaus/core';
 import {
   actionTestIds,
   actionValues,
   actionsView,
   hasValue,
-  matrixColumns,
   engineLabel,
   ROOT_PROPS,
   shouldApplyExternalErrors,
   testIds,
 } from '@formhaus/core/internal';
 import { computed, h, provide, ref, watch, type FunctionalComponent } from 'vue';
-import FieldResolver from './FieldResolver.vue';
-import FormGroup from './FormGroup.vue';
-import DefaultSection from './DefaultSection.vue';
+import { FormNodeView, NODE_CONTEXT } from './FormNodeView';
 import { useFormFocus } from './composables/useFormFocus';
 import { useFormId } from './composables/useFormId';
 import { useEngineOptions } from './composables/useEngineOptions';
@@ -51,7 +48,6 @@ const {
   topLevelErrors,
   fieldLoading,
   visibleFields,
-  visibleNodes,
   currentStep,
   isFirstStep,
   isLastStep,
@@ -83,7 +79,14 @@ const errorView = computed(() => {
 });
 const errorCount = computed(() => errorView.value.count);
 
-const { rememberFocus, showField, requestFocus } = useFormFocus(form, formRef, formId, invalidAttempts, () => errorCount.value > 1);
+const { rememberFocus, showField, requestFocus } = useFormFocus(
+  form,
+  formRef,
+  formId,
+  invalidAttempts,
+  () => errorCount.value > 1,
+  () => props.stepFocus === 'heading',
+);
 
 watch(
   [() => props.errors, () => form.engine],
@@ -117,13 +120,14 @@ function onCancel() {
 const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
 const testId = computed(() => testIds(props.testIds, props.definition.id));
 
-const { nodeProps, sectionProps } = useNodeProps(form, props, formId, disabled, testId, {
+const { shown, ...nodeContext } = useNodeProps(form, props, formId, disabled, testId, {
   update: onFieldUpdate,
   commit: onFieldCommit,
   changeItems: onItemsChange,
   blur: onFieldBlur,
   focus: onFieldFocus,
 });
+provide(NODE_CONTEXT, nodeContext);
 
 defineExpose({
   setValue: (key: string, value: unknown) => form.engine.setValue(key, value),
@@ -200,17 +204,7 @@ async function onPrimary() {
     />
 
     <component :is="props.layout?.fields ?? DefaultFields" :root-props="ROOT_PROPS.fields">
-      <template v-for="node in visibleNodes" :key="node.key">
-        <component :is="props.layout?.section ?? props.components?.section ?? DefaultSection" v-if="isSection(node)" v-bind="sectionProps(node)">
-          <component
-            :is="child.type === 'group' ? FormGroup : FieldResolver"
-            v-for="(child, row) in node.fields"
-            :key="child.key"
-            v-bind="nodeProps(child as FormField, matrixColumns(node), row)"
-          />
-        </component>
-        <component :is="node.type === 'group' ? FormGroup : FieldResolver" v-else v-bind="nodeProps(node as FormField)" />
-      </template>
+      <FormNodeView v-for="node in shown.nodes" :key="node.key" :node="node" :slots="shown.slots" />
     </component>
 
     <template v-if="formErrors.length > 0">

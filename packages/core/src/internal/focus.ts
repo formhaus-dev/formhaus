@@ -34,11 +34,27 @@ const GROUP_ADD = '[data-fh-group-add], .fh-group__add';
 const GROUP = '[data-fh="group"], .fh-group';
 const FIELD = `[data-fh="field"], ${GROUP}, .fh-field`;
 const SUMMARY = '[data-fh="error-summary"], .fh-error-summary';
+const HEADING = ':is([data-fh="progress"], .fh-step-progress) :is(h1, h2, h3, h4, h5, h6)';
 const OUTSIDE = '[data-fh="progress"], [data-fh="actions"], [data-fh="error-summary"]';
+
+interface Radio extends Focusable {
+  type?: string;
+  name?: string;
+  checked?: boolean;
+}
+
+function checkedPeer(root: Found, control: Found): Found {
+  const radio = control as Radio | null | undefined;
+  if (!root || radio?.type !== 'radio' || radio.checked) return control;
+  const peers = (root as unknown as { querySelectorAll?(selector: string): ArrayLike<Radio> }).querySelectorAll?.(
+    `input[type=radio]:checked${ENABLED}`,
+  );
+  return Array.from(peers ?? []).find((peer) => peer.name === radio.name) ?? control;
+}
 
 function firstControl(root: Found, group = root?.matches(GROUP)): Found {
   if (root && group) return (root.querySelector(GROUP_ADD) as Found) ?? (root.querySelector(CONTROLS) as Found);
-  return root?.matches(CONTROLS) ? root : (root?.querySelector(CONTROLS) as Found);
+  return root?.matches(CONTROLS) ? root : checkedPeer(root, root?.querySelector(CONTROLS) as Found);
 }
 
 function reveal(target: Focusable, scrollTo: Focusable): void {
@@ -55,15 +71,13 @@ function summaryOf(root: Searchable | null | undefined, several?: () => boolean)
 
 function fieldsOf(form: FormRoot | null | undefined): Found {
   const fields = form?.querySelector('[data-fh="fields"], .fh-form__fields') as Found;
-  return (
-    fields ??
-    (form &&
-      ({
-        querySelector: (selector: string) =>
-          Array.from(form.querySelectorAll(selector)).find((node) => !(node as Focusable).closest!(OUTSIDE)),
-        matches: () => false,
-      } as unknown as Focusable))
-  );
+  if (fields || !form) return fields;
+  const inside = (selector: string) => Array.from(form.querySelectorAll(selector)).filter((node) => !(node as Focusable).closest!(OUTSIDE));
+  return {
+    querySelectorAll: inside,
+    querySelector: (selector: string) => inside(selector)[0],
+    matches: () => false,
+  } as unknown as Focusable;
 }
 
 export function focusProblem(
@@ -89,7 +103,22 @@ export function restoreFocus(form: FormRoot | null | undefined, target: (Focusab
   if (document && document.activeElement === document.body && target?.isConnected) target.focus();
 }
 
-export function focusField(form: FormRoot | null | undefined, id: string | null, afterErrors = false, several?: () => boolean): void {
+export function focusField(
+  form: FormRoot | null | undefined,
+  id: string | null,
+  afterErrors = false,
+  several?: () => boolean,
+  toHeading = false,
+): void {
+  const heading =
+    toHeading && !id && !afterErrors
+      ? (form?.querySelector(HEADING) as (Focusable & { hasAttribute(name: string): boolean; tabIndex: number }) | null)
+      : null;
+  if (heading) {
+    if (!heading.hasAttribute('tabindex')) heading.tabIndex = -1;
+    heading.focus();
+    return;
+  }
   const fields = fieldsOf(form);
   const summary = !id && afterErrors && fields?.querySelector('[aria-invalid="true"]') ? summaryOf(form, several) : undefined;
   if (summary) {

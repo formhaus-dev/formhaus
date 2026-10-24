@@ -6,7 +6,7 @@ import {
   type ControlEntryOf,
   type ControlKeyEvent,
   type ControlKind,
-  type ControlOption,
+  type ControlOption as CoreControlOption,
   type ControlRoot,
   controlKind,
   controlOptions,
@@ -19,7 +19,7 @@ import {
   warnDoubleLabel,
 } from '@formhaus/core/controls';
 import { type FieldProps, fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
-import { type Component, defineComponent, h, onBeforeUnmount, onMounted, type PropType, ref, type VNodeChild } from 'vue';
+import { type Component, defineComponent, h, onBeforeUnmount, onMounted, type PropType, ref, type VNode, type VNodeChild } from 'vue';
 
 export interface ControlRootProps extends ControlRoot {
   onPointerdown: () => void;
@@ -49,6 +49,8 @@ type PropsOf<C> = C extends abstract new (
 
 type Slot = VNodeChild | (() => VNodeChild);
 
+export type ControlOption = CoreControlOption<VNode>;
+
 export type ControlAdapter<C extends Component> =
   | (keyof PropsOf<C> & string)
   | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>> & { children?: Slot });
@@ -61,11 +63,11 @@ type Checked<Controls> = {
     : Controls[Type];
 };
 
-export type ControlMap = { [Type in FieldType | 'input']?: ControlEntryOf<Component, FieldProps> };
+export type ControlMap = { [Type in FieldType | 'input']?: ControlEntryOf<Component, FieldProps, ControlOption> };
 
 export type MapControlsConfig<Controls = ControlMap> = MapControlsOptions<Component, FieldProps, Component, Controls>;
 
-function mapped(entry: ControlEntryOf<Component, FieldProps>, input: boolean, config: MapControlsConfig): Component {
+function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, input: boolean, config: MapControlsConfig): Component {
   const [Control, adapter, changeProp = 'onUpdate:modelValue'] = (Array.isArray(entry) ? entry : [entry]) as unknown as [
     Component,
     ControlAdapter<Component>?,
@@ -112,7 +114,7 @@ function mapped(entry: ControlEntryOf<Component, FieldProps>, input: boolean, co
             text.value = typed;
           },
         });
-        const options = controlOptions(field, f.options);
+        const options = controlOptions(field, f.options, props.reveals);
         const { children, ...adapted } = (typeof adapter === 'string' ? { [adapter]: options } : (adapter?.(f, options) ?? {})) as {
           children?: Slot;
         };
@@ -143,7 +145,7 @@ function mapped(entry: ControlEntryOf<Component, FieldProps>, input: boolean, co
 export function mapControls<const Controls extends ControlMap>(
   config: MapControlsConfig<Checked<Controls>>,
 ): { [Type in MappedTypes<Controls>]: Component } {
-  return mapControlTypes(config.controls as ControlMap, (entry, input) => mapped(entry, input, config)) as {
+  return mapControlTypes(config.controls as ControlMap, (entry, input) => mapped(entry, input, config), config.conditionalReveal) as {
     [Type in MappedTypes<Controls>]: Component;
   };
 }

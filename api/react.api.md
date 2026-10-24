@@ -32,6 +32,7 @@ import { LabelSource } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
 import * as react from 'react';
 import { ReactNode } from 'react';
+import { RevealView } from '@formhaus/core';
 import { RootProps } from '@formhaus/core';
 import { SectionView } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
@@ -110,6 +111,8 @@ export interface FieldComponentProps {
     onFocus?: () => void;
     // (undocumented)
     optionTestId?: (value: string) => string | undefined;
+    // (undocumented)
+    reveals?: RevealView<ReactNode>[];
     // (undocumented)
     testId?: string;
     // (undocumented)
@@ -195,6 +198,8 @@ export interface FormhausFieldProps {
     // (undocumented)
     optionTestId?: (value: string) => string | undefined;
     // (undocumented)
+    reveals?: FieldComponentProps['reveals'];
+    // (undocumented)
     testId?: string;
     // (undocumented)
     value: unknown;
@@ -213,6 +218,8 @@ export interface FormRendererProps extends FormEngineOptions {
     className?: string;
     // (undocumented)
     components?: FieldComponentMap;
+    // (undocumented)
+    conditionalReveal?: boolean;
     // (undocumented)
     confirmRemove?: boolean;
     // (undocumented)
@@ -251,6 +258,8 @@ export interface FormRendererProps extends FormEngineOptions {
     progressComponent?: ComponentType<FormStepProgressProps>;
     // (undocumented)
     stepErrorMarks?: boolean;
+    // (undocumented)
+    stepFocus?: 'field' | 'heading';
     // (undocumented)
     testIds?: boolean | ((target: TestIdTarget) => string | undefined);
     // (undocumented)

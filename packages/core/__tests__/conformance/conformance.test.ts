@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { checkDefinition, FormDefinitionError, FormEngine, isActionDisabled, recallText, type FormDefinition } from '../../src';
+import {
+  checkDefinition,
+  FormDefinitionError,
+  FormEngine,
+  type FormNode,
+  isActionDisabled,
+  isSection,
+  recallText,
+  revealTargets,
+  type FormDefinition,
+} from '../../src';
 import { optionOrder } from '../../src/research/option-order';
 import { asStored } from '../../src/engine/recall-format';
 import { textSlots } from '../../src/i18n';
@@ -11,6 +21,24 @@ type Input = (typeof cases)[number][2]['input'];
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const byPathAndCode = (a: { code: string; path: string }, b: { code: string; path: string }) =>
   compare(a.path, b.path) || compare(a.code, b.code);
+function revealPointers(definition: FormDefinition): Record<string, { parent: string; option: number }> {
+  const tops: [string, FormNode[]][] = definition.steps?.length
+    ? definition.steps.map((step, index) => [`/steps/${index}/fields`, step.fields])
+    : [['/fields', definition.fields ?? []]];
+  const lists = tops.flatMap(([path, nodes]) => [
+    [path, nodes] as const,
+    ...nodes.flatMap((node, index) =>
+      isSection(node) && node.layout !== 'matrix' ? [[`${path}/${index}/fields`, node.fields as FormNode[]] as const] : [],
+    ),
+  ]);
+  const found: Record<string, { parent: string; option: number }> = {};
+  for (const [path, nodes] of lists)
+    revealTargets(nodes).forEach((target, index) => {
+      if (target) found[`${path}/${index}`] = { parent: `${path}/${target.parent}`, option: target.option };
+    });
+  return found;
+}
+
 const project = ({ code, path }: { code: string; path: string }) => ({ code, path });
 
 async function browserCanSubmit(definition: FormDefinition, { values, hiddenValues }: Input): Promise<boolean> {
@@ -99,6 +127,7 @@ describe('conformance corpus', () => {
       'recall-translations',
       'recall-values',
       'recall-version',
+      'reveal',
       'shared-key-branches',
       'slow-pattern-quadratic',
       'times-and-hidden',
@@ -178,6 +207,13 @@ describe('conformance corpus', () => {
       ),
     ).toEqual(order);
   });
+
+  it.each(corpus.filter(({ reveals }) => reveals).map((fixture) => [fixture.name, fixture] as const))(
+    '%s: revealed fields',
+    (_, { definition, reveals }) => {
+      expect(revealPointers(definition)).toEqual(reveals);
+    },
+  );
 
   it.each(cases)('%s: server', (_, definition, { input, expected, serverValues, serverErrors }) => {
     const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps, hiddenValues: input.hiddenValues });

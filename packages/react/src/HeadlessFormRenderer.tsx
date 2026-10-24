@@ -138,7 +138,13 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       const afterErrors = focusErrors.current || (restore && Object.keys(engine.errors).length > 0);
       focusKey.current = null;
       focusErrors.current = false;
-      focusField(formRef.current, key && errorDomId(engine, formId, key), afterErrors, () => errorSummary(engine).count > 1);
+      focusField(
+        formRef.current,
+        key && errorDomId(engine, formId, key),
+        afterErrors,
+        () => errorSummary(engine).count > 1,
+        handlers.current.stepFocus === 'heading',
+      );
     }, [engine, version, actions.invalidAttempts, focusRequest]);
 
     const handleFieldFocus = useCallback((key: string) => onFormEvent({ type: 'field_focused', fieldKey: key }), [onFormEvent]);
@@ -213,6 +219,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             components={components}
             optionsProviders={optionsProviders}
             confirmRemove={props.confirmRemove}
+            conditionalReveal={props.conditionalReveal}
             onChange={actions.update}
             onItemsChange={actions.changeItems}
             onCommit={actions.commit}

@@ -10,6 +10,7 @@ const props = defineProps<{
   error?: string;
   variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
   testId?: string;
+  errorFirst?: boolean;
 }>();
 
 const text = useLabel();
@@ -32,6 +33,7 @@ const Legend = () =>
         props.field.validation?.required ? [' ', h('span', { class: 'fh-field__required-text' }, text('required'))] : null,
       ])
     : null;
+const Message = () => (props.error ? h('p', { id: ids.value.errorId, class: 'fh-field__error', role: 'alert' }, props.error) : null);
 const Helper = () =>
   props.field.helperText ? h('p', { id: ids.value.helperId, class: 'fh-field__helper' }, props.field.helperText) : null;
 </script>
@@ -46,12 +48,13 @@ const Helper = () =>
     <Legend v-if="group" />
     <Label v-if="!props.variant" />
     <Helper v-if="!inline" />
+    <Message v-if="props.errorFirst" />
     <div v-if="props.variant" :class="container" :data-columns="props.field.columns">
       <slot />
       <Label v-if="inline" />
     </div>
     <slot v-else />
     <Helper v-if="inline" />
-    <p v-if="props.error" :id="ids.errorId" class="fh-field__error" role="alert">{{ props.error }}</p>
+    <Message v-if="!props.errorFirst" />
   </component>
 </template>

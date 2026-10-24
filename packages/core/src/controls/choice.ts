@@ -5,12 +5,14 @@ export interface ControlKeyEvent {
   key: string;
   repeat: boolean;
   target: unknown;
+  currentTarget?: unknown;
   preventDefault(): void;
 }
 
 export interface ControlClickEvent {
   detail: number;
   target: unknown;
+  currentTarget?: unknown;
 }
 
 export interface ChoiceInput {
@@ -22,6 +24,11 @@ export interface ChoiceInput {
 
 const COMMIT_TYPES = ['radio', 'scale', 'rating'];
 const OPTION = 'input[type=radio], button[value], [role=radio], [role=option]';
+const REVEAL = '[data-fh="reveal"]';
+
+interface Closest {
+  closest?: (selector: string) => unknown;
+}
 
 const empty = (value: unknown) => value == null || value === '' || (Array.isArray(value) && !value.length);
 
@@ -49,9 +56,13 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
     }, 0);
     commit(value);
   };
-  const optionAt = (target: unknown) => (target as { closest?: (selector: string) => unknown } | null)?.closest?.(OPTION);
+  const optionAt = ({ target, currentTarget }: { target: unknown; currentTarget?: unknown }) => {
+    const element = (target as Closest | null)?.closest?.(OPTION) as Closest | null | undefined;
+    const reveal = element?.closest?.(REVEAL);
+    return reveal && (currentTarget as { contains?: (node: unknown) => boolean } | undefined)?.contains?.(reveal) ? undefined : element;
+  };
   const pressed = (event: ControlKeyEvent, key: string) => {
-    const element = optionAt(event.target);
+    const element = optionAt(event);
     if (event.key !== key || !active() || !element) return;
     event.preventDefault();
     if (pending) finish(optionOf(element) ?? read().value);
@@ -72,15 +83,16 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
       if (!event.repeat) pending = event.key === ' ' || event.key === 'Enter';
     },
     keyDown(event: ControlKeyEvent) {
-      if (event.key === ' ' && active() && optionAt(event.target)) event.preventDefault();
+      if (event.key === ' ' && active() && optionAt(event)) event.preventDefault();
       pressed(event, 'Enter');
     },
     keyUp(event: ControlKeyEvent) {
       arrow = false;
       pressed(event, ' ');
     },
-    click({ detail, target }: ControlClickEvent) {
-      const element = optionAt(target);
+    click(input: ControlClickEvent) {
+      const element = optionAt(input);
+      const { detail } = input;
       if (!active() || arrow || fresh || detail > 1 || !element) return;
       const value = read().value;
       const picked = optionOf(element);

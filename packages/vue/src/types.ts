@@ -24,6 +24,7 @@ import type {
   MessageKey,
   OptionsProvider,
   RecallFormatFn,
+  RevealView,
   RootProps,
   SectionView,
   StepValidateFn,
@@ -33,7 +34,7 @@ import type {
   TestIdTarget,
   ValidatorFn,
 } from '@formhaus/core';
-import type { Component, ComponentOptionsMixin, DefineComponent, EmitsOptions } from 'vue';
+import type { Component, ComponentOptionsMixin, DefineComponent, EmitsOptions, VNode } from 'vue';
 
 export type FieldComponentMap = Partial<Record<FieldType | 'section' | 'group' | 'groupItem' | 'confirmDialog', Component>>;
 
@@ -108,6 +109,8 @@ export interface FormRendererProps {
   errorSummary?: boolean | 'top' | 'bottom';
   confirmRemove?: boolean;
   stepErrorMarks?: boolean;
+  stepFocus?: 'field' | 'heading';
+  conditionalReveal?: boolean;
   loading?: boolean;
   components?: FieldComponentMap;
   layout?: LayoutComponentMap;
@@ -141,6 +144,7 @@ export interface FieldComponentProps {
   testId?: string;
   optionTestId?: (value: string) => string | undefined;
   matrix?: { columns: FieldOption[]; row: number };
+  reveals?: RevealView<VNode>[];
 }
 
 export interface FieldResolverProps extends FieldComponentProps {

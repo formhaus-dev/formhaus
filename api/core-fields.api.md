@@ -88,6 +88,10 @@ export interface FieldState {
     // (undocumented)
     label: string;
     // (undocumented)
+    maxLength?: number;
+    // (undocumented)
+    minLength?: number;
+    // (undocumented)
     name: string;
     // (undocumented)
     optionId: (index: number) => string;

@@ -6,7 +6,7 @@ import {
   type ControlEntryOf,
   type ControlKeyEvent,
   type ControlKind,
-  type ControlOption,
+  type ControlOption as CoreControlOption,
   type ControlRoot,
   controlKind,
   controlOptions,
@@ -40,6 +40,8 @@ export interface ControlShellProps {
 
 type Control = ComponentType<never>;
 
+export type ControlOption = CoreControlOption<ReactNode>;
+
 type PropsOf<C> = C extends ComponentType<infer Props> ? Props : never;
 
 export type ControlAdapter<C extends Control> =
@@ -54,7 +56,7 @@ type Checked<Controls> = {
     : Controls[Type];
 };
 
-export type ControlMap = { [Type in FieldType | 'input']?: ControlEntryOf<Control, FieldProps> };
+export type ControlMap = { [Type in FieldType | 'input']?: ControlEntryOf<Control, FieldProps, ControlOption> };
 
 export type MapControlsConfig<Controls = ControlMap> = MapControlsOptions<
   ComponentType<ControlShellProps>,
@@ -65,7 +67,7 @@ export type MapControlsConfig<Controls = ControlMap> = MapControlsOptions<
 
 export type MappedControl = (props: FieldComponentProps) => ReactElement;
 
-function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, config: MapControlsConfig): MappedControl {
+function mapped(entry: ControlEntryOf<Control, FieldProps, ControlOption>, input: boolean, config: MapControlsConfig): MappedControl {
   const [Control, adapter, changeProp = 'onChange'] = (Array.isArray(entry) ? entry : [entry]) as unknown as [
     ComponentType<Record<string, unknown>>,
     ControlAdapter<Control>?,
@@ -98,7 +100,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, conf
     const { field } = props;
     const kind = controlKind(field.type, config.kinds);
     const Shell = controlShell(config.shell, kind);
-    const options = controlOptions(field, f.options);
+    const options = controlOptions(field, f.options, props.reveals);
     const valueKey = kind === 'inline' ? 'checked' : 'value';
     const { control, root, anchors, save } = controlProps(field, f, {
       kind,
@@ -136,7 +138,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, conf
 export function mapControls<const Controls extends ControlMap>(
   config: MapControlsConfig<Checked<Controls>>,
 ): { [Type in MappedTypes<Controls>]: MappedControl } {
-  return mapControlTypes(config.controls as ControlMap, (entry, input) => mapped(entry, input, config)) as {
+  return mapControlTypes(config.controls as ControlMap, (entry, input) => mapped(entry, input, config), config.conditionalReveal) as {
     [Type in MappedTypes<Controls>]: MappedControl;
   };
 }

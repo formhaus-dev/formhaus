@@ -39,7 +39,12 @@ function errorGroups(engine: FormEngine, formId: string | undefined, labels?: La
       const field = recalled(engine, raw, item ? key : undefined);
       const label = item ? `${field.label} (${itemTitle(engine, item.group, item.index, labels)})` : field.label;
       return [
-        { key, id: errorDomId(engine, formId, key), text: label + (/[?!:.。]$/.test(label.normalize('NFKC')) ? ' ' : ': ') + errors[key] },
+        {
+          key,
+          id: errorDomId(engine, formId, key),
+          text: label + (/[?!:.。]$/.test(label.normalize('NFKC')) ? ' ' : ': ') + errors[key],
+          message: errors[key],
+        },
       ];
     });
     return entries[0] ? [{ id, title: title || engineLabel(engine, 'stepTitle', { index: index + 1 }, labels), entries }] : [];

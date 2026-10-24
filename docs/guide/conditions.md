@@ -151,6 +151,49 @@ Show a field when country is US AND method is credit or debit:
 }
 ```
 
+## Show a field under its option
+
+Turn on `conditionalReveal` to draw a field shown by a `radio` or `multiselect` answer under that option, indented with a line on its left, as GOV.UK and USWDS do. The option input gets `aria-controls` with the id of the revealed block, and a checkbox option also gets `aria-expanded`. Values, validation, submit payload and the order of the error summary do not change.
+
+::: code-group
+```tsx [React]
+<FormRenderer definition={definition} conditionalReveal onSubmit={onSubmit} />
+```
+
+```vue [Vue]
+<FormRenderer :definition="definition" conditional-reveal @submit="onSubmit" />
+```
+:::
+
+A field goes under an option when its only condition is `eq` on the `radio` right before it, or `contains` on the `multiselect` right before it:
+
+```json
+{
+  "fields": [
+    {
+      "key": "contact",
+      "type": "radio",
+      "label": "How should we contact you?",
+      "options": [
+        { "value": "email", "label": "Email" },
+        { "value": "phone", "label": "Phone" }
+      ]
+    },
+    { "key": "email", "type": "email", "label": "Email address", "show": [{ "field": "contact", "eq": "email" }] },
+    { "key": "phone", "type": "phone", "label": "Phone number", "show": [{ "field": "contact", "eq": "phone" }] }
+  ]
+}
+```
+
+- Several fields can follow one option, and fields of different options can follow each other. For a `multiselect`, list them in the order of the options, and with `randomize` under one option only.
+- The first field after the choice that does not match ends the run. It and every field after it stay in place.
+- A field with two or more conditions, or with another operator such as `in`, stays in place.
+- A choice with `layout: "inline"`, picture options or `optionsFrom` keeps its fields after the group. So do matrix sections and fields inside a [group](/guide/groups).
+- A revealed `radio` can reveal fields of its own. Keep it to one level where you can: a long nested block is harder to read.
+- With a choice field that has `autoAdvance`, a pick moves on before the user sees the revealed field. Leave `autoAdvance` off on such fields.
+
+The built-in fields draw the block. A field from [`mapControls`](/guide/design-systems#conditional-reveal) draws it when its type is listed in `conditionalReveal`. Other custom field components keep the fields after the group. `revealTargets(nodes)` from `@formhaus/core` returns the same matches for a custom layout. See [Revealed fields](/spec#revealed-fields).
+
 ## Hidden field cleanup
 
 By default, hidden field values are removed during engine construction, after `reset()`, and whenever a dependency changes. Hidden values are not submitted.

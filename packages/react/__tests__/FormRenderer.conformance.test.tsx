@@ -12,6 +12,7 @@ import { handleScenarios } from '../../core/__tests__/renderers/handle.scenarios
 import { layoutScenarios } from '../../core/__tests__/renderers/layout.scenarios';
 import { recallScenarios } from '../../core/__tests__/renderers/recall.scenarios';
 import { focusScenarios } from '../../core/__tests__/renderers/focus.scenarios';
+import { revealScenarios } from '../../core/__tests__/renderers/reveal.scenarios';
 import { labelScenarios } from '../../core/__tests__/renderers/labels.scenarios';
 import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
 import { exclusiveScenarios } from '../../core/__tests__/renderers/exclusive.scenarios';
@@ -180,3 +181,4 @@ describe('renderer conformance: mapControls', () => mapControlScenarios(harness,
 describe('renderer conformance: mapControls commit', () => mapCommitScenarios(harness, kit));
 describe('renderer conformance: mapControls change props', () => mapNamedScenarios(harness, kit));
 describe('renderer conformance: mapControls field props', () => mapPropsScenarios(harness, kit));
+describe('renderer conformance: conditional reveal', () => revealScenarios(harness, kit));

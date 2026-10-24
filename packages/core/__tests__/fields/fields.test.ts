@@ -49,6 +49,18 @@ describe('fieldState', () => {
   });
 });
 
+describe('length limits', () => {
+  it('gives minLength and maxLength of text fields for character counters', () => {
+    const limits = (type: string) => {
+      const state = fieldState({ field: field({ type, validation: { minLength: 2, maxLength: 200 } }) });
+      return [state.minLength, state.maxLength];
+    };
+    expect(['text', 'email', 'phone', 'password', 'textarea'].map(limits)).toEqual(Array(5).fill([2, 200]));
+    expect(['multiselect', 'number', 'select'].map(limits)).toEqual(Array(3).fill([undefined, undefined]));
+    expect([fieldState({ field: field() }).maxLength]).toEqual([undefined]);
+  });
+});
+
 describe('inputs', () => {
   it('maps field types to input types and reads the placeholder, mask and input mode', () => {
     expect(

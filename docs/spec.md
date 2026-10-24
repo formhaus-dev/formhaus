@@ -487,6 +487,20 @@ Conditions, validation, validators and recall see the same values as with `"clea
 
 `validateSubmission()` takes the same option. With `"keep"`, it returns the values of hidden fields and of fields off the active path, after trimming and number conversion. It checks each of them against every rule of its field except `required`, as for a visible field, and drops one that fails without an error. For a group, it checks the group and each item field. The client decides which fields are hidden, so a kept value is as untrusted as a visible one. The scenarios in `hidden-values.json` and the corpus file `hidden-values.json` pin this rule.
 
+### Revealed fields
+
+Renderers MAY draw a field under the option that shows it, as GOV.UK and USWDS do with conditional reveals. This changes only the layout. Visibility, values, validation, the submit payload and the order of errors stay as described above. The rule reads the definition only, never values, and applies to each node list on its own: `fields` of a form without steps, `fields` of each step, and `fields` of each section without `layout: "matrix"`.
+
+A node `C` of a list is revealed by option `k` of a node `F` earlier in the same list when:
+
+1. `F` is a field of type `radio` or `multiselect` with a non-empty `options` list, no `optionsFrom`, no `layout: "inline"` and no option with `image`.
+2. `C` is a field that is not a section, a group or a `hidden` field, and has exactly one condition in `show` and `showAny` together. That condition names `F` by key. Its operator, chosen as in [Conditions](#conditions), is `eq` for a `radio` and `contains` for a `multiselect`, and its operand is `===` the `value` of option `k`.
+3. Every node between `F` and `C` meets rule 2 for `F` too. The first node that does not ends the run of `F`.
+4. For a `multiselect`, the option indexes along the run never go down, and with `randomize` they are all the same. The first node that breaks this ends the run.
+5. A node already revealed by an earlier `F` keeps that parent.
+
+A revealed field can be a choice field with a run of its own, so reveals can nest. Rule 4 keeps the fields in written order on screen: a `radio` shows the fields of one option at a time, and the fields of a `multiselect` follow its options. A renderer draws `C` in place when `F` is not shown, and keeps the fields of a group item in place. `revealTargets(nodes)` in TypeScript returns, for each node of a list, `{ parent, option }` with the index of `F` in the list and `k`, or `null`. The corpus file `reveal.json` pins this rule.
+
 ## Defaults and initial values
 
 When the engine is constructed or reset, values are built in this order:

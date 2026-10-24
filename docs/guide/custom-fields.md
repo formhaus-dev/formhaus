@@ -42,6 +42,7 @@ Before you write a component, read [Value types](#value-types): each built-in ty
 | `helperId`, `errorId` | `` `${id}-helper` `` and `` `${id}-error` `` |
 | `describedBy` | The helper id and then the error id, only the ones shown |
 | `invalid`, `required`, `disabled` | `error` is set, `validation.required` is set, `disabled` or `loading` is set |
+| `minLength`, `maxLength` | `validation.minLength` and `validation.maxLength` of a `text`, `email`, `phone`, `password` or `textarea` field, for a character counter. The input does not get them as attributes, so typing past the limit shows the error instead of cutting the text |
 | `inputType`, `inputMode` | The `type` of a native input for the field type (`text`, `email`, `tel`, `number`, `password`, `date`, `time` or `datetime-local`), and `field.inputMode` |
 | `aria` | `aria-invalid`, `aria-required` and `aria-describedby`, for a control or group whose helper and error you render |
 | `testId` | The [test id](/guide/testing) of the field |
@@ -110,6 +111,7 @@ The helpers above follow these rules. A component without them follows the rules
 | Discrete pick with `autoAdvance` | `onCommit(value)`, optional | `commit` |
 | Blur and focus | `onBlur()`, `onFocus()` | `blur`, `focus` |
 | [Matrix row](#matrix-rows) context | `matrix` | `matrix` |
+| [Revealed fields](/guide/conditions#show-a-field-under-its-option) of the options, built-in and `mapControls` fields only | `reveals` | `reveals` |
 
 ### autoAdvance
 
@@ -276,7 +278,7 @@ The `<form class="fh-form">` element stays. Add a design-system class to it with
 - `group`: render each item with `itemComponent`.
 - `groupItem`: in Vue, render the fields with `<component :is="fields" />`.
 - `confirmDialog`: opens only for an item with answers. See [Remove dialog](#remove-dialog).
-- `errorSummary`: `title` is the `errorSummary` [label](/guide/translations). Change it with `labels: { errorSummary: 'There is a problem' }` on the renderer. `groups` has one `{ id, title, entries }` per step with errors, and each entry is `{ key, id, text }` with the DOM id of the field. `showField` opens the step of the field and focuses it. The summary renders when the `errorSummary` prop is not `false` and `count` is above 0. With `errorSummary="top"` it renders first in the form, before the progress and the fields. After a failed Continue or Submit, the summary takes focus only when it lists two or more errors. With one error, focus goes to the invalid field. See [Error summary and step marks](/guide/errors#error-summary-and-step-marks).
+- `errorSummary`: `title` is the `errorSummary` [label](/guide/translations). Change it with `labels: { errorSummary: 'There is a problem' }` on the renderer. `groups` has one `{ id, title, entries }` per step with errors, and each entry is `{ key, id, text, message }` with the DOM id of the field. `text` is `Label: message` and `message` is the field message alone, the same text as the error under the field. `showField` opens the step of the field and focuses it. The summary renders when the `errorSummary` prop is not `false` and `count` is above 0. With `errorSummary="top"` it renders first in the form, before the progress and the fields. After a failed Continue or Submit, the summary takes focus only when it lists two or more errors. With one error, focus goes to the invalid field. See [Error summary and step marks](/guide/errors#error-summary-and-step-marks).
 - `formErrors`: `errors` holds the `formErrors` of a `{ ok: false }` [submit result](/guide/errors) and the message of a failed action. It renders when `errors` is not empty.
 - `progress`: renders only for a multi-step form. `steps` always holds every step of the active path as `{ id, title, errorCount, errorsLabel }`. `marks` is `true` only when the renderer has `stepErrorMarks`, so draw the step list when `marks` is `true`. `stepErrorsLabel` and each `errorsLabel` are the `stepErrors` [label](/guide/translations), such as `Errors: 2`, and are `undefined` when the step has no errors.
 - `actions`: `primaryDisabled` is `true` while the `disabled` conditions of the primary action match, the `next` of the step or the form `submit` on the last step. Disable the primary button while `primaryDisabled` or `loading` is set. See [Custom progress component](/guide/custom-components#custom-progress-component).
@@ -439,7 +441,7 @@ Build the whole form on `useFormEngine` and read the error summary with `errorSu
 <<< @/recipes/snippets/custom-layout.vue [Vue]
 :::
 
-`errorSummary(engine, { idPrefix?, labels? })` returns `{ groups, topLevelErrors, count }`. It reads the engine errors only: `groups` and `count` are the ones the `errorSummary` slot gets, and `topLevelErrors` is `engine.topLevelErrors`, without the message of a failed `onSubmit`. Each entry `id` is the DOM id the Formhaus renderers give the control of that field, with `idPrefix` as the form id (`fh` without one). For a top-level key made of letters, digits, `_` and `-` that is `<idPrefix>-<key>`, as in the snippet; group items and other keys get derived ids. `labels` overrides the definition `labels` for step and item titles.
+`errorSummary(engine, { idPrefix?, labels? })` returns `{ groups, topLevelErrors, count }`. It reads the engine errors only: `groups` and `count` are the ones the `errorSummary` slot gets, and `topLevelErrors` is `engine.topLevelErrors`, without the message of a failed `onSubmit`. Each entry `id` is the DOM id the Formhaus renderers give the control of that field, with `idPrefix` as the form id (`fh` without one). For a top-level key made of letters, digits, `_` and `-` that is `<idPrefix>-<key>`, as in the snippet, except that a run of dashes before `reveal` becomes one dash; group items and other keys get derived ids. `labels` overrides the definition `labels` for step and item titles.
 
 ## Next steps
 

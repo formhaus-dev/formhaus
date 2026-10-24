@@ -46,6 +46,7 @@ export type {
   FormStepStatus,
   GroupItemView,
   GroupView,
+  RevealView,
   RootProps,
   SectionView,
   TestIdTarget,

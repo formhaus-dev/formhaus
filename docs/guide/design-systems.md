@@ -156,6 +156,7 @@ controls: {
 - A function gets `f` and the options and returns props. Its props override the preset.
 - `options` are the field options, the matrix columns in a matrix row, or the points of a `scale` or `rating` as `{ value: 3, label: '3' }`.
 - In Vue, `children` becomes the default slot.
+- `f.maxLength` and `f.minLength` feed the character counter of a design system, such as Ant Design `showCount`, Element Plus `show-word-limit` or the GOV.UK character count: `textarea: [Input.TextArea, (f) => ({ showCount: true, maxLength: f.maxLength })]`. A native `maxLength` stops typing at the limit; leave it out to let the user type on and see the error.
 
 React types the adapter with the props of the component, and Vue with its `$props`. A wrong prop name in a string adapter, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
 
@@ -211,6 +212,29 @@ mapControls({
 ```
 
 The control gets the typed text as its value. Text that matches an option label saves the option value, other text saves as typed. With two options of the same label, the first one wins. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do.
+
+## Conditional reveal
+
+With [`conditionalReveal`](/guide/conditions#show-a-field-under-its-option) on the renderer, list the types whose adapter draws revealed fields under the options. Each option the adapter gets then has `reveal`: `{ id, open, children }`. Put `children` in a block with that `id` and `data-fh="reveal"` under the option, hide the block while `open` is `false`, and give the option input `aria-controls={option.reveal.id}`. Give a checkbox option `aria-expanded={option.reveal.open}` too.
+
+```tsx
+const radios = (f: FieldProps, options: ControlOption[]) => ({
+  children: options.map((option) => (
+    <Fragment key={option.value}>
+      <FormControlLabel value={option.value} label={option.label} control={<Radio inputProps={{ 'aria-controls': option.reveal?.id }} />} />
+      {option.reveal && (
+        <Box id={option.reveal.id} data-fh="reveal" hidden={!option.reveal.open} sx={{ ml: 1.5, pl: 3, borderLeft: 4, borderColor: 'divider' }}>
+          {option.reveal.children}
+        </Box>
+      )}
+    </Fragment>
+  )),
+})
+
+mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { radio: [RadioGroup, radios] } })
+```
+
+A type that is not listed keeps the revealed fields after the group, so list a type only when its adapter draws `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent, as long as the block has `data-fh="reveal"`.
 
 ## autoAdvance
 

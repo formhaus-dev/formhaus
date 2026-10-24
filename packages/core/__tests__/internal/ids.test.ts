@@ -11,6 +11,15 @@ const form = (keys: string[]): FormDefinition => ({
 });
 
 describe('fieldDomId', () => {
+  it('keeps --reveal out of field ids so reveal blocks stay unique', () => {
+    const keys = ['q', 'q--reveal-0', 'q---reveal', 'q-reveal-0'];
+    const ids = keys.map((key) => fieldDomId('form', key, form(keys)));
+    expect(ids.some((id) => id.includes('--reveal'))).toBe(false);
+    expect(new Set(ids).size).toBe(keys.length);
+    expect(ids).not.toContain('form-q--reveal-0');
+    expect(fieldDomId(undefined, 'a--reveal')).toBe('fh-a-reveal');
+  });
+
   it('keeps the id of keys that collide with no other key', () => {
     const definition = form(['email', 'first_name', 'contact.email', 'Ünit', 'a-b']);
     expect(['email', 'first_name', 'contact.email', 'Ünit', 'a-b'].map((key) => fieldDomId('form', key, definition))).toEqual([
