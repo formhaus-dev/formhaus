@@ -23,14 +23,14 @@ function canReveal(node: FormNode): node is FormField {
   );
 }
 
-function optionOf(parent: FormField, node: FormNode): number {
+function optionOf(parent: FormField, values: Map<unknown, number>, node: FormNode): number {
   if (!plain(node)) return -1;
   const conditions = [...(node.show ?? []), ...(node.showAny ?? [])];
   const [condition] = conditions;
   if (conditions.length !== 1 || condition.field !== parent.key) return -1;
   const operator = conditionOperator(condition);
   if (!operator || operator !== OPERATORS[parent.type]) return -1;
-  return parent.options!.findIndex((option) => option.value === condition[operator]);
+  return values.get(condition[operator]) ?? -1;
 }
 
 export function revealTargets(nodes: readonly FormNode[]): (RevealTarget | null)[] {
@@ -38,9 +38,10 @@ export function revealTargets(nodes: readonly FormNode[]): (RevealTarget | null)
   nodes.forEach((parent, index) => {
     if (!canReveal(parent)) return;
     const multiple = parent.type === 'multiselect';
+    const values = new Map<unknown, number>(parent.options!.map((option, at): [unknown, number] => [option.value, at]).reverse());
     let last = -1;
     for (let at = index + 1; at < nodes.length; at++) {
-      const option = optionOf(parent, nodes[at]);
+      const option = optionOf(parent, values, nodes[at]);
       if (option < 0 || (multiple && (option < last || (parent.randomize && last >= 0 && option !== last)))) break;
       targets[at] ??= { parent: index, option };
       last = option;

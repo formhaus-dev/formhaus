@@ -24,47 +24,48 @@ function planOf(engine: FormEngine): Plan {
   let plan = plans.get(key);
   if (plan) return plan;
   const { definition } = engine;
-  plan = { parents: new Map(), options: new Map() };
+  const parents: Plan['parents'] = new Map();
+  const found = new Map<FormField, Set<number>>();
   const tops = definition.steps?.length ? definition.steps.map((step) => step.fields) : [topNodes(definition)];
   const sections = tops.flatMap((nodes) => nodes.filter(isSection).filter((section) => section.layout !== 'matrix'));
   for (const nodes of [...tops, ...sections.map((section) => section.fields as FormNode[])])
     revealTargets(nodes).forEach((target, index) => {
       if (!target) return;
       const parent = nodes[target.parent] as FormField;
-      const options = plan!.options.get(parent) ?? [];
-      plan!.parents.set(nodes[index], [parent, target.option]);
-      if (!options.includes(target.option))
-        plan!.options.set(
-          parent,
-          [...options, target.option].sort((a, b) => a - b),
-        );
+      parents.set(nodes[index], [parent, target.option]);
+      (found.get(parent) ?? found.set(parent, new Set()).get(parent)!).add(target.option);
     });
+  plan = { parents, options: new Map([...found].map(([parent, indexes]) => [parent, [...indexes].sort((a, b) => a - b)])) };
   plans.set(key, plan);
   return plan;
 }
 
-export function revealLayout(engine: FormEngine, nodes: readonly FormNode[], can: (field: FormField) => boolean) {
+const FLAT = { slots: (): RevealSlot[] => [] };
+
+export function revealLayout(engine: FormEngine, nodes: readonly FormNode[], can?: (field: FormField) => boolean) {
+  if (!can) return { nodes, ...FLAT };
   const { parents, options } = planOf(engine);
   const shown = new Set(nodes);
-  const slots = new Map<FormField, RevealSlot[]>();
+  const slots = new Map<FormField, Map<number, RevealSlot>>();
   const slotsOf = (field: FormField) => {
     let list = slots.get(field);
-    if (!list) slots.set(field, (list = (options.get(field) ?? []).map((index) => ({ index, option: field.options![index], nodes: [] }))));
+    if (!list)
+      slots.set(
+        field,
+        (list = new Map((options.get(field) ?? []).map((index) => [index, { index, option: field.options![index], nodes: [] }]))),
+      );
     return list;
   };
   const top: FormNode[] = [];
   for (const node of nodes) {
     const [parent, index] = parents.get(node) ?? [];
-    if (parent && shown.has(parent) && can(parent))
-      slotsOf(parent)
-        .find((slot) => slot.index === index)!
-        .nodes.push(node);
+    if (parent && shown.has(parent) && can(parent)) slotsOf(parent).get(index!)!.nodes.push(node);
     else top.push(node);
   }
   return {
     nodes: top,
     slots: (field: FormNode): RevealSlot[] =>
-      options.has(field as FormField) && can(field as FormField) ? slotsOf(field as FormField) : [],
+      options.has(field as FormField) && can(field as FormField) ? [...slotsOf(field as FormField).values()] : [],
   };
 }
 

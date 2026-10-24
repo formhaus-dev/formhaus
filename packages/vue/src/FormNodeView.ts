@@ -9,6 +9,7 @@ export interface NodeContext {
   engine: () => FormEngine;
   section: () => Component;
   can: (field: FormField) => boolean;
+  reveal: () => boolean;
   nodeProps: (field: FormField, columns?: FieldOption[], row?: number) => Record<string, unknown>;
   sectionProps: (section: FormSection) => Record<string, unknown>;
 }
@@ -17,7 +18,8 @@ export const NODE_CONTEXT: InjectionKey<NodeContext> = Symbol('fhNodes');
 
 type Slots = (field: FormNode) => RevealSlot[];
 
-export const nodeLayout = (context: NodeContext, nodes: readonly FormNode[]) => revealLayout(context.engine(), nodes, context.can);
+export const nodeLayout = (context: NodeContext, nodes: readonly FormNode[]) =>
+  revealLayout(context.engine(), nodes, context.reveal() ? context.can : undefined);
 
 export const FormNodeView = /* @__PURE__ */ defineComponent({
   props: {
@@ -28,7 +30,7 @@ export const FormNodeView = /* @__PURE__ */ defineComponent({
   },
   setup(props) {
     const context = inject(NODE_CONTEXT)!;
-    const list = (nodes: FormNode[], slots: Slots, columns?: FieldOption[]): VNode[] =>
+    const list = (nodes: readonly FormNode[], slots: Slots, columns?: FieldOption[]): VNode[] =>
       nodes.map((node, row) => h(FormNodeView, { key: node.key, node, slots, columns, row }));
     return () => {
       const { node } = props;

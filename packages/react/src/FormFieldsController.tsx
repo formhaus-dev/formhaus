@@ -55,11 +55,11 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
   const resolvedOptions = useMemo(() => providedOptions(sources, optionsProviders, loaded), [sources, optionsProviders, loaded]);
   const can = (field: FormField) => {
     const component = props.components?.[field.type];
-    return !!conditionalReveal && !!component && revealable.has(component);
+    return !!component && revealable.has(component);
   };
 
   const renderAll = (nodes: readonly FormNode[], columns?: FieldOption[]): ReactNode[] => {
-    const shown = revealLayout(engine, nodes, can);
+    const shown = revealLayout(engine, nodes, conditionalReveal ? can : undefined);
     const render = (node: FormNode, row?: number): ReactNode => {
       if (isGroup(node))
         return (

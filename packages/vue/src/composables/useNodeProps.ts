@@ -100,10 +100,11 @@ export function useNodeProps(
   const context = {
     formId,
     engine: () => form.engine,
+    reveal: () => !!props.conditionalReveal,
     section: () => props.layout?.section ?? props.components?.section ?? DefaultSection,
     can: (field: FormField) => {
       const component = props.components?.[field.type];
-      return !!props.conditionalReveal && !!component && revealable.has(toRaw(component));
+      return !!component && revealable.has(toRaw(component));
     },
     sectionProps(section: FormSection) {
       const id = fieldDomId(formId, section.key, form.engine.definition);

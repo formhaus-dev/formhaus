@@ -9,8 +9,9 @@ export function withReveals<Option extends { value: string | number }, Children>
   reveals?: RevealView<Children>[],
 ): (Option & { reveal?: RevealView<Children> })[] {
   if (!reveals) return options;
+  const byValue = new Map(reveals.map((view) => [view.value, view]));
   return options.map((option) => {
-    const reveal = reveals.find((view) => view.value === String(option.value));
+    const reveal = byValue.get(String(option.value));
     return reveal ? { ...option, reveal } : option;
   });
 }
