@@ -7,7 +7,7 @@ defineProps(controlShellProps);
 <template>
   <div v-bind="rootProps" class="matrix-row">
     <div class="matrix-row__label text-body-2">
-      <span :id="`${f.id}-label`">{{ f.label }}</span>
+      <span :id="`${f.id}-label`">{{ f.label }}</span><span v-if="f.required" aria-hidden="true"> *</span>
       <div v-if="f.helperText" :id="f.helperId" class="text-caption text-medium-emphasis">{{ f.helperText }}</div>
       <div v-if="f.error" :id="f.errorId" class="text-caption text-error">{{ f.error }}</div>
     </div>

@@ -12,8 +12,9 @@ defineProps({
 </script>
 
 <template>
-  <v-dialog :model-value="open" max-width="420" @update:model-value="(value) => !value && cancel()">
-    <v-card :id="id" :title="title" :text="description">
+  <v-dialog :model-value="open" :aria-labelledby="`${id}-title`" max-width="420" @update:model-value="(value) => !value && cancel()">
+    <v-card :id="id" :text="description">
+      <template #title><span :id="`${id}-title`">{{ title }}</span></template>
       <v-card-actions>
         <v-spacer />
         <v-btn variant="text" @click="cancel">{{ cancelLabel }}</v-btn>
