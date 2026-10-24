@@ -1,38 +1,43 @@
 import type { FieldComponentMap, FieldProps, LayoutComponentMap } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
-import { Checkbox, Choices, FileUpload, Input, Select, Textarea } from './fields/controls';
+import { Choices } from './fields/Choices';
+import { Checkbox, FileUpload, Input, Password, Select, Textarea } from './fields/controls';
 import { DateInput } from './fields/DateInput';
 import { Shell } from './fields/Shell';
-import { ConfirmDialog, Group, GroupItem, Section } from './layout/Containers';
-import { ErrorSummary } from './layout/ErrorSummary';
+import { Fields, Group, GroupItem, Section } from './layout/Containers';
+import { ErrorSummary, FormErrors } from './layout/ErrorSummary';
 import { FormActions } from './layout/FormActions';
-import { FormErrors } from './layout/FormErrors';
 import { StepProgress } from './layout/StepProgress';
 
-const choices = (className?: string) => (f: FieldProps, options: ControlOption[]) => ({ f, options, className });
-const points = choices('govuk-radios--inline govuk-radios--small');
+const stacked = (f: FieldProps, options: ControlOption[]) => ({ f, options });
+const shortPair = (options: ControlOption[]) => options.length === 2 && options.every((option) => option.label.length <= 12);
+const dateParts = [DateInput, (f: FieldProps) => ({ type: f.inputType, autoComplete: f.input.autoComplete })] as const;
 
 export const components: FieldComponentMap = mapControls({
   shell: Shell,
-  kinds: { date: 'group' },
-  matrix: mapControls({ shell: Shell, controls: { radio: [Choices, points] } }).radio,
+  kinds: { date: 'group', time: 'group', datetime: 'group' },
+  matrix: mapControls({ shell: Shell, controls: { radio: [Choices, stacked] } }).radio,
   controls: {
     input: Input,
-    date: DateInput,
+    password: Password,
+    date: dateParts,
+    time: dateParts,
+    datetime: dateParts,
     textarea: Textarea,
     select: [Select, 'options'],
     autocomplete: [Select, 'options'],
     checkbox: Checkbox,
     switch: Checkbox,
-    multiselect: [Choices, (f, options) => ({ f, options, multiple: true, className: 'govuk-checkboxes--small' })],
-    radio: [Choices, (f, options) => choices(options.length <= 2 ? 'govuk-radios--inline' : undefined)(f, options)],
-    scale: [Choices, points],
-    rating: [Choices, points],
+    multiselect: [Choices, (f, options) => ({ f, options, multiple: true })],
+    radio: [Choices, (f, options) => ({ f, options, inline: shortPair(options) })],
+    scale: [Choices, stacked],
+    rating: [Choices, stacked],
     file: FileUpload,
   },
 });
 
 export const layout: LayoutComponentMap = {
+  fields: Fields,
   actions: FormActions,
   progress: StepProgress,
   errorSummary: ErrorSummary,
@@ -40,5 +45,4 @@ export const layout: LayoutComponentMap = {
   section: Section,
   group: Group,
   groupItem: GroupItem,
-  confirmDialog: ConfirmDialog,
 };

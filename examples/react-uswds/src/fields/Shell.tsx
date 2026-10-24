@@ -1,7 +1,7 @@
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 
-function Label({ f }: { f: FieldProps }) {
+export function Label({ f }: { f: FieldProps }) {
   return (
     <>
       {f.label}

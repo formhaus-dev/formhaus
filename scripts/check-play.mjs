@@ -1,3 +1,4 @@
+import { completionChecks } from './play-completion-checks.mjs';
 import { entryChecks } from './play-entry-checks.mjs';
 import { playPage } from './play-page.mjs';
 import { apps, playwright, previewServer, watchErrors } from './play-server.mjs';
@@ -7,11 +8,13 @@ const browsers = process.argv.slice(2).length ? process.argv.slice(2) : ['chromi
 const widths = [320, 390, 768, 861, 1024, 1180, 1280, 1440, 1920];
 const { base, ready, stop } = previewServer();
 
-const { open, rendered, frameOf, edit, tone } = playPage(base);
+const play = playPage(base);
+const { open, rendered, frameOf, edit, tone } = play;
 
 const checks = {
   ...entryChecks(base, frameOf),
   ...schemaChecks(base),
+  ...completionChecks(play),
 
   async systems(page, problems) {
     await open(page);

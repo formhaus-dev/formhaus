@@ -78,7 +78,7 @@ export function GroupItem({
       <CardHeader
         sx={{ pb: 0 }}
         title={
-          <Typography id={titleId} tabIndex={-1} variant="subtitle1" fontWeight={500}>
+          <Typography id={titleId} tabIndex={-1} component="h3" variant="subtitle1" fontWeight={500}>
             {title}
           </Typography>
         }

@@ -50,6 +50,12 @@ body {
   overflow-x: auto;
 }
 
+@media (max-width: 30rem) {
+  .progress .p-step:not(.p-step-active) .p-step-title {
+    display: none;
+  }
+}
+
 .progress__counter,
 .progress__description {
   margin: 0;
@@ -108,4 +114,62 @@ body {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+.completion {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.completion > .p-message {
+  align-self: stretch;
+}
+
+.completion__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+}
+
+.completion__body {
+  margin: 0.25rem 0 0;
+  font-weight: 400;
+}
+
+.completion__heading {
+  margin: 0.5rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.completion__answers {
+  align-self: stretch;
+  margin: 0;
+  border-top: 1px solid var(--p-content-border-color);
+}
+
+.completion__row {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 0.25rem 1rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--p-content-border-color);
+}
+
+.completion__row dt {
+  color: var(--p-text-muted-color);
+}
+
+.completion__row dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+@media (max-width: 480px) {
+  .completion__row {
+    grid-template-columns: 100%;
+  }
 }

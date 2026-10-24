@@ -27,7 +27,7 @@ export function StepProgress({
             <Stepper.Step
               key={step.id}
               label={narrow ? undefined : step.title || `Step ${index + 1}`}
-              aria-label={step.title || `Step ${index + 1}`}
+              aria-label={narrow ? step.title || `Step ${index + 1}` : undefined}
               description={!narrow && marks && step.errorCount > 0 ? toFix(step.errorCount) : undefined}
               color={marks && step.errorCount > 0 ? 'red' : undefined}
               aria-current={index + 1 === current ? 'step' : undefined}
