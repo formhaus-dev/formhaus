@@ -30,6 +30,14 @@
   display: none;
 }
 
+.play .play-bar .play-back {
+  width: 28px;
+  margin-inline: calc(var(--fh-site-space-2) * -1) calc(var(--fh-site-space-1) * -1);
+  border-color: transparent;
+  background: transparent;
+  color: var(--vp-c-text-2);
+}
+
 .play-logo {
   display: flex;
   align-items: center;

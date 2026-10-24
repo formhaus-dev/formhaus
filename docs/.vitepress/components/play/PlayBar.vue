@@ -11,10 +11,18 @@ const isTemplate = (entry: { id: string }) => entry.id.startsWith('template:');
 const examples = (list: { id: string; label: string }[]) => list.filter((entry) => !isTemplate(entry));
 const templatesOf = (list: { id: string; label: string }[]) => list.filter(isTemplate);
 const value = (event: Event) => (event.target as HTMLSelectElement).value;
+const back = (event: MouseEvent) => {
+  if (!document.referrer.startsWith(location.origin) || history.length < 2) return;
+  event.preventDefault();
+  history.back();
+};
 </script>
 
 <template>
   <header class="play-bar">
+    <a class="play-button play-button--icon play-back" href="/" aria-label="Back" @click="back">
+      <LucideIcon name="arrow-left" />
+    </a>
     <a class="play-logo" href="/" aria-label="Formhaus home">
       <img class="play-logo__light" :src="`/brand/logo-full.svg`" alt="Formhaus" width="112" height="24" />
       <img class="play-logo__dark" :src="`/brand/logo-full-dark.svg`" alt="" width="112" height="24" />
