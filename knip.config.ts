@@ -18,6 +18,7 @@ const config: KnipConfig = {
   workspaces: {
     '.': {
       entry: ['scripts/*.{mjs,cjs}'],
+      ignore: ['scripts/consumer-types/**'],
       project: ['scripts/**'],
       ignoreDependencies: ['publint', '@arethetypeswrong/cli'],
       ignoreBinaries: ['tokens', 'vitepress'],
