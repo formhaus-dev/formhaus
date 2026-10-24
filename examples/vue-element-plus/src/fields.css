@@ -193,3 +193,15 @@
 .group__error {
   margin: 0 0 0.75rem;
 }
+
+.reveal {
+  align-self: stretch;
+  margin-inline-start: 6px;
+  padding-inline-start: 14px;
+  border-inline-start: 2px solid var(--el-border-color-lighter);
+  font-size: 1rem;
+}
+
+.reveal > :last-child > .el-form-item {
+  margin-bottom: 0;
+}

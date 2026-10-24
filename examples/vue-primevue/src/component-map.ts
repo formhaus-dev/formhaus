@@ -27,6 +27,7 @@ const root = {
   'data-testid': undefined,
 };
 const look = (f: FieldProps) => ({ invalid: f.invalid, fluid: true });
+const counted = (f: FieldProps) => (f.maxLength ? { 'aria-describedby': [f.describedBy, `${f.id}-count`].filter(Boolean).join(' ') } : {});
 const aria = (f: FieldProps) => ({ ...f.aria, 'data-testid': f.testId });
 const inner = (f: FieldProps) => ({ ...root, inputId: f.id, invalid: f.invalid });
 const fluid = (f: FieldProps) => ({ ...inner(f), fluid: true });
@@ -74,14 +75,23 @@ const cells = (f: FieldProps, options: ControlOption[]) => ({
     ),
 });
 
+const revealed = (option: ControlOption) =>
+  option.reveal
+    ? h(
+        'div',
+        { key: option.reveal.id, id: option.reveal.id, 'data-fh': 'reveal', hidden: !option.reveal.open, class: 'reveal' },
+        option.reveal.children,
+      )
+    : [];
+
 const radios = (f: FieldProps, options: ControlOption[]) => ({
   ...root,
   invalid: f.invalid,
   class: ['choices', { 'choices--tiles': options.some((option) => option.image) }],
   children: () =>
-    options.map((option, index) => {
+    options.flatMap((option, index) => {
       const { id, 'data-testid': testId, onBlur, onFocus } = choice(f, option, index);
-      return h('label', { key: option.value, for: id, class: 'choice' }, [
+      const item = h('label', { key: option.value, for: id, class: 'choice' }, [
         option.image && h('img', { src: option.image, alt: '', class: 'choice__image' }),
         h('span', { class: 'choice__row' }, [
           h(RadioButton, {
@@ -90,12 +100,14 @@ const radios = (f: FieldProps, options: ControlOption[]) => ({
             invalid: f.invalid,
             disabled: f.disabled,
             'data-testid': testId,
+            pt: { input: { 'aria-controls': option.reveal?.id } },
             onBlur,
             onFocus,
           }),
           option.label,
         ]),
       ]);
+      return [item, revealed(option)];
     }),
 });
 
@@ -104,29 +116,35 @@ export const components: FieldComponentMap = {
     shell: FieldShell,
     kinds: { multiselect: 'input' },
     freeText: true,
-    matrix: mapControls({ shell: MatrixRow, controls: { radio: [RadioButtonGroup, cells] } }).radio,
+    conditionalReveal: ['radio'],
+    matrix: mapControls({ shell: MatrixRow, controls: { radio: { component: RadioButtonGroup, props: cells } } }).radio,
     controls: {
-      input: [InputText, look],
-      password: [
-        Password,
-        (f) => ({ ...fluid(f), inputProps: { ...aria(f), autocomplete: f.attrs.autocomplete }, feedback: false, toggleMask: true }),
-      ],
-      number: [
-        InputNumber,
-        (f) => ({
+      input: { component: InputText, props: (f) => ({ ...look(f), ...counted(f) }) },
+      password: {
+        component: Password,
+        props: (f) => ({
+          ...fluid(f),
+          inputProps: { ...aria(f), ...counted(f), autocomplete: f.attrs.autocomplete },
+          feedback: false,
+          toggleMask: true,
+        }),
+      },
+      number: {
+        component: InputNumber,
+        props: (f) => ({
           ...text(f),
           modelValue: typeof f.value === 'number' ? f.value : null,
           useGrouping: false,
           maxFractionDigits: f.inputMode === 'numeric' ? 0 : 4,
         }),
-      ],
-      date: [DatePicker, picked('date')],
-      time: [DatePicker, picked('time')],
-      datetime: [DatePicker, picked('datetime')],
-      textarea: [Textarea, (f) => ({ ...look(f), autoResize: true })],
-      select: [
-        Select,
-        (f, options) => ({
+      },
+      date: { component: DatePicker, props: picked('date') },
+      time: { component: DatePicker, props: picked('time') },
+      datetime: { component: DatePicker, props: picked('datetime') },
+      textarea: { component: Textarea, props: (f) => ({ ...look(f), ...counted(f), autoResize: true }) },
+      select: {
+        component: Select,
+        props: (f, options) => ({
           ...root,
           ...listed(options),
           labelId: f.id,
@@ -136,10 +154,10 @@ export const components: FieldComponentMap = {
           placeholder: f.placeholder ?? 'Select an option',
           showClear: !f.required,
         }),
-      ],
-      multiselect: [
-        MultiSelect,
-        (f, options) => ({
+      },
+      multiselect: {
+        component: MultiSelect,
+        props: (f, options) => ({
           ...fluid(f),
           ...listed(options),
           pt: { hiddenInput: aria(f) },
@@ -147,13 +165,16 @@ export const components: FieldComponentMap = {
           display: 'chip',
           showToggleAll: false,
         }),
-      ],
-      autocomplete: [AutocompleteControl, 'options'],
-      checkbox: [Checkbox, (f) => ({ ...inner(f), pt: { input: aria(f) }, binary: true })],
-      switch: [ToggleSwitch, (f) => ({ ...inner(f), pt: { input: aria(f) } })],
-      radio: [RadioButtonGroup, radios],
-      scale: [RadioButtonGroup, (f, options) => ({ ...radios(f, options), class: ['scale', { 'scale--invalid': f.invalid }] })],
-      rating: [Rating, (f, options) => ({ stars: options.length, class: { 'rating--invalid': f.invalid } })],
+      },
+      autocomplete: { component: AutocompleteControl, optionsProp: 'options' },
+      checkbox: { component: Checkbox, props: (f) => ({ ...inner(f), pt: { input: aria(f) }, binary: true }) },
+      switch: { component: ToggleSwitch, props: (f) => ({ ...inner(f), pt: { input: aria(f) } }) },
+      radio: { component: RadioButtonGroup, props: radios },
+      scale: {
+        component: RadioButtonGroup,
+        props: (f, options) => ({ ...radios(f, options), class: ['scale', { 'scale--invalid': f.invalid }] }),
+      },
+      rating: { component: Rating, props: (f, options) => ({ stars: options.length, class: { 'rating--invalid': f.invalid } }) },
     },
   }),
   file: FileField,

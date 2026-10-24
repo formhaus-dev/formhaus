@@ -21,6 +21,7 @@ import {
   TextInput,
 } from '@mantine/core';
 import { DatePickerInput, DateTimePicker, TimePicker } from '@mantine/dates';
+import { Fragment } from 'react';
 import { GroupShell, RadioList } from './fields/GroupShell';
 import { labels, marked, spoken } from './fields/labels';
 import { MatrixRow } from './fields/MatrixRow';
@@ -56,7 +57,23 @@ const radios = (options: ControlOption[]) =>
   ) : (
     <RadioList>
       {options.map((option) => (
-        <Radio key={option.value} value={String(option.value)} label={option.label} />
+        <Fragment key={option.value}>
+          <Radio value={String(option.value)} label={option.label} aria-controls={option.reveal?.id} />
+          {option.reveal && (
+            <Stack
+              id={option.reveal.id}
+              data-fh="reveal"
+              hidden={!option.reveal.open}
+              display={option.reveal.open ? undefined : 'none'}
+              gap="lg"
+              ms="xs"
+              ps="lg"
+              style={{ borderInlineStart: '2px solid var(--mantine-color-default-border)' }}
+            >
+              {option.reveal.children}
+            </Stack>
+          )}
+        </Fragment>
       ))}
     </RadioList>
   );
@@ -68,40 +85,48 @@ export const components: FieldComponentMap = {
     freeText: true,
     kinds: { multiselect: 'input' },
     matrix: MatrixRow,
+    conditionalReveal: ['radio'],
     controls: {
       input: TextInput,
       password: PasswordInput,
       number: NumberInput,
       textarea: Textarea,
-      select: [Select, (_, options) => ({ data: items(options), allowDeselect: false, ...closed })],
-      autocomplete: [Autocomplete, (_, options) => ({ data: options.map((option) => option.label), ...closed })],
-      multiselect: [MultiSelect, (_, options) => ({ data: items(options), searchable: true, ...closed })],
-      date: [
-        DatePickerInput,
-        (f) => ({ ...spoken(f), 'aria-required': undefined, value: f.text || null, valueFormat: 'MMM D, YYYY', clearable: true }),
-      ],
-      datetime: [
-        DateTimePicker,
-        (f) => ({
+      select: { component: Select, props: (_, options) => ({ data: items(options), allowDeselect: false, ...closed }) },
+      autocomplete: { component: Autocomplete, props: (_, options) => ({ data: options.map((option) => option.label), ...closed }) },
+      multiselect: { component: MultiSelect, props: (_, options) => ({ data: items(options), searchable: true, ...closed }) },
+      date: {
+        component: DatePickerInput,
+        props: (f) => ({ ...spoken(f), 'aria-required': undefined, value: f.text || null, valueFormat: 'MMM D, YYYY', clearable: true }),
+      },
+      datetime: {
+        component: DateTimePicker,
+        props: (f) => ({
           value: f.text.replace('T', ' ') || null,
           valueFormat: 'MMM D, YYYY HH:mm',
           clearable: true,
           onChange: (next: unknown) => f.change(typeof next === 'string' ? next.slice(0, 16).replace(' ', 'T') : null),
         }),
-      ],
-      time: [TimePicker, clock],
-      checkbox: [Checkbox, marked],
-      switch: [Switch, marked],
-      radio: [Radio.Group, (_, options) => ({ 'aria-required': undefined, children: radios(options) })],
-      scale: [
-        SegmentedControl,
-        (f, options) => ({ data: items(options), value: f.text, fullWidth: true, color: 'blue', withItemsBorders: false }),
-      ],
-      rating: [Rating, (f, options) => ({ 'aria-required': undefined, count: options.length, size: 'lg', readOnly: f.disabled })],
-      file: [
-        FileInput,
-        (f) => ({ clearable: true, placeholder: f.placeholder ?? 'Choose a file', value: f.value instanceof File ? f.value : null }),
-      ],
+      },
+      time: { component: TimePicker, props: clock },
+      checkbox: { component: Checkbox, props: marked },
+      switch: { component: Switch, props: marked },
+      radio: { component: Radio.Group, props: (_, options) => ({ 'aria-required': undefined, children: radios(options) }) },
+      scale: {
+        component: SegmentedControl,
+        props: (f, options) => ({ data: items(options), value: f.text, fullWidth: true, color: 'blue', withItemsBorders: false }),
+      },
+      rating: {
+        component: Rating,
+        props: (f, options) => ({ 'aria-required': undefined, count: options.length, size: 'lg', readOnly: f.disabled }),
+      },
+      file: {
+        component: FileInput,
+        props: (f) => ({
+          clearable: true,
+          placeholder: f.placeholder ?? 'Choose a file',
+          value: f.value instanceof File ? f.value : null,
+        }),
+      },
     },
   }),
 };

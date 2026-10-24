@@ -1,6 +1,9 @@
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import { Form, Typography } from 'antd';
+import { createContext } from 'react';
+
+export const Inline = createContext(false);
 
 export const RequiredMark = ({ f }: { f: FieldProps }) =>
   f.required && (
@@ -9,7 +12,7 @@ export const RequiredMark = ({ f }: { f: FieldProps }) =>
     </span>
   );
 
-export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
+export function Shell({ kind, field, f, rootProps, anchors, children }: ControlShellProps) {
   const item = (
     <Form.Item
       label={kind === 'input' ? f.label : undefined}
@@ -28,7 +31,7 @@ export function Shell({ kind, f, rootProps, anchors, children }: ControlShellPro
           </label>
         </span>
       ) : (
-        children
+        <Inline value={field.layout === 'inline'}>{children}</Inline>
       )}
       {anchors.some(Boolean) && (
         <div className="scale-anchors">
