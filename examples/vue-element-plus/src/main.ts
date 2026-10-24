@@ -5,6 +5,7 @@ import { createApp, type App as VueApp } from 'vue';
 import App from './App.vue';
 import { listenToPlayground, type Theme } from './playground';
 import './styles.css';
+import './fields.css';
 
 let app: VueApp | undefined;
 

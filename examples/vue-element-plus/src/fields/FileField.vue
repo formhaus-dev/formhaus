@@ -1,43 +1,30 @@
 <script setup lang="ts">
-import { fieldComponentEmits, fieldComponentProps } from '@formhaus/vue';
+import { fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
+import type { ControlRootProps } from '@formhaus/vue/controls';
 import { ElButton, ElUpload, type UploadFile } from 'element-plus';
 import { computed } from 'vue';
 import FieldShell from './FieldShell.vue';
-import { describedBy } from './field';
 
 const props = defineProps(fieldComponentProps);
 const emit = defineEmits(fieldComponentEmits);
-const id = computed(() => props.id ?? props.field.key);
-const files = computed(() => (props.modelValue instanceof File ? [{ name: props.modelValue.name }] : []));
-
-function change(file: UploadFile) {
-  emit('update:modelValue', file.raw ?? null);
-}
+const f = useFieldProps(props, emit);
+const files = computed(() => (f.value instanceof File ? [{ name: f.value.name }] : []));
+const root = { 'data-fh': 'field' } as ControlRootProps;
 </script>
 
 <template>
-  <FieldShell :id="id" :field="field" :error="error" kind="group">
+  <FieldShell kind="group" :field="field" :f="f" :root-props="root">
     <ElUpload
       :file-list="files"
       :accept="field.accept"
       :auto-upload="false"
-      :disabled="disabled || loading"
-      :on-change="change"
-      :on-remove="() => emit('update:modelValue', null)"
+      :disabled="f.disabled"
+      :on-change="(file: UploadFile) => f.change(file.raw ?? null)"
+      :on-remove="() => f.change(null)"
       class="file"
     >
       <template #trigger>
-        <ElButton
-          :id="id"
-          :type="error ? 'danger' : 'default'"
-          plain
-          :aria-invalid="error ? true : undefined"
-          :aria-describedby="describedBy(id, field, error)"
-          :disabled="disabled || loading"
-          :data-testid="testId"
-          @blur="emit('blur')"
-          @focus="emit('focus')"
-        >
+        <ElButton :id="f.id" :type="f.invalid ? 'danger' : 'default'" plain v-bind="f.aria" :disabled="f.disabled" :data-testid="f.testId" @blur="f.blur" @focus="f.focus">
           {{ files.length ? 'Replace file' : 'Choose file' }}
         </ElButton>
       </template>
