@@ -60,12 +60,12 @@ function entrySize(name) {
   return bundleSize(lines.join('\n'), { external: EXTERNAL[pkg], define: trusted ? TRUSTED : {} });
 }
 
-export async function measureEntries() {
+export async function measureEntries(names = Object.keys(ENTRIES)) {
   for (const pkg of Object.keys(EXTERNAL)) {
     if (!existsSync(`packages/${pkg}/dist/index.js`)) throw new Error(`packages/${pkg}/dist/index.js is missing. Run pnpm build first.`);
   }
   const sizes = {};
-  for (const name of Object.keys(ENTRIES)) sizes[name] = await entrySize(name);
+  for (const name of names) sizes[name] = await entrySize(name);
   return sizes;
 }
 
