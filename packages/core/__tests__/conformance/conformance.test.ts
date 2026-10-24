@@ -100,6 +100,7 @@ describe('conformance corpus', () => {
       'recall-values',
       'recall-version',
       'shared-key-branches',
+      'slow-pattern-quadratic',
       'times-and-hidden',
       'trimmed-conditions',
       'trimmed-text',
@@ -137,20 +138,23 @@ describe('conformance corpus', () => {
     },
   );
 
-  it.each(
-    corpus
-      .filter(({ warnings }) => warnings?.some(({ code }) => code === 'slow-pattern'))
-      .map((fixture) => [fixture.name, fixture] as const),
-  )('%s: slow patterns rejected by the server', (_, { definition, warnings }) => {
-    const slow = warnings!.filter(({ code }) => code === 'slow-pattern');
-    let issues: { code: string; path: string }[] = [];
-    try {
-      validateSubmission(definition, {});
-    } catch (error) {
-      if (error instanceof FormDefinitionError) issues = error.issues.map(project);
-    }
-    expect(issues.sort(byPathAndCode)).toEqual([...slow].sort(byPathAndCode));
+  it('lists the patterns the server refuses wherever slow patterns are reported', () => {
+    const slow = corpus.filter(({ warnings }) => warnings?.some(({ code }) => code === 'slow-pattern'));
+    expect(slow.filter(({ refused }) => !refused).map(({ name }) => name)).toEqual([]);
   });
+
+  it.each(corpus.filter(({ refused }) => refused).map((fixture) => [fixture.name, fixture] as const))(
+    '%s: slow patterns refused by the server',
+    (_, { definition, refused }) => {
+      let issues: { code: string; path: string }[] = [];
+      try {
+        validateSubmission(definition, {});
+      } catch (error) {
+        if (error instanceof FormDefinitionError) issues = error.issues.map(project);
+      }
+      expect(issues.sort(byPathAndCode)).toEqual([...refused!].sort(byPathAndCode));
+    },
+  );
 
   it.each(recalls)('%s: recall', (_, definition, { values, texts }) => {
     const slots = new Map(textSlots(definition).map(({ address, text }) => [address, text]));

@@ -15,6 +15,7 @@ export interface ConformanceFixture {
   name: string;
   issues: { code: string; path: string }[];
   warnings?: { code: string; path: string }[];
+  refused?: { code: string; path: string }[];
   definition: FormDefinition;
   overlay?: Overlay;
   texts?: Record<string, string>;

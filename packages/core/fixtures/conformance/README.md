@@ -20,6 +20,7 @@ Each file holds one `definition`, the issues `checkDefinition` reports for it, a
 - `definition` is the form definition. It may be malformed.
 - `issues` lists the issues with severity `error` that `checkDefinition` reports, as `{ code, path }`. Use `[]` for none.
 - `warnings` lists the issues with severity `warning`, as `{ code, path }`. When the key is missing, warnings are not checked. `[]` means there must be none.
+- `refused` lists the `slow-pattern` issues the server validation reports as errors, as `{ code, path }`. It is set in every file whose `warnings` list `slow-pattern` entries. `[]` means the server runs every pattern.
 - `overlay` is an optional i18n overlay. Apply it to the definition with `localize` before running `cases`, as described in the specification under Translations.
 - `texts` maps text slot addresses to the text they hold after the overlay is applied, such as `"steps.account.fields.email.label": "Почта"`. Addresses are those of the specification under Translations, Addresses. Only the listed addresses are checked; an address with no text slot fails.
 - `cases` lists value cases. It may be empty or missing.
@@ -31,7 +32,7 @@ Each file holds one `definition`, the issues `checkDefinition` reports for it, a
 1. `issues`: take the `error` issues from `checkDefinition(definition)`. Compare their `code` and `path` with `issues`. Other fields of an issue (`message`, `hint`) are not part of the corpus.
 2. `warnings`: if set, take the `warning` issues and compare them the same way.
 3. Both lists are compared as lists of entries after sorting by `path` and then by `code`, with plain code-unit string order. An entry may appear more than once, and the count must match. The order in the file does not matter.
-4. If `issues` is not empty, creating the engine with no values and running the server validation with `{}` must both fail with a definition error. If `warnings` lists `slow-pattern` entries, running the server validation with `{}` must fail with a definition error whose issues are exactly those entries, as `slow-pattern` errors.
+4. If `issues` is not empty, creating the engine with no values and running the server validation with `{}` must both fail with a definition error. If `refused` is not empty, running the server validation with `{}` must fail with a definition error whose issues are exactly those entries. If `refused` is `[]`, it must not fail.
 
 The checks run on the definition as written, without `overlay`. A structural error (wrong type, missing required property) stops the checks below it in the same node, so a condition without `field` reports only `missing-property`.
 5. `texts`: if set, apply `overlay` to the definition, list its text slots, and compare the text at each listed address. Do this even when step 1 rejected the definition: text slots do not depend on validation.
@@ -78,6 +79,8 @@ The corpus and the scenarios assume the ECMAScript semantics of the TypeScript i
 ## Versions
 
 The corpus and the scenarios change with `@formhaus/core`. An implementation pins them to a release tag of this repository, such as `@formhaus/core@0.18.0`, and states which tag it passes.
+
+Since 1.4.1, the server runs a `slow-pattern` pattern that backtracks at most quadratically, and `refused` lists the patterns it refuses. In 1.4.0 the server refuses every `slow-pattern` pattern.
 
 Since 0.21, `serverValues` and `fixtures/submissions` expect the server to drop every value that fails its type check, at top level and in group items. Earlier tags expect a top-level value with a type error to be returned with its error.
 
