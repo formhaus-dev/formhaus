@@ -57,14 +57,14 @@ A repeated group that starts or ends with a character nothing else in it matches
 | `^\d+\.?\d*$` | `^\d+(\.\d*)?$` |
 | `^([a-z]+\.?)+$` | `^[a-z]+(\.[a-z]+)*$` |
 
-The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) runs a slow pattern only when it starts with `^`, has no `|` outside a group, and no more than two overlapping repeats in a row can share the same characters, as in `^\d+\.?\d*$` or `^[0-9]+\s?[0-9]+$`. Such a pattern takes about 40 ms on a 10,000-character value, and 0.5 ms on 1,000. Set `maxLength` to keep it short. For any other slow pattern, `validateSubmission()` throws a `FormDefinitionError` with a `slow-pattern` error and runs nothing:
+The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) runs a slow pattern only when it is quadratic: it starts with `^` and has exactly one pair of overlapping repeats, as in `^\d+\.?\d*$` or `^[0-9]+\s?[0-9]+$`. A pattern with `|`, a lookahead or lookbehind, a backreference, an optional group, or a `{0,n}` quantifier is not quadratic. On the server, a value longer than 1000 characters fails a quadratic pattern without being matched, so one match takes at most about 1 ms. For any other slow pattern, `validateSubmission()` throws a `FormDefinitionError` with a `slow-pattern` error and runs nothing:
 
-| Pattern | 10,000 characters | `validateSubmission()` |
-|---------|-------------------|------------------------|
-| `^\d+\.?\d*$` | 40 ms | runs |
-| `\d+\.?\d*$` | 2 min | throws |
-| `^\d*\d*\d*$` | 2 min | throws |
-| `^(a+)+$` | years | throws |
+| Pattern | 1,000 characters | 10,000 characters | `validateSubmission()` |
+|---------|------------------|-------------------|------------------------|
+| `^\d+\.?\d*$` | 0.4 ms | 35 ms | runs, up to 1000 characters |
+| `\d+\.?\d*$` | 220 ms | 2 min | throws |
+| `^\d*\d*\d*$` | 230 ms | 2 min | throws |
+| `^(a+)+$` | years | years | throws |
 
 A value longer than 10,000 characters fails `pattern` without being matched.
 
