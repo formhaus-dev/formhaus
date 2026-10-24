@@ -184,16 +184,21 @@ for (const name of [
   'schema-server-check',
   'schema-confirm',
   'schema-empty',
+  'schema-confirm-valibot',
+  'schema-empty-valibot',
+  'schema-server-check-valibot',
+  'schema-confirm-arktype',
+  'schema-empty-arktype',
   'locale-catalogs',
 ])
   files[`src/${name}.ts`] = readFileSync(join(root, `docs/recipes/snippets/${name}.ts`), 'utf8');
 files['src/locale-catalogs-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/locale-catalogs-page.tsx'), 'utf8');
 
-const arktype = 'src/schema-arktype.ts';
+const arktype = ['src/schema-arktype.ts', 'src/schema-confirm-arktype.ts', 'src/schema-empty-arktype.ts'];
 const checks = {
-  bundler: { module: 'ESNext', exclude: [arktype] },
-  node16: { module: 'Node16', exclude: ['src/steps-in-url-page.tsx', arktype] },
-  'bundler, ArkType without its lib check': { module: 'ESNext', include: [arktype], skipLibCheck: true },
+  bundler: { module: 'ESNext', exclude: arktype },
+  node16: { module: 'Node16', exclude: ['src/steps-in-url-page.tsx', ...arktype] },
+  'bundler, ArkType without its lib check': { module: 'ESNext', include: arktype, skipLibCheck: true },
 };
 const configs = Object.keys(checks).map((_, index) => `tsconfig.${index}.json`);
 Object.values(checks).forEach(({ module, include = ['src'], exclude = [], skipLibCheck = false }, index) => {

@@ -1,0 +1,20 @@
+{
+  "id": "account",
+  "title": "Create an account",
+  "submit": { "label": "Create account" },
+  "steps": [
+    {
+      "id": "email",
+      "title": "Email",
+      "fields": [{ "key": "email", "type": "text", "label": "Email", "validation": { "required": true } }]
+    },
+    {
+      "id": "password",
+      "title": "Password",
+      "fields": [
+        { "key": "password", "type": "password", "label": "Password", "validation": { "required": true } },
+        { "key": "confirm", "type": "password", "label": "Repeat the password", "validation": { "required": true } }
+      ]
+    }
+  ]
+}

@@ -8,10 +8,12 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } 
 import LucideIcon from '../landing/LucideIcon.vue';
 import PlayBar from './PlayBar.vue';
 import PlayCode from './PlayCode.vue';
+import PlayExamples from './PlayExamples.vue';
 import PlaySkeleton from './PlaySkeleton.vue';
-import { templateId, useDefinition } from './definition';
-import { mountJsonEditor, type JsonEditor } from './json-editor';
-import { templateSlug } from './play-catalog';
+import PlayWidths from './PlayWidths.vue';
+import { useDefinition } from './definition';
+import { type Editor, mountEditor } from './editor';
+import { playSources, sharedPreset, templateId, templateSlug } from './play-catalog';
 import { issueText, readHash, writeHash } from './play-share';
 import { appUrl, type Code, codeUrl, designs, presets, stackblitz, type WidthId, widths } from './play-state';
 import { usePreviews } from './previews';
@@ -25,7 +27,7 @@ const codes = reactive(new Map<string, Code>());
 const copied = ref(false);
 const mobile = ref(false);
 const editorHost = ref<HTMLElement>();
-let editor: JsonEditor | null = null;
+let editor: Editor | null = null;
 let timer: ReturnType<typeof setTimeout> | undefined;
 let hashTimer: ReturnType<typeof setTimeout> | undefined;
 let copyTimer: ReturnType<typeof setTimeout> | undefined;
@@ -34,6 +36,7 @@ const { isDark } = useData();
 const form = useDefinition(
   () => editor,
   () => previews.send(designId.value),
+  playSources,
 );
 const previews = usePreviews(form.definition, isDark);
 const { text, presetId, status, statusKind, listed, loading } = form;
@@ -45,7 +48,7 @@ const stale = computed(() => blocking.value > 0 && previews.rendered.has(designI
 const stageWidth = computed(() => (mobile.value ? 'desktop' : width.value));
 const frameWidth = computed(() => widths.find((entry) => entry.id === stageWidth.value)?.px ?? 0);
 
-const share = () => writeHash({ design: designId.value, width: width.value, ...form.shared() });
+const share = () => writeHash({ design: designId.value, width: width.value, ...sharedPreset(form.shared()) });
 
 function scheduleHash() {
   clearTimeout(hashTimer);
@@ -125,7 +128,7 @@ onMounted(async () => {
   window.addEventListener('hashchange', restore);
   await restore();
   await nextTick();
-  if (editorHost.value) editor = await mountJsonEditor(editorHost.value, text.value, onEdit);
+  if (editorHost.value) editor = await mountEditor(editorHost.value, text.value, onEdit);
   form.validate();
 });
 
@@ -137,15 +140,14 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="play" :data-tab="tab">
-    <PlayBar
-      :preset-id="presetId"
-      :design-id="designId"
-      :copied="copied"
-      @preset="choosePreset"
-      @design="chooseDesign"
-      @share="copyLink"
-      @stackblitz="openStackblitz"
-    />
+    <PlayBar :copied="copied" @share="copyLink">
+      <PlayExamples :preset-id="presetId" :design-id="designId" @preset="choosePreset" @design="chooseDesign" />
+      <template #actions>
+        <button type="button" class="play-button play-button--primary" @click="openStackblitz">
+          <LucideIcon name="external-link" /><span>StackBlitz</span>
+        </button>
+      </template>
+    </PlayBar>
 
     <nav class="play-tabs" aria-label="Panels">
       <button v-for="entry in ['json', 'preview', 'code'] as const" :key="entry" type="button" :aria-pressed="tab === entry" @click="tab = entry">
@@ -183,21 +185,7 @@ onBeforeUnmount(() => {
             {{ design.label }} <span class="play-pane__muted">· {{ design.framework }}</span>
             <span v-if="design.lightOnly && isDark" class="play-note" title="This design system has no dark mode">Light only</span>
           </span>
-          <div v-if="outView === 'preview'" class="play-seg play-seg--icons" role="radiogroup" aria-label="Width" @keydown="roving">
-            <button
-              v-for="entry in widths"
-              :key="entry.id"
-              type="button"
-              role="radio"
-              :aria-checked="entry.id === width"
-              :tabindex="entry.id === width ? 0 : -1"
-              :aria-label="entry.label"
-              :title="entry.label"
-              @click="chooseWidth(entry.id)"
-            >
-              <LucideIcon :name="entry.icon" />
-            </button>
-          </div>
+          <PlayWidths v-if="outView === 'preview'" :width="width" @choose="chooseWidth" />
         </div>
 
         <div v-show="outView === 'preview'" class="play-stage" :data-width="stageWidth">

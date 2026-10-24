@@ -74,12 +74,15 @@ export const sharedNav: DefaultTheme.NavItem[] = [
   { text: 'Playground', link: '/playground', activeMatch: '^/play' },
 ];
 
+export const blogPublished = false;
+
 export async function sharedThemeConfig() {
   const count = await fetchStarCount();
   return {
     logo: { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg', alt: 'Formhaus' },
     siteTitle: false as const,
     nav: sharedNav,
+    blog: blogPublished,
     githubStars: count === null ? null : { count, label: formatStarCount(count) },
   };
 }
