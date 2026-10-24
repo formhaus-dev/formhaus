@@ -25,5 +25,6 @@ export interface MapControlsOptions<Shell, View, Matrix, Controls> {
   labels?: (f: View) => object;
   kinds?: Partial<Record<FieldType, ControlKind>>;
   matrix?: Matrix;
+  freeText?: boolean;
   controls: Controls;
 }
