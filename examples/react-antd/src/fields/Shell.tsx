@@ -2,16 +2,11 @@ import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import { Form, Typography } from 'antd';
 
-const help = (f: FieldProps) =>
-  (f.helperText || f.error) && (
-    <>
-      {f.helperText && (
-        <div id={f.helperId} className="field-help">
-          {f.helperText}
-        </div>
-      )}
-      {f.error && <div id={f.errorId}>{f.error}</div>}
-    </>
+export const RequiredMark = ({ f }: { f: FieldProps }) =>
+  f.required && (
+    <span className="required-mark" aria-hidden="true">
+      *
+    </span>
   );
 
 export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
@@ -21,12 +16,16 @@ export function Shell({ kind, f, rootProps, anchors, children }: ControlShellPro
       htmlFor={f.id}
       required={f.required}
       validateStatus={f.invalid ? 'error' : undefined}
-      help={help(f)}
+      help={f.error && <div id={f.errorId}>{f.error}</div>}
+      extra={f.helperText && <div id={f.helperId}>{f.helperText}</div>}
     >
       {kind === 'inline' ? (
         <span className="inline-label">
           {children}
-          <label htmlFor={f.id}>{f.label}</label>
+          <label htmlFor={f.id}>
+            <RequiredMark f={f} />
+            {f.label}
+          </label>
         </span>
       ) : (
         children
@@ -45,11 +44,7 @@ export function Shell({ kind, f, rootProps, anchors, children }: ControlShellPro
   return kind === 'group' ? (
     <fieldset {...rootProps} className="choice-group">
       <legend>
-        {f.required && (
-          <span className="required-mark" aria-hidden="true">
-            *
-          </span>
-        )}
+        <RequiredMark f={f} />
         {f.label}
       </legend>
       {item}
