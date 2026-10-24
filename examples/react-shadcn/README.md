@@ -21,15 +21,12 @@ The project was created with `shadcn init --template vite --base base --preset n
 
 ## Files
 
-- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a shadcn renderer.
-- [src/fields/TextField.tsx](src/fields/TextField.tsx) renders text, email, phone, number, password, and date fields with `Input`.
-- [src/fields/SelectField.tsx](src/fields/SelectField.tsx) renders `select` with `Select`.
-- [src/fields/RadioField.tsx](src/fields/RadioField.tsx) and [src/fields/CheckboxField.tsx](src/fields/CheckboxField.tsx) use `RadioGroup` and `Checkbox`.
-- [src/fields/MultiselectField.tsx](src/fields/MultiselectField.tsx) renders `multiselect` as a group of `Checkbox`es and emits a string array.
-- [src/fields/TextareaField.tsx](src/fields/TextareaField.tsx) renders `textarea` with `Textarea`.
+- [src/component-map.tsx](src/component-map.tsx) maps the field types to shadcn components with `mapControls`, one entry per type: `Input`, `Textarea`, `Checkbox`, `Switch` and `RadioGroup`, plus a checkbox group for `multiselect`.
+- [src/fields/Shell.tsx](src/fields/Shell.tsx) draws the label, helper text and error around each control.
+- [src/fields/choices.tsx](src/fields/choices.tsx) builds the radio, checkbox, scale and star options. [SelectControl.tsx](src/fields/SelectControl.tsx) wraps `Select`, [AutocompleteInput.tsx](src/fields/AutocompleteInput.tsx) is an `Input` with a `<datalist>`, and [MatrixRow.tsx](src/fields/MatrixRow.tsx) is a row inside a matrix section.
 - [src/FormActions.tsx](src/FormActions.tsx) renders Back and Continue with `Button`.
 - [src/definition.json](src/definition.json) is a branching form: the Team plan routes to company details, the Personal plan to a name step.
 
 ## Use as a starter
 
-Copy the folder, then change `definition.json`. Add more shadcn components with `pnpm dlx shadcn@latest add <name>` and map them in `component-map.ts`.
+Copy the folder, then change `definition.json`. Add more shadcn components with `pnpm dlx shadcn@latest add <name>` and map them in `component-map.tsx`.
