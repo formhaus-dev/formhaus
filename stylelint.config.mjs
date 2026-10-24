@@ -41,6 +41,7 @@ export default {
     '**/storybook-static/**',
     'docs/.vitepress/cache/**',
     'docs/.vitepress/dist/**',
+    'docs/public/play/apps/**',
     'examples/**',
     'packages/figma/**',
   ],

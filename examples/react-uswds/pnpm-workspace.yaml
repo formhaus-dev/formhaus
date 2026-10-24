@@ -1,0 +1,11 @@
+packages:
+  - '.'
+minimumReleaseAge: 10080
+minimumReleaseAgeExclude:
+  - '@formhaus/*'
+blockExoticSubdeps: true
+strictDepBuilds: true
+allowBuilds:
+  esbuild: true
+  '@parcel/watcher': false
+trustPolicy: no-downgrade

@@ -21,31 +21,25 @@ pnpm add @formhaus/core @formhaus/react
 
 ## Component map
 
-Each key is a field type. Types without an entry fall back to the built-in HTML fields.
+[`mapControls`](/guide/design-systems) maps one shadcn/ui control per field type. Types without an entry fall back to the built-in HTML fields.
 
-<<< @/../examples/react-shadcn/src/component-map.ts
+<<< @/../examples/react-shadcn/src/component-map.tsx
 
-## Fields
+## Shell
 
-Every field receives `FieldComponentProps`: the `field` definition, `value`, `error`, `loading`, `disabled`, `onChange` and `onBlur`.
+One shell renders the label, the helper, the error and the required mark for every control:
 
-<<< @/../examples/react-shadcn/src/fields/FieldShell.tsx
+<<< @/../examples/react-shadcn/src/fields/Shell.tsx
 
-<<< @/../examples/react-shadcn/src/fields/TextField.tsx
+## Choices
+
+Radio, scale, rating and multiselect options, with image tiles when the options have images:
+
+<<< @/../examples/react-shadcn/src/fields/choices.tsx
 
 The Base UI `Select` takes the options as `items`, so `SelectValue` shows the option label instead of the stored value:
 
-<<< @/../examples/react-shadcn/src/fields/SelectField.tsx
-
-<<< @/../examples/react-shadcn/src/fields/RadioField.tsx
-
-<<< @/../examples/react-shadcn/src/fields/CheckboxField.tsx
-
-<<< @/../examples/react-shadcn/src/fields/TextareaField.tsx
-
-shadcn/ui has no multiselect. A group of `Checkbox`es emits the string array a `multiselect` field expects:
-
-<<< @/../examples/react-shadcn/src/fields/MultiselectField.tsx
+<<< @/../examples/react-shadcn/src/fields/SelectControl.tsx
 
 ## Next.js
 

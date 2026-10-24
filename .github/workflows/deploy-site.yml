@@ -34,6 +34,12 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            docs/pnpm-lock.yaml
+            examples/react-*/pnpm-lock.yaml
+            examples/vue-*/pnpm-lock.yaml
 
       - name: Install
         run: |
@@ -41,7 +47,11 @@ jobs:
           pnpm --dir docs install --frozen-lockfile
 
       - name: Build
-        run: pnpm --dir docs run build
+        run: |
+          pnpm --filter "@formhaus/editor-react..." run build
+          pnpm play:apps --install
+          pnpm --dir docs run build
+          pnpm check:docs-bundle
 
       - name: Upload
         env:

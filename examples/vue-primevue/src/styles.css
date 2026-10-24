@@ -1,0 +1,111 @@
+:root {
+  --scale-background: var(--p-surface-100);
+  --scale-color: var(--p-surface-500);
+  --scale-hover-color: var(--p-surface-700);
+  --scale-checked-color: var(--p-surface-900);
+  --scale-checked-background: var(--p-surface-0);
+  color-scheme: light;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+:root.app-dark {
+  --scale-background: var(--p-surface-950);
+  --scale-color: var(--p-surface-400);
+  --scale-hover-color: var(--p-surface-300);
+  --scale-checked-color: var(--p-surface-0);
+  --scale-checked-background: var(--p-surface-800);
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--p-surface-50);
+  color: var(--p-text-color);
+}
+
+.app-dark body {
+  background: #121212;
+}
+
+.page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.page__title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress .p-steplist {
+  overflow-x: auto;
+}
+
+.progress__counter,
+.progress__description {
+  margin: 0;
+  color: var(--p-text-muted-color);
+}
+
+.progress__title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.summary {
+  margin-top: 1.5rem;
+}
+
+.summary__title {
+  display: block;
+  margin-bottom: 0.25rem;
+}
+
+.summary__step {
+  margin: 0.5rem 0 0;
+  font-weight: 500;
+}
+
+.summary__list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.summary__list a {
+  color: inherit;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.actions__secondary {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.dialog {
+  width: min(28rem, calc(100vw - 2rem));
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

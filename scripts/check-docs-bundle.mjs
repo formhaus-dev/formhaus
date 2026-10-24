@@ -45,3 +45,13 @@ if (!readFileSync(mount, 'utf8').includes(reactMarker))
   problems.push('the React marker is missing from the mount chunk, so the landing check cannot detect React');
 
 for (const problem of problems) console.warn(`note: ${problem}`);
+
+const apps = JSON.parse(readFileSync(new URL('../docs/.vitepress/components/play/apps.json', import.meta.url), 'utf8'));
+const missing = apps.flatMap(({ id }) =>
+  ['index.html', 'code.json'].filter((file) => !existsSync(join(dist, 'play/apps', id, file))).map((file) => `${id}/${file}`),
+);
+console.log(`playground apps: ${apps.length - new Set(missing.map((path) => path.split('/')[0])).size} of ${apps.length} built`);
+if (missing.length) {
+  console.error(`missing playground files: ${missing.join(', ')}`);
+  process.exitCode = 1;
+}

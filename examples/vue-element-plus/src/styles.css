@@ -1,0 +1,90 @@
+:root {
+  color-scheme: light;
+  font-family: var(--el-font-family);
+}
+
+:root.dark {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  background: var(--el-bg-color-page);
+  color: var(--el-text-color-primary);
+}
+
+:root.dark body {
+  background: #121212;
+}
+
+.page {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.page__title {
+  margin: 0;
+  font-size: var(--el-font-size-extra-large);
+  font-weight: 600;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress__counter,
+.progress__description {
+  align-self: flex-start;
+}
+
+.progress__title {
+  margin: 0.5rem 0 0;
+  font-size: var(--el-font-size-large);
+  font-weight: 600;
+}
+
+.progress__description {
+  margin: 0;
+}
+
+.summary {
+  margin-bottom: 1rem;
+}
+
+.summary__step {
+  margin: 0.5rem 0 0;
+  font-weight: 600;
+}
+
+.summary__list {
+  margin: 0.25rem 0 0;
+  padding-left: 1.25rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.actions__secondary {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actions__secondary .el-button + .el-button {
+  margin-left: 0;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

@@ -1,36 +1,26 @@
-import type { FieldComponentProps } from '@formhaus/react';
+import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import Autocomplete from '@mui/material/Autocomplete';
-import MuiTextField from '@mui/material/TextField';
+import TextField from '@mui/material/TextField';
+import { labels } from './shells';
 
-interface Option {
-  value: string;
-  label: string;
-}
-
-export function AutocompleteField({ id, field, value, error, loading, disabled, onChange, onBlur, onFocus }: FieldComponentProps) {
-  const options = (field.options ?? []) as Option[];
-  const selected = options.find((o) => o.value === value) ?? null;
-
+export function AutocompleteField(props: FieldComponentProps) {
+  const f = fieldProps(props);
   return (
     <Autocomplete
-      id={id}
-      options={options}
-      value={selected}
-      getOptionLabel={(opt) => opt.label}
-      isOptionEqualToValue={(a, b) => a.value === b.value}
-      onChange={(_, opt) => onChange(opt?.value ?? '')}
-      onBlur={onBlur}
-      onFocus={onFocus}
-      disabled={disabled || loading}
+      id={f.id}
+      options={f.options}
+      value={f.options.find((option) => option.value === f.value) ?? null}
+      onChange={(_, option) => f.change(option?.value ?? '')}
+      onBlur={f.blur}
+      onFocus={f.focus}
+      disabled={f.disabled}
       fullWidth
-      renderInput={(params) => (
-        <MuiTextField
+      renderInput={({ inputProps, InputProps, InputLabelProps, ...params }) => (
+        <TextField
           {...params}
-          label={field.label}
-          placeholder={field.placeholder}
-          error={!!error}
-          helperText={error || field.helperText}
-          margin="normal"
+          {...labels(f)}
+          placeholder={f.placeholder}
+          slotProps={{ input: InputProps, inputLabel: InputLabelProps, htmlInput: { ...inputProps, 'data-testid': f.testId } }}
         />
       )}
     />

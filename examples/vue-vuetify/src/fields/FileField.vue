@@ -1,27 +1,28 @@
-<script setup>
-defineProps({
-  field: { type: Object, required: true },
-  id: { type: String, default: undefined },
-  modelValue: { default: undefined },
-  error: { type: String, default: undefined },
-  loading: { type: Boolean, default: false },
-  disabled: { type: Boolean, default: false },
-});
+<script setup lang="ts">
+import { fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
 
-const emit = defineEmits(['update:modelValue', 'blur', 'focus']);
+const props = defineProps(fieldComponentProps);
+const emit = defineEmits(fieldComponentEmits);
+const f = useFieldProps(props, emit);
 </script>
 
 <template>
-  <v-file-input
-    :id="id"
-    :label="field.label"
-    :accept="field.accept"
-    :error-messages="error ? [error] : []"
-    :hint="field.helperText"
-    :persistent-hint="!!field.helperText"
-    :disabled="disabled || loading"
-    @update:model-value="(files) => emit('update:modelValue', files && files.length > 0 ? files[0] : null)"
-    @blur="emit('blur')"
-    @focus="emit('focus')"
-  />
+  <div data-fh="field">
+    <v-file-input
+      :id="f.id"
+      :name="f.name"
+      :accept="field.accept"
+      :label="f.label"
+      :disabled="f.disabled"
+      :aria-required="f.input['aria-required']"
+      :aria-invalid="f.input['aria-invalid']"
+      :error-messages="f.error"
+      :hint="f.helperText"
+      :persistent-hint="!!f.helperText"
+      :data-testid="f.testId"
+      @update:model-value="(files: File | File[]) => f.change([files].flat()[0] ?? null)"
+      @blur="f.blur"
+      @focus="f.focus"
+    />
+  </div>
 </template>

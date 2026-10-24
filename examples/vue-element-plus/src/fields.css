@@ -1,0 +1,171 @@
+.fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  min-width: 0;
+  margin: 0 0 22px;
+  padding: 0;
+  border: 0;
+}
+
+.field > .el-form-item {
+  margin-bottom: 0;
+}
+
+.field__legend {
+  margin-bottom: 8px;
+  padding: 0;
+  color: var(--el-text-color-regular);
+  font-size: var(--el-form-label-font-size);
+  line-height: 22px;
+}
+
+.field__inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field__inline label {
+  color: var(--el-text-color-regular);
+  font-size: var(--el-font-size-base);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.field__inline .el-checkbox {
+  margin-right: 0;
+}
+
+.field .el-form-item__content {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.field__control {
+  width: 100%;
+}
+
+.field__control.el-date-editor {
+  --el-date-editor-width: 100%;
+}
+
+.field__helper {
+  align-self: flex-start;
+  line-height: 1.5;
+}
+
+.field__error {
+  position: static;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.field--inline .choices {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.choices--tiles {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr));
+  gap: 0.75rem;
+}
+
+.choices--tiles .el-radio {
+  height: auto;
+  margin: 0;
+  padding: 0.5rem;
+  align-items: flex-start;
+}
+
+.choices--tiles .el-radio__label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.choice__image {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--el-border-radius-base);
+}
+
+.scale__anchors {
+  display: flex;
+  margin-top: 0.5rem;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--el-text-color-secondary);
+  font-size: var(--el-font-size-small);
+}
+
+.section {
+  margin-bottom: 22px;
+}
+
+.section__title {
+  margin: 0;
+  font-size: var(--el-font-size-medium);
+  font-weight: 600;
+}
+
+.section__description {
+  margin: 0.25rem 0 0;
+}
+
+.matrix__row {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) repeat(var(--matrix-columns), minmax(3.5rem, 5rem));
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+}
+
+.matrix__cells {
+  display: contents;
+}
+
+.matrix__header {
+  padding-top: 0;
+}
+
+.matrix__cell {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.matrix__cell .el-radio {
+  margin: 0;
+}
+
+.matrix__error {
+  position: static;
+  grid-column: 1 / -1;
+}
+
+.group__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.group__title {
+  margin: 0;
+  font-size: var(--el-font-size-base);
+  font-weight: 600;
+}
+
+.group__error {
+  margin: 0 0 0.75rem;
+}

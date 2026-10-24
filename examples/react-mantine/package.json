@@ -1,0 +1,28 @@
+{
+  "name": "@formhaus-examples/react-mantine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@formhaus/core": "^1.4.0",
+    "@formhaus/react": "^1.4.0",
+    "@mantine/core": "^9.7.3",
+    "@mantine/dates": "^9.7.3",
+    "@mantine/hooks": "^9.7.3",
+    "dayjs": "^1.11.23",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "typescript": "~6.0.2",
+    "vite": "^8.3.4"
+  }
+}

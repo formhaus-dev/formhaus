@@ -29,6 +29,7 @@ export const categoryLabel = (id: string) => categories.find((category) => categ
 
 export const plural = (count: number, word: string) => `${count} ${word}${count === 1 ? '' : 's'}`;
 
-export const counts = ({ steps, fields }: TemplateEntry) => `${plural(steps, 'step')} · ${plural(fields, 'field')}`;
+export const counts = ({ steps, fields }: Pick<TemplateEntry, 'steps' | 'fields'>) =>
+  `${plural(steps, 'step')} · ${plural(fields, 'field')}`;
 
 export const cloudUrl = (slug: string) => `${appUrl}/forms/new?template=${encodeURIComponent(slug)}`;
