@@ -19,7 +19,7 @@ function select(event: FileUploadSelectEvent) {
 </script>
 
 <template>
-  <FieldShell kind="group" :field="field" :f="f" :root-props="root">
+  <FieldShell kind="group" :field="field" :f="f" :root-props="root" :anchors="[]">
     <div class="file">
       <FileUpload
         mode="basic"

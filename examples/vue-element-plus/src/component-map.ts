@@ -1,8 +1,8 @@
-import { optionText, optionValue } from '@formhaus/core/fields';
 import type { FieldComponentMap, FieldProps } from '@formhaus/vue';
 import { type ControlOption, mapControls } from '@formhaus/vue/controls';
 import {
   ElAutocomplete,
+  ElButton,
   ElCheckbox,
   ElDatePicker,
   ElInput,
@@ -13,10 +13,11 @@ import {
   ElSelect,
   ElSwitch,
   ElTimePicker,
+  ElUpload,
+  type UploadFile,
 } from 'element-plus';
 import { h, type VNode } from 'vue';
 import FieldShell from './fields/FieldShell.vue';
-import FileField from './fields/FileField.vue';
 import MatrixRow from './fields/MatrixRow.vue';
 
 const testId = (f: FieldProps, option: ControlOption, index: number) =>
@@ -54,6 +55,43 @@ const picked =
     class: 'field__control',
   });
 
+const upload = (f: FieldProps) => {
+  const files = f.value instanceof File ? [{ name: f.value.name }] : [];
+  return {
+    id: undefined,
+    'aria-invalid': undefined,
+    'aria-required': undefined,
+    'aria-describedby': undefined,
+    'data-testid': undefined,
+    onBlur: undefined,
+    onFocus: undefined,
+    fileList: files,
+    autoUpload: false,
+    onChange: (file: UploadFile) => f.change(file.raw ?? null),
+    onRemove: () => f.change(null),
+    children: () =>
+      h(ElButton, { ...f.attrs, type: f.invalid ? 'danger' : 'default', plain: true }, () =>
+        files.length ? 'Replace file' : 'Choose file',
+      ),
+  };
+};
+
+const cells = (f: FieldProps, options: ControlOption[]) => ({
+  'aria-labelledby': `${f.id}-label`,
+  'aria-describedby': f.describedBy,
+  class: 'matrix__cells',
+  children: () =>
+    options.map((option, index) =>
+      h('span', { key: option.value, class: 'matrix__cell' }, [
+        h(
+          ElRadio,
+          { value: option.value, 'aria-label': option.label, 'data-testid': testId(f, option, index), onBlur: f.blur, onFocus: f.focus },
+          () => h('span', { class: 'sr-only' }, option.label),
+        ),
+      ]),
+    ),
+});
+
 const radios = (f: FieldProps, options: ControlOption[]) => {
   const tiles = options.some((option) => option.image);
   return {
@@ -72,11 +110,12 @@ export const components: FieldComponentMap = {
   ...mapControls({
     shell: FieldShell,
     kinds: { multiselect: 'input' },
-    matrix: MatrixRow,
+    freeText: true,
+    matrix: mapControls({ shell: MatrixRow, controls: { radio: [ElRadioGroup, cells] } }).radio,
     controls: {
       input: ElInput,
       password: [ElInput, (f) => ({ type: 'password', showPassword: true, autocomplete: f.attrs.autocomplete ?? 'off' })],
-      textarea: [ElInput, () => ({ type: 'textarea', autosize: { minRows: 3 } })],
+      textarea: [ElInput, () => ({ type: 'textarea' })],
       number: [
         ElInputNumber,
         (f) => ({
@@ -95,12 +134,10 @@ export const components: FieldComponentMap = {
       autocomplete: [
         ElAutocomplete,
         (f) => ({
-          modelValue: optionText(f.options, f.value),
           fetchSuggestions: (query: string, show: (items: { value: string }[]) => void) => {
             const term = query.trim().toLowerCase();
             show(f.options.filter((option) => option.label.toLowerCase().includes(term)).map((option) => ({ value: option.label })));
           },
-          'onUpdate:modelValue': (text: string | number) => f.change(optionValue(f.options, String(text))),
           clearable: true,
           class: 'field__control',
         }),
@@ -116,7 +153,7 @@ export const components: FieldComponentMap = {
         }),
       ],
       rating: [ElRate, (f, options) => ({ max: options.length, clearable: true, ariaLabel: f.label })],
+      file: [ElUpload, upload],
     },
   }),
-  file: FileField,
 };

@@ -32,6 +32,10 @@ export function Textarea(props: ComponentProps<'textarea'>) {
   return <textarea rows={5} {...props} className={classes('govuk-textarea', props)} />;
 }
 
+export function FileUpload(props: ComponentProps<'input'>) {
+  return <input {...props} type="file" className={classes('govuk-file-upload', props)} />;
+}
+
 export function Select({ options, placeholder, ...props }: ComponentProps<'select'> & { options: ControlOption[]; placeholder?: string }) {
   return (
     <select {...props} className={classes('govuk-select', props)}>

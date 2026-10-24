@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.4.0
-        version: 1.4.0
+        specifier: ^1.5.0
+        version: 1.5.0
       '@formhaus/react':
-        specifier: ^1.4.0
-        version: 1.4.0(@formhaus/core@1.4.0)(react@19.3.1)
+        specifier: ^1.5.0
+        version: 1.5.0(@formhaus/core@1.5.0)(react@19.3.1)
       '@uswds/uswds':
         specifier: ^3.14.0
         version: 3.14.0
@@ -48,15 +48,15 @@ packages:
   '@bufbuild/protobuf@2.16.0':
     resolution: {integrity: sha512-FWa0sPlqYGJgpTs6OxBRcL/AW4JT0OIO+W1ajerluoTVh8CV0B7XM1qsNCRgnkSCkRCgOICKHRQlY17jrsm0+Q==}
 
-  '@formhaus/core@1.4.0':
-    resolution: {integrity: sha512-ujdYKZ9SmWO+ZcQJgOmmQ6ujnu35HPU0bZN/jivnVc1bFEbwXgxsZ3/B6aBCBwTKWSrK/8VFeUvS5b6LFpsRrQ==}
+  '@formhaus/core@1.5.0':
+    resolution: {integrity: sha512-zgcBuRN8LRrgXfyGuPhq1SW7+9SqRIhHqgJsW3HnyUzvrwdUD7Pz7VS18NSZvmey5HY18d933NFGTWN/DprrnA==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.4.0':
-    resolution: {integrity: sha512-dtHDJRRIQ4lNUvDXYgoPEm+BQJv3SLeW5nOup5+1k67IEMHgPrO595l8BQoYZG826AmUXOszkTxHc1jlIvr4fg==}
+  '@formhaus/react@1.5.0':
+    resolution: {integrity: sha512-eiT+tc00SIa5Mh3HZdSH8RJlUKsF8r4CD9qvqYzzz35CFQjsoGilZafNsbPHbh6lee4Zw7/RaLNP9pdfQ9hiEg==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.4.0
+      '@formhaus/core': ~1.5.0
       react: ^18.0.0 || ^19.0.0
 
   '@lit-labs/ssr-dom-shim@1.6.0':
@@ -649,11 +649,11 @@ snapshots:
 
   '@bufbuild/protobuf@2.16.0': {}
 
-  '@formhaus/core@1.4.0': {}
+  '@formhaus/core@1.5.0': {}
 
-  '@formhaus/react@1.4.0(@formhaus/core@1.4.0)(react@19.3.1)':
+  '@formhaus/react@1.5.0(@formhaus/core@1.5.0)(react@19.3.1)':
     dependencies:
-      '@formhaus/core': 1.4.0
+      '@formhaus/core': 1.5.0
       react: 19.3.1
 
   '@lit-labs/ssr-dom-shim@1.6.0': {}

@@ -15,11 +15,12 @@ import { Shell } from './fields/Shell';
 export const components: FieldComponentMap = mapControls({
   shell: Shell,
   matrix: MatrixRow,
+  freeText: true,
   controls: {
     input: Input,
     textarea: Textarea,
     select: [SelectControl, 'options'],
-    autocomplete: [AutocompleteInput, (f) => ({ options: f.options })],
+    autocomplete: [AutocompleteInput, 'options'],
     multiselect: [CheckboxGroup, checkboxes, 'onValueChange'],
     checkbox: [Checkbox, native, 'onCheckedChange'],
     switch: [Switch, native, 'onCheckedChange'],

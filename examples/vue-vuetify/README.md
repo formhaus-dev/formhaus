@@ -18,7 +18,7 @@ Opens at http://localhost:5173.
 - [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a Vuetify component with `mapControls`. Simple types are one line each, and Vuetify draws their label, hint and error.
 - [src/fields/GroupShell.vue](src/fields/GroupShell.vue) wraps radio, scale and rating groups in a `fieldset` with a legend, the scale anchors, the helper text and the error.
 - [src/fields/OptionTiles.vue](src/fields/OptionTiles.vue) renders radio options with images as `v-card` tiles.
-- [src/fields/FileField.vue](src/fields/FileField.vue) and [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) are the file picker and the matrix rows.
+- [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) renders a matrix row around the same `v-radio-group` control as radio fields.
 - [src/actions/](src/actions/) holds the layout slots: progress, error summary, sections, groups, the remove dialog and the actions.
 - [src/definition.json](src/definition.json) is the contact form used by the example.
 

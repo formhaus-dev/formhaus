@@ -1,8 +1,5 @@
-import { scaleView } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
-import type { ControlRootProps, ControlShellProps } from '@formhaus/react/controls';
-
-type ShellProps = Omit<ControlShellProps, 'rootProps'> & { rootProps: Partial<ControlRootProps> };
+import type { ControlShellProps } from '@formhaus/react/controls';
 
 function Label({ f }: { f: FieldProps }) {
   return (
@@ -37,10 +34,10 @@ function Notes({ f }: { f: FieldProps }) {
   );
 }
 
-export function Shell({ kind, field, f, rootProps, children }: ShellProps) {
+export function Shell({ kind, field, f, rootProps, anchors, children }: ControlShellProps) {
   const className = f.invalid ? 'usa-form-group usa-form-group--error' : 'usa-form-group';
   const points = field.type === 'scale' || field.type === 'rating';
-  const [start, middle, end] = points ? scaleView(field).anchors : [];
+  const [start, middle, end] = anchors;
   const layout = [
     points && 'scale',
     field.options?.some((option) => option.image) && 'tiles',

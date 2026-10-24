@@ -19,7 +19,7 @@ Opens at http://localhost:5173. The page follows the system color scheme with th
 - [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to an Element Plus component with `mapControls`.
 - [src/layout/index.ts](src/layout/index.ts) maps the layout slots: `ElSteps` for progress, `ElAlert` for the error summary, `ElCard` for sections and groups, `ElDialog` for the remove dialog, `ElButton` for actions.
 - [src/fields/FieldShell.vue](src/fields/FieldShell.vue) wraps each control in `ElFormItem` with its `error` prop and adds the label and helper text.
-- [src/fields/FileField.vue](src/fields/FileField.vue) and [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) are the file picker and the matrix rows.
+- [src/fields/MatrixRow.vue](src/fields/MatrixRow.vue) renders a matrix row around the same `ElRadioGroup` control as radio fields.
 - [src/definition.json](src/definition.json) is a three-step form with every field type.
 
 | Formhaus type | Element Plus component |

@@ -157,6 +157,10 @@ legend.field__label {
   gap: 0.5rem;
 }
 
+.matrix__row > .matrix__cells {
+  display: contents;
+}
+
 .matrix__header {
   margin-bottom: 0.75rem;
   color: var(--p-text-muted-color);

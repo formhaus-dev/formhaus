@@ -1,13 +1,13 @@
-import { scaleView } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import Box from '@mui/material/Box';
+import Button, { type ButtonProps } from '@mui/material/Button';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import Typography from '@mui/material/Typography';
-import type { ReactElement } from 'react';
+import { type InputHTMLAttributes, type ReactElement, useRef } from 'react';
 
 export const labels = (f: FieldProps) => ({
   label: f.label,
@@ -41,8 +41,7 @@ export function InlineShell({ f, rootProps, children }: ControlShellProps) {
   );
 }
 
-export function GroupShell({ field, f, rootProps, children }: ControlShellProps) {
-  const anchors = field.type === 'scale' ? scaleView(field).anchors : [];
+export function GroupShell({ f, rootProps, anchors, children }: ControlShellProps) {
   return (
     <FormControl {...rootProps} component="fieldset" error={f.invalid} fullWidth sx={{ mt: 1, mb: 0.5 }}>
       <FormLabel component="legend" required={f.required} sx={{ mb: 0.5 }}>
@@ -60,5 +59,32 @@ export function GroupShell({ field, f, rootProps, children }: ControlShellProps)
       )}
       <Texts f={f} />
     </FormControl>
+  );
+}
+
+export function FileShell({ f, rootProps, children }: ControlShellProps) {
+  return (
+    <FormControl {...rootProps} error={f.invalid} margin="normal">
+      <FormLabel id={`${f.id}-label`} required={f.required} sx={{ mb: 0.5 }}>
+        {f.label}
+      </FormLabel>
+      {children}
+      <Texts f={f} />
+    </FormControl>
+  );
+}
+
+type FilePickerProps = ButtonProps &
+  Pick<InputHTMLAttributes<HTMLInputElement>, 'accept' | 'onChange'> & { 'aria-required'?: boolean; 'data-testid'?: string };
+
+export function FilePicker({ name, accept, onChange, 'aria-required': _, 'data-testid': testId, ...button }: FilePickerProps) {
+  const input = useRef<HTMLInputElement>(null);
+  return (
+    <>
+      <Button {...button} variant="outlined" onClick={() => input.current?.click()} sx={{ alignSelf: 'flex-start' }}>
+        Choose file
+      </Button>
+      <input ref={input} type="file" hidden name={name} accept={accept} onChange={onChange} data-testid={testId} />
+    </>
   );
 }

@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@formhaus/core": "^1.4.0",
-    "@formhaus/react": "^1.4.0",
+    "@formhaus/core": "^1.5.0",
+    "@formhaus/react": "^1.5.0",
     "@uswds/uswds": "^3.14.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"

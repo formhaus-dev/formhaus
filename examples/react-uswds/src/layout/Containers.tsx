@@ -1,4 +1,3 @@
-import type { FieldOption } from '@formhaus/core';
 import type { FieldsContainerProps, GroupComponentProps, GroupItemComponentProps, SectionComponentProps } from '@formhaus/react';
 import type { CSSProperties } from 'react';
 
@@ -10,8 +9,7 @@ export function FieldsContainer({ rootProps, children }: FieldsContainerProps) {
   );
 }
 
-export function Section({ id, section, title, description, descriptionId, children }: SectionComponentProps) {
-  const columns = section.layout === 'matrix' ? ((section.fields[0] as { options?: FieldOption[] } | undefined)?.options ?? []) : undefined;
+export function Section({ id, title, description, descriptionId, columns, children }: SectionComponentProps) {
   return (
     <fieldset
       id={id}

@@ -2,10 +2,7 @@ import type { SectionComponentProps } from '@formhaus/react';
 import { GroupMessage } from '../fields/GroupMessage';
 import { FormGroup, Stack, Table, TableBody, TableHead, TableHeader, TableRow, Tile } from '@carbon/react';
 
-export function Section({ id, section, title, description, descriptionId, children }: SectionComponentProps) {
-  const first = section.fields[0];
-  const columns = section.layout === 'matrix' && first && 'options' in first ? (first.options ?? []) : null;
-
+export function Section({ id, title, description, descriptionId, columns, children }: SectionComponentProps) {
   return (
     <Tile>
       <FormGroup id={id} legendText={title} aria-describedby={descriptionId}>

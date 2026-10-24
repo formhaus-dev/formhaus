@@ -32,6 +32,7 @@ const inner = (f: FieldProps) => ({ ...root, inputId: f.id, invalid: f.invalid }
 const fluid = (f: FieldProps) => ({ ...inner(f), fluid: true });
 const text = (f: FieldProps) => ({ ...fluid(f), pt: { pcInputText: { root: aria(f) } } });
 const listed = (options: ControlOption[]) => ({ options, optionLabel: 'label', optionValue: 'value' });
+const choice = (f: FieldProps, option: ControlOption, index: number) => f.option({ ...option, value: String(option.value) }, index);
 const placeholders: Record<DateType, string> = { date: 'YYYY-MM-DD', time: 'HH:mm', datetime: 'YYYY-MM-DD HH:mm' };
 
 const picked = (type: DateType) => (f: FieldProps) => ({
@@ -50,13 +51,36 @@ const picked = (type: DateType) => (f: FieldProps) => ({
   },
 });
 
+const cells = (f: FieldProps, options: ControlOption[]) => ({
+  ...root,
+  role: 'radiogroup',
+  'aria-labelledby': `${f.id}-label`,
+  'aria-describedby': f.describedBy,
+  class: 'matrix__cells',
+  children: () =>
+    options.map((option, index) =>
+      h('span', { key: option.value, class: 'matrix__cell' }, [
+        h(RadioButton, {
+          inputId: f.optionId(index),
+          value: option.value,
+          'aria-label': option.label,
+          invalid: f.invalid,
+          disabled: f.disabled,
+          'data-testid': choice(f, option, index)['data-testid'],
+          onBlur: f.blur,
+          onFocus: f.focus,
+        }),
+      ]),
+    ),
+});
+
 const radios = (f: FieldProps, options: ControlOption[]) => ({
   ...root,
   invalid: f.invalid,
   class: ['choices', { 'choices--tiles': options.some((option) => option.image) }],
   children: () =>
     options.map((option, index) => {
-      const { id, 'data-testid': testId, onBlur, onFocus } = f.option({ ...option, value: String(option.value) }, index);
+      const { id, 'data-testid': testId, onBlur, onFocus } = choice(f, option, index);
       return h('label', { key: option.value, for: id, class: 'choice' }, [
         option.image && h('img', { src: option.image, alt: '', class: 'choice__image' }),
         h('span', { class: 'choice__row' }, [
@@ -79,7 +103,8 @@ export const components: FieldComponentMap = {
   ...mapControls({
     shell: FieldShell,
     kinds: { multiselect: 'input' },
-    matrix: MatrixRow,
+    freeText: true,
+    matrix: mapControls({ shell: MatrixRow, controls: { radio: [RadioButtonGroup, cells] } }).radio,
     controls: {
       input: [InputText, look],
       password: [
@@ -98,7 +123,7 @@ export const components: FieldComponentMap = {
       date: [DatePicker, picked('date')],
       time: [DatePicker, picked('time')],
       datetime: [DatePicker, picked('datetime')],
-      textarea: [Textarea, (f) => ({ ...look(f), rows: 4, autoResize: true })],
+      textarea: [Textarea, (f) => ({ ...look(f), autoResize: true })],
       select: [
         Select,
         (f, options) => ({

@@ -23,13 +23,13 @@ npm install @formhaus/core @formhaus/react @mui/material @emotion/react @emotion
 
 ## Shells
 
-Checkbox, switch and the choice groups get a `FormControl` shell:
+Checkbox, switch, the choice groups and the file picker get a `FormControl` shell:
 
 <<< @/../examples/react-mui/src/fields/shells.tsx
 
-## Custom fields
+## Autocomplete
 
-MUI `Autocomplete` needs `renderInput`, so it stays a field written with [field helpers](/guide/custom-fields#field-helpers):
+MUI `Autocomplete` needs `renderInput`, so a small `freeSolo` wrapper is mapped as the autocomplete control with `freeText: true`:
 
 <<< @/../examples/react-mui/src/fields/AutocompleteField.tsx
 
@@ -37,7 +37,7 @@ MUI `Autocomplete` needs `renderInput`, so it stays a field written with [field 
 
 <<< @/../examples/react-mui/src/App.tsx
 
-The option tiles, the file picker and the matrix row are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/fields), the layout slots in [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/actions).
+The option tiles and the matrix row are in [`src/fields`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/fields), the layout slots in [`src/actions`](https://github.com/formhaus-dev/formhaus/tree/main/examples/react-mui/src/actions).
 
 ## Server validation
 

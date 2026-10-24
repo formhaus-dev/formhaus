@@ -1,35 +1,18 @@
-import { type FieldComponentProps, fieldProps } from '@formhaus/react';
+import { type ControlShellProps, mapControls } from '@formhaus/react/controls';
+import { Choices } from './controls';
 
-export function MatrixRow(props: FieldComponentProps) {
-  const f = fieldProps(props);
+function MatrixShell({ f, rootProps, children }: ControlShellProps) {
   return (
     <div
+      {...rootProps}
       className={f.invalid ? 'usa-form-group usa-form-group--error matrix__row' : 'usa-form-group matrix__row'}
-      data-fh="field"
       role="radiogroup"
       aria-labelledby={`${f.id}-label`}
-      aria-describedby={f.describedBy}
     >
       <span id={`${f.id}-label`} className="matrix__label">
         {f.label}
       </span>
-      {f.options.map((option, index) => {
-        const attrs = f.option(option, index);
-        return (
-          <div key={option.value} className="usa-radio matrix__cell">
-            <input
-              {...attrs}
-              type="radio"
-              className="usa-radio__input"
-              aria-invalid={f.aria['aria-invalid']}
-              onChange={() => f.change(option.value)}
-            />
-            <label className="usa-radio__label" htmlFor={attrs.id}>
-              <span className="usa-sr-only">{option.label}</span>
-            </label>
-          </div>
-        );
-      })}
+      {children}
       {f.helperText && (
         <span id={f.helperId} className="usa-hint matrix__hint">
           {f.helperText}
@@ -43,3 +26,8 @@ export function MatrixRow(props: FieldComponentProps) {
     </div>
   );
 }
+
+export const MatrixRow = mapControls({
+  shell: MatrixShell,
+  controls: { radio: [Choices, (f, options) => ({ f, options, matrix: true })] },
+}).radio;

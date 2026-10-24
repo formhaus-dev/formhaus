@@ -10,8 +10,8 @@
   "dependencies": {
     "@carbon/icons-react": "^11.80.0",
     "@carbon/react": "^1.110.0",
-    "@formhaus/core": "^1.4.0",
-    "@formhaus/react": "^1.4.0",
+    "@formhaus/core": "^1.5.0",
+    "@formhaus/react": "^1.5.0",
     "@ibm/plex-mono": "2.5.0",
     "@ibm/plex-sans": "1.1.0",
     "react": "^19.3.0",

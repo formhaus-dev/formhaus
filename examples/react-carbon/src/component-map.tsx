@@ -2,6 +2,7 @@ import type { FieldComponentMap, FieldProps } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
 import {
   Checkbox,
+  ComboBox,
   FilterableMultiSelect,
   NumberInput,
   PasswordInput,
@@ -12,7 +13,6 @@ import {
   TimePicker,
   Toggle,
 } from '@carbon/react';
-import { AutocompleteField } from './fields/AutocompleteField';
 import { Choices } from './fields/Choices';
 import { DateInput } from './fields/DateInput';
 import { DateTimeField } from './fields/DateTimeField';
@@ -21,6 +21,9 @@ import { InlineShell } from './fields/InlineShell';
 import { label, labels, texts } from './fields/labels';
 import { MatrixRow } from './fields/MatrixRow';
 import { Rating } from './fields/Rating';
+
+const matches = ({ item, inputValue }: { item: ControlOption; inputValue: string | null }) =>
+  !inputValue || item.label.toLowerCase().includes(inputValue.toLowerCase());
 
 const group = (f: FieldProps, options: ControlOption[]) => ({
   legendText: label(f),
@@ -33,13 +36,14 @@ const group = (f: FieldProps, options: ControlOption[]) => ({
 export const components: FieldComponentMap = {
   ...mapControls({
     shell: { input: null, inline: InlineShell, group: null },
+    freeText: true,
     kinds: { multiselect: 'input' },
     matrix: MatrixRow,
     controls: {
       input: [TextInput, labels],
       password: [PasswordInput, labels],
       number: [NumberInput, (f) => ({ label: label(f), ...texts(f), allowEmpty: true })],
-      textarea: [TextArea, (f) => ({ ...labels(f), rows: 3 })],
+      textarea: [TextArea, labels],
       date: [DateInput, labels],
       time: [
         TimePicker,
@@ -64,6 +68,20 @@ export const components: FieldComponentMap = {
             </>
           ),
         }),
+      ],
+      autocomplete: [
+        ComboBox<ControlOption>,
+        (f, options) => ({
+          ...texts(f),
+          titleText: label(f),
+          items: options,
+          itemToString: (option: ControlOption | null) => option?.label ?? '',
+          allowCustomValue: true,
+          selectedItem: options.find((option) => option.value === f.value) ?? null,
+          shouldFilterItem: matches,
+          onChange: () => {},
+        }),
+        'onInputChange',
       ],
       multiselect: [
         FilterableMultiSelect<ControlOption>,
@@ -93,7 +111,6 @@ export const components: FieldComponentMap = {
       rating: [Rating, group],
     },
   }),
-  autocomplete: AutocompleteField,
   datetime: DateTimeField,
   file: FileField,
 };

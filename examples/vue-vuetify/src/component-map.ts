@@ -1,8 +1,18 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/vue';
 import { type ControlOption, mapControls } from '@formhaus/vue/controls';
 import { h } from 'vue';
-import { VAutocomplete, VCheckbox, VRadio, VRadioGroup, VRating, VSelect, VSwitch, VTextarea, VTextField } from 'vuetify/components';
-import FileField from './fields/FileField.vue';
+import {
+  VCheckbox,
+  VCombobox,
+  VFileInput,
+  VRadio,
+  VRadioGroup,
+  VRating,
+  VSelect,
+  VSwitch,
+  VTextarea,
+  VTextField,
+} from 'vuetify/components';
 import GroupShell from './fields/GroupShell.vue';
 import MatrixRow from './fields/MatrixRow.vue';
 import OptionTiles from './fields/OptionTiles.vue';
@@ -14,19 +24,39 @@ const starOutline =
 const labels = (f: FieldProps) => ({ label: f.label, errorMessages: f.error, hint: f.helperText, persistentHint: !!f.helperText });
 const items = (_: FieldProps, options: ControlOption[]) => ({ items: options, itemTitle: 'label', itemValue: 'value' });
 const radios = (options: ControlOption[]) => () => options.map((option) => h(VRadio, { label: option.label, value: option.value }));
+const cells = (f: FieldProps, options: ControlOption[]) => ({
+  inline: true,
+  hideDetails: true,
+  error: f.invalid,
+  'aria-labelledby': `${f.id}-label`,
+  'aria-describedby': f.describedBy,
+  class: 'matrix-row__group',
+  children: () =>
+    options.map((option, index) =>
+      h(VRadio, {
+        value: option.value,
+        'aria-label': option.label,
+        'data-testid': f.option({ ...option, value: String(option.value) }, index)['data-testid'],
+        class: 'matrix-row__cell',
+        onBlur: f.blur,
+        onFocus: f.focus,
+      }),
+    ),
+});
 
 export const components: FieldComponentMap = {
   ...mapControls({
     shell: { group: GroupShell },
     labels,
     kinds: { multiselect: 'input' },
-    matrix: MatrixRow,
+    freeText: true,
+    matrix: mapControls({ shell: MatrixRow, controls: { radio: [VRadioGroup, cells] } }).radio,
     controls: {
       input: VTextField,
-      textarea: [VTextarea, () => ({ rows: 3 })],
+      textarea: VTextarea,
       select: [VSelect, items],
       multiselect: [VSelect, (f, options) => ({ ...items(f, options), multiple: true })],
-      autocomplete: [VAutocomplete, items],
+      autocomplete: [VCombobox, (_, options) => ({ items: options.map((option) => option.label) })],
       checkbox: VCheckbox,
       switch: [VSwitch, () => ({ color: 'primary' })],
       radio: [
@@ -50,7 +80,7 @@ export const components: FieldComponentMap = {
           hover: true,
         }),
       ],
+      file: VFileInput,
     },
   }),
-  file: FileField,
 };

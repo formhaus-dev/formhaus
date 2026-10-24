@@ -1,11 +1,10 @@
-import type { FieldOption } from '@formhaus/core';
-import { optionText, optionValue } from '@formhaus/core/fields';
+import type { ControlOption } from '@formhaus/react/controls';
 import { Combobox, useFilter, useListCollection } from '@chakra-ui/react';
 
 interface AutocompleteProps extends Omit<Combobox.InputProps, 'value' | 'onChange'> {
-  options: FieldOption[];
+  options: ControlOption[];
   value: string;
-  onChange: (value: string) => void;
+  onChange: (text: string) => void;
 }
 
 export function Autocomplete({ options, value, onChange, id, name, disabled, ...input }: AutocompleteProps) {
@@ -22,13 +21,12 @@ export function Autocomplete({ options, value, onChange, id, name, disabled, ...
       lazyMount
       unmountOnExit
       inputBehavior="autohighlight"
-      inputValue={optionText(options, value)}
-      value={options.some((option) => option.value === value) ? [value] : []}
+      inputValue={value}
+      value={options.filter((option) => option.label === value).map((option) => String(option.value))}
       onInputValueChange={({ inputValue }) => {
         filter(inputValue);
-        onChange(optionValue(options, inputValue));
+        onChange(inputValue);
       }}
-      onValueChange={({ value: [picked] }) => picked && onChange(picked)}
     >
       <Combobox.Control>
         <Combobox.Input {...input} />

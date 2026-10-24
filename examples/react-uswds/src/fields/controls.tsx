@@ -34,7 +34,7 @@ export function Password(props: ComponentProps<'input'>) {
 }
 
 export function Textarea(props: ComponentProps<'textarea'>) {
-  return <textarea rows={5} {...props} className={classes('usa-textarea', props['aria-invalid'])} />;
+  return <textarea {...props} className={classes('usa-textarea', props['aria-invalid'])} />;
 }
 
 export function Select({ options, placeholder, ...props }: ComponentProps<'select'> & { options: ControlOption[]; placeholder?: string }) {
@@ -50,6 +50,33 @@ export function Select({ options, placeholder, ...props }: ComponentProps<'selec
   );
 }
 
+export function FileInput({ file, ...props }: ComponentProps<'input'> & { file: unknown }) {
+  const picked = file instanceof File ? file : null;
+  return (
+    <div className={props.disabled ? 'usa-file-input usa-file-input--disabled' : 'usa-file-input'}>
+      <div className={picked ? 'usa-file-input__target has-file' : 'usa-file-input__target'}>
+        {picked ? (
+          <>
+            <div className="usa-file-input__preview-heading">
+              Selected file <span className="usa-file-input__choose">Change file</span>
+            </div>
+            <div className="usa-file-input__preview" aria-hidden="true">
+              {picked.name}
+            </div>
+          </>
+        ) : (
+          <div className="usa-file-input__instructions" aria-hidden="true">
+            <span className="usa-file-input__drag-text">Drag file here or </span>
+            <span className="usa-file-input__choose">choose from folder</span>
+          </div>
+        )}
+        <div className="usa-file-input__box" />
+        <input {...props} type="file" className="usa-file-input__input" />
+      </div>
+    </div>
+  );
+}
+
 export function Checkbox(props: ComponentProps<'input'>) {
   return <input {...props} type="checkbox" className="usa-checkbox__input" />;
 }
@@ -61,15 +88,16 @@ interface ChoicesProps {
   onChange: (value: unknown) => void;
   multiple?: boolean;
   stars?: boolean;
+  matrix?: boolean;
 }
 
-export function Choices({ f, options, value, onChange, multiple, stars }: ChoicesProps) {
+export function Choices({ f, options, value, onChange, multiple, stars, matrix }: ChoicesProps) {
   const kind = multiple ? 'checkbox' : 'radio';
   const tiles = options.some((option) => option.image);
   return options.map((option, index) => {
     const attrs = f.option({ ...option, value: String(option.value) }, index);
     return (
-      <div key={option.value} className={`usa-${kind}`}>
+      <div key={option.value} className={matrix ? 'usa-radio matrix__cell' : `usa-${kind}`}>
         <input
           {...attrs}
           type={kind}
@@ -78,9 +106,15 @@ export function Choices({ f, options, value, onChange, multiple, stars }: Choice
           onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(multiple ? toggleOption(value, attrs.value) : event)}
         />
         <label className={`usa-${kind}__label`} htmlFor={attrs.id}>
-          {option.image && <img src={option.image} alt="" className="choice__image" />}
-          {option.label}
-          {stars && <span className="usa-sr-only">{option.value === 1 ? ' star' : ' stars'}</span>}
+          {matrix ? (
+            <span className="usa-sr-only">{option.label}</span>
+          ) : (
+            <>
+              {option.image && <img src={option.image} alt="" className="choice__image" />}
+              {option.label}
+              {stars && <span className="usa-sr-only">{option.value === 1 ? ' star' : ' stars'}</span>}
+            </>
+          )}
         </label>
       </div>
     );

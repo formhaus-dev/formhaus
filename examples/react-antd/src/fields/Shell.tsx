@@ -1,9 +1,8 @@
-import { scaleView } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import { Form, Typography } from 'antd';
 
-export const help = (f: FieldProps) =>
+const help = (f: FieldProps) =>
   (f.helperText || f.error) && (
     <>
       {f.helperText && (
@@ -15,8 +14,7 @@ export const help = (f: FieldProps) =>
     </>
   );
 
-export function Shell({ kind, field, f, rootProps, children }: ControlShellProps) {
-  const anchors = field.type === 'scale' ? scaleView(field).anchors : [];
+export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
   const item = (
     <Form.Item
       label={kind === 'input' ? f.label : undefined}

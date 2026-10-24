@@ -1,7 +1,9 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
 import {
+  Autocomplete,
   Checkbox,
+  FileInput,
   Group,
   Image,
   MultiSelect,
@@ -19,8 +21,6 @@ import {
   TextInput,
 } from '@mantine/core';
 import { DatePickerInput, DateTimePicker, TimePicker } from '@mantine/dates';
-import { AutocompleteField } from './fields/AutocompleteField';
-import { FileField } from './fields/FileField';
 import { GroupShell } from './fields/GroupShell';
 import { labels } from './fields/labels';
 import { MatrixRow } from './fields/MatrixRow';
@@ -64,14 +64,16 @@ export const components: FieldComponentMap = {
   ...mapControls({
     shell: { input: null, inline: null, group: GroupShell },
     labels,
+    freeText: true,
     kinds: { multiselect: 'input' },
     matrix: MatrixRow,
     controls: {
       input: TextInput,
       password: PasswordInput,
       number: NumberInput,
-      textarea: [Textarea, () => ({ autosize: true, minRows: 3 })],
+      textarea: Textarea,
       select: [Select, (_, options) => ({ data: items(options), allowDeselect: false, ...closed })],
+      autocomplete: [Autocomplete, (_, options) => ({ data: options.map((option) => option.label), ...closed })],
       multiselect: [MultiSelect, (_, options) => ({ data: items(options), searchable: true, ...closed })],
       date: [DatePickerInput, (f) => ({ value: f.text || null, valueFormat: 'MMM D, YYYY', clearable: true })],
       datetime: [
@@ -92,8 +94,10 @@ export const components: FieldComponentMap = {
         (f, options) => ({ data: items(options), value: f.text, fullWidth: true, color: 'blue', withItemsBorders: false }),
       ],
       rating: [Rating, (f, options) => ({ count: options.length, size: 'lg', readOnly: f.disabled })],
+      file: [
+        FileInput,
+        (f) => ({ clearable: true, placeholder: f.placeholder ?? 'Choose a file', value: f.value instanceof File ? f.value : null }),
+      ],
     },
   }),
-  autocomplete: AutocompleteField,
-  file: FileField,
 };

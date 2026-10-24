@@ -56,7 +56,6 @@
       "src/component-map.tsx",
       "src/fields/Shell.tsx",
       "src/fields/MatrixRow.tsx",
-      "src/fields/FileField.tsx",
       "src/layout/Feedback.tsx",
       "src/layout/Containers.tsx",
       "src/main.tsx"
@@ -74,7 +73,6 @@
       "src/fields/labels.tsx",
       "src/fields/GroupShell.tsx",
       "src/fields/MatrixRow.tsx",
-      "src/fields/AutocompleteField.tsx",
       "src/layout/index.ts",
       "src/layout/StepProgress.tsx",
       "src/layout/ErrorSummary.tsx"
@@ -127,7 +125,6 @@
       "src/component-map.ts",
       "src/fields/GroupShell.vue",
       "src/fields/OptionTiles.vue",
-      "src/fields/FileField.vue",
       "src/fields/MatrixRow.vue",
       "src/actions/FormActions.vue",
       "src/actions/GroupItem.vue"
@@ -162,7 +159,6 @@
       "src/main.ts",
       "src/component-map.ts",
       "src/fields/FieldShell.vue",
-      "src/fields/FileField.vue",
       "src/fields/MatrixRow.vue",
       "src/layout/index.ts",
       "src/layout/StepProgress.vue"
@@ -181,7 +177,6 @@
       "src/fields/Shell.tsx",
       "src/fields/controls.tsx",
       "src/fields/DateInput.tsx",
-      "src/fields/FileField.tsx",
       "src/layout/ErrorSummary.tsx",
       "src/layout/FormActions.tsx",
       "src/layout/StepProgress.tsx",
