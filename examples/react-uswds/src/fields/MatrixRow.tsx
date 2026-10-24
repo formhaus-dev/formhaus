@@ -1,5 +1,6 @@
 import { type ControlShellProps, mapControls } from '@formhaus/react/controls';
 import { Choices } from './controls';
+import { Label } from './Shell';
 
 function MatrixShell({ f, rootProps, children }: ControlShellProps) {
   return (
@@ -10,7 +11,7 @@ function MatrixShell({ f, rootProps, children }: ControlShellProps) {
       aria-labelledby={`${f.id}-label`}
     >
       <span id={`${f.id}-label`} className="matrix__label">
-        {f.label}
+        <Label f={f} />
       </span>
       {children}
       {f.helperText && (

@@ -35,6 +35,7 @@ function join({ month, day, year }: Parts) {
 
 interface DateProps {
   id: string;
+  'aria-describedby'?: string;
   name: string;
   value: string;
   disabled?: boolean;
@@ -54,60 +55,79 @@ export function MemorableDate({ id, name, value, onChange, ...events }: DateProp
   };
   const input = events['aria-invalid'] ? 'usa-input usa-input--error' : 'usa-input';
 
+  const hints = (part: keyof Parts) => [`${id}-${part}-hint`, events['aria-describedby']].filter(Boolean).join(' ');
+
   return (
-    <div className="usa-memorable-date">
-      <div className="usa-form-group usa-form-group--month usa-form-group--select">
-        <label className="usa-label" htmlFor={id}>
-          Month
-        </label>
-        <select
-          {...events}
-          id={id}
-          name={`${name}-month`}
-          className={events['aria-invalid'] ? 'usa-select usa-input--error' : 'usa-select'}
-          value={current.month}
-          onChange={(event) => update('month', event.target.value)}
-        >
-          <option value="">- Select -</option>
-          {months.map((month, index) => (
-            <option key={month} value={String(index + 1)}>
-              {pad(index + 1)} - {month}
-            </option>
-          ))}
-        </select>
+    <>
+      <span className="usa-hint" aria-hidden="true">
+        Select a month. Enter 1 or 2 digits for the day and 4 digits for the year.
+      </span>
+      <div className="usa-memorable-date">
+        <div className="usa-form-group usa-form-group--month usa-form-group--select">
+          <label className="usa-label" htmlFor={id}>
+            Month
+          </label>
+          <span id={`${id}-month-hint`} className="usa-sr-only">
+            Select a month.
+          </span>
+          <select
+            {...events}
+            aria-describedby={hints('month')}
+            id={id}
+            name={`${name}-month`}
+            className={events['aria-invalid'] ? 'usa-select usa-input--error' : 'usa-select'}
+            value={current.month}
+            onChange={(event) => update('month', event.target.value)}
+          >
+            <option value="">- Select -</option>
+            {months.map((month, index) => (
+              <option key={month} value={String(index + 1)}>
+                {pad(index + 1)} - {month}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="usa-form-group usa-form-group--day">
+          <label className="usa-label" htmlFor={`${id}-day`}>
+            Day
+          </label>
+          <span id={`${id}-day-hint`} className="usa-sr-only">
+            Enter 1 or 2 digits.
+          </span>
+          <input
+            {...events}
+            aria-describedby={hints('day')}
+            id={`${id}-day`}
+            name={`${name}-day`}
+            className={input}
+            inputMode="numeric"
+            maxLength={2}
+            value={current.day}
+            onChange={(event) => update('day', event.target.value)}
+          />
+        </div>
+        <div className="usa-form-group usa-form-group--year">
+          <label className="usa-label" htmlFor={`${id}-year`}>
+            Year
+          </label>
+          <span id={`${id}-year-hint`} className="usa-sr-only">
+            Enter 4 digits.
+          </span>
+          <input
+            {...events}
+            aria-describedby={hints('year')}
+            id={`${id}-year`}
+            name={`${name}-year`}
+            className={input}
+            inputMode="numeric"
+            minLength={4}
+            maxLength={4}
+            value={current.year}
+            onChange={(event) => update('year', event.target.value)}
+          />
+        </div>
       </div>
-      <div className="usa-form-group usa-form-group--day">
-        <label className="usa-label" htmlFor={`${id}-day`}>
-          Day
-        </label>
-        <input
-          {...events}
-          id={`${id}-day`}
-          name={`${name}-day`}
-          className={input}
-          inputMode="numeric"
-          maxLength={2}
-          value={current.day}
-          onChange={(event) => update('day', event.target.value)}
-        />
-      </div>
-      <div className="usa-form-group usa-form-group--year">
-        <label className="usa-label" htmlFor={`${id}-year`}>
-          Year
-        </label>
-        <input
-          {...events}
-          id={`${id}-year`}
-          name={`${name}-year`}
-          className={input}
-          inputMode="numeric"
-          minLength={4}
-          maxLength={4}
-          value={current.year}
-          onChange={(event) => update('year', event.target.value)}
-        />
-      </div>
-    </div>
+    </>
   );
 }
 
