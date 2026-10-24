@@ -42,7 +42,7 @@ export default function App({ definition = initial, mode = 'light' }: { definiti
                 {definition.title}
               </Typography>
             )}
-            <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
+            <FormRenderer definition={definition} components={components} layout={layout} conditionalReveal onSubmit={setSubmitted} />
           </>
         )}
       </Container>
