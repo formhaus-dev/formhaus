@@ -212,6 +212,29 @@ mapControls({
 
 The control gets the typed text as its value. Text that matches an option label saves the option value, other text saves as typed. With two options of the same label, the first one wins. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do.
 
+## Conditional reveal
+
+With [`conditionalReveal`](/guide/conditions#show-a-field-under-its-option) on the renderer, list the types whose adapter draws revealed fields under the options. Each option the adapter gets then has `reveal`: `{ id, open, children }`. Put `children` in a block with that `id` under the option, hide the block while `open` is `false`, and give the option input `aria-controls={option.reveal.id}`. Give a checkbox option `aria-expanded={option.reveal.open}` too.
+
+```tsx
+const radios = (f: FieldProps, options: ControlOption[]) => ({
+  children: options.map((option) => (
+    <Fragment key={option.value}>
+      <FormControlLabel value={option.value} label={option.label} control={<Radio inputProps={{ 'aria-controls': option.reveal?.id }} />} />
+      {option.reveal && (
+        <Box id={option.reveal.id} hidden={!option.reveal.open} sx={{ ml: 1.5, pl: 3, borderLeft: 4, borderColor: 'divider' }}>
+          {option.reveal.children}
+        </Box>
+      )}
+    </Fragment>
+  )),
+})
+
+mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { radio: [RadioGroup, radios] } })
+```
+
+A type that is not listed keeps the revealed fields after the group, so list a type only when its adapter draws `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent.
+
 ## autoAdvance
 
 For `radio`, `scale` and `rating` with `autoAdvance`, `rootProps` wire the same keys as the built-in fields: a click, Enter or Space commits the pick and goes to the next step, arrow keys, Home and End only change the value. A held Space commits once on release. Native radios work as they are, and so do components that pick an option on focus or on their own Space or Enter handler, such as Radix: each press commits once. Clicks, Space and Enter commit only on an option: a native radio, an element with `role="radio"` or `role="option"`, or a button with a `value`. A clear button or a text input inside the group keeps its own keys and does not commit. See [autoAdvance](/guide/custom-fields#autoadvance).

@@ -110,6 +110,7 @@ The helpers above follow these rules. A component without them follows the rules
 | Discrete pick with `autoAdvance` | `onCommit(value)`, optional | `commit` |
 | Blur and focus | `onBlur()`, `onFocus()` | `blur`, `focus` |
 | [Matrix row](#matrix-rows) context | `matrix` | `matrix` |
+| [Revealed fields](/guide/conditions#show-a-field-under-its-option) of the options, built-in and `mapControls` fields only | `reveals` | `reveals` |
 
 ### autoAdvance
 
