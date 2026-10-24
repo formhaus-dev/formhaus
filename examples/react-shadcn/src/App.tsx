@@ -36,7 +36,7 @@ export function App({ definition = initial }: { definition?: FormDefinition }) {
             <CardTitle>{definition.title}</CardTitle>
           </CardHeader>
           <CardContent>
-            <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
+            <FormRenderer definition={definition} components={components} layout={layout} conditionalReveal onSubmit={setSubmitted} />
           </CardContent>
         </Card>
       )}
