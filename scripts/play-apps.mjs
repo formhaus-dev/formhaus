@@ -1,171 +1,22 @@
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { extname, join, relative, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const root = resolve(import.meta.dirname, '..');
 const out = join(root, 'docs/public/play/apps');
+const apps = JSON.parse(readFileSync(join(root, 'docs/.vitepress/components/play/apps.json'), 'utf8'));
 const vitepress = createRequire(join(root, 'docs/package.json')).resolve('vitepress');
 const { createMarkdownRenderer } = await import(pathToFileURL(vitepress).href);
 
-const apps = [
-  { id: 'react', dir: 'react-default', show: ['src/App.tsx', 'src/main.tsx', 'src/styles.css'] },
-  {
-    id: 'shadcn',
-    dir: 'react-shadcn',
-    show: [
-      'src/App.tsx',
-      'src/component-map.ts',
-      'src/Section.tsx',
-      'src/ErrorSummary.tsx',
-      'src/fields/ScaleField.tsx',
-      'src/fields/RadioField.tsx',
-      'src/FormActions.tsx',
-      'src/StepProgress.tsx',
-    ],
-  },
-  {
-    id: 'mui',
-    dir: 'react-mui',
-    show: [
-      'src/App.tsx',
-      'src/component-map.ts',
-      'src/actions/Section.tsx',
-      'src/actions/ErrorSummary.tsx',
-      'src/fields/ScaleField.tsx',
-      'src/fields/RadioField.tsx',
-      'src/actions/FormActions.tsx',
-      'src/main.tsx',
-    ],
-  },
-  {
-    id: 'antd',
-    dir: 'react-antd',
-    show: [
-      'src/App.tsx',
-      'src/component-map.ts',
-      'src/fields/ChoiceFields.tsx',
-      'src/fields/InputFields.tsx',
-      'src/fields/PickerFields.tsx',
-      'src/layout/Feedback.tsx',
-      'src/layout/Containers.tsx',
-      'src/main.tsx',
-    ],
-  },
-  {
-    id: 'mantine',
-    dir: 'react-mantine',
-    show: [
-      'src/App.tsx',
-      'src/component-map.ts',
-      'src/layout/index.ts',
-      'src/layout/StepProgress.tsx',
-      'src/layout/ErrorSummary.tsx',
-      'src/fields/TextField.tsx',
-      'src/fields/RadioField.tsx',
-    ],
-  },
-  {
-    id: 'chakra',
-    dir: 'react-chakra',
-    show: [
-      'src/App.tsx',
-      'src/component-map.ts',
-      'src/fields/shared.tsx',
-      'src/layout/StepProgress.tsx',
-      'src/layout/ErrorSummary.tsx',
-      'src/fields/SelectField.tsx',
-      'src/fields/RadioField.tsx',
-    ],
-  },
-  {
-    id: 'carbon',
-    dir: 'react-carbon',
-    show: [
-      'src/App.tsx',
-      'src/component-map.ts',
-      'src/styles.scss',
-      'src/layout/StepProgress.tsx',
-      'src/layout/ErrorSummary.tsx',
-      'src/fields/TextField.tsx',
-      'src/fields/RatingField.tsx',
-    ],
-  },
-  {
-    id: 'vuetify',
-    dir: 'vue-vuetify',
-    show: [
-      'src/App.vue',
-      'src/main.ts',
-      'src/component-map.ts',
-      'src/actions/FormActions.vue',
-      'src/actions/StepProgress.vue',
-      'src/fields/TextField.vue',
-    ],
-  },
-  {
-    id: 'primevue',
-    dir: 'vue-primevue',
-    show: [
-      'src/App.vue',
-      'src/main.ts',
-      'src/component-map.ts',
-      'src/layout/index.ts',
-      'src/fields/FieldShell.vue',
-      'src/fields/TextField.vue',
-      'src/fields/DateField.vue',
-      'src/layout/StepProgress.vue',
-    ],
-  },
-  {
-    id: 'element-plus',
-    dir: 'vue-element-plus',
-    show: [
-      'src/App.vue',
-      'src/main.ts',
-      'src/component-map.ts',
-      'src/layout/index.ts',
-      'src/fields/FieldShell.vue',
-      'src/fields/TextField.vue',
-      'src/fields/DateField.vue',
-      'src/layout/StepProgress.vue',
-    ],
-  },
-  {
-    id: 'govuk',
-    dir: 'react-govuk',
-    show: [
-      'src/App.tsx',
-      'src/component-map.ts',
-      'src/fields/FormGroup.tsx',
-      'src/fields/InputField.tsx',
-      'src/fields/RadioField.tsx',
-      'src/fields/DateField.tsx',
-      'src/layout/ErrorSummary.tsx',
-      'src/layout/FormActions.tsx',
-      'src/layout/StepProgress.tsx',
-      'src/styles.scss',
-    ],
-  },
-  {
-    id: 'uswds',
-    dir: 'react-uswds',
-    show: [
-      'src/App.tsx',
-      'src/main.tsx',
-      'src/component-map.ts',
-      'src/layout/index.ts',
-      'src/fields/FormGroup.tsx',
-      'src/fields/InputField.tsx',
-      'src/fields/ComboBox.tsx',
-      'src/layout/StepProgress.tsx',
-      'src/styles.scss',
-    ],
-  },
-];
+const args = process.argv.slice(2);
+const local = args.includes('--local');
+const only = args.filter((arg) => !arg.startsWith('--'));
+const unknown = only.filter((id) => !apps.some((app) => app.id === id));
+if (unknown.length) throw new Error(`unknown apps: ${unknown.join(', ')}`);
 
-const skip = new Set(['node_modules', 'dist', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', '.npmrc', 'README.md']);
+const skip = new Set(['node_modules', 'dist', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', '.npmrc', 'README.md', 'tsconfig.local.json']);
 const langs = { '.tsx': 'tsx', '.ts': 'ts', '.vue': 'vue', '.css': 'css', '.scss': 'scss', '.json': 'json', '.html': 'html' };
 
 function walk(dir, base = dir) {
@@ -176,24 +27,107 @@ function walk(dir, base = dir) {
   });
 }
 
+function run(command, commandArgs, cwd) {
+  const result = spawnSync(command, commandArgs, { cwd, stdio: 'inherit' });
+  if (result.status !== 0) throw new Error(`${command} ${commandArgs.join(' ')} failed in ${relative(root, cwd)}`);
+}
+
+const literal = (text) => text.replace(/[.*+?^${}()|[\]\\/]/g, '\\$&');
+const entry = (target, condition) => (typeof target === 'string' ? target : (target[condition] ?? target.default));
+
+function packages() {
+  return ['core', 'react', 'vue'].map((name) => {
+    const dir = join(root, 'packages', name);
+    const manifest = JSON.parse(readFileSync(join(dir, 'package.json'), 'utf8'));
+    const exports = Object.entries(manifest.exports).map(([path, target]) => ({
+      specifier: manifest.name + path.slice(1),
+      code: join(dir, entry(target, 'default')),
+      types: typeof target === 'string' ? undefined : target.types && join(dir, target.types),
+    }));
+    return { dir, exports };
+  });
+}
+
+function aliases(list) {
+  return list.flatMap(({ exports }) =>
+    exports.map(({ specifier, code }) =>
+      specifier.includes('*')
+        ? { find: new RegExp(`^${literal(specifier).replace('\\*', '(.+)')}$`), replacement: code.replace('*', '$1') }
+        : { find: new RegExp(`^${literal(specifier)}$`), replacement: code },
+    ),
+  );
+}
+
+function typecheck(dir, list) {
+  const require = createRequire(join(dir, 'package.json'));
+  const ts = require('typescript');
+  const vue = existsIn(dir, 'node_modules/vue-tsc');
+  const base = existsIn(dir, 'tsconfig.app.json') ? 'tsconfig.app.json' : 'tsconfig.json';
+  const parsed = ts.getParsedCommandLineOfConfigFile(join(dir, base), {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic: () => {} });
+  const own = parsed?.options.paths ?? {};
+  const paths = { ...own };
+  for (const { exports } of list) for (const { specifier, types } of exports) if (types) paths[specifier] = [types];
+  if (list.length && existsIn(dir, 'node_modules/@types/react')) {
+    paths.react = ['./node_modules/@types/react'];
+    paths['react/*'] = ['./node_modules/@types/react/*'];
+  }
+  if (list.length && vue) paths.vue = ['./node_modules/vue'];
+  const config = join(dir, 'tsconfig.local.json');
+  writeFileSync(config, JSON.stringify({ extends: `./${base}`, compilerOptions: { noEmit: true, tsBuildInfoFile: null, paths } }));
+  try {
+    run(join(dir, 'node_modules/.bin', vue ? 'vue-tsc' : 'tsc'), ['-p', config], dir);
+  } finally {
+    rmSync(config, { force: true });
+  }
+}
+
+function existsIn(dir, path) {
+  try {
+    statSync(join(dir, path));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+async function build(app, dir, target, list) {
+  typecheck(dir, list);
+  if (!local) {
+    run(join(dir, 'node_modules/.bin/vite'), ['build', '--base', `/play/apps/${app.id}/`, '--outDir', target, '--emptyOutDir'], dir);
+    return;
+  }
+  const vite = await import(pathToFileURL(join(dir, 'node_modules/vite/dist/node/index.js')).href);
+  const cwd = process.cwd();
+  process.chdir(dir);
+  try {
+    await vite.build({
+      root: dir,
+      base: `/play/apps/${app.id}/`,
+      logLevel: 'warn',
+      build: { outDir: target, emptyOutDir: true },
+      resolve: { alias: aliases(list), dedupe: ['react', 'react-dom', 'vue'] },
+    });
+  } finally {
+    process.chdir(cwd);
+  }
+}
+
+if (local && !args.includes('--skip-packages'))
+  run('pnpm', ['--filter', '@formhaus/core', '--filter', '@formhaus/react', '--filter', '@formhaus/vue', 'run', 'build'], root);
+const list = local ? packages() : [];
 const md = await createMarkdownRenderer(join(root, 'docs'), { theme: { light: 'github-light', dark: 'github-dark' } });
-const only = process.argv.slice(2);
 
 for (const app of apps.filter((entry) => !only.length || only.includes(entry.id))) {
   const dir = join(root, 'examples', app.dir);
   const target = join(out, app.id);
   const started = Date.now();
-  const build = spawnSync(
-    join(dir, 'node_modules/.bin/vite'),
-    ['build', '--base', `/play/apps/${app.id}/`, '--outDir', target, '--emptyOutDir'],
-    {
-      cwd: dir,
-      stdio: 'inherit',
-    },
-  );
-  if (build.status !== 0) process.exit(build.status ?? 1);
+  if (args.includes('--install')) run('pnpm', ['install', '--frozen-lockfile'], dir);
+  await build(app, dir, target, list);
+  const page = join(target, 'index.html');
+  writeFileSync(page, readFileSync(page, 'utf8').replace('<head>', '<head>\n    <meta name="robots" content="noindex" />'));
   const project = Object.fromEntries(walk(dir).map((path) => [path, readFileSync(join(dir, path), 'utf8')]));
   const files = app.show.map((path) => {
+    if (!(path in project)) throw new Error(`${app.id}: ${path} is not in ${app.dir}`);
     const lang = langs[extname(path)];
     const html = md.render(`\`\`\`${lang}\n${project[path]}\`\`\``);
     return { path, lang, source: project[path], html: /<pre[\s\S]*<\/pre>/.exec(html)[0] };
