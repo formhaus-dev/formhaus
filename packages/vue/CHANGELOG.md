@@ -1,5 +1,18 @@
 # @formhaus/vue
 
+## 1.5.0
+
+### Minor Changes
+
+- `mapControls` shells get `anchors`, the labels of a `scale` at its first, middle and last point.
+- New `freeText` option in `mapControls`.
+- With `freeText`, the `autocomplete` control gets the typed text as its value, and text that matches an option label saves the option value.
+
+### Patch Changes
+
+- Fixed mapped `textarea` controls ignoring `rows` and mapped `file` controls ignoring `accept`.
+- Requires `@formhaus/core` 1.5.0.
+
 ## 1.4.2
 
 ### Patch Changes

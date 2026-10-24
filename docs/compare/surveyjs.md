@@ -18,7 +18,7 @@ SurveyJS and Formhaus both render forms from JSON. SurveyJS is a full survey pla
 ## Choose Formhaus when
 
 - Forms should render with your own field components through a `components` map, with no theme layer in between.
-- Bundle size matters: the Formhaus engine and React renderer together are <!-- size:react:start -->32.2 KB<!-- size:react:end --> gzipped.
+- Bundle size matters: the Formhaus engine and React renderer together are <!-- size:react:start -->32.3 KB<!-- size:react:end --> gzipped.
 - Steps branch to different steps through explicit `routes`, and you want an MCP server to simulate every path.
 - Design works in Figma from the same definition the app renders.
 
@@ -35,7 +35,7 @@ SurveyJS and Formhaus both render forms from JSON. SurveyJS is a full survey pla
 | Figma | Plugin draws the definition ([guide](/guide/figma)) | Figma design kit of SurveyJS components ([FAQ](https://surveyjs.io/faq/customization), [kit](https://www.figma.com/@surveyjs)) |
 | AI tooling | JSON Schema, [MCP server](/guide/mcp) that validates definitions and simulates paths, Claude Code plugin | [MCP server](https://surveyjs.io/documentation/surveyjs-mcp-server) for docs search, [agent skills](https://surveyjs.io/documentation/surveyjs-ai-agent-skills), AI chat in Survey Creator ([demo](https://surveyjs.io/survey-creator/examples/ai-assisted-survey-design-chat)) |
 | Frameworks | React 18 and 19, Vue 3.3.3+, headless engine | React, Angular, Vue 3, plain JavaScript ([overview](https://surveyjs.io/form-library/documentation/overview)) |
-| Bundle size (gzipped) | <!-- size:react:start -->32.2 KB<!-- size:react:end --> core + React | <!-- size:surveyjs:start -->409.3 KB for `survey-core` + `survey-react-ui` 3.2.1<!-- size:surveyjs:end --> ([how it's measured](/guide/bundle-size)) |
+| Bundle size (gzipped) | <!-- size:react:start -->32.3 KB<!-- size:react:end --> core + React | <!-- size:surveyjs:start -->409.3 KB for `survey-core` + `survey-react-ui` 3.2.1<!-- size:surveyjs:end --> ([how it's measured](/guide/bundle-size)) |
 | License | MIT, all packages | Form Library MIT; Survey Creator, Dashboard and PDF Generator commercial ([licensing](https://surveyjs.io/licensing)) |
 
 Sizes measured on 2026-10-09. See [how Formhaus sizes are measured](/compare/#formhaus-at-a-glance).
