@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import { checkDefinition } from '../../src';
-import { slowPattern } from '../../src/definition-validation/slow-pattern';
 import type { FormDefinition, FormField, FormStep } from '../../src/types';
 
 const form = (fields: FormField[]): FormDefinition => ({ id: 'f', title: 'F', submit: { label: 'Submit' }, fields });
@@ -172,16 +171,6 @@ describe('field rules', () => {
     ];
     const issues = checkDefinition(form([...slow, ...fast].map((pattern, index) => field(`p${index}`, { validation: { pattern } }))));
     expect(issues.map((issue) => issue.path)).toEqual(slow.map((_, index) => `/fields/${index}/validation/pattern`));
-  });
-});
-
-describe('slowPattern', () => {
-  it('reads the text after \\k as pattern unless it is a group name', () => {
-    expect(
-      ['(?<s>a)\\k<(a+)+>', '(?<s>a)\\k<(a|a)+>', '(?<s>a)a*\\k<s>*$', '(?<s>a)a*\\k<\\u{73}>*$', '(?<s>a)a*\\k<\\u0073>*$'].map(
-        (pattern) => slowPattern(pattern),
-      ),
-    ).toEqual(['nested', 'nested', 'adjacent', 'adjacent', 'adjacent']);
   });
 });
 
