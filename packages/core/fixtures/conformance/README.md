@@ -42,12 +42,13 @@ The checks run on the definition as written, without `overlay`. A structural err
 
 ## Cases
 
-A case has `name`, `input` (`values`, `skippedSteps` and an optional `hiddenValues`), `expected` (`values` and `errors`), `canSubmit` and an optional `serverValues`. When `hiddenValues` is set, pass it to the engine and to the server validation as the option of the same name.
+A case has `name`, `input` (`values`, `skippedSteps` and an optional `hiddenValues`), `expected` (`values` and `errors`), `canSubmit`, an optional `serverValues` and an optional `serverErrors`. When `hiddenValues` is set, pass it to the engine and to the server validation as the option of the same name.
 
 - Server: validating `input.values` with `input.skippedSteps` returns `expected`. The returned values are a plain object.
 - Browser engine: creating the engine with `input.values`, then `validate()` returns `expected.errors`, and the submit values equal `expected.values`. `canSubmit` says whether stepping through every step and submitting is allowed: on each step before the last, `next.disabled` does not match the submit values and `next()` succeeds; on the last, `validate()` returns no errors and `submit.disabled` does not match.
-- A payload the browser accepts passes server validation without errors.
+- A payload the browser accepts passes server validation without errors, unless the case sets `serverErrors`.
 - `serverValues` is optional. When set, the server returns it in place of `expected.values`. The server drops a value with a type error, and the browser engine keeps it. With `hiddenValues` set to `keep`, the server also drops a hidden value that fails any other rule except `required`.
+- `serverErrors` is optional. When set, the server returns it in place of `expected.errors`. The server gives the `pattern` error, without matching, to a value longer than 1000 characters when the field's pattern is a quadratic `slow-pattern` pattern. The browser engine matches such values.
 
 ## Recall
 
@@ -80,7 +81,7 @@ The corpus and the scenarios assume the ECMAScript semantics of the TypeScript i
 
 The corpus and the scenarios change with `@formhaus/core`. An implementation pins them to a release tag of this repository, such as `@formhaus/core@0.18.0`, and states which tag it passes.
 
-Since 1.4.1, the server runs a `slow-pattern` pattern that backtracks at most quadratically, and `refused` lists the patterns it refuses. In 1.4.0 the server refuses every `slow-pattern` pattern.
+Since 1.4.1, the server runs a quadratic `slow-pattern` pattern on values of at most 1000 characters, as the specification describes under Field validation, and `refused` lists the patterns it refuses. In 1.4.0 the server refuses every `slow-pattern` pattern.
 
 Since 0.21, `serverValues` and `fixtures/submissions` expect the server to drop every value that fails its type check, at top level and in group items. Earlier tags expect a top-level value with a type error to be returned with its error.
 
