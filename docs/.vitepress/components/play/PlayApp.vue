@@ -8,8 +8,9 @@ import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref, watch } 
 import LucideIcon from '../landing/LucideIcon.vue';
 import PlayBar from './PlayBar.vue';
 import PlayCode from './PlayCode.vue';
-import { useDefinition } from './definition';
+import { templateId, useDefinition } from './definition';
 import { mountJsonEditor, type JsonEditor } from './json-editor';
+import { templateSlug } from './play-catalog';
 import { issueText, readHash, writeHash } from './play-share';
 import { appUrl, type Code, codeUrl, designs, presets, stackblitz, type WidthId, widths } from './play-state';
 import { usePreviews } from './previews';
@@ -34,7 +35,7 @@ const form = useDefinition(
   () => previews.send(designId.value),
 );
 const previews = usePreviews(form.definition, isDark);
-const { text, presetId, sources, status, statusKind, listed } = form;
+const { text, presetId, status, statusKind, listed } = form;
 
 const design = computed(() => designs.find((entry) => entry.id === designId.value) ?? designs[0]!);
 const outView = computed(() => (mobile.value ? (tab.value === 'code' ? 'code' : 'preview') : view.value));
@@ -112,8 +113,7 @@ async function restore() {
   if (shared.design && designs.some((entry) => entry.id === shared.design)) designId.value = shared.design;
   if (shared.width && widths.some((entry) => entry.id === shared.width)) width.value = shared.width as WidthId;
   previews.loaded.add(designId.value);
-  await form.loadTemplate(shared.template);
-  await form.applyPreset(form.template.value?.id ?? shared.preset ?? presets[0]!.id, shared.text);
+  await form.applyPreset(shared.template ? templateId(templateSlug(shared.template)) : (shared.preset ?? presets[0]!.id), shared.text);
   if (outView.value === 'code') loadCode();
 }
 
@@ -138,7 +138,6 @@ onBeforeUnmount(() => {
   <div class="play" :data-tab="tab">
     <PlayBar
       :preset-id="presetId"
-      :sources="sources"
       :design-id="designId"
       :copied="copied"
       @preset="choosePreset"

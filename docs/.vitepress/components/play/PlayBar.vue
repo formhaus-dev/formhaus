@@ -2,17 +2,17 @@
 import { useData } from 'vitepress';
 import LucideIcon from '../landing/LucideIcon.vue';
 import PlayDesigns from './PlayDesigns.vue';
-import { designGroups } from './play-state';
+import { templateId } from './definition';
+import { templateGroups } from './play-catalog';
+import { designGroups, presets, takeEntryVisit } from './play-state';
 
-defineProps<{ presetId: string; sources: { id: string; label: string }[]; designId: string; copied: boolean }>();
+defineProps<{ presetId: string; designId: string; copied: boolean }>();
 const emit = defineEmits<{ preset: [id: string]; design: [id: string]; share: []; stackblitz: [] }>();
 const { isDark } = useData();
-const isTemplate = (entry: { id: string }) => entry.id.startsWith('template:');
-const examples = (list: { id: string; label: string }[]) => list.filter((entry) => !isTemplate(entry));
-const templatesOf = (list: { id: string; label: string }[]) => list.filter(isTemplate);
 const value = (event: Event) => (event.target as HTMLSelectElement).value;
+const fromEntry = takeEntryVisit();
 const back = (event: MouseEvent) => {
-  if (!document.referrer.startsWith(location.origin) || history.length < 2) return;
+  if (!(fromEntry || document.referrer.startsWith(location.origin)) || history.length < 2) return;
   event.preventDefault();
   history.back();
 };
@@ -20,7 +20,7 @@ const back = (event: MouseEvent) => {
 
 <template>
   <header class="play-bar">
-    <a class="play-button play-button--icon play-back" href="/" aria-label="Back" @click="back">
+    <a class="play-button play-button--icon play-back vp-raw" href="/playground" aria-label="Back" @click="back">
       <LucideIcon name="arrow-left" />
     </a>
     <a class="play-logo" href="/" aria-label="Formhaus home">
@@ -32,10 +32,10 @@ const back = (event: MouseEvent) => {
       <span class="play-sr">Example</span>
       <select :value="presetId" @change="emit('preset', value($event))">
         <optgroup label="Examples">
-          <option v-for="preset in examples(sources)" :key="preset.id" :value="preset.id">{{ preset.label }}</option>
+          <option v-for="preset in presets" :key="preset.id" :value="preset.id">{{ preset.label }}</option>
         </optgroup>
-        <optgroup v-if="templatesOf(sources).length" label="Templates">
-          <option v-for="preset in templatesOf(sources)" :key="preset.id" :value="preset.id">{{ preset.label }}</option>
+        <optgroup v-for="group in templateGroups" :key="group.id" :label="group.label">
+          <option v-for="entry in group.entries" :key="entry.slug" :value="templateId(entry.slug)">{{ entry.title }}</option>
         </optgroup>
       </select>
       <LucideIcon name="chevron-down" />

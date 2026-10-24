@@ -13,14 +13,14 @@
   flex: none;
 }
 
-@media (min-width: 1180px) {
+@media (min-width: 1280px) {
   .play-bar__title,
   .play-bar .play-select {
     flex: none;
   }
 }
 
-@media (max-width: 1179px) {
+@media (max-width: 1279px) {
   .play-bar__title {
     display: none;
   }
@@ -84,7 +84,9 @@
 
 .play-select select {
   appearance: none;
+  max-width: 186px;
   height: 34px;
+  text-overflow: ellipsis;
   padding: 0 var(--fh-site-space-8) 0 var(--fh-site-space-3);
   border: 1px solid var(--vp-c-divider);
   border-radius: 8px;

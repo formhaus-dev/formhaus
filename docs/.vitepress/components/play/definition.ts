@@ -1,6 +1,7 @@
 import { checkDefinition, type DefinitionIssue } from '@formhaus/core';
 import { computed, ref, shallowRef } from 'vue';
 import type { JsonEditor } from './json-editor';
+import { templateDefinition, templateGroups } from './play-catalog';
 import { issueMarks, issueText, type JsonError, syntaxError } from './play-share';
 import { presets } from './play-state';
 
@@ -8,14 +9,21 @@ export type Issue = Pick<DefinitionIssue, 'path' | 'message' | 'severity'>;
 
 const templatePrefix = 'template:';
 
+export const templateId = (slug: string) => `${templatePrefix}${slug}`;
+
+const sources = [
+  ...presets,
+  ...templateGroups.flatMap((group) =>
+    group.entries.map((entry) => ({ id: templateId(entry.slug), label: entry.title, load: () => templateDefinition(entry.slug) })),
+  ),
+];
+
 export function useDefinition(editor: () => JsonEditor | null, onValid: () => void) {
   const presetId = ref(presets[0]!.id);
   const text = ref('');
   const parseError = ref<JsonError | null>(null);
   const issues = ref<Issue[]>([]);
   const definition = shallowRef<object | null>(null);
-  const template = shallowRef<(typeof presets)[number] | null>(null);
-  const sources = computed(() => (template.value ? [...presets, template.value] : presets));
   let presetText = '';
 
   const errors = computed(() => (parseError.value ? 1 : issues.value.filter((issue) => issue.severity === 'error').length));
@@ -58,25 +66,12 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
     }
   }
 
-  async function loadTemplate(slug: string | undefined) {
-    template.value = null;
-    if (!slug || !/^[a-z0-9-]+$/.test(slug)) return;
-    try {
-      const response = await fetch(`/templates/${slug}.json`);
-      const entry = (await response.json()) as { title?: unknown; definition?: object };
-      const { definition: loaded } = entry;
-      if (!loaded) return;
-      const title = typeof entry.title === 'string' ? entry.title : slug;
-      template.value = { id: `${templatePrefix}${slug}`, label: title, load: async () => loaded };
-    } catch {
-      template.value = null;
-    }
-  }
-
   async function applyPreset(id: string, source?: string) {
-    const preset = sources.value.find((entry) => entry.id === id) ?? presets[0]!;
+    const preset = sources.find((entry) => entry.id === id) ?? presets[0]!;
+    const loaded = await preset.load().catch(() => null);
+    if (!loaded && preset !== presets[0]) return applyPreset(presets[0]!.id, source);
     presetId.value = preset.id;
-    presetText = `${JSON.stringify(await preset.load(), null, 2)}\n`;
+    presetText = `${JSON.stringify(loaded, null, 2)}\n`;
     text.value = source ?? presetText;
     editor()?.setDoc(text.value);
     validate();
@@ -99,15 +94,12 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
     presetId,
     text,
     definition,
-    template,
-    sources,
     errors,
     status,
     statusKind,
     listed,
     formTitle,
     validate,
-    loadTemplate,
     applyPreset,
     shared,
     jump,

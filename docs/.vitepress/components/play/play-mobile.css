@@ -41,6 +41,7 @@
 
   .play-select select {
     width: 100%;
+    max-width: none;
   }
 
   .play-select--designs {
