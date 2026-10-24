@@ -1,24 +1,26 @@
-import type { FieldComponentProps } from '@formhaus/react';
+import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { Button, FileUpload, HStack, Text } from '@chakra-ui/react';
-import { FieldShell } from './shared';
+import { FieldFrame } from './Shell';
 
 export function FileField(props: FieldComponentProps) {
-  const { id, field, value, disabled, loading, onChange, onBlur, onFocus } = props;
+  const f = fieldProps(props);
+  const { field, value } = props;
 
   return (
-    <FieldShell props={props} bind={false}>
+    <FieldFrame data-fh="field" f={f} label>
       <FileUpload.Root
-        name={field.key}
+        name={f.name}
+        ids={{ hiddenInput: `${f.id}-input` }}
         maxFiles={1}
         accept={field.accept}
-        disabled={disabled || loading}
-        onFileChange={(details) => onChange(details.acceptedFiles[0] ?? null)}
+        disabled={f.disabled}
+        onFileChange={({ acceptedFiles }) => f.change(acceptedFiles[0] ?? null)}
       >
         <FileUpload.HiddenInput />
         <HStack gap="3">
           <FileUpload.Trigger asChild>
-            <Button id={id} variant="outline" size="sm" onBlur={onBlur} onFocus={onFocus}>
-              {field.placeholder ?? 'Choose a file'}
+            <Button id={f.id} variant="outline" size="sm" aria-describedby={f.describedBy} onBlur={f.blur} onFocus={f.focus}>
+              {f.placeholder ?? 'Choose a file'}
             </Button>
           </FileUpload.Trigger>
           <Text textStyle="sm" color="fg.muted">
@@ -26,6 +28,6 @@ export function FileField(props: FieldComponentProps) {
           </Text>
         </HStack>
       </FileUpload.Root>
-    </FieldShell>
+    </FieldFrame>
   );
 }

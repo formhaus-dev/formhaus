@@ -1,6 +1,6 @@
 # React + Chakra UI example
 
-This example maps every Formhaus field type to [Chakra UI](https://chakra-ui.com) v3 components through the `components` prop, and renders steps, errors, sections, groups and the remove dialog with Chakra through the `layout` prop.
+This example maps every Formhaus field type to [Chakra UI](https://chakra-ui.com) v3 components with `mapControls`, and renders steps, errors, sections, groups and the remove dialog with Chakra through the `layout` prop.
 
 ## Run
 
@@ -16,12 +16,10 @@ Opens at http://localhost:5173. The color mode follows the system setting, see [
 ## Files
 
 - [src/App.tsx](src/App.tsx) wraps the form in `ChakraProvider` and shows the submitted values.
-- [src/component-map.ts](src/component-map.ts) maps each Formhaus field type to a Chakra renderer.
-- [src/fields/shared.tsx](src/fields/shared.tsx) wraps single controls in `Field` and option groups in `Fieldset`, with label, helper text and error.
-- [src/fields/SelectField.tsx](src/fields/SelectField.tsx) renders `select` and `multiselect` with `Select`, and [AutocompleteField.tsx](src/fields/AutocompleteField.tsx) uses `Combobox` with free text.
-- [src/fields/DateField.tsx](src/fields/DateField.tsx) uses `DatePicker` and [DateTimeField.tsx](src/fields/DateTimeField.tsx) uses `DateInput`, both converted to the Formhaus `YYYY-MM-DD` and `YYYY-MM-DDTHH:mm` formats. `time` uses `Input` with `type="time"`.
-- [src/fields/RadioField.tsx](src/fields/RadioField.tsx) renders `RadioGroup`, `RadioCard` for options with images, and a table row inside a matrix section.
-- [src/fields/ScaleField.tsx](src/fields/ScaleField.tsx) and [RatingField.tsx](src/fields/RatingField.tsx) use `SegmentGroup` and `RatingGroup`.
+- [src/component-map.tsx](src/component-map.tsx) maps the field types to Chakra controls with `mapControls`, one entry per type. Text, email, phone, password, date, time and datetime use `Input` with the native input type, `number` uses `NumberInput`, `checkbox` and `switch` use `Checkbox` and `Switch`, `scale` uses `SegmentGroup` and `rating` uses `RatingGroup`.
+- [src/fields/Shell.tsx](src/fields/Shell.tsx) renders the label, helper text and error around each control: `Field` for single controls and `Fieldset` for option groups.
+- [src/fields/select.tsx](src/fields/select.tsx) builds `Select` for `select` and `multiselect`, and [Autocomplete.tsx](src/fields/Autocomplete.tsx) uses `Combobox` with free text.
+- [src/fields/Choices.tsx](src/fields/Choices.tsx) renders `RadioGroup`, or `RadioCard` tiles for options with images. [MatrixRow.tsx](src/fields/MatrixRow.tsx) is a table row inside a matrix section, and [FileField.tsx](src/fields/FileField.tsx) uses `FileUpload`.
 - [src/layout](src/layout) holds the `layout` slots: `Steps` progress, `Button` actions, `Alert` error summary, `Fieldset` sections with a `Table` for matrix sections, `Card` group items and a `Dialog` remove dialog.
 - [src/definition.json](src/definition.json) is a three-step account form.
 
