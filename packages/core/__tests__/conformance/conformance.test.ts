@@ -100,6 +100,7 @@ describe('conformance corpus', () => {
       'recall-values',
       'recall-version',
       'shared-key-branches',
+      'slow-pattern-quadratic',
       'times-and-hidden',
       'trimmed-conditions',
       'trimmed-text',
@@ -137,20 +138,23 @@ describe('conformance corpus', () => {
     },
   );
 
-  it.each(
-    corpus
-      .filter(({ warnings }) => warnings?.some(({ code }) => code === 'slow-pattern'))
-      .map((fixture) => [fixture.name, fixture] as const),
-  )('%s: slow patterns rejected by the server', (_, { definition, warnings }) => {
-    const slow = warnings!.filter(({ code }) => code === 'slow-pattern');
-    let issues: { code: string; path: string }[] = [];
-    try {
-      validateSubmission(definition, {});
-    } catch (error) {
-      if (error instanceof FormDefinitionError) issues = error.issues.map(project);
-    }
-    expect(issues.sort(byPathAndCode)).toEqual([...slow].sort(byPathAndCode));
+  it('lists the patterns the server refuses wherever slow patterns are reported', () => {
+    const slow = corpus.filter(({ warnings }) => warnings?.some(({ code }) => code === 'slow-pattern'));
+    expect(slow.filter(({ refused }) => !refused).map(({ name }) => name)).toEqual([]);
   });
+
+  it.each(corpus.filter(({ refused }) => refused).map((fixture) => [fixture.name, fixture] as const))(
+    '%s: slow patterns refused by the server',
+    (_, { definition, refused }) => {
+      let issues: { code: string; path: string }[] = [];
+      try {
+        validateSubmission(definition, {});
+      } catch (error) {
+        if (error instanceof FormDefinitionError) issues = error.issues.map(project);
+      }
+      expect(issues.sort(byPathAndCode)).toEqual([...refused!].sort(byPathAndCode));
+    },
+  );
 
   it.each(recalls)('%s: recall', (_, definition, { values, texts }) => {
     const slots = new Map(textSlots(definition).map(({ address, text }) => [address, text]));
@@ -175,9 +179,9 @@ describe('conformance corpus', () => {
     ).toEqual(order);
   });
 
-  it.each(cases)('%s: server', (_, definition, { input, expected, serverValues }) => {
+  it.each(cases)('%s: server', (_, definition, { input, expected, serverValues, serverErrors }) => {
     const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps, hiddenValues: input.hiddenValues });
-    expect(result).toEqual({ ...expected, values: serverValues ?? expected.values });
+    expect(result).toEqual({ values: serverValues ?? expected.values, errors: serverErrors ?? expected.errors });
     expect(Object.getPrototypeOf(result.values)).toBe(Object.prototype);
   });
 
@@ -189,8 +193,8 @@ describe('conformance corpus', () => {
     expect(await browserCanSubmit(definition, input)).toBe(canSubmit);
   });
 
-  it.each(cases)('%s: a payload the browser accepts passes the server', async (_, definition, { input }) => {
-    if (!(await browserCanSubmit(definition, input))) return;
+  it.each(cases)('%s: a payload the browser accepts passes the server', async (_, definition, { input, serverErrors }) => {
+    if (serverErrors || !(await browserCanSubmit(definition, input))) return;
     expect(
       validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps, hiddenValues: input.hiddenValues }).errors,
     ).toEqual({});

@@ -146,7 +146,7 @@ const { errors } = validateSubmission(definition, req.body?.values, { messages: 
 
 ## Limits
 
-- `pattern` regexes run synchronously, with no time limit. `validateSubmission()` throws a `FormDefinitionError` for a pattern that `checkDefinition()` reports as `slow-pattern`, and runs no such pattern. The check does not find every slow pattern: with definitions from untrusted authors, run the call in a worker thread with a timeout. See [Pattern safety](/guide/validation#pattern-safety).
+- `pattern` regexes run synchronously, with no time limit. `validateSubmission()` throws a `FormDefinitionError` for a pattern that `checkDefinition()` reports as `slow-pattern`, unless the pattern is quadratic, such as `^\d+\.?\d*$`. See [Pattern safety](/guide/validation#pattern-safety) for which patterns are quadratic. A value longer than 1000 characters fails a quadratic pattern with the field's `pattern` error, and the pattern does not run on it. The browser engine has no such limit, so set `maxLength` to 1000 or less on these fields. The check does not find every slow pattern: with definitions from untrusted authors, run the call in a worker thread with a timeout. See [Pattern safety](/guide/validation#pattern-safety).
 - `validateSubmission()` does not limit the request body. Set a limit in your framework or proxy.
 - Submitted values and recalled answers are user input. Encode them for each output before use: see [Output safety](/guide/fields#output-safety).
 

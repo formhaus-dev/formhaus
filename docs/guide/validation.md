@@ -57,7 +57,16 @@ A repeated group that starts or ends with a character nothing else in it matches
 | `^\d+\.?\d*$` | `^\d+(\.\d*)?$` |
 | `^([a-z]+\.?)+$` | `^[a-z]+(\.[a-z]+)*$` |
 
-The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) does not run it: it throws a `FormDefinitionError` with a `slow-pattern` error. A definition that passed `validateSubmission()` before can throw now, so run `checkDefinition()` on your definitions before you upgrade the server. A value longer than 10,000 characters fails `pattern` without being matched.
+The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) runs a slow pattern only when it is quadratic: it starts with `^`, is a flat list of characters, escapes, `\d`, `\w`, `\s` and character classes such as `[0-9.,]`, each with no quantifier or with `+`, `*` or `?`, and exactly one pair of repeats overlaps, as in `^\d+\.?\d*$` or `^[0-9]+\s?[0-9]+$`. Plain groups such as `^(\d+)\.?(\d*)$` are allowed. `.`, `{n,m}`, `|`, lookarounds, backreferences, negated classes, quantified groups and non-ASCII characters are not. On the server, a value longer than 1000 characters fails a quadratic pattern without being matched, so one match takes at most about 1 ms. For any other slow pattern, `validateSubmission()` throws a `FormDefinitionError` with a `slow-pattern` error and runs nothing:
+
+| Pattern | 1,000 characters | 10,000 characters | `validateSubmission()` |
+|---------|------------------|-------------------|------------------------|
+| `^\d+\.?\d*$` | 0.4 ms | 35 ms | runs, up to 1000 characters |
+| `\d+\.?\d*$` | 220 ms | 2 min | throws |
+| `^\d*\d*\d*$` | 230 ms | 2 min | throws |
+| `^(a+)+$` | years | years | throws |
+
+A value longer than 10,000 characters fails `pattern` without being matched.
 
 The check does not find every slow pattern. Separate wildcards such as `^.*x.*y.*z$` take 80 ms on 1,000 characters and 3 s on 4,000, and each extra `.*` makes this worse. If the people who write your definitions are not trusted, run `validateSubmission()` in a worker thread with a timeout.
 
