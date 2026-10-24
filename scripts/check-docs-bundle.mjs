@@ -4,6 +4,7 @@ import { gzipSync } from 'node:zlib';
 
 const budgets = JSON.parse(readFileSync(new URL('./docs-budgets.json', import.meta.url), 'utf8'));
 const dist = process.argv[2] ?? 'docs/.vitepress/dist';
+const appsDist = process.argv[3] ?? dist;
 const reactMarker = '__REACT_DEVTOOLS_GLOBAL_HOOK__';
 const gz = (file) => gzipSync(readFileSync(file), { level: 9 }).length;
 
@@ -48,7 +49,7 @@ for (const problem of problems) console.warn(`note: ${problem}`);
 
 const apps = JSON.parse(readFileSync(new URL('../docs/.vitepress/components/play/apps.json', import.meta.url), 'utf8'));
 const missing = apps.flatMap(({ id }) =>
-  ['index.html', 'code.json'].filter((file) => !existsSync(join(dist, 'play/apps', id, file))).map((file) => `${id}/${file}`),
+  ['index.html', 'code.json'].filter((file) => !existsSync(join(appsDist, 'play/apps', id, file))).map((file) => `${id}/${file}`),
 );
 console.log(`playground apps: ${apps.length - new Set(missing.map((path) => path.split('/')[0])).size} of ${apps.length} built`);
 if (missing.length) {
