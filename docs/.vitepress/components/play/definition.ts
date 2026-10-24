@@ -1,25 +1,17 @@
 import { checkDefinition, type DefinitionIssue } from '@formhaus/core';
 import { computed, ref, shallowRef } from 'vue';
-import type { JsonEditor } from './json-editor';
-import { templateDefinition, templateGroups } from './play-catalog';
+import type { Editor } from './editor';
 import { issueMarks, issueText, type JsonError, syntaxError } from './play-share';
-import { presets } from './play-state';
 
 export type Issue = Pick<DefinitionIssue, 'path' | 'message' | 'severity'>;
 
-const templatePrefix = 'template:';
+export interface Source {
+  id: string;
+  load: () => Promise<unknown>;
+}
 
-export const templateId = (slug: string) => `${templatePrefix}${slug}`;
-
-const sources = [
-  ...presets,
-  ...templateGroups.flatMap((group) =>
-    group.entries.map((entry) => ({ id: templateId(entry.slug), label: entry.title, load: () => templateDefinition(entry.slug) })),
-  ),
-];
-
-export function useDefinition(editor: () => JsonEditor | null, onValid: () => void) {
-  const presetId = ref(presets[0]!.id);
+export function useDefinition(editor: () => Editor | null, onValid: () => void, list: Source[]) {
+  const presetId = ref(list[0]!.id);
   const text = ref('');
   const parseError = ref<JsonError | null>(null);
   const issues = ref<Issue[]>([]);
@@ -68,22 +60,19 @@ export function useDefinition(editor: () => JsonEditor | null, onValid: () => vo
   }
 
   async function applyPreset(id: string, source?: string) {
-    const preset = sources.find((entry) => entry.id === id) ?? presets[0]!;
+    const preset = list.find((entry) => entry.id === id) ?? list[0]!;
     presetId.value = preset.id;
     loading.value = true;
     const loaded = await preset.load().catch(() => null);
     loading.value = false;
-    if (!loaded && preset !== presets[0]) return applyPreset(presets[0]!.id, source);
+    if (!loaded && preset !== list[0]) return applyPreset(list[0]!.id, source);
     presetText = `${JSON.stringify(loaded, null, 2)}\n`;
     text.value = source ?? presetText;
     editor()?.setDoc(text.value);
     validate();
   }
 
-  function shared() {
-    const slug = presetId.value.startsWith(templatePrefix) ? presetId.value.slice(templatePrefix.length) : undefined;
-    return { preset: slug ? undefined : presetId.value, template: slug, text: text.value === presetText ? undefined : text.value };
-  }
+  const shared = () => ({ id: presetId.value, text: text.value === presetText ? undefined : text.value });
 
   function jump(issue: Issue) {
     if (parseError.value) editor()?.select(parseError.value.from, parseError.value.from + 1);

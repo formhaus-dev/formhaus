@@ -2,6 +2,7 @@ import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitepress';
 import { transformPageData } from './templates';
 import { llms } from './llms';
+import { schemaRuntimes } from './schema-runtimes';
 import { templateFiles } from './template-files';
 import {
   analyticsHead,
@@ -22,7 +23,7 @@ const sitemap = sitemapCollector();
 
 export default defineConfig({
   vite: {
-    plugins: [llms, templateFiles(), sharedPublic(), ownHashmap()],
+    plugins: [llms, templateFiles(), schemaRuntimes(), sharedPublic(), ownHashmap()],
     resolve: {
       alias: {
         '@formhaus/site-theme': fileURLToPath(new URL('../../packages/site-theme/src/index.ts', import.meta.url)),

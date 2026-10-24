@@ -1,6 +1,7 @@
 import index from '../../../../templates/index.json';
 import aliases from '../../template-aliases.json';
 import { categories, counts, type TemplateEntry } from '../templates/catalog';
+import type { Source } from './definition';
 import { presets } from './play-state';
 import { data as presetCounts } from './presets.data';
 
@@ -20,6 +21,15 @@ export const templateGroups = categories.map((category) => ({
   ...category,
   entries: templates.filter((template) => template.category === category.id),
 }));
+
+const templatePrefix = 'template:';
+
+export const templateId = (slug: string) => `${templatePrefix}${slug}`;
+
+export function sharedPreset({ id, text }: { id: string; text?: string }) {
+  const slug = id.startsWith(templatePrefix) ? id.slice(templatePrefix.length) : undefined;
+  return { preset: slug ? undefined : id, template: slug, text };
+}
 
 const templateForm = (template: TemplateEntry, group: string, prefix = 't'): PlayForm => ({
   key: `${prefix}:${template.slug}`,
@@ -56,7 +66,7 @@ export const templateSlug = (slug: string) => aliases[slug as keyof typeof alias
 
 const fetched = new Map<string, Promise<object>>();
 
-export function templateDefinition(slug: string) {
+function templateDefinition(slug: string) {
   const cached = fetched.get(slug);
   if (cached) return cached;
   const request = fetch(`/templates/${slug}.json`)
@@ -69,3 +79,10 @@ export function templateDefinition(slug: string) {
 
 export const formDefinition = (form: PlayForm) =>
   form.preset ? presets.find((entry) => entry.id === form.preset)!.load() : templateDefinition(form.slug!);
+
+export const playSources: Source[] = [
+  ...presets,
+  ...templateGroups.flatMap((group) =>
+    group.entries.map((entry) => ({ id: templateId(entry.slug), load: () => templateDefinition(entry.slug) })),
+  ),
+];

@@ -39,6 +39,13 @@ describe('share hash', () => {
     expect(edited).toMatchObject({ template: 'contact-form', text: '{}' });
   });
 
+  it('round trips the schema library and edited code next to the definition', async () => {
+    const code = "import { z } from 'zod';\nexport const schema = z.object({});\n";
+    const hash = await writeHash({ preset: 'players', library: 'valibot', text: '{}', code });
+    expect(hash).toMatch(/^#p=players&lib=valibot&d=[\w-]+&s=[\w-]+$/);
+    expect(await readHash(hash)).toMatchObject({ preset: 'players', library: 'valibot', text: '{}', code });
+  });
+
   it('drops a damaged payload', async () => {
     expect((await readHash('#ds=vuetify&d=not-deflate')).text).toBeUndefined();
   });

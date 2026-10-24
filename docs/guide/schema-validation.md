@@ -13,6 +13,8 @@ description: "Validate Formhaus forms with Zod, Valibot or ArkType through onVal
 <<< @/recipes/snippets/schema-arktype.ts [ArkType]
 :::
 
+[Open in the playground](/play/schema#p=players)
+
 Pass it to the renderer or the engine:
 
 ::: code-group
@@ -46,6 +48,8 @@ A field nobody answered is missing from the values. A text field the user cleare
 
 <<< @/recipes/snippets/schema-empty.ts
 
+[Open in the playground](/play/schema#p=empty)
+
 `'omit'` drops `''` at the top level and in group items, only from what the schema sees. The default, `'keep'`, passes `''` as it is.
 
 ## Checks across fields
@@ -53,6 +57,8 @@ A field nobody answered is missing from the values. A text field the user cleare
 An object-level check, such as Zod `.refine()` or ArkType `.narrow()`, runs only when every key of the object passes. On Continue the keys of later steps are missing, so mark the keys optional and keep `required` in the definition:
 
 <<< @/recipes/snippets/schema-confirm.ts
+
+[Open in the playground](/play/schema#p=confirm)
 
 Zod `.refine()` with a `when` option and Valibot `partialCheck()` run a check on some keys while others fail.
 
@@ -65,6 +71,8 @@ Issue paths map to group item keys: `['players', 1, 'name']` shows on `players.1
 An async refinement runs on Continue and Submit, never on each keystroke. The form stays busy until it resolves, and a result is dropped when the values or the step change in the meantime.
 
 <<< @/recipes/snippets/schema-server-check.ts
+
+[Open in the playground](/play/schema#p=server-check)
 
 Zod runs the whole schema twice when a refinement is async: its Standard Schema `validate` tries a sync parse first, then parses again async. Valibot runs it once. The example caches the result per email, so each email is fetched once, also across Continue and Submit. A failed request lets the answer through and is tried again next time; the server checks the email again on submit.
 
@@ -97,6 +105,8 @@ With a context, only issues on the paths in `fields` and issues without a path c
 `onValidate` gets the values and the field paths in scope. It returns errors keyed by field path, or `null` to pass. It may be async.
 
 <<< @/recipes/snippets/on-validate.ts
+
+[Open in the playground](/play/schema#p=on-validate)
 
 ```ts
 type ValidateFn = (
