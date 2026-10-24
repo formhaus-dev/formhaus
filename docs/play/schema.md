@@ -1,6 +1,6 @@
 ---
 title: Schema playground
-description: "Run schemaValidate with Zod, Valibot or ArkType on a live Formhaus form, edit the schema and the definition, and see the errors each Continue and Submit returns."
+description: "Run schemaValidate with Zod, Valibot or ArkType on a live Formhaus form. Edit the schema or the definition and see the errors that Continue and Submit return."
 layout: false
 ---
 

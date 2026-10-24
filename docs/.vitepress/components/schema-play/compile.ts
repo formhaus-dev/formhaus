@@ -17,7 +17,8 @@ export async function compile(source: string): Promise<Compiled> {
     const { message, loc } = error as { message: string; loc?: { line: number } };
     return { problem: { message: message.replace(/ \(\d+:\d+\)$/, ''), line: loc?.line } };
   }
-  const names = [...new Set(Array.from(code.matchAll(/require\((['"])(.+?)\1\)/g), (match) => match[2]!))];
+  const imports = Array.from(code.matchAll(/var (_[\w$]+) = (?:_interopRequire\w+\()?require\((['"])(.+?)\2\)/g));
+  const names = [...new Set(imports.map((match) => match[3]!))];
   const unknown = names.find((name) => !builtins.includes(name) && !isLibrary(name));
   if (unknown !== undefined)
     return {
@@ -26,5 +27,7 @@ export async function compile(source: string): Promise<Compiled> {
         line: lineOf(source, source.indexOf(`'${unknown}'`)) ?? lineOf(source, source.indexOf(`"${unknown}"`)),
       },
     };
-  return { code: code.replace(/(_[\w$]+\.[\w$]+)\.call\(void 0(, )?/g, '(0, $1)('), libraries: names.filter(isLibrary) };
+  const bindings = imports.map((match) => match[1]!.replace(/\$/g, '\\$')).join('|');
+  const calls = new RegExp(`\\b((?:${bindings})\\.[\\w$]+)\\.call\\(void 0(, )?`, 'g');
+  return { code: bindings ? code.replace(calls, '(0, $1)(') : code, libraries: names.filter(isLibrary) };
 }

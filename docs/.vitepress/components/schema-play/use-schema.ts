@@ -49,9 +49,10 @@ export function useSchema(editor: () => Editor | null) {
   }
 
   async function validate(values: Record<string, unknown>, context: ValidateContext) {
+    const mine = token;
     last.value = { context };
     const outcome = (await sandbox?.validate(values, context)) ?? { problem: { message: 'The schema is still loading' } };
-    last.value = { context, outcome };
+    if (mine === token) last.value = { context, outcome };
     if ('problem' in outcome) throw new Error(outcome.problem.message);
     return outcome.errors;
   }

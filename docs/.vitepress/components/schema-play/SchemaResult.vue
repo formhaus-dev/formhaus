@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import LucideIcon from '../landing/LucideIcon.vue';
+import type { Problem } from './runtime/module';
 import type { Run } from './use-schema';
 
-const props = defineProps<{ run?: Run }>();
+const props = defineProps<{ run?: Run; problem?: Problem }>();
 
 const action = computed(() => {
   const context = props.run?.context;
@@ -23,7 +24,10 @@ const badge = computed(() => {
 
 <template>
   <section class="play-issues sp-result" aria-label="Last run" aria-live="polite">
-    <p v-if="!run" class="sp-result__empty">Press Continue or Submit to run onValidate.</p>
+    <p v-if="problem" class="sp-result__empty" data-kind="error">
+      onValidate did not load. Fix {{ problem.line ? `line ${problem.line} in ` : '' }}schema.ts.
+    </p>
+    <p v-else-if="!run" class="sp-result__empty">Continue or submit the form to run onValidate.</p>
     <template v-else>
       <p class="sp-result__head">
         <strong>Last run</strong>

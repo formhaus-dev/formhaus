@@ -149,6 +149,7 @@ async function restore() {
   recipe.value = recipeOf(shared.preset);
   const wanted = libraries.find((entry) => entry.id === shared.library && supports(recipe.value, entry.id));
   library.value = (wanted ?? libraries.find((entry) => supports(recipe.value, entry.id))!).id;
+  if (shared.code) drafts.set(draftKey(), shared.code);
   await Promise.all([form.applyPreset(recipe.value.id, shared.text), loadCode(shared.code)]);
   version.value += 1;
 }
@@ -230,7 +231,7 @@ onBeforeUnmount(() => {
             <PlaySkeleton v-else label="Loading the form" />
           </div>
         </div>
-        <SchemaResult :run="schema.last.value" />
+        <SchemaResult :run="schema.last.value" :problem="schema.problem.value" />
       </section>
     </main>
   </div>

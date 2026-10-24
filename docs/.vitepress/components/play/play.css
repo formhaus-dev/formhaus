@@ -17,7 +17,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-:where(.play) :is(button, select) {
+.play :is(button, select):where(:not(.sp-form *)) {
   font: inherit;
   color: inherit;
 }
@@ -54,6 +54,10 @@
 .play-button--primary {
   border-color: var(--vp-c-brand-3);
   background: var(--vp-c-brand-3);
+  color: var(--vp-c-white);
+}
+
+.play .play-button--primary {
   color: var(--vp-c-white);
 }
 

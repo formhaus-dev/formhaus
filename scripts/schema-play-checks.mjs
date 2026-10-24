@@ -52,6 +52,7 @@ const recipes = [
 ];
 
 async function open(page, base, hash) {
+  await page.goto('about:blank');
   await page.goto(`${base}/play/schema#${hash}`);
   await page.locator('.sp-status', { hasText: /^(Valid|Error)/ }).waitFor({ timeout: 20000 });
 }

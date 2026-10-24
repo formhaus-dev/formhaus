@@ -22,7 +22,7 @@ const pick = (id: string) => libraries.some((entry) => entry.id === id && !unsup
       :key="entry.id"
       type="button"
       role="radio"
-      :aria-checked="entry.id === library"
+      :aria-checked="typeof recipe.snippets !== 'string' && entry.id === library"
       :tabindex="entry.id === library ? 0 : -1"
       :disabled="Boolean(unsupported(entry.id))"
       :title="unsupported(entry.id)"
