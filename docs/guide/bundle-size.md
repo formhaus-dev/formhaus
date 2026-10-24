@@ -9,25 +9,23 @@ Gzipped size of the code an app pays for each Formhaus entry and for other form 
 
 ## Size at 1.0
 
-CI fails a pull request that goes over these limits in `scripts/size/measure.mjs`.
+<!-- size:apps:start -->
 
-<!-- size:limits:start -->
+| App imports | Measured |
+|---|---|
+| Every export of `@formhaus/core` | 28.4 KB |
+| Every export of `@formhaus/core` and `@formhaus/react` | 32.2 KB |
+| Every export of `@formhaus/core` and `@formhaus/vue` | 35.9 KB |
+| `FormEngine` from `@formhaus/core` | 17.7 KB |
+| `useFormEngine` from `@formhaus/react`, with core | 18.5 KB |
+| `useFormEngine` from `@formhaus/vue`, with core | 18.3 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 31.6 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 34.9 KB |
+| `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 14.0 KB |
+| `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 28.0 KB |
+| `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 31.3 KB |
 
-| App imports | Limit | Measured |
-|---|---|---|
-| Every export of `@formhaus/core` | 28.5 KB | 28.4 KB |
-| Every export of `@formhaus/core` and `@formhaus/react` | 33 KB | 32.2 KB |
-| Every export of `@formhaus/core` and `@formhaus/vue` | 36.5 KB | 35.9 KB |
-| `FormEngine` from `@formhaus/core` | 19 KB | 17.7 KB |
-| `useFormEngine` from `@formhaus/react`, with core | 20 KB | 18.5 KB |
-| `useFormEngine` from `@formhaus/vue`, with core | 20 KB | 18.3 KB |
-| `FormRenderer` from `@formhaus/react`, with core | 32.5 KB | 31.6 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 36 KB | 34.9 KB |
-| `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 14.25 KB | 14.0 KB |
-| `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 28.25 KB | 28.0 KB |
-| `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 31.5 KB | 31.3 KB |
-
-<!-- size:limits:end -->
+<!-- size:apps:end -->
 
 ## Rendering paths
 
@@ -53,7 +51,7 @@ These cost the same on any path, and only when imported:
 | `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 8.0 KB |
 | `@formhaus/core/cloud` | 3.3 KB |
 | `@formhaus/core/i18n` | 5.9 KB |
-| `@formhaus/core/fix` | 11.5 KB |
+| `@formhaus/core/fix` | 11.6 KB |
 | `@formhaus/core/research` | 0.3 KB |
 | `@formhaus/core/fields` | 1.7 KB |
 | `@formhaus/core/schema` | 0.2 KB |
@@ -67,7 +65,7 @@ These cost the same on any path, and only when imported:
 
 | Import | React | Vue |
 |---|---|---|
-| `mapControls` from `/controls`, over `FormRenderer` | 2.5 KB | 2.8 KB |
+| `mapControls` from `/controls`, over `FormRenderer` | 2.6 KB | 2.8 KB |
 
 <!-- size:controls:end -->
 
