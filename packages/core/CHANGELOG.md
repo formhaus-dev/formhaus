@@ -1,5 +1,25 @@
 # @formhaus/core
 
+## 1.6.0
+
+### Minor Changes
+
+- New `revealTargets(nodes)` returns, for each node of a list, the choice field and option that reveal it, following the new Revealed fields rule of the specification.
+- Exposes the `RevealTarget` and `RevealView` types.
+- `ControlOption` has `reveal`, and `controlOptions()` takes the revealed fields of the options as a third argument.
+- `choiceControl()` ignores keys and clicks that come from a nested field when the event has `currentTarget`.
+- New `.fh-field__reveal` style for fields shown under an option.
+- The invalid border of option cards and the picture grid apply only to options that are direct children of the option group in the built-in markup.
+- Error summary entries have `message`, the field message without the label, next to `text`. `errorSummary()`, `getErrors()` and the `errorSummary` layout slot return it.
+- `fieldState()` and the field props of custom and mapped fields have `minLength` and `maxLength` of text fields, for character counters.
+- `mapControls` accepts an object entry `{ component, props, optionsProp, changeProp }` wherever it accepts a tuple.
+- `optionsProp`, `changeProp` and the props returned by `props` are type checked against the component props, as in the tuple.
+- `/controls` exports the `ControlSpec` type.
+
+### Patch Changes
+
+- Fixed focus after Continue, Back or Skip landing on the first option of a radio group when another option is checked.
+
 ## 1.5.0
 
 ### Minor Changes
