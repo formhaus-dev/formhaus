@@ -23,7 +23,7 @@ const config: KnipConfig = {
       ignoreBinaries: ['tokens', 'vitepress'],
     },
     docs: {
-      entry: ['**/*.md', 'templates/[[]slug].paths.ts', 'recipes/snippets/*.{ts,tsx,vue}'],
+      entry: ['**/*.md', '.vitepress/components/**/*.data.ts', 'templates/[[]slug].paths.ts', 'recipes/snippets/*.{ts,tsx,vue}'],
       project: [sources],
       ignoreDependencies: ['vue', 'vite', 'react', 'vue-router', 'zod', 'valibot', 'arktype'],
     },

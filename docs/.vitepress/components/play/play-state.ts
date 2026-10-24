@@ -33,14 +33,26 @@ const loaders = import.meta.glob<object>(
 );
 const load = (name: string) => loaders[`../../../../examples/definitions/${name}.json`]!;
 
+const preset = (id: string, label: string, file: string) => ({ id, label, file, load: load(file) });
+
 export const presets = [
-  { id: 'multi-step', label: 'Multi-step', load: load('multi-step') },
-  { id: 'conditional', label: 'Conditional fields', load: load('conditional-fields') },
-  { id: 'validation', label: 'Validation', load: load('validation') },
-  { id: 'survey', label: 'Survey with matrix', load: load('survey') },
-  { id: 'branching', label: 'Branching', load: load('branching-form') },
-  { id: 'event', label: 'Event registration', load: load('event-registration') },
+  preset('multi-step', 'Multi-step', 'multi-step'),
+  preset('conditional', 'Conditional fields', 'conditional-fields'),
+  preset('validation', 'Validation', 'validation'),
+  preset('survey', 'Survey with matrix', 'survey'),
+  preset('branching', 'Branching', 'branching-form'),
+  preset('event', 'Event registration', 'event-registration'),
 ];
+
+let entryVisit = false;
+export const markEntryVisit = () => {
+  entryVisit = true;
+};
+export function takeEntryVisit() {
+  const visited = entryVisit;
+  entryVisit = false;
+  return visited;
+}
 
 export const appUrl = (design: Design) => `/play/apps/${design.id}/index.html`;
 export const codeUrl = (design: Design) => `/play/apps/${design.id}/code.json`;
