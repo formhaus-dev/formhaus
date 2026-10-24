@@ -1,6 +1,8 @@
+import type { GatedLink } from './gated';
+
 export const footerRepo = 'https://github.com/formhaus-dev/formhaus';
 
-interface FooterLink {
+interface FooterLink extends GatedLink {
   text: string;
   href: string;
   dest?: string;
@@ -40,6 +42,7 @@ export const footerColumns: FooterColumn[] = [
     id: 'company',
     title: 'Company',
     links: [
+      { text: 'Blog', href: '/blog/', blog: true },
       { text: 'Changelog', href: '/changelog' },
       { text: 'Legal', href: '/legal/' },
       { text: 'Privacy', href: '/legal/privacy' },
