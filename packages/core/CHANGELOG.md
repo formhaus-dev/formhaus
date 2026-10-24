@@ -1,5 +1,21 @@
 # @formhaus/core
 
+## 1.4.0
+
+### Minor Changes
+
+- New `@formhaus/core/fields` entry with helpers for custom field components: `fieldState`, `fieldId`, `fieldAria`, `fieldValue`, `numberValue`, `inputType`, `optionChecked`, `fromDate`, `toDate`, `scaleView`, `optionText`, `optionValue` and `toggleOption`. `toDate` reads every date, datetime and time value core accepts and gives `null` for an impossible date such as `2026-02-31`. The main entry does not change.
+- `SectionView` has `columns`, `FormActionsView` has `primaryDisabled`, `FormStepProgressView` has `stepErrorsLabel` and `FormStepStatus` has `errorsLabel`.
+- New `@formhaus/core/controls` entry with the logic behind `mapControls` in React and Vue, for an adapter in another framework: `toControl`, `fromControl`, `controlKind`, `controlOptions`, `controlProps` and `choiceControl`.
+- In production builds, and in a browser without a bundler where `process` is not defined, `FormDefinitionError` from `FormEngine` and `replaceDefinition()` lists `path: code` for each issue, without `hint`. `checkDefinition()`, `parseDefinition()` and development builds keep the full text. `FormEngine` with core is about 1 KB smaller gzipped.
+
+### Patch Changes
+
+- `validateSubmission()` also refuses, and `checkDefinition()` reports as `slow-pattern`, a pattern that repeats a backreference next to overlapping parts or inside a repeated group, such as `(-)(?:a*\1*-)+$` or `(?<s>-)(?:a*\k<s>*-)+$`.
+- `validateSubmission()` throws a `FormDefinitionError` with a `slow-pattern` error for a `pattern` that `checkDefinition()` reports as `slow-pattern` or that is longer than 1000 characters, instead of running it on the submitted values. A definition that `validateSubmission()` accepted before can now throw. The engine still runs these patterns and only warns.
+- `checkDefinition()` reports `slow-pattern` for a pattern longer than 1000 characters and for repeated groups next to overlapping repeated parts, such as `(ab)+(ab)+`.
+- `slow-pattern` no longer reports a repeated group that starts or ends with a character nothing else in the group matches, such as `([\w-]+\.)+` or `(,\s*[a-z]+)*`.
+
 ## 1.3.0
 
 ### Minor Changes
