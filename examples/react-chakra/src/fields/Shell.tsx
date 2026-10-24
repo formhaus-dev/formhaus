@@ -1,6 +1,9 @@
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import { Field, Fieldset, HStack, Text } from '@chakra-ui/react';
+import { createContext } from 'react';
+
+export const Inline = createContext(false);
 
 export const labelId = (f: FieldProps) => `${f.id}-label`;
 
@@ -11,7 +14,7 @@ export const RequiredMark = ({ f }: { f: FieldProps }) =>
     </Text>
   );
 
-export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
+export function Shell({ kind, field, f, rootProps, anchors, children }: ControlShellProps) {
   if (kind !== 'group')
     return (
       <Field.Root
@@ -34,7 +37,7 @@ export function Shell({ kind, f, rootProps, anchors, children }: ControlShellPro
       </Field.Root>
     );
   return (
-    <Fieldset.Root {...rootProps} invalid={f.invalid} disabled={f.disabled} size="sm">
+    <Fieldset.Root {...rootProps} invalid={f.invalid} size="sm">
       <Fieldset.Legend id={labelId(f)} fontSize="sm" fontWeight="medium">
         {f.label}
         <RequiredMark f={f} />
@@ -44,7 +47,7 @@ export function Shell({ kind, f, rootProps, anchors, children }: ControlShellPro
           {f.helperText}
         </Fieldset.HelperText>
       )}
-      {children}
+      <Inline value={field.layout === 'inline'}>{children}</Inline>
       {anchors.some(Boolean) && (
         <HStack justify="space-between">
           {anchors.map((anchor, index) => (

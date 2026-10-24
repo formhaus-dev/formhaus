@@ -16,11 +16,18 @@ export function App({ definition = initial, scheme }: { definition?: FormDefinit
 
   return (
     <MantineProvider defaultColorScheme="auto" forceColorScheme={scheme} cssVariablesResolver={resolver}>
-      <Container size="sm" py="xl">
+      <Container size={632} py="xl">
         {submitted ? (
           <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
         ) : (
-          <FormRenderer definition={definition} components={components} layout={layout} stepErrorMarks onSubmit={setSubmitted} />
+          <FormRenderer
+            definition={definition}
+            components={components}
+            layout={layout}
+            stepErrorMarks
+            conditionalReveal
+            onSubmit={setSubmitted}
+          />
         )}
       </Container>
     </MantineProvider>

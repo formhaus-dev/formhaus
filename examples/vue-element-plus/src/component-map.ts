@@ -22,14 +22,14 @@ import MatrixRow from './fields/MatrixRow.vue';
 
 const testId = (f: FieldProps, option: ControlOption, index: number) =>
   f.option({ ...option, value: String(option.value) }, index)['data-testid'];
+const setAttrs = (input: Element | null | undefined, attrs: object) => {
+  for (const [name, value] of Object.entries(attrs)) {
+    if (value) input?.setAttribute(name, String(value));
+    else input?.removeAttribute(name);
+  }
+};
 const inner = (f: FieldProps) => {
-  const link = ({ el }: VNode) => {
-    const input = (el as Node).parentElement?.querySelector('input');
-    for (const [name, value] of Object.entries(f.aria)) {
-      if (value) input?.setAttribute(name, String(value));
-      else input?.removeAttribute(name);
-    }
-  };
+  const link = ({ el }: VNode) => setAttrs((el as Node).parentElement?.querySelector('input'), f.aria);
   return {
     'aria-invalid': undefined,
     'aria-required': undefined,
@@ -92,49 +92,74 @@ const cells = (f: FieldProps, options: ControlOption[]) => ({
     ),
 });
 
+const controls = (id?: string) => {
+  const link = ({ el }: VNode) => setAttrs((el as Element).querySelector('input'), { 'aria-controls': id });
+  return { onVnodeMounted: link, onVnodeUpdated: link };
+};
+
 const radios = (f: FieldProps, options: ControlOption[]) => {
   const tiles = options.some((option) => option.image);
   return {
     ariaLabel: f.label,
     class: ['choices', { 'choices--tiles': tiles }],
     children: () =>
-      options.map((option, index) =>
-        h(ElRadio, { key: option.value, value: option.value, border: tiles, 'data-testid': testId(f, option, index) }, () => [
-          option.image && h('img', { src: option.image, alt: '', class: 'choice__image' }),
-          option.label,
-        ]),
-      ),
+      options.flatMap((option, index) => [
+        h(
+          ElRadio,
+          {
+            key: option.value,
+            value: option.value,
+            border: tiles,
+            'data-testid': testId(f, option, index),
+            ...controls(option.reveal?.id),
+          },
+          () => [option.image && h('img', { src: option.image, alt: '', class: 'choice__image' }), option.label],
+        ),
+        option.reveal
+          ? h(
+              'div',
+              { key: option.reveal.id, id: option.reveal.id, 'data-fh': 'reveal', hidden: !option.reveal.open, class: 'reveal' },
+              option.reveal.children,
+            )
+          : [],
+      ]),
   };
 };
+
+const counted = (f: FieldProps) => (f.maxLength ? { maxlength: f.maxLength, showWordLimit: true } : {});
 
 export const components: FieldComponentMap = {
   ...mapControls({
     shell: FieldShell,
     kinds: { multiselect: 'input' },
     freeText: true,
-    matrix: mapControls({ shell: MatrixRow, controls: { radio: [ElRadioGroup, cells] } }).radio,
+    conditionalReveal: ['radio'],
+    matrix: mapControls({ shell: MatrixRow, controls: { radio: { component: ElRadioGroup, props: cells } } }).radio,
     controls: {
-      input: ElInput,
-      password: [ElInput, (f) => ({ type: 'password', showPassword: true, autocomplete: f.attrs.autocomplete ?? 'off' })],
-      textarea: [ElInput, () => ({ type: 'textarea' })],
-      number: [
-        ElInputNumber,
-        (f) => ({
+      input: { component: ElInput, props: counted },
+      password: {
+        component: ElInput,
+        props: (f) => ({ ...counted(f), type: 'password', showPassword: true, autocomplete: f.attrs.autocomplete ?? 'off' }),
+      },
+      textarea: { component: ElInput, props: (f) => ({ ...counted(f), type: 'textarea', autosize: { minRows: 3 } }) },
+      number: {
+        component: ElInputNumber,
+        props: (f) => ({
           ...inner(f),
           modelValue: typeof f.value === 'number' ? f.value : null,
           valueOnClear: null,
           controlsPosition: 'right',
           class: 'field__control',
         }),
-      ],
-      date: [ElDatePicker, picked('YYYY-MM-DD')],
-      datetime: [ElDatePicker, (f) => ({ ...picked('YYYY-MM-DD HH:mm', 'YYYY-MM-DDTHH:mm')(f), type: 'datetime' })],
-      time: [ElTimePicker, picked('HH:mm')],
-      select: [ElSelect, choose('Select an option')],
-      multiselect: [ElSelect, (f, options) => ({ ...choose('Select options')(f, options), multiple: true })],
-      autocomplete: [
-        ElAutocomplete,
-        (f) => ({
+      },
+      date: { component: ElDatePicker, props: picked('YYYY-MM-DD') },
+      datetime: { component: ElDatePicker, props: (f) => ({ ...picked('YYYY-MM-DD HH:mm', 'YYYY-MM-DDTHH:mm')(f), type: 'datetime' }) },
+      time: { component: ElTimePicker, props: picked('HH:mm') },
+      select: { component: ElSelect, props: choose('Select an option') },
+      multiselect: { component: ElSelect, props: (f, options) => ({ ...choose('Select options')(f, options), multiple: true }) },
+      autocomplete: {
+        component: ElAutocomplete,
+        props: (f) => ({
           fetchSuggestions: (query: string, show: (items: { value: string }[]) => void) => {
             const term = query.trim().toLowerCase();
             show(f.options.filter((option) => option.label.toLowerCase().includes(term)).map((option) => ({ value: option.label })));
@@ -142,20 +167,20 @@ export const components: FieldComponentMap = {
           clearable: true,
           class: 'field__control',
         }),
-      ],
-      checkbox: [ElCheckbox, inner],
-      switch: [ElSwitch, inner],
-      radio: [ElRadioGroup, radios],
-      scale: [
-        ElRadioGroup,
-        (f, options) => ({
+      },
+      checkbox: { component: ElCheckbox, props: inner },
+      switch: { component: ElSwitch, props: inner },
+      radio: { component: ElRadioGroup, props: radios },
+      scale: {
+        component: ElRadioGroup,
+        props: (f, options) => ({
           type: 'button',
           ariaLabel: f.label,
           options: options.map((option, index) => ({ ...option, 'data-testid': testId(f, option, index) })),
         }),
-      ],
-      rating: [ElRate, (f, options) => ({ max: options.length, clearable: true, ariaLabel: f.label })],
-      file: [ElUpload, upload],
+      },
+      rating: { component: ElRate, props: (f, options) => ({ max: options.length, clearable: true, ariaLabel: f.label }) },
+      file: { component: ElUpload, props: upload },
     },
   }),
 };

@@ -18,11 +18,11 @@ importers:
         specifier: ^5.3.0
         version: 5.3.0
       '@formhaus/core':
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.6.0
+        version: 1.6.0
       '@formhaus/react':
-        specifier: ^1.5.0
-        version: 1.5.0(@formhaus/core@1.5.0)(react@18.3.1)
+        specifier: ^1.6.0
+        version: 1.6.0(@formhaus/core@1.6.0)(react@18.3.1)
       '@mui/material':
         specifier: ^6.4.0
         version: 6.5.0(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react@18.3.1))(@types/react@18.3.31)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -351,15 +351,15 @@ packages:
   '@fontsource/roboto@5.3.0':
     resolution: {integrity: sha512-BapRJOWYP+LZ21zp+wBQjfpPYKRoxc4LspJ/RLuI+HSMBD5u/X4O+ESDrSvEqDSy0rAl7GwBJ+09mdc16cVQ1Q==}
 
-  '@formhaus/core@1.5.0':
-    resolution: {integrity: sha512-zgcBuRN8LRrgXfyGuPhq1SW7+9SqRIhHqgJsW3HnyUzvrwdUD7Pz7VS18NSZvmey5HY18d933NFGTWN/DprrnA==}
+  '@formhaus/core@1.6.0':
+    resolution: {integrity: sha512-mCM4u2csT1PP0UOOFH2tWeU5+bP0ClMZMXEP3Tn4qN4/e7bvlmXm+pnq/G1fi7sHDBMCEWZPMaEeWyacfy9vfg==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.5.0':
-    resolution: {integrity: sha512-eiT+tc00SIa5Mh3HZdSH8RJlUKsF8r4CD9qvqYzzz35CFQjsoGilZafNsbPHbh6lee4Zw7/RaLNP9pdfQ9hiEg==}
+  '@formhaus/react@1.6.0':
+    resolution: {integrity: sha512-8etb74YYe1MOIAKxORip6HKxfiIogPm3RBf4gvboZ/meQ8QejuINEHBIrLN2Gzodgm8w2FceU/vp6cB5H/IvxA==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.5.0
+      '@formhaus/core': ~1.6.0
       react: ^18.0.0 || ^19.0.0
 
   '@jridgewell/gen-mapping@0.3.13':
@@ -1237,11 +1237,11 @@ snapshots:
 
   '@fontsource/roboto@5.3.0': {}
 
-  '@formhaus/core@1.5.0': {}
+  '@formhaus/core@1.6.0': {}
 
-  '@formhaus/react@1.5.0(@formhaus/core@1.5.0)(react@18.3.1)':
+  '@formhaus/react@1.6.0(@formhaus/core@1.6.0)(react@18.3.1)':
     dependencies:
-      '@formhaus/core': 1.5.0
+      '@formhaus/core': 1.6.0
       react: 18.3.1
 
   '@jridgewell/gen-mapping@0.3.13':

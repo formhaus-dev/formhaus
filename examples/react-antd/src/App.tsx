@@ -25,7 +25,7 @@ export function App({ definition = initial, mode = 'light' }: AppProps) {
               <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
             ) : (
               <Form layout="vertical" component={false}>
-                <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
+                <FormRenderer definition={definition} components={components} layout={layout} conditionalReveal onSubmit={setSubmitted} />
               </Form>
             )}
           </Card>

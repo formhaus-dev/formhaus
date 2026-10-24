@@ -30,9 +30,9 @@ function MatrixShell({ f, rootProps, children }: ControlShellProps) {
 export const MatrixRow = mapControls({
   shell: MatrixShell,
   controls: {
-    radio: [
-      Radio.Group,
-      (f, options) => ({
+    radio: {
+      component: Radio.Group,
+      props: (f, options) => ({
         id: undefined,
         className: 'matrix-row__cells',
         'aria-labelledby': `${f.id}-label`,
@@ -44,6 +44,6 @@ export const MatrixRow = mapControls({
           </span>
         )),
       }),
-    ],
+    },
   },
 }).radio;

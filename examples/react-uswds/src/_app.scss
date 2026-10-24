@@ -14,7 +14,7 @@
 }
 
 .app .fh-form {
-  max-width: units("tablet");
+  max-width: 600px;
 }
 
 .progress {
@@ -165,4 +165,11 @@
 .completion__value {
   overflow-wrap: anywhere;
   white-space: pre-line;
+}
+
+.reveal {
+  margin-bottom: units(1);
+  margin-left: units(1);
+  padding-left: units(2.5);
+  border-left: units(0.5) solid color("base-lighter");
 }

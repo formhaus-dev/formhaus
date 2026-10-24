@@ -28,9 +28,9 @@ function MatrixShell({ f, rootProps, children }: ControlShellProps) {
 export const MatrixRow = mapControls({
   shell: MatrixShell,
   controls: {
-    radio: [
-      RadioGroup,
-      (f, options) => ({
+    radio: {
+      component: RadioGroup,
+      props: (f, options) => ({
         className: 'contents',
         'aria-labelledby': `${f.id}-label`,
         'aria-describedby': f.describedBy,
@@ -41,7 +41,7 @@ export const MatrixRow = mapControls({
           </span>
         )),
       }),
-      'onValueChange',
-    ],
+      changeProp: 'onValueChange',
+    },
   },
 }).radio;

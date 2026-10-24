@@ -1,5 +1,6 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
+import Box from '@mui/material/Box';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import MenuItem from '@mui/material/MenuItem';
@@ -8,6 +9,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Rating from '@mui/material/Rating';
 import Switch from '@mui/material/Switch';
 import TextField from '@mui/material/TextField';
+import { Fragment } from 'react';
 import { AutocompleteField } from './fields/AutocompleteField';
 import { MatrixRow } from './fields/MatrixRow';
 import { ImageTiles, Segment } from './fields/options';
@@ -25,7 +27,23 @@ const radios = (f: FieldProps, options: ControlOption[]) =>
     ? { sx: { display: 'block' }, children: <ImageTiles options={options} value={f.value} /> }
     : {
         children: options.map((option) => (
-          <FormControlLabel key={option.value} value={option.value} control={<Radio />} label={option.label} />
+          <Fragment key={option.value}>
+            <FormControlLabel
+              value={option.value}
+              control={<Radio inputProps={{ 'aria-controls': option.reveal?.id }} />}
+              label={option.label}
+            />
+            {option.reveal && (
+              <Box
+                id={option.reveal.id}
+                data-fh="reveal"
+                hidden={!option.reveal.open}
+                sx={{ ml: 1.25, pl: 2.25, borderLeft: 2, borderColor: 'divider' }}
+              >
+                {option.reveal.children}
+              </Box>
+            )}
+          </Fragment>
         )),
       };
 
@@ -49,24 +67,41 @@ export const components: FieldComponentMap = {
     kinds: { multiselect: 'input' },
     matrix: MatrixRow,
     freeText: true,
+    conditionalReveal: ['radio'],
     controls: {
       input: TextField,
-      textarea: [TextField, () => ({ multiline: true })],
-      select: [TextField, (_, options) => ({ select: true, children: menu(options) })],
-      multiselect: [
-        TextField,
-        (f, options) => ({ select: true, slotProps: { ...labels(f).slotProps, select: { multiple: true } }, children: menu(options) }),
-      ],
-      checkbox: [Checkbox, (f) => ({ inputProps: { ...f.aria, 'aria-describedby': describedBy(f) } })],
-      switch: [Switch, (f) => ({ inputProps: { ...f.aria, 'aria-describedby': describedBy(f) } })],
-      radio: [RadioGroup, radios],
-      scale: [RadioGroup, (_, options) => ({ row: true, sx: { flexWrap: 'nowrap' }, children: points(options) })],
-      rating: [Rating, (_, options) => ({ max: options.length, size: 'large', 'aria-required': undefined, 'aria-invalid': undefined })],
-      autocomplete: [AutocompleteField, (_, options) => ({ options: options.map((option) => option.label) }), 'onInputChange'],
+      textarea: { component: TextField, props: () => ({ multiline: true }) },
+      select: { component: TextField, props: (_, options) => ({ select: true, children: menu(options) }) },
+      multiselect: {
+        component: TextField,
+        props: (f, options) => ({
+          select: true,
+          slotProps: { ...labels(f).slotProps, select: { multiple: true } },
+          children: menu(options),
+        }),
+      },
+      checkbox: { component: Checkbox, props: (f) => ({ inputProps: { ...f.aria, 'aria-describedby': describedBy(f) } }) },
+      switch: { component: Switch, props: (f) => ({ inputProps: { ...f.aria, 'aria-describedby': describedBy(f) } }) },
+      radio: { component: RadioGroup, props: radios },
+      scale: { component: RadioGroup, props: (_, options) => ({ row: true, sx: { flexWrap: 'nowrap' }, children: points(options) }) },
+      rating: {
+        component: Rating,
+        props: (_, options) => ({ max: options.length, size: 'large', 'aria-required': undefined, 'aria-invalid': undefined }),
+      },
+      autocomplete: {
+        component: AutocompleteField,
+        props: (_, options) => ({ options: options.map((option) => option.label) }),
+        changeProp: 'onInputChange',
+      },
     },
   }),
   ...mapControls({
     shell: FileShell,
-    controls: { file: [FilePicker, (f) => ({ 'aria-labelledby': `${f.id}-label ${f.id}-button`, 'aria-describedby': describedBy(f) })] },
+    controls: {
+      file: {
+        component: FilePicker,
+        props: (f) => ({ 'aria-labelledby': `${f.id}-label ${f.id}-button`, 'aria-describedby': describedBy(f) }),
+      },
+    },
   }),
 };

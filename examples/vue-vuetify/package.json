@@ -9,8 +9,8 @@
   },
   "dependencies": {
     "@fontsource/roboto": "^5.3.0",
-    "@formhaus/core": "^1.5.0",
-    "@formhaus/vue": "^1.5.0",
+    "@formhaus/core": "^1.6.0",
+    "@formhaus/vue": "^1.6.0",
     "vue": "^3.5.44",
     "vuetify": "^3.13.6"
   },

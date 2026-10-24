@@ -10,7 +10,7 @@ const dateTypes = ['date', 'time', 'datetime'];
 export function Shell({ kind, field, f, rootProps, anchors, children }: ControlShellProps) {
   const text = f.required ? f.label : `${f.label} (optional)`;
   const heading = useContext(PageContext).soloKeys.has(field.key);
-  const maxLength = field.type === 'textarea' ? field.validation?.maxLength : undefined;
+  const maxLength = field.type === 'textarea' ? f.maxLength : undefined;
   const module = field.type === 'password' ? PasswordInput : maxLength ? CharacterCount : undefined;
   const moduleRef = useGovuk(module);
   const [start, , end] = anchors;

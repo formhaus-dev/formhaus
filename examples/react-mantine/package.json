@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@formhaus/core": "^1.5.0",
-    "@formhaus/react": "^1.5.0",
+    "@formhaus/core": "^1.6.0",
+    "@formhaus/react": "^1.6.0",
     "@mantine/core": "^9.7.3",
     "@mantine/dates": "^9.7.3",
     "@mantine/hooks": "^9.7.3",

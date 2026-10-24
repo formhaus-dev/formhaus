@@ -43,7 +43,7 @@ export function ErrorSummary({ rootProps, title, groups, showField }: ErrorSumma
                     showField(entry.key);
                   }}
                 >
-                  {entry.text}
+                  {entry.message ?? entry.text}
                 </a>
               </li>
             ))}

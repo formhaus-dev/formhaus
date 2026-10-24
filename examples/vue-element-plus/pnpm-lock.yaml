@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.5.0
-        version: 1.5.0
+        specifier: ^1.6.0
+        version: 1.6.0
       '@formhaus/vue':
-        specifier: ^1.5.0
-        version: 1.5.0(@formhaus/core@1.5.0)(vue@3.5.44(typescript@5.9.3))
+        specifier: ^1.6.0
+        version: 1.6.0(@formhaus/core@1.6.0)(vue@3.5.44(typescript@5.9.3))
       element-plus:
         specifier: ^2.14.7
         version: 2.14.7(vue@3.5.44(typescript@5.9.3))
@@ -71,15 +71,15 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@formhaus/core@1.5.0':
-    resolution: {integrity: sha512-zgcBuRN8LRrgXfyGuPhq1SW7+9SqRIhHqgJsW3HnyUzvrwdUD7Pz7VS18NSZvmey5HY18d933NFGTWN/DprrnA==}
+  '@formhaus/core@1.6.0':
+    resolution: {integrity: sha512-mCM4u2csT1PP0UOOFH2tWeU5+bP0ClMZMXEP3Tn4qN4/e7bvlmXm+pnq/G1fi7sHDBMCEWZPMaEeWyacfy9vfg==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/vue@1.5.0':
-    resolution: {integrity: sha512-fyWyCe77BDhgf4TSECE6DJOWj1Xfjd97kGSVlcoxC5HLC4TR1TV1R1LRnVUPdrrxZm7AfeMsiQIcyMwPmqNYGg==}
+  '@formhaus/vue@1.6.0':
+    resolution: {integrity: sha512-xx3sVIBMj4n6rPz4nc2cXmgSlczimj6uXL8oFkjrHF1wk/lWBO3FaAYYaJFNXFQma8a15Cj8oG/HeU2K+Oljkw==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.5.0
+      '@formhaus/core': ~1.6.0
       vue: ^3.3.3
 
   '@jridgewell/sourcemap-codec@1.6.0':
@@ -534,11 +534,11 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@formhaus/core@1.5.0': {}
+  '@formhaus/core@1.6.0': {}
 
-  '@formhaus/vue@1.5.0(@formhaus/core@1.5.0)(vue@3.5.44(typescript@5.9.3))':
+  '@formhaus/vue@1.6.0(@formhaus/core@1.6.0)(vue@3.5.44(typescript@5.9.3))':
     dependencies:
-      '@formhaus/core': 1.5.0
+      '@formhaus/core': 1.6.0
       vue: 3.5.44(typescript@5.9.3)
 
   '@jridgewell/sourcemap-codec@1.6.0': {}

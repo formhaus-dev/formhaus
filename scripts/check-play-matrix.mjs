@@ -102,7 +102,7 @@ async function runSystem(browser, base, system, report) {
   await context.close();
 }
 
-const { base, ready, stop } = previewServer();
+const { base, ready, stop } = await previewServer();
 const report = [];
 try {
   await ready();

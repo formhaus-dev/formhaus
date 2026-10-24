@@ -1,4 +1,4 @@
-import type { FieldComponentMap, FieldComponentProps, FieldProps } from '@formhaus/react';
+import type { FieldComponentMap, FieldProps } from '@formhaus/react';
 import { mapControls } from '@formhaus/react/controls';
 import {
   Button,
@@ -6,17 +6,16 @@ import {
   Field,
   FileUpload,
   HStack,
-  Input,
   NumberInput,
   RatingGroup,
   SegmentGroup,
   Select,
   Switch,
   Text,
-  Textarea,
 } from '@chakra-ui/react';
 import { Autocomplete } from './fields/Autocomplete';
 import { Choices, optionIds } from './fields/Choices';
+import { CountedInput, CountedTextarea } from './fields/Counted';
 import { MatrixRow } from './fields/MatrixRow';
 import { select } from './fields/select';
 import { labelId, Shell } from './fields/Shell';
@@ -58,24 +57,19 @@ const upload = (f: FieldProps) => ({
   ),
 });
 
-const base = { shell: Shell, matrix: MatrixRow };
-
-const radio = (inline: boolean) => mapControls({ ...base, controls: { radio: [Choices, (_, options) => ({ options, inline })] } }).radio;
-
-const InlineRadio = radio(true);
-const StackedRadio = radio(false);
-
 export const components: FieldComponentMap = {
   ...mapControls({
-    ...base,
+    shell: Shell,
+    matrix: MatrixRow,
     freeText: true,
     kinds: { multiselect: 'input' },
+    conditionalReveal: ['radio'],
     controls: {
-      input: Input,
-      textarea: [Textarea, () => ({ autoresize: true })],
-      number: [
-        NumberInput.Root,
-        (f) => ({
+      input: { component: CountedInput, props: (f) => ({ f }) },
+      textarea: { component: CountedTextarea, props: (f) => ({ f, autoresize: true }) },
+      number: {
+        component: NumberInput.Root,
+        props: (f) => ({
           width: 'full',
           children: (
             <>
@@ -84,16 +78,17 @@ export const components: FieldComponentMap = {
             </>
           ),
         }),
-        'onValueChange',
-      ],
-      select: [Select.Root, select(false)],
-      multiselect: [Select.Root, select(true)],
-      autocomplete: [Autocomplete, 'options'],
-      checkbox: [Checkbox.Root, toggle(Checkbox)],
-      switch: [Switch.Root, toggle(Switch)],
-      scale: [
-        SegmentGroup.Root,
-        (f, options) => ({
+        changeProp: 'onValueChange',
+      },
+      select: { component: Select.Root, props: select(false) },
+      multiselect: { component: Select.Root, props: select(true) },
+      autocomplete: { component: Autocomplete, optionsProp: 'options' },
+      checkbox: { component: Checkbox.Root, props: toggle(Checkbox) },
+      switch: { component: Switch.Root, props: toggle(Switch) },
+      radio: { component: Choices, optionsProp: 'options', changeProp: 'onValueChange' },
+      scale: {
+        component: SegmentGroup.Root,
+        props: (f, options) => ({
           width: 'full',
           value: f.text || null,
           ids: optionIds(f.id, options),
@@ -104,10 +99,10 @@ export const components: FieldComponentMap = {
             </>
           ),
         }),
-      ],
-      rating: [
-        RatingGroup.Root,
-        (f, options) => ({
+      },
+      rating: {
+        component: RatingGroup.Root,
+        props: (f, options) => ({
           count: options.length,
           value: Number(f.text),
           size: 'lg',
@@ -121,10 +116,9 @@ export const components: FieldComponentMap = {
             </>
           ),
         }),
-        'onValueChange',
-      ],
-      file: [FileUpload.Root, upload],
+        changeProp: 'onValueChange',
+      },
+      file: { component: FileUpload.Root, props: upload },
     },
   }),
-  radio: (props: FieldComponentProps) => (props.field.layout === 'inline' ? <InlineRadio {...props} /> : <StackedRadio {...props} />),
 };

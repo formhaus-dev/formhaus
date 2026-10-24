@@ -15,7 +15,7 @@ export function App({ definition = initial }: { definition?: FormDefinition }) {
       {submitted ? (
         <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
       ) : (
-        <FormRenderer definition={definition} onSubmit={setSubmitted} />
+        <FormRenderer definition={definition} conditionalReveal onSubmit={setSubmitted} />
       )}
     </main>
   );

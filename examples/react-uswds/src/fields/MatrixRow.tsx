@@ -30,5 +30,5 @@ function MatrixShell({ f, rootProps, children }: ControlShellProps) {
 
 export const MatrixRow = mapControls({
   shell: MatrixShell,
-  controls: { radio: [Choices, (f, options) => ({ f, options, matrix: true })] },
+  controls: { radio: { component: Choices, props: (f, options) => ({ f, options, matrix: true }) } },
 }).radio;

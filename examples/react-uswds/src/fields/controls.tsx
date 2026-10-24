@@ -1,10 +1,10 @@
 import { toggleOption } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
-import { type AriaAttributes, type ChangeEvent, type ComponentProps, useState } from 'react';
+import { type AriaAttributes, type ChangeEvent, type ComponentProps, Fragment, useState } from 'react';
 
-const classes = (base: string, invalid: AriaAttributes['aria-invalid'], extra?: string) =>
-  [base, extra, invalid === true && 'usa-input--error'].filter(Boolean).join(' ');
+const classes = (base: string, invalid: AriaAttributes['aria-invalid'], ...extra: (string | undefined)[]) =>
+  [base, ...extra, invalid === true && 'usa-input--error'].filter(Boolean).join(' ');
 
 const widths: Record<string, string> = { tel: 'usa-input--xl', number: 'usa-input--small' };
 
@@ -16,7 +16,7 @@ export function Input({ type = 'text', ...props }: ComponentProps<'input'>) {
       type={number ? 'text' : type}
       inputMode={props.inputMode ?? (number ? 'decimal' : undefined)}
       spellCheck={type === 'email' || type === 'password' ? false : undefined}
-      className={classes('usa-input', props['aria-invalid'], widths[type])}
+      className={classes('usa-input', props['aria-invalid'], widths[type], props.className)}
     />
   );
 }
@@ -34,7 +34,7 @@ export function Password(props: ComponentProps<'input'>) {
 }
 
 export function Textarea(props: ComponentProps<'textarea'>) {
-  return <textarea {...props} className={classes('usa-textarea', props['aria-invalid'])} />;
+  return <textarea {...props} className={classes('usa-textarea', props['aria-invalid'], props.className)} />;
 }
 
 export function Select({ options, placeholder, ...props }: ComponentProps<'select'> & { options: ControlOption[]; placeholder?: string }) {
@@ -97,26 +97,35 @@ export function Choices({ f, options, value, onChange, multiple, stars, matrix }
   return options.map((option, index) => {
     const attrs = f.option({ ...option, value: String(option.value) }, index);
     return (
-      <div key={option.value} className={matrix ? 'usa-radio matrix__cell' : `usa-${kind}`}>
-        <input
-          {...attrs}
-          type={kind}
-          className={tiles ? `usa-${kind}__input usa-${kind}__input--tile` : `usa-${kind}__input`}
-          aria-invalid={multiple ? undefined : f.aria['aria-invalid']}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(multiple ? toggleOption(value, attrs.value) : event)}
-        />
-        <label className={`usa-${kind}__label`} htmlFor={attrs.id}>
-          {matrix ? (
-            <span className="usa-sr-only">{option.label}</span>
-          ) : (
-            <>
-              {option.image && <img src={option.image} alt="" className="choice__image" />}
-              {option.label}
-              {stars && <span className="usa-sr-only">{option.value === 1 ? ' star' : ' stars'}</span>}
-            </>
-          )}
-        </label>
-      </div>
+      <Fragment key={option.value}>
+        <div className={matrix ? 'usa-radio matrix__cell' : `usa-${kind}`}>
+          <input
+            {...attrs}
+            type={kind}
+            className={tiles ? `usa-${kind}__input usa-${kind}__input--tile` : `usa-${kind}__input`}
+            aria-invalid={multiple ? undefined : f.aria['aria-invalid']}
+            aria-controls={option.reveal?.id}
+            {...(multiple && { 'aria-expanded': option.reveal?.open })}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(multiple ? toggleOption(value, attrs.value) : event)}
+          />
+          <label className={`usa-${kind}__label`} htmlFor={attrs.id}>
+            {matrix ? (
+              <span className="usa-sr-only">{option.label}</span>
+            ) : (
+              <>
+                {option.image && <img src={option.image} alt="" className="choice__image" />}
+                {option.label}
+                {stars && <span className="usa-sr-only">{option.value === 1 ? ' star' : ' stars'}</span>}
+              </>
+            )}
+          </label>
+        </div>
+        {option.reveal && (
+          <div id={option.reveal.id} data-fh="reveal" hidden={!option.reveal.open} className="reveal">
+            {option.reveal.children}
+          </div>
+        )}
+      </Fragment>
     );
   });
 }
