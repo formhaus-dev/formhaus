@@ -24,7 +24,15 @@ defineProps(controlShellProps);
       </div>
     </div>
     <slot v-else />
-    <Message v-if="f.helperText" :pt="{ root: { id: f.helperId, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">
+    <div v-if="f.maxLength" class="field__meta">
+      <Message v-if="f.helperText" :pt="{ root: { id: f.helperId, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">
+        {{ f.helperText }}
+      </Message>
+      <Message :pt="{ root: { id: `${f.id}-count`, class: 'field__count', role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">
+        {{ f.text.length }}/{{ f.maxLength }}
+      </Message>
+    </div>
+    <Message v-else-if="f.helperText" :pt="{ root: { id: f.helperId, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">
       {{ f.helperText }}
     </Message>
     <Message v-if="f.error" :pt="{ root: { id: f.errorId } }" size="small" severity="error" variant="simple">{{ f.error }}</Message>

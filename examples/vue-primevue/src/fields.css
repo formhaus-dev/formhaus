@@ -209,3 +209,24 @@ legend.field__label {
   align-self: flex-start;
   margin-top: 1rem;
 }
+
+.field__meta {
+  display: flex;
+  gap: 1rem;
+}
+
+.field__count {
+  margin-inline-start: auto;
+}
+
+.reveal {
+  margin-inline-start: calc(var(--p-radiobutton-width) / 2 - 1px);
+  padding-inline-start: calc(var(--p-radiobutton-width) / 2 + 0.5rem - 1px);
+  border-inline-start: 2px solid var(--p-content-border-color);
+}
+
+.reveal:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
