@@ -5,18 +5,38 @@ export interface Mark {
   severity: 'error' | 'warning';
 }
 
-export interface JsonEditor {
+export interface Editor {
   setDoc: (text: string) => void;
   setMarks: (marks: Mark[]) => void;
   select: (from: number, to: number) => void;
   destroy: () => void;
 }
 
-export async function mountJsonEditor(parent: HTMLElement, doc: string, onChange: (text: string) => void): Promise<JsonEditor> {
+type Tags = typeof import('@lezer/highlight').tags;
+
+const languages = {
+  json: {
+    label: 'Form definition JSON',
+    load: () => import('@codemirror/lang-json').then((lang) => lang.json()),
+    keys: (tags: Tags) => tags.propertyName,
+  },
+  typescript: {
+    label: 'Schema code',
+    load: () => import('@codemirror/lang-javascript').then((lang) => lang.javascript({ typescript: true })),
+    keys: (tags: Tags) => [tags.keyword, tags.typeName],
+  },
+};
+
+export async function mountEditor(
+  parent: HTMLElement,
+  doc: string,
+  onChange: (text: string) => void,
+  kind: keyof typeof languages = 'json',
+): Promise<Editor> {
   const [view, state, lang, language, commands, lint, lezer] = await Promise.all([
     import('@codemirror/view'),
     import('@codemirror/state'),
-    import('@codemirror/lang-json'),
+    languages[kind].load(),
     import('@codemirror/language'),
     import('@codemirror/commands'),
     import('@codemirror/lint'),
@@ -24,10 +44,10 @@ export async function mountJsonEditor(parent: HTMLElement, doc: string, onChange
   ]);
   const { tags } = lezer;
   const highlight = language.HighlightStyle.define([
-    { tag: tags.propertyName, color: 'var(--play-code-key)' },
+    { tag: languages[kind].keys(tags), color: 'var(--play-code-key)' },
     { tag: tags.string, color: 'var(--play-code-string)' },
     { tag: [tags.number, tags.bool, tags.null], color: 'var(--play-code-literal)' },
-    { tag: [tags.punctuation, tags.separator, tags.brace, tags.squareBracket], color: 'var(--vp-c-text-3)' },
+    { tag: [tags.punctuation, tags.separator, tags.brace, tags.squareBracket, tags.comment], color: 'var(--vp-c-text-3)' },
   ]);
   const theme = view.EditorView.theme({
     '&': { height: '100%', color: 'var(--vp-c-text-1)', backgroundColor: 'transparent', fontSize: 'var(--fh-site-font-size-xs)' },
@@ -61,11 +81,11 @@ export async function mountJsonEditor(parent: HTMLElement, doc: string, onChange
         language.bracketMatching(),
         language.indentOnInput(),
         language.foldGutter(),
-        lang.json(),
+        lang,
         lint.lintGutter(),
         language.syntaxHighlighting(highlight),
         theme,
-        view.EditorView.contentAttributes.of({ 'aria-label': 'Form definition JSON' }),
+        view.EditorView.contentAttributes.of({ 'aria-label': languages[kind].label }),
         view.keymap.of([commands.indentWithTab, ...commands.defaultKeymap, ...commands.historyKeymap]),
         view.EditorView.updateListener.of((update) => {
           if (update.docChanged && !muted) onChange(update.state.doc.toString());

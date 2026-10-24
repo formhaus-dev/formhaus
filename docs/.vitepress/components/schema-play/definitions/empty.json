@@ -1,0 +1,13 @@
+{
+  "id": "profile",
+  "title": "Profile",
+  "submit": { "label": "Save" },
+  "fields": [
+    {
+      "key": "website",
+      "type": "text",
+      "label": "Website",
+      "helperText": "Optional. Type a word, submit, then clear the field and submit again."
+    }
+  ]
+}

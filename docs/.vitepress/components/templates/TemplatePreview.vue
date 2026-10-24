@@ -2,11 +2,12 @@
 import { nextTick, onMounted, ref } from 'vue';
 import { useData } from 'vitepress';
 import { FormRenderer } from '@formhaus/vue';
-import type { FormDefinition } from '@formhaus/core';
+import type { FormDefinition, ValidateFn } from '@formhaus/core';
 import styles from '@formhaus/core/style.css?inline';
 import LucideIcon from '../landing/LucideIcon.vue';
+import './detail.css';
 
-const props = defineProps<{ definition: FormDefinition }>();
+const props = defineProps<{ definition: FormDefinition; onValidate?: ValidateFn }>();
 const { isDark } = useData();
 const run = ref(0);
 const payload = ref<Record<string, unknown>>();
@@ -42,6 +43,6 @@ function restart() {
         <LucideIcon name="restart" /> Start over
       </button>
     </div>
-    <FormRenderer v-else :key="run" :definition="props.definition" @submit="onSubmit" />
+    <FormRenderer v-else :key="run" :definition="props.definition" :on-validate="props.onValidate" @submit="onSubmit" />
   </div>
 </template>

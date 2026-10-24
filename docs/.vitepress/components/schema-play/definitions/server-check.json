@@ -1,0 +1,14 @@
+{
+  "id": "sign-up",
+  "title": "Sign up",
+  "submit": { "label": "Sign up" },
+  "fields": [
+    {
+      "key": "email",
+      "type": "text",
+      "label": "Email",
+      "helperText": "taken@example.com is already registered in this playground.",
+      "validation": { "required": true }
+    }
+  ]
+}
