@@ -55,6 +55,37 @@ export function entryChecks(base, frameOf) {
       if (tab?.trim() !== 'MUI') problems.push(`back on the entry page the selected system is ${tab}`);
     },
 
+    async entryLazy(page, problems) {
+      const requests = [];
+      page.on('request', (request) => requests.push(new URL(request.url()).pathname));
+      await page.route('**/templates/bug-report.json', async (route) => {
+        await new Promise((resolve) => setTimeout(resolve, 900));
+        await route.continue();
+      });
+      await page.goto(`${base}/playground`);
+      if (!(await visible(await frame(page, 'react'), 'First Name'))) problems.push('the default preview did not render');
+      const apps = () => new Set(requests.filter((path) => path.startsWith('/play/apps/')).map((path) => path.split('/')[3]));
+      const fetched = () => requests.filter((path) => /^\/templates\/.+\.json$/.test(path));
+      if (apps().size !== 1 || fetched().length) problems.push(`the first load fetched apps ${[...apps()]} and ${fetched()}`);
+      const search = page.locator('.ps-panel').getByRole('combobox');
+      await search.fill('bug');
+      await page
+        .locator('.ps-panel')
+        .getByRole('option', { name: /Bug report/ })
+        .click();
+      const skeleton = page.locator('.lv-stage .play-skeleton');
+      if (!(await skeleton.isVisible())) problems.push('no skeleton while the definition loads');
+      await skeleton.waitFor({ state: 'detached', timeout: 15000 });
+      if (!(await visible(frameOf(page, 'react'), 'Short summary'))) problems.push('the bug report did not render');
+      for (const name of ['MUI', 'Ant Design', 'Mantine', 'Vuetify']) {
+        await page.getByRole('tab', { name }).click();
+        await skeleton.waitFor({ state: 'detached', timeout: 15000 });
+      }
+      const frames = await page.locator('.lv-frame').count();
+      if (frames > 3) problems.push(`${frames} preview frames stay mounted`);
+      if (fetched().length !== 1) problems.push(`the bug report was fetched ${fetched().length} times`);
+    },
+
     async entryPhone(page, problems) {
       await page.setViewportSize({ width: 390, height: 844 });
       await page.goto(`${base}/playground`);

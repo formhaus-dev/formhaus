@@ -8,7 +8,7 @@ export function playPage(base) {
   }
 
   async function rendered(page) {
-    await page.locator('.play-loading').waitFor({ state: 'detached', timeout: 20000 });
+    await page.locator('.play-loading, .play-skeleton').waitFor({ state: 'detached', timeout: 20000 });
   }
 
   function frameOf(page, id) {
