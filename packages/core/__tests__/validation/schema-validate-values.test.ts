@@ -74,6 +74,12 @@ describe('schemaValidate empty strings', () => {
     await schemaValidate(schema, { emptyStrings: 'keep' })({ notes: '' }, { fields: ['notes'], submit: true });
     expect(seen).toEqual([{ notes: '' }]);
   });
+
+  it('keeps a __proto__ key as data with emptyStrings omit', async () => {
+    const values = JSON.parse('{"__proto__":{"email":"ada@example.com"}}');
+    const errors = await schemaValidate(z.object({ email: z.string().email() }), { emptyStrings: 'omit' })(values);
+    expect(errors).toEqual({ email: expect.any(String) });
+  });
 });
 
 describe('schemaValidate cross-field checks', () => {
