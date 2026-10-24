@@ -36,14 +36,14 @@ export function StepProgress({
           })}
         </ol>
         <div className="usa-step-indicator__header">
-          <Heading className="usa-step-indicator__heading">
+          <div className="usa-step-indicator__heading">
             <span className="usa-step-indicator__heading-counter">
               <span className="usa-sr-only">Step</span>
               <span className="usa-step-indicator__current-step">{current}</span>
               <span className="usa-step-indicator__total-steps"> of {total}</span>
             </span>
-            {stepTitle && <span className="usa-step-indicator__heading-text">{stepTitle}</span>}
-          </Heading>
+            {stepTitle && <Heading className="usa-step-indicator__heading-text progress__title">{stepTitle}</Heading>}
+          </div>
         </div>
       </div>
       {stepDescription && <p className="usa-intro progress__description">{stepDescription}</p>}

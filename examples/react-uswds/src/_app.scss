@@ -118,6 +118,18 @@
   margin-top: 0;
 }
 
+.matrix__hint,
 .matrix__error {
   grid-column: 1 / -1;
+}
+
+.progress__title {
+  display: inline;
+  margin: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.usa-form-group {
+  display: flow-root;
 }

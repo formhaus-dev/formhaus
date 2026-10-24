@@ -1,61 +1,46 @@
-import type { FieldOption } from '@formhaus/core';
-import { type KeyboardEvent, useEffect, useState } from 'react';
+import type { ControlOption } from '@formhaus/react/controls';
+import { type AriaAttributes, type KeyboardEvent, useEffect, useState } from 'react';
 
-interface ComboBoxProps {
+interface ComboBoxProps extends Pick<AriaAttributes, 'aria-invalid' | 'aria-required' | 'aria-describedby'> {
   id: string;
   name: string;
-  options: FieldOption[];
+  options: ControlOption[];
   value: string;
   onChange: (value: string) => void;
   onBlur: () => void;
   onFocus?: () => void;
   parse?: (text: string) => string;
   disabled?: boolean;
-  invalid?: boolean;
-  describedBy?: string;
   placeholder?: string;
   autoComplete?: string;
-  testId?: string;
+  'data-testid'?: string;
   className?: string;
 }
 
-const display = (options: FieldOption[], value: string) => options.find((option) => option.value === value)?.label ?? value;
+const display = (options: ControlOption[], value: string) => options.find((option) => String(option.value) === value)?.label ?? value;
 
-export function ComboBox({
-  id,
-  name,
-  options,
-  value,
-  onChange,
-  onBlur,
-  onFocus,
-  parse,
-  disabled,
-  invalid,
-  describedBy,
-  placeholder,
-  autoComplete,
-  testId,
-  className,
-}: ComboBoxProps) {
+export function ComboBox({ options, value, onChange, onBlur, parse, className, ...input }: ComboBoxProps) {
+  const { id, disabled } = input;
   const [text, setText] = useState(() => display(options, value));
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState(-1);
   const term = text.trim().toLowerCase();
-  const shown = options.filter((option) => !term || option.label.toLowerCase().includes(term) || option.value === value);
+  const shown = options.filter((option) => !term || option.label.toLowerCase().includes(term) || String(option.value) === value);
   const list = `${id}--list`;
 
-  const toValue = (typed: string) =>
-    options.find((option) => option.label.toLowerCase() === typed.trim().toLowerCase())?.value ?? (parse ? parse(typed) : typed);
+  const toValue = (typed: string) => {
+    const match = options.find((option) => option.label.toLowerCase() === typed.trim().toLowerCase());
+    return match ? String(match.value) : parse ? parse(typed) : typed;
+  };
 
   useEffect(() => {
     setText((current) => (toValue(current) === value ? current : display(options, value)));
   }, [value]);
 
-  function choose(option: FieldOption) {
+  function choose(option: ControlOption) {
     setText(option.label);
     setOpen(false);
-    onChange(option.value);
+    onChange(String(option.value));
   }
 
   function keyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -75,21 +60,15 @@ export function ComboBox({
   return (
     <div className={['usa-combo-box', text && 'usa-combo-box--pristine', className].filter(Boolean).join(' ')} data-enhanced="true">
       <input
-        id={id}
-        name={name}
-        className={invalid ? 'usa-combo-box__input usa-input--error' : 'usa-combo-box__input'}
+        {...input}
+        className={input['aria-invalid'] ? 'usa-combo-box__input usa-input--error' : 'usa-combo-box__input'}
         role="combobox"
         aria-expanded={open}
         aria-controls={list}
         aria-autocomplete="list"
         aria-activedescendant={open && shown[active] ? `${list}-${active}` : undefined}
-        aria-invalid={invalid ? true : undefined}
-        aria-describedby={describedBy}
-        autoComplete={autoComplete ?? 'off'}
-        placeholder={placeholder}
+        autoComplete={input.autoComplete ?? 'off'}
         value={text}
-        disabled={disabled}
-        data-testid={testId}
         onChange={(event) => {
           setText(event.target.value);
           setOpen(true);
@@ -97,7 +76,6 @@ export function ComboBox({
           onChange(toValue(event.target.value));
         }}
         onKeyDown={keyDown}
-        onFocus={onFocus}
         onBlur={() => {
           setOpen(false);
           onBlur();
@@ -141,12 +119,12 @@ export function ComboBox({
               key={option.value}
               id={`${list}-${index}`}
               role="option"
-              aria-selected={option.value === value}
+              aria-selected={String(option.value) === value}
               tabIndex={-1}
               className={[
                 'usa-combo-box__list-option',
                 index === active && 'usa-combo-box__list-option--focused',
-                option.value === value && 'usa-combo-box__list-option--selected',
+                String(option.value) === value && 'usa-combo-box__list-option--selected',
               ]
                 .filter(Boolean)
                 .join(' ')}
