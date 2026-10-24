@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { FieldOption } from '@formhaus/core';
-import { optionText, optionValue } from '@formhaus/core/fields';
 import AutoComplete, { type AutoCompleteCompleteEvent } from 'primevue/autocomplete';
 import { ref } from 'vue';
 
@@ -15,14 +14,14 @@ function search({ query }: AutoCompleteCompleteEvent) {
 }
 
 function update(next: string | FieldOption | null) {
-  emit('update:modelValue', next && typeof next === 'object' ? next.value : optionValue(props.options, next ?? ''));
+  emit('update:modelValue', next && typeof next === 'object' ? next.label : (next ?? ''));
 }
 </script>
 
 <template>
   <AutoComplete
     :input-id="id"
-    :model-value="optionText(options, modelValue)"
+    :model-value="modelValue"
     :suggestions="suggestions"
     option-label="label"
     :disabled="disabled"

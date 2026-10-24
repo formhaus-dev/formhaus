@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { scaleView } from '@formhaus/core/fields';
 import { controlShellProps } from '@formhaus/vue/controls';
 import Message from 'primevue/message';
-import { computed } from 'vue';
 
-const props = defineProps(controlShellProps);
-const anchors = computed(() => (props.field.type === 'scale' ? scaleView(props.field).anchors : []));
+defineProps(controlShellProps);
 </script>
 
 <template>
