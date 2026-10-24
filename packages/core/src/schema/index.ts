@@ -1,4 +1,4 @@
-import type { ValidateFn } from '../engine/engine-options';
+import type { ValidateContext } from '../engine/engine-options';
 import { hasOwn } from '../visibility/nodes';
 
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
@@ -38,19 +38,28 @@ export declare namespace StandardSchemaV1 {
   type InferOutput<Schema extends StandardSchemaV1> = NonNullable<Schema['~standard']['types']>['output'];
 }
 
-export function schemaValidate(schema: StandardSchemaV1): ValidateFn {
-  return async (values, { fields }) => {
+const segmentKey = (segment: PropertyKey | StandardSchemaV1.PathSegment): PropertyKey =>
+  typeof segment === 'object' && segment !== null && 'key' in segment ? segment.key : segment;
+
+function fieldOf(keys: PropertyKey[], fields: string[]): string | undefined {
+  for (let end = keys.length; end > 0; end--) {
+    const key = keys.slice(0, end).map(String).join('.');
+    if (fields.includes(key)) return key;
+    if (typeof keys[end - 1] === 'string' && typeof keys[end - 2] === 'number') return undefined;
+  }
+  return undefined;
+}
+
+export function schemaValidate(
+  schema: StandardSchemaV1,
+): (values: Record<string, unknown>, context?: ValidateContext) => Promise<Record<string, string>> {
+  return async (values, context) => {
     const { issues = [] } = await schema['~standard'].validate(values);
     const errors: Record<string, string> = {};
-    for (const { message, path = [] } of issues) {
-      const keys = path.map((segment) => (typeof segment === 'object' ? segment.key : segment));
-      const name = () => keys.map(String).join('.');
-      let key = name();
-      while (key && !fields.includes(key)) {
-        const last = keys.pop();
-        key = typeof last === 'string' && typeof keys[keys.length - 1] === 'number' ? '' : name();
-      }
-      if ((key || path.length === 0) && !hasOwn(errors, key)) errors[key] = message;
+    for (const { message, path } of issues) {
+      const keys = Array.from(path ?? [], segmentKey);
+      const key = keys.length === 0 ? '' : context ? fieldOf(keys, context.fields) : String(keys[0]);
+      if (key !== undefined && !hasOwn(errors, key)) errors[key] = message;
     }
     return errors;
   };

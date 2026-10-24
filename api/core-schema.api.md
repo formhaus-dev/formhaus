@@ -5,7 +5,7 @@
 ```ts
 
 // @public (undocumented)
-export function schemaValidate(schema: StandardSchemaV1): ValidateFn;
+export function schemaValidate(schema: StandardSchemaV1): (values: Record<string, unknown>, context?: ValidateContext) => Promise<Record<string, string>>;
 
 // @public (undocumented)
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
