@@ -1,4 +1,5 @@
 import type { FieldType, FormField } from '@formhaus/core';
+import type { ScaleAnchor } from '@formhaus/core/fields';
 import {
   choiceControl,
   type ControlClickEvent,
@@ -11,7 +12,6 @@ import {
   controlOptions,
   controlProps,
   controlShell,
-  fromControl,
   type LooseProps,
   type MapControlsOptions,
   type MappedTypes,
@@ -19,7 +19,7 @@ import {
   warnDoubleLabel,
 } from '@formhaus/core/controls';
 import { type FieldComponentProps, type FieldProps, fieldProps } from '@formhaus/react';
-import { type ComponentType, createElement, isValidElement, type ReactElement, type ReactNode, useEffect, useRef } from 'react';
+import { type ComponentType, createElement, isValidElement, type ReactElement, type ReactNode, useEffect, useRef, useState } from 'react';
 
 export interface ControlRootProps extends ControlRoot {
   onPointerDown: () => void;
@@ -34,6 +34,7 @@ export interface ControlShellProps {
   field: FormField;
   f: FieldProps;
   rootProps: ControlRootProps;
+  anchors: (ScaleAnchor | undefined)[];
   children: ReactNode;
 }
 
@@ -74,6 +75,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, conf
     const f = fieldProps(props);
     const latest = useRef({ props, f });
     latest.current = { props, f };
+    const [text, setText] = useState('');
     const choice = useRef<ReturnType<typeof choiceControl>>(null);
     choice.current ??= choiceControl(
       () => ({
@@ -98,10 +100,18 @@ function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, conf
     const Shell = controlShell(config.shell, kind);
     const options = controlOptions(field, f.options);
     const valueKey = kind === 'inline' ? 'checked' : 'value';
-    const { control, root } = controlProps(field, f, { kind, shell: !!Shell, input, attrs: f.input, valueKey });
+    const { control, root, anchors, save } = controlProps(field, f, {
+      kind,
+      shell: !!Shell,
+      input,
+      attrs: f.input,
+      valueKey,
+      text: config.freeText ? text : undefined,
+      setText,
+    });
     const element = createElement(Control, {
       ...control,
-      [changeProp]: (value: unknown, detail?: unknown) => pick(fromControl(field, value, isValidElement(detail) ? undefined : detail)),
+      [changeProp]: (value: unknown, detail?: unknown) => pick(save(value, isValidElement(detail) ? undefined : detail)),
       ...(Shell ? undefined : config.labels?.(f)),
       ...(typeof adapter === 'string' ? { [adapter]: options } : adapter?.(f, options)),
     });
@@ -114,7 +124,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps>, input: boolean, conf
       onClick: click,
     };
     return Shell ? (
-      <Shell kind={kind} field={field} f={f} rootProps={rootProps}>
+      <Shell kind={kind} field={field} f={f} rootProps={rootProps} anchors={anchors}>
         {element}
       </Shell>
     ) : (

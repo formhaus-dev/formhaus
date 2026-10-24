@@ -20,6 +20,7 @@ import { LooseProps } from '@formhaus/core/controls';
 import { MapControlsOptions } from '@formhaus/core/controls';
 import { MappedTypes } from '@formhaus/core/controls';
 import { PropType } from 'vue';
+import { ScaleAnchor } from '@formhaus/core/fields';
 import { VNodeChild } from 'vue';
 
 // @public (undocumented)
@@ -69,6 +70,10 @@ export const controlShellProps: {
     };
     rootProps: {
         type: PropType<ControlRootProps>;
+        required: true;
+    };
+    anchors: {
+        type: PropType<(ScaleAnchor | undefined)[]>;
         required: true;
     };
 };
