@@ -179,6 +179,13 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     expect(active()?.getAttribute('tabindex')).toBe('-1');
   });
 
+  it('focuses the first field with stepFocus heading when the step has no title', async () => {
+    const untitled: FormDefinition = { ...wizard, steps: wizard.steps!.map((step) => ({ ...step, title: '' })) };
+    harness.mount({ definition: untitled, initialValues: filled, stepFocus: 'heading', onSubmit: () => {} });
+    await harness.click(button('Continue'));
+    await waitFor(() => expect(active()).toBe(screen.getByRole('radio', { name: 'Plan A' })));
+  });
+
   it('still focuses the invalid field after a failed Continue with stepFocus heading', async () => {
     harness.mount({ definition: wizard, stepFocus: 'heading', onSubmit: () => {} });
     await harness.click(button('Continue'));

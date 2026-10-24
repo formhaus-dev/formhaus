@@ -110,10 +110,13 @@ export function focusField(
   several?: () => boolean,
   toHeading = false,
 ): void {
-  if (toHeading && !id && !afterErrors) {
-    const heading = form?.querySelector(HEADING) as (Focusable & { hasAttribute(name: string): boolean; tabIndex: number }) | null;
-    if (heading && !heading.hasAttribute('tabindex')) heading.tabIndex = -1;
-    (heading ?? form)?.focus();
+  const heading =
+    toHeading && !id && !afterErrors
+      ? (form?.querySelector(HEADING) as (Focusable & { hasAttribute(name: string): boolean; tabIndex: number }) | null)
+      : null;
+  if (heading) {
+    if (!heading.hasAttribute('tabindex')) heading.tabIndex = -1;
+    heading.focus();
     return;
   }
   const fields = fieldsOf(form);
