@@ -193,7 +193,7 @@ jobs:
 
   docs:
     needs: changes
-    if: needs.changes.outputs.code == 'true' || needs.changes.outputs.docs == 'true' || needs.changes.outputs.templates == 'true'
+    if: needs.changes.outputs.code == 'true' || needs.changes.outputs.docs == 'true' || needs.changes.outputs.templates == 'true' || needs.changes.outputs.examples == 'true'
     runs-on: ubuntu-latest
 
     steps:
@@ -207,6 +207,11 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            docs/pnpm-lock.yaml
+            examples/react-*/pnpm-lock.yaml
+            examples/vue-*/pnpm-lock.yaml
 
       - run: pnpm install --frozen-lockfile
 
@@ -214,11 +219,23 @@ jobs:
 
       - run: pnpm check:size-docs
 
-      - run: pnpm docs:build
+      - run: pnpm docs:install
+
+      - run: pnpm --dir docs test
+
+      - run: pnpm play:apps --install
+
+      - run: pnpm --dir docs run build
+
+      - run: pnpm check:docs-bundle
 
       - run: pnpm check:seo
 
       - run: pnpm check:template-aliases
+
+      - run: pnpm --filter @formhaus/editor-react exec playwright install --with-deps --only-shell chromium
+
+      - run: pnpm check:play
 
   examples:
     needs: changes
@@ -227,7 +244,7 @@ jobs:
 
     strategy:
       matrix:
-        example: [react-default, react-mui, react-antd, react-govuk, react-mantine, react-chakra, react-carbon, react-uswds, vue-vuetify, vue-primevue, vue-element-plus, vanilla-svelte, react-quiz, react-flat-api, nextjs-app-router, nuxt, react-shadcn, cloud-waitlist/react]
+        example: [react-default, vanilla-svelte, react-quiz, react-flat-api, nextjs-app-router, nuxt, cloud-waitlist/react]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
