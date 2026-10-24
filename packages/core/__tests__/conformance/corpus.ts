@@ -9,12 +9,14 @@ interface ConformanceCase {
   expected: { values: Record<string, unknown>; errors: Record<string, string> };
   canSubmit: boolean;
   serverValues?: Record<string, unknown>;
+  serverErrors?: Record<string, string>;
 }
 
 export interface ConformanceFixture {
   name: string;
   issues: { code: string; path: string }[];
   warnings?: { code: string; path: string }[];
+  refused?: { code: string; path: string }[];
   definition: FormDefinition;
   overlay?: Overlay;
   texts?: Record<string, string>;

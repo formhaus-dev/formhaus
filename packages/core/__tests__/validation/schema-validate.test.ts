@@ -101,4 +101,58 @@ describe('schemaValidate', () => {
     expect(form.errors).toEqual({ plan: 'Pick fewer' });
     expect(form.topLevelErrors).toEqual([]);
   });
+
+  it('maps ArkType issues of other steps, hidden fields and the root without hanging', async () => {
+    const schema = type({ email: 'string.email', notes: 'string >= 5', company: 'string' });
+    const form = new FormEngine(league, leagueValues, { onValidate: schemaValidate(schema) });
+    expect(await form.next()).toBe(true);
+    expect(await form.next()).toBe(true);
+    expect(await form.submit(() => {})).toBe(false);
+    expect(Object.keys(form.errors)).toEqual(['notes']);
+    expect(form.topLevelErrors).toEqual([]);
+  });
+
+  it('shows an ArkType root issue as a form error', async () => {
+    const schema = type({ email: 'string', notes: 'string' }).narrow(
+      (values, ctx) => values.email !== values.notes || ctx.reject({ message: 'Use different notes' }),
+    );
+    const form = new FormEngine(league, { ...leagueValues, notes: 'ada@example.com' }, { onValidate: schemaValidate(schema) });
+    await form.next();
+    await form.next();
+    expect(await form.submit(() => {})).toBe(false);
+    expect(form.topLevelErrors).toEqual(['Use different notes']);
+  });
+
+  it('reads paths that are Array subclasses without relying on their map', async () => {
+    class Path extends Array<PropertyKey> {
+      override map<U>(): U[] {
+        return [0 as U];
+      }
+    }
+    const issues = [
+      { message: 'Root', path: Path.of() },
+      { message: 'Ghost', path: Path.of('ghost') },
+      { message: 'Item', path: Path.of('players', 0, 'nickname') },
+      { message: 'Plan', path: Path.of('plan') },
+    ];
+    const schema: StandardSchemaV1 = { '~standard': { version: 1, vendor: 'test', validate: () => ({ issues }) } };
+    expect(await schemaValidate(schema)({}, { fields: ['plan'], submit: false })).toEqual({ '': 'Root', plan: 'Plan' });
+  });
+
+  it('maps issues by their top-level key without a context', async () => {
+    const schema = type({ email: 'string.email', players: type({ name: 'string >= 2' }).array() }).narrow((_, ctx) =>
+      ctx.reject({ message: 'Not allowed' }),
+    );
+    expect(await schemaValidate(schema)({ email: 'nope', players: [{ name: 'Ada' }, { name: 'B' }] })).toEqual({
+      email: expect.any(String),
+      players: expect.any(String),
+    });
+    expect(await schemaValidate(schema)({ email: 'ada@example.com', players: [] })).toEqual({ '': 'Not allowed' });
+  });
+
+  it('keeps only path-less issues when no field is in scope', async () => {
+    const schema = z.object({ email: z.email('Enter a valid email') }).refine(() => false, 'Not allowed');
+    expect(await schemaValidate(schema)({}, { fields: [], submit: true })).toEqual({});
+    expect(await schemaValidate(schema)({ email: 'ada@example.com' }, { fields: [], submit: true })).toEqual({ '': 'Not allowed' });
+  });
 });

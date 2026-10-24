@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { HARD_LIMITS, kb, measureEntries } from './measure.mjs';
+import { kb, measureEntries } from './measure.mjs';
 
 const DOC_FILES = [
   'docs/guide/bundle-size.md',
@@ -14,7 +14,7 @@ const MARKER = /(<!-- size:([\w-]+):start -->)([\s\S]*?)(<!-- size:\2:end -->)/g
 const VALUE = /(\d+(?:\.\d+)?) KB/g;
 const TOLERANCE_KB = 0.5;
 
-const LIMIT_LABELS = {
+const APP_LABELS = {
   core: 'Every export of `@formhaus/core`',
   'core + react': 'Every export of `@formhaus/core` and `@formhaus/react`',
   'core + vue': 'Every export of `@formhaus/core` and `@formhaus/vue`',
@@ -67,14 +67,11 @@ const pathSize = (sizes, entry, pkg) => kb(sizes[entry === 'FormEngine' ? 'core 
 export async function formhausBlocks() {
   const sizes = await measureEntries();
   const engine = sizes['core FormEngine'];
-  const limits = Object.entries(HARD_LIMITS).map(([name, limit]) => {
-    if (!LIMIT_LABELS[name]) throw new Error(`No docs label for the hard limit "${name}" in scripts/size/docs.mjs`);
-    return [LIMIT_LABELS[name], `${limit / 1024} KB`, kb(sizes[name])];
-  });
+  const apps = Object.entries(APP_LABELS).map(([name, label]) => [label, kb(sizes[name])]);
   return {
     sizes,
     blocks: {
-      limits: table(['App imports', 'Limit', 'Measured'], limits),
+      apps: table(['App imports', 'Measured'], apps),
       paths: table(
         ['Entry', 'You write', 'React', 'Vue'],
         PATHS.map(([entry, write]) => [`\`${entry}\``, write, pathSize(sizes, entry, 'react'), pathSize(sizes, entry, 'vue')]),
