@@ -24,7 +24,10 @@ export function Choices({ f, options, value, onChange, multiple, inline }: Choic
   const stacked = useContext(PageContext).controllers.has(f.name);
   const ref = useGovuk(multiple ? Checkboxes : Radios);
   const tiles = options.some((option) => option.image);
-  const className = [`govuk-${kind}`, inline && !stacked && 'govuk-radios--inline', tiles && 'app-tiles'].filter(Boolean).join(' ');
+  const revealing = options.some((option) => option.reveal);
+  const className = [`govuk-${kind}`, inline && !stacked && !revealing && 'govuk-radios--inline', tiles && 'app-tiles']
+    .filter(Boolean)
+    .join(' ');
 
   return (
     <div className={className} data-module={`govuk-${kind}`} ref={ref}>
@@ -40,6 +43,8 @@ export function Choices({ f, options, value, onChange, multiple, inline }: Choic
                 type={multiple ? 'checkbox' : 'radio'}
                 className={`govuk-${kind}__input`}
                 data-behaviour={multiple && option.exclusive ? 'exclusive' : undefined}
+                aria-controls={option.reveal?.id}
+                {...(multiple && { 'aria-expanded': option.reveal?.open })}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => onChange(multiple ? toggleOption(value, attrs.value) : event)}
               />
               <label className={`govuk-label govuk-${kind}__label`} htmlFor={attrs.id}>
@@ -47,6 +52,16 @@ export function Choices({ f, options, value, onChange, multiple, inline }: Choic
                 {anchor ? `${option.label} (${anchor.label.toLowerCase()})` : option.label}
               </label>
             </div>
+            {option.reveal && (
+              <div
+                id={option.reveal.id}
+                data-fh="reveal"
+                hidden={!option.reveal.open}
+                className={`govuk-${kind}__conditional${option.reveal.open ? '' : ` govuk-${kind}__conditional--hidden`}`}
+              >
+                {option.reveal.children}
+              </div>
+            )}
           </Fragment>
         );
       })}

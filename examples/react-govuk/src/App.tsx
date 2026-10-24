@@ -62,6 +62,7 @@ export function App({ definition = initial }: { definition?: FormDefinition }) {
                       labels={{ errorSummary: 'There is a problem' }}
                       messages={messages}
                       errorSummary="top"
+                      conditionalReveal
                       confirmRemove={false}
                       onSubmit={(values) => setView({ name: 'check', values })}
                     />
