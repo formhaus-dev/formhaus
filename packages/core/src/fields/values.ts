@@ -15,7 +15,8 @@ export function toggleOption(value: unknown, option: string): string[] {
   return selected.includes(option) ? selected.filter((item) => item !== option) : [...selected, option];
 }
 
-const INPUT_TYPES: Record<string, string> = {
+const INPUT_TYPES: Record<string, string | null> = {
+  __proto__: null,
   email: 'email',
   phone: 'tel',
   number: 'number',

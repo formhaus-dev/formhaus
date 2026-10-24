@@ -2,7 +2,8 @@
   "name": "check-slow-pattern",
   "covers": [
     "warns about a pattern that repeats a group with a quantifier or alternation",
-    "warns about overlapping repeats split by optional parts or groups"
+    "warns about overlapping repeats split by optional parts or groups",
+    "warns about a repeated group with a backreference to a separator"
   ],
   "issues": [],
   "warnings": [
@@ -57,6 +58,34 @@
     {
       "code": "slow-pattern",
       "path": "/fields/23/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/24/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/25/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/26/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/27/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/28/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/29/validation/pattern"
+    },
+    {
+      "code": "slow-pattern",
+      "path": "/fields/30/validation/pattern"
     }
   ],
   "definition": {
@@ -256,6 +285,62 @@
         "label": "code23",
         "validation": {
           "pattern": "^(?:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa)$"
+        }
+      },
+      {
+        "key": "code24",
+        "type": "text",
+        "label": "code24",
+        "validation": {
+          "pattern": "(-)(?:a*\\1*-)+$"
+        }
+      },
+      {
+        "key": "code25",
+        "type": "text",
+        "label": "code25",
+        "validation": {
+          "pattern": "(?<s>-)(?:a*\\k<s>*-)+$"
+        }
+      },
+      {
+        "key": "code26",
+        "type": "text",
+        "label": "code26",
+        "validation": {
+          "pattern": "(?<s>a)a*\\k<s>*$"
+        }
+      },
+      {
+        "key": "code27",
+        "type": "text",
+        "label": "code27",
+        "validation": {
+          "pattern": "\\k<(a+)+>"
+        }
+      },
+      {
+        "key": "code28",
+        "type": "text",
+        "label": "code28",
+        "validation": {
+          "pattern": "\\k<(a|a)+>"
+        }
+      },
+      {
+        "key": "code29",
+        "type": "text",
+        "label": "code29",
+        "validation": {
+          "pattern": "(?<ä>a)a*\\k<ä>*$"
+        }
+      },
+      {
+        "key": "code30",
+        "type": "text",
+        "label": "code30",
+        "validation": {
+          "pattern": "(?<s>a)a*\\k<\\u{73}>*$"
         }
       }
     ]

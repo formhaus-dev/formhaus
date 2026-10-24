@@ -52,8 +52,10 @@ describe('fieldState', () => {
 describe('inputs', () => {
   it('maps field types to input types and reads the placeholder, mask and input mode', () => {
     expect(
-      ['text', 'email', 'phone', 'number', 'password', 'date', 'time', 'datetime', 'x-custom'].map((type) => inputType({ type })),
-    ).toEqual(['text', 'email', 'tel', 'number', 'password', 'date', 'time', 'datetime-local', 'text']);
+      ['text', 'email', 'phone', 'number', 'password', 'date', 'time', 'datetime', 'x-custom', 'constructor', '__proto__'].map((type) =>
+        inputType({ type }),
+      ),
+    ).toEqual(['text', 'email', 'tel', 'number', 'password', 'date', 'time', 'datetime-local', 'text', 'text', 'text']);
     const state = fieldState({ field: field({ mask: '(___) ___', inputMode: 'tel' }) });
     expect([state.placeholder, state.inputMode]).toEqual(['(___) ___', 'tel']);
   });
