@@ -65,7 +65,7 @@ These cost the same on any path, and only when imported:
 
 | Import | React | Vue |
 |---|---|---|
-| `mapControls` from `/controls`, over `FormRenderer` | 2.9 KB | 3.0 KB |
+| `mapControls` from `/controls`, over `FormRenderer` | 3.0 KB | 3.1 KB |
 
 <!-- size:controls:end -->
 
