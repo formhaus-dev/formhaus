@@ -79,9 +79,14 @@ export function completionChecks({ open, rendered, edit }) {
     async completion(page, problems) {
       for (const app of apps)
         for (const form of forms)
-          await complete(page, app, form, problems).catch((error) => {
+          await complete(page, app, form, problems).catch(async (error) => {
             const lines = String(error).split('\n');
-            problems.push(`${app.id} ${form.hash}: threw ${lines[0]} ${lines.find((line) => line.includes('waiting for')) ?? ''}`);
+            const shown = await page
+              .frameLocator(`iframe[src*="/play/apps/${app.id}/"]`)
+              .locator('body')
+              .innerText({ timeout: 2000 })
+              .catch(() => '');
+            problems.push(`${app.id} ${form.hash}: threw ${lines[0]} | preview: ${shown.replace(/\s+/g, ' ').slice(0, 400)}`);
           });
     },
   };
