@@ -1,4 +1,5 @@
 import { defineComponent, h, type PropType } from 'vue';
+import { mergedEntry, objectEntries } from '../../../core/__tests__/renderers/map-object.scenarios';
 import { type ControlOption, controlShellProps, mapControls } from '../../src/controls';
 import type { FieldProps } from '../../src/composables/useFieldProps';
 import { fieldComponentProps } from '../../src/props';
@@ -227,6 +228,9 @@ export const mapped = {
   revealed: mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { input: TextInput, radio: [Choices, 'options'] } }),
   named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onUpdate:value'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
+  object: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls: objectEntries(controls) }),
+  objectNamed: mapControls({ shell: Shell, controls: objectEntries({ radio: [Picker, 'options', 'onUpdate:value'] }) }),
+  objectMerged: mapControls({ shell: Shell, controls: mergedEntry(Choices) }),
   bare: mapControls({ shell: null, labels, kinds: { multiselect: 'input' }, controls }),
   mixed: mapControls({ shell: { group: Shell }, labels, controls }),
   doubled: mapControls({ shell: Shell, labels, controls: { input: [TextInput, labels] } }),

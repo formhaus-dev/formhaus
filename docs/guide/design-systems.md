@@ -16,9 +16,9 @@ const components = mapControls({
   controls: {
     input: Input,
     textarea: Textarea,
-    select: [Select, 'options'],
+    select: { component: Select, optionsProp: 'options' },
     checkbox: Checkbox,
-    radio: [RadioGroup, 'options'],
+    radio: { component: RadioGroup, optionsProp: 'options' },
   },
 })
 
@@ -33,12 +33,14 @@ const components = mapControls({
   controls: {
     input: VTextField,
     textarea: VTextarea,
-    select: [VSelect, (f, options) => ({ items: options, itemTitle: 'label' })],
+    select: { component: VSelect, props: (f, options) => ({ items: options, itemTitle: 'label' }) },
     checkbox: VCheckbox,
   },
 })
 ```
 :::
+
+A control is a component, or an object with the component and how to call it. See [Control entries](#control-entries).
 
 The result is a plain `components` map. Mix it with hand-written fields: `{ ...mapControls(config), file: FileField }`. Types you leave out keep the built-in fields in `FormRenderer`.
 
@@ -139,32 +141,56 @@ Every control gets these props:
 - A `Date`, or a date library object with `toDate()` such as dayjs, for `date`, `time` and `datetime`: the [value format](/guide/custom-fields#value-types) of the type.
 - For `number`, decimal text becomes a number and empty text `null`. For `scale` and `rating`, text becomes a number, and a `rating` of `0` becomes `null`.
 
-## Adapters
+## Control entries
 
-Options are never passed by default. An adapter after the control says where they go:
+Options are never passed by default. An object entry says where they go and which props the control gets:
+
+```tsx
+controls: {
+  input: TextField,
+  select: { component: Select, optionsProp: 'options' },
+  autocomplete: { component: Combobox, optionsProp: 'data' },
+  multiselect: { component: Select, optionsProp: 'options', props: () => ({ mode: 'multiple' }) },
+  radio: {
+    component: RadioGroup,
+    props: (f, options) => ({ children: options.map((option) => <Radio key={option.value} {...option} />) }),
+  },
+  checkbox: { component: Checkbox, changeProp: 'onCheckedChange' },
+}
+```
+
+| Key | Value |
+|---|---|
+| `component` | The control component |
+| `props` | A function that gets `f` and the options and returns props. Its props override the preset and `optionsProp` |
+| `optionsProp` | The name of the prop that gets the options |
+| `changeProp` | The name of the prop that reports changes. React uses `onChange` by default, Vue `onUpdate:modelValue`. See [Change prop](#change-prop) |
+
+- `options` are the field options, the matrix columns in a matrix row, or the points of a `scale` or `rating` as `{ value: 3, label: '3' }`.
+- In Vue, `children` from `props` becomes the default slot.
+- `f.maxLength` and `f.minLength` feed the character counter of a design system, such as Ant Design `showCount`, Element Plus `show-word-limit` or the GOV.UK character count: `textarea: { component: Input.TextArea, props: (f) => ({ showCount: true, maxLength: f.maxLength }) }`. A native `maxLength` stops typing at the limit; leave it out to let the user type on and see the error.
+
+React types `props`, `optionsProp` and `changeProp` with the props of the component, and Vue with its `$props`. A wrong prop name, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
+
+Inside the `mapControls` call the parameters of `props` get their types. When you declare an entry outside the call, type it with `ControlSpec` from the `/controls` entry: `const select: ControlSpec<typeof Select> = { component: Select, optionsProp: 'options' }`. Then `optionsProp` and `changeProp` stay checked and `props` gets typed parameters. A `props` function declared on its own takes `(f: FieldProps, options: ControlOption[]) => ...`.
+
+### Tuple shorthand
+
+A tuple is short for an object entry: `[component, props or optionsProp, changeProp]`. A string in the second place is `optionsProp`, a function is `props`, and `null` skips it. These entries match the ones above:
 
 ```tsx
 controls: {
   select: [Select, 'options'],
-  autocomplete: [Combobox, 'data'],
   multiselect: [Select, (f, options) => ({ options, mode: 'multiple' })],
-  radio: [RadioGroup, (f, options) => ({ children: options.map((option) => <Radio key={option.value} {...option} />) })],
+  checkbox: [Checkbox, null, 'onCheckedChange'],
 }
 ```
 
-- A string puts the options in that prop.
-- A function gets `f` and the options and returns props. Its props override the preset.
-- `options` are the field options, the matrix columns in a matrix row, or the points of a `scale` or `rating` as `{ value: 3, label: '3' }`.
-- In Vue, `children` becomes the default slot.
-- `f.maxLength` and `f.minLength` feed the character counter of a design system, such as Ant Design `showCount`, Element Plus `show-word-limit` or the GOV.UK character count: `textarea: [Input.TextArea, (f) => ({ showCount: true, maxLength: f.maxLength })]`. A native `maxLength` stops typing at the limit; leave it out to let the user type on and see the error.
-
-React types the adapter with the props of the component, and Vue with its `$props`. A wrong prop name in a string adapter, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
-
-Inside the `mapControls` call the adapter parameters get their types. When you declare `controls` in a separate constant, annotate them: `(f: FieldProps, options: ControlOption[]) => ...`. `ControlOption` comes from the `/controls` entry.
+The tuple is type checked the same way as the object.
 
 ### Change prop
 
-A component that reports changes in another prop names it third. The value then goes through the same `onChange` rules and [autoAdvance](#autoadvance) handling. Pass `null` when there is no adapter. shadcn/ui, on Radix:
+A component that reports changes in another prop names it in `changeProp`. The value then goes through the same `onChange` rules and [autoAdvance](#autoadvance) handling. shadcn/ui, on Radix:
 
 ```tsx
 import { Checkbox } from '@/components/ui/checkbox'
@@ -187,15 +213,15 @@ const components = mapControls({
   controls: {
     input: Input,
     textarea: Textarea,
-    checkbox: [Checkbox, null, 'onCheckedChange'],
-    switch: [Switch, null, 'onCheckedChange'],
-    radio: [RadioGroup, radios, 'onValueChange'],
-    scale: [RadioGroup, radios, 'onValueChange'],
+    checkbox: { component: Checkbox, changeProp: 'onCheckedChange' },
+    switch: { component: Switch, changeProp: 'onCheckedChange' },
+    radio: { component: RadioGroup, props: radios, changeProp: 'onValueChange' },
+    scale: { component: RadioGroup, props: radios, changeProp: 'onValueChange' },
   },
 })
 ```
 
-Radix compares string values, so `value: f.text` passes a scale point as text. In Vue, name the event listener, such as `'onUpdate:value'`.
+Radix compares string values, so `value: f.text` passes a scale point as text. In Vue, `changeProp` names the event listener, such as `'onUpdate:value'`.
 
 ### Free text
 
@@ -206,7 +232,7 @@ mapControls({
   shell: Shell,
   freeText: true,
   controls: {
-    autocomplete: [Autocomplete, (_, options) => ({ data: options.map((option) => option.label) })],
+    autocomplete: { component: Autocomplete, props: (_, options) => ({ data: options.map((option) => option.label) }) },
   },
 })
 ```
@@ -215,7 +241,7 @@ The control gets the typed text as its value. Text that matches an option label 
 
 ## Conditional reveal
 
-With [`conditionalReveal`](/guide/conditions#show-a-field-under-its-option) on the renderer, list the types whose adapter draws revealed fields under the options. Each option the adapter gets then has `reveal`: `{ id, open, children }`. Put `children` in a block with that `id` and `data-fh="reveal"` under the option, hide the block while `open` is `false`, and give the option input `aria-controls={option.reveal.id}`. Give a checkbox option `aria-expanded={option.reveal.open}` too.
+With [`conditionalReveal`](/guide/conditions#show-a-field-under-its-option) on the renderer, list the types whose `props` draw revealed fields under the options. Each option that `props` gets then has `reveal`: `{ id, open, children }`. Put `children` in a block with that `id` and `data-fh="reveal"` under the option, hide the block while `open` is `false`, and give the option input `aria-controls={option.reveal.id}`. Give a checkbox option `aria-expanded={option.reveal.open}` too.
 
 ```tsx
 const radios = (f: FieldProps, options: ControlOption[]) => ({
@@ -231,10 +257,10 @@ const radios = (f: FieldProps, options: ControlOption[]) => ({
   )),
 })
 
-mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { radio: [RadioGroup, radios] } })
+mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { radio: { component: RadioGroup, props: radios } } })
 ```
 
-A type that is not listed keeps the revealed fields after the group, so list a type only when its adapter draws `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent, as long as the block has `data-fh="reveal"`.
+A type that is not listed keeps the revealed fields after the group, so list a type only when its `props` draw `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent, as long as the block has `data-fh="reveal"`.
 
 ## autoAdvance
 
@@ -279,14 +305,17 @@ export const components: FieldComponentMap = {
     matrix: MatrixRow,
     controls: {
       input: TextField,
-      textarea: [TextField, () => ({ multiline: true, minRows: 3 })],
-      select: [TextField, (_, options) => ({ select: true, children: menu(options) })],
-      multiselect: [TextField, (_, options) => ({ select: true, slotProps: { select: { multiple: true } }, children: menu(options) })],
-      checkbox: [Checkbox, (f) => ({ inputProps: f.aria })],
-      switch: [Switch, (f) => ({ inputProps: f.aria })],
-      radio: [RadioGroup, (_, options) => ({ children: radios(options) })],
-      scale: [RadioGroup, (_, options) => ({ row: true, children: radios(options) })],
-      rating: [Rating, (_, options) => ({ max: options.length })],
+      textarea: { component: TextField, props: () => ({ multiline: true, minRows: 3 }) },
+      select: { component: TextField, props: (_, options) => ({ select: true, children: menu(options) }) },
+      multiselect: {
+        component: TextField,
+        props: (_, options) => ({ select: true, slotProps: { select: { multiple: true } }, children: menu(options) }),
+      },
+      checkbox: { component: Checkbox, props: (f) => ({ inputProps: f.aria }) },
+      switch: { component: Switch, props: (f) => ({ inputProps: f.aria }) },
+      radio: { component: RadioGroup, props: (_, options) => ({ children: radios(options) }) },
+      scale: { component: RadioGroup, props: (_, options) => ({ row: true, children: radios(options) }) },
+      rating: { component: Rating, props: (_, options) => ({ max: options.length }) },
     },
   }),
   autocomplete: AutocompleteField,
@@ -363,19 +392,26 @@ export const components: FieldComponentMap = {
     controls: {
       input: Input,
       password: Input.Password,
-      number: [InputNumber, () => ({ style: { width: '100%' } })],
-      textarea: [Input.TextArea, () => ({ rows: 4 })],
-      select: [Select, 'options'],
-      multiselect: [Select, (_, options) => ({ options, mode: 'multiple' })],
-      autocomplete: [Select, (_, options) => ({ options, showSearch: { optionFilterProp: 'label' } })],
-      date: [DatePicker, picked],
-      datetime: [DatePicker, (f) => ({ ...picked(f), showTime: { format: 'HH:mm' }, format: 'YYYY-MM-DD HH:mm' })],
-      time: [TimePicker, (f) => ({ ...picked(f), format: 'HH:mm' })],
+      number: { component: InputNumber, props: () => ({ style: { width: '100%' } }) },
+      textarea: { component: Input.TextArea, props: () => ({ rows: 4 }) },
+      select: { component: Select, optionsProp: 'options' },
+      multiselect: { component: Select, optionsProp: 'options', props: () => ({ mode: 'multiple' }) },
+      autocomplete: { component: Select, optionsProp: 'options', props: () => ({ showSearch: { optionFilterProp: 'label' } }) },
+      date: { component: DatePicker, props: picked },
+      datetime: {
+        component: DatePicker,
+        props: (f) => ({ ...picked(f), showTime: { format: 'HH:mm' }, format: 'YYYY-MM-DD HH:mm' }),
+      },
+      time: { component: TimePicker, props: (f) => ({ ...picked(f), format: 'HH:mm' }) },
       checkbox: Checkbox,
       switch: Switch,
-      radio: [Radio.Group, (_, options) => ({ options, vertical: true })],
-      scale: [Radio.Group, (_, options) => ({ options, optionType: 'button', buttonStyle: 'solid', block: true })],
-      rating: [Rate, (_, options) => ({ count: options.length })],
+      radio: { component: Radio.Group, optionsProp: 'options', props: () => ({ vertical: true }) },
+      scale: {
+        component: Radio.Group,
+        optionsProp: 'options',
+        props: () => ({ optionType: 'button', buttonStyle: 'solid', block: true }),
+      },
+      rating: { component: Rate, props: (_, options) => ({ count: options.length }) },
     },
   }),
   file: FileField,
@@ -456,15 +492,15 @@ export const components: FieldComponentMap = mapControls({
   controls: {
     input: VTextField,
     textarea: VTextarea,
-    select: [VSelect, items],
-    multiselect: [VSelect, (f, options) => ({ ...items(f, options), multiple: true })],
-    autocomplete: [VAutocomplete, items],
+    select: { component: VSelect, props: items },
+    multiselect: { component: VSelect, props: (f, options) => ({ ...items(f, options), multiple: true }) },
+    autocomplete: { component: VAutocomplete, props: items },
     checkbox: VCheckbox,
-    switch: [VSwitch, () => ({ color: 'primary' })],
+    switch: { component: VSwitch, props: () => ({ color: 'primary' }) },
     file: VFileInput,
-    radio: [VRadioGroup, (_, options) => ({ hideDetails: true, children: radios(options) })],
-    scale: [VRadioGroup, (_, options) => ({ inline: true, hideDetails: true, children: radios(options) })],
-    rating: [VRating, (_, options) => ({ length: options.length, hover: true })],
+    radio: { component: VRadioGroup, props: (_, options) => ({ hideDetails: true, children: radios(options) }) },
+    scale: { component: VRadioGroup, props: (_, options) => ({ inline: true, hideDetails: true, children: radios(options) }) },
+    rating: { component: VRating, props: (_, options) => ({ length: options.length, hover: true }) },
   },
 })
 ```

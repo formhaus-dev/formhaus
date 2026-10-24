@@ -2,6 +2,7 @@ import type { FieldOption, FormField, FormSection, RootProps } from '../types';
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
 export { autofilled } from './autofill';
+export { controlEntry } from './control-entry';
 export { recalled, recalls, recallVersion, refreshRecall, subscribeRecall } from './recall';
 export { recallEnabled, recallKeys } from '../engine/recall';
 

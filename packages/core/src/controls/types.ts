@@ -8,9 +8,19 @@ export type ControlTextType = 'text' | 'email' | 'phone' | 'number' | 'password'
 
 export type ControlOption<Children = unknown> = Omit<FieldOption, 'value'> & { value: string | number; reveal?: RevealView<Children> };
 
+export interface ControlSpecOf<Component, View, Option = ControlOption> {
+  component: Component;
+  props?: (f: View, options: Option[]) => object;
+  optionsProp?: string;
+  changeProp?: string;
+}
+
+export type ControlSpecKey<Entry> = string extends keyof Entry ? never : 'component' & keyof Entry;
+
 export type ControlEntryOf<Component, View, Option = ControlOption> =
   | Component
-  | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?];
+  | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?]
+  | ControlSpecOf<Component, View, Option>;
 
 type Widen<T> = T extends string ? string : T extends number ? number : T extends boolean ? boolean : T;
 
