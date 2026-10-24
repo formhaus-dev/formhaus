@@ -1,9 +1,10 @@
 const PATTERN_TOKEN =
-  /(\(\?<?[=!])|(\((?:\?<[^>]*>|\?:)?)|(\)|\\(?:x[\da-f]{2}|u[\da-f]{4}|c[a-z]|\d+|[^bB])|\[(?:\\.|[^\]])*]|[^|^$\\])((?:[*+?]|\{\d+(?:,\d*)?\})\??)?|\\?./gis;
+  /(\(\?<?[=!])|(\((?:\?<[^>]*>|\?:)?)|(\)|\\(?:x[\da-f]{2}|u[\da-f]{4}|c[a-z]|\d+|k<(?:[$\w\x80-\uffff]|\\u[\da-f]{4}|\\u\{[\da-f]+\})+>|[^bB])|\[(?:\\.|[^\]])*]|[^|^$\\])((?:[*+?]|\{\d+(?:,\d*)?\})\??)?|\\?./gis;
 
 const ASCII = /* @__PURE__ */ Array.from({ length: 128 }, (_, code) => String.fromCharCode(code));
 
 function samples(atom: string): string[] {
+  if (/^\\[1-9k]/.test(atom)) return ASCII;
   try {
     const regex = new RegExp(`^(?:${atom})$`);
     return ASCII.filter((char) => regex.test(char));
