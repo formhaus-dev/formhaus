@@ -31,7 +31,7 @@ const engine = new FormEngine(definition, {}, { onValidate });
 
 ## Which issues show
 
-- **Continue** checks the visible fields of the current step. Issues of other steps are dropped, so one schema covers the whole form.
+- **Continue** checks the visible fields of the current step, so one schema covers the whole form.
 - **Submit** checks the visible fields of every step on the path, except skipped steps. An issue on another step opens that step.
 - The first issue of a field wins.
 - An issue without a path shows as a form error. It clears on the next Continue, Back or Submit.
@@ -66,7 +66,7 @@ An async refinement runs on Continue and Submit, never on each keystroke. The fo
 
 <<< @/recipes/snippets/schema-server-check.ts
 
-Zod runs an async refinement twice per check: its Standard Schema `validate` tries a sync parse first, then parses again async. Valibot runs it once. The example caches the result per email, so each email is fetched once, also across Continue and Submit.
+Zod runs the whole schema twice when a refinement is async: its Standard Schema `validate` tries a sync parse first, then parses again async. Valibot runs it once. The example caches the result per email, so each email is fetched once, also across Continue and Submit. A failed request lets the answer through and is tried again next time; the server checks the email again on submit.
 
 ## On the server
 

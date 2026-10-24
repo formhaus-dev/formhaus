@@ -99,6 +99,16 @@ describe('schema validation recipes', () => {
     expect(fetch).toHaveBeenCalledTimes(1);
   });
 
+  it('checks an email again after a failed request', async () => {
+    const fetch = vi
+      .fn(async () => new Response(null, { status: 404 }))
+      .mockImplementationOnce(async () => new Response(null, { status: 500 }));
+    vi.stubGlobal('fetch', fetch);
+    expect(await submit({ onValidate: serverCheck }, { email: 'retry@example.com' })).toMatchObject({ sent: true });
+    expect(await submit({ onValidate: serverCheck }, { email: 'retry@example.com' })).toMatchObject({ sent: true });
+    expect(fetch).toHaveBeenCalledTimes(2);
+  });
+
   it('runs the server check', async () => {
     const fetch = vi.fn(async (url: string) => new Response(null, { status: url.endsWith('taken%40example.com') ? 200 : 404 }));
     vi.stubGlobal('fetch', fetch);
