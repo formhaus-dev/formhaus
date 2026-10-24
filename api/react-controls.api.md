@@ -12,6 +12,7 @@ import { ControlKeyEvent } from '@formhaus/core/controls';
 import { ControlKind } from '@formhaus/core/controls';
 import { ControlOption as ControlOption_2 } from '@formhaus/core/controls';
 import { ControlRoot } from '@formhaus/core/controls';
+import { ControlSpecKey } from '@formhaus/core/controls';
 import { FieldAria } from '@formhaus/core/fields';
 import { FieldControl } from '@formhaus/core/fields';
 import { FieldOption } from '@formhaus/core';
@@ -28,10 +29,10 @@ import { RevealView } from '@formhaus/core';
 import { ScaleAnchor } from '@formhaus/core/fields';
 
 // @public (undocumented)
-export type ControlAdapter<C extends Control> = (keyof PropsOf<C> & string) | ((f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>>);
+export type ControlAdapter<C extends Control> = PropName<C> | ControlProps<C>;
 
 // @public (undocumented)
-export type ControlEntry<C extends Control = Control> = C | readonly [C, ControlAdapter<C> | null, (keyof PropsOf<C> & string)?];
+export type ControlEntry<C extends Control = Control> = C | readonly [C, ControlAdapter<C> | null, PropName<C>?] | ControlSpec<C>;
 
 export { ControlKind }
 
@@ -71,6 +72,18 @@ export interface ControlShellProps {
     kind: ControlKind;
     // (undocumented)
     rootProps: ControlRootProps;
+}
+
+// @public (undocumented)
+export interface ControlSpec<C extends Control = Control> {
+    // (undocumented)
+    changeProp?: PropName<C>;
+    // (undocumented)
+    component: C;
+    // (undocumented)
+    optionsProp?: PropName<C>;
+    // (undocumented)
+    props?: ControlProps<C>;
 }
 
 // @public (undocumented)
