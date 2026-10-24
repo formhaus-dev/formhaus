@@ -15,25 +15,25 @@ const choice = useChoice(props, emit);
 <template>
   <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" :error-first="!!props.reveals" variant="radio">
     <template v-for="(option, index) in withReveals(props.field.options ?? [], props.reveals)" :key="String(option.value)">
-    <div class="fh-field__radio-option">
-      <input
-        v-bind="{ ...control, ...choice(option.value) }"
-        :autocomplete="props.field.autocomplete"
-        :id="`${inputId}-${index}`"
-        class="fh-field__radio"
-        :data-testid="props.optionTestId?.(String(option.value))"
-        type="radio"
-        :name="props.field.key"
-        :value="option.value"
-        :checked="String(props.modelValue) === String(option.value)"
-        :aria-controls="option.reveal?.id"
-      />
-      <label :for="`${inputId}-${index}`" class="fh-field__radio-label">
-        {{ option.label }}
-      </label>
-      <OptionImage :option="option" />
-    </div>
-    <RevealSlot :reveal="option.reveal" />
+      <div class="fh-field__radio-option">
+        <input
+          v-bind="{ ...control, ...choice(option.value) }"
+          :autocomplete="props.field.autocomplete"
+          :id="`${inputId}-${index}`"
+          class="fh-field__radio"
+          :data-testid="props.optionTestId?.(String(option.value))"
+          type="radio"
+          :name="props.field.key"
+          :value="option.value"
+          :checked="String(props.modelValue) === String(option.value)"
+          :aria-controls="option.reveal?.id"
+        />
+        <label :for="`${inputId}-${index}`" class="fh-field__radio-label">
+          {{ option.label }}
+        </label>
+        <OptionImage :option="option" />
+      </div>
+      <RevealSlot :reveal="option.reveal" />
     </template>
   </FieldShell>
 </template>

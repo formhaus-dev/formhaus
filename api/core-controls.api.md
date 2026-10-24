@@ -61,13 +61,13 @@ export type ControlKind = 'input' | 'inline' | 'group';
 export const controlKind: (type: string, kinds?: Partial<Record<string, ControlKind>>) => ControlKind;
 
 // @public (undocumented)
-export type ControlOption<Children = never> = Omit<FieldOption, 'value'> & {
+export type ControlOption<Children = unknown> = Omit<FieldOption, 'value'> & {
     value: string | number;
     reveal?: RevealView<Children>;
 };
 
 // @public (undocumented)
-export function controlOptions<Children = never>(field: FormField, options: FieldOption[], reveals?: RevealView<Children>[]): ControlOption<Children>[];
+export function controlOptions<Children = unknown>(field: FormField, options: FieldOption[], reveals?: RevealView<Children>[]): ControlOption<Children>[];
 
 // @public (undocumented)
 export interface ControlPreset {

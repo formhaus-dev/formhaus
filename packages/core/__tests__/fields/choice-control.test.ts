@@ -36,12 +36,13 @@ describe('choiceControl', () => {
 
   it('ignores Enter and clicks from a nested field inside its root', () => {
     const { commit, choice } = setup({}, 'a');
-    const root = {};
-    const nested = { value: 'a', closest: (selector: string) => (selector.includes('data-fh') ? {} : nested) };
+    const reveal = {};
+    const root = { contains: (node: unknown) => node === reveal };
+    const nested = { value: 'a', closest: (selector: string) => (selector.includes('reveal') ? reveal : nested) };
     down(choice, { ...key('Enter', nested), currentTarget: root });
     choice.click({ detail: 1, target: nested, currentTarget: root });
     vi.runAllTimers();
-    const own = { value: 'a', closest: (selector: string) => (selector.includes('data-fh') ? root : own) };
+    const own = { value: 'a', closest: (selector: string) => (selector.includes('reveal') ? null : own) };
     choice.click({ detail: 1, target: own, currentTarget: root });
     vi.runAllTimers();
     expect(commit.mock.calls).toEqual([['a']]);

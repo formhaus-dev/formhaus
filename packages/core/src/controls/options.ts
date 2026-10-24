@@ -15,7 +15,7 @@ export function withReveals<Option extends { value: string | number }, Children>
   });
 }
 
-export function controlOptions<Children = never>(
+export function controlOptions<Children = unknown>(
   field: FormField,
   options: FieldOption[],
   reveals?: RevealView<Children>[],

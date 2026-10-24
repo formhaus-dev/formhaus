@@ -8,7 +8,7 @@ export function useFormFocus(
   formId: string,
   invalidAttempts: Ref<number>,
   several: () => boolean,
-  toForm: () => boolean,
+  toHeading: () => boolean,
 ) {
   const { currentStep, stepValidating, submitting } = form;
   const requested = ref(0);
@@ -46,7 +46,7 @@ export function useFormFocus(
       const afterErrors = focusErrors || (restore && Object.keys(form.engine.errors).length > 0);
       focusKey = null;
       focusErrors = false;
-      focusField(formRef.value, key && errorDomId(form.engine, formId, key), afterErrors, several, toForm());
+      focusField(formRef.value, key && errorDomId(form.engine, formId, key), afterErrors, several, toHeading());
     },
     { flush: 'post' },
   );

@@ -234,7 +234,7 @@ const radios = (f: FieldProps, options: ControlOption[]) => ({
 mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { radio: [RadioGroup, radios] } })
 ```
 
-A type that is not listed keeps the revealed fields after the group, so list a type only when its adapter draws `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent.
+A type that is not listed keeps the revealed fields after the group, so list a type only when its adapter draws `option.reveal` for every option. A `multiselect` drawn as a dropdown cannot show fields under an option. The revealed fields sit inside the option group of the design system, so keep them out of its group context: a nested checkbox must not join a parent checkbox group, and a `<fieldset disabled>` around the options disables them too. Keys and clicks from the revealed fields do not trigger the [autoAdvance](#autoadvance) wiring of the parent, as long as the block has the `id` of `option.reveal`.
 
 ## autoAdvance
 

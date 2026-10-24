@@ -48,7 +48,6 @@ const {
   topLevelErrors,
   fieldLoading,
   visibleFields,
-  visibleNodes,
   currentStep,
   isFirstStep,
   isLastStep,

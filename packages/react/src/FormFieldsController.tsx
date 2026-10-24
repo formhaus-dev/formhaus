@@ -59,7 +59,7 @@ export const FormFieldsController = /* @__PURE__ */ memo(function FormFieldsCont
   };
 
   const renderAll = (nodes: readonly FormNode[], columns?: FieldOption[]): ReactNode[] => {
-    const shown = revealLayout(engine.definition, nodes, can);
+    const shown = revealLayout(engine, nodes, can);
     const render = (node: FormNode, row?: number): ReactNode => {
       if (isGroup(node))
         return (

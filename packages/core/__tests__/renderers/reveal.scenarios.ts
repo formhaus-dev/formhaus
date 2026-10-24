@@ -98,6 +98,37 @@ export function revealScenarios(harness: RendererHarness, { it, expect, waitFor,
     expect(before(error, textbox('Email address'))).toBe(true);
   });
 
+  it('nests inside a section and nests a revealed radio with its own field', async () => {
+    const definition: FormDefinition = {
+      ...contact,
+      fields: [
+        {
+          key: 'about',
+          type: 'section',
+          title: 'About',
+          fields: [
+            {
+              key: 'kids',
+              type: 'radio',
+              label: 'Kids',
+              options: [
+                { value: 'yes', label: 'Yes' },
+                { value: 'no', label: 'No' },
+              ],
+            },
+            { key: 'ages', type: 'radio', label: 'Ages', show: [{ field: 'kids', eq: 'yes' }], options: [{ value: 'old', label: 'Old' }] },
+            { key: 'detail', type: 'text', label: 'Detail', show: [{ field: 'ages', eq: 'old' }] },
+          ],
+        },
+      ],
+    };
+    harness.mount({ definition, conditionalReveal: true, initialValues: { kids: 'yes', ages: 'old' }, onSubmit: () => {} });
+    const outer = container(radio('Yes'))!;
+    expect(outer.contains(radio('Old'))).toBe(true);
+    expect(container(radio('Old'))?.contains(textbox('Detail'))).toBe(true);
+    expect(outer.contains(textbox('Detail'))).toBe(true);
+  });
+
   it('keeps the flat layout for a custom radio component', async () => {
     harness.mount({
       definition: contact,

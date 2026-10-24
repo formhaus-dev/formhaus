@@ -85,7 +85,7 @@ export interface ErrorSummaryGroup {
         key: string;
         id: string;
         text: string;
-        message: string;
+        message?: string;
     }[];
     // (undocumented)
     id: string;

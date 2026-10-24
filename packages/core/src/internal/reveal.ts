@@ -1,4 +1,6 @@
-import type { FieldOption, FormDefinition, FormField, FormNode, RevealView } from '../types';
+import type { FormEngine } from '../engine';
+import type { EngineInternals } from '../engine/runtime-internals';
+import type { FieldOption, FormField, FormNode, RevealView } from '../types';
 import { isSection, topNodes } from '../visibility/nodes';
 import { revealTargets } from '../visibility/reveal';
 
@@ -15,11 +17,13 @@ export interface RevealSlot<Node = FormNode> {
 
 export const revealable = new WeakSet<object>();
 
-const plans = new WeakMap<FormDefinition, Plan>();
+const plans = new WeakMap<object, Plan>();
 
-function planOf(definition: FormDefinition): Plan {
-  let plan = plans.get(definition);
+function planOf(engine: FormEngine): Plan {
+  const key = (engine as unknown as EngineInternals).visibility;
+  let plan = plans.get(key);
   if (plan) return plan;
+  const { definition } = engine;
   plan = { parents: new Map(), options: new Map() };
   const tops = definition.steps?.length ? definition.steps.map((step) => step.fields) : [topNodes(definition)];
   const sections = tops.flatMap((nodes) => nodes.filter(isSection).filter((section) => section.layout !== 'matrix'));
@@ -35,12 +39,12 @@ function planOf(definition: FormDefinition): Plan {
           [...options, target.option].sort((a, b) => a - b),
         );
     });
-  plans.set(definition, plan);
+  plans.set(key, plan);
   return plan;
 }
 
-export function revealLayout(definition: FormDefinition, nodes: readonly FormNode[], can: (field: FormField) => boolean) {
-  const { parents, options } = planOf(definition);
+export function revealLayout(engine: FormEngine, nodes: readonly FormNode[], can: (field: FormField) => boolean) {
+  const { parents, options } = planOf(engine);
   const shown = new Set(nodes);
   const slots = new Map<FormField, RevealSlot[]>();
   const slotsOf = (field: FormField) => {
@@ -64,7 +68,7 @@ export function revealLayout(definition: FormDefinition, nodes: readonly FormNod
   };
 }
 
-const revealDomId = (fieldId: string, index: number): string => `${fieldId}-reveal-${index}`;
+const revealDomId = (fieldId: string, index: number): string => `${fieldId}--reveal-${index}`;
 
 export function revealViews<Children>(
   slots: RevealSlot[],

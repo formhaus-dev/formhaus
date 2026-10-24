@@ -99,7 +99,7 @@ export function useNodeProps(
   };
   const context = {
     formId,
-    definition: () => form.engine.definition,
+    engine: () => form.engine,
     section: () => props.layout?.section ?? props.components?.section ?? DefaultSection,
     can: (field: FormField) => {
       const component = props.components?.[field.type];

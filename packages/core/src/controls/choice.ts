@@ -24,7 +24,7 @@ export interface ChoiceInput {
 
 const COMMIT_TYPES = ['radio', 'scale', 'rating'];
 const OPTION = 'input[type=radio], button[value], [role=radio], [role=option]';
-const FIELD = '[data-fh="field"], .fh-field';
+const REVEAL = '[data-fh="reveal"], [id*="--reveal-"]';
 
 interface Closest {
   closest?: (selector: string) => unknown;
@@ -58,7 +58,8 @@ export function choiceControl(read: () => ChoiceInput, change: (value: unknown) 
   };
   const optionAt = ({ target, currentTarget }: { target: unknown; currentTarget?: unknown }) => {
     const element = (target as Closest | null)?.closest?.(OPTION) as Closest | null | undefined;
-    return currentTarget && element?.closest?.(FIELD) !== currentTarget ? undefined : element;
+    const reveal = element?.closest?.(REVEAL);
+    return reveal && (currentTarget as { contains?: (node: unknown) => boolean } | undefined)?.contains?.(reveal) ? undefined : element;
   };
   const pressed = (event: ControlKeyEvent, key: string) => {
     const element = optionAt(event);

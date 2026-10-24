@@ -1,4 +1,4 @@
-import { isGroup, isSection, type FieldOption, type FormDefinition, type FormField, type FormNode, type FormSection } from '@formhaus/core';
+import { isGroup, isSection, type FieldOption, type FormEngine, type FormField, type FormNode, type FormSection } from '@formhaus/core';
 import { fieldDomId, matrixColumns, type RevealSlot, revealLayout, revealViews } from '@formhaus/core/internal';
 import { type Component, defineComponent, Fragment, h, inject, type InjectionKey, type PropType, type VNode } from 'vue';
 import FieldResolver from './FieldResolver.vue';
@@ -6,7 +6,7 @@ import FormGroup from './FormGroup.vue';
 
 export interface NodeContext {
   formId: string;
-  definition: () => FormDefinition;
+  engine: () => FormEngine;
   section: () => Component;
   can: (field: FormField) => boolean;
   nodeProps: (field: FormField, columns?: FieldOption[], row?: number) => Record<string, unknown>;
@@ -17,7 +17,7 @@ export const NODE_CONTEXT: InjectionKey<NodeContext> = Symbol('fhNodes');
 
 type Slots = (field: FormNode) => RevealSlot[];
 
-export const nodeLayout = (context: NodeContext, nodes: readonly FormNode[]) => revealLayout(context.definition(), nodes, context.can);
+export const nodeLayout = (context: NodeContext, nodes: readonly FormNode[]) => revealLayout(context.engine(), nodes, context.can);
 
 export const FormNodeView = /* @__PURE__ */ defineComponent({
   props: {
@@ -39,7 +39,7 @@ export const FormNodeView = /* @__PURE__ */ defineComponent({
       }
       const field = node as FormField;
       if (isGroup(node)) return h(FormGroup as Component, context.nodeProps(field));
-      const id = fieldDomId(context.formId, node.key, context.definition());
+      const id = fieldDomId(context.formId, node.key, context.engine().definition);
       return h(FieldResolver as Component, {
         ...context.nodeProps(field, props.columns, props.row),
         reveals: revealViews(props.slots(node), id, (nested) => h(Fragment, list(nested, props.slots))),

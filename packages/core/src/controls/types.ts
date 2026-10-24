@@ -6,7 +6,7 @@ export type ControlShells<Shell> = Shell | null | Partial<Record<ControlKind, Sh
 
 export type ControlTextType = 'text' | 'email' | 'phone' | 'number' | 'password' | 'date' | 'time' | 'datetime';
 
-export type ControlOption<Children = never> = Omit<FieldOption, 'value'> & { value: string | number; reveal?: RevealView<Children> };
+export type ControlOption<Children = unknown> = Omit<FieldOption, 'value'> & { value: string | number; reveal?: RevealView<Children> };
 
 export type ControlEntryOf<Component, View, Option = ControlOption> =
   | Component
