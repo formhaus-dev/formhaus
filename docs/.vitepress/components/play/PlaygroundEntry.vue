@@ -2,7 +2,7 @@
 import './playground.css';
 import './play-picker.css';
 import { useData } from 'vitepress';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import LucideIcon from '../landing/LucideIcon.vue';
 import PlayLive from './PlayLive.vue';
 import PlayPicker from './PlayPicker.vue';
@@ -10,11 +10,15 @@ import { playForms } from './play-catalog';
 import { shareParams } from './play-share';
 import { designs, markEntryVisit } from './play-state';
 import { roving } from './roving';
+import { trackEdges } from './scroll-edges';
 
 const { isDark } = useData();
 const system = ref(designs[0]!.id);
 const formKey = ref(playForms[0]!.key);
 const strip = ref<HTMLElement>();
+const stripWrap = ref<HTMLElement>();
+const panel = ref<HTMLElement>();
+const stops: Array<() => void> = [];
 
 const design = computed(() => designs.find((entry) => entry.id === system.value) ?? designs[0]!);
 const form = computed(() => playForms.find((entry) => entry.key === formKey.value) ?? playForms[0]!);
@@ -31,6 +35,9 @@ function choose(id: string) {
 }
 
 onMounted(() => {
+  if (strip.value && stripWrap.value) stops.push(trackEdges(strip.value, stripWrap.value, 'x'));
+  const list = panel.value?.querySelector<HTMLElement>('.cb-list');
+  if (list && panel.value) stops.push(trackEdges(list, panel.value, 'y'));
   const params = new URLSearchParams(location.search);
   const ds = params.get('ds');
   const key = params.get('f');
@@ -43,6 +50,10 @@ onMounted(() => {
     history.replaceState(history.state, '', url);
   });
 });
+
+onBeforeUnmount(() => {
+  for (const stop of stops) stop();
+});
 </script>
 
 <template>
@@ -52,25 +63,27 @@ onMounted(() => {
       <p class="ps-lead">One JSON form definition, rendered by {{ designs.length }} popular design systems.</p>
     </header>
 
-    <div ref="strip" class="ps-strip" role="tablist" aria-label="Design system" @keydown="roving">
-      <button
-        v-for="entry in designs"
-        :id="`tab-${entry.id}`"
-        :key="entry.id"
-        type="button"
-        role="tab"
-        class="ps-tab"
-        aria-controls="ps-preview"
-        :aria-selected="entry.id === system"
-        :tabindex="entry.id === system ? 0 : -1"
-        @click="choose(entry.id)"
-      >
-        {{ entry.label }}
-      </button>
+    <div ref="stripWrap" class="ps-strip-wrap">
+      <div ref="strip" class="ps-strip" role="tablist" aria-label="Design system" @keydown="roving">
+        <button
+          v-for="entry in designs"
+          :id="`tab-${entry.id}`"
+          :key="entry.id"
+          type="button"
+          role="tab"
+          class="ps-tab"
+          aria-controls="ps-preview"
+          :aria-selected="entry.id === system"
+          :tabindex="entry.id === system ? 0 : -1"
+          @click="choose(entry.id)"
+        >
+          {{ entry.label }}
+        </button>
+      </div>
     </div>
 
     <div class="ps-stage">
-      <div class="ps-panel"><PlayPicker v-model="formKey" inline /></div>
+      <div ref="panel" class="ps-panel"><PlayPicker v-model="formKey" inline /></div>
       <div class="ps-pick"><PlayPicker v-model="formKey" /></div>
       <div>
         <section id="ps-preview" class="lv-window" role="tabpanel" :aria-labelledby="`tab-${system}`">
