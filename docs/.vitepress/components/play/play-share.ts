@@ -20,12 +20,17 @@ async function pipe(bytes: Uint8Array, transform: CompressionStream | Decompress
   return new Uint8Array(await new Response(new Blob([bytes as BlobPart]).stream().pipeThrough(transform)).arrayBuffer());
 }
 
-export async function writeHash(state: Shared): Promise<string> {
+export function shareParams(state: Shared) {
   const params = new URLSearchParams();
   if (state.design) params.set('ds', state.design);
   if (state.width && state.width !== 'desktop') params.set('w', state.width);
   if (state.template) params.set('t', state.template);
   else if (state.preset) params.set('p', state.preset);
+  return params;
+}
+
+export async function writeHash(state: Shared): Promise<string> {
+  const params = shareParams(state);
   if (state.text) params.set('d', toBase64Url(await pipe(new TextEncoder().encode(state.text), new CompressionStream('deflate-raw'))));
   return `#${params}`;
 }
