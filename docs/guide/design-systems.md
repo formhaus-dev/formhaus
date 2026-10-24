@@ -156,6 +156,7 @@ controls: {
 - A function gets `f` and the options and returns props. Its props override the preset.
 - `options` are the field options, the matrix columns in a matrix row, or the points of a `scale` or `rating` as `{ value: 3, label: '3' }`.
 - In Vue, `children` becomes the default slot.
+- `f.maxLength` and `f.minLength` feed the character counter of a design system, such as Ant Design `showCount`, Element Plus `show-word-limit` or the GOV.UK character count: `textarea: [Input.TextArea, (f) => ({ showCount: true, maxLength: f.maxLength })]`. A native `maxLength` stops typing at the limit; leave it out to let the user type on and see the error.
 
 React types the adapter with the props of the component, and Vue with its `$props`. A wrong prop name in a string adapter, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
 

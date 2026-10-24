@@ -42,6 +42,7 @@ Before you write a component, read [Value types](#value-types): each built-in ty
 | `helperId`, `errorId` | `` `${id}-helper` `` and `` `${id}-error` `` |
 | `describedBy` | The helper id and then the error id, only the ones shown |
 | `invalid`, `required`, `disabled` | `error` is set, `validation.required` is set, `disabled` or `loading` is set |
+| `minLength`, `maxLength` | `validation.minLength` and `validation.maxLength` of a `text`, `email`, `phone`, `password` or `textarea` field, for a character counter. The input does not get them as attributes, so typing past the limit shows the error instead of cutting the text |
 | `inputType`, `inputMode` | The `type` of a native input for the field type (`text`, `email`, `tel`, `number`, `password`, `date`, `time` or `datetime-local`), and `field.inputMode` |
 | `aria` | `aria-invalid`, `aria-required` and `aria-describedby`, for a control or group whose helper and error you render |
 | `testId` | The [test id](/guide/testing) of the field |
