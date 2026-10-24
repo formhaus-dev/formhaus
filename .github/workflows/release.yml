@@ -135,3 +135,14 @@ jobs:
           if [ "$DIST_TAG" = latest ] && grep -qx "@formhaus/mcp@$mcp" "$RUNNER_TEMP/new-tags"; then
             gh workflow run mcp-registry.yml --ref "@formhaus/mcp@$mcp"
           fi
+
+      - name: Notify the native ports
+        env:
+          GH_TOKEN: ${{ secrets.PORTS_DISPATCH_TOKEN }}
+        run: |
+          [ -n "$GH_TOKEN" ] || exit 0
+          core=$(jq -r .version packages/core/package.json)
+          [ "$DIST_TAG" = latest ] && grep -qx "@formhaus/core@$core" "$RUNNER_TEMP/new-tags" || exit 0
+          for repo in formhaus-swift formhaus-kotlin; do
+            gh api "repos/formhaus-dev/$repo/dispatches" -f event_type=core-release -f "client_payload[version]=$core"
+          done

@@ -31,13 +31,30 @@ const engine = new FormEngine(definition, {}, { onValidate });
 
 ## Which issues show
 
-- **Continue** checks the visible fields of the current step. Issues of other steps are dropped, so one schema covers the whole form.
+- **Continue** checks the visible fields of the current step, so one schema covers the whole form.
 - **Submit** checks the visible fields of every step on the path, except skipped steps. An issue on another step opens that step.
 - The first issue of a field wins.
 - An issue without a path shows as a form error. It clears on the next Continue, Back or Submit.
 - An issue deeper than a field, such as one item of a `multiselect`, shows on that field.
+- An issue on any other key is dropped: fields of other steps, fields hidden by a condition, skipped steps and keys that no field has. A misspelled schema key never shows an error, so check the keys against the definition.
 
-Fields that are optional in the definition or hidden by a condition can be missing from the values. Mark them optional in the schema, such as `z.string().optional()`, so an empty optional field passes.
+## Empty answers
+
+Keep `required` in the definition. Its rules run first, so an unanswered required field shows the definition message and the schema checks only answers.
+
+A field nobody answered is missing from the values. A text field the user cleared is `''`. Mark every key the definition does not require as optional in the schema, and pass `emptyStrings: 'omit'` so a cleared field passes `.optional()` like an untouched one:
+
+<<< @/recipes/snippets/schema-empty.ts
+
+`'omit'` drops `''` at the top level and in group items, only from what the schema sees. The default, `'keep'`, passes `''` as it is.
+
+## Checks across fields
+
+An object-level check, such as Zod `.refine()` or ArkType `.narrow()`, runs only when every key of the object passes. On Continue the keys of later steps are missing, so mark the keys optional and keep `required` in the definition:
+
+<<< @/recipes/snippets/schema-confirm.ts
+
+Zod `.refine()` with a `when` option and Valibot `partialCheck()` run a check on some keys while others fail.
 
 ## Group items
 
@@ -48,6 +65,32 @@ Issue paths map to group item keys: `['players', 1, 'name']` shows on `players.1
 An async refinement runs on Continue and Submit, never on each keystroke. The form stays busy until it resolves, and a result is dropped when the values or the step change in the meantime.
 
 <<< @/recipes/snippets/schema-server-check.ts
+
+Zod runs the whole schema twice when a refinement is async: its Standard Schema `validate` tries a sync parse first, then parses again async. Valibot runs it once. The example caches the result per email, so each email is fetched once, also across Continue and Submit. A failed request lets the answer through and is tried again next time; the server checks the email again on submit.
+
+## On the server
+
+Call the function with the values alone. Each issue maps to the top-level key of its path, so `['players', 1, 'name']` shows on `players`, and an issue without a path comes back under the empty key `''`. Run it on the `values` that [`validateSubmission()`](/guide/server-validation) returns, which hold only the fields on the active path:
+
+```ts
+import { validateSubmission } from '@formhaus/core/server';
+
+app.post('/api/submit', async (req, res) => {
+  const { values, errors } = validateSubmission(definition, req.body?.values, {
+    skippedSteps: req.body?.skippedSteps,
+  });
+  const allErrors = { ...(await onValidate(values)), ...errors };
+  if (Object.keys(allErrors).length > 0) return res.status(422).json({ errors: allErrors });
+  res.json({ values });
+});
+```
+
+With a context, only issues on the paths in `fields` and issues without a path count. `fields: []` keeps only the issues without a path.
+
+## Values and messages
+
+- The submit handler gets the form values, not the schema output. Transforms, coercion and defaults in the schema do not apply. Parse the values again in the handler when you need the output.
+- Schema messages come from the library and stay in its language. Pass your own messages, or set the library locale: `z.config(z.locales.de())` in Zod, [`@valibot/i18n`](https://valibot.dev/guides/internationalization/) in Valibot.
 
 ## onValidate without a schema
 
