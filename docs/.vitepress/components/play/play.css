@@ -17,8 +17,7 @@
   -webkit-font-smoothing: antialiased;
 }
 
-.play button,
-.play select {
+:where(.play) :is(button, select) {
   font: inherit;
   color: inherit;
 }
@@ -55,10 +54,6 @@
 .play-button--primary {
   border-color: var(--vp-c-brand-3);
   background: var(--vp-c-brand-3);
-  color: var(--vp-c-white);
-}
-
-.play .play-button--primary {
   color: var(--vp-c-white);
 }
 
@@ -207,7 +202,8 @@
   background: var(--vp-c-bg-soft);
 }
 
-.play-issues button {
+.play-issues button,
+.play-issues__row {
   display: grid;
   grid-template-columns: auto 1fr;
   gap: var(--fh-site-space-0-5) var(--fh-site-space-2);
@@ -217,6 +213,9 @@
   background: transparent;
   text-align: left;
   line-height: 1.45;
+}
+
+.play-issues button {
   cursor: pointer;
 }
 
