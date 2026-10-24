@@ -15,6 +15,11 @@ function prefill(definition) {
   return { ...definition, ...(steps ? { steps } : { fields: definition.fields.map(fill) }) };
 }
 
+export function primaryButton(definition) {
+  const labels = ['Continue', definition.submit.label, ...(definition.steps ?? []).flatMap((step) => step.next?.label ?? [])];
+  return new RegExp(`^\\s*(${labels.map(literal).join('|')})\\s*$`);
+}
+
 export function completionChecks({ open, rendered, frameOf, edit }) {
   async function listed(frame, fields) {
     const shown = await Promise.all(fields.map((field) => frame.getByText(field.label, { exact: true }).filter({ visible: true }).count()));
@@ -23,8 +28,7 @@ export function completionChecks({ open, rendered, frameOf, edit }) {
   }
 
   async function submit(frame, definition, fields) {
-    const labels = ['Continue', definition.submit.label, ...(definition.steps ?? []).flatMap((step) => step.next?.label ?? [])];
-    const primary = new RegExp(`^\\s*(${labels.map(literal).join('|')})\\s*$`);
+    const primary = primaryButton(definition);
     const done = frame.getByText('Response submitted', { exact: true }).filter({ visible: true });
     let review = false;
     for (let turn = 0; turn <= (definition.steps?.length ?? 1) && !(await done.count()); turn += 1) {
