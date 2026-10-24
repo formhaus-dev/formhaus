@@ -1,4 +1,5 @@
 import { type ChangeEvent, type InputHTMLAttributes, type KeyboardEvent, type ReactNode, type TextareaHTMLAttributes, useRef } from 'react';
+import { mergedEntry, objectEntries } from '../../../core/__tests__/renderers/map-object.scenarios';
 import { type ControlOption, type ControlShellProps, mapControls } from '../../src/controls';
 import type { FieldProps } from '../../src/fieldProps';
 import type { FieldComponentProps } from '../../src/types';
@@ -234,6 +235,9 @@ export const mapped = {
   revealed: mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { input: TextInput, radio: [Choices, 'options'] } }),
   named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onValueChange'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
+  object: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls: objectEntries(controls) }),
+  objectNamed: mapControls({ shell: Shell, controls: objectEntries({ radio: [Picker, 'options', 'onValueChange'] }) }),
+  objectMerged: mapControls({ shell: Shell, controls: mergedEntry(Choices) }),
   bare: mapControls({ shell: null, labels: (f: FieldProps) => ({ label: f.label }), kinds: { multiselect: 'input' }, controls }),
   mixed: mapControls({ shell: { group: Shell }, labels: (f: FieldProps) => ({ label: f.label }), controls }),
   doubled: mapControls({

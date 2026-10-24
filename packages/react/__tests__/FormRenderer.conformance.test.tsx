@@ -25,6 +25,7 @@ import { validateScenarios } from '../../core/__tests__/renderers/validate.scena
 import { mapCommitScenarios } from '../../core/__tests__/renderers/map-commit.scenarios';
 import { mapControlScenarios } from '../../core/__tests__/renderers/map-controls.scenarios';
 import { mapNamedScenarios } from '../../core/__tests__/renderers/map-named.scenarios';
+import { mapObjectScenarios } from '../../core/__tests__/renderers/map-object.scenarios';
 import { mapPropsScenarios } from '../../core/__tests__/renderers/map-props.scenarios';
 import { FormRenderer } from '../src/FormRenderer';
 import { design } from './fixtures/design';
@@ -180,5 +181,6 @@ describe('renderer conformance: onValidate', () => validateScenarios(harness, ki
 describe('renderer conformance: mapControls', () => mapControlScenarios(harness, kit));
 describe('renderer conformance: mapControls commit', () => mapCommitScenarios(harness, kit));
 describe('renderer conformance: mapControls change props', () => mapNamedScenarios(harness, kit));
+describe('renderer conformance: mapControls object form', () => mapObjectScenarios(harness, kit));
 describe('renderer conformance: mapControls field props', () => mapPropsScenarios(harness, kit));
 describe('renderer conformance: conditional reveal', () => revealScenarios(harness, kit));
