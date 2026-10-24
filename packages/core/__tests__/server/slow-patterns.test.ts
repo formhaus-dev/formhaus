@@ -82,6 +82,26 @@ describe('slow patterns on the server', () => {
     expect(validateSubmission(definition, { p0: 'ada@mail.example.com', p1: 'Ada Lovelace', p2: 'a, b,c' }).errors).toEqual({});
   });
 
+  it('refuses a repeated group with a backreference to its separator', () => {
+    const value = `${'-'.repeat(40)}!`;
+    const test = tests();
+    const issues = refused(form('(-)(?:a*\\1*-)+$', '(?<s>-)(?:a*\\k<s>*-)+$'), { p0: value, p1: value });
+    expect(test.mock.calls.some(([input]) => input === value)).toBe(false);
+    expect(issues.map(({ path }) => path)).toEqual(['/fields/0/validation/pattern', '/fields/1/validation/pattern']);
+  });
+
+  it('does not cache a pattern over 1000 characters', () => {
+    const short = form('^[a-z]+(?:/\\s*[a-z]+)*$');
+    const test = tests();
+    validateSubmission(short, {});
+    const first = test.mock.calls.length;
+    const long = `^(?:${'a'.repeat(1000)})$`;
+    for (let index = 0; index < 300; index++) expect(refused(form(`${long}${index}`)).map(({ code }) => code)).toEqual(['slow-pattern']);
+    test.mockClear();
+    validateSubmission(short, {});
+    expect(test.mock.calls.length).toBeLessThan(first);
+  });
+
   it('checks a pattern once', () => {
     const definition = form('^[a-z]+(?:;\\s*[a-z]+)*$');
     const test = tests();

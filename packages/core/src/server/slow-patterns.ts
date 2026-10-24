@@ -7,6 +7,7 @@ import { ISSUE_TEXTS } from '../definition-validation/texts';
 const checked = new Map<string, boolean>();
 
 function isSlow(pattern: string): boolean {
+  if (pattern.length > 1000) return true;
   const cached = checked.get(pattern);
   if (cached !== undefined) return cached;
   const slow = !!slowPattern(pattern);
