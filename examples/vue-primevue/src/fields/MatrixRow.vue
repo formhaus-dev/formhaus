@@ -8,7 +8,7 @@ defineProps(controlShellProps);
 <template>
   <div v-bind="rootProps" class="matrix__row">
     <div class="matrix__label">
-      <span :id="`${f.id}-label`">{{ f.label }}</span>
+      <span :id="`${f.id}-label`">{{ f.label }}</span><span v-if="f.required" aria-hidden="true"> *</span>
       <Message v-if="f.helperText" :pt="{ root: { id: f.helperId, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">
         {{ f.helperText }}
       </Message>

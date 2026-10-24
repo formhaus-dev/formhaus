@@ -9,6 +9,10 @@
   margin: 0 0 units(3);
 }
 
+.app__required {
+  margin: 0 0 units(3);
+}
+
 .app .fh-form {
   max-width: units("tablet");
 }
@@ -26,6 +30,10 @@
 }
 
 .summary {
+  margin-bottom: units(3);
+}
+
+.form-errors {
   margin-top: units(4);
 }
 
@@ -89,7 +97,7 @@
   margin-top: units(1);
 }
 
-.matrix__row {
+.matrix .matrix__row {
   display: grid;
   grid-template-columns: minmax(units("card"), 1fr) repeat(var(--matrix-columns), minmax(units(7), units(10)));
   align-items: center;
@@ -132,4 +140,29 @@
 
 .usa-form-group {
   display: flow-root;
+}
+
+.completion {
+  max-width: units("tablet");
+}
+
+.completion__heading {
+  @include u-font("sans", "lg");
+  margin: units(4) 0 0;
+}
+
+.completion__label,
+.completion__value {
+  vertical-align: top;
+}
+
+.completion__label {
+  width: 40%;
+  color: color("base-dark");
+  font-weight: font-weight("normal");
+}
+
+.completion__value {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
 }

@@ -4,7 +4,7 @@ import { Card, Fieldset, Stack, Table } from '@chakra-ui/react';
 export function Section({ id, title, description, descriptionId, columns, children }: SectionComponentProps) {
   return (
     <Card.Root asChild variant="outline">
-      <Fieldset.Root id={id} aria-describedby={descriptionId} p="5" gap="4">
+      <Fieldset.Root id={id} aria-describedby={descriptionId} p="5" minW="0">
         <Stack gap="1">
           <Fieldset.Legend>{title}</Fieldset.Legend>
           {description && <Fieldset.HelperText id={descriptionId}>{description}</Fieldset.HelperText>}

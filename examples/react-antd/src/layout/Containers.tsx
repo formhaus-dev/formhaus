@@ -37,7 +37,7 @@ export function FormActions({
           </Button>
         )}
       </Flex>
-      <Flex gap={8}>
+      <Flex gap={8} className="actions__primary">
         {showSkip && onSkip && (
           <Button type="link" disabled={loading} onClick={onSkip}>
             {skipLabel}
@@ -154,7 +154,7 @@ export function GroupItem({
       }
       extra={
         canRemove && (
-          <Button type="link" danger size="small" disabled={disabled} aria-label={`${removeLabel} ${removeName}`} onClick={requestRemove}>
+          <Button type="link" danger size="small" disabled={disabled} aria-label={removeName} onClick={requestRemove}>
             {removeLabel}
           </Button>
         )
@@ -173,6 +173,8 @@ export function ConfirmDialog({ open, title, description, confirmLabel, cancelLa
       okText={confirmLabel}
       cancelText={cancelLabel}
       okButtonProps={{ danger: true }}
+      cancelButtonProps={{ autoFocus: true }}
+      closable={false}
       onOk={confirm}
       onCancel={cancel}
     >

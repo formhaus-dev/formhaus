@@ -99,8 +99,8 @@ export function GroupItem({
   children,
 }: GroupItemComponentProps) {
   return (
-    <li className="usa-card group__item" role="group" aria-labelledby={titleId} data-fh-group-item>
-      <div className="usa-card__container">
+    <li className="usa-card group__item" data-fh-group-item>
+      <div className="usa-card__container" role="group" aria-labelledby={titleId}>
         <div className="usa-card__header">
           <h3 id={titleId} tabIndex={-1} className="usa-card__heading">
             {title}

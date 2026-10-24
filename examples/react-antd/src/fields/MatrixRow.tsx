@@ -1,11 +1,16 @@
 import { type ControlShellProps, mapControls } from '@formhaus/react/controls';
 import { Radio, Typography } from 'antd';
+import { RequiredMark } from './Shell';
 
 function MatrixShell({ f, rootProps, children }: ControlShellProps) {
+  const { 'aria-invalid': _invalid, 'aria-describedby': _describedBy, ...root } = rootProps;
   return (
-    <div {...rootProps} className="matrix-row">
+    <div {...root} className="matrix-row">
       <span className="matrix-row__label">
-        <span id={`${f.id}-label`}>{f.label}</span>
+        <span id={`${f.id}-label`}>
+          <RequiredMark f={f} />
+          {f.label}
+        </span>
         {f.helperText && (
           <Typography.Text id={f.helperId} type="secondary">
             {f.helperText}
@@ -31,6 +36,8 @@ export const MatrixRow = mapControls({
         id: undefined,
         className: 'matrix-row__cells',
         'aria-labelledby': `${f.id}-label`,
+        'aria-describedby': f.describedBy,
+        'aria-invalid': f.invalid || undefined,
         children: options.map((column, index) => (
           <span key={column.value} className="matrix-row__cell">
             <Radio id={f.optionId(index)} value={column.value} aria-label={column.label} />

@@ -1,19 +1,33 @@
 import type { ConfirmDialogComponentProps } from '@formhaus/react';
 import sprite from '@uswds/uswds/img/sprite.svg';
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 export function ConfirmDialog({ id, open, title, description, confirmLabel, cancelLabel, confirm, cancel }: ConfirmDialogComponentProps) {
   const cancelButton = useRef<HTMLButtonElement>(null);
+  const modal = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!open) return;
+    const page = document.getElementById('root');
+    if (page) page.inert = true;
     cancelButton.current?.focus();
-    const close = (event: KeyboardEvent) => event.key === 'Escape' && cancel();
-    document.addEventListener('keydown', close);
-    return () => document.removeEventListener('keydown', close);
+    const keys = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') cancel();
+      if (event.key !== 'Tab' || !modal.current) return;
+      const focusable = [...modal.current.querySelectorAll<HTMLElement>('button:not([disabled])')];
+      const index = focusable.indexOf(document.activeElement as HTMLElement);
+      event.preventDefault();
+      focusable.at((index + (event.shiftKey ? -1 : 1)) % focusable.length)?.focus();
+    };
+    document.addEventListener('keydown', keys);
+    return () => {
+      document.removeEventListener('keydown', keys);
+      if (page) page.inert = false;
+    };
   }, [open, cancel]);
 
-  return (
+  return createPortal(
     <div
       id={id}
       className={open ? 'usa-modal-wrapper is-visible' : 'usa-modal-wrapper is-hidden'}
@@ -24,7 +38,7 @@ export function ConfirmDialog({ id, open, title, description, confirmLabel, canc
       hidden={!open}
     >
       <div className="usa-modal-overlay">
-        <div className="usa-modal" tabIndex={-1}>
+        <div ref={modal} className="usa-modal" tabIndex={-1}>
           <div className="usa-modal__content">
             <div className="usa-modal__main">
               <h2 id={`${id}-title`} className="usa-modal__heading">
@@ -54,6 +68,7 @@ export function ConfirmDialog({ id, open, title, description, confirmLabel, canc
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

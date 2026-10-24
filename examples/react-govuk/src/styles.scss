@@ -3,15 +3,6 @@
   $govuk-assets-path: "../node_modules/govuk-frontend/dist/govuk/assets/"
 );
 
-.app-form form {
-  display: flex;
-  flex-direction: column;
-}
-
-.app-form [data-fh="error-summary"] {
-  order: -1;
-}
-
 .govuk-template {
   background-color: #ffffff;
 }
@@ -19,14 +10,19 @@
 .app-link-button {
   padding: 0;
   border: 0;
+  color: govuk.govuk-functional-colour(link);
   background: none;
   cursor: pointer;
 }
 
-.app-tiles {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-  gap: 15px;
+.app-back-link {
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+  border: 0;
+  color: govuk.govuk-functional-colour(text);
+  background: none;
+  cursor: pointer;
 }
 
 .app-tiles .govuk-radios__label {
@@ -35,12 +31,13 @@
 
 .app-tile__image {
   display: block;
-  width: 100%;
+  width: 10rem;
   aspect-ratio: 4 / 3;
   object-fit: cover;
   margin-bottom: 5px;
 }
 
-.app-tiles .govuk-radios__item {
-  margin-bottom: 0;
+.app-answer {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
 }

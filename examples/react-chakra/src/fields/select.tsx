@@ -5,6 +5,7 @@ import { labelId } from './Shell';
 
 export const select = (multiple: boolean) => (f: FieldProps, options: ControlOption[]) => ({
   multiple,
+  'aria-required': undefined,
   collection: createListCollection<unknown>({ items: options }),
   ids: { label: labelId(f), trigger: f.id },
   lazyMount: true,
@@ -15,7 +16,7 @@ export const select = (multiple: boolean) => (f: FieldProps, options: ControlOpt
   children: (
     <>
       <Select.Control>
-        <Select.Trigger aria-describedby={f.describedBy}>
+        <Select.Trigger aria-describedby={f.describedBy} aria-required={f.required || undefined}>
           <Select.ValueText placeholder={f.placeholder ?? 'Select'} />
         </Select.Trigger>
         <Select.IndicatorGroup>

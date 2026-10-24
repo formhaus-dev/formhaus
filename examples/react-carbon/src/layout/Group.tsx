@@ -53,7 +53,7 @@ export function GroupItem({
     <Tile role="group" aria-labelledby={titleId} data-fh-group-item>
       <Layer>
         <Stack gap={5}>
-          <Stack orientation="horizontal" gap={5}>
+          <Stack orientation="horizontal" gap={5} style={{ justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 id={titleId} tabIndex={-1} className="cds--type-heading-compact-02">
               {title}
             </h3>

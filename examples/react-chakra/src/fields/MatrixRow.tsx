@@ -1,6 +1,7 @@
 import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { RadioGroup, Table, Text } from '@chakra-ui/react';
 import { optionIds } from './Choices';
+import { RequiredMark } from './Shell';
 
 export function MatrixRow(props: FieldComponentProps) {
   const f = fieldProps(props);
@@ -21,6 +22,7 @@ export function MatrixRow(props: FieldComponentProps) {
         <Table.Cell>
           <Text id={`${f.id}-label`} textStyle="sm">
             {f.label}
+            <RequiredMark f={f} />
           </Text>
           {f.error && (
             <Text id={f.errorId} textStyle="xs" color="fg.error">

@@ -12,6 +12,7 @@ export function ErrorSummary({ rootProps, title, groups, showField }: ErrorSumma
       lowContrast
       hideCloseButton
       hasFocus={false}
+      className="error-summary"
       style={{ marginBlockStart: '2rem' }}
       title={title}
       {...root}

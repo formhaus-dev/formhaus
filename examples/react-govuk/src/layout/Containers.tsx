@@ -1,14 +1,42 @@
-import type { ConfirmDialogComponentProps, GroupComponentProps, GroupItemComponentProps, SectionComponentProps } from '@formhaus/react';
+import type { FormNode } from '@formhaus/core';
+import type { FieldsContainerProps, GroupComponentProps, GroupItemComponentProps, SectionComponentProps } from '@formhaus/react';
+import { Button } from 'govuk-frontend';
+import { useContext } from 'react';
+import { useGovuk } from '../govuk';
+import { PageContext } from '../page';
 
-export function Section({ id, title, description, descriptionId, children }: SectionComponentProps) {
+const fieldsetTypes = ['radio', 'multiselect', 'scale', 'rating', 'date', 'time', 'datetime', 'group'];
+const hasFieldsets = (nodes: FormNode[]): boolean =>
+  nodes.some((node) => fieldsetTypes.includes(node.type) || ('fields' in node && hasFieldsets(node.fields)));
+
+export function Fields({ rootProps, children }: FieldsContainerProps) {
+  const { title } = useContext(PageContext);
+  return (
+    <div {...rootProps}>
+      {title && <h1 className="govuk-heading-l">{title}</h1>}
+      {children}
+    </div>
+  );
+}
+
+export function Section({ id, section, title, description, descriptionId, children }: SectionComponentProps) {
+  const hint = description && (
+    <div id={descriptionId} className="govuk-hint">
+      {description}
+    </div>
+  );
+  if (hasFieldsets(section.fields))
+    return (
+      <div id={id} className="govuk-!-margin-bottom-6">
+        <h2 className="govuk-heading-m">{title}</h2>
+        {hint}
+        {children}
+      </div>
+    );
   return (
     <fieldset id={id} className="govuk-fieldset govuk-!-margin-bottom-6" aria-describedby={descriptionId}>
       <legend className="govuk-fieldset__legend govuk-fieldset__legend--m">{title}</legend>
-      {description && (
-        <div id={descriptionId} className="govuk-hint">
-          {description}
-        </div>
-      )}
+      {hint}
       {children}
     </fieldset>
   );
@@ -19,7 +47,6 @@ export function Group({
   label,
   helperText,
   error,
-  describedBy,
   items,
   canAdd,
   add,
@@ -28,99 +55,63 @@ export function Group({
   status,
   itemComponent: Item,
 }: GroupComponentProps) {
+  const button = useGovuk(Button);
   return (
-    <div className={error ? 'govuk-form-group govuk-form-group--error' : 'govuk-form-group'}>
-      <fieldset id={id} className="govuk-fieldset" aria-describedby={describedBy}>
-        <legend className="govuk-fieldset__legend govuk-fieldset__legend--m">{label}</legend>
-        {helperText && (
-          <div id={`${id}-helper`} className="govuk-hint">
-            {helperText}
-          </div>
-        )}
-        {error && (
-          <p id={`${id}-error`} className="govuk-error-message">
-            <span className="govuk-visually-hidden">Error:</span> {error}
-          </p>
-        )}
-        {items.map((item) => (
-          <Item key={item.id} {...item} />
-        ))}
-        {canAdd && (
-          <button
-            type="button"
-            className="govuk-button govuk-button--secondary"
-            data-module="govuk-button"
-            disabled={disabled}
-            onClick={add}
-          >
-            {addLabel}
-          </button>
-        )}
-        <p className="govuk-visually-hidden" role="status">
-          {status}
-        </p>
-      </fieldset>
-    </div>
-  );
-}
-
-export function GroupItem({
-  title,
-  titleId,
-  canRemove,
-  requestRemove,
-  removeLabel,
-  removeName,
-  disabled,
-  children,
-}: GroupItemComponentProps) {
-  return (
-    <div className="govuk-summary-card" role="group" aria-labelledby={titleId}>
-      <div className="govuk-summary-card__title-wrapper">
-        <h2 id={titleId} className="govuk-summary-card__title" tabIndex={-1}>
-          {title}
-        </h2>
-        {canRemove && (
-          <ul className="govuk-summary-card__actions">
-            <li className="govuk-summary-card__action">
-              <button
-                type="button"
-                className="govuk-link govuk-body govuk-!-margin-0 app-link-button"
-                disabled={disabled}
-                onClick={requestRemove}
-              >
-                {removeLabel}
-                <span className="govuk-visually-hidden"> {removeName}</span>
-              </button>
-            </li>
-          </ul>
-        )}
-      </div>
-      <div className="govuk-summary-card__content">{children}</div>
-    </div>
-  );
-}
-
-export function ConfirmDialog({ id, open, title, description, confirmLabel, cancelLabel, confirm, cancel }: ConfirmDialogComponentProps) {
-  if (!open) return null;
-  return (
-    <div id={id} className="govuk-notification-banner" role="alertdialog" aria-labelledby={`${id}-title`}>
-      <div className="govuk-notification-banner__header">
-        <h2 id={`${id}-title`} className="govuk-notification-banner__title">
-          {title}
-        </h2>
-      </div>
-      <div className="govuk-notification-banner__content">
-        <p className="govuk-body">{description}</p>
-        <div className="govuk-button-group">
-          <button type="button" className="govuk-button govuk-button--warning" data-module="govuk-button" onClick={confirm}>
-            {confirmLabel}
-          </button>
-          <button type="button" className="govuk-button govuk-button--secondary" data-module="govuk-button" onClick={cancel}>
-            {cancelLabel}
-          </button>
+    <div id={id} className={error ? 'govuk-form-group govuk-form-group--error' : 'govuk-form-group'}>
+      <h2 className="govuk-heading-m">{label}</h2>
+      {helperText && (
+        <div id={`${id}-helper`} className="govuk-hint">
+          {helperText}
         </div>
-      </div>
+      )}
+      {error && (
+        <p id={`${id}-error`} className="govuk-error-message">
+          <span className="govuk-visually-hidden">Error:</span> {error}
+        </p>
+      )}
+      {items.map((item) => (
+        <Item key={item.id} {...item} />
+      ))}
+      {canAdd && (
+        <button
+          type="button"
+          className="govuk-button govuk-button--secondary"
+          data-module="govuk-button"
+          ref={button}
+          disabled={disabled}
+          onClick={add}
+        >
+          {addLabel}
+        </button>
+      )}
+      <p className="govuk-visually-hidden" role="status">
+        {status}
+      </p>
     </div>
+  );
+}
+
+export function GroupItem({ title, titleId, canRemove, requestRemove, removeLabel, disabled, children }: GroupItemComponentProps) {
+  const button = useGovuk(Button);
+  return (
+    <fieldset className="govuk-fieldset">
+      <legend id={titleId} tabIndex={-1} className="govuk-fieldset__legend govuk-fieldset__legend--s">
+        {title}
+      </legend>
+      {children}
+      {canRemove && (
+        <button
+          type="button"
+          className="govuk-button govuk-button--secondary"
+          data-module="govuk-button"
+          ref={button}
+          disabled={disabled}
+          onClick={requestRemove}
+        >
+          {removeLabel}
+          <span className="govuk-visually-hidden"> {title}</span>
+        </button>
+      )}
+    </fieldset>
   );
 }

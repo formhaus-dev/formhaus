@@ -8,7 +8,7 @@ defineProps(controlShellProps);
 <template>
   <div v-bind="rootProps" class="matrix__row">
     <div class="matrix__label">
-      <span :id="`${f.id}-label`">{{ f.label }}</span>
+      <span :id="`${f.id}-label`" :class="{ field__required: f.required }">{{ f.label }}</span>
       <ElText v-if="f.helperText" :id="f.helperId" tag="div" size="small" type="info">{{ f.helperText }}</ElText>
     </div>
     <slot />

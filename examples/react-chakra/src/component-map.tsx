@@ -1,4 +1,4 @@
-import type { FieldComponentMap, FieldProps } from '@formhaus/react';
+import type { FieldComponentMap, FieldComponentProps, FieldProps } from '@formhaus/react';
 import { mapControls } from '@formhaus/react/controls';
 import {
   Button,
@@ -19,16 +19,17 @@ import { Autocomplete } from './fields/Autocomplete';
 import { Choices, optionIds } from './fields/Choices';
 import { MatrixRow } from './fields/MatrixRow';
 import { select } from './fields/select';
-import { Shell } from './fields/Shell';
+import { labelId, Shell } from './fields/Shell';
 
 const toggle = (Part: typeof Checkbox | typeof Switch) => (f: FieldProps) => ({
+  'aria-required': undefined,
   children: (
     <>
-      <Part.HiddenInput aria-describedby={f.describedBy} />
+      <Part.HiddenInput aria-describedby={f.describedBy} aria-required={f.required || undefined} />
       <Part.Control />
       <Part.Label>
         {f.label}
-        <Field.RequiredIndicator />
+        <Field.RequiredIndicator ms="1" />
       </Part.Label>
     </>
   ),
@@ -57,12 +58,18 @@ const upload = (f: FieldProps) => ({
   ),
 });
 
+const base = { shell: Shell, matrix: MatrixRow };
+
+const radio = (inline: boolean) => mapControls({ ...base, controls: { radio: [Choices, (_, options) => ({ options, inline })] } }).radio;
+
+const InlineRadio = radio(true);
+const StackedRadio = radio(false);
+
 export const components: FieldComponentMap = {
   ...mapControls({
-    shell: Shell,
+    ...base,
     freeText: true,
     kinds: { multiselect: 'input' },
-    matrix: MatrixRow,
     controls: {
       input: Input,
       textarea: [Textarea, () => ({ autoresize: true })],
@@ -84,7 +91,6 @@ export const components: FieldComponentMap = {
       autocomplete: [Autocomplete, 'options'],
       checkbox: [Checkbox.Root, toggle(Checkbox)],
       switch: [Switch.Root, toggle(Switch)],
-      radio: [Choices, 'options'],
       scale: [
         SegmentGroup.Root,
         (f, options) => ({
@@ -94,7 +100,7 @@ export const components: FieldComponentMap = {
           children: (
             <>
               <SegmentGroup.Indicator />
-              <SegmentGroup.Items items={options.map((option) => String(option.value))} flex="1" justifyContent="center" />
+              <SegmentGroup.Items items={options.map((option) => String(option.value))} flex="1" justifyContent="center" px="0" />
             </>
           ),
         }),
@@ -106,11 +112,12 @@ export const components: FieldComponentMap = {
           value: Number(f.text),
           size: 'lg',
           colorPalette: 'orange',
-          ids: { item: (index: string) => (index === '1' ? f.id : `${f.id}-${index}`) },
+          'aria-required': undefined,
+          ids: { label: labelId(f), item: (index: string) => (index === '1' ? f.id : `${f.id}-${index}`) },
           children: (
             <>
               <RatingGroup.HiddenInput />
-              <RatingGroup.Control />
+              <RatingGroup.Control aria-required={f.required || undefined} />
             </>
           ),
         }),
@@ -119,4 +126,5 @@ export const components: FieldComponentMap = {
       file: [FileUpload.Root, upload],
     },
   }),
+  radio: (props: FieldComponentProps) => (props.field.layout === 'inline' ? <InlineRadio {...props} /> : <StackedRadio {...props} />),
 };

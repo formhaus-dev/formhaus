@@ -27,5 +27,6 @@ export const components: FieldComponentMap = mapControls({
     radio: [RadioGroup, radios, 'onValueChange'],
     scale: [RadioGroup, points, 'onValueChange'],
     rating: [RadioGroup, stars, 'onValueChange'],
+    file: [Input, () => ({ type: 'file' })],
   },
 });

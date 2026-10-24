@@ -17,10 +17,13 @@ defineProps(controlShellProps);
       <slot />
       <label :for="f.id">{{ f.label }}<span v-if="f.required" aria-hidden="true"> *</span></label>
     </div>
-    <slot v-else />
-    <div v-if="anchors.some(Boolean)" class="scale__anchors" aria-hidden="true">
-      <span v-for="(anchor, index) in anchors" :key="index">{{ anchor?.label }}</span>
+    <div v-else-if="field.type === 'scale'" class="scale__frame">
+      <slot />
+      <div v-if="anchors.some(Boolean)" class="scale__anchors" aria-hidden="true">
+        <span v-for="(anchor, index) in anchors" :key="index">{{ anchor?.label }}</span>
+      </div>
     </div>
+    <slot v-else />
     <Message v-if="f.helperText" :pt="{ root: { id: f.helperId, role: null, 'aria-live': null } }" size="small" severity="secondary" variant="simple">
       {{ f.helperText }}
     </Message>

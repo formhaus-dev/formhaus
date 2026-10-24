@@ -2,6 +2,7 @@ import { parseDefinition, type FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FormCompletion } from './FormCompletion';
 import { components } from './component-map';
 import json from './definition.json';
 import { FormActions } from './FormActions';
@@ -27,18 +28,18 @@ export function App({ definition = initial }: { definition?: FormDefinition }) {
 
   return (
     <main className="mx-auto max-w-md px-4 py-8">
-      <Card>
-        <CardHeader>
-          <CardTitle>{definition.title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {submitted ? (
-            <pre className="text-sm">{JSON.stringify(submitted, null, 2)}</pre>
-          ) : (
+      {submitted ? (
+        <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>{definition.title}</CardTitle>
+          </CardHeader>
+          <CardContent>
             <FormRenderer definition={definition} components={components} layout={layout} onSubmit={setSubmitted} />
-          )}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
     </main>
   );
 }

@@ -95,6 +95,7 @@ const cells = (f: FieldProps, options: ControlOption[]) => ({
 const radios = (f: FieldProps, options: ControlOption[]) => {
   const tiles = options.some((option) => option.image);
   return {
+    ariaLabel: f.label,
     class: ['choices', { 'choices--tiles': tiles }],
     children: () =>
       options.map((option, index) =>
@@ -149,6 +150,7 @@ export const components: FieldComponentMap = {
         ElRadioGroup,
         (f, options) => ({
           type: 'button',
+          ariaLabel: f.label,
           options: options.map((option, index) => ({ ...option, 'data-testid': testId(f, option, index) })),
         }),
       ],

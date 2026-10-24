@@ -21,8 +21,8 @@ import {
   TextInput,
 } from '@mantine/core';
 import { DatePickerInput, DateTimePicker, TimePicker } from '@mantine/dates';
-import { GroupShell } from './fields/GroupShell';
-import { labels } from './fields/labels';
+import { GroupShell, RadioList } from './fields/GroupShell';
+import { labels, marked, spoken } from './fields/labels';
 import { MatrixRow } from './fields/MatrixRow';
 
 const items = (options: ControlOption[]) => options.map(({ value, label }) => ({ value: String(value), label }));
@@ -34,6 +34,7 @@ const clock = (f: FieldProps) => ({
   descriptionProps: { id: f.helperId },
   errorProps: { id: f.errorId },
   hoursInputProps: { id: f.id, ...f.aria },
+  minutesInputLabel: `${f.label} minutes`,
   onChange: (next: string) => f.change(next.slice(0, 5)),
 });
 
@@ -53,11 +54,11 @@ const radios = (options: ControlOption[]) =>
       ))}
     </SimpleGrid>
   ) : (
-    <Stack gap="xs">
+    <RadioList>
       {options.map((option) => (
         <Radio key={option.value} value={String(option.value)} label={option.label} />
       ))}
-    </Stack>
+    </RadioList>
   );
 
 export const components: FieldComponentMap = {
@@ -75,7 +76,10 @@ export const components: FieldComponentMap = {
       select: [Select, (_, options) => ({ data: items(options), allowDeselect: false, ...closed })],
       autocomplete: [Autocomplete, (_, options) => ({ data: options.map((option) => option.label), ...closed })],
       multiselect: [MultiSelect, (_, options) => ({ data: items(options), searchable: true, ...closed })],
-      date: [DatePickerInput, (f) => ({ value: f.text || null, valueFormat: 'MMM D, YYYY', clearable: true })],
+      date: [
+        DatePickerInput,
+        (f) => ({ ...spoken(f), 'aria-required': undefined, value: f.text || null, valueFormat: 'MMM D, YYYY', clearable: true }),
+      ],
       datetime: [
         DateTimePicker,
         (f) => ({
@@ -86,14 +90,14 @@ export const components: FieldComponentMap = {
         }),
       ],
       time: [TimePicker, clock],
-      checkbox: Checkbox,
-      switch: Switch,
-      radio: [Radio.Group, (_, options) => ({ children: radios(options) })],
+      checkbox: [Checkbox, marked],
+      switch: [Switch, marked],
+      radio: [Radio.Group, (_, options) => ({ 'aria-required': undefined, children: radios(options) })],
       scale: [
         SegmentedControl,
         (f, options) => ({ data: items(options), value: f.text, fullWidth: true, color: 'blue', withItemsBorders: false }),
       ],
-      rating: [Rating, (f, options) => ({ count: options.length, size: 'lg', readOnly: f.disabled })],
+      rating: [Rating, (f, options) => ({ 'aria-required': undefined, count: options.length, size: 'lg', readOnly: f.disabled })],
       file: [
         FileInput,
         (f) => ({ clearable: true, placeholder: f.placeholder ?? 'Choose a file', value: f.value instanceof File ? f.value : null }),

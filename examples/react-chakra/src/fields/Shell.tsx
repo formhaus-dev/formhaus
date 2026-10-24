@@ -4,6 +4,13 @@ import { Field, Fieldset, HStack, Text } from '@chakra-ui/react';
 
 export const labelId = (f: FieldProps) => `${f.id}-label`;
 
+export const RequiredMark = ({ f }: { f: FieldProps }) =>
+  f.required && (
+    <Text as="span" color="fg.error" ms="1" aria-hidden>
+      *
+    </Text>
+  );
+
 export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
   if (kind !== 'group')
     return (
@@ -27,14 +34,10 @@ export function Shell({ kind, f, rootProps, anchors, children }: ControlShellPro
       </Field.Root>
     );
   return (
-    <Fieldset.Root {...rootProps} invalid={f.invalid} disabled={f.disabled} gap="1.5">
-      <Fieldset.Legend fontSize="sm" fontWeight="medium">
+    <Fieldset.Root {...rootProps} invalid={f.invalid} disabled={f.disabled} size="sm">
+      <Fieldset.Legend id={labelId(f)} fontSize="sm" fontWeight="medium">
         {f.label}
-        {f.required && (
-          <Text as="span" color="fg.error" ms="1" aria-hidden>
-            *
-          </Text>
-        )}
+        <RequiredMark f={f} />
       </Fieldset.Legend>
       {f.helperText && (
         <Fieldset.HelperText id={f.helperId} textStyle="xs">

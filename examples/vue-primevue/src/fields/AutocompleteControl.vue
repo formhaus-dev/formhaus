@@ -26,7 +26,7 @@ function update(next: string | FieldOption | null) {
     option-label="label"
     :disabled="disabled"
     :invalid="!!$attrs['aria-invalid']"
-    :pt="{ pcInputText: { root: $attrs } }"
+    :pt="{ pcInputText: { root: $attrs }, dropdown: { 'aria-label': 'Show suggestions', tabindex: -1 } }"
     dropdown
     @complete="search"
     @update:model-value="update"

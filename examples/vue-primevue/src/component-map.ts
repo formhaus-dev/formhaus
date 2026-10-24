@@ -152,7 +152,7 @@ export const components: FieldComponentMap = {
       checkbox: [Checkbox, (f) => ({ ...inner(f), pt: { input: aria(f) }, binary: true })],
       switch: [ToggleSwitch, (f) => ({ ...inner(f), pt: { input: aria(f) } })],
       radio: [RadioButtonGroup, radios],
-      scale: [RadioButtonGroup, (f, options) => ({ ...radios(f, options), class: 'scale' })],
+      scale: [RadioButtonGroup, (f, options) => ({ ...radios(f, options), class: ['scale', { 'scale--invalid': f.invalid }] })],
       rating: [Rating, (f, options) => ({ stars: options.length, class: { 'rating--invalid': f.invalid } })],
     },
   }),

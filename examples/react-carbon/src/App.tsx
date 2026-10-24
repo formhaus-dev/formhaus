@@ -1,15 +1,15 @@
 import { parseDefinition, type FormDefinition } from '@formhaus/core';
 import { FormRenderer } from '@formhaus/react';
-import { CodeSnippet, Heading, Section, Stack, Theme } from '@carbon/react';
+import { Theme } from '@carbon/react';
 import { useEffect, useState } from 'react';
 import { useColorMode } from './color-mode';
+import { FormCompletion } from './FormCompletion';
 import { components } from './component-map';
 import json from './definition.json';
 import { layout } from './layout';
 import type { Theme as Scheme } from './playground';
 
 const initial = parseDefinition(json);
-const show = (_: string, value: unknown) => (value instanceof File ? `File: ${value.name}` : value);
 
 export function App({ definition = initial, scheme }: { definition?: FormDefinition; scheme?: Scheme }) {
   const [submitted, setSubmitted] = useState<Record<string, unknown> | null>(null);
@@ -24,14 +24,7 @@ export function App({ definition = initial, scheme }: { definition?: FormDefinit
     <Theme theme={theme}>
       <main style={{ maxWidth: 640, margin: '0 auto', padding: '3rem 1rem' }}>
         {submitted ? (
-          <Section level={2}>
-            <Stack gap={5}>
-              <Heading>Submitted</Heading>
-              <CodeSnippet type="multi" feedback="Copied">
-                {JSON.stringify(submitted, show, 2)}
-              </CodeSnippet>
-            </Stack>
-          </Section>
+          <FormCompletion definition={definition} values={submitted} onRestart={() => setSubmitted(null)} />
         ) : (
           <FormRenderer definition={definition} components={components} layout={layout} stepErrorMarks onSubmit={setSubmitted} />
         )}

@@ -16,7 +16,7 @@ export function Group({
   itemComponent: Item,
 }: GroupComponentProps) {
   return (
-    <Fieldset.Root id={id} invalid={!!error} aria-describedby={describedBy} gap="3">
+    <Fieldset.Root id={id} invalid={!!error} aria-describedby={describedBy}>
       <Stack gap="1">
         <Fieldset.Legend>{label}</Fieldset.Legend>
         {helperText && <Fieldset.HelperText id={`${id}-helper`}>{helperText}</Fieldset.HelperText>}

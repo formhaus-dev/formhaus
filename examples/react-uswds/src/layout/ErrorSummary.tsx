@@ -1,6 +1,15 @@
 import type { ErrorSummaryComponentProps } from '@formhaus/react';
+import { useEffect } from 'react';
 
 export function ErrorSummary({ rootProps, title, groups, showField }: ErrorSummaryComponentProps) {
+  useEffect(() => {
+    const pageTitle = document.title;
+    document.title = `Error: ${pageTitle}`;
+    return () => {
+      document.title = pageTitle;
+    };
+  }, []);
+
   return (
     <div className="usa-alert usa-alert--error summary" {...rootProps}>
       <div className="usa-alert__body">

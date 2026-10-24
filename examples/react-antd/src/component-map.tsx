@@ -1,7 +1,21 @@
 import { toDate } from '@formhaus/core/fields';
-import type { FieldComponentMap, FieldProps, LayoutComponentMap } from '@formhaus/react';
+import type { FieldComponentMap, FieldComponentProps, FieldProps, LayoutComponentMap } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
-import { Button, Checkbox, DatePicker, Input, InputNumber, Radio, Rate, Select, Switch, TimePicker, Upload, type UploadProps } from 'antd';
+import {
+  AutoComplete,
+  Button,
+  Checkbox,
+  DatePicker,
+  Input,
+  InputNumber,
+  Radio,
+  Rate,
+  Select,
+  Switch,
+  TimePicker,
+  Upload,
+  type UploadProps,
+} from 'antd';
 import dayjs from 'dayjs';
 import { MatrixRow } from './fields/MatrixRow';
 import { Shell } from './fields/Shell';
@@ -26,10 +40,10 @@ const choose = (f: FieldProps, options: ControlOption[]) => ({ options, allowCle
 
 const single = (f: FieldProps, options: ControlOption[]) => ({ ...choose(f, options), value: f.text || undefined });
 
-const radios = (options: ControlOption[]) => {
+const radios = (options: ControlOption[], inline: boolean) => {
   const tiles = options.some((option) => option.image);
   return {
-    vertical: !tiles,
+    vertical: !tiles && !inline,
     className: tiles ? 'image-options' : undefined,
     options: options.map(({ value, label, image }) => ({
       value,
@@ -46,11 +60,19 @@ const radios = (options: ControlOption[]) => {
   };
 };
 
+const base = { shell: Shell, matrix: MatrixRow };
+
+const radio = (inline: boolean) =>
+  mapControls({ ...base, controls: { radio: [Radio.Group, (_, options) => radios(options, inline)] } }).radio;
+
+const InlineRadio = radio(true);
+const StackedRadio = radio(false);
+
 export const components: FieldComponentMap = {
   ...mapControls({
-    shell: Shell,
+    ...base,
+    freeText: true,
     kinds: { multiselect: 'input' },
-    matrix: MatrixRow,
     controls: {
       input: Input,
       password: Input.Password,
@@ -58,18 +80,26 @@ export const components: FieldComponentMap = {
       textarea: Input.TextArea,
       select: [Select, single],
       multiselect: [Select, (f, options) => ({ ...choose(f, options), mode: 'multiple' })],
-      autocomplete: [Select, (f, options) => ({ ...single(f, options), showSearch: { optionFilterProp: 'label' } })],
+      autocomplete: [
+        AutoComplete,
+        (f, options) => ({
+          options: options.map((option) => ({ value: option.label })),
+          allowClear: true,
+          filterOption: true,
+          placeholder: f.placeholder,
+        }),
+      ],
       date: [DatePicker, picked],
       datetime: [DatePicker, (f) => ({ ...picked(f), showTime: { format: 'HH:mm' }, format: 'YYYY-MM-DD HH:mm' })],
       time: [TimePicker, (f) => ({ ...picked(f), format: 'HH:mm' })],
       checkbox: Checkbox,
       switch: Switch,
-      radio: [Radio.Group, (_, options) => radios(options)],
       scale: [Radio.Group, (_, options) => ({ options, optionType: 'button', buttonStyle: 'solid', block: true })],
-      rating: [Rate, (_, options) => ({ count: options.length })],
+      rating: [Rate, (_, options) => ({ 'aria-required': undefined, count: options.length })],
       file: [Upload, upload],
     },
   }),
+  radio: (props: FieldComponentProps) => (props.field.layout === 'inline' ? <InlineRadio {...props} /> : <StackedRadio {...props} />),
 };
 
 export const layout: LayoutComponentMap = {

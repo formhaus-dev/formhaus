@@ -1,12 +1,19 @@
 import type { ControlShellProps } from '@formhaus/react/controls';
 import { Group, Input, Stack, Text } from '@mantine/core';
-import { labels } from './labels';
+import { createContext, type ReactNode, useContext } from 'react';
+import { spoken } from './labels';
 
-export function GroupShell({ f, rootProps, anchors, children }: ControlShellProps) {
+const Inline = createContext(false);
+
+export function RadioList({ children }: { children: ReactNode }) {
+  return useContext(Inline) ? <Group gap="lg">{children}</Group> : <Stack gap="xs">{children}</Stack>;
+}
+
+export function GroupShell({ field, f, rootProps, anchors, children }: ControlShellProps) {
   return (
     <Input.Wrapper
       {...rootProps}
-      {...labels(f)}
+      {...spoken(f)}
       role="group"
       aria-labelledby={`${f.id}-label`}
       labelElement="div"
@@ -15,7 +22,7 @@ export function GroupShell({ f, rootProps, anchors, children }: ControlShellProp
       errorProps={{ id: f.errorId }}
     >
       <Stack gap={4} mt="xs" mb={4}>
-        {children}
+        <Inline.Provider value={field.layout === 'inline'}>{children}</Inline.Provider>
         {anchors.some(Boolean) && (
           <Group justify="space-between">
             {anchors.map((anchor, index) => (

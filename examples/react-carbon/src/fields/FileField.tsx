@@ -2,7 +2,7 @@ import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { Button, FileUploaderItem, FormGroup, Stack } from '@carbon/react';
 import { Upload } from '@carbon/icons-react';
 import { useRef } from 'react';
-import { Texts } from './GroupMessage';
+import { GroupMessage } from './GroupMessage';
 import { label } from './labels';
 
 export function FileField(props: FieldComponentProps) {
@@ -13,6 +13,7 @@ export function FileField(props: FieldComponentProps) {
   return (
     <FormGroup legendText={label(f)} invalid={f.invalid} data-fh="field">
       <Stack gap={3}>
+        <GroupMessage id={f.helperId} helper={f.helperText} />
         <div>
           <Button
             id={f.id}
@@ -38,7 +39,7 @@ export function FileField(props: FieldComponentProps) {
         </div>
         {value instanceof File && <FileUploaderItem name={value.name} status="edit" onDelete={() => f.change(null)} />}
       </Stack>
-      <Texts id={f.id} helperText={f.helperText} error={f.error} />
+      <GroupMessage id={f.errorId} error={f.error} />
     </FormGroup>
   );
 }

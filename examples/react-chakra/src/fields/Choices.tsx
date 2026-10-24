@@ -1,18 +1,20 @@
 import type { ControlOption } from '@formhaus/react/controls';
-import { Image, RadioCard, RadioGroup, SimpleGrid, Stack } from '@chakra-ui/react';
+import { HStack, Image, RadioCard, RadioGroup, SimpleGrid, Stack } from '@chakra-ui/react';
 
 interface ChoicesProps extends Omit<RadioGroup.RootProps, 'size'> {
   options: ControlOption[];
+  inline: boolean;
 }
 
 export const optionIds = (id: string | undefined, options: ControlOption[]) => ({
+  label: `${id}-label`,
   itemHiddenInput: (value: string) => {
     const index = options.findIndex((option) => String(option.value) === value);
     return index > 0 ? `${id}-${index}` : `${id}`;
   },
 });
 
-export function Choices({ options, ...props }: ChoicesProps) {
+export function Choices({ options, inline, ...props }: ChoicesProps) {
   const ids = optionIds(props.id, options);
   if (options.some((option) => option.image))
     return (
@@ -33,9 +35,10 @@ export function Choices({ options, ...props }: ChoicesProps) {
         </SimpleGrid>
       </RadioCard.Root>
     );
+  const Options = inline ? HStack : Stack;
   return (
     <RadioGroup.Root {...props} ids={ids}>
-      <Stack gap="2">
+      <Options gap={inline ? '6' : '2'} wrap="wrap">
         {options.map((option) => (
           <RadioGroup.Item key={option.value} value={String(option.value)}>
             <RadioGroup.ItemHiddenInput />
@@ -43,7 +46,7 @@ export function Choices({ options, ...props }: ChoicesProps) {
             <RadioGroup.ItemText>{option.label}</RadioGroup.ItemText>
           </RadioGroup.Item>
         ))}
-      </Stack>
+      </Options>
     </RadioGroup.Root>
   );
 }

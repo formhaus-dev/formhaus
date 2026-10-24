@@ -1,15 +1,20 @@
 import type { ControlShellProps } from '@formhaus/react/controls';
-import { Label } from '@/components/ui/label';
+import { Field, FieldDescription, FieldError, FieldLabel, FieldLegend, FieldSet } from '@/components/ui/field';
+import { cn } from '@/lib/utils';
 
-export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
+export function RequiredMark({ f }: Pick<ControlShellProps, 'f'>) {
+  return f.required ? (
+    <span aria-hidden="true" className="text-destructive">
+      {' *'}
+    </span>
+  ) : null;
+}
+
+export function Shell({ kind, field, f, rootProps, anchors, children }: ControlShellProps) {
   const text = (
     <span>
       {f.label}
-      {f.required && (
-        <span aria-hidden="true" className="text-destructive">
-          {' *'}
-        </span>
-      )}
+      <RequiredMark f={f} />
     </span>
   );
   const texts = (
@@ -21,42 +26,44 @@ export function Shell({ kind, f, rootProps, anchors, children }: ControlShellPro
           ))}
         </div>
       )}
-      {f.helperText && (
-        <p id={f.helperId} className="text-sm text-muted-foreground">
-          {f.helperText}
-        </p>
-      )}
-      {f.error && (
-        <p id={f.errorId} className="text-sm text-destructive">
-          {f.error}
-        </p>
-      )}
+      {f.helperText && <FieldDescription id={f.helperId}>{f.helperText}</FieldDescription>}
+      {f.error && <FieldError id={f.errorId}>{f.error}</FieldError>}
     </>
   );
   if (kind === 'group')
     return (
-      <fieldset {...rootProps} className="grid gap-2">
-        <legend className="mb-2 text-sm leading-none font-medium">{text}</legend>
+      <FieldSet
+        {...rootProps}
+        data-invalid={f.invalid || undefined}
+        className={cn(
+          'gap-2',
+          field.layout === 'inline' &&
+            '*:data-[slot=radio-group]:flex *:data-[slot=radio-group]:flex-wrap *:data-[slot=radio-group]:gap-x-6',
+        )}
+      >
+        <FieldLegend variant="label" className={cn('mb-2', f.invalid && 'text-destructive')}>
+          {text}
+        </FieldLegend>
         {children}
         {texts}
-      </fieldset>
+      </FieldSet>
     );
   return (
-    <div {...rootProps} className="grid gap-2">
+    <Field {...rootProps} data-invalid={f.invalid || undefined}>
       {kind === 'input' ? (
         <>
-          <Label htmlFor={f.id}>{text}</Label>
+          <FieldLabel htmlFor={f.id}>{text}</FieldLabel>
           {children}
         </>
       ) : (
         <div className="flex items-center gap-2">
           {children}
-          <Label htmlFor={f.id} className="font-normal">
+          <FieldLabel htmlFor={f.id} className="font-normal">
             {text}
-          </Label>
+          </FieldLabel>
         </div>
       )}
       {texts}
-    </div>
+    </Field>
   );
 }

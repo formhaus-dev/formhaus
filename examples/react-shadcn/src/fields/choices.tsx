@@ -10,11 +10,11 @@ import { cn } from '@/lib/utils';
 
 export const native = () => ({ nativeButton: true, render: <button type="button" /> });
 
-export const checkboxes = (_: FieldProps, options: ControlOption[]) => ({
+export const checkboxes = (f: FieldProps, options: ControlOption[]) => ({
   className: 'grid gap-2',
   children: options.map((option) => (
     <Label key={option.value} className="font-normal">
-      <Checkbox value={String(option.value)} />
+      <Checkbox value={String(option.value)} aria-invalid={f.invalid || undefined} />
       {option.label}
     </Label>
   )),
@@ -23,7 +23,7 @@ export const checkboxes = (_: FieldProps, options: ControlOption[]) => ({
 const tile =
   'flex-col items-stretch gap-2 rounded-lg border p-2 font-normal has-[[data-checked]]:border-primary has-[[data-checked]]:ring-1 has-[[data-checked]]:ring-primary';
 
-export const radios = (_: FieldProps, options: ControlOption[]) => {
+export const radios = (f: FieldProps, options: ControlOption[]) => {
   const tiles = options.some((option) => option.image);
   return {
     className: tiles ? 'grid grid-cols-[repeat(auto-fill,minmax(9rem,1fr))] gap-3' : undefined,
@@ -32,13 +32,13 @@ export const radios = (_: FieldProps, options: ControlOption[]) => {
         <Label key={option.value} className={tile}>
           {option.image && <img src={option.image} alt="" className="aspect-[4/3] w-full rounded-md object-cover" />}
           <span className="flex items-center gap-2">
-            <RadioGroupItem value={option.value} />
+            <RadioGroupItem value={option.value} aria-invalid={f.invalid || undefined} />
             {option.label}
           </span>
         </Label>
       ) : (
         <Label key={option.value} className="font-normal">
-          <RadioGroupItem value={option.value} />
+          <RadioGroupItem value={option.value} aria-invalid={f.invalid || undefined} />
           {option.label}
         </Label>
       ),
@@ -53,6 +53,7 @@ export const points = (f: FieldProps, options: ControlOption[]) => ({
     <Radio.Root
       key={option.value}
       value={option.value}
+      aria-invalid={f.invalid || undefined}
       className={cn(buttonVariants({ variant: f.value === option.value ? 'default' : 'outline', size: 'lg' }))}
     >
       {option.label}
@@ -67,6 +68,7 @@ export const stars = (f: FieldProps, options: ControlOption[]) => ({
       key={option.value}
       value={option.value}
       aria-label={`${option.label} of ${options.length}`}
+      aria-invalid={f.invalid || undefined}
       className={buttonVariants({ variant: 'ghost', size: 'icon' })}
     >
       <Star className={cn('size-6', Number(f.value) >= Number(option.value) ? 'fill-primary text-primary' : 'text-muted-foreground')} />

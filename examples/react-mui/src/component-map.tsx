@@ -11,7 +11,7 @@ import TextField from '@mui/material/TextField';
 import { AutocompleteField } from './fields/AutocompleteField';
 import { MatrixRow } from './fields/MatrixRow';
 import { ImageTiles, Segment } from './fields/options';
-import { FilePicker, FileShell, GroupShell, InlineShell, labels } from './fields/shells';
+import { describedBy, FilePicker, FileShell, GroupShell, InlineShell, labels } from './fields/shells';
 
 const menu = (options: ControlOption[]) =>
   options.map((option) => (
@@ -57,13 +57,16 @@ export const components: FieldComponentMap = {
         TextField,
         (f, options) => ({ select: true, slotProps: { ...labels(f).slotProps, select: { multiple: true } }, children: menu(options) }),
       ],
-      checkbox: [Checkbox, (f) => ({ inputProps: f.aria })],
-      switch: [Switch, (f) => ({ inputProps: f.aria })],
+      checkbox: [Checkbox, (f) => ({ inputProps: { ...f.aria, 'aria-describedby': describedBy(f) } })],
+      switch: [Switch, (f) => ({ inputProps: { ...f.aria, 'aria-describedby': describedBy(f) } })],
       radio: [RadioGroup, radios],
       scale: [RadioGroup, (_, options) => ({ row: true, sx: { flexWrap: 'nowrap' }, children: points(options) })],
-      rating: [Rating, (_, options) => ({ max: options.length, size: 'large' })],
+      rating: [Rating, (_, options) => ({ max: options.length, size: 'large', 'aria-required': undefined, 'aria-invalid': undefined })],
       autocomplete: [AutocompleteField, (_, options) => ({ options: options.map((option) => option.label) }), 'onInputChange'],
     },
   }),
-  ...mapControls({ shell: FileShell, controls: { file: [FilePicker, (f) => ({ 'aria-labelledby': `${f.id}-label ${f.id}` })] } }),
+  ...mapControls({
+    shell: FileShell,
+    controls: { file: [FilePicker, (f) => ({ 'aria-labelledby': `${f.id}-label ${f.id}-button`, 'aria-describedby': describedBy(f) })] },
+  }),
 };

@@ -1,5 +1,5 @@
 import { type FieldComponentProps, fieldProps } from '@formhaus/react';
-import { FormGroup, Stack, TimePicker } from '@carbon/react';
+import { FormGroup, TimePicker } from '@carbon/react';
 import { DateInput } from './DateInput';
 import { Texts } from './GroupMessage';
 import { label } from './labels';
@@ -13,7 +13,7 @@ export function DateTimeField(props: FieldComponentProps) {
 
   return (
     <FormGroup legendText={label(f)} invalid={f.invalid} data-fh="field">
-      <Stack orientation="horizontal" gap={5}>
+      <div className="date-time">
         <DateInput
           id={f.id}
           labelText="Date"
@@ -41,7 +41,7 @@ export function DateTimeField(props: FieldComponentProps) {
           onChange={(event) => write(date, event.currentTarget.value)}
           onBlur={f.blur}
         />
-      </Stack>
+      </div>
       <Texts id={f.id} helperText={f.helperText} />
     </FormGroup>
   );

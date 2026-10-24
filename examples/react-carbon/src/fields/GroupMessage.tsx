@@ -1,3 +1,5 @@
+import { WarningFilled } from '@carbon/icons-react';
+
 interface MessageProps {
   id?: string;
   error?: string;
@@ -6,11 +8,18 @@ interface MessageProps {
 }
 
 export function GroupMessage({ id, error, helper, role }: MessageProps) {
-  if (!error && !helper) return null;
+  if (error)
+    return (
+      <div id={id} role={role} className="cds--radio-button__validation-msg group-error">
+        <WarningFilled className="cds--radio-button__invalid-icon" />
+        <div className="cds--form-requirement">{error}</div>
+      </div>
+    );
+  if (!helper) return null;
 
   return (
-    <div id={id} role={role} className="cds--form__helper-text" style={error ? { color: 'var(--cds-text-error)' } : undefined}>
-      {error ?? helper}
+    <div id={id} className="cds--form__helper-text">
+      {helper}
     </div>
   );
 }

@@ -2,7 +2,8 @@ import type { ControlOption } from '@formhaus/react/controls';
 import { FormGroup, RadioButton, RadioButtonGroup, type RadioButtonGroupProps, RadioTile, Stack } from '@carbon/react';
 import { Texts } from './GroupMessage';
 
-interface ChoicesProps extends Omit<RadioButtonGroupProps, 'name' | 'value' | 'onChange' | 'legendText' | 'helperText'> {
+interface ChoicesProps extends Omit<RadioButtonGroupProps, 'name' | 'value' | 'onChange' | 'legendText' | 'helperText' | 'required'> {
+  'aria-required'?: boolean;
   id: string;
   name: string;
   value: unknown;
@@ -16,7 +17,7 @@ interface ChoicesProps extends Omit<RadioButtonGroupProps, 'name' | 'value' | 'o
 
 const optionId = (id: string, index: number) => (index ? `${id}-${index}` : id);
 
-export function Choices({ id, value, options, error, describedBy, onChange, ...group }: ChoicesProps) {
+export function Choices({ id, value, options, error, describedBy, onChange, 'aria-required': _required, ...group }: ChoicesProps) {
   const selected = value == null ? undefined : String(value);
   if (options.some((option) => option.image))
     return (
