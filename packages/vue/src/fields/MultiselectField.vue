@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { toggleOption } from '@formhaus/core/fields';
-import { dividerBefore } from '@formhaus/core/internal';
+import { dividerBefore, withReveals } from '@formhaus/core/internal';
 import { computed } from 'vue';
 import { useLabel } from '../composables/useLabel';
 import { fieldComponentProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
 import OptionImage from './OptionImage.vue';
+import RevealSlot from './RevealSlot.vue';
 import { useField } from './useField';
 
 const props = defineProps(fieldComponentProps);
 const emit = defineEmits<FieldEmits>();
 const { inputId, control } = useField(props, emit);
 const text = useLabel();
-const options = computed(() => props.field.options ?? []);
+const options = computed(() => withReveals(props.field.options ?? [], props.reveals));
 const selected = computed(() => (Array.isArray(props.modelValue) ? (props.modelValue as (string | number)[]) : []));
 </script>
 
 <template>
-  <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" variant="multiselect">
+  <FieldShell :id="props.id" :field="props.field" :error="props.error" :test-id="props.testId" :error-first="!!props.reveals" variant="multiselect">
     <template v-for="(option, index) in options" :key="String(option.value)">
       <div v-if="dividerBefore(props.field, options, index)" class="fh-field__option-divider">{{ text('or') }}</div>
       <div class="fh-field__multiselect-option">
@@ -30,6 +31,8 @@ const selected = computed(() => (Array.isArray(props.modelValue) ? (props.modelV
           :data-testid="props.optionTestId?.(String(option.value))"
           type="checkbox"
           :checked="selected.includes(option.value)"
+          :aria-controls="option.reveal?.id"
+          :aria-expanded="option.reveal?.open"
           @change="emit('update:modelValue', toggleOption(props.modelValue, option.value))"
         />
         <label :for="`${inputId}-${index}`" class="fh-field__multiselect-label">
@@ -37,6 +40,7 @@ const selected = computed(() => (Array.isArray(props.modelValue) ? (props.modelV
         </label>
         <OptionImage :option="option" />
       </div>
+      <RevealSlot :reveal="option.reveal" />
     </template>
   </FieldShell>
 </template>

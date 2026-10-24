@@ -1,5 +1,6 @@
 import { type DateType, type FieldState, fieldValue, fromDate, numberValue, scaleView } from '@formhaus/core/fields';
 import type { FieldOption, FormField } from '../types';
+import { revealable } from '../internal/reveal';
 import { POINT_TYPES } from './options';
 import type { ControlKind, ControlShells, ControlTextType, MappedTypes } from './types';
 
@@ -51,6 +52,7 @@ export function controlShell<Shell>(shells: ControlShells<Shell>, kind: ControlK
 export function mapControlTypes<Controls extends object, Component>(
   controls: Controls,
   make: (entry: NonNullable<Controls[keyof Controls]>, input: boolean) => Component,
+  reveal: readonly string[] = [],
 ): { [Type in MappedTypes<Controls>]: Component } {
   const entries = controls as Record<string, Controls[keyof Controls]>;
   const map: Record<string, Component> = {};
@@ -58,6 +60,7 @@ export function mapControlTypes<Controls extends object, Component>(
     if (!entry) continue;
     const component = make(entry, key === 'input');
     for (const type of key === 'input' ? TEXT_TYPES.filter((type) => !entries[type]) : [key]) map[type] = component;
+    if (reveal.includes(key)) revealable.add(component as object);
   }
   return map as { [Type in MappedTypes<Controls>]: Component };
 }

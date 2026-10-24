@@ -4,7 +4,8 @@ export {
   type ControlAdapter,
   type ControlEntry,
   type ControlMap,
+  type ControlOption,
   type ControlRootProps,
   type MapControlsConfig,
 } from './mapControls';
-export type { ControlKind, ControlOption } from '@formhaus/core/controls';
+export type { ControlKind } from '@formhaus/core/controls';

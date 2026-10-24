@@ -1,5 +1,5 @@
 import { type ChangeEvent, type InputHTMLAttributes, type KeyboardEvent, type ReactNode, type TextareaHTMLAttributes, useRef } from 'react';
-import { type ControlShellProps, mapControls } from '../../src/controls';
+import { type ControlOption, type ControlShellProps, mapControls } from '../../src/controls';
 import type { FieldProps } from '../../src/fieldProps';
 import type { FieldComponentProps } from '../../src/types';
 
@@ -56,7 +56,7 @@ interface ChoicesProps {
   value?: unknown;
   disabled?: boolean;
   label?: string;
-  options: { value: string | number; label: string }[];
+  options: ControlOption[];
   onChange: (event: ChangeEvent<HTMLInputElement>, value: string) => void;
   children?: ReactNode;
 }
@@ -65,17 +65,25 @@ function Choices({ id, name, value, disabled, label, options, onChange }: Choice
   return (
     <div role="radiogroup" id={id} aria-label={label}>
       {options.map((option) => (
-        <label key={option.value}>
-          <input
-            type="radio"
-            name={name}
-            value={option.value}
-            disabled={disabled}
-            checked={String(value) === String(option.value)}
-            onChange={(event) => onChange(event, event.target.value)}
-          />
-          {option.label}
-        </label>
+        <div key={option.value}>
+          <label>
+            <input
+              type="radio"
+              name={name}
+              value={option.value}
+              disabled={disabled}
+              checked={String(value) === String(option.value)}
+              aria-controls={option.reveal?.id}
+              onChange={(event) => onChange(event, event.target.value)}
+            />
+            {option.label}
+          </label>
+          {option.reveal && (
+            <div id={option.reveal.id} data-fh="reveal" hidden={!option.reveal.open}>
+              {option.reveal.children}
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );
@@ -223,6 +231,7 @@ const free = { autocomplete: Plain, textarea: Area, file: Upload, scale: [Choice
 export const mapped = {
   typed: mapControls({ shell: Shell, freeText: true, controls: free }),
   plain: mapControls({ shell: Shell, controls: free }),
+  revealed: mapControls({ shell: Shell, conditionalReveal: ['radio'], controls: { input: TextInput, radio: [Choices, 'options'] } }),
   named: mapControls({ shell: Shell, controls: { radio: [Picker, 'options', 'onValueChange'] } }),
   shell: mapControls({ shell: Shell, kinds: { multiselect: 'input' }, matrix: MatrixRow, controls }),
   bare: mapControls({ shell: null, labels: (f: FieldProps) => ({ label: f.label }), kinds: { multiselect: 'input' }, controls }),

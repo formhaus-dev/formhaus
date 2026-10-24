@@ -21,6 +21,7 @@ export interface FieldResolverProps {
   testId?: string;
   optionTestId?: (value: string) => string | undefined;
   matrix?: FieldComponentProps['matrix'];
+  reveals?: FieldComponentProps['reveals'];
 }
 
 export function FieldResolver({ components, onBlur, busy = false, ...props }: FieldResolverProps & { busy?: boolean }) {

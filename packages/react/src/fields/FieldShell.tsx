@@ -11,10 +11,11 @@ interface FieldShellProps {
   error?: string;
   variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
   testId?: string;
+  errorFirst?: boolean;
   children: ReactNode;
 }
 
-export function FieldShell({ id, field, error, variant, testId, children }: FieldShellProps) {
+export function FieldShell({ id, field, error, variant, testId, errorFirst, children }: FieldShellProps) {
   const text = useContext(LabelContext);
   const inline = variant === 'checkbox' || variant === 'switch';
   const group = variant && !inline;
@@ -23,6 +24,11 @@ export function FieldShell({ id, field, error, variant, testId, children }: Fiel
   const helper = field.helperText && (
     <p id={`${id}-helper`} className="fh-field__helper">
       {field.helperText}
+    </p>
+  );
+  const message = error && (
+    <p id={`${id}-error`} className="fh-field__error" role="alert">
+      {error}
     </p>
   );
 
@@ -48,6 +54,7 @@ export function FieldShell({ id, field, error, variant, testId, children }: Fiel
       )}
       {!variant && <FieldLabel field={field} inputId={id} />}
       {!inline && helper}
+      {errorFirst && message}
       {variant ? (
         <div className={group && field.layout === 'inline' ? `${container} ${container}--inline` : container} data-columns={field.columns}>
           {children}
@@ -61,11 +68,7 @@ export function FieldShell({ id, field, error, variant, testId, children }: Fiel
         children
       )}
       {inline && helper}
-      {error && (
-        <p id={`${id}-error`} className="fh-field__error" role="alert">
-          {error}
-        </p>
-      )}
+      {!errorFirst && message}
     </Root>
   );
 }

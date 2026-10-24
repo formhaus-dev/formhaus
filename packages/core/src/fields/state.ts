@@ -31,9 +31,13 @@ export interface FieldState {
   invalid: boolean;
   required: boolean;
   disabled: boolean;
+  minLength?: number;
+  maxLength?: number;
   aria: FieldAria;
   optionId: (index: number) => string;
 }
+
+const COUNTED = ['text', 'email', 'phone', 'password', 'textarea'];
 
 export const fieldId = ({ id, field }: Pick<FieldStateInput, 'id' | 'field'>): string => id ?? fieldDomId(undefined, field.key);
 
@@ -51,6 +55,7 @@ export function fieldState(input: FieldStateInput): FieldState {
   const control = field as FormField;
   const id = fieldId(input);
   const aria = fieldAria(input);
+  const counted = COUNTED.includes(field.type) ? control.validation : undefined;
   return {
     id,
     name: field.key,
@@ -66,6 +71,8 @@ export function fieldState(input: FieldStateInput): FieldState {
     invalid: !!error,
     required: !!aria['aria-required'],
     disabled: !!(input.disabled || input.loading),
+    minLength: counted?.minLength,
+    maxLength: counted?.maxLength,
     aria,
     optionId: (index) => (index ? `${id}-${index}` : id),
   };

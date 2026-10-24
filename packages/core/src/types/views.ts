@@ -37,6 +37,13 @@ export interface ConfirmDialogView {
   cancel: () => void;
 }
 
+export interface RevealView<Children> {
+  value: string;
+  id: string;
+  open: boolean;
+  children: Children;
+}
+
 export interface RootProps {
   'data-fh': string;
   role?: string;
@@ -47,7 +54,7 @@ export interface RootProps {
 export interface ErrorSummaryGroup {
   id: string;
   title: string;
-  entries: { key: string; id: string; text: string }[];
+  entries: { key: string; id: string; text: string; message?: string }[];
 }
 
 export interface ErrorSummary {

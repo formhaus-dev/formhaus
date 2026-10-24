@@ -52,6 +52,17 @@ Use `steps` instead of `fields` in the definition:
 - **Skip** appears on steps with `skip` and moves forward without validating.
 - **Submit** replaces Continue on the last visible step.
 - **Progress bar** shows "Step N of M" based on visible steps.
+- **Focus** moves to the first field of the new step after Continue, Back or Skip. Pass `stepFocus="heading"` to focus the step title instead, so a screen reader reads the title and no input is entered. Without a step title in the progress, focus moves to the first field as before. After a failed Continue or Submit, focus still moves to the error summary or the invalid field.
+
+::: code-group
+```tsx [React]
+<FormRenderer definition={definition} stepFocus="heading" onSubmit={onSubmit} />
+```
+
+```vue [Vue]
+<FormRenderer :definition="definition" step-focus="heading" @submit="onSubmit" />
+```
+:::
 
 ## Welcome screen
 

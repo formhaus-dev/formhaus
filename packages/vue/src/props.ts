@@ -6,9 +6,10 @@ import type {
   FormField,
   FormGroup,
   FormSection,
+  RevealView,
   RootProps,
 } from '@formhaus/core';
-import type { Component, PropType } from 'vue';
+import type { Component, PropType, VNode } from 'vue';
 import type { FieldComponentProps, FormStepStatus, GroupItemComponentProps, HeadingLevel } from './types';
 
 const required = <T>(type: PropType<T>) => ({ type, required: true as const });
@@ -26,6 +27,7 @@ export const fieldComponentProps = {
   testId: String,
   optionTestId: Function as PropType<(value: string) => string | undefined>,
   matrix: Object as PropType<FieldComponentProps['matrix']>,
+  reveals: Array as PropType<RevealView<VNode>[]>,
 };
 
 export const fieldComponentEmits = {
