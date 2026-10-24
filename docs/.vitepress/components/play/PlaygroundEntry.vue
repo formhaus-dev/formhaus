@@ -93,12 +93,12 @@ onBeforeUnmount(() => {
               <span class="lv-bar__system">{{ design.label }} · {{ design.framework }}</span>
               <span v-if="design.lightOnly && isDark" class="lv-bar__note">Light only</span>
             </span>
-            <a class="lv-open" :href="href" @click="markEntryVisit">Open the playground<LucideIcon name="arrow-right" /></a>
+            <a class="lv-open" :href="href" @click="markEntryVisit">Open in the playground<LucideIcon name="arrow-right" /></a>
           </div>
           <PlayLive :system="system" :form="form" />
         </section>
         <div class="ps-open-under">
-          <a class="lv-open lv-open--block" :href="href" @click="markEntryVisit">Open the playground<LucideIcon name="arrow-right" /></a>
+          <a class="lv-open lv-open--block" :href="href" @click="markEntryVisit">Open in the playground<LucideIcon name="arrow-right" /></a>
         </div>
       </div>
     </div>
