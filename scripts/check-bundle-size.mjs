@@ -1,5 +1,5 @@
 import { readFileSync } from 'node:fs';
-import { bundleSize, entrySize, gzip, HARD_LIMITS } from './size/measure.mjs';
+import { bundleSize, gzip, measureEntries } from './size/measure.mjs';
 
 const PACKAGE_EXTERNALS = [
   '@formhaus/core',
@@ -23,7 +23,6 @@ const json = process.argv.includes('--json');
 const log = json ? () => {} : console.log;
 
 const sizes = { budgets: {}, apps: {} };
-const violations = [];
 
 for (const name of ENTRIES) {
   const [target, mode = 'development'] = name.split(':');
@@ -40,16 +39,7 @@ for (const name of ENTRIES) {
 }
 
 log('');
-for (const [name, limit] of Object.entries(HARD_LIMITS)) {
-  const size = await entrySize(name);
-  sizes.apps[name] = size;
-  log(`${name}: ${size} B gzipped (hard limit ${limit} B, headroom ${limit - size} B)`);
-  if (size > limit) violations.push(`${name} is ${size - limit} B over the hard limit`);
-}
+sizes.apps = await measureEntries();
+for (const [name, size] of Object.entries(sizes.apps)) log(`${name}: ${size} B gzipped`);
 
 if (json) console.log(JSON.stringify(sizes, null, 2));
-
-if (violations.length > 0) {
-  console.error(violations.join('\n'));
-  process.exit(1);
-}

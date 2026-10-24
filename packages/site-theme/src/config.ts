@@ -7,7 +7,7 @@ import { fetchStarCount, formatStarCount } from './stars';
 
 export { analyticsHead } from './analytics';
 export { head, transformHead } from './seo/head';
-export { coreBudgetKB, coreVersion, mcpVersion, pageUrl, repoUrl, siteName, siteUrl } from './seo/site';
+export { coreVersion, mcpVersion, pageUrl, repoUrl, siteName, siteUrl } from './seo/site';
 
 const publicDir = fileURLToPath(new URL('../public/', import.meta.url));
 const types: Record<string, string> = {

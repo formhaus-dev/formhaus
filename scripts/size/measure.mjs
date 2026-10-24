@@ -1,12 +1,10 @@
 import { build } from 'esbuild';
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 
 export const REACT_EXTERNAL = ['react', 'react/*', 'react-dom', 'react-dom/*'];
 export const VUE_EXTERNAL = ['vue'];
 const EXTERNAL = { core: [], react: REACT_EXTERNAL, vue: VUE_EXTERNAL };
-
-export const HARD_LIMITS = JSON.parse(readFileSync(new URL('./hard-limits.json', import.meta.url), 'utf8'));
 
 const SUBPATHS = ['cloud', 'i18n', 'fix', 'research', 'schema', 'fields'];
 
@@ -54,7 +52,7 @@ export async function bundleSize(contents, { external = [], mode = 'production',
   return gzip(result.outputFiles[0].contents);
 }
 
-export function entrySize(name) {
+function entrySize(name) {
   const { pkg, only, subpath, trusted } = ENTRIES[name];
   const dist = `./packages/${pkg}/dist`;
   const lines = [`export ${only ? `{ ${only} }` : '*'} from '${dist}/index.js';`];

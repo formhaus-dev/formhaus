@@ -6,7 +6,6 @@ import { templateFiles } from './template-files';
 import {
   analyticsHead,
   copyHashmap,
-  coreBudgetKB,
   head,
   ownHashmap,
   sharedDedupe,
@@ -174,6 +173,5 @@ export default defineConfig({
         ],
       },
     ],
-    ...{ coreBudgetKB },
   },
 });
