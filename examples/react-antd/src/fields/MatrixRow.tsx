@@ -1,21 +1,9 @@
-import { type FieldComponentProps, fieldProps } from '@formhaus/react';
+import { type ControlShellProps, mapControls } from '@formhaus/react/controls';
 import { Radio, Typography } from 'antd';
 
-export function MatrixRow(props: FieldComponentProps) {
-  const f = fieldProps(props);
+function MatrixShell({ f, rootProps, children }: ControlShellProps) {
   return (
-    <Radio.Group
-      {...f.aria}
-      data-fh="field"
-      name={f.name}
-      className="matrix-row"
-      aria-labelledby={`${f.id}-label`}
-      value={f.value ?? null}
-      disabled={f.disabled}
-      onChange={(event) => f.change(event.target.value)}
-      onBlur={f.blur}
-      onFocus={f.focus}
-    >
+    <div {...rootProps} className="matrix-row">
       <span className="matrix-row__label">
         <span id={`${f.id}-label`}>{f.label}</span>
         {f.helperText && (
@@ -29,11 +17,26 @@ export function MatrixRow(props: FieldComponentProps) {
           </Typography.Text>
         )}
       </span>
-      {f.options.map((column, index) => (
-        <span key={column.value} className="matrix-row__cell">
-          <Radio id={f.optionId(index)} value={column.value} aria-label={column.label} />
-        </span>
-      ))}
-    </Radio.Group>
+      {children}
+    </div>
   );
 }
+
+export const MatrixRow = mapControls({
+  shell: MatrixShell,
+  controls: {
+    radio: [
+      Radio.Group,
+      (f, options) => ({
+        id: undefined,
+        className: 'matrix-row__cells',
+        'aria-labelledby': `${f.id}-label`,
+        children: options.map((column, index) => (
+          <span key={column.value} className="matrix-row__cell">
+            <Radio id={f.optionId(index)} value={column.value} aria-label={column.label} />
+          </span>
+        )),
+      }),
+    ],
+  },
+}).radio;

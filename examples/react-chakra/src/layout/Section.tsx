@@ -1,10 +1,7 @@
 import type { SectionComponentProps } from '@formhaus/react';
 import { Card, Fieldset, Stack, Table } from '@chakra-ui/react';
 
-export function Section({ id, section, title, description, descriptionId, children }: SectionComponentProps) {
-  const first = section.fields[0];
-  const columns = section.layout === 'matrix' && first && 'options' in first ? (first.options ?? []) : null;
-
+export function Section({ id, title, description, descriptionId, columns, children }: SectionComponentProps) {
   return (
     <Card.Root asChild variant="outline">
       <Fieldset.Root id={id} aria-describedby={descriptionId} p="5" gap="4">

@@ -1,11 +1,8 @@
-import { scaleView } from '@formhaus/core/fields';
-import type { ControlRootProps, ControlShellProps } from '@formhaus/react/controls';
+import type { ControlShellProps } from '@formhaus/react/controls';
 
-type ShellProps = Omit<ControlShellProps, 'rootProps'> & { rootProps: Partial<ControlRootProps> };
-
-export function Shell({ kind, field, f, rootProps, children }: ShellProps) {
+export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
   const text = f.required ? f.label : `${f.label} (optional)`;
-  const [start, , end] = field.type === 'scale' ? scaleView(field).anchors : [];
+  const [start, , end] = anchors;
   const notes = (
     <>
       {f.helperText && (

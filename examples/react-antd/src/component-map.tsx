@@ -1,9 +1,8 @@
 import { toDate } from '@formhaus/core/fields';
 import type { FieldComponentMap, FieldProps, LayoutComponentMap } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
-import { Checkbox, DatePicker, Input, InputNumber, Radio, Rate, Select, Switch, TimePicker } from 'antd';
+import { Button, Checkbox, DatePicker, Input, InputNumber, Radio, Rate, Select, Switch, TimePicker, Upload, type UploadProps } from 'antd';
 import dayjs from 'dayjs';
-import { FileField } from './fields/FileField';
 import { MatrixRow } from './fields/MatrixRow';
 import { Shell } from './fields/Shell';
 import { ConfirmDialog, FormActions, Group, GroupItem, Section } from './layout/Containers';
@@ -13,6 +12,15 @@ const picked = (f: FieldProps) => {
   const date = toDate(f.value);
   return { value: date && dayjs(date), style: { width: '100%' } };
 };
+
+const upload = (f: FieldProps): UploadProps => ({
+  id: undefined,
+  maxCount: 1,
+  fileList: f.value instanceof File ? [{ uid: f.value.name, name: f.value.name, status: 'done' }] : [],
+  beforeUpload: () => false,
+  onChange: ({ file }) => f.change(file.status === 'removed' ? null : (file.originFileObj ?? file)),
+  children: <Button {...f.attrs}>Choose file</Button>,
+});
 
 const choose = (f: FieldProps, options: ControlOption[]) => ({ options, allowClear: !f.required, placeholder: f.placeholder ?? 'Select' });
 
@@ -47,7 +55,7 @@ export const components: FieldComponentMap = {
       input: Input,
       password: Input.Password,
       number: [InputNumber, () => ({ style: { width: '100%' } })],
-      textarea: [Input.TextArea, () => ({ rows: 4 })],
+      textarea: Input.TextArea,
       select: [Select, single],
       multiselect: [Select, (f, options) => ({ ...choose(f, options), mode: 'multiple' })],
       autocomplete: [Select, (f, options) => ({ ...single(f, options), showSearch: { optionFilterProp: 'label' } })],
@@ -59,9 +67,9 @@ export const components: FieldComponentMap = {
       radio: [Radio.Group, (_, options) => radios(options)],
       scale: [Radio.Group, (_, options) => ({ options, optionType: 'button', buttonStyle: 'solid', block: true })],
       rating: [Rate, (_, options) => ({ count: options.length })],
+      file: [Upload, upload],
     },
   }),
-  file: FileField,
 };
 
 export const layout: LayoutComponentMap = {
