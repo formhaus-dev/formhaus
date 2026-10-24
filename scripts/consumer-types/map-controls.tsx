@@ -1,5 +1,5 @@
 import type { FieldComponentMap } from '@formhaus/react';
-import { type ControlShellProps, mapControls } from '@formhaus/react/controls';
+import { type ControlShellProps, type ControlSpec, mapControls } from '@formhaus/react/controls';
 
 function Shell({ f, rootProps, children }: ControlShellProps) {
   return (
@@ -26,10 +26,13 @@ function Picker({
   return <button type="button" value={value} data-count={items?.length} onClick={() => onValueChange?.('a')} />;
 }
 
+const separate: ControlSpec<typeof Input> = { component: Input, props: (f) => ({ value: f.text }) };
+
 export const objects: FieldComponentMap = mapControls({
   shell: Shell,
   controls: {
     input: { component: Input },
+    password: separate,
     textarea: { component: Input, props: () => ({ size: 'large' }) },
     select: { component: Input, props: (f, options) => ({ value: f.text + options.length }) },
     radio: { component: Picker, optionsProp: 'items', changeProp: 'onValueChange' },
@@ -48,4 +51,6 @@ export const wrong = [
   mapControls({ shell: Shell, controls: { radio: { component: Picker, optionsProp: 'options' } } }),
   // @ts-expect-error
   mapControls({ shell: Shell, controls: { radio: { component: Picker, change: 'onValueChange' } } }),
+  // @ts-expect-error
+  { component: Picker, changeProp: 'onChange' } satisfies ControlSpec<typeof Picker>,
 ];

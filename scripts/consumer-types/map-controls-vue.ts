@@ -36,5 +36,9 @@ export const wrong = [
   // @ts-expect-error
   mapControls({ shell: Shell, controls: { radio: { component: Picker, changeProp: 'onUpdate:modelValue' } } }),
   // @ts-expect-error
+  mapControls({ shell: Shell, controls: { textarea: { component: Input, props: () => ({ width: 1 }) } } }),
+  // @ts-expect-error
   mapControls({ shell: Shell, controls: { radio: { component: Picker, optionsProp: 'options' } } }),
+  // @ts-expect-error
+  mapControls({ shell: Shell, controls: { radio: { component: Picker, change: 'onUpdate:value' } } }),
 ];
