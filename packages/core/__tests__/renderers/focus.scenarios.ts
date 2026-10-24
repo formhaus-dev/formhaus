@@ -159,6 +159,18 @@ export function focusScenarios(harness: RendererHarness, { it, expect, waitFor, 
     await waitFor(() => expect(active()).toBe(screen.getByRole('radio', { name: 'Plan A' })));
   });
 
+  it('focuses the checked radio of the next step and after Back', async () => {
+    harness.mount({ definition: wizard, initialValues: { ...filled, plan: 'b' }, onSubmit: () => {} });
+    await harness.click(button('Continue'));
+    await screen.findByRole('heading', { name: 'Two' });
+    await waitFor(() => expect(active()).toBe(screen.getByRole('radio', { name: 'Plan B' })));
+    await harness.click(button('Continue'));
+    await screen.findByRole('heading', { name: 'Three' });
+    await harness.click(button('Back'));
+    await screen.findByRole('heading', { name: 'Two' });
+    await waitFor(() => expect(active()).toBe(screen.getByRole('radio', { name: 'Plan B' })));
+  });
+
   it('focuses the step title instead of a field of the next step with stepFocus heading', async () => {
     harness.mount({ definition: wizard, initialValues: filled, stepFocus: 'heading', onSubmit: () => {} });
     await harness.click(button('Continue'));
