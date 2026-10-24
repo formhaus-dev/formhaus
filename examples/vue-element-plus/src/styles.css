@@ -7,6 +7,13 @@
   color-scheme: dark;
 }
 
+input,
+textarea,
+select,
+button {
+  font: inherit;
+}
+
 body {
   margin: 0;
   background: var(--el-bg-color-page);
@@ -87,4 +94,13 @@ body {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+.completion__answers .el-descriptions__cell {
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.completion__label {
+  width: 40%;
 }

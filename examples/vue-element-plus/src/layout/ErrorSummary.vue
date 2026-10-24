@@ -12,7 +12,7 @@ defineProps(errorSummaryComponentProps);
         <p v-if="groups.length > 1" class="summary__step">{{ group.title }}</p>
         <ul class="summary__list">
           <li v-for="entry in group.entries" :key="entry.key">
-            <ElLink type="danger" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.text }}</ElLink>
+            <ElLink type="danger" underline="always" :href="`#${entry.id}`" @click.prevent="showField(entry.key)">{{ entry.text }}</ElLink>
           </li>
         </ul>
       </template>
