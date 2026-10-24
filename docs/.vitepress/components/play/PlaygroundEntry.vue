@@ -60,7 +60,7 @@ onBeforeUnmount(() => {
   <div class="ps">
     <header class="ps-head">
       <h1 class="ps-title">Playground</h1>
-      <p class="ps-lead">One JSON form definition, rendered by {{ designs.length }} popular design systems.</p>
+      <p class="ps-lead">One Formhaus form definition, rendered by {{ designs.length }} popular design systems.</p>
     </header>
 
     <div ref="stripWrap" class="ps-strip-wrap">

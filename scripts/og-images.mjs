@@ -68,7 +68,9 @@ const font = `/assets/${readdirSync(join(dist, 'assets')).find((name) => /^inter
 const home = { slug: 'contact-form', address: 'formhaus.cc/k3Fq9xT2bW' };
 
 const jobs = [
-  ...Object.entries(sections).map(([name, section]) => ({ name, ...section, ...(name === 'home' ? home : {}) })),
+  ...Object.entries(sections)
+    .filter(([, section]) => !section.static)
+    .map(([name, section]) => ({ name, ...section, ...(name === 'home' ? home : {}) })),
   ...templates.map((template) => ({
     name: `templates/${template.slug}`,
     slug: template.slug,

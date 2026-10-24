@@ -30,8 +30,9 @@
   },
   "playground": {
     "eyebrow": "Playground",
-    "title": "Form playground",
-    "subtitle": "Edit a definition and watch it render in React, Vue and Svelte."
+    "title": "One form definition in 12 design systems",
+    "subtitle": "One Formhaus form definition, rendered by 12 popular design systems.",
+    "static": true
   },
   "recipes": {
     "eyebrow": "Recipes",
