@@ -1,5 +1,11 @@
 # @formhaus/mcp
 
+## 0.12.2
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.4.1.
+
 ## 0.12.1
 
 ### Patch Changes
