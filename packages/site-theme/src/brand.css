@@ -88,3 +88,9 @@
     margin-inline: calc(-1 * var(--fh-site-space-4));
   }
 }
+
+.VPNavBarAppearance,
+.VPNavScreenAppearance,
+.VPNavBarExtra .group:has(.appearance) {
+  display: none !important;
+}
