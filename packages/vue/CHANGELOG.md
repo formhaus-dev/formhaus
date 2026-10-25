@@ -2,7 +2,9 @@
 
 ## 1.6.1
 
-No changes in this release.
+### Patch Changes
+
+- Requires `@formhaus/core` 1.6.1.
 
 ## 1.6.0
 
