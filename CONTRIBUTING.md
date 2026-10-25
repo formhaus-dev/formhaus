@@ -2,6 +2,8 @@
 
 Thanks for wanting to help. Here's how to get started.
 
+Everyone taking part follows the [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Setup
 
 ```bash
