@@ -5,7 +5,15 @@ import { createFileUploader, createSubmitter, fetchForm, type CloudClientOptions
 import { draftValues, sessionDraftStore, type DraftStore } from './draft';
 import { parseSettings, withEnding, type CloudChallenge, type CloudSettings, type PublishedForm } from './envelope';
 import { CloudError, isRecord, networkError } from './error';
-import { FORM_UPDATED_MESSAGE, cloudLabel, failureFor, type CloudAction, type CloudLabelSource, type CloudNoticeCode } from './failures';
+import {
+  FORM_UPDATED_MESSAGE,
+  cloudLabel,
+  failureFor,
+  unknownFailure,
+  type CloudAction,
+  type CloudLabelSource,
+  type CloudNoticeCode,
+} from './failures';
 import { uploadGone } from './files';
 
 export interface CloudNotice {
@@ -154,6 +162,8 @@ export function createCloudController(options: CloudControllerOptions, callbacks
     if (cloud.status !== 422) return report({ notice: errorNotice(cloud) });
     const errors = cloud.errors ?? {};
     const split = state.definition ? splitErrors(state.definition, errors) : { fields: errors, other: [] };
+    const unexplained = split.other.length === 0 && Object.keys(split.fields).length === 0;
+    if (unexplained) return report({ errors: {}, notice: { tone: 'error', ...unknownFailure(), details: [] } });
     report({ errors: split.fields, notice: split.other.length > 0 ? errorNotice(cloud, split.other) : null });
   }
 

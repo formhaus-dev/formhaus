@@ -62,6 +62,13 @@ it('replaces the notice with noticeComponent, passes the code and focuses a mark
   expect(await screen.findByRole('status')).toBeDefined();
 });
 
+it('shows a notice when a 422 explains no field', async () => {
+  stub(reply(422, { error: 'definition_refused', message: 'The form cannot be validated' }));
+  render(<FormhausForm id="abc" initialForm={initialForm} />);
+  send();
+  expect(await screen.findByText('Could not send. Try again.')).toBeDefined();
+});
+
 it('focuses the first invalid field when a replaced notice has no marker', async () => {
   stub(reply(422, { errors: { email: 'Taken' } }));
   render(<FormhausForm id="abc" initialForm={initialForm} noticeComponent={() => <p>Custom</p>} />);
