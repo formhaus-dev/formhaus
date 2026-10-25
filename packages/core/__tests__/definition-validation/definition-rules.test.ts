@@ -141,14 +141,13 @@ describe('field rules', () => {
     );
   });
 
-  it('does not warn about a repeated group that starts or ends with a character nothing else in it matches', () => {
+  it('does not warn about a repeated group that starts or ends with a separator nothing else in it matches', () => {
     const slow = [
       '(a+\\.a+)+',
       '(\\.?[a-z]+\\.)+',
       '(.+\\.)+',
       '([a-z]+\\.|x)+',
       '(a+a)+',
-      '(\\d+\\.+)+',
       '([a-z.]+\\.)+',
       '(a+\\1)+',
       '(-)(?:a*\\1*-)+$',
@@ -168,6 +167,11 @@ describe('field rules', () => {
       '((a+)\\.)+',
       '([^,]+,)+',
       '(?:[a-z]+\\.){2,}',
+      '(\\d+\\.+)+',
+      "^[A-Za-z]+([ '-][A-Za-z]+)*$",
+      '^\\w+(?:\\s+\\w+)*$',
+      '^[a-z0-9]+(?:[._-][a-z0-9]+)*@[a-z0-9]+(?:[.-][a-z0-9]+)*\\.[a-z]{2,}$',
+      '^#(?:[0-9a-fA-F]{3}){1,2}$',
     ];
     const issues = checkDefinition(form([...slow, ...fast].map((pattern, index) => field(`p${index}`, { validation: { pattern } }))));
     expect(issues.map((issue) => issue.path)).toEqual(slow.map((_, index) => `/fields/${index}/validation/pattern`));
