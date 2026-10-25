@@ -49,22 +49,23 @@ Length, range, pattern, and matching rules have a corresponding `...Message` fie
 - overlapping repeated parts next to each other, such as `\d*\d*`, `\d+\.?\d*` or `(ab)+(ab)+`
 - a pattern longer than 1000 characters, which the check does not scan
 
-A repeated group that starts or ends with a character nothing else in it matches is safe and gets no warning, such as `([a-z]+\.)+` or `(,\s*[a-z]+)*`.
+A repeated group that starts or ends with a separator nothing else in it matches is safe and gets no warning, such as `([a-z]+\.)+`, `(,\s*[a-z]+)*`, `[A-Za-z]+([ '-][A-Za-z]+)*` or `\w+(\s+\w+)*`. A separator can be a character, an escape or a character class, with no quantifier or with `+`. A group repeated a fixed or small bounded number of times, such as `(?:[0-9a-f]{3}){1,2}`, is safe too.
 
 | Slow | Safe |
 |------|------|
 | `^(\w+\s?)+$` | `^\w+( \w+)*$` |
 | `^\d+\.?\d*$` | `^\d+(\.\d*)?$` |
 | `^([a-z]+\.?)+$` | `^[a-z]+(\.[a-z]+)*$` |
+| `^[A-Za-z]+([ '-]?[A-Za-z]+)*$` | `^[A-Za-z]+([ '-][A-Za-z]+)*$` |
 
-The engine runs a slow pattern and only warns. [`validateSubmission()`](/guide/server-validation) runs a slow pattern only when it is quadratic: it starts with `^`, is a flat list of characters, escapes, `\d`, `\w`, `\s` and character classes such as `[0-9.,]`, each with no quantifier or with `+`, `*` or `?`, and exactly one pair of repeats overlaps, as in `^\d+\.?\d*$` or `^[0-9]+\s?[0-9]+$`. Plain groups such as `^(\d+)\.?(\d*)$` are allowed. `.`, `{n,m}`, `|`, lookarounds, backreferences, negated classes, quantified groups and non-ASCII characters are not. On the server, a value longer than 1000 characters fails a quadratic pattern without being matched, so one match takes at most about 1 ms. For any other slow pattern, `validateSubmission()` throws a `FormDefinitionError` with a `slow-pattern` error and runs nothing:
+The warning is advice for authors. The engine and [`validateSubmission()`](/guide/server-validation) run every pattern, slow or not:
 
-| Pattern | 1,000 characters | 10,000 characters | `validateSubmission()` |
-|---------|------------------|-------------------|------------------------|
-| `^\d+\.?\d*$` | 0.4 ms | 35 ms | runs, up to 1000 characters |
-| `\d+\.?\d*$` | 220 ms | 2 min | throws |
-| `^\d*\d*\d*$` | 230 ms | 2 min | throws |
-| `^(a+)+$` | years | years | throws |
+| Pattern | 1,000 characters | 10,000 characters |
+|---------|------------------|-------------------|
+| `^\d+\.?\d*$` | 0.4 ms | 35 ms |
+| `\d+\.?\d*$` | 220 ms | 2 min |
+| `^\d*\d*\d*$` | 230 ms | 2 min |
+| `^(a+)+$` | years | years |
 
 A value longer than 10,000 characters fails `pattern` without being matched.
 
