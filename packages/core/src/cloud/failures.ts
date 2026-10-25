@@ -91,10 +91,12 @@ const CODE_BY_STATUS: Record<number, KnownCloudErrorCode> = {
   429: 'rate_limited',
 };
 
+export const unknownFailure = (): CloudFailure => ({ ...GENERIC, code: 'unknown' });
+
 export function failureFor(status: number, code = ''): CloudFailure {
   const known = BY_CODE[code] ? code : CODE_BY_STATUS[status];
   if (known) return { ...BY_CODE[known]!, code: known as CloudNoticeCode };
-  return { ...(status >= 500 ? SERVER : GENERIC), code: 'unknown' };
+  return status >= 500 ? { ...SERVER, code: 'unknown' } : unknownFailure();
 }
 
 const CLOUD_LABELS: Partial<Record<CloudLabelKey, string>> = {
