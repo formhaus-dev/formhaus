@@ -76,6 +76,7 @@ onBeforeUnmount(() => observer?.disconnect());
         :src="appUrl(entry)"
         :title="`${entry.label} preview`"
         class="lv-frame"
+        :class="{ 'lv-frame--waiting': !previews.rendered.has(entry.id) }"
         sandbox="allow-scripts allow-same-origin allow-forms"
       />
     </template>
