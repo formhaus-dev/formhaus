@@ -1,5 +1,11 @@
 # @formhaus/core
 
+## 1.6.2
+
+### Patch Changes
+
+- Fixed Cloud forms showing nothing when the server refused a submission without any field errors. They now show "Could not send. Try again."
+
 ## 1.6.1
 
 ### Patch Changes
