@@ -31,19 +31,13 @@ const patterns = new Map<string, RegExp | null>();
 const MAX_PATTERN_TESTS = 10_000;
 let patternTests: number | undefined;
 
-type PatternLimit = (pattern: string) => number | undefined;
-let patternLimit: PatternLimit | undefined;
-
-export function withPatternBudget<T>(run: () => T, limit = patternLimit): T {
-  const outer = patternLimit;
-  const opened = patternTests === undefined;
-  if (opened) patternTests = 0;
-  patternLimit = limit;
+export function withPatternBudget<T>(run: () => T): T {
+  if (patternTests !== undefined) return run();
+  patternTests = 0;
   try {
     return run();
   } finally {
-    patternLimit = outer;
-    if (opened) patternTests = undefined;
+    patternTests = undefined;
   }
 }
 
@@ -67,9 +61,7 @@ function patternError(value: unknown, rules: FieldValidation, message: () => str
   let matches = false;
   try {
     const text = String(value);
-    const allowed =
-      text.length <= (patternLimit?.(rules.pattern) ?? MAX_STRING_LENGTH) &&
-      (patternTests === undefined || patternTests++ < MAX_PATTERN_TESTS);
+    const allowed = text.length <= MAX_STRING_LENGTH && (patternTests === undefined || patternTests++ < MAX_PATTERN_TESTS);
     matches = allowed && pattern.test(text);
   } catch {}
   return matches ? undefined : (rules.patternMessage ?? message());
