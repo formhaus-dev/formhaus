@@ -1,0 +1,60 @@
+name: Bug report
+description: Something in a Formhaus package does not work as expected
+labels: [bug]
+body:
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - "@formhaus/core"
+        - "@formhaus/react"
+        - "@formhaus/vue"
+        - "@formhaus/mcp"
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: The package version
+      placeholder: 1.6.0
+    validations:
+      required: true
+  - type: input
+    id: framework
+    attributes:
+      label: Framework and environment
+      description: Framework and version, bundler, browser or Node version
+      placeholder: React 19.1, Vite 7, Safari 26
+    validations:
+      required: true
+  - type: textarea
+    id: definition
+    attributes:
+      label: Minimal definition
+      description: The smallest form definition that shows the problem
+      render: json
+    validations:
+      required: true
+  - type: textarea
+    id: code
+    attributes:
+      label: Code
+      description: The code that uses the definition, if it matters
+      render: tsx
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected
+      description: What should happen
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual
+      description: What happens instead, with errors or screenshots
+    validations:
+      required: true
