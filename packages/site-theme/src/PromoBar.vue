@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
 import { useData } from 'vitepress';
-import { promoKey, promoVariant } from './promo';
+import { promoKey, promoQuietMs, promoVariant } from './promo';
 
 const { page } = useData();
 const variant = computed(() => promoVariant(page.value.relativePath));
@@ -29,7 +29,8 @@ const item = computed(() => (variant.value ? content[variant.value] : null));
 
 function read(name: string) {
   try {
-    return localStorage.getItem(promoKey(name)) === '1';
+    const closedAt = Number(localStorage.getItem(promoKey(name)));
+    return Boolean(closedAt) && Date.now() - closedAt < promoQuietMs;
   } catch {
     return false;
   }
@@ -43,7 +44,7 @@ function sync() {
 function close() {
   if (!variant.value) return;
   try {
-    localStorage.setItem(promoKey(variant.value), '1');
+    localStorage.setItem(promoKey(variant.value), String(Date.now()));
   } catch {}
   dismissed.value = true;
   document.documentElement.classList.add('fh-promo-off');

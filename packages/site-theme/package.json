@@ -23,5 +23,8 @@
   "bugs": {
     "url": "https://github.com/formhaus-dev/formhaus/issues"
   },
-  "homepage": "https://formhaus.dev"
+  "homepage": "https://formhaus.dev",
+  "dependencies": {
+    "minisearch": "^7.2.0"
+  }
 }
