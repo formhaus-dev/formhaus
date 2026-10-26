@@ -16,6 +16,7 @@ interface Options {
   readOnly?: boolean;
   published?: Published;
   host?: Partial<EditorHost>;
+  split?: boolean;
 }
 
 const NotifyContext = createContext<(notice: Notice) => void>(() => undefined);
@@ -40,7 +41,7 @@ function View({ store, options }: { store: EditorStore; options: Options }) {
     host: testHost({ notify, readOnly: !!options.readOnly, ...options.host }),
     published: options.published ?? null,
   }));
-  return <EditorView handle={handle} stale={false} />;
+  return <EditorView handle={handle} stale={false} split={!!options.split} />;
 }
 
 export function renderEditor(form: BuilderForm = blankForm(), options: Options = {}) {

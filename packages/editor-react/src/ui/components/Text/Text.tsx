@@ -21,7 +21,7 @@ const text = cva(styles.text, {
   defaultVariants: { size: 'md', tone: 'default', weight: 'regular', mono: false, truncate: false, numeric: false },
 });
 
-export type TextProps = HTMLAttributes<HTMLElement> & VariantProps<typeof text> & { as?: 'span' | 'p' | 'code' };
+export type TextProps = HTMLAttributes<HTMLElement> & VariantProps<typeof text> & { as?: 'span' | 'p' | 'code' | 'pre' | 'h2' };
 
 export function Text({ as: Tag = 'span', size, tone, weight, mono, truncate, numeric, className, ...rest }: TextProps) {
   return <Tag className={text({ size, tone, weight, mono, truncate, numeric, className })} {...rest} />;

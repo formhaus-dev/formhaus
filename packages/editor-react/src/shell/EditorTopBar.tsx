@@ -6,6 +6,7 @@ import { useCanRedo, useCanUndo, useReadOnly } from '../store/hooks';
 import { EditorSaveStatus } from './EditorSaveStatus';
 import styles from './EditorShell.module.css';
 import { redoHint, undoHint } from './keys';
+import { scrollRoot, scrollTop } from './scroller';
 
 const focusable = 'button:not([disabled]), input:checked:not([disabled]), [tabindex="0"]';
 
@@ -69,13 +70,14 @@ export function EditorTopBar({ start, end, compact = false }: { start?: ReactNod
     const node = bar.current;
     if (!node) return undefined;
     const update = () => {
-      const top = Number.parseFloat(getComputedStyle(node).top);
-      node.toggleAttribute('data-stuck', node.getBoundingClientRect().top <= top + 1 && window.scrollY > 0);
+      const root = scrollRoot(node);
+      const top = Number.parseFloat(getComputedStyle(node).top) + (root?.getBoundingClientRect().top ?? 0);
+      node.toggleAttribute('data-stuck', node.getBoundingClientRect().top <= top + 1 && scrollTop(root) > 0);
     };
     update();
-    window.addEventListener('scroll', update, { passive: true });
+    document.addEventListener('scroll', update, { capture: true, passive: true });
     return () => {
-      window.removeEventListener('scroll', update);
+      document.removeEventListener('scroll', update, { capture: true });
     };
   }, []);
   return (

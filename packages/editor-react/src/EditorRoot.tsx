@@ -10,9 +10,10 @@ export interface EditorRootProps {
   host: EditorHost;
   mode?: EditorMode;
   compact?: boolean;
+  split?: boolean;
 }
 
-export function EditorRoot({ host, mode, compact = false }: EditorRootProps) {
+export function EditorRoot({ host, mode, compact = false, split = false }: EditorRootProps) {
   const { entries, notify, dismiss } = useNotices();
   const [shown] = useState<EditorHost>(() => ({
     ...host,
@@ -24,7 +25,7 @@ export function EditorRoot({ host, mode, compact = false }: EditorRootProps) {
   return (
     <div className="fh-editor">
       <TooltipProvider>
-        <EditorScreen host={shown} compact={compact} {...(mode ? { mode } : {})} />
+        <EditorScreen host={shown} compact={compact} split={split} {...(mode ? { mode } : {})} />
         <Notices entries={entries} dismiss={dismiss} />
         <LeaveDialog />
       </TooltipProvider>
