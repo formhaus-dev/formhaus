@@ -7,6 +7,10 @@ description: "Build a multi-step form with branching paths in React or Vue: Form
 
 With Formhaus, the branching lives in the JSON definition: each step lists `routes`, and the first route whose `show` conditions match picks the next step. `FormRenderer` from `@formhaus/react` or `@formhaus/vue` renders the steps, validates each one on Continue, handles Back and Skip, and submits only the answers on the path the user took.
 
+## Live preview
+
+<RecipePreview name="project-inquiry" />
+
 ## Definition
 
 The service answer sends the user to a design or a development step. Both branches converge at an optional budget step, then contact details.

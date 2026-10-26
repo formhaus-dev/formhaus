@@ -7,6 +7,10 @@ description: "Measure how long visitors spend on each question of a Formhaus for
 
 Listen to form events and time each question from its `step_viewed` to the next step, the submit or the visitor leaving. The form library only reports events. The timer below is your code.
 
+## Live preview
+
+<RecipePreview name="survey" />
+
 ## Definition
 
 One question per step:

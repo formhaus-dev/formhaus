@@ -7,6 +7,10 @@ description: "Generate and check forms with AI agents: the Formhaus JSON Schema 
 
 A Formhaus form is a JSON definition, so an agent writes data instead of component code. The JSON Schema at `https://formhaus.dev/schema/form-definition.json` tells the agent and the editor which keys are valid, the Formhaus Claude Code plugin adds the `/formhaus:formhaus-create-form` skill that drafts definitions from a description, CSV or screenshot, and the `@formhaus/mcp` server that checks the result against the real `FormEngine` with `validate_definition` and `simulate_path`.
 
+## Live preview
+
+<RecipePreview name="support-request" />
+
 ## Definition
 
 A support form an agent might produce. The `$schema` line enables completion and validation in VS Code, Cursor and JetBrains editors.

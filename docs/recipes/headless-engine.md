@@ -11,6 +11,10 @@ Install `@formhaus/core` and create a `FormEngine` from the JSON definition. The
 npm install @formhaus/core
 ```
 
+## Live preview
+
+<RecipePreview name="newsletter" />
+
 ## Definition
 
 <<< @/recipes/definitions/newsletter.json
