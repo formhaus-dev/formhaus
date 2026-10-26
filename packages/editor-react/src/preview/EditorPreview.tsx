@@ -56,31 +56,42 @@ function Blocked({ onShowIssues }: { onShowIssues: () => void }) {
   );
 }
 
-export function EditorPreview({ onShowIssues }: { onShowIssues: () => void }) {
+export function EditorPreview({ onShowIssues, docked = false }: { onShowIssues: () => void; docked?: boolean }) {
   const definition = useDefinition();
   const { Preview } = useHost();
   const [device, setDevice] = useState('desktop');
   const small = useMedia(phone);
+  const form = (
+    <Guard reset={definition} fallback={<Blocked onShowIssues={onShowIssues} />}>
+      <Suspense fallback={<Skeleton height="var(--fh-ed-size-tile)" />}>
+        <Preview definition={definition} />
+      </Suspense>
+    </Guard>
+  );
+  const widths = !small && (
+    <SegmentedControl
+      label="Preview width"
+      options={[
+        { value: 'desktop', label: 'Desktop' },
+        { value: 'mobile', label: 'Phone' },
+      ]}
+      value={device}
+      onValueChange={setDevice}
+    />
+  );
+  const frame = <div className={cx(styles.frame, device === 'mobile' && styles.mobile)}>{form}</div>;
+  if (docked) {
+    return (
+      <div className={styles.stage}>
+        <div className={styles.widths}>{widths}</div>
+        {frame}
+      </div>
+    );
+  }
   return (
     <div className={styles.preview}>
-      {!small && (
-        <SegmentedControl
-          label="Preview width"
-          options={[
-            { value: 'desktop', label: 'Desktop' },
-            { value: 'mobile', label: 'Phone' },
-          ]}
-          value={device}
-          onValueChange={setDevice}
-        />
-      )}
-      <div className={cx(styles.frame, device === 'mobile' && styles.mobile)}>
-        <Guard reset={definition} fallback={<Blocked onShowIssues={onShowIssues} />}>
-          <Suspense fallback={<Skeleton height="var(--fh-ed-size-tile)" />}>
-            <Preview definition={definition} />
-          </Suspense>
-        </Guard>
-      </div>
+      {widths}
+      {frame}
     </div>
   );
 }

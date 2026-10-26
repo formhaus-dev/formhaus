@@ -1,29 +1,83 @@
-.panel {
+.card {
   display: flex;
   flex-direction: column;
-  gap: var(--fh-ed-space-4);
-  padding: var(--fh-ed-space-6);
-  border: var(--fh-ed-border-thin) solid var(--fh-ed-line);
-  border-radius: var(--fh-ed-radius-lg);
-  background: var(--fh-ed-panel);
+  gap: var(--fh-ed-space-8);
+  padding: var(--fh-ed-space-10);
+  border: var(--fh-ed-border-thin) solid var(--fh-ed-stage-line);
+  border-radius: var(--fh-ed-radius-2xl);
+  background: var(--fh-ed-stage-panel);
 }
 
-.caption {
-  margin: calc(var(--fh-ed-space-2) * -1) 0 var(--fh-ed-space-4);
+.intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fh-ed-space-2);
+}
+
+.title {
+  margin: 0;
+  font-size: var(--fh-ed-font-size-2xl);
+  font-weight: var(--fh-ed-font-weight-semibold);
   line-height: var(--fh-ed-font-leading-tight);
+  letter-spacing: var(--fh-ed-font-tracking-tight);
+  text-wrap: balance;
+}
+
+.lead {
+  margin: 0;
+  font-size: var(--fh-ed-font-size-lg);
+  text-wrap: pretty;
+}
+
+.done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--fh-ed-space-4);
   text-align: center;
 }
 
-.sent {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--fh-ed-space-3);
+.done:focus {
+  outline: none;
+}
+
+.tick {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--fh-ed-size-touch);
+  height: var(--fh-ed-size-touch);
+  border-radius: var(--fh-ed-radius-full);
+  background: var(--fh-ed-success-soft);
+  color: var(--fh-ed-success);
+}
+
+.tick svg {
+  width: var(--fh-ed-size-icon-lg);
+  height: var(--fh-ed-size-icon-lg);
+}
+
+.payload {
+  box-sizing: border-box;
+  width: 100%;
+  max-height: var(--fh-ed-size-sheet-medium);
+  margin: 0;
+  padding: var(--fh-ed-space-4);
+  overflow: auto;
+  border-radius: var(--fh-ed-radius-lg);
+  background: var(--fh-ed-sub);
+  line-height: var(--fh-ed-font-leading-base);
+  text-align: left;
+  white-space: pre;
 }
 
 .sample :global(.fh-form) {
-  --fh-color-primary: var(--fh-ed-fg);
-  --fh-color-primary-hover: var(--fh-ed-fg-muted);
-  --fh-color-primary-text: var(--fh-ed-panel);
-  --fh-color-primary-soft: var(--fh-ed-sub);
+  --fh-color-bg: var(--fh-ed-stage-panel);
+  --fh-gap: var(--fh-ed-space-8);
+}
+
+@container preview (width < 480px) {
+  .card {
+    padding: var(--fh-ed-space-6);
+  }
 }
