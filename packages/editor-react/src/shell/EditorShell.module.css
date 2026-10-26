@@ -118,14 +118,14 @@
   padding-inline: 0;
 }
 
-.split {
+.split[data-docked] {
   display: grid;
   grid-template-columns: minmax(var(--fh-ed-size-editor-pane), 1fr) minmax(0, 1fr);
   height: 100%;
   min-height: 0;
 }
 
-.main {
+.split[data-docked] > .main {
   min-width: 0;
   min-height: 0;
   padding-inline: var(--fh-ed-layout-gutter);

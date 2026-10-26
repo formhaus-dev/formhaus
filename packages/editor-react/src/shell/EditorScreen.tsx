@@ -10,9 +10,10 @@ interface Props {
   host: EditorHost;
   mode?: EditorMode;
   compact?: boolean;
+  split?: boolean;
 }
 
-export function EditorScreen({ host, mode, compact = false }: Props) {
+export function EditorScreen({ host, mode, compact = false, split = false }: Props) {
   const source = useEditorSource(host);
   if (source.status === 'error') {
     return (
@@ -34,10 +35,19 @@ export function EditorScreen({ host, mode, compact = false }: Props) {
       </div>
     );
   }
-  return <Session host={host} initial={source.initial} published={source.published} compact={compact} {...(mode ? { mode } : {})} />;
+  return (
+    <Session
+      host={host}
+      initial={source.initial}
+      published={source.published}
+      compact={compact}
+      split={split}
+      {...(mode ? { mode } : {})}
+    />
+  );
 }
 
-function Session({ host, initial, published, mode, compact }: Props & { initial: InitialEditor; published: Published | null }) {
+function Session({ host, initial, published, mode, compact, split }: Props & { initial: InitialEditor; published: Published | null }) {
   const handle = useEditorSession({ host, initial, published });
-  return <EditorView handle={handle} stale={initial.stale} compact={!!compact} {...(mode ? { mode } : {})} />;
+  return <EditorView handle={handle} stale={initial.stale} compact={!!compact} split={!!split} {...(mode ? { mode } : {})} />;
 }

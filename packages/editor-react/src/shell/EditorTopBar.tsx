@@ -69,16 +69,15 @@ export function EditorTopBar({ start, end, compact = false }: { start?: ReactNod
   useEffect(() => {
     const node = bar.current;
     if (!node) return undefined;
-    const root = scrollRoot(node);
-    const target = root ?? window;
     const update = () => {
+      const root = scrollRoot(node);
       const top = Number.parseFloat(getComputedStyle(node).top) + (root?.getBoundingClientRect().top ?? 0);
       node.toggleAttribute('data-stuck', node.getBoundingClientRect().top <= top + 1 && scrollTop(root) > 0);
     };
     update();
-    target.addEventListener('scroll', update, { passive: true });
+    document.addEventListener('scroll', update, { capture: true, passive: true });
     return () => {
-      target.removeEventListener('scroll', update);
+      document.removeEventListener('scroll', update, { capture: true });
     };
   }, []);
   return (

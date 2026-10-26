@@ -4,7 +4,7 @@ import { scrollRoot, scrollToY, scrollTop } from './scroller';
 const INPUT = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
 
 function restore(scroller: HTMLElement | null, target: number): () => void {
-  const root = document.documentElement.style;
+  const root = (scroller ?? document.documentElement).style;
   root.setProperty('overflow-anchor', 'none');
   let frame = 0;
   let timer = 0;
@@ -26,7 +26,7 @@ function restore(scroller: HTMLElement | null, target: number): () => void {
   return stop;
 }
 
-export function useTabScroll(mode: string, top: RefObject<HTMLElement | null>) {
+export function useTabScroll(mode: string, top: RefObject<HTMLElement | null>, docked = false) {
   const positions = useRef(new Map<string, number>());
   const shown = useRef(mode);
   const skip = useRef(false);
@@ -39,6 +39,10 @@ export function useTabScroll(mode: string, top: RefObject<HTMLElement | null>) {
     },
     [top],
   );
+  useLayoutEffect(() => {
+    cancel.current();
+    positions.current.clear();
+  }, [docked]);
   useLayoutEffect(() => {
     if (shown.current === mode) return;
     shown.current = mode;

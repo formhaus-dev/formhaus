@@ -76,6 +76,7 @@ describe('field settings in the inspector', () => {
     });
     expect(panel.queryByText("Can't be more than 99.5")).toBeNull();
     await userEvent.fill(panel.getByRole('textbox', { name: 'Error if too low' }), 'Adults only');
+    await userEvent.click(screen.getByRole('radio', { name: 'Preview' }));
     await waitFor(() => {
       expect(first(store).validation).toEqual({ min: 120, minMessage: 'Adults only' });
     });

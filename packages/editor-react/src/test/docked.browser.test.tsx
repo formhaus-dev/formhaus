@@ -1,4 +1,5 @@
-import { fromDefinition } from '@formhaus/builder';
+import { EditorView } from '@codemirror/view';
+import { fromDefinition, toDefinition } from '@formhaus/builder';
 import type { FormDefinition } from '@formhaus/core';
 import { cleanup, screen, waitFor, within } from '@testing-library/react';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -25,7 +26,7 @@ const stepped = {
 } as FormDefinition;
 
 function renderDocked(definition: FormDefinition = long) {
-  const view = renderEditor(fromDefinition(definition), { host: { Preview: ReactPreview } });
+  const view = renderEditor(fromDefinition(definition), { host: { Preview: ReactPreview }, split: true });
   view.container.style.height = '700px';
   view.container.querySelector<HTMLElement>('.fh-editor')?.style.setProperty('height', '100%');
   return view;
@@ -79,6 +80,45 @@ describe('the live preview beside the editor', () => {
     });
   });
 
+  it('keeps the tabs when the host does not ask for the split', async () => {
+    await page.viewport(1440, 800);
+    renderEditor(fromDefinition(long), { host: { Preview: ReactPreview } });
+    expect(screen.getByRole('radio', { name: 'Preview' })).toBeTruthy();
+    expect(screen.queryByRole('complementary', { name: 'Live preview' })).toBeNull();
+  });
+
+  it('keeps unfinished JSON when the window crosses 1280 px', async () => {
+    await page.viewport(1440, 800);
+    renderDocked();
+    await userEvent.click(screen.getByRole('radio', { name: 'JSON' }));
+    const view = () => {
+      const dom = document.querySelector<HTMLElement>('.cm-editor');
+      const found = dom ? EditorView.findFromDOM(dom) : null;
+      if (!found) throw new Error('No JSON editor');
+      return found;
+    };
+    await waitFor(() => view());
+    const editor = view();
+    editor.dispatch({ changes: { from: 0, insert: 'unfinished ' }, userEvent: 'input.type' });
+    await page.viewport(1279, 800);
+    await waitFor(() => {
+      expect(screen.queryByRole('complementary', { name: 'Live preview' })).toBeNull();
+    });
+    expect(view()).toBe(editor);
+    expect(view().state.doc.toString()).toMatch(/^unfinished /);
+  });
+
+  it('leaves the builder history alone when undoing inside the preview', async () => {
+    await page.viewport(1440, 800);
+    const { store } = renderDocked();
+    await userEvent.fill(fieldLabel(0), 'Work email');
+    const live = within(screen.getByRole('complementary', { name: 'Live preview' }));
+    const input = await live.findByRole('textbox', { name: /Work email/ });
+    await userEvent.type(input, 'abc');
+    await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
+    expect(toDefinition(store.getState().form).fields?.[0]?.label).toBe('Work email');
+  });
+
   it('splits the screen in half', async () => {
     await page.viewport(1440, 800);
     renderDocked();
@@ -123,5 +163,9 @@ describe('the live preview beside the editor', () => {
     await userEvent.click(live.getByRole('button', { name: 'Send' }));
     expect(await live.findByText(/nothing was sent/)).toBeVisible();
     expect(live.getByText(/"f0": "hello"/)).toBeVisible();
+    await userEvent.click(live.getByRole('button', { name: 'Start over' }));
+    await waitFor(() => {
+      expect(document.activeElement).toBe(live.getByRole('textbox', { name: /Field 0/ }));
+    });
   });
 });

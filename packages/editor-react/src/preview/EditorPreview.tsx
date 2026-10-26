@@ -82,14 +82,14 @@ export function EditorPreview({ onShowIssues, docked = false }: { onShowIssues: 
   const frame = <div className={cx(styles.frame, device === 'mobile' && styles.mobile)}>{form}</div>;
   if (docked) {
     return (
-      <div className={styles.stage}>
+      <div className={styles.stage} data-preview>
         <div className={styles.widths}>{widths}</div>
         {frame}
       </div>
     );
   }
   return (
-    <div className={styles.preview}>
+    <div className={styles.preview} data-preview>
       {widths}
       {frame}
     </div>

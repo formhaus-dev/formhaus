@@ -44,7 +44,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('shows visual edits in the JSON', async () => {
-    await page.viewport(1024, 1000);
+    await page.viewport(1440, 1000);
     renderEditor();
     await userEvent.click(fieldLabel(0));
     await userEvent.keyboard('Work email');
@@ -58,7 +58,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('applies pasted JSON to the visual editor as one undo step', async () => {
-    await page.viewport(1024, 1000);
+    await page.viewport(1440, 1000);
     const { store } = renderEditor();
     await mode('JSON');
     paste(definition('Name', 'Company'));
@@ -72,7 +72,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('keeps the visual state and the typed text while the JSON is invalid', async () => {
-    await page.viewport(1024, 1000);
+    await page.viewport(1440, 1000);
     const { store } = renderEditor();
     await userEvent.click(fieldLabel(0));
     await userEvent.keyboard('Keep me');
@@ -89,7 +89,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('undoes and redoes across Visual and JSON', async () => {
-    await page.viewport(1024, 1000);
+    await page.viewport(1440, 1000);
     const { store } = renderEditor();
     await userEvent.click(fieldLabel(0));
     await userEvent.keyboard('Visual');
@@ -111,7 +111,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('opens an existing form with its live version and keeps keys while editing', async () => {
-    await page.viewport(1024, 1000);
+    await page.viewport(1440, 1000);
     const live = JSON.parse(definition('Email')) as FormDefinition;
     const published = { definition: live, version: 3 };
     const { store } = renderEditor(loader(published)(live), { published });
@@ -129,7 +129,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('gives the JSON pane the full width of the editor toolbar', async () => {
-    await page.viewport(1024, 1000);
+    await page.viewport(1440, 1000);
     renderEditor();
     await mode('JSON');
     const start = screen.getByRole('radiogroup', { name: 'Editor mode' }).getBoundingClientRect();
@@ -140,7 +140,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('scrolls the page to the last line while the editor is focused', async () => {
-    await page.viewport(1024, 600);
+    await page.viewport(1440, 600);
     renderEditor(
       fromDefinition(JSON.parse(definition(...Array.from({ length: 40 }, (_, index) => `Field ${String(index + 1)}`))) as FormDefinition),
     );
@@ -156,7 +156,7 @@ describe('JSON mode in a browser', () => {
   });
 
   it('keeps the cursor line below the sticky toolbar when it scrolls up to it', async () => {
-    await page.viewport(1024, 600);
+    await page.viewport(1440, 600);
     renderEditor(
       fromDefinition(JSON.parse(definition(...Array.from({ length: 40 }, (_, index) => `Field ${String(index + 1)}`))) as FormDefinition),
     );

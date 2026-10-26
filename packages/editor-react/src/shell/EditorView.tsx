@@ -41,15 +41,16 @@ interface Props {
   stale: boolean;
   mode?: EditorMode;
   compact?: boolean;
+  split?: boolean;
 }
 
-export function EditorView({ handle, stale, mode: initialMode = 'edit', compact = false }: Props) {
+export function EditorView({ handle, stale, mode: initialMode = 'edit', compact = false, split = false }: Props) {
   const { published } = handle;
   const [picked, setShownMode] = useState<string>(initialMode);
-  const docked = useMedia(wide) && !compact;
+  const docked = useMedia(wide) && split && !compact;
   const mode = docked && picked === 'preview' ? 'edit' : picked;
   const top = useRef<HTMLDivElement>(null);
-  const remember = useTabScroll(mode, top);
+  const remember = useTabScroll(mode, top, docked);
   const setMode = useCallback(
     (next: string, restore = true) => {
       remember(restore);
@@ -122,18 +123,16 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit', compact 
   );
   return (
     <EditorShell handle={handle} docked={docked}>
-      {docked ? (
-        <div className={styles.split}>
-          <div className={styles.main} data-scroll>
-            {editor}
-          </div>
+      <div className={styles.split} data-docked={docked || undefined}>
+        <div className={styles.main} data-scroll={docked || undefined}>
+          {editor}
+        </div>
+        {docked && (
           <aside className={styles.docked} aria-label="Live preview">
             <EditorPreview docked onShowIssues={onShowIssues} />
           </aside>
-        </div>
-      ) : (
-        editor
-      )}
+        )}
+      </div>
       <ShortcutsDialog open={help} onOpenChange={setHelp} />
     </EditorShell>
   );

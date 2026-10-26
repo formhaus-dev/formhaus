@@ -12,11 +12,15 @@ export default function ReactPreview({ definition }: { definition: FormDefinitio
   const [round, setRound] = useState(0);
   const [payload, setPayload] = useState<Record<string, unknown> | null>(null);
   const result = useRef<HTMLDivElement>(null);
+  const card = useRef<HTMLElement>(null);
   useEffect(() => {
     if (payload) result.current?.focus();
   }, [payload]);
+  useEffect(() => {
+    if (round > 0) card.current?.querySelector<HTMLElement>('input, select, textarea, button')?.focus();
+  }, [round]);
   return (
-    <section className={styles.card} aria-label="Preview" data-fh-theme={dark ? 'dark' : 'light'}>
+    <section ref={card} className={styles.card} aria-label="Preview" data-fh-theme={dark ? 'dark' : 'light'}>
       {payload ? (
         <div ref={result} role="status" tabIndex={-1} className={styles.done}>
           <Text className={styles.tick}>

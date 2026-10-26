@@ -44,7 +44,8 @@ export function EditorShell({ handle, docked = false, children }: { handle: Edit
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const action = isUndoKey(event);
-      const inside = event.target === document.body || (event.target instanceof Node && !!root.current?.contains(event.target));
+      const preview = event.target instanceof Element && !!event.target.closest('[data-preview]');
+      const inside = event.target === document.body || (event.target instanceof Node && !!root.current?.contains(event.target) && !preview);
       if (!action || !inside || event.defaultPrevented || handle.store.getState().readOnly) return;
       event.preventDefault();
       if (action === 'undo') handle.store.undo();

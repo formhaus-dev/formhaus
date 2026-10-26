@@ -24,11 +24,6 @@ const Preview = ({ definition }: { definition: FormDefinition }) => {
 
 const list = () => screen.getByRole('list', { name: 'Definition issues' });
 
-const openPreview = async () => {
-  const tab = screen.queryByRole('radio', { name: 'Preview' });
-  if (tab) await userEvent.click(tab);
-};
-
 describe.each([
   [1440, 800],
   [390, 800],
@@ -60,7 +55,7 @@ describe.each([
   it('offers the issues and the safe fixes from a preview that cannot render', async () => {
     await page.viewport(width, height);
     const { store } = renderEditor(fromDefinition(broken), { host: { Preview } });
-    await openPreview();
+    await userEvent.click(screen.getByRole('radio', { name: 'Preview' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Fix all safe issues (1)' }, { timeout: 5000 }));
     expect(await screen.findByText('Rendered preview')).toBeTruthy();
     expect(toDefinition(store.getState().form).fields?.at(-1)?.key).toBe('email_2');
@@ -69,7 +64,7 @@ describe.each([
   it('opens the issue list from the preview', async () => {
     await page.viewport(width, height);
     renderEditor(fromDefinition(broken), { host: { Preview } });
-    await openPreview();
+    await userEvent.click(screen.getByRole('radio', { name: 'Preview' }));
     await userEvent.click(await screen.findByRole('button', { name: 'Show issues (1)' }));
     await waitFor(() => {
       expect(document.activeElement).toBe(list());

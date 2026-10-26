@@ -148,7 +148,7 @@ describe('overlays inherit the editor font on a serif host page', () => {
     [
       'preview',
       async () => {
-        expect(screen.queryByRole('radio', { name: 'Preview' })).toBeNull();
+        await userEvent.click(screen.getByRole('radio', { name: 'Preview' }));
         return screen.findByRole('region', { name: 'Preview' });
       },
     ],
