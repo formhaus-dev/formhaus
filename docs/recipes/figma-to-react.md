@@ -9,6 +9,10 @@ Formhaus keeps the form in one JSON definition. The Formhaus Figma plugin draws 
 
 ![The Formhaus plugin editing a branching form next to its flow map on the canvas](/figma/hero.png)
 
+## Live preview
+
+<RecipePreview name="account-flow" />
+
 ## Definition
 
 <<< @/recipes/definitions/account-flow.json
