@@ -7,6 +7,10 @@ description: "Show or hide form fields based on earlier answers with Formhaus sh
 
 In Formhaus you add `show` (all conditions must match) or `showAny` (at least one must match) to a field in the JSON definition. The `FormEngine` re-evaluates visibility on every change, clears the values of fields that become hidden, gives them back when they show again, and skips hidden fields in validation and submission. The React and Vue renderers apply this without extra code.
 
+## Live preview
+
+<RecipePreview name="checkout-details" />
+
 ## Definition
 
 A checkout form: company name for business buyers, an invoice email for business buyers or individuals who ask for an invoice, and an address or pickup point depending on delivery.

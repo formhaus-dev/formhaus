@@ -129,6 +129,8 @@ A [group](/guide/groups) inside a section, limited to one item, is a real nested
 
 <<< @/recipes/definitions/shipping-group.json
 
+<RecipePreview name="shipping-group" />
+
 - `defaultItems: 1` starts the group with one item. Without it, the group starts empty.
 - `required: true` rejects an empty group. `minLength: 1` alone does not.
 - At `maxLength: 1` the renderer hides Add. With `required` it hides Remove at one item.
