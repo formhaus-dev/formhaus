@@ -16,7 +16,8 @@
 }
 
 @media (max-width: 959px) {
-  .fh-promo { position: relative; inset: auto; }
+  .fh-promo { inset: auto 0 0; height: auto; min-height: 40px; padding-bottom: env(safe-area-inset-bottom); border-top: 1px solid var(--vp-c-divider); border-bottom: 0; }
+  :root:not(.fh-promo-off):has(.fh-promo) body { padding-bottom: calc(40px + env(safe-area-inset-bottom)); }
 }
 
 @media (max-width: 639px) {
