@@ -3,6 +3,7 @@ import MiniSearch from 'minisearch';
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import type { SearchEntry } from './search-index';
 import { searchIndexes } from './nav';
+import { searchRequests } from './search-state';
 import './site-search.css';
 
 const open = ref(false);
@@ -89,6 +90,8 @@ function keys(event: KeyboardEvent) {
     go(results.value[active.value]);
   }
 }
+
+watch(searchRequests, () => show());
 
 watch(query, () => {
   active.value = 0;

@@ -17,9 +17,13 @@
     padding-top: var(--vp-layout-top-height, 0);
   }
 
-  .Layout:has(.VPContent.has-sidebar) .VPNav {
+  .VPNav {
     position: sticky;
     top: var(--vp-layout-top-height, 0);
+  }
+
+  html:has(.VPNavScreen) .fh-promo {
+    display: none;
   }
 
   .Layout:has(.VPContent.has-sidebar) .VPLocalNav {

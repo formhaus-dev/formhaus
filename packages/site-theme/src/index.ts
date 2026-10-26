@@ -2,7 +2,9 @@ import { h } from 'vue';
 import DefaultTheme from 'vitepress/theme';
 import type { EnhanceAppContext, Theme } from 'vitepress';
 import NavCta from './NavCta.vue';
+import MenuSearch from './MenuSearch.vue';
 import SiteSearch from './SiteSearch.vue';
+import ThemeToggle from './ThemeToggle.vue';
 import SiteNav from './SiteNav.vue';
 import PromoBar from './PromoBar.vue';
 import SiteFooter from './SiteFooter.vue';
@@ -39,7 +41,11 @@ export function createTheme(enhance?: (context: EnhanceAppContext) => void): The
         'layout-top': () => h(PromoBar),
         'nav-bar-content-before': () => [h(SiteNav), h(SiteSearch)],
         'nav-bar-content-after': () => h(NavCta),
-        'nav-screen-content-before': () => h(SiteNav, { mobile: true }),
+        'nav-screen-content-before': () => [
+          h(MenuSearch),
+          h(SiteNav, { mobile: true }),
+          h('div', { class: 'fh-menu-theme' }, [h('span', 'Theme'), h(ThemeToggle)]),
+        ],
         'nav-screen-content-after': () => h(DocsDrawerMenu),
         'layout-bottom': () => h(SiteFooter),
       }),
