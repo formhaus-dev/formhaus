@@ -1,6 +1,9 @@
 import { createTheme } from '@formhaus/site-theme';
-import RecipePreview from '../components/recipes/RecipePreview.vue';
+import { defineAsyncComponent } from 'vue';
 
 export default createTheme(({ app }) => {
-  app.component('RecipePreview', RecipePreview);
+  app.component(
+    'RecipePreview',
+    defineAsyncComponent(() => import('../components/recipes/RecipePreview.vue')),
+  );
 });
