@@ -142,6 +142,21 @@ describe('the live preview beside the editor', () => {
     expect(live.getBoundingClientRect().top).toBe(before);
   });
 
+  it('ignores the host header offset inside the pane', async () => {
+    await page.viewport(1440, 800);
+    document.documentElement.style.setProperty('--fh-ed-layout-topbar', '64px');
+    try {
+      renderDocked();
+      pane().scrollTo(0, 1000);
+      await waitFor(() => {
+        expect(topBar()).toHaveAttribute('data-stuck');
+      });
+      expect(topBar().getBoundingClientRect().top).toBeCloseTo(pane().getBoundingClientRect().top, 0);
+    } finally {
+      document.documentElement.style.removeProperty('--fh-ed-layout-topbar');
+    }
+  });
+
   it('switches the preview between desktop and phone widths', async () => {
     await page.viewport(1440, 800);
     renderDocked();

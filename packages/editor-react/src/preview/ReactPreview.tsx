@@ -22,7 +22,7 @@ export default function ReactPreview({ definition }: { definition: FormDefinitio
   return (
     <section ref={card} className={styles.card} aria-label="Preview" data-fh-theme={dark ? 'dark' : 'light'}>
       {payload ? (
-        <div ref={result} role="status" tabIndex={-1} className={styles.done}>
+        <div ref={result} tabIndex={-1} className={styles.done}>
           <Text className={styles.tick}>
             <Check aria-hidden />
           </Text>

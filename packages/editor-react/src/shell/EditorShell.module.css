@@ -113,6 +113,8 @@
 }
 
 .shell[data-docked] {
+  --fh-ed-layout-topbar: 0px;
+
   height: 100%;
 }
 
