@@ -10,8 +10,7 @@ const definition = definitions[`../../../recipes/definitions/${props.name}.json`
 </script>
 
 <template>
-  <section v-if="definition" class="tpl-preview recipe-preview vp-raw" aria-label="Live preview">
-    <p class="tpl-preview__label">Live preview</p>
+  <section v-if="definition" class="tpl-preview recipe-preview vp-raw" aria-label="Live form preview">
     <ClientOnly>
       <TemplatePreview :definition="definition" />
     </ClientOnly>

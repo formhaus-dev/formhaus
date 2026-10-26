@@ -11,6 +11,10 @@ There is no Svelte adapter. A small runes component renders `FormEngine` from `@
 npm install @formhaus/core
 ```
 
+## Live preview
+
+<RecipePreview name="project-inquiry" />
+
 ## Definition
 
 <<< @/recipes/definitions/project-inquiry.json
