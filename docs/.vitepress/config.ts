@@ -11,6 +11,7 @@ import {
   ownHashmap,
   sharedDedupe,
   sharedPublic,
+  searchIndex,
   sharedThemeConfig,
   siteUrl,
   transformHead,
@@ -23,7 +24,14 @@ const sitemap = sitemapCollector();
 
 export default defineConfig({
   vite: {
-    plugins: [llms, templateFiles(), schemaRuntimes(), sharedPublic(), ownHashmap()],
+    plugins: [
+      llms,
+      templateFiles(),
+      schemaRuntimes(),
+      sharedPublic(),
+      ownHashmap(),
+      searchIndex(fileURLToPath(new URL('..', import.meta.url)), 'guide/search-index.json'),
+    ],
     resolve: {
       alias: {
         '@formhaus/site-theme': fileURLToPath(new URL('../../packages/site-theme/src/index.ts', import.meta.url)),
