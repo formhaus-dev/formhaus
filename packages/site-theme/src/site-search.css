@@ -1,0 +1,195 @@
+.fh-search {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  gap: var(--fh-site-space-2);
+  height: var(--fh-site-control-md);
+  padding: 0 var(--fh-site-space-2) 0 var(--fh-site-space-3);
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--fh-site-radius-pill);
+  background: transparent;
+  font-size: var(--fh-site-font-size-sm);
+  line-height: 20px;
+  color: var(--vp-c-text-2);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.fh-search svg,
+.fh-search-dialog__field svg {
+  flex: none;
+  width: var(--fh-site-icon-sm);
+  height: var(--fh-site-icon-sm);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fh-search__label {
+  min-width: calc(var(--fh-site-space-24) + var(--fh-site-space-6));
+  text-align: left;
+}
+
+.fh-search__keys {
+  display: flex;
+  gap: var(--fh-site-space-1);
+}
+
+.fh-search kbd,
+.fh-search-dialog kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--fh-site-space-5);
+  height: var(--fh-site-space-5);
+  padding: 0 var(--fh-site-space-1);
+  border: 1px solid var(--vp-c-divider);
+  border-bottom-width: 2px;
+  border-radius: var(--fh-site-radius-sm);
+  background: var(--vp-c-bg-soft);
+  font-family: inherit;
+  font-size: var(--fh-site-font-size-2xs);
+  line-height: 1;
+  color: var(--vp-c-text-2);
+}
+
+.fh-search:focus-visible {
+  outline: 2px solid var(--vp-c-brand-1);
+  outline-offset: 2px;
+}
+
+.fh-search-dialog {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--vp-z-index-nav) + 10);
+  display: flex;
+  justify-content: center;
+  padding: calc(var(--fh-site-space-24) * 0.8) var(--fh-site-space-4) var(--fh-site-space-4);
+}
+
+.fh-search-dialog__backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--fh-c-overlay);
+}
+
+.fh-search-dialog__panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: calc(var(--fh-site-space-24) * 6.5);
+  max-height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--vp-c-divider);
+  border-radius: var(--fh-site-radius-xl);
+  background: var(--vp-c-bg);
+  box-shadow: 0 24px 64px var(--fh-c-dialog-shadow);
+  align-self: flex-start;
+}
+
+.fh-search-dialog__field {
+  display: flex;
+  align-items: center;
+  gap: var(--fh-site-space-3);
+  padding: 0 var(--fh-site-space-4);
+  border-bottom: 1px solid var(--vp-c-divider);
+  color: var(--vp-c-text-2);
+}
+
+.fh-search-dialog__field input {
+  flex: 1;
+  min-width: 0;
+  height: calc(var(--fh-site-space-12) + var(--fh-site-space-2));
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: var(--fh-site-font-size-base);
+  color: var(--vp-c-text-1);
+}
+
+.fh-search-dialog__field input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.fh-search-dialog__results {
+  margin: 0;
+  padding: var(--fh-site-space-2);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.fh-search-dialog__results li {
+  display: flex;
+  cursor: pointer;
+  flex-direction: column;
+  gap: var(--fh-site-space-0-5);
+  padding: var(--fh-site-space-2-5) var(--fh-site-space-3);
+  border-radius: var(--fh-site-radius-md);
+  color: var(--vp-c-text-1);
+}
+
+.fh-search-dialog__results [aria-selected='true'] {
+  background: var(--vp-c-bg-soft);
+}
+
+.fh-search-dialog__title {
+  font-size: var(--fh-site-font-size-sm);
+  line-height: 20px;
+  font-weight: 600;
+}
+
+.fh-search-dialog__section {
+  font-weight: 500;
+  color: var(--vp-c-text-2);
+}
+
+.fh-search-dialog__sep {
+  margin-inline: var(--fh-site-space-1-5);
+  color: var(--vp-c-text-3);
+}
+
+.fh-search-dialog__text {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  font-size: var(--fh-site-font-size-xs);
+  line-height: 18px;
+  color: var(--vp-c-text-2);
+}
+
+.fh-search-dialog__empty {
+  margin: 0;
+  padding: var(--fh-site-space-6) var(--fh-site-space-4);
+  font-size: var(--fh-site-font-size-sm);
+  color: var(--vp-c-text-2);
+  text-align: center;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fh-search:hover {
+    border-color: var(--vp-c-brand-1);
+  }
+}
+
+@media (max-width: 1279px) {
+  .fh-search {
+    width: var(--fh-site-control-md);
+    padding: 0;
+    justify-content: center;
+  }
+
+  .fh-search__label,
+  .fh-search__keys {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fh-search {
+    transition: none;
+  }
+}

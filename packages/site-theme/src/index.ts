@@ -1,13 +1,14 @@
 import { h } from 'vue';
 import DefaultTheme from 'vitepress/theme';
 import type { EnhanceAppContext, Theme } from 'vitepress';
-import GithubStar from './GithubStar.vue';
 import NavCta from './NavCta.vue';
-import LpNav from './LpNav.vue';
+import MenuSearch from './MenuSearch.vue';
+import SiteSearch from './SiteSearch.vue';
+import ThemeToggle from './ThemeToggle.vue';
+import SiteNav from './SiteNav.vue';
 import PromoBar from './PromoBar.vue';
 import SiteFooter from './SiteFooter.vue';
 import './promo.css';
-import './landing-nav.css';
 import DocsDrawerMenu from './DocsDrawerMenu.vue';
 import { ownerOf } from './routes.js';
 import './brand.css';
@@ -38,9 +39,13 @@ export function createTheme(enhance?: (context: EnhanceAppContext) => void): The
     Layout: () =>
       h(DefaultTheme.Layout, null, {
         'layout-top': () => h(PromoBar),
-        'nav-bar-content-before': () => h(LpNav),
-        'nav-bar-content-after': () => [h(GithubStar), h(NavCta)],
-        'nav-screen-content-before': () => [h(NavCta, { mobile: true }), h(LpNav, { mobile: true })],
+        'nav-bar-content-before': () => [h(SiteNav), h(SiteSearch)],
+        'nav-bar-content-after': () => h(NavCta),
+        'nav-screen-content-before': () => [
+          h(MenuSearch),
+          h(SiteNav, { mobile: true }),
+          h('div', { class: 'fh-menu-theme' }, [h('span', 'Theme'), h(ThemeToggle)]),
+        ],
         'nav-screen-content-after': () => h(DocsDrawerMenu),
         'layout-bottom': () => h(SiteFooter),
       }),

@@ -2,10 +2,9 @@ import { copyFileSync, createReadStream, readdirSync, readFileSync, statSync } f
 import { extname, join, relative, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { Plugin } from 'vite';
-import type { DefaultTheme } from 'vitepress';
-import { fetchStarCount, formatStarCount } from './stars';
 
 export { analyticsHead } from './analytics';
+export { searchIndex } from './search-index';
 export { head, transformHead } from './seo/head';
 export { coreVersion, mcpVersion, pageUrl, repoUrl, siteName, siteUrl } from './seo/site';
 
@@ -64,26 +63,13 @@ export function copyHashmap({ outDir, assetsDir }: { outDir: string; assetsDir: 
 
 export const sharedDedupe = ['@formhaus/core', 'vue', 'vitepress'];
 
-export const sharedNav: DefaultTheme.NavItem[] = [
-  { text: 'Guide', link: '/guide/' },
-  { text: 'Templates', link: '/templates/', activeMatch: '^/templates/' },
-  { text: 'Framework', link: '/', activeMatch: '^/$' },
-  { text: 'Cloud', link: '/cloud', activeMatch: '^/cloud' },
-  { text: 'API', link: '/api/definition' },
-  { text: 'Builder', link: '/build' },
-  { text: 'Playground', link: '/playground', activeMatch: '^/play' },
-];
-
 export const blogPublished = false;
 
 export async function sharedThemeConfig() {
-  const count = await fetchStarCount();
   return {
     logo: { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg', alt: 'Formhaus' },
     siteTitle: false as const,
-    nav: sharedNav,
     blog: blogPublished,
-    githubStars: count === null ? null : { count, label: formatStarCount(count) },
   };
 }
 export { promoHead } from './promo';

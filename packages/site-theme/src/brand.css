@@ -8,6 +8,8 @@
   --vp-c-brand-3: #5502fb;
   --vp-c-brand-soft: rgba(85, 2, 251, 0.1);
   --fh-c-card-shadow: rgba(0, 0, 0, 0.04);
+  --fh-c-overlay: rgba(13, 13, 21, 0.4);
+  --fh-c-dialog-shadow: rgba(13, 13, 21, 0.24);
   --fh-site-space-0-5: 2px;
   --fh-site-space-1: 4px;
   --fh-site-space-1-5: 6px;
@@ -24,6 +26,7 @@
   --fh-site-space-12: 48px;
   --fh-site-space-16: 64px;
   --fh-site-space-24: 96px;
+  --fh-site-font-size-2xs: 12px;
   --fh-site-font-size-xs: 13px;
   --fh-site-font-size-sm: 14px;
   --fh-site-font-size-md: 15px;
@@ -34,10 +37,25 @@
   --fh-site-font-size-3xl: 20px;
   --fh-site-font-size-display-sm: 32px;
   --fh-site-font-size-display: 40px;
+  --fh-site-radius-sm: 6px;
+  --fh-site-radius-md: 8px;
+  --fh-site-radius-lg: 12px;
+  --fh-site-radius-xl: 16px;
+  --fh-site-radius-pill: 999px;
+  --fh-site-control-sm: 32px;
+  --fh-site-control-md: 36px;
+  --fh-site-control-lg: 44px;
+  --fh-site-control-xl: 52px;
+  --fh-site-icon-xs: 12px;
+  --fh-site-icon-sm: 16px;
+  --fh-site-icon-md: 20px;
 }
 
 .dark {
   --vp-c-gutter: var(--vp-c-divider);
+  --fh-c-card-shadow: rgba(0, 0, 0, 0.4);
+  --fh-c-overlay: rgba(0, 0, 0, 0.6);
+  --fh-c-dialog-shadow: rgba(0, 0, 0, 0.5);
   --fh-c-brand-shadow: rgba(85, 2, 251, 0.3);
   --vp-c-brand-1: #a98bff;
   --vp-c-brand-2: #7a3dff;
@@ -64,12 +82,6 @@
 
   .Layout.lp-page .VPDoc .content-container {
     margin: 0;
-  }
-}
-
-@media (min-width: 1200px) {
-  .Layout.lp-page .VPNavBar .container {
-    max-width: 1152px;
   }
 }
 

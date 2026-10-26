@@ -26,7 +26,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
           <a class="fh-footer__brand" href="/" aria-label="Formhaus home">
             <VPImage :image="logo" />
           </a>
-          <p class="fh-footer__tagline">The simple way to collect responses.</p>
+          <p class="fh-footer__tagline">One form definition for your projects.</p>
         </div>
         <nav v-for="column in columns" :key="column.title" class="fh-footer__column" :aria-labelledby="`fh-footer-${column.id}`">
           <h2 :id="`fh-footer-${column.id}`" class="fh-footer__title">{{ column.title }}</h2>
@@ -178,7 +178,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
 .fh-footer__actions {
   display: flex;
   align-items: center;
-  gap: var(--fh-site-space-1);
+  gap: var(--fh-site-space-3);
 }
 
 .fh-footer__github {

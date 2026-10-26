@@ -10,10 +10,12 @@ export function promoVariant(relativePath: string): PromoVariant | null {
 
 export const promoKey = (variant: string) => `fh-promo-${variant}`;
 
+export const promoQuietMs = 7 * 24 * 60 * 60 * 1000;
+
 export const promoHead: HeadConfig[] = [
   [
     'script',
     {},
-    "try{var v=location.pathname.replace(/\\/$/,'')===''?'framework':'cloud';if(localStorage.getItem('fh-promo-'+v)==='1')document.documentElement.classList.add('fh-promo-off')}catch(e){}",
+    "try{var v=location.pathname.replace(/\\/$/,'')===''?'framework':'cloud';var t=Number(localStorage.getItem('fh-promo-'+v));if(t&&Date.now()-t<6048e5)document.documentElement.classList.add('fh-promo-off')}catch(e){}",
   ],
 ];
