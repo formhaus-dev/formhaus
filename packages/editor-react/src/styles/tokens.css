@@ -31,6 +31,7 @@
   --fh-ed-font-size-mono: 12.5px;
   --fh-ed-font-size-sm: 13px;
   --fh-ed-font-size-xl: 20px;
+  --fh-ed-font-size-2xl: 24px;
   --fh-ed-font-size-xs: 12px;
   --fh-ed-font-tracking-tight: -0.01em;
   --fh-ed-font-weight-medium: 500;
@@ -38,6 +39,7 @@
   --fh-ed-knob: light-dark(#ffffff, #a9a9b1);
   --fh-ed-layout-gutter: 16px;
   --fh-ed-layout-sidebar: 300px;
+  --fh-ed-layout-steps: 0px;
   --fh-ed-layout-target-gap: 0px;
   --fh-ed-layout-topbar: 0px;
   --fh-ed-line: light-dark(#e7e7e4, #2a2a30);
@@ -49,6 +51,7 @@
   --fh-ed-radius-md: 6px;
   --fh-ed-radius-sm: 4px;
   --fh-ed-radius-xl: 12px;
+  --fh-ed-radius-2xl: 16px;
   --fh-ed-scrim: light-dark(rgba(20, 20, 22, 0.32), rgba(0, 0, 0, 0.55));
   --fh-ed-shadow-dialog: 0px 24px 64px 0px light-dark(rgba(20, 20, 22, 0.2), rgba(0, 0, 0, 0.6));
   --fh-ed-shadow-pop: 0px 1px 2px 0px light-dark(rgba(20, 20, 22, 0.06), rgba(0, 0, 0, 0.4)), 0px 8px 24px 0px light-dark(rgba(20, 20, 22, 0.12), rgba(0, 0, 0, 0.5));
@@ -68,6 +71,7 @@
   --fh-ed-size-editor-canvas: 640px;
   --fh-ed-size-editor-inspector: 320px;
   --fh-ed-size-editor-outline: 240px;
+  --fh-ed-size-editor-pane: 560px;
   --fh-ed-size-icon-lg: 24px;
   --fh-ed-size-icon-md: 16px;
   --fh-ed-size-icon-sm: 14px;
@@ -99,6 +103,9 @@
   --fh-ed-space-6: 24px;
   --fh-ed-space-7: 28px;
   --fh-ed-space-8: 32px;
+  --fh-ed-stage-bg: light-dark(#f6f6f5, #0d0d0f);
+  --fh-ed-stage-line: light-dark(#e5e5e2, #27272c);
+  --fh-ed-stage-panel: light-dark(#ffffff, #151518);
   --fh-ed-sub: light-dark(#f3f3f1, #1f1f24);
   --fh-ed-success: light-dark(#1e8449, #45c27a);
   --fh-ed-success-soft: light-dark(#e9f6ee, #12261a);
