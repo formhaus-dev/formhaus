@@ -2,7 +2,6 @@
 import { inject, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import { useSidebar } from 'vitepress/theme';
 import VPSidebarGroup from 'vitepress/dist/client/theme-default/components/VPSidebarGroup.vue';
-import GithubStar from './GithubStar.vue';
 
 const focusableSelector = 'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -67,7 +66,6 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="hasSidebar" ref="root" class="drawer-menu" @click="onClick">
-    <GithubStar class="drawer-star" />
     <nav class="drawer-sidebar" aria-label="Sidebar Navigation">
       <VPSidebarGroup :items="sidebarGroups" />
     </nav>
@@ -79,10 +77,6 @@ onBeforeUnmount(() => {
   margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid var(--vp-c-divider);
-}
-
-.drawer-star {
-  margin-left: 0;
 }
 
 .drawer-sidebar {
