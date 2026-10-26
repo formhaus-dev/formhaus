@@ -116,7 +116,7 @@ describe('the live preview beside the editor', () => {
     const input = await live.findByRole('textbox', { name: /Work email/ });
     await userEvent.type(input, 'abc');
     await userEvent.keyboard('{ControlOrMeta>}z{/ControlOrMeta}');
-    expect(toDefinition(store.getState().form).fields?.[0]?.label).toBe('Work email');
+    expect(toDefinition(store.getState().form).fields?.[0]).toMatchObject({ label: 'Work email' });
   });
 
   it('splits the screen in half', async () => {
