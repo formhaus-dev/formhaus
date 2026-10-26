@@ -8,7 +8,7 @@ import { useEditorStore } from '../store/context';
 import { useForm, useIssues, useSelection, useStepOf } from '../store/hooks';
 import styles from './StepOutline.module.css';
 
-export function StepOutline() {
+export function StepOutline({ row = false }: { row?: boolean }) {
   const form = useForm();
   const store = useEditorStore();
   const selection = useSelection();
@@ -17,7 +17,7 @@ export function StepOutline() {
   const parts = groups(form).filter((part) => part.page);
   if (parts.length < 2) return null;
   return (
-    <nav className={styles.outline} aria-label="Steps">
+    <nav className={cx(styles.outline, row && styles.row)} aria-label="Steps">
       <ol className={styles.list}>
         {parts.map((part, index) => {
           const page = part.page;
@@ -63,7 +63,7 @@ export function StepOutline() {
           return (
             <li key={page.uid}>
               {count > 0 ? (
-                <Tooltip content={tip} side="right">
+                <Tooltip content={tip} side={row ? 'bottom' : 'right'}>
                   {button}
                 </Tooltip>
               ) : (

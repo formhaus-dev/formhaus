@@ -87,6 +87,31 @@
   height: var(--fh-ed-size-icon-sm);
 }
 
+.row .list {
+  flex-direction: row;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fh-ed-line-strong) transparent;
+}
+
+.row .item {
+  align-items: center;
+  min-height: var(--fh-ed-size-row-dense);
+  width: auto;
+  max-width: var(--fh-ed-size-menu);
+  white-space: nowrap;
+}
+
+.row .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  overflow-wrap: normal;
+}
+
+.row .meta {
+  display: none;
+}
+
 .jump {
   width: 100%;
   max-width: var(--fh-ed-size-editor-canvas);
