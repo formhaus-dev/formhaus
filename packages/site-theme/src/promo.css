@@ -1,4 +1,6 @@
-:root:not(.fh-promo-off):has(.fh-promo) { --vp-layout-top-height: 40px; }
+@media (min-width: 960px) {
+  :root:not(.fh-promo-off):has(.fh-promo) { --vp-layout-top-height: 40px; }
+}
 .fh-promo-off .fh-promo { display: none; }
 .fh-promo { position: fixed; inset: 0 0 auto; z-index: var(--vp-z-index-nav); display: flex; align-items: center; justify-content: center; height: 40px; padding: 0 var(--fh-site-space-10); border-bottom: 1px solid var(--vp-c-divider); background: var(--vp-c-bg-soft); color: var(--vp-c-text-2); font-size: var(--fh-site-font-size-xs); line-height: 20px; }
 .fh-promo__text { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -11,6 +13,10 @@
 @media (hover: hover) and (pointer: fine) {
   .fh-promo__link:hover { text-decoration: underline; text-underline-offset: 3px; }
   .fh-promo__close:hover { color: var(--vp-c-text-1); background: var(--vp-c-default-soft); }
+}
+
+@media (max-width: 959px) {
+  .fh-promo { position: relative; inset: auto; }
 }
 
 @media (max-width: 639px) {

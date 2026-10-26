@@ -4,10 +4,12 @@
   }
 
   .VPNavScreen {
+    display: block;
+    padding: 0 var(--fh-site-space-6) !important;
     overscroll-behavior: contain;
   }
 
-  .Layout:has(.VPContent.has-sidebar) .VPNavBar :is(.menu, .translations, .appearance, .social-links, .extra, .gh-star) {
+  .Layout:has(.VPContent.has-sidebar) .VPNavBar :is(.menu, .translations, .appearance, .social-links, .extra) {
     display: none;
   }
 
@@ -33,12 +35,8 @@
     display: flex;
   }
 
-  .Layout:has(.VPContent.has-sidebar) .VPNavScreen {
-    display: block;
-    padding: 0 var(--fh-site-space-6);
-  }
 
-  .Layout:has(.VPContent.has-sidebar) .VPNavScreen .container {
+  .VPNavScreen .container {
     max-width: none;
   }
 
@@ -52,11 +50,84 @@
 }
 
 @media (min-width: 768px) and (max-width: 959px) {
-  .Layout:has(.VPContent.has-sidebar) .VPNavScreen {
-    padding: 0 var(--fh-site-space-8);
+  .VPNavScreen {
+    padding: 0 var(--fh-site-space-8) !important;
   }
 
   .Layout:has(.VPContent.has-sidebar) .VPLocalNavOutlineDropdown {
     padding-inline: var(--fh-site-space-8);
+  }
+}
+
+@media (min-width: 960px) {
+  .VPNavBar.has-sidebar {
+    background-color: var(--vp-nav-bg-color) !important;
+  }
+
+  .VPNavBar.has-sidebar .wrapper {
+    padding: 0 var(--fh-site-space-8) !important;
+  }
+
+  .VPNavBar.has-sidebar .container {
+    max-width: none;
+  }
+
+  .VPNavBar.has-sidebar .title {
+    position: static !important;
+    width: auto !important;
+    padding: 0 !important;
+    background-color: transparent !important;
+  }
+
+  .VPNavBar.has-sidebar .content {
+    padding: 0 !important;
+  }
+
+  .VPNavBar.has-sidebar .content-body {
+    background-color: transparent;
+  }
+
+  .VPNavBar.has-sidebar .divider {
+    padding-left: 0 !important;
+  }
+
+  .VPNavBar.has-sidebar .divider-line {
+    background-color: var(--vp-c-divider);
+  }
+
+  .VPNavBar.has-sidebar .VPNavBarTitle .title {
+    border-bottom: 0;
+  }
+
+  .VPSidebar {
+    top: calc(var(--vp-layout-top-height, 0px) + var(--vp-nav-height)) !important;
+    z-index: calc(var(--vp-z-index-nav) - 1) !important;
+    padding-top: var(--fh-site-space-6) !important;
+  }
+
+  .VPSidebar .curtain {
+    display: none;
+  }
+}
+
+@media (min-width: 1440px) {
+  .VPSidebar {
+    padding-left: var(--fh-site-space-8) !important;
+    width: var(--vp-sidebar-width) !important;
+  }
+
+  .VPContent.has-sidebar {
+    padding-right: 0 !important;
+    padding-left: var(--vp-sidebar-width) !important;
+  }
+
+  .VPLocalNav.has-sidebar {
+    padding-left: var(--vp-sidebar-width) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .Layout.lp-page .VPNavScreen {
+    padding-inline: var(--fh-site-space-4) !important;
   }
 }
