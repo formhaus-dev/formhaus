@@ -26,24 +26,27 @@ describe.each([
     cleanup();
   });
 
-  it.each(['Visual', 'JSON', 'Preview'])('covers nothing in %s at rest and lines up with the content', async (mode) => {
-    await page.viewport(width, height);
-    renderEditor();
-    await userEvent.click(screen.getByRole('radio', { name: mode }));
-    window.scrollTo(0, 0);
-    await waitFor(() => {
+  it.each(width >= 1280 ? ['Visual', 'JSON'] : ['Visual', 'JSON', 'Preview'])(
+    'covers nothing in %s at rest and lines up with the content',
+    async (mode) => {
+      await page.viewport(width, height);
+      renderEditor();
+      await userEvent.click(screen.getByRole('radio', { name: mode }));
+      window.scrollTo(0, 0);
+      await waitFor(() => {
+        const bar = box(document.querySelector('[data-topbar]'));
+        expect(firstContent()?.top ?? bar.bottom).toBeGreaterThanOrEqual(bar.bottom);
+      });
       const bar = box(document.querySelector('[data-topbar]'));
-      expect(firstContent()?.top ?? bar.bottom).toBeGreaterThanOrEqual(bar.bottom);
-    });
-    const bar = box(document.querySelector('[data-topbar]'));
-    const group = box(screen.getByRole('radiogroup', { name: 'Editor mode' }));
-    const shell = box(document.querySelector('[data-topbar]')?.parentElement ?? null);
-    const content = box(document.querySelector('[data-topbar]')?.nextElementSibling ?? null);
-    expect(bar.left).toBe(shell.left);
-    expect(bar.right).toBe(shell.right);
-    expect(group.left).toBe(content.left);
-    expect(group.top - bar.top).toBeGreaterThan(0);
-  });
+      const group = box(screen.getByRole('radiogroup', { name: 'Editor mode' }));
+      const shell = box(document.querySelector('[data-topbar]')?.parentElement ?? null);
+      const content = box(document.querySelector('[data-topbar]')?.nextElementSibling ?? null);
+      expect(bar.left).toBe(shell.left);
+      expect(bar.right).toBe(shell.right);
+      expect(group.left).toBe(content.left);
+      expect(group.top - bar.top).toBeGreaterThan(0);
+    },
+  );
 });
 
 describe.each([0, 64])('the stuck toolbar under a %ipx host header', (header) => {
@@ -54,7 +57,7 @@ describe.each([0, 64])('the stuck toolbar under a %ipx host header', (header) =>
   });
 
   it('sticks below the header with a border and without moving the content', async () => {
-    await page.viewport(1440, 700);
+    await page.viewport(1024, 700);
     document.documentElement.style.setProperty('--fh-ed-layout-topbar', `${String(header)}px`);
     const fake = Object.assign(document.createElement('div'), {
       style: `position:fixed;top:0;left:0;right:0;height:${String(header)}px;z-index:1000`,

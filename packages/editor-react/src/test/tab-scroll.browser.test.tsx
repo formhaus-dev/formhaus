@@ -25,7 +25,7 @@ describe('scroll position per tab', () => {
   });
 
   it('opens a new tab at the top of the editor and restores a visited one', async () => {
-    await page.viewport(1440, 700);
+    await page.viewport(1024, 700);
     const spacer = Object.assign(document.createElement('div'), { style: 'height: 300px' });
     spacer.dataset.spacer = '';
     document.body.prepend(spacer);
