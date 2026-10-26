@@ -38,7 +38,7 @@
 .handle {
   position: absolute;
   top: calc(var(--fh-ed-space-5) + (var(--fh-ed-size-control-md) - var(--fh-ed-space-8)) / 2);
-  left: calc(var(--fh-ed-space-8) * -1);
+  right: var(--fh-ed-space-4);
   width: var(--fh-ed-space-8);
   min-height: var(--fh-ed-space-8);
   border-radius: var(--fh-ed-radius-md);
@@ -64,6 +64,7 @@
   align-items: flex-start;
   gap: var(--fh-ed-space-2);
   min-height: var(--fh-ed-size-control-md);
+  padding-right: var(--fh-ed-space-8);
 }
 
 .title {
@@ -147,8 +148,6 @@
 
   .handle {
     top: var(--fh-ed-space-4);
-    right: var(--fh-ed-space-4);
-    left: auto;
   }
 }
 
