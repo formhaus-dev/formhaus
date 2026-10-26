@@ -7,10 +7,6 @@ description: "Show an invoice total that updates on every value change, and fill
 
 Read `onValuesChange` (React), `@values-change` or the handle's `values` (Vue) for anything computed from the form, such as a total. Use `onFieldChange` (React) or `fieldChange` (Vue) with `setValue` to fill one field from another until the user edits it. Requires `@formhaus/react` or `@formhaus/vue` 0.16.
 
-## Live preview
-
-<RecipePreview name="invoice" />
-
 ## Definition
 
 An invoice with line items and a due date that follows the issue date by 14 days.
@@ -111,8 +107,6 @@ Write the computed value to a `hidden` field with `setValue`, then recall it in 
 A booking that adds two seat counts into `total`. The next step shows it with `{{total}}` and asks for a group request from 10 seats. Requires `@formhaus/core` 0.21 and `formatVersion` `"1.5"`.
 
 <<< @/recipes/definitions/booking-total.json
-
-<RecipePreview name="booking-total" />
 
 A `hidden` field holds text, so write the sum as a string. `gte` compares it as a number.
 
