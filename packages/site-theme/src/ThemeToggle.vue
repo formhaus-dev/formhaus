@@ -5,15 +5,15 @@ const { isDark } = useData();
 </script>
 
 <template>
-  <div class="fh-theme" role="radiogroup" aria-label="Theme">
-    <button type="button" role="radio" :aria-checked="!isDark" @click="isDark = false">
+  <div class="fh-theme" role="group" aria-label="Theme">
+    <button type="button" :aria-pressed="!isDark" @click="isDark = false">
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
         <circle cx="12" cy="12" r="4" />
         <path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
       </svg>
       Light
     </button>
-    <button type="button" role="radio" :aria-checked="isDark" @click="isDark = true">
+    <button type="button" :aria-pressed="isDark" @click="isDark = true">
       <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
         <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
       </svg>
@@ -53,7 +53,7 @@ const { isDark } = useData();
   inset: -7px 0;
 }
 
-.fh-theme button[aria-checked='true'] {
+.fh-theme button[aria-pressed='true'] {
   background: var(--vp-c-default-soft);
   color: var(--vp-c-text-1);
 }

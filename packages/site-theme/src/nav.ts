@@ -44,7 +44,7 @@ export const navGroups: NavGroup[] = [
 
 export const navLinks = [
   { label: 'Playground', href: '/playground', match: /^\/play/ },
-  { label: 'Docs', href: '/guide/', match: /^\/(guide|api|recipes)\// },
+  { label: 'Docs', href: '/guide/', match: /^\/(guide|api|recipes|compare|migrate|spec|changelog)(\/|$)/ },
 ];
 
 export const cloudLogin = 'https://app.formhaus.dev/login';

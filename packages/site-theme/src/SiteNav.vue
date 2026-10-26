@@ -3,6 +3,7 @@ import { computed, inject, onBeforeUnmount, onMounted, ref, useId } from 'vue';
 import { useRoute } from 'vitepress';
 import { navGroups, navLinks } from './nav';
 import './site-nav.css';
+import './site-nav-mobile.css';
 
 const props = defineProps<{ mobile?: boolean }>();
 const uid = useId();
@@ -18,7 +19,9 @@ const groupActive = (id: string) =>
   !topActive.value && navGroups.find((group) => group.id === id)!.links.some((link) => current(link.href));
 
 function leave(event: FocusEvent) {
-  if (!props.mobile && !root.value?.contains(event.relatedTarget as Node | null)) open.value = null;
+  if (props.mobile || !open.value) return;
+  const group = document.getElementById(`${uid}-${open.value}`)?.parentElement;
+  if (!group?.contains(event.relatedTarget as Node | null)) open.value = null;
 }
 function outside(event: PointerEvent) {
   if (!root.value?.contains(event.target as Node)) open.value = null;
@@ -52,7 +55,7 @@ onBeforeUnmount(() => {
         type="button"
         :aria-expanded="open === group.id"
         :class="{ active: groupActive(group.id) }"
-        :aria-controls="`${uid}-${group.id}-panel`"
+        :aria-controls="open === group.id ? `${uid}-${group.id}-panel` : undefined"
         @click="open = open === group.id ? null : group.id"
       >
         {{ group.label }}
