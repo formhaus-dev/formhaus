@@ -1,9 +1,10 @@
 import { type RefObject, useCallback, useLayoutEffect, useRef } from 'react';
+import { scrollRoot, scrollToY, scrollTop } from './scroller';
 
 const INPUT = ['wheel', 'touchstart', 'keydown', 'pointerdown'] as const;
 
-function restore(target: number): () => void {
-  const root = document.documentElement.style;
+function restore(scroller: HTMLElement | null, target: number): () => void {
+  const root = (scroller ?? document.documentElement).style;
   root.setProperty('overflow-anchor', 'none');
   let frame = 0;
   let timer = 0;
@@ -15,9 +16,9 @@ function restore(target: number): () => void {
     for (const type of INPUT) window.removeEventListener(type, stop, true);
   };
   const step = () => {
-    window.scrollTo(0, target);
+    scrollToY(scroller, target);
     frames += 1;
-    if (Math.abs(window.scrollY - target) > 1 && frames < 60) frame = requestAnimationFrame(step);
+    if (Math.abs(scrollTop(scroller) - target) > 1 && frames < 60) frame = requestAnimationFrame(step);
     else timer = window.setTimeout(stop, 1000);
   };
   for (const type of INPUT) window.addEventListener(type, stop, { capture: true, passive: true });
@@ -25,16 +26,23 @@ function restore(target: number): () => void {
   return stop;
 }
 
-export function useTabScroll(mode: string, top: RefObject<HTMLElement | null>) {
+export function useTabScroll(mode: string, top: RefObject<HTMLElement | null>, docked = false) {
   const positions = useRef(new Map<string, number>());
   const shown = useRef(mode);
   const skip = useRef(false);
   const cancel = useRef<() => void>(() => undefined);
-  const remember = useCallback((keep = true) => {
+  const remember = useCallback(
+    (keep = true) => {
+      cancel.current();
+      positions.current.set(shown.current, scrollTop(scrollRoot(top.current)));
+      skip.current = !keep;
+    },
+    [top],
+  );
+  useLayoutEffect(() => {
     cancel.current();
-    positions.current.set(shown.current, window.scrollY);
-    skip.current = !keep;
-  }, []);
+    positions.current.clear();
+  }, [docked]);
   useLayoutEffect(() => {
     if (shown.current === mode) return;
     shown.current = mode;
@@ -42,16 +50,17 @@ export function useTabScroll(mode: string, top: RefObject<HTMLElement | null>) {
       skip.current = false;
       return;
     }
+    const node = top.current;
+    const root = scrollRoot(node);
     const saved = positions.current.get(mode);
     if (saved !== undefined) {
-      cancel.current = restore(saved);
+      cancel.current = restore(root, saved);
       return;
     }
-    const node = top.current;
     if (!node) return;
     const offset = Number.parseFloat(getComputedStyle(node).getPropertyValue('--fh-ed-layout-topbar')) || 0;
-    const start = node.getBoundingClientRect().top + window.scrollY - offset;
-    if (window.scrollY > start) window.scrollTo(0, Math.max(0, start));
+    const start = node.getBoundingClientRect().top - (root?.getBoundingClientRect().top ?? 0) + scrollTop(root) - offset;
+    if (scrollTop(root) > start) scrollToY(root, Math.max(0, start));
   }, [mode, top]);
   useLayoutEffect(
     () => () => {

@@ -1,6 +1,7 @@
 import { useCallback, useSyncExternalStore } from 'react';
 
 export const phone = '(width < 640px)';
+export const wide = '(width >= 1280px)';
 export function useMedia(query: string): boolean {
   const subscribe = useCallback(
     (listener: () => void) => {

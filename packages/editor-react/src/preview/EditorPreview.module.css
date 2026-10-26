@@ -9,8 +9,36 @@
 .frame {
   width: 100%;
   max-width: var(--fh-ed-size-device-desktop);
+  container: preview / inline-size;
 }
 
 .mobile {
   max-width: var(--fh-ed-size-device-mobile);
+}
+
+.stage {
+  flex: 1;
+  min-height: 0;
+  padding: 0 var(--fh-ed-space-8) var(--fh-ed-space-8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--fh-ed-line-strong) transparent;
+  background: var(--fh-ed-stage-bg);
+}
+
+.widths {
+  position: sticky;
+  top: 0;
+  z-index: var(--fh-ed-z-sticky);
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--fh-ed-size-control-md) + var(--fh-ed-space-2) * 2);
+  margin: 0 calc(var(--fh-ed-space-8) * -1) var(--fh-ed-space-4);
+  padding-inline: var(--fh-ed-layout-gutter);
+  background: var(--fh-ed-stage-bg);
+}
+
+.stage .frame {
+  margin-inline: auto;
 }

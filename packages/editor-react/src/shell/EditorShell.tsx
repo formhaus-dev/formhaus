@@ -6,7 +6,7 @@ import { createFocusRequests, FocusContext } from '../canvas/focus';
 import { EditorContext, type EditorHandle } from '../store/context';
 import styles from './EditorShell.module.css';
 
-export function EditorShell({ handle, children }: { handle: EditorHandle; children: ReactNode }) {
+export function EditorShell({ handle, docked = false, children }: { handle: EditorHandle; docked?: boolean; children: ReactNode }) {
   const [focus] = useState(createFocusRequests);
   const root = useRef<HTMLDivElement>(null);
 
@@ -44,7 +44,11 @@ export function EditorShell({ handle, children }: { handle: EditorHandle; childr
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       const action = isUndoKey(event);
-      const inside = event.target === document.body || (event.target instanceof Node && !!root.current?.contains(event.target));
+      const preview =
+        event.target instanceof Element &&
+        !!event.target.closest('[data-preview]') &&
+        !!event.target.closest('input, textarea, select, [contenteditable]');
+      const inside = event.target === document.body || (event.target instanceof Node && !!root.current?.contains(event.target) && !preview);
       if (!action || !inside || event.defaultPrevented || handle.store.getState().readOnly) return;
       event.preventDefault();
       if (action === 'undo') handle.store.undo();
@@ -61,7 +65,7 @@ export function EditorShell({ handle, children }: { handle: EditorHandle; childr
       <FocusContext value={focus}>
         <LiveRegionProvider>
           <RemovalGuardProvider>
-            <div ref={root} className={styles.shell} data-route={handle.host.isNew ? 'new' : 'form'}>
+            <div ref={root} className={styles.shell} data-route={handle.host.isNew ? 'new' : 'form'} data-docked={docked || undefined}>
               {children}
             </div>
           </RemovalGuardProvider>

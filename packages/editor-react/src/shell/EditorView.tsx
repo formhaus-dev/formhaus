@@ -5,7 +5,7 @@ import { JsonPane } from '../json/JsonPane';
 import { EditorPreview } from '../preview/EditorPreview';
 import { EditorMenu, PublishAction } from '../publish/PublishControls';
 import type { EditorHandle } from '../store/context';
-import { phone, useMedia } from '../useMedia';
+import { phone, useMedia, wide } from '../useMedia';
 import { EditorShell } from './EditorShell';
 import styles from './EditorShell.module.css';
 import { EditorTopBar } from './EditorTopBar';
@@ -23,8 +23,8 @@ const MODES: [EditorMode, string, LucideIcon][] = [
   ['preview', 'Preview', Eye],
 ];
 
-const modeOptions = (small: boolean) =>
-  MODES.map(([value, label, Icon]) => ({
+const modeOptions = (small: boolean, docked: boolean) =>
+  MODES.filter(([value]) => !docked || value !== 'preview').map(([value, label, Icon]) => ({
     value,
     label: small ? (
       <>
@@ -41,15 +41,18 @@ interface Props {
   stale: boolean;
   mode?: EditorMode;
   compact?: boolean;
+  split?: boolean;
 }
 
-export function EditorView({ handle, stale, mode: initialMode = 'edit', compact = false }: Props) {
+export function EditorView({ handle, stale, mode: initialMode = 'edit', compact = false, split = false }: Props) {
   const { published } = handle;
-  const [mode, setShownMode] = useState<string>(initialMode);
+  const [picked, setShownMode] = useState<string>(initialMode);
+  const docked = useMedia(wide) && split && !compact;
+  const mode = docked && picked === 'preview' ? 'edit' : picked;
   const top = useRef<HTMLDivElement>(null);
-  const remember = useTabScroll(mode, top);
+  const remember = useTabScroll(mode, top, docked);
   const setMode = useCallback(
-    (next: string | ((current: string) => string), restore = true) => {
+    (next: string, restore = true) => {
       remember(restore);
       setShownMode(next);
     },
@@ -66,16 +69,18 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit', compact 
     setReveal(false);
   }, []);
   const onToggleJson = useCallback(() => {
-    if (!compact) setMode((current) => (current === 'json' ? 'edit' : 'json'));
-  }, [compact, setMode]);
+    if (!compact) setMode(mode === 'json' ? 'edit' : 'json');
+  }, [compact, mode, setMode]);
   const onHelp = useCallback(() => {
     setHelp(true);
   }, []);
   useEditorKeys({ onToggleJson, onHelp });
-  const modes = <SegmentedControl label="Editor mode" options={modeOptions(small)} value={mode} onValueChange={(next) => setMode(next)} />;
+  const modes = (
+    <SegmentedControl label="Editor mode" options={modeOptions(small, docked)} value={mode} onValueChange={(next) => setMode(next)} />
+  );
   const publish = <PublishAction published={published} compact={small} />;
-  return (
-    <EditorShell handle={handle}>
+  const editor = (
+    <>
       <div ref={top} />
       {!compact && (
         <EditorTopBar
@@ -113,6 +118,20 @@ export function EditorView({ handle, stale, mode: initialMode = 'edit', compact 
       )}
       <div hidden={mode !== 'edit'}>
         <Workspace outline={!compact} header={!compact} />
+      </div>
+    </>
+  );
+  return (
+    <EditorShell handle={handle} docked={docked}>
+      <div className={styles.split} data-docked={docked || undefined}>
+        <div className={styles.main} data-scroll={docked || undefined}>
+          {editor}
+        </div>
+        {docked && (
+          <aside className={styles.docked} aria-label="Live preview">
+            <EditorPreview docked onShowIssues={onShowIssues} />
+          </aside>
+        )}
       </div>
       <ShortcutsDialog open={help} onOpenChange={setHelp} />
     </EditorShell>

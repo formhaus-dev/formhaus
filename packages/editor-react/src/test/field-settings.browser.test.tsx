@@ -196,6 +196,6 @@ describe('field settings in the inspector', () => {
     expect(await preview.findByText('Must be at most 65')).toBeVisible();
     await userEvent.fill(age, '30');
     await userEvent.click(preview.getByRole('button', { name: 'Send' }));
-    expect(await screen.findByText('Preview only, nothing was sent')).toBeVisible();
+    expect(await screen.findByText('Submitted')).toBeVisible();
   });
 });
