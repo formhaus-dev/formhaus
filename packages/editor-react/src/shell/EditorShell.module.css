@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   min-height: 100%;
-  padding-inline: var(--fh-ed-layout-gutter);
 }
 
 .topBar {
@@ -115,7 +114,14 @@
 
 .shell[data-docked] {
   height: 100%;
-  padding-inline: 0;
+}
+
+.split {
+  flex: 1;
+}
+
+.main {
+  padding-inline: var(--fh-ed-layout-gutter);
 }
 
 .split[data-docked] {
@@ -128,7 +134,6 @@
 .split[data-docked] > .main {
   min-width: 0;
   min-height: 0;
-  padding-inline: var(--fh-ed-layout-gutter);
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;

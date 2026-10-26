@@ -76,7 +76,6 @@ describe('field settings in the inspector', () => {
     });
     expect(panel.queryByText("Can't be more than 99.5")).toBeNull();
     await userEvent.fill(panel.getByRole('textbox', { name: 'Error if too low' }), 'Adults only');
-    await userEvent.click(screen.getByRole('radio', { name: 'Preview' }));
     await waitFor(() => {
       expect(first(store).validation).toEqual({ min: 120, minMessage: 'Adults only' });
     });
@@ -186,6 +185,7 @@ describe('field settings in the inspector', () => {
     await userEvent.fill(panel.getByRole('textbox', { name: 'Minimum' }), '18');
     await userEvent.fill(panel.getByRole('textbox', { name: 'Maximum' }), '65');
     await userEvent.fill(panel.getByRole('textbox', { name: 'Error if too low' }), 'Adults only');
+    await userEvent.click(screen.getByRole('radio', { name: 'Preview' }));
     const preview = within(await screen.findByRole('region', { name: 'Preview' }));
     const age = await preview.findByRole('spinbutton', { name: /Age/ });
     await userEvent.fill(age, '12');
