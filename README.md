@@ -9,14 +9,14 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/formhaus-dev/formhaus" alt="MIT license"></a>
 </p>
 
-<p align="center"><strong>One form definition for your projects.</strong></p>
+<p align="center"><strong>Write your forms once, render everywhere.</strong></p>
 
 <p align="center">
   One JSON definition holds fields, validation, conditions, steps and branching.<br>
-  Render it in your React or Vue app, or publish it as a hosted form.
+  Render it in your React or Vue app, natively in Swift or Kotlin, or publish it as a hosted form.
 </p>
 
-<p align="center"><strong>React</strong> · <strong>Vue</strong> · <strong>MCP</strong> · <strong>Figma Plugin</strong></p>
+<p align="center"><strong>React</strong> · <strong>Vue</strong> · <strong>Swift</strong> · <strong>Kotlin</strong> · <strong>MCP</strong> · <strong>Figma Plugin</strong></p>
 
 <p align="center">
   <a href="https://formhaus.dev/guide/">Documentation</a> ·
