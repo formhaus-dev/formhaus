@@ -1,7 +1,7 @@
 {
   "home": {
-    "title": "One form definition for your projects",
-    "subtitle": "Describe a form once in JSON. Share it, embed it, or render it in any web app or natively in Swift."
+    "title": "Write your forms once, render everywhere",
+    "subtitle": "Describe a form once in JSON. Share it, embed it, or render it in any web app or natively in Swift or Kotlin."
   },
   "guide": {
     "eyebrow": "Guide",

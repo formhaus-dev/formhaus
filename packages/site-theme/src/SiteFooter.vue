@@ -26,7 +26,7 @@ const logo = { light: '/brand/logo-full.svg', dark: '/brand/logo-full-dark.svg',
           <a class="fh-footer__brand" href="/" aria-label="Formhaus home">
             <VPImage :image="logo" />
           </a>
-          <p class="fh-footer__tagline">One form definition for your projects.</p>
+          <p class="fh-footer__tagline">Write your forms once, render everywhere.</p>
         </div>
         <nav v-for="column in columns" :key="column.title" class="fh-footer__column" :aria-labelledby="`fh-footer-${column.id}`">
           <h2 :id="`fh-footer-${column.id}`" class="fh-footer__title">{{ column.title }}</h2>
