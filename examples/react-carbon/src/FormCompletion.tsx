@@ -1,3 +1,4 @@
+import { Renew } from '@carbon/icons-react';
 import {
   Button,
   Heading,
@@ -40,7 +41,7 @@ export function FormCompletion({ definition, values, onRestart }: CompletionProp
           </Stack>
         </Section>
         <div>
-          <Button kind="tertiary" onClick={onRestart}>
+          <Button kind="tertiary" renderIcon={Renew} onClick={onRestart}>
             {completion.again}
           </Button>
         </div>
