@@ -49,6 +49,13 @@ import { FormhausForm } from '@formhaus/react/cloud';
 <FormhausForm id="form_id" />
 ```
 
+### Network
+
+Only `@formhaus/react/cloud` makes network requests.
+
+- It calls `https://api.formhaus.cc`, or the `apiBase` you pass, and loads a challenge frame from `https://formhaus.cc`.
+- `@formhaus/react` makes no network requests.
+
 ## Docs
 
 - [Guide](https://formhaus.dev/guide/), [API reference](https://formhaus.dev/api/form-engine) and [recipes](https://formhaus.dev/recipes/)

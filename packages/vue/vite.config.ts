@@ -49,11 +49,13 @@ export default defineConfig({
       fileName: (_format, name) => `${name}.js`,
     },
     rollupOptions: {
+      output: { sourcemapExcludeSources: true },
       external: [
         'vue',
         '@formhaus/core',
         '@formhaus/core/cloud',
         '@formhaus/core/internal',
+        '@formhaus/core/internal/cloud',
         '@formhaus/core/fields',
         '@formhaus/core/controls',
         '@formhaus/core/i18n',

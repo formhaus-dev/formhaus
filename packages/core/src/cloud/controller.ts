@@ -52,7 +52,7 @@ export interface CloudControllerOptions extends CloudClientOptions {
   challengeHost?: () => ChallengeHost | null;
 }
 
-export const initialCloudState: CloudState = {
+const initialCloudState: CloudState = {
   definition: null,
   version: null,
   settings: {},

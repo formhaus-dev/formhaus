@@ -1,5 +1,5 @@
 import type { CloudSubmission, DraftStore, PublishedForm } from '@formhaus/core/cloud';
-import { cloudStateFor, createCloudController } from '@formhaus/core/internal';
+import { cloudStateFor, createCloudController } from '@formhaus/core/internal/cloud';
 import { onBeforeUnmount, onMounted, shallowRef, watch } from 'vue';
 
 interface CloudFormOptions {

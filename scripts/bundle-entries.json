@@ -8,6 +8,7 @@
   "vue#useFormEngine:production",
   "core/cloud",
   "core/internal",
+  "core/internal/cloud",
   "core/i18n",
   "core/fix",
   "core/research",

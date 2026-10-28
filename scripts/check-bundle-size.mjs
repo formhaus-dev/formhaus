@@ -5,6 +5,7 @@ const PACKAGE_EXTERNALS = [
   '@formhaus/core',
   '@formhaus/core/cloud',
   '@formhaus/core/internal',
+  '@formhaus/core/internal/cloud',
   '@formhaus/core/i18n',
   '@formhaus/core/fix',
   '@formhaus/core/research',
