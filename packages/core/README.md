@@ -53,6 +53,13 @@ engine.getSubmitValues();
 
 `@formhaus/core/internal` holds code shared by `@formhaus/react` and `@formhaus/vue`. It is not a public API and has no semver guarantee: any release can change it. Do not import it.
 
+## Network
+
+Only the `/cloud` entries make network requests.
+
+- `@formhaus/core/cloud` calls `https://api.formhaus.cc`, or the `apiBase` you pass, and loads a challenge frame from `https://formhaus.cc`.
+- Every other entry makes no network requests.
+
 ## Features
 
 - Field types, validation rules, `show` / `showAny` conditions, sections and [repeatable groups](https://formhaus.dev/guide/groups). See [fields](https://formhaus.dev/guide/fields) and [validation](https://formhaus.dev/guide/validation).
