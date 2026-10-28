@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import type { FormDefinition } from '../../src';
-import { createCloudController, type CloudState } from '../../src/internal';
+import { createCloudController, type CloudState } from '../../src/internal/cloud';
 import { challenge, flush, page } from './fake-challenge';
 
 afterEach(() => vi.unstubAllGlobals());

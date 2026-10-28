@@ -1,5 +1,5 @@
 import type { CloudLabelSource, CloudNotice as Notice, CloudNoticeActionFn } from '@formhaus/core/cloud';
-import { cloudLabel } from '@formhaus/core/internal';
+import { cloudLabel } from '@formhaus/core/internal/cloud';
 
 export function CloudNotice({ notice, labels, onAction }: { notice: Notice; labels?: CloudLabelSource; onAction: CloudNoticeActionFn }) {
   return (

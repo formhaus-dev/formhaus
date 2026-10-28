@@ -3,7 +3,8 @@ import { type Component, type FunctionalComponent, computed, h, onBeforeUnmount,
 import type { FormEvent } from '@formhaus/core';
 import { FormActions, FormRenderer } from '@formhaus/vue';
 import { CloudError, type CloudNoticeActionFn } from '@formhaus/core/cloud';
-import { CLOUD_NOTICE, cloudLabel, focusProblem, loadMessage, localNotice } from '@formhaus/core/internal';
+import { focusProblem } from '@formhaus/core/internal';
+import { CLOUD_NOTICE, cloudLabel, loadMessage, localNotice } from '@formhaus/core/internal/cloud';
 import CloudNotice from './CloudNotice.vue';
 import type { FormhausFormEvents, FormhausFormProps, FormhausFormSlots } from './types';
 import { useCloudForm } from './useCloudForm';

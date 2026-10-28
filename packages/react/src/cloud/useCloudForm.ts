@@ -1,5 +1,5 @@
 import type { CloudSubmission, DraftStore, PublishedForm } from '@formhaus/core/cloud';
-import { cloudStateFor, createCloudController } from '@formhaus/core/internal';
+import { cloudStateFor, createCloudController } from '@formhaus/core/internal/cloud';
 import { type RefObject, useCallback, useEffect, useRef, useState } from 'react';
 
 interface CloudFormOptions {

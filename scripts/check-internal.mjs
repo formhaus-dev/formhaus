@@ -27,7 +27,7 @@ function visit(file, seen, entry) {
   seen.add(file);
   checked++;
   for (const [, specifier] of readFileSync(file, 'utf8').matchAll(IMPORT)) {
-    if (specifier === '@formhaus/core/internal' || /(^|\/)internal(\.d\.ts|\.js)?$/.test(specifier)) {
+    if (/^@formhaus\/core\/internal(\/|$)/.test(specifier) || /(^|\/)internal(\/cloud)?(\.d\.ts|\.js)?$/.test(specifier)) {
       failures.push(`${relative(root, file)} (from ${entry}) imports ${specifier}`);
       continue;
     }

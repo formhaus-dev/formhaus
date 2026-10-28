@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { CloudError, createSubmitter, fetchForm } from '../../src/cloud';
-import { cloudLabel, createCloudController, loadMessage, localNotice, type CloudState } from '../../src/internal';
+import { cloudLabel, createCloudController, loadMessage, localNotice, type CloudState } from '../../src/internal/cloud';
 import { failureFor } from '../../src/cloud/failures';
 import type { FormDefinition } from '../../src';
 

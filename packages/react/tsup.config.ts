@@ -4,8 +4,9 @@ import { defineConfig } from 'tsup';
 const INTERNAL_PROPS = /^(invalidAttempts|onItemsChange|actionError|changeItems|ProgressComponent|ActionsComponent|inputId)$/;
 
 const shared = {
-  esbuildOptions(options: { mangleProps?: RegExp }) {
+  esbuildOptions(options: { mangleProps?: RegExp; sourcesContent?: boolean }) {
     options.mangleProps = INTERNAL_PROPS;
+    options.sourcesContent = false;
   },
   format: ['esm' as const],
   dts: true,
@@ -48,6 +49,7 @@ export default defineConfig([
       '@formhaus/core',
       '@formhaus/core/cloud',
       '@formhaus/core/internal',
+      '@formhaus/core/internal/cloud',
       '@formhaus/core/fields',
       '@formhaus/react',
     ],

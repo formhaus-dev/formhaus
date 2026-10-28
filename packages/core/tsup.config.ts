@@ -8,8 +8,9 @@ const INTERNAL_PROPS =
 
 const shared = {
   define: { __FORMHAUS_CORE_VERSION__: JSON.stringify(version) },
-  esbuildOptions(options: { mangleProps?: RegExp }) {
+  esbuildOptions(options: { mangleProps?: RegExp; sourcesContent?: boolean }) {
     options.mangleProps = INTERNAL_PROPS;
+    options.sourcesContent = false;
   },
   treeshake: true,
   minify: false,
@@ -24,6 +25,7 @@ export default defineConfig([
       cloud: 'src/cloud/index.ts',
       server: 'src/server/index.ts',
       internal: 'src/internal/index.ts',
+      'internal/cloud': 'src/internal/cloud.ts',
       i18n: 'src/i18n/index.ts',
       fix: 'src/fix/index.ts',
       research: 'src/research/index.ts',
