@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CloudAction, CloudLabelSource, CloudNotice } from '@formhaus/core/cloud';
-import { cloudLabel } from '@formhaus/core/internal';
+import { cloudLabel } from '@formhaus/core/internal/cloud';
 
 defineProps<{ notice: CloudNotice; labels?: CloudLabelSource }>();
 const emit = defineEmits<{ action: [action: NonNullable<CloudAction>] }>();

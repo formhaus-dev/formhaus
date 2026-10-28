@@ -27,6 +27,10 @@
       "types": "./dist/internal.d.ts",
       "default": "./dist/internal.js"
     },
+    "./internal/cloud": {
+      "types": "./dist/internal/cloud.d.ts",
+      "default": "./dist/internal/cloud.js"
+    },
     "./i18n": {
       "types": "./dist/i18n.d.ts",
       "default": "./dist/i18n.js"

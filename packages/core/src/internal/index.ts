@@ -6,17 +6,6 @@ export { controlEntry } from './control-entry';
 export { recalled, recalls, recallVersion, refreshRecall, subscribeRecall } from './recall';
 export { recallEnabled, recallKeys } from '../engine/recall';
 
-export {
-  cloudStateFor,
-  createCloudController,
-  initialCloudState,
-  loadMessage,
-  localNotice,
-  type CloudCallbacks,
-  type CloudControllerOptions,
-  type CloudState,
-} from '../cloud/controller';
-export { CLOUD_NOTICE, cloudLabel } from '../cloud/failures';
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { engineLabel, labelFor } from '../i18n/labels';
 export { actionsView, actionValues } from './actions';

@@ -1,6 +1,7 @@
 import { type ErrorSummaryComponentProps, FormActions, type FormActionsProps, FormRenderer } from '@formhaus/react';
 import { CloudError, type CloudNotice as CloudNoticeData, type CloudNoticeActionFn } from '@formhaus/core/cloud';
-import { CLOUD_NOTICE, cloudLabel, focusProblem, loadMessage, localNotice } from '@formhaus/core/internal';
+import { focusProblem } from '@formhaus/core/internal';
+import { CLOUD_NOTICE, cloudLabel, loadMessage, localNotice } from '@formhaus/core/internal/cloud';
 import {
   type ComponentType,
   createContext,
