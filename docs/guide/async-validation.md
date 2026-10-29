@@ -20,11 +20,12 @@ Run a server check before advancing to the next step. Pass `onStepValidate`, get
 ```tsx [React]
 import { FormRenderer } from '@formhaus/react';
 
-async function validateStep(stepId: string, values: Record<string, unknown>) {
+async function validateStep(stepId: string, values: Record<string, unknown>, signal: AbortSignal) {
   if (stepId === 'account') {
     const res = await fetch('/api/check-email', {
       method: 'POST',
       body: JSON.stringify({ email: values.email }),
+      signal,
     });
     const data = await res.json();
     if (data.taken) {
@@ -49,11 +50,12 @@ function SignupForm() {
 <script setup>
 import { FormRenderer } from '@formhaus/vue';
 
-async function validateStep(stepId, values) {
+async function validateStep(stepId, values, signal) {
   if (stepId === 'account') {
     const res = await fetch('/api/check-email', {
       method: 'POST',
       body: JSON.stringify({ email: values.email }),
+      signal,
     });
     const data = await res.json();
     if (data.taken) {
@@ -134,12 +136,14 @@ async function validateStep(stepId, values) {
 type StepValidateFn = (
   stepId: string,
   values: Record<string, unknown>,
+  signal: AbortSignal,
 ) => Promise<Record<string, string> | null | void>;
 ```
 
 The callback receives:
 - `stepId` - the `id` of the step being validated (from your definition)
 - `values` - visible field values across the active path, not just the current step. In routed forms, retained answers from skipped branches are excluded.
+- `signal` - aborts when the check goes stale: the user edits a checked value, the step changes, the form resets or unmounts. Pass it to `fetch` to cancel the request.
 
 Return:
 - `{ key: message }` - errors to show. Keys match field keys in your definition.
