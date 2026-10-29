@@ -34,6 +34,9 @@ export function useFormEngineStore(
       get onValidate() {
         return optionsRef.current?.onValidate;
       },
+      get validateWithRules() {
+        return optionsRef.current?.validateWithRules;
+      },
       get onBeforeStepChange() {
         return optionsRef.current?.onBeforeStepChange;
       },

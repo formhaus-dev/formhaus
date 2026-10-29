@@ -26,6 +26,9 @@ export function useEngineOptions(props: FormRendererProps, onFormEvent: (event: 
     get onValidate() {
       return props.onValidate;
     },
+    get validateWithRules() {
+      return props.validateWithRules;
+    },
     get lang() {
       return props.lang;
     },

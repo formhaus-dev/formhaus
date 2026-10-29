@@ -48,6 +48,7 @@ export interface FormEngineOptions {
   locale?: LocaleCatalog | LocaleCatalog[];
   onStepValidate?: StepValidateFn;
   onValidate?: ValidateFn;
+  validateWithRules?: boolean;
   onWarning?: (issue: DefinitionIssue) => void;
   onFormEvent?: (event: FormEvent) => void;
   lang?: string;

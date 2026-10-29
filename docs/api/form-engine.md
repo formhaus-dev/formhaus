@@ -18,6 +18,7 @@ const engine = new FormEngine(definition, initialValues, {
   locale,
   onStepValidate,
   onValidate,
+  validateWithRules,
   onBeforeStepChange,
   onAfterStepChange,
   onBeforeSubmit,
@@ -32,6 +33,8 @@ const engine = new FormEngine(definition, initialValues, {
 ```
 
 `hiddenValues` is `'clear'` (default) or `'keep'`. With `'keep'`, fields hidden by conditions keep their values in `values` and in `getSubmitValues()`. Conditions, validation and recall still treat them as unanswered. See [Keep hidden values](/guide/conditions#keep-hidden-values). Renderers take it as a prop. Added in 1.2.0.
+
+`validateWithRules: true` runs `onValidate` even when the definition rules fail and shows both errors at once. See [Errors in one round](/guide/schema-validation#errors-in-one-round). Renderers take it as a prop. Added in 1.7.0.
 
 `lang` and `formatRecall` control how [recalled answers](/spec#answer-recall) look: `formatRecall(value, field, locale)` returns the text of one answer, and `lang` wins over `definition.lang`. Renderers take both as props.
 
