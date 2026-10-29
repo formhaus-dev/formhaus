@@ -85,4 +85,24 @@ export function mapContextScenarios(harness: RendererHarness, { it, expect, fn, 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(2));
     expect(onSubmit.mock.calls[1][0].city).toBe('Paris');
   });
+
+  it.each([
+    ['a hand-written field', () => harness.views],
+    ['a mapped control', () => harness.mapped!.typed],
+    ['the built-in field', () => undefined],
+  ])('saves the option of a same-label text in %s', async (_, components) => {
+    const onSubmit = fn();
+    const options: FieldOption[] = [
+      { value: 'ny', label: 'Paris' },
+      { value: 'fr', label: 'Paris' },
+    ];
+    const definition: FormDefinition = { ...typed, fields: [{ key: 'city', type: 'autocomplete', label: 'City', options }] };
+    harness.mount({ definition, components: components(), onSubmit });
+    const city = (screen.queryByRole('combobox', { name: 'City' }) ?? screen.getByRole('textbox', { name: 'City' })) as HTMLInputElement;
+    await harness.type(city, 'Paris (fr)');
+    await waitFor(() => expect(city.value).toBe('Paris (fr)'));
+    await send();
+    await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1));
+    expect(onSubmit.mock.calls[0][0].city).toBe('fr');
+  });
 }

@@ -64,6 +64,17 @@ describe('freeText', () => {
       ['', ''],
     ]);
   });
+
+  it('shows options of the same label with their value and saves the picked one', () => {
+    const twins = [
+      { value: 'ny', label: 'Paris' },
+      { value: 'fr', label: 'Paris' },
+    ];
+    const save = vi.fn();
+    expect(freeText(twins, 'fr', '', save).text).toBe('Paris (fr)');
+    freeText(twins, null, '', save).setText('Paris (fr)');
+    expect(save).toHaveBeenCalledWith('fr', 'Paris (fr)');
+  });
 });
 
 describe('controlProps free text', () => {
@@ -88,5 +99,13 @@ describe('controlProps free text', () => {
       [null, 'Berl'],
     ] as const)
       expect(props(value, text).control.value).toBe(freeText(options, value, text, vi.fn()).text);
+  });
+
+  it('uses a field view free text as it is', () => {
+    const setText = vi.fn();
+    const typed = { text: 'Berl', setText };
+    const mapped = controlProps(city, { ...fieldState({ id: 'f', field: city }), value: 'Berl', options }, { ...preset, freeText: typed });
+    expect([mapped.control.value, mapped.freeText, mapped.save('Netherlands')]).toEqual(['Berl', true, 'nl']);
+    expect(setText).toHaveBeenCalledWith('Netherlands');
   });
 });
