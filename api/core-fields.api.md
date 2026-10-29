@@ -166,7 +166,7 @@ export interface FileEntry {
 }
 
 // @public (undocumented)
-export const fileLimit: (field: FormField) => number;
+export function fileLimit(field: FormField): number;
 
 // @public (undocumented)
 export interface FreeText {
