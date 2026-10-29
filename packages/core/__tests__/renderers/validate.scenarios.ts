@@ -20,7 +20,7 @@ export function validateScenarios(harness: RendererHarness, { it, expect, waitFo
     harness.mount({ definition: wizard, initialValues: filled, onSubmit: () => {}, onValidate });
     await harness.click(button('Continue'));
     await screen.findByText('Taken');
-    expect(onValidate).toHaveBeenCalledWith(filled, { stepId: 'one', fields: ['name'], submit: false });
+    expect(onValidate).toHaveBeenCalledWith(filled, { stepId: 'one', fields: ['name'], submit: false }, expect.any(AbortSignal));
     expect(screen.getByRole('heading', { name: 'One' })).toBeTruthy();
     await waitFor(() => expect(document.activeElement).toBe(textbox('Name')));
   });
@@ -39,7 +39,11 @@ export function validateScenarios(harness: RendererHarness, { it, expect, waitFo
     await screen.findByRole('heading', { name: 'One' });
     await screen.findByText('Try again later');
     expect(screen.getByText('Taken')).toBeTruthy();
-    expect(onValidate).toHaveBeenLastCalledWith(filled, { stepId: 'three', fields: ['name', 'plan', 'city'], submit: true });
+    expect(onValidate).toHaveBeenLastCalledWith(
+      filled,
+      { stepId: 'three', fields: ['name', 'plan', 'city'], submit: true },
+      expect.any(AbortSignal),
+    );
     expect(onSubmit).not.toHaveBeenCalled();
     await waitFor(() => expect(document.activeElement).toBe(textbox('Name')));
   });
