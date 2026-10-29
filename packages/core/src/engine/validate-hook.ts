@@ -16,6 +16,7 @@ export async function passesValidate(
   values: Record<string, unknown>,
   stale: () => boolean,
   submit: boolean,
+  ruleErrors: Record<string, string> = {},
 ): Promise<boolean> {
   const fields: string[] = [];
   const nodes = submit ? formNodes(engine) : engine.currentStep!.fields;
@@ -29,6 +30,7 @@ export async function passesValidate(
     if (fields.includes(key)) errors[key] = message;
     else general.push(message);
   }
+  Object.assign(errors, ruleErrors);
   applyValidationErrors(engine, errors, false, general, submit);
   return false;
 }

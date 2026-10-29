@@ -29,6 +29,7 @@ export interface ScenarioProps {
   locale?: LocaleCatalog | LocaleCatalog[];
   onStepValidate?: StepValidateFn;
   onValidate?: ValidateFn;
+  validateWithRules?: boolean;
   lang?: string;
   formatRecall?: RecallFormatFn;
   onFormEvent?: (event: FormEvent) => void;

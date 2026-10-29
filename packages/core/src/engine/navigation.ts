@@ -17,15 +17,20 @@ import { passesValidate } from './validate-hook';
 import type { GoToStepResult, StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 
-function hasStepErrors(engine: EngineInternals): boolean {
+function stepErrors(engine: EngineInternals): Record<string, string> | null {
   const step = engine.currentStep;
-  if (!step) return true;
+  if (!step) return null;
   const errors = fieldsErrors(engine, step.fields);
-  if (Object.keys(errors).length === 0) return false;
+  if (Object.keys(errors).length === 0) return errors;
   const previousErrors = engine.errors;
   engine.state.errors = { ...previousErrors, ...errors };
   engine.notify({ fieldKeys: getChangedKeys(previousErrors, engine.errors) });
-  return true;
+  return errors;
+}
+
+function hasStepErrors(engine: EngineInternals): boolean {
+  const errors = stepErrors(engine);
+  return !errors || Object.keys(errors).length > 0;
 }
 
 function moveTo(engine: EngineInternals, index: number): void {
@@ -103,9 +108,12 @@ export async function changeStep(
   clearFormErrors(engine);
   const validating = direction === 'next' && !skipping;
   if (validating) includeCurrentStep(engine);
-  if (validating && hasStepErrors(engine)) return false;
   const lifecycle = { ...engine.lifecycle };
-  const validate = lifecycle.onStepValidate;
+  const ruleErrors = validating ? stepErrors(engine) : {};
+  if (!ruleErrors) return false;
+  const invalid = Object.keys(ruleErrors).length > 0;
+  const { onValidate, onStepValidate: validate } = lifecycle;
+  if (invalid && !(onValidate && lifecycle.validateWithRules)) return false;
   let committed = false;
   const fromIndex = engine.currentStepIndex;
   const toIndex = fromIndex + (direction === 'next' ? 1 : -1);
@@ -121,7 +129,7 @@ export async function changeStep(
   engine.notify();
   try {
     if (stale()) return false;
-    if (validating && validate) {
+    if (validating && validate && !invalid) {
       const result = await validate!(step.id, context.values);
       if (stale()) return false;
       if (result && Object.keys(result).length > 0) {
@@ -129,8 +137,8 @@ export async function changeStep(
         return false;
       }
     }
-    if (validating && lifecycle.onValidate && !(await passesValidate(engine, lifecycle.onValidate, context.values, stale, false)))
-      return false;
+    if (validating && onValidate && !(await passesValidate(engine, onValidate, context.values, stale, false, ruleErrors))) return false;
+    if (invalid) return false;
     if (lifecycle.onBeforeStepChange) {
       const allowed = await lifecycle.onBeforeStepChange(context);
       if (stale() || allowed === false) return false;

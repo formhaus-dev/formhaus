@@ -420,6 +420,8 @@ export interface FormEngineOptions {
     // (undocumented)
     seed?: string | undefined;
     // (undocumented)
+    validateWithRules?: boolean;
+    // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }
 

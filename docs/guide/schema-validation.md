@@ -141,6 +141,26 @@ const onValidate = computed(() => validateIn(lang.value));
 ```
 :::
 
+## Errors in one round
+
+Set `validateWithRules` to run `onValidate` even when the definition rules fail. Both sets of errors show at once, and the definition error wins on a field that has both.
+
+::: code-group
+```tsx [React]
+<FormRenderer definition={definition} onValidate={onValidate} validateWithRules onSubmit={send} />
+```
+
+```vue [Vue]
+<FormRenderer :definition="definition" :on-validate="onValidate" validate-with-rules @submit="send" />
+```
+
+```ts [Core]
+const engine = new FormEngine(definition, {}, { onValidate, validateWithRules: true });
+```
+:::
+
+When the definition rules fail, Continue skips `onStepValidate` and `onBeforeStepChange`, and Submit skips `onBeforeSubmit` and the submit handler. `onValidate` still sees only the visible fields in scope.
+
 ## onValidate without a schema
 
 `onValidate` gets the values and the field paths in scope. It returns errors keyed by field path, or `null` to pass. It may be async.
@@ -163,7 +183,7 @@ interface ValidateContext {
 ```
 
 - `fields` lists the visible field paths in scope, with group items such as `players.0.name`.
-- `stepId` is the current step. Single-step forms have none.
+- `stepId` is the step shown when `onValidate` runs. On Submit with `validateWithRules`, the form has already moved to the first step with a definition error. Single-step forms have none.
 - `submit` is `true` on Submit and `false` on Continue.
 - A key outside `fields`, or the empty key `''`, shows as a form error.
 

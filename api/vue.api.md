@@ -424,6 +424,8 @@ export interface FormRendererProps {
     // (undocumented)
     testIds?: boolean | ((target: TestIdTarget) => string | undefined);
     // (undocumented)
+    validateWithRules?: boolean;
+    // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }
 
