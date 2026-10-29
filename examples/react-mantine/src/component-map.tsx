@@ -121,8 +121,9 @@ export const components: FieldComponentMap = {
       },
       file: {
         component: FileField,
-        props: (f) => ({
+        props: (f, _, { field }) => ({
           f,
+          field,
           clearable: true,
           placeholder: f.placeholder ?? 'Choose a file',
           value: f.value instanceof File ? f.value : null,
