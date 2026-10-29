@@ -28,7 +28,7 @@ export function fileListScenarios(harness: RendererHarness, { it, expect, waitFo
     const [a, b, c] = files('a.pdf', 'b.pdf', 'c.pdf');
     pick(picker(), [a, b]);
     await waitFor(() => expect(names()).toEqual(['a.pdf', 'b.pdf']));
-    expect(status()).toBe('a.pdf, b.pdf added');
+    await waitFor(() => expect(status()).toBe('a.pdf, b.pdf added'));
     pick(picker(), [c]);
     await waitFor(() => expect(names()).toEqual(['a.pdf', 'b.pdf', 'c.pdf']));
     expect(picker().value).toBe('');
@@ -41,13 +41,39 @@ export function fileListScenarios(harness: RendererHarness, { it, expect, waitFo
     pick(picker(), files('a.pdf', 'b.pdf', 'c.pdf'));
     await harness.click(await screen.findByRole('button', { name: 'Remove b.pdf' }));
     await waitFor(() => expect(names()).toEqual(['a.pdf', 'c.pdf']));
-    expect(status()).toBe('b.pdf removed');
+    await waitFor(() => expect(status()).toBe('b.pdf removed'));
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Remove c.pdf' })));
     await harness.click(screen.getByRole('button', { name: 'Remove c.pdf' }));
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Remove a.pdf' })));
     await harness.click(screen.getByRole('button', { name: 'Remove a.pdf' }));
     await waitFor(() => expect(document.activeElement).toBe(picker()));
     expect(screen.queryAllByRole('list')).toEqual([]);
+  });
+
+  it('names the list after the field label', async () => {
+    harness.mount({ definition: attachments('1.7'), onSubmit: fn() });
+    pick(picker(), files('a.pdf'));
+    expect(await screen.findByRole('list', { name: 'Documents' })).toBeTruthy();
+  });
+
+  it('announces a repeated message again', async () => {
+    harness.mount({ definition: attachments('1.7'), onSubmit: fn() });
+    pick(picker(), files('a.pdf', 'a.pdf'));
+    const seen: string[] = [];
+    const region = await waitFor(() => {
+      const found = document.querySelector('.fh-file-list__status')!;
+      expect(found.textContent).toBe('a.pdf, a.pdf added');
+      return found;
+    });
+    new MutationObserver(() => seen.push(region.textContent ?? '')).observe(region, {
+      childList: true,
+      characterData: true,
+      subtree: true,
+    });
+    await harness.click(await screen.findAllByRole('button', { name: 'Remove a.pdf' }).then(([first]) => first!));
+    await waitFor(() => expect(seen.filter(Boolean)).toHaveLength(1));
+    await harness.click(screen.getByRole('button', { name: 'Remove a.pdf' }));
+    await waitFor(() => expect(seen.filter(Boolean)).toHaveLength(2));
   });
 
   it('requires at least one file after the last one is removed', async () => {
@@ -79,8 +105,9 @@ export function fileListScenarios(harness: RendererHarness, { it, expect, waitFo
     const [a, b, c] = files('a.pdf', 'b.pdf', 'c.pdf');
     pick(picker(), [a, b, c]);
     await waitFor(() => expect(names()).toEqual(['upload-1', 'a.pdf', 'b.pdf']));
-    expect(status()).toBe('a.pdf, b.pdf added At most 3 allowed');
+    await waitFor(() => expect(status()).toBe('a.pdf, b.pdf added At most 3 allowed'));
     expect(document.querySelector('.fh-file-list__notice')?.textContent).toBe('At most 3 allowed');
+    expect(picker().getAttribute('aria-describedby')).toBe(document.querySelector('.fh-file-list__notice')?.id);
     expect(picker().disabled).toBe(true);
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Remove b.pdf' })));
     await harness.click(screen.getByRole('button', { name: 'Remove a.pdf' }));
