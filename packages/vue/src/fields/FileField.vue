@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { addFiles, fileEntries, fileNames, isFileList, nextRemove, removeFile } from '@formhaus/core/fields';
+import { addFiles, fileEntries, isFileList, removeFile } from '@formhaus/core/fields';
+import { fileNames, nextRemove } from '@formhaus/core/internal';
 import { computed, nextTick, ref } from 'vue';
 import { useLabel } from '../composables/useLabel';
 import { fieldComponentProps } from '../props';
