@@ -1,10 +1,10 @@
-import type { FormDefinition } from './definition';
 import type { LocaleCatalog } from './i18n';
 
+declare const translated: unique symbol;
+
 export interface Translation {
-  locale: string;
-  texts(definition: FormDefinition): FormDefinition;
-  text(definition: FormDefinition, part: 'messages' | 'labels', key: string, params: Record<string, unknown>): string | undefined;
+  readonly locale: string;
+  readonly [translated]: true;
 }
 
 export type LocaleSource = LocaleCatalog | Translation;

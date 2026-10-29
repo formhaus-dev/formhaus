@@ -1,9 +1,9 @@
 import { validDefinition } from '../definition-validation/check-definition';
 import { FormDefinitionError, isError } from '../definition-validation/issues';
 import { checkTranslations } from './check';
-import type { FormDefinition, LabelFn, LocaleSource, LocaleText, TranslateSource, Translation } from '../types';
+import type { FormDefinition, LabelFn, LocaleSource, TranslateSource, Translation } from '../types';
 import { firstText, formatText, type MessageFn } from '../validation/default-messages';
-import { catalogText, localeList, localeSources, localizedTexts } from './catalog';
+import { catalogEntry, catalogText, defineTranslation, localeList, localeSources, localizedTexts } from './catalog';
 import { CATALOGS } from './nodes';
 import { lookup, type Overlay } from './overlay';
 import { definitionSlots, type Slot } from './slots';
@@ -19,7 +19,7 @@ export interface Localized {
 
 function applied(input: FormDefinition, locale: string, text: (slot: Slot, definition: FormDefinition) => string | undefined) {
   const definition: FormDefinition = JSON.parse(JSON.stringify(input));
-  definition.lang = locale;
+  definition.lang = locale ?? definition.lang;
   for (const slot of definitionSlots(definition)) {
     const result = text(slot, definition);
     if (result !== undefined) slot.apply(result);
@@ -27,22 +27,20 @@ function applied(input: FormDefinition, locale: string, text: (slot: Slot, defin
   return definition;
 }
 
-function fileTranslation(file: TranslationFile): Translation {
-  return {
-    locale: file.locale,
+const fileTranslation = (file: TranslationFile): Translation =>
+  defineTranslation(file.locale, {
+    key: [file],
     texts: (input) =>
       applied(input, file.locale, (slot) => {
         const text = lookup(file, slot.address);
         return text !== undefined && slot.kind === 'rule' ? formatText(text, slot.params) : text;
       }),
-    text: (_definition, part, key, params) =>
-      catalogText(file.locale, (file[part] as Record<string, LocaleText | undefined> | undefined)?.[key], params),
-  };
-}
+    text: (_definition, part, key, params) => catalogText(file.locale, catalogEntry(file, part, key), params),
+  });
 
-function keyTranslation(source: TranslateSource): Translation {
-  return {
-    locale: source.locale,
+const keyTranslation = (source: TranslateSource): Translation =>
+  defineTranslation(source.locale, {
+    key: [source.locale, source.prefix, source.translate],
     texts: (input) =>
       applied(input, source.locale, (slot, definition) => {
         if (slot.kind !== 'text' && slot.kind !== 'rule') return undefined;
@@ -56,8 +54,7 @@ function keyTranslation(source: TranslateSource): Translation {
       const text = translator(definition, source)(explicit, [part, key], params, fallback);
       return text === fallback ? undefined : text;
     },
-  };
-}
+  });
 
 export const translation = (source: TranslationFile | TranslateSource): Translation =>
   typeof (source as TranslateSource).translate === 'function'

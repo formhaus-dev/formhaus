@@ -1,16 +1,32 @@
 import { formatter, numberFormat, supported } from '../engine/recall-format';
 import type { EngineInternals } from '../engine/runtime-internals';
-import type { FormDefinition, LabelKey, LocaleSource, LocaleText, MessageKey, PluralForms, Translation } from '../types';
+import type { FormDefinition, LabelKey, LocaleCatalog, LocaleSource, LocaleText, MessageKey, PluralForms, Translation } from '../types';
 import { formatText, type MessageParams } from '../validation/default-messages';
 import { isEntry } from '../visibility/nodes';
 
 type Part = 'messages' | 'labels';
 type Text = (key: MessageKey | LabelKey, params: MessageParams) => string | undefined;
 
-const isTranslation = (source: LocaleSource): source is Translation => typeof (source as Translation).texts === 'function';
+export interface TranslationParts {
+  key: unknown[];
+  texts(definition: FormDefinition): FormDefinition;
+  text(definition: FormDefinition, part: Part, key: string, params: MessageParams): string | undefined;
+}
+
+const PARTS = Symbol.for('formhaus.translation');
+
+export const defineTranslation = (locale: string, parts: TranslationParts): Translation =>
+  ({ locale, [PARTS]: parts }) as unknown as Translation;
+
+const partsOf = (source: LocaleSource): TranslationParts | undefined => (source as unknown as Record<symbol, TranslationParts>)[PARTS];
 
 export const localeList = (locale: LocaleSource | LocaleSource[] | undefined): LocaleSource[] =>
   [locale ?? []].flat().filter((source): source is LocaleSource => isEntry(source));
+
+export const localeKey = (sources: LocaleSource[]): unknown[] => sources.flatMap((source) => partsOf(source)?.key ?? [source]);
+
+export const catalogEntry = (source: object, part: Part, key: string): LocaleText | undefined =>
+  ((source as Partial<LocaleCatalog>)[part] as Record<string, LocaleText | undefined> | undefined)?.[key];
 
 export function catalogText(locale: string, text: LocaleText | undefined, params: MessageParams): string | undefined {
   if (!text) return undefined;
@@ -28,7 +44,7 @@ export function catalogText(locale: string, text: LocaleText | undefined, params
 }
 
 export const localizedTexts = (definition: FormDefinition, sources: LocaleSource[]): FormDefinition =>
-  sources.filter(isTranslation).reduceRight((shown, source) => source.texts(shown), definition);
+  sources.reduceRight((shown, source) => partsOf(source)?.texts(shown) ?? shown, definition);
 
 export function localeSources(
   sources: () => LocaleSource[],
@@ -39,10 +55,11 @@ export function localeSources(
     (translated: boolean): Text =>
     (key, params) => {
       for (const source of sources()) {
-        if (isTranslation(source) !== translated) continue;
-        const result = isTranslation(source)
-          ? source.text(definition(), part, key, params)
-          : catalogText(source.locale, (source[part] as Record<string, LocaleText | undefined> | undefined)?.[key], params);
+        const parts = partsOf(source);
+        if (!!parts !== translated) continue;
+        const result = parts
+          ? parts.text(definition(), part, key, params)
+          : catalogText(source.locale, catalogEntry(source, part, key), params);
         if (result) return result;
       }
     };
@@ -55,3 +72,8 @@ export const engineSources = (engine: EngineInternals, part: Part) =>
     () => engine.definition,
     part,
   );
+
+const FORM_TEXTS = ['title', 'description', 'fields', 'steps', 'sections', 'submit', 'cancel'];
+
+export const untranslated = (sources: LocaleSource[]): boolean =>
+  sources.some((source) => !partsOf(source) && FORM_TEXTS.some((key) => key in source));
