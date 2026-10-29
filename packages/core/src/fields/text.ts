@@ -1,4 +1,5 @@
 import type { FieldOption } from '../types';
+import { optionText, optionValue } from './options';
 
 export interface FreeText {
   text: string;
@@ -6,10 +7,8 @@ export interface FreeText {
 }
 
 export function freeText(options: FieldOption[], value: unknown, text: string, save: (value: string, text: string) => void): FreeText {
-  const shown = value == null ? '' : String(value);
-  const labelValue = (typed: string) => options.find((option) => option.label === typed)?.value ?? typed;
   return {
-    text: labelValue(text) === shown ? text : (options.find((option) => option.value === value)?.label ?? shown),
-    setText: (typed) => save(labelValue(typed), typed),
+    text: optionValue(options, text) === (value == null ? '' : String(value)) ? text : optionText(options, value),
+    setText: (typed) => save(optionValue(options, typed), typed),
   };
 }

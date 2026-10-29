@@ -103,8 +103,8 @@ export interface FieldOptionAttrs {
 export interface FieldView<Attrs extends FieldControl> extends FieldState {
   value: unknown;
   text: string;
-  loading: boolean;
-  freeText: FreeText;
+  loading?: boolean;
+  freeText?: FreeText;
   testId?: string;
   options: FieldOption[];
   change: (value: unknown) => void;

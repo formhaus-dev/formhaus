@@ -1,4 +1,14 @@
-import { type DateType, type FieldState, fieldValue, freeText, fromDate, numberValue, scaleView } from '@formhaus/core/fields';
+import {
+  type DateType,
+  type FieldState,
+  type FreeText,
+  fieldValue,
+  freeText,
+  fromDate,
+  numberValue,
+  optionValue,
+  scaleView,
+} from '@formhaus/core/fields';
 import type { FieldOption, FormField } from '../types';
 import { revealable } from '../internal/reveal';
 import { POINT_TYPES } from './options';
@@ -114,6 +124,7 @@ export interface ControlPreset {
   valueKey: string;
   text?: string;
   setText?: (text: string) => void;
+  freeText?: FreeText;
 }
 
 export function controlProps(
@@ -124,14 +135,11 @@ export function controlProps(
   const { type } = field;
   const { value, options = [] } = state;
   const { text } = preset;
-  let saved: unknown;
   const typed =
-    text !== undefined && type === 'autocomplete'
-      ? freeText(options, value, text, (next, typedText) => {
-          saved = next;
-          preset.setText?.(typedText);
-        })
-      : undefined;
+    type !== 'autocomplete'
+      ? undefined
+      : (preset.freeText ??
+        (text === undefined ? undefined : freeText(options, value, text, (_value, typedText) => preset.setText?.(typedText))));
   const group = preset.kind === 'group';
   const control: Record<string, unknown> = {
     ...preset.attrs,
@@ -155,8 +163,9 @@ export function controlProps(
     save(input: unknown, detail?: unknown): unknown {
       const next = fromControl(field, input, detail);
       if (!typed) return next;
-      typed.setText(String(next ?? ''));
-      return saved;
+      const typedText = String(next ?? '');
+      typed.setText(typedText);
+      return optionValue(options, typedText);
     },
     freeText: !!typed,
     root: {
