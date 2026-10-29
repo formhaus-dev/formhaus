@@ -1,4 +1,15 @@
+import type { FormDefinition, FormEvent } from '../../src';
 import { filled, wizard, type RendererHarness, type TestKit } from './fixtures';
+
+const emails: FormDefinition = {
+  id: 'emails',
+  title: '',
+  submit: { label: 'Send' },
+  fields: [
+    { key: 'email', type: 'text', label: 'Email', validation: { required: true } },
+    { key: 'confirm', type: 'text', label: 'Confirm email' },
+  ],
+};
 
 export function validateScenarios(harness: RendererHarness, { it, expect, waitFor, screen, fn }: TestKit): void {
   const button = (name: string) => screen.getByRole('button', { name });
@@ -52,5 +63,40 @@ export function validateScenarios(harness: RendererHarness, { it, expect, waitFo
     await harness.click(button('Back'));
     await screen.findByRole('heading', { name: 'One' });
     expect(screen.queryByText('Service down')).toBeNull();
+  });
+
+  it('shows definition and onValidate errors of a step together with validateWithRules', async () => {
+    const onValidate = fn(() => ({ name: 'Taken', '': 'Service down' }));
+    harness.mount({ definition: wizard, errorSummary: true, onSubmit: () => {}, onValidate, validateWithRules: true });
+    await harness.click(button('Continue'));
+    await screen.findByText('Service down');
+    expect(screen.getByRole('link', { name: 'Name: This field is required' })).toBeTruthy();
+    expect(screen.queryByText('Taken')).toBeNull();
+    expect(screen.getByRole('heading', { name: 'One' })).toBeTruthy();
+    expect(onValidate).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows definition and onValidate errors of a submit together with validateWithRules', async () => {
+    const onSubmit = fn();
+    const onFormEvent = fn();
+    const onValidate = fn(() => ({ email: 'Use a work email', confirm: 'Emails must match', '': 'Check the form' }));
+    harness.mount({ definition: emails, errorSummary: true, onSubmit, onValidate, onFormEvent, validateWithRules: true });
+    await harness.click(button('Send'));
+    await screen.findByRole('link', { name: 'Confirm email: Emails must match' });
+    expect(screen.getByRole('link', { name: 'Email: This field is required' })).toBeTruthy();
+    expect(screen.getByText('Check the form')).toBeTruthy();
+    expect(screen.queryByText('Use a work email')).toBeNull();
+    expect(onSubmit).not.toHaveBeenCalled();
+    const failed = onFormEvent.mock.calls.filter(([event]) => (event as FormEvent).type === 'form_submit_failed');
+    expect(failed).toEqual([[{ type: 'form_submit_failed', reason: 'validation' }]]);
+    await waitFor(() => expect(document.activeElement?.closest('.fh-error-summary')).toBeTruthy());
+  });
+
+  it('runs onValidate only after the definition rules pass without validateWithRules', async () => {
+    const onValidate = fn(() => ({ confirm: 'Emails must match' }));
+    harness.mount({ definition: emails, onSubmit: () => {}, onValidate });
+    await harness.click(button('Send'));
+    await screen.findByText('This field is required');
+    expect(onValidate).not.toHaveBeenCalled();
   });
 }
