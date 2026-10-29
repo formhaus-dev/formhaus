@@ -28,6 +28,6 @@ export const components: FieldComponentMap = mapControls({
     radio: { component: RadioGroup, props: radios, changeProp: 'onValueChange' },
     scale: { component: RadioGroup, props: points, changeProp: 'onValueChange' },
     rating: { component: RadioGroup, props: stars, changeProp: 'onValueChange' },
-    file: { component: FileInput, props: (f) => ({ f }) },
+    file: { component: FileInput, props: (f, _, { field }) => ({ f, field }) },
   },
 });
