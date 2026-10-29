@@ -27,7 +27,7 @@ const files = {
   'src/react.tsx': `import { createRef } from 'react';
 import { FormRenderer, HeadlessFormRenderer, TextField, type FieldComponentMap, type FormRendererHandle } from '@formhaus/react';
 import { FormhausForm, CloudError } from '@formhaus/react/cloud';
-import { localize, type LocaleCatalog } from '@formhaus/core/i18n';
+import { localize, translation } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
 import { fromDate, scaleView } from '@formhaus/core/fields';
@@ -79,12 +79,12 @@ export const mapped: FieldComponentMap = {
   }),
   rating: components.rating,
 };
-const de: LocaleCatalog = { locale: 'de', title: 'Kontakt', labels: { submit: 'Senden' } };
+const de = translation({ locale: 'de', title: 'Kontakt', labels: { submit: 'Senden' } });
 export const localized = localize(definition, de);
 const fixes: DefinitionFix[] = suggestFixes(definition).flatMap((issue) => issue.fixes ?? []);
 export const fixed = [fixes.reduce((current, fix) => applyFix(current, fix.patch), definition), fixAll(definition).definition];
 export function Localized() {
-  return <FormRenderer definition={definition} locale={[{ locale: 'de', translate: (key, params, fallback) => fallback, prefix: false }, de]} onSubmit={() => {}} />;
+  return <FormRenderer definition={definition} locale={[translation({ locale: 'de', translate: (key, params, fallback) => fallback, prefix: false }), de]} onSubmit={() => {}} />;
 }
 `,
   'src/vue-props.ts': `import { defineComponent, h, type ExtractPublicPropTypes, type PropType } from 'vue';
@@ -144,6 +144,7 @@ import { FormhausForm, CloudError } from '@formhaus/vue/cloud';
 import type { FormDefinition } from '@formhaus/core';
 import { onValidate } from './on-validate.js';
 import ru from '@formhaus/core/locales/ru';
+import { translation } from '@formhaus/core/i18n';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
 export const components: Formhaus.FieldComponentMap = {
@@ -161,7 +162,7 @@ export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definit
   .component('TextField', Formhaus.TextField)
   .component('FormhausForm', FormhausForm);
 export const extras = [Formhaus, CloudError];
-export const localized = h(Formhaus.FormRenderer, { definition, locale: [{ locale: 'de', title: 'Kontakt' }, ru] });
+export const localized = h(Formhaus.FormRenderer, { definition, locale: [translation({ locale: 'de', title: 'Kontakt' }), ru] });
 `,
 };
 

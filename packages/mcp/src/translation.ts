@@ -4,12 +4,14 @@ import {
   defaultLabels,
   defaultMessages,
   localize,
+  translation,
   textSlots,
   translationIssues,
   translationTemplate,
   type CatalogIssues,
   type Overlay,
   type TextSlot,
+  type TranslationFile,
 } from '@formhaus/core/i18n';
 import { parseDefinition } from './definition-input';
 import { inspectDefinition, type ValidationReport } from './validate';
@@ -74,7 +76,11 @@ export function withOverlay(input: unknown, overlay: unknown): { definition: unk
       ...invalid.map((address) => `${address || 'overlay'} is not text and was ignored`),
       ...placeholderMismatch.map((address) => `${address} has different {placeholders} than the source`),
     ];
-    return { definition: localize(definition, { locale: definition.lang ?? 'en', ...(overlay as Overlay) }).definition, issues };
+    return {
+      definition: localize(definition, translation({ locale: definition.lang ?? 'en', ...(overlay as Overlay) } as TranslationFile))
+        .definition,
+      issues,
+    };
   } catch (error) {
     return { definition: input, issues: [`overlay was not applied: ${error instanceof Error ? error.message : String(error)}`] };
   }
