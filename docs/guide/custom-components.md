@@ -274,6 +274,7 @@ const props = defineProps(groupItemComponentProps)
 | Remove dialog | `confirmDialogComponentProps` | |
 | Error summary | `errorSummaryComponentProps` | |
 | Form errors | `formErrorsComponentProps` | |
+| A wrapper around `FormRenderer` | `formRendererProps` | |
 
 Each declares every prop of the matching interface, such as `FieldComponentProps` for `fieldComponentProps`. Props you do not use are harmless. `formStepProgressProps` defaults `headingLevel` to `2` and `marks` to `true`.
 

@@ -2,9 +2,9 @@
 import { builtInFields } from '@formhaus/core/internal';
 import { type Component, computed } from 'vue';
 import { fieldComponentEmits } from './props';
-import type { FieldResolverProps } from './types';
+import { fieldResolverProps } from './innerProps';
 
-const props = defineProps<FieldResolverProps & { busy?: boolean }>();
+const props = defineProps(fieldResolverProps);
 const emit = defineEmits(fieldComponentEmits);
 
 let development = false;
