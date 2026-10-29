@@ -17,14 +17,14 @@ const control = (render: (props: Record<string, unknown>, emit: Emit, attrs: Rec
         render(props, emit, attrs),
   });
 
-const target = (event: Event) => event.target as HTMLInputElement;
+export const target = (event: Event) => event.target as HTMLInputElement;
 
 const TextInput = control((props, emit, attrs) => [
   props.label ? h('label', { for: props.id }, props.label as string) : null,
   h('input', { ...attrs, id: props.id, value: props.modelValue, onInput: (event: Event) => emit('update:modelValue', event) }),
 ]);
 
-const Plain = control((props, emit, attrs) =>
+export const Plain = control((props, emit, attrs) =>
   h('input', {
     ...attrs,
     id: props.id,
@@ -175,7 +175,7 @@ const Picker = control((props, emit) => {
   );
 });
 
-const Shell = defineComponent({
+export const Shell = defineComponent({
   props: controlShellProps,
   setup:
     (props, { slots }) =>
