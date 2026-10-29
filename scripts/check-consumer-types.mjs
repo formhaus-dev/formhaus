@@ -170,40 +170,21 @@ export const localized = useLocalizedForm(() => definition, () => ({ overlay: { 
 
 files['src/map-controls.tsx'] = readFileSync(join(root, 'scripts/consumer-types/map-controls.tsx'), 'utf8');
 files['src/map-controls-vue.ts'] = readFileSync(join(root, 'scripts/consumer-types/map-controls-vue.ts'), 'utf8');
-files['src/question-timing.ts'] = readFileSync(join(root, 'docs/recipes/snippets/question-timing.ts'), 'utf8');
-files['src/ssr-cloud-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/ssr-cloud-page.tsx'), 'utf8');
-files['src/use-form-engine.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/use-form-engine.tsx'), 'utf8');
-files['src/custom-layout.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/custom-layout.tsx'), 'utf8');
-files['src/matrix-row.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/matrix-row.tsx'), 'utf8');
-files['src/field-helpers.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/field-helpers.tsx'), 'utf8');
-files['src/steps-in-url.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url.tsx'), 'utf8');
-files['src/steps-in-url-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/steps-in-url-page.tsx'), 'utf8');
-for (const name of [
-  'on-validate',
-  'schema-zod',
-  'schema-valibot',
-  'schema-arktype',
-  'schema-server-check',
-  'schema-confirm',
-  'schema-empty',
-  'schema-confirm-valibot',
-  'schema-empty-valibot',
-  'schema-server-check-valibot',
-  'schema-confirm-arktype',
-  'schema-empty-arktype',
-  'locale-catalogs',
-])
-  files[`src/${name}.ts`] = readFileSync(join(root, `docs/recipes/snippets/${name}.ts`), 'utf8');
-files['src/locale-catalogs-page.tsx'] = readFileSync(join(root, 'docs/recipes/snippets/locale-catalogs-page.tsx'), 'utf8');
+const snippets = join(root, 'docs/recipes/snippets');
+for (const name of readdirSync(snippets).filter((file) => /\.tsx?$/.test(file)))
+  files[`src/${name}`] = readFileSync(join(snippets, name), 'utf8');
+const declared = join(root, 'scripts/consumer-types/declared');
+for (const name of readdirSync(declared)) files[`declared/${name}`] = readFileSync(join(declared, name), 'utf8');
 
 const arktype = ['src/schema-arktype.ts', 'src/schema-confirm-arktype.ts', 'src/schema-empty-arktype.ts'];
 const checks = {
   bundler: { module: 'ESNext', exclude: arktype },
   node16: { module: 'Node16', exclude: ['src/steps-in-url-page.tsx', ...arktype] },
   'bundler, ArkType without its lib check': { module: 'ESNext', include: arktype, skipLibCheck: true },
+  'bundler, declaration emit with vue-tsc': { module: 'ESNext', include: ['declared'], declaration: true },
 };
 const configs = Object.keys(checks).map((_, index) => `tsconfig.${index}.json`);
-Object.values(checks).forEach(({ module, include = ['src'], exclude = [], skipLibCheck = false }, index) => {
+Object.values(checks).forEach(({ module, include = ['src'], exclude = [], skipLibCheck = false, declaration = false }, index) => {
   files[configs[index]] = JSON.stringify({
     compilerOptions: {
       target: 'ES2022',
@@ -211,7 +192,8 @@ Object.values(checks).forEach(({ module, include = ['src'], exclude = [], skipLi
       moduleResolution: module === 'ESNext' ? 'bundler' : 'node16',
       strict: true,
       skipLibCheck,
-      noEmit: true,
+      noEmit: !declaration,
+      ...(declaration && { declaration, emitDeclarationOnly: true, outDir: 'types' }),
       jsx: 'react-jsx',
       lib: ['ES2022', 'DOM'],
       types: [],
@@ -233,9 +215,10 @@ try {
     writeFileSync(join(work, path), source);
   }
   const tsc = join(root, 'packages/react/node_modules/typescript/bin/tsc');
-  Object.keys(checks).forEach((check, index) => {
+  const vueTsc = join(root, 'packages/vue/node_modules/vue-tsc/bin/vue-tsc.js');
+  Object.entries(checks).forEach(([check, { declaration }], index) => {
     try {
-      execFileSync(process.execPath, [tsc, '-p', configs[index]], { cwd: work, encoding: 'utf8' });
+      execFileSync(process.execPath, [declaration ? vueTsc : tsc, '-p', configs[index]], { cwd: work, encoding: 'utf8' });
       console.log(`consumer types ok (moduleResolution ${check})`);
     } catch (error) {
       failed = true;
