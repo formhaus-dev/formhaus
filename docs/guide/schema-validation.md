@@ -173,6 +173,7 @@ When the definition rules fail, Continue skips `onStepValidate` and `onBeforeSte
 type ValidateFn = (
   values: Record<string, unknown>,
   context: ValidateContext,
+  signal: AbortSignal,
 ) => Record<string, string> | null | void | Promise<Record<string, string> | null | void>;
 
 interface ValidateContext {

@@ -281,7 +281,7 @@ The engine reports `form_viewed`, `step_viewed`, `step_completed`, `step_skipped
 
 ## Navigation and submission lifecycle
 
-`FormEngineOptions` additionally accepts `onBeforeStepChange`, `onAfterStepChange`, `onBeforeSubmit` and `onAfterSubmit`. Before-hooks may return `false` to cancel, synchronously or asynchronously. Step hooks receive `StepChangeContext`; submit hooks receive submission values.
+`FormEngineOptions` additionally accepts `onBeforeStepChange`, `onAfterStepChange`, `onBeforeSubmit` and `onAfterSubmit`. Before-hooks may return `false` to cancel, synchronously or asynchronously. Step hooks receive `StepChangeContext`; submit hooks receive submission values. Before-hooks also get an `AbortSignal` that aborts when the pending action is discarded.
 
 These types are exported by `@formhaus/core`:
 
@@ -293,9 +293,9 @@ interface StepChangeContext {
   values: Record<string, unknown>
 }
 
-type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>
+type BeforeStepChangeFn = (context: StepChangeContext, signal: AbortSignal) => boolean | void | Promise<boolean | void>
 type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>
-type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>
+type BeforeSubmitFn = (values: Record<string, unknown>, signal: AbortSignal) => boolean | void | Promise<boolean | void>
 type AfterSubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>
 type SubmitResult =
   | { ok: true }

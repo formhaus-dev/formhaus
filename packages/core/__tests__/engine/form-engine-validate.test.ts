@@ -22,6 +22,7 @@ describe('FormEngine onValidate on step change', () => {
     expect(onValidate.mock.calls[0]).toEqual([
       expect.objectContaining({ email: 'ada@example.com', company: 'Acme' }),
       { stepId: 'account', fields: ['email', 'plan', 'company'], submit: false },
+      expect.any(AbortSignal),
     ]);
     expect(onValidate.mock.calls[1][1]).toEqual({
       stepId: 'roster',
@@ -150,6 +151,7 @@ describe('FormEngine onValidate on submit', () => {
         fields: ['email', 'plan', 'players', 'players.0.name', 'players.0.role', 'players.1.name', 'notes'],
         submit: true,
       },
+      expect.any(AbortSignal),
     ]);
   });
 
