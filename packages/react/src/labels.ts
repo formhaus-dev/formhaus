@@ -8,7 +8,7 @@ export const LabelContext = /* @__PURE__ */ createContext<Label>((key, params = 
 
 export const FileLimitContext = /* @__PURE__ */ createContext<FileLimitMessage>(defaultFileLimit);
 
-export function useEngineLabel(engine: FormEngine, labels: LabelSource | undefined, locale: unknown): Label {
+function useEngineLabel(engine: FormEngine, labels: LabelSource | undefined, locale: unknown): Label {
   return useMemo(
     () =>
       (key, params = {}) =>
