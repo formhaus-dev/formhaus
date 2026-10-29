@@ -1,6 +1,6 @@
 <script>
-import { FormEngine } from '@formhaus/core';
-import { addFiles, fileEntries, isFileList, removeFile } from '@formhaus/core/fields';
+import { FormEngine, getDefaultMessage } from '@formhaus/core';
+import { addFiles, fileEntries, fileLimit, isFileList, removeFile } from '@formhaus/core/fields';
 import definition from './definition.json';
 
 const STEP_SEPARATOR = ' \u2014 ';
@@ -15,6 +15,7 @@ let isMultiStep = engine.isMultiStep;
 let currentStep = engine.currentStep;
 let isFirstStep = engine.isFirstStep;
 let isLastStep = engine.isLastStep;
+let fileNotices = {};
 
 function sync() {
   fields = engine.visibleFields.slice();
@@ -44,7 +45,17 @@ function handleFilesPick(field, input) {
   const picked = Array.from(input.files ?? []);
   if (!isFileList(field)) return handleFieldChange(field.key, picked[0] ?? null);
   input.value = '';
-  if (picked.length) handleFieldChange(field.key, addFiles(values[field.key], picked));
+  if (!picked.length) return;
+  const max = fileLimit(field);
+  const next = addFiles(values[field.key], picked, max);
+  const dropped = next.length < addFiles(values[field.key], picked).length;
+  fileNotices[field.key] = dropped ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max })) : '';
+  handleFieldChange(field.key, next);
+}
+
+function handleFileRemove(field, index) {
+  fileNotices[field.key] = '';
+  handleFieldChange(field.key, removeFile(values[field.key], index));
 }
 
 async function handleNext() {
@@ -103,16 +114,19 @@ async function handleSubmit() {
         {:else if field.type === 'textarea'}
           <textarea id={field.key} rows={field.rows ?? 3} placeholder={field.placeholder ?? ''} on:input={e => handleFieldChange(field.key, e.target.value)}>{values[field.key] ?? ''}</textarea>
         {:else if field.type === 'file'}
-          <input id={field.key} type="file" accept={field.accept} multiple={isFileList(field)} on:change={e => handleFilesPick(field, e.target)} />
+          <input id={field.key} type="file" accept={field.accept} multiple={isFileList(field)} disabled={isFileList(field) && addFiles(values[field.key], []).length >= fileLimit(field)} on:change={e => handleFilesPick(field, e.target)} />
           {#if isFileList(field)}
             <ul style="list-style: none; margin: 4px 0 0; padding: 0">
               {#each fileEntries(values[field.key]) as entry (entry.index)}
                 <li style="display: flex; gap: 8px; align-items: center; margin-top: 4px">
                   {entry.name}
-                  <button type="button" aria-label="Remove {entry.name}" on:click={() => handleFieldChange(field.key, removeFile(values[field.key], entry.index))}>Remove</button>
+                  <button type="button" aria-label="Remove {entry.name}" on:click={() => handleFileRemove(field, entry.index)}>Remove</button>
                 </li>
               {/each}
             </ul>
+            {#if fileNotices[field.key]}
+              <p style="color: #666; margin: 4px 0 0; font-size: 13px">{fileNotices[field.key]}</p>
+            {/if}
           {/if}
         {:else if field.type === 'autocomplete'}
           <input
