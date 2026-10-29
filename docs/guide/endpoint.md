@@ -43,7 +43,7 @@ Props, status codes, `Idempotency-Key` and validation rules are in [Collecting s
 
 ## Files
 
-`FormhausForm` uploads the file of each `file` field before it submits and sends the upload id as the value. Files go straight from the browser to Cloud storage, up to 10 MB each and 5 per form. A refused file, such as one too large or of a type the form does not accept, shows its message on the field. See [Files](https://formhaus.dev/cloud/submissions#files) for the types and for uploads from your own client.
+`FormhausForm` uploads the file of each `file` field before it submits and sends the upload id as the value. For a field with [`multiple`](/guide/fields#several-files), it uploads each file and sends the list of ids. Files go straight from the browser to Cloud storage, up to 10 MB each and 5 per form. A refused file, such as one too large or of a type the form does not accept, shows its message on the field. See [Files](https://formhaus.dev/cloud/submissions#files) for the types and for uploads from your own client.
 
 `createSubmitter` sends values as they are. Upload files yourself before you call it.
 

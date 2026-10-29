@@ -454,7 +454,7 @@ The browser and `validateSubmission()` accept `00:00` to `23:59:59` and reject a
 
 ## File
 
-File upload. Uses native file input. Set `accept` to restrict file types. The value is one `File`, or `null`; use one `file` field per file. With [Formhaus Cloud](/guide/endpoint#files), `FormhausForm` uploads the file and submits its id.
+File upload. Uses native file input. Set `accept` to restrict file types. The value is one `File`, or `null`. With [Formhaus Cloud](/guide/endpoint#files), `FormhausForm` uploads the file and submits its id.
 
 ```json
 {
@@ -464,6 +464,23 @@ File upload. Uses native file input. Set `accept` to restrict file types. The va
   "accept": "image/*,.pdf"
 }
 ```
+
+### Several files
+
+Set `"multiple": true` to collect a list of files in one field. The value is an array of `File`. Picking files adds them to the list, and each file has a Remove button. `required` needs at least one file, and `validation.minLength` and `maxLength` count files. Without `maxLength` a list holds up to 100 files. With Formhaus Cloud, `FormhausForm` uploads each file and submits the list of ids. Requires `"formatVersion": "1.7"` and `@formhaus/core` 1.7; below 1.7 the field keeps one file.
+
+```json
+{
+  "key": "receipts",
+  "type": "file",
+  "label": "Receipts",
+  "accept": "image/*,.pdf",
+  "multiple": true,
+  "validation": { "required": true, "maxLength": 5 }
+}
+```
+
+On your server, `validateSubmission()` expects an array of upload references, such as `["up_1", "up_2"]`. It also accepts one reference as a list of one, so older clients that send one file keep working. Upgrade the server before the clients: `@formhaus/core` 1.6 and older reject a list.
 
 ## Hidden
 
