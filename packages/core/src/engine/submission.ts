@@ -37,22 +37,24 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged();
   engine.state.submitting = true;
   engine.notify();
-  const invalid = () => {
-    if (Object.keys(validateForm(engine, true)).length === 0) return false;
+  const fail = () => {
     if (!stale()) emit(engine, { type: 'form_submit_failed', reason: 'validation' });
-    return true;
+    return false;
   };
+  const validate = lifecycle.onValidate;
   try {
     if (stale()) return false;
-    if (invalid() || stale()) return false;
-    if (lifecycle.onValidate && !(await passesValidate(engine, lifecycle.onValidate, values, stale, true))) {
-      if (!stale()) emit(engine, { type: 'form_submit_failed', reason: 'validation' });
-      return false;
-    }
+    const ruleErrors = validateForm(engine, true);
+    const invalid = Object.keys(ruleErrors).length > 0;
+    if (stale()) return false;
+    if (invalid && !(validate && lifecycle.validateWithRules)) return fail();
+    if (validate && !(await passesValidate(engine, validate, values, stale, true, ruleErrors))) return fail();
+    if (invalid) return fail();
     if (lifecycle.onBeforeSubmit) {
       const allowed = await lifecycle.onBeforeSubmit(values);
       if (stale() || allowed === false) return false;
-      if (invalid() || stale()) return false;
+      if (Object.keys(validateForm(engine, true)).length > 0) return fail();
+      if (stale()) return false;
       values = getSubmitValues(engine, true);
     }
     engine.sending = operation;
