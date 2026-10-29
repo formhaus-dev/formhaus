@@ -98,6 +98,7 @@ export interface FormRendererProps {
   validators?: Record<string, ValidatorFn>;
   onStepValidate?: Callback<StepValidateFn>;
   onValidate?: Callback<ValidateFn>;
+  validateWithRules?: boolean;
   lang?: string;
   locale?: LocaleCatalog | LocaleCatalog[];
   formatRecall?: Callback<RecallFormatFn>;
