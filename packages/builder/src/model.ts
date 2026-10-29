@@ -148,6 +148,13 @@ function dropScale(question: BuilderQuestion, keepRange: boolean): void {
   else delete question.extra.validation;
 }
 
+export function dropFileList(question: BuilderQuestion): void {
+  const { minLength: _min, maxLength: _max, minLengthMessage: _low, maxLengthMessage: _high, ...rules } = question.extra.validation ?? {};
+  delete question.extra.multiple;
+  if (Object.keys(rules).length) question.extra.validation = rules;
+  else delete question.extra.validation;
+}
+
 type OptionExtra = NonNullable<BuilderOption['extra']>;
 
 export function setOptionExtra<K extends keyof OptionExtra>(option: BuilderOption, key: K, value: OptionExtra[K] | undefined): void {
@@ -166,6 +173,7 @@ export function setType(form: BuilderForm, question: BuilderQuestion, type: Fiel
   if (!canAutoAdvance(type)) delete question.extra.autoAdvance;
   if (type !== 'radio' && type !== 'multiselect') delete question.extra.columns;
   if (!hasOptions(type)) dropOrder(question);
+  if (type !== 'file' && question.extra.multiple !== undefined) dropFileList(question);
   question.type = type;
   if (type === 'hidden') question.required = false;
   else delete question.extra.source;
