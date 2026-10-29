@@ -3,6 +3,7 @@ import type { ScaleAnchor } from '@formhaus/core/fields';
 import {
   choiceControl,
   type ControlClickEvent,
+  type ControlContext,
   type ControlEntryOf,
   type ControlKeyEvent,
   type ControlKind,
@@ -21,7 +22,7 @@ import {
 } from '@formhaus/core/controls';
 import { controlEntry } from '@formhaus/core/internal';
 import { type FieldProps, fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
-import { type Component, defineComponent, h, onBeforeUnmount, onMounted, type PropType, ref, type VNode, type VNodeChild } from 'vue';
+import { type Component, defineComponent, h, onBeforeUnmount, onMounted, type PropType, type VNode, type VNodeChild } from 'vue';
 
 export interface ControlRootProps extends ControlRoot {
   onPointerdown: () => void;
@@ -55,7 +56,11 @@ export type ControlOption = CoreControlOption<VNode>;
 
 type PropName<C> = keyof PropsOf<C> & string;
 
-type ControlProps<C extends Component> = (f: FieldProps, options: ControlOption[]) => LooseProps<PropsOf<C>> & { children?: Slot };
+type ControlProps<C extends Component> = (
+  f: FieldProps,
+  options: ControlOption[],
+  context: ControlContext,
+) => LooseProps<PropsOf<C>> & { children?: Slot };
 
 export type ControlAdapter<C extends Component> = PropName<C> | ControlProps<C>;
 
@@ -91,7 +96,6 @@ function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, inp
     emits: fieldComponentEmits,
     setup(props, { emit }) {
       const f = useFieldProps(props, emit);
-      const text = ref('');
       const { pick, stop, pointerDown, keyDownCapture, keyDown, keyUp, click } = choiceControl(
         () => ({ field: props.field, value: props.modelValue, options: f.options, disabled: f.disabled }),
         f.change,
@@ -115,24 +119,25 @@ function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, inp
         const { field } = props;
         const kind = controlKind(field.type, config.kinds);
         const Shell = controlShell(config.shell, kind);
-        const { control, root, anchors, save } = controlProps(field, f, {
+        const { control, root, anchors, save, freeText } = controlProps(field, f, {
           kind,
           shell: !!Shell,
           input,
           attrs: f.input,
           valueKey: 'modelValue',
-          text: config.freeText ? text.value : undefined,
-          setText: (typed) => {
-            text.value = typed;
-          },
+          text: config.freeText ? f.freeText.text : undefined,
+          setText: f.freeText.setText,
         });
         const options = controlOptions(field, f.options, props.reveals);
-        const { children, ...adapted } = adapt(f, options) as { children?: Slot };
+        const { children, ...adapted } = adapt(f, options, { kind, field, anchors }) as { children?: Slot };
         const element = h(
           Control,
           {
             ...control,
-            [changeProp]: (value: unknown) => pick(save(value)),
+            [changeProp]: (value: unknown) => {
+              const next = save(value);
+              if (!freeText) pick(next);
+            },
             ...(Shell ? undefined : config.labels?.(f)),
             ...adapted,
           },
