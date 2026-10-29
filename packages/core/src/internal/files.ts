@@ -30,5 +30,5 @@ export function fileListAria(input: FieldStateInput & { field: FormField }, valu
   const noticeId = `${id}-notice`;
   const notice = picked || (filesFull(input.field, value) ? text.limit(input.field, fileLimit(input.field)) : '');
   const describedBy = [fieldAria(input)['aria-describedby'], notice && noticeId].filter(Boolean).join(' ') || undefined;
-  return { notice, noticeId, describedBy, list: { role: 'list', 'aria-labelledby': `${id}-label` } };
+  return { notice, noticeId, describedBy, list: { role: 'list', ...(input.field.label ? { 'aria-labelledby': `${id}-label` } : {}) } };
 }

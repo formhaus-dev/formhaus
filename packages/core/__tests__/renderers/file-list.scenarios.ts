@@ -56,6 +56,14 @@ export function fileListScenarios(harness: RendererHarness, { it, expect, waitFo
     expect(await screen.findByRole('list', { name: 'Documents' })).toBeTruthy();
   });
 
+  it('leaves an unlabelled list without a label reference', async () => {
+    const definition = attachments('1.7');
+    delete definition.fields[0].label;
+    harness.mount({ definition, onSubmit: fn() });
+    pick(picker(), files('a.pdf'));
+    expect((await screen.findByRole('list')).hasAttribute('aria-labelledby')).toBe(false);
+  });
+
   it('announces a repeated message again', async () => {
     harness.mount({ definition: attachments('1.7'), onSubmit: fn() });
     pick(picker(), files('a.pdf', 'a.pdf'));
