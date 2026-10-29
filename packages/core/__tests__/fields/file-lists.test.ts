@@ -119,6 +119,12 @@ describe('file lists', () => {
     expect(validateSubmission(definition, { docs: ['a', 'b'] }).errors).toEqual({ docs: 'At most 1 allowed' });
   });
 
+  it('marks a file list on a field that ignores writes', () => {
+    const field = new Proxy({ ...docs }, { set: () => true });
+    const engine = new FormEngine({ ...form('1.7'), fields: [field] });
+    expect(isFileList(engine.visibleFields[0] as object)).toBe(true);
+  });
+
   it('removes multiple where it does not apply', () => {
     const definition = form('1.7', [{ key: 'name', type: 'text', label: 'Name', multiple: true }]);
     expect(checkDefinition(definition).map(({ code }) => code)).toEqual(['multiple-not-applicable']);

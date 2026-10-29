@@ -53,7 +53,7 @@ export function markFileLists(definition: FormDefinition, fields: FormField[]): 
     const list = multipleFiles(definition, field);
     if (list === isFileList(field)) continue;
     if (Object.isExtensible(field)) (field as unknown as Record<symbol, boolean>)[FILE_LIST] = list;
-    else frozenLists[list ? 'add' : 'delete'](field);
+    if (isFileList(field) !== list) frozenLists[list ? 'add' : 'delete'](field);
   }
 }
 
