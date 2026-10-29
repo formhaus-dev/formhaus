@@ -359,6 +359,11 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   .fh-field__scale-input:checked + .fh-field__scale-label { color: Canvas; forced-color-adjust: none; }
   .fh-field--rating :is(.fh-field__scale-input:checked + *, .fh-field__scale-option:has(~ * :checked) > .fh-field__scale-label) { background: Highlight; }
   .fh-field__scale-input:focus-visible { outline: 2px solid CanvasText; }
+  .fh-field__input--files { forced-color-adjust: none; border-color: ButtonBorder; background: Canvas; color: CanvasText; }
+  .fh-field:has(.fh-file-list) .fh-field__input--files { color: transparent; }
+  .fh-field__input--files::file-selector-button { border-color: ButtonBorder; background: ButtonFace; color: ButtonText; }
+  .fh-field__input--files:disabled { border-color: GrayText; }
+  .fh-field__input--files:disabled::file-selector-button { border-color: GrayText; background: Canvas; color: GrayText; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:checked) { border-color: Highlight; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:focus-visible), .fh-form-actions__button:focus-visible, .fh-field__input:focus, :is(.fh-field__radio, .fh-field__checkbox, .fh-field__switch):focus-visible { outline: 2px solid CanvasText; }
 }
