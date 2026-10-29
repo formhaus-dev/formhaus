@@ -119,6 +119,10 @@ function onCancel() {
 
 const disabled = computed(() => props.loading || stepValidating.value || submitting.value);
 const testId = computed(() => testIds(props.testIds, props.definition.id));
+const lang = computed(() => {
+  void [props.locale, props.definition];
+  return form.engine.definition.lang;
+});
 
 const { shown, ...nodeContext } = useNodeProps(form, props, formId, disabled, testId, {
   update: onFieldUpdate,
@@ -187,7 +191,7 @@ async function onPrimary() {
 </script>
 
 <template>
-  <form ref="formRef" :lang="form.engine.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
+  <form ref="formRef" :lang="lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
     <component :is="props.layout?.errorSummary ?? DefaultSummary" v-if="summaryAt === 'top'" v-bind="summary" />
 
     <component
