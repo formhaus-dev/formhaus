@@ -1,5 +1,11 @@
 # @formhaus/vue
 
+## 1.8.0
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.8.0.
+
 ## 1.7.0
 
 ### Minor Changes
