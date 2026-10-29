@@ -1,5 +1,6 @@
 import type { CloudLabelSource, CloudNotice, CloudNoticeActionFn, CloudSubmission, DraftStore, PublishedForm } from '@formhaus/core/cloud';
-import type { FormRendererEvents, FormRendererProps } from '../types';
+import type { FormRendererProps } from '@formhaus/vue';
+import type { FormRendererEvents } from '../types';
 
 export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues'> {
   id: string;
