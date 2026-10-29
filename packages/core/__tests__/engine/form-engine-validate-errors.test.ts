@@ -137,6 +137,21 @@ describe('FormEngine field errors of a passed step', () => {
     expect(engine.errors).toEqual({});
   });
 
+  it('drops onStepValidate errors of hidden fields on the next Continue', async () => {
+    const [account, ...rest] = league.steps!;
+    const definition = {
+      ...league,
+      steps: [{ ...account, fields: [...account.fields, { key: 'ref', type: 'hidden' as const }] }, ...rest],
+    };
+    const replies = [{ ref: 'Bad link' }, null];
+    const engine = new FormEngine(definition, leagueValues, { onStepValidate: () => replies.shift() ?? null });
+    expect(await engine.next()).toBe(false);
+    expect(engine.errors).toEqual({ ref: 'Bad link' });
+    expect(await engine.next()).toBe(true);
+    expect(engine.errors).toEqual({});
+    expect(engine.topLevelErrors).toEqual([]);
+  });
+
   it('brings back the setErrors error a step error replaced', async () => {
     const engine = new FormEngine(league, leagueValues, { onValidate: once({ email: 'Taken' }) });
     engine.setErrors({ email: 'Server says no' });
