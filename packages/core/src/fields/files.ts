@@ -1,6 +1,9 @@
-import { isFileList } from '../validation/type-checks';
+import { isFileList, maxItems } from '../validation/type-checks';
+import type { FormField } from '../types';
 
 export { isFileList };
+
+export const fileLimit = (field: FormField): number => maxItems(field);
 
 export const fileItems = (value: unknown): unknown[] => (Array.isArray(value) ? value : value == null || value === '' ? [] : [value]);
 

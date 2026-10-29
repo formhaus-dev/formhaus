@@ -1,9 +1,8 @@
 import type { FormEngine } from '../engine';
 import type { EngineInternals } from '../engine/runtime-internals';
-import { addFiles, fileEntries, fileItems, fileName } from '../fields/files';
+import { addFiles, fileEntries, fileItems, fileLimit, fileName } from '../fields/files';
 import type { FormField, LabelKey } from '../types';
 import { getDefaultMessage } from '../validation/default-messages';
-import { maxItems } from '../validation/type-checks';
 
 export type FileLimitMessage = (field: FormField, max: number) => string;
 
@@ -17,10 +16,10 @@ export const engineFileLimit =
   (field, max) =>
     field.validation?.maxLengthMessage ?? (engine as unknown as EngineInternals).messages('maxItems', { max }, field);
 
-export const filesFull = (field: FormField, value: unknown): boolean => fileItems(value).length >= maxItems(field);
+export const filesFull = (field: FormField, value: unknown): boolean => fileItems(value).length >= fileLimit(field);
 
 export function pickFiles(field: FormField, value: unknown, picked: unknown[], label: Label, limit: FileLimitMessage) {
-  const max = maxItems(field);
+  const max = fileLimit(field);
   const before = fileItems(value).length;
   const next = addFiles(value, picked, max);
   const added = next.slice(before);
