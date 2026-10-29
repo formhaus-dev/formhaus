@@ -9,40 +9,58 @@ description: "Map a design system to Formhaus with mapControls: one shell for la
 
 ::: code-group
 ```tsx [React]
+import { FormActions, FormStepProgress, HeadlessFormRenderer, HiddenField } from '@formhaus/react'
 import { mapControls } from '@formhaus/react/controls'
 
-const components = mapControls({
-  shell: Shell,
-  controls: {
-    input: Input,
-    textarea: Textarea,
-    select: { component: Select, optionsProp: 'options' },
-    checkbox: Checkbox,
-    radio: { component: RadioGroup, optionsProp: 'options' },
-  },
-})
+const components = {
+  ...mapControls({
+    shell: Shell,
+    controls: {
+      input: Input,
+      textarea: Textarea,
+      select: { component: Select, optionsProp: 'options' },
+      checkbox: Checkbox,
+      radio: { component: RadioGroup, optionsProp: 'options' },
+    },
+  }),
+  hidden: HiddenField,
+}
+const layout = { actions: FormActions, progress: FormStepProgress }
 
-<FormRenderer definition={definition} components={components} onSubmit={handleSubmit} />
+<HeadlessFormRenderer definition={definition} components={components} layout={layout} onSubmit={handleSubmit} />
 ```
 
-```ts [Vue]
+```vue [Vue]
+<script setup lang="ts">
+import { FormActions, FormStepProgress, HeadlessFormRenderer, HiddenField } from '@formhaus/vue'
 import { mapControls } from '@formhaus/vue/controls'
 
-const components = mapControls({
-  shell: Shell,
-  controls: {
-    input: VTextField,
-    textarea: VTextarea,
-    select: { component: VSelect, props: (f, options) => ({ items: options, itemTitle: 'label' }) },
-    checkbox: VCheckbox,
-  },
-})
+const components = {
+  ...mapControls({
+    shell: Shell,
+    controls: {
+      input: VTextField,
+      textarea: VTextarea,
+      select: { component: VSelect, props: (f, options) => ({ items: options, itemTitle: 'label' }) },
+      checkbox: VCheckbox,
+    },
+  }),
+  hidden: HiddenField,
+}
+const layout = { actions: FormActions, progress: FormStepProgress }
+</script>
+
+<template>
+  <HeadlessFormRenderer :definition="definition" :components="components" :layout="layout" @submit="handleSubmit" />
+</template>
 ```
 :::
 
 A control is a component, or an object with the component and how to call it. See [Control entries](#control-entries).
 
-The result is a plain `components` map. Mix it with hand-written fields: `{ ...mapControls(config), file: FileField }`. Types you leave out keep the built-in fields in `FormRenderer`.
+The result is a plain `components` map. Mix it with hand-written fields: `{ ...mapControls(config), file: FileField }`.
+
+`HeadlessFormRenderer` imports no built-in field, so your bundle carries only the controls you map. See [Bundle size](/guide/bundle-size#rendering-paths). Map every field type your definitions use. `hidden` has no visible control, so pass the built-in `HiddenField`. `layout` takes the built-in `FormActions` and `FormStepProgress`, or your own. A type with no component renders a placeholder, and in development the renderer warns with `missing-component`. To keep the built-in fields for the types you leave out, pass the same props to `FormRenderer`.
 
 Call `mapControls` once at module level. Each call creates new components, so a call inside a render function remounts every field and loses focus.
 
