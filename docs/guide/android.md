@@ -15,9 +15,9 @@ Releases are published to Maven Central. Add the packages you need:
 
 ```kotlin
 dependencies {
-    implementation("dev.formhaus:formhaus-core:0.8.0")
-    implementation("dev.formhaus:formhaus-compose:0.8.0")
-    implementation("dev.formhaus:formhaus-research:0.8.0")
+    implementation("dev.formhaus:formhaus-core:0.8.1")
+    implementation("dev.formhaus:formhaus-compose:0.8.1")
+    implementation("dev.formhaus:formhaus-research:0.8.1")
 }
 ```
 
@@ -33,6 +33,7 @@ Both ports are 0.x previews. The [compatibility table](/guide/stability#native-p
 
 | formhaus-kotlin | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.8.1 | 1.8.0 | 1.7 |
 | 0.8.0 | 1.8.0 | 1.7 |
 | 0.7.0 | 1.6.1 | 1.6 |
 | 0.6.0 | 1.6.0 | 1.6 |
