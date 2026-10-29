@@ -5,6 +5,7 @@
   "category": "lead-gen",
   "definition": {
     "id": "home-repair-quote",
+    "formatVersion": "1.7",
     "title": "Get a quote",
     "submit": { "label": "Request a quote" },
     "steps": [
@@ -46,9 +47,11 @@
           {
             "key": "photo",
             "type": "file",
-            "label": "Photo of the problem",
+            "label": "Photos of the problem",
             "accept": "image/*",
-            "helperText": "Photos help us quote without a visit."
+            "multiple": true,
+            "helperText": "Photos help us quote without a visit.",
+            "validation": { "maxLength": 5 }
           },
           {
             "key": "photos",
