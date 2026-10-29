@@ -53,4 +53,15 @@ export const wrong = [
   mapControls({ shell: Shell, controls: { radio: { component: Picker, change: 'onValueChange' } } }),
   // @ts-expect-error
   { component: Picker, changeProp: 'onChange' } satisfies ControlSpec<typeof Picker>,
+  // @ts-expect-error
+  mapControls({ shell: Shell, controls: { radio: [Input, (_f, _options, { field }) => ({ size: field.columns })] } }),
 ];
+
+export const contextual: FieldComponentMap = mapControls({
+  shell: Shell,
+  controls: {
+    radio: [Input, (_f, _options, { kind, field }) => ({ size: field.layout === 'inline' && kind === 'group' ? 'small' : 'large' })],
+    scale: { component: Input, props: (_f, _options, { anchors }) => ({ value: anchors.map((anchor) => anchor?.label).join() }) },
+    select: [Input, (f) => ({ value: f.loading ? '' : f.freeText.text })],
+  },
+});
