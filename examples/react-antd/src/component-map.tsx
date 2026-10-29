@@ -59,7 +59,7 @@ export const components: FieldComponentMap = {
         props: () => ({ optionType: 'button', buttonStyle: 'solid', block: true }),
       },
       rating: { component: Rate, props: (_, options) => ({ 'aria-required': undefined, count: options.length }) },
-      file: { component: FileUpload, props: upload },
+      file: { component: FileUpload, props: (f, _, { field }) => upload(f, field) },
     },
   }),
 };
