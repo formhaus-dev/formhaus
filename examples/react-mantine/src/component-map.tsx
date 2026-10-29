@@ -3,7 +3,6 @@ import { type ControlOption, mapControls } from '@formhaus/react/controls';
 import {
   Autocomplete,
   Checkbox,
-  FileInput,
   Group,
   Image,
   MultiSelect,
@@ -22,6 +21,7 @@ import {
 } from '@mantine/core';
 import { DatePickerInput, DateTimePicker, TimePicker } from '@mantine/dates';
 import { Fragment } from 'react';
+import { FileField } from './fields/FileField';
 import { GroupShell, RadioList } from './fields/GroupShell';
 import { labels, marked, spoken } from './fields/labels';
 import { MatrixRow } from './fields/MatrixRow';
@@ -120,8 +120,9 @@ export const components: FieldComponentMap = {
         props: (f, options) => ({ 'aria-required': undefined, count: options.length, size: 'lg', readOnly: f.disabled }),
       },
       file: {
-        component: FileInput,
+        component: FileField,
         props: (f) => ({
+          f,
           clearable: true,
           placeholder: f.placeholder ?? 'Choose a file',
           value: f.value instanceof File ? f.value : null,

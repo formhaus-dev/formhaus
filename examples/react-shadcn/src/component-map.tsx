@@ -7,6 +7,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { AutocompleteInput } from './fields/AutocompleteInput';
 import { CheckboxList, native, points, radios, stars } from './fields/choices';
+import { FileInput } from './fields/FileInput';
 import { MatrixRow } from './fields/MatrixRow';
 import { SelectControl } from './fields/SelectControl';
 import { Shell } from './fields/Shell';
@@ -27,6 +28,6 @@ export const components: FieldComponentMap = mapControls({
     radio: { component: RadioGroup, props: radios, changeProp: 'onValueChange' },
     scale: { component: RadioGroup, props: points, changeProp: 'onValueChange' },
     rating: { component: RadioGroup, props: stars, changeProp: 'onValueChange' },
-    file: { component: Input, props: () => ({ type: 'file' }) },
+    file: { component: FileInput, props: (f) => ({ f }) },
   },
 });
