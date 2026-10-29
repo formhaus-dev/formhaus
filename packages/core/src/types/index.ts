@@ -26,7 +26,6 @@ export type {
   LabelKey,
   LabelSource,
   LocaleCatalog,
-  LocaleSource,
   LocaleText,
   MessageCatalog,
   MessageKey,
@@ -34,9 +33,9 @@ export type {
   StepI18n,
   TranslateFn,
   TranslateSource,
-  Translation,
   ValidationI18n,
 } from './i18n';
+export type { LocaleSource, Translation } from './locale';
 export type {
   ConfirmDialogView,
   ErrorSummary,

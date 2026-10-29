@@ -1,5 +1,3 @@
-import type { FormDefinition } from './definition';
-
 export type MessageKey =
   | 'required'
   | 'minLength'
@@ -78,14 +76,6 @@ export interface TranslateSource {
   translate: TranslateFn;
   prefix?: string | false;
 }
-
-export interface Translation {
-  locale: string;
-  texts(definition: FormDefinition): FormDefinition;
-  text(definition: FormDefinition, part: 'messages' | 'labels', key: string, params: Record<string, unknown>): string | undefined;
-}
-
-export type LocaleSource = LocaleCatalog | Translation;
 
 export interface FormI18n {
   title?: string;
