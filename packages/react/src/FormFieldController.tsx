@@ -1,4 +1,14 @@
-import { autofilled, errorDomId, fieldDomId, fieldTestIds, recalled, recalls, shownOptions, type TestId } from '@formhaus/core/internal';
+import {
+  autofilled,
+  copyField,
+  errorDomId,
+  fieldDomId,
+  fieldTestIds,
+  recalled,
+  recalls,
+  shownOptions,
+  type TestId,
+} from '@formhaus/core/internal';
 import type { FieldOption, FormEngine, FormField as FormFieldType, RevealView } from '@formhaus/core';
 import { memo, type ReactNode, useCallback, useSyncExternalStore } from 'react';
 import { useFieldSnapshot, useRecallSnapshot } from './hooks/useEngineSnapshot';
@@ -60,7 +70,7 @@ export const FormFieldController = /* @__PURE__ */ memo(function FormFieldContro
   const handleBlur = useCallback(() => onBlur(key), [key, onBlur]);
   const handleFocus = useCallback(() => onFocus(key), [key, onFocus]);
   const shown = shownOptions(engine, key, field, options, useSyncExternalStore(subscribeNothing, onClient, onServer));
-  const fieldWithOptions = { ...field, ...(shown && { options: shown }), ...(path && { key: path, autoAdvance: undefined }) };
+  const fieldWithOptions = copyField(field, { ...(shown && { options: shown }), ...(path && { key: path, autoAdvance: undefined }) });
 
   return (
     <FieldResolver
