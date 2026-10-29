@@ -16,6 +16,7 @@ export async function passesValidate(
   validate: ValidateFn,
   values: Record<string, unknown>,
   stale: () => boolean,
+  signal: AbortSignal,
   submit: boolean,
   ruleErrors: Record<string, string> = {},
 ): Promise<boolean> {
@@ -23,7 +24,7 @@ export async function passesValidate(
   const fields: string[] = [];
   const nodes = submit ? formNodes(engine) : engine.currentStep!.fields;
   visitShown(nodes, getSubmitValues(engine), engine.visibility.conditionValues(engine.state.values), (path) => fields.push(path));
-  const result = await validate(values, { stepId: engine.currentStep?.id, fields, submit });
+  const result = await validate(values, { stepId: engine.currentStep?.id, fields, submit }, signal);
   if (stale()) return false;
   if (!result || Object.keys(result).length === 0) return true;
   const errors: Record<string, string> = {};

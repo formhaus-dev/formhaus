@@ -15,6 +15,7 @@ import {
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
 import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
+import { abortWhenStale } from './operation-signal';
 import { passesValidate } from './validate-hook';
 import type { GoToStepResult, StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
@@ -137,26 +138,29 @@ export async function changeStep(
   const inputsChanged = watchCheckedInputs(engine, context.values);
   const stale = () =>
     epoch !== engine.validationEpoch || operation !== engine.operationEpoch || engine.currentStep?.id !== step.id || inputsChanged();
+  const pending = abortWhenStale(engine, stale);
   engine.state.stepValidating = true;
   engine.notify();
   try {
     if (stale()) return false;
     if (validating && validate && !invalid) {
-      const result = await validate!(step.id, context.values);
+      const result = await validate!(step.id, context.values, pending.signal);
       if (stale()) return false;
       if (result && Object.keys(result).length > 0) {
         applyValidationErrors(engine, result);
         return false;
       }
     }
-    if (validating && onValidate && !(await passesValidate(engine, onValidate, context.values, stale, false, ruleErrors))) return false;
+    if (validating && onValidate && !(await passesValidate(engine, onValidate, context.values, stale, pending.signal, false, ruleErrors)))
+      return false;
     if (invalid) return false;
     if (lifecycle.onBeforeStepChange) {
-      const allowed = await lifecycle.onBeforeStepChange(context);
+      const allowed = await lifecycle.onBeforeStepChange(context, pending.signal);
       if (stale() || allowed === false) return false;
     }
     if (stale()) return false;
     if (validating && hasStepErrors(engine)) return false;
+    pending.stop();
     committed = true;
     if (direction === 'next') emit(engine, { type: skipping ? 'step_skipped' : 'step_completed', stepId: step.id });
     if (skipping) skipCurrentStep(engine);
@@ -167,6 +171,7 @@ export async function changeStep(
     if (!committed && stale()) return false;
     throw error;
   } finally {
+    pending.stop();
     if (operation === engine.operationEpoch) {
       engine.state.stepValidating = false;
       engine.notify();

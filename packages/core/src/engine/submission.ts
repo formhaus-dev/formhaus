@@ -5,6 +5,7 @@ import type { SubmitHandler, SubmitResult } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 import { applyValidationErrors, clearFormErrors, getSubmitValues, validateForm } from './validation-state';
 import { includeCurrentStep } from './step-skip';
+import { abortWhenStale } from './operation-signal';
 import { passesValidate } from './validate-hook';
 
 type Rejection = Extract<SubmitResult, { ok: false }>;
@@ -35,6 +36,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   let values = getSubmitValues(engine, true);
   const inputsChanged = watchCheckedInputs(engine, values);
   const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged();
+  const pending = abortWhenStale(engine, stale);
   engine.state.submitting = true;
   engine.notify();
   const fail = () => {
@@ -48,15 +50,16 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
     const invalid = Object.keys(ruleErrors).length > 0;
     if (stale()) return false;
     if (invalid && !(validate && lifecycle.validateWithRules)) return fail();
-    if (validate && !(await passesValidate(engine, validate, values, stale, true, ruleErrors))) return fail();
+    if (validate && !(await passesValidate(engine, validate, values, stale, pending.signal, true, ruleErrors))) return fail();
     if (invalid) return fail();
     if (lifecycle.onBeforeSubmit) {
-      const allowed = await lifecycle.onBeforeSubmit(values);
+      const allowed = await lifecycle.onBeforeSubmit(values, pending.signal);
       if (stale() || allowed === false) return false;
       if (Object.keys(validateForm(engine, true)).length > 0) return fail();
       if (stale()) return false;
       values = getSubmitValues(engine, true);
     }
+    pending.stop();
     engine.sending = operation;
     const skippedSteps = [...engine.skipped.keys()];
     const sent = { ...engine.state.values };
@@ -85,6 +88,7 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
     if (engine.sending !== operation && stale()) return false;
     throw error;
   } finally {
+    pending.stop();
     if (operation === engine.latestOperation) {
       engine.state.submitting = false;
       engine.notify();

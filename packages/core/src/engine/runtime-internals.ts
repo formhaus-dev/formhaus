@@ -49,6 +49,7 @@ export interface EngineInternals {
   readonly isFirstStep: boolean;
   readonly isLastStep: boolean;
   notify(options?: NotifyOptions): void;
+  subscribe(listener: () => void): () => void;
   getSnapshot(): number;
   advance(reason: 'next' | 'autoAdvance'): Promise<boolean>;
 }

@@ -298,6 +298,7 @@ Async step-level validator. See [Async Step Validation](/guide/async-validation)
 type StepValidateFn = (
   stepId: string,
   values: Record<string, unknown>,
+  signal: AbortSignal,
 ) => Promise<Record<string, string> | null | void>;
 ```
 
