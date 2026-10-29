@@ -47,6 +47,22 @@ for (const [pkg, entries] of Object.entries(ENTRIES)) {
   }
 }
 
+const DECLARED =
+  /^(?:export )?(?:declare )?(?:abstract )?(?:const )?(?:interface|type|class|const|let|var|function|enum|namespace) (\w+)/gm;
+const LISTED = /^export (?:type )?\{([^}]*)\}/gm;
+for (const pkg of ['react', 'vue']) {
+  const main = readFileSync(join(root, 'packages', pkg, 'dist/index.d.ts'), 'utf8');
+  const exported = new Set([
+    ...[...main.matchAll(DECLARED)].filter(([line]) => line.startsWith('export')).map(([, name]) => name),
+    ...[...main.matchAll(LISTED)].flatMap(([, list]) => list.split(',').map((item) => item.trim().split(/\s+/).at(-1))),
+  ]);
+  for (const entry of ENTRIES[pkg].filter((name) => name !== 'index')) {
+    const file = join('packages', pkg, 'dist', `${entry}.d.ts`);
+    for (const [, name] of readFileSync(join(root, file), 'utf8').matchAll(DECLARED))
+      if (exported.has(name)) failures.push(`${file} redeclares ${name}; import it from @formhaus/${pkg}`);
+  }
+}
+
 const core = JSON.parse(readFileSync(join(root, 'packages/core/package.json'), 'utf8')).version;
 const pinned = `${core.startsWith('0.') ? '^' : '~'}${core}`;
 for (const pkg of ['react', 'vue']) {
@@ -56,8 +72,10 @@ for (const pkg of ['react', 'vue']) {
 }
 
 if (failures.length > 0) {
-  console.error(`@formhaus/core/internal boundary:\n${failures.map((failure) => `  ${failure}`).join('\n')}`);
+  console.error(`Public .d.ts boundaries:\n${failures.map((failure) => `  ${failure}`).join('\n')}`);
   process.exit(1);
 }
 
-console.log(`${checked} public .d.ts files reference no internal types, and the adapters pin core ${pinned}`);
+console.log(
+  `${checked} public .d.ts files reference no internal types, subpaths reuse the main entry types, and the adapters pin core ${pinned}`,
+);

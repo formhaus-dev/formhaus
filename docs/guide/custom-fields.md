@@ -315,6 +315,24 @@ The `<form class="fh-form">` element stays. Add a design-system class to it with
 
 Put `rootProps` on one element, and keep one `role="alert"`. Some components type their own `role` prop, such as Carbon notifications, and reject the `role` of `rootProps`. Spread `rootProps` on a wrapper element then. Some design-system alerts put their attributes on an inner element or on a `Transition`, and some set their own `role="alert"`. Then wrap the component in an element that takes `rootProps`, and turn off the role of the inner component if it has an option for that. With a pass-through option, such as `pt: { root: rootProps }` in PrimeVue, the component can take `rootProps` itself.
 
+Some screen readers read nested alerts twice. When the component of `layout.errorSummary` sets its own `role="alert"` or `aria-live` and cannot turn it off, drop `role` from `rootProps` and keep the rest, so focus still finds the root:
+
+::: code-group
+```tsx [React]
+<div {...rootProps} role={undefined}>
+  <Alert kind="error" title={title}>{list}</Alert>
+</div>
+```
+
+```vue [Vue]
+<div v-bind="{ ...rootProps, role: undefined }">
+  <Alert kind="error" :title="title">...</Alert>
+</div>
+```
+:::
+
+Keep the `role` of `rootProps` when the component has no role or live region of its own. The default error summary keeps it.
+
 An error summary in React:
 
 ```tsx
