@@ -1,6 +1,7 @@
 import { localeSource } from '../i18n/catalog';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
+import { markFileLists } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
 import { createValues, keptValues, valuesDiffer } from './engine-utils';
 import { baselineFields, trackChanges } from './form-events';
@@ -17,6 +18,7 @@ export function loadDefinition(
   assertDefinition(definition, engine.lifecycle, engine.validators);
   warnUnordered(definition, engine.lifecycle);
   const visibility = createVisibility(definition, engine.lifecycle.hiddenValues === 'keep');
+  markFileLists(definition, visibility.allFields);
   engine.definition = definition;
   engine.messages = messageResolver(engine.lifecycle.messages, definition.messages, localeSource(engine, 'messages'));
   engine.visibility = visibility;

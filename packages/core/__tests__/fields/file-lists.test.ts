@@ -3,7 +3,7 @@ import { checkDefinition, FormEngine, type FormDefinition, type FormField } from
 import { carryValues } from '../../src/cloud/carry';
 import { createUploader, type Send } from '../../src/cloud/files';
 import { controlProps, fromControl } from '../../src/controls';
-import { fieldState } from '../../src/fields';
+import { fieldState, isFileList } from '../../src/fields';
 import { fixAll } from '../../src/fix';
 import { translationTemplate } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
@@ -72,6 +72,14 @@ describe('file lists', () => {
     const props = (target: FormField) => controlProps(target, { ...fieldState({ id: 'f', field: target }), value: [] }, preset).control;
     expect(props({ ...field })).toEqual({ multiple: true });
     expect(props(engineField(form('1.6')))).toEqual({});
+  });
+
+  it('keeps a file list in a production engine that skips definition checks', () => {
+    vi.stubEnv('NODE_ENV', 'production');
+    vi.stubEnv('FORMHAUS_TRUSTED', '1');
+    const engine = new FormEngine(form('1.7', [{ ...docs, validation: { maxLength: 1 } }]), { docs: 'upload-1' });
+    vi.unstubAllEnvs();
+    expect([isFileList(engine.definition.fields![0]), engine.validate()]).toEqual([true, {}]);
   });
 
   it('works with a frozen definition', () => {
