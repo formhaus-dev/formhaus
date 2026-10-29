@@ -1,5 +1,5 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/vue';
-import { type ControlOption, mapControls } from '@formhaus/vue/controls';
+import { type ControlContext, type ControlOption, mapControls } from '@formhaus/vue/controls';
 import {
   ElAutocomplete,
   ElButton,
@@ -13,11 +13,11 @@ import {
   ElSelect,
   ElSwitch,
   ElTimePicker,
-  ElUpload,
   type UploadFile,
 } from 'element-plus';
 import { h, type VNode } from 'vue';
 import FieldShell from './fields/FieldShell.vue';
+import FileUpload from './fields/FileUpload.vue';
 import MatrixRow from './fields/MatrixRow.vue';
 
 const testId = (f: FieldProps, option: ControlOption, index: number) =>
@@ -55,9 +55,11 @@ const picked =
     class: 'field__control',
   });
 
-const upload = (f: FieldProps) => {
+const upload = (f: FieldProps, _: ControlOption[], { field }: ControlContext) => {
   const files = f.value instanceof File ? [{ name: f.value.name }] : [];
   return {
+    f,
+    field,
     id: undefined,
     'aria-invalid': undefined,
     'aria-required': undefined,
@@ -180,7 +182,7 @@ export const components: FieldComponentMap = {
         }),
       },
       rating: { component: ElRate, props: (f, options) => ({ max: options.length, clearable: true, ariaLabel: f.label }) },
-      file: { component: ElUpload, props: upload },
+      file: { component: FileUpload, props: upload },
     },
   }),
 };

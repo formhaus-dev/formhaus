@@ -1,21 +1,10 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/react';
-import { mapControls } from '@formhaus/react/controls';
-import {
-  Button,
-  Checkbox,
-  Field,
-  FileUpload,
-  HStack,
-  NumberInput,
-  RatingGroup,
-  SegmentGroup,
-  Select,
-  Switch,
-  Text,
-} from '@chakra-ui/react';
+import { type ControlContext, mapControls } from '@formhaus/react/controls';
+import { Checkbox, Field, NumberInput, RatingGroup, SegmentGroup, Select, Switch } from '@chakra-ui/react';
 import { Autocomplete } from './fields/Autocomplete';
 import { Choices, optionIds } from './fields/Choices';
 import { CountedInput, CountedTextarea } from './fields/Counted';
+import { FileField } from './fields/FileField';
 import { MatrixRow } from './fields/MatrixRow';
 import { select } from './fields/select';
 import { labelId, Shell } from './fields/Shell';
@@ -34,27 +23,13 @@ const toggle = (Part: typeof Checkbox | typeof Switch) => (f: FieldProps) => ({
   ),
 });
 
-const upload = (f: FieldProps) => ({
+const upload = (f: FieldProps, _: unknown, { field }: ControlContext) => ({
+  f,
+  field,
   'aria-describedby': undefined,
   'aria-invalid': undefined,
   'aria-required': undefined,
-  maxFiles: 1,
   ids: { hiddenInput: `${f.id}-input` },
-  children: (
-    <>
-      <FileUpload.HiddenInput />
-      <HStack gap="3">
-        <FileUpload.Trigger asChild>
-          <Button id={f.id} variant="outline" size="sm" aria-describedby={f.describedBy}>
-            {f.placeholder ?? 'Choose a file'}
-          </Button>
-        </FileUpload.Trigger>
-        <Text textStyle="sm" color="fg.muted">
-          {f.value instanceof File ? f.value.name : 'No file chosen'}
-        </Text>
-      </HStack>
-    </>
-  ),
 });
 
 export const components: FieldComponentMap = {
@@ -118,7 +93,7 @@ export const components: FieldComponentMap = {
         }),
         changeProp: 'onValueChange',
       },
-      file: { component: FileUpload.Root, props: upload },
+      file: { component: FileField, props: upload },
     },
   }),
 };
