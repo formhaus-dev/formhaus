@@ -7,6 +7,7 @@ import {
   isScale,
   setFieldProp,
   setMatrix,
+  isFileList,
   setMultiple,
   type BuilderQuestion,
 } from '@formhaus/builder';
@@ -77,7 +78,7 @@ export function AnswerSettings(props: Props) {
   const form = useForm();
   const parent = findField(form, field.parent ?? '');
   const row = isMatrix(parent);
-  const files = field.type === 'file' && !!field.extra.multiple;
+  const files = isFileList(form, field);
   const limits = limitSpec(files ? 'files' : field.type);
   const shuffles = hasOptions(field.type) && !row;
   const choices = shuffles && field.type !== 'select';
