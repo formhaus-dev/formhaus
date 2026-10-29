@@ -7,17 +7,24 @@ export const fileItems = (value: unknown): unknown[] => (Array.isArray(value) ? 
 export const isListLike = (value: unknown): value is ArrayLike<unknown> =>
   typeof value === 'object' && value !== null && typeof (value as ArrayLike<unknown>).length === 'number';
 
-export const addFiles = (value: unknown, picked: unknown): unknown[] => [
-  ...fileItems(value),
-  ...(isListLike(picked) ? Array.from(picked) : fileItems(picked)),
-];
+export function addFiles(value: unknown, picked: unknown, max = Number.POSITIVE_INFINITY): unknown[] {
+  const items = fileItems(value);
+  const added = isListLike(picked) ? Array.from(picked) : fileItems(picked);
+  return [...items, ...added.slice(0, Math.max(0, max - items.length))];
+}
 
 export const removeFile = (value: unknown, index: number): unknown[] => fileItems(value).filter((_, at) => at !== index);
 
-const fileName = (item: unknown): string | undefined =>
+export const fileName = (item: unknown): string | undefined =>
   typeof item === 'object' && item !== null && typeof (item as { name?: unknown }).name === 'string'
     ? (item as { name: string }).name
     : undefined;
+
+function referenceName(item: unknown): string | undefined {
+  if (typeof item !== 'string' || item === '') return undefined;
+  const trimmed = item.replace(/\/+$/, '');
+  return trimmed.slice(trimmed.lastIndexOf('/') + 1) || item;
+}
 
 export interface FileEntry {
   index: number;
@@ -26,21 +33,6 @@ export interface FileEntry {
 
 export const fileEntries = (value: unknown): FileEntry[] =>
   fileItems(value).flatMap((item, index) => {
-    const name = fileName(item);
+    const name = fileName(item) ?? referenceName(item);
     return name === undefined ? [] : [{ index, name }];
   });
-
-interface Focusable {
-  focus(): void;
-}
-
-interface ButtonList {
-  querySelectorAll(selector: 'button'): ArrayLike<Focusable>;
-}
-
-export const nextRemove = (list: ButtonList | null | undefined, position: number): Focusable | undefined => {
-  const buttons = list?.querySelectorAll('button');
-  return buttons?.[position] ?? buttons?.[position - 1];
-};
-
-export const fileNames = (items: unknown[]): string => items.flatMap((item) => fileName(item) ?? []).join(', ');

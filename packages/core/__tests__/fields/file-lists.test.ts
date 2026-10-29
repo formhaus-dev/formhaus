@@ -5,6 +5,7 @@ import { createUploader, type Send } from '../../src/cloud/files';
 import { controlProps, fromControl } from '../../src/controls';
 import { fieldState, isFileList } from '../../src/fields';
 import { fixAll } from '../../src/fix';
+import { defaultFileLimit, engineFileLimit, pickFiles } from '../../src/internal/files';
 import { translationTemplate } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
 
@@ -67,6 +68,7 @@ describe('file lists', () => {
     const picked = { 0: 'a', 1: 'b', length: 2 };
     expect(fromControl(field, picked)).toEqual(['a', 'b']);
     expect(fromControl(field, null)).toEqual([]);
+    expect(fromControl(engineField(form('1.7', [{ ...docs, validation: { maxLength: 1 } }])), picked)).toEqual(['a']);
     expect(fromControl(engineField(form('1.6')), picked)).toBe('a');
     const preset = { kind: 'input' as const, shell: false, input: false, attrs: {}, valueKey: 'value' };
     const props = (target: FormField) => controlProps(target, { ...fieldState({ id: 'f', field: target }), value: [] }, preset).control;
@@ -80,6 +82,25 @@ describe('file lists', () => {
     const engine = new FormEngine(form('1.7', [{ ...docs, validation: { maxLength: 1 } }]), { docs: 'upload-1' });
     vi.unstubAllEnvs();
     expect([isFileList(engine.definition.fields![0]), engine.validate()]).toEqual([true, {}]);
+  });
+
+  it('stops picking at the limit and names the limit with the field message', () => {
+    const label = (key: string, params: Record<string, unknown> = {}) => `${key}:${String(params.item)}`;
+    const field = engineField(form('1.7', [{ ...docs, validation: { maxLength: 2 } }]));
+    expect(pickFiles(field, ['r'], [file('a'), file('b')], label, defaultFileLimit)).toMatchObject({
+      value: ['r', expect.objectContaining({ name: 'a' })],
+      status: 'itemAdded:a At most 2 allowed',
+      notice: 'At most 2 allowed',
+      focus: 1,
+    });
+    expect(pickFiles(field, ['r', 's'], [file('a')], label, defaultFileLimit)).toMatchObject({
+      value: undefined,
+      status: 'At most 2 allowed',
+    });
+    const custom = engineField(form('1.7', [{ ...docs, validation: { maxLength: 1, maxLengthMessage: 'One file' } }]));
+    expect(pickFiles(custom, [], [file('a'), file('b')], label, defaultFileLimit).notice).toBe('One file');
+    const translated = new FormEngine({ ...form('1.7', [{ ...docs, validation: { maxLength: 1 } }]), messages: { maxItems: 'Max {max}' } });
+    expect(engineFileLimit(translated)(translated.definition.fields![0] as FormField, 1)).toBe('Max 1');
   });
 
   it('works with a frozen definition', () => {
