@@ -55,7 +55,7 @@ function withoutCatalog(definition: FormDefinition, overlay: Overlay, slots: Tex
 export function translationTemplateTool({ definition: input, lang, prefix, catalog }: TemplateInput): TemplateResult {
   const { report, definition } = inspectDefinition(input);
   if (!definition) return { ok: false, validation: report };
-  const overlay = translationTemplate(definition);
+  const overlay: Overlay = { locale: lang, ...translationTemplate(definition) };
   const slots = textSlots(definition, { prefix });
   const file = `${definition.id}.${lang}.json`;
   if (catalog === undefined) return { ok: true, validation: report, lang, file, overlay, slots };
@@ -74,7 +74,7 @@ export function withOverlay(input: unknown, overlay: unknown): { definition: unk
       ...invalid.map((address) => `${address || 'overlay'} is not text and was ignored`),
       ...placeholderMismatch.map((address) => `${address} has different {placeholders} than the source`),
     ];
-    return { definition: localize(definition, { overlay: overlay as Overlay }).definition, issues };
+    return { definition: localize(definition, { locale: definition.lang ?? 'en', ...(overlay as Overlay) }).definition, issues };
   } catch (error) {
     return { definition: input, issues: [`overlay was not applied: ${error instanceof Error ? error.message : String(error)}`] };
   }
