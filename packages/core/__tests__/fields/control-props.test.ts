@@ -63,8 +63,8 @@ describe('controlProps field props', () => {
         { value: 'b', label: 'Same' },
       ],
     });
-    expect([props(twins, 'b', { text: '' }).control.value, props(twins, '', { text: '', setText: keep }).save('Same')]).toEqual([
-      'Same',
+    expect([props(twins, 'b', { text: '' }).control.value, props(twins, '', { text: '', setText: keep }).save('Same (a)')]).toEqual([
+      'Same (b)',
       'a',
     ]);
   });

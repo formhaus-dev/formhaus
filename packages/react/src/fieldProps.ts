@@ -1,5 +1,5 @@
-import { fieldState, fieldValue, optionChecked, type FieldAria, type FieldControl, type FieldView } from '@formhaus/core/fields';
-import type { ChangeEvent } from 'react';
+import { fieldState, fieldValue, freeText, optionChecked, type FieldAria, type FieldControl, type FieldView } from '@formhaus/core/fields';
+import { type ChangeEvent, useState } from 'react';
 import { optionProps } from './fields/fieldProps';
 import type { FieldComponentProps } from './types';
 
@@ -20,10 +20,11 @@ export interface FieldProps extends FieldView<FieldAttrs> {
 
 const noop = () => {};
 
-export function fieldProps(props: FieldComponentProps): FieldProps {
+function fieldView(props: FieldComponentProps, [typed, setTyped]: [string, (text: string) => void]): FieldProps {
   const state = fieldState(props);
   const { field, value, onCommit, onBlur, onFocus = noop } = props;
   const text = value == null ? '' : String(value);
+  const options = props.matrix?.columns ?? field.options ?? [];
   const change = (next: unknown) => props.onChange(fieldValue(field, next));
   const onInput = ({ target }: InputEvent) => change(target.value);
   const control: FieldAttrs = {
@@ -40,8 +41,13 @@ export function fieldProps(props: FieldComponentProps): FieldProps {
     ...state,
     value,
     text,
+    loading: !!props.loading,
+    freeText: freeText(options, value, typed, (next, typedText) => {
+      setTyped(typedText);
+      change(next);
+    }),
     testId: props.testId,
-    options: props.matrix?.columns ?? field.options ?? [],
+    options,
     change,
     commit: field.autoAdvance && onCommit ? onCommit : change,
     blur: onBlur,
@@ -65,4 +71,12 @@ export function fieldProps(props: FieldComponentProps): FieldProps {
       disabled: state.disabled,
     }),
   };
+}
+
+export function fieldProps(props: FieldComponentProps): FieldProps {
+  return fieldView(props, ['', noop]);
+}
+
+export function useFieldProps(props: FieldComponentProps): FieldProps {
+  return fieldView(props, useState(''));
 }

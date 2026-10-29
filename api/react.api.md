@@ -352,6 +352,9 @@ export function TextField(props: FieldComponentProps): react.JSX.Element;
 export function TimeField(props: FieldComponentProps): react.JSX.Element;
 
 // @public (undocumented)
+export function useFieldProps(props: FieldComponentProps): FieldProps;
+
+// @public (undocumented)
 export function useFormEngine(definition: FormDefinition, initialValues?: Record<string, unknown>, options?: UseFormEngineOptions): FormEngine;
 
 // @public (undocumented)

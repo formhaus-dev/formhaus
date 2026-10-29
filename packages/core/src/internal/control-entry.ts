@@ -1,9 +1,9 @@
-import type { ControlEntryOf, ControlSpecOf } from '../controls/types';
+import type { ControlContext, ControlEntryOf, ControlSpecOf } from '../controls/types';
 
 export interface ControlPlan<Component, View, Option> {
   component: Component;
   changeProp: string;
-  props: (f: View, options: Option[]) => Record<string, unknown>;
+  props: (f: View, options: Option[], context: ControlContext) => Record<string, unknown>;
 }
 
 const isSpec = <Component, View, Option>(entry: unknown): entry is ControlSpecOf<Component, View, Option> =>
@@ -27,6 +27,6 @@ export function controlEntry<Component, View, Option>(
   return {
     component,
     changeProp,
-    props: (f, options) => ({ ...(optionsProp ? { [optionsProp]: options } : undefined), ...props?.(f, options) }),
+    props: (f, options, context) => ({ ...(optionsProp ? { [optionsProp]: options } : undefined), ...props?.(f, options, context) }),
   };
 }

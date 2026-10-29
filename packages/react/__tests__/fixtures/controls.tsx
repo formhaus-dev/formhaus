@@ -16,7 +16,7 @@ function TextInput({ label, helper, ...props }: InputProps) {
   );
 }
 
-function Plain({ value, onChange, ...props }: Omit<InputProps, 'onChange'> & { onChange: (value: string) => void }) {
+export function Plain({ value, onChange, ...props }: Omit<InputProps, 'onChange'> & { onChange: (value: string) => void }) {
   return <input {...props} value={value} onChange={(event) => onChange(event.target.value)} />;
 }
 
@@ -185,7 +185,7 @@ function Picker({ id, value, options, onValueChange }: PickerProps) {
   );
 }
 
-function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
+export function Shell({ kind, f, rootProps, anchors, children }: ControlShellProps) {
   const texts = (
     <>
       {f.helperText && <p id={f.helperId}>{f.helperText}</p>}

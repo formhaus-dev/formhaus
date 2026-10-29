@@ -25,11 +25,13 @@ import { mapCommitScenarios } from '../../core/__tests__/renderers/map-commit.sc
 import { mapControlScenarios } from '../../core/__tests__/renderers/map-controls.scenarios';
 import { mapNamedScenarios } from '../../core/__tests__/renderers/map-named.scenarios';
 import { mapObjectScenarios } from '../../core/__tests__/renderers/map-object.scenarios';
+import { mapContextScenarios } from '../../core/__tests__/renderers/map-context.scenarios';
 import { mapPropsScenarios } from '../../core/__tests__/renderers/map-props.scenarios';
 import { defineComponent, h, type Component, type PropType } from 'vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import { design } from './fixtures/design';
 import { mapped } from './fixtures/controls';
+import { context, views } from './fixtures/views';
 import { fieldComponentEmits, fieldComponentProps } from '../src/props';
 import { useFieldProps } from '../src/composables/useFieldProps';
 import type { FormRendererHandle, GroupItemComponentProps } from '../src/types';
@@ -175,7 +177,8 @@ const harness: RendererHarness = {
   },
   containers,
   controls,
-  mapped,
+  mapped: { ...mapped, context },
+  views,
   design,
 };
 
@@ -205,4 +208,5 @@ describe('renderer conformance: mapControls commit', () => mapCommitScenarios(ha
 describe('renderer conformance: mapControls change props', () => mapNamedScenarios(harness, kit));
 describe('renderer conformance: mapControls object form', () => mapObjectScenarios(harness, kit));
 describe('renderer conformance: mapControls field props', () => mapPropsScenarios(harness, kit));
+describe('renderer conformance: mapControls context and field views', () => mapContextScenarios(harness, kit));
 describe('renderer conformance: conditional reveal', () => revealScenarios(harness, kit));
