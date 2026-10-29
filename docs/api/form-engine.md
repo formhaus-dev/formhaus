@@ -40,7 +40,7 @@ const engine = new FormEngine(definition, initialValues, {
 
 `research` from [`@formhaus/core/research`](/guide/research) turns on the [option order](/spec#option-order) of fields with `randomize`. `seed` sets that order. Without it, the research module generates one. Pass the same seed, such as a session id, to show a respondent the same order again and to render the same order on the server and the client. Renderers take both as props.
 
-`messages` is a [message catalog](/spec#message-and-label-catalogs) or a function `(key, params, field) => string | undefined`. It wins over `definition.messages` and is fixed for the lifetime of the engine. `locale` takes a [locale source](#translations) or a list of them; it ranks above `definition.messages` and is read on every validation. Added in 1.3.0. Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction, unless `hiddenValues` is `'keep'`. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
+`messages` is a [message catalog](/spec#message-and-label-catalogs) or a function `(key, params, field) => string | undefined`. It wins over `definition.messages` and is fixed for the lifetime of the engine. `locale` takes a [locale source](#translations) or a list of them. A translation ranks above `definition.messages` and a catalog below it. It is read on every validation. Added in 1.3.0. Both `initialValues` and the options object are optional. Pass a values type to get typed `values` and `getSubmitValues()`: `new FormEngine<{ email: string }>(definition)`. It defaults to `Record<string, unknown>`. Values belonging to hidden fields or hidden steps are removed during construction, unless `hiddenValues` is `'keep'`. In routed forms, skipped branch answers are retained as draft values; see [active-path values](/guide/steps#route-between-branches).
 
 ## Definition checks
 
@@ -187,23 +187,24 @@ for (const node of engine.visibleNodes) {
 
 ## Translations
 
-The `locale` option takes one source or a list: a catalog such as `@formhaus/core/locales/ru`, a [translation file](/guide/translations#translation-files) with its `locale`, or `{ locale, translate, prefix? }`. The engine translates the texts of the form and resolves messages and labels from it. `engine.definition` is the translated definition. Renderers take `locale` as a prop, switch texts when it changes and keep the answers.
+The `locale` option takes one source or a list: catalogs such as `@formhaus/core/locales/ru`, and translations from `translation()` of a [translation file](/guide/translations#translation-files) or of `{ locale, translate, prefix? }`. The engine translates the texts of the form with the translations. `engine.definition` is the translated definition. Renderers take `locale` as a prop, switch texts when it changes and keep the answers.
 
 ```ts
-const engine = new FormEngine(definition, {}, { locale: [signupRu, ru] });
+const engine = new FormEngine(definition, {}, { locale: [translation(signupRu), ru] });
 ```
 
 `@formhaus/core/i18n` has the tools for translation files and servers. The main entry does not include it.
 
 ```ts
-import { localize, textSlots, translationIssues, translationTemplate } from '@formhaus/core/i18n';
+import { localize, textSlots, translation, translationIssues, translationTemplate } from '@formhaus/core/i18n';
 
-const { definition: localized, messages } = localize(definition, [signupRu, ru]);
+const { definition: localized, messages } = localize(definition, [translation(signupRu), ru]);
 const { errors } = validateSubmission(localized, values, { messages });
 ```
 
 | Export | Returns | Description |
 |---|---|---|
+| `translation(file)`, `translation({ locale, translate, prefix? })` | `Translation` | A `locale` source that translates the texts of the form |
 | `localize(definition, locale)` | `{ definition, messages, labels }` | The translated definition and the `messages` and `labels` functions of the same sources as the `locale` option |
 | `translationTemplate(definition)` | overlay | Skeleton with the source texts as values |
 | `textSlots(definition, { prefix? })` | `TextSlot[]` | `{ address, key, text, params, hash }` for every translatable text |

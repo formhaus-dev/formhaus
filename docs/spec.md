@@ -950,11 +950,12 @@ A message for a failed rule comes from the first of:
 
 1. The field message: a string `required`, `minLengthMessage`, `maxLengthMessage`, `minMessage`, `maxMessage`, `patternMessage` or `matchFieldMessage`.
 2. The `messages` option of the engine, the renderer or `validateSubmission()`.
-3. The `locale` sources, in order.
+3. The translations of the `locale` option, in order.
 4. `definition.messages`.
-5. The default.
+5. The catalogs of the `locale` option, in order.
+6. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then the `locale` sources, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then the translations of `locale`, then `definition.labels`, then the catalogs of `locale`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 
@@ -1027,7 +1028,7 @@ An overlay is a JSON object of translated texts, nested by address. Every leaf i
 }
 ```
 
-`localize(definition, overlay)` returns a copy of the definition:
+`localize(definition, translation(overlay))` returns a copy of the definition:
 
 - A text is replaced only by a non-empty string. Missing, empty and non-string entries keep the source text.
 - Entries without a source slot are ignored. An overlay never adds fields, options, rules or actions.
@@ -1038,11 +1039,11 @@ An overlay is a JSON object of translated texts, nested by address. Every leaf i
 
 ### Translate function
 
-`localize(definition, { locale, translate, prefix })` calls `translate(key, params, defaultText)` for each slot. The key is the explicit `i18n` key, or `<prefix>.<address>`, where `prefix` defaults to the form id. With `prefix: false` only explicit keys are asked. A result of `undefined`, `''` or the key itself, or a thrown error, means no translation, and the source text stays. `{name}` placeholders left in a result are filled in like overlay templates.
+`localize(definition, translation({ locale, translate, prefix }))` calls `translate(key, params, defaultText)` for each slot. The key is the explicit `i18n` key, or `<prefix>.<address>`, where `prefix` defaults to the form id. With `prefix: false` only explicit keys are asked. A result of `undefined`, `''` or the key itself, or a thrown error, means no translation, and the source text stays. `{name}` placeholders left in a result are filled in like overlay templates.
 
 Texts, options, action labels and field messages are translated once. For a rule without a field message, a result equal to `defaultText` is not written, so the catalog still applies. Catalog messages and labels are translated when they are shown, through the `messages` and `labels` functions that `localize()` returns.
 
-`localize()` also takes a list of overlays, catalogs and translate sources, the same list as the `locale` option of the engine and the renderers. For each text the first source that has it wins.
+`localize()` also takes a list of translations and catalogs, the same list as the `locale` option of the engine and the renderers.
 
 `lang` is metadata. It does not select a translation and does not set `dir`.
 

@@ -5,7 +5,7 @@ description: "Translate Formhaus forms: ready-made language catalogs, message an
 
 # Translations
 
-A definition keeps texts in its source language. The `locale` prop takes everything for one language: a ready-made catalog, a translation file of the form, or a translate function with your app's keys.
+A definition keeps texts in its source language. The `locale` prop takes everything for one language: a ready-made catalog, and a translation of the form from a translation file or from your app's keys.
 
 ```bash
 npm install @formhaus/core @formhaus/react   # or @formhaus/vue
@@ -51,16 +51,15 @@ Ready-made catalogs translate the message and label codes into `es`, `fr`, `fr-C
 
 ```tsx
 import ru from '@formhaus/core/locales/ru';
-import signupRu from './signup.ru.json';
 
-<FormRenderer definition={definition} locale={[signupRu, ru]} onSubmit={save} />
+<FormRenderer definition={definition} locale={ru} onSubmit={save} />
 ```
 
 ```vue
-<FormRenderer :definition="definition" :locale="[signupRu, ru]" @submit="save" />
+<FormRenderer :definition="definition" :locale="ru" @submit="save" />
 ```
 
-`locale` takes one source or a list. A source is a catalog, a [translation file](#translation-files) of the form or a [translate function](#translation-keys). For each text the first source that has it wins. The first source also sets `lang` of the form. `@formhaus/core/locales/ru` is typed. `@formhaus/core/locales/ru.json` is the same catalog as plain JSON. `FormEngine` takes `locale` as an option.
+`locale` takes one source or a list: catalogs and `translation()` of a [translation file](#translation-files) or of your [translation keys](#translation-keys). A translation also sets `lang` of the form. `@formhaus/core/locales/ru` is typed. `@formhaus/core/locales/ru.json` is the same catalog as plain JSON. `FormEngine` takes `locale` as an option.
 
 A new `locale` switches the texts and keeps the answers. Shown errors switch on the next validation.
 
@@ -77,11 +76,12 @@ A new `locale` switches the texts and keeps the answers. Shown errors switch on 
 For each key, the first source that has it wins:
 
 1. `messages` and `labels` props.
-2. `locale` sources, in array order.
+2. Translations in `locale`, in array order.
 3. `messages` and `labels` of the definition.
-4. Built-in English.
+4. Catalogs in `locale`, in array order.
+5. Built-in English.
 
-Field messages such as `minLengthMessage` win over all of them, and `locale` translates them like other texts of the form. A translate function that returns the English default for a key leaves the key to the next source.
+Field messages such as `minLengthMessage` win over all of them, and a translation translates them like other texts of the form. A translate function that returns the English default for a key leaves the key to the next source.
 
 Put your own catalog first to change a few texts:
 
@@ -151,11 +151,12 @@ Texts without a key keep the source text with `prefix: false`. Without it, Formh
 ```tsx
 import { useTranslation } from 'react-i18next';
 import { FormRenderer } from '@formhaus/react';
+import { translation } from '@formhaus/core/i18n';
 import definition from './signup.json';
 
 export function Signup() {
   const { t, i18n } = useTranslation('forms');
-  const locale = { locale: i18n.language, translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }), prefix: false };
+  const locale = translation({ locale: i18n.language, translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }), prefix: false });
   return <FormRenderer definition={definition} locale={locale} onSubmit={save} />;
 }
 ```
@@ -171,14 +172,17 @@ Lokalise: export the `forms` namespace as nested JSON with i18next placeholders,
 import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FormRenderer } from '@formhaus/vue';
+import { translation } from '@formhaus/core/i18n';
 import definition from './signup.json';
 
 const { t, te, locale } = useI18n();
-const source = computed(() => ({
-  locale: locale.value,
-  translate: (key: string, params: Record<string, unknown>, fallback: string) => (te(key) ? t(key, params) : fallback),
-  prefix: false as const,
-}));
+const source = computed(() =>
+  translation({
+    locale: locale.value,
+    translate: (key, params, fallback) => (te(key) ? t(key, params) : fallback),
+    prefix: false,
+  }),
+);
 </script>
 
 <template>
@@ -213,20 +217,24 @@ A translation file holds the texts of one form in one language, nested by step i
 
 ```tsx
 import ru from '@formhaus/core/locales/ru';
+import { translation } from '@formhaus/core/i18n';
 import signupRu from './signup.ru.json';
 
-<FormRenderer definition={definition} locale={[signupRu, ru]} onSubmit={save} />
+<FormRenderer definition={definition} locale={[translation(signupRu), ru]} onSubmit={save} />
 ```
 
 Load the file for a language before rendering:
 
 ```ts
-import type { LocaleSource } from '@formhaus/core';
+import { translation } from '@formhaus/core/i18n';
+import type { Translation } from '@formhaus/core';
 
-async function loadLocale(lang: string): Promise<LocaleSource | undefined> {
-  return lang === 'en' ? undefined : (await import(`./signup.${lang}.json`)).default;
+async function loadTranslation(lang: string): Promise<Translation | undefined> {
+  return lang === 'en' ? undefined : translation((await import(`./signup.${lang}.json`)).default);
 }
 ```
+
+`translation()` lives in `@formhaus/core/i18n`, so forms without one do not load it.
 
 A message or label in the file can be an object of [plural forms](#plurals).
 
@@ -276,10 +284,10 @@ Use letters, digits, `-` and `_` in form ids, step ids, field keys and option va
 Validate with the localized definition so 422 errors come back in the user's language:
 
 ```ts
-import { localize } from '@formhaus/core/i18n';
+import { localize, translation } from '@formhaus/core/i18n';
 import { validateSubmission } from '@formhaus/core/server';
 
-const { definition: localized, messages } = localize(definition, locales[lang]);
+const { definition: localized, messages } = localize(definition, [translation(files[lang]), catalogs[lang]]);
 const { errors } = validateSubmission(localized, body.values, { skippedSteps: body.skippedSteps, messages });
 ```
 
@@ -290,13 +298,13 @@ The MCP tool `translation_template` returns the translation file skeleton and th
 ## Limits
 
 - Options from `optionsFrom` and messages from custom validators are not translated here; translate them in the provider or the validator.
-- `messages` and `labels` of the definition have no plural forms. Use a `locale` source, or choose the plural in a translate function.
+- `messages` and `labels` of the definition have no plural forms. Use a translation file or a catalog, or choose the plural in a translate function.
 - `lang` does not set `dir` or right-to-left layout.
 - `localize()` throws on the errors of `checkTranslations()`, such as an `i18n` key for a text the definition does not have.
 
 ## Migrate from 1.6
 
-`useLocalizedForm()` and the `@formhaus/react/i18n` and `@formhaus/vue/i18n` entries are gone. Pass the source to `locale`, with its language tag:
+`useLocalizedForm()` and the `@formhaus/react/i18n` and `@formhaus/vue/i18n` entries are gone. Wrap the source in `translation()` with its language tag and pass it to `locale`:
 
 ```tsx
 // Before
@@ -304,7 +312,7 @@ const form = useLocalizedForm(definition, { overlay, lang: 'ru' });
 <FormRenderer {...form} locale={ru} onSubmit={save} />
 
 // After
-<FormRenderer definition={definition} locale={[{ ...overlay, locale: 'ru' }, ru]} onSubmit={save} />
+<FormRenderer definition={definition} locale={[translation({ ...overlay, locale: 'ru' }), ru]} onSubmit={save} />
 ```
 
-A translate source takes `locale` in place of `lang`, and `localize(definition, source)` takes the same sources as `locale`. `locale` texts now win over `messages` and `labels` of the definition.
+A translate source takes `locale` in place of `lang`, and `localize(definition, locale)` takes the same list as the `locale` prop.

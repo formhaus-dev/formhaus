@@ -27,6 +27,8 @@ Not covered:
 - CSS values and the look of `style.css` and `tokens/*`. A minor version can change them and lists each change in the [changelog](/changelog).
 - `@formhaus/mcp` and the `formhaus` CLI, which have their own versions.
 
+1.7 changed the translation API of `/i18n` and the React and Vue `i18n` entries, against this rule. See [Migrate from 1.6](/guide/translations#migrate-from-1-6).
+
 Before 1.0, a minor version can break these parts and lists each break in the [changelog](/changelog).
 
 0.22 removed the APIs deprecated in 0.x. See [Migrate to 0.22](/migrate/0.22), or [Migrate from 0.11 to 1.x](/migrate/1.x) for every break since 0.11.
