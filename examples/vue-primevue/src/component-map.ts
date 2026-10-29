@@ -1,5 +1,5 @@
 import { type DateType, fromDate, toDate } from '@formhaus/core/fields';
-import type { FieldComponentMap, FieldProps } from '@formhaus/vue';
+import { type FieldComponentMap, type FieldProps, HiddenField } from '@formhaus/vue';
 import { type ControlOption, mapControls } from '@formhaus/vue/controls';
 import Checkbox from 'primevue/checkbox';
 import DatePicker from 'primevue/datepicker';
@@ -178,4 +178,5 @@ export const components: FieldComponentMap = {
     },
   }),
   file: FileField,
+  hidden: HiddenField,
 };
