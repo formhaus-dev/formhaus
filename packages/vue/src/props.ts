@@ -3,19 +3,31 @@ import type {
   FieldOption,
   FormAction,
   FormActionsView,
+  FormDefinition,
   FormField,
   FormGroup,
+  FormResearch,
   FormSection,
+  LabelSource,
   RevealView,
   RootProps,
 } from '@formhaus/core';
 import type { Component, PropType, VNode } from 'vue';
-import type { FieldComponentProps, FormStepStatus, GroupItemComponentProps, HeadingLevel } from './types';
+import type {
+  FieldComponentMap,
+  FieldComponentProps,
+  FormRendererProps,
+  FormStepStatus,
+  GroupItemComponentProps,
+  HeadingLevel,
+  LayoutComponentMap,
+} from './types';
 
-const required = <T>(type: PropType<T>) => ({ type, required: true as const });
-const any = <T>() => null as unknown as PropType<T>;
-const callback = <T extends (...args: never[]) => unknown>() => required(Function as PropType<T>);
+export const required = <T>(type: PropType<T>) => ({ type, required: true as const });
+export const any = <T>() => null as unknown as PropType<T>;
+export const callback = <T extends (...args: never[]) => unknown>() => required(Function as PropType<T>);
 const rootProps = Object as PropType<RootProps>;
+export const labelSource = [Object, Function] as PropType<LabelSource>;
 
 export const fieldComponentProps = {
   id: String,
@@ -155,4 +167,45 @@ export const errorSummaryComponentProps = {
 export const formErrorsComponentProps = {
   rootProps: /* @__PURE__ */ required(rootProps),
   errors: /* @__PURE__ */ required(Array as PropType<readonly string[]>),
+};
+
+type Renderer = Required<FormRendererProps>;
+
+export const formRendererProps = {
+  onBeforeStepChange: Function as PropType<Renderer['onBeforeStepChange']>,
+  onAfterStepChange: Function as PropType<Renderer['onAfterStepChange']>,
+  onBeforeSubmit: Function as PropType<Renderer['onBeforeSubmit']>,
+  onAfterSubmit: Function as PropType<Renderer['onAfterSubmit']>,
+  onWarning: Function as PropType<Renderer['onWarning']>,
+  messages: [Object, Function] as PropType<Renderer['messages']>,
+  onError: Function as PropType<Renderer['onError']>,
+  onSubmit: Function as PropType<Renderer['onSubmit']>,
+  headingLevel: { type: Number as PropType<HeadingLevel>, default: 2 },
+  definition: /* @__PURE__ */ required(Object as PropType<FormDefinition>),
+  initialValues: Object as PropType<Renderer['initialValues']>,
+  keepValues: Boolean,
+  validators: Object as PropType<Renderer['validators']>,
+  onStepValidate: Function as PropType<Renderer['onStepValidate']>,
+  onValidate: Function as PropType<Renderer['onValidate']>,
+  validateWithRules: Boolean,
+  lang: String,
+  locale: [Object, Array] as PropType<Renderer['locale']>,
+  formatRecall: Function as PropType<Renderer['formatRecall']>,
+  seed: String,
+  research: Object as PropType<FormResearch>,
+  hiddenValues: String as PropType<Renderer['hiddenValues']>,
+  errors: Object as PropType<Renderer['errors']>,
+  labels: labelSource,
+  errorSummary: { type: [Boolean, String] as PropType<Renderer['errorSummary']>, default: true },
+  confirmRemove: { type: Boolean, default: true },
+  stepErrorMarks: Boolean,
+  stepFocus: String as PropType<Renderer['stepFocus']>,
+  conditionalReveal: Boolean,
+  loading: { type: Boolean, default: false },
+  components: Object as PropType<FieldComponentMap>,
+  layout: Object as PropType<LayoutComponentMap>,
+  actionsComponent: /* @__PURE__ */ any<Component>(),
+  progressComponent: /* @__PURE__ */ any<Component>(),
+  optionsProviders: Object as PropType<Renderer['optionsProviders']>,
+  testIds: [Boolean, Function] as PropType<Renderer['testIds']>,
 };

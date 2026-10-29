@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import type { FormField } from '@formhaus/core';
 import { computed, h } from 'vue';
 import { useLabel } from '../composables/useLabel';
+import { fieldShellProps } from '../innerProps';
 import { fieldAria, fieldIds } from './useField';
 
-const props = defineProps<{
-  id?: string;
-  field: FormField;
-  error?: string;
-  variant?: 'checkbox' | 'switch' | 'radio' | 'multiselect' | 'scale' | 'rating';
-  testId?: string;
-  errorFirst?: boolean;
-}>();
+const props = defineProps(fieldShellProps);
 
 const text = useLabel();
 const inline = computed(() => props.variant === 'checkbox' || props.variant === 'switch');

@@ -29,15 +29,17 @@ import type {
   fieldComponentProps,
   formActionsEmits,
   formActionsProps,
+  formRendererProps,
   formStepProgressProps,
   groupComponentProps,
   groupItemComponentProps,
   sectionComponentProps,
 } from './props';
-import type { EmitsOf, FieldResolverProps, FormRendererEvents, FormRendererProps, TypedComponent, WithSlots } from './types';
+import type { formhausFieldProps } from './innerProps';
+import type { EmitsOf, FormRendererEvents, TypedComponent, WithSlots } from './types';
 
 type RendererComponent = TypedComponent<
-  FormRendererProps,
+  typeof formRendererProps,
   EmitsOf<FormRendererEvents>,
   Omit<FormRendererHandle, 'values'> & { values: Readonly<Ref<FormRendererHandle['values']>> }
 >;
@@ -48,7 +50,7 @@ type FieldComponent = TypedComponent<typeof fieldComponentProps, Omit<FieldCompo
 
 export const FormRenderer: RendererComponent = FormRendererComponent;
 export const HeadlessFormRenderer: RendererComponent = HeadlessFormRendererComponent;
-export const FormhausField: TypedComponent<FieldResolverProps, FieldComponentEmits> = FormhausFieldComponent;
+export const FormhausField: TypedComponent<typeof formhausFieldProps, FieldComponentEmits> = FormhausFieldComponent;
 export const FormActions: TypedComponent<typeof formActionsProps, EmitsOf<typeof formActionsEmits>> = FormActionsComponent;
 export const DefaultConfirmDialog: TypedComponent<typeof confirmDialogComponentProps> = DefaultConfirmDialogComponent;
 export const DefaultGroup: TypedComponent<typeof groupComponentProps> = DefaultGroupComponent;

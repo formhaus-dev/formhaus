@@ -6,10 +6,11 @@ import { CloudError, type CloudNoticeActionFn } from '@formhaus/core/cloud';
 import { focusProblem } from '@formhaus/core/internal';
 import { CLOUD_NOTICE, cloudLabel, loadMessage, localNotice } from '@formhaus/core/internal/cloud';
 import CloudNotice from './CloudNotice.vue';
-import type { FormhausFormEvents, FormhausFormProps, FormhausFormSlots } from './types';
+import { formhausFormProps } from './props';
+import type { FormhausFormEvents, FormhausFormSlots } from './types';
 import { useCloudForm } from './useCloudForm';
 
-const props = withDefaults(defineProps<FormhausFormProps>(), { confirmRemove: true, errorSummary: true, draftStore: undefined });
+const props = defineProps(formhausFormProps);
 defineSlots<FormhausFormSlots>();
 const emit = defineEmits<FormhausFormEvents>();
 const root = ref<HTMLDivElement | null>(null);

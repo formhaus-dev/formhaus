@@ -20,15 +20,11 @@ import { useFormEngine } from './composables/useFormEngine';
 import { useStepTexts } from './composables/useStepTexts';
 import { useValuesSync } from './composables/useValuesSync';
 import { useNodeProps } from './composables/useNodeProps';
-import type { FieldsContainerProps, FormRendererEmits, FormRendererProps } from './types';
+import { formRendererProps } from './props';
+import type { FieldsContainerProps, FormRendererEmits } from './types';
 import { DefaultSummary } from './DefaultSummary';
 
-const props = withDefaults(defineProps<FormRendererProps>(), {
-  loading: false,
-  headingLevel: 2,
-  confirmRemove: true,
-  errorSummary: true,
-});
+const props = defineProps(formRendererProps);
 
 const emit = defineEmits<FormRendererEmits>();
 

@@ -1,9 +1,10 @@
 import type { EmitsOf, TypedComponent, WithSlots } from '../types';
 import FormhausFormComponent from './FormhausForm.vue';
+import type { formhausFormProps } from './props';
 import type { FormhausFormEvents, FormhausFormProps, FormhausFormSlots } from './types';
 
 export const FormhausForm: WithSlots<
-  TypedComponent<FormhausFormProps, EmitsOf<FormhausFormEvents>>,
+  TypedComponent<typeof formhausFormProps, EmitsOf<FormhausFormEvents>>,
   FormhausFormSlots
 > = FormhausFormComponent;
 export type { FormhausFormProps };

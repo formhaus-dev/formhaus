@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { FieldOption } from '@formhaus/core';
 import { imageSource } from '@formhaus/core/internal';
 import { computed, ref } from 'vue';
 import { useLabel } from '../composables/useLabel';
+import { optionImageProps } from '../innerProps';
 
-const props = defineProps<{ option: FieldOption }>();
+const props = defineProps(optionImageProps);
 const image = computed(() => imageSource(props.option.image));
 const text = useLabel();
 const dialog = ref<HTMLDialogElement>();

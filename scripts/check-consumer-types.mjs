@@ -92,6 +92,7 @@ export function Localized() {
   'src/vue-props.ts': `import { defineComponent, h, type ExtractPublicPropTypes, type PropType } from 'vue';
 import * as Formhaus from '@formhaus/vue';
 import { controlShellProps, mapControls } from '@formhaus/vue/controls';
+import { FormhausForm, type FormhausFormProps } from '@formhaus/vue/cloud';
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 type Props<T> = ExtractPublicPropTypes<T>;
@@ -103,6 +104,7 @@ export const same: [
   Same<Props<typeof Formhaus.confirmDialogComponentProps>, Formhaus.ConfirmDialogComponentProps>,
   Same<Props<typeof Formhaus.formActionsProps>, Formhaus.FormActionsProps>,
   Same<Props<typeof Formhaus.formStepProgressProps>, Formhaus.FormStepProgressProps>,
+  Same<Props<typeof Formhaus.formRendererProps>, Formhaus.FormRendererProps>,
   Same<keyof Props<typeof Formhaus.fieldComponentProps>, keyof Formhaus.FieldComponentProps>,
   Same<keyof Props<typeof Formhaus.sectionComponentProps>, keyof Formhaus.SectionComponentProps>,
   Same<keyof Props<typeof Formhaus.groupComponentProps>, keyof Formhaus.GroupComponentProps>,
@@ -110,7 +112,15 @@ export const same: [
   Same<keyof Props<typeof Formhaus.confirmDialogComponentProps>, keyof Formhaus.ConfirmDialogComponentProps>,
   Same<keyof Props<typeof Formhaus.formActionsProps>, keyof Formhaus.FormActionsProps>,
   Same<keyof Props<typeof Formhaus.formStepProgressProps>, keyof Formhaus.FormStepProgressProps>,
-] = [true, true, true, true, true, true, true, true, true, true, true, true, true, true];
+  Same<keyof Props<typeof Formhaus.formRendererProps>, keyof Formhaus.FormRendererProps>,
+] = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
+type Declared<C extends abstract new (...args: never) => { $props: object }, P> = Pick<InstanceType<C>['$props'], keyof P & keyof InstanceType<C>['$props']>;
+export const declared: [
+  Same<Declared<typeof Formhaus.FormRenderer, Formhaus.FormRendererProps>, Formhaus.FormRendererProps>,
+  Same<Declared<typeof Formhaus.HeadlessFormRenderer, Formhaus.FormRendererProps>, Formhaus.FormRendererProps>,
+  Same<Declared<typeof Formhaus.FormhausField, Formhaus.FormhausFieldProps>, Formhaus.FormhausFieldProps>,
+  Same<Declared<typeof FormhausForm, FormhausFormProps>, FormhausFormProps>,
+] = [true, true, true, true];
 export const TypedField = defineComponent({
   props: Formhaus.fieldComponentProps,
   emits: Formhaus.fieldComponentEmits,

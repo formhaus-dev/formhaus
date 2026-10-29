@@ -6,9 +6,10 @@ import HeadlessFormRenderer from './HeadlessFormRenderer.vue';
 import { withDefaultFields } from './constants';
 import { useListening } from './composables/useListening';
 import type { FormEvent } from '@formhaus/core';
-import type { FormRendererEmits, FormRendererHandle, FormRendererProps } from './types';
+import { formRendererProps } from './props';
+import type { FormRendererEmits, FormRendererHandle } from './types';
 
-const props = withDefaults(defineProps<FormRendererProps>(), { loading: false, confirmRemove: true, errorSummary: true });
+const props = defineProps(formRendererProps);
 
 const emit = defineEmits<FormRendererEmits>();
 

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { RevealView } from '@formhaus/core';
-import type { VNode } from 'vue';
+import { revealSlotProps } from '../innerProps';
 
-defineProps<{ reveal?: RevealView<VNode> }>();
+defineProps(revealSlotProps);
 </script>
 
 <template>
