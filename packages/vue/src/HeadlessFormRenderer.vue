@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { errorSummary, type FormEvent, type LabelKey } from '@formhaus/core';
+import { errorSummary, type FormEvent, type FormField, type LabelKey } from '@formhaus/core';
 import {
   actionTestIds,
   actionValues,
   actionsView,
   hasValue,
+  engineFileLimit,
   engineLabel,
   ROOT_PROPS,
   shouldApplyExternalErrors,
@@ -140,6 +141,7 @@ defineExpose({
 
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => engineLabel(form.engine, key, params, props.labels);
 provide('fhLabel', label);
+provide('fhFileLimit', (field: FormField, max: number) => engineFileLimit(form.engine)(field, max));
 
 const DefaultFields: FunctionalComponent<FieldsContainerProps> = (fields, { slots }) =>
   h('div', { class: 'fh-form__fields', ...fields.rootProps }, slots.default?.());
