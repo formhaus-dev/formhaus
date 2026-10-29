@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.7.0
+        version: 1.7.0
       '@formhaus/react':
-        specifier: ^1.0.0
-        version: 1.0.0(@formhaus/core@1.0.0)(react@19.3.1)
+        specifier: ^1.7.0
+        version: 1.7.0(@formhaus/core@1.7.0)(react@19.3.1)
       next:
         specifier: ^16.4.2
         version: 16.4.2(@types/node@22.20.5)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -42,15 +42,15 @@ packages:
   '@emnapi/runtime@1.11.3':
     resolution: {integrity: sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==}
 
-  '@formhaus/core@1.0.0':
-    resolution: {integrity: sha512-1cd92SOv9MZNn59TAYASOL71CCzyL7ZLoiX5unh0lIDTPaDCkZZ4HanF4F6ekkPxy1QPe854ejBRdZt7T5OsxQ==}
+  '@formhaus/core@1.7.0':
+    resolution: {integrity: sha512-/itWz+qbfhvc9OGytk46eFDZbZv9uHskNL9SP3qmBWg77jS/2dpSKnklfmU/shFvD/YJJn0EASg9XK5ExwQbCw==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.0.0':
-    resolution: {integrity: sha512-aCdRxher7IiEhitBwTowaUDo7xntkxnnUEFhokVBEKWP+S6iVMk97vUZ830g3B65dHHYbf7vTYTVkO4stmJURw==}
+  '@formhaus/react@1.7.0':
+    resolution: {integrity: sha512-A/HBk2i0VOpB6KUBw9BBte3P+6e+tE51nF90J25Oxs+OcuJy08TYHC33UR6Yx/iheXaL5G8FpVXtCzAROHzyVw==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.0.0
+      '@formhaus/core': ~1.7.0
       react: ^18.0.0 || ^19.0.0
 
   '@img/colour@1.1.0':
@@ -396,11 +396,11 @@ snapshots:
       tslib: 2.8.1
     optional: true
 
-  '@formhaus/core@1.0.0': {}
+  '@formhaus/core@1.7.0': {}
 
-  '@formhaus/react@1.0.0(@formhaus/core@1.0.0)(react@19.3.1)':
+  '@formhaus/react@1.7.0(@formhaus/core@1.7.0)(react@19.3.1)':
     dependencies:
-      '@formhaus/core': 1.0.0
+      '@formhaus/core': 1.7.0
       react: 19.3.1
 
   '@img/colour@1.1.0':

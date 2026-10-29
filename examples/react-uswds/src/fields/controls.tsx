@@ -1,4 +1,5 @@
-import { toggleOption } from '@formhaus/core/fields';
+import { type FormField, getDefaultMessage } from '@formhaus/core';
+import { addFiles, fileEntries, fileLimit, removeFile, toggleOption } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
 import { type AriaAttributes, type ChangeEvent, type ComponentProps, Fragment, useState } from 'react';
@@ -50,30 +51,68 @@ export function Select({ options, placeholder, ...props }: ComponentProps<'selec
   );
 }
 
-export function FileInput({ file, ...props }: ComponentProps<'input'> & { file: unknown }) {
-  const picked = file instanceof File ? file : null;
+export function FileInput({ f, field, onChange, ...props }: ComponentProps<'input'> & { f: FieldProps; field: FormField }) {
+  const [notice, setNotice] = useState('');
+  const list = !!props.multiple;
+  const max = fileLimit(field);
+  const disabled = props.disabled || (list && addFiles(f.value, []).length >= max);
+  const picked = !list && f.value instanceof File ? f.value : null;
+  const entries = list ? fileEntries(f.value) : [];
+  const add = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(target.files ?? []);
+    target.value = '';
+    if (!files.length) return;
+    const next = addFiles(f.value, files, max);
+    setNotice(
+      next.length < addFiles(f.value, files).length ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max })) : '',
+    );
+    f.change(next);
+  };
   return (
-    <div className={props.disabled ? 'usa-file-input usa-file-input--disabled' : 'usa-file-input'}>
-      <div className={picked ? 'usa-file-input__target has-file' : 'usa-file-input__target'}>
-        {picked ? (
-          <>
-            <div className="usa-file-input__preview-heading">
-              Selected file <span className="usa-file-input__choose">Change file</span>
+    <>
+      <div className={disabled ? 'usa-file-input usa-file-input--disabled' : 'usa-file-input'}>
+        <div className={picked ? 'usa-file-input__target has-file' : 'usa-file-input__target'}>
+          {picked ? (
+            <>
+              <div className="usa-file-input__preview-heading">
+                Selected file <span className="usa-file-input__choose">Change file</span>
+              </div>
+              <div className="usa-file-input__preview" aria-hidden="true">
+                {picked.name}
+              </div>
+            </>
+          ) : (
+            <div className="usa-file-input__instructions" aria-hidden="true">
+              <span className="usa-file-input__drag-text">{list ? 'Drag files here or ' : 'Drag file here or '}</span>
+              <span className="usa-file-input__choose">choose from folder</span>
             </div>
-            <div className="usa-file-input__preview" aria-hidden="true">
-              {picked.name}
-            </div>
-          </>
-        ) : (
-          <div className="usa-file-input__instructions" aria-hidden="true">
-            <span className="usa-file-input__drag-text">Drag file here or </span>
-            <span className="usa-file-input__choose">choose from folder</span>
-          </div>
-        )}
-        <div className="usa-file-input__box" />
-        <input {...props} type="file" className="usa-file-input__input" />
+          )}
+          <div className="usa-file-input__box" />
+          <input {...props} type="file" disabled={disabled} className="usa-file-input__input" onChange={list ? add : onChange} />
+        </div>
       </div>
-    </div>
+      {entries.length > 0 && (
+        <ul className="files">
+          {entries.map(({ index, name }) => (
+            <li key={index} className="files__item">
+              <span className="files__name">{name}</span>
+              <button
+                type="button"
+                className="usa-button usa-button--unstyled"
+                disabled={props.disabled}
+                onClick={() => {
+                  setNotice('');
+                  f.change(removeFile(f.value, index));
+                }}
+              >
+                Remove<span className="usa-sr-only"> {name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+      {notice && <div className="usa-hint files__notice">{notice}</div>}
+    </>
   );
 }
 

@@ -9,11 +9,11 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.6.0
-        version: 1.6.0
+        specifier: ^1.7.0
+        version: 1.7.0
       '@formhaus/react':
-        specifier: ^1.6.0
-        version: 1.6.0(@formhaus/core@1.6.0)(react@19.3.1)
+        specifier: ^1.7.0
+        version: 1.7.0(@formhaus/core@1.7.0)(react@19.3.1)
       '@mantine/core':
         specifier: ^9.7.3
         version: 9.7.3(@mantine/hooks@9.7.3(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
@@ -75,15 +75,15 @@ packages:
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
 
-  '@formhaus/core@1.6.0':
-    resolution: {integrity: sha512-mCM4u2csT1PP0UOOFH2tWeU5+bP0ClMZMXEP3Tn4qN4/e7bvlmXm+pnq/G1fi7sHDBMCEWZPMaEeWyacfy9vfg==}
+  '@formhaus/core@1.7.0':
+    resolution: {integrity: sha512-/itWz+qbfhvc9OGytk46eFDZbZv9uHskNL9SP3qmBWg77jS/2dpSKnklfmU/shFvD/YJJn0EASg9XK5ExwQbCw==}
     engines: {node: '>=22.12'}
 
-  '@formhaus/react@1.6.0':
-    resolution: {integrity: sha512-8etb74YYe1MOIAKxORip6HKxfiIogPm3RBf4gvboZ/meQ8QejuINEHBIrLN2Gzodgm8w2FceU/vp6cB5H/IvxA==}
+  '@formhaus/react@1.7.0':
+    resolution: {integrity: sha512-A/HBk2i0VOpB6KUBw9BBte3P+6e+tE51nF90J25Oxs+OcuJy08TYHC33UR6Yx/iheXaL5G8FpVXtCzAROHzyVw==}
     engines: {node: '>=22.12'}
     peerDependencies:
-      '@formhaus/core': ~1.6.0
+      '@formhaus/core': ~1.7.0
       react: ^18.0.0 || ^19.0.0
 
   '@mantine/core@9.7.3':
@@ -534,11 +534,11 @@ snapshots:
 
   '@floating-ui/utils@0.2.12': {}
 
-  '@formhaus/core@1.6.0': {}
+  '@formhaus/core@1.7.0': {}
 
-  '@formhaus/react@1.6.0(@formhaus/core@1.6.0)(react@19.3.1)':
+  '@formhaus/react@1.7.0(@formhaus/core@1.7.0)(react@19.3.1)':
     dependencies:
-      '@formhaus/core': 1.6.0
+      '@formhaus/core': 1.7.0
       react: 19.3.1
 
   '@mantine/core@9.7.3(@mantine/hooks@9.7.3(react@19.3.1))(@types/react@19.3.0)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)':

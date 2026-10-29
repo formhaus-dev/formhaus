@@ -1,23 +1,10 @@
 import { toDate } from '@formhaus/core/fields';
 import type { FieldComponentMap, FieldProps, LayoutComponentMap } from '@formhaus/react';
 import { type ControlOption, mapControls } from '@formhaus/react/controls';
-import {
-  AutoComplete,
-  Button,
-  Checkbox,
-  DatePicker,
-  Input,
-  InputNumber,
-  Radio,
-  Rate,
-  Select,
-  Switch,
-  TimePicker,
-  Upload,
-  type UploadProps,
-} from 'antd';
+import { AutoComplete, Checkbox, DatePicker, Input, InputNumber, Radio, Rate, Select, Switch, TimePicker } from 'antd';
 import dayjs from 'dayjs';
 import { Choices } from './fields/Choices';
+import { FileUpload, upload } from './fields/FileUpload';
 import { MatrixRow } from './fields/MatrixRow';
 import { Shell } from './fields/Shell';
 import { ConfirmDialog, FormActions, Group, GroupItem, Section } from './layout/Containers';
@@ -27,15 +14,6 @@ const picked = (f: FieldProps) => {
   const date = toDate(f.value);
   return { value: date && dayjs(date), style: { width: '100%' } };
 };
-
-const upload = (f: FieldProps): UploadProps => ({
-  id: undefined,
-  maxCount: 1,
-  fileList: f.value instanceof File ? [{ uid: f.value.name, name: f.value.name, status: 'done' }] : [],
-  beforeUpload: () => false,
-  onChange: ({ file }) => f.change(file.status === 'removed' ? null : (file.originFileObj ?? file)),
-  children: <Button {...f.attrs}>Choose file</Button>,
-});
 
 const counter = (f: FieldProps) => (f.maxLength ? { count: { show: true, max: f.maxLength } } : {});
 
@@ -81,7 +59,7 @@ export const components: FieldComponentMap = {
         props: () => ({ optionType: 'button', buttonStyle: 'solid', block: true }),
       },
       rating: { component: Rate, props: (_, options) => ({ 'aria-required': undefined, count: options.length }) },
-      file: { component: Upload, props: upload },
+      file: { component: FileUpload, props: (f, _, { field }) => upload(f, field) },
     },
   }),
 };

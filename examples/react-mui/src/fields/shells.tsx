@@ -1,3 +1,5 @@
+import { type FormField, getDefaultMessage } from '@formhaus/core';
+import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import Box from '@mui/material/Box';
@@ -6,6 +8,9 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
 import { styled } from '@mui/material/styles';
 import { type InputHTMLAttributes, type ReactElement, useState } from 'react';
@@ -107,43 +112,92 @@ const HiddenInput = styled('input')({
 });
 
 type FilePickerProps = ButtonProps<'label'> &
-  Pick<InputHTMLAttributes<HTMLInputElement>, 'name' | 'accept' | 'onChange'> & {
+  Pick<InputHTMLAttributes<HTMLInputElement>, 'name' | 'accept' | 'multiple' | 'onChange'> & {
+    f: FieldProps;
+    field: FormField;
     'aria-required'?: boolean;
     'aria-invalid'?: boolean;
     'aria-describedby'?: string;
     'data-testid'?: string;
   };
 
-export function FilePicker({ id, name, accept, onChange, disabled, 'data-testid': testId, ...aria }: FilePickerProps) {
+export function FilePicker({ f, field, id, name, accept, multiple, onChange, disabled, 'data-testid': testId, ...aria }: FilePickerProps) {
   const [file, setFile] = useState('');
+  const [notice, setNotice] = useState('');
+  const max = fileLimit(field);
+  const full = multiple && addFiles(f.value, []).length >= max;
+  const entries = multiple ? fileEntries(f.value) : [];
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
-      <Button
-        component="label"
-        id={`${id}-button`}
-        variant="outlined"
-        disabled={disabled}
-        sx={{ '&:focus-within': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 } }}
-      >
-        Choose file
-        <HiddenInput
-          id={id}
-          type="file"
-          name={name}
-          accept={accept}
-          disabled={disabled}
-          data-testid={testId}
-          aria-labelledby={aria['aria-labelledby']}
-          aria-describedby={aria['aria-describedby']}
-          aria-invalid={aria['aria-invalid']}
-          aria-required={aria['aria-required']}
-          onChange={(event) => {
-            setFile(event.target.files?.[0]?.name ?? '');
-            onChange?.(event);
-          }}
-        />
-      </Button>
-      {file && <Typography variant="body2">{file}</Typography>}
-    </Box>
+    <>
+      <Box sx={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap', gap: 1.5 }}>
+        <Button
+          component="label"
+          id={`${id}-button`}
+          variant="outlined"
+          disabled={disabled || full}
+          sx={{ '&:focus-within': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 } }}
+        >
+          {multiple ? 'Add files' : 'Choose file'}
+          <HiddenInput
+            id={id}
+            type="file"
+            name={name}
+            accept={accept}
+            multiple={multiple}
+            disabled={disabled || full}
+            data-testid={testId}
+            aria-labelledby={aria['aria-labelledby']}
+            aria-describedby={aria['aria-describedby']}
+            aria-invalid={aria['aria-invalid']}
+            aria-required={aria['aria-required']}
+            onChange={(event) => {
+              if (!multiple) {
+                setFile(event.target.files?.[0]?.name ?? '');
+                return onChange?.(event);
+              }
+              const picked = Array.from(event.target.files ?? []);
+              event.target.value = '';
+              if (!picked.length) return;
+              const next = addFiles(f.value, picked, max);
+              setNotice(
+                next.length < addFiles(f.value, picked).length
+                  ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max }))
+                  : '',
+              );
+              f.change(next);
+            }}
+          />
+        </Button>
+        {file && <Typography variant="body2">{file}</Typography>}
+      </Box>
+      {entries.length > 0 && (
+        <List dense disablePadding sx={{ mt: 1 }}>
+          {entries.map(({ index, name }) => (
+            <ListItem
+              key={index}
+              divider
+              disableGutters
+              secondaryAction={
+                <Button
+                  size="small"
+                  color="error"
+                  aria-label={`Remove ${name}`}
+                  disabled={disabled}
+                  onClick={() => {
+                    setNotice('');
+                    f.change(removeFile(f.value, index));
+                  }}
+                >
+                  Remove
+                </Button>
+              }
+            >
+              <ListItemText primary={name} slotProps={{ primary: { sx: { overflowWrap: 'anywhere' } } }} />
+            </ListItem>
+          ))}
+        </List>
+      )}
+      {notice && <FormHelperText>{notice}</FormHelperText>}
+    </>
   );
 }

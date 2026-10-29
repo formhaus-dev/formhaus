@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@formhaus/core':
-        specifier: ^1.0.0
-        version: 1.0.0
+        specifier: ^1.7.0
+        version: 1.7.0
     devDependencies:
       '@sveltejs/vite-plugin-svelte':
         specifier: ^3.1.2
@@ -184,8 +184,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@formhaus/core@1.0.0':
-    resolution: {integrity: sha512-1cd92SOv9MZNn59TAYASOL71CCzyL7ZLoiX5unh0lIDTPaDCkZZ4HanF4F6ekkPxy1QPe854ejBRdZt7T5OsxQ==}
+  '@formhaus/core@1.7.0':
+    resolution: {integrity: sha512-/itWz+qbfhvc9OGytk46eFDZbZv9uHskNL9SP3qmBWg77jS/2dpSKnklfmU/shFvD/YJJn0EASg9XK5ExwQbCw==}
     engines: {node: '>=22.12'}
 
   '@jridgewell/gen-mapping@0.3.13':
@@ -613,7 +613,7 @@ snapshots:
   '@esbuild/win32-x64@0.25.12':
     optional: true
 
-  '@formhaus/core@1.0.0': {}
+  '@formhaus/core@1.7.0': {}
 
   '@jridgewell/gen-mapping@0.3.13':
     dependencies:

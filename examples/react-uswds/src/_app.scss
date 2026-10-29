@@ -167,6 +167,33 @@
   white-space: pre-line;
 }
 
+.files {
+  margin: units(1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.files__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: units(2);
+  padding: units(1) 0;
+  border-bottom: units(1px) solid color("base-lighter");
+}
+
+.files__name {
+  overflow-wrap: anywhere;
+}
+
+.files__item .usa-button {
+  margin-top: 0;
+}
+
+.files__notice {
+  margin-top: units(1);
+}
+
 .reveal {
   margin-bottom: units(1);
   margin-left: units(1);

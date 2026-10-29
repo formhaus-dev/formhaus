@@ -1,6 +1,9 @@
+import { type FormField, getDefaultMessage } from '@formhaus/core';
+import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
 import { FileUpload as GovukFileUpload } from 'govuk-frontend';
-import { type AriaAttributes, type ChangeEvent, type ComponentProps, useEffect, useRef } from 'react';
+import { type AriaAttributes, type ChangeEvent, type ComponentProps, useEffect, useRef, useState } from 'react';
 import { initGovuk } from '../govuk';
 
 type Classed = Pick<AriaAttributes, 'aria-invalid'> & { className?: string };
@@ -55,10 +58,31 @@ export function Password({ autoComplete, ...props }: ComponentProps<'input'>) {
   );
 }
 
-export function FileUpload({ onChange, ...props }: ComponentProps<'input'>) {
+const several = {
+  'data-i18n.choose-files-button': 'Choose files',
+  'data-i18n.drop-instruction': 'or drop files',
+  'data-i18n.no-file-chosen': 'No files chosen',
+};
+
+export function FileUpload({ onChange, f, field, ...props }: ComponentProps<'input'> & { f: FieldProps; field: FormField }) {
   const root = useRef<HTMLDivElement>(null);
+  const [notice, setNotice] = useState('');
+  const max = fileLimit(field);
   const change = useRef(onChange);
-  change.current = onChange;
+  change.current = props.multiple
+    ? ({ target }) => {
+        const picked = Array.from(target.files ?? []);
+        target.value = '';
+        if (!picked.length) return;
+        const next = addFiles(f.value, picked, max);
+        setNotice(
+          next.length < addFiles(f.value, picked).length
+            ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max }))
+            : '',
+        );
+        f.change(next);
+      }
+    : onChange;
   const describedBy = props['aria-describedby'];
 
   useEffect(() => {
@@ -76,10 +100,42 @@ export function FileUpload({ onChange, ...props }: ComponentProps<'input'>) {
     else button?.removeAttribute('aria-describedby');
   }, [describedBy]);
 
+  const entries = props.multiple ? fileEntries(f.value) : [];
+
   return (
-    <div ref={root} className="govuk-file-upload-wrapper" data-module="govuk-file-upload">
-      <input {...props} type="file" className={classes('govuk-file-upload', props)} />
-    </div>
+    <>
+      <div ref={root} className="govuk-file-upload-wrapper" data-module="govuk-file-upload" {...(props.multiple && several)}>
+        <input
+          {...props}
+          type="file"
+          disabled={props.disabled || (props.multiple && addFiles(f.value, []).length >= max)}
+          className={classes('govuk-file-upload', props)}
+        />
+      </div>
+      {entries.length > 0 && (
+        <dl className="govuk-summary-list govuk-!-margin-top-4 govuk-!-margin-bottom-0">
+          {entries.map(({ index, name }) => (
+            <div key={index} className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key app-file-name">{name}</dt>
+              <dd className="govuk-summary-list__actions">
+                <button
+                  type="button"
+                  className="govuk-button govuk-button--secondary govuk-!-margin-bottom-0"
+                  disabled={props.disabled}
+                  onClick={() => {
+                    setNotice('');
+                    f.change(removeFile(f.value, index));
+                  }}
+                >
+                  Remove<span className="govuk-visually-hidden"> {name}</span>
+                </button>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+      {notice && <p className="govuk-hint govuk-!-margin-top-2 govuk-!-margin-bottom-0">{notice}</p>}
+    </>
   );
 }
 
