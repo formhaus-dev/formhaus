@@ -12,7 +12,7 @@ import {
   scaleView,
 } from '@formhaus/core/fields';
 import { isListLike } from '../fields/files';
-import { maxItems } from '../validation/type-checks';
+import { fileLimit } from '../validation/type-checks';
 import type { FieldOption, FormField } from '../types';
 import { revealable } from '../internal/reveal';
 import { POINT_TYPES } from './options';
@@ -108,7 +108,7 @@ export function fromControl(field: FormField, input: unknown, detail?: unknown):
     const { target } = input;
     value = detail !== undefined ? detail : type === 'file' ? target.files : KINDS[type] === 'inline' ? target.checked : target.value;
   }
-  if (type === 'file') return isFileList(field) ? addFiles([], value, maxItems(field)) : (first(value) ?? null);
+  if (type === 'file') return isFileList(field) ? addFiles([], value, fileLimit(field)) : (first(value) ?? null);
   if (type === 'date' || type === 'time' || type === 'datetime') {
     const date = value as { toDate?: () => Date } | null;
     if (date && typeof date === 'object') value = fromDate(date instanceof Date ? date : date.toDate?.(), type as DateType);
