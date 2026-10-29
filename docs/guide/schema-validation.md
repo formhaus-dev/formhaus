@@ -141,6 +141,26 @@ const onValidate = computed(() => validateIn(lang.value));
 ```
 :::
 
+## Errors in one round
+
+Set `validateWithRules` to run `onValidate` even when the definition rules fail. Both sets of errors show at once, and the definition error wins on a field that has both.
+
+::: code-group
+```tsx [React]
+<FormRenderer definition={definition} onValidate={onValidate} validateWithRules onSubmit={send} />
+```
+
+```vue [Vue]
+<FormRenderer :definition="definition" :on-validate="onValidate" validate-with-rules @submit="send" />
+```
+
+```ts [Core]
+const engine = new FormEngine(definition, {}, { onValidate, validateWithRules: true });
+```
+:::
+
+When the definition rules fail, Continue skips `onStepValidate` and `onBeforeStepChange`, and Submit skips `onBeforeSubmit` and the submit handler. `onValidate` still sees only the visible fields in scope.
+
 ## onValidate without a schema
 
 `onValidate` gets the values and the field paths in scope. It returns errors keyed by field path, or `null` to pass. It may be async.
