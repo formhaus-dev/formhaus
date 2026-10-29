@@ -34,6 +34,13 @@ const characters: LimitSpec = {
   high: side('maxLength', 'Max characters', 'Error if too long', (value) => `Maximum length is ${String(value)}`),
 };
 
+const counts = (noun: string): LimitSpec => ({
+  whole: true,
+  pattern: false,
+  low: side('minLength', `Min ${noun}`, 'Error if too few', (value) => `At least ${String(value)} required`),
+  high: side('maxLength', `Max ${noun}`, 'Error if too many', (value) => `At most ${String(value)} allowed`),
+});
+
 const SPECS: Record<string, LimitSpec> = {
   number: {
     whole: false,
@@ -43,12 +50,8 @@ const SPECS: Record<string, LimitSpec> = {
   },
   text: characters,
   textarea: characters,
-  multiselect: {
-    whole: true,
-    pattern: false,
-    low: side('minLength', 'Min selections', 'Error if too few', (value) => `At least ${String(value)} required`),
-    high: side('maxLength', 'Max selections', 'Error if too many', (value) => `At most ${String(value)} allowed`),
-  },
+  multiselect: counts('selections'),
+  files: counts('files'),
 };
 
 export const limitSpec = (type: string): LimitSpec | undefined => SPECS[type];
