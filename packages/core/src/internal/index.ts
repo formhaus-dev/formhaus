@@ -34,6 +34,7 @@ export { applySources } from './sources';
 export { revealable, revealLayout, revealViews, type RevealSlot } from './reveal';
 export { withReveals } from '../controls/options';
 export { fileNames, nextRemove } from '../fields/files';
+export { copyField } from '../validation/type-checks';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;

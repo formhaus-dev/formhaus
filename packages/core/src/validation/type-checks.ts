@@ -42,6 +42,12 @@ export const multipleFiles = (definition: Pick<FormDefinition, 'formatVersion'>,
 
 export const isFileList = (field: object): boolean => (field as Record<symbol, unknown>)[FILE_LIST] === true || frozenLists.has(field);
 
+export function copyField<T extends object>(field: T, patch: object): T {
+  const copy = { ...field, ...patch } as T;
+  if (frozenLists.has(field)) (copy as Record<symbol, boolean>)[FILE_LIST] = true;
+  return copy;
+}
+
 export function markFileLists(definition: FormDefinition, fields: FormField[]): void {
   for (const field of fields) {
     const list = multipleFiles(definition, field);
