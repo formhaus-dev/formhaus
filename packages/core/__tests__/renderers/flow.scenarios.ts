@@ -138,6 +138,18 @@ export function flowScenarios(harness: RendererHarness, { it, expect, waitFor, s
     await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('textbox', { name: /Name/ })));
   });
 
+  it('drops a step check error once the step passes', async () => {
+    const replies = [{ name: 'Taken' }, null];
+    harness.mount({ definition: wizard, initialValues: filled, onSubmit: () => {}, onStepValidate: () => replies.shift() ?? null });
+    await harness.click(button('Continue'));
+    await screen.findByText('Taken');
+    await harness.click(button('Continue'));
+    await screen.findByRole('heading', { name: 'Two' });
+    await harness.click(button('Back'));
+    await screen.findByRole('heading', { name: 'One' });
+    expect(screen.queryByText('Taken')).toBeNull();
+  });
+
   it('reports form events with their details', async () => {
     const onFormEvent = fn();
     const onFieldChange = fn();
