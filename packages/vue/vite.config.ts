@@ -20,13 +20,16 @@ const developmentNames: Plugin = {
   },
 };
 
+const selfAsPackage = { moduleResolution: 'node10', paths: { '@formhaus/vue': ['./external'] } };
+
 export default defineConfig({
   plugins: [
     vue(),
     developmentNames,
     dts({
       include: ['src/**/*.ts', 'src/**/*.vue'],
-      bundleTypes: true,
+      bundleTypes: { extractorConfig: { compiler: { overrideTsconfig: { compilerOptions: selfAsPackage } } } },
+      pathsToAliases: false,
       tsconfigPath: './tsconfig.json',
       afterDiagnostic(diagnostics) {
         if (diagnostics.length) throw new Error('@formhaus/vue has type errors');

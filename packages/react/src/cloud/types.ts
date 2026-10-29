@@ -1,6 +1,6 @@
 import type { CloudLabelSource, CloudNoticeActionFn, CloudNotice, CloudSubmission, DraftStore, PublishedForm } from '@formhaus/core/cloud';
 import type { ComponentType, ReactNode } from 'react';
-import type { FormActionsProps, FormRendererProps } from '../types';
+import type { FormActionsProps, FormRendererProps } from '@formhaus/react';
 
 export interface FormhausFormActionsProps extends FormActionsProps {
   notice?: CloudNotice | null;
