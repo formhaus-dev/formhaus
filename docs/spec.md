@@ -1102,6 +1102,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `legacy-layout` | warning, from the React and Vue renderers in development | `components.section`, `components.group`, `components.groupItem`, `components.confirmDialog`, `actionsComponent` or `progressComponent`, which `layout` replaces. Reported once per key |
 | `missing-research` | warning, from the engine in development | A field with `randomize` and no `research` option, so the options show in written order. Reported once |
+| `untranslated-locale` | warning, from the engine in development | A `locale` source with texts of the form, such as `title` or `fields`, that was not passed through `translation()`, so those texts stay in the source language |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-autocomplete-token` | warning | An `autocomplete` that is not a valid [autofill token](#autocomplete) |
 | `autocomplete-not-applicable` | warning | `autocomplete` on a built-in field type other than `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` |

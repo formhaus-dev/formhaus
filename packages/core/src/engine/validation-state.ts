@@ -161,6 +161,20 @@ function formErrors(engine: EngineInternals): Record<string, string> {
   return errors;
 }
 
+export function retranslateErrors(engine: EngineInternals): void {
+  const previous = engine.errors;
+  const errors = { ...previous };
+  for (const key of Object.keys(errors)) {
+    if (engine.state.serverErrors[key] !== undefined) continue;
+    const field = engine.visibility.activeField(key, engine.state.values);
+    const item = !field && engine.visibility.activeItem(key, engine.state.values);
+    const error = field ? fieldError(engine, field, engine.state.values[key]) : item ? itemError(engine, item) : null;
+    if (error) errors[key] = error;
+  }
+  engine.state.errors = errors;
+  engine.notify({ fieldKeys: getChangedKeys(previous, errors) });
+}
+
 export function validateOne(engine: EngineInternals, key: string): string | null {
   const field = engine.visibility.activeField(key, engine.state.values);
   const item = !field && engine.visibility.activeItem(key, engine.state.values);

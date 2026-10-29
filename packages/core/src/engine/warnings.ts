@@ -1,7 +1,8 @@
 import { checkDefinition, FormDefinitionError, type DefinitionIssue } from '../definition-validation';
 import { definitionErrors, parsed } from '../definition-validation/check-definition';
 import { isError } from '../definition-validation/issues';
-import type { FormDefinition } from '../types';
+import type { FormDefinition, LocaleSource } from '../types';
+import { untranslated } from '../i18n/catalog';
 import { isGroup } from '../visibility/nodes';
 import { getAllFields } from './engine-utils';
 import type { FormEngineOptions } from './engine-options';
@@ -53,6 +54,25 @@ export function warnUnordered(definition: FormDefinition, options: FormEngineOpt
           severity: 'warning',
           path: '',
           message,
+          hint,
+        });
+      };
+  } catch {}
+  warn?.();
+}
+
+export function warnUntranslated(sources: LocaleSource[], options: FormEngineOptions): void {
+  let warn: (() => void) | undefined;
+  try {
+    if (process.env.NODE_ENV !== 'production')
+      warn = () => {
+        if (!untranslated(sources)) return;
+        const hint = 'Pass it through translation() from @formhaus/core/i18n.';
+        reporter(options)({
+          code: 'untranslated-locale',
+          severity: 'warning',
+          path: '',
+          message: `A locale source has texts of the form, which only a translation applies. ${hint}`,
           hint,
         });
       };

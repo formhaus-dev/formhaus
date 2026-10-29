@@ -1,4 +1,4 @@
-import { engineSources, localeList, localizedTexts } from '../i18n/catalog';
+import { engineSources, localeKey, localeList, localizedTexts } from '../i18n/catalog';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
@@ -7,7 +7,7 @@ import { baselineFields, trackChanges } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
 import { createVisibility } from './visibility-state';
-import { assertDefinition, warnUnordered } from './warnings';
+import { assertDefinition, warnUnordered, warnUntranslated } from './warnings';
 
 export function loadDefinition(
   engine: EngineInternals,
@@ -16,7 +16,10 @@ export function loadDefinition(
 ): void {
   assertDefinition(definition, engine.lifecycle, engine.validators);
   warnUnordered(definition, engine.lifecycle);
-  const shown = localizedTexts(definition, localeList(engine.lifecycle.locale));
+  const sources = localeList(engine.lifecycle.locale);
+  warnUntranslated(sources, engine.lifecycle);
+  const shown = localizedTexts(definition, sources);
+  engine.localeKey = localeKey(sources);
   const visibility = createVisibility(shown, engine.lifecycle.hiddenValues === 'keep');
   engine.source = definition;
   engine.definition = shown;
