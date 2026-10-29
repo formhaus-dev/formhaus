@@ -1,10 +1,11 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
 import { validateSubmission } from '../../src/server';
 import type { FormDefinition, FormField } from '../../src';
 import { countReads } from './reads';
+import { freshBuild } from '../fresh-build';
 
 interface SubmissionCase {
   name: string;
@@ -127,7 +128,7 @@ describe('validateSubmission with values shown by a skipped step', () => {
   });
 });
 
-describe.skipIf(!existsSync(iifePath) && !process.env.CI)('server IIFE build', () => {
+describe.skipIf(!freshBuild(iifePath))('server IIFE build', () => {
   it('runs every fixture without a console global', () => {
     const context: { Formhaus?: { validateSubmission: typeof validateSubmission } } = {};
     runInNewContext(readFileSync(iifePath, 'utf8'), context);
