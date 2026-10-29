@@ -161,14 +161,19 @@ function formErrors(engine: EngineInternals): Record<string, string> {
   return errors;
 }
 
+function currentError(engine: EngineInternals, key: string): string | null | undefined {
+  const field = engine.visibility.activeField(key, engine.state.values);
+  const item = !field && engine.visibility.activeItem(key, engine.state.values);
+  if (item) return itemError(engine, item);
+  return field ? fieldError(engine, field, engine.state.values[key]) : undefined;
+}
+
 export function retranslateErrors(engine: EngineInternals): void {
   const previous = engine.errors;
   const errors = { ...previous };
   for (const key of Object.keys(errors)) {
     if (engine.state.serverErrors[key] !== undefined) continue;
-    const field = engine.visibility.activeField(key, engine.state.values);
-    const item = !field && engine.visibility.activeItem(key, engine.state.values);
-    const error = field ? fieldError(engine, field, engine.state.values[key]) : item ? itemError(engine, item) : null;
+    const error = currentError(engine, key);
     if (error) errors[key] = error;
   }
   const fieldKeys = getChangedKeys(previous, errors);
@@ -178,11 +183,9 @@ export function retranslateErrors(engine: EngineInternals): void {
 }
 
 export function validateOne(engine: EngineInternals, key: string): string | null {
-  const field = engine.visibility.activeField(key, engine.state.values);
-  const item = !field && engine.visibility.activeItem(key, engine.state.values);
-  if (!field && !item) return null;
+  const error = currentError(engine, key);
+  if (error === undefined) return null;
   const previousError = engine.errors[key];
-  const error = item ? itemError(engine, item) : fieldError(engine, field!, engine.state.values[key]);
   if (error) engine.errors[key] = error;
   else clearError(engine, key, true);
   const fieldKeys = Object.is(previousError, engine.errors[key]) ? [] : [key];

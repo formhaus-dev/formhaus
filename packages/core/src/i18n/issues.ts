@@ -22,7 +22,7 @@ export interface TranslationIssues {
 
 const dotted = (path: string[]) => path.join('.');
 
-const catalogEntry = ([part, key, form, ...rest]: string[], known: Set<string>) =>
+const catalogLeaf = ([part, key, form, ...rest]: string[], known: Set<string>) =>
   (part === 'locale' && key === undefined) ||
   ((part === 'messages' || part === 'labels') && PLURALS.includes(form) && !rest.length && known.has(addressKey([part, key])));
 
@@ -42,7 +42,7 @@ function mismatch(slot: Slot, text: string): boolean {
 export function translationIssues(definition: FormDefinition, overlay: unknown, meta?: TranslationMeta): TranslationIssues {
   const slots = definitionSlots(definition);
   const known = new Set(slots.flatMap((slot) => addresses(slot.address).map(addressKey)));
-  const found = isEntry(overlay) ? leaves(overlay).filter(({ path }) => !catalogEntry(path, known)) : [{ path: [], value: null }];
+  const found = isEntry(overlay) ? leaves(overlay).filter(({ path }) => !catalogLeaf(path, known)) : [{ path: [], value: null }];
   const translated = slots.filter((slot) => lookup(overlay, slot.address) !== undefined);
   const result: TranslationIssues = {
     missing: slots
