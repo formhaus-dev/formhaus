@@ -21,7 +21,7 @@ import {
   warnDoubleLabel,
 } from '@formhaus/core/controls';
 import { controlEntry } from '@formhaus/core/internal';
-import { type FieldProps, fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
+import { type FieldProps, fieldComponentEmits, fieldComponentProps, useFieldProps, useFileText } from '@formhaus/vue';
 import { type Component, defineComponent, h, onBeforeUnmount, onMounted, type PropType, type VNode, type VNodeChild } from 'vue';
 
 export interface ControlRootProps extends ControlRoot {
@@ -102,6 +102,7 @@ function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, inp
         f.commit,
       );
       onBeforeUnmount(stop);
+      const text = useFileText();
       onMounted(() => {
         try {
           if (process.env.NODE_ENV !== 'production') warnDoubleLabel(document, f.id);
@@ -128,7 +129,7 @@ function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, inp
           freeText: config.freeText ? f.freeText : undefined,
         });
         const options = controlOptions(field, f.options, props.reveals);
-        const { children, ...adapted } = adapt(f, options, { kind, field, anchors }) as { children?: Slot };
+        const { children, ...adapted } = adapt(f, options, { kind, field, anchors, text }) as { children?: Slot };
         const element = h(
           Control,
           {

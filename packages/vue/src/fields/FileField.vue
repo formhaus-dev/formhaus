@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { fileEntries, isFileList, removeFile } from '@formhaus/core/fields';
-import { filesFull, nextRemove, pickFiles } from '@formhaus/core/internal';
+import { fileEntries, filesFull, isFileList, pickFiles, removeFile } from '@formhaus/core/fields';
+import { nextRemove } from '@formhaus/core/internal';
 import { computed, nextTick, ref } from 'vue';
-import { useFileLimit, useLabel } from '../composables/useLabel';
+import { useFileText } from '../composables/useLabel';
 import { fieldComponentProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
@@ -11,8 +11,8 @@ import { useField } from './useField';
 const props = defineProps(fieldComponentProps);
 const emit = defineEmits<FieldEmits>();
 const { input } = useField(props, emit);
-const text = useLabel();
-const limit = useFileLimit();
+const fileText = useFileText();
+const text = fileText.label;
 const list = computed(() => isFileList(props.field));
 const entries = computed(() => fileEntries(props.modelValue));
 const status = ref('');
@@ -37,7 +37,7 @@ function onFilesAdd(event: Event) {
   const picked = Array.from(target.files ?? []);
   target.value = '';
   if (picked.length === 0) return;
-  const result = pickFiles(props.field, props.modelValue, picked, text, limit);
+  const result = pickFiles(props.field, props.modelValue, picked, fileText);
   if (result.value) emit('update:modelValue', result.value);
   status.value = result.status;
   notice.value = result.notice;
@@ -68,7 +68,7 @@ function onRemove(index: number, position: number, name: string) {
       />
       <ul v-if="entries.length" ref="items" class="fh-file-list">
         <li v-for="(entry, position) in entries" :key="entry.index" class="fh-file-list__item">
-          <span class="fh-file-list__name">{{ entry.name }}</span>
+          <span class="fh-file-list__name" dir="auto">{{ entry.name }}</span>
           <button
             type="button"
             class="fh-form-actions__button fh-form-actions__button--text fh-file-list__remove"

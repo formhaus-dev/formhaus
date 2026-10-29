@@ -5,7 +5,7 @@ import {
   actionValues,
   actionsView,
   hasValue,
-  engineFileLimit,
+  fileLimitMessage,
   engineLabel,
   ROOT_PROPS,
   shouldApplyExternalErrors,
@@ -141,7 +141,7 @@ defineExpose({
 
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => engineLabel(form.engine, key, params, props.labels);
 provide('fhLabel', label);
-provide('fhFileLimit', (field: FormField, max: number) => engineFileLimit(form.engine)(field, max));
+provide('fhFileText', { label, limit: (field: FormField, max: number) => fileLimitMessage(form.engine, field, max) });
 
 const DefaultFields: FunctionalComponent<FieldsContainerProps> = (fields, { slots }) =>
   h('div', { class: 'fh-form__fields', ...fields.rootProps }, slots.default?.());
