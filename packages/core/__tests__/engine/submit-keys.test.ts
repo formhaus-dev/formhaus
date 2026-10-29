@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FormEngine, type FormDefinition } from '../../src';
-import { localize } from '../../src/i18n';
+import { localize, translation } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
 
 const KEYS = ['contact.email', 'first-name', 'last_name', 'field2', 'camelCase', 'имя', 'Größe', 'a.b.c'] as const;
@@ -41,11 +41,11 @@ describe('submitted keys', () => {
 
   it('keeps the keys when the form is localized', () => {
     const overlay = { fields: Object.fromEntries(KEYS.map((key) => [key, { label: `Перевод ${key}` }])) };
-    const localized = localize(definition, { ...overlay, locale: 'ru' }).definition;
+    const localized = localize(definition, translation({ ...overlay, locale: 'ru' })).definition;
     expect(localized.fields!.map((field) => field.key)).toEqual([...KEYS]);
     expect(localized.fields!.map((field) => field.label)).toEqual(KEYS.map((key) => `Перевод ${key}`));
-    expect(localize(definition, { locale: 'ru', translate: () => 'Перевод' }).definition.fields!.map((field) => field.key)).toEqual([
-      ...KEYS,
-    ]);
+    expect(
+      localize(definition, translation({ locale: 'ru', translate: () => 'Перевод' })).definition.fields!.map((field) => field.key),
+    ).toEqual([...KEYS]);
   });
 });

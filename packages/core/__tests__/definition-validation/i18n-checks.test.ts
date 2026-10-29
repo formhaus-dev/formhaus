@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { checkDefinition, FormDefinitionError, FormEngine } from '../../src';
-import { checkTranslations, localize } from '../../src/i18n';
+import { checkTranslations, localize, translation } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
 
 const base = () => ({
@@ -64,7 +64,7 @@ describe('i18n definition checks', () => {
       { code: 'invalid-type', severity: 'error', path: '/lang' },
       { code: 'invalid-type', severity: 'error', path: '/messages/required' },
     ]);
-    expect(() => localize(definition as never, { locale: 'ru' })).toThrow(FormDefinitionError);
+    expect(() => localize(definition as never, [])).toThrow(FormDefinitionError);
     expect(() => new FormEngine(definition as never)).not.toThrow();
   });
 
@@ -78,7 +78,7 @@ describe('i18n definition checks', () => {
       { code: 'i18n-key-without-text', severity: 'error', path: '/i18n/description' },
       { code: 'i18n-key-without-text', severity: 'error', path: '/fields/0/i18n/helperText' },
     ]);
-    expect(() => localize(definition as never, { locale: 'ru', translate: () => undefined })).toThrow(FormDefinitionError);
+    expect(() => localize(definition as never, translation({ locale: 'ru', translate: () => undefined }))).toThrow(FormDefinitionError);
     expect(() => new FormEngine(definition as never)).not.toThrow();
     expect(validateSubmission(definition as never, {}).errors).toEqual({});
   });
