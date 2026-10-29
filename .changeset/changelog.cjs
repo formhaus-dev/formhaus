@@ -1,7 +1,10 @@
-const bullet = (summary) => {
-  const text = summary.trim();
-  return text.startsWith('- ') ? text : `- ${text}`;
-};
+const bullet = (summary) =>
+  summary
+    .trim()
+    .split('\n')
+    .filter((line) => line.trim())
+    .map((line) => (line.startsWith('- ') ? line : `- ${line}`))
+    .join('\n');
 
 module.exports = {
   getReleaseLine: async (changeset) => bullet(changeset.summary),
