@@ -10,5 +10,5 @@ export function labelFor(key: LabelKey, params: Record<string, unknown>, ...sour
 }
 
 export function engineLabel(engine: FormEngine, key: LabelKey, params: Record<string, unknown>, labels?: LabelSource): string {
-  return labelFor(key, params, labels, engine.definition.labels, localeSource(engine as unknown as EngineInternals, 'labels'));
+  return labelFor(key, params, labels, localeSource(engine as unknown as EngineInternals, 'labels'), engine.definition.labels);
 }

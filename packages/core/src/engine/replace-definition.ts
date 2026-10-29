@@ -1,4 +1,5 @@
-import { localeSource } from '../i18n/catalog';
+import { localeList, localeSource } from '../i18n/catalog';
+import { localizeTexts } from '../i18n/localize';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
@@ -16,9 +17,11 @@ export function loadDefinition(
 ): void {
   assertDefinition(definition, engine.lifecycle, engine.validators);
   warnUnordered(definition, engine.lifecycle);
-  const visibility = createVisibility(definition, engine.lifecycle.hiddenValues === 'keep');
-  engine.definition = definition;
-  engine.messages = messageResolver(engine.lifecycle.messages, definition.messages, localeSource(engine, 'messages'));
+  const shown = localizeTexts(definition, localeList(engine.lifecycle.locale));
+  const visibility = createVisibility(shown, engine.lifecycle.hiddenValues === 'keep');
+  engine.source = definition;
+  engine.definition = shown;
+  engine.messages = messageResolver(engine.lifecycle.messages, localeSource(engine, 'messages'), shown.messages);
   engine.visibility = visibility;
   engine.state.values = createValues(visibility.allFields, values(visibility.allFields), visibility.activeField);
   visibility.reconcileHidden(engine.state.values, engine.state.errors, true);

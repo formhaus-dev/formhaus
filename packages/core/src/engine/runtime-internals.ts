@@ -19,6 +19,7 @@ export interface EngineState {
 
 export interface EngineInternals {
   definition: FormDefinition;
+  source: FormDefinition;
   readonly state: EngineState;
   readonly values: Record<string, unknown>;
   readonly errors: Record<string, string>;
