@@ -18,9 +18,7 @@
   "core/locales/ru",
   "react/cloud",
   "react/controls",
-  "react/i18n",
   "vue/cloud",
   "vue/controls",
-  "vue/i18n",
   "core/style.css"
 ]

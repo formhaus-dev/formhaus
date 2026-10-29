@@ -27,8 +27,7 @@ const files = {
   'src/react.tsx': `import { createRef } from 'react';
 import { FormRenderer, HeadlessFormRenderer, TextField, type FieldComponentMap, type FormRendererHandle } from '@formhaus/react';
 import { FormhausForm, CloudError } from '@formhaus/react/cloud';
-import { useLocalizedForm } from '@formhaus/react/i18n';
-import { localize, type Overlay } from '@formhaus/core/i18n';
+import { localize, type LocaleCatalog } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
 import { fromDate, scaleView } from '@formhaus/core/fields';
@@ -80,13 +79,12 @@ export const mapped: FieldComponentMap = {
   }),
   rating: components.rating,
 };
-const overlay: Overlay = { title: 'Kontakt' };
-export const localized = localize(definition, { overlay, lang: 'de' });
+const de: LocaleCatalog = { locale: 'de', title: 'Kontakt', labels: { submit: 'Senden' } };
+export const localized = localize(definition, de);
 const fixes: DefinitionFix[] = suggestFixes(definition).flatMap((issue) => issue.fixes ?? []);
 export const fixed = [fixes.reduce((current, fix) => applyFix(current, fix.patch), definition), fixAll(definition).definition];
 export function Localized() {
-  const form = useLocalizedForm(definition, { translate: (key, params, fallback) => fallback, prefix: false });
-  return <FormRenderer {...form} onSubmit={() => {}} />;
+  return <FormRenderer definition={definition} locale={[{ locale: 'de', translate: (key, params, fallback) => fallback, prefix: false }, de]} onSubmit={() => {}} />;
 }
 `,
   'src/vue-props.ts': `import { defineComponent, h, type ExtractPublicPropTypes, type PropType } from 'vue';
@@ -143,7 +141,6 @@ export const handles: Formhaus.FormRendererHandle[] = [
   'src/vue.ts': `import { createApp, h } from 'vue';
 import * as Formhaus from '@formhaus/vue';
 import { FormhausForm, CloudError } from '@formhaus/vue/cloud';
-import { useLocalizedForm } from '@formhaus/vue/i18n';
 import type { FormDefinition } from '@formhaus/core';
 import { onValidate } from './on-validate.js';
 import ru from '@formhaus/core/locales/ru';
@@ -164,7 +161,7 @@ export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definit
   .component('TextField', Formhaus.TextField)
   .component('FormhausForm', FormhausForm);
 export const extras = [Formhaus, CloudError];
-export const localized = useLocalizedForm(() => definition, () => ({ overlay: { title: 'Kontakt' } }));
+export const localized = h(Formhaus.FormRenderer, { definition, locale: [{ locale: 'de', title: 'Kontakt' }, ru] });
 `,
 };
 
