@@ -183,7 +183,7 @@ interface ValidateContext {
 ```
 
 - `fields` lists the visible field paths in scope, with group items such as `players.0.name`.
-- `stepId` is the current step. Single-step forms have none.
+- `stepId` is the step shown when `onValidate` runs. On Submit with `validateWithRules`, the form has already moved to the first step with a definition error. Single-step forms have none.
 - `submit` is `true` on Submit and `false` on Continue.
 - A key outside `fields`, or the empty key `''`, shows as a form error.
 
