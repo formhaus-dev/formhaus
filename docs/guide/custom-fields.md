@@ -42,7 +42,7 @@ Before you write a component, read [Value types](#value-types): each built-in ty
 | `helperId`, `errorId` | `` `${id}-helper` `` and `` `${id}-error` `` |
 | `describedBy` | The helper id and then the error id, only the ones shown |
 | `invalid`, `required`, `disabled` | `error` is set, `validation.required` is set, `disabled` or `loading` is set |
-| `loading` | The [options provider](/guide/fields#select) of the field runs. Set `aria-busy` with it |
+| `loading` | The [options provider](/guide/fields#select) of the field runs, or `engine.setFieldLoading(key, true)` is active. Set `aria-busy` with it |
 | `minLength`, `maxLength` | `validation.minLength` and `validation.maxLength` of a `text`, `email`, `phone`, `password` or `textarea` field, for a character counter. The input does not get them as attributes, so typing past the limit shows the error instead of cutting the text |
 | `inputType`, `inputMode` | The `type` of a native input for the field type (`text`, `email`, `tel`, `number`, `password`, `date`, `time` or `datetime-local`), and `field.inputMode` |
 | `aria` | `aria-invalid`, `aria-required` and `aria-describedby`, for a control or group whose helper and error you render |
@@ -96,11 +96,11 @@ With Vuetify: `<v-text-field v-bind="f.input" :type="f.inputType" :label="f.labe
 ```tsx
 export function CityInput(props: FieldComponentProps) {
   const f = useFieldProps(props)
-  return <input {...f.attrs} aria-busy={f.loading} value={f.freeText.text} onChange={(event) => f.freeText.setText(event.target.value)} />
+  return <input {...f.attrs} aria-busy={f.loading} value={f.freeText?.text} onChange={(event) => f.freeText?.setText(event.target.value)} />
 }
 ```
 
-`setText` saves the value of the first option with that label, other text as typed. `text` is the typed text while it gives the value, else the label of the value. `fieldProps` in React keeps no typed text between renders, so `text` is always the label of the value; use the hook `useFieldProps` to keep it. In Vue: `<input v-bind="f.attrs" :aria-busy="f.loading" :value="f.freeText.text" @input="f.freeText.setText($event.target.value)" />`.
+`setText` saves the value of the option with that text, other text as typed. `text` is the typed text while it gives the value, else the text of the value. Options with the same label get the value in the text, such as `Paris (fr)`, as in the built-in `autocomplete`. `fieldProps` in React keeps no typed text between renders, so `text` is always the text of the value; use the hook `useFieldProps` to keep it. In Vue: `<input v-bind="f.attrs" :aria-busy="f.loading" :value="f.freeText?.text" @input="f.freeText?.setText($event.target.value)" />`.
 
 ## Contract
 

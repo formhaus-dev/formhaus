@@ -175,7 +175,7 @@ radio: { component: RadioGroup, optionsProp: 'options', props: (f, options, { fi
 scale: { component: Slider, props: (f, options, { anchors }) => ({ marks: anchors.filter((anchor) => anchor !== undefined).map(({ point, label }) => ({ value: point, label })) }) },
 ```
 
-- `f.loading` is set while the options provider of the field runs, for a busy state such as `loading` on MUI `Autocomplete` or Vuetify `VSelect`. `f.disabled` is set then too.
+- `f.loading` is set while the options provider of the field runs or `engine.setFieldLoading(key, true)` is active, for a busy state such as `loading` on MUI `Autocomplete` or Vuetify `VSelect`. `f.disabled` is set then too.
 - `f.maxLength` and `f.minLength` feed the character counter of a design system, such as Ant Design `showCount`, Element Plus `show-word-limit` or the GOV.UK character count: `textarea: { component: Input.TextArea, props: (f) => ({ showCount: true, maxLength: f.maxLength }) }`. A native `maxLength` stops typing at the limit; leave it out to let the user type on and see the error.
 
 React types `props`, `optionsProp` and `changeProp` with the props of the component, and Vue with its `$props`. A wrong prop name, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
@@ -245,7 +245,7 @@ mapControls({
 })
 ```
 
-The control gets the typed text as its value. Text that matches an option label saves the option value, other text saves as typed. With two options of the same label, the first one wins. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do. A hand-written field gets the same text from [`f.freeText`](/guide/custom-fields#free-text).
+The control gets the typed text as its value. Text that matches an option saves the option value, other text saves as typed. Options with the same label get the value in the text, such as `Paris (fr)`. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do. A hand-written field gets the same text from [`f.freeText`](/guide/custom-fields#free-text).
 
 ## Conditional reveal
 
