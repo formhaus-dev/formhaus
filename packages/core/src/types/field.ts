@@ -55,6 +55,7 @@ export interface FormField {
   optionsFrom?: string;
   optionsDependsOn?: string[];
   accept?: string;
+  multiple?: boolean;
   rows?: number;
   mask?: string;
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
