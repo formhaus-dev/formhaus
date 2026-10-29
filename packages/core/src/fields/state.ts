@@ -1,5 +1,6 @@
 import { fieldDomId } from '../internal/ids';
 import type { FieldOption, FormField, FormGroup } from '../types';
+import type { FreeText } from './text';
 import { inputType } from './values';
 
 export interface FieldStateInput {
@@ -102,6 +103,8 @@ export interface FieldOptionAttrs {
 export interface FieldView<Attrs extends FieldControl> extends FieldState {
   value: unknown;
   text: string;
+  loading: boolean;
+  freeText: FreeText;
   testId?: string;
   options: FieldOption[];
   change: (value: unknown) => void;

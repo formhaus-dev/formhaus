@@ -13,4 +13,5 @@ export {
   type FieldStateInput,
   type FieldView,
 } from './state';
+export { freeText, type FreeText } from './text';
 export { fieldValue, inputType, numberValue, toggleOption } from './values';
