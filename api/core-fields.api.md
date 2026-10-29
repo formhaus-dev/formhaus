@@ -166,6 +166,9 @@ export interface FileEntry {
 }
 
 // @public (undocumented)
+export const fileLimit: (field: FormField) => number;
+
+// @public (undocumented)
 export interface FreeText {
     // (undocumented)
     setText: (text: string) => void;
