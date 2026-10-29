@@ -69,12 +69,11 @@ describe('translations of sections and groups', () => {
       who: { sections: { billing: { title: 'Billing' } }, fields: { people: { fields: { diet: { label: 'Diet' } } } } },
     });
     const localized = localize(definition, {
-      overlay: {
-        steps: {
-          who: {
-            sections: { billing: { title: 'Facturation' } },
-            fields: { people: { itemLabel: 'Personne {index}', fields: { diet: { label: 'Régime', options: { none: 'Aucun' } } } } },
-          },
+      locale: 'fr',
+      steps: {
+        who: {
+          sections: { billing: { title: 'Facturation' } },
+          fields: { people: { itemLabel: 'Personne {index}', fields: { diet: { label: 'Régime', options: { none: 'Aucun' } } } } },
         },
       },
     }).definition;

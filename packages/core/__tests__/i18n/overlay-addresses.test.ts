@@ -34,7 +34,7 @@ const overlay = {
 
 describe('top-level field addresses in a multi-step overlay', () => {
   it('applies fields.<key> and lets steps.<id>.fields.<key> win', () => {
-    const [who, guests] = localize(definition, { overlay }).definition.steps!;
+    const [who, guests] = localize(definition, { ...overlay, locale: 'ru' }).definition.steps!;
     expect(who.fields[0]).toMatchObject({ label: 'Nom', validation: { required: 'Saisissez un nom' } });
     expect(who.fields[1]).toMatchObject({ label: 'Destination', options: [{ value: 'rome', label: 'Rome (Italie)' }] });
     const group = guests.fields[0] as FormGroup;

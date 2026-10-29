@@ -78,8 +78,8 @@ describe('locale catalogs', () => {
     expect(minLengthError(4, [])).toBe(defaultMessages.minLength.replace('{min}', '4'));
   });
 
-  it('ranks the messages option over definition messages over the catalog', () => {
-    expect(minLengthError(4, ru, {}, { messages: { minLength: 'Definition {min}' } })).toBe('Definition 4');
+  it('ranks the messages option over the catalog over definition messages', () => {
+    expect(minLengthError(4, ru, {}, { messages: { minLength: 'Definition {min}' } })).toBe('Не менее 4 символов');
     expect(minLengthError(4, ru, { messages: { minLength: 'Option {min}' } }, { messages: { minLength: 'Definition {min}' } })).toBe(
       'Option 4',
     );
@@ -117,7 +117,7 @@ describe('locale catalogs', () => {
   it('falls through to the catalog when a translate function returns the built-in text', () => {
     const translate = (key: string, _params: Record<string, unknown>, fallback: string) =>
       key === 'f.messages.required' ? 'Requis' : fallback;
-    const { definition, messages } = localize(form(4), { translate });
+    const { definition, messages } = localize(form(4), { locale: 'ru', translate });
     expect(new FormEngine(definition, {}, { messages, locale: ru }).validate().name).toBe('Requis');
     expect(new FormEngine(definition, { name: 'a' }, { messages, locale: ru }).validate().name).toBe('Не менее 4 символов');
   });

@@ -4,7 +4,7 @@ import { localize } from '../../src/i18n';
 import { ru, signup } from './fixtures';
 
 describe('localize with an overlay', () => {
-  const { definition, messages, labels } = localize(signup, { overlay: ru, lang: 'ru' });
+  const { definition, messages, labels } = localize(signup, { ...ru, locale: 'ru' });
   const [kind, business] = definition.steps!;
 
   it('replaces static texts and keeps the source for missing or empty entries', () => {
@@ -22,8 +22,9 @@ describe('localize with an overlay', () => {
 
   it('merges messages and labels into the definition catalogs', () => {
     expect(definition.messages).toEqual(ru.messages);
-    expect(messages).toBe(definition.messages);
-    expect(labels).toEqual(ru.labels);
+    expect(definition.labels).toEqual(ru.labels);
+    expect(messages('required', {}, kind.fields[0])).toBe(ru.messages.required);
+    expect(labels('continue', {})).toBe(ru.labels.continue);
   });
 
   it('never enables a rule, creates nodes or mutates the source', () => {
@@ -37,7 +38,7 @@ describe('localize with an overlay', () => {
     const overlay = {
       fields: { name: { validation: { required: 'Нужно', pattern: 'Формат' }, helperText: 'Подсказка' }, ghost: { label: 'Призрак' } },
     };
-    const result = localize(source, { overlay });
+    const result = localize(source, { ...overlay, locale: 'ru' });
     expect(result.definition.fields).toEqual([{ key: 'name', type: 'text', label: 'Name', validation: { required: false } }]);
     expect(JSON.stringify(source)).toBe(before);
   });
