@@ -100,7 +100,7 @@ export const components: FieldComponentMap = {
     controls: {
       file: {
         component: FilePicker,
-        props: (f) => ({ 'aria-labelledby': `${f.id}-label ${f.id}-button`, 'aria-describedby': describedBy(f) }),
+        props: (f) => ({ f, 'aria-labelledby': `${f.id}-label ${f.id}-button`, 'aria-describedby': describedBy(f) }),
       },
     },
   }),

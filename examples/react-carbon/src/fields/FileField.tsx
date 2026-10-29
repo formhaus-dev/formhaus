@@ -1,3 +1,4 @@
+import { addFiles, fileEntries, isFileList, removeFile } from '@formhaus/core/fields';
 import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { Button, FileUploaderItem, FormGroup, Stack } from '@carbon/react';
 import { Upload } from '@carbon/icons-react';
@@ -9,6 +10,7 @@ export function FileField(props: FieldComponentProps) {
   const f = fieldProps(props);
   const { field, value } = props;
   const input = useRef<HTMLInputElement>(null);
+  const list = isFileList(field);
 
   return (
     <FormGroup legendText={label(f)} invalid={f.invalid} data-fh="field">
@@ -26,18 +28,33 @@ export function FileField(props: FieldComponentProps) {
             onBlur={f.blur}
             onFocus={f.focus}
           >
-            {f.placeholder ?? 'Choose a file'}
+            {f.placeholder ?? (list ? 'Add files' : 'Choose a file')}
           </Button>
           <input
             ref={input}
             type="file"
             name={f.name}
             accept={field.accept}
+            multiple={list}
             hidden
-            onChange={(event) => f.change(event.currentTarget.files?.[0] ?? null)}
+            onChange={(event) => {
+              const picked = Array.from(event.currentTarget.files ?? []);
+              event.currentTarget.value = '';
+              if (!list) f.change(picked[0] ?? null);
+              else if (picked.length) f.change(addFiles(value, picked));
+            }}
           />
         </div>
-        {value instanceof File && <FileUploaderItem name={value.name} status="edit" onDelete={() => f.change(null)} />}
+        {fileEntries(value).map(({ index, name }) => (
+          <FileUploaderItem
+            key={index}
+            name={name}
+            status="edit"
+            iconDescription="Remove"
+            disabled={f.disabled}
+            onDelete={() => f.change(list ? removeFile(value, index) : null)}
+          />
+        ))}
       </Stack>
       <GroupMessage id={f.errorId} error={f.error} />
     </FormGroup>
