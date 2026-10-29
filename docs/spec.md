@@ -161,7 +161,15 @@ Built-in type names are single lowercase words without separators. A type name w
 A `file` field with `"multiple": true` keeps a list of files. `multiple` takes effect only in a definition that declares `formatVersion` 1.7 or newer. `multiple` on another type is a `multiple-not-applicable` warning, and a value that is not a boolean is an `invalid-type` error.
 
 ```json
-{ "key": "receipts", "type": "file", "label": "Receipts", "accept": "image/*,.pdf", "multiple": true, "validation": { "required": true, "maxLength": 5 } }
+{
+  "formatVersion": "1.7",
+  "id": "expenses",
+  "title": "Expenses",
+  "submit": { "label": "Send" },
+  "fields": [
+    { "key": "receipts", "type": "file", "label": "Receipts", "accept": "image/*,.pdf", "multiple": true, "validation": { "required": true, "maxLength": 5 } }
+  ]
+}
 ```
 
 - **Value.** An array. The built-in renderers write a `File[]` in the order the user added the files, and `[]` after the user removes the last one. The value of a `file` field without `multiple` stays one `File` or `null`.
@@ -169,7 +177,7 @@ A `file` field with `"multiple": true` keeps a list of files. `multiple` takes e
 - **Count.** `validation.minLength` and `maxLength` count the files and use the `minItems` and `maxItems` messages. A list holds at most `maxLength` files, or 100 without it, and never more than 1000. A longer list fails with `maxItems` and that number.
 - **Single values.** In the engine, a value that is not an array, such as a reference the app supplied, counts as a list of that one value, and `null` or `''` as an empty list. Validators receive the list. The engine submits the value as given.
 - **Server.** `validateSubmission()` checks the value as a list of string references: an array of non-empty strings of at most 10,000 characters each, within the count above. It reads a single string as a list of one, so a renderer that keeps one file, such as `@formhaus/react` 1.6, still submits. Any other value fails with the `file` message and is dropped.
-- **Renderers.** The built-in React and Vue renderers show the file picker and, below it, the chosen files, each with a Remove button. Picking files adds them to the list. The button shows the `removeItem` label, and its accessible name is the `removeItemNamed` label with the file name as `item`. A status region announces `itemAdded` and `itemRemoved` with the file names as `item`. After a removal, focus moves to the next Remove button, or to the picker when no file is left. Like a single file, an item that is not a `File` is a reference the app supplied: the renderers do not show it, and keep it in the value.
+- **Renderers.** The built-in React and Vue renderers show the file picker and, below it, the chosen files, each with a Remove button. Picking files adds them to the list. The button shows the `removeItem` label, and its accessible name is the `removeItemNamed` label with the file name as `item`. A status region announces `itemAdded` and `itemRemoved` with the file names as `item`. After a removal, focus moves to the next Remove button, to the previous one after the last file, or to the picker when no file is left. Like a single file, an item that is not a `File` is a reference the app supplied: the renderers do not show it, and keep it in the value.
 - **Recall.** A `{{key}}` token shows the list of file names.
 - **Cloud.** The Cloud uploader uploads each `File` of the list and submits the list of upload ids in the same order.
 
