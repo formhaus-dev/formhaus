@@ -71,6 +71,14 @@ export function fileListScenarios(harness: RendererHarness, { it, expect, waitFo
     await waitFor(() => expect(onSubmit).toHaveBeenCalledWith({ docs: ['upload-1', a] }, []));
   });
 
+  it('keeps a frozen definition a file list, also with recall in its texts', () => {
+    const definition = attachments('1.7');
+    const [field] = definition.fields!;
+    Object.freeze(Object.assign(field, { helperText: 'Files for {{docs}}' }));
+    harness.mount({ definition: Object.freeze(definition), onSubmit: fn() });
+    expect(picker().multiple).toBe(true);
+  });
+
   it('keeps one file below format 1.7', async () => {
     const onSubmit = fn();
     harness.mount({ definition: attachments('1.6'), onSubmit });
