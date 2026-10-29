@@ -90,7 +90,7 @@ With Vuetify: `<v-text-field v-bind="f.input" :type="f.inputType" :label="f.labe
 | `toggleOption(value, option)` | A `multiselect` value with the option added or removed |
 | `isFileList(field)` | Whether a `file` field keeps a [list of files](/guide/fields#several-files) |
 | `addFiles(value, files, max?)`, `removeFile(value, index)` | A file list with the picked files added at the end, up to `max` items, or with one item removed |
-| `fileLimit(field)` | The most files a file list holds: `validation.maxLength`, or 100, and never more than 1000. A picker stops there |
+| `fileLimit(field)` | The most files a file list holds: `validation.maxLength` rounded down and at least 0, or 100, and never more than 1000. A picker stops there |
 | `fileEntries(value)` | The `{ index, name }` of each item of a file list: a file's name, or the last path segment of a reference the app supplied |
 
 ### Free text
