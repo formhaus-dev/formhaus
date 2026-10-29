@@ -7,6 +7,7 @@ import {
   isScale,
   setFieldProp,
   setMatrix,
+  setMultiple,
   type BuilderQuestion,
 } from '@formhaus/builder';
 import { takesPlaceholder } from '../canvas/placeholder';
@@ -76,7 +77,8 @@ export function AnswerSettings(props: Props) {
   const form = useForm();
   const parent = findField(form, field.parent ?? '');
   const row = isMatrix(parent);
-  const limits = limitSpec(field.type);
+  const files = field.type === 'file' && !!field.extra.multiple;
+  const limits = limitSpec(files ? 'files' : field.type);
   const shuffles = hasOptions(field.type) && !row;
   const choices = shuffles && field.type !== 'select';
   const pictures = choices && field.options.some((option) => option.extra?.image);
@@ -95,6 +97,18 @@ export function AnswerSettings(props: Props) {
     ),
     field.type === 'group' && <GroupSettings key="group" {...props} />,
     takesPlaceholder(field) && <FieldText key="text" {...props} />,
+    field.type === 'file' && (
+      <SettingSwitch
+        key="multiple"
+        label="Allow several files"
+        checked={files}
+        actions={actions}
+        readOnly={readOnly}
+        onChange={(draft, next) => {
+          setMultiple(draft, field.uid, next);
+        }}
+      />
+    ),
     isScale(field.type) && <ScaleSettings key="scale" {...props} />,
     limits && <LimitSettings key="limits" spec={limits} {...props} />,
     field.type === 'textarea' && <Rows key="rows" {...props} />,
