@@ -6,6 +6,7 @@ import { formatText } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, itemsOf } from '../visibility/nodes';
 import { getAllFields } from './engine-utils';
 import { formatRecallValue, type RecallFormatFn } from './recall-format';
+import { formatAtLeast } from '../definition-validation/format';
 
 export interface RecallItem {
   group: string;
@@ -41,15 +42,7 @@ export const recallKeys = (text: string): string[] => tokens(text).flatMap(({ ke
 
 export const reservedTokens = (text: string): string[] => tokens(text).flatMap(({ token, key, name }) => (key || name ? [] : [token]));
 
-export const formatOf = ({ formatVersion }: Pick<FormDefinition, 'formatVersion'>): number[] =>
-  String(formatVersion ?? '1.0')
-    .split('.')
-    .map(Number);
-
-export function recallEnabled(definition: Pick<FormDefinition, 'formatVersion'>): boolean {
-  const [major, minor = 0] = formatOf(definition);
-  return major > 1 || minor >= 5;
-}
+export const recallEnabled = (definition: Pick<FormDefinition, 'formatVersion'>): boolean => formatAtLeast(definition, 5);
 
 function substitute(
   definition: FormDefinition,

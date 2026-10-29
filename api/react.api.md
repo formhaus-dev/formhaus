@@ -15,6 +15,7 @@ import { FieldControl } from '@formhaus/core/fields';
 import { FieldOption } from '@formhaus/core';
 import { FieldType } from '@formhaus/core';
 import { FieldView } from '@formhaus/core/fields';
+import { FileText } from '@formhaus/core/fields';
 import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEngine } from '@formhaus/core';
@@ -353,6 +354,9 @@ export function TimeField(props: FieldComponentProps): react.JSX.Element;
 
 // @public (undocumented)
 export function useFieldProps(props: FieldComponentProps): FieldProps;
+
+// @public (undocumented)
+export const useFileText: () => FileText;
 
 // @public (undocumented)
 export function useFormEngine(definition: FormDefinition, initialValues?: Record<string, unknown>, options?: UseFormEngineOptions): FormEngine;

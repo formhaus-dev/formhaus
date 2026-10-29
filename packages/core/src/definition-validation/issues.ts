@@ -67,6 +67,7 @@ export type DefinitionIssueCode =
   | 'exclusive-default-value'
   | 'exclusive-with-min-length'
   | 'randomize-not-applicable'
+  | 'multiple-not-applicable'
   | 'matrix-options-mismatch';
 
 export interface DefinitionIssue {

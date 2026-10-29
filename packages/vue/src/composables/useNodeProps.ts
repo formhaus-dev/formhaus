@@ -1,5 +1,6 @@
 import { isGroup, type FieldOption, type FormField, type FormSection, type GroupItem } from '@formhaus/core';
 import {
+  copyField,
   fieldDomId,
   fieldTestIds,
   matrixColumns,
@@ -147,7 +148,7 @@ export function useNodeProps(
       const resolved = shownOptions(form.engine, field.key, field, options.value[field.key], mounted.value);
       return {
         id: fieldDomId(formId, field.key, form.engine.definition),
-        field: recalled(form.engine, resolved ? { ...field, options: resolved } : field),
+        field: recalled(form.engine, resolved ? copyField(field, { options: resolved }) : field),
         modelValue: values.value[field.key],
         error: errors.value[field.key],
         loading: fieldLoading.value[field.key],

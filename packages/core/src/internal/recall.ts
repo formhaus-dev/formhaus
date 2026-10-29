@@ -3,6 +3,7 @@ import { RECALL_SLOTS, type RecallItem, recallEnabled, resolveRecall } from '../
 import type { EngineInternals } from '../engine/runtime-internals';
 import { engineField } from '../engine/engine-field';
 import { getSubmitValues } from '../engine/validation-state';
+import { copyField } from '../validation/type-checks';
 
 const internals = (engine: FormEngine) => engine as unknown as EngineInternals;
 
@@ -52,7 +53,7 @@ export function recalled<T extends object>(engine: FormEngine, node: T, at?: str
   const parts = typeof at === 'string' ? internals(engine).visibility.parse(at) : undefined;
   const item = parts ? { group: parts[0], index: parts[1] } : (at as RecallItem | undefined);
   const resolve = resolver(engine, item);
-  const result = { ...node } as Record<string, unknown>;
+  const result = copyField(node, {}) as Record<string, unknown>;
   for (const slot of RECALL_SLOTS) if (typeof result[slot] === 'string') result[slot] = resolve(result[slot] as string);
   return result as T;
 }

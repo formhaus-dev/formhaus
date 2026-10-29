@@ -16,6 +16,7 @@ import { labelScenarios } from '../../core/__tests__/renderers/labels.scenarios'
 import { idScenarios } from '../../core/__tests__/renderers/ids.scenarios';
 import { exclusiveScenarios } from '../../core/__tests__/renderers/exclusive.scenarios';
 import { randomizeScenarios } from '../../core/__tests__/renderers/randomize.scenarios';
+import { fileListScenarios } from '../../core/__tests__/renderers/file-list.scenarios';
 import { optionScenarios } from '../../core/__tests__/renderers/options.scenarios';
 import { sourceScenarios } from '../../core/__tests__/renderers/sources.scenarios';
 import { summaryScenarios } from '../../core/__tests__/renderers/summary.scenarios';
@@ -195,6 +196,7 @@ describe('renderer conformance: ids', () => idScenarios(harness, kit));
 describe('renderer conformance: options', () => optionScenarios(harness, kit));
 describe('renderer conformance: exclusive options', () => exclusiveScenarios(harness, kit));
 describe('renderer conformance: randomized options', () => randomizeScenarios(harness, kit));
+describe('renderer conformance: file lists', () => fileListScenarios(harness, kit));
 describe('renderer conformance: sources', () => sourceScenarios(harness, kit));
 describe('renderer conformance: custom controls', () => controlScenarios(harness, kit));
 describe('renderer conformance: sections and groups', () => containerScenarios(harness, kit));

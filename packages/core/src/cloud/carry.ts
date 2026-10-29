@@ -1,7 +1,7 @@
 import type { FormDefinition, FormField } from '../types';
 import { splitPath, valueFields } from '../visibility/nodes';
 import { ANSWER_AGAIN } from './failures';
-import { SCALE_TYPES, scaleRange } from '../validation/type-checks';
+import { multipleFiles, SCALE_TYPES, scaleRange } from '../validation/type-checks';
 
 const SHAPES: Record<string, string> = {
   multiselect: 'list',
@@ -18,8 +18,8 @@ function fieldsOf(definition: FormDefinition): FormField[] {
   return valueFields([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]);
 }
 
-function shapeOf(field: FormField): string {
-  return SHAPES[field.type] ?? 'text';
+function shapeOf(definition: FormDefinition, field: FormField): string {
+  return multipleFiles(definition, field) ? 'files' : (SHAPES[field.type] ?? 'text');
 }
 
 function allowed(field: FormField, value: unknown): boolean {
@@ -32,9 +32,9 @@ function allowed(field: FormField, value: unknown): boolean {
   return (Array.isArray(value) ? value : [value]).every((item) => options.has(String(item)));
 }
 
-function fits(previous: FormField | undefined, next: FormField, value: unknown): boolean {
-  if (previous && shapeOf(previous) !== shapeOf(next)) return false;
-  switch (shapeOf(next)) {
+function fits(previous: string | undefined, next: string, value: unknown): boolean {
+  if (previous && previous !== next) return false;
+  switch (next) {
     case 'list':
       return Array.isArray(value);
     case 'flag':
@@ -49,12 +49,12 @@ function fits(previous: FormField | undefined, next: FormField, value: unknown):
 }
 
 export function carryValues(values: Record<string, unknown>, next: FormDefinition, previous?: FormDefinition): Record<string, unknown> {
-  const before = new Map(previous ? fieldsOf(previous).map((field) => [field.key, field]) : []);
+  const before = new Map(previous ? fieldsOf(previous).map((field) => [field.key, shapeOf(previous, field)]) : []);
   const kept: Record<string, unknown> = {};
   for (const field of fieldsOf(next)) {
     const value = values[field.key];
     if (value === undefined || value === null) continue;
-    if (fits(before.get(field.key), field, value) && allowed(field, value)) kept[field.key] = value;
+    if (fits(before.get(field.key), shapeOf(next, field), value) && allowed(field, value)) kept[field.key] = value;
   }
   return kept;
 }

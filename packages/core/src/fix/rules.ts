@@ -162,6 +162,7 @@ export function fixesFor(definition: Entry, issue: DefinitionIssue, issues: read
     case 'unsupported-format-version':
       return formatVersion(definition, true);
     case 'randomize-not-applicable':
+    case 'multiple-not-applicable':
       return [fix(`Remove "${last(issue.path)}"`, true, { op: 'remove', path: issue.path })];
     case 'invalid-type':
       return issue.path === '/formatVersion' ? formatVersion(definition, false) : [];

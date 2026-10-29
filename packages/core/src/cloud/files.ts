@@ -1,4 +1,5 @@
-import type { FormDefinition, FormNode } from '../types';
+import type { FormDefinition, FormField, FormNode } from '../types';
+import { multipleFiles } from '../validation/type-checks';
 import { CloudError, isRecord, readJson } from './error';
 
 const UPLOAD_FAILED = 'The upload failed. Try again.';
@@ -21,17 +22,21 @@ function isFile(value: unknown): value is CloudFile {
   return isRecord(value) && typeof value.name === 'string' && typeof value.size === 'number' && typeof value.arrayBuffer === 'function';
 }
 
-function fileKeys(nodes: FormNode[] = []): string[] {
+function fileFields(nodes: FormNode[] = []): FormField[] {
   return nodes.flatMap((node) =>
-    node.type === 'section' ? fileKeys((node as { fields: FormNode[] }).fields) : node.type === 'file' ? [node.key] : [],
+    node.type === 'section' ? fileFields((node as { fields: FormNode[] }).fields) : node.type === 'file' ? [node as FormField] : [],
   );
 }
 
-const keysOf = (definition: FormDefinition) =>
-  new Set(fileKeys([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]));
+const fieldsOf = (definition: FormDefinition) =>
+  fileFields([...(definition.fields ?? []), ...(definition.steps ?? []).flatMap((step) => step.fields)]);
+
+const keysOf = (definition: FormDefinition) => new Set(fieldsOf(definition).map((field) => field.key));
+
+const filesIn = (value: unknown) => [value].flat().filter(isFile);
 
 export const uploadGone = (definition: FormDefinition, values: Record<string, unknown>, errors: Record<string, string> = {}) =>
-  [...keysOf(definition)].some((key) => isFile(values[key]) && String(errors[key] ?? '').endsWith(UPLOAD_GONE));
+  [...keysOf(definition)].some((key) => filesIn(values[key]).length > 0 && String(errors[key] ?? '').endsWith(UPLOAD_GONE));
 
 function bounded<T>(work: Promise<T>, signal: AbortSignal): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -79,21 +84,33 @@ async function uploadFile(endpoint: string, send: Send, field: string, file: Clo
 export function createUploader(endpoint: string, send: Send) {
   const uploaded = new WeakMap<CloudFile, Map<string, string>>();
   const idsOf = (file: CloudFile) => uploaded.get(file) ?? uploaded.set(file, new Map()).get(file)!;
+  async function idOf(key: string, file: CloudFile, signal?: AbortSignal): Promise<string> {
+    let id = idsOf(file).get(key);
+    if (id === undefined) {
+      id = await uploadFile(endpoint, send, key, file, signal);
+      idsOf(file).set(key, id);
+    }
+    return id;
+  }
   return {
     async upload(definition: FormDefinition, values: Record<string, unknown>, signal?: AbortSignal): Promise<Record<string, unknown>> {
       const sent = { ...values };
       const errors: Record<string, string> = {};
+      const seen = new Set<string>();
       await Promise.all(
-        [...keysOf(definition)].map(async (key) => {
-          const file = values[key];
-          if (!isFile(file)) return;
+        fieldsOf(definition).map(async (field) => {
+          const { key } = field;
+          const value = values[key];
+          const list = multipleFiles(definition, field) && Array.isArray(value);
+          if (seen.has(key) || !(list ? value.some(isFile) : isFile(value))) return;
+          seen.add(key);
           try {
-            let id = idsOf(file).get(key);
-            if (id === undefined) {
-              id = await uploadFile(endpoint, send, key, file, signal);
-              idsOf(file).set(key, id);
+            if (!list) sent[key] = await idOf(key, value as CloudFile, signal);
+            else {
+              const ids: unknown[] = [];
+              for (const item of value) ids.push(isFile(item) ? await idOf(key, item, signal) : item);
+              sent[key] = ids;
             }
-            sent[key] = id;
           } catch (error) {
             if (signal?.aborted) throw error;
             errors[key] = error instanceof UploadError ? error.message : UPLOAD_FAILED;
@@ -104,10 +121,7 @@ export function createUploader(endpoint: string, send: Send) {
       return sent;
     },
     forget(values: Record<string, unknown>, keys: string[]): void {
-      for (const key of keys) {
-        const file = values[key];
-        if (isFile(file)) uploaded.get(file)?.delete(key);
-      }
+      for (const key of keys) for (const file of filesIn(values[key])) uploaded.get(file)?.delete(key);
     },
   };
 }

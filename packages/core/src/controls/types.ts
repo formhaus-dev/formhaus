@@ -1,4 +1,4 @@
-import type { ScaleAnchor } from '@formhaus/core/fields';
+import type { FileText, ScaleAnchor } from '@formhaus/core/fields';
 import type { FieldOption, FieldType, FormField, RevealView } from '../types';
 
 export type ControlKind = 'input' | 'inline' | 'group';
@@ -13,6 +13,7 @@ export interface ControlContext {
   kind: ControlKind;
   field: FormField;
   anchors: (ScaleAnchor | undefined)[];
+  text: FileText;
 }
 
 export interface ControlSpecOf<Component, View, Option = ControlOption> {

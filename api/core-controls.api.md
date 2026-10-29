@@ -45,6 +45,8 @@ export interface ControlContext {
     field: FormField;
     // (undocumented)
     kind: ControlKind;
+    // (undocumented)
+    text: FileText;
 }
 
 // @public (undocumented)

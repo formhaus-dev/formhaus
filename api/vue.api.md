@@ -23,6 +23,7 @@ import { FieldControl } from '@formhaus/core/fields';
 import { FieldOption } from '@formhaus/core';
 import { FieldType } from '@formhaus/core';
 import { FieldView } from '@formhaus/core/fields';
+import { FileText } from '@formhaus/core/fields';
 import { FormAction } from '@formhaus/core';
 import { FormActionsView } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
@@ -719,6 +720,9 @@ export const TimeField: FieldComponent;
 
 // @public (undocumented)
 export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Readonly<FieldProps>;
+
+// @public (undocumented)
+export const useFileText: () => FileText;
 
 // @public (undocumented)
 export function useFormEngine(definitionOrGetter: FormDefinition | (() => FormDefinition), initialValues?: Record<string, unknown> | (() => Record<string, unknown> | undefined), options?: UseFormEngineOptions): UseFormEngineReturn;

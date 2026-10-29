@@ -44,8 +44,9 @@ The format each node type and property needs:
 | Option `exclusive` | 1.5 | yes |
 | Field `autocomplete` | 1.5 | yes |
 | Field `randomize`, option `pinned` | 1.6 | yes |
+| Field `multiple` on `file` | 1.7 | yes |
 
-Other built-in field types and properties need no `formatVersion`. The warning is `outdated-format-version` and names the highest format the definition needs. Recall is the only feature the current core turns off below its format: the text shows `{{key}}` as written. The [specification](/spec#versioning) lists what older cores do with each feature.
+Other built-in field types and properties need no `formatVersion`. The warning is `outdated-format-version` and names the highest format the definition needs. Recall and file lists are the features the current core turns off below their format: the text shows `{{key}}` as written, and a `file` field with `multiple` keeps one file. The [specification](/spec#versioning) lists what older cores do with each feature.
 
 ## FormField
 
@@ -70,6 +71,7 @@ interface FormField {
   optionsFrom?: string;           // Dynamic options provider key
   optionsDependsOn?: string[];    // Re-fetch options when these fields change
   accept?: string;                // File input mime types
+  multiple?: boolean;             // File only: a list of files. Format 1.7. Added in 1.7.0
   rows?: number;                  // Textarea row count
   mask?: string;                  // Input mask pattern (shown as placeholder, custom components get full access)
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
@@ -378,6 +380,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
+| `multiple` on file fields, format 1.7 | 1.7.0 |
 | `randomize` on fields and `pinned` on options, format 1.6 | 1.1.0 |
 | `{{key}}` answer recall, `exclusive` on options and `autocomplete` on fields, format 1.5 | 0.21.0 |
 | `contains` and `notContains` conditions, format 1.4 | 0.20.0 |

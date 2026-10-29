@@ -5,7 +5,13 @@
 ```ts
 
 // @public (undocumented)
+export function addFiles(value: unknown, picked: unknown, max?: number): unknown[];
+
+// @public (undocumented)
 export type DateType = 'date' | 'datetime' | 'time';
+
+// @public (undocumented)
+export const defaultFileText: FileText;
 
 // @public (undocumented)
 export interface FieldAria {
@@ -152,6 +158,45 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
 }
 
 // @public (undocumented)
+export const fileEntries: (value: unknown) => FileEntry[];
+
+// @public (undocumented)
+export interface FileEntry {
+    // (undocumented)
+    index: number;
+    // (undocumented)
+    name: string;
+}
+
+// @public (undocumented)
+export function fileLimit(field: FormField): number;
+
+// @public (undocumented)
+export interface FilePick {
+    // (undocumented)
+    focus: number | null;
+    // (undocumented)
+    full: boolean;
+    // (undocumented)
+    notice: string;
+    // (undocumented)
+    status: string;
+    // (undocumented)
+    value: unknown[] | undefined;
+}
+
+// @public (undocumented)
+export const filesFull: (field: FormField, value: unknown) => boolean;
+
+// @public (undocumented)
+export interface FileText {
+    // (undocumented)
+    label: (key: LabelKey, params?: Record<string, unknown>) => string;
+    // (undocumented)
+    limit: (field: FormField, max: number) => string;
+}
+
+// @public (undocumented)
 export interface FreeText {
     // (undocumented)
     setText: (text: string) => void;
@@ -169,6 +214,9 @@ export function fromDate(date: Date | null | undefined, type?: DateType): string
 export const inputType: (field: Pick<FormField, "type">) => string;
 
 // @public (undocumented)
+export const isFileList: (field: object) => boolean;
+
+// @public (undocumented)
 export function numberValue(text: string | null | undefined): number | string | null;
 
 // @public (undocumented)
@@ -179,6 +227,12 @@ export const optionText: (options: FieldOption[], value: unknown) => string;
 
 // @public (undocumented)
 export const optionValue: (options: FieldOption[], text: string) => string;
+
+// @public (undocumented)
+export function pickFiles(field: FormField, value: unknown, picked: unknown, text?: FileText): FilePick;
+
+// @public (undocumented)
+export const removeFile: (value: unknown, index: number) => unknown[];
 
 // @public (undocumented)
 export interface ScaleAnchor {

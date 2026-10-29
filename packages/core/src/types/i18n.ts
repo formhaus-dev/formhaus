@@ -46,6 +46,7 @@ export type LabelKey =
   | 'submit'
   | 'stepTitle'
   | 'stepErrors'
+  | 'fileCount'
   | 'or'
   | 'select';
 

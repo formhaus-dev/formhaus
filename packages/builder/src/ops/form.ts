@@ -17,9 +17,13 @@ export function setFormProp<K extends Exclude<keyof FormExtra, 'submit'>>(
   else form.extra[prop] = value;
 }
 
-export function requireFormat(form: BuilderForm, version: `1.${number}`): void {
+export function hasFormat(form: BuilderForm, version: `1.${number}`): boolean {
   const [major, minor = 0] = String(form.extra.formatVersion ?? '1.0')
     .split('.')
     .map(Number);
-  if (major === 1 && minor < Number(version.slice(2))) form.extra.formatVersion = version;
+  return major !== 1 || minor >= Number(version.slice(2));
+}
+
+export function requireFormat(form: BuilderForm, version: `1.${number}`): void {
+  if (!hasFormat(form, version)) form.extra.formatVersion = version;
 }

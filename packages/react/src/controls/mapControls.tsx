@@ -21,7 +21,7 @@ import {
   warnDoubleLabel,
 } from '@formhaus/core/controls';
 import { controlEntry } from '@formhaus/core/internal';
-import { type FieldComponentProps, type FieldProps, useFieldProps } from '@formhaus/react';
+import { type FieldComponentProps, type FieldProps, useFieldProps, useFileText } from '@formhaus/react';
 import { type ComponentType, createElement, isValidElement, type ReactElement, type ReactNode, useEffect, useRef } from 'react';
 
 export interface ControlRootProps extends ControlRoot {
@@ -108,6 +108,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps, ControlOption>, input
         if (process.env.NODE_ENV !== 'production') warnDoubleLabel(document, f.id);
       } catch {}
     }, [f.id]);
+    const text = useFileText();
     if (props.matrix && config.matrix) return <config.matrix {...props} />;
     const { field } = props;
     const kind = controlKind(field.type, config.kinds);
@@ -129,7 +130,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps, ControlOption>, input
         if (!freeText) pick(next);
       },
       ...(Shell ? undefined : config.labels?.(f)),
-      ...adapt(f, options, { kind, field, anchors }),
+      ...adapt(f, options, { kind, field, anchors, text }),
     });
     const rootProps: ControlRootProps = {
       ...root,

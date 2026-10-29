@@ -1,6 +1,7 @@
 import type { FormAction, FormDefinition, FormField, FormGroup, FormNode, ShowCondition } from '../types';
 import { isGroup, isSection } from '../visibility/nodes';
 import { nestable } from './shape';
+import { markFileLists } from '../validation/type-checks';
 
 export interface FieldEntry {
   field: FormField;
@@ -73,6 +74,10 @@ export function createContext(definition: FormDefinition, validators?: Record<st
   } else visit(definition.fields ?? [], '/fields', -1);
   const entries: FieldEntry[] = nodes.flatMap(({ node, path, step, group, parent }) =>
     isSection(node) ? [] : [{ field: node as FormField, path, step, group, parent }],
+  );
+  markFileLists(
+    definition,
+    entries.map(({ field }) => field),
   );
   const keys = new Map<string, FieldEntry>();
   const scopes = new Map<string, Map<string, FieldEntry>>();

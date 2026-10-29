@@ -2,7 +2,7 @@ import { getAllFields } from '../engine/engine-utils';
 import { isGroup } from '../visibility/nodes';
 import type { FormDefinition, FormField, LabelKey, MessageKey } from '../types';
 import { DEFAULT_MESSAGES, formatText } from '../validation/default-messages';
-import { LIST_TYPES, typeMessageKeys } from '../validation/type-checks';
+import { isFileList, LIST_TYPES, markFileLists, typeMessageKeys } from '../validation/type-checks';
 import { CATALOGS, hasRule, SLOTS, type Entry } from './nodes';
 import { slotAddress, textNodes, type TextNode } from './walk';
 
@@ -23,7 +23,9 @@ const BOUNDS: Record<string, string> = { minLength: 'min', maxLength: 'max', min
 
 function ruleKey(field: FormField, rule: string): MessageKey {
   return (
-    (LIST_TYPES.includes(field.type) || field.type === 'group') && rule.endsWith('Length') ? rule.replace('Length', 'Items') : rule
+    (LIST_TYPES.includes(field.type) || field.type === 'group' || isFileList(field)) && rule.endsWith('Length')
+      ? rule.replace('Length', 'Items')
+      : rule
   ) as MessageKey;
 }
 
@@ -107,6 +109,7 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
   const steps = definition.steps ?? [];
   const nodes = getAllFields(definition);
   const fields = nodes.flatMap((field) => (isGroup(field) ? field.fields : [field]));
+  markFileLists(definition, fields);
   const labels = new Set<LabelKey>(['errorSummary']);
   const add = (when: unknown, keys: LabelKey[]) => {
     if (when) for (const key of keys) labels.add(key);
@@ -160,6 +163,7 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
     fields.some((field) => field.type === 'file'),
     ['chooseFile'],
   );
+  add(fields.some(isFileList), ['removeItem', 'removeItemNamed', 'itemAdded', 'itemRemoved', 'fileCount']);
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),

@@ -20,7 +20,7 @@ export const capabilities = {
     optional: ['formatVersion', 'lang', 'description', 'messages', 'labels', 'i18n', 'cancel', 'fields', 'steps'],
     rule: 'Use either "fields" (single page) or "steps" (multi-step), never both.',
     formatVersion: FORMAT_VERSION,
-    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. Set "1.6" when a field has randomize or an option is pinned. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options, autocomplete, randomize and pinned.`,
+    formatVersionRule: `Optional. A newer major version than ${FORMAT_VERSION} is reported as unsupported-format-version. Set "1.1" when the definition has sections or groups. Set "1.3" when it has scale or rating fields, option images or a matrix section. Set "1.4" when a condition uses contains or notContains. Set "1.5" when a text uses {{key}} answer recall, an option is exclusive or a field has autocomplete. Set "1.6" when a field has randomize or an option is pinned. Set "1.7" when a file field has multiple; below 1.7 multiple is ignored and the field keeps one file. outdated-format-version is reported for sections, groups, scale, rating, contains, notContains, {{key}}, exclusive options, autocomplete, randomize, pinned and multiple.`,
   },
   containerTypes: CONTAINER_TYPES,
   sections: {
@@ -57,6 +57,7 @@ export const capabilities = {
     rating:
       'Stars from 1 to validation.max (default 5, allowed 3 to 10). The value is a whole number. validation.min is an ordinary rule, "at least N stars".',
     time: 'A 24-hour "HH:MM" or "HH:MM:SS" string.',
+    file: 'One file, or with "multiple": true a list of files. accept limits the picker, such as "image/*,.pdf". On the server the value is an upload reference string, or an array of them for a list.',
     hidden:
       'Renders no label or control, so the label is optional. Its value comes from the initial values, then its source, then defaultValue. It is checked as text up to maxLength, or 2000 characters without it, follows show conditions like any field and gets its value back when they match again. Its errors show as form errors that name the field by its label, or by its key without one.',
   },
@@ -74,6 +75,7 @@ export const capabilities = {
       'optionsFrom',
       'optionsDependsOn',
       'accept',
+      'multiple',
       'rows',
       'mask',
       'inputMode',
@@ -94,6 +96,8 @@ export const capabilities = {
       'Array of { value: string, label: string, image?, exclusive?, pinned? }. image is an image URL shown above the label on radio and multiselect options (picture choice); the label stays visible and names the option. select and autocomplete ignore image.',
     exclusive:
       'multiselect with static options only: "exclusive": true makes an option such as "None of these" or "Prefer not to say" the only answer. Picking it clears the other answers, picking another option clears it, and several exclusive options also clear each other. Put exclusive options last; renderers show the "or" label before them. A list with an exclusive option and any other value fails the type check with the exclusive message. One exclusive option alone answers required and skips minLength. contains and notContains work as usual. Set "formatVersion": "1.5".',
+    multiple:
+      'file only: "multiple": true keeps a list of files. The value is an array; required needs at least one file, and validation.minLength and maxLength count files (at most 100 without maxLength, never more than 1000). Pickers add files and each file has a Remove button. Another type is multiple-not-applicable; a value that is not a boolean is invalid-type. Needs "formatVersion": "1.7".',
     randomize:
       'radio, multiselect and select only: "randomize": true shows the options in a random order that stays the same for one respondent, as research surveys do against position bias. "pinned": true on an option keeps it at its written position, such as "Other"; exclusive options are always pinned. Values, conditions and validation do not change. Not applied in a matrix section. Another type, a matrix row or pinned without randomize is randomize-not-applicable. Needs "formatVersion": "1.6". In code, the order needs research from @formhaus/core/research, passed to FormRenderer, useFormEngine or FormEngine; without it the options show in written order. Formhaus Cloud hosted pages and embeds shuffle the options and store the order each respondent saw with the response.',
     imageFieldTypes: IMAGE_FIELD_TYPES,

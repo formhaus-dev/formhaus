@@ -1,4 +1,17 @@
 export { fromDate, toDate, type DateType } from './dates';
+export {
+  addFiles,
+  defaultFileText,
+  fileEntries,
+  fileLimit,
+  filesFull,
+  isFileList,
+  pickFiles,
+  removeFile,
+  type FileEntry,
+  type FilePick,
+  type FileText,
+} from './files';
 export { optionText, optionValue } from './options';
 export { scaleView, type ScaleAnchor, type ScaleView } from './scale';
 export {
