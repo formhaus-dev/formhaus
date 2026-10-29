@@ -467,7 +467,7 @@ File upload. Uses native file input. Set `accept` to restrict file types. The va
 
 ### Several files
 
-Set `"multiple": true` to collect a list of files in one field. The value is an array of `File`. Picking files adds them to the list, and each file has a Remove button. `required` needs at least one file, and `validation.minLength` and `maxLength` count files. Without `maxLength` a list holds up to 100 files. With Formhaus Cloud, `FormhausForm` uploads each file and submits the list of ids. Requires `"formatVersion": "1.7"` and `@formhaus/core` 1.7; below 1.7 the field keeps one file.
+Set `"multiple": true` to collect a list of files in one field. The value is an array of `File`. Picking files adds them to the list, and each file has a Remove button. The picker stops at `maxLength` and says so when files are dropped. `required` needs at least one file, and `validation.minLength` and `maxLength` count files. Without `maxLength` a list holds up to 100 files. With Formhaus Cloud, `FormhausForm` uploads each file and submits the list of ids. Requires `"formatVersion": "1.7"` and `@formhaus/core` 1.7; below 1.7 the field keeps one file.
 
 ```json
 {
@@ -481,6 +481,8 @@ Set `"multiple": true` to collect a list of files in one field. The value is an 
 ```
 
 On your server, `validateSubmission()` expects an array of upload references, such as `["up_1", "up_2"]`. It also accepts one reference as a list of one, so older clients that send one file keep working. Upgrade the server before the clients: `@formhaus/core` 1.6 and older reject a list.
+
+Core marks the field object of a file list with an own `Symbol.for('formhaus.fileList')` property when it loads the definition. JSON output does not include it, but deep-equality checks that compare symbol keys, such as Jest and Vitest `toEqual`, see it on those field objects.
 
 ## Hidden
 

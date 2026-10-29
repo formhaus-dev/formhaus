@@ -5,7 +5,7 @@
 ```ts
 
 // @public (undocumented)
-export const addFiles: (value: unknown, picked: unknown) => unknown[];
+export function addFiles(value: unknown, picked: unknown, max?: number): unknown[];
 
 // @public (undocumented)
 export type DateType = 'date' | 'datetime' | 'time';
