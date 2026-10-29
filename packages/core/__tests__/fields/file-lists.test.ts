@@ -5,7 +5,8 @@ import { createUploader, type Send } from '../../src/cloud/files';
 import { controlProps, fromControl } from '../../src/controls';
 import { fieldState, isFileList } from '../../src/fields';
 import { fixAll } from '../../src/fix';
-import { defaultFileLimit, engineFileLimit, pickFiles } from '../../src/internal/files';
+import { defaultFileText, fileEntries, pickFiles } from '../../src/fields/files';
+import { fileLimitMessage } from '../../src/internal/files';
 import { translationTemplate } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
 
@@ -85,22 +86,32 @@ describe('file lists', () => {
   });
 
   it('stops picking at the limit and names the limit with the field message', () => {
-    const label = (key: string, params: Record<string, unknown> = {}) => `${key}:${String(params.item)}`;
+    const text = { ...defaultFileText, label: (key: string, params: Record<string, unknown> = {}) => `${key}:${String(params.item)}` };
     const field = engineField(form('1.7', [{ ...docs, validation: { maxLength: 2 } }]));
-    expect(pickFiles(field, ['r'], [file('a'), file('b')], label, defaultFileLimit)).toMatchObject({
+    expect(pickFiles(field, ['r'], [file('a'), file('b')], text)).toMatchObject({
       value: ['r', expect.objectContaining({ name: 'a' })],
       status: 'itemAdded:a At most 2 allowed',
       notice: 'At most 2 allowed',
       focus: 1,
     });
-    expect(pickFiles(field, ['r', 's'], [file('a')], label, defaultFileLimit)).toMatchObject({
+    expect(pickFiles(field, ['r', 's'], [file('a')], text)).toMatchObject({
       value: undefined,
       status: 'At most 2 allowed',
     });
     const custom = engineField(form('1.7', [{ ...docs, validation: { maxLength: 1, maxLengthMessage: 'One file' } }]));
-    expect(pickFiles(custom, [], [file('a'), file('b')], label, defaultFileLimit).notice).toBe('One file');
+    expect(pickFiles(custom, [], [file('a'), file('b')], text).notice).toBe('One file');
     const translated = new FormEngine({ ...form('1.7', [{ ...docs, validation: { maxLength: 1 } }]), messages: { maxItems: 'Max {max}' } });
-    expect(engineFileLimit(translated)(translated.definition.fields![0] as FormField, 1)).toBe('Max 1');
+    expect(fileLimitMessage(translated, translated.definition.fields![0] as FormField, 1)).toBe('Max 1');
+    expect(pickFiles(field, [], ['', null, 'x']).value).toEqual(['x']);
+  });
+
+  it('names rows by file name or the last path segment of a reference', () => {
+    expect(fileEntries([file('a.pdf'), 'https://cdn.test/docs/b.pdf?sig=1#top', 'a/b/', '/', '', null, 5, { id: 1 }])).toEqual([
+      { index: 0, name: 'a.pdf' },
+      { index: 1, name: 'b.pdf' },
+      { index: 2, name: 'b' },
+      { index: 3, name: '/' },
+    ]);
   });
 
   it('works with a frozen definition', () => {
