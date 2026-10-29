@@ -1,3 +1,5 @@
+import { addFiles, fileEntries, removeFile } from '@formhaus/core/fields';
+import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
 import { FileUpload as GovukFileUpload } from 'govuk-frontend';
 import { type AriaAttributes, type ChangeEvent, type ComponentProps, useEffect, useRef } from 'react';
@@ -55,10 +57,22 @@ export function Password({ autoComplete, ...props }: ComponentProps<'input'>) {
   );
 }
 
-export function FileUpload({ onChange, ...props }: ComponentProps<'input'>) {
+const several = {
+  'data-i18n.choose-files-button': 'Choose files',
+  'data-i18n.drop-instruction': 'or drop files',
+  'data-i18n.no-file-chosen': 'No files chosen',
+};
+
+export function FileUpload({ onChange, f, ...props }: ComponentProps<'input'> & { f: FieldProps }) {
   const root = useRef<HTMLDivElement>(null);
   const change = useRef(onChange);
-  change.current = onChange;
+  change.current = props.multiple
+    ? ({ target }) => {
+        const picked = Array.from(target.files ?? []);
+        target.value = '';
+        if (picked.length) f.change(addFiles(f.value, picked));
+      }
+    : onChange;
   const describedBy = props['aria-describedby'];
 
   useEffect(() => {
@@ -76,10 +90,33 @@ export function FileUpload({ onChange, ...props }: ComponentProps<'input'>) {
     else button?.removeAttribute('aria-describedby');
   }, [describedBy]);
 
+  const entries = props.multiple ? fileEntries(f.value) : [];
+
   return (
-    <div ref={root} className="govuk-file-upload-wrapper" data-module="govuk-file-upload">
-      <input {...props} type="file" className={classes('govuk-file-upload', props)} />
-    </div>
+    <>
+      <div ref={root} className="govuk-file-upload-wrapper" data-module="govuk-file-upload" {...(props.multiple && several)}>
+        <input {...props} type="file" className={classes('govuk-file-upload', props)} />
+      </div>
+      {entries.length > 0 && (
+        <dl className="govuk-summary-list govuk-!-margin-top-4 govuk-!-margin-bottom-0">
+          {entries.map(({ index, name }) => (
+            <div key={index} className="govuk-summary-list__row">
+              <dt className="govuk-summary-list__key app-file-name">{name}</dt>
+              <dd className="govuk-summary-list__actions">
+                <button
+                  type="button"
+                  className="govuk-button govuk-button--secondary govuk-!-margin-bottom-0"
+                  disabled={props.disabled}
+                  onClick={() => f.change(removeFile(f.value, index))}
+                >
+                  Remove<span className="govuk-visually-hidden"> {name}</span>
+                </button>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      )}
+    </>
   );
 }
 
