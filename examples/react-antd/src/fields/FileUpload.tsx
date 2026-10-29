@@ -1,5 +1,5 @@
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, fileLimit, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import { Button, Flex, Typography, Upload, type UploadProps } from 'antd';
 import { useState } from 'react';
@@ -15,11 +15,11 @@ export const upload = (f: FieldProps, field: FormField): UploadProps & { f: Fiel
   children: <Button {...f.attrs}>Choose file</Button>,
 });
 
-const list = (f: FieldProps, field: FormField, notify: (notice: string) => void): UploadProps => {
+const list = (f: FieldProps, field: FormField, notify: (notice: string, status: string) => void): UploadProps => {
   const max = fileLimit(field);
-  const disabled = f.disabled || addFiles(f.value, []).length >= max;
-  const drop = (uid: string) => {
-    notify('');
+  const disabled = f.disabled || filesFull(field, f.value);
+  const drop = (uid: string, name: string) => {
+    notify('', `${name} removed`);
     f.change(removeFile(f.value, Number(uid)));
   };
   return {
@@ -28,18 +28,25 @@ const list = (f: FieldProps, field: FormField, notify: (notice: string) => void)
     fileList: fileEntries(f.value).map(({ index, name }) => ({ uid: String(index), name, status: 'done' })),
     beforeUpload: (file, batch) => {
       if (file !== batch[batch.length - 1]) return false;
-      const next = addFiles(f.value, batch, max);
-      notify(
-        next.length < addFiles(f.value, batch).length ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max })) : '',
-      );
-      f.change(next);
+      const result = pickFiles(field, f.value, batch);
+      if (result.value) f.change(result.value);
+      notify(result.notice, result.status);
       return false;
     },
     onChange: undefined,
     itemRender: (_, file) => (
       <Flex justify="space-between" align="center" gap={8}>
-        <Typography.Text style={{ overflowWrap: 'anywhere' }}>{file.name}</Typography.Text>
-        <Button type="link" danger size="small" aria-label={`Remove ${file.name}`} disabled={f.disabled} onClick={() => drop(file.uid)}>
+        <Typography.Text style={{ overflowWrap: 'anywhere' }} dir="auto">
+          {file.name}
+        </Typography.Text>
+        <Button
+          type="link"
+          danger
+          size="small"
+          aria-label={`Remove ${file.name}`}
+          disabled={f.disabled}
+          onClick={() => drop(file.uid, file.name)}
+        >
           Remove
         </Button>
       </Flex>
@@ -54,11 +61,19 @@ const list = (f: FieldProps, field: FormField, notify: (notice: string) => void)
 
 export function FileUpload({ f, field, ...props }: UploadProps & { f: FieldProps; field: FormField }) {
   const [notice, setNotice] = useState('');
+  const [status, setStatus] = useState('');
   if (!props.multiple) return <Upload {...props} />;
+  const notify = (nextNotice: string, nextStatus: string) => {
+    setNotice(nextNotice);
+    setStatus(nextStatus);
+  };
   return (
     <>
-      <Upload {...props} {...list(f, field, setNotice)} />
+      <Upload {...props} {...list(f, field, notify)} />
       {notice && <Typography.Text type="secondary">{notice}</Typography.Text>}
+      <span className="sr-only" role="status">
+        {status}
+      </span>
     </>
   );
 }

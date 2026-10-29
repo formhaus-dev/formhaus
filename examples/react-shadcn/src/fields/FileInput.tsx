@@ -1,5 +1,5 @@
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import { type ComponentProps, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -10,32 +10,31 @@ type FileInputProps = ComponentProps<'input'> & { f: FieldProps; field: FormFiel
 
 function FileList({ f, field, ...props }: FileInputProps) {
   const [notice, setNotice] = useState('');
-  const max = fileLimit(field);
+  const [status, setStatus] = useState('');
   const entries = fileEntries(f.value);
   return (
     <>
       <Input
         {...props}
         type="file"
-        disabled={props.disabled || addFiles(f.value, []).length >= max}
+        disabled={props.disabled || filesFull(field, f.value)}
         onChange={({ target }) => {
           const picked = Array.from(target.files ?? []);
           target.value = '';
           if (!picked.length) return;
-          const next = addFiles(f.value, picked, max);
-          setNotice(
-            next.length < addFiles(f.value, picked).length
-              ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max }))
-              : '',
-          );
-          f.change(next);
+          const result = pickFiles(field, f.value, picked);
+          if (result.value) f.change(result.value);
+          setNotice(result.notice);
+          setStatus(result.status);
         }}
       />
       {entries.length > 0 && (
         <ul className="grid gap-1">
           {entries.map(({ index, name }) => (
             <li key={index} className="flex items-center justify-between gap-2 rounded-lg border px-2.5 py-1 text-sm">
-              <span className="min-w-0 break-words">{name}</span>
+              <span className="min-w-0 break-words" dir="auto">
+                {name}
+              </span>
               <Button
                 variant="ghost"
                 size="sm"
@@ -44,6 +43,7 @@ function FileList({ f, field, ...props }: FileInputProps) {
                 onClick={() => {
                   setNotice('');
                   f.change(removeFile(f.value, index));
+                  setStatus(`${name} removed`);
                 }}
               >
                 Remove
@@ -53,6 +53,9 @@ function FileList({ f, field, ...props }: FileInputProps) {
         </ul>
       )}
       {notice && <FieldDescription>{notice}</FieldDescription>}
+      <p className="sr-only" role="status">
+        {status}
+      </p>
     </>
   );
 }
