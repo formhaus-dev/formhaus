@@ -19,7 +19,7 @@ import type {
   GroupItemView,
   GroupView,
   LabelSource,
-  LocaleCatalog,
+  LocaleSource,
   MessageFn,
   MessageKey,
   OptionsProvider,
@@ -100,7 +100,7 @@ export interface FormRendererProps {
   onValidate?: Callback<ValidateFn>;
   validateWithRules?: boolean;
   lang?: string;
-  locale?: LocaleCatalog | LocaleCatalog[];
+  locale?: LocaleSource | LocaleSource[];
   formatRecall?: Callback<RecallFormatFn>;
   seed?: string | undefined;
   research?: FormResearch | undefined;

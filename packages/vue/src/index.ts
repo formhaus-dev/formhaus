@@ -13,6 +13,7 @@ export {
   fieldComponentEmits,
   fieldComponentProps,
   formErrorsComponentProps,
+  formRendererProps,
   formStepProgressProps,
   groupComponentProps,
   groupItemComponentProps,

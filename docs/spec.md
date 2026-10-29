@@ -983,10 +983,12 @@ A message for a failed rule comes from the first of:
 
 1. The field message: a string `required`, `minLengthMessage`, `maxLengthMessage`, `minMessage`, `maxMessage`, `patternMessage` or `matchFieldMessage`.
 2. The `messages` option of the engine, the renderer or `validateSubmission()`.
-3. `definition.messages`.
-4. The default.
+3. The translations of the `locale` option, in order.
+4. `definition.messages`.
+5. The catalogs of the `locale` option, in order.
+6. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. In a [file list](#file-lists), `removeItem`, `removeItemNamed`, `itemAdded` and `itemRemoved` name the Remove button of a file and announce changes, with the file name as `item`. Native renderers read the number of files with `fileCount`; web renderers do not use it. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then the translations of `locale`, then `definition.labels`, then the catalogs of `locale`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. In a [file list](#file-lists), `removeItem`, `removeItemNamed`, `itemAdded` and `itemRemoved` name the Remove button of a file and announce changes, with the file name as `item`. Native renderers read the number of files with `fileCount`; web renderers do not use it. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 
@@ -1044,10 +1046,11 @@ Fields of a multi-step form are addressed under their step, so a key shared by t
 
 ### Overlays
 
-An overlay is a JSON object of translated texts, nested by address. Every leaf is a string. Its JSON Schema is [`https://formhaus.dev/schema/form-translation.json`](https://formhaus.dev/schema/form-translation.json), shipped as `@formhaus/core/translation.schema.json`.
+An overlay is a JSON object of translated texts, nested by address. Every leaf is a string, except that a `messages` or `labels` entry MAY be an object of plural forms with a required `other`. A root `locale` string names its language. Its JSON Schema is [`https://formhaus.dev/schema/form-translation.json`](https://formhaus.dev/schema/form-translation.json), shipped as `@formhaus/core/translation.schema.json`.
 
 ```json [signup.ru.json]
 {
+  "locale": "ru",
   "title": "Регистрация",
   "submit": { "label": "Создать аккаунт" },
   "messages": { "required": "Обязательное поле", "minLength": "Минимум {min} символов" },
@@ -1058,19 +1061,22 @@ An overlay is a JSON object of translated texts, nested by address. Every leaf i
 }
 ```
 
-`localize(definition, { overlay })` returns a copy of the definition:
+`localize(definition, translation(overlay))` returns a copy of the definition:
 
 - A text is replaced only by a non-empty string. Missing, empty and non-string entries keep the source text.
 - Entries without a source slot are ignored. An overlay never adds fields, options, rules or actions.
 - A validation entry applies only when its rule is set. It becomes the field message, with `{min}` and `{max}` replaced by the rule value. Field messages in the definition itself are used as written.
-- `messages` and `labels` entries are merged into the definition catalogs.
+- String `messages` and `labels` entries are merged into the definition catalogs. Plural forms apply when the text is shown.
+- `lang` becomes the `locale` of the overlay.
 - Only own properties are read.
 
 ### Translate function
 
-`localize(definition, { translate, prefix })` calls `translate(key, params, defaultText)` for each slot. The key is the explicit `i18n` key, or `<prefix>.<address>`, where `prefix` defaults to the form id. With `prefix: false` only explicit keys are asked. A result of `undefined`, `''` or the key itself, or a thrown error, means no translation, and the source text stays. `{name}` placeholders left in a result are filled in like overlay templates.
+`localize(definition, translation({ locale, translate, prefix }))` calls `translate(key, params, defaultText)` for each slot. The key is the explicit `i18n` key, or `<prefix>.<address>`, where `prefix` defaults to the form id. With `prefix: false` only explicit keys are asked. A result of `undefined`, `''` or the key itself, or a thrown error, means no translation, and the source text stays. `{name}` placeholders left in a result are filled in like overlay templates.
 
 Texts, options, action labels and field messages are translated once. For a rule without a field message, a result equal to `defaultText` is not written, so the catalog still applies. Catalog messages and labels are translated when they are shown, through the `messages` and `labels` functions that `localize()` returns.
+
+`localize()` also takes a list of translations and catalogs, the same list as the `locale` option of the engine and the renderers.
 
 `lang` is metadata. It does not select a translation and does not set `dir`.
 
@@ -1129,6 +1135,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `missing-component` | warning, from the React and Vue renderers in development | A field type with no component in `components`. Reported once per type |
 | `legacy-layout` | warning, from the React and Vue renderers in development | `components.section`, `components.group`, `components.groupItem`, `components.confirmDialog`, `actionsComponent` or `progressComponent`, which `layout` replaces. Reported once per key |
 | `missing-research` | warning, from the engine in development | A field with `randomize` and no `research` option, so the options show in written order. Reported once |
+| `untranslated-locale` | warning, from the engine in development | A `locale` source with texts of the form, such as `title` or `fields`, that was not passed through `translation()`, so those texts stay in the source language |
 | `source-not-applicable` | warning | A `source` on a field that is not `hidden` |
 | `unknown-autocomplete-token` | warning | An `autocomplete` that is not a valid [autofill token](#autocomplete) |
 | `autocomplete-not-applicable` | warning | `autocomplete` on a built-in field type other than `text`, `email`, `phone`, `password`, `textarea`, `number`, `date`, `select`, `autocomplete` and `radio` |

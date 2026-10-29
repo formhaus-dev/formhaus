@@ -43,7 +43,7 @@ import { FormStepStatus } from '@formhaus/core';
 import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
-import { LocaleCatalog } from '@formhaus/core';
+import { LocaleSource } from '@formhaus/core';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
@@ -329,7 +329,7 @@ export const formErrorsComponentProps: {
 };
 
 // @public (undocumented)
-export const FormhausField: TypedComponent<FormhausFieldProps, FieldComponentEmits>;
+export const FormhausField: TypedComponent<typeof formhausFieldProps, FieldComponentEmits>;
 
 // @public (undocumented)
 export interface FormhausFieldProps extends FieldComponentProps {
@@ -389,7 +389,7 @@ export interface FormRendererProps {
     // (undocumented)
     loading?: boolean;
     // (undocumented)
-    locale?: LocaleCatalog | LocaleCatalog[];
+    locale?: LocaleSource | LocaleSource[];
     // (undocumented)
     messages?: Partial<Record<MessageKey, string>> | Callback<MessageFn>;
     // (undocumented)
@@ -429,6 +429,61 @@ export interface FormRendererProps {
     // (undocumented)
     validators?: Record<string, ValidatorFn>;
 }
+
+// @public (undocumented)
+export const formRendererProps: {
+    onBeforeStepChange: PropType<Renderer["onBeforeStepChange"]>;
+    onAfterStepChange: PropType<Renderer["onAfterStepChange"]>;
+    onBeforeSubmit: PropType<Renderer["onBeforeSubmit"]>;
+    onAfterSubmit: PropType<Renderer["onAfterSubmit"]>;
+    onWarning: PropType<Renderer["onWarning"]>;
+    messages: PropType<Renderer["messages"]>;
+    onError: PropType<Renderer["onError"]>;
+    onSubmit: PropType<Renderer["onSubmit"]>;
+    headingLevel: {
+        type: PropType<HeadingLevel>;
+        default: number;
+    };
+    definition: {
+        type: PropType<FormDefinition>;
+        required: true;
+    };
+    initialValues: PropType<Renderer["initialValues"]>;
+    keepValues: BooleanConstructor;
+    validators: PropType<Renderer["validators"]>;
+    onStepValidate: PropType<Renderer["onStepValidate"]>;
+    onValidate: PropType<Renderer["onValidate"]>;
+    validateWithRules: BooleanConstructor;
+    lang: StringConstructor;
+    locale: PropType<Renderer["locale"]>;
+    formatRecall: PropType<Renderer["formatRecall"]>;
+    seed: StringConstructor;
+    research: PropType<FormResearch>;
+    hiddenValues: PropType<Renderer["hiddenValues"]>;
+    errors: PropType<Renderer["errors"]>;
+    labels: PropType<LabelSource>;
+    errorSummary: {
+        type: PropType<Renderer["errorSummary"]>;
+        default: boolean;
+    };
+    confirmRemove: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    stepErrorMarks: BooleanConstructor;
+    stepFocus: PropType<Renderer["stepFocus"]>;
+    conditionalReveal: BooleanConstructor;
+    loading: {
+        type: BooleanConstructor;
+        default: boolean;
+    };
+    components: PropType<FieldComponentMap>;
+    layout: PropType<LayoutComponentMap>;
+    actionsComponent: PropType<Component>;
+    progressComponent: PropType<Component>;
+    optionsProviders: PropType<Renderer["optionsProviders"]>;
+    testIds: PropType<Renderer["testIds"]>;
+};
 
 // @public (undocumented)
 export const FormStepProgress: TypedComponent<typeof formStepProgressProps>;

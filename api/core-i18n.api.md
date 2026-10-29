@@ -38,36 +38,28 @@ export interface LocaleCatalog {
 export function localeChain(tag: string): string[];
 
 // @public (undocumented)
+export type LocaleSource = LocaleCatalog | Translation;
+
+// @public (undocumented)
 export type LocaleText = string | PluralForms;
 
 // @public (undocumented)
-export function localize(input: FormDefinition, source: LocalizeSource): Localized;
+export function localize(input: FormDefinition, locale: LocaleSource | LocaleSource[]): Localized;
 
 // @public (undocumented)
 export interface Localized {
     // (undocumented)
     definition: FormDefinition;
     // (undocumented)
-    labels: LabelSource;
+    labels: LabelFn;
     // (undocumented)
-    messages: MessageSource;
+    messages: MessageFn;
 }
-
-// @public (undocumented)
-export type LocalizeSource = OverlaySource | TranslateSource;
 
 // @public (undocumented)
 export type Overlay = {
     [key: string]: string | Overlay;
 };
-
-// @public (undocumented)
-export interface OverlaySource {
-    // (undocumented)
-    lang?: string;
-    // (undocumented)
-    overlay: Overlay;
-}
 
 // @public (undocumented)
 export interface PluralForms {
@@ -114,12 +106,28 @@ export type TranslateFn = (key: string, params: Record<string, unknown>, default
 // @public (undocumented)
 export interface TranslateSource {
     // (undocumented)
-    lang?: string;
+    locale: string;
     // (undocumented)
     prefix?: string | false;
     // (undocumented)
     translate: TranslateFn;
 }
+
+// @public (undocumented)
+export interface Translation {
+    // (undocumented)
+    readonly [translated]: true;
+    // (undocumented)
+    readonly locale: string;
+}
+
+// @public (undocumented)
+export const translation: (source: TranslationFile | TranslateSource) => Translation;
+
+// @public (undocumented)
+export type TranslationFile = Overlay & {
+    locale: string;
+};
 
 // @public (undocumented)
 export interface TranslationIssues {

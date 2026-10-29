@@ -20,7 +20,7 @@ const details = [
   '',
   `Server-side validation: \`validateSubmission(definition, body.values, { skippedSteps })\` from \`@formhaus/core/server\`. \`FormEngine.validate()\` runs the same type checks in the browser, but only the server call protects against untrusted input. Docs: ${siteUrl}/guide/server-validation`,
   '',
-  `Translations: a definition keeps its source texts. \`messages\` and \`labels\` catalogs replace built-in texts; \`i18n\` objects map texts to the app's existing keys (Lokalise, i18next, vue-i18n), with the literal text as the required fallback; an overlay file such as \`signup.ru.json\` holds translated texts nested by step id, field key and option value. \`localize()\` from \`@formhaus/core/i18n\` and \`useLocalizedForm\` from \`@formhaus/react/i18n\` or \`@formhaus/vue/i18n\` apply them. Never invent translation keys. Docs: ${siteUrl}/guide/translations`,
+  `Translations: a definition keeps its source texts. \`messages\` and \`labels\` catalogs replace built-in texts; \`i18n\` objects map texts to the app's existing keys (Lokalise, i18next, vue-i18n), with the literal text as the required fallback; a translation file such as \`signup.ru.json\` holds translated texts nested by step id, field key and option value, with its \`locale\` tag. The \`locale\` prop or engine option takes one language: catalogs from \`@formhaus/core/locales/*\` and \`translation()\` from \`@formhaus/core/i18n\` of a translation file or of \`{ locale, translate }\`. \`localize()\` applies the same list on a server. Never invent translation keys. Docs: ${siteUrl}/guide/translations`,
   '',
   `JSON Schema of an overlay: ${siteUrl}/schema/form-translation.json`,
   '',

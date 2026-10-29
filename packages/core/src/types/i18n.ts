@@ -70,6 +70,14 @@ export interface LocaleCatalog {
   labels: Partial<Record<LabelKey, LocaleText>>;
 }
 
+export type TranslateFn = (key: string, params: Record<string, unknown>, defaultText: string) => string | undefined;
+
+export interface TranslateSource {
+  locale: string;
+  translate: TranslateFn;
+  prefix?: string | false;
+}
+
 export interface FormI18n {
   title?: string;
   description?: string;

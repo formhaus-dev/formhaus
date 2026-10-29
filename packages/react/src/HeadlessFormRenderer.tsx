@@ -189,7 +189,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     return (
       <form
         ref={formRef}
-        lang={definition.lang}
+        lang={engine.definition.lang}
         onFocusCapture={(event) => {
           focusReturn.current = event.target;
         }}

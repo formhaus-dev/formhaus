@@ -5,9 +5,9 @@ import { fieldDomId } from '@formhaus/core/internal';
 import { useFormId } from './composables/useFormId';
 import { withDefaultFields } from './constants';
 import { fieldComponentEmits } from './props';
-import type { FieldResolverProps } from './types';
+import { formhausFieldProps } from './innerProps';
 
-const props = defineProps<FieldResolverProps>();
+const props = defineProps(formhausFieldProps);
 const emit = defineEmits(fieldComponentEmits);
 
 const components = computed(() => withDefaultFields(props.components));

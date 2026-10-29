@@ -1,9 +1,11 @@
 import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitest/config';
+import { coreDefine, coreSource } from '../core/vitest.source';
 
 export default defineConfig({
+  define: coreDefine,
   resolve: {
-    alias: { '@formhaus/react': fileURLToPath(new URL('./src/index.ts', import.meta.url)) },
+    alias: [{ find: /^@formhaus\/react$/, replacement: fileURLToPath(new URL('./src/index.ts', import.meta.url)) }, ...coreSource],
     dedupe: ['react', '@formhaus/core'],
   },
   test: {
