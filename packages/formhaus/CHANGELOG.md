@@ -1,5 +1,11 @@
 # formhaus
 
+## 0.21.5
+
+### Patch Changes
+
+- The `formhaus-create-form` skill sets format 1.7 for a `file` field with `multiple`, and describes it.
+
 ## 0.21.4
 
 ### Patch Changes

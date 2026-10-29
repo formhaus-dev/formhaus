@@ -1,5 +1,25 @@
 # @formhaus/core
 
+## 1.7.0
+
+### Minor Changes
+
+- Format 1.7: `"multiple": true` on a `file` field holds a list of files. `minLength` and `maxLength` count files. Without `maxLength` the limit is 100.
+- `validateSubmission()` accepts a file list as an array of references or a single reference.
+- New `isFileList`, `addFiles`, `removeFile`, `fileEntries`, `fileLimit`, `filesFull` and `pickFiles` in `@formhaus/core/fields`.
+- `checkDefinition()` reports `multiple-not-applicable`, and `outdated-format-version` for `multiple` below 1.7.
+- New `validateWithRules` option runs `onValidate` even when the definition rules fail.
+- New `translation()` in `@formhaus/core/i18n` makes one `locale` source per language.
+- Translation files support plural forms.
+- Changing `locale` on an open form keeps its answers.
+- **Breaking:** `localize(definition, locale)` takes the same list as the `locale` option. Removed `OverlaySource` and `LocalizeSource`.
+- **Breaking:** `TranslateSource.lang` is renamed to `locale` and is required.
+
+### Patch Changes
+
+- Fixed `onValidate` and `onStepValidate` errors staying after Continue passed and showing again after Back.
+- Unpacked size down from 1.83 MB to 1.24 MB.
+
 ## 1.6.2
 
 ### Patch Changes

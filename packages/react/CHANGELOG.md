@@ -1,5 +1,27 @@
 # @formhaus/react
 
+## 1.7.0
+
+### Minor Changes
+
+- File fields with `multiple` list the picked files, each with a Remove button, and stop at the limit.
+- `FormhausForm` uploads every file of a list.
+- `mapControls` passes `multiple` to `file` controls and the file texts as `context.text`.
+- `mapControls` props callbacks get a third argument `{ kind, field, anchors }`.
+- New `f.loading` and `f.freeText` in mapped controls.
+- `freeText` controls show options with the same label as `Label (value)`.
+- New `useFileText()`.
+- New `useFieldProps(props)` hook keeps the typed text of `f.freeText` between renders.
+- New `validateWithRules` prop.
+- The `<form>` element gets `lang` from the translation.
+- **Breaking:** removed `useLocalizedForm()` and the `@formhaus/react/i18n` entry. Pass `locale={[translation({ ...overlay, locale: 'ru' }), ru]}` instead.
+
+### Patch Changes
+
+- Fixed TS4023 "cannot be named" for the props of `FormhausForm` from `@formhaus/react/cloud`.
+- The main entry no longer loads Cloud code when unbundled.
+- Requires `@formhaus/core` 1.7.0.
+
 ## 1.6.2
 
 ### Patch Changes

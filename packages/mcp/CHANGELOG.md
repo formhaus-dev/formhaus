@@ -1,5 +1,15 @@
 # @formhaus/mcp
 
+## 0.13.0
+
+### Minor Changes
+
+- Supports format 1.7: `multiple` on `file` fields.
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.7.0.
+
 ## 0.12.7
 
 ### Patch Changes
