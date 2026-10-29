@@ -22,8 +22,8 @@ function Combo(props: FieldComponentProps) {
         role="combobox"
         aria-expanded={false}
         aria-busy={f.loading || undefined}
-        value={f.freeText.text}
-        onChange={(event) => f.freeText.setText(event.target.value)}
+        value={f.freeText?.text}
+        onChange={(event) => f.freeText?.setText(event.target.value)}
       />
     </div>
   );

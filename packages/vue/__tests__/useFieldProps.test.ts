@@ -31,18 +31,18 @@ describe('useFieldProps', () => {
 
   it('keeps typed text that gives the value and saves option values', async () => {
     const { props, emit, f } = setup();
-    expect(f.freeText.text).toBe('Germany');
-    f.freeText.setText('nl');
-    f.freeText.setText('Netherlands');
+    expect(f.freeText?.text).toBe('Germany');
+    f.freeText?.setText('nl');
+    f.freeText?.setText('Netherlands');
     expect(emit.mock.calls).toEqual([
       ['update:modelValue', 'nl'],
       ['update:modelValue', 'nl'],
     ]);
-    f.freeText.setText('nl');
+    f.freeText?.setText('nl');
     props.modelValue = 'nl';
     await nextTick();
-    expect(f.freeText.text).toBe('nl');
+    expect(f.freeText?.text).toBe('nl');
     props.modelValue = 'de';
-    expect(f.freeText.text).toBe('Germany');
+    expect(f.freeText?.text).toBe('Germany');
   });
 });

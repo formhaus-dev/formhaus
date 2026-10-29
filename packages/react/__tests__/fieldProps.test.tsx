@@ -31,9 +31,9 @@ describe('fieldProps', () => {
   it('gives free text from the value and saves option values', () => {
     const onChange = vi.fn();
     const f = fieldProps(props({ onChange }));
-    expect(f.freeText.text).toBe('Germany');
-    f.freeText.setText('Netherlands');
-    f.freeText.setText('Paris');
+    expect(f.freeText?.text).toBe('Germany');
+    f.freeText?.setText('Netherlands');
+    f.freeText?.setText('Paris');
     expect(onChange.mock.calls).toEqual([['nl'], ['Paris']]);
   });
 });
@@ -42,11 +42,11 @@ describe('useFieldProps', () => {
   it('keeps typed text that gives the value', () => {
     const onChange = vi.fn();
     const { result, rerender } = renderHook((value: unknown) => useFieldProps(props({ value, onChange })), { initialProps: 'de' });
-    act(() => result.current.freeText.setText('nl'));
+    act(() => result.current.freeText?.setText('nl'));
     expect(onChange).toHaveBeenLastCalledWith('nl');
     rerender('nl');
-    expect(result.current.freeText.text).toBe('nl');
+    expect(result.current.freeText?.text).toBe('nl');
     rerender('de');
-    expect(result.current.freeText.text).toBe('Germany');
+    expect(result.current.freeText?.text).toBe('Germany');
   });
 });

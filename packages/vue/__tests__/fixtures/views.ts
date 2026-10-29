@@ -26,8 +26,8 @@ const Combo = defineComponent({
           role: 'combobox',
           'aria-expanded': false,
           'aria-busy': f.loading || undefined,
-          value: f.freeText.text,
-          onInput: (event: Event) => f.freeText.setText(target(event).value),
+          value: f.freeText?.text,
+          onInput: (event: Event) => f.freeText?.setText(target(event).value),
         }),
       ]);
   },
