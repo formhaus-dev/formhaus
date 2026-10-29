@@ -1,4 +1,5 @@
-import type { FormField, FormGroup, MessageKey } from '../types';
+import type { FormDefinition, FormField, FormGroup, MessageKey } from '../types';
+import { formatAtLeast } from '../definition-validation/format';
 import { messageResolver, type ResolveMessage } from './default-messages';
 import { hasOwn } from '../visibility/nodes';
 import { MAX_STRING_LENGTH } from './bounded-text';
@@ -32,6 +33,19 @@ export const SCALE_TYPES = ['scale', 'rating'];
 export const NUMBER_TYPES = ['number', ...SCALE_TYPES];
 export const LIST_TYPES = ['multiselect'];
 export const RANDOMIZED_TYPES = ['radio', 'multiselect', 'select'];
+
+const fileLists = new WeakSet<object>();
+
+export const multipleFiles = (definition: Pick<FormDefinition, 'formatVersion'>, field: FormField): boolean =>
+  field.type === 'file' && field.multiple === true && formatAtLeast(definition, 7);
+
+export function markFileLists(definition: FormDefinition, fields: FormField[]): void {
+  for (const field of fields) if (multipleFiles(definition, field)) fileLists.add(field);
+}
+
+export const isFileList = (field: object): boolean => fileLists.has(field);
+
+const isListField = (field: FormField) => LIST_TYPES.includes(field.type) || isFileList(field);
 
 export function scaleRange({ type, validation }: FormField): [number, number] {
   return [type === 'rating' ? 1 : (validation?.min ?? 1), validation?.max ?? 5];
@@ -85,8 +99,8 @@ export function trimValue(field: FormField, value: unknown): unknown {
 }
 
 export function normalizeValue(field: FormField, input: unknown): unknown {
-  if (Array.isArray(input) && input.length === 0 && !LIST_TYPES.includes(field.type) && BUILT_IN_TYPES.includes(field.type))
-    return undefined;
+  if (Array.isArray(input) && input.length === 0 && !isListField(field) && BUILT_IN_TYPES.includes(field.type)) return undefined;
+  if (isFileList(field) && typeof input === 'string' && input !== '') return [input];
   if (field.type === 'group') return normalizeItems(field as FormGroup, input);
   const value = trimValue(field, input);
   if (!NUMBER_TYPES.includes(field.type) || typeof value !== 'string' || !DECIMAL.test(value)) return value;
@@ -148,7 +162,7 @@ function primitiveError(field: FormField, value: unknown, fail: Fail): string | 
 }
 
 function isEmpty(field: FormField, value: unknown): boolean {
-  return isBlank(value) && (LIST_TYPES.includes(field.type) || !Array.isArray(value));
+  return isBlank(value) && (isListField(field) || !Array.isArray(value));
 }
 
 export const isPlainEntry = (item: unknown) => Object.prototype.toString.call(item) === '[object Object]';
@@ -158,6 +172,15 @@ function groupError(field: FormField, value: unknown, fail: Fail): string | null
   if (!Array.isArray(value)) return fail('value');
   if (max !== undefined && value.length > max) return field.validation?.maxLengthMessage ?? fail('maxItems', { max });
   return value.length > maxItems(field) || !value.every(isPlainEntry) ? fail('value') : null;
+}
+
+const isReference = (item: unknown) => typeof item === 'string' && item !== '' && item.length <= MAX_STRING_LENGTH;
+
+function fileListError(field: FormField, value: unknown, fail: Fail): string | null {
+  const max = maxItems(field);
+  if (!Array.isArray(value)) return fail('file');
+  if (value.length > max) return field.validation?.maxLengthMessage ?? fail('maxItems', { max });
+  return value.every(isReference) ? null : fail('file');
 }
 
 export function typeError(field: FormField, value: unknown, resolve: ResolveMessage = messageResolver()): string | null {
@@ -171,6 +194,7 @@ export function typeError(field: FormField, value: unknown, resolve: ResolveMess
     return Number.isInteger(value) && (value as number) >= min && (value as number) <= max ? null : fail('option');
   }
   if (LIST_TYPES.includes(field.type)) return multiselectError(field, value, fail);
+  if (isFileList(field)) return fileListError(field, value, fail);
   if (field.type === 'file') return stringError(field, value, 'file', fail);
   const format = FORMATS.get(field.type);
   if (format) return formatError(field, value, format, fail);
@@ -187,7 +211,7 @@ export function typeMessageKeys(field: FormField): MessageKey[] {
   if (LIST_TYPES.includes(field.type)) return ['options', 'option', ...(exclusiveValues(field).length ? ['exclusive' as const] : [])];
   const format = FORMATS.get(field.type)?.[1];
   if (format) return [format, 'maxLength'];
-  if (field.type === 'file') return ['file', 'maxLength'];
+  if (field.type === 'file') return isFileList(field) ? ['file', 'maxItems'] : ['file', 'maxLength'];
   if (field.type === 'select' || field.type === 'radio') return ['option', 'maxLength'];
   return [TEXT_TYPES.has(field.type) ? 'string' : 'value', 'maxLength', ...(field.type === 'hidden' ? ['hidden' as const] : [])];
 }
