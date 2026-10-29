@@ -6,7 +6,11 @@ import type { RecallFormatFn } from './recall-format';
 
 export type { GoToStepResult };
 
-export type StepValidateFn = (stepId: string, values: Record<string, unknown>) => Promise<Record<string, string> | null | void>;
+export type StepValidateFn = (
+  stepId: string,
+  values: Record<string, unknown>,
+  signal: AbortSignal,
+) => Promise<Record<string, string> | null | void>;
 
 export interface ValidateContext {
   stepId?: string;
@@ -17,6 +21,7 @@ export interface ValidateContext {
 export type ValidateFn = (
   values: Record<string, unknown>,
   context: ValidateContext,
+  signal: AbortSignal,
 ) => Record<string, string> | null | void | Promise<Record<string, string> | null | void>;
 
 export interface StepChangeContext {
@@ -26,9 +31,9 @@ export interface StepChangeContext {
   values: Record<string, unknown>;
 }
 
-export type BeforeStepChangeFn = (context: StepChangeContext) => boolean | void | Promise<boolean | void>;
+export type BeforeStepChangeFn = (context: StepChangeContext, signal: AbortSignal) => boolean | void | Promise<boolean | void>;
 export type AfterStepChangeFn = (context: StepChangeContext) => void | Promise<void>;
-export type BeforeSubmitFn = (values: Record<string, unknown>) => boolean | void | Promise<boolean | void>;
+export type BeforeSubmitFn = (values: Record<string, unknown>, signal: AbortSignal) => boolean | void | Promise<boolean | void>;
 export type AfterSubmitFn = (values: Record<string, unknown>, skippedSteps: string[]) => void | Promise<void>;
 export type SubmitResult = { ok: true } | { ok: false; errors?: Record<string, string>; formErrors?: string[] };
 export type SubmitHandler = (values: Record<string, unknown>, skippedSteps: string[]) => void | SubmitResult | Promise<void | SubmitResult>;

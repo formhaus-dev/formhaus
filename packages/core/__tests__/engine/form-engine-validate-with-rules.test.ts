@@ -26,11 +26,15 @@ describe('FormEngine validateWithRules on submit', () => {
     const engine = new FormEngine(emails, { confirm: 'b@example.com' }, { onValidate, onFormEvent, validateWithRules: true });
     expect(await engine.submit(send)).toBe(false);
     expect(send).not.toHaveBeenCalled();
-    expect(onValidate).toHaveBeenCalledWith(expect.objectContaining({ confirm: 'b@example.com' }), {
-      stepId: undefined,
-      fields: ['email', 'confirm'],
-      submit: true,
-    });
+    expect(onValidate).toHaveBeenCalledWith(
+      expect.objectContaining({ confirm: 'b@example.com' }),
+      {
+        stepId: undefined,
+        fields: ['email', 'confirm'],
+        submit: true,
+      },
+      expect.any(AbortSignal),
+    );
     expect(engine.errors).toEqual({ email: expect.not.stringMatching('Use a work email'), confirm: 'Emails must match' });
     expect(engine.topLevelErrors).toEqual(['Check the form']);
     expect(onFormEvent.mock.calls.filter(([event]) => event.type === 'form_submit_failed')).toEqual([
@@ -95,11 +99,15 @@ describe('FormEngine validateWithRules on step change', () => {
     const onValidate = vi.fn<ValidateFn>(() => ({ email: 'Taken', plan: 'Pick a paid plan', '': 'Service down' }));
     const engine = new FormEngine(league, { plan: 'solo' }, { onValidate, validateWithRules: true });
     expect(await engine.next()).toBe(false);
-    expect(onValidate).toHaveBeenCalledWith(expect.objectContaining({ plan: 'solo' }), {
-      stepId: 'account',
-      fields: ['email', 'plan'],
-      submit: false,
-    });
+    expect(onValidate).toHaveBeenCalledWith(
+      expect.objectContaining({ plan: 'solo' }),
+      {
+        stepId: 'account',
+        fields: ['email', 'plan'],
+        submit: false,
+      },
+      expect.any(AbortSignal),
+    );
     expect(engine.errors).toEqual({ email: expect.not.stringMatching('Taken'), plan: 'Pick a paid plan' });
     expect(engine.topLevelErrors).toEqual(['Service down']);
     expect(engine.currentStep?.id).toBe('account');
