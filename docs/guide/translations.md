@@ -1,11 +1,11 @@
 ---
 title: "Translations"
-description: "Translate Formhaus forms: ready-made language catalogs, message and label codes, i18next or vue-i18n keys, and per-language overlay files."
+description: "Translate Formhaus forms: ready-made language catalogs, message and label codes, i18next or vue-i18n keys, and per-language translation files."
 ---
 
 # Translations
 
-A definition keeps texts in its source language. Translate it with your app's keys or with an overlay file per language.
+A definition keeps texts in its source language. The `locale` prop takes everything for one language: a ready-made catalog, a translation file of the form, or a translate function with your app's keys.
 
 ```bash
 npm install @formhaus/core @formhaus/react   # or @formhaus/vue
@@ -51,15 +51,18 @@ Ready-made catalogs translate the message and label codes into `es`, `fr`, `fr-C
 
 ```tsx
 import ru from '@formhaus/core/locales/ru';
+import signupRu from './signup.ru.json';
 
-<FormRenderer definition={definition} locale={ru} onSubmit={save} />
+<FormRenderer definition={definition} locale={[signupRu, ru]} onSubmit={save} />
 ```
 
 ```vue
-<FormRenderer :definition="definition" :locale="ru" @submit="save" />
+<FormRenderer :definition="definition" :locale="[signupRu, ru]" @submit="save" />
 ```
 
-`@formhaus/core/locales/ru` is typed. `@formhaus/core/locales/ru.json` is the same catalog as plain JSON. `FormEngine` takes `locale` as an option.
+`locale` takes one source or a list. A source is a catalog, a [translation file](#translation-files) of the form or a [translate function](#translation-keys). For each text the first source that has it wins. The first source also sets `lang` of the form. `@formhaus/core/locales/ru` is typed. `@formhaus/core/locales/ru.json` is the same catalog as plain JSON. `FormEngine` takes `locale` as an option.
+
+A new `locale` switches the texts and keeps the answers. Shown errors switch on the next validation.
 
 ### Load the user's language
 
@@ -69,18 +72,16 @@ import ru from '@formhaus/core/locales/ru';
 
 <<< @/recipes/snippets/locale-catalogs-page.tsx
 
-Labels switch as soon as the catalogs arrive. Shown errors switch on the next validation.
-
 ### Precedence
 
 For each key, the first source that has it wins:
 
 1. `messages` and `labels` props.
-2. `messages` and `labels` of the definition, and translations from an overlay or a translate function.
-3. `locale` catalogs, in array order.
+2. `locale` sources, in array order.
+3. `messages` and `labels` of the definition.
 4. Built-in English.
 
-Field messages such as `minLengthMessage` win over all of them. A translate function that returns the English default for a key leaves the key to the catalogs.
+Field messages such as `minLengthMessage` win over all of them, and `locale` translates them like other texts of the form. A translate function that returns the English default for a key leaves the key to the next source.
 
 Put your own catalog first to change a few texts:
 
@@ -117,7 +118,7 @@ import { checkCatalog } from '@formhaus/core/i18n';
 const { missing, unknown } = checkCatalog(catalog);
 ```
 
-`missing` lists keys without a text, such as `messages.minLength` or `messages.minLength.other`. `unknown` lists keys Formhaus does not read. The MCP tool `translation_template` takes a `catalog` and leaves the texts it covers out of the overlay.
+`missing` lists keys without a text, such as `messages.minLength` or `messages.minLength.other`. `unknown` lists keys a ready-made catalog does not need, such as texts of a form. The MCP tool `translation_template` takes a `catalog` and leaves the texts it covers out of the translation file.
 
 ### Add a language
 
@@ -150,21 +151,16 @@ Texts without a key keep the source text with `prefix: false`. Without it, Formh
 ```tsx
 import { useTranslation } from 'react-i18next';
 import { FormRenderer } from '@formhaus/react';
-import { useLocalizedForm } from '@formhaus/react/i18n';
 import definition from './signup.json';
 
 export function Signup() {
   const { t, i18n } = useTranslation('forms');
-  const form = useLocalizedForm(
-    definition,
-    { translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }), prefix: false, lang: i18n.language },
-    { key: t },
-  );
-  return <FormRenderer {...form} onSubmit={save} />;
+  const locale = { locale: i18n.language, translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }), prefix: false };
+  return <FormRenderer definition={definition} locale={locale} onSubmit={save} />;
 }
 ```
 
-The hook rebuilds the form when the definition, `lang`, `prefix`, the overlay or the `key` option changes. A rebuild clears the answers. A new `translate` function alone does not rebuild the form, so an inline arrow is safe: validation messages and labels call the latest `translate`. `t` from `react-i18next` changes when a namespace finishes loading, so `key: t` makes the form pick up the loaded texts.
+An inline `translate` is safe: the form keeps its answers and calls the latest function. The texts of the form update when a namespace finishes loading.
 
 Lokalise: export the `forms` namespace as nested JSON with i18next placeholders, so `errors.password.tooShort` can read `Не менее {{min}} символов`.
 
@@ -172,32 +168,33 @@ Lokalise: export the `forms` namespace as nested JSON with i18next placeholders,
 
 ```vue
 <script setup lang="ts">
+import { computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { FormRenderer } from '@formhaus/vue';
-import { useLocalizedForm } from '@formhaus/vue/i18n';
 import definition from './signup.json';
 
 const { t, te, locale } = useI18n();
-const form = useLocalizedForm(definition, () => ({
-  translate: (key, params, fallback) => (te(key) ? t(key, params) : fallback),
-  prefix: false,
-  lang: locale.value,
+const source = computed(() => ({
+  locale: locale.value,
+  translate: (key: string, params: Record<string, unknown>, fallback: string) => (te(key) ? t(key, params) : fallback),
+  prefix: false as const,
 }));
 </script>
 
 <template>
-  <FormRenderer v-bind="form" @submit="save" />
+  <FormRenderer :definition="definition" :locale="source" @submit="save" />
 </template>
 ```
 
 `te` keeps vue-i18n from returning the key for a missing message. Set `fallbackLocale: false` in `createI18n()`, otherwise `te` also finds the key in the fallback locale and a missing text shows in that language instead of the source text. vue-i18n placeholders are `{min}`. Write `@` as `{'@'}` in vue-i18n messages; a message that fails to compile falls back to the source text.
 
-## Overlays
+## Translation files
 
-An overlay is one JSON file per language with the translated texts, nested by step id, field key and option value.
+A translation file holds the texts of one form in one language, nested by step id, field key and option value. `locale` is its language tag.
 
 ```json [signup.ru.json]
 {
+  "locale": "ru",
   "title": "Создайте аккаунт",
   "submit": { "label": "Создать аккаунт" },
   "messages": { "required": "Обязательное поле", "minLength": "Минимум {min} символов" },
@@ -215,23 +212,25 @@ An overlay is one JSON file per language with the translated texts, nested by st
 ```
 
 ```tsx
-import { useLocalizedForm, type Overlay } from '@formhaus/react/i18n';
+import ru from '@formhaus/core/locales/ru';
+import signupRu from './signup.ru.json';
 
-export function Signup({ lang, overlay }: { lang: string; overlay?: Overlay }) {
-  const form = useLocalizedForm(definition, overlay && { overlay, lang });
-  return <FormRenderer {...form} onSubmit={save} />;
-}
+<FormRenderer definition={definition} locale={[signupRu, ru]} onSubmit={save} />
 ```
 
-Load the overlay for a language before rendering:
+Load the file for a language before rendering:
 
 ```ts
-async function loadOverlay(lang: string): Promise<Overlay | undefined> {
+import type { LocaleSource } from '@formhaus/core';
+
+async function loadLocale(lang: string): Promise<LocaleSource | undefined> {
   return lang === 'en' ? undefined : (await import(`./signup.${lang}.json`)).default;
 }
 ```
 
-Field texts live at `fields.<key>`. In a multi-step form they can also live at `steps.<id>.fields.<key>`, which wins when both are set. Missing or empty strings keep the source text, so an incomplete translation still works. A field message in the definition, such as `required: "Enter your email"`, wins over `messages` of the overlay; translate it at the field address. The same file loads into i18next with `i18n.addResourceBundle('ru', 'forms', { signup: overlay })`, and derived keys then resolve through `t`.
+A message or label in the file can be an object of [plural forms](#plurals).
+
+Field texts live at `fields.<key>`. In a multi-step form they can also live at `steps.<id>.fields.<key>`, which wins when both are set. Missing or empty strings keep the source text, so an incomplete translation still works. A field message in the definition, such as `required: "Enter your email"`, wins over `messages` of the file; translate it at the field address. The same file loads into i18next with `i18n.addResourceBundle('ru', 'forms', { signup: file })`, and derived keys then resolve through `t`.
 
 Sections and groups have their own addresses. A section title lives at `sections.<key>.title`, or `steps.<id>.sections.<key>.title` in a multi-step form, and the fields inside keep their usual address. A group keeps `fields.<key>.label` and adds `itemLabel`, `addLabel` and `removeLabel`. Its item fields live under `fields.<key>.fields.<item key>`. The `labels` catalog has `addItem`, `removeItem`, `itemLabel` (`{label} {index}`), `itemAdded`, `itemRemoved` and `removeItemNamed`, `removeItemPrompt` (`{item}`), and `removeItemBody` and `cancel`. A translated `itemLabel` must keep `{index}`. Forms with picture options add `enlargeImage` (`{label}`, the name of the button that opens the image) and `close` (the button that closes it). Forms with [exclusive options](/guide/fields#none-of-these) add `or`, the divider before them.
 
@@ -257,10 +256,10 @@ Check a translation before you ship it:
 import { textSlots, translationIssues, translationTemplate } from '@formhaus/core/i18n';
 
 const template = translationTemplate(definition);
-const { missing, unknown, invalid, placeholderMismatch, unlabeled } = translationIssues(definition, overlay);
+const { missing, unknown, invalid, placeholderMismatch, unlabeled } = translationIssues(definition, signupRu);
 ```
 
-`textSlots(definition)` lists every text with its address, key, placeholders and a hash. Store the hashes next to the overlay, such as in `signup.ru.meta.json`, and `translationIssues(definition, overlay, { slots })` also reports `stale` texts whose source changed.
+`textSlots(definition)` lists every text with its address, key, placeholders and a hash. Store the hashes next to the file, such as in `signup.ru.meta.json`, and `translationIssues(definition, signupRu, { slots })` also reports `stale` texts whose source changed.
 
 ## Translation management
 
@@ -280,18 +279,32 @@ Validate with the localized definition so 422 errors come back in the user's lan
 import { localize } from '@formhaus/core/i18n';
 import { validateSubmission } from '@formhaus/core/server';
 
-const { definition: localized, messages } = localize(definition, { overlay: overlays[lang] });
+const { definition: localized, messages } = localize(definition, locales[lang]);
 const { errors } = validateSubmission(localized, body.values, { skippedSteps: body.skippedSteps, messages });
 ```
 
 ## Agents
 
-The MCP tool `translation_template` returns the overlay skeleton and the slot list for a language. `simulate_path` takes an `overlay` to run the form in that language. See [MCP](/guide/mcp).
+The MCP tool `translation_template` returns the translation file skeleton and the slot list for a language. `simulate_path` takes it as `overlay` to run the form in that language. See [MCP](/guide/mcp).
 
 ## Limits
 
-- The language is set when the form is created. A new language recreates the form and clears its answers.
 - Options from `optionsFrom` and messages from custom validators are not translated here; translate them in the provider or the validator.
-- Definition catalogs and overlays have no plural forms. Use a [locale catalog](#plurals), or choose the plural in a translate function.
+- `messages` and `labels` of the definition have no plural forms. Use a `locale` source, or choose the plural in a translate function.
 - `lang` does not set `dir` or right-to-left layout.
-- `localize()` and `useLocalizedForm()` throw on the errors of `checkTranslations()`, such as an `i18n` key for a text the definition does not have. The same definition renders without translations.
+- `localize()` throws on the errors of `checkTranslations()`, such as an `i18n` key for a text the definition does not have.
+
+## Migrate from 1.6
+
+`useLocalizedForm()` and the `@formhaus/react/i18n` and `@formhaus/vue/i18n` entries are gone. Pass the source to `locale`, with its language tag:
+
+```tsx
+// Before
+const form = useLocalizedForm(definition, { overlay, lang: 'ru' });
+<FormRenderer {...form} locale={ru} onSubmit={save} />
+
+// After
+<FormRenderer definition={definition} locale={[{ ...overlay, locale: 'ru' }, ru]} onSubmit={save} />
+```
+
+A translate source takes `locale` in place of `lang`, and `localize(definition, source)` takes the same sources as `locale`. `locale` texts now win over `messages` and `labels` of the definition.
