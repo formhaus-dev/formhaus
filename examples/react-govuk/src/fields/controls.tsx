@@ -1,5 +1,5 @@
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
 import { FileUpload as GovukFileUpload } from 'govuk-frontend';
@@ -67,20 +67,17 @@ const several = {
 export function FileUpload({ onChange, f, field, ...props }: ComponentProps<'input'> & { f: FieldProps; field: FormField }) {
   const root = useRef<HTMLDivElement>(null);
   const [notice, setNotice] = useState('');
-  const max = fileLimit(field);
+  const [status, setStatus] = useState('');
   const change = useRef(onChange);
   change.current = props.multiple
     ? ({ target }) => {
         const picked = Array.from(target.files ?? []);
         target.value = '';
         if (!picked.length) return;
-        const next = addFiles(f.value, picked, max);
-        setNotice(
-          next.length < addFiles(f.value, picked).length
-            ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max }))
-            : '',
-        );
-        f.change(next);
+        const result = pickFiles(field, f.value, picked);
+        if (result.value) f.change(result.value);
+        setNotice(result.notice);
+        setStatus(result.status);
       }
     : onChange;
   const describedBy = props['aria-describedby'];
@@ -108,7 +105,7 @@ export function FileUpload({ onChange, f, field, ...props }: ComponentProps<'inp
         <input
           {...props}
           type="file"
-          disabled={props.disabled || (props.multiple && addFiles(f.value, []).length >= max)}
+          disabled={props.disabled || (props.multiple && filesFull(field, f.value))}
           className={classes('govuk-file-upload', props)}
         />
       </div>
@@ -116,7 +113,9 @@ export function FileUpload({ onChange, f, field, ...props }: ComponentProps<'inp
         <dl className="govuk-summary-list govuk-!-margin-top-4 govuk-!-margin-bottom-0">
           {entries.map(({ index, name }) => (
             <div key={index} className="govuk-summary-list__row">
-              <dt className="govuk-summary-list__key app-file-name">{name}</dt>
+              <dt className="govuk-summary-list__key app-file-name" dir="auto">
+                {name}
+              </dt>
               <dd className="govuk-summary-list__actions">
                 <button
                   type="button"
@@ -125,6 +124,7 @@ export function FileUpload({ onChange, f, field, ...props }: ComponentProps<'inp
                   onClick={() => {
                     setNotice('');
                     f.change(removeFile(f.value, index));
+                    setStatus(`${name} removed`);
                   }}
                 >
                   Remove<span className="govuk-visually-hidden"> {name}</span>
@@ -135,6 +135,11 @@ export function FileUpload({ onChange, f, field, ...props }: ComponentProps<'inp
         </dl>
       )}
       {notice && <p className="govuk-hint govuk-!-margin-top-2 govuk-!-margin-bottom-0">{notice}</p>}
+      {props.multiple && (
+        <p className="govuk-visually-hidden" role="status">
+          {status}
+        </p>
+      )}
     </>
   );
 }

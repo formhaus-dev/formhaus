@@ -1,5 +1,4 @@
-import { getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, isFileList, removeFile } from '@formhaus/core/fields';
+import { fileEntries, filesFull, isFileList, pickFiles, removeFile } from '@formhaus/core/fields';
 import { type FieldComponentProps, fieldProps } from '@formhaus/react';
 import { Button, FileUploaderItem, FormGroup, Stack } from '@carbon/react';
 import { Upload } from '@carbon/icons-react';
@@ -12,8 +11,8 @@ export function FileField(props: FieldComponentProps) {
   const { field, value } = props;
   const input = useRef<HTMLInputElement>(null);
   const list = isFileList(field);
-  const max = fileLimit(field);
   const [notice, setNotice] = useState('');
+  const [status, setStatus] = useState('');
 
   return (
     <FormGroup legendText={label(f)} invalid={f.invalid} data-fh="field">
@@ -25,7 +24,7 @@ export function FileField(props: FieldComponentProps) {
             kind="tertiary"
             size="md"
             renderIcon={Upload}
-            disabled={f.disabled || (list && addFiles(value, []).length >= max)}
+            disabled={f.disabled || (list && filesFull(field, value))}
             aria-describedby={f.describedBy}
             onClick={() => input.current?.click()}
             onBlur={f.blur}
@@ -45,10 +44,10 @@ export function FileField(props: FieldComponentProps) {
               event.currentTarget.value = '';
               if (!list) f.change(picked[0] ?? null);
               else if (picked.length) {
-                const next = addFiles(value, picked, max);
-                const dropped = next.length < addFiles(value, picked).length;
-                f.change(next);
-                setNotice(dropped ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max })) : '');
+                const result = pickFiles(field, value, picked);
+                if (result.value) f.change(result.value);
+                setNotice(result.notice);
+                setStatus(result.status);
               }
             }}
           />
@@ -63,10 +62,14 @@ export function FileField(props: FieldComponentProps) {
             onDelete={() => {
               setNotice('');
               f.change(list ? removeFile(value, index) : null);
+              setStatus(`${name} removed`);
             }}
           />
         ))}
         <GroupMessage helper={notice} />
+        <p className="cds--visually-hidden" role="status">
+          {status}
+        </p>
       </Stack>
       <GroupMessage id={f.errorId} error={f.error} />
     </FormGroup>
