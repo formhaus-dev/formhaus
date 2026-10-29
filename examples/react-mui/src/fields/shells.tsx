@@ -1,4 +1,5 @@
-import { addFiles, fileEntries, removeFile } from '@formhaus/core/fields';
+import { type FormField, getDefaultMessage } from '@formhaus/core';
+import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import Box from '@mui/material/Box';
@@ -113,14 +114,18 @@ const HiddenInput = styled('input')({
 type FilePickerProps = ButtonProps<'label'> &
   Pick<InputHTMLAttributes<HTMLInputElement>, 'name' | 'accept' | 'multiple' | 'onChange'> & {
     f: FieldProps;
+    field: FormField;
     'aria-required'?: boolean;
     'aria-invalid'?: boolean;
     'aria-describedby'?: string;
     'data-testid'?: string;
   };
 
-export function FilePicker({ f, id, name, accept, multiple, onChange, disabled, 'data-testid': testId, ...aria }: FilePickerProps) {
+export function FilePicker({ f, field, id, name, accept, multiple, onChange, disabled, 'data-testid': testId, ...aria }: FilePickerProps) {
   const [file, setFile] = useState('');
+  const [notice, setNotice] = useState('');
+  const max = fileLimit(field);
+  const full = multiple && addFiles(f.value, []).length >= max;
   const entries = multiple ? fileEntries(f.value) : [];
   return (
     <>
@@ -129,7 +134,7 @@ export function FilePicker({ f, id, name, accept, multiple, onChange, disabled, 
           component="label"
           id={`${id}-button`}
           variant="outlined"
-          disabled={disabled}
+          disabled={disabled || full}
           sx={{ '&:focus-within': { outline: 2, outlineColor: 'primary.main', outlineOffset: 2 } }}
         >
           {multiple ? 'Add files' : 'Choose file'}
@@ -139,7 +144,7 @@ export function FilePicker({ f, id, name, accept, multiple, onChange, disabled, 
             name={name}
             accept={accept}
             multiple={multiple}
-            disabled={disabled}
+            disabled={disabled || full}
             data-testid={testId}
             aria-labelledby={aria['aria-labelledby']}
             aria-describedby={aria['aria-describedby']}
@@ -152,7 +157,14 @@ export function FilePicker({ f, id, name, accept, multiple, onChange, disabled, 
               }
               const picked = Array.from(event.target.files ?? []);
               event.target.value = '';
-              if (picked.length) f.change(addFiles(f.value, picked));
+              if (!picked.length) return;
+              const next = addFiles(f.value, picked, max);
+              setNotice(
+                next.length < addFiles(f.value, picked).length
+                  ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max }))
+                  : '',
+              );
+              f.change(next);
             }}
           />
         </Button>
@@ -171,7 +183,10 @@ export function FilePicker({ f, id, name, accept, multiple, onChange, disabled, 
                   color="error"
                   aria-label={`Remove ${name}`}
                   disabled={disabled}
-                  onClick={() => f.change(removeFile(f.value, index))}
+                  onClick={() => {
+                    setNotice('');
+                    f.change(removeFile(f.value, index));
+                  }}
                 >
                   Remove
                 </Button>
@@ -182,6 +197,7 @@ export function FilePicker({ f, id, name, accept, multiple, onChange, disabled, 
           ))}
         </List>
       )}
+      {notice && <FormHelperText>{notice}</FormHelperText>}
     </>
   );
 }
