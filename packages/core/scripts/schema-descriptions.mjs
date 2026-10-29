@@ -1,13 +1,13 @@
 const DESCRIPTIONS = {
   FormDefinition: 'A Formhaus form. Use fields for a single-step form or steps for a multi-step form, not both.',
   'FormDefinition.formatVersion':
-    'Format version of the definition, such as "1.6". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6.',
+    'Format version of the definition, such as "1.7". Core rejects a newer major version. Sections and groups were added in 1.1, props in 1.2, scale, rating, option images, columns and matrix sections in 1.3, contains and notContains in 1.4, answer recall with {{key}} in texts and exclusive options in 1.5, randomize and pinned options in 1.6, multiple files in 1.7.',
   'FormDefinition.id': 'Unique form identifier.',
   'FormDefinition.lang': 'Language of the texts, a BCP 47 tag such as "en" or "pt-BR". Renderers set it as the lang attribute of the form.',
   'FormDefinition.messages':
     'Validation message templates by message key. {min} and {max} are replaced. Field-level messages win over these.',
   'FormDefinition.labels':
-    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, done, chooseFile, required, skip, submit, stepTitle ({index}), stepErrors ({count}), or and select.',
+    'Renderer label templates: continue, back, stepOf ({current}, {total}), errorSummary, addItem, removeItem, itemLabel ({label}, {index}), itemAdded, itemRemoved, removeItemPrompt and removeItemBody ({item}), removeItemNamed ({label}, {item}), cancel, enlargeImage ({label}), close, clear, done, chooseFile, required, skip, submit, stepTitle ({index}), stepErrors ({count}), fileCount ({count}), or and select.',
   'FormDefinition.i18n':
     'Translation keys for the form texts and the messages and labels catalogs, resolved by the app translate function.',
   'FormStep.i18n': 'Translation keys for the step title and description. The literal texts stay the fallback.',
@@ -55,6 +55,8 @@ const DESCRIPTIONS = {
     'Static options for select, autocomplete, multiselect and radio fields. On scale and rating fields, anchor labels whose value is a point number: the first, middle and last points show their label.',
   'FormField.randomize':
     'Radio, multiselect and select only: shows the options in a random order per respondent. Pinned and exclusive options keep their written position. Not applied in a matrix section. Added in format 1.6.',
+  'FormField.multiple':
+    'File only: the field keeps a list of files and its value is an array. validation.minLength and maxLength count the files, and required needs at least one. Takes effect only with "formatVersion": "1.7" or newer. Added in format 1.7.',
   'FormField.layout':
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
   'FormField.columns':

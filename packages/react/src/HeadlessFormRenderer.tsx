@@ -15,7 +15,7 @@ import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
 import { FormTopLevelErrors, shownFormErrors } from './FormTopLevelErrors';
-import { LabelContext, useEngineLabel } from './labels';
+import { TextContexts } from './labels';
 import { useComponentWarnings } from './hooks/useComponentWarnings';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
@@ -72,7 +72,6 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
       },
     };
     const engine = useFormEngineStore(definition, initialValues, engineOptions);
-    const label = useEngineLabel(engine, props.labels, props.locale);
     const version = useFormSnapshot(engine);
     const previousStep = useRef(engine.currentStep?.id);
     const actions = useRendererActions(engine, props);
@@ -203,7 +202,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
           void (engine.isLastStep ? actions.submit() : actions.next());
         }}
       >
-        <LabelContext.Provider value={label}>
+        <TextContexts engine={engine} labels={props.labels} locale={props.locale}>
           {top && summary}
           <FormProgressController
             engine={engine}
@@ -242,7 +241,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
             onSkip={actions.skip}
             onCancel={handleCancel}
           />
-        </LabelContext.Provider>
+        </TextContexts>
       </form>
     );
   },

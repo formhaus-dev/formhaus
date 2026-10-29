@@ -34,6 +34,8 @@ export { optionKey } from '../visibility/nodes';
 export { applySources } from './sources';
 export { revealable, revealLayout, revealViews, type RevealSlot } from './reveal';
 export { withReveals } from '../controls/options';
+export { fileLimitMessage, nextRemove } from './files';
+export { copyField } from '../validation/type-checks';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;

@@ -1,14 +1,18 @@
 import {
+  addFiles,
   type DateType,
   type FieldState,
   type FreeText,
   fieldValue,
   freeText,
   fromDate,
+  isFileList,
   numberValue,
   optionValue,
   scaleView,
 } from '@formhaus/core/fields';
+import { isListLike } from '../fields/files';
+import { fileLimit } from '../validation/type-checks';
 import type { FieldOption, FormField } from '../types';
 import { revealable } from '../internal/reveal';
 import { POINT_TYPES } from './options';
@@ -92,10 +96,7 @@ const isEvent = (input: unknown): input is { target: { checked?: boolean; value?
   'target' in input &&
   typeof (input as { preventDefault?: unknown }).preventDefault === 'function';
 
-const first = (value: unknown) => {
-  const list = value as ArrayLike<unknown> | null;
-  return list && typeof list === 'object' && typeof list.length === 'number' ? (list[0] ?? null) : value;
-};
+const first = (value: unknown) => (isListLike(value) ? (value[0] ?? null) : value);
 
 const unwrap = (value: unknown): unknown =>
   Array.isArray(value) ? value.map(unwrap) : value && typeof value === 'object' && 'value' in value ? value.value : value;
@@ -107,7 +108,7 @@ export function fromControl(field: FormField, input: unknown, detail?: unknown):
     const { target } = input;
     value = detail !== undefined ? detail : type === 'file' ? target.files : KINDS[type] === 'inline' ? target.checked : target.value;
   }
-  if (type === 'file') return first(value) ?? null;
+  if (type === 'file') return isFileList(field) ? addFiles([], value, fileLimit(field)) : (first(value) ?? null);
   if (type === 'date' || type === 'time' || type === 'datetime') {
     const date = value as { toDate?: () => Date } | null;
     if (date && typeof date === 'object') value = fromDate(date instanceof Date ? date : date.toDate?.(), type as DateType);
@@ -152,6 +153,7 @@ export function controlProps(
     type: preset.input ? state.inputType : undefined,
     rows: type === 'textarea' ? field.rows : undefined,
     accept: type === 'file' ? field.accept : undefined,
+    multiple: isFileList(field) || undefined,
     [preset.valueKey]: typed ? typed.text : toControl(field, value),
   };
   for (const key of Object.keys(control))

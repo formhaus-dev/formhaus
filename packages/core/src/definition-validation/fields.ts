@@ -4,6 +4,7 @@ import { missingTarget } from './conditions';
 import type { CheckContext, FieldEntry } from './context';
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
+import { formatAtLeast } from './format';
 
 function rangeIssue(rules: FieldValidation, path: string, min: 'min' | 'minLength', max: 'max' | 'maxLength'): DefinitionIssue[] {
   const low = rules[min];
@@ -22,12 +23,15 @@ function patternIssue(pattern: string | undefined, path: string): DefinitionIssu
   }
 }
 
-function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry): DefinitionIssue[] {
+function ruleIssues(context: CheckContext, { field, path, group }: FieldEntry, files: boolean): DefinitionIssue[] {
   const rules = field.validation ?? {};
   const match = rules.matchField;
   const [min, max] = scaleRange(field);
   const items = field.type === 'group' ? (field as { defaultItems?: number }).defaultItems : undefined;
   return [
+    ...(files && field.multiple !== undefined && typeof field.multiple !== 'boolean'
+      ? [error('invalid-type', `${path}/multiple`, 'boolean', 'multiple')]
+      : []),
     ...rangeIssue(rules, path, 'minLength', 'maxLength'),
     ...rangeIssue(rules, path, 'min', 'max'),
     ...patternIssue(rules.pattern, path),
@@ -49,5 +53,6 @@ function optionIssues({ field, path }: FieldEntry): DefinitionIssue[] {
 }
 
 export function fieldIssues(context: CheckContext): DefinitionIssue[] {
-  return context.entries.flatMap((entry) => [...ruleIssues(context, entry), ...optionIssues(entry)]);
+  const files = formatAtLeast(context.definition, 7);
+  return context.entries.flatMap((entry) => [...ruleIssues(context, entry, files), ...optionIssues(entry)]);
 }

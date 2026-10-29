@@ -1,6 +1,7 @@
 import { engineSources, localeList, localizedTexts } from '../i18n/catalog';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
+import { markFileLists } from '../validation/type-checks';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
 import { createValues, keptValues, valuesDiffer } from './engine-utils';
 import { baselineFields, trackChanges } from './form-events';
@@ -20,6 +21,7 @@ export function loadDefinition(
   warnUntranslated(sources, engine.lifecycle);
   const shown = localizedTexts(definition, sources);
   const visibility = createVisibility(shown, engine.lifecycle.hiddenValues === 'keep');
+  markFileLists(shown, visibility.allFields);
   engine.source = definition;
   engine.definition = shown;
   engine.messages = messageResolver(engine.lifecycle.messages, ...engineSources(engine, 'messages'));

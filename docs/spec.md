@@ -1,9 +1,9 @@
 ---
-title: "Form definition 1.6 specification"
-description: "Formhaus form definition format 1.6: fields, sections, groups, conditions, validation, steps, routes, answer recall, option order, translations and the payload."
+title: "Form definition 1.7 specification"
+description: "Formhaus form definition format 1.7: fields, sections, groups, conditions, validation, steps, routes, recall, option order, file lists and translations."
 ---
 
-# Formhaus form definition 1.6
+# Formhaus form definition 1.7
 
 This page specifies the JSON format that `@formhaus/core` reads, and how `FormEngine` interprets it. The [JSON Schema](https://formhaus.dev/schema/form-definition.json) describes the shape; this page describes the behaviour. For the TypeScript types, see the [Definition Reference](/api/definition).
 
@@ -19,13 +19,13 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.6**. `@formhaus/core` 1.1 and later implement it. Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.7**. `@formhaus/core` 1.7 and later implement it. Format 1.6, implemented by `@formhaus/core` 1.1 to 1.6, is 1.7 without [file lists](#file-lists). Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
 - The JSON Schema `$id`, `https://formhaus.dev/schema/form-definition.json`, is the canonical identifier of the format. It is unversioned and always describes the latest version. A major version publishes the previous schema under a versioned URL and states it in this section.
 
-A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.6"`. Without it, core reads the definition as 1.6, but shows `{{key}}` tokens as written. A minor version newer than 1.6 is also read as 1.6. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
+A definition MAY declare its format with `formatVersion`, a string `MAJOR` or `MAJOR.MINOR`, such as `"1.7"`. Without it, core reads the definition as 1.7, but shows `{{key}}` tokens as written and keeps one file in a `file` field. A minor version newer than 1.7 is also read as 1.7. Core reports `unsupported-format-version` for a major version newer than 1, and `invalid-type` for a value of another shape. In both cases it does not check the rest of the definition.
 
 A definition with sections or groups SHOULD declare `"formatVersion": "1.1"` or newer. Core 0.13 and older read a section or a group as a field of a custom type: they skip the fields inside it, and their `validateSubmission()` passes a group value without checks. `checkDefinition()` warns about a section or a group without format 1.1. Upgrade the server that runs `validateSubmission()` before the clients.
 
@@ -46,6 +46,8 @@ A definition with an [exclusive option](#exclusive-options) SHOULD declare `"for
 A definition with a field `autocomplete` MAY declare `"formatVersion": "1.5"`. Core 0.20 reports `autocomplete` as `unknown-property`, and its renderers do not set the attribute. `checkDefinition()` warns about `autocomplete` without format 1.5.
 
 A definition with a field `randomize` or an option `pinned` MAY declare `"formatVersion": "1.6"`. Core 1.0 and older report them as `unknown-property` and show the written order. `checkDefinition()` warns about `randomize` or `pinned` without format 1.6.
+
+A `file` field with `multiple` MUST declare `"formatVersion": "1.7"` or newer. Without it, and in core 1.6 and older, core reports `multiple` as `unknown-property` and the field keeps one file, so a definition written before 1.7 behaves as before. `checkDefinition()` warns about `multiple` without format 1.7. The `validateSubmission()` of core 1.6 and older fails a list in a `file` field with the `file` message. Upgrade the server that runs `validateSubmission()` before the clients. The renderers of core 1.6 and older draw a file list as a picker for one file and submit one file, which a 1.7 server reads as a list of one. A `minLength` above 1 then fails on the server.
 
 ## Document structure
 
@@ -92,6 +94,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `optionsDependsOn` | string[] | Field keys whose changes reload `optionsFrom`. |
 | `autoAdvance` | boolean | See [Auto-advance](#auto-advance). |
 | `accept` | string | Accepted file types for `file`. |
+| `multiple` | boolean | Keeps a list of files in a `file` field. See [File lists](#file-lists). Added in 1.7. |
 | `rows` | number | Row count for `textarea`. |
 | `mask` | string | Input mask. The built-in `text`, `email`, `phone`, `number` and `password` inputs use it as the placeholder when `placeholder` is absent. |
 | `inputMode` | `text`, `numeric`, `decimal`, `tel`, `email`, `url`, `search` | Virtual keyboard hint, applied by the built-in `text`, `email`, `phone`, `number` and `password` inputs. |
@@ -126,7 +129,7 @@ A `\n` in a step or section `description`, a field or group `helperText` or a st
 | `select`, `radio` | string, the selected option `value` |
 | `multiselect` | string[] of distinct selected option values |
 | `checkbox`, `switch` | boolean |
-| `file` | a `File`, or `null` |
+| `file` | a `File`, or `null`; with [`multiple`](#file-lists), a `File[]` |
 | `date` | string `YYYY-MM-DD` |
 | `datetime` | string `YYYY-MM-DDTHH:mm`, without a timezone |
 | `time` | string `HH:mm`, 24-hour |
@@ -152,6 +155,34 @@ A value is used when it is a string that is not empty after trimming. It is cut 
 Any other string is a **custom type**. A renderer provides its component through its `components` option and passes it the whole field, so the component reads its settings from `field.props`. The built-in React and Vue renderers show an "Unsupported field type" placeholder for a type without a component. Core runs type checks for built-in types (see [Validation](#validation)) and treats an unchecked `checkbox` or `switch` (`false`) as empty for `required`. It does not interpret custom types.
 
 Built-in type names are single lowercase words without separators. A type name with `-` or `:`, such as `x-rating`, `acme-rating` or `acme:rating`, is reserved for custom types and never becomes a built-in type. A custom type without `-` or `:` can collide with a built-in type added in a later minor version, which then applies its type checks to the field.
+
+### File lists
+
+A `file` field with `"multiple": true` keeps a list of files. `multiple` takes effect only in a definition that declares `formatVersion` 1.7 or newer. `multiple` on another type is a `multiple-not-applicable` warning, and a value that is not a boolean is an `invalid-type` error.
+
+```json
+{
+  "formatVersion": "1.7",
+  "id": "expenses",
+  "title": "Expenses",
+  "submit": { "label": "Send" },
+  "fields": [
+    { "key": "receipts", "type": "file", "label": "Receipts", "accept": "image/*,.pdf", "multiple": true, "validation": { "required": true, "maxLength": 5 } }
+  ]
+}
+```
+
+- **Value.** An array. The built-in renderers write a `File[]` in the order the user added the files, and `[]` after the user removes the last one. The value of a `file` field without `multiple` stays one `File` or `null`.
+- **Empty.** `[]` and `null` are empty, so `required` needs at least one file.
+- **Count.** `validation.minLength` and `maxLength` count the files and use the `minItems` and `maxItems` messages. A list holds at most `maxLength` files, rounded down and at least 0, or 100 without it, and never more than 1000. A longer list fails with `maxItems` and that number. The corpus file `file-multiple-limits.json` pins the rounding.
+- **Single values.** In the engine, a value that is not an array, such as a reference the app supplied, counts as a list of that one value, and `null` or `''` as an empty list. Validators receive the list. The engine submits the value as given.
+- **Server.** `validateSubmission()` checks the value as a list of string references: an array of non-empty strings of at most 10,000 characters each, within the count above. It reads a single string as a list of one, so a renderer that keeps one file, such as `@formhaus/react` 1.6, still submits. Any other value fails with the `file` message and is dropped.
+- **Renderers.** The built-in React and Vue renderers show the file picker and, below it, one row per item, each with a Remove button. A `File` shows its name. A string the app supplied, such as an upload reference or a `file:` URL, shows its last path segment as plain text, ignoring trailing `/` characters, or the whole string when that segment is empty: the renderers never link to it, open it or fetch it, and keep it in the value. An item of another kind gets no row. The button shows the `removeItem` label, and its accessible name is the `removeItemNamed` label with the shown name as `item`. After a removal, focus moves to the next Remove button, to the previous one after the last file, or to the picker when no file is left.
+- **Picker limit.** Picking adds files at the end of the list until it holds the maximum count above, counting every item. Files past it are dropped. The picker is disabled while the list is full, and after a pick that fills it, focus moves to the last Remove button. A status region announces the `itemAdded` label with the added file names, joined with `, `, as `item`, and, when files were dropped, the field's `maxItems` message: its `maxLengthMessage`, else the message catalogs, with `max`. The two join with a space, and the renderers also show the `maxItems` message under the list until the next removal. A removal announces `itemRemoved`. Native renderers pass the remaining count to the system picker where it takes one.
+- **Recall.** A `{{key}}` token shows the list of file names.
+- **Cloud.** The Cloud uploader uploads each `File` of the list and submits the list of upload ids in the same order.
+
+The corpus file `file-multiple.json` and the scenarios in `scenarios/file-multiple.json` pin these rules.
 
 ### Scale and rating
 
@@ -533,8 +564,8 @@ Initial values for keys that do not belong to any field stay in `engine.values` 
 | Rule | Type | Applies to | Default message |
 |---|---|---|---|
 | `required` | boolean or string | any value | `This field is required` |
-| `minLength` | number | string length; item count of a `multiselect` or a group | `Minimum length is N`; `At least N required` for arrays |
-| `maxLength` | number | string length; item count of a `multiselect` or a group | `Maximum length is N`; `At most N allowed` for arrays |
+| `minLength` | number | string length; item count of a `multiselect`, a group or a [file list](#file-lists) | `Minimum length is N`; `At least N required` for arrays |
+| `maxLength` | number | string length; item count of a `multiselect`, a group or a [file list](#file-lists) | `Maximum length is N`; `At most N allowed` for arrays |
 | `min` | number | number values; the range of a `scale`; the lowest rating of a `rating` | `Must be at least N` |
 | `max` | number | number values; the range of a `scale` or `rating` | `Must be at most N` |
 | `pattern` | string | `String(value)` | `Invalid format` |
@@ -730,7 +761,7 @@ A token is replaced with the answer of the field. When fields on different route
 | `number`, `scale`, `rating` | the number |
 | `date`, `time`, `datetime`, text types other than `password`, `hidden` | the value as stored |
 | `password` | empty, also when another field with the same key on another route branch, or in another group with the same key, is not a `password` |
-| `file` | the list of file names |
+| `file` | the file name, or the list of file names of a [file list](#file-lists). A file the renderer stored shows its name, never a path or URL. A reference the app supplied shows as written |
 | group | the number of items |
 
 A field without a value, an empty list, a field that conditions hide, a field on a step off the [active path](#active-path) or a skipped step, and an unknown key give an empty text. After the tokens and the `itemLabel` parameters are replaced, a text longer than 10000 UTF-16 code units is cut to its first 10000. When the last unit kept is a high surrogate, it is dropped too, so the text never ends in half a character. The same cut applies to a message or label filled with parameters, such as an item title from the `itemLabel` label or its default. Swift counts the units of `String.utf16`. Recall runs once. Inserted text is never read again: a value, an option label or a checkbox label that holds `{{key}}` or `\{{` shows as written. The result is plain text. Renderers MUST draw a resolved text as plain text and MUST NOT interpret it as HTML, Markdown or any other markup. Other outputs encode it for their context, as [Output safety](/guide/fields#output-safety) describes. React and Vue update the texts when a value, `lang` or `formatRecall` changes. `recallText(definition, text, values, { item?, lang?, format?, engine? })` from `@formhaus/core` resolves a text with the values from `engine.getSubmitValues()`; `item` is `{ group, index }` for a text inside a group item. With `engine`, a shared key reads the field on the engine's active path. Without it, the path is computed from `values`, which leave out skipped steps, so a route that reads a skipped step's default can pick another branch.
@@ -783,12 +814,13 @@ With the built-in renderers, a visible field on the active path has these payloa
 | `number` cleared by the user | `null` |
 | `checkbox` or `switch` unchecked by the user | `false` |
 | `file` cleared by the user | `null` |
+| `file` with `multiple` after the user removes every file | `[]` |
 
 Fields hidden by conditions, on a skipped step or off the active path are absent. These are value representations, not a record of what the user did. An untouched field with an initial value of `null` sends `null`. An edit flow must not read an absent key as "keep the stored value". `validateSubmission()` reads an absent key as absent too: it applies no `defaultValue`, `defaultItems` or item field default to it, and it keeps no last values, so it restores nothing that the payload does not hold. It resets the fields of each step in `skippedSteps` like Skip does, ignores the values sent for them and evaluates conditions against the reset values. A value that fails its type check, at top level or in a group item, gets only its type error and is left out of the returned values; conditions and validators treat the field as unanswered. `""` and `null` count as empty for `required`, and `notEmpty` does not match them.
 
 Reopening a draft through `initialValues` starts without last values, so a hidden field the draft omits gets its `defaultValue` when it is shown.
 
-A `file` value in the browser is a `File`, or `null` after clearing. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference. A `file` value that is not a `File`, such as a string or a `file:` URL in the initial values, is a reference the app supplied. The built-in renderers do not show it, link to it or fetch it, the engine submits it as given, and the Cloud uploader sends it without an upload. The fixtures `file-app-reference.json` in the corpus and in `scenarios/` pin this rule.
+A `file` value in the browser is a `File`, or `null` after clearing. A [file list](#file-lists) is an array of them. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference. A `file` value that is not a `File`, such as a string or a `file:` URL in the initial values, is a reference the app supplied. The built-in renderers do not show it, link to it or fetch it, the engine submits it as given, and the Cloud uploader sends it without an upload. The fixtures `file-app-reference.json` in the corpus and in `scenarios/` pin this rule.
 
 ## Submit results
 
@@ -883,7 +915,7 @@ Native renderers restore a form after the OS ends the app process. The JS core d
 - After a successful submit, including a Skip on the last step that submits, the renderer MUST report a cleared snapshot (`null`) so the host drops its draft. This holds when the form view went away while the submit was sending.
 - The host stores the snapshot. Values can hold personal data.
 - A snapshot MUST NOT contain values of `password` fields, including `password` fields inside group items. `snapshot()` leaves them out and on restore they stay empty, so `required` catches them again. Snapshots may be written to disk. No other values are excluded: hidden fields keep their values according to [`hiddenValues`](#kept-hidden-values).
-- On restore, a file value inside the renderer's own upload storage is re-adopted if the file still exists and becomes `null` otherwise. Other values are untouched.
+- On restore, a file value inside the renderer's own upload storage is re-adopted if the file still exists and becomes `null` otherwise. In a [file list](#file-lists), each such file is re-adopted or removed from the list. Other values are untouched.
 - When the form view goes away during a submit, a submit that already reached the submit handler MUST run to completion, including the after-submit callbacks.
 
 ## Translations
@@ -943,6 +975,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `submit` | `Submit` | |
 | `stepTitle` | `Step {index}` | `index` (1-based) |
 | `stepErrors` | `Errors: {count}` | `count` |
+| `fileCount` | `Files: {count}` | `count` |
 | `or` | `or` | |
 | `select` | `Select` | |
 
@@ -955,7 +988,7 @@ A message for a failed rule comes from the first of:
 5. The catalogs of the `locale` option, in order.
 6. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then the translations of `locale`, then `definition.labels`, then the catalogs of `locale`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then the translations of `locale`, then `definition.labels`, then the catalogs of `locale`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. In a [file list](#file-lists), `removeItem`, `removeItemNamed`, `itemAdded` and `itemRemoved` name the Remove button of a file and announce changes, with the file name as `item`. Native renderers read the number of files with `fileCount`; web renderers do not use it. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 
@@ -1087,7 +1120,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5, or `randomize` or `pinned` without 1.6 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5, `randomize` or `pinned` without 1.6, or `multiple` without 1.7 |
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |
@@ -1112,6 +1145,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `exclusive-option-position` | warning | An exclusive option followed by an option that is not exclusive |
 | `exclusive-default-value` | warning | A `defaultValue` that holds an exclusive option and other values |
 | `exclusive-with-min-length` | warning | `minLength` greater than 1 on a `multiselect` with an exclusive option |
+| `multiple-not-applicable` | warning | `multiple` on a field other than `file` |
 | `randomize-not-applicable` | warning | `randomize` on a field other than `radio`, `multiselect` and `select` or in a section with `layout: "matrix"`, or `pinned` on an option of a field without `randomize` |
 | `matrix-options-mismatch` | warning | A `radio` or `multiselect` row of a section with `layout: "matrix"` whose option values differ from those of the first field, in content or order |
 | `snapshot-mismatch` | warning | A native port restored a form from a [snapshot](#form-snapshot-native-ports) it could not use, so the form started fresh |

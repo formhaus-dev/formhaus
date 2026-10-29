@@ -88,6 +88,10 @@ With Vuetify: `<v-text-field v-bind="f.input" :type="f.inputType" :label="f.labe
 | `optionText(options, value)`, `optionValue(options, text)` | The text an `autocomplete` shows for a value, and the value for a typed text |
 | `freeText(options, value, text, save)` | The `freeText` of a field view from the typed text. `setText` calls `save(value, text)` |
 | `toggleOption(value, option)` | A `multiselect` value with the option added or removed |
+| `isFileList(field)` | Whether a `file` field keeps a [list of files](/guide/fields#several-files) |
+| `addFiles(value, files, max?)`, `removeFile(value, index)` | A file list with the picked files added at the end, up to `max` items, or with one item removed |
+| `fileLimit(field)` | The most files a file list holds: `validation.maxLength` rounded down and at least 0, or 100, and never more than 1000. A picker stops there |
+| `fileEntries(value)` | The `{ index, name }` of each item of a file list: a file's name, or the last path segment of a reference the app supplied |
 
 ### Free text
 
@@ -186,10 +190,10 @@ A component for a built-in type writes the value that core checks for that type.
 | `datetime` | string `YYYY-MM-DDTHH:mm`. Core also accepts seconds, milliseconds and a `Z` or `+HH:mm` offset, such as `2026-01-05T09:07:30.5+02:00` |
 | `time` | string `HH:mm`, 24-hour, or `HH:mm:ss` |
 | `scale`, `rating` | number, the selected point |
-| `file` | one `File`, or `null` |
+| `file` | one `File`, or `null`. With `multiple`, a `File[]`, `[]` after the last file is removed |
 | custom type | string, number or boolean |
 
-A `file` field holds one file. Use one `file` field per file.
+A `file` field holds one file. With [`multiple`](/guide/fields#several-files) it holds a list: `mapControls` passes `multiple` to the control and writes the picked `FileList` as an array, so a picker that replaces the selection replaces the list. To add files to the list, write the old list with the new files.
 
 Write `null` or `''` when the user clears the control. An empty value is checked only against `required` and `matchField`.
 

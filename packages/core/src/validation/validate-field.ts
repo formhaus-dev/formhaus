@@ -1,7 +1,8 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
 import { messageResolver, namedResolver, type MessageSource, type ResolveMessage } from './default-messages';
-import { BOOLEAN_TYPES, clientTypeError, exclusiveValues, MAX_STRING_LENGTH, trimValue } from './type-checks';
+import { BOOLEAN_TYPES, clientTypeError, exclusiveValues, fileLimit, isFileList, MAX_STRING_LENGTH, trimValue } from './type-checks';
+import { fileItems, isFileItem } from '../fields/files';
 
 export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) => string | null;
 
@@ -82,15 +83,16 @@ export function validateFieldValue(
   allValues: Record<string, unknown>,
   { validators, messages }: ValidateOptions = {},
 ): string | null {
-  const value = trimValue(field, input);
-  const rules = field.validation ?? {};
+  const files = isFileList(field);
+  const value = files ? fileItems(input) : trimValue(field, input);
+  const rules = files ? { ...field.validation, maxLength: fileLimit(field) } : (field.validation ?? {});
   const resolve = namedResolver(messageResolver(messages));
   const matchMessage = () => rules.matchFieldMessage ?? resolve('matchField', {}, field);
   if (isEmpty(value, field)) {
     if (rules.required) return typeof rules.required === 'string' ? rules.required : resolve('required', {}, field);
     return rules.matchField !== undefined && !isBlank(allValues[rules.matchField]) ? matchMessage() : null;
   }
-  const typeIssue = clientTypeError(field, value, resolve);
+  const typeIssue = files && !(value as unknown[]).every(isFileItem) ? resolve('file', {}, field) : clientTypeError(field, value, resolve);
   if (typeIssue) return typeIssue;
   return (
     (sizeError(value, rules, field, resolve) ??
