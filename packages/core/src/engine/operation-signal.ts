@@ -1,11 +1,14 @@
 import type { EngineInternals } from './runtime-internals';
 
-export function abortWhenStale(engine: EngineInternals, stale: () => boolean): { signal: AbortSignal; stop: () => void } {
+export function watchOperation(engine: EngineInternals, changed: () => boolean) {
   const controller = new AbortController();
-  const stop = engine.subscribe(() => {
-    if (!stale()) return;
-    stop();
-    controller.abort();
-  });
-  return { signal: controller.signal, stop };
+  const stale = (): boolean => {
+    if (!controller.signal.aborted && changed()) {
+      stop();
+      controller.abort();
+    }
+    return controller.signal.aborted;
+  };
+  const stop = engine.subscribe(stale);
+  return { signal: controller.signal, stale, stop };
 }

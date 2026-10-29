@@ -15,7 +15,7 @@ import {
 import { includeCurrentStep, skipCurrentStep, skipTarget } from './step-skip';
 import { reconcileStepIndex } from './step-routes';
 import { isRejection, submitForm } from './submission';
-import { abortWhenStale } from './operation-signal';
+import { watchOperation } from './operation-signal';
 import { passesValidate } from './validate-hook';
 import type { GoToStepResult, StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
@@ -136,11 +136,13 @@ export async function changeStep(
   const epoch = engine.validationEpoch;
   const operation = (engine.latestOperation = ++engine.operationEpoch);
   const inputsChanged = watchCheckedInputs(engine, context.values);
-  const stale = () =>
-    epoch !== engine.validationEpoch || operation !== engine.operationEpoch || engine.currentStep?.id !== step.id || inputsChanged();
-  const pending = abortWhenStale(engine, stale);
   engine.state.stepValidating = true;
   engine.notify();
+  const pending = watchOperation(
+    engine,
+    () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || engine.currentStep?.id !== step.id || inputsChanged(),
+  );
+  const { stale } = pending;
   try {
     if (stale()) return false;
     if (validating && validate && !invalid) {
