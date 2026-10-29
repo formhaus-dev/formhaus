@@ -1,4 +1,4 @@
-import type { FieldComponentMap, FieldProps } from '@formhaus/vue';
+import { type FieldComponentMap, type FieldProps, HiddenField } from '@formhaus/vue';
 import { type ControlContext, type ControlOption, mapControls } from '@formhaus/vue/controls';
 import {
   ElAutocomplete,
@@ -185,4 +185,5 @@ export const components: FieldComponentMap = {
       file: { component: FileUpload, props: upload },
     },
   }),
+  hidden: HiddenField,
 };
