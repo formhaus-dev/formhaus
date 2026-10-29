@@ -226,3 +226,10 @@
 .files__name {
   overflow-wrap: anywhere;
 }
+
+.files__notice {
+  display: block;
+  align-self: flex-start;
+  margin-top: 4px;
+  text-align: start;
+}

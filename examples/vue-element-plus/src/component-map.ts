@@ -1,5 +1,5 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/vue';
-import { type ControlOption, mapControls } from '@formhaus/vue/controls';
+import { type ControlContext, type ControlOption, mapControls } from '@formhaus/vue/controls';
 import {
   ElAutocomplete,
   ElButton,
@@ -55,10 +55,11 @@ const picked =
     class: 'field__control',
   });
 
-const upload = (f: FieldProps) => {
+const upload = (f: FieldProps, _: ControlOption[], { field }: ControlContext) => {
   const files = f.value instanceof File ? [{ name: f.value.name }] : [];
   return {
     f,
+    field,
     id: undefined,
     'aria-invalid': undefined,
     'aria-required': undefined,
