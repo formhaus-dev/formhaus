@@ -22,17 +22,22 @@ import { EmitsOptions } from 'vue';
 import { FieldType } from '@formhaus/core';
 import { FormDefinition } from '@formhaus/core';
 import { FormEvent } from '@formhaus/core';
+import { FormField } from '@formhaus/core';
 import { FormResearch } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
 import { LocaleCatalog } from '@formhaus/core';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
+import { MessageParams } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
+import { PropType } from 'vue';
 import { PublishedForm } from '@formhaus/core/cloud';
 import { RecallFormatFn } from '@formhaus/core';
+import { StepChangeContext } from '@formhaus/core';
 import { StepValidateFn } from '@formhaus/core';
 import { SubmitHandler } from '@formhaus/core';
 import { TestIdTarget } from '@formhaus/core';
+import { ValidateContext } from '@formhaus/core';
 import { ValidateFn } from '@formhaus/core';
 import { ValidatorFn } from '@formhaus/core';
 
@@ -47,7 +52,7 @@ export { CloudNoticeActionFn }
 export { CloudSubmission }
 
 // @public (undocumented)
-export const FormhausForm: WithSlots<TypedComponent<FormhausFormProps, EmitsOf<FormhausFormEvents>>, FormhausFormSlots>;
+export const FormhausForm: WithSlots<TypedComponent<typeof formhausFormProps, EmitsOf<FormhausFormEvents>>, FormhausFormSlots>;
 
 // @public (undocumented)
 export interface FormhausFormProps extends Omit<FormRendererProps, 'definition' | 'onSubmit' | 'errors' | 'hiddenValues'> {
