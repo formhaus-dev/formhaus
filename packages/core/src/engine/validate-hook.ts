@@ -1,6 +1,7 @@
 import type { FormNode } from '../types';
 import { visitShown } from '../validation/validate-step';
 import type { ValidateFn } from './engine-options';
+import { reportRuleErrors } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { applyValidationErrors, getSubmitValues } from './validation-state';
 
@@ -18,6 +19,7 @@ export async function passesValidate(
   submit: boolean,
   ruleErrors: Record<string, string> = {},
 ): Promise<boolean> {
+  if (Object.keys(ruleErrors).length > 0) reportRuleErrors(engine);
   const fields: string[] = [];
   const nodes = submit ? formNodes(engine) : engine.currentStep!.fields;
   visitShown(nodes, getSubmitValues(engine), engine.visibility.conditionValues(engine.state.values), (path) => fields.push(path));

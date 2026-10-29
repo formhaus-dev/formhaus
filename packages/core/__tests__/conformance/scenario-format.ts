@@ -5,7 +5,7 @@ import { localize, type Overlay } from '../../src/i18n';
 
 export type Reply = { return?: unknown; throw?: string; defer?: string };
 
-type HookName = 'onBeforeStepChange' | 'onAfterStepChange' | 'onBeforeSubmit' | 'onAfterSubmit' | 'onStepValidate';
+type HookName = 'onBeforeStepChange' | 'onAfterStepChange' | 'onBeforeSubmit' | 'onAfterSubmit' | 'onStepValidate' | 'onValidate';
 
 interface ValidatorSpec {
   reject: unknown[];
@@ -67,6 +67,7 @@ export interface Scenario {
   values?: Record<string, unknown>;
   seed?: string;
   hiddenValues?: 'clear' | 'keep';
+  validateWithRules?: boolean;
   hooks?: Partial<Record<HookName, Reply[]>>;
   validators?: Record<string, ValidatorSpec>;
   messages?: Record<string, string>;
