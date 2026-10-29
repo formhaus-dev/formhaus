@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/vue';
 import { computed, ref, useAttrs } from 'vue';
 import { VChip, VFileInput } from 'vuetify/components';
@@ -12,24 +12,23 @@ const picker = computed(() => {
   const { 'onUpdate:modelValue': _, ...rest } = attrs;
   return rest;
 });
-const max = computed(() => fileLimit(props.field));
-const full = computed(() => addFiles(props.f.value, []).length >= max.value);
+const full = computed(() => filesFull(props.field, props.f.value));
 const notice = ref('');
+const status = ref('');
 
 function add(files: File | File[]) {
   const picked = ([] as File[]).concat(files);
   if (!picked.length) return;
-  const next = addFiles(props.f.value, picked, max.value);
-  notice.value =
-    next.length < addFiles(props.f.value, picked).length
-      ? (props.field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max: max.value }))
-      : '';
-  props.f.change(next);
+  const result = pickFiles(props.field, props.f.value, picked);
+  if (result.value) props.f.change(result.value);
+  notice.value = result.notice;
+  status.value = result.status;
 }
 
-function remove(index: number) {
+function remove(index: number, name: string) {
   notice.value = '';
   props.f.change(removeFile(props.f.value, index));
+  status.value = `${name} removed`;
 }
 </script>
 
@@ -45,11 +44,12 @@ function remove(index: number) {
         closable
         :close-label="`Remove ${entry.name}`"
         :disabled="f.disabled"
-        @update:model-value="remove(entry.index)"
+        @update:model-value="remove(entry.index, entry.name)"
       >
-        {{ entry.name }}
+        <span dir="auto">{{ entry.name }}</span>
       </VChip>
     </div>
     <div v-if="notice" class="text-caption text-medium-emphasis ps-10 mb-4">{{ notice }}</div>
+    <p class="d-sr-only" role="status">{{ status }}</p>
   </template>
 </template>

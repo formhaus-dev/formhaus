@@ -1,6 +1,6 @@
 <script>
-import { FormEngine, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, isFileList, removeFile } from '@formhaus/core/fields';
+import { FormEngine } from '@formhaus/core';
+import { fileEntries, filesFull, isFileList, pickFiles, removeFile } from '@formhaus/core/fields';
 import definition from './definition.json';
 
 const STEP_SEPARATOR = ' \u2014 ';
@@ -16,6 +16,8 @@ let currentStep = engine.currentStep;
 let isFirstStep = engine.isFirstStep;
 let isLastStep = engine.isLastStep;
 let fileNotices = {};
+let fileStatuses = {};
+const srOnly = 'position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap';
 
 function sync() {
   fields = engine.visibleFields.slice();
@@ -46,15 +48,15 @@ function handleFilesPick(field, input) {
   if (!isFileList(field)) return handleFieldChange(field.key, picked[0] ?? null);
   input.value = '';
   if (!picked.length) return;
-  const max = fileLimit(field);
-  const next = addFiles(values[field.key], picked, max);
-  const dropped = next.length < addFiles(values[field.key], picked).length;
-  fileNotices[field.key] = dropped ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max })) : '';
-  handleFieldChange(field.key, next);
+  const result = pickFiles(field, values[field.key], picked);
+  fileNotices[field.key] = result.notice;
+  fileStatuses[field.key] = result.status;
+  if (result.value) handleFieldChange(field.key, result.value);
 }
 
-function handleFileRemove(field, index) {
+function handleFileRemove(field, index, name) {
   fileNotices[field.key] = '';
+  fileStatuses[field.key] = `${name} removed`;
   handleFieldChange(field.key, removeFile(values[field.key], index));
 }
 
@@ -114,19 +116,20 @@ async function handleSubmit() {
         {:else if field.type === 'textarea'}
           <textarea id={field.key} rows={field.rows ?? 3} placeholder={field.placeholder ?? ''} on:input={e => handleFieldChange(field.key, e.target.value)}>{values[field.key] ?? ''}</textarea>
         {:else if field.type === 'file'}
-          <input id={field.key} type="file" accept={field.accept} multiple={isFileList(field)} disabled={isFileList(field) && addFiles(values[field.key], []).length >= fileLimit(field)} on:change={e => handleFilesPick(field, e.target)} />
+          <input id={field.key} type="file" accept={field.accept} multiple={isFileList(field)} disabled={isFileList(field) && filesFull(field, values[field.key])} on:change={e => handleFilesPick(field, e.target)} />
           {#if isFileList(field)}
             <ul style="list-style: none; margin: 4px 0 0; padding: 0">
               {#each fileEntries(values[field.key]) as entry (entry.index)}
                 <li style="display: flex; gap: 8px; align-items: center; margin-top: 4px">
-                  {entry.name}
-                  <button type="button" aria-label="Remove {entry.name}" on:click={() => handleFileRemove(field, entry.index)}>Remove</button>
+                  <span dir="auto">{entry.name}</span>
+                  <button type="button" aria-label="Remove {entry.name}" on:click={() => handleFileRemove(field, entry.index, entry.name)}>Remove</button>
                 </li>
               {/each}
             </ul>
             {#if fileNotices[field.key]}
               <p style="color: #666; margin: 4px 0 0; font-size: 13px">{fileNotices[field.key]}</p>
             {/if}
+            <p role="status" style={srOnly}>{fileStatuses[field.key] ?? ''}</p>
           {/if}
         {:else if field.type === 'autocomplete'}
           <input

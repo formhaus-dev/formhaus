@@ -1,14 +1,14 @@
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
-import { Button, FileInput, type FileInputProps, Group, Stack, Text } from '@mantine/core';
+import { Button, FileInput, type FileInputProps, Group, Stack, Text, VisuallyHidden } from '@mantine/core';
 import { useState } from 'react';
 
 type FileFieldProps = FileInputProps & { f: FieldProps; field: FormField };
 
 function FileList({ f, field, value: _, defaultValue: __, onChange: ___, ...props }: FileFieldProps) {
   const [notice, setNotice] = useState('');
-  const max = fileLimit(field);
+  const [status, setStatus] = useState('');
   return (
     <Stack gap="xs">
       <FileInput
@@ -16,22 +16,19 @@ function FileList({ f, field, value: _, defaultValue: __, onChange: ___, ...prop
         multiple
         clearable={false}
         value={[]}
-        disabled={props.disabled || addFiles(f.value, []).length >= max}
+        disabled={props.disabled || filesFull(field, f.value)}
         placeholder={f.placeholder ?? 'Add files'}
         onChange={(files) => {
           if (!files.length) return;
-          const next = addFiles(f.value, files, max);
-          setNotice(
-            next.length < addFiles(f.value, files).length
-              ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max }))
-              : '',
-          );
-          f.change(next);
+          const result = pickFiles(field, f.value, files);
+          if (result.value) f.change(result.value);
+          setNotice(result.notice);
+          setStatus(result.status);
         }}
       />
       {fileEntries(f.value).map(({ index, name }) => (
         <Group key={index} justify="space-between" wrap="nowrap" gap="sm">
-          <Text size="sm" style={{ overflowWrap: 'anywhere' }}>
+          <Text size="sm" style={{ overflowWrap: 'anywhere' }} dir="auto">
             {name}
           </Text>
           <Button
@@ -43,6 +40,7 @@ function FileList({ f, field, value: _, defaultValue: __, onChange: ___, ...prop
             onClick={() => {
               setNotice('');
               f.change(removeFile(f.value, index));
+              setStatus(`${name} removed`);
             }}
           >
             Remove
@@ -54,6 +52,7 @@ function FileList({ f, field, value: _, defaultValue: __, onChange: ___, ...prop
           {notice}
         </Text>
       )}
+      <VisuallyHidden role="status">{status}</VisuallyHidden>
     </Stack>
   );
 }

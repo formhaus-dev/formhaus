@@ -1,5 +1,5 @@
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlShellProps } from '@formhaus/react/controls';
 import Box from '@mui/material/Box';
@@ -121,11 +121,20 @@ type FilePickerProps = ButtonProps<'label'> &
     'data-testid'?: string;
   };
 
+const visuallyHidden = {
+  position: 'absolute',
+  width: 1,
+  height: 1,
+  overflow: 'hidden',
+  clip: 'rect(0 0 0 0)',
+  whiteSpace: 'nowrap',
+} as const;
+
 export function FilePicker({ f, field, id, name, accept, multiple, onChange, disabled, 'data-testid': testId, ...aria }: FilePickerProps) {
   const [file, setFile] = useState('');
   const [notice, setNotice] = useState('');
-  const max = fileLimit(field);
-  const full = multiple && addFiles(f.value, []).length >= max;
+  const [status, setStatus] = useState('');
+  const full = multiple && filesFull(field, f.value);
   const entries = multiple ? fileEntries(f.value) : [];
   return (
     <>
@@ -158,13 +167,10 @@ export function FilePicker({ f, field, id, name, accept, multiple, onChange, dis
               const picked = Array.from(event.target.files ?? []);
               event.target.value = '';
               if (!picked.length) return;
-              const next = addFiles(f.value, picked, max);
-              setNotice(
-                next.length < addFiles(f.value, picked).length
-                  ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max }))
-                  : '',
-              );
-              f.change(next);
+              const result = pickFiles(field, f.value, picked);
+              if (result.value) f.change(result.value);
+              setNotice(result.notice);
+              setStatus(result.status);
             }}
           />
         </Button>
@@ -186,18 +192,24 @@ export function FilePicker({ f, field, id, name, accept, multiple, onChange, dis
                   onClick={() => {
                     setNotice('');
                     f.change(removeFile(f.value, index));
+                    setStatus(`${name} removed`);
                   }}
                 >
                   Remove
                 </Button>
               }
             >
-              <ListItemText primary={name} slotProps={{ primary: { sx: { overflowWrap: 'anywhere' } } }} />
+              <ListItemText primary={name} slotProps={{ primary: { dir: 'auto', sx: { overflowWrap: 'anywhere' } } }} />
             </ListItem>
           ))}
         </List>
       )}
       {notice && <FormHelperText>{notice}</FormHelperText>}
+      {multiple && (
+        <Box role="status" sx={visuallyHidden}>
+          {status}
+        </Box>
+      )}
     </>
   );
 }

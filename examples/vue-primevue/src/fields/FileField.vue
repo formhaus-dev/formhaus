@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, isFileList, removeFile } from '@formhaus/core/fields';
+import { fileEntries, filesFull, isFileList, pickFiles, removeFile } from '@formhaus/core/fields';
 import { fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
 import type { ControlRootProps } from '@formhaus/vue/controls';
 import Button from 'primevue/button';
@@ -17,25 +16,24 @@ const file = computed(() => (f.value instanceof File ? f.value : null));
 const entries = computed(() => (list.value ? fileEntries(f.value) : []));
 const chooseLabel = computed(() => (list.value ? 'Add files' : file.value ? 'Replace file' : 'Choose file'));
 const fileLabel = computed(() => (list.value ? (entries.value.length ? '' : 'No files chosen') : (file.value?.name ?? 'No file chosen')));
-const max = computed(() => fileLimit(props.field));
-const full = computed(() => list.value && addFiles(f.value, []).length >= max.value);
+const full = computed(() => list.value && filesFull(props.field, f.value));
 const notice = ref('');
+const status = ref('');
 const root = { 'data-fh': 'field' } as ControlRootProps;
 
 function select(event: FileUploadSelectEvent) {
   const files = event.files as File[];
   if (!list.value) return f.change(files[files.length - 1] ?? null);
-  const next = addFiles(f.value, files, max.value);
-  notice.value =
-    next.length < addFiles(f.value, files).length
-      ? (props.field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max: max.value }))
-      : '';
-  f.change(next);
+  const result = pickFiles(props.field, f.value, files);
+  if (result.value) f.change(result.value);
+  notice.value = result.notice;
+  status.value = result.status;
 }
 
-function remove(index: number) {
+function remove(index: number, name: string) {
   notice.value = '';
   f.change(removeFile(f.value, index));
+  status.value = `${name} removed`;
 }
 </script>
 
@@ -61,7 +59,7 @@ function remove(index: number) {
     </div>
     <ul v-if="entries.length" class="files">
       <li v-for="entry in entries" :key="entry.index" class="file">
-        <span class="file__name">{{ entry.name }}</span>
+        <span class="file__name" dir="auto">{{ entry.name }}</span>
         <Button
           label="Remove"
           :aria-label="`Remove ${entry.name}`"
@@ -69,10 +67,11 @@ function remove(index: number) {
           variant="text"
           size="small"
           :disabled="f.disabled"
-          @click="remove(entry.index)"
+          @click="remove(entry.index, entry.name)"
         />
       </li>
     </ul>
+    <p v-if="list" class="p-hidden-accessible" role="status">{{ status }}</p>
     <Message v-if="notice" size="small" severity="secondary" variant="simple">{{ notice }}</Message>
   </FieldShell>
 </template>

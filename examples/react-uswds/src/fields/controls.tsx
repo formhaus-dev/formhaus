@@ -1,5 +1,5 @@
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile, toggleOption } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, filesFull, pickFiles, removeFile, toggleOption } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
 import { type AriaAttributes, type ChangeEvent, type ComponentProps, Fragment, useState } from 'react';
@@ -53,20 +53,19 @@ export function Select({ options, placeholder, ...props }: ComponentProps<'selec
 
 export function FileInput({ f, field, onChange, ...props }: ComponentProps<'input'> & { f: FieldProps; field: FormField }) {
   const [notice, setNotice] = useState('');
+  const [status, setStatus] = useState('');
   const list = !!props.multiple;
-  const max = fileLimit(field);
-  const disabled = props.disabled || (list && addFiles(f.value, []).length >= max);
+  const disabled = props.disabled || (list && filesFull(field, f.value));
   const picked = !list && f.value instanceof File ? f.value : null;
   const entries = list ? fileEntries(f.value) : [];
   const add = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(target.files ?? []);
     target.value = '';
     if (!files.length) return;
-    const next = addFiles(f.value, files, max);
-    setNotice(
-      next.length < addFiles(f.value, files).length ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max })) : '',
-    );
-    f.change(next);
+    const result = pickFiles(field, f.value, files);
+    if (result.value) f.change(result.value);
+    setNotice(result.notice);
+    setStatus(result.status);
   };
   return (
     <>
@@ -95,7 +94,9 @@ export function FileInput({ f, field, onChange, ...props }: ComponentProps<'inpu
         <ul className="files">
           {entries.map(({ index, name }) => (
             <li key={index} className="files__item">
-              <span className="files__name">{name}</span>
+              <span className="files__name" dir="auto">
+                {name}
+              </span>
               <button
                 type="button"
                 className="usa-button usa-button--unstyled"
@@ -103,6 +104,7 @@ export function FileInput({ f, field, onChange, ...props }: ComponentProps<'inpu
                 onClick={() => {
                   setNotice('');
                   f.change(removeFile(f.value, index));
+                  setStatus(`${name} removed`);
                 }}
               >
                 Remove<span className="usa-sr-only"> {name}</span>
@@ -112,6 +114,11 @@ export function FileInput({ f, field, onChange, ...props }: ComponentProps<'inpu
         </ul>
       )}
       {notice && <div className="usa-hint files__notice">{notice}</div>}
+      {list && (
+        <p className="usa-sr-only" role="status">
+          {status}
+        </p>
+      )}
     </>
   );
 }

@@ -1,21 +1,20 @@
-import { type FormField, getDefaultMessage } from '@formhaus/core';
-import { addFiles, fileEntries, fileLimit, removeFile } from '@formhaus/core/fields';
+import type { FormField } from '@formhaus/core';
+import { fileEntries, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
-import { Button, FileUpload, HStack, Stack, Text } from '@chakra-ui/react';
+import { Button, FileUpload, HStack, Stack, Text, VisuallyHidden } from '@chakra-ui/react';
 import { useState } from 'react';
 
 type FileFieldProps = FileUpload.RootProps & { f: FieldProps; field: FormField; multiple?: boolean };
 
 function FileList({ f, field, ...props }: FileFieldProps) {
   const [notice, setNotice] = useState('');
-  const max = fileLimit(field);
+  const [status, setStatus] = useState('');
   const accept = ({ files }: FileUpload.FileAcceptDetails) => {
     if (!files.length) return;
-    const next = addFiles(f.value, files, max);
-    setNotice(
-      next.length < addFiles(f.value, files).length ? (field.validation?.maxLengthMessage ?? getDefaultMessage('maxItems', { max })) : '',
-    );
-    f.change(next);
+    const result = pickFiles(field, f.value, files);
+    if (result.value) f.change(result.value);
+    setNotice(result.notice);
+    setStatus(result.status);
   };
   return (
     <FileUpload.Root
@@ -24,7 +23,7 @@ function FileList({ f, field, ...props }: FileFieldProps) {
       acceptedFiles={[]}
       onChange={undefined}
       onFileAccept={accept}
-      disabled={props.disabled || addFiles(f.value, []).length >= max}
+      disabled={props.disabled || filesFull(field, f.value)}
     >
       <FileUpload.HiddenInput />
       <FileUpload.Trigger asChild>
@@ -35,7 +34,7 @@ function FileList({ f, field, ...props }: FileFieldProps) {
       <Stack gap="2" width="full">
         {fileEntries(f.value).map(({ index, name }) => (
           <HStack key={index} justify="space-between" gap="3" borderWidth="1px" rounded="l2" px="3" py="2">
-            <Text textStyle="sm" overflowWrap="anywhere">
+            <Text textStyle="sm" overflowWrap="anywhere" dir="auto">
               {name}
             </Text>
             <Button
@@ -46,6 +45,7 @@ function FileList({ f, field, ...props }: FileFieldProps) {
               onClick={() => {
                 setNotice('');
                 f.change(removeFile(f.value, index));
+                setStatus(`${name} removed`);
               }}
             >
               Remove
@@ -58,6 +58,7 @@ function FileList({ f, field, ...props }: FileFieldProps) {
           {notice}
         </Text>
       )}
+      <VisuallyHidden role="status">{status}</VisuallyHidden>
     </FileUpload.Root>
   );
 }
