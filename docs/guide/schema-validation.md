@@ -54,9 +54,7 @@ A field nobody answered is missing from the values. A text field the user cleare
 
 ## Built-in checks
 
-The type check of a built-in field type runs with the definition rules, before the schema. `taro@example` in an `email` field shows "Enter a valid email", and the schema message for the same answer never shows.
-
-Keep `required` and the field `type` in the definition. Check in the schema what the types do not, such as a work email domain or a rule across fields. Each built-in check has a message code, such as `email`, `number`, `date` or `option`. Set its wording in the [`messages` catalog](/guide/translations#messages-and-labels):
+Keep `required` and the field `type` in the definition, and check in the schema what the types do not, such as a work email domain. Each built-in type check has a message code, such as `email`, `number`, `date` or `option`. Set its wording in the [`messages` catalog](/guide/translations#messages-and-labels):
 
 ```json
 {
