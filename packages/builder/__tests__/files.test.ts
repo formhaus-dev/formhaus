@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { addField, createForm, fromDefinition, setFieldProp, setFieldType, setMultiple, toDefinition } from '../src';
+import {
+  addField,
+  createForm,
+  fromDefinition,
+  isFileList,
+  isQuestion,
+  setFieldProp,
+  setFieldType,
+  setMultiple,
+  toDefinition,
+} from '../src';
 
 function upload() {
   const form = createForm();
@@ -28,6 +38,20 @@ describe('file list ops', () => {
     setFieldProp(form, item.uid, 'validation', { maxLength: 5 });
     setFieldType(form, item.uid, 'text');
     expect(toDefinition(form).fields?.[0]).toEqual({ key: 'receipts', type: 'text', label: 'Receipts' });
+  });
+
+  it('raises the format when multiple is already set below 1.7', () => {
+    const form = fromDefinition({
+      formatVersion: '1.6',
+      id: 'expenses',
+      title: 'Expenses',
+      submit: { label: 'Send' },
+      fields: [{ key: 'receipts', type: 'file', label: 'Receipts', multiple: true }],
+    });
+    const [item] = form.blocks.filter(isQuestion);
+    expect(isFileList(form, item)).toBe(false);
+    setMultiple(form, item.uid, true);
+    expect(toDefinition(form)).toMatchObject({ formatVersion: '1.7', fields: [{ multiple: true }] });
   });
 
   it('ignores multiple on other types', () => {
