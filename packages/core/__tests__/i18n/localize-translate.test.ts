@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { FormEngine } from '../../src';
-import { localize, type TranslateFn } from '../../src/i18n';
+import { localize, type TranslateFn, translation } from '../../src/i18n';
 import { labelFor } from '../../src/internal';
 import { signup } from './fixtures';
 
@@ -32,7 +32,7 @@ function i18next(): { t: TranslateFn; asked: string[] } {
 describe('localize with a translate function', () => {
   it('uses explicit keys first and derived keys otherwise', () => {
     const { t, asked } = i18next();
-    const { definition } = localize(signup, { locale: 'ru', translate: t });
+    const { definition } = localize(signup, translation({ locale: 'ru', translate: t }));
     const [kind, business, home] = definition.steps!;
     expect(definition.title).toBe('Создайте аккаунт');
     expect(kind.fields[0].label).toBe('Почта');
@@ -47,7 +47,7 @@ describe('localize with a translate function', () => {
 
   it('never writes a fallback over a rule that has no literal', () => {
     const { t } = i18next();
-    const { definition } = localize(signup, { locale: 'ru', translate: t });
+    const { definition } = localize(signup, translation({ locale: 'ru', translate: t }));
     expect(definition.steps![0].fields[1].validation).toEqual(
       signup.steps![0].fields[1].validation && { ...signup.steps![0].fields[1].validation, minLengthMessage: 'Не менее 8 символов' },
     );
@@ -56,7 +56,7 @@ describe('localize with a translate function', () => {
 
   it('resolves catalog messages and labels at runtime with params', () => {
     const { t } = i18next();
-    const { definition, messages, labels } = localize(signup, { locale: 'ru', translate: t });
+    const { definition, messages, labels } = localize(signup, translation({ locale: 'ru', translate: t }));
     const engine = new FormEngine(definition, { email: 'a@b.co', password: 'secret123', kind: 'home', address: 'abc' }, { messages });
     expect(engine.validate()).toEqual({ address: 'Минимум 5' });
     expect(new FormEngine(definition, {}, { messages }).validate().kind).toBe('Обязательное поле');
@@ -69,7 +69,7 @@ describe('localize with a translate function', () => {
     const echo: TranslateFn = (key) => key;
     const empty: TranslateFn = () => '';
     for (const translate of [echo, empty, () => undefined]) {
-      const { definition, messages } = localize(signup, { locale: 'ru', translate });
+      const { definition, messages } = localize(signup, translation({ locale: 'ru', translate }));
       expect(definition).toEqual({ ...signup, lang: 'ru' });
       expect(messages('required', {}, signup.steps![0].fields[0])).toBe(undefined);
     }
@@ -77,10 +77,10 @@ describe('localize with a translate function', () => {
 
   it('asks explicit keys only with prefix false and bare addresses with an empty prefix', () => {
     const { t, asked } = i18next();
-    localize(signup, { locale: 'ru', translate: t, prefix: false });
+    localize(signup, translation({ locale: 'ru', translate: t, prefix: false }));
     expect(asked.every((key) => !key.startsWith('signup.steps'))).toBe(true);
     const bare = i18next();
-    localize(signup, { locale: 'ru', translate: bare.t, prefix: '' });
+    localize(signup, translation({ locale: 'ru', translate: bare.t, prefix: '' }));
     expect(bare.asked).toContain('steps.kind.title');
   });
 
@@ -91,7 +91,7 @@ describe('localize with a translate function', () => {
         'signup.messages.minLength': 'Минимум {min}',
         'errors.password.tooShort': 'Не менее {min}',
       })[key] ?? fallback;
-    const { definition, messages, labels } = localize(signup, { locale: 'ru', translate: raw });
+    const { definition, messages, labels } = localize(signup, translation({ locale: 'ru', translate: raw }));
     expect(labelFor('stepOf', { current: 1, total: 2 }, labels)).toBe('Шаг 1 из 2');
     expect(new FormEngine(definition, { kind: 'home', address: 'abc' }, { messages }).validate().address).toBe('Минимум 5');
     expect(definition.steps![0].fields[1].validation?.minLengthMessage).toBe('Не менее 8');
@@ -102,18 +102,24 @@ describe('localize with a translate function', () => {
       if (key === 'signup.title') throw new Error('Invalid linked format');
       return undefined;
     };
-    const { definition, messages } = localize(signup, {
-      locale: 'ru',
-      translate: (key, params, fallback) => (key === 'signup.email.label' ? 'Почта' : failing(key, params, fallback)),
-    });
+    const { definition, messages } = localize(
+      signup,
+      translation({
+        locale: 'ru',
+        translate: (key, params, fallback) => (key === 'signup.email.label' ? 'Почта' : failing(key, params, fallback)),
+      }),
+    );
     expect(definition.title).toBe('Create your account');
     expect(definition.steps![0].fields[0].label).toBe('Почта');
-    const throwing = localize(signup, {
-      locale: 'ru',
-      translate: () => {
-        throw new Error('x');
-      },
-    });
+    const throwing = localize(
+      signup,
+      translation({
+        locale: 'ru',
+        translate: () => {
+          throw new Error('x');
+        },
+      }),
+    );
     expect(typeof throwing.messages === 'function' && throwing.messages('required', {}, signup.steps![0].fields[0])).toBe(undefined);
     expect(messages).toBeTypeOf('function');
   });

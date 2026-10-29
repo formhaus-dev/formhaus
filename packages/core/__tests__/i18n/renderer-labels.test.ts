@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { localize, textSlots, translationIssues } from '../../src/i18n';
+import { localize, textSlots, translation, translationIssues } from '../../src/i18n';
 import { labelFor } from '../../src/internal';
 import type { FormDefinition } from '../../src/types';
 
@@ -98,7 +98,7 @@ describe('renderer labels', () => {
     const issues = translationIssues(definition, overlay);
     expect(issues.unknown).toEqual([]);
     expect(issues.missing.filter((address) => address.startsWith('labels.'))).toEqual(['labels.errorSummary']);
-    expect(localize(definition, { ...overlay, locale: 'ru' }).definition.labels).toMatchObject({
+    expect(localize(definition, translation({ ...overlay, locale: 'ru' })).definition.labels).toMatchObject({
       submit: 'Отправить',
       clear: 'Очистить',
       chooseFile: 'Выбрать файл',

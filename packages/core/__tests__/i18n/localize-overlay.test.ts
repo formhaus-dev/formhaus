@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { FormDefinition } from '../../src';
-import { localize } from '../../src/i18n';
+import { localize, translation } from '../../src/i18n';
 import { ru, signup } from './fixtures';
 
 describe('localize with an overlay', () => {
-  const { definition, messages, labels } = localize(signup, { ...ru, locale: 'ru' });
+  const { definition, messages, labels } = localize(signup, translation({ ...ru, locale: 'ru' }));
   const [kind, business] = definition.steps!;
 
   it('replaces static texts and keeps the source for missing or empty entries', () => {
@@ -38,7 +38,7 @@ describe('localize with an overlay', () => {
     const overlay = {
       fields: { name: { validation: { required: 'Нужно', pattern: 'Формат' }, helperText: 'Подсказка' }, ghost: { label: 'Призрак' } },
     };
-    const result = localize(source, { ...overlay, locale: 'ru' });
+    const result = localize(source, translation({ ...overlay, locale: 'ru' }));
     expect(result.definition.fields).toEqual([{ key: 'name', type: 'text', label: 'Name', validation: { required: false } }]);
     expect(JSON.stringify(source)).toBe(before);
   });
