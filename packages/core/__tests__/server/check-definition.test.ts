@@ -1,9 +1,10 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { runInNewContext } from 'node:vm';
 import { describe, expect, it } from 'vitest';
 import { checkDefinition } from '../../src/server';
 import type { FormDefinition } from '../../src';
+import { freshBuild } from '../fresh-build';
 
 const iifePath = join(__dirname, '../../dist/server.iife.js');
 
@@ -49,7 +50,7 @@ describe('checkDefinition', () => {
   });
 });
 
-describe.skipIf(!existsSync(iifePath) && !process.env.CI)('server IIFE checkDefinition', () => {
+describe.skipIf(!freshBuild(iifePath))('server IIFE checkDefinition', () => {
   it('is exposed on the Formhaus global', () => {
     const context: { Formhaus?: { checkDefinition: typeof checkDefinition } } = {};
     runInNewContext(readFileSync(iifePath, 'utf8'), context);
