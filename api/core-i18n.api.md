@@ -116,11 +116,9 @@ export interface TranslateSource {
 // @public (undocumented)
 export interface Translation {
     // (undocumented)
-    locale: string;
+    readonly [translated]: true;
     // (undocumented)
-    text(definition: FormDefinition, part: 'messages' | 'labels', key: string, params: Record<string, unknown>): string | undefined;
-    // (undocumented)
-    texts(definition: FormDefinition): FormDefinition;
+    readonly locale: string;
 }
 
 // @public (undocumented)
