@@ -84,6 +84,8 @@ export interface ControlPreset {
     // (undocumented)
     attrs: object;
     // (undocumented)
+    freeText?: FreeText;
+    // (undocumented)
     input: boolean;
     // (undocumented)
     kind: ControlKind;

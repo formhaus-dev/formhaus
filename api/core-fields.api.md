@@ -136,9 +136,9 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
     // (undocumented)
     focus: () => void;
     // (undocumented)
-    freeText: FreeText;
+    freeText?: FreeText;
     // (undocumented)
-    loading: boolean;
+    loading?: boolean;
     // (undocumented)
     option: (option: FieldOption, index: number) => FieldOptionAttrs;
     // (undocumented)

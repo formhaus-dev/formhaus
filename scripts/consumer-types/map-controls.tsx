@@ -1,4 +1,4 @@
-import type { FieldComponentMap } from '@formhaus/react';
+import type { FieldComponentMap, FieldProps } from '@formhaus/react';
 import { type ControlShellProps, type ControlSpec, mapControls } from '@formhaus/react/controls';
 
 function Shell({ f, rootProps, children }: ControlShellProps) {
@@ -62,6 +62,39 @@ export const contextual: FieldComponentMap = mapControls({
   controls: {
     radio: [Input, (_f, _options, { kind, field }) => ({ size: field.layout === 'inline' && kind === 'group' ? 'small' : 'large' })],
     scale: { component: Input, props: (_f, _options, { anchors }) => ({ value: anchors.map((anchor) => anchor?.label).join() }) },
-    select: [Input, (f) => ({ value: f.loading ? '' : f.freeText.text })],
+    select: [Input, (f) => ({ value: f.loading ? '' : f.freeText?.text })],
   },
 });
+
+export const handBuilt: FieldProps = {
+  id: 'name',
+  name: 'name',
+  label: 'Name',
+  inputType: 'text',
+  helperId: 'name-helper',
+  errorId: 'name-error',
+  invalid: false,
+  required: false,
+  disabled: false,
+  aria: {},
+  optionId: (index) => `name-${index}`,
+  value: '',
+  text: '',
+  options: [],
+  change: () => {},
+  commit: () => {},
+  blur: () => {},
+  focus: () => {},
+  onInput: () => {},
+  attrs: { id: 'name', name: 'name', disabled: false, onBlur: () => {}, onFocus: () => {} },
+  option: (option, index) => ({
+    id: `name-${index}`,
+    name: 'name',
+    value: option.value,
+    checked: false,
+    disabled: false,
+    onBlur: () => {},
+    onFocus: () => {},
+  }),
+  input: { id: 'name', name: 'name', disabled: false, onBlur: () => {}, onFocus: () => {}, value: '', onChange: () => {} },
+};
