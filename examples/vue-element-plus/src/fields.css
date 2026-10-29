@@ -205,3 +205,24 @@
 .reveal > :last-child > .el-form-item {
   margin-bottom: 0;
 }
+
+.files {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.files__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--el-border-color-lighter);
+  color: var(--el-text-color-regular);
+  font-size: var(--el-font-size-base);
+}
+
+.files__name {
+  overflow-wrap: anywhere;
+}

@@ -13,11 +13,11 @@ import {
   ElSelect,
   ElSwitch,
   ElTimePicker,
-  ElUpload,
   type UploadFile,
 } from 'element-plus';
 import { h, type VNode } from 'vue';
 import FieldShell from './fields/FieldShell.vue';
+import FileUpload from './fields/FileUpload.vue';
 import MatrixRow from './fields/MatrixRow.vue';
 
 const testId = (f: FieldProps, option: ControlOption, index: number) =>
@@ -58,6 +58,7 @@ const picked =
 const upload = (f: FieldProps) => {
   const files = f.value instanceof File ? [{ name: f.value.name }] : [];
   return {
+    f,
     id: undefined,
     'aria-invalid': undefined,
     'aria-required': undefined,
@@ -180,7 +181,7 @@ export const components: FieldComponentMap = {
         }),
       },
       rating: { component: ElRate, props: (f, options) => ({ max: options.length, clearable: true, ariaLabel: f.label }) },
-      file: { component: ElUpload, props: upload },
+      file: { component: FileUpload, props: upload },
     },
   }),
 };

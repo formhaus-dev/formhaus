@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { addFiles, fileEntries, isFileList, removeFile } from '@formhaus/core/fields';
 import { fieldComponentEmits, fieldComponentProps, useFieldProps } from '@formhaus/vue';
 import type { ControlRootProps } from '@formhaus/vue/controls';
 import Button from 'primevue/button';
@@ -9,12 +10,17 @@ import FieldShell from './FieldShell.vue';
 const props = defineProps(fieldComponentProps);
 const emit = defineEmits(fieldComponentEmits);
 const f = useFieldProps(props, emit);
+const list = computed(() => isFileList(props.field));
 const file = computed(() => (f.value instanceof File ? f.value : null));
+const entries = computed(() => (list.value ? fileEntries(f.value) : []));
+const chooseLabel = computed(() => (list.value ? 'Add files' : file.value ? 'Replace file' : 'Choose file'));
+const fileLabel = computed(() => (list.value ? (entries.value.length ? '' : 'No files chosen') : (file.value?.name ?? 'No file chosen')));
 const root = { 'data-fh': 'field' } as ControlRootProps;
 
 function select(event: FileUploadSelectEvent) {
   const files = event.files as File[];
-  f.change(files[files.length - 1] ?? null);
+  if (!list.value) return f.change(files[files.length - 1] ?? null);
+  f.change(addFiles(f.value, files));
 }
 </script>
 
@@ -25,17 +31,32 @@ function select(event: FileUploadSelectEvent) {
         mode="basic"
         :name="f.name"
         :accept="field.accept"
-        :choose-label="file ? 'Replace file' : 'Choose file'"
+        :multiple="list"
+        :choose-label="chooseLabel"
         :choose-button-props="{ id: f.id, severity: f.invalid ? 'danger' : 'secondary', outlined: true, ...f.aria, 'data-testid': f.testId, onBlur: f.blur, onFocus: f.focus }"
         :disabled="f.disabled"
         custom-upload
         @select="select"
       >
         <template #filelabel>
-          <span class="file__name">{{ file?.name ?? 'No file chosen' }}</span>
+          <span class="file__name">{{ fileLabel }}</span>
         </template>
       </FileUpload>
       <Button v-if="file" label="Remove" severity="secondary" variant="text" size="small" :disabled="f.disabled" @click="f.change(null)" />
     </div>
+    <ul v-if="entries.length" class="files">
+      <li v-for="entry in entries" :key="entry.index" class="file">
+        <span class="file__name">{{ entry.name }}</span>
+        <Button
+          label="Remove"
+          :aria-label="`Remove ${entry.name}`"
+          severity="secondary"
+          variant="text"
+          size="small"
+          :disabled="f.disabled"
+          @click="f.change(removeFile(f.value, entry.index))"
+        />
+      </li>
+    </ul>
   </FieldShell>
 </template>

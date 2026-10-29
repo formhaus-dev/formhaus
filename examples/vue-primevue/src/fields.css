@@ -85,6 +85,22 @@ legend.field__label {
   overflow-wrap: anywhere;
 }
 
+.files {
+  display: grid;
+  gap: 0.25rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.files .file {
+  justify-content: space-between;
+}
+
+.files .file__name {
+  color: var(--p-text-color);
+}
+
 .scale__frame {
   display: flex;
   flex-direction: column;
