@@ -6,6 +6,7 @@
 
 import { Component } from 'vue';
 import { ControlClickEvent } from '@formhaus/core/controls';
+import { ControlContext } from '@formhaus/core/controls';
 import { ControlEntryOf } from '@formhaus/core/controls';
 import { ControlKeyEvent } from '@formhaus/core/controls';
 import { ControlKind } from '@formhaus/core/controls';
@@ -27,6 +28,8 @@ import { VNodeChild } from 'vue';
 
 // @public (undocumented)
 export type ControlAdapter<C extends Component> = PropName<C> | ControlProps<C>;
+
+export { ControlContext }
 
 // @public (undocumented)
 export type ControlEntry<C extends Component = Component> = C | readonly [C, ControlAdapter<C> | null, PropName<C>?] | ControlSpec<C>;

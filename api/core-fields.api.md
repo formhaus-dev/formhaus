@@ -136,6 +136,10 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
     // (undocumented)
     focus: () => void;
     // (undocumented)
+    freeText: FreeText;
+    // (undocumented)
+    loading: boolean;
+    // (undocumented)
     option: (option: FieldOption, index: number) => FieldOptionAttrs;
     // (undocumented)
     options: FieldOption[];
@@ -146,6 +150,17 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
     // (undocumented)
     value: unknown;
 }
+
+// @public (undocumented)
+export interface FreeText {
+    // (undocumented)
+    setText: (text: string) => void;
+    // (undocumented)
+    text: string;
+}
+
+// @public (undocumented)
+export function freeText(options: FieldOption[], value: unknown, text: string, save: (value: string, text: string) => void): FreeText;
 
 // @public (undocumented)
 export function fromDate(date: Date | null | undefined, type?: DateType): string | null;

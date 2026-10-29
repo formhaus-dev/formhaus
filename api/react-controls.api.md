@@ -7,6 +7,7 @@
 import { ChangeEvent } from 'react';
 import { ComponentType } from 'react';
 import { ControlClickEvent } from '@formhaus/core/controls';
+import { ControlContext } from '@formhaus/core/controls';
 import { ControlEntryOf } from '@formhaus/core/controls';
 import { ControlKeyEvent } from '@formhaus/core/controls';
 import { ControlKind } from '@formhaus/core/controls';
@@ -30,6 +31,8 @@ import { ScaleAnchor } from '@formhaus/core/fields';
 
 // @public (undocumented)
 export type ControlAdapter<C extends Control> = PropName<C> | ControlProps<C>;
+
+export { ControlContext }
 
 // @public (undocumented)
 export type ControlEntry<C extends Control = Control> = C | readonly [C, ControlAdapter<C> | null, PropName<C>?] | ControlSpec<C>;
