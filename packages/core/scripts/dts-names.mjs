@@ -37,15 +37,26 @@ for (const source of sources) {
   aliases.set(source.file, names);
 }
 
+if (aliases.size === 0) throw new Error(`No declaration chunks found in ${dist}`);
+
+let linked = 0;
 for (const source of sources) {
   source.text = source.text.replace(FROM, (statement, kind, type = '', list, path) => {
     const target = resolve(dirname(source.file), `${path}.d.ts`);
     const names = aliases.get(target);
     if (!names) return statement;
+    const exported = new Set(names.values());
     const items = specifiers(list).map(({ name, alias }) => ({ name: names.get(name) ?? name, alias }));
+    const missing = items.find(({ name }) => !exported.has(name));
+    if (missing) throw new Error(`${relative(dist, source.file)} imports ${missing.name} that ${relative(dist, target)} does not export`);
+    linked += 1;
     return `${kind}${type} { ${items.map(named).join(', ')} } from '${path}.js';`;
   });
   writeFileSync(source.file, source.text);
 }
+
+if (linked === 0) throw new Error(`No imports of declaration chunks matched in ${dist}`);
+const left = sources.find(({ text }) => /\{[^}]*\b[\w$]{1,2} as [\w$]+[^}]*\} from/.test(text));
+if (left) throw new Error(`${relative(dist, left.file)} still imports a minified type name`);
 
 console.log(`Kept type names in ${aliases.size} declaration chunks of ${relative(process.cwd(), dist)}`);
