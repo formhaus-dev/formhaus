@@ -173,15 +173,17 @@ files['src/map-controls-vue.ts'] = readFileSync(join(root, 'scripts/consumer-typ
 const snippets = join(root, 'docs/recipes/snippets');
 for (const name of readdirSync(snippets).filter((file) => /\.tsx?$/.test(file)))
   files[`src/${name}`] = readFileSync(join(snippets, name), 'utf8');
-const declared = join(root, 'scripts/consumer-types/declared');
-for (const name of readdirSync(declared)) files[`declared/${name}`] = readFileSync(join(declared, name), 'utf8');
+const fixtures = join(root, 'scripts/consumer-types/declared');
+for (const name of readdirSync(fixtures)) files[`declared/${name}`] = readFileSync(join(fixtures, name), 'utf8');
+const declared = { include: ['declared'], declaration: true };
 
 const arktype = ['src/schema-arktype.ts', 'src/schema-confirm-arktype.ts', 'src/schema-empty-arktype.ts'];
 const checks = {
   bundler: { module: 'ESNext', exclude: arktype },
   node16: { module: 'Node16', exclude: ['src/steps-in-url-page.tsx', ...arktype] },
   'bundler, ArkType without its lib check': { module: 'ESNext', include: arktype, skipLibCheck: true },
-  'bundler, declaration emit with vue-tsc': { module: 'ESNext', include: ['declared'], declaration: true },
+  'bundler, declaration emit with vue-tsc': { module: 'ESNext', ...declared },
+  'node16, declaration emit with vue-tsc': { module: 'Node16', ...declared },
 };
 const configs = Object.keys(checks).map((_, index) => `tsconfig.${index}.json`);
 Object.values(checks).forEach(({ module, include = ['src'], exclude = [], skipLibCheck = false, declaration = false }, index) => {

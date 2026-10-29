@@ -47,7 +47,8 @@ for (const [pkg, entries] of Object.entries(ENTRIES)) {
   }
 }
 
-const DECLARED = /^(?:export )?(?:declare )?(?:interface|type|class|const|function|enum) (\w+)/gm;
+const DECLARED =
+  /^(?:export )?(?:declare )?(?:abstract )?(?:const )?(?:interface|type|class|const|let|var|function|enum|namespace) (\w+)/gm;
 const LISTED = /^export (?:type )?\{([^}]*)\}/gm;
 for (const pkg of ['react', 'vue']) {
   const main = readFileSync(join(root, 'packages', pkg, 'dist/index.d.ts'), 'utf8');
