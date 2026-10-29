@@ -5,12 +5,13 @@ import { FormActions } from '../src/FormActions';
 import { FormRenderer } from '../src/FormRenderer';
 import { FormStepProgress } from '../src/FormStepProgress';
 import type { LocaleSource } from '@formhaus/core';
+import { translation } from '@formhaus/core/i18n';
 import { definition, overlay, resources } from './i18n.fixtures';
 
 const i18n = createInstance();
 await i18n.init({ lng: 'ru', resources: { ru: { forms: resources } }, defaultNS: 'forms', interpolation: { escapeValue: false } });
 
-const translate: LocaleSource = { locale: 'ru', translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }) };
+const translate = translation({ locale: 'ru', translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }) });
 
 function Signup({ locale }: { locale?: LocaleSource | LocaleSource[] }) {
   return <FormRenderer definition={definition} locale={locale} errorSummary onSubmit={() => {}} />;
@@ -45,7 +46,7 @@ describe('localized forms', () => {
   });
 
   it('applies an overlay with its locale', async () => {
-    render(<Signup locale={{ ...overlay, locale: 'ru' }} />);
+    render(<Signup locale={translation({ ...overlay, locale: 'ru' })} />);
     await checkRussianForm('Пароль: от 8 символов');
   });
 
@@ -75,7 +76,9 @@ describe('localized forms', () => {
       return (
         <>
           <output>{tick}</output>
-          <Signup locale={{ locale: 'ru', translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }) }} />
+          <Signup
+            locale={translation({ locale: 'ru', translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }) })}
+          />
         </>
       );
     }
@@ -86,10 +89,8 @@ describe('localized forms', () => {
   });
 
   it('switches the language and keeps the answers', () => {
-    const tagged = (lang: string): LocaleSource => ({
-      locale: lang,
-      translate: (_key, _params, defaultValue) => `${lang}:${defaultValue}`,
-    });
+    const tagged = (lang: string): LocaleSource =>
+      translation({ locale: lang, translate: (_key, _params, defaultValue) => `${lang}:${defaultValue}` });
     const { rerender } = render(<Signup locale={tagged('ru')} />);
     expect(screen.getByRole('heading', { name: 'ru:Account' })).toBeTruthy();
     fireEvent.change(screen.getByLabelText(/Email/), { target: { value: 'kept@example.com' } });

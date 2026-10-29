@@ -6,6 +6,7 @@ import FormActions from '../src/FormActions.vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import FormStepProgress from '../src/FormStepProgress.vue';
 import type { LocaleSource } from '@formhaus/core';
+import { translation } from '@formhaus/core/i18n';
 import { definition, overlay, resources } from './i18n.fixtures';
 
 const i18n = createI18n({
@@ -48,17 +49,17 @@ async function checkRussianForm(passwordError: string) {
 
 describe('Vue localized forms', () => {
   it('resolves explicit keys through vue-i18n with source fallback', async () => {
-    render(Signup, { props: { source: () => ({ translate, locale: locale.value }) } });
+    render(Signup, { props: { source: () => translation({ translate, locale: locale.value }) } });
     await checkRussianForm('Минимум 8 символов');
   });
 
   it('applies an overlay', async () => {
-    render(Signup, { props: { source: () => ({ ...overlay, locale: 'ru' }) } });
+    render(Signup, { props: { source: () => translation({ ...overlay, locale: 'ru' }) } });
     await checkRussianForm('Пароль: от 8 символов');
   });
 
   it('switches the language when the locale changes and keeps the answers', async () => {
-    render(Signup, { props: { source: () => ({ translate, locale: locale.value }) } });
+    render(Signup, { props: { source: () => translation({ translate, locale: locale.value }) } });
     expect(screen.getByRole('heading', { name: 'Аккаунт' })).toBeTruthy();
     await fireEvent.update(screen.getByLabelText(/Почта/), 'kept@example.com');
     locale.value = 'en';

@@ -5,6 +5,7 @@ import { renderToString } from 'vue/server-renderer';
 import FormhausForm from '../src/cloud/FormhausForm.vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import HeadlessFormRenderer from '../src/HeadlessFormRenderer.vue';
+import { translation } from '@formhaus/core/i18n';
 import { definition as localizedDefinition, overlay } from './i18n.fixtures';
 import { choices, choiceValues, conditions, group, groupValues, hidden, plain, questionTypes, questionValues, steps } from './ssr.fixtures';
 import { randomized, shownOrder, toolValues, writtenOrder } from './ssr.fixtures';
@@ -207,7 +208,8 @@ describe('FormRenderer hydration', () => {
 
   it('hydrates a localized form', async () => {
     const { html } = await hydrate({
-      render: () => h(FormRenderer, { definition: localizedDefinition, locale: { ...overlay, locale: 'ru' }, onSubmit: () => {} }),
+      render: () =>
+        h(FormRenderer, { definition: localizedDefinition, locale: translation({ ...overlay, locale: 'ru' }), onSubmit: () => {} }),
     });
     expect(html).toContain('lang="ru"');
     expect(html).toContain('Почта');
