@@ -171,8 +171,10 @@ export function retranslateErrors(engine: EngineInternals): void {
     const error = field ? fieldError(engine, field, engine.state.values[key]) : item ? itemError(engine, item) : null;
     if (error) errors[key] = error;
   }
+  const fieldKeys = getChangedKeys(previous, errors);
+  if (fieldKeys.size === 0) return;
   engine.state.errors = errors;
-  engine.notify({ fieldKeys: getChangedKeys(previous, errors) });
+  engine.notify({ fieldKeys });
 }
 
 export function validateOne(engine: EngineInternals, key: string): string | null {

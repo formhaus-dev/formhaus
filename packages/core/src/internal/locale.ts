@@ -12,8 +12,9 @@ export function refreshLocale(engine: FormEngine): void {
   const internal = internals(engine);
   const sources = localeList(internal.lifecycle.locale);
   const key = localeKey(sources);
-  if (key.length === internal.localeKey.length && key.every((part, index) => Object.is(part, internal.localeKey[index]))) return;
+  const previous = internal.localeKey;
   internal.localeKey = key;
+  if (previous?.length === key.length && key.every((part, index) => Object.is(part, previous[index]))) return;
   if (JSON.stringify(localizedTexts(internal.source, sources)) !== JSON.stringify(internal.definition))
     replaceDefinition(internal, internal.source);
   retranslateErrors(internal);

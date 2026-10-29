@@ -134,6 +134,7 @@ describe('the locale option', () => {
     const translate = vi.fn((_key: string, _params: Record<string, unknown>, text: string) => `ru:${text}`);
     const options: FormEngineOptions = { locale: [translation({ locale: 'ru', translate }), generic] };
     const engine = new FormEngine(signup, {}, options);
+    refreshLocale(engine);
     translate.mockClear();
     options.locale = [translation({ locale: 'ru', translate }), generic];
     refreshLocale(engine);

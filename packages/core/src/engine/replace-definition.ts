@@ -1,4 +1,4 @@
-import { engineSources, localeKey, localeList, localizedTexts } from '../i18n/catalog';
+import { engineSources, localeList, localizedTexts } from '../i18n/catalog';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
 import { hasOwn, isEntry, isGroup, keepId, valueFields } from '../visibility/nodes';
@@ -19,7 +19,6 @@ export function loadDefinition(
   const sources = localeList(engine.lifecycle.locale);
   warnUntranslated(sources, engine.lifecycle);
   const shown = localizedTexts(definition, sources);
-  engine.localeKey = localeKey(sources);
   const visibility = createVisibility(shown, engine.lifecycle.hiddenValues === 'keep');
   engine.source = definition;
   engine.definition = shown;
