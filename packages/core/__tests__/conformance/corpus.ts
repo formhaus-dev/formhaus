@@ -48,7 +48,7 @@ export const corpus: ConformanceFixture[] = readdirSync(dir)
 const valid = corpus.filter(({ issues }) => !issues.length);
 
 export const runtime = ({ definition, overlay }: ConformanceFixture) =>
-  overlay ? localize(definition, { overlay }).definition : definition;
+  overlay ? localize(definition, { ...overlay, locale: definition.lang ?? 'en' }).definition : definition;
 
 export const cases = valid.flatMap((fixture) =>
   (fixture.cases ?? []).map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase] as const),

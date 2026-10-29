@@ -114,4 +114,4 @@ export const runtimeDefinition = (file: ScenarioFile, scenario: Scenario): FormD
   localized(file, scenarioDefinition(file, scenario));
 
 export const localized = (file: ScenarioFile, definition: FormDefinition): FormDefinition =>
-  file.overlay ? localize(definition, { overlay: file.overlay }).definition : definition;
+  file.overlay ? localize(definition, { ...file.overlay, locale: definition.lang ?? 'en' }).definition : definition;

@@ -41,9 +41,11 @@ describe('submitted keys', () => {
 
   it('keeps the keys when the form is localized', () => {
     const overlay = { fields: Object.fromEntries(KEYS.map((key) => [key, { label: `Перевод ${key}` }])) };
-    const localized = localize(definition, { overlay }).definition;
+    const localized = localize(definition, { ...overlay, locale: 'ru' }).definition;
     expect(localized.fields!.map((field) => field.key)).toEqual([...KEYS]);
     expect(localized.fields!.map((field) => field.label)).toEqual(KEYS.map((key) => `Перевод ${key}`));
-    expect(localize(definition, { translate: () => 'Перевод' }).definition.fields!.map((field) => field.key)).toEqual([...KEYS]);
+    expect(localize(definition, { locale: 'ru', translate: () => 'Перевод' }).definition.fields!.map((field) => field.key)).toEqual([
+      ...KEYS,
+    ]);
   });
 });
