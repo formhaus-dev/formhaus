@@ -482,7 +482,7 @@ Set `"multiple": true` to collect a list of files in one field. The value is an 
 
 On your server, `validateSubmission()` expects an array of upload references, such as `["up_1", "up_2"]`. It also accepts one reference as a list of one, so older clients that send one file keep working. Upgrade the server before the clients: `@formhaus/core` 1.6 and older reject a list.
 
-Core marks the field object of a file list with an own `Symbol.for('formhaus.fileList')` property when it loads the definition. JSON output does not include it, but deep-equality checks that compare symbol keys, such as Jest and Vitest `toEqual`, see it on those field objects.
+Core marks the field object of a file list with an own `Symbol.for('formhaus.fileList')` property when it loads the definition, and so do `checkDefinition()` and `translationTemplate()` on the field objects you pass them. JSON output does not include it, but deep-equality checks that compare symbol keys, such as Jest and Vitest `toEqual`, see it on those field objects.
 
 ## Hidden
 
