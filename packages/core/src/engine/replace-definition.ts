@@ -31,7 +31,7 @@ export function loadDefinition(
 
 const kept = (fields?: FormField[], field?: FormField) => !!fields?.some(({ key, type }) => key === field?.key && type === field.type);
 
-export function replaceDefinition(engine: EngineInternals, definition: FormDefinition): void {
+export function replaceDefinition(engine: EngineInternals, definition: FormDefinition, textsOnly = false): void {
   const { state, skipped, values, currentStepIndex, visibility: previous } = engine;
   const errors = Object.keys(engine.errors);
   const steps = engine.visibleSteps;
@@ -56,10 +56,12 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
     return result;
   });
   const { visibility } = engine;
-  engine.validationEpoch++;
-  engine.operationEpoch++;
-  state.stepValidating = false;
-  if (engine.sending !== engine.latestOperation) state.submitting = false;
+  if (!textsOnly) {
+    engine.validationEpoch++;
+    engine.operationEpoch++;
+    state.stepValidating = false;
+    if (engine.sending !== engine.latestOperation) state.submitting = false;
+  }
   for (const key in state.errors) {
     const [group, , child] = visibility.parse(key) ?? [];
     const field = visibility.activeField(group ?? key, engine.state.values);

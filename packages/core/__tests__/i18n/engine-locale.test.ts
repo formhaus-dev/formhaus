@@ -149,4 +149,34 @@ describe('the locale option', () => {
     new FormEngine(signup, {}, { locale: [form, generic], onWarning });
     expect(onWarning).not.toHaveBeenCalledWith(expect.objectContaining({ code: 'untranslated-locale' }));
   });
+
+  it('keeps server errors when the locale changes', async () => {
+    const options: FormEngineOptions = { locale: generic };
+    const engine = new FormEngine(signup, { kind: 'home', address: 'abc' }, options);
+    engine.setErrors({ address: 'Server says no' });
+    options.locale = tagged('de');
+    refreshLocale(engine);
+    expect(engine.errors.address).toBe('Server says no');
+  });
+
+  it('finishes a Continue that is running when the locale changes', async () => {
+    let release!: () => void;
+    const options: FormEngineOptions = {
+      locale: tagged('ru'),
+      onValidate: () =>
+        new Promise<null>((resolve) => {
+          release = () => resolve(null);
+        }),
+    };
+    const engine = new FormEngine(signup, { email: 'ada@example.com', password: 'secret123', kind: 'home' }, options);
+    const moving = engine.next();
+    expect(engine.stepValidating).toBe(true);
+    options.locale = tagged('de');
+    refreshLocale(engine);
+    expect(engine.currentStep?.title).toBe('de:Account');
+    expect(engine.stepValidating).toBe(true);
+    release();
+    expect(await moving).toBe(true);
+    expect(engine.currentStep?.id).toBe('home');
+  });
 });
