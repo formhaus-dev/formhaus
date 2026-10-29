@@ -4,6 +4,7 @@ import { textNodes } from './walk';
 import { addresses, addressKey, leaves, lookup, placeholders } from './overlay';
 import { definitionSlots, type Slot } from './slots';
 import { describeSlot } from './template';
+import { PLURALS } from './locale';
 
 export interface TranslationMeta {
   prefix?: string | false;
@@ -21,6 +22,17 @@ export interface TranslationIssues {
 
 const dotted = (path: string[]) => path.join('.');
 
+const catalogEntry = ([part, key, form, ...rest]: string[], known: Set<string>) =>
+  (part === 'locale' && key === undefined) ||
+  ((part === 'messages' || part === 'labels') && PLURALS.includes(form) && !rest.length && known.has(addressKey([part, key])));
+
+function plural(overlay: unknown, slot: Slot): boolean {
+  const [part, key] = slot.address;
+  const block = slot.kind !== 'text' && slot.kind !== 'rule' && isEntry(overlay) && overlay[part];
+  const text = isEntry(block) && block[key];
+  return isEntry(text) && typeof text.other === 'string';
+}
+
 function mismatch(slot: Slot, text: string): boolean {
   const used = placeholders(text);
   if (slot.kind === 'rule') return used.some((name) => !hasOwn(slot.params, name));
@@ -30,10 +42,12 @@ function mismatch(slot: Slot, text: string): boolean {
 export function translationIssues(definition: FormDefinition, overlay: unknown, meta?: TranslationMeta): TranslationIssues {
   const slots = definitionSlots(definition);
   const known = new Set(slots.flatMap((slot) => addresses(slot.address).map(addressKey)));
-  const found = isEntry(overlay) ? leaves(overlay) : [{ path: [], value: null }];
+  const found = isEntry(overlay) ? leaves(overlay).filter(({ path }) => !catalogEntry(path, known)) : [{ path: [], value: null }];
   const translated = slots.filter((slot) => lookup(overlay, slot.address) !== undefined);
   const result: TranslationIssues = {
-    missing: slots.filter((slot) => slot.template && lookup(overlay, slot.address) === undefined).map((slot) => dotted(slot.address)),
+    missing: slots
+      .filter((slot) => slot.template && lookup(overlay, slot.address) === undefined && !plural(overlay, slot))
+      .map((slot) => dotted(slot.address)),
     unknown: found.filter(({ path, value }) => typeof value === 'string' && !known.has(addressKey(path))).map(({ path }) => dotted(path)),
     invalid: found.filter(({ value }) => typeof value !== 'string').map(({ path }) => dotted(path)),
     placeholderMismatch: translated.filter((slot) => mismatch(slot, lookup(overlay, slot.address)!)).map((slot) => dotted(slot.address)),
