@@ -26,11 +26,14 @@ export type {
   LabelKey,
   LabelSource,
   LocaleCatalog,
+  LocaleSource,
   LocaleText,
   MessageCatalog,
   MessageKey,
   PluralForms,
   StepI18n,
+  TranslateFn,
+  TranslateSource,
   ValidationI18n,
 } from './i18n';
 export type {

@@ -65,9 +65,20 @@ export type LocaleText = string | PluralForms;
 
 export interface LocaleCatalog {
   locale: string;
-  messages: Partial<Record<MessageKey, LocaleText>>;
-  labels: Partial<Record<LabelKey, LocaleText>>;
+  messages?: Partial<Record<MessageKey, LocaleText>>;
+  labels?: Partial<Record<LabelKey, LocaleText>>;
+  [text: string]: unknown;
 }
+
+export type TranslateFn = (key: string, params: Record<string, unknown>, defaultText: string) => string | undefined;
+
+export interface TranslateSource {
+  locale: string;
+  translate: TranslateFn;
+  prefix?: string | false;
+}
+
+export type LocaleSource = LocaleCatalog | TranslateSource;
 
 export interface FormI18n {
   title?: string;
