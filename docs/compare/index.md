@@ -27,13 +27,7 @@ Formhaus fits forms that are data: one JSON definition with steps, branching rou
 | Figma | Plugin draws the same definition with your design system ([guide](/guide/figma)) |
 | AI tooling | JSON Schema, `@formhaus/mcp` server, Claude Code plugin ([guide](/guide/mcp)) |
 | Frameworks | React 18 and 19, Vue 3.3.3+, framework-agnostic engine |
-<<<<<<< HEAD
-| Bundle size | <!-- size:react:start -->35.5 KB<!-- size:react:end --> `@formhaus/core` + `@formhaus/react`, <!-- size:vue:start -->39.4 KB<!-- size:vue:end --> `@formhaus/core` + `@formhaus/vue`, gzipped ([how it's measured](/guide/bundle-size)) |
-||||||| 64f98bf2
-| Bundle size | <!-- size:react:start -->33.5 KB<!-- size:react:end --> `@formhaus/core` + `@formhaus/react`, <!-- size:vue:start -->37.4 KB<!-- size:vue:end --> `@formhaus/core` + `@formhaus/vue`, gzipped ([how it's measured](/guide/bundle-size)) |
-=======
-| Bundle size | <!-- size:react:start -->34.2 KB<!-- size:react:end --> `@formhaus/core` + `@formhaus/react`, <!-- size:vue:start -->38.0 KB<!-- size:vue:end --> `@formhaus/core` + `@formhaus/vue`, gzipped ([how it's measured](/guide/bundle-size)) |
->>>>>>> origin/main
+| Bundle size | <!-- size:react:start -->36.0 KB<!-- size:react:end --> `@formhaus/core` + `@formhaus/react`, <!-- size:vue:start -->39.9 KB<!-- size:vue:end --> `@formhaus/core` + `@formhaus/vue`, gzipped ([how it's measured](/guide/bundle-size)) |
 | License | MIT |
 
 All sizes on these pages come from [Bundle size](/guide/bundle-size), with one method for every library.
