@@ -63,7 +63,7 @@ export interface DefinitionIssue {
 }
 
 // @public (undocumented)
-export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'matrix-options-mismatch';
+export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'multiple-not-applicable' | 'matrix-options-mismatch';
 
 // @public (undocumented)
 export interface ErrorSummary {
@@ -242,7 +242,7 @@ export interface FormActionsView {
 }
 
 // @public (undocumented)
-export const FORMAT_VERSION = "1.6";
+export const FORMAT_VERSION = "1.7";
 
 // @public (undocumented)
 export interface FormDefinition {
@@ -507,6 +507,8 @@ export interface FormField {
     layout?: 'stack' | 'inline';
     // (undocumented)
     mask?: string;
+    // (undocumented)
+    multiple?: boolean;
     // (undocumented)
     options?: FieldOption[];
     // (undocumented)
