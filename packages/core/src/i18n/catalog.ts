@@ -1,7 +1,15 @@
 import { formatter, numberFormat, supported } from '../engine/recall-format';
 import type { EngineInternals } from '../engine/runtime-internals';
-import type { LabelKey, LocaleText, MessageKey, PluralForms } from '../types';
+import type { FormDefinition, LabelKey, LocaleSource, LocaleText, MessageKey, PluralForms } from '../types';
 import { formatText, type MessageParams } from '../validation/default-messages';
+import { isEntry } from '../visibility/nodes';
+import { CATALOGS } from './nodes';
+import { isTranslate, translator } from './translate';
+
+type Part = 'messages' | 'labels';
+
+export const localeList = (locale: LocaleSource | LocaleSource[] | undefined): LocaleSource[] =>
+  [locale ?? []].flat().filter((source): source is LocaleSource => isEntry(source));
 
 function catalogText(locale: string, text: LocaleText, params: MessageParams): string | undefined {
   const tag = supported(locale);
@@ -17,12 +25,30 @@ function catalogText(locale: string, text: LocaleText, params: MessageParams): s
   return typeof chosen === 'string' ? formatText(chosen, values) : undefined;
 }
 
-export const localeSource =
-  (engine: EngineInternals, part: 'messages' | 'labels') =>
+function sourceText(definition: FormDefinition, source: LocaleSource, part: Part, key: string, params: MessageParams) {
+  if (!isTranslate(source)) {
+    const text = (source[part] as Record<string, LocaleText | undefined> | undefined)?.[key];
+    return text ? catalogText(source.locale, text, params) : undefined;
+  }
+  const own = (definition[part] as Record<string, string> | undefined)?.[key];
+  const fallback = formatText(own ?? (CATALOGS[part] as Record<string, string>)[key], params);
+  const explicit = (definition.i18n?.[part] as Record<string, string> | undefined)?.[key];
+  const text = translator(definition, source)(explicit, [part, key], params, fallback);
+  return text === fallback ? undefined : text;
+}
+
+export const localeText =
+  (sources: () => LocaleSource[], definition: () => FormDefinition, part: Part) =>
   (key: MessageKey | LabelKey, params: MessageParams): string | undefined => {
-    for (const catalog of [engine.lifecycle.locale ?? []].flat()) {
-      const text = (catalog?.[part] as Record<string, LocaleText | undefined> | undefined)?.[key];
-      const result = text && catalogText(catalog.locale, text, params);
-      if (result) return result;
+    for (const source of sources()) {
+      const text = sourceText(definition(), source, part, key, params);
+      if (text) return text;
     }
   };
+
+export const localeSource = (engine: EngineInternals, part: Part) =>
+  localeText(
+    () => localeList(engine.lifecycle.locale),
+    () => engine.definition,
+    part,
+  );
