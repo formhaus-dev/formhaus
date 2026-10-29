@@ -42,10 +42,26 @@ export function trackChanges(engine: EngineInternals, fields?: boolean): void {
   trackStep(engine);
 }
 
+function emitFieldErrors(engine: EngineInternals, reported: Record<string, string> = {}): void {
+  for (const [fieldKey, error] of Object.entries(engine.errors))
+    if (reported[fieldKey] !== error) emit(engine, { type: 'field_error', fieldKey, error });
+}
+
+export function reportRuleErrors(engine: EngineInternals): void {
+  engine.reportedErrors = { operation: engine.operationEpoch, errors: engine.errors };
+  emitFieldErrors(engine);
+}
+
 export async function reportErrors(engine: EngineInternals, action: () => Promise<boolean>): Promise<boolean> {
   const errors = engine.errors;
-  const done = await action();
-  if (!done && engine.errors !== errors)
-    for (const [fieldKey, error] of Object.entries(engine.errors)) emit(engine, { type: 'field_error', fieldKey, error });
-  return done;
+  const operation = engine.operationEpoch + 1;
+  const own = () => (engine.reportedErrors?.operation === operation ? engine.reportedErrors.errors : undefined);
+  try {
+    const done = await action();
+    const reported = own();
+    if (!done && engine.errors !== (reported ?? errors)) emitFieldErrors(engine, reported);
+    return done;
+  } finally {
+    if (own()) engine.reportedErrors = undefined;
+  }
 }
