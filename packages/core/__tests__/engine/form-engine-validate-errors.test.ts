@@ -115,3 +115,53 @@ describe('FormEngine onValidate failures and pending calls', () => {
     expect(engine.submitting).toBe(false);
   });
 });
+
+describe('FormEngine field errors of a passed step', () => {
+  it('drops onValidate errors of the step on the next Continue and after Back', async () => {
+    const engine = new FormEngine(league, leagueValues, { onValidate: once({ email: 'Taken' }) });
+    expect(await engine.next()).toBe(false);
+    expect(engine.errors).toEqual({ email: 'Taken' });
+    expect(await engine.next()).toBe(true);
+    expect(engine.errors).toEqual({});
+    expect(await engine.back()).toBe(true);
+    expect(engine.errors).toEqual({});
+  });
+
+  it('drops onStepValidate errors of group items on the next Continue', async () => {
+    const replies = [null, { 'players.0.name': 'Taken' }, null];
+    const engine = new FormEngine(league, leagueValues, { onStepValidate: () => replies.shift() ?? null });
+    await engine.next();
+    expect(await engine.next()).toBe(false);
+    expect(engine.errors).toEqual({ 'players.0.name': 'Taken' });
+    expect(await engine.next()).toBe(true);
+    expect(engine.errors).toEqual({});
+  });
+
+  it('brings back the setErrors error a step error replaced', async () => {
+    const engine = new FormEngine(league, leagueValues, { onValidate: once({ email: 'Taken' }) });
+    engine.setErrors({ email: 'Server says no' });
+    expect(await engine.next()).toBe(false);
+    expect(engine.errors).toEqual({ email: 'Taken' });
+    expect(await engine.next()).toBe(true);
+    expect(engine.errors).toEqual({ email: 'Server says no' });
+  });
+
+  it('keeps errors of other steps', async () => {
+    const engine = new FormEngine(league, leagueValues);
+    await engine.next();
+    engine.setValue('email', '');
+    engine.validateField('email');
+    expect(await engine.next()).toBe(true);
+    expect(engine.errors).toEqual({ email: 'This field is required' });
+  });
+
+  it('keeps errors of the step on Back', async () => {
+    const engine = new FormEngine(league, leagueValues, {
+      onValidate: (_, { stepId }) => (stepId === 'roster' ? { 'players.0.name': 'Taken' } : null),
+    });
+    await engine.next();
+    expect(await engine.next()).toBe(false);
+    expect(await engine.back()).toBe(true);
+    expect(engine.errors).toEqual({ 'players.0.name': 'Taken' });
+  });
+});
