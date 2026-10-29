@@ -855,17 +855,15 @@ export type LabelSource = LabelCatalog | LabelFn;
 // @public (undocumented)
 export interface LocaleCatalog {
     // (undocumented)
-    [text: string]: unknown;
-    // (undocumented)
-    labels?: Partial<Record<LabelKey, LocaleText>>;
+    labels: Partial<Record<LabelKey, LocaleText>>;
     // (undocumented)
     locale: string;
     // (undocumented)
-    messages?: Partial<Record<MessageKey, LocaleText>>;
+    messages: Partial<Record<MessageKey, LocaleText>>;
 }
 
 // @public (undocumented)
-export type LocaleSource = LocaleCatalog | TranslateSource;
+export type LocaleSource = LocaleCatalog | Translation;
 
 // @public (undocumented)
 export type LocaleText = string | PluralForms;
@@ -1085,16 +1083,13 @@ export type TestIdTarget = {
 };
 
 // @public (undocumented)
-export type TranslateFn = (key: string, params: Record<string, unknown>, defaultText: string) => string | undefined;
-
-// @public (undocumented)
-export interface TranslateSource {
+export interface Translation {
     // (undocumented)
     locale: string;
     // (undocumented)
-    prefix?: string | false;
+    text(definition: FormDefinition, part: 'messages' | 'labels', key: string, params: Record<string, unknown>): string | undefined;
     // (undocumented)
-    translate: TranslateFn;
+    texts(definition: FormDefinition): FormDefinition;
 }
 
 // @public (undocumented)
