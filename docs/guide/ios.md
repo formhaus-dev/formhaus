@@ -14,7 +14,7 @@ description: "Render Formhaus JSON form definitions on iOS and macOS with SwiftU
 In Xcode, add the package URL under Package Dependencies and add `FormhausCore` and `FormhausUI` to your app target. In a `Package.swift` manifest, add this entry to `dependencies`:
 
 ```swift
-.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.5.0")
+.package(url: "https://github.com/formhaus-dev/formhaus-swift.git", from: "0.6.0")
 ```
 
 Requires Swift 6.2 and iOS 17 or macOS 14. The package has no JavaScript runtime.
@@ -23,6 +23,7 @@ Both ports are 0.x previews. The [compatibility table](/guide/stability#native-p
 
 | formhaus-swift | @formhaus/core | formatVersion |
 |---|---|---|
+| 0.6.0 | 1.8.0 | 1.7 |
 | 0.5.0 | 1.6.1 | 1.6 |
 | 0.4.0 | 1.6.0 | 1.6 |
 | 0.3.0 | 1.4.2 | 1.6 |
