@@ -6,7 +6,7 @@ export interface CatalogIssues {
   unknown: string[];
 }
 
-const PLURALS = ['zero', 'one', 'two', 'few', 'many', 'other'];
+export const PLURALS = ['zero', 'one', 'two', 'few', 'many', 'other'];
 
 export function localeChain(tag: string): string[] {
   const chain: string[] = [];

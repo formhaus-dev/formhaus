@@ -45,6 +45,7 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = /* @__PURE__ *
   submit: 'Submit',
   stepTitle: 'Step {index}',
   stepErrors: 'Errors: {count}',
+  fileCount: 'Files: {count}',
   or: 'or',
   select: 'Select',
 });

@@ -40,7 +40,7 @@ JSON Forms renders a form from a JSON Schema that describes your data and a UI s
 | i18n | Message and label catalogs, translation keys ([guide](/guide/translations)) | `translate` function and keys derived from the property path ([i18n](https://jsonforms.io/docs/i18n)) |
 | Figma | Plugin draws the definition ([guide](/guide/figma)) | Not documented |
 | AI tooling | JSON Schema, [MCP server](/guide/mcp), Claude Code plugin | Input is standard JSON Schema; no AI tooling documented |
-| Bundle size (gzipped) | <!-- size:react:start -->35.2 KB<!-- size:react:end --> core + React | <!-- size:jsonforms:start -->82.6 KB for `@jsonforms/core` + `@jsonforms/react` + `@jsonforms/vanilla-renderers` 3.8.0<!-- size:jsonforms:end --> ([how it's measured](/guide/bundle-size)) |
+| Bundle size (gzipped) | <!-- size:react:start -->36.0 KB<!-- size:react:end --> core + React | <!-- size:jsonforms:start -->82.6 KB for `@jsonforms/core` + `@jsonforms/react` + `@jsonforms/vanilla-renderers` 3.8.0<!-- size:jsonforms:end --> ([how it's measured](/guide/bundle-size)) |
 | License | MIT | MIT ([license](https://github.com/eclipsesource/jsonforms/blob/v3.8.0/LICENSE)) |
 
 In JSON Forms 3.8.0, AJV and lodash are two thirds of the minified bundle.

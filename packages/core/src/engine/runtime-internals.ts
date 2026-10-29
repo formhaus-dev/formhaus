@@ -19,6 +19,8 @@ export interface EngineState {
 
 export interface EngineInternals {
   definition: FormDefinition;
+  source: FormDefinition;
+  localeKey?: unknown[];
   readonly state: EngineState;
   readonly values: Record<string, unknown>;
   readonly errors: Record<string, string>;
@@ -33,6 +35,7 @@ export interface EngineInternals {
   sending?: number;
   viewedStep?: string | null;
   shownFields?: Map<string, [string, boolean]>;
+  reportedErrors?: { operation: number; errors: Record<string, string> };
   readonly skipped: Map<string, string[]>;
   readonly lifecycle: FormEngineOptions;
   readonly seed: string;

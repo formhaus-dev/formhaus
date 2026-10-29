@@ -1,4 +1,4 @@
-import { localeSource } from '../i18n/catalog';
+import { engineSources, localeList, localizedTexts } from '../i18n/catalog';
 import type { FormDefinition, FormField, FormGroup } from '../types';
 import { messageResolver } from '../validation/default-messages';
 import { markFileLists } from '../validation/type-checks';
@@ -8,7 +8,7 @@ import { baselineFields, trackChanges } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
 import { createVisibility } from './visibility-state';
-import { assertDefinition, warnUnordered } from './warnings';
+import { assertDefinition, warnUnordered, warnUntranslated } from './warnings';
 
 export function loadDefinition(
   engine: EngineInternals,
@@ -17,10 +17,14 @@ export function loadDefinition(
 ): void {
   assertDefinition(definition, engine.lifecycle, engine.validators);
   warnUnordered(definition, engine.lifecycle);
-  const visibility = createVisibility(definition, engine.lifecycle.hiddenValues === 'keep');
-  markFileLists(definition, visibility.allFields);
-  engine.definition = definition;
-  engine.messages = messageResolver(engine.lifecycle.messages, definition.messages, localeSource(engine, 'messages'));
+  const sources = localeList(engine.lifecycle.locale);
+  warnUntranslated(sources, engine.lifecycle);
+  const shown = localizedTexts(definition, sources);
+  const visibility = createVisibility(shown, engine.lifecycle.hiddenValues === 'keep');
+  markFileLists(shown, visibility.allFields);
+  engine.source = definition;
+  engine.definition = shown;
+  engine.messages = messageResolver(engine.lifecycle.messages, ...engineSources(engine, 'messages'));
   engine.visibility = visibility;
   engine.state.values = createValues(visibility.allFields, values(visibility.allFields), visibility.activeField);
   visibility.reconcileHidden(engine.state.values, engine.state.errors, true);
@@ -29,7 +33,7 @@ export function loadDefinition(
 
 const kept = (fields?: FormField[], field?: FormField) => !!fields?.some(({ key, type }) => key === field?.key && type === field.type);
 
-export function replaceDefinition(engine: EngineInternals, definition: FormDefinition): void {
+export function replaceDefinition(engine: EngineInternals, definition: FormDefinition, textsOnly = false): void {
   const { state, skipped, values, currentStepIndex, visibility: previous } = engine;
   const errors = Object.keys(engine.errors);
   const steps = engine.visibleSteps;
@@ -54,10 +58,12 @@ export function replaceDefinition(engine: EngineInternals, definition: FormDefin
     return result;
   });
   const { visibility } = engine;
-  engine.validationEpoch++;
-  engine.operationEpoch++;
-  state.stepValidating = false;
-  if (engine.sending !== engine.latestOperation) state.submitting = false;
+  if (!textsOnly) {
+    engine.validationEpoch++;
+    engine.operationEpoch++;
+    state.stepValidating = false;
+    if (engine.sending !== engine.latestOperation) state.submitting = false;
+  }
   for (const key in state.errors) {
     const [group, , child] = visibility.parse(key) ?? [];
     const field = visibility.activeField(group ?? key, engine.state.values);

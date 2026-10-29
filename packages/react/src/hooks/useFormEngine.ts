@@ -1,5 +1,5 @@
 import { FormEngine, type FormEngineOptions, type FormDefinition } from '@formhaus/core';
-import { refreshRecall, warnDefinitionReset } from '@formhaus/core/internal';
+import { definitionSource, refreshLocale, refreshRecall, warnDefinitionReset } from '@formhaus/core/internal';
 import { useEffect, useRef } from 'react';
 import { useFormSnapshot } from './useEngineSnapshot';
 
@@ -16,7 +16,7 @@ export function useFormEngineStore(
   optionsRef.current = options;
   const engineRef = useRef<FormEngine | null>(null);
   const warnedRef = useRef(false);
-  const previous = engineRef.current?.definition;
+  const previous = engineRef.current && definitionSource(engineRef.current);
 
   if (!previous || (previous !== definition && !options?.keepValues)) {
     let warn: (() => boolean) | undefined;
@@ -72,14 +72,17 @@ export function useFormEngineStore(
   useEffect(() => () => engine.cancelPendingActions(), [engine]);
   const formatRecall = options?.formatRecall;
   const lang = options?.lang;
-  const shown = useRef({ engine, formatRecall, lang });
+  const locale = options?.locale;
+  const shown = useRef({ engine, formatRecall, lang, locale });
   useEffect(() => {
     const previous = shown.current;
-    shown.current = { engine, formatRecall, lang };
-    if (previous.engine === engine && (previous.formatRecall !== formatRecall || previous.lang !== lang)) refreshRecall(engine);
-  }, [engine, formatRecall, lang]);
+    shown.current = { engine, formatRecall, lang, locale };
+    if (previous.engine !== engine) return;
+    if (previous.locale !== locale) refreshLocale(engine);
+    if (previous.formatRecall !== formatRecall || previous.lang !== lang) refreshRecall(engine);
+  }, [engine, formatRecall, lang, locale]);
   useEffect(() => {
-    if (engine.definition !== definition) engine.replaceDefinition(definition);
+    if (definitionSource(engine) !== definition) engine.replaceDefinition(definition);
   }, [engine, definition]);
   return engine;
 }

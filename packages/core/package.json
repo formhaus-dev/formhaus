@@ -1,6 +1,6 @@
 {
   "name": "@formhaus/core",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "JSON form definition engine: validation, conditional visibility, multi-step and branching routes. Zero dependencies, works in React, Vue, Svelte or vanilla.",
   "type": "module",
   "sideEffects": [
@@ -78,7 +78,7 @@
     "tokens"
   ],
   "scripts": {
-    "build": "tsup && node scripts/locales.mjs",
+    "build": "tsup && node scripts/dts-names.mjs && node scripts/locales.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "fuzz": "FORMHAUS_FUZZ_RUNS=500 FORMHAUS_MODEL_RUNS=2000 vitest run __tests__/engine/form-engine-lifecycle-fuzz.test.ts __tests__/engine/form-engine-model.test.ts && FORMHAUS_FUZZ_RUNS=3000 vitest run __tests__/engine/form-engine-path.test.ts __tests__/engine/path-patch-fuzz.test.ts __tests__/engine/path-patch-engine.test.ts",

@@ -5,7 +5,7 @@ import {
   actionValues,
   actionsView,
   hasValue,
-  engineFileLimit,
+  fileLimitMessage,
   engineLabel,
   ROOT_PROPS,
   shouldApplyExternalErrors,
@@ -21,15 +21,11 @@ import { useFormEngine } from './composables/useFormEngine';
 import { useStepTexts } from './composables/useStepTexts';
 import { useValuesSync } from './composables/useValuesSync';
 import { useNodeProps } from './composables/useNodeProps';
-import type { FieldsContainerProps, FormRendererEmits, FormRendererProps } from './types';
+import { formRendererProps } from './props';
+import type { FieldsContainerProps, FormRendererEmits } from './types';
 import { DefaultSummary } from './DefaultSummary';
 
-const props = withDefaults(defineProps<FormRendererProps>(), {
-  loading: false,
-  headingLevel: 2,
-  confirmRemove: true,
-  errorSummary: true,
-});
+const props = defineProps(formRendererProps);
 
 const emit = defineEmits<FormRendererEmits>();
 
@@ -141,7 +137,7 @@ defineExpose({
 
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => engineLabel(form.engine, key, params, props.labels);
 provide('fhLabel', label);
-provide('fhFileLimit', (field: FormField, max: number) => engineFileLimit(form.engine)(field, max));
+provide('fhFileText', { label, limit: (field: FormField, max: number) => fileLimitMessage(form.engine, field, max) });
 
 const DefaultFields: FunctionalComponent<FieldsContainerProps> = (fields, { slots }) =>
   h('div', { class: 'fh-form__fields', ...fields.rootProps }, slots.default?.());
@@ -189,7 +185,7 @@ async function onPrimary() {
 </script>
 
 <template>
-  <form ref="formRef" :lang="props.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
+  <form ref="formRef" :lang="form.engine.definition.lang" @focusin="rememberFocus" class="fh-form" tabindex="-1" :aria-busy="disabled" :data-testid="testId?.('form')" @submit.prevent="onPrimary">
     <component :is="props.layout?.errorSummary ?? DefaultSummary" v-if="summaryAt === 'top'" v-bind="summary" />
 
     <component

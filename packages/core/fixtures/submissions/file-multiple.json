@@ -78,10 +78,27 @@
       }
     },
     {
-      "name": "drops a list with an empty reference",
+      "name": "drops empty entries from a list",
       "input": {
         "values": {
-          "docs": ["upload-1", ""]
+          "docs": ["upload-1", "", null]
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "docs": ["upload-1"]
+        },
+        "errors": {}
+      }
+    },
+    {
+      "name": "drops an object",
+      "input": {
+        "values": {
+          "docs": {
+            "id": "upload-1"
+          }
         },
         "skippedSteps": []
       },
@@ -93,12 +110,15 @@
       }
     },
     {
-      "name": "drops an object",
+      "name": "drops a list with an object without a name",
       "input": {
         "values": {
-          "docs": {
-            "id": "upload-1"
-          }
+          "docs": [
+            "upload-1",
+            {
+              "id": "upload-2"
+            }
+          ]
         },
         "skippedSteps": []
       },

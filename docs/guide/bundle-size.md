@@ -13,17 +13,17 @@ Gzipped size of the code an app pays for each Formhaus entry and for other form 
 
 | App imports | Measured |
 |---|---|
-| Every export of `@formhaus/core` | 30.3 KB |
-| Every export of `@formhaus/core` and `@formhaus/react` | 35.2 KB |
-| Every export of `@formhaus/core` and `@formhaus/vue` | 39.2 KB |
-| `FormEngine` from `@formhaus/core` | 18.5 KB |
-| `useFormEngine` from `@formhaus/react`, with core | 19.3 KB |
-| `useFormEngine` from `@formhaus/vue`, with core | 19.1 KB |
-| `FormRenderer` from `@formhaus/react`, with core | 34.5 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 38.1 KB |
-| `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 14.8 KB |
-| `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 30.8 KB |
-| `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 34.5 KB |
+| Every export of `@formhaus/core` | 30.5 KB |
+| Every export of `@formhaus/core` and `@formhaus/react` | 36.0 KB |
+| Every export of `@formhaus/core` and `@formhaus/vue` | 39.9 KB |
+| `FormEngine` from `@formhaus/core` | 18.9 KB |
+| `useFormEngine` from `@formhaus/react`, with core | 19.9 KB |
+| `useFormEngine` from `@formhaus/vue`, with core | 19.9 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 35.2 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 38.8 KB |
+| `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 15.2 KB |
+| `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 31.6 KB |
+| `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 35.1 KB |
 
 <!-- size:apps:end -->
 
@@ -35,10 +35,10 @@ The entry you import sets the size. React and Vue are not counted.
 
 | Entry | You write | React | Vue |
 |---|---|---|---|
-| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 18.5 KB | 18.5 KB |
-| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 19.3 KB | 19.1 KB |
-| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 29.9 KB | 31.9 KB |
-| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 34.5 KB | 38.1 KB |
+| `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 18.9 KB | 18.9 KB |
+| `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 19.9 KB | 19.9 KB |
+| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 30.6 KB | 32.6 KB |
+| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 35.2 KB | 38.8 KB |
 
 <!-- size:paths:end -->
 
@@ -48,12 +48,12 @@ These cost the same on any path, and only when imported:
 
 | Import | Adds |
 |---|---|
-| `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 8.7 KB |
+| `checkDefinition()` with warnings and hints, for an editor, CI or AI generation | 8.5 KB |
 | `@formhaus/core/cloud` | 3.4 KB |
-| `@formhaus/core/i18n` | 5.9 KB |
-| `@formhaus/core/fix` | 12.2 KB |
+| `@formhaus/core/i18n` | 6.2 KB |
+| `@formhaus/core/fix` | 12.1 KB |
 | `@formhaus/core/research` | 0.3 KB |
-| `@formhaus/core/fields` | 2.0 KB |
+| `@formhaus/core/fields` | 2.6 KB |
 | `@formhaus/core/schema` | 0.3 KB |
 | Engine warnings in development | 0 KB in production |
 
@@ -65,7 +65,7 @@ These cost the same on any path, and only when imported:
 
 | Import | React | Vue |
 |---|---|---|
-| `mapControls` from `/controls`, over `FormRenderer` | 3.2 KB | 3.4 KB |
+| `mapControls` from `/controls`, over `FormRenderer` | 3.3 KB | 3.4 KB |
 
 <!-- size:controls:end -->
 
@@ -108,9 +108,9 @@ Define `process.env.FORMHAUS_TRUSTED` as `"1"` in the bundler to drop the struct
 
 | App imports | Checked | Trusted |
 |---|---|---|
-| `FormEngine` from `@formhaus/core` | 18.5 KB | 14.8 KB |
-| `FormRenderer` from `@formhaus/react`, with core | 34.5 KB | 30.8 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 38.1 KB | 34.5 KB |
+| `FormEngine` from `@formhaus/core` | 18.9 KB | 15.2 KB |
+| `FormRenderer` from `@formhaus/react`, with core | 35.2 KB | 31.6 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 38.8 KB | 35.1 KB |
 
 <!-- size:trusted:end -->
 
@@ -167,9 +167,9 @@ The same entries next to other form libraries. The second table changes only whe
 
 | Formhaus | gzip | State and validation | Rendering | Multi-step | Same validation on the server | JSON definitions |
 |---|---|---|---|---|---|---|
-| `@formhaus/core` `FormEngine` only | 18.5 KB | Yes | No | Yes | `validateSubmission()` | Yes |
-| `@formhaus/core` + `@formhaus/react` | 35.2 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
-| `@formhaus/core` + `@formhaus/vue` | 39.2 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` `FormEngine` only | 18.9 KB | Yes | No | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` + `@formhaus/react` | 36.0 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
+| `@formhaus/core` + `@formhaus/vue` | 39.9 KB | Yes | Yes | Yes | `validateSubmission()` | Yes |
 
 <!-- size:formhaus:end -->
 

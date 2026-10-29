@@ -3,46 +3,29 @@ import {
   checkDefinition,
   FormDefinitionError,
   FormEngine,
-  type FormNode,
   isActionDisabled,
-  isSection,
   recallText,
-  revealTargets,
   type FormDefinition,
+  type LocaleCatalog,
 } from '../../src';
 import { optionOrder } from '../../src/research/option-order';
 import { asStored } from '../../src/engine/recall-format';
-import { textSlots } from '../../src/i18n';
+import { localize, textSlots } from '../../src/i18n';
 import { validateSubmission } from '../../src/server';
-import { cases, corpus, orders, recalls, runtime } from './corpus';
+import { cases, corpus, orders, recalls, revealPointers, runtime } from './corpus';
 
 type Input = (typeof cases)[number][2]['input'];
 
 const compare = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 const byPathAndCode = (a: { code: string; path: string }, b: { code: string; path: string }) =>
   compare(a.path, b.path) || compare(a.code, b.code);
-function revealPointers(definition: FormDefinition): Record<string, { parent: string; option: number }> {
-  const tops: [string, FormNode[]][] = definition.steps?.length
-    ? definition.steps.map((step, index) => [`/steps/${index}/fields`, step.fields])
-    : [['/fields', definition.fields ?? []]];
-  const lists = tops.flatMap(([path, nodes]) => [
-    [path, nodes] as const,
-    ...nodes.flatMap((node, index) =>
-      isSection(node) && node.layout !== 'matrix' ? [[`${path}/${index}/fields`, node.fields as FormNode[]] as const] : [],
-    ),
-  ]);
-  const found: Record<string, { parent: string; option: number }> = {};
-  for (const [path, nodes] of lists)
-    revealTargets(nodes).forEach((target, index) => {
-      if (target) found[`${path}/${index}`] = { parent: `${path}/${target.parent}`, option: target.option };
-    });
-  return found;
-}
-
 const project = ({ code, path }: { code: string; path: string }) => ({ code, path });
 
-async function browserCanSubmit(definition: FormDefinition, { values, hiddenValues }: Input): Promise<boolean> {
-  const engine = new FormEngine(definition, values, { hiddenValues });
+const serverMessages = (definition: FormDefinition, locale?: LocaleCatalog[]) =>
+  locale && { messages: localize(definition, locale).messages };
+
+async function browserCanSubmit(definition: FormDefinition, { values, hiddenValues }: Input, locale?: LocaleCatalog[]): Promise<boolean> {
+  const engine = new FormEngine(definition, values, { hiddenValues, locale });
   while (engine.isMultiStep && !engine.isLastStep) {
     if (isActionDisabled(engine.currentStep?.next, engine.getSubmitValues()) || !(await engine.next())) return false;
   }
@@ -102,6 +85,7 @@ describe('conformance corpus', () => {
       'exclusive-options',
       'file-app-reference',
       'file-multiple',
+      'file-multiple-items',
       'file-multiple-limits',
       'flat-api-steps',
       'format-version',
@@ -116,6 +100,7 @@ describe('conformance corpus', () => {
       'impossible-dates',
       'invalid-labels',
       'invalid-messages',
+      'locale-precedence',
       'localized-catalog',
       'localized-overlay',
       'option-order',
@@ -217,24 +202,32 @@ describe('conformance corpus', () => {
     },
   );
 
-  it.each(cases)('%s: server', (_, definition, { input, expected, serverValues }) => {
-    const result = validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps, hiddenValues: input.hiddenValues });
+  it.each(cases)('%s: server', (_, definition, { input, expected, serverValues }, locale) => {
+    const result = validateSubmission(definition, input.values, {
+      skippedSteps: input.skippedSteps,
+      hiddenValues: input.hiddenValues,
+      ...serverMessages(definition, locale),
+    });
     expect(result).toEqual({ values: serverValues ?? expected.values, errors: expected.errors });
     expect(Object.getPrototypeOf(result.values)).toBe(Object.prototype);
   });
 
-  it.each(cases)('%s: browser engine', async (_, definition, { input, expected, canSubmit }) => {
-    const engine = new FormEngine(definition, input.values, { hiddenValues: input.hiddenValues });
+  it.each(cases)('%s: browser engine', async (_, definition, { input, expected, canSubmit }, locale) => {
+    const engine = new FormEngine(definition, input.values, { hiddenValues: input.hiddenValues, locale });
     expect(Object.getPrototypeOf(engine.values)).toBe(Object.prototype);
     expect(engine.validate()).toEqual(expected.errors);
     expect(engine.getSubmitValues()).toEqual(expected.values);
-    expect(await browserCanSubmit(definition, input)).toBe(canSubmit);
+    expect(await browserCanSubmit(definition, input, locale)).toBe(canSubmit);
   });
 
-  it.each(cases)('%s: a payload the browser accepts passes the server', async (_, definition, { input }) => {
-    if (!(await browserCanSubmit(definition, input))) return;
+  it.each(cases)('%s: a payload the browser accepts passes the server', async (_, definition, { input }, locale) => {
+    if (!(await browserCanSubmit(definition, input, locale))) return;
     expect(
-      validateSubmission(definition, input.values, { skippedSteps: input.skippedSteps, hiddenValues: input.hiddenValues }).errors,
+      validateSubmission(definition, input.values, {
+        skippedSteps: input.skippedSteps,
+        hiddenValues: input.hiddenValues,
+        ...serverMessages(definition, locale),
+      }).errors,
     ).toEqual({});
   });
 });

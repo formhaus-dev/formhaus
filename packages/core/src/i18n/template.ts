@@ -1,6 +1,6 @@
 import type { FormDefinition } from '../types';
 import { fnv1a } from '../internal/hash';
-import { translationKey } from './localize';
+import { translationKey } from './translate';
 import { assign, placeholders, type Overlay } from './overlay';
 import { definitionSlots, type Slot } from './slots';
 

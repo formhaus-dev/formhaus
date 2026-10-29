@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey, LabelSource } from '@formhaus/core';
+import type { FormField, LabelKey } from '@formhaus/core';
 import {
   CLOSED_DIALOG,
-  copyField,
   engineLabel,
   errorDomId,
   fieldDomId,
@@ -16,7 +15,6 @@ import {
   recalled,
   shownOptions,
   fieldTestIds,
-  type TestId,
 } from '@formhaus/core/internal';
 import { computed, defineComponent, h, nextTick, ref, type Component } from 'vue';
 import DefaultGroup from './DefaultGroup.vue';
@@ -25,30 +23,10 @@ import DefaultGroupItem from './DefaultGroupItem.vue';
 import FieldResolver from './FieldResolver.vue';
 import { fieldAria } from './fields/useField';
 import { useMounted } from './composables/useMounted';
-import type { ConfirmDialogComponentProps, FieldComponentMap, GroupComponentProps, LayoutComponentMap } from './types';
+import { formGroupProps } from './innerProps';
+import type { ConfirmDialogComponentProps, GroupComponentProps } from './types';
 
-const props = withDefaults(
-  defineProps<{
-    engine: FormEngine;
-    formId: string;
-    group: FormGroup & object;
-    items: GroupItem[];
-    value: unknown;
-    errors: Readonly<Record<string, string>>;
-    fieldLoading: Readonly<Record<string, boolean>>;
-    disabled?: boolean;
-    components?: FieldComponentMap;
-    layout?: LayoutComponentMap;
-    labels?: LabelSource;
-    options: Record<string, FieldOption[]>;
-    busy: Record<string, boolean>;
-    confirmRemove?: boolean;
-    onItemsChange: (key: string, apply: () => boolean) => boolean;
-    recall?: unknown;
-    testId?: TestId;
-  }>(),
-  { confirmRemove: true },
-);
+const props = defineProps(formGroupProps);
 
 const emit = defineEmits<{
   (e: 'update', key: string, value: unknown): void;
@@ -76,7 +54,7 @@ function itemProps(index: number, field: FormField) {
     id: errorDomId(props.engine, props.formId, key),
     field: autofilled(
       props.engine,
-      recalled(props.engine, copyField(field, { ...(options && { options }), key, autoAdvance: undefined }), key),
+      recalled(props.engine, { ...field, ...(options && { options }), key, autoAdvance: undefined }, key),
       key,
     ),
     modelValue: values.value[index]?.[field.key],

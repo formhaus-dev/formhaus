@@ -8,6 +8,7 @@ export { recallEnabled, recallKeys } from '../engine/recall';
 
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { engineLabel, labelFor } from '../i18n/labels';
+export { definitionSource, refreshLocale } from './locale';
 export { actionsView, actionValues } from './actions';
 export { warnDefinitionReset } from './definition-reset';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';
@@ -33,7 +34,7 @@ export { optionKey } from '../visibility/nodes';
 export { applySources } from './sources';
 export { revealable, revealLayout, revealViews, type RevealSlot } from './reveal';
 export { withReveals } from '../controls/options';
-export { defaultFileLimit, engineFileLimit, filesFull, nextRemove, pickFiles, type FileLimitMessage } from './files';
+export { fileLimitMessage, nextRemove } from './files';
 export { copyField } from '../validation/type-checks';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {

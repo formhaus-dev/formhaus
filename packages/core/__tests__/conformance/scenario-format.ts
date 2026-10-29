@@ -1,11 +1,11 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { FieldOption, FormDefinition } from '../../src';
-import { localize, type Overlay } from '../../src/i18n';
+import { localize, type Overlay, translation, type TranslationFile } from '../../src/i18n';
 
 export type Reply = { return?: unknown; throw?: string; defer?: string };
 
-type HookName = 'onBeforeStepChange' | 'onAfterStepChange' | 'onBeforeSubmit' | 'onAfterSubmit' | 'onStepValidate';
+type HookName = 'onBeforeStepChange' | 'onAfterStepChange' | 'onBeforeSubmit' | 'onAfterSubmit' | 'onStepValidate' | 'onValidate';
 
 interface ValidatorSpec {
   reject: unknown[];
@@ -67,6 +67,7 @@ export interface Scenario {
   values?: Record<string, unknown>;
   seed?: string;
   hiddenValues?: 'clear' | 'keep';
+  validateWithRules?: boolean;
   hooks?: Partial<Record<HookName, Reply[]>>;
   validators?: Record<string, ValidatorSpec>;
   messages?: Record<string, string>;
@@ -114,4 +115,6 @@ export const runtimeDefinition = (file: ScenarioFile, scenario: Scenario): FormD
   localized(file, scenarioDefinition(file, scenario));
 
 export const localized = (file: ScenarioFile, definition: FormDefinition): FormDefinition =>
-  file.overlay ? localize(definition, { overlay: file.overlay }).definition : definition;
+  file.overlay
+    ? localize(definition, translation({ locale: definition.lang ?? 'en', ...file.overlay } as TranslationFile)).definition
+    : definition;

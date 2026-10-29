@@ -27,8 +27,7 @@ const files = {
   'src/react.tsx': `import { createRef } from 'react';
 import { FormRenderer, HeadlessFormRenderer, TextField, type FieldComponentMap, type FormRendererHandle } from '@formhaus/react';
 import { FormhausForm, CloudError } from '@formhaus/react/cloud';
-import { useLocalizedForm } from '@formhaus/react/i18n';
-import { localize, type Overlay } from '@formhaus/core/i18n';
+import { localize, translation } from '@formhaus/core/i18n';
 import { applyFix, fixAll, suggestFixes, type DefinitionFix } from '@formhaus/core/fix';
 import type { FormDefinition } from '@formhaus/core';
 import { fromDate, scaleView } from '@formhaus/core/fields';
@@ -80,18 +79,18 @@ export const mapped: FieldComponentMap = {
   }),
   rating: components.rating,
 };
-const overlay: Overlay = { title: 'Kontakt' };
-export const localized = localize(definition, { overlay, lang: 'de' });
+const de = translation({ locale: 'de', title: 'Kontakt', labels: { submit: 'Senden' } });
+export const localized = localize(definition, de);
 const fixes: DefinitionFix[] = suggestFixes(definition).flatMap((issue) => issue.fixes ?? []);
 export const fixed = [fixes.reduce((current, fix) => applyFix(current, fix.patch), definition), fixAll(definition).definition];
 export function Localized() {
-  const form = useLocalizedForm(definition, { translate: (key, params, fallback) => fallback, prefix: false });
-  return <FormRenderer {...form} onSubmit={() => {}} />;
+  return <FormRenderer definition={definition} locale={[translation({ locale: 'de', translate: (key, params, fallback) => fallback, prefix: false }), de]} onSubmit={() => {}} />;
 }
 `,
   'src/vue-props.ts': `import { defineComponent, h, type ExtractPublicPropTypes, type PropType } from 'vue';
 import * as Formhaus from '@formhaus/vue';
 import { controlShellProps, mapControls } from '@formhaus/vue/controls';
+import { FormhausForm, type FormhausFormProps } from '@formhaus/vue/cloud';
 
 type Same<A, B> = [A] extends [B] ? ([B] extends [A] ? true : false) : false;
 type Props<T> = ExtractPublicPropTypes<T>;
@@ -103,6 +102,7 @@ export const same: [
   Same<Props<typeof Formhaus.confirmDialogComponentProps>, Formhaus.ConfirmDialogComponentProps>,
   Same<Props<typeof Formhaus.formActionsProps>, Formhaus.FormActionsProps>,
   Same<Props<typeof Formhaus.formStepProgressProps>, Formhaus.FormStepProgressProps>,
+  Same<Props<typeof Formhaus.formRendererProps>, Formhaus.FormRendererProps>,
   Same<keyof Props<typeof Formhaus.fieldComponentProps>, keyof Formhaus.FieldComponentProps>,
   Same<keyof Props<typeof Formhaus.sectionComponentProps>, keyof Formhaus.SectionComponentProps>,
   Same<keyof Props<typeof Formhaus.groupComponentProps>, keyof Formhaus.GroupComponentProps>,
@@ -110,7 +110,15 @@ export const same: [
   Same<keyof Props<typeof Formhaus.confirmDialogComponentProps>, keyof Formhaus.ConfirmDialogComponentProps>,
   Same<keyof Props<typeof Formhaus.formActionsProps>, keyof Formhaus.FormActionsProps>,
   Same<keyof Props<typeof Formhaus.formStepProgressProps>, keyof Formhaus.FormStepProgressProps>,
-] = [true, true, true, true, true, true, true, true, true, true, true, true, true, true];
+  Same<keyof Props<typeof Formhaus.formRendererProps>, keyof Formhaus.FormRendererProps>,
+] = [true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true];
+type Declared<C extends abstract new (...args: never) => { $props: object }, P> = Pick<InstanceType<C>['$props'], keyof P & keyof InstanceType<C>['$props']>;
+export const declared: [
+  Same<Declared<typeof Formhaus.FormRenderer, Formhaus.FormRendererProps>, Formhaus.FormRendererProps>,
+  Same<Declared<typeof Formhaus.HeadlessFormRenderer, Formhaus.FormRendererProps>, Formhaus.FormRendererProps>,
+  Same<Declared<typeof Formhaus.FormhausField, Formhaus.FormhausFieldProps>, Formhaus.FormhausFieldProps>,
+  Same<Declared<typeof FormhausForm, FormhausFormProps>, FormhausFormProps>,
+] = [true, true, true, true];
 export const TypedField = defineComponent({
   props: Formhaus.fieldComponentProps,
   emits: Formhaus.fieldComponentEmits,
@@ -143,10 +151,10 @@ export const handles: Formhaus.FormRendererHandle[] = [
   'src/vue.ts': `import { createApp, h } from 'vue';
 import * as Formhaus from '@formhaus/vue';
 import { FormhausForm, CloudError } from '@formhaus/vue/cloud';
-import { useLocalizedForm } from '@formhaus/vue/i18n';
 import type { FormDefinition } from '@formhaus/core';
 import { onValidate } from './on-validate.js';
 import ru from '@formhaus/core/locales/ru';
+import { translation } from '@formhaus/core/i18n';
 
 const definition: FormDefinition = { id: 'contact', title: 'Contact', fields: [{ key: 'name', type: 'text', label: 'Name' }], submit: { label: 'Send' } };
 export const components: Formhaus.FieldComponentMap = {
@@ -164,7 +172,7 @@ export const app = createApp({ render: () => [h(Formhaus.FormRenderer, { definit
   .component('TextField', Formhaus.TextField)
   .component('FormhausForm', FormhausForm);
 export const extras = [Formhaus, CloudError];
-export const localized = useLocalizedForm(() => definition, () => ({ overlay: { title: 'Kontakt' } }));
+export const localized = h(Formhaus.FormRenderer, { definition, locale: [translation({ locale: 'de', title: 'Kontakt' }), ru] });
 `,
 };
 

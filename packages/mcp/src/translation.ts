@@ -4,12 +4,14 @@ import {
   defaultLabels,
   defaultMessages,
   localize,
+  translation,
   textSlots,
   translationIssues,
   translationTemplate,
   type CatalogIssues,
   type Overlay,
   type TextSlot,
+  type TranslationFile,
 } from '@formhaus/core/i18n';
 import { parseDefinition } from './definition-input';
 import { inspectDefinition, type ValidationReport } from './validate';
@@ -55,7 +57,7 @@ function withoutCatalog(definition: FormDefinition, overlay: Overlay, slots: Tex
 export function translationTemplateTool({ definition: input, lang, prefix, catalog }: TemplateInput): TemplateResult {
   const { report, definition } = inspectDefinition(input);
   if (!definition) return { ok: false, validation: report };
-  const overlay = translationTemplate(definition);
+  const overlay: Overlay = { locale: lang, ...translationTemplate(definition) };
   const slots = textSlots(definition, { prefix });
   const file = `${definition.id}.${lang}.json`;
   if (catalog === undefined) return { ok: true, validation: report, lang, file, overlay, slots };
@@ -74,7 +76,11 @@ export function withOverlay(input: unknown, overlay: unknown): { definition: unk
       ...invalid.map((address) => `${address || 'overlay'} is not text and was ignored`),
       ...placeholderMismatch.map((address) => `${address} has different {placeholders} than the source`),
     ];
-    return { definition: localize(definition, { overlay: overlay as Overlay }).definition, issues };
+    return {
+      definition: localize(definition, translation({ locale: definition.lang ?? 'en', ...(overlay as Overlay) } as TranslationFile))
+        .definition,
+      issues,
+    };
   } catch (error) {
     return { definition: input, issues: [`overlay was not applied: ${error instanceof Error ? error.message : String(error)}`] };
   }
@@ -99,7 +105,7 @@ export const i18nCapabilities = {
   },
   labels: {
     defaults: defaultLabels,
-    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. addItem and removeItem are the group button defaults, itemLabel takes {label} and {index}, itemAdded, itemRemoved and removeItemPrompt take {item}, removeItemNamed is the accessible name of a Remove button with {label} and {item}, removeItemBody takes {item} and is the text of the remove dialog, cancel closes it. enlargeImage takes {label} and names the button that opens an option image, close closes that preview. skip and submit are the button defaults, stepTitle takes {index} and names a step without a title, stepErrors takes {count} and marks a step with errors in the step progress. or is the divider before exclusive multiselect options. select is the prompt of an empty select for native renderers. required is the word assistive technology announces for a required field; web renderers add it to the legend of a required option group. clear, done and chooseFile are for native renderers: the clear button of a field, the confirm button of a date or time picker, and the file picker button. Explicit next, back, skip and submit labels and group texts win.',
+    rule: 'Optional "labels" catalog for renderer texts. stepOf takes {current} and {total}. addItem and removeItem are the group button defaults, itemLabel takes {label} and {index}, itemAdded, itemRemoved and removeItemPrompt take {item}, removeItemNamed is the accessible name of a Remove button with {label} and {item}, removeItemBody takes {item} and is the text of the remove dialog, cancel closes it. enlargeImage takes {label} and names the button that opens an option image, close closes that preview. skip and submit are the button defaults, stepTitle takes {index} and names a step without a title, stepErrors takes {count} and marks a step with errors in the step progress. fileCount takes {count} and is the number of files of a file list for native screen readers. or is the divider before exclusive multiselect options. select is the prompt of an empty select for native renderers. required is the word assistive technology announces for a required field; web renderers add it to the legend of a required option group. clear, done and chooseFile are for native renderers: the clear button of a field, the confirm button of a date or time picker, and the file picker button. Explicit next, back, skip and submit labels and group texts win.',
   },
   keys: {
     slots,

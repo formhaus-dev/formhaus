@@ -46,6 +46,7 @@ export type LabelKey =
   | 'submit'
   | 'stepTitle'
   | 'stepErrors'
+  | 'fileCount'
   | 'or'
   | 'select';
 
@@ -67,6 +68,14 @@ export interface LocaleCatalog {
   locale: string;
   messages: Partial<Record<MessageKey, LocaleText>>;
   labels: Partial<Record<LabelKey, LocaleText>>;
+}
+
+export type TranslateFn = (key: string, params: Record<string, unknown>, defaultText: string) => string | undefined;
+
+export interface TranslateSource {
+  locale: string;
+  translate: TranslateFn;
+  prefix?: string | false;
 }
 
 export interface FormI18n {

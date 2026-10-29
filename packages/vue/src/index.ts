@@ -1,6 +1,7 @@
 export * from './components';
 export { useFormEngine } from './composables/useFormEngine';
 export { useFieldProps, type FieldAttrs, type FieldEmit, type FieldProps } from './composables/useFieldProps';
+export { useFileText } from './composables/useLabel';
 export type { UseFormEngineOptions, UseFormEngineReturn } from './composables/useFormEngine';
 export { defaultFieldComponents } from './constants';
 export {
@@ -12,6 +13,7 @@ export {
   fieldComponentEmits,
   fieldComponentProps,
   formErrorsComponentProps,
+  formRendererProps,
   formStepProgressProps,
   groupComponentProps,
   groupItemComponentProps,

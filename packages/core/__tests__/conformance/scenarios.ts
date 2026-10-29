@@ -37,6 +37,7 @@ export class ScenarioRun {
       onWarning: ({ code, path }) => this.log.push({ warning: { code, path } }),
       seed: this.scenario.seed,
       hiddenValues: this.scenario.hiddenValues,
+      validateWithRules: this.scenario.validateWithRules,
       research,
     };
     if (hooks.onBeforeStepChange)
@@ -63,6 +64,11 @@ export class ScenarioRun {
       options.onStepValidate = (stepId, values) => {
         this.log.push({ call: 'onStepValidate', stepId, values: plain(values) });
         return Promise.resolve(this.script.reply(hooks.onStepValidate)) as ReturnType<NonNullable<FormEngineOptions['onStepValidate']>>;
+      };
+    if (hooks.onValidate)
+      options.onValidate = (values, { stepId, submit }) => {
+        this.log.push(plain({ call: 'onValidate', stepId, values, submit }));
+        return this.script.reply(hooks.onValidate) as ReturnType<NonNullable<FormEngineOptions['onValidate']>>;
       };
     if (this.scenario.validators)
       options.validators = Object.fromEntries(

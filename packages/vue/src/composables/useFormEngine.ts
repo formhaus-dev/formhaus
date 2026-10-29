@@ -1,5 +1,5 @@
 import { FormEngine, type FormEngineOptions, type FormField, type FormNode, type FormDefinition, type FormStep } from '@formhaus/core';
-import { warnDefinitionReset } from '@formhaus/core/internal';
+import { refreshLocale, warnDefinitionReset } from '@formhaus/core/internal';
 import { type ComputedRef, computed, onScopeDispose, ref, shallowRef, watch } from 'vue';
 
 export interface UseFormEngineReturn {
@@ -59,6 +59,11 @@ export function useFormEngine(
     engineRef.value = engine;
     version.value++;
   });
+
+  watch(
+    () => options?.locale,
+    () => refreshLocale(engine),
+  );
 
   onScopeDispose(() => {
     engine.cancelPendingActions();

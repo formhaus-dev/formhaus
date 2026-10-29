@@ -63,7 +63,7 @@ export interface DefinitionIssue {
 }
 
 // @public (undocumented)
-export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'multiple-not-applicable' | 'matrix-options-mismatch';
+export type DefinitionIssueCode = 'invalid-type' | 'missing-property' | 'missing-label' | 'unknown-property' | 'fields-and-steps' | 'duplicate-step-id' | 'duplicate-key' | 'duplicate-option-value' | 'reserved-key' | 'route-target' | 'unknown-field' | 'group-scope' | 'invalid-nesting' | 'outdated-format-version' | 'forward-reference' | 'unknown-recall-field' | 'recall-forward-reference' | 'recall-syntax' | 'recall-sensitive-field' | 'recall-query-source' | 'recall-untrusted-source' | 'condition-operator-count' | 'unknown-operator' | 'condition-value-mismatch' | 'contains-not-list' | 'contains-not-in-options' | 'condition-cycle' | 'condition-always-true' | 'invalid-pattern' | 'slow-pattern' | 'min-greater-than-max' | 'default-items-greater-than-max' | 'group-item-limit' | 'invalid-columns' | 'invalid-scale' | 'rule-not-applicable' | 'disabled-not-applicable' | 'missing-options' | 'default-not-in-options' | 'unknown-field-type' | 'custom-type-name' | 'definition-reset' | 'missing-component' | 'legacy-layout' | 'missing-research' | 'untranslated-locale' | 'unknown-validator' | 'skip-unreachable' | 'route-fallthrough' | 'unsupported-format-version' | 'i18n-key-without-text' | 'unknown-i18n-slot' | 'unknown-message-key' | 'unknown-label-key' | 'i18n-unsafe-identifier' | 'unknown-source' | 'source-not-applicable' | 'columns-not-applicable' | 'unknown-autocomplete-token' | 'autocomplete-not-applicable' | 'unsafe-image-url' | 'exclusive-not-applicable' | 'exclusive-option-position' | 'exclusive-default-value' | 'exclusive-with-min-length' | 'randomize-not-applicable' | 'multiple-not-applicable' | 'matrix-options-mismatch';
 
 // @public (undocumented)
 export interface ErrorSummary {
@@ -396,7 +396,7 @@ export interface FormEngineOptions {
     // (undocumented)
     lang?: string;
     // (undocumented)
-    locale?: LocaleCatalog | LocaleCatalog[];
+    locale?: LocaleSource | LocaleSource[];
     // (undocumented)
     messages?: MessageSource;
     // (undocumented)
@@ -849,7 +849,7 @@ export interface LabelI18n {
 }
 
 // @public (undocumented)
-export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' | 'enlargeImage' | 'close' | 'clear' | 'done' | 'chooseFile' | 'required' | 'skip' | 'submit' | 'stepTitle' | 'stepErrors' | 'or' | 'select';
+export type LabelKey = 'continue' | 'back' | 'stepOf' | 'errorSummary' | 'addItem' | 'removeItem' | 'itemLabel' | 'itemAdded' | 'itemRemoved' | 'removeItemNamed' | 'removeItemPrompt' | 'removeItemBody' | 'cancel' | 'enlargeImage' | 'close' | 'clear' | 'done' | 'chooseFile' | 'required' | 'skip' | 'submit' | 'stepTitle' | 'stepErrors' | 'fileCount' | 'or' | 'select';
 
 // @public (undocumented)
 export type LabelSource = LabelCatalog | LabelFn;
@@ -863,6 +863,9 @@ export interface LocaleCatalog {
     // (undocumented)
     messages: Partial<Record<MessageKey, LocaleText>>;
 }
+
+// @public (undocumented)
+export type LocaleSource = LocaleCatalog | Translation;
 
 // @public (undocumented)
 export type LocaleText = string | PluralForms;
@@ -1080,6 +1083,14 @@ export type TestIdTarget = {
     key: string;
     value: string;
 };
+
+// @public (undocumented)
+export interface Translation {
+    // (undocumented)
+    readonly [translated]: true;
+    // (undocumented)
+    readonly locale: string;
+}
 
 // @public (undocumented)
 export interface ValidateContext {
