@@ -4,8 +4,10 @@ import { afterCommit } from './lifecycle-error';
 import { watchCheckedInputs, watchValues } from './pending-inputs';
 import {
   applyValidationErrors,
+  clearError,
   clearFormErrors,
   dropServerErrors,
+  errorKeys,
   fieldsErrors,
   getSubmitValues,
   pruneOffPathErrors,
@@ -16,6 +18,8 @@ import { isRejection, submitForm } from './submission';
 import { passesValidate } from './validate-hook';
 import type { GoToStepResult, StepChangeContext, SubmitHandler } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
+import type { FormNode } from '../types';
+import { valueFields } from '../visibility/nodes';
 
 function stepErrors(engine: EngineInternals): Record<string, string> | null {
   const step = engine.currentStep;
@@ -33,10 +37,18 @@ function hasStepErrors(engine: EngineInternals): boolean {
   return !errors || Object.keys(errors).length > 0;
 }
 
-function moveTo(engine: EngineInternals, index: number): void {
+function clearPassedErrors(engine: EngineInternals, nodes: FormNode[]): string[] {
+  const { errors, state } = engine;
+  const hidden = valueFields(nodes).flatMap((field) => (field.type === 'hidden' && errors[field.key] !== undefined ? [field.key] : []));
+  const keys = [...errorKeys(nodes, errors, state.values), ...hidden].filter((key) => errors[key] !== state.serverErrors[key]);
+  for (const key of keys) clearError(engine, key);
+  return keys;
+}
+
+function moveTo(engine: EngineInternals, index: number, fieldKeys: string[] = []): void {
   engine.validationEpoch++;
   engine.state.currentStepIndex = index;
-  engine.notify({ structureChanged: true });
+  engine.notify({ fieldKeys, structureChanged: true });
 }
 
 export async function skipStep(engine: EngineInternals, submit?: SubmitHandler): Promise<boolean> {
@@ -148,7 +160,7 @@ export async function changeStep(
     committed = true;
     if (direction === 'next') emit(engine, { type: skipping ? 'step_skipped' : 'step_completed', stepId: step.id });
     if (skipping) skipCurrentStep(engine);
-    moveTo(engine, toIndex);
+    moveTo(engine, toIndex, validating ? clearPassedErrors(engine, step.fields) : []);
     await afterCommit('afterStepChange', () => lifecycle.onAfterStepChange?.(context));
     return true;
   } catch (error) {
