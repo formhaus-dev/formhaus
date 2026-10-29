@@ -95,4 +95,57 @@ describe('the locale option', () => {
     expect(invalid).toEqual([]);
     expect(missing).not.toContain('messages.minLength');
   });
+
+  it('ranks a translate function over definition messages and labels', () => {
+    const own: FormDefinition = { ...signup, messages: { required: 'Own required' }, labels: { back: 'Own back' } };
+    const keys: Record<string, string> = { 'errors.required': 'Ключ: обязательно', 'signup.labels.back': 'Ключ: назад' };
+    const locale = translation({ locale: 'ru', translate: (key, _params, text) => keys[key] ?? text });
+    const engine = new FormEngine(own, { kind: 'home', address: 'abc' }, { locale: [locale, generic] });
+    expect(engine.validate().password).toBe('Ключ: обязательно');
+    expect(engineLabel(engine, 'back', {})).toBe('Ключ: назад');
+  });
+
+  it('ranks plural forms of a translation file over definition messages and labels', () => {
+    const own: FormDefinition = { ...signup, messages: { minLength: 'Own {min}' }, labels: { stepErrors: 'Own {count}' } };
+    const file = translation({
+      locale: 'ru',
+      messages: { minLength: { one: 'Файл {min} символ', few: 'Файл {min} символа', many: 'Файл {min} символов', other: 'x' } },
+      labels: { stepErrors: { one: '{count} ошибка', few: '{count} ошибки', many: '{count} ошибок', other: 'x' } },
+    });
+    const engine = new FormEngine(own, { kind: 'home', address: 'abc' }, { locale: [file, generic] });
+    expect(engine.validate().address).toBe('Файл 5 символов');
+    expect(engineLabel(engine, 'stepErrors', { count: 3 })).toBe('3 ошибки');
+  });
+
+  it('translates errors already shown when the locale changes, without new errors or events', () => {
+    const onFormEvent = vi.fn();
+    const options: FormEngineOptions = { locale: generic, onFormEvent };
+    const engine = new FormEngine(signup, { kind: 'home', address: 'abc' }, options);
+    engine.validateField('address');
+    expect(engine.errors).toEqual({ address: 'Не менее 5 символов' });
+    onFormEvent.mockClear();
+    options.locale = undefined;
+    refreshLocale(engine);
+    expect(engine.errors).toEqual({ address: 'Minimum length is 5' });
+    expect(onFormEvent).not.toHaveBeenCalled();
+  });
+
+  it('skips the refresh when the same sources are passed again', () => {
+    const translate = vi.fn((_key: string, _params: Record<string, unknown>, text: string) => `ru:${text}`);
+    const options: FormEngineOptions = { locale: [translation({ locale: 'ru', translate }), generic] };
+    const engine = new FormEngine(signup, {}, options);
+    translate.mockClear();
+    options.locale = [translation({ locale: 'ru', translate }), generic];
+    refreshLocale(engine);
+    expect(translate).not.toHaveBeenCalled();
+  });
+
+  it('warns in development when a translation file is passed without translation()', () => {
+    const onWarning = vi.fn();
+    new FormEngine(signup, {}, { locale: { ...ru, locale: 'ru' } as unknown as LocaleCatalog, onWarning });
+    expect(onWarning).toHaveBeenCalledWith(expect.objectContaining({ code: 'untranslated-locale', severity: 'warning' }));
+    onWarning.mockClear();
+    new FormEngine(signup, {}, { locale: [form, generic], onWarning });
+    expect(onWarning).not.toHaveBeenCalledWith(expect.objectContaining({ code: 'untranslated-locale' }));
+  });
 });

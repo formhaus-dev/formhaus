@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { FormDefinition, LocaleCatalog } from '../../src';
-import { localize, type Overlay, translation } from '../../src/i18n';
+import { localize, type Overlay, translation, type TranslationFile } from '../../src/i18n';
 
 interface ConformanceCase {
   name: string;
@@ -49,7 +49,7 @@ export const corpus: ConformanceFixture[] = readdirSync(dir)
 const valid = corpus.filter(({ issues }) => !issues.length);
 
 export const runtime = ({ definition, overlay }: ConformanceFixture) =>
-  overlay ? localize(definition, translation({ ...overlay, locale: definition.lang ?? 'en' })).definition : definition;
+  overlay ? localize(definition, translation({ locale: definition.lang ?? 'en', ...overlay } as TranslationFile)).definition : definition;
 
 export const cases = valid.flatMap((fixture) =>
   (fixture.cases ?? []).map((testCase) => [`${fixture.name}: ${testCase.name}`, runtime(fixture), testCase, fixture.locale] as const),

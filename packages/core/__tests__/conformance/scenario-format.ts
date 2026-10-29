@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import type { FieldOption, FormDefinition } from '../../src';
-import { localize, type Overlay, translation } from '../../src/i18n';
+import { localize, type Overlay, translation, type TranslationFile } from '../../src/i18n';
 
 export type Reply = { return?: unknown; throw?: string; defer?: string };
 
@@ -114,4 +114,6 @@ export const runtimeDefinition = (file: ScenarioFile, scenario: Scenario): FormD
   localized(file, scenarioDefinition(file, scenario));
 
 export const localized = (file: ScenarioFile, definition: FormDefinition): FormDefinition =>
-  file.overlay ? localize(definition, translation({ ...file.overlay, locale: definition.lang ?? 'en' })).definition : definition;
+  file.overlay
+    ? localize(definition, translation({ locale: definition.lang ?? 'en', ...file.overlay } as TranslationFile)).definition
+    : definition;
