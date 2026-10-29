@@ -29,6 +29,6 @@ export const components: FieldComponentMap = mapControls({
     radio: { component: Choices, props: choices },
     scale: { component: Choices, props: choices },
     rating: { component: Choices, props: (f, options) => ({ ...choices(f, options), stars: true }) },
-    file: { component: FileInput, props: (f) => ({ file: f.value }) },
+    file: { component: FileInput, props: (f) => ({ f }) },
   },
 });

@@ -1,4 +1,4 @@
-import { toggleOption } from '@formhaus/core/fields';
+import { addFiles, fileEntries, removeFile, toggleOption } from '@formhaus/core/fields';
 import type { FieldProps } from '@formhaus/react';
 import type { ControlOption } from '@formhaus/react/controls';
 import { type AriaAttributes, type ChangeEvent, type ComponentProps, Fragment, useState } from 'react';
@@ -50,30 +50,56 @@ export function Select({ options, placeholder, ...props }: ComponentProps<'selec
   );
 }
 
-export function FileInput({ file, ...props }: ComponentProps<'input'> & { file: unknown }) {
-  const picked = file instanceof File ? file : null;
+export function FileInput({ f, onChange, ...props }: ComponentProps<'input'> & { f: FieldProps }) {
+  const list = !!props.multiple;
+  const picked = !list && f.value instanceof File ? f.value : null;
+  const entries = list ? fileEntries(f.value) : [];
+  const add = ({ target }: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(target.files ?? []);
+    target.value = '';
+    if (files.length) f.change(addFiles(f.value, files));
+  };
   return (
-    <div className={props.disabled ? 'usa-file-input usa-file-input--disabled' : 'usa-file-input'}>
-      <div className={picked ? 'usa-file-input__target has-file' : 'usa-file-input__target'}>
-        {picked ? (
-          <>
-            <div className="usa-file-input__preview-heading">
-              Selected file <span className="usa-file-input__choose">Change file</span>
+    <>
+      <div className={props.disabled ? 'usa-file-input usa-file-input--disabled' : 'usa-file-input'}>
+        <div className={picked ? 'usa-file-input__target has-file' : 'usa-file-input__target'}>
+          {picked ? (
+            <>
+              <div className="usa-file-input__preview-heading">
+                Selected file <span className="usa-file-input__choose">Change file</span>
+              </div>
+              <div className="usa-file-input__preview" aria-hidden="true">
+                {picked.name}
+              </div>
+            </>
+          ) : (
+            <div className="usa-file-input__instructions" aria-hidden="true">
+              <span className="usa-file-input__drag-text">{list ? 'Drag files here or ' : 'Drag file here or '}</span>
+              <span className="usa-file-input__choose">choose from folder</span>
             </div>
-            <div className="usa-file-input__preview" aria-hidden="true">
-              {picked.name}
-            </div>
-          </>
-        ) : (
-          <div className="usa-file-input__instructions" aria-hidden="true">
-            <span className="usa-file-input__drag-text">Drag file here or </span>
-            <span className="usa-file-input__choose">choose from folder</span>
-          </div>
-        )}
-        <div className="usa-file-input__box" />
-        <input {...props} type="file" className="usa-file-input__input" />
+          )}
+          <div className="usa-file-input__box" />
+          <input {...props} type="file" className="usa-file-input__input" onChange={list ? add : onChange} />
+        </div>
       </div>
-    </div>
+      {entries.length > 0 && (
+        <ul className="files">
+          {entries.map(({ index, name }) => (
+            <li key={index} className="files__item">
+              <span className="files__name">{name}</span>
+              <button
+                type="button"
+                className="usa-button usa-button--unstyled"
+                disabled={props.disabled}
+                onClick={() => f.change(removeFile(f.value, index))}
+              >
+                Remove<span className="usa-sr-only"> {name}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </>
   );
 }
 
