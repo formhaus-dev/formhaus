@@ -1,5 +1,5 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/react';
-import { mapControls } from '@formhaus/react/controls';
+import { type ControlContext, mapControls } from '@formhaus/react/controls';
 import { Checkbox, Field, NumberInput, RatingGroup, SegmentGroup, Select, Switch } from '@chakra-ui/react';
 import { Autocomplete } from './fields/Autocomplete';
 import { Choices, optionIds } from './fields/Choices';
@@ -23,8 +23,9 @@ const toggle = (Part: typeof Checkbox | typeof Switch) => (f: FieldProps) => ({
   ),
 });
 
-const upload = (f: FieldProps) => ({
+const upload = (f: FieldProps, _: unknown, { field }: ControlContext) => ({
   f,
+  field,
   'aria-describedby': undefined,
   'aria-invalid': undefined,
   'aria-required': undefined,
