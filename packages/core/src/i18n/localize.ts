@@ -1,82 +1,81 @@
 import { validDefinition } from '../definition-validation/check-definition';
 import { FormDefinitionError, isError } from '../definition-validation/issues';
 import { checkTranslations } from './check';
-import type { FormDefinition, LabelFn, LabelSource } from '../types';
-import { DEFAULT_MESSAGES, formatText, type MessageFn, type MessageSource } from '../validation/default-messages';
-import { DEFAULT_LABELS } from './nodes';
+import type { FormDefinition, LabelFn, LocaleSource, TranslateSource, Translation } from '../types';
+import { firstText, formatText, type MessageFn } from '../validation/default-messages';
+import { catalogEntry, catalogText, defineTranslation, localeList, localeSources, localizedTexts } from './catalog';
+import { CATALOGS } from './nodes';
 import { lookup, type Overlay } from './overlay';
-import { definitionSlots } from './slots';
+import { definitionSlots, type Slot } from './slots';
+import { translator } from './translate';
 
-export type TranslateFn = (key: string, params: Record<string, unknown>, defaultText: string) => string | undefined;
-
-export interface OverlaySource {
-  overlay: Overlay;
-  lang?: string;
-}
-
-export interface TranslateSource {
-  translate: TranslateFn;
-  prefix?: string | false;
-  lang?: string;
-}
-
-export type LocalizeSource = OverlaySource | TranslateSource;
+export type TranslationFile = Overlay & { locale: string };
 
 export interface Localized {
   definition: FormDefinition;
-  messages: MessageSource;
-  labels: LabelSource;
+  messages: MessageFn;
+  labels: LabelFn;
 }
 
-export function translationKey(prefix: string | false, explicit: string | undefined, address: string[]): string | undefined {
-  if (explicit !== undefined) return explicit;
-  if (prefix === false) return undefined;
-  return (prefix ? [prefix, ...address] : address).join('.');
-}
-
-function fromOverlay(definition: FormDefinition, overlay: Overlay): Localized {
+function applied(input: FormDefinition, locale: string, text: (slot: Slot, definition: FormDefinition) => string | undefined) {
+  const definition: FormDefinition = JSON.parse(JSON.stringify(input));
+  definition.lang = locale ?? definition.lang;
   for (const slot of definitionSlots(definition)) {
-    const text = lookup(overlay, slot.address);
-    if (text !== undefined) slot.apply(slot.kind === 'rule' ? formatText(text, slot.params) : text);
+    const result = text(slot, definition);
+    if (result !== undefined) slot.apply(result);
   }
-  return { definition, messages: definition.messages ?? {}, labels: definition.labels ?? {} };
+  return definition;
 }
 
-function fromTranslate(definition: FormDefinition, { translate, prefix = definition.id }: TranslateSource): Localized {
-  const ask = (explicit: string | undefined, address: string[], params: Record<string, unknown>, fallback: string) => {
-    const key = translationKey(prefix, explicit, address);
-    let text: unknown;
-    try {
-      text = key === undefined ? undefined : translate(key, params, fallback);
-    } catch {
-      return undefined;
-    }
-    return typeof text === 'string' && text.trim() && text !== key ? formatText(text, params) : undefined;
-  };
-  const source = { messages: { ...definition.messages }, labels: { ...definition.labels } };
-  const keys = definition.i18n ?? {};
-  for (const slot of definitionSlots(definition)) {
-    if (slot.kind !== 'text' && slot.kind !== 'rule') continue;
-    const text = ask(slot.key, slot.address, slot.params, slot.fallback);
-    if (text !== undefined && (slot.source !== undefined || text !== slot.fallback)) slot.apply(text);
-  }
-  const catalog =
-    <K extends string>(name: 'messages' | 'labels', defaults: Record<K, string>) =>
-    (key: K, params: Record<string, unknown>) => {
-      const own = (source[name] as Partial<Record<K, string>>)[key];
-      const fallback = formatText(own ?? defaults[key], params);
-      const text = ask((keys[name] as Partial<Record<K, string>> | undefined)?.[key], [name, key], params, fallback);
-      return own === undefined && text === fallback ? undefined : text;
-    };
-  const messages: MessageFn = catalog('messages', DEFAULT_MESSAGES);
-  const labels: LabelFn = catalog('labels', DEFAULT_LABELS);
-  return { definition, messages, labels };
-}
+const fileTranslation = (file: TranslationFile): Translation =>
+  defineTranslation(file.locale, {
+    key: [file],
+    texts: (input) =>
+      applied(input, file.locale, (slot) => {
+        const text = lookup(file, slot.address);
+        return text !== undefined && slot.kind === 'rule' ? formatText(text, slot.params) : text;
+      }),
+    text: (_definition, part, key, params) => catalogText(file.locale, catalogEntry(file, part, key), params),
+  });
 
-export function localize(input: FormDefinition, source: LocalizeSource): Localized {
+const keyTranslation = (source: TranslateSource): Translation =>
+  defineTranslation(source.locale, {
+    key: [source.locale, source.prefix, source.translate],
+    texts: (input) =>
+      applied(input, source.locale, (slot, definition) => {
+        if (slot.kind !== 'text' && slot.kind !== 'rule') return undefined;
+        const text = translator(definition, source)(slot.key, slot.address, slot.params, slot.fallback);
+        return text !== undefined && (slot.source !== undefined || text !== slot.fallback) ? text : undefined;
+      }),
+    text: (definition, part, key, params) => {
+      const own = (definition[part] as Record<string, string> | undefined)?.[key];
+      const fallback = formatText(own ?? (CATALOGS[part] as Record<string, string>)[key], params);
+      const explicit = (definition.i18n?.[part] as Record<string, string> | undefined)?.[key];
+      const text = translator(definition, source)(explicit, [part, key], params, fallback);
+      return text === fallback ? undefined : text;
+    },
+  });
+
+export const translation = (source: TranslationFile | TranslateSource): Translation =>
+  typeof (source as TranslateSource).translate === 'function'
+    ? keyTranslation(source as TranslateSource)
+    : fileTranslation(source as TranslationFile);
+
+export function localize(input: FormDefinition, locale: LocaleSource | LocaleSource[]): Localized {
   const errors = checkTranslations(validDefinition(input)).filter(isError);
   if (errors.length) throw new FormDefinitionError(errors);
-  const definition: FormDefinition = JSON.parse(JSON.stringify(input));
-  if (source.lang) definition.lang = source.lang;
-  return 'overlay' in source ? fromOverlay(definition, source.overlay) : fromTranslate(definition, source);
+  const sources = localeList(locale);
+  const definition = localizedTexts(input, sources);
+  const chain = (part: 'messages' | 'labels') =>
+    localeSources(
+      () => sources,
+      () => definition,
+      part,
+    );
+  const [messages, labels] = [chain('messages'), chain('labels')];
+  return {
+    definition,
+    messages: (key, params) => firstText(key, params, messages),
+    labels: (key, params) => firstText(key, params, labels),
+  };
 }

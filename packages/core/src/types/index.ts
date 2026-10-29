@@ -31,8 +31,11 @@ export type {
   MessageKey,
   PluralForms,
   StepI18n,
+  TranslateFn,
+  TranslateSource,
   ValidationI18n,
 } from './i18n';
+export type { LocaleSource, Translation } from './locale';
 export type {
   ConfirmDialogView,
   ErrorSummary,

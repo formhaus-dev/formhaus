@@ -2,9 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://formhaus.dev/schema/form-translation.json",
   "title": "Formhaus translation overlay",
-  "description": "Translated texts of one form in one language, keyed by step id, section key, field key and option value. In a multi-step form, top-level fields.<key> also applies and steps.<id>.fields.<key> wins over it. Every leaf is a string; empty strings fall back to the source text.",
+  "description": "Translated texts of one form in one language, keyed by step id, section key, field key and option value. locale is the language tag. In a multi-step form, top-level fields.<key> also applies and steps.<id>.fields.<key> wins over it. Every text is a string, and a message or label may also be an object of plural forms; empty strings fall back to the source text.",
   "type": "object",
   "properties": {
+    "locale": {
+      "type": "string"
+    },
     "title": {
       "type": "string"
     },
@@ -33,70 +36,224 @@
       "type": "object",
       "properties": {
         "required": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "minLength": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "maxLength": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "minItems": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "maxItems": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "min": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "max": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "pattern": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "matchField": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "email": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "number": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "date": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "datetime": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "time": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "option": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "options": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "exclusive": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "boolean": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "string": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "file": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "value": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "hidden": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -105,79 +262,254 @@
       "type": "object",
       "properties": {
         "continue": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "back": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "stepOf": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "errorSummary": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "addItem": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "removeItem": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "itemLabel": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "itemAdded": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "itemRemoved": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "removeItemNamed": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "removeItemPrompt": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "removeItemBody": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "cancel": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "enlargeImage": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "close": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "clear": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "done": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "chooseFile": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "required": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "skip": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "submit": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "stepTitle": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "stepErrors": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "or": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         },
         "select": {
-          "type": "string"
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "$ref": "#/definitions/plural"
+            }
+          ]
         }
       },
       "additionalProperties": false
@@ -334,6 +666,33 @@
         }
       },
       "additionalProperties": false
+    },
+    "plural": {
+      "type": "object",
+      "properties": {
+        "zero": {
+          "type": "string"
+        },
+        "one": {
+          "type": "string"
+        },
+        "two": {
+          "type": "string"
+        },
+        "few": {
+          "type": "string"
+        },
+        "many": {
+          "type": "string"
+        },
+        "other": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "other"
+      ]
     }
   }
 }

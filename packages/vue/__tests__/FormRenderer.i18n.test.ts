@@ -5,7 +5,8 @@ import { describe, expect, it } from 'vitest';
 import FormActions from '../src/FormActions.vue';
 import FormRenderer from '../src/FormRenderer.vue';
 import FormStepProgress from '../src/FormStepProgress.vue';
-import { type LocalizeSource, useLocalizedForm } from '../src/i18n';
+import type { LocaleSource } from '@formhaus/core';
+import { translation } from '@formhaus/core/i18n';
 import { definition, overlay, resources } from './i18n.fixtures';
 
 const i18n = createI18n({
@@ -20,10 +21,9 @@ const { t, te, locale } = i18n.global;
 const translate = (key: string, params: Record<string, unknown>, fallback: string) => (te(key) ? t(key, params) : fallback);
 
 const Signup = defineComponent({
-  props: { source: { type: Function as PropType<() => LocalizeSource | undefined>, required: true } },
+  props: { source: { type: Function as PropType<() => LocaleSource | undefined>, required: true } },
   setup(props) {
-    const localized = useLocalizedForm(definition, () => props.source());
-    return () => h(FormRenderer, { ...localized.value, errorSummary: true, onSubmit: () => {} });
+    return () => h(FormRenderer, { definition, locale: props.source(), errorSummary: true, onSubmit: () => {} });
   },
 });
 
@@ -49,25 +49,27 @@ async function checkRussianForm(passwordError: string) {
 
 describe('Vue localized forms', () => {
   it('resolves explicit keys through vue-i18n with source fallback', async () => {
-    render(Signup, { props: { source: () => ({ translate, lang: locale.value }) } });
+    render(Signup, { props: { source: () => translation({ translate, locale: locale.value }) } });
     await checkRussianForm('Минимум 8 символов');
   });
 
   it('applies an overlay', async () => {
-    render(Signup, { props: { source: () => ({ overlay, lang: 'ru' }) } });
+    render(Signup, { props: { source: () => translation({ ...overlay, locale: 'ru' }) } });
     await checkRussianForm('Пароль: от 8 символов');
   });
 
-  it('rebuilds the form in the new language when the locale changes', async () => {
-    render(Signup, { props: { source: () => ({ translate, lang: locale.value }) } });
+  it('switches the language when the locale changes and keeps the answers', async () => {
+    render(Signup, { props: { source: () => translation({ translate, locale: locale.value }) } });
     expect(screen.getByRole('heading', { name: 'Аккаунт' })).toBeTruthy();
+    await fireEvent.update(screen.getByLabelText(/Почта/), 'kept@example.com');
     locale.value = 'en';
     expect(await screen.findByRole('heading', { name: 'Account' })).toBeTruthy();
     expect(document.querySelector('form')?.getAttribute('lang')).toBe('en');
+    expect((screen.getByLabelText(/Email/) as HTMLInputElement).value).toBe('kept@example.com');
     locale.value = 'ru';
   });
 
-  it('takes messages and labels props without localize', async () => {
+  it('takes messages and labels props without a locale', async () => {
     render(FormRenderer, {
       props: {
         definition,
@@ -81,7 +83,7 @@ describe('Vue localized forms', () => {
     expect(await screen.findAllByText('Pflichtfeld')).toHaveLength(2);
   });
 
-  it('keeps the definition when there is no translation', () => {
+  it('keeps the definition when there is no locale', () => {
     render(Signup, { props: { source: () => undefined } });
     expect(screen.getByRole('heading', { name: 'Account' })).toBeTruthy();
     expect(screen.getByText('Step 1 of 2')).toBeTruthy();

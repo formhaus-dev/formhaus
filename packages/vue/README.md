@@ -37,7 +37,7 @@ async function handleSubmit(values: Record<string, unknown>) {
 - [Custom components](https://formhaus.dev/guide/custom-components) through the `components` prop, plus `HeadlessFormRenderer` to keep the built-in fields out of your bundle. Integrations: [Vuetify](https://formhaus.dev/guide/integrations/vuetify).
 - Dynamic select options with `optionsFrom` and `optionsProviders`. See [fields](https://formhaus.dev/guide/fields).
 - [Form events](https://formhaus.dev/guide/custom-components#form-events) through `@formEvent`, for analytics.
-- [Translations](https://formhaus.dev/guide/translations): `useLocalizedForm()` from `@formhaus/vue/i18n`.
+- [Translations](https://formhaus.dev/guide/translations): the `locale` prop.
 - [Server-side validation](https://formhaus.dev/guide/server-validation) of the same definition with `@formhaus/core/server`.
 - [Formhaus Cloud](https://formhaus.dev/guide/endpoint): `FormhausForm` from `@formhaus/vue/cloud` renders a published form and submits to the hosted endpoint, with file uploads and the bot check.
 - [Theming](https://formhaus.dev/guide/#optional-baseline-styles): `import '@formhaus/core/style.css'`, then override the `--fh-*` custom properties.

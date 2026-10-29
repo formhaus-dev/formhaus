@@ -8,6 +8,7 @@ export { recallEnabled, recallKeys } from '../engine/recall';
 
 export { shouldApplyExternalErrors } from '../engine/external-errors';
 export { engineLabel, labelFor } from '../i18n/labels';
+export { definitionSource, refreshLocale } from './locale';
 export { actionsView, actionValues } from './actions';
 export { warnDefinitionReset } from './definition-reset';
 export { canMoveFocus, focusField, focusItem, focusProblem, restoreFocus } from './focus';

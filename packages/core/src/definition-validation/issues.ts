@@ -46,6 +46,7 @@ export type DefinitionIssueCode =
   | 'missing-component'
   | 'legacy-layout'
   | 'missing-research'
+  | 'untranslated-locale'
   | 'unknown-validator'
   | 'skip-unreachable'
   | 'route-fallthrough'

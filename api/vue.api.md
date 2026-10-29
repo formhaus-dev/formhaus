@@ -42,7 +42,7 @@ import { FormStepStatus } from '@formhaus/core';
 import { GroupItemView } from '@formhaus/core';
 import { GroupView } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
-import { LocaleCatalog } from '@formhaus/core';
+import { LocaleSource } from '@formhaus/core';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
 import { OptionsProvider } from '@formhaus/core';
@@ -388,7 +388,7 @@ export interface FormRendererProps {
     // (undocumented)
     loading?: boolean;
     // (undocumented)
-    locale?: LocaleCatalog | LocaleCatalog[];
+    locale?: LocaleSource | LocaleSource[];
     // (undocumented)
     messages?: Partial<Record<MessageKey, string>> | Callback<MessageFn>;
     // (undocumented)

@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FormhausForm } from '../src/cloud';
 import { FormRenderer } from '../src/FormRenderer';
 import { HeadlessFormRenderer } from '../src/HeadlessFormRenderer';
-import { useLocalizedForm } from '../src/i18n';
+import { translation } from '@formhaus/core/i18n';
 import { definition as localizedDefinition, overlay } from './i18n.fixtures';
 import { choices, choiceValues, conditions, group, groupValues, hidden, plain, questionTypes, questionValues, steps } from './ssr.fixtures';
 import { randomized, shownOrder, toolValues, writtenOrder } from './ssr.fixtures';
@@ -208,11 +208,9 @@ describe('FormRenderer hydration', () => {
   });
 
   it('hydrates a localized form', async () => {
-    function Localized() {
-      const localized = useLocalizedForm(localizedDefinition, { overlay, lang: 'ru' });
-      return <FormRenderer {...localized} onSubmit={() => {}} />;
-    }
-    const { html } = await hydrate(<Localized />);
+    const { html } = await hydrate(
+      <FormRenderer definition={localizedDefinition} locale={translation({ ...overlay, locale: 'ru' })} onSubmit={() => {}} />,
+    );
     expect(html).toContain('lang="ru"');
     expect(html).toContain('Почта');
   });

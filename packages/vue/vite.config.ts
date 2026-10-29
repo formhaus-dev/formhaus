@@ -46,7 +46,6 @@ export default defineConfig({
         index: resolve(__dirname, 'src/index.ts'),
         cloud: resolve(__dirname, 'src/cloud/index.ts'),
         controls: resolve(__dirname, 'src/controls/index.ts'),
-        i18n: resolve(__dirname, 'src/i18n/index.ts'),
       },
       formats: ['es'],
       fileName: (_format, name) => `${name}.js`,

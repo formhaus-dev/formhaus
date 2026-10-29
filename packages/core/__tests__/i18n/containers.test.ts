@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { checkTranslations, localize, textSlots, translationIssues, translationTemplate } from '../../src/i18n';
+import { checkTranslations, localize, textSlots, translation, translationIssues, translationTemplate } from '../../src/i18n';
 import type { FormDefinition } from '../../src/types';
 
 const definition: FormDefinition = {
@@ -68,16 +68,18 @@ describe('translations of sections and groups', () => {
     expect(overlay.steps).toMatchObject({
       who: { sections: { billing: { title: 'Billing' } }, fields: { people: { fields: { diet: { label: 'Diet' } } } } },
     });
-    const localized = localize(definition, {
-      overlay: {
+    const localized = localize(
+      definition,
+      translation({
+        locale: 'fr',
         steps: {
           who: {
             sections: { billing: { title: 'Facturation' } },
             fields: { people: { itemLabel: 'Personne {index}', fields: { diet: { label: 'Régime', options: { none: 'Aucun' } } } } },
           },
         },
-      },
-    }).definition;
+      }),
+    ).definition;
     const [section, group] = localized.steps![0].fields as [
       { title: string },
       { itemLabel: string; fields: { label: string; options: { label: string }[] }[] },

@@ -25,7 +25,7 @@ import { FormEvent } from '@formhaus/core';
 import { FormField } from '@formhaus/core';
 import { FormResearch } from '@formhaus/core';
 import { LabelSource } from '@formhaus/core';
-import { LocaleCatalog } from '@formhaus/core';
+import { LocaleSource } from '@formhaus/core';
 import { MessageFn } from '@formhaus/core';
 import { MessageKey } from '@formhaus/core';
 import { MessageParams } from '@formhaus/core';

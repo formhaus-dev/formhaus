@@ -19,6 +19,7 @@ describe('translation_template', () => {
     if (!result.ok) throw new Error('expected a template');
     expect(result.file).toBe('signup.ru.json');
     expect(result.overlay).toEqual({
+      locale: 'ru',
       title: 'Sign up',
       submit: { label: 'Create' },
       steps: {
