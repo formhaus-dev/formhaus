@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { FormEngine, type ValidateFn } from '../../src/engine';
-import type { FormDefinition } from '../../src/types';
+import type { FormDefinition, FormEvent } from '../../src/types';
 import { deferred } from '../renderers/fixtures';
 import { league, leagueValues } from './validate.fixtures';
 
@@ -138,5 +138,70 @@ describe('FormEngine validateWithRules on step change', () => {
     expect(await engine.next()).toBe(false);
     expect(engine.stepValidating).toBe(false);
     expect(Object.keys(engine.errors)).toEqual(['email']);
+  });
+});
+
+function recorder() {
+  const log: string[] = [];
+  const onFormEvent = (event: FormEvent) => {
+    if (event.type === 'field_error') log.push(`${event.fieldKey}: ${event.error}`);
+  };
+  return { log, onFormEvent };
+}
+
+describe('FormEngine validateWithRules field_error events', () => {
+  it('reports the rule errors before onValidate runs and each error once', async () => {
+    const { log, onFormEvent } = recorder();
+    const onValidate: ValidateFn = () => {
+      log.push('onValidate');
+      return { email: 'Taken', plan: 'Pick a paid plan' };
+    };
+    const engine = new FormEngine(league, {}, { onValidate, onFormEvent, validateWithRules: true });
+    expect(await engine.next()).toBe(false);
+    expect(log).toEqual([`email: ${engine.errors.email}`, 'onValidate', 'plan: Pick a paid plan']);
+  });
+
+  it('reports the rule errors when onValidate throws', async () => {
+    const { log, onFormEvent } = recorder();
+    const onValidate: ValidateFn = () => {
+      throw new Error('Service down');
+    };
+    const engine = new FormEngine(league, {}, { onValidate, onFormEvent, validateWithRules: true });
+    await expect(engine.next()).rejects.toThrow('Service down');
+    expect(log).toEqual([`email: ${engine.errors.email}`]);
+  });
+
+  it('reports the rule errors once when the reply is stale', async () => {
+    const check = deferred<Result>();
+    const { log, onFormEvent } = recorder();
+    const engine = new FormEngine(emails, {}, { onValidate: () => check.promise, onFormEvent, validateWithRules: true });
+    const submitting = engine.submit(() => {});
+    expect(log).toEqual([`email: ${engine.errors.email}`]);
+    engine.setValue('confirm', 'c@example.com');
+    check.resolve({ confirm: 'Emails must match' });
+    expect(await submitting).toBe(false);
+    expect(log).toEqual([`email: ${engine.errors.email}`]);
+  });
+
+  it('reports each error once when a second submit arrives while onValidate runs', async () => {
+    const check = deferred<Result>();
+    const { log, onFormEvent } = recorder();
+    const engine = new FormEngine(emails, {}, { onValidate: () => check.promise, onFormEvent, validateWithRules: true });
+    const submitting = engine.submit(() => {});
+    expect(await engine.submit(() => {})).toBe(false);
+    check.resolve({ confirm: 'Emails must match' });
+    expect(await submitting).toBe(false);
+    expect(log).toEqual([`email: ${engine.errors.email}`, 'confirm: Emails must match']);
+  });
+
+  it('reports each error once when a second next arrives while onValidate runs', async () => {
+    const check = deferred<Result>();
+    const { log, onFormEvent } = recorder();
+    const engine = new FormEngine(league, {}, { onValidate: () => check.promise, onFormEvent, validateWithRules: true });
+    const moving = engine.next();
+    expect(await engine.next()).toBe(false);
+    check.resolve({ plan: 'Pick a paid plan' });
+    expect(await moving).toBe(false);
+    expect(log).toEqual([`email: ${engine.errors.email}`, 'plan: Pick a paid plan']);
   });
 });
