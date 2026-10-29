@@ -1,6 +1,6 @@
 ---
 title: "Form definition 1.7 specification"
-description: "Formhaus form definition format 1.7: fields, sections, groups, conditions, validation, steps, routes, answer recall, option order, file lists, translations and the payload."
+description: "Formhaus form definition format 1.7: fields, sections, groups, conditions, validation, steps, routes, recall, option order, file lists and translations."
 ---
 
 # Formhaus form definition 1.7
