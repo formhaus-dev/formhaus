@@ -82,7 +82,7 @@ export const components: FieldComponentMap = {
           hover: true,
         }),
       },
-      file: { component: FileField, props: (f) => ({ f }) },
+      file: { component: FileField, props: (f, _, { field }) => ({ f, field }) },
     },
   }),
 };
