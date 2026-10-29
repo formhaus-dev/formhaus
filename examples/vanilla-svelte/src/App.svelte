@@ -1,5 +1,6 @@
 <script>
 import { FormEngine } from '@formhaus/core';
+import { addFiles, fileEntries, isFileList, removeFile } from '@formhaus/core/fields';
 import definition from './definition.json';
 
 const STEP_SEPARATOR = ' \u2014 ';
@@ -37,6 +38,13 @@ function points(field) {
 function handleFieldChange(key, value) {
   engine.setValue(key, value);
   sync();
+}
+
+function handleFilesPick(field, input) {
+  const picked = Array.from(input.files ?? []);
+  if (!isFileList(field)) return handleFieldChange(field.key, picked[0] ?? null);
+  input.value = '';
+  if (picked.length) handleFieldChange(field.key, addFiles(values[field.key], picked));
 }
 
 async function handleNext() {
@@ -94,6 +102,18 @@ async function handleSubmit() {
           <label><input type="checkbox" role="switch" checked={values[field.key] ?? false} on:change={e => handleFieldChange(field.key, e.target.checked)} /> {field.label}</label>
         {:else if field.type === 'textarea'}
           <textarea id={field.key} rows={field.rows ?? 3} placeholder={field.placeholder ?? ''} on:input={e => handleFieldChange(field.key, e.target.value)}>{values[field.key] ?? ''}</textarea>
+        {:else if field.type === 'file'}
+          <input id={field.key} type="file" accept={field.accept} multiple={isFileList(field)} on:change={e => handleFilesPick(field, e.target)} />
+          {#if isFileList(field)}
+            <ul style="list-style: none; margin: 4px 0 0; padding: 0">
+              {#each fileEntries(values[field.key]) as entry (entry.index)}
+                <li style="display: flex; gap: 8px; align-items: center; margin-top: 4px">
+                  {entry.name}
+                  <button type="button" aria-label="Remove {entry.name}" on:click={() => handleFieldChange(field.key, removeFile(values[field.key], entry.index))}>Remove</button>
+                </li>
+              {/each}
+            </ul>
+          {/if}
         {:else if field.type === 'autocomplete'}
           <input
             id={field.key}

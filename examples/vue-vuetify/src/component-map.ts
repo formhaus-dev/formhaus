@@ -1,18 +1,8 @@
 import type { FieldComponentMap, FieldProps } from '@formhaus/vue';
 import { type ControlOption, mapControls } from '@formhaus/vue/controls';
 import { h } from 'vue';
-import {
-  VCheckbox,
-  VCombobox,
-  VFileInput,
-  VRadio,
-  VRadioGroup,
-  VRating,
-  VSelect,
-  VSwitch,
-  VTextarea,
-  VTextField,
-} from 'vuetify/components';
+import { VCheckbox, VCombobox, VRadio, VRadioGroup, VRating, VSelect, VSwitch, VTextarea, VTextField } from 'vuetify/components';
+import FileField from './fields/FileField.vue';
 import GroupShell from './fields/GroupShell.vue';
 import MatrixRow from './fields/MatrixRow.vue';
 import OptionTiles from './fields/OptionTiles.vue';
@@ -92,7 +82,7 @@ export const components: FieldComponentMap = {
           hover: true,
         }),
       },
-      file: VFileInput,
+      file: { component: FileField, props: (f) => ({ f }) },
     },
   }),
 };
