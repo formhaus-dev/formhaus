@@ -163,7 +163,7 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
     fields.some((field) => field.type === 'file'),
     ['chooseFile'],
   );
-  add(fields.some(isFileList), ['removeItem', 'removeItemNamed', 'itemAdded', 'itemRemoved']);
+  add(fields.some(isFileList), ['removeItem', 'removeItemNamed', 'itemAdded', 'itemRemoved', 'fileCount']);
   return [
     ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),
