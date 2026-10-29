@@ -59,9 +59,21 @@ export interface RendererHarness {
   containers?: Record<string, unknown>;
   controls?: Record<string, unknown>;
   mapped?: Record<
-    'shell' | 'bare' | 'mixed' | 'doubled' | 'named' | 'typed' | 'plain' | 'revealed' | 'object' | 'objectNamed' | 'objectMerged',
+    | 'shell'
+    | 'bare'
+    | 'mixed'
+    | 'doubled'
+    | 'named'
+    | 'typed'
+    | 'plain'
+    | 'revealed'
+    | 'object'
+    | 'objectNamed'
+    | 'objectMerged'
+    | 'context',
     Record<string, unknown>
   >;
+  views?: Record<string, unknown>;
   design?: { components: Record<string, unknown>; layout: Record<string, unknown> };
 }
 
