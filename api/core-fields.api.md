@@ -11,6 +11,9 @@ export function addFiles(value: unknown, picked: unknown, max?: number): unknown
 export type DateType = 'date' | 'datetime' | 'time';
 
 // @public (undocumented)
+export const defaultFileText: FileText;
+
+// @public (undocumented)
 export interface FieldAria {
     // (undocumented)
     'aria-describedby'?: string;
@@ -169,6 +172,31 @@ export interface FileEntry {
 export function fileLimit(field: FormField): number;
 
 // @public (undocumented)
+export interface FilePick {
+    // (undocumented)
+    focus: number | null;
+    // (undocumented)
+    full: boolean;
+    // (undocumented)
+    notice: string;
+    // (undocumented)
+    status: string;
+    // (undocumented)
+    value: unknown[] | undefined;
+}
+
+// @public (undocumented)
+export const filesFull: (field: FormField, value: unknown) => boolean;
+
+// @public (undocumented)
+export interface FileText {
+    // (undocumented)
+    label: (key: LabelKey, params?: Record<string, unknown>) => string;
+    // (undocumented)
+    limit: (field: FormField, max: number) => string;
+}
+
+// @public (undocumented)
 export interface FreeText {
     // (undocumented)
     setText: (text: string) => void;
@@ -199,6 +227,9 @@ export const optionText: (options: FieldOption[], value: unknown) => string;
 
 // @public (undocumented)
 export const optionValue: (options: FieldOption[], text: string) => string;
+
+// @public (undocumented)
+export function pickFiles(field: FormField, value: unknown, picked: unknown, text?: FileText): FilePick;
 
 // @public (undocumented)
 export const removeFile: (value: unknown, index: number) => unknown[];

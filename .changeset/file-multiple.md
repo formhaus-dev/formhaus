@@ -11,6 +11,8 @@
 - The built-in React and Vue file fields add picked files to the list and show each file with a Remove button. The picker stops at the list's maximum and shows the `maxItems` message when it drops files.
 - `mapControls` passes `multiple` to a `file` control and writes the picked files as an array.
 - `FormhausForm` uploads each file of a list and submits the list of upload ids.
-- New `isFileList`, `addFiles`, `removeFile` and `fileEntries` in `@formhaus/core/fields`.
+- New `isFileList`, `addFiles`, `removeFile`, `fileEntries`, `fileLimit`, `filesFull` and `pickFiles` in `@formhaus/core/fields`, and `useFileText()` in `@formhaus/react` and `@formhaus/vue`. Mapped controls get the file texts as `context.text`.
+- In a file list, `''` and `null` entries are not files. A number or an object without a `name` fails with the `file` message.
+- New `fileCount` label for native screen readers.
 - `checkDefinition()` reports `multiple-not-applicable`, and `outdated-format-version` for `multiple` below format 1.7. `suggestFixes()` offers to remove `multiple` where it does not apply.
 - `capabilities` in `@formhaus/mcp` describes `multiple`.

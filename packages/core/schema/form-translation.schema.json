@@ -173,6 +173,9 @@
         "stepErrors": {
           "type": "string"
         },
+        "fileCount": {
+          "type": "string"
+        },
         "or": {
           "type": "string"
         },

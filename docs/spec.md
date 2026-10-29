@@ -975,6 +975,7 @@ A definition holds its texts in one language, the source language. Catalogs, tra
 | `submit` | `Submit` | |
 | `stepTitle` | `Step {index}` | `index` (1-based) |
 | `stepErrors` | `Errors: {count}` | `count` |
+| `fileCount` | `Files: {count}` | `count` |
 | `or` | `or` | |
 | `select` | `Select` | |
 
@@ -985,7 +986,7 @@ A message for a failed rule comes from the first of:
 3. `definition.messages`.
 4. The default.
 
-A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. In a [file list](#file-lists), `removeItem`, `removeItemNamed`, `itemAdded` and `itemRemoved` name the Remove button of a file and announce changes, with the file name as `item`. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
+A label comes from the explicit action label, then the `labels` renderer option, then `definition.labels`, then the default. `skip` and `submit` apply when the step `skip` or the form `submit` has no label. `stepTitle` names a step without a title in the step progress, and `stepErrors` marks a step with errors there. `or` is the divider before [exclusive options](#exclusive-options). `select` is the prompt of an empty select. `clear` names the button that clears a field, `done` the button that confirms a date or time picker, and `chooseFile` the button that opens the file picker. In a [file list](#file-lists), `removeItem`, `removeItemNamed`, `itemAdded` and `itemRemoved` name the Remove button of a file and announce changes, with the file name as `item`. Native renderers read the number of files with `fileCount`; web renderers do not use it. `required` is the word assistive technology announces for a required field. The web renderers add it as visually hidden text to the legend of a required `radio`, `multiselect`, `scale` or `rating` group. Web renderers use `aria-required` and the browser file input, so they do not show `clear`, `done`, `chooseFile` or `select`. A `messages` or `labels` option MAY be a function `(key, params, field)` or `(key, params)`. Its result is final text and is not formatted again. `undefined` or `''` falls through to the next source.
 
 Core resolves a message when the rule fails. Errors stay strings. The `messages` option is fixed for the lifetime of an engine.
 
