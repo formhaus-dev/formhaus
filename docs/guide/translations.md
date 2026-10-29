@@ -61,7 +61,7 @@ import ru from '@formhaus/core/locales/ru';
 
 `locale` takes one source or a list: catalogs and `translation()` of a [translation file](#translation-files) or of your [translation keys](#translation-keys). A translation also sets `lang` of the form. `@formhaus/core/locales/ru` is typed. `@formhaus/core/locales/ru.json` is the same catalog as plain JSON. `FormEngine` takes `locale` as an option.
 
-A new `locale` switches the texts and keeps the answers. Shown errors switch on the next validation.
+A new `locale` switches the texts, the shown errors included, and keeps the answers.
 
 ### Load the user's language
 
@@ -149,6 +149,7 @@ Texts without a key keep the source text with `prefix: false`. Without it, Formh
 ### React with react-i18next
 
 ```tsx
+import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FormRenderer } from '@formhaus/react';
 import { translation } from '@formhaus/core/i18n';
@@ -156,12 +157,15 @@ import definition from './signup.json';
 
 export function Signup() {
   const { t, i18n } = useTranslation('forms');
-  const locale = translation({ locale: i18n.language, translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }), prefix: false });
+  const locale = useMemo(
+    () => translation({ locale: i18n.language, translate: (key, params, defaultValue) => t(key, { ...params, defaultValue }), prefix: false }),
+    [t, i18n.language],
+  );
   return <FormRenderer definition={definition} locale={locale} onSubmit={save} />;
 }
 ```
 
-An inline `translate` is safe: the form keeps its answers and calls the latest function. The texts of the form update when a namespace finishes loading.
+`t` from `react-i18next` changes when a namespace finishes loading, so the memo picks up the loaded texts. A new translation keeps the answers. Without the memo the form still works, but compares its texts on every render.
 
 Lokalise: export the `forms` namespace as nested JSON with i18next placeholders, so `errors.password.tooShort` can read `Не менее {{min}} символов`.
 

@@ -204,7 +204,7 @@ const { errors } = validateSubmission(localized, values, { messages });
 
 | Export | Returns | Description |
 |---|---|---|
-| `translation(file)`, `translation({ locale, translate, prefix? })` | `Translation` | A `locale` source that translates the texts of the form |
+| `translation(file)`, `translation({ locale, translate, prefix? })` | `Translation` | A `locale` source that translates the texts of the form. `Translation` is opaque: only `translation()` makes one, and only `locale` reads it |
 | `localize(definition, locale)` | `{ definition, messages, labels }` | The translated definition and the `messages` and `labels` functions of the same sources as the `locale` option |
 | `translationTemplate(definition)` | overlay | Skeleton with the source texts as values |
 | `textSlots(definition, { prefix? })` | `TextSlot[]` | `{ address, key, text, params, hash }` for every translatable text |
