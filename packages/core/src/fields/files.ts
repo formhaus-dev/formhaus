@@ -14,7 +14,7 @@ export const addFiles = (value: unknown, picked: unknown): unknown[] => [
 
 export const removeFile = (value: unknown, index: number): unknown[] => fileItems(value).filter((_, at) => at !== index);
 
-export const fileName = (item: unknown): string | undefined =>
+const fileName = (item: unknown): string | undefined =>
   typeof item === 'object' && item !== null && typeof (item as { name?: unknown }).name === 'string'
     ? (item as { name: string }).name
     : undefined;

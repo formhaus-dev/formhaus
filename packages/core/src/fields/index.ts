@@ -1,14 +1,5 @@
 export { fromDate, toDate, type DateType } from './dates';
-export {
-  addFiles,
-  fileEntries,
-  fileNames,
-  isFileList,
-  isListLike,
-  nextRemove,
-  removeFile,
-  type FileEntry,
-} from './files';
+export { addFiles, fileEntries, isFileList, removeFile, type FileEntry } from './files';
 export { optionText, optionValue } from './options';
 export { scaleView, type ScaleAnchor, type ScaleView } from './scale';
 export {
