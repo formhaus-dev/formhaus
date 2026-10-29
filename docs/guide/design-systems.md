@@ -162,17 +162,25 @@ controls: {
 | Key | Value |
 |---|---|
 | `component` | The control component |
-| `props` | A function that gets `f` and the options and returns props. Its props override the preset and `optionsProp` |
+| `props` | A function that gets `f`, the options and the context `{ kind, field, anchors }` and returns props. Its props override the preset and `optionsProp` |
 | `optionsProp` | The name of the prop that gets the options |
 | `changeProp` | The name of the prop that reports changes. React uses `onChange` by default, Vue `onUpdate:modelValue`. See [Change prop](#change-prop) |
 
 - `options` are the field options, the matrix columns in a matrix row, or the points of a `scale` or `rating` as `{ value: 3, label: '3' }`.
 - In Vue, `children` from `props` becomes the default slot.
+- The context has the [kind](#kinds), the field definition and the `anchors` the [shell](#shell) gets. A control reads its config from `field` and labels its own points with `anchors`:
+
+```tsx
+radio: { component: RadioGroup, optionsProp: 'options', props: (f, options, { field }) => ({ row: field.layout === 'inline' }) },
+scale: { component: Slider, props: (f, options, { anchors }) => ({ marks: anchors.filter((anchor) => anchor !== undefined).map(({ point, label }) => ({ value: point, label })) }) },
+```
+
+- `f.loading` is set while the options provider of the field runs or `engine.setFieldLoading(key, true)` is active, for a busy state such as `loading` on MUI `Autocomplete` or Vuetify `VSelect`. `f.disabled` is set then too.
 - `f.maxLength` and `f.minLength` feed the character counter of a design system, such as Ant Design `showCount`, Element Plus `show-word-limit` or the GOV.UK character count: `textarea: { component: Input.TextArea, props: (f) => ({ showCount: true, maxLength: f.maxLength }) }`. A native `maxLength` stops typing at the limit; leave it out to let the user type on and see the error.
 
 React types `props`, `optionsProp` and `changeProp` with the props of the component, and Vue with its `$props`. A wrong prop name, or a wrong type in a returned prop, fails the type check. Literal unions such as `size: 'large'` are checked as strings.
 
-Inside the `mapControls` call the parameters of `props` get their types. When you declare an entry outside the call, type it with `ControlSpec` from the `/controls` entry: `const select: ControlSpec<typeof Select> = { component: Select, optionsProp: 'options' }`. Then `optionsProp` and `changeProp` stay checked and `props` gets typed parameters. A `props` function declared on its own takes `(f: FieldProps, options: ControlOption[]) => ...`.
+Inside the `mapControls` call the parameters of `props` get their types. When you declare an entry outside the call, type it with `ControlSpec` from the `/controls` entry: `const select: ControlSpec<typeof Select> = { component: Select, optionsProp: 'options' }`. Then `optionsProp` and `changeProp` stay checked and `props` gets typed parameters. A `props` function declared on its own takes `(f: FieldProps, options: ControlOption[], context: ControlContext) => ...`, and may leave out the last parameters.
 
 ### Tuple shorthand
 
@@ -237,7 +245,7 @@ mapControls({
 })
 ```
 
-The control gets the typed text as its value. Text that matches an option label saves the option value, other text saves as typed. With two options of the same label, the first one wins. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do.
+The control gets the typed text as its value. Text that matches an option saves the option value, other text saves as typed. Options with the same label get the value in the text, such as `Paris (fr)`. Without `freeText` the control gets and sends option values, as MUI `Autocomplete`, Ant Design `Select` and Vuetify `VAutocomplete` do. A hand-written field gets the same text from [`f.freeText`](/guide/custom-fields#free-text).
 
 ## Conditional reveal
 

@@ -1,5 +1,5 @@
-import { fieldState, fieldValue, optionChecked, type FieldAria, type FieldControl, type FieldView } from '@formhaus/core/fields';
-import { computed } from 'vue';
+import { fieldState, fieldValue, freeText, optionChecked, type FieldAria, type FieldControl, type FieldView } from '@formhaus/core/fields';
+import { computed, ref } from 'vue';
 import type { FieldComponentProps } from '../types';
 
 export type FieldEmit = ((event: 'update:modelValue', value: unknown) => void) &
@@ -26,6 +26,11 @@ export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Read
   const blur = () => emit('blur');
   const focus = () => emit('focus');
   const onInput = (event: Event) => change((event.target as HTMLInputElement).value);
+  const typed = ref('');
+  const keep = (value: string, text: string) => {
+    typed.value = text;
+    change(value);
+  };
   const view = computed((): FieldProps => {
     const state = fieldState(props);
     const control: FieldAttrs = {
@@ -38,12 +43,15 @@ export function useFieldProps(props: FieldComponentProps, emit: FieldEmit): Read
       onBlur: blur,
       onFocus: focus,
     };
+    const options = props.matrix?.columns ?? props.field.options ?? [];
     return {
       ...state,
       value: props.modelValue,
       text: props.modelValue == null ? '' : String(props.modelValue),
+      loading: !!props.loading,
+      freeText: freeText(options, props.modelValue, typed.value, keep),
       testId: props.testId,
-      options: props.matrix?.columns ?? props.field.options ?? [],
+      options,
       change,
       commit,
       blur,

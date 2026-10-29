@@ -38,7 +38,17 @@ export interface ControlClickEvent {
 }
 
 // @public (undocumented)
-export type ControlEntryOf<Component, View, Option = ControlOption> = Component | readonly [Component, string | ((f: View, options: Option[]) => object) | null, string?] | ControlSpecOf<Component, View, Option>;
+export interface ControlContext {
+    // (undocumented)
+    anchors: (ScaleAnchor | undefined)[];
+    // (undocumented)
+    field: FormField;
+    // (undocumented)
+    kind: ControlKind;
+}
+
+// @public (undocumented)
+export type ControlEntryOf<Component, View, Option = ControlOption> = Component | readonly [Component, string | ((f: View, options: Option[], context: ControlContext) => object) | null, string?] | ControlSpecOf<Component, View, Option>;
 
 // @public (undocumented)
 export interface ControlKeyEvent {
@@ -74,6 +84,8 @@ export interface ControlPreset {
     // (undocumented)
     attrs: object;
     // (undocumented)
+    freeText?: FreeText;
+    // (undocumented)
     input: boolean;
     // (undocumented)
     kind: ControlKind;
@@ -96,6 +108,7 @@ export function controlProps(field: FormField, state: FieldState & {
     control: Record<string, unknown>;
     anchors: (_formhaus_core_fields.ScaleAnchor | undefined)[];
     save(input: unknown, detail?: unknown): unknown;
+    freeText: boolean;
     root: ControlRoot;
 };
 
@@ -129,7 +142,7 @@ export interface ControlSpecOf<Component, View, Option = ControlOption> {
     // (undocumented)
     optionsProp?: string;
     // (undocumented)
-    props?: (f: View, options: Option[]) => object;
+    props?: (f: View, options: Option[], context: ControlContext) => object;
 }
 
 // @public (undocumented)

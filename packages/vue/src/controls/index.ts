@@ -9,4 +9,4 @@ export {
   type ControlSpec,
   type MapControlsConfig,
 } from './mapControls';
-export type { ControlKind } from '@formhaus/core/controls';
+export type { ControlContext, ControlKind } from '@formhaus/core/controls';
