@@ -1,3 +1,5 @@
+import type { FormDefinition } from './definition';
+
 export type MessageKey =
   | 'required'
   | 'minLength'
@@ -65,9 +67,8 @@ export type LocaleText = string | PluralForms;
 
 export interface LocaleCatalog {
   locale: string;
-  messages?: Partial<Record<MessageKey, LocaleText>>;
-  labels?: Partial<Record<LabelKey, LocaleText>>;
-  [text: string]: unknown;
+  messages: Partial<Record<MessageKey, LocaleText>>;
+  labels: Partial<Record<LabelKey, LocaleText>>;
 }
 
 export type TranslateFn = (key: string, params: Record<string, unknown>, defaultText: string) => string | undefined;
@@ -78,7 +79,13 @@ export interface TranslateSource {
   prefix?: string | false;
 }
 
-export type LocaleSource = LocaleCatalog | TranslateSource;
+export interface Translation {
+  locale: string;
+  texts(definition: FormDefinition): FormDefinition;
+  text(definition: FormDefinition, part: 'messages' | 'labels', key: string, params: Record<string, unknown>): string | undefined;
+}
+
+export type LocaleSource = LocaleCatalog | Translation;
 
 export interface FormI18n {
   title?: string;

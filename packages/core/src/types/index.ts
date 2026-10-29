@@ -34,6 +34,7 @@ export type {
   StepI18n,
   TranslateFn,
   TranslateSource,
+  Translation,
   ValidationI18n,
 } from './i18n';
 export type {

@@ -103,8 +103,6 @@ function catalogSlots(definition: FormDefinition, name: 'messages' | 'labels', u
   });
 }
 
-export const formSlots = (definition: FormDefinition): Slot[] => textNodes(definition).flatMap((node) => nodeSlots(definition, node));
-
 export function definitionSlots(definition: FormDefinition): Slot[] {
   const steps = definition.steps ?? [];
   const nodes = getAllFields(definition);
@@ -163,7 +161,7 @@ export function definitionSlots(definition: FormDefinition): Slot[] {
     ['chooseFile'],
   );
   return [
-    ...formSlots(definition),
+    ...textNodes(definition).flatMap((node) => nodeSlots(definition, node)),
     ...catalogSlots(definition, 'messages', usedMessages(definition)),
     ...catalogSlots(definition, 'labels', labels),
   ];
