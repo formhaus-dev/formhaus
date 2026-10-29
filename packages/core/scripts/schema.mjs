@@ -79,6 +79,12 @@ const texts = (names) => ({
   additionalProperties: false,
 });
 
+const catalog = (names) => ({
+  type: 'object',
+  properties: Object.fromEntries(names.map((name) => [name, { anyOf: [text, { $ref: '#/definitions/plural' }] }])),
+  additionalProperties: false,
+});
+
 export function buildTranslationSchema(definitionSchema = buildSchema()) {
   const names = (name) => Object.keys(definitionSchema.definitions[name].properties);
   const action = texts(['label']);
@@ -90,12 +96,13 @@ export function buildTranslationSchema(definitionSchema = buildSchema()) {
   field.properties.fields = fields;
   const step = texts(['title', 'description']);
   Object.assign(step.properties, { next: action, back: action, skip: action, sections, fields });
-  const overlay = texts(['title', 'description']);
+  const overlay = texts(['locale', 'title', 'description']);
+  const plural = { ...texts(['zero', 'one', 'two', 'few', 'many', 'other']), required: ['other'] };
   Object.assign(overlay.properties, {
     submit: action,
     cancel: action,
-    messages: texts(names('MessageCatalog')),
-    labels: texts(names('LabelCatalog')),
+    messages: catalog(names('MessageCatalog')),
+    labels: catalog(names('LabelCatalog')),
     sections,
     fields,
     steps: { type: 'object', additionalProperties: { $ref: '#/definitions/step' } },
@@ -105,9 +112,9 @@ export function buildTranslationSchema(definitionSchema = buildSchema()) {
     $id: 'https://formhaus.dev/schema/form-translation.json',
     title: 'Formhaus translation overlay',
     description:
-      'Translated texts of one form in one language, keyed by step id, section key, field key and option value. In a multi-step form, top-level fields.<key> also applies and steps.<id>.fields.<key> wins over it. Every leaf is a string; empty strings fall back to the source text.',
+      'Translated texts of one form in one language, keyed by step id, section key, field key and option value. locale is the language tag. In a multi-step form, top-level fields.<key> also applies and steps.<id>.fields.<key> wins over it. Every text is a string, and a message or label may also be an object of plural forms; empty strings fall back to the source text.',
     ...overlay,
-    definitions: { field, step },
+    definitions: { field, step, plural },
   };
 }
 

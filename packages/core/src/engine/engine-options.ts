@@ -1,7 +1,7 @@
 import type { DefinitionIssue } from '../definition-validation';
 import type { FormEvent, GoToStepResult } from '../types/analytics';
 import type { MessageSource, ValidatorFn } from '../validation';
-import type { FieldOption, LocaleCatalog } from '../types';
+import type { FieldOption, LocaleSource } from '../types';
 import type { RecallFormatFn } from './recall-format';
 
 export type { GoToStepResult };
@@ -45,7 +45,7 @@ export interface FormEngineOptions {
   onAfterSubmit?: AfterSubmitFn;
   validators?: Record<string, ValidatorFn>;
   messages?: MessageSource;
-  locale?: LocaleCatalog | LocaleCatalog[];
+  locale?: LocaleSource | LocaleSource[];
   onStepValidate?: StepValidateFn;
   onValidate?: ValidateFn;
   validateWithRules?: boolean;
