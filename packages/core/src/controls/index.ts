@@ -7,11 +7,11 @@ import {
   freeText,
   fromDate,
   isFileList,
-  isListLike,
   numberValue,
   optionValue,
   scaleView,
 } from '@formhaus/core/fields';
+import { isListLike } from '../fields/files';
 import type { FieldOption, FormField } from '../types';
 import { revealable } from '../internal/reveal';
 import { POINT_TYPES } from './options';
