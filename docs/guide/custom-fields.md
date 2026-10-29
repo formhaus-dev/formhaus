@@ -89,8 +89,8 @@ With Vuetify: `<v-text-field v-bind="f.input" :type="f.inputType" :label="f.labe
 | `freeText(options, value, text, save)` | The `freeText` of a field view from the typed text. `setText` calls `save(value, text)` |
 | `toggleOption(value, option)` | A `multiselect` value with the option added or removed |
 | `isFileList(field)` | Whether a `file` field keeps a [list of files](/guide/fields#several-files) |
-| `addFiles(value, files)`, `removeFile(value, index)` | A file list with the picked files added at the end, or with one item removed |
-| `fileEntries(value)` | The `{ index, name }` of each file in a file list. References the app supplied are left out |
+| `addFiles(value, files, max?)`, `removeFile(value, index)` | A file list with the picked files added at the end, up to `max` items, or with one item removed |
+| `fileEntries(value)` | The `{ index, name }` of each item of a file list: a file's name, or the last path segment of a reference the app supplied |
 
 ### Free text
 
