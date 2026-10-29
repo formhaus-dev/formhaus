@@ -31,7 +31,7 @@ const props = withDefaults(
   defineProps<{
     engine: FormEngine;
     formId: string;
-    group: FormGroup;
+    group: FormGroup & object;
     items: GroupItem[];
     value: unknown;
     errors: Readonly<Record<string, string>>;
