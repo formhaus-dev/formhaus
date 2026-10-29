@@ -2,6 +2,7 @@
 import type { FieldOption, FormEngine, FormField, FormGroup, GroupItem, LabelKey, LabelSource } from '@formhaus/core';
 import {
   CLOSED_DIALOG,
+  copyField,
   engineLabel,
   errorDomId,
   fieldDomId,
@@ -75,7 +76,7 @@ function itemProps(index: number, field: FormField) {
     id: errorDomId(props.engine, props.formId, key),
     field: autofilled(
       props.engine,
-      recalled(props.engine, { ...field, ...(options && { options }), key, autoAdvance: undefined }, key),
+      recalled(props.engine, copyField(field, { ...(options && { options }), key, autoAdvance: undefined }), key),
       key,
     ),
     modelValue: values.value[index]?.[field.key],
