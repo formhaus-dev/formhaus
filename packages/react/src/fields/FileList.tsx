@@ -1,4 +1,5 @@
-import { addFiles, fileEntries, fileNames, nextRemove, removeFile } from '@formhaus/core/fields';
+import { addFiles, fileEntries, removeFile } from '@formhaus/core/fields';
+import { fileNames, nextRemove } from '@formhaus/core/internal';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { LabelContext } from '../labels';
 import type { FieldComponentProps } from '../types';
