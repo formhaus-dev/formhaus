@@ -27,7 +27,7 @@ Before you write a component, read [Value types](#value-types): each built-in ty
 
 ## Field helpers
 
-`fieldProps(props)` in React and `useFieldProps(props, emit)` in Vue return everything a field needs from the [contract](#contract): ids, ARIA, flags, the value and the handlers. A text field is then a few lines:
+`fieldProps(props)` or the hook `useFieldProps(props)` in React and `useFieldProps(props, emit)` in Vue return everything a field needs from the [contract](#contract): ids, ARIA, flags, the value and the handlers. A text field is then a few lines:
 
 ::: code-group
 <<< @/recipes/snippets/text-input.vue [Vue]
@@ -42,11 +42,13 @@ Before you write a component, read [Value types](#value-types): each built-in ty
 | `helperId`, `errorId` | `` `${id}-helper` `` and `` `${id}-error` `` |
 | `describedBy` | The helper id and then the error id, only the ones shown |
 | `invalid`, `required`, `disabled` | `error` is set, `validation.required` is set, `disabled` or `loading` is set |
+| `loading` | The [options provider](/guide/fields#select) of the field runs. Set `aria-busy` with it |
 | `minLength`, `maxLength` | `validation.minLength` and `validation.maxLength` of a `text`, `email`, `phone`, `password` or `textarea` field, for a character counter. The input does not get them as attributes, so typing past the limit shows the error instead of cutting the text |
 | `inputType`, `inputMode` | The `type` of a native input for the field type (`text`, `email`, `tel`, `number`, `password`, `date`, `time` or `datetime-local`), and `field.inputMode` |
 | `aria` | `aria-invalid`, `aria-required` and `aria-describedby`, for a control or group whose helper and error you render |
 | `testId` | The [test id](/guide/testing) of the field |
 | `value`, `text` | The value, and the value as a string with `''` for `null` |
+| `freeText` | `text` and `setText(text)` for an input that takes typed text, see [Free text](#free-text) |
 | `change(value)` | Saves a value. For `number`, decimal text becomes a number, empty text becomes `null`, other text stays a string |
 | `onInput(event)` | `change` with the value of an input event |
 | `commit(value)` | A discrete pick: commits with [autoAdvance](#autoadvance), else saves |
@@ -84,7 +86,21 @@ With Vuetify: `<v-text-field v-bind="f.input" :type="f.inputType" :label="f.labe
 | `fromDate(date, type)`, `toDate(value)` | A `date`, `datetime` or `time` value from a `Date`, and a `Date` from such a value. See [Value types](#value-types) |
 | `scaleView(field)` | The points, `min`, `max` and the start, middle and end anchors of a `scale` or `rating`. See [Scale](#scale) |
 | `optionText(options, value)`, `optionValue(options, text)` | The text an `autocomplete` shows for a value, and the value for a typed text |
+| `freeText(options, value, text, save)` | The `freeText` of a field view from the typed text. `setText` calls `save(value, text)` |
 | `toggleOption(value, option)` | A `multiselect` value with the option added or removed |
+
+### Free text
+
+`f.freeText` drives an autocomplete input that takes typed text:
+
+```tsx
+export function CityInput(props: FieldComponentProps) {
+  const f = useFieldProps(props)
+  return <input {...f.attrs} aria-busy={f.loading} value={f.freeText.text} onChange={(event) => f.freeText.setText(event.target.value)} />
+}
+```
+
+`setText` saves the value of the first option with that label, other text as typed. `text` is the typed text while it gives the value, else the label of the value. `fieldProps` in React keeps no typed text between renders, so `text` is always the label of the value; use the hook `useFieldProps` to keep it. In Vue: `<input v-bind="f.attrs" :aria-busy="f.loading" :value="f.freeText.text" @input="f.freeText.setText($event.target.value)" />`.
 
 ## Contract
 
