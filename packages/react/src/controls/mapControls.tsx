@@ -120,8 +120,7 @@ function mapped(entry: ControlEntryOf<Control, FieldProps, ControlOption>, input
       input,
       attrs: f.input,
       valueKey,
-      text: config.freeText ? f.freeText.text : undefined,
-      setText: f.freeText.setText,
+      freeText: config.freeText ? f.freeText : undefined,
     });
     const element = createElement(Control, {
       ...control,

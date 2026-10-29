@@ -125,8 +125,7 @@ function mapped(entry: ControlEntryOf<Component, FieldProps, ControlOption>, inp
           input,
           attrs: f.input,
           valueKey: 'modelValue',
-          text: config.freeText ? f.freeText.text : undefined,
-          setText: f.freeText.setText,
+          freeText: config.freeText ? f.freeText : undefined,
         });
         const options = controlOptions(field, f.options, props.reveals);
         const { children, ...adapted } = adapt(f, options, { kind, field, anchors }) as { children?: Slot };
