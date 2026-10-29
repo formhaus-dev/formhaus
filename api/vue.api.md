@@ -456,9 +456,9 @@ export const formRendererProps: {
     lang: StringConstructor;
     locale: PropType<Renderer["locale"]>;
     formatRecall: PropType<Renderer["formatRecall"]>;
-    seed: PropType<string>;
+    seed: StringConstructor;
     research: PropType<FormResearch>;
-    hiddenValues: PropType<"clear" | "keep">;
+    hiddenValues: PropType<Renderer["hiddenValues"]>;
     errors: PropType<Renderer["errors"]>;
     labels: PropType<LabelSource>;
     errorSummary: {
