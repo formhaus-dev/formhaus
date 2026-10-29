@@ -92,6 +92,30 @@ describe('FormEngine abort signal', () => {
     await expect(submitting).resolves.toBe(false);
   });
 
+  it('stays stale when a changed value is changed back', async () => {
+    const gate = deferred<void>();
+    const sent: unknown[] = [];
+    let signal: AbortSignal | undefined;
+    const engine = new FormEngine(
+      singleStep,
+      { email: 'a@b.co' },
+      {
+        onBeforeSubmit: async (_, received) => {
+          signal = received;
+          await gate.promise;
+        },
+      },
+    );
+    const submitting = engine.submit((values) => void sent.push(values));
+    await Promise.resolve();
+    engine.setValue('email', 'c@d.co');
+    engine.setValue('email', 'a@b.co');
+    gate.resolve();
+    await expect(submitting).resolves.toBe(false);
+    expect(signal?.aborted).toBe(true);
+    expect(sent).toEqual([]);
+  });
+
   it('keeps the signal live once the operation settles', async () => {
     const signals: AbortSignal[] = [];
     const engine = new FormEngine(

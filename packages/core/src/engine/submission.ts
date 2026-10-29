@@ -5,7 +5,7 @@ import type { SubmitHandler, SubmitResult } from './engine-options';
 import type { EngineInternals } from './runtime-internals';
 import { applyValidationErrors, clearFormErrors, getSubmitValues, validateForm } from './validation-state';
 import { includeCurrentStep } from './step-skip';
-import { abortWhenStale } from './operation-signal';
+import { watchOperation } from './operation-signal';
 import { passesValidate } from './validate-hook';
 
 type Rejection = Extract<SubmitResult, { ok: false }>;
@@ -35,10 +35,10 @@ export async function submitForm(engine: EngineInternals, submit: SubmitHandler,
   const operation = (engine.latestOperation = ++engine.operationEpoch);
   let values = getSubmitValues(engine, true);
   const inputsChanged = watchCheckedInputs(engine, values);
-  const stale = () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged();
-  const pending = abortWhenStale(engine, stale);
   engine.state.submitting = true;
   engine.notify();
+  const pending = watchOperation(engine, () => epoch !== engine.validationEpoch || operation !== engine.operationEpoch || inputsChanged());
+  const { stale } = pending;
   const fail = () => {
     if (!stale()) emit(engine, { type: 'form_submit_failed', reason: 'validation' });
     return false;
