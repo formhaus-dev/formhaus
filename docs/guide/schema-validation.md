@@ -52,6 +52,25 @@ A field nobody answered is missing from the values. A text field the user cleare
 
 `'omit'` drops `''` at the top level and in group items, only from what the schema sees. The default, `'keep'`, passes `''` as it is.
 
+## Built-in checks
+
+The type check of a built-in field type runs with the definition rules, before the schema. `taro@example` in an `email` field shows "Enter a valid email", and the schema message for the same answer never shows.
+
+Keep `required` and the field `type` in the definition. Check in the schema what the types do not, such as a work email domain or a rule across fields. Each built-in check has a message code, such as `email`, `number`, `date` or `option`. Set its wording in the [`messages` catalog](/guide/translations#messages-and-labels):
+
+```json
+{
+  "messages": { "email": "Enter an email such as name@example.com" }
+}
+```
+
+A `messages` function gets the field, so one field can have its own wording:
+
+```ts
+const messages: MessageFn = (code, _params, field) =>
+  code === 'email' && field.key === 'workEmail' ? 'Enter your work email' : undefined;
+```
+
 ## Checks across fields
 
 An object-level check, such as Zod `.refine()` or ArkType `.narrow()`, runs only when every key of the object passes. On Continue the keys of later steps are missing, so mark the keys optional and keep `required` in the definition:
@@ -98,7 +117,31 @@ With a context, only issues on the paths in `fields` and issues without a path c
 ## Values and messages
 
 - The submit handler gets the form values, not the schema output. Transforms, coercion and defaults in the schema do not apply. Parse the values again in the handler when you need the output.
-- Schema messages come from the library and stay in its language. Pass your own messages, or set the library locale: `z.config(z.locales.de())` in Zod, [`@valibot/i18n`](https://valibot.dev/guides/internationalization/) in Valibot.
+- Schema messages come from the library, not from the Formhaus [locale catalogs](/guide/translations). Set the library locale with `z.config(z.locales.de())` in Zod or [`@valibot/i18n`](https://valibot.dev/guides/internationalization/) in Valibot, or pass your own messages as below.
+
+## Messages in each language
+
+Build the schema per language and pass the one for the active locale:
+
+<<< @/recipes/snippets/schema-messages.ts
+
+::: code-group
+```tsx [React]
+const onValidate = useMemo(() => validateIn(lang), [lang]);
+
+<FormRenderer definition={definition} lang={lang} onValidate={onValidate} onSubmit={send} />
+```
+
+```vue [Vue]
+<script setup lang="ts">
+const onValidate = computed(() => validateIn(lang.value));
+</script>
+
+<template>
+  <FormRenderer :definition="definition" :lang="lang" :on-validate="onValidate" @submit="send" />
+</template>
+```
+:::
 
 ## onValidate without a schema
 
