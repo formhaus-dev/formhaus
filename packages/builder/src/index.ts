@@ -18,6 +18,7 @@ export { fromDefinition, type ParseOptions } from './parse';
 export * from './ops/blocks';
 export * from './ops/locate';
 export * from './ops/fields';
+export * from './ops/files';
 export * from './ops/tracking';
 export * from './ops/steps';
 export * from './ops/options';
