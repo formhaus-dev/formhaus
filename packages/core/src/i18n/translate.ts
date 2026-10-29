@@ -1,14 +1,7 @@
-import type { FormDefinition, LocaleSource, TranslateSource } from '../types';
+import type { FormDefinition, TranslateSource } from '../types';
 import { formatText } from '../validation/default-messages';
 
-export type Ask = (
-  explicit: string | undefined,
-  address: string[],
-  params: Record<string, unknown>,
-  fallback: string,
-) => string | undefined;
-
-export const isTranslate = (source: LocaleSource): source is TranslateSource => typeof source.translate === 'function';
+type Ask = (explicit: string | undefined, address: string[], params: Record<string, unknown>, fallback: string) => string | undefined;
 
 export function translationKey(prefix: string | false, explicit: string | undefined, address: string[]): string | undefined {
   if (explicit !== undefined) return explicit;
