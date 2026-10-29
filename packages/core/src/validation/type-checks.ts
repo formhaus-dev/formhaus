@@ -34,16 +34,22 @@ export const NUMBER_TYPES = ['number', ...SCALE_TYPES];
 export const LIST_TYPES = ['multiselect'];
 export const RANDOMIZED_TYPES = ['radio', 'multiselect', 'select'];
 
-const fileLists = new WeakSet<object>();
+const FILE_LIST = Symbol.for('formhaus.fileList');
+const frozenLists = new WeakSet<object>();
 
 export const multipleFiles = (definition: Pick<FormDefinition, 'formatVersion'>, field: FormField): boolean =>
   field.type === 'file' && field.multiple === true && formatAtLeast(definition, 7);
 
-export function markFileLists(definition: FormDefinition, fields: FormField[]): void {
-  for (const field of fields) if (multipleFiles(definition, field)) fileLists.add(field);
-}
+export const isFileList = (field: object): boolean => (field as Record<symbol, unknown>)[FILE_LIST] === true || frozenLists.has(field);
 
-export const isFileList = (field: object): boolean => fileLists.has(field);
+export function markFileLists(definition: FormDefinition, fields: FormField[]): void {
+  for (const field of fields) {
+    const list = multipleFiles(definition, field);
+    if (list === isFileList(field)) continue;
+    if (Object.isExtensible(field)) (field as unknown as Record<symbol, boolean>)[FILE_LIST] = list;
+    else frozenLists[list ? 'add' : 'delete'](field);
+  }
+}
 
 const isListField = (field: FormField) => LIST_TYPES.includes(field.type) || isFileList(field);
 

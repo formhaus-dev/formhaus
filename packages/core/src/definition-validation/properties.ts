@@ -11,7 +11,7 @@ export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
   step: 'id title description fields show showAny routes next back skip i18n',
   field:
-    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options randomize layout columns optionsFrom optionsDependsOn accept rows mask inputMode autocomplete props i18n',
+    'key type label placeholder helperText autoAdvance defaultValue source show showAny validation options randomize layout columns optionsFrom optionsDependsOn accept multiple rows mask inputMode autocomplete props i18n',
   section: 'key type title description layout show showAny fields i18n',
   group: 'key type label helperText itemLabel addLabel removeLabel defaultItems show showAny validation fields i18n',
   option: 'value label image exclusive pinned i18n',
@@ -20,6 +20,8 @@ export const PROPERTIES = {
   validation:
     'required minLength minLengthMessage maxLength maxLengthMessage min minMessage max maxMessage pattern patternMessage matchField matchFieldMessage validator i18n',
 };
+
+const BEFORE_FILE_LISTS = PROPERTIES.field.replace(' multiple', '');
 
 const LABEL_HINT = 'Add a label so screen readers can name the input';
 
@@ -80,7 +82,7 @@ function fieldWarnings({ field, path, parent }: FieldEntry, files: boolean): Def
   return [
     ...(visible ? labeled(field, path, LABEL_HINT) : []),
     ...(empty ? [warning('missing-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
-    ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : `${PROPERTIES.field}${files ? ' multiple' : ''}`, misplaced),
+    ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : files ? PROPERTIES.field : BEFORE_FILE_LISTS, misplaced),
     ...(field.options ?? []).flatMap((option, index) => [
       ...labeled(option, `${path}/options/${index}`),
       ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
