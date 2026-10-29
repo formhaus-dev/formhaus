@@ -57,6 +57,8 @@ export function markFileLists(definition: FormDefinition, fields: FormField[]): 
   }
 }
 
+export const listedFiles = (value: unknown[]): unknown[] => value.filter((item) => item !== '' && item != null);
+
 const isListField = (field: FormField) => LIST_TYPES.includes(field.type) || isFileList(field);
 
 export function scaleRange({ type, validation }: FormField): [number, number] {
@@ -118,6 +120,7 @@ export function trimValue(field: FormField, value: unknown): unknown {
 export function normalizeValue(field: FormField, input: unknown): unknown {
   if (Array.isArray(input) && input.length === 0 && !isListField(field) && BUILT_IN_TYPES.includes(field.type)) return undefined;
   if (isFileList(field) && typeof input === 'string' && input !== '') return [input];
+  if (isFileList(field) && Array.isArray(input)) return listedFiles(input);
   if (field.type === 'group') return normalizeItems(field as FormGroup, input);
   const value = trimValue(field, input);
   if (!NUMBER_TYPES.includes(field.type) || typeof value !== 'string' || !DECIMAL.test(value)) return value;
