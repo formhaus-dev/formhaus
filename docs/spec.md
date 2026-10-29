@@ -47,7 +47,7 @@ A definition with a field `autocomplete` MAY declare `"formatVersion": "1.5"`. C
 
 A definition with a field `randomize` or an option `pinned` MAY declare `"formatVersion": "1.6"`. Core 1.0 and older report them as `unknown-property` and show the written order. `checkDefinition()` warns about `randomize` or `pinned` without format 1.6.
 
-A `file` field with `multiple` MUST declare `"formatVersion": "1.7"` or newer. Without it, and in core 1.6 and older, core reports `multiple` as `unknown-property` and the field keeps one file, so a definition written before 1.7 behaves as before. `checkDefinition()` warns about `multiple` without format 1.7. The `validateSubmission()` of core 1.6 and older fails a list in a `file` field with the `file` message. Upgrade the server that runs `validateSubmission()` before the clients.
+A `file` field with `multiple` MUST declare `"formatVersion": "1.7"` or newer. Without it, and in core 1.6 and older, core reports `multiple` as `unknown-property` and the field keeps one file, so a definition written before 1.7 behaves as before. `checkDefinition()` warns about `multiple` without format 1.7. The `validateSubmission()` of core 1.6 and older fails a list in a `file` field with the `file` message. Upgrade the server that runs `validateSubmission()` before the clients. The renderers of core 1.6 and older draw a file list as a picker for one file and submit one file, which a 1.7 server reads as a list of one. A `minLength` above 1 then fails on the server.
 
 ## Document structure
 
