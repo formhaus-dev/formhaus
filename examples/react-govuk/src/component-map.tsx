@@ -36,7 +36,7 @@ export const components: FieldComponentMap = mapControls({
     radio: { component: Choices, props: (f, options) => ({ f, options, inline: shortPair(options) }) },
     scale: { component: Choices, props: stacked },
     rating: { component: Choices, props: stacked },
-    file: { component: FileUpload, props: (f) => ({ f }) },
+    file: { component: FileUpload, props: (f, _, { field }) => ({ f, field }) },
   },
 });
 
