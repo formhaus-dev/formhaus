@@ -73,6 +73,11 @@ const MAX_EMAIL_LENGTH = 254;
 const DEFAULT_GROUP_ITEMS = 100;
 export const MAX_GROUP_ITEMS = 1000;
 export const maxItems = (group: FormField) => Math.min(group.validation?.maxLength ?? DEFAULT_GROUP_ITEMS, MAX_GROUP_ITEMS);
+
+export function fileLimit(field: FormField): number {
+  const max = field.validation?.maxLength;
+  return typeof max === 'number' && Number.isFinite(max) ? Math.min(Math.max(Math.floor(max), 0), MAX_GROUP_ITEMS) : DEFAULT_GROUP_ITEMS;
+}
 const EMAIL = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
 export const DECIMAL = /^[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?$/;
 const DATE = '\\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\\d|3[01])';
@@ -189,7 +194,7 @@ function groupError(field: FormField, value: unknown, fail: Fail): string | null
 const isReference = (item: unknown) => typeof item === 'string' && item !== '' && item.length <= MAX_STRING_LENGTH;
 
 function fileListError(field: FormField, value: unknown, fail: Fail): string | null {
-  const max = maxItems(field);
+  const max = fileLimit(field);
   if (!Array.isArray(value)) return fail('file');
   if (value.length > max) return field.validation?.maxLengthMessage ?? fail('maxItems', { max });
   return value.every(isReference) ? null : fail('file');

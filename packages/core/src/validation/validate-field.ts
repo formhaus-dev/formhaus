@@ -1,7 +1,7 @@
 import type { FieldValidation, FormField } from '../types';
 import { isBlank } from '../visibility';
 import { messageResolver, namedResolver, type MessageSource, type ResolveMessage } from './default-messages';
-import { BOOLEAN_TYPES, clientTypeError, exclusiveValues, isFileList, MAX_STRING_LENGTH, maxItems, trimValue } from './type-checks';
+import { BOOLEAN_TYPES, clientTypeError, exclusiveValues, fileLimit, isFileList, MAX_STRING_LENGTH, trimValue } from './type-checks';
 import { fileItems } from '../fields/files';
 
 export type ValidatorFn = (value: unknown, allValues: Record<string, unknown>) => string | null;
@@ -85,7 +85,7 @@ export function validateFieldValue(
 ): string | null {
   const files = isFileList(field);
   const value = files ? fileItems(input) : trimValue(field, input);
-  const rules = files ? { ...field.validation, maxLength: maxItems(field) } : (field.validation ?? {});
+  const rules = files ? { ...field.validation, maxLength: fileLimit(field) } : (field.validation ?? {});
   const resolve = namedResolver(messageResolver(messages));
   const matchMessage = () => rules.matchFieldMessage ?? resolve('matchField', {}, field);
   if (isEmpty(value, field)) {
