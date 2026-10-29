@@ -1,14 +1,16 @@
-import { addFiles, fileEntries, removeFile } from '@formhaus/core/fields';
-import { fileNames, nextRemove } from '@formhaus/core/internal';
+import { fileEntries, removeFile } from '@formhaus/core/fields';
+import { filesFull, nextRemove, pickFiles } from '@formhaus/core/internal';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { LabelContext } from '../labels';
+import { FileLimitContext, LabelContext } from '../labels';
 import type { FieldComponentProps } from '../types';
 import { inputProps } from './fieldProps';
 
 export function FileList(props: FieldComponentProps) {
   const { field, value, onChange, disabled, loading } = props;
   const text = useContext(LabelContext);
+  const limit = useContext(FileLimitContext);
   const [status, setStatus] = useState('');
+  const [notice, setNotice] = useState('');
   const picker = useRef<HTMLInputElement>(null);
   const list = useRef<HTMLUListElement>(null);
   const focus = useRef<number | null>(null);
@@ -25,6 +27,7 @@ export function FileList(props: FieldComponentProps) {
     <>
       <input
         {...inputProps(props)}
+        disabled={disabled || loading || filesFull(field, value)}
         ref={picker}
         type="file"
         multiple
@@ -34,8 +37,11 @@ export function FileList(props: FieldComponentProps) {
           const picked = Array.from(e.target.files ?? []);
           e.target.value = '';
           if (picked.length === 0) return;
-          onChange(addFiles(value, picked));
-          setStatus(text('itemAdded', { item: fileNames(picked) }));
+          const result = pickFiles(field, value, picked, text, limit);
+          focus.current = result.focus;
+          if (result.value) onChange(result.value);
+          setStatus(result.status);
+          setNotice(result.notice);
         }}
       />
       {entries.length > 0 && (
@@ -50,6 +56,7 @@ export function FileList(props: FieldComponentProps) {
                 disabled={disabled || loading}
                 onClick={() => {
                   focus.current = position;
+                  setNotice('');
                   onChange(removeFile(value, index));
                   setStatus(text('itemRemoved', { item: name }));
                 }}
@@ -60,6 +67,7 @@ export function FileList(props: FieldComponentProps) {
           ))}
         </ul>
       )}
+      {notice && <p className="fh-field__helper fh-file-list__notice">{notice}</p>}
       <p className="fh-file-list__status" role="status">
         {status}
       </p>

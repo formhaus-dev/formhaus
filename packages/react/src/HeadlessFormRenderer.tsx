@@ -2,6 +2,7 @@ import { errorSummary, type FormEngineOptions, type FormEvent } from '@formhaus/
 import {
   applySources,
   canMoveFocus,
+  engineFileLimit,
   errorDomId,
   focusField,
   hasValue,
@@ -15,7 +16,7 @@ import { FormErrorSummary } from './FormErrorSummary';
 import { FormFieldsController } from './FormFieldsController';
 import { FormProgressController } from './FormProgressController';
 import { FormTopLevelErrors, shownFormErrors } from './FormTopLevelErrors';
-import { LabelContext, useEngineLabel } from './labels';
+import { FileLimitContext, LabelContext, useEngineLabel } from './labels';
 import { useComponentWarnings } from './hooks/useComponentWarnings';
 import { useFormEngineStore } from './hooks/useFormEngine';
 import { useFormSnapshot } from './hooks/useEngineSnapshot';
@@ -73,6 +74,7 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
     };
     const engine = useFormEngineStore(definition, initialValues, engineOptions);
     const label = useEngineLabel(engine, props.labels, props.locale);
+    const fileLimit = useMemo(() => engineFileLimit(engine), [engine]);
     const version = useFormSnapshot(engine);
     const previousStep = useRef(engine.currentStep?.id);
     const actions = useRendererActions(engine, props);
@@ -204,44 +206,46 @@ export const HeadlessFormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandl
         }}
       >
         <LabelContext.Provider value={label}>
-          {top && summary}
-          <FormProgressController
-            engine={engine}
-            ProgressComponent={layout?.progress ?? progressComponent}
-            slot={!!layout?.progress}
-            headingLevel={headingLevel}
-            marks={props.stepErrorMarks}
-          />
-          <FormFieldsController
-            {...shared}
-            key={engineKey(engine)}
-            loading={busy}
-            components={components}
-            optionsProviders={optionsProviders}
-            confirmRemove={props.confirmRemove}
-            conditionalReveal={props.conditionalReveal}
-            onChange={actions.update}
-            onItemsChange={actions.changeItems}
-            onCommit={actions.commit}
-            onBlur={handleFieldBlur}
-            onFocus={handleFieldFocus}
-            testId={testId}
-          />
-          <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />
-          {!top && summary}
-          <FormActionsController
-            engine={engine}
-            loading={busy}
-            labels={props.labels}
-            ActionsComponent={layout?.actions ?? actionsComponent}
-            slot={!!layout?.actions}
-            testId={testId}
-            onSubmit={actions.submit}
-            onNext={actions.next}
-            onBack={actions.back}
-            onSkip={actions.skip}
-            onCancel={handleCancel}
-          />
+          <FileLimitContext.Provider value={fileLimit}>
+            {top && summary}
+            <FormProgressController
+              engine={engine}
+              ProgressComponent={layout?.progress ?? progressComponent}
+              slot={!!layout?.progress}
+              headingLevel={headingLevel}
+              marks={props.stepErrorMarks}
+            />
+            <FormFieldsController
+              {...shared}
+              key={engineKey(engine)}
+              loading={busy}
+              components={components}
+              optionsProviders={optionsProviders}
+              confirmRemove={props.confirmRemove}
+              conditionalReveal={props.conditionalReveal}
+              onChange={actions.update}
+              onItemsChange={actions.changeItems}
+              onCommit={actions.commit}
+              onBlur={handleFieldBlur}
+              onFocus={handleFieldFocus}
+              testId={testId}
+            />
+            <FormTopLevelErrors engine={engine} actionError={actions.actionError} layout={layout} />
+            {!top && summary}
+            <FormActionsController
+              engine={engine}
+              loading={busy}
+              labels={props.labels}
+              ActionsComponent={layout?.actions ?? actionsComponent}
+              slot={!!layout?.actions}
+              testId={testId}
+              onSubmit={actions.submit}
+              onNext={actions.next}
+              onBack={actions.back}
+              onSkip={actions.skip}
+              onCancel={handleCancel}
+            />
+          </FileLimitContext.Provider>
         </LabelContext.Provider>
       </form>
     );
