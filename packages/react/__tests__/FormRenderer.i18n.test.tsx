@@ -4,17 +4,16 @@ import { describe, expect, it } from 'vitest';
 import { FormActions } from '../src/FormActions';
 import { FormRenderer } from '../src/FormRenderer';
 import { FormStepProgress } from '../src/FormStepProgress';
-import { type LocalizeSource, useLocalizedForm } from '../src/i18n';
+import type { LocaleSource } from '@formhaus/core';
 import { definition, overlay, resources } from './i18n.fixtures';
 
 const i18n = createInstance();
 await i18n.init({ lng: 'ru', resources: { ru: { forms: resources } }, defaultNS: 'forms', interpolation: { escapeValue: false } });
 
-const translate: LocalizeSource = { translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }), lang: 'ru' };
+const translate: LocaleSource = { locale: 'ru', translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }) };
 
-function Signup({ source }: { source: LocalizeSource }) {
-  const localized = useLocalizedForm(definition, source);
-  return <FormRenderer {...localized} errorSummary onSubmit={() => {}} />;
+function Signup({ locale }: { locale?: LocaleSource | LocaleSource[] }) {
+  return <FormRenderer definition={definition} locale={locale} errorSummary onSubmit={() => {}} />;
 }
 
 async function checkRussianForm(passwordError: string) {
@@ -40,17 +39,17 @@ async function checkRussianForm(passwordError: string) {
 
 describe('localized forms', () => {
   it('resolves explicit keys through an i18next translate function with source fallback', async () => {
-    render(<Signup source={translate} />);
+    render(<Signup locale={translate} />);
     expect(screen.getByLabelText(/Почта/)).toBeTruthy();
     await checkRussianForm('Минимум 8 символов');
   });
 
-  it('applies an overlay', async () => {
-    render(<Signup source={{ overlay, lang: 'ru' }} />);
+  it('applies an overlay with its locale', async () => {
+    render(<Signup locale={{ ...overlay, locale: 'ru' }} />);
     await checkRussianForm('Пароль: от 8 символов');
   });
 
-  it('takes messages and labels props without localize', async () => {
+  it('takes messages and labels props without a locale', async () => {
     render(
       <FormRenderer
         definition={definition}
@@ -65,33 +64,18 @@ describe('localized forms', () => {
     expect(await screen.findAllByText('Pflichtfeld')).toHaveLength(2);
   });
 
-  it('keeps the definition when there is no translation', () => {
-    function Source() {
-      const localized = useLocalizedForm(definition);
-      return <FormRenderer {...localized} onSubmit={() => {}} />;
-    }
-    render(<Source />);
+  it('keeps the definition when there is no locale', () => {
+    render(<Signup />);
     expect(screen.getByRole('heading', { name: 'Account' })).toBeTruthy();
     expect(screen.getByText('Step 1 of 2')).toBeTruthy();
   });
 
-  it('keeps the engine while the source is unchanged', () => {
-    const { rerender } = render(<Signup source={translate} />);
-    fireEvent.change(screen.getByLabelText(/Почта/), { target: { value: 'kept@example.com' } });
-    rerender(<Signup source={{ ...translate }} />);
-    expect((screen.getByLabelText(/Почта/) as HTMLInputElement).value).toBe('kept@example.com');
-  });
-
-  it('keeps the engine when translate is an inline arrow', () => {
+  it('keeps the answers when the locale is recreated or translate is an inline arrow', () => {
     function Inline({ tick }: { tick: number }) {
-      const localized = useLocalizedForm(definition, {
-        translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }),
-        lang: 'ru',
-      });
       return (
         <>
           <output>{tick}</output>
-          <FormRenderer {...localized} onSubmit={() => {}} />
+          <Signup locale={{ locale: 'ru', translate: (key, params, defaultValue) => i18n.t(key, { ...params, defaultValue }) }} />
         </>
       );
     }
@@ -101,21 +85,20 @@ describe('localized forms', () => {
     expect((screen.getByLabelText(/Почта/) as HTMLInputElement).value).toBe('kept@example.com');
   });
 
-  it('rebuilds the form when the key or lang changes', () => {
-    function Keyed({ version, lang }: { version: number; lang: string }) {
-      const localized = useLocalizedForm(
-        definition,
-        { translate: (_key, _params, defaultValue) => `${lang}${version}:${defaultValue}`, lang },
-        { key: version },
-      );
-      return <FormRenderer {...localized} onSubmit={() => {}} />;
-    }
-    const { rerender } = render(<Keyed version={1} lang="ru" />);
-    expect(screen.getByRole('heading', { name: 'ru1:Account' })).toBeTruthy();
-    rerender(<Keyed version={2} lang="ru" />);
-    expect(screen.getByRole('heading', { name: 'ru2:Account' })).toBeTruthy();
-    rerender(<Keyed version={2} lang="de" />);
-    expect(screen.getByRole('heading', { name: 'de2:Account' })).toBeTruthy();
+  it('switches the language and keeps the answers', () => {
+    const tagged = (lang: string): LocaleSource => ({
+      locale: lang,
+      translate: (_key, _params, defaultValue) => `${lang}:${defaultValue}`,
+    });
+    const { rerender } = render(<Signup locale={tagged('ru')} />);
+    expect(screen.getByRole('heading', { name: 'ru:Account' })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText(/Email/), { target: { value: 'kept@example.com' } });
+    rerender(<Signup locale={tagged('de')} />);
+    expect(screen.getByRole('heading', { name: 'de:Account' })).toBeTruthy();
+    expect(document.querySelector('form')?.getAttribute('lang')).toBe('de');
+    expect((screen.getByLabelText(/Email/) as HTMLInputElement).value).toBe('kept@example.com');
+    rerender(<Signup />);
+    expect(screen.getByRole('heading', { name: 'Account' })).toBeTruthy();
   });
 
   it('formats a standalone step progress and action bar with the default labels', () => {

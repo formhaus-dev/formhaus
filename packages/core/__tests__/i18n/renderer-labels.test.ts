@@ -98,7 +98,7 @@ describe('renderer labels', () => {
     const issues = translationIssues(definition, overlay);
     expect(issues.unknown).toEqual([]);
     expect(issues.missing.filter((address) => address.startsWith('labels.'))).toEqual(['labels.errorSummary']);
-    expect(localize(definition, { overlay }).definition.labels).toMatchObject({
+    expect(localize(definition, { ...overlay, locale: 'ru' }).definition.labels).toMatchObject({
       submit: 'Отправить',
       clear: 'Очистить',
       chooseFile: 'Выбрать файл',

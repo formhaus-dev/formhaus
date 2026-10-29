@@ -34,8 +34,8 @@ describe('textSlots and translationTemplate', () => {
   it('builds an overlay skeleton that round-trips to the source texts', () => {
     const template = translationTemplate(signup);
     expect(template.steps).toMatchObject({ business: { fields: { address: { label: 'Company address' } } } });
-    const { messages, labels, ...localized } = localize(signup, { overlay: template }).definition;
-    expect(localized).toEqual(signup);
+    const { messages, labels, ...localized } = localize(signup, { ...template, locale: 'en' }).definition;
+    expect(localized).toEqual({ ...signup, lang: 'en' });
     expect(messages).toEqual({
       required: 'This field is required',
       minLength: 'Minimum length is {min}',
@@ -71,7 +71,7 @@ describe('textSlots and translationTemplate', () => {
     expect(Object.keys(template.messages ?? {}).sort()).toEqual(['boolean', 'maxLength', 'option', 'options', 'string']);
     const overlay = { ...template, messages: Object.fromEntries(Object.keys(template.messages ?? {}).map((key) => [key, `ru:${key}`])) };
     expect(translationIssues(definition, overlay).missing).toEqual([]);
-    const { definition: localized, messages } = localize(definition, { overlay });
+    const { definition: localized, messages } = localize(definition, { ...overlay, locale: 'ru' });
     const { errors } = validateSubmission(localized, { plan: 'x', tags: 'a', agree: 'yes', name: 5 }, { messages });
     expect(errors).toEqual({ plan: 'ru:option', tags: 'ru:options', agree: 'ru:boolean', name: 'ru:string' });
   });
@@ -174,8 +174,8 @@ describe('inactive required rules', () => {
     expect(translationTemplate(source).messages).not.toHaveProperty('required');
     expect(textSlots(source).map(({ address }) => address)).not.toContain('fields.name.validation.required');
     expect(translationIssues(source, overlay).unknown).toEqual(['fields.name.validation.required']);
-    expect(localize(source, { overlay }).definition.fields![0].validation).toEqual({ required });
-    const translated = localize(source, { translate: () => 'Нужно' }).definition;
+    expect(localize(source, { ...overlay, locale: 'ru' }).definition.fields![0].validation).toEqual({ required });
+    const translated = localize(source, { locale: 'ru', translate: () => 'Нужно' }).definition;
     expect(translated.fields![0].validation).toEqual({ required });
     expect(validateSubmission(translated, {}).errors).toEqual({});
   });
