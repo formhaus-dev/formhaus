@@ -1,4 +1,4 @@
-import { type DateType, type FieldState, fieldValue, fromDate, numberValue, scaleView } from '@formhaus/core/fields';
+import { type DateType, type FieldState, fieldValue, freeText, fromDate, numberValue, scaleView } from '@formhaus/core/fields';
 import type { FieldOption, FormField } from '../types';
 import { revealable } from '../internal/reveal';
 import { POINT_TYPES } from './options';
@@ -8,6 +8,7 @@ export { choiceControl, type ChoiceInput, type ControlClickEvent, type ControlKe
 export { controlOptions } from './options';
 
 export type {
+  ControlContext,
   ControlEntryOf,
   ControlKind,
   ControlOption,
@@ -123,9 +124,14 @@ export function controlProps(
   const { type } = field;
   const { value, options = [] } = state;
   const { text } = preset;
-  const typed = text !== undefined && type === 'autocomplete';
-  const shown = toControl(field, value);
-  const labelValue = (label: string) => options.find((option) => option.label === label)?.value ?? label;
+  let saved: unknown;
+  const typed =
+    text !== undefined && type === 'autocomplete'
+      ? freeText(options, value, text, (next, typedText) => {
+          saved = next;
+          preset.setText?.(typedText);
+        })
+      : undefined;
   const group = preset.kind === 'group';
   const control: Record<string, unknown> = {
     ...preset.attrs,
@@ -138,11 +144,7 @@ export function controlProps(
     type: preset.input ? state.inputType : undefined,
     rows: type === 'textarea' ? field.rows : undefined,
     accept: type === 'file' ? field.accept : undefined,
-    [preset.valueKey]: !typed
-      ? shown
-      : labelValue(text) === shown
-        ? text
-        : (options.find((option) => option.value === value)?.label ?? shown),
+    [preset.valueKey]: typed ? typed.text : toControl(field, value),
   };
   for (const key of Object.keys(control))
     if (control[key] === undefined || (preset.kind !== 'input' && INPUT_ONLY.includes(key))) delete control[key];
@@ -153,10 +155,10 @@ export function controlProps(
     save(input: unknown, detail?: unknown): unknown {
       const next = fromControl(field, input, detail);
       if (!typed) return next;
-      const typedText = String(next ?? '');
-      preset.setText?.(typedText);
-      return labelValue(typedText);
+      typed.setText(String(next ?? ''));
+      return saved;
     },
+    freeText: !!typed,
     root: {
       'data-fh': 'field',
       'data-testid': group ? state.testId : undefined,
