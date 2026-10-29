@@ -8,8 +8,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@formhaus/core": "^1.6.0",
-    "@formhaus/vue": "^1.6.0",
+    "@formhaus/core": "^1.7.0",
+    "@formhaus/vue": "^1.7.0",
     "element-plus": "^2.14.7",
     "vue": "^3.5.13"
   },
