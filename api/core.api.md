@@ -396,7 +396,7 @@ export interface FormEngineOptions {
     // (undocumented)
     lang?: string;
     // (undocumented)
-    locale?: LocaleCatalog | LocaleCatalog[];
+    locale?: LocaleSource | LocaleSource[];
     // (undocumented)
     messages?: MessageSource;
     // (undocumented)
@@ -855,12 +855,17 @@ export type LabelSource = LabelCatalog | LabelFn;
 // @public (undocumented)
 export interface LocaleCatalog {
     // (undocumented)
-    labels: Partial<Record<LabelKey, LocaleText>>;
+    [text: string]: unknown;
+    // (undocumented)
+    labels?: Partial<Record<LabelKey, LocaleText>>;
     // (undocumented)
     locale: string;
     // (undocumented)
-    messages: Partial<Record<MessageKey, LocaleText>>;
+    messages?: Partial<Record<MessageKey, LocaleText>>;
 }
+
+// @public (undocumented)
+export type LocaleSource = LocaleCatalog | TranslateSource;
 
 // @public (undocumented)
 export type LocaleText = string | PluralForms;
@@ -1078,6 +1083,19 @@ export type TestIdTarget = {
     key: string;
     value: string;
 };
+
+// @public (undocumented)
+export type TranslateFn = (key: string, params: Record<string, unknown>, defaultText: string) => string | undefined;
+
+// @public (undocumented)
+export interface TranslateSource {
+    // (undocumented)
+    locale: string;
+    // (undocumented)
+    prefix?: string | false;
+    // (undocumented)
+    translate: TranslateFn;
+}
 
 // @public (undocumented)
 export interface ValidateContext {

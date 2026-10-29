@@ -27,47 +27,41 @@ export const defaultMessages: Readonly<Record<MessageKey, string>>;
 // @public (undocumented)
 export interface LocaleCatalog {
     // (undocumented)
-    labels: Partial<Record<LabelKey, LocaleText>>;
+    [text: string]: unknown;
+    // (undocumented)
+    labels?: Partial<Record<LabelKey, LocaleText>>;
     // (undocumented)
     locale: string;
     // (undocumented)
-    messages: Partial<Record<MessageKey, LocaleText>>;
+    messages?: Partial<Record<MessageKey, LocaleText>>;
 }
 
 // @public (undocumented)
 export function localeChain(tag: string): string[];
 
 // @public (undocumented)
+export type LocaleSource = LocaleCatalog | TranslateSource;
+
+// @public (undocumented)
 export type LocaleText = string | PluralForms;
 
 // @public (undocumented)
-export function localize(input: FormDefinition, source: LocalizeSource): Localized;
+export function localize(input: FormDefinition, locale: LocaleSource | LocaleSource[]): Localized;
 
 // @public (undocumented)
 export interface Localized {
     // (undocumented)
     definition: FormDefinition;
     // (undocumented)
-    labels: LabelSource;
+    labels: LabelFn;
     // (undocumented)
-    messages: MessageSource;
+    messages: MessageFn;
 }
-
-// @public (undocumented)
-export type LocalizeSource = OverlaySource | TranslateSource;
 
 // @public (undocumented)
 export type Overlay = {
     [key: string]: string | Overlay;
 };
-
-// @public (undocumented)
-export interface OverlaySource {
-    // (undocumented)
-    lang?: string;
-    // (undocumented)
-    overlay: Overlay;
-}
 
 // @public (undocumented)
 export interface PluralForms {
@@ -114,7 +108,7 @@ export type TranslateFn = (key: string, params: Record<string, unknown>, default
 // @public (undocumented)
 export interface TranslateSource {
     // (undocumented)
-    lang?: string;
+    locale: string;
     // (undocumented)
     prefix?: string | false;
     // (undocumented)
