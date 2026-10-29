@@ -5,6 +5,9 @@
 ```ts
 
 // @public (undocumented)
+export const addFiles: (value: unknown, picked: unknown) => unknown[];
+
+// @public (undocumented)
 export type DateType = 'date' | 'datetime' | 'time';
 
 // @public (undocumented)
@@ -152,6 +155,17 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
 }
 
 // @public (undocumented)
+export const fileEntries: (value: unknown) => FileEntry[];
+
+// @public (undocumented)
+export interface FileEntry {
+    // (undocumented)
+    index: number;
+    // (undocumented)
+    name: string;
+}
+
+// @public (undocumented)
 export interface FreeText {
     // (undocumented)
     setText: (text: string) => void;
@@ -169,6 +183,9 @@ export function fromDate(date: Date | null | undefined, type?: DateType): string
 export const inputType: (field: Pick<FormField, "type">) => string;
 
 // @public (undocumented)
+export const isFileList: (field: object) => boolean;
+
+// @public (undocumented)
 export function numberValue(text: string | null | undefined): number | string | null;
 
 // @public (undocumented)
@@ -179,6 +196,9 @@ export const optionText: (options: FieldOption[], value: unknown) => string;
 
 // @public (undocumented)
 export const optionValue: (options: FieldOption[], text: string) => string;
+
+// @public (undocumented)
+export const removeFile: (value: unknown, index: number) => unknown[];
 
 // @public (undocumented)
 export interface ScaleAnchor {
