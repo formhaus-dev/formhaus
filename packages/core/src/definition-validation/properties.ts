@@ -5,6 +5,7 @@ import { closest, pointer, warning } from './issues';
 import { isEntry } from './shape';
 import { RANDOMIZED_TYPES } from '../validation/type-checks';
 import { missingProperty } from './texts';
+import { formatAtLeast } from './format';
 
 export const PROPERTIES = {
   form: '$schema formatVersion id lang title description messages labels i18n submit cancel fields steps',
@@ -70,7 +71,7 @@ const misplaced = (key: string) =>
 const optionValues = ({ options, optionsFrom }: Partial<FormField>) =>
   !optionsFrom && Array.isArray(options) ? JSON.stringify(options.map((option) => option?.value)) : undefined;
 
-function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
+function fieldWarnings({ field, path, parent }: FieldEntry, files: boolean): DefinitionIssue[] {
   const visible = field.type !== 'hidden';
   const matrix = (parent as FormSection | undefined)?.layout === 'matrix';
   const choice = /^(radio|multiselect)$/.test(field.type);
@@ -79,7 +80,7 @@ function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
   return [
     ...(visible ? labeled(field, path, LABEL_HINT) : []),
     ...(empty ? [warning('missing-label', `${path}/label`, `the label of "${field.key}" is empty`, LABEL_HINT)] : []),
-    ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : PROPERTIES.field, misplaced),
+    ...unknown(field, path, field.type === 'group' ? PROPERTIES.group : `${PROPERTIES.field}${files ? ' multiple' : ''}`, misplaced),
     ...(field.options ?? []).flatMap((option, index) => [
       ...labeled(option, `${path}/options/${index}`),
       ...unknown(option, `${path}/options/${index}`, PROPERTIES.option),
@@ -113,6 +114,9 @@ function fieldWarnings({ field, path, parent }: FieldEntry): DefinitionIssue[] {
             'Remove "randomize"',
           ),
         ]
+      : []),
+    ...(files && field.multiple !== undefined && field.type !== 'file'
+      ? [warning('multiple-not-applicable', `${path}/multiple`, `"multiple" of "${field.key}" applies to file fields`, 'Remove "multiple"')]
       : []),
     ...(columns && choice && (optionValues(field) ?? columns) !== columns
       ? [
@@ -158,6 +162,6 @@ export function propertyWarnings({ definition, entries, nodes }: CheckContext): 
     ...nodes.flatMap(({ node, path }) =>
       node.type === 'section' ? [...required(node, path, 'title'), ...unknown(node, path, PROPERTIES.section)] : [],
     ),
-    ...entries.flatMap(fieldWarnings),
+    ...entries.flatMap((entry) => fieldWarnings(entry, formatAtLeast(definition, 7))),
   ];
 }
