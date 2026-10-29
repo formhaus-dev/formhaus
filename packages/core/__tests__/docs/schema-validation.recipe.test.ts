@@ -3,6 +3,7 @@ import { onValidate as custom } from '../../../../docs/recipes/snippets/on-valid
 import { onValidate as arktype } from '../../../../docs/recipes/snippets/schema-arktype';
 import { onValidate as confirm } from '../../../../docs/recipes/snippets/schema-confirm';
 import { onValidate as empty } from '../../../../docs/recipes/snippets/schema-empty';
+import { validateIn } from '../../../../docs/recipes/snippets/schema-messages';
 import { onValidate as serverCheck } from '../../../../docs/recipes/snippets/schema-server-check';
 import { onValidate as valibot } from '../../../../docs/recipes/snippets/schema-valibot';
 import { onValidate as zod } from '../../../../docs/recipes/snippets/schema-zod';
@@ -125,5 +126,31 @@ describe('schema validation recipes', () => {
     );
     expect(result.errors).toEqual({ 'players.1.name': 'Two players have this name' });
     expect(result.topLevelErrors).toEqual(['Teams need an even number of players']);
+  });
+
+  it('shows the schema messages of the active language', async () => {
+    const values = { email: 'ada@example.com', players: [{ name: 'A' }] };
+    expect((await submit({ onValidate: validateIn('en') }, values)).errors).toEqual({ 'players.0.name': 'Use at least 2 letters' });
+    expect((await submit({ onValidate: validateIn('de') }, values)).errors).toEqual({ 'players.0.name': 'Mindestens 2 Buchstaben' });
+  });
+
+  it('shows the built-in email check before the schema', async () => {
+    const onValidate = vi.fn(zod);
+    const contact: FormDefinition = {
+      id: 'contact',
+      title: 'Contact',
+      submit: { label: 'Send' },
+      fields: [{ key: 'email', type: 'email', label: 'Email' }],
+    };
+    const engine = new FormEngine(contact, { email: 'taro@example' }, { onValidate });
+    expect(await engine.submit(() => {})).toBe(false);
+    expect(engine.errors).toEqual({ email: 'Enter a valid email' });
+    expect(onValidate).not.toHaveBeenCalled();
+    const worded = new FormEngine(
+      { ...contact, messages: { email: 'Enter an email such as name@example.com' } },
+      { email: 'taro@example' },
+    );
+    await worded.submit(() => {});
+    expect(worded.errors).toEqual({ email: 'Enter an email such as name@example.com' });
   });
 });

@@ -53,7 +53,7 @@ const config: KnipConfig = {
       project: [sources],
       entry: ['src/cloud/index.ts', 'src/controls/index.ts', 'src/i18n/index.ts'],
       vitest: { entry: ['**/*.test.{ts,tsx}'] },
-      ignoreDependencies: ['@vue/language-core'],
+      ignoreDependencies: ['@vue/language-core', 'vue-tsc'],
     },
   },
 };
