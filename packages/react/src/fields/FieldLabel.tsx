@@ -16,7 +16,7 @@ export function RequiredMark({ field }: { field: FormField }) {
 export function FieldLabel({ field, inputId }: FieldLabelProps) {
   if (!field.label) return null;
   return (
-    <label className="fh-field__label" htmlFor={inputId}>
+    <label id={`${inputId}-label`} className="fh-field__label" htmlFor={inputId}>
       {field.label}
       <RequiredMark field={field} />
     </label>
