@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { fileEntries, filesFull, isFileList, pickFiles, removeFile } from '@formhaus/core/fields';
-import { nextRemove } from '@formhaus/core/internal';
+import { announce, fileListAria, nextRemove } from '@formhaus/core/internal';
 import { computed, nextTick, ref } from 'vue';
 import { useFileText } from '../composables/useLabel';
 import { fieldComponentProps } from '../props';
 import type { FieldEmits } from '../types';
 import FieldShell from './FieldShell.vue';
-import { useField } from './useField';
+import { fieldIds, useField } from './useField';
 
 const props = defineProps(fieldComponentProps);
 const emit = defineEmits<FieldEmits>();
@@ -18,6 +18,17 @@ const entries = computed(() => fileEntries(props.modelValue));
 const status = ref('');
 const notice = ref('');
 const full = computed(() => filesFull(props.field, props.modelValue));
+const aria = computed(() =>
+  fileListAria(
+    { id: fieldIds(props.field, props.id).inputId, field: props.field, error: props.error },
+    props.modelValue,
+    notice.value,
+    fileText,
+  ),
+);
+const setStatus = (message: string) => {
+  status.value = message;
+};
 const picker = ref<HTMLInputElement>();
 const items = ref<HTMLUListElement>();
 
@@ -39,14 +50,14 @@ function onFilesAdd(event: Event) {
   if (picked.length === 0) return;
   const result = pickFiles(props.field, props.modelValue, picked, fileText);
   if (result.value) emit('update:modelValue', result.value);
-  status.value = result.status;
+  announce(setStatus, result.status);
   notice.value = result.notice;
   void focusAfter(result.focus);
 }
 
 function onRemove(index: number, position: number, name: string) {
   emit('update:modelValue', removeFile(props.modelValue, index));
-  status.value = text('itemRemoved', { item: name });
+  announce(setStatus, text('itemRemoved', { item: name }));
   notice.value = '';
   void focusAfter(position);
 }
@@ -62,11 +73,12 @@ function onRemove(index: number, position: number, name: string) {
         class="fh-field__input fh-field__input--files"
         type="file"
         multiple
+        :aria-describedby="aria.describedBy"
         :disabled="input.disabled || full"
         :accept="props.field.accept"
         @change="onFilesAdd"
       />
-      <ul v-if="entries.length" ref="items" class="fh-file-list">
+      <ul v-if="entries.length" ref="items" class="fh-file-list" v-bind="aria.list">
         <li v-for="(entry, position) in entries" :key="entry.index" class="fh-file-list__item">
           <span class="fh-file-list__name" dir="auto">{{ entry.name }}</span>
           <button
@@ -80,7 +92,7 @@ function onRemove(index: number, position: number, name: string) {
           </button>
         </li>
       </ul>
-      <p v-if="notice" class="fh-field__helper fh-file-list__notice">{{ notice }}</p>
+      <p v-if="aria.notice" :id="aria.noticeId" class="fh-field__helper fh-file-list__notice">{{ aria.notice }}</p>
       <p class="fh-file-list__status" role="status">{{ status }}</p>
     </template>
   </FieldShell>
