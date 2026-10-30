@@ -17,7 +17,9 @@ const container = computed(() => {
 const required = () =>
   !inline.value && props.field.validation?.required ? h('span', { class: 'fh-field__required', 'aria-hidden': 'true' }, ' *') : null;
 const Label = () =>
-  props.field.label ? h('label', { for: ids.value.inputId, class: 'fh-field__label' }, [props.field.label, required()]) : null;
+  props.field.label
+    ? h('label', { id: `${ids.value.inputId}-label`, for: ids.value.inputId, class: 'fh-field__label' }, [props.field.label, required()])
+    : null;
 const Legend = () =>
   props.field.label
     ? h('legend', { class: 'fh-field__label' }, [

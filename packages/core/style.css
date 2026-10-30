@@ -132,6 +132,7 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
 .fh-field__input--textarea { min-height: 112px; resize: vertical; }
 .fh-field__input[type="file"] { padding: var(--fh-space-2); color: var(--fh-color-text-muted); font-size: var(--fh-font-size-small); cursor: pointer; }
 .fh-field__input[type="file"]::file-selector-button { height: calc(var(--fh-control-height) - 2px - 2 * var(--fh-space-2)); margin-inline-end: var(--fh-space-5); padding: 0 var(--fh-space-7); border: 1px solid var(--fh-color-secondary-border); border-radius: calc(var(--fh-radius) - var(--fh-space-2)); background: var(--fh-color-bg); color: var(--fh-color-text); font: inherit; font-weight: 600; cursor: pointer; transition: border-color 140ms; }
+.fh-field__input[type="file"]:disabled::file-selector-button { background: var(--fh-color-bg-disabled); color: var(--fh-color-text-muted); cursor: not-allowed; }
 .fh-field:has(.fh-file-list) .fh-field__input--files { color: transparent; }
 .fh-file-list { display: grid; gap: var(--fh-space-2); margin: var(--fh-space-3) 0 0; padding: 0; list-style: none; }
 .fh-file-list__item { display: flex; align-items: center; gap: var(--fh-space-3); min-height: var(--fh-control-height); box-sizing: border-box; padding: var(--fh-space-1) var(--fh-space-5); border: 1px solid var(--fh-color-border); border-radius: var(--fh-radius); font-size: var(--fh-font-size-small); line-height: 1.4; }
@@ -359,6 +360,11 @@ legend.fh-field__label { padding: 0; margin-bottom: var(--fh-space-3); }
   .fh-field__scale-input:checked + .fh-field__scale-label { color: Canvas; forced-color-adjust: none; }
   .fh-field--rating :is(.fh-field__scale-input:checked + *, .fh-field__scale-option:has(~ * :checked) > .fh-field__scale-label) { background: Highlight; }
   .fh-field__scale-input:focus-visible { outline: 2px solid CanvasText; }
+  .fh-field__input--files { forced-color-adjust: none; border-color: ButtonBorder; background: Canvas; color: CanvasText; }
+  .fh-field:has(.fh-file-list) .fh-field__input--files { color: transparent; }
+  .fh-field__input--files[type="file"]::file-selector-button { border-color: ButtonBorder; background: ButtonFace; color: ButtonText; }
+  .fh-field__input--files:disabled { border-color: GrayText; background: Canvas; }
+  .fh-field__input--files[type="file"]:disabled::file-selector-button { border-color: GrayText; background: Canvas; color: GrayText; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:checked) { border-color: Highlight; }
   :is(.fh-field__radio-option, .fh-field__multiselect-option):has(:focus-visible), .fh-form-actions__button:focus-visible, .fh-field__input:focus, :is(.fh-field__radio, .fh-field__checkbox, .fh-field__switch):focus-visible { outline: 2px solid CanvasText; }
 }
