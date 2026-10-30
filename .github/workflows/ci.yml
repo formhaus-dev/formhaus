@@ -298,6 +298,7 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
+          git fetch --no-tags --depth=1 origin "$BASE_SHA"
           git worktree add "$RUNNER_TEMP/base" "$BASE_SHA"
           cd "$RUNNER_TEMP/base"
           pnpm install --frozen-lockfile
