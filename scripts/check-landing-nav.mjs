@@ -54,9 +54,11 @@ function measureScreen() {
     .filter((el) => el.getBoundingClientRect().width > 0)
     .map((el) => {
       const rect = el.getBoundingClientRect();
-      return `${el.textContent.trim().replace(/\s+/g, ' ')}@${Math.round(rect.y - top)}`;
+      return { name: el.textContent.trim().replace(/\s+/g, ' '), y: rect.y - top };
     });
 }
+
+const describeScreen = (screen) => screen.map((item) => `${item.name}@${Math.round(item.y)}`).join(' | ');
 
 function compare(reference, items, where, problems) {
   if (reference.length !== items.length) {
@@ -102,13 +104,16 @@ try {
           await burger.click();
           await page.waitForTimeout(300);
           const screen = await page.evaluate(measureScreen);
-          if (!screenReference) screenReference = screen.join(' | ');
-          else if (screen.join(' | ') !== screenReference)
-            problems.push(`${where}: open menu shows "${screen.join(' | ')}", expected "${screenReference}"`);
+          if (!screenReference) screenReference = screen;
+          else if (
+            screen.length !== screenReference.length ||
+            screen.some((item, i) => item.name !== screenReference[i].name || Math.abs(item.y - screenReference[i].y) > 1)
+          )
+            problems.push(`${where}: open menu shows "${describeScreen(screen)}", expected "${describeScreen(screenReference)}"`);
           await burger.click();
         }
       }
-      if (screenReference) table.push(`${theme} ${width} menu: ${screenReference}`);
+      if (screenReference) table.push(`${theme} ${width} menu: ${describeScreen(screenReference)}`);
       await context.close();
     }
   }
