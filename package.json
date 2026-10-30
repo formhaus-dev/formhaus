@@ -35,7 +35,7 @@
     "templates": "node scripts/templates-index.mjs",
     "templates:check": "node scripts/templates-index.mjs --check",
     "changeset": "changeset",
-    "version": "changeset version && node scripts/sync-mcp-server-json.mjs",
+    "version": "changeset version && node scripts/sync-mcp-server-json.mjs && node scripts/sync-core-peers.mjs",
     "release": "pnpm build && changeset publish",
     "check:build-page": "node scripts/check-build-page.mjs",
     "check:editor-guard": "node scripts/check-editor-guard.mjs",
