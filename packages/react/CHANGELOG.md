@@ -1,5 +1,14 @@
 # @formhaus/react
 
+## 1.8.1
+
+### Patch Changes
+
+- Requires `@formhaus/core` 1.8.1.
+- The multi-file list is a list named by the field label.
+- A file status message is announced again when it repeats, such as after removing two files with the same name.
+- The file limit notice is linked to the picker through `aria-describedby` and stays visible while the list is full.
+
 ## 1.8.0
 
 ### Patch Changes
