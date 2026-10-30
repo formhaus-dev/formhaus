@@ -1,5 +1,12 @@
 # @formhaus/core
 
+## 1.8.1
+
+### Patch Changes
+
+- A disabled file picker greys out its button.
+- Under forced colors the file picker hides "No file chosen" and a full picker looks disabled.
+
 ## 1.8.0
 
 ### Minor Changes
