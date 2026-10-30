@@ -1,9 +1,9 @@
 import { fileEntries, filesFull, pickFiles, removeFile } from '@formhaus/core/fields';
-import { nextRemove } from '@formhaus/core/internal';
+import { announce, fileListAria, nextRemove } from '@formhaus/core/internal';
 import { useEffect, useRef, useState } from 'react';
 import { useFileText } from '../labels';
 import type { FieldComponentProps } from '../types';
-import { inputProps } from './fieldProps';
+import { fieldId, inputProps } from './fieldProps';
 
 export function FileList(props: FieldComponentProps) {
   const { field, value, onChange, disabled, loading } = props;
@@ -16,17 +16,19 @@ export function FileList(props: FieldComponentProps) {
   const focus = useRef<number | null>(null);
   const remove = text('removeItem');
   const entries = fileEntries(value);
+  const aria = fileListAria({ id: fieldId(props), field, error: props.error }, value, notice, fileText);
 
   useEffect(() => {
     if (focus.current === null) return;
     (nextRemove(list.current, focus.current) ?? picker.current)?.focus();
     focus.current = null;
-  });
+  }, [value, notice]);
 
   return (
     <>
       <input
         {...inputProps(props)}
+        aria-describedby={aria.describedBy}
         disabled={disabled || loading || filesFull(field, value)}
         ref={picker}
         type="file"
@@ -40,12 +42,12 @@ export function FileList(props: FieldComponentProps) {
           const result = pickFiles(field, value, picked, fileText);
           focus.current = result.focus;
           if (result.value) onChange(result.value);
-          setStatus(result.status);
+          announce(setStatus, result.status);
           setNotice(result.notice);
         }}
       />
       {entries.length > 0 && (
-        <ul ref={list} className="fh-file-list">
+        <ul ref={list} className="fh-file-list" {...aria.list}>
           {entries.map(({ index, name }, position) => (
             <li key={index} className="fh-file-list__item">
               <span className="fh-file-list__name" dir="auto">
@@ -60,7 +62,7 @@ export function FileList(props: FieldComponentProps) {
                   focus.current = position;
                   setNotice('');
                   onChange(removeFile(value, index));
-                  setStatus(text('itemRemoved', { item: name }));
+                  announce(setStatus, text('itemRemoved', { item: name }));
                 }}
               >
                 {remove}
@@ -69,7 +71,11 @@ export function FileList(props: FieldComponentProps) {
           ))}
         </ul>
       )}
-      {notice && <p className="fh-field__helper fh-file-list__notice">{notice}</p>}
+      {aria.notice && (
+        <p id={aria.noticeId} className="fh-field__helper fh-file-list__notice">
+          {aria.notice}
+        </p>
+      )}
       <p className="fh-file-list__status" role="status">
         {status}
       </p>
