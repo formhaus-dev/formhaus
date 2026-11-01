@@ -69,7 +69,8 @@
         "readOnly": true,
         "validation": {
           "required": true,
-          "minLength": 5
+          "minLength": 5,
+          "pattern": "^acct-\\d+$"
         }
       },
       {
@@ -119,7 +120,8 @@
         "values": {
           "seats": 3,
           "plan": "legacy",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "skippedSteps": []
       },
@@ -127,7 +129,8 @@
         "values": {
           "seats": 3,
           "plan": "legacy",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "errors": {
           "plan": "Select one of the available options"
@@ -140,7 +143,8 @@
         "values": {
           "seats": 3,
           "plan": "legacy",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "skippedSteps": [],
         "previousValues": {
@@ -151,7 +155,8 @@
         "values": {
           "seats": 3,
           "plan": "legacy",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "errors": {}
       }
@@ -162,7 +167,8 @@
         "values": {
           "seats": 8,
           "plan": "starter",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "skippedSteps": []
       },
@@ -170,7 +176,8 @@
         "values": {
           "seats": 8,
           "plan": "starter",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "errors": {
           "plan": "Select one of the available options"
@@ -183,7 +190,8 @@
         "values": {
           "seats": 5,
           "plan": "starter",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "skippedSteps": []
       },
@@ -191,7 +199,8 @@
         "values": {
           "seats": 5,
           "plan": "starter",
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12"
         },
         "errors": {}
       }
@@ -203,7 +212,8 @@
           "seats": 3,
           "plan": "starter",
           "note": "Hi",
-          "addons": ["sso", "audit"]
+          "addons": ["sso", "audit"],
+          "account": "acct-12"
         },
         "skippedSteps": []
       },
@@ -212,7 +222,8 @@
           "seats": 3,
           "plan": "starter",
           "note": "Hi",
-          "addons": ["sso", "audit"]
+          "addons": ["sso", "audit"],
+          "account": "acct-12"
         },
         "errors": {
           "addons": "Select one of the available options"
@@ -226,7 +237,8 @@
           "seats": 3,
           "plan": "starter",
           "note": "Hi",
-          "addons": ["sso", "audit"]
+          "addons": ["sso", "audit"],
+          "account": "acct-12"
         },
         "skippedSteps": [],
         "previousValues": {
@@ -238,7 +250,8 @@
           "seats": 3,
           "plan": "starter",
           "note": "Hi",
-          "addons": ["sso", "audit"]
+          "addons": ["sso", "audit"],
+          "account": "acct-12"
         },
         "errors": {}
       }
@@ -257,7 +270,8 @@
             {
               "role": "admin"
             }
-          ]
+          ],
+          "account": "acct-12"
         },
         "skippedSteps": []
       },
@@ -273,7 +287,8 @@
             {
               "role": "admin"
             }
-          ]
+          ],
+          "account": "acct-12"
         },
         "errors": {
           "people.1.role": "Select one of the available options"
@@ -294,7 +309,8 @@
             {
               "role": "admin"
             }
-          ]
+          ],
+          "account": "acct-12"
         },
         "skippedSteps": [],
         "previousValues": {
@@ -320,19 +336,20 @@
             {
               "role": "admin"
             }
-          ]
+          ],
+          "account": "acct-12"
         },
         "errors": {}
       }
     },
     {
-      "name": "skips the rules of a read-only field",
+      "name": "rejects a read-only value that breaks its pattern",
       "input": {
         "values": {
           "seats": 3,
           "plan": "pro",
           "note": "Hi",
-          "account": "x"
+          "account": "acct-x"
         },
         "skippedSteps": []
       },
@@ -341,9 +358,11 @@
           "seats": 3,
           "plan": "pro",
           "note": "Hi",
-          "account": "x"
+          "account": "acct-x"
         },
-        "errors": {}
+        "errors": {
+          "account": "Invalid format"
+        }
       }
     },
     {

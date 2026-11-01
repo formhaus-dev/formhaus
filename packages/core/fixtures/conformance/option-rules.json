@@ -72,7 +72,8 @@
         "readOnly": true,
         "validation": {
           "required": true,
-          "minLength": 5
+          "minLength": 5,
+          "pattern": "^acct-\\d+$"
         }
       },
       {
@@ -131,13 +132,14 @@
   },
   "cases": [
     {
-      "name": "accepts enabled options and skips the rules of a read-only field",
+      "name": "accepts enabled options and a read-only value",
       "input": {
         "values": {
           "seats": 3,
           "plan": "starter",
-          "addons": ["audit"],
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12",
+          "addons": ["audit"]
         },
         "skippedSteps": []
       },
@@ -145,46 +147,53 @@
         "values": {
           "seats": 3,
           "plan": "starter",
-          "addons": ["audit"],
-          "note": "Hi"
+          "note": "Hi",
+          "account": "acct-12",
+          "addons": ["audit"]
         },
         "errors": {}
       },
       "canSubmit": true
     },
     {
-      "name": "applies readOnly when its conditions match",
+      "name": "validates a read-only field like any other field",
       "input": {
         "values": {
-          "seats": 200,
+          "seats": 3,
           "plan": "pro",
-          "addons": ["sso"]
+          "note": "Hi",
+          "account": "x"
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
-          "seats": 200,
+          "seats": 3,
           "plan": "pro",
-          "addons": ["sso"]
+          "note": "Hi",
+          "account": "x"
         },
-        "errors": {}
+        "errors": {
+          "account": "Minimum length is 5"
+        }
       },
-      "canSubmit": true
+      "canSubmit": false
     },
     {
-      "name": "checks the rules when readOnly conditions do not match",
+      "name": "readOnly conditions do not skip the rules",
       "input": {
         "values": {
-          "seats": 3,
-          "plan": "pro"
+          "seats": 200,
+          "plan": "pro",
+          "account": "acct-12"
         },
         "skippedSteps": []
       },
       "expected": {
         "values": {
-          "seats": 3,
-          "plan": "pro"
+          "seats": 200,
+          "plan": "pro",
+          "account": "acct-12"
         },
         "errors": {
           "note": "This field is required"
@@ -193,7 +202,31 @@
       "canSubmit": false
     },
     {
-      "name": "still checks the type of a read-only value",
+      "name": "rejects a read-only value that breaks its pattern",
+      "input": {
+        "values": {
+          "seats": 3,
+          "plan": "pro",
+          "note": "Hi",
+          "account": "acct-x"
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "seats": 3,
+          "plan": "pro",
+          "note": "Hi",
+          "account": "acct-x"
+        },
+        "errors": {
+          "account": "Invalid format"
+        }
+      },
+      "canSubmit": false
+    },
+    {
+      "name": "checks the type of a read-only value",
       "input": {
         "values": {
           "seats": 3,

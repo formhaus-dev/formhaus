@@ -20,7 +20,7 @@ const account = (readOnly: FormField['readOnly'] = true, formatVersion = '1.8'):
   ],
 });
 
-const stored = { name: 'Ada', news: false, plan: 'a', tier: 'a' };
+const stored = { name: 'Ada Lovelace', news: false, plan: 'a', tier: 'a' };
 
 const crew: FormDefinition = {
   formatVersion: '1.8',
@@ -40,14 +40,18 @@ export function readOnlyScenarios(harness: RendererHarness, { it, expect, waitFo
     harness.mount({ definition: account(), initialValues: stored, onSubmit: fn() });
     const name = control('textbox', 'Name');
     expect([name.readOnly, name.disabled, name.hasAttribute('aria-readonly')]).toEqual([true, false, false]);
-    for (const element of [control('checkbox', 'News'), control('radio', 'Alpha'), control('combobox', 'Tier')]) {
+    expect([control('radiogroup', 'Plan').getAttribute('aria-readonly'), control('radio', 'Alpha').hasAttribute('aria-readonly')]).toEqual([
+      'true',
+      false,
+    ]);
+    for (const element of [control('checkbox', 'News'), control('combobox', 'Tier')]) {
       expect([element.getAttribute('aria-readonly'), (element as HTMLInputElement).disabled]).toEqual(['true', false]);
     }
     const tier = Array.from(control('combobox', 'Tier').querySelectorAll('option')).filter((item) => item.value);
     expect(tier.map((item) => item.disabled)).toEqual([false, true]);
   });
 
-  it('ignores value changes and submits the stored values without their rules', async () => {
+  it('ignores value changes and submits the stored values', async () => {
     const onSubmit = fn();
     harness.mount({ definition: account(), initialValues: stored, onSubmit });
     await harness.click(control('checkbox', 'News'));
@@ -63,7 +67,15 @@ export function readOnlyScenarios(harness: RendererHarness, { it, expect, waitFo
     expect(control('textbox', 'Name').readOnly).toBe(false);
     await harness.click(control('checkbox', 'Lock'));
     await waitFor(() => expect(control('textbox', 'Name').readOnly).toBe(true));
-    expect(control('radio', 'Alpha').getAttribute('aria-readonly')).toBe('true');
+    expect(control('radiogroup', 'Plan').getAttribute('aria-readonly')).toBe('true');
+  });
+
+  it('validates a read-only field like any other field', async () => {
+    const onSubmit = fn();
+    harness.mount({ definition: account(), initialValues: { ...stored, name: 'Ada' }, onSubmit });
+    await harness.click(screen.getByRole('button', { name: 'Send' }));
+    await waitFor(() => expect(control('textbox', 'Name').getAttribute('aria-invalid')).toBe('true'));
+    expect(onSubmit).not.toHaveBeenCalled();
   });
 
   it('ignores readOnly below format 1.8', () => {

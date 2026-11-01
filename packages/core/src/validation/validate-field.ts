@@ -98,14 +98,12 @@ export function validateFieldValue(
   const rules = files ? { ...field.validation, maxLength: fileLimit(field) } : (field.validation ?? {});
   const resolve = namedResolver(messageResolver(messages));
   const matchMessage = () => rules.matchFieldMessage ?? resolve('matchField', {}, field);
-  const readOnly = conditionsMet(field.readOnly, allValues);
   if (isEmpty(value, field)) {
-    if (readOnly) return null;
     if (rules.required) return typeof rules.required === 'string' ? rules.required : resolve('required', {}, field);
     return rules.matchField !== undefined && !isBlank(allValues[rules.matchField]) ? matchMessage() : null;
   }
   const typeIssue = files && !(value as unknown[]).every(isFileItem) ? resolve('file', {}, field) : clientTypeError(field, value, resolve);
-  if (typeIssue || readOnly) return typeIssue;
+  if (typeIssue) return typeIssue;
   if (disabledError(field, value, allValues, previousValues?.[field.key])) return resolve('option', {}, field);
   return (
     (sizeError(value, rules, field, resolve) ??
