@@ -1,4 +1,4 @@
-import type { FieldI18n, GroupI18n, LabelI18n, StepI18n, ValidationI18n } from './i18n';
+import type { FieldI18n, GroupI18n, OptionI18n, StepI18n, ValidationI18n } from './i18n';
 
 export type DefaultFieldType =
   | 'text'
@@ -33,7 +33,9 @@ export interface FieldOption {
   image?: string;
   exclusive?: boolean;
   pinned?: boolean;
-  i18n?: LabelI18n;
+  hint?: string;
+  disabled?: boolean | ShowCondition[];
+  i18n?: OptionI18n;
 }
 
 export interface FormField {
@@ -60,6 +62,7 @@ export interface FormField {
   mask?: string;
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
   autocomplete?: string;
+  readOnly?: boolean | ShowCondition[];
   props?: Record<string, unknown>;
   i18n?: FieldI18n;
 }
@@ -85,6 +88,7 @@ export interface FormGroup {
   addLabel?: string;
   removeLabel?: string;
   defaultItems?: number;
+  reorderable?: boolean;
   show?: ShowCondition[];
   showAny?: ShowCondition[];
   validation?: GroupValidation;

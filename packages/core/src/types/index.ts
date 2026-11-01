@@ -23,6 +23,7 @@ export type {
   LabelCatalog,
   LabelFn,
   LabelI18n,
+  OptionI18n,
   LabelKey,
   LabelSource,
   LocaleCatalog,
