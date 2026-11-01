@@ -82,6 +82,25 @@ const misplaced = (key: string) =>
 const optionValues = ({ options, optionsFrom }: Partial<FormField>) =>
   !optionsFrom && Array.isArray(options) ? JSON.stringify(options.map((option) => option?.value)) : undefined;
 
+function disabledDefault(field: FormField, path: string, definition: FormDefinition): DefinitionIssue[] {
+  const defaults = ([] as unknown[]).concat(field.defaultValue);
+  const option = formatAtLeast(definition, 8)
+    ? field.options?.find(
+        (item) => (item.disabled === true || !!(item.disabled as unknown[] | undefined)?.length) && defaults.includes(item.value),
+      )
+    : undefined;
+  return option
+    ? [
+        warning(
+          'default-disabled-option',
+          `${path}/defaultValue`,
+          `the defaultValue of "${field.key}" is the disabled option "${option.value}"`,
+          'Pick an enabled option as the default',
+        ),
+      ]
+    : [];
+}
+
 function fieldWarnings({ field, path, parent }: FieldEntry, definition: FormDefinition): DefinitionIssue[] {
   const visible = field.type !== 'hidden';
   const matrix = (parent as FormSection | undefined)?.layout === 'matrix';
@@ -136,6 +155,7 @@ function fieldWarnings({ field, path, parent }: FieldEntry, definition: FormDefi
           ),
         ]
       : []),
+    ...disabledDefault(field, path, definition),
     ...(formatAtLeast(definition, 7) && field.multiple !== undefined && field.type !== 'file'
       ? [warning('multiple-not-applicable', `${path}/multiple`, `"multiple" of "${field.key}" applies to file fields`, 'Remove "multiple"')]
       : []),

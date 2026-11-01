@@ -50,6 +50,7 @@ describe('conformance corpus', () => {
       'check-contains-not-list',
       'check-contains-options',
       'check-custom-type-names',
+      'check-default-disabled-option',
       'check-default-items',
       'check-disabled-not-applicable',
       'check-escaped-property',

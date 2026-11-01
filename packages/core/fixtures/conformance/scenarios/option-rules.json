@@ -426,6 +426,174 @@
           }
         }
       ]
+    },
+    {
+      "name": "follows disabled conditions in a matrix",
+      "definition": {
+        "formatVersion": "1.8",
+        "id": "grid",
+        "title": "Grid",
+        "submit": {
+          "label": "Send"
+        },
+        "fields": [
+          {
+            "key": "locked",
+            "type": "checkbox",
+            "label": "Locked"
+          },
+          {
+            "key": "rates",
+            "type": "section",
+            "title": "Rates",
+            "layout": "matrix",
+            "fields": [
+              {
+                "key": "speed",
+                "type": "radio",
+                "label": "Speed",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No",
+                    "disabled": [
+                      {
+                        "field": "locked",
+                        "eq": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "key": "price",
+                "type": "radio",
+                "label": "Price",
+                "options": [
+                  {
+                    "value": "yes",
+                    "label": "Yes"
+                  },
+                  {
+                    "value": "no",
+                    "label": "No",
+                    "disabled": [
+                      {
+                        "field": "locked",
+                        "eq": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "locked": true
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "price",
+          "value": "no"
+        },
+        {
+          "do": "validate",
+          "returns": {
+            "price": "Select one of the available options"
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "locked",
+          "value": false
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
+    },
+    {
+      "name": "counts each stored disabled option once",
+      "values": {
+        "seats": 3,
+        "plan": "pro",
+        "note": "Hi",
+        "account": "acct-12",
+        "people": [
+          {
+            "role": "admin"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "addItem",
+          "key": "people",
+          "returns": true
+        },
+        {
+          "do": "setItemValue",
+          "key": "people",
+          "index": 1,
+          "field": "role",
+          "value": "admin"
+        },
+        {
+          "do": "validate",
+          "returns": {
+            "people.1.role": "Select one of the available options"
+          }
+        }
+      ]
+    },
+    {
+      "name": "keeps a stored disabled option for a re-added item",
+      "values": {
+        "seats": 3,
+        "plan": "pro",
+        "note": "Hi",
+        "account": "acct-12",
+        "people": [
+          {
+            "role": "admin"
+          },
+          {
+            "role": "member"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "removeItem",
+          "key": "people",
+          "index": 0,
+          "returns": true
+        },
+        {
+          "do": "addItem",
+          "key": "people",
+          "returns": true
+        },
+        {
+          "do": "setItemValue",
+          "key": "people",
+          "index": 1,
+          "field": "role",
+          "value": "admin"
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
     }
   ]
 }
