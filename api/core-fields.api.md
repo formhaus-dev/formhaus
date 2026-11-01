@@ -154,9 +154,9 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
     // (undocumented)
     loading?: boolean;
     // (undocumented)
-    option: (option: FieldOption, index: number) => FieldOptionAttrs;
+    option: (option: OptionView, index: number) => FieldOptionAttrs;
     // (undocumented)
-    options: FieldOption[];
+    options: OptionView[];
     // (undocumented)
     testId?: string;
     // (undocumented)
@@ -236,16 +236,16 @@ export interface OptionAttrs {
 }
 
 // @public (undocumented)
-export function optionAttrs(option: FieldOption, optionId: string, disabled?: boolean): OptionAttrs;
+export function optionAttrs(option: FieldOption | OptionView, optionId: string, disabled?: boolean): OptionAttrs;
 
 // @public (undocumented)
-export function optionChecked(value: unknown, option: FieldOption): boolean;
+export function optionChecked(value: unknown, option: FieldOption | OptionView): boolean;
 
 // @public (undocumented)
 export const optionDescriptionId: (optionId: string) => string;
 
 // @public (undocumented)
-export const optionLocked: (option: FieldOption, value: unknown, readOnly?: boolean) => boolean;
+export const optionLocked: (option: FieldOption | OptionView, value: unknown, readOnly?: boolean) => boolean;
 
 // @public (undocumented)
 export const optionText: (options: FieldOption[], value: unknown) => string;

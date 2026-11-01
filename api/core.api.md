@@ -917,6 +917,11 @@ export interface OptionI18n extends LabelI18n {
 export type OptionsProvider = (values: Record<string, unknown>) => FieldOption[] | Promise<FieldOption[]>;
 
 // @public (undocumented)
+export type OptionView = Omit<FieldOption, 'disabled'> & {
+    disabled?: boolean;
+};
+
+// @public (undocumented)
 export function parseDefinition(input: unknown): FormDefinition;
 
 // @public (undocumented)

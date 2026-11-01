@@ -11,6 +11,7 @@ import {
 } from '@formhaus/core/fields';
 import { type ChangeEvent, useState } from 'react';
 import { optionProps } from './fields/fieldProps';
+import type { OptionView } from '@formhaus/core';
 import type { FieldComponentProps } from './types';
 
 export interface FieldAttrs extends FieldControl {
@@ -34,7 +35,7 @@ function fieldView(props: FieldComponentProps, [typed, setTyped]: [string, (text
   const state = fieldState(props);
   const { field, value, onCommit, onBlur, onFocus = noop } = props;
   const text = value == null ? '' : String(value);
-  const options = props.matrix?.columns ?? field.options ?? [];
+  const options = (props.matrix?.columns ?? field.options ?? []) as OptionView[];
   const change = (next: unknown) => props.onChange(fieldValue(field, next));
   const onInput = ({ target }: InputEvent) => change(target.value);
   const control: FieldAttrs = {
