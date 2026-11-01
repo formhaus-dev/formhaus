@@ -36,7 +36,10 @@ export function gzip(contents) {
 
 const SELF = Object.fromEntries(['react', 'vue'].map((pkg) => [`@formhaus/${pkg}`, `./packages/${pkg}/dist/index.js`]));
 
-export async function bundleSize(contents, { external = [], mode = 'production', resolveDir = process.cwd(), define = {} } = {}) {
+export async function bundleOutput(
+  contents,
+  { external = [], mode = 'production', resolveDir = process.cwd(), define = {}, sourcemap = false } = {},
+) {
   const result = await build({
     stdin: { contents, resolveDir },
     bundle: true,
@@ -48,16 +51,32 @@ export async function bundleSize(contents, { external = [], mode = 'production',
     define: { 'process.env.NODE_ENV': JSON.stringify(mode), ...define },
     external,
     alias: Object.fromEntries(Object.entries(SELF).filter(([name]) => !external.includes(name))),
+    outfile: 'bundle.js',
+    sourcemap: sourcemap ? 'external' : false,
   });
-  return gzip(result.outputFiles[0].contents);
+  const file = (extension) => result.outputFiles.find((output) => output.path.endsWith(extension));
+  return { js: file('.js').contents, map: sourcemap ? JSON.parse(file('.map').text) : null };
 }
 
-function entrySize(name) {
+export async function bundleSize(contents, options) {
+  return gzip((await bundleOutput(contents, options)).js);
+}
+
+function entryBundle(name, sourcemap) {
   const { pkg, only, subpath, trusted } = ENTRIES[name];
   const dist = `./packages/${pkg}/dist`;
   const lines = [`export ${only ? `{ ${only} }` : '*'} from '${dist}/index.js';`];
   if (subpath) lines.push(`export * from '${dist}/${subpath}.js';`);
-  return bundleSize(lines.join('\n'), { external: EXTERNAL[pkg], define: trusted ? TRUSTED : {} });
+  return bundleOutput(lines.join('\n'), { external: EXTERNAL[pkg], define: trusted ? TRUSTED : {}, sourcemap });
+}
+
+export async function entryBundleFiles(name) {
+  const { js, map } = await entryBundle(name, true);
+  return { size: gzip(js), js, map };
+}
+
+async function entrySize(name) {
+  return gzip((await entryBundle(name, false)).js);
 }
 
 export async function measureEntries(names = Object.keys(ENTRIES)) {
