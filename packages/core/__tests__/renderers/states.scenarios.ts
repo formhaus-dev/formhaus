@@ -13,6 +13,73 @@ export function stateScenarios(harness: RendererHarness, { it, expect, waitFor, 
     expect(document.querySelector('.fh-form__top-errors')).not.toBeNull();
   });
 
+  const follows = (before: Element, after: Element) => Boolean(before.compareDocumentPosition(after) & Node.DOCUMENT_POSITION_FOLLOWING);
+  const toLastStep = async () => {
+    await harness.click(button('Continue'));
+    await screen.findByRole('heading', { name: 'Two' });
+    await harness.click(button('Continue'));
+    await screen.findByRole('heading', { name: 'Three' });
+  };
+
+  it('renders a field error right after its field and before the next field', async () => {
+    harness.mount({ definition: flat, errors: { first: 'Taken' }, onSubmit: () => {} });
+    const error = await screen.findByText('Taken');
+    expect(follows(textbox('First'), error)).toBe(true);
+    expect(follows(error, textbox('Second'))).toBe(true);
+    expect(error.closest('.fh-form__fields')).not.toBeNull();
+  });
+
+  it('puts form errors and the error summary between the fields and the actions of a single page', async () => {
+    harness.mount({
+      definition: flat,
+      errorSummary: true,
+      onSubmit: () => ({ ok: false, errors: { first: 'Taken', ghost: 'Ghost field' }, formErrors: ['Try later'] }),
+    });
+    await harness.click(button('Send'));
+    const formErrors = (await screen.findByText('Try later')).closest('.fh-form__top-errors')!;
+    const summary = document.querySelector('.fh-error-summary')!;
+    const fields = document.querySelector('.fh-form__fields')!;
+    const actions = document.querySelector('.fh-form-actions')!;
+    expect(follows(fields, formErrors)).toBe(true);
+    expect(follows(formErrors, actions)).toBe(true);
+    expect(follows(fields, summary)).toBe(true);
+    expect(follows(summary, actions)).toBe(true);
+    expect(document.querySelector('form')!.firstElementChild).toBe(fields);
+  });
+
+  it('puts form errors right above the step buttons on a step and keeps the step', async () => {
+    harness.mount({
+      definition: wizard,
+      errorSummary: false,
+      initialValues: filled,
+      onSubmit: () => ({ ok: false, formErrors: ['Try later'] }),
+    });
+    await toLastStep();
+    await harness.click(button('Send'));
+    const formErrors = (await screen.findByText('Try later')).closest('.fh-form__top-errors')!;
+    expect(screen.getByRole('heading', { name: 'Three' })).toBeTruthy();
+    expect(follows(document.querySelector('.fh-form__fields')!, formErrors)).toBe(true);
+    expect(formErrors.nextElementSibling).toBe(document.querySelector('.fh-form-actions'));
+  });
+
+  it('shows a server error of an earlier step under its field with the form errors above the step buttons', async () => {
+    harness.mount({
+      definition: wizard,
+      errorSummary: false,
+      initialValues: filled,
+      onSubmit: () => ({ ok: false, errors: { name: 'Taken' }, formErrors: ['Try later'] }),
+    });
+    await toLastStep();
+    await harness.click(button('Send'));
+    await screen.findByRole('heading', { name: 'One' });
+    const error = await screen.findByText('Taken');
+    expect(follows(textbox('Name'), error)).toBe(true);
+    const formErrors = screen.getByText('Try later').closest('.fh-form__top-errors')!;
+    expect(follows(error, formErrors)).toBe(true);
+    expect(formErrors.nextElementSibling).toBe(document.querySelector('.fh-form-actions'));
+    await waitFor(() => expect(document.activeElement).toBe(textbox('Name')));
+  });
+
   it('shows the message of a failing submit handler', async () => {
     harness.mount({
       definition: flat,
