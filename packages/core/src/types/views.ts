@@ -24,6 +24,8 @@ export interface GroupItemView {
   removeLabel: string;
   removeName: string;
   disabled?: boolean;
+  move?: (to: number) => void;
+  count?: number;
 }
 
 export interface ConfirmDialogView {

@@ -37,6 +37,7 @@ export { withReveals } from '../controls/options';
 export { announce, fileLimitMessage, fileListAria, nextRemove } from './files';
 export { copyField } from '../validation/type-checks';
 export { conditionalRules, fieldRules, type FieldRules } from './rules';
+export { keepReadOnly, moveButtonId, movedFocusId } from './reorder';
 
 export function conditionValues(engine: FormEngine): Record<string, unknown> {
   const internals = engine as unknown as EngineInternals;
