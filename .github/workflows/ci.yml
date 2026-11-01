@@ -5,7 +5,6 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-    types: [opened, synchronize, reopened, edited]
 
 permissions:
   contents: read
@@ -323,9 +322,11 @@ jobs:
       - id: report
         env:
           TAG: ${{ steps.tag.outputs.name }}
-          PR_BODY: ${{ github.event.pull_request.body }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
         run: |
-          printf '%s' "$PR_BODY" > "$RUNNER_TEMP/body.md"
+          gh api "repos/$REPO/pulls/$PR" --jq '.body // ""' > "$RUNNER_TEMP/body.md"
           node scripts/size-growth.mjs report "$RUNNER_TEMP/base.json" "$RUNNER_TEMP/head.json" "$RUNNER_TEMP/tag.json" "$RUNNER_TEMP/body.md" "$RUNNER_TEMP/comment.md"
 
       - name: Update the pull request comment

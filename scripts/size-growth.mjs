@@ -46,14 +46,16 @@ function report([baseFile, headFile, tagFile, bodyFile, outFile]) {
   const blocked = grown.length > 0 && !documented;
   const intro = `Gzipped size of the entry points on this pull request against its base. Growth over ${THRESHOLD} B needs a \`## Size\` section in the pull request description.`;
   const heading = grown.length ? `### Bundle size grew by more than ${THRESHOLD} B` : '### Bundle size';
-  const missing = blocked ? '**The pull request description has no `## Size` section.** Explain the growth there.' : '';
+  const missing = blocked
+    ? '**The pull request description has no `## Size` section.** Explain the growth there, then re-run the size-growth job.'
+    : '';
   const details = growthDetails(base, head);
   const body = [MARKER, heading, intro, sizeTable(base, head, tag, process.env.TAG), missing, details].filter(Boolean).join('\n\n');
   writeFileSync(outFile, `${body}\n`);
   if (process.env.GITHUB_STEP_SUMMARY) appendFileSync(process.env.GITHUB_STEP_SUMMARY, `${body.replace(`${MARKER}\n\n`, '')}\n`);
   if (blocked) {
     console.log(
-      `::error title=Bundle size::${grown.join(', ')} grew by more than ${THRESHOLD} B gzipped. Add a "## Size" section to the pull request description explaining why.`,
+      `::error title=Bundle size::${grown.join(', ')} grew by more than ${THRESHOLD} B gzipped. Add a "## Size" section to the pull request description explaining why, then re-run this job.`,
     );
     process.exitCode = 1;
   }
