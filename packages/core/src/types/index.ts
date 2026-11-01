@@ -53,5 +53,6 @@ export type {
   RevealView,
   RootProps,
   SectionView,
+  OptionView,
   TestIdTarget,
 } from './views';
