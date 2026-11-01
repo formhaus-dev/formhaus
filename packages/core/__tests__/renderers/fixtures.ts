@@ -22,6 +22,7 @@ export interface ScenarioProps {
   errors?: Record<string, string>;
   errorSummary?: boolean | 'top' | 'bottom';
   loading?: boolean;
+  readOnly?: boolean;
   stepErrorMarks?: boolean;
   stepFocus?: 'field' | 'heading';
   conditionalReveal?: boolean;
@@ -58,6 +59,7 @@ export interface RendererHarness {
   type(element: Element, value: string): Promise<void>;
   submit(form: HTMLFormElement): Promise<void>;
   containers?: Record<string, unknown>;
+  reorder?: unknown;
   controls?: Record<string, unknown>;
   mapped?: Record<
     | 'shell'
