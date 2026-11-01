@@ -1,5 +1,11 @@
 # @formhaus/mcp
 
+## 0.13.3
+
+### Patch Changes
+
+- Updated `@modelcontextprotocol/sdk` to 1.32.2.
+
 ## 0.13.2
 
 ### Patch Changes
