@@ -107,6 +107,7 @@ All state properties are read-only. Change values with `setValue()` and errors w
 | `progress` | `{ current: number; total: number }` | One-based progress through visible steps on the active path |
 | `isMultiStep` | `boolean` | Whether the definition uses steps |
 | `seed` | `string` | The `seed` option, the seed the research module generated, or `''` without either. Added in 1.1.0 |
+| `resetCount` | `number` | How many times `reset()` ran. It changes before the reset notifies subscribers. Added in 1.9.0 |
 
 ## Values and validation
 
@@ -267,6 +268,27 @@ const values = useSyncExternalStore(
 ```
 
 `subscribeValues` runs for `setValue`, group item changes, values cleared or restored by conditions, `reset`, and step skip and its rollback. It may run when the values end up unchanged: a write to a hidden field, a reset to equal content, a skip. It does not run for errors, loading, navigation or a value equal to the current one. Listeners run synchronously, after the general `subscribe` listeners.
+
+## Dirty tracking
+
+`trackDirty(engine)` from `@formhaus/core/dirty` follows the engine and compares its submit values with a baseline. See [Unsaved changes](/guide/unsaved-changes) and the [rules](/spec#unsaved-changes).
+
+```ts
+import { trackDirty } from '@formhaus/core/dirty';
+
+const changes = trackDirty(engine);
+changes.subscribe(() => console.log(changes.dirty, changes.dirtyKeys));
+```
+
+| Member | Description |
+|---|---|
+| `dirty` | `true` when `dirtyKeys` is not empty |
+| `dirtyKeys` | Changed field and group item paths, sorted |
+| `markClean()` | Takes the current values as the baseline. `reset()` does the same with the reset values |
+| `subscribe(listener)` | Runs the listener when `dirtyKeys` changes |
+| `stop()` | Stops following the engine |
+
+Added in 1.9.0.
 
 ## Form events
 

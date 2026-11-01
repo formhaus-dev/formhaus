@@ -342,6 +342,8 @@ export class FormEngine<TValues extends object = Record<string, unknown>> {
     // (undocumented)
     reset(values?: Record<string, unknown>): void;
     // (undocumented)
+    readonly resetCount = 0;
+    // (undocumented)
     readonly seed: string;
     // (undocumented)
     setErrors(errors: Record<string, string>): void;
@@ -600,9 +602,15 @@ export interface FormRendererHandle {
     // (undocumented)
     goToStep(stepId: string): GoToStepResult;
     // (undocumented)
+    reset(values?: Record<string, unknown>): void;
+    // (undocumented)
     setValue(key: string, value: unknown): void;
     // (undocumented)
     showField(key: string): void;
+    // (undocumented)
+    submit(): Promise<boolean>;
+    // (undocumented)
+    readonly submitting: boolean;
     // (undocumented)
     readonly values: Readonly<Record<string, unknown>>;
 }

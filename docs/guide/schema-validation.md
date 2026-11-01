@@ -1,6 +1,6 @@
 ---
 title: "Schema validation"
-description: "Validate Formhaus forms with Zod, Valibot or ArkType through onValidate and schemaValidate: step scope, group items and async server checks."
+description: "Validate Formhaus forms with Zod, Valibot or ArkType through schemaValidate and schemaParse: step scope, group items, typed schema output and async checks."
 ---
 
 # Schema Validation
@@ -112,9 +112,60 @@ app.post('/api/submit', async (req, res) => {
 
 With a context, only issues on the paths in `fields` and issues without a path count. `fields: []` keeps only the issues without a path.
 
+## Schema output
+
+`schemaParse()` gives the submit handler the schema output: transforms, coercion, `.catch()` and defaults applied, typed from the schema.
+
+```ts
+import { schemaParse } from '@formhaus/core/schema';
+import { z } from 'zod';
+
+const schema = z.object({
+  email: z.string().trim().toLowerCase().pipe(z.email()),
+  seats: z.coerce.number().int(),
+});
+
+const settings = schemaParse(schema);
+const onSubmit = settings.submit(async (values) => {
+  await save(values);
+});
+```
+
+::: code-group
+```tsx [React]
+<FormRenderer definition={definition} onValidate={settings.validate} onSubmit={onSubmit} />
+```
+
+```vue [Vue]
+<FormRenderer :definition="definition" :on-validate="settings.validate" @submit="onSubmit" />
+```
+
+```ts [Core]
+const engine = new FormEngine(definition, {}, { onValidate: settings.validate });
+await engine.submit(onSubmit);
+```
+:::
+
+`validate` maps issues exactly like `schemaValidate()` and takes the same options. The schema runs once per submit, in `validate`, and `submit(handler)` gets its output. When `onBeforeSubmit` changed the values, `submit` parses them again and rejects the submit if they have issues. Added in 1.9.0.
+
+The schema parses the submit payload, and fields hidden by a condition or on a skipped step are absent from it. Mark them optional. When the schema fails only on a field the form does not submit, the submit stops with the schema message as a form error, and a development warning names the cause:
+
+```ts
+const schema = z.object({
+  business: z.boolean(),
+  vat: z.string().optional(),
+});
+```
+
+Without a schema, the React renderers take the values type as a type argument. The engine does not check it:
+
+```tsx
+<FormRenderer<Settings> definition={definition} onSubmit={(values) => save(values)} />
+```
+
 ## Values and messages
 
-- The submit handler gets the form values, not the schema output. Transforms, coercion and defaults in the schema do not apply. Parse the values again in the handler when you need the output.
+- With `schemaValidate()`, the submit handler gets the form values, not the schema output. Use `schemaParse()` for the output.
 - Schema messages come from the library, not from the Formhaus [locale catalogs](/guide/translations). Set the library locale with `z.config(z.locales.de())` in Zod or [`@valibot/i18n`](https://valibot.dev/guides/internationalization/) in Valibot, or pass your own messages as below.
 
 ## Messages in each language
