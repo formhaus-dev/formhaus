@@ -305,26 +305,46 @@ jobs:
           pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue build
           node "$GITHUB_WORKSPACE/scripts/size-growth.mjs" measure > "$RUNNER_TEMP/base.json"
 
+      - id: tag
+        name: Build the last release tag
+        continue-on-error: true
+        run: |
+          tag=$(git ls-remote --tags --refs --sort=-v:refname origin '@formhaus/core@*' | head -n 1 | sed 's|.*refs/tags/||')
+          if [ -z "$tag" ]; then exit 0; fi
+          git fetch --no-tags --depth=1 origin "refs/tags/$tag:refs/tags/$tag"
+          git worktree add "$RUNNER_TEMP/tag" "$tag"
+          cd "$RUNNER_TEMP/tag"
+          pnpm install --frozen-lockfile
+          pnpm --filter @formhaus/core --filter @formhaus/react --filter @formhaus/vue build
+          node "$GITHUB_WORKSPACE/scripts/size-growth.mjs" measure > "$RUNNER_TEMP/tag.json"
+          echo "name=$tag" >> "$GITHUB_OUTPUT"
+
       - id: report
-        run: node scripts/size-growth.mjs report "$RUNNER_TEMP/base.json" "$RUNNER_TEMP/head.json" "$RUNNER_TEMP/comment.md"
+        env:
+          TAG: ${{ steps.tag.outputs.name }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          gh api "repos/$REPO/pulls/$PR" --jq '.body // ""' > "$RUNNER_TEMP/body.md"
+          node scripts/size-growth.mjs report "$RUNNER_TEMP/base.json" "$RUNNER_TEMP/head.json" "$RUNNER_TEMP/tag.json" "$RUNNER_TEMP/body.md" "$RUNNER_TEMP/comment.md"
 
       - name: Update the pull request comment
-        if: github.event.pull_request.head.repo.full_name == github.repository
+        if: always() && steps.report.conclusion != 'skipped' && github.event.pull_request.head.repo.full_name == github.repository
         env:
           GH_TOKEN: ${{ github.token }}
-          EXCEEDED: ${{ steps.report.outputs.exceeded }}
           REPO: ${{ github.repository }}
           PR: ${{ github.event.pull_request.number }}
         run: |
           id=$(gh api --paginate "repos/$REPO/issues/$PR/comments" --jq '.[] | select(.body | startswith("<!-- size-growth -->")) | .id' | head -n 1)
           if [ -n "$id" ]; then
             gh api --method PATCH "repos/$REPO/issues/comments/$id" --field body=@"$RUNNER_TEMP/comment.md" > /dev/null
-          elif [ "$EXCEEDED" = true ]; then
+          else
             gh api --method POST "repos/$REPO/issues/$PR/comments" --field body=@"$RUNNER_TEMP/comment.md" > /dev/null
           fi
 
   ci-ok:
-    needs: [changes, check, content, lowest-peers, audit, docs, examples]
+    needs: [changes, check, content, lowest-peers, audit, docs, examples, size-growth]
     if: always()
     runs-on: ubuntu-latest
 
