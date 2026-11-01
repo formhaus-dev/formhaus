@@ -159,5 +159,8 @@ export interface FormRendererHandle {
   goToStep(stepId: string): GoToStepResult;
   showField(key: string): void;
   getErrors(): ErrorSummary;
+  submit(): Promise<boolean>;
+  reset(values?: Record<string, unknown>): void;
   readonly values: Readonly<Record<string, unknown>>;
+  readonly submitting: boolean;
 }

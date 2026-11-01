@@ -30,6 +30,7 @@ export type Action =
   | { do: 'goToStepWithField'; key: string }
   | { do: 'goToStep'; stepId: string }
   | { do: 'reset'; values?: Record<string, unknown> }
+  | { do: 'markClean' }
   | { do: 'replaceDefinition'; definition: FormDefinition }
   | { do: 'orderOptions'; key: string; options?: FieldOption[] }
   | { do: 'resolve'; deferred: string }
@@ -40,6 +41,8 @@ export type Step = (Action & { returns?: unknown; throws?: Record<string, unknow
 export interface Expectation {
   values?: Record<string, unknown>;
   submitValues?: Record<string, unknown>;
+  dirty?: boolean;
+  dirtyKeys?: string[];
   errors?: Record<string, string>;
   topLevelErrors?: string[];
   stepErrors?: Record<string, string[]>;

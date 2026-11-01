@@ -3,7 +3,7 @@ import { FormActions } from './FormActions';
 import { FormStepProgress } from './FormStepProgress';
 import { HeadlessFormRenderer } from './HeadlessFormRenderer';
 import { withDefaultFields } from './defaultFieldComponents';
-import type { FormRendererHandle, FormRendererProps } from './types';
+import type { FormRendererComponent, FormRendererHandle, FormRendererProps } from './types';
 
 export const FormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandle, FormRendererProps>(function FormRenderer(
   { components, layout, ...props },
@@ -21,4 +21,4 @@ export const FormRenderer = /* @__PURE__ */ forwardRef<FormRendererHandle, FormR
   );
 
   return <HeadlessFormRenderer {...props} ref={ref} components={fieldComponents} layout={slots} />;
-});
+}) as FormRendererComponent;

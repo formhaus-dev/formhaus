@@ -5,6 +5,17 @@
 ```ts
 
 // @public (undocumented)
+export interface SchemaParse<Output> {
+    // (undocumented)
+    submit(handler: (values: Output, skippedSteps: string[]) => ReturnType<SubmitHandler>): SubmitHandler;
+    // (undocumented)
+    validate(values: Record<string, unknown>, context?: ValidateContext): Promise<Record<string, string>>;
+}
+
+// @public (undocumented)
+export function schemaParse<Schema extends StandardSchemaV1>(schema: Schema, options?: SchemaValidateOptions): SchemaParse<StandardSchemaV1.InferOutput<Schema>>;
+
+// @public (undocumented)
 export function schemaValidate(schema: StandardSchemaV1, options?: SchemaValidateOptions): (values: Record<string, unknown>, context?: ValidateContext) => Promise<Record<string, string>>;
 
 // @public (undocumented)

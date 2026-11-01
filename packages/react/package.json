@@ -19,6 +19,10 @@
     "./controls": {
       "types": "./dist/controls.d.ts",
       "default": "./dist/controls.js"
+    },
+    "./dirty": {
+      "types": "./dist/dirty.d.ts",
+      "default": "./dist/dirty.js"
     }
   },
   "files": [

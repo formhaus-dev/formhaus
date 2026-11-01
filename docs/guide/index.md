@@ -321,7 +321,43 @@ async function changed(key: string, value: unknown) {
 
 A field keeps its value when the new definition has a field with the same key and type. New fields start from their defaults. The user stays on the same step when it still exists, and steps added before it are checked on submit. Without `keepValues`, a new definition resets the form as before. The `useFormEngine` hook and composable take `keepValues` in their options, and `engine.replaceDefinition()` does the same on a bare engine. See [Replacing the definition](/spec#replacing-the-definition).
 
-To change a value after the form mounts, put a ref on the renderer. `FormRenderer` and `HeadlessFormRenderer` expose `setValue(key, value)`, `getValues()`, `goToStep(stepId)`, `showField(key)` and `getErrors()`, typed as `FormRendererHandle`. See [Errors in app code](/guide/errors#errors-in-app-code) for the last two. `setValue` does not call `onFieldChange` (React) or emit `fieldChange` (Vue).
+### Renderer handle
+
+Put a ref on `FormRenderer` or `HeadlessFormRenderer` to drive the form from app code. The ref is typed as `FormRendererHandle`.
+
+| Member | Description |
+|---|---|
+| `setValue(key, value)` | Sets a value. It does not call `onFieldChange` (React) or emit `fieldChange` (Vue) |
+| `getValues()` | A copy of the values |
+| `values` | The current values. Reactive in Vue |
+| `goToStep(stepId)` | Opens a step. See [Opening a step by id](/spec#opening-a-step-by-id) |
+| `showField(key)` | Opens the step of a field and focuses it. See [Errors in app code](/guide/errors#errors-in-app-code) |
+| `getErrors()` | The error summary. See [Errors in app code](/guide/errors#errors-in-app-code) |
+| `submit()` | Validates and submits like the submit button. Resolves to `true` when the submit handler ran and accepted. Added in 1.9.0 |
+| `reset(values?)` | Resets the form to `values`, or to the defaults. Added in 1.9.0 |
+| `submitting` | `true` while a submit runs. Added in 1.9.0 |
+| `engine` | The running `FormEngine`. Added in 1.9.0 |
+
+`id` goes on the `<form>` element, so a submit button outside the form, such as in a dialog footer, submits it:
+
+::: code-group
+```tsx [React]
+<Dialog footer={<button type="submit" form="settings">Save</button>}>
+  <FormRenderer id="settings" definition={definition} layout={{ actions: () => null }} onSubmit={save} />
+</Dialog>
+```
+
+```vue [Vue]
+<Dialog>
+  <FormRenderer id="settings" :definition="definition" :layout="{ actions: () => null }" @submit="save" />
+  <template #footer>
+    <button type="submit" form="settings">Save</button>
+  </template>
+</Dialog>
+```
+:::
+
+On a multi-step form the button runs Continue until the last step, like the built-in primary button.
 
 `onValuesChange` (React) and `valuesChange` (Vue) fire on mount and on every value-changing operation, with a frozen copy of the values. In Vue, the handle also has a reactive `values`. See [Derived values](/recipes/derived-values).
 

@@ -1,4 +1,3 @@
-import type { FormRendererHandle } from '@formhaus/core';
 import type { Ref } from 'vue';
 import FormRendererComponent from './FormRenderer.vue';
 import HeadlessFormRendererComponent from './HeadlessFormRenderer.vue';
@@ -36,7 +35,7 @@ import type {
   sectionComponentProps,
 } from './props';
 import type { formhausFieldProps } from './innerProps';
-import type { EmitsOf, FormRendererEvents, TypedComponent, WithSlots } from './types';
+import type { EmitsOf, FormRendererEvents, FormRendererHandle, TypedComponent, WithSlots } from './types';
 
 type RendererComponent = TypedComponent<
   typeof formRendererProps,

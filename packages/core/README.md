@@ -47,7 +47,8 @@ engine.getSubmitValues();
 | `@formhaus/core/fix` | `suggestFixes()`, `applyFix()`, `fixAll()` |
 | `@formhaus/core/fields` | Helpers for custom field components: `fieldState()`, `scaleView()`, `fromDate()`, `toDate()` and others |
 | `@formhaus/core/research` | Opt-in survey features: `research` for random option order |
-| `@formhaus/core/schema` | `schemaValidate()` for Zod, Valibot, ArkType and other Standard Schema libraries |
+| `@formhaus/core/schema` | `schemaValidate()` and `schemaParse()` for Zod, Valibot, ArkType and other Standard Schema libraries |
+| `@formhaus/core/dirty` | `trackDirty()` for unsaved changes |
 | `@formhaus/core/style.css` | Optional baseline styles with `--fh-*` theme tokens |
 | `@formhaus/core/schema.json` | JSON Schema of the definition |
 

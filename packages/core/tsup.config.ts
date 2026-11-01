@@ -32,6 +32,7 @@ export default defineConfig([
       fields: 'src/fields/index.ts',
       controls: 'src/controls/index.ts',
       schema: 'src/schema/index.ts',
+      dirty: 'src/dirty/index.ts',
     },
     format: ['esm'],
     external: ['@formhaus/core/fields'],

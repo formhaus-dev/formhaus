@@ -26,6 +26,7 @@ export { useFormEngine, type UseFormEngineOptions } from './hooks/useFormEngine'
 export type {
   FieldComponentMap,
   FieldComponentProps,
+  FormRendererComponent,
   FormRendererProps,
   FormRendererHandle,
   FormActionsProps,

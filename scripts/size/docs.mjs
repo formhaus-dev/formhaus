@@ -55,6 +55,7 @@ const ADDONS = [
   ['`@formhaus/core/research`', 'core FormEngine + /research'],
   ['`@formhaus/core/fields`', 'core FormEngine + /fields'],
   ['`@formhaus/core/schema`', 'core FormEngine + /schema'],
+  ['`@formhaus/core/dirty`', 'core FormEngine + /dirty'],
 ];
 
 const SERVER = '`validateSubmission()`';

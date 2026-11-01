@@ -9,15 +9,17 @@ export function useRendererActions(engine: FormEngine, props: FormRendererProps)
   const [invalidAttempts, setInvalidAttempts] = useState(0);
   const run = useCallback(
     async (action: () => Promise<boolean>) => {
-      if (loading) return;
+      if (loading) return false;
       setFailure(null);
       const errors = engine.errors;
       try {
-        if (!(await action()) && engine.errors !== errors && Object.keys(engine.errors).length > 0)
-          setInvalidAttempts((count) => count + 1);
+        const done = await action();
+        if (!done && engine.errors !== errors && Object.keys(engine.errors).length > 0) setInvalidAttempts((count) => count + 1);
+        return done;
       } catch (error) {
         if (onError) onError(error);
         else setFailure({ engine, message: error instanceof Error ? error.message : 'Form action failed' });
+        return false;
       }
     },
     [engine, loading, onError],

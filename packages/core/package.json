@@ -55,6 +55,10 @@
       "types": "./dist/schema.d.ts",
       "default": "./dist/schema.js"
     },
+    "./dirty": {
+      "types": "./dist/dirty.d.ts",
+      "default": "./dist/dirty.js"
+    },
     "./locales/*.json": "./locales/*.json",
     "./locales/*": {
       "types": "./dist/locales/*.d.ts",

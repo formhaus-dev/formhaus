@@ -14,18 +14,20 @@ export function useRendererActions(form: UseFormEngineReturn, props: FormRendere
     },
   );
   async function run(action: () => Promise<boolean>) {
-    if (props.loading) return;
+    if (props.loading) return false;
     const owner = form.engine;
     const onError = props.onError;
     const errors = owner.errors;
     actionError.value = null;
     try {
-      if (!(await action()) && owner === form.engine && owner.errors !== errors && Object.keys(owner.errors).length > 0)
-        invalidAttempts.value++;
+      const done = await action();
+      if (!done && owner === form.engine && owner.errors !== errors && Object.keys(owner.errors).length > 0) invalidAttempts.value++;
+      return done;
     } catch (error) {
-      if (owner !== form.engine) return;
+      if (owner !== form.engine) return false;
       if (onError) onError(error);
       else actionError.value = error instanceof Error ? error.message : 'Form action failed';
+      return false;
     }
   }
   const next = () =>

@@ -822,6 +822,21 @@ Reopening a draft through `initialValues` starts without last values, so a hidde
 
 A `file` value in the browser is a `File`, or `null` after clearing. A [file list](#file-lists) is an array of them. Core does not upload it, and how it reaches the server is the app's choice, such as `FormData` or an uploader that returns a reference. `validateSubmission()` on the server checks a `file` value as a string reference. A `file` value that is not a `File`, such as a string or a `file:` URL in the initial values, is a reference the app supplied. The built-in renderers do not show it, link to it or fetch it, the engine submits it as given, and the Cloud uploader sends it without an upload. The fixtures `file-app-reference.json` in the corpus and in `scenarios/` pin this rule.
 
+## Unsaved changes
+
+Dirty tracking is an opt-in module: `@formhaus/core/dirty` in TypeScript. It follows a running engine and compares its [submit payload](#submit-payload) with a baseline.
+
+1. The baseline holds the values, the definition and the skipped steps when tracking starts, right after the engine is created with its initial values. The baseline payload is the submit payload at that moment.
+2. A key is dirty when its value in the current payload differs from its baseline value. Numbers are equal when they are numerically equal, so `0` equals `-0`. Strings and booleans compare by value, arrays by items in order, plain objects by keys in any order. Other values, such as files, compare by reference. A key missing on one side differs from any value on the other, `null` and `''` included, and `null` differs from `''`.
+3. For a group whose items are objects on both sides and whose item count is the same, the dirty keys are the item paths `<group>.<index>.<field>` whose values differ. When the item count differs, the dirty key is the group key.
+4. Trimming, hidden fields, `hiddenValues` and skipped steps apply as in the payload. A trim-only edit is not dirty. A value that a condition hides is dirty unless `hiddenValues` is `"keep"`. Skipping a step drops its values from the payload, so they are dirty until the step is included again.
+5. The dirty keys are sorted by UTF-16 code units. The form is dirty when the list is not empty.
+6. `markClean()` sets the baseline to the current payload. Every `reset(values)` of the engine sets the baseline to the resulting payload. The engine counts resets in `resetCount`, which changes before the reset notifies subscribers, and the tracker takes a new baseline when the count changed.
+7. After `replaceDefinition()`, the baseline payload is recomputed: an engine created with the baseline values, definition and skipped steps is switched to the current definition, and its payload is the new baseline payload. A definition swap alone, with new fields and their defaults or removed fields, is not dirty. Edits made before or after it are.
+8. Listeners run when the list of dirty keys changes, not in the middle of `reset`.
+
+The conformance file `scenarios/dirty.json` pins these rules.
+
 ## Submit results
 
 The submit handler receives the [submit payload](#submit-payload) and the skipped step ids. It MAY return a result, directly or through a Promise:
