@@ -1,0 +1,225 @@
+{
+  "name": "option-rules",
+  "covers": ["option hints, disabled options and read-only fields"],
+  "issues": [],
+  "warnings": [],
+  "definition": {
+    "formatVersion": "1.8",
+    "id": "workspace",
+    "title": "Workspace",
+    "submit": {
+      "label": "Save"
+    },
+    "fields": [
+      {
+        "key": "seats",
+        "type": "number",
+        "label": "Seats"
+      },
+      {
+        "key": "plan",
+        "type": "radio",
+        "label": "Plan",
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter",
+            "hint": "Up to 5 seats",
+            "disabled": [
+              {
+                "field": "seats",
+                "gt": 5
+              }
+            ]
+          },
+          {
+            "value": "pro",
+            "label": "Pro",
+            "hint": "Any number of seats"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "key": "addons",
+        "type": "multiselect",
+        "label": "Add-ons",
+        "options": [
+          {
+            "value": "sso",
+            "label": "SSO",
+            "disabled": [
+              {
+                "field": "plan",
+                "neq": "pro"
+              }
+            ]
+          },
+          {
+            "value": "audit",
+            "label": "Audit log"
+          }
+        ]
+      },
+      {
+        "key": "account",
+        "type": "text",
+        "label": "Account ID",
+        "readOnly": true,
+        "validation": {
+          "required": true,
+          "minLength": 5
+        }
+      },
+      {
+        "key": "note",
+        "type": "text",
+        "label": "Note",
+        "readOnly": [
+          {
+            "field": "seats",
+            "gt": 100
+          }
+        ],
+        "validation": {
+          "required": true
+        }
+      },
+      {
+        "key": "people",
+        "type": "group",
+        "label": "People",
+        "reorderable": true,
+        "fields": [
+          {
+            "key": "role",
+            "type": "select",
+            "label": "Role",
+            "options": [
+              {
+                "value": "admin",
+                "label": "Admin",
+                "disabled": true
+              },
+              {
+                "value": "member",
+                "label": "Member"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "overlay": {
+    "fields": {
+      "plan": {
+        "optionHints": {
+          "starter": "Bis zu 5 Plätze"
+        }
+      }
+    }
+  },
+  "texts": {
+    "fields.plan.optionHints.starter": "Bis zu 5 Plätze",
+    "fields.plan.optionHints.pro": "Any number of seats",
+    "fields.plan.options.starter": "Starter"
+  },
+  "cases": [
+    {
+      "name": "accepts enabled options and skips the rules of a read-only field",
+      "input": {
+        "values": {
+          "seats": 3,
+          "plan": "starter",
+          "addons": ["audit"],
+          "note": "Hi"
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "seats": 3,
+          "plan": "starter",
+          "addons": ["audit"],
+          "note": "Hi"
+        },
+        "errors": {}
+      },
+      "canSubmit": true
+    },
+    {
+      "name": "applies readOnly when its conditions match",
+      "input": {
+        "values": {
+          "seats": 200,
+          "plan": "pro",
+          "addons": ["sso"]
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "seats": 200,
+          "plan": "pro",
+          "addons": ["sso"]
+        },
+        "errors": {}
+      },
+      "canSubmit": true
+    },
+    {
+      "name": "checks the rules when readOnly conditions do not match",
+      "input": {
+        "values": {
+          "seats": 3,
+          "plan": "pro"
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "seats": 3,
+          "plan": "pro"
+        },
+        "errors": {
+          "note": "This field is required"
+        }
+      },
+      "canSubmit": false
+    },
+    {
+      "name": "still checks the type of a read-only value",
+      "input": {
+        "values": {
+          "seats": 3,
+          "plan": "pro",
+          "note": "Hi",
+          "account": 5
+        },
+        "skippedSteps": []
+      },
+      "expected": {
+        "values": {
+          "seats": 3,
+          "plan": "pro",
+          "note": "Hi",
+          "account": 5
+        },
+        "errors": {
+          "account": "Must be text"
+        }
+      },
+      "serverValues": {
+        "seats": 3,
+        "plan": "pro",
+        "note": "Hi"
+      },
+      "canSubmit": false
+    }
+  ]
+}
