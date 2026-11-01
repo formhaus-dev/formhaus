@@ -31,7 +31,15 @@ defineExpose({
   goToStep: (stepId: string) => inner!.goToStep(stepId),
   showField: (key: string) => inner?.showField(key),
   getErrors: () => inner?.getErrors() ?? { groups: [], topLevelErrors: [], count: 0 },
+  submit: () => inner?.submit() ?? Promise.resolve(false),
+  reset: (initial?: Record<string, unknown>) => inner?.reset(initial),
   values,
+  get submitting() {
+    return !!inner?.submitting;
+  },
+  get engine() {
+    return inner!.engine;
+  },
 });
 </script>
 

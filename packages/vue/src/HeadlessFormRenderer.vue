@@ -132,7 +132,15 @@ defineExpose({
   goToStep: (stepId: string) => form.engine.goToStep(stepId),
   showField,
   getErrors: () => ({ ...getErrors(), topLevelErrors: formErrors.value }),
+  submit: onSubmit,
+  reset: (initial?: Record<string, unknown>) => form.engine.reset(initial),
   values,
+  get submitting() {
+    return submitting.value;
+  },
+  get engine() {
+    return form.engine;
+  },
 });
 
 const label = (key: LabelKey, params: Record<string, unknown> = {}) => engineLabel(form.engine, key, params, props.labels);
