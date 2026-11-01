@@ -13,9 +13,10 @@ describe('read-only attributes', () => {
         readOnlyAttrs({ field: field(type), readOnly: true }),
       ),
     ).toEqual(Array(7).fill({ readOnly: true }));
-    expect(
-      ['checkbox', 'select', 'multiselect', 'switch', 'file'].map((type) => readOnlyAttrs({ field: field(type), readOnly: true })),
-    ).toEqual(Array(5).fill({ 'aria-readonly': true }));
+    expect(['checkbox', 'select', 'multiselect', 'switch'].map((type) => readOnlyAttrs({ field: field(type), readOnly: true }))).toEqual(
+      Array(4).fill({ 'aria-readonly': true }),
+    );
+    expect(readOnlyAttrs({ field: field('file'), readOnly: true })).toEqual({});
     expect(readOnlyAttrs({ field: field('radio') })).toEqual({});
   });
 

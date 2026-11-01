@@ -1,5 +1,5 @@
 import { fieldDomId } from '../internal/ids';
-import type { FieldOption, FormField, FormGroup } from '../types';
+import type { FieldOption, FormField, FormGroup, OptionView } from '../types';
 import type { FreeText } from './text';
 import { inputType } from './values';
 
@@ -62,7 +62,7 @@ const RADIOS = ['radio', 'scale', 'rating'];
 export function readOnlyAttrs({ field, readOnly }: Pick<FieldStateInput, 'field' | 'readOnly'>, group = false): ReadOnlyAttrs {
   if (!readOnly) return {};
   if (TYPED.includes(field.type)) return { readOnly: true };
-  if (RADIOS.includes(field.type) !== group) return {};
+  if (field.type === 'file' || RADIOS.includes(field.type) !== group) return {};
   return group ? { role: 'radiogroup', 'aria-readonly': true } : { 'aria-readonly': true };
 }
 
@@ -80,7 +80,7 @@ export function fieldAria({ id, field, error, readOnly }: FieldStateInput): Fiel
   return {
     'aria-invalid': error ? true : undefined,
     'aria-required': field.validation?.required ? true : undefined,
-    'aria-readonly': readOnly && !TYPED.includes(field.type) ? true : undefined,
+    'aria-readonly': readOnly && ![...TYPED, 'file'].includes(field.type) ? true : undefined,
     'aria-describedby': [field.helperText && `${base}-helper`, error && `${base}-error`].filter(Boolean).join(' ') || undefined,
   };
 }
@@ -142,13 +142,13 @@ export interface FieldView<Attrs extends FieldControl> extends FieldState {
   loading?: boolean;
   freeText?: FreeText;
   testId?: string;
-  options: FieldOption[];
+  options: OptionView[];
   change: (value: unknown) => void;
   commit: (value: unknown) => void;
   blur: () => void;
   focus: () => void;
   attrs: Attrs & FieldAria & { 'data-testid'?: string };
-  option: (option: FieldOption, index: number) => FieldOptionAttrs;
+  option: (option: OptionView, index: number) => FieldOptionAttrs;
 }
 
 export function optionChecked(value: unknown, option: FieldOption): boolean {
