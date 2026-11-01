@@ -84,7 +84,7 @@ Item errors use `<group>.<index>.<field>` with a 0-based index. Count errors use
 }
 ```
 
-`engine.errors`, `stepErrors`, `setErrors()`, the `errors` prop and [submit results](/spec#server-errors) all use these paths. When an item is removed, the errors of later items move with them.
+`engine.errors`, `stepErrors`, `setErrors()`, the `errors` prop and [submit results](/spec#server-errors) all use these paths. When an item is removed or moved, the errors of the other items move with them.
 
 ## Engine API
 
@@ -93,6 +93,7 @@ engine.addItem('participants');
 engine.setItemValue('participants', 0, 'email', 'ada@example.com');
 engine.setValue('participants.0.email', 'ada@example.com');
 engine.removeItem('participants', 1);
+engine.moveItem('participants', 1, 0);
 engine.items('participants');
 ```
 

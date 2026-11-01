@@ -117,6 +117,19 @@ The returned `values` then hold the hidden values, trimmed and converted like vi
 The client decides which fields are hidden: it answers the fields their conditions read. Treat a kept hidden value as you would any other submitted value.
 :::
 
+## Stored answers
+
+Pass the stored values when a submission edits a saved record. A [disabled option](/guide/fields#hints-and-disabled-options) the stored answer already holds stays valid.
+
+```ts
+const { values, errors } = validateSubmission(definition, req.body?.values, {
+  skippedSteps: req.body?.skippedSteps,
+  previousValues: record.values,
+});
+```
+
+Without `previousValues`, every disabled option fails with the `option` message. In a group, an item is compared with the stored item at the same index.
+
 ## Custom validators
 
 `validateSubmission()` ignores `validation.validator` unless you pass the function in `validators`:
