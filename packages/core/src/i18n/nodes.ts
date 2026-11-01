@@ -9,7 +9,7 @@ export const SLOTS: Record<NodeKind, readonly string[]> = {
   section: ['title', 'description'],
   group: ['label', 'helperText', 'itemLabel', 'addLabel', 'removeLabel'],
   field: ['label', 'placeholder', 'helperText'],
-  option: ['label'],
+  option: ['label', 'hint'],
   action: ['label'],
   validation: ['required', 'minLength', 'maxLength', 'min', 'max', 'pattern', 'matchField'],
 };
@@ -46,6 +46,9 @@ export const DEFAULT_LABELS: Readonly<Record<LabelKey, string>> = /* @__PURE__ *
   stepTitle: 'Step {index}',
   stepErrors: 'Errors: {count}',
   fileCount: 'Files: {count}',
+  moveUp: 'Move up',
+  moveDown: 'Move down',
+  itemMoved: '{item} moved to position {position}',
   or: 'or',
   select: 'Select',
 });
