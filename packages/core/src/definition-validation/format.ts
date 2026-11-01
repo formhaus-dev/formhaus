@@ -2,7 +2,7 @@ import type { FormDefinition } from '../types';
 import type { DefinitionIssue } from './issues';
 import { error } from './issues';
 
-export const FORMAT_VERSION = '1.7';
+export const FORMAT_VERSION = '1.8';
 
 export const formatOf = ({ formatVersion }: Pick<FormDefinition, 'formatVersion'>): number[] =>
   String(formatVersion ?? '1.0')
