@@ -119,7 +119,7 @@ The client decides which fields are hidden: it answers the fields their conditio
 
 ## Stored answers
 
-Pass the stored values when a submission edits a saved record. A [disabled option](/guide/fields#hints-and-disabled-options) the stored answer already holds stays valid.
+Pass the stored values when a submission edits a saved record. A [disabled option](/guide/fields#option-descriptions-and-disabled-options) the stored answer already holds stays valid.
 
 ```ts
 const { values, errors } = validateSubmission(definition, req.body?.values, {

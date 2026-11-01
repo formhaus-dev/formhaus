@@ -227,7 +227,7 @@ import signupRu from './signup.ru.json';
 <FormRenderer definition={definition} locale={[translation(signupRu), ru]} onSubmit={save} />
 ```
 
-Option hints sit next to the options, under `optionHints`: `"plan": { "optionHints": { "pro": "Без ограничений" } }`.
+Option descriptions sit next to the options, under `optionDescriptions`: `"plan": { "optionDescriptions": { "pro": "Без ограничений" } }`.
 
 Load the file for a language before rendering:
 

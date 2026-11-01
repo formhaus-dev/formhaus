@@ -19,7 +19,7 @@ The key words MUST, MUST NOT, SHOULD and MAY are used as described in [RFC 2119]
 
 ## Versioning
 
-This document describes **Formhaus form definition 1.8**. `@formhaus/core` 1.9 and later implement it. Format 1.7, implemented by `@formhaus/core` 1.7 and 1.8, is 1.8 without [option hints and disabled options](#option-hints-and-disabled-options), [read-only fields](#read-only-fields) and [reorderable groups](#reordering-items). Format 1.6, implemented by `@formhaus/core` 1.1 to 1.6, is 1.7 without [file lists](#file-lists). Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
+This document describes **Formhaus form definition 1.8**. `@formhaus/core` 1.9 and later implement it. Format 1.7, implemented by `@formhaus/core` 1.7 and 1.8, is 1.8 without [option descriptions and disabled options](#option-descriptions-and-disabled-options), [read-only fields](#read-only-fields) and [reorderable groups](#reordering-items). Format 1.6, implemented by `@formhaus/core` 1.1 to 1.6, is 1.7 without [file lists](#file-lists). Format 1.5, implemented by `@formhaus/core` 0.21 to 1.0, is 1.6 without [option order](#option-order). Format 1.4, implemented by `@formhaus/core` 0.20, is 1.5 without [answer recall](#answer-recall), [exclusive options](#exclusive-options) and the field [`autocomplete`](#autocomplete). Format 1.3, implemented by `@formhaus/core` 0.19, is 1.4 without the [`contains` and `notContains`](#conditions) operators. Format 1.2, implemented by `@formhaus/core` 0.15 to 0.18, is 1.3 without the [`scale` and `rating`](#scale-and-rating) types, option [`image`](#picture-options), field [`columns`](#picture-options) and section [`layout`](#matrix). Format 1.1, implemented by `@formhaus/core` 0.14, is 1.2 without the field `props`. Format 1.0, implemented by `@formhaus/core` 0.11 to 0.13, is 1.1 without [sections](#sections) and [groups](#groups).
 
 - Additive changes, such as a new optional property or a new built-in field type, are minor versions.
 - Removing or renaming a property, or changing the meaning of an existing one, is a major version.
@@ -49,7 +49,7 @@ A definition with a field `randomize` or an option `pinned` MAY declare `"format
 
 A `file` field with `multiple` MUST declare `"formatVersion": "1.7"` or newer. Without it, and in core 1.6 and older, core reports `multiple` as `unknown-property` and the field keeps one file, so a definition written before 1.7 behaves as before. `checkDefinition()` warns about `multiple` without format 1.7. The `validateSubmission()` of core 1.6 and older fails a list in a `file` field with the `file` message. Upgrade the server that runs `validateSubmission()` before the clients. The renderers of core 1.6 and older draw a file list as a picker for one file and submit one file, which a 1.7 server reads as a list of one. A `minLength` above 1 then fails on the server.
 
-An option `hint` or `disabled`, a field `readOnly` and a group `reorderable` MUST declare `"formatVersion": "1.8"` or newer. Without it, and in core 1.8 and older, core reports them as `unknown-property`, and the engine, `validateSubmission()` and the renderers ignore them, so a definition written before 1.8 behaves as before. `checkDefinition()` warns about them without format 1.8. The `validateSubmission()` of core 1.8 and older accepts a disabled option and runs the rules of a read-only field. Upgrade the server that runs `validateSubmission()` before the clients.
+An option `description` or `disabled`, a field `readOnly` and a group `reorderable` MUST declare `"formatVersion": "1.8"` or newer. Without it, and in core 1.8 and older, core reports them as `unknown-property`, and the engine, `validateSubmission()` and the renderers ignore them, so a definition written before 1.8 behaves as before. `checkDefinition()` warns about them without format 1.8. The `validateSubmission()` of core 1.8 and older accepts a disabled option and runs the rules of a read-only field. Upgrade the server that runs `validateSubmission()` before the clients.
 
 ## Document structure
 
@@ -88,7 +88,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `show` | [condition](#conditions)[] | Visible when all conditions match. |
 | `showAny` | [condition](#conditions)[] | Visible when at least one condition matches. |
 | `validation` | [validation](#validation) | Validation rules. |
-| `options` | `{ value: string, label: string, image?: string, exclusive?: boolean, pinned?: boolean, hint?: string, disabled?: boolean \| condition[] }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
+| `options` | `{ value: string, label: string, image?: string, exclusive?: boolean, pinned?: boolean, description?: string, disabled?: boolean \| condition[] }[]` | Choices for `select`, `radio`, `multiselect` and `autocomplete`. Anchor labels for `scale` and `rating`. |
 | `randomize` | boolean | Shows the options in a random order per respondent. See [Option order](#option-order). Added in 1.6. |
 | `layout` | `"stack"` or `"inline"` | Option layout for `radio` and `multiselect`. `stack` (default) lists options vertically. `inline` places short options side by side. |
 | `columns` | integer, 1 to 4 | Cards per row for [picture options](#picture-options). |
@@ -105,7 +105,7 @@ A definition MUST NOT have both a non-empty `fields` and a non-empty `steps`. Th
 | `props` | object | Settings of a [custom type](#field-types). Core ignores it. Renderers pass it unchanged as `field.props`. Added in 1.2. |
 | `i18n` | object | [Translation keys](#translation-keys) for `label`, `placeholder` and `helperText`. |
 
-An option MAY have `i18n: { label, hint }`, an [`image`](#picture-options), [`exclusive`](#exclusive-options), [`pinned`](#option-order), and a [`hint` and `disabled`](#option-hints-and-disabled-options). `validation` MAY have `i18n` with keys by rule name.
+An option MAY have `i18n: { label, description }`, an [`image`](#picture-options), [`exclusive`](#exclusive-options), [`pinned`](#option-order), and a [`description` and `disabled`](#option-descriptions-and-disabled-options). `validation` MAY have `i18n` with keys by rule name.
 
 Field keys MUST be unique on every possible path. Two fields MAY share a key only when they are on route branches that never meet on one path; then the field on the active path owns the value. The constructor throws on any other duplicate. Section keys share this namespace.
 
@@ -196,7 +196,7 @@ A field MAY have `readOnly`: `true`, or a list of [conditions](#conditions) that
 ```
 
 - **Value.** A read-only field keeps its value from the initial values, `defaultValue`, its `source` or `setValue()`. The engine submits it like any visible value. The user cannot change it.
-- **Validation.** A read-only field runs only the type check, in `validate()`, on Continue and in `validateSubmission()`. `required`, the length and range rules, `pattern`, `matchField`, `validator` and the [disabled option](#option-hints-and-disabled-options) rule do not apply, so an empty read-only field is valid. A value that fails the type check fails as usual, and `validateSubmission()` drops it.
+- **Validation.** A read-only field runs only the type check, in `validate()`, on Continue and in `validateSubmission()`. `required`, the length and range rules, `pattern`, `matchField`, `validator` and the [disabled option](#option-descriptions-and-disabled-options) rule do not apply, so an empty read-only field is valid. A value that fails the type check fails as usual, and `validateSubmission()` drops it.
 - **Server.** `readOnly` is not a server guarantee: `validateSubmission()` accepts any value of the right type. An app that needs a fixed value writes it on the server.
 - **Renderers.** The built-in renderers draw the control read-only, not disabled, so it stays focusable and its text can be copied. Text, number, date and time inputs get the `readonly` attribute; other controls get `aria-readonly="true"` and ignore changes. The renderer `readOnly` prop makes every field read-only and hides the group Add, Remove and Move buttons. It does not change validation.
 - `readOnly` that is not a boolean or a list of conditions is an `invalid-type` error. Its conditions are checked like `show` conditions.
@@ -330,9 +330,9 @@ The conformance corpus file `option-order.json` lists vectors of seeds, keys and
 - The order is not applied to other field types, to a field in a section with `layout: "matrix"`, or when fewer than two options are unpinned. `randomize` on another type or in a matrix section, and `pinned` on a field without `randomize`, are `randomize-not-applicable` warnings.
 - The built-in renderers draw the options in the shown order in the DOM, so keyboard and screen reader order match what is seen. A native `select` keeps its placeholder first. Without a `seed` option, they render the written order on the server and during hydration, and the shown order after mount.
 
-### Option hints and disabled options
+### Option descriptions and disabled options
 
-An option of a `radio`, `select` or `multiselect` field MAY have `hint`, a short text shown under its label, and `disabled`: `true`, or a list of [conditions](#conditions) that must all match. Inside a group, the conditions read the fields of the same item first, like `show`. An empty list never disables.
+An option of a `radio`, `select` or `multiselect` field MAY have `description`, a short text shown under its label, and `disabled`: `true`, or a list of [conditions](#conditions) that must all match. Inside a group, the conditions read the fields of the same item first, like `show`. An empty list never disables.
 
 ```json
 {
@@ -347,8 +347,8 @@ An option of a `radio`, `select` or `multiselect` field MAY have `hint`, a short
       "type": "radio",
       "label": "Plan",
       "options": [
-        { "value": "starter", "label": "Starter", "hint": "Up to 5 seats", "disabled": [{ "field": "seats", "gt": 5 }] },
-        { "value": "pro", "label": "Pro", "hint": "Any number of seats" },
+        { "value": "starter", "label": "Starter", "description": "Up to 5 seats", "disabled": [{ "field": "seats", "gt": 5 }] },
+        { "value": "pro", "label": "Pro", "description": "Any number of seats" },
         { "value": "legacy", "label": "Legacy", "disabled": true }
       ]
     }
@@ -356,11 +356,11 @@ An option of a `radio`, `select` or `multiselect` field MAY have `hint`, a short
 }
 ```
 
-- **Hint.** A translatable text with the address `fields.<key>.optionHints.<value>` and the translation key `i18n.hint`. The built-in renderers show it under the option label and point the option's `aria-describedby` at it. A `select` shows no hint. Hints do not recall answers.
+- **Description.** A translatable text with the address `fields.<key>.optionDescriptions.<value>` and the translation key `i18n.description`. The built-in renderers show it under the option label and point the option's `aria-describedby` at it. A `select` shows no description. Option descriptions do not recall answers.
 - **Disabled option.** The built-in renderers draw it with the `disabled` attribute, so it cannot be picked. It keeps its place, and values, conditions and the submit payload do not change.
 - **Validation.** A value that holds a disabled option fails with the `option` message, after the type check, unless the stored answer of the field already holds that option. A list fails when any of its options is disabled and not stored. A read-only field skips this rule.
 - **Stored answer.** In the engine, the stored answer is the [start value](#visibility) of the field: the initial values, `reset(values)`, its `source` or `defaultValue`, and for an item field, the value its item started with, which stays with the item when items are removed or [moved](#reordering-items). A respondent can keep a stored answer that is now disabled, or pick it again, but cannot pick a disabled option the field did not hold. `validateSubmission()` takes the stored answers from its `previousValues` option, an object of the same shape as the submitted values; for an item field it reads the item at the same index. Without `previousValues`, every disabled option fails, so a server that edits a stored submission passes the stored values.
-- `disabled` on an option of another field type is a `disabled-not-applicable` warning and is ignored. A `hint` that is not a string, or a `disabled` that is not a boolean or a list of conditions, is an `invalid-type` error. Conditions of `disabled` are checked like `show` conditions.
+- `disabled` on an option of another field type is a `disabled-not-applicable` warning and is ignored. A `description` that is not a string, or a `disabled` that is not a boolean or a list of conditions, is an `invalid-type` error. Conditions of `disabled` are checked like `show` conditions.
 
 The corpus file `option-rules.json`, the scenarios in `scenarios/option-rules.json` and `fixtures/submissions/option-rules.json` pin these rules.
 
@@ -639,7 +639,7 @@ Core evaluates one field as follows and returns the first error:
 
 1. If the field is [read-only](#read-only-fields) and the value is empty, return no error. Otherwise, if the value is empty, return the `required` error when `required` is `true` or a non-empty string. Otherwise, return the `matchField` error when the named field has a non-empty value, or no error. No other rule runs. For validation, empty also includes `false` for `checkbox` and `switch`.
 2. The type check for built-in types other than `file`: `email` with a top-level domain and at most 254 characters, `date` as a real calendar date `YYYY-MM-DD`, `datetime` as `YYYY-MM-DDTHH:mm` with optional seconds, milliseconds and a `Z` or `±HH:mm` offset, and a real calendar date, `time` as 24-hour `HH:mm` with optional seconds from `00:00` to `23:59:59`, a finite number for `number`, an integer of the [range](#scale-and-rating) for `scale` and `rating`, a boolean for `checkbox` and `switch`, a static option value for `select`, `radio` and `multiselect` without `optionsFrom`, an array without repeated values and without an [exclusive option](#exclusive-options) next to other values for `multiselect`, and at most 10,000 characters (or `maxLength`) for strings. Custom types skip it. A [read-only](#read-only-fields) field stops here.
-3. A value that holds a [disabled option](#option-hints-and-disabled-options) the stored answer does not hold fails with the `option` message.
+3. A value that holds a [disabled option](#option-descriptions-and-disabled-options) the stored answer does not hold fails with the `option` message.
 4. For a string or array: `minLength`, then `maxLength`. For a number: `min`, then `max`. Other value types skip these rules. A numeric string is not converted.
 5. `pattern`, compiled with `new RegExp(pattern)` without flags and without implicit anchors. An invalid pattern is a definition error, so the constructor throws on it. A value longer than 10,000 characters fails `pattern` without being matched. One validation matches at most 10,000 values against patterns: each `validate()`, each step check on Continue, each `validateFields()` call and each `validateSubmission()` call counts from zero. Values are matched in validation order: the fields of each step on the active path in definition order, and the items of a group, item by item, right after the group field. After 10,000 matches, `pattern` fails without matching, so the field gets its `pattern` error. The limit bounds the work of one request with many fields, items and patterns. The engine and `validateSubmission()` run every pattern that `checkDefinition()` reports as `slow-pattern`; the report is only a warning.
 6. `matchField`: the value is compared with `===` to the value of the named field. A field on a skipped step has no value here. In a form with routes, a field off the active path has no value either.
@@ -1066,7 +1066,7 @@ An `i18n` object maps texts of its node to keys of the app dictionary, such as L
 | step, section | `title`, `description` |
 | field | `label`, `placeholder`, `helperText` |
 | group | `label`, `helperText`, `itemLabel`, `addLabel`, `removeLabel` |
-| option | `label`, `hint` |
+| option | `label`, `description` |
 | action | `label` |
 | validation | `required`, `minLength`, `maxLength`, `min`, `max`, `pattern`, `matchField` |
 
@@ -1097,7 +1097,7 @@ submit.label | cancel.label
 messages.<key> | labels.<key>
 fields.<key>.label | placeholder | helperText
 fields.<key>.options.<value>
-fields.<key>.optionHints.<value>
+fields.<key>.optionDescriptions.<value>
 fields.<key>.validation.<rule>
 steps.<id>.title | description
 steps.<id>.next.label | back.label | skip.label
@@ -1186,7 +1186,7 @@ The `FormEngine` constructor runs the same checks. It throws a `FormDefinitionEr
 | `rule-not-applicable` | warning | `min`/`max` on a built-in type other than `number`, `scale` and `rating` or on a group, or `minLength`/`maxLength` on `number`, `scale`, `rating`, `checkbox` or `switch` |
 | `condition-always-true` | warning | `notEmpty: false`, which matches every value |
 | `disabled-not-applicable` | warning | `disabled` on a `back`, `skip` or `cancel` action, which the built-in renderers ignore, or on an option of a field other than `radio`, `select` and `multiselect` |
-| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5, `randomize` or `pinned` without 1.6, `multiple` without 1.7, or an option `hint` or `disabled`, a `readOnly` or a `reorderable` without 1.8 |
+| `outdated-format-version` | warning | A section or a group in a definition without `formatVersion` 1.1 or newer, a `scale` or `rating` field without 1.3, a `contains` or `notContains` condition without 1.4, a `{{key}}` token, an exclusive option or an `autocomplete` without 1.5, `randomize` or `pinned` without 1.6, `multiple` without 1.7, or an option `description` or `disabled`, a `readOnly` or a `reorderable` without 1.8 |
 | `unknown-recall-field` | warning | A `{{key}}` token whose key is not a top-level field key or, inside a group item, an item key |
 | `recall-forward-reference` | warning | A `{{key}}` token for a field on a later step, or for the field that holds the text |
 | `recall-syntax` | warning | A `{{ }}` token with content other than a field key. It shows as written |

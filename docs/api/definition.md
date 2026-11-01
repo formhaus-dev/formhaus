@@ -45,9 +45,9 @@ The format each node type and property needs:
 | Field `autocomplete` | 1.5 | yes |
 | Field `randomize`, option `pinned` | 1.6 | yes |
 | Field `multiple` on `file` | 1.7 | yes |
-| Option `hint` and `disabled`, field `readOnly`, group `reorderable` | 1.8 | yes |
+| Option `description` and `disabled`, field `readOnly`, group `reorderable` | 1.8 | yes |
 
-Other built-in field types and properties need no `formatVersion`. The warning is `outdated-format-version` and names the highest format the definition needs. Recall, file lists and the 1.8 properties are the features the current core turns off below their format: the text shows `{{key}}` as written, a `file` field with `multiple` keeps one file, and option `hint` and `disabled`, `readOnly` and `reorderable` are ignored. The [specification](/spec#versioning) lists what older cores do with each feature.
+Other built-in field types and properties need no `formatVersion`. The warning is `outdated-format-version` and names the highest format the definition needs. Recall, file lists and the 1.8 properties are the features the current core turns off below their format: the text shows `{{key}}` as written, a `file` field with `multiple` keeps one file, and option `description` and `disabled`, `readOnly` and `reorderable` are ignored. The [specification](/spec#versioning) lists what older cores do with each feature.
 
 ## FormField
 
@@ -238,9 +238,9 @@ interface FieldOption {
   image?: string;                 // Picture URL for radio and multiselect. Added in 0.19.0
   exclusive?: boolean;            // Multiselect only: the only answer when picked. Added in 0.21.0
   pinned?: boolean;               // Keeps its written position under randomize. Added in 1.1.0
-  hint?: string;                  // Text under the label. Format 1.8. Added in 1.9.0
+  description?: string;          // Text under the label. Format 1.8. Added in 1.9.0
   disabled?: boolean | ShowCondition[]; // Radio, select, multiselect: cannot be picked. Format 1.8. Added in 1.9.0
-  i18n?: { label?: string; hint?: string };
+  i18n?: { label?: string; description?: string };
 }
 ```
 
@@ -386,7 +386,7 @@ Definition properties added since 0.7.0. Earlier versions do not support them.
 
 | Property | Added in |
 |---|---|
-| `hint` and `disabled` on options, `readOnly` on fields, `reorderable` on groups, format 1.8 | 1.9.0 |
+| `description` and `disabled` on options, `readOnly` on fields, `reorderable` on groups, format 1.8 | 1.9.0 |
 | `multiple` on file fields, format 1.7 | 1.7.0 |
 | `randomize` on fields and `pinned` on options, format 1.6 | 1.1.0 |
 | `{{key}}` answer recall, `exclusive` on options and `autocomplete` on fields, format 1.5 | 0.21.0 |

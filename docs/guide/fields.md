@@ -265,9 +265,9 @@ Pick one from a list. Options stack vertically, one full-width row per option.
 
 For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`. Options then sit side by side and wrap on narrow screens. Keep the default `stack` for options longer than a few words. `layout` was added in 0.10.0.
 
-### Hints and disabled options
+### Option descriptions and disabled options
 
-`hint` adds a short line under an option label. `disabled` turns an option off, always with `true` or while its conditions match. Works on `radio`, `select` and `multiselect`; `select` shows no hint.
+`description` adds a short line under an option label. `disabled` turns an option off, always with `true` or while its conditions match. Works on `radio`, `select` and `multiselect`; `select` shows no description.
 
 ```json
 {
@@ -275,14 +275,14 @@ For a few short options, such as `1 year` or `2 years`, set `"layout": "inline"`
   "type": "radio",
   "label": "Plan",
   "options": [
-    { "value": "starter", "label": "Starter", "hint": "Up to 5 seats", "disabled": [{ "field": "seats", "gt": 5 }] },
-    { "value": "pro", "label": "Pro", "hint": "Any number of seats" },
+    { "value": "starter", "label": "Starter", "description": "Up to 5 seats", "disabled": [{ "field": "seats", "gt": 5 }] },
+    { "value": "pro", "label": "Pro", "description": "Any number of seats" },
     { "value": "legacy", "label": "Legacy", "disabled": true }
   ]
 }
 ```
 
-A disabled option cannot be picked, and validation rejects it with the `option` message. A stored answer that already holds it stays valid: in the browser that is the initial value, on the server pass [`previousValues`](/guide/server-validation#stored-answers). Requires `"formatVersion": "1.8"` and `@formhaus/core` 1.9. See the [specification](/spec#option-hints-and-disabled-options).
+A disabled option cannot be picked, and validation rejects it with the `option` message. A stored answer that already holds it stays valid: in the browser that is the initial value, on the server pass [`previousValues`](/guide/server-validation#stored-answers). Requires `"formatVersion": "1.8"` and `@formhaus/core` 1.9. See the [specification](/spec#option-descriptions-and-disabled-options).
 
 ## Scale
 
