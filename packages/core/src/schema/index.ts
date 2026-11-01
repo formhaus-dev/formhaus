@@ -1,6 +1,7 @@
 import type { SubmitHandler, ValidateContext } from '../engine/engine-options';
 import { isPlainEntry } from '../validation/type-checks';
 import { hasOwn } from '../visibility/nodes';
+import { sameValue } from '../validation/same-value';
 
 export interface StandardSchemaV1<Input = unknown, Output = Input> {
   readonly '~standard': StandardSchemaV1.Props<Input, Output>;
@@ -92,24 +93,37 @@ export interface SchemaParse<Output> {
   submit(handler: (values: Output, skippedSteps: string[]) => ReturnType<SubmitHandler>): SubmitHandler;
 }
 
+function warnHidden(message: string): void {
+  try {
+    if (process.env.NODE_ENV !== 'production')
+      console.warn(
+        `[formhaus] schemaParse: the schema rejected the submit values on a field the form does not submit ("${message}"). The schema must accept the submit payload: fields hidden by a condition or on a skipped step are absent, so mark them optional.`,
+      );
+  } catch {}
+}
+
 export function schemaParse<Schema extends StandardSchemaV1>(
   schema: Schema,
   options: SchemaValidateOptions = {},
 ): SchemaParse<StandardSchemaV1.InferOutput<Schema>> {
-  const outputs = new WeakMap<object, StandardSchemaV1.InferOutput<Schema>>();
+  let parsed: { values: Record<string, unknown>; output: StandardSchemaV1.InferOutput<Schema> } | undefined;
   const parse = async (values: Record<string, unknown>, context?: ValidateContext) => {
     const { errors, result } = await check(schema, options, values, context);
-    if (!result.issues) outputs.set(values, result.value);
+    if (!result.issues) parsed = { values, output: result.value };
+    else if (Object.keys(errors).length === 0 && context?.submit !== false) {
+      warnHidden(result.issues[0].message);
+      return { '': result.issues[0].message };
+    }
     return errors;
   };
   return {
     validate: parse,
     submit: (handler) => async (values, skippedSteps) => {
-      if (!outputs.has(values)) {
+      if (!parsed || !sameValue(parsed.values, values)) {
         const errors = await parse(values);
-        if (!outputs.has(values)) return { ok: false, errors };
+        if (!parsed || parsed.values !== values) return { ok: false, errors };
       }
-      return handler(outputs.get(values)!, skippedSteps);
+      return handler(parsed.output, skippedSteps);
     },
   };
 }

@@ -80,4 +80,38 @@ describe('schemaParse', () => {
     expect(await engine.submit(parsed.submit(() => {}))).toBe(true);
     expect(validate).toHaveBeenCalledTimes(1);
   });
+
+  it('runs the schema once when onBeforeSubmit leaves the values equal', async () => {
+    const validate = vi.fn(schema['~standard'].validate);
+    const counted = { '~standard': { ...schema['~standard'], validate } } as typeof schema;
+    const parsed = schemaParse(counted);
+    const handler = vi.fn();
+    const engine = new FormEngine(definition, { email: 'ada', seats: '1' }, { onValidate: parsed.validate, onBeforeSubmit: () => true });
+    expect(await engine.submit(parsed.submit(handler))).toBe(true);
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledWith({ email: 'ADA', seats: 1 }, []);
+  });
+
+  it('shows a form error and warns when the schema rejects a field the form does not submit', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const company: FormDefinition = {
+      id: 'company',
+      title: 'Company',
+      submit: { label: 'Save' },
+      fields: [
+        { key: 'business', type: 'checkbox', label: 'Business' },
+        { key: 'vat', type: 'text', label: 'VAT', show: [{ field: 'business', eq: true }] },
+      ],
+    };
+    const validate = vi.fn(z.object({ vat: z.string('VAT is required') })['~standard'].validate);
+    const parsed = schemaParse({ '~standard': { version: 1, vendor: 'zod', validate } });
+    const handler = vi.fn();
+    const engine = new FormEngine(company, { business: false, vat: 'DE1' }, { onValidate: parsed.validate });
+    expect(await engine.submit(parsed.submit(handler))).toBe(false);
+    expect(engine.topLevelErrors).toEqual(['VAT is required']);
+    expect(handler).not.toHaveBeenCalled();
+    expect(validate).toHaveBeenCalledTimes(1);
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('mark them optional'));
+    warn.mockRestore();
+  });
 });
