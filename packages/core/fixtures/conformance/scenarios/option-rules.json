@@ -1,0 +1,437 @@
+{
+  "$schema": "./scenario.schema.json",
+  "name": "option-rules",
+  "definition": {
+    "formatVersion": "1.8",
+    "id": "workspace",
+    "title": "Workspace",
+    "submit": {
+      "label": "Save"
+    },
+    "fields": [
+      {
+        "key": "seats",
+        "type": "number",
+        "label": "Seats"
+      },
+      {
+        "key": "plan",
+        "type": "radio",
+        "label": "Plan",
+        "options": [
+          {
+            "value": "starter",
+            "label": "Starter",
+            "hint": "Up to 5 seats",
+            "disabled": [
+              {
+                "field": "seats",
+                "gt": 5
+              }
+            ]
+          },
+          {
+            "value": "pro",
+            "label": "Pro",
+            "hint": "Any number of seats"
+          },
+          {
+            "value": "legacy",
+            "label": "Legacy",
+            "disabled": true
+          }
+        ]
+      },
+      {
+        "key": "addons",
+        "type": "multiselect",
+        "label": "Add-ons",
+        "options": [
+          {
+            "value": "sso",
+            "label": "SSO",
+            "disabled": [
+              {
+                "field": "plan",
+                "neq": "pro"
+              }
+            ]
+          },
+          {
+            "value": "audit",
+            "label": "Audit log"
+          }
+        ]
+      },
+      {
+        "key": "account",
+        "type": "text",
+        "label": "Account ID",
+        "readOnly": true,
+        "validation": {
+          "required": true,
+          "minLength": 5
+        }
+      },
+      {
+        "key": "note",
+        "type": "text",
+        "label": "Note",
+        "readOnly": [
+          {
+            "field": "seats",
+            "gt": 100
+          }
+        ],
+        "validation": {
+          "required": true
+        }
+      },
+      {
+        "key": "people",
+        "type": "group",
+        "label": "People",
+        "reorderable": true,
+        "fields": [
+          {
+            "key": "role",
+            "type": "select",
+            "label": "Role",
+            "options": [
+              {
+                "value": "admin",
+                "label": "Admin",
+                "disabled": true
+              },
+              {
+                "value": "member",
+                "label": "Member"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "scenarios": [
+    {
+      "name": "keeps a disabled option the form started with",
+      "values": {
+        "seats": 3,
+        "plan": "legacy",
+        "note": "Hi"
+      },
+      "steps": [
+        {
+          "do": "validate",
+          "returns": {}
+        },
+        {
+          "do": "setValue",
+          "key": "plan",
+          "value": "pro"
+        },
+        {
+          "do": "setValue",
+          "key": "plan",
+          "value": "legacy"
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
+    },
+    {
+      "name": "rejects a disabled option chosen after the start",
+      "values": {
+        "seats": 3,
+        "note": "Hi"
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "plan",
+          "value": "legacy"
+        },
+        {
+          "do": "validateField",
+          "key": "plan",
+          "returns": "Select one of the available options"
+        },
+        {
+          "do": "validate",
+          "returns": {
+            "plan": "Select one of the available options"
+          }
+        }
+      ]
+    },
+    {
+      "name": "follows the conditions of a disabled option",
+      "values": {
+        "seats": 8,
+        "note": "Hi"
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "plan",
+          "value": "starter"
+        },
+        {
+          "do": "validate",
+          "returns": {
+            "plan": "Select one of the available options"
+          }
+        },
+        {
+          "do": "setValue",
+          "key": "seats",
+          "value": 3
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
+    },
+    {
+      "name": "reset makes the new values the stored answers",
+      "steps": [
+        {
+          "do": "reset",
+          "values": {
+            "seats": 3,
+            "plan": "legacy",
+            "note": "Hi"
+          }
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        }
+      ]
+    },
+    {
+      "name": "skips the rules of read-only fields",
+      "values": {
+        "seats": 200,
+        "plan": "pro"
+      },
+      "steps": [
+        {
+          "do": "validateField",
+          "key": "account",
+          "returns": null
+        },
+        {
+          "do": "validateField",
+          "key": "note",
+          "returns": null
+        },
+        {
+          "do": "setValue",
+          "key": "seats",
+          "value": 3
+        },
+        {
+          "do": "validateField",
+          "key": "note",
+          "returns": "This field is required"
+        },
+        {
+          "do": "submit",
+          "handler": [],
+          "returns": false
+        },
+        {
+          "expect": {
+            "errors": {
+              "note": "This field is required"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "a stored item keeps its disabled option when it moves",
+      "values": {
+        "seats": 3,
+        "plan": "pro",
+        "note": "Hi",
+        "people": [
+          {
+            "role": "member"
+          },
+          {
+            "role": "admin"
+          }
+        ]
+      },
+      "steps": [
+        {
+          "do": "moveItem",
+          "key": "people",
+          "from": 1,
+          "to": 0,
+          "returns": true
+        },
+        {
+          "do": "validate",
+          "returns": {}
+        },
+        {
+          "do": "addItem",
+          "key": "people",
+          "returns": true
+        },
+        {
+          "do": "setItemValue",
+          "key": "people",
+          "index": 2,
+          "field": "role",
+          "value": "admin"
+        },
+        {
+          "do": "validate",
+          "returns": {
+            "people.2.role": "Select one of the available options"
+          }
+        }
+      ]
+    },
+    {
+      "name": "ignores the rules below format 1.8",
+      "definition": {
+        "formatVersion": "1.7",
+        "id": "workspace",
+        "title": "Workspace",
+        "submit": {
+          "label": "Save"
+        },
+        "fields": [
+          {
+            "key": "seats",
+            "type": "number",
+            "label": "Seats"
+          },
+          {
+            "key": "plan",
+            "type": "radio",
+            "label": "Plan",
+            "options": [
+              {
+                "value": "starter",
+                "label": "Starter",
+                "hint": "Up to 5 seats",
+                "disabled": [
+                  {
+                    "field": "seats",
+                    "gt": 5
+                  }
+                ]
+              },
+              {
+                "value": "pro",
+                "label": "Pro",
+                "hint": "Any number of seats"
+              },
+              {
+                "value": "legacy",
+                "label": "Legacy",
+                "disabled": true
+              }
+            ]
+          },
+          {
+            "key": "addons",
+            "type": "multiselect",
+            "label": "Add-ons",
+            "options": [
+              {
+                "value": "sso",
+                "label": "SSO",
+                "disabled": [
+                  {
+                    "field": "plan",
+                    "neq": "pro"
+                  }
+                ]
+              },
+              {
+                "value": "audit",
+                "label": "Audit log"
+              }
+            ]
+          },
+          {
+            "key": "account",
+            "type": "text",
+            "label": "Account ID",
+            "readOnly": true,
+            "validation": {
+              "required": true,
+              "minLength": 5
+            }
+          },
+          {
+            "key": "note",
+            "type": "text",
+            "label": "Note",
+            "readOnly": [
+              {
+                "field": "seats",
+                "gt": 100
+              }
+            ],
+            "validation": {
+              "required": true
+            }
+          },
+          {
+            "key": "people",
+            "type": "group",
+            "label": "People",
+            "reorderable": true,
+            "fields": [
+              {
+                "key": "role",
+                "type": "select",
+                "label": "Role",
+                "options": [
+                  {
+                    "value": "admin",
+                    "label": "Admin",
+                    "disabled": true
+                  },
+                  {
+                    "value": "member",
+                    "label": "Member"
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "values": {
+        "seats": 3,
+        "note": "Hi"
+      },
+      "steps": [
+        {
+          "do": "setValue",
+          "key": "plan",
+          "value": "legacy"
+        },
+        {
+          "do": "validate",
+          "returns": {
+            "account": "This field is required"
+          }
+        }
+      ]
+    }
+  ]
+}
