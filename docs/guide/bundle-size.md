@@ -20,7 +20,7 @@ Gzipped size of the code an app pays for each Formhaus entry and for other form 
 | `useFormEngine` from `@formhaus/react`, with core | 20.7 KB |
 | `useFormEngine` from `@formhaus/vue`, with core | 20.7 KB |
 | `FormRenderer` from `@formhaus/react`, with core | 37.1 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 40.7 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 40.8 KB |
 | `FormEngine` from `@formhaus/core`, with `FORMHAUS_TRUSTED` | 15.7 KB |
 | `FormRenderer` from `@formhaus/react`, with core and `FORMHAUS_TRUSTED` | 33.2 KB |
 | `FormRenderer` from `@formhaus/vue`, with core and `FORMHAUS_TRUSTED` | 36.9 KB |
@@ -37,8 +37,8 @@ The entry you import sets the size. React and Vue are not counted.
 |---|---|---|---|
 | `FormEngine` | All markup, in any framework. The engine does state, conditions, validation, steps and a basic structure check | 19.7 KB | 19.7 KB |
 | `useFormEngine` | All markup. The hook gives the visible fields of the step, values, errors, the current step, `setValue`, `next`, `back` and `submit` | 20.7 KB | 20.7 KB |
-| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 32.0 KB | 33.9 KB |
-| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 37.1 KB | 40.7 KB |
+| `HeadlessFormRenderer` | A component for each field type, actions and progress. The renderer does steps, field order, conditions, focus and the error summary | 32.0 KB | 34.0 KB |
+| `FormRenderer` | Nothing. Built-in fields, actions and progress; replace some types through `components` | 37.1 KB | 40.8 KB |
 
 <!-- size:paths:end -->
 
@@ -111,7 +111,7 @@ Define `process.env.FORMHAUS_TRUSTED` as `"1"` in the bundler to drop the struct
 |---|---|---|
 | `FormEngine` from `@formhaus/core` | 19.7 KB | 15.7 KB |
 | `FormRenderer` from `@formhaus/react`, with core | 37.1 KB | 33.2 KB |
-| `FormRenderer` from `@formhaus/vue`, with core | 40.7 KB | 36.9 KB |
+| `FormRenderer` from `@formhaus/vue`, with core | 40.8 KB | 36.9 KB |
 
 <!-- size:trusted:end -->
 
