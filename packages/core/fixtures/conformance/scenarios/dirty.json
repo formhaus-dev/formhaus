@@ -271,7 +271,7 @@
       ]
     },
     {
-      "name": "reset with values takes them as the baseline",
+      "name": "an engine reset with values takes them as the baseline",
       "values": {
         "name": "Ada"
       },
@@ -310,7 +310,7 @@
       ]
     },
     {
-      "name": "reset without values takes the defaults as the baseline",
+      "name": "an engine reset without values takes the defaults as the baseline",
       "values": {
         "name": "Ada"
       },

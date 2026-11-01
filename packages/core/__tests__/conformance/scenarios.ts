@@ -128,7 +128,7 @@ export class ScenarioRun {
       case 'goToStep':
         return engine.goToStep(action.stepId);
       case 'reset':
-        return this.dirty.reset(action.values);
+        return engine.reset(action.values);
       case 'markClean':
         return this.dirty.markClean();
       case 'replaceDefinition':

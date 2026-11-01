@@ -35,12 +35,12 @@ describe('trackDirty', () => {
     expect(tracker.dirtyKeys).toBe(keys);
   });
 
-  it('does not report a dirty state in the middle of a reset', () => {
+  it('takes the values of a plain engine reset as the baseline', () => {
     const engine = new FormEngine(definition, { name: 'Ada' });
     const tracker = trackDirty(engine);
     const states: boolean[] = [];
     tracker.subscribe(() => states.push(tracker.dirty));
-    tracker.reset({ name: 'Lin' });
+    engine.reset({ name: 'Lin' });
     engine.setValue('name', 'Ada');
     tracker.markClean();
     expect(states).toEqual([true, false]);

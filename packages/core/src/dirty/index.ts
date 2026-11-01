@@ -4,7 +4,7 @@ import { itemPath } from '../visibility/nodes';
 
 type Values = Record<string, unknown>;
 
-export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset'>;
+export type DirtySource = Pick<FormEngine<object>, 'getSubmitValues' | 'subscribe' | 'reset' | 'resets'>;
 
 export interface DirtyTracker {
   readonly dirty: boolean;
@@ -44,20 +44,22 @@ function changedKeys(baseline: Values, values: Values): string[] {
 
 export function trackDirty(engine: DirtySource): DirtyTracker {
   const listeners = new Set<() => void>();
-  let baseline = engine.getSubmitValues() as Values;
+  let baseline: Values;
+  let resets: number;
   let keys: readonly string[] = [];
-  let resetting = false;
+  const markClean = () => {
+    baseline = engine.getSubmitValues() as Values;
+    resets = engine.resets;
+    update();
+  };
   const update = () => {
-    if (resetting) return;
+    if (resets !== engine.resets) return markClean();
     const next = changedKeys(baseline, engine.getSubmitValues() as Values);
     if (next.length === keys.length && next.every((key, index) => key === keys[index])) return;
     keys = next;
     for (const listener of listeners) listener();
   };
-  const markClean = () => {
-    baseline = engine.getSubmitValues() as Values;
-    update();
-  };
+  markClean();
   const stop = engine.subscribe(update);
   return {
     get dirty() {
@@ -67,15 +69,7 @@ export function trackDirty(engine: DirtySource): DirtyTracker {
       return keys;
     },
     markClean,
-    reset(values) {
-      resetting = true;
-      try {
-        engine.reset(values);
-      } finally {
-        resetting = false;
-      }
-      markClean();
-    },
+    reset: (values) => engine.reset(values),
     subscribe(listener) {
       listeners.add(listener);
       return () => listeners.delete(listener);
