@@ -102,6 +102,8 @@ export class ScenarioRun {
         return engine.addItem(action.key);
       case 'removeItem':
         return engine.removeItem(action.key, action.index);
+      case 'moveItem':
+        return engine.moveItem(action.key, action.from, action.to);
       case 'setErrors':
         return engine.setErrors(action.errors);
       case 'setFieldLoading':
