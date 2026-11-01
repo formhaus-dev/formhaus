@@ -613,7 +613,7 @@
               }
             }
           ],
-          "description": "true, or conditions that must all match, shows the value without letting the user change it. The value is submitted and only its type is checked. Added in format 1.8."
+          "description": "true, or conditions that must all match, shows the value without letting the user change it. The value is submitted and validated like any other field. Added in format 1.8."
         },
         "props": {
           "type": "object",

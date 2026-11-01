@@ -61,7 +61,7 @@ const DESCRIPTIONS = {
   'FormField.multiple':
     'File only: the field keeps a list of files and its value is an array. validation.minLength and maxLength count the files, and required needs at least one. Takes effect only with "formatVersion": "1.7" or newer. Added in format 1.7.',
   'FormField.readOnly':
-    'true, or conditions that must all match, shows the value without letting the user change it. The value is submitted and only its type is checked. Added in format 1.8.',
+    'true, or conditions that must all match, shows the value without letting the user change it. The value is submitted and validated like any other field. Added in format 1.8.',
   'FormField.layout':
     'Option layout for radio and multiselect fields. stack (default) lists options vertically. inline places short options side by side and wraps them.',
   'FormField.columns':

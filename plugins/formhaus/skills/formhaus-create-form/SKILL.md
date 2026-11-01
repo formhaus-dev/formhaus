@@ -110,7 +110,7 @@ interface FormField {
   mask?: string;              // input mask
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
   autocomplete?: string;      // HTML autofill token: given-name, family-name, email, tel, street-address, postal-code, off (format 1.5)
-  readOnly?: boolean | ShowCondition[]; // shown and submitted, the user cannot change it, only its type is checked (format 1.8)
+  readOnly?: boolean | ShowCondition[]; // shown and submitted, the user cannot change it, validated as usual (format 1.8)
 }
 
 type FieldType =

@@ -877,7 +877,7 @@ const emit = defineEmits(fieldComponentEmits)
 { "key": "accountId", "type": "text", "label": "Account ID", "readOnly": true }
 ```
 
-The value is submitted, and only its type is checked: `required` and the other rules do not apply. The control stays focusable and copyable, with `readonly` or `aria-readonly`. Pass `readOnly` to `FormRenderer` to show the whole form read-only. Requires `"formatVersion": "1.8"`. The server still accepts any value of the right type, so write fixed values on the server. See the [specification](/spec#read-only-fields).
+The value is submitted and validated like any other field. The control stays focusable and copyable, with `readonly` or `aria-readonly`. Pass `readOnly` to `FormRenderer` to show the whole form read-only. Requires `"formatVersion": "1.8"`. A client can still send any value, so write fixed values on the server. See the [specification](/spec#read-only-fields).
 
 ```tsx
 <FormRenderer definition={definition} initialValues={settings} readOnly onSubmit={save} />

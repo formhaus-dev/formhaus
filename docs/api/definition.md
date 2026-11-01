@@ -77,7 +77,7 @@ interface FormField {
   mask?: string;                  // Input mask pattern (shown as placeholder, custom components get full access)
   inputMode?: 'text' | 'numeric' | 'decimal' | 'tel' | 'email' | 'url' | 'search';
   autocomplete?: string;          // HTML autofill token, such as 'given-name'. Format 1.5
-  readOnly?: boolean | ShowCondition[]; // Shown, submitted, only type-checked. Format 1.8. Added in 1.9.0
+  readOnly?: boolean | ShowCondition[]; // Shown, not editable, validated as usual. Format 1.8. Added in 1.9.0
   source?: FieldSource;           // Hidden fields: where the value comes from. Added in 0.14.0
   props?: Record<string, unknown>; // Custom type settings, passed as field.props. Added in 0.15.0
 }
