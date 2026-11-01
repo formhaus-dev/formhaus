@@ -87,6 +87,8 @@ Covers cases like:
 return { ok: false, formErrors: ['Your account has been temporarily suspended.'] };
 ```
 
+Form errors render below the fields. Pass `formErrorsPlacement="top"` to render them above the fields, after the progress. Added in 1.9.0.
+
 ## Error summary and step marks
 
 The error summary lists every field error in step order. By default it sits below the fields, above the step buttons. Each entry is a link that opens the step of the field and focuses it. When errors span more than one step, the list groups them under each step's title. A label that ends with `?`, `!`, `:` or `.` is followed by a space instead of `: `. It is on by default; pass `errorSummary={false}` in React or `:error-summary="false"` in Vue to turn it off. Pass `errorSummary="top"` to put it first in the form, before the progress and the fields, as GOV.UK and USWDS ask. `"bottom"` and `true` keep it above the buttons. Focus works the same in both places. After a failed Continue or Submit with two or more errors, focus moves to the summary. With one error, or with the summary off, focus moves to the first invalid field. `stepErrorMarks` lists the steps under the progress bar and marks the ones with errors. It is off by default.

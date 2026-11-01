@@ -11,11 +11,11 @@ export interface DirtyTracker {
     // (undocumented)
     readonly dirtyKeys: readonly string[];
     // (undocumented)
-    markClean(): void;
+    markClean: () => void;
     // (undocumented)
-    stop(): void;
+    stop: () => void;
     // (undocumented)
-    subscribe(listener: () => void): () => void;
+    subscribe: (listener: () => void) => () => void;
 }
 
 // @public (undocumented)

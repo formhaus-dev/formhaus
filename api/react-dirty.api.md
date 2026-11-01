@@ -13,15 +13,17 @@ export interface FormDirty {
     // (undocumented)
     dirtyKeys: readonly string[];
     // (undocumented)
-    markClean(): void;
+    markClean: () => void;
     // (undocumented)
-    ref(handle: {
+    ref: (handle: {
         readonly engine: FormEngine;
-    } | null): void;
+    } | null) => void;
 }
 
 // @public (undocumented)
-export function useFormDirty(engine?: FormEngine): FormDirty;
+export function useFormDirty(engine?: FormEngine | {
+    readonly engine: FormEngine;
+} | null): FormDirty;
 
 // (No @packageDocumentation comment for this package)
 

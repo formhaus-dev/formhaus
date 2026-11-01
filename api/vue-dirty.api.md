@@ -15,9 +15,9 @@ export interface FormDirty {
     // (undocumented)
     dirtyKeys: ComputedRef<readonly string[]>;
     // (undocumented)
-    markClean(): void;
+    markClean: () => void;
     // (undocumented)
-    ref(handle: unknown): void;
+    ref: (handle: unknown) => void;
 }
 
 // @public (undocumented)
