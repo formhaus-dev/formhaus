@@ -1,4 +1,4 @@
-import type { ValidateContext } from '../engine/engine-options';
+import type { SubmitHandler, ValidateContext } from '../engine/engine-options';
 import { isPlainEntry } from '../validation/type-checks';
 import { hasOwn } from '../visibility/nodes';
 
@@ -63,19 +63,53 @@ function withoutEmpty(values: Record<string, unknown>): Record<string, unknown> 
   );
 }
 
+async function check(
+  schema: StandardSchemaV1,
+  options: SchemaValidateOptions,
+  values: Record<string, unknown>,
+  context?: ValidateContext,
+): Promise<{ errors: Record<string, string>; result: StandardSchemaV1.Result<unknown> }> {
+  const input = options.emptyStrings === 'omit' ? withoutEmpty(values) : values;
+  const result = await schema['~standard'].validate(input);
+  const errors: Record<string, string> = {};
+  for (const { message, path } of result.issues ?? []) {
+    const keys = Array.from(path ?? [], segmentKey);
+    const key = keys.length === 0 ? '' : context ? fieldOf(keys, context.fields) : String(keys[0]);
+    if (key !== undefined && !hasOwn(errors, key)) errors[key] = message;
+  }
+  return { errors, result };
+}
+
 export function schemaValidate(
   schema: StandardSchemaV1,
   options: SchemaValidateOptions = {},
 ): (values: Record<string, unknown>, context?: ValidateContext) => Promise<Record<string, string>> {
-  return async (values, context) => {
-    const input = options.emptyStrings === 'omit' ? withoutEmpty(values) : values;
-    const { issues = [] } = await schema['~standard'].validate(input);
-    const errors: Record<string, string> = {};
-    for (const { message, path } of issues) {
-      const keys = Array.from(path ?? [], segmentKey);
-      const key = keys.length === 0 ? '' : context ? fieldOf(keys, context.fields) : String(keys[0]);
-      if (key !== undefined && !hasOwn(errors, key)) errors[key] = message;
-    }
+  return async (values, context) => (await check(schema, options, values, context)).errors;
+}
+
+export interface SchemaParse<Output> {
+  validate(values: Record<string, unknown>, context?: ValidateContext): Promise<Record<string, string>>;
+  submit(handler: (values: Output, skippedSteps: string[]) => ReturnType<SubmitHandler>): SubmitHandler;
+}
+
+export function schemaParse<Schema extends StandardSchemaV1>(
+  schema: Schema,
+  options: SchemaValidateOptions = {},
+): SchemaParse<StandardSchemaV1.InferOutput<Schema>> {
+  const outputs = new WeakMap<object, StandardSchemaV1.InferOutput<Schema>>();
+  const parse = async (values: Record<string, unknown>, context?: ValidateContext) => {
+    const { errors, result } = await check(schema, options, values, context);
+    if (!result.issues) outputs.set(values, result.value);
     return errors;
+  };
+  return {
+    validate: parse,
+    submit: (handler) => async (values, skippedSteps) => {
+      if (!outputs.has(values)) {
+        const errors = await parse(values);
+        if (!outputs.has(values)) return { ok: false, errors };
+      }
+      return handler(outputs.get(values)!, skippedSteps);
+    },
   };
 }
