@@ -7,6 +7,7 @@ import {
   itemHasContent,
   itemLimits,
   itemTitle,
+  movedFocusId,
   optionKey,
   recalled,
   recalls,
@@ -43,7 +44,7 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
   onItemsChange,
   ...props
 }: FormGroupControllerProps) {
-  const { engine, formId } = props;
+  const { engine, formId, readOnly } = props;
   useFieldSnapshot(engine, group.key);
   useStructureSnapshot(engine);
   useRecallSnapshot(engine, recalls(engine, group));
@@ -85,6 +86,13 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
     if (!confirmRemove || !itemHasContent(engine, group.key, index)) return drop(index);
     setConfirming(items[index].id);
   };
+  const move = (index: number, to: number) => {
+    const item = title(index);
+    if (!onItemsChange(group.key, () => engine.moveItem(group.key, index, to))) return;
+    focus.current = { id: movedFocusId(itemDomId(formId, group.key, to, undefined, engine.definition), index, to, items.length) };
+    setStatus(label('itemMoved', { item, position: to + 1 }));
+  };
+  const reorder = group.reorderable && !readOnly;
   const keep = (index: number) => {
     setConfirming(null);
     focus.current = { id: `${itemDomId(formId, group.key, index, undefined, engine.definition)}-remove` };
@@ -99,13 +107,15 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
       index,
       title: title(index),
       titleId: itemDomId(formId, group.key, index, undefined, engine.definition),
-      canRemove: items.length > min,
+      canRemove: !readOnly && items.length > min,
       remove: () => drop(index),
       requestRemove: () => ask(index),
       hasContent: itemHasContent(engine, group.key, index),
       removeLabel: remove,
       removeName: label('removeItemNamed', { label: remove, item: title(index) }),
       disabled,
+      move: reorder ? (to) => move(index, to) : undefined,
+      count: group.reorderable ? items.length : undefined,
       children: item.fields.map((field) => (
         <FormFieldController
           key={field.key}
@@ -145,7 +155,7 @@ export const FormGroupController = /* @__PURE__ */ memo(function FormGroupContro
         error={error}
         describedBy={describedBy(group, id, error)}
         items={entries}
-        canAdd={items.length < max}
+        canAdd={!readOnly && items.length < max}
         add={add}
         remove={(key) => drop(items.findIndex((item) => item.id === key))}
         requestRemove={(key) => ask(items.findIndex((item) => item.id === key))}

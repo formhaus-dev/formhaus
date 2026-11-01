@@ -35,6 +35,12 @@ export default defineConfig([
   },
   {
     ...shared,
+    entry: { reorder: 'src/reorder/index.ts' },
+    onSuccess: () => useClient('dist/reorder.js'),
+    external: ['react', '@formhaus/core', '@formhaus/core/internal', '@formhaus/react'],
+  },
+  {
+    ...shared,
     entry: { cloud: 'src/cloud/index.ts' },
     onSuccess: () => useClient('dist/cloud.js'),
     external: [

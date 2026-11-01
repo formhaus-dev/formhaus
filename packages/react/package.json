@@ -19,6 +19,10 @@
     "./controls": {
       "types": "./dist/controls.d.ts",
       "default": "./dist/controls.js"
+    },
+    "./reorder": {
+      "types": "./dist/reorder.d.ts",
+      "default": "./dist/reorder.js"
     }
   },
   "files": [

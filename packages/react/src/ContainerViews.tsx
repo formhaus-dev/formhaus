@@ -1,4 +1,4 @@
-import { type CSSProperties, useEffect, useRef } from 'react';
+import { type CSSProperties, type ReactNode, useEffect, useRef } from 'react';
 import type { ConfirmDialogComponentProps, GroupComponentProps, GroupItemComponentProps, SectionComponentProps } from './types';
 
 export function DefaultSection({ id, title, description, descriptionId, columns, children }: SectionComponentProps) {
@@ -39,14 +39,16 @@ export function DefaultGroupItem({
   removeLabel,
   removeName,
   disabled,
+  actions,
   children,
-}: GroupItemComponentProps) {
+}: GroupItemComponentProps & { actions?: ReactNode }) {
   return (
     <div className="fh-group__item" role="group" aria-labelledby={titleId}>
       <div className="fh-group__header">
         <span id={titleId} tabIndex={-1} className="fh-group__title">
           {title}
         </span>
+        {actions}
         {canRemove && (
           <button
             id={`${titleId}-remove`}
