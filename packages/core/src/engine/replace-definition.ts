@@ -8,6 +8,7 @@ import { baselineFields, trackChanges } from './form-events';
 import type { EngineInternals } from './runtime-internals';
 import { reconcileStepIndex } from './step-routes';
 import { createVisibility } from './visibility-state';
+import { formatView } from './format-view';
 import { assertDefinition, warnUnordered, warnUntranslated } from './warnings';
 
 export function loadDefinition(
@@ -19,7 +20,7 @@ export function loadDefinition(
   warnUnordered(definition, engine.lifecycle);
   const sources = localeList(engine.lifecycle.locale);
   warnUntranslated(sources, engine.lifecycle);
-  const shown = localizedTexts(definition, sources);
+  const shown = localizedTexts(formatView(definition), sources);
   const visibility = createVisibility(shown, engine.lifecycle.hiddenValues === 'keep');
   markFileLists(shown, visibility.allFields);
   engine.source = definition;
